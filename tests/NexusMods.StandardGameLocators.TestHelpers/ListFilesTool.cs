@@ -9,7 +9,7 @@ public class ListFilesTool : ITool
 {
     public IEnumerable<GameDomain> Domains => new[] { GameDomain.From("stubbed-game") };
 
-    public async Task Execute(Loadout loadout, ApplyPlan applyPlan, CancellationToken cancellationToken)
+    public async Task Execute(Loadout loadout, CancellationToken cancellationToken)
     {
         var listPath = loadout.Installation.LocationsRegister[LocationId.Game];
         var outPath = GeneratedFilePath.Combine(listPath);
@@ -19,7 +19,7 @@ public class ListFilesTool : ITool
             .Select(f => f.ToString())
             .ToArray();
 
-        await outPath.WriteAllLinesAsync(lines);
+        await outPath.WriteAllLinesAsync(lines, cancellationToken);
     }
 
     public string Name => "List Files";

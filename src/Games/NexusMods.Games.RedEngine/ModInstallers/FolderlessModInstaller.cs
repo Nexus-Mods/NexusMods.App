@@ -14,13 +14,17 @@ public class FolderlessModInstaller : IModInstaller
 {
     private static readonly RelativePath Destination = "archive/pc/mod".ToRelativePath();
 
-    public async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(GameInstallation gameInstallation, ModId baseModId,
-        FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles, CancellationToken cancellationToken = default)
+    public async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
+        GameInstallation gameInstallation,
+        LoadoutId loadoutId,
+        ModId baseModId,
+        FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
+        CancellationToken cancellationToken = default)
     {
 
         var modFiles = archiveFiles.GetAllDescendentFiles()
             .Where(f => !Helpers.IgnoreExtensions.Contains(f.Path.Extension))
-            .Select(f => f.Value!.ToFromArchive(
+            .Select(f => f.Value!.ToStoredFile(
                 new GamePath(LocationId.Game, Destination.Join(f.Path.FileName))
             ))
             .ToArray();

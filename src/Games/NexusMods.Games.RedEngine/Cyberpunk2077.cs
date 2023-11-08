@@ -14,7 +14,7 @@ public class Cyberpunk2077 : AGame, ISteamGame, IGogGame, IEpicGame
     private readonly IFileSystem _fileSystem;
     private readonly IServiceProvider _serviceProvider;
 
-    public Cyberpunk2077(IEnumerable<IGameLocator> gameLocators, IFileSystem fileSystem, IServiceProvider provider) : base(gameLocators)
+    public Cyberpunk2077(IEnumerable<IGameLocator> gameLocators, IFileSystem fileSystem, IServiceProvider provider) : base(provider)
     {
         _fileSystem = fileSystem;
         _serviceProvider = provider;

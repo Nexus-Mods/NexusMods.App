@@ -37,7 +37,7 @@ public class SortTests
             }},
             new Item {Id = "C", Rules = new()
             {
-                new After<Item, string>("B")
+                new After<Item, string> { Other = "B" }
             }}
         };
 
@@ -66,7 +66,7 @@ public class SortTests
                     Id = n, Rules = new()
                 {
                     new First<Item, string>(),
-                    new After<Item, string>(letters.ElementAt(idx - 1))
+                    new After<Item, string> { Other = letters.ElementAt(idx - 1)}
                 }
                 });
             }
@@ -84,7 +84,7 @@ public class SortTests
                 {
                     Id = n, Rules = new()
                     {
-                        new After<Item, string>(numbers.ElementAt(idx - 1))
+                        new After<Item, string> { Other = numbers.ElementAt(idx - 1)}
                     }
                 });
             }

@@ -22,7 +22,7 @@ public class RedModDeployTool : ITool
 
     public IEnumerable<GameDomain> Domains => new[] { Cyberpunk2077.StaticDomain };
 
-    public async Task Execute(Loadout loadout, ApplyPlan applyPlan, CancellationToken cancellationToken)
+    public async Task Execute(Loadout loadout, CancellationToken cancellationToken)
     {
         var exe = RedModPath.CombineChecked(loadout.Installation);
 

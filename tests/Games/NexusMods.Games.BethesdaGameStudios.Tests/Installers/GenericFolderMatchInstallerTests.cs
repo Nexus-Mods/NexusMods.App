@@ -63,18 +63,18 @@ public abstract class GenericFolderMatchInstallerTests<TGame> : AGameTest<TGame>
         var path = BethesdaTestHelpers.GetDownloadableModFolder(_realFs, "HasScriptExtender");
         var downloaded = await _downloader.DownloadFromManifestAsync(path, _realFs);
 
-        var mod = await InstallModFromArchiveIntoLoadout(
+        var mod = await InstallModStoredFileIntoLoadout(
             loadout,
             downloaded.Path,
             downloaded.Manifest.Name);
 
         var files = mod.Files;
         files.Count.Should().BeGreaterThan(0);
-        files.Values.Where(f => f is FromArchive fromArchive && fromArchive.To.Path.Equals("skse_loader.exe")).Should()
+        files.Values.Where(f => f is StoredFile storedFile && storedFile.To.Path.Equals("skse_loader.exe")).Should()
             .HaveCount(1);
-        files.Values.Where(f => f is FromArchive fromArchive && fromArchive.To.Path.StartsWith("Data/scripts")).Should()
+        files.Values.Where(f => f is StoredFile storedFile && storedFile.To.Path.StartsWith("Data/scripts")).Should()
             .HaveCount(120);
-        files.Values.Where(f => f is FromArchive fromArchive && fromArchive.To.Path.StartsWith("src")).Should()
+        files.Values.Where(f => f is StoredFile storedFile && storedFile.To.Path.StartsWith("src")).Should()
             .HaveCount(0);
     }
 
@@ -85,7 +85,7 @@ public abstract class GenericFolderMatchInstallerTests<TGame> : AGameTest<TGame>
         var path = BethesdaTestHelpers.GetDownloadableModFolder(_realFs, folderName);
         var downloaded = await _downloader.DownloadFromManifestAsync(path, _realFs);
 
-        var mod = await InstallModFromArchiveIntoLoadout(
+        var mod = await InstallModStoredFileIntoLoadout(
             loadout,
             downloaded.Path,
             downloaded.Manifest.Name);
@@ -95,9 +95,9 @@ public abstract class GenericFolderMatchInstallerTests<TGame> : AGameTest<TGame>
 
         foreach (var file in files)
         {
-            if (file.Value is FromArchive fromArchive)
+            if (file.Value is StoredFile storedFile)
             {
-                if (!fromArchive.To.Path.StartsWith("Data"))
+                if (!storedFile.To.Path.StartsWith("Data"))
                     Assert.Fail("Loose files should target data folder.");
 
                 continue;

@@ -1,0 +1,193 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia">
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <StackPanel Orientation="Vertical" Spacing="6">
+                <Button Classes="Rounded" IsEnabled="True">
+                    <StackPanel Orientation="Horizontal">
+                        <icons:Icon Classes="Play" />
+                        <TextBlock Text="Rounded" />
+                        <Button Classes="Pill Standard Label">
+                            <StackPanel>
+                                <TextBlock Text="LABEL" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </Button>
+                <Button Classes="Rounded Active" IsEnabled="True">
+                    <StackPanel Orientation="Horizontal">
+                        <icons:Icon Classes="Play" />
+                        <TextBlock Text="Rounded Active" />
+                        <Button Classes="Pill Standard Label">
+                            <StackPanel>
+                                <TextBlock Text="LABEL" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </Button>
+                <Button Classes="Rounded SemiActive" IsEnabled="True">
+                    <StackPanel Orientation="Horizontal">
+                        <icons:Icon Classes="Play" />
+                        <TextBlock Text="Rounded SemiActive" />
+                        <Button Classes="Pill Standard Label">
+                            <StackPanel>
+                                <TextBlock Text="LABEL" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </Button>
+                <Button Classes="Rounded SemiActiveAccent" IsEnabled="True">
+                    <StackPanel Orientation="Horizontal">
+                        <icons:Icon Classes="Play" />
+                        <TextBlock Text="Rounded SemiActiveAccent" />
+                        <Button Classes="Pill Standard Label">
+                            <StackPanel>
+                                <TextBlock Text="LABEL" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </Button>
+                <Button Classes="Rounded Accent" IsEnabled="True">
+                    <StackPanel Orientation="Horizontal">
+                        <icons:Icon Classes="Play" />
+                        <TextBlock Text="Rounded Accent" />
+                        <Button Classes="Pill Standard Label">
+                            <StackPanel>
+                                <TextBlock Text="LABEL" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+
+    <!-- NOTE(Al12rs): Figma currently has three different sections for Rounded buttons,
+    so some additional discrimination classes were needed. Warning they have different roundness as well -->
+
+    <!-- Base Rounded Button (no outline)-->
+    <Style Selector="Button.Rounded">
+        <!-- Base Rounded Button (no outline)-->
+        <Setter Property="CornerRadius" Value="48" />
+        <Setter Property="Background" Value="{DynamicResource BrandWhiteBrush10Percent}" />
+        <Style Selector="^ > StackPanel > TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource FontDarkPrimary}" />
+            <!-- BodyMDNormal -->
+            <Setter Property="FontFamily" Value="{DynamicResource FontSecondary}" />
+            <Setter Property="FontWeight" Value="400" />
+            <Setter Property="FontSize" Value="14" />
+        </Style>
+
+        <!-- When TextBlock isn't wrapped in Stackpanel, i.e. text only -->
+        <Style Selector="^ > TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource FontDarkPrimary}" />
+            <!-- BodyMDNormal -->
+            <Setter Property="FontFamily" Value="{DynamicResource FontSecondary}" />
+            <Setter Property="FontWeight" Value="400" />
+            <Setter Property="FontSize" Value="14" />
+        </Style>
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource BrandWhiteBrush20Percent}" />
+        </Style>
+        <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource BrandWhiteBrush10Percent}" />
+            <Setter Property="Opacity" Value="0.4" />
+        </Style>
+
+        <!-- Rounded Button Active -->
+        <Style Selector="^.Active">
+            <Setter Property="Background" Value="{DynamicResource BrandWhite}" />
+
+            <Style Selector="^ > StackPanel > TextBlock">
+                <Setter Property="Foreground" Value="{DynamicResource FontLightPrimary}" />
+            </Style>
+
+            <Style Selector="^ > StackPanel > icons|Icon">
+                <Setter Property="Foreground" Value="{DynamicResource FontLightPrimary}" />
+            </Style>
+
+            <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Background" Value="{DynamicResource BrandTertiaryLighter}" />
+            </Style>
+
+            <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Background" Value="{DynamicResource BrandWhite}" />
+            </Style>
+        </Style>
+
+        <!-- Rounded Button SemiActive -->
+        <Style Selector="^.SemiActive">
+            <Setter Property="BorderBrush" Value="{DynamicResource BrandWhite}" />
+            <Setter Property="BorderThickness" Value="1" />
+
+            <Style Selector="^ > StackPanel > TextBlock">
+                <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+            </Style>
+
+            <Style Selector="^ > StackPanel > icons|Icon">
+                <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+            </Style>
+
+            <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="BorderBrush" Value="{DynamicResource BrandWhite}" />
+                <Setter Property="BorderThickness" Value="1" />
+            </Style>
+
+            <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="BorderBrush" Value="{DynamicResource BrandWhite}" />
+                <Setter Property="BorderThickness" Value="1" />
+            </Style>
+        </Style>
+
+        <!-- Rounded Button SemiActiveAccent -->
+        <Style Selector="^.SemiActiveAccent">
+            <Setter Property="BorderBrush" Value="{DynamicResource BrandAccentLighter}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Background" Value="{DynamicResource BrandAccentLighterBrush20Percent}" />
+
+            <Style Selector="^ > StackPanel > TextBlock">
+                <Setter Property="Foreground" Value="{DynamicResource FontDarkPrimary}" />
+            </Style>
+
+            <Style Selector="^ > StackPanel > icons|Icon">
+                <Setter Property="Foreground" Value="{DynamicResource FontDarkPrimary}" />
+            </Style>
+
+            <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="BorderBrush" Value="{DynamicResource BrandAccentLighter}" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="Background" Value="{DynamicResource BrandAccentLighterBrush30Percent}" />
+            </Style>
+
+            <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="BorderBrush" Value="{DynamicResource BrandAccentLighter}" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="Background" Value="{DynamicResource BrandAccentLighterBrush20Percent}" />
+            </Style>
+        </Style>
+
+        <!-- Rounded Button Accent -->
+        <Style Selector="^.Accent">
+            <Setter Property="Background" Value="{DynamicResource BrandAccentLighter}" />
+
+            <Style Selector="^ > StackPanel > TextBlock">
+                <Setter Property="Foreground" Value="{DynamicResource BackgroundPrimary}" />
+            </Style>
+
+            <Style Selector="^ > StackPanel > icons|Icon">
+                <Setter Property="Foreground" Value="{DynamicResource BackgroundPrimary}" />
+            </Style>
+
+            <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Background" Value="{DynamicResource BrandAccent}" />
+            </Style>
+
+            <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Background" Value="{DynamicResource BrandAccentLighter}" />
+            </Style>
+        </Style>
+
+
+    </Style>
+</Styles>

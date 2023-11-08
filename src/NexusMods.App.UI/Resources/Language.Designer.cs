@@ -447,6 +447,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add Mod (Advanced).
+        /// </summary>
+        public static string LoadoutGridView__Add_Mod_Advanced {
+            get {
+                return ResourceManager.GetString("LoadoutGridView__Add_Mod_Advanced", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Please select a mod file to install..
         /// </summary>
         public static string LoadoutGridView_AddMod_FilePicker_Title {
@@ -609,6 +618,15 @@ namespace NexusMods.App.UI.Resources {
         public static string NexusLoginOverlayView_Please_copy_url {
             get {
                 return ResourceManager.GetString("NexusLoginOverlayView_Please_copy_url", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New Tab.
+        /// </summary>
+        public static string PanelTabHeaderViewModel_Title_New_Tab {
+            get {
+                return ResourceManager.GetString("PanelTabHeaderViewModel_Title_New_Tab", resourceCulture);
             }
         }
         

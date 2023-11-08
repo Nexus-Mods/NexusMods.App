@@ -6,14 +6,16 @@
 /// <typeparam name="TEnum"></typeparam>
 /// <typeparam name="TVmType"></typeparam>
 /// <typeparam name="TBase"></typeparam>
-public class ViewModelDesignSelector<TEnum, TVmType, TBase> : 
+public class ViewModelDesignSelector<TEnum, TVmType, TBase> :
     AViewModelSelector<TEnum, TVmType, TBase>
     where TVmType : class, IViewModelInterface
-    where TEnum : struct, Enum {
+    where TEnum : struct, Enum
+    where TBase : class, IViewModelInterface
+{
     protected ViewModelDesignSelector(params TVmType[] vms) : base(vms.ToDictionary(GetKeyForVm))
     {
     }
-    
+
     private static TEnum GetKeyForVm(TVmType vm)
     {
         return Mappings.First(pair => vm.GetType().IsAssignableTo(pair.Value)).Key;

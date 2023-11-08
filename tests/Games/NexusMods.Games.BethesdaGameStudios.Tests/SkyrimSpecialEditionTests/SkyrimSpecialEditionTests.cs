@@ -1,19 +1,17 @@
-using System.Collections.Immutable;
 using System.Text;
 using System.Text.Json;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.CLI.Tests.VerbTests;
-using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Extensions;
-using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.Loadouts.Extensions;
+using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Loadouts.Mods;
+using NexusMods.DataModel.LoadoutSynchronizer.Extensions;
 using NexusMods.Games.TestFramework;
-using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
-using NexusMods.Paths.Extensions;
 using Noggog;
 
 namespace NexusMods.Games.BethesdaGameStudios.Tests.SkyrimSpecialEditionTests;
@@ -63,20 +61,23 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
         var loadout = await CreateLoadout(indexGameFiles: false);
         var loadoutName = loadout.Value.Name;
 
+        var modPath = FileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine("Assets/TruncatedPlugins.7z");
+        await InstallModStoredFileIntoLoadout(loadout, modPath, "Skyrim Truncated Plugins");
+
         await _verbTester.RunNoBannerAsync("list-managed-games");
 
         _verbTester.LastTable.Columns.Should().BeEquivalentTo("Name", "Game", "Id", "Mod Count");
         _verbTester.LastTable.Rows.FirstOrDefault(r => r.First().Equals(loadoutName)).Should().NotBeNull();
 
         await _verbTester.RunNoBannerAsync("list-mods", "-l", loadoutName);
-        _verbTester.LastTable.Rows.Count().Should().Be(1);
+        _verbTester.LastTable.Rows.Count().Should().Be(3);
 
         // install skse
         var uri = $"nxm://{Game.Domain}/mods/{skseModId}/files/{skseFileId}";
         await _verbTester.RunNoBannerAsync("download-and-install-mod", "-u", uri, "-l", loadoutName, "-n", skseModName);
 
         await _verbTester.RunNoBannerAsync("list-mods", "-l", loadoutName);
-        _verbTester.LastTable.Rows.Count().Should().Be(2);
+        _verbTester.LastTable.Rows.Count().Should().Be(4);
 
         await _verbTester.RunNoBannerAsync("list-mod-contents", "-l", loadoutName, "-n", skseModName);
         _verbTester.LastTable.Rows.Count().Should().Be(128);
@@ -87,7 +88,7 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
             skyuiModName);
 
         await _verbTester.RunNoBannerAsync("list-mods", "-l", loadoutName);
-        _verbTester.LastTable.Rows.Count().Should().Be(3);
+        _verbTester.LastTable.Rows.Count().Should().Be(5);
 
         await _verbTester.RunNoBannerAsync("list-mod-contents", "-l", loadoutName, "-n", skyuiModName);
         _verbTester.LastTable.Rows.Count().Should().Be(6);
@@ -98,7 +99,7 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
             ussepModName);
 
         await _verbTester.RunNoBannerAsync("list-mods", "-l", loadoutName);
-        _verbTester.LastTable.Rows.Count().Should().Be(4);
+        _verbTester.LastTable.Rows.Count().Should().Be(6);
 
         await _verbTester.RunNoBannerAsync("list-mod-contents", "-l", loadoutName, "-n", ussepModName);
         _verbTester.LastTable.Rows.Count().Should().Be(8);
@@ -114,176 +115,169 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
             sb.AppendLine();
         });
         logger.LogInformation("flatten-list table {FlattenTable}", sb.ToString());
-        _verbTester.LastTable.Rows.Count().Should().Be(143);
+        _verbTester.LastTable.Rows.Count().Should().Be(223);
 
-        await _verbTester.RunNoBannerAsync("apply", "-l", loadoutName, "-r", "false");
-        // depending on the state of plugins.txt, there could be more or less steps
-        _verbTester.LastTable.Rows.Count().Should().BeGreaterThan(142);
+        await _verbTester.RunNoBannerAsync("apply", "-l", loadoutName);
     }
 
     [Fact]
     public async Task CanGeneratePluginsFile()
     {
         var loadout = await CreateLoadout(indexGameFiles: false);
+        var mod = await InstallTruncatedPlugins(loadout);
 
         var analysisStr = await BethesdaTestHelpers.GetAssetsPath(FileSystem).Combine("plugin_dependencies.json")
             .ReadAllTextAsync();
         var analysis = JsonSerializer.Deserialize<Dictionary<string, string[]>>(analysisStr)!;
 
 
+        var metadataFiles =
+            loadout.Value.Mods.Values.First(m => m.ModCategory == Mod.ModdingMetaData); // <= throws on failure
+
         var gameFiles =
             loadout.Value.Mods.Values.First(m => m.ModCategory == Mod.GameFilesCategory); // <= throws on failure
 
-        LoadoutRegistry.Alter(loadout.Value.LoadoutId, gameFiles.Id, "Added plugins", mod =>
-        {
-            var files = mod!.Files;
-            foreach (var file in analysis)
-            {
-                var newFile = new GameFile()
-                {
-                    Id = ModFileId.New(),
-                    Installation = loadout.Value.Installation,
-                    To = new GamePath(LocationId.Game, $"Data/{file.Key}"),
-                    Hash = Hash.Zero,
-                    Size = Size.Zero,
-                    Metadata = ImmutableList<IMetadata>.Empty
-                };
-                files = files.With(newFile.Id, newFile);
-            }
+        var modPath = FileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine("Assets/SMIM_Truncated_Plugins.7z");
+        await InstallModStoredFileIntoLoadout(loadout, modPath, "SMIM");
 
-            return mod with { Files = files };
-        });
+        var pluginOrderFile = metadataFiles.Files.Values.OfType<PluginOrderFile>().First();
 
+        var flattened = await loadout.Value.ToFlattenedLoadout();
 
-        gameFiles.Files.Count.Should().BeGreaterThan(0);
-
-        var pluginOrderFile = gameFiles.Files.Values.OfType<PluginOrderFile>().First();
-        var flattenedList = (await LoadoutSynchronizer.FlattenLoadout(loadout.Value)).Files.Values.ToList();
-
-        var plan = await LoadoutSynchronizer.MakeApplySteps(loadout.Value);
-
+        await Task.Delay(100);
         using var ms = new MemoryStream();
-        await pluginOrderFile.GenerateAsync(ms, plan);
+        await pluginOrderFile.Write(ms, loadout.Value, flattened, await loadout.Value.ToFileTree());
+        await ms.FlushAsync();
+
+
+        flattened.GetAllDescendentFiles()
+            .ToArray()
+            .Length
+            .Should()
+            .Be(83, "the loadout has all the files");
 
         ms.Position = 0;
-
-        (await ms.XxHash64Async()).Should().Be(Hash.From(0x68B821EEFD98523C));
         var results = Encoding.UTF8.GetString(ms.ToArray()).Split("\r\n", StringSplitOptions.RemoveEmptyEntries);
+        //(await ms.XxHash64Async()).Should().Be(Hash.From(0xEF46DB3751D8E999));
 
-        // CC = Creation Club
-        if (results.Length == 9)
-        {
-            // Skyrim SE without CC downloads
-            results.Select(t => t.TrimStart('*')).Should()
-                .BeEquivalentTo(new[]
+
+        // Skyrim SE with CC downloads
+        results
+            .Select(t => t.TrimStart('*').ToLowerInvariant())
+            .Should()
+            .BeEquivalentTo(new[]
                 {
                     "Skyrim.esm",
                     "Update.esm",
                     "Dawnguard.esm",
                     "HearthFires.esm",
                     "Dragonborn.esm",
-                    "ccBGSSSE001-Fish.esm",
-                    "ccBGSSSE025-AdvDSGS.esm",
-                    "ccBGSSSE037-Curios.esl",
-                    "ccQDRSSE001-SurvivalMode.esl"
-                });
-        }
-        else
-        {
-            // Skyrim SE with CC downloads
-            results
-                .Select(t => t.TrimStart('*').ToLowerInvariant())
-                .Should()
-                .BeEquivalentTo(new[]
-                    {
-                        "Skyrim.esm",
-                        "Update.esm",
-                        "Dawnguard.esm",
-                        "HearthFires.esm",
-                        "Dragonborn.esm",
-                        "ccafdsse001-dwesanctuary.esm",
-                        "ccasvsse001-almsivi.esm",
-                        "ccbgssse001-fish.esm",
-                        "ccbgssse016-umbra.esm",
-                        "ccbgssse025-advdsgs.esm",
-                        "ccbgssse031-advcyrus.esm",
-                        "ccbgssse067-daedinv.esm",
-                        "cceejsse001-hstead.esm",
-                        "cceejsse005-cave.esm",
-                        "cctwbsse001-puzzledungeon.esm",
-                        "ccbgssse002-exoticarrows.esl",
-                        "ccbgssse003-zombies.esl",
-                        "ccbgssse004-ruinsedge.esl",
-                        "ccbgssse005-goldbrand.esl",
-                        "ccbgssse006-stendarshammer.esl",
-                        "ccbgssse007-chrysamere.esl",
-                        "ccbgssse008-wraithguard.esl",
-                        "ccbgssse010-petdwarvenarmoredmudcrab.esl",
-                        "ccbgssse011-hrsarmrelvn.esl",
-                        "ccbgssse012-hrsarmrstl.esl",
-                        "ccbgssse013-dawnfang.esl",
-                        "ccbgssse014-spellpack01.esl",
-                        "ccbgssse018-shadowrend.esl",
-                        "ccbgssse019-staffofsheogorath.esl",
-                        "ccbgssse020-graycowl.esl",
-                        "ccbgssse021-lordsmail.esl",
-                        "ccbgssse034-mntuni.esl",
-                        "ccbgssse035-petnhound.esl",
-                        "ccbgssse036-petbwolf.esl",
-                        "ccbgssse037-curios.esl",
-                        "ccbgssse038-bowofshadows.esl",
-                        "ccbgssse040-advobgobs.esl",
-                        "ccbgssse041-netchleather.esl",
-                        "ccbgssse043-crosselv.esl",
-                        "ccbgssse045-hasedoki.esl",
-                        "ccbgssse050-ba_daedric.esl",
-                        "ccbgssse051-ba_daedricmail.esl",
-                        "ccbgssse052-ba_iron.esl",
-                        "ccbgssse053-ba_leather.esl",
-                        "ccbgssse054-ba_orcish.esl",
-                        "ccbgssse055-ba_orcishscaled.esl",
-                        "ccbgssse056-ba_silver.esl",
-                        "ccbgssse057-ba_stalhrim.esl",
-                        "ccbgssse058-ba_steel.esl",
-                        "ccbgssse059-ba_dragonplate.esl",
-                        "ccbgssse060-ba_dragonscale.esl",
-                        "ccbgssse061-ba_dwarven.esl",
-                        "ccbgssse062-ba_dwarvenmail.esl",
-                        "ccbgssse063-ba_ebony.esl",
-                        "ccbgssse064-ba_elven.esl",
-                        "ccbgssse066-staves.esl",
-                        "ccbgssse068-bloodfall.esl",
-                        "ccbgssse069-contest.esl",
-                        "cccbhsse001-gaunt.esl",
-                        "ccedhsse001-norjewel.esl",
-                        "ccedhsse002-splkntset.esl",
-                        "ccedhsse003-redguard.esl",
-                        "cceejsse002-tower.esl",
-                        "cceejsse003-hollow.esl",
-                        "cceejsse004-hall.esl",
-                        "ccffbsse001-imperialdragon.esl",
-                        "ccffbsse002-crossbowpack.esl",
-                        "ccfsvsse001-backpacks.esl",
-                        "cckrtsse001_altar.esl",
-                        "ccmtysse001-knightsofthenine.esl",
-                        "ccmtysse002-ve.esl",
-                        "ccpewsse002-armsofchaos.esl",
-                        "ccqdrsse001-survivalmode.esl",
-                        "ccqdrsse002-firewood.esl",
-                        "ccrmssse001-necrohouse.esl",
-                        "ccvsvsse001-winter.esl",
-                        "ccvsvsse002-pets.esl",
-                        "ccvsvsse003-necroarts.esl",
-                        "ccvsvsse004-beafarmer.esl"
-                    }.Select(t => t.ToLowerInvariant()),
-                    opt => opt.WithStrictOrdering());
-        }
+                    "ccafdsse001-dwesanctuary.esm",
+                    "ccasvsse001-almsivi.esm",
+                    "ccbgssse001-fish.esm",
+                    "ccbgssse016-umbra.esm",
+                    "ccbgssse025-advdsgs.esm",
+                    "ccbgssse031-advcyrus.esm",
+                    "ccbgssse067-daedinv.esm",
+                    "cceejsse001-hstead.esm",
+                    "cceejsse005-cave.esm",
+                    "cctwbsse001-puzzledungeon.esm",
+                    "ccbgssse002-exoticarrows.esl",
+                    "ccbgssse003-zombies.esl",
+                    "ccbgssse004-ruinsedge.esl",
+                    "ccbgssse005-goldbrand.esl",
+                    "ccbgssse006-stendarshammer.esl",
+                    "ccbgssse007-chrysamere.esl",
+                    "ccbgssse008-wraithguard.esl",
+                    "ccbgssse010-petdwarvenarmoredmudcrab.esl",
+                    "ccbgssse011-hrsarmrelvn.esl",
+                    "ccbgssse012-hrsarmrstl.esl",
+                    "ccbgssse013-dawnfang.esl",
+                    "ccbgssse014-spellpack01.esl",
+                    "ccbgssse018-shadowrend.esl",
+                    "ccbgssse019-staffofsheogorath.esl",
+                    "ccbgssse020-graycowl.esl",
+                    "ccbgssse021-lordsmail.esl",
+                    "ccbgssse034-mntuni.esl",
+                    "ccbgssse035-petnhound.esl",
+                    "ccbgssse036-petbwolf.esl",
+                    "ccbgssse037-curios.esl",
+                    "ccbgssse038-bowofshadows.esl",
+                    "ccbgssse040-advobgobs.esl",
+                    "ccbgssse041-netchleather.esl",
+                    "ccbgssse043-crosselv.esl",
+                    "ccbgssse045-hasedoki.esl",
+                    "ccbgssse050-ba_daedric.esl",
+                    "ccbgssse051-ba_daedricmail.esl",
+                    "ccbgssse052-ba_iron.esl",
+                    "ccbgssse053-ba_leather.esl",
+                    "ccbgssse054-ba_orcish.esl",
+                    "ccbgssse055-ba_orcishscaled.esl",
+                    "ccbgssse056-ba_silver.esl",
+                    "ccbgssse057-ba_stalhrim.esl",
+                    "ccbgssse058-ba_steel.esl",
+                    "ccbgssse059-ba_dragonplate.esl",
+                    "ccbgssse060-ba_dragonscale.esl",
+                    "ccbgssse061-ba_dwarven.esl",
+                    "ccbgssse062-ba_dwarvenmail.esl",
+                    "ccbgssse063-ba_ebony.esl",
+                    "ccbgssse064-ba_elven.esl",
+                    "ccbgssse066-staves.esl",
+                    "ccbgssse068-bloodfall.esl",
+                    "ccbgssse069-contest.esl",
+                    "cccbhsse001-gaunt.esl",
+                    "ccedhsse001-norjewel.esl",
+                    "ccedhsse002-splkntset.esl",
+                    "ccedhsse003-redguard.esl",
+                    "cceejsse002-tower.esl",
+                    "cceejsse003-hollow.esl",
+                    "cceejsse004-hall.esl",
+                    "ccffbsse001-imperialdragon.esl",
+                    "ccffbsse002-crossbowpack.esl",
+                    "ccfsvsse001-backpacks.esl",
+                    "cckrtsse001_altar.esl",
+                    "ccmtysse001-knightsofthenine.esl",
+                    "ccmtysse002-ve.esl",
+                    "ccpewsse002-armsofchaos.esl",
+                    "ccqdrsse001-survivalmode.esl",
+                    "ccqdrsse002-firewood.esl",
+                    "ccrmssse001-necrohouse.esl",
+                    "ccvsvsse001-winter.esl",
+                    "ccvsvsse002-pets.esl",
+                    "ccvsvsse003-necroarts.esl",
+                    "ccvsvsse004-beafarmer.esl",
+                    "jks skyrim.esp",
+                    "skyui_se.esp",
+                    "smim-merged-all.esp",
+                }.Select(t => t.ToLowerInvariant()),
+                opt => opt.WithStrictOrdering());
+    }
+
+    /// <summary>
+    /// Installs the test mod that contains around 80 truncated plugins. These are the game plugins
+    /// and a few mods, but they have all been stripped of everything but their headers. So this is purely
+    /// the metadata of the plugins, which is all we need to test the plugin order file generation.
+    /// </summary>
+    /// <param name="loadout"></param>
+    /// <exception cref="NotImplementedException"></exception>
+    private async Task<Mod> InstallTruncatedPlugins(LoadoutMarker loadout)
+    {
+        var path = FileSystem.GetKnownPath(KnownPath.EntryDirectory)
+            .Combine("Assets/TruncatedPlugins.7z");
+        var mod = await InstallModStoredFileIntoLoadout(loadout, path, "TruncatedPlugins");
+        return mod;
     }
 
     [Fact]
     public async Task EnablingAndDisablingModsModifiesThePluginsFile()
     {
         var loadout = await CreateLoadout(indexGameFiles: false);
+
+        loadout.Value.Mods.Values.SelectMany(m => m.Files.Values)
+            .OfType<IToFile>()
+            .Where(t => t.To.FileName == "plugin_test.esp")
+            .Should()
+            .BeEmpty("the mod is not installed");
 
         var pluginFile = (from mod in loadout.Value.Mods.Values
                 from file in mod.Files.Values
@@ -298,12 +292,12 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
         var path = BethesdaTestHelpers.GetDownloadableModFolder(FileSystem, "SkyrimBase");
         var downloaded = await _downloader.DownloadFromManifestAsync(path, FileSystem);
 
-        var skyrimBase = await InstallModFromArchiveIntoLoadout(
+        var skyrimBase = await InstallModStoredFileIntoLoadout(
             loadout,
             downloaded.Path,
             downloaded.Manifest.Name);
 
-        await Apply(loadout.Value);
+        await loadout.Value.Apply();
 
         pluginFilePath.FileExists.Should().BeTrue("the loadout is applied");
 
@@ -315,12 +309,12 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
 
         path = BethesdaTestHelpers.GetDownloadableModFolder(FileSystem, "PluginTest");
         downloaded = await _downloader.DownloadFromManifestAsync(path, FileSystem);
-        var pluginTest = await InstallModFromArchiveIntoLoadout(
+        var pluginTest = await InstallModStoredFileIntoLoadout(
             loadout,
             downloaded.Path,
             downloaded.Manifest.Name);
 
-        await Apply(loadout.Value);
+        await loadout.Value.Apply();
 
         pluginFilePath.FileExists.Should().BeTrue("the loadout is applied");
         text = await GetPluginOrder(pluginFilePath);
@@ -340,7 +334,7 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
         text.Should().Contain("Skyrim.esm");
         text.Should().Contain("plugin_test.esp", "new loadout has not been applied yet");
 
-        await Apply(loadout.Value);
+        await loadout.Value.Apply();
 
         text = await GetPluginOrder(pluginFilePath);
 
@@ -354,7 +348,7 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
                 return mod! with { Enabled = true };
             });
 
-        await Apply(loadout.Value);
+        await loadout.Value.Apply();
 
         text = await GetPluginOrder(pluginFilePath);
 

@@ -1,8 +1,5 @@
 using System.Reactive.Disposables;
-using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using Avalonia.ReactiveUI;
-using NexusMods.App.UI;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Controls.TopBar;

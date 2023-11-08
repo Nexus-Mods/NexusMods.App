@@ -50,7 +50,7 @@ public class SMAPIModInstallerTests : AModInstallerTest<StardewValley, SMAPIModI
         // NPC Map Locations 2.11.3 (https://www.nexusmods.com/stardewvalley/mods/239)
         var downloadId = await DownloadMod(GameInstallation.Game.Domain, ModId.From(239), FileId.From(68865));
 
-        var mod = await InstallModFromArchiveIntoLoadout(loadout, downloadId);
+        var mod = await InstallModStoredFileIntoLoadout(loadout, downloadId);
         mod.Files.Should().NotBeEmpty();
         mod.Files.Values.Cast<IToFile>().Should().AllSatisfy(kv => kv.To.Path.StartsWith("Mods/NPCMapLocations"));
     }
@@ -65,7 +65,7 @@ public class SMAPIModInstallerTests : AModInstallerTest<StardewValley, SMAPIModI
         var downloadId = await DownloadMod(GameInstallation.Game.Domain, ModId.From(5305), FileId.From(68056));
 
         // var mods = await GetModsFromInstaller(path);
-        var mods = await InstallModsFromArchiveIntoLoadout(loadout, downloadId);
+        var mods = await InstallModsStoredFileIntoLoadout(loadout, downloadId);
         mods
             .Should().HaveCount(3)
             .And.AllSatisfy(x =>

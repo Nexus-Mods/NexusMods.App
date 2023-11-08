@@ -7,8 +7,6 @@ public class GuidedInstallerOptionDesignViewModel : GuidedInstallerOptionViewMod
 {
     public GuidedInstallerOptionDesignViewModel() : base(GenerateOption(), GenerateGroup()) { }
 
-    public GuidedInstallerOptionDesignViewModel(Option option, OptionGroup group) : base(option, group) { }
-
     private static OptionGroup GenerateGroup()
     {
         return new OptionGroup

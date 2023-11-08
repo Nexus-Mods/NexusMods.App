@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using DynamicData;
@@ -19,6 +20,7 @@ public class LoadoutRegistry : IDisposable
 {
     private bool _isDisposed;
 
+    private ConcurrentDictionary<LoadoutId, LoadoutMarker> _markers;
     private readonly ILogger<LoadoutRegistry> _logger;
     private readonly IDataStore _store;
     private SourceCache<IId, LoadoutId> _cache;
@@ -53,6 +55,7 @@ public class LoadoutRegistry : IDisposable
         _logger = logger;
         _store = store;
         _compositeDisposable = new CompositeDisposable();
+        _markers = new ConcurrentDictionary<LoadoutId, LoadoutMarker>();
 
         _cache = new SourceCache<IId, LoadoutId>(_ => throw new NotImplementedException());
         _cache.Edit(x =>
@@ -97,7 +100,7 @@ public class LoadoutRegistry : IDisposable
             loadout = _store.Get<Loadout>(IId.FromTaggedSpan(loadoutRoot), true);
         }
 
-        var newLoadout = alterFn(loadout ?? Loadout.Empty(_store));
+        var newLoadout = alterFn(loadout ?? Loadout.Empty(_store) with {LoadoutId = id});
 
         newLoadout = newLoadout with
         {
@@ -116,6 +119,9 @@ public class LoadoutRegistry : IDisposable
             goto TryAgain;
 
         _logger.LogInformation("Loadout {LoadoutId} altered: {CommitMessage}", id, commitMessage);
+
+        var marker = _markers.GetOrAdd(id, id => new LoadoutMarker(this, id));
+        marker.SetDataStoreId(newLoadout.DataStoreId);
 
         return newLoadout;
     }
@@ -156,6 +162,27 @@ public class LoadoutRegistry : IDisposable
     }
 
     /// <summary>
+    /// Alters the file with the given id in the mod with the given id in the loadout with the given id. If the file
+    /// does not exist, an error is thrown.
+    /// </summary>
+    /// <param name="loadoutId"></param>
+    /// <param name="modId"></param>
+    /// <param name="fileId"></param>
+    /// <param name="commitMessage"></param>
+    /// <param name="alterFn"></param>
+    /// <typeparam name="T"></typeparam>
+    public void Alter<T>(LoadoutId loadoutId, ModId modId, ModFileId fileId, string commitMessage, Func<T, T> alterFn)
+    where T : AModFile
+    {
+        Alter(loadoutId, modId, commitMessage, mod =>
+        {
+            var existingFile = mod!.Files[fileId];
+            var newFile = alterFn((T)existingFile);
+            return mod with { Files = mod.Files.With(fileId, newFile) };
+        });
+    }
+
+    /// <summary>
     /// Alters the mod pointed to by the cursor. If the alter function returns null, the mod is removed from the loadout.
     /// </summary>
     /// <param name="cursor"></param>
@@ -177,18 +204,7 @@ public class LoadoutRegistry : IDisposable
     /// <param name="visitor"></param>
     public Loadout Alter(LoadoutId id, string commitMessage, ALoadoutVisitor visitor)
     {
-        // Callback hell? Never heard of it!
-        return Alter(id, commitMessage, loadout =>
-        {
-            return visitor.Alter(loadout with
-            {
-                Mods = loadout.Mods.Keep(mod =>
-                {
-                    return visitor.Alter(mod with { Files = mod.Files.Keep(visitor.Alter) });
-                })
-            });
-        });
-
+        return Alter(id, commitMessage, visitor.Transform);
     }
 
     /// <summary>
@@ -210,7 +226,20 @@ public class LoadoutRegistry : IDisposable
     /// <exception cref="InvalidOperationException"></exception>
     public Loadout? Get(LoadoutId id)
     {
-        return _store.Get<Loadout>(GetId(id)!, true);
+        var databaseId = GetId(id)!;
+        if (databaseId == null)
+            throw new InvalidOperationException($"Loadout {id} does not exist");
+        return _store.Get<Loadout>(databaseId, true);
+    }
+
+    /// <summary>
+    /// Loads the loadout with the given id, or null if it does not exist.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    public Loadout? GetLoadout(IId id)
+    {
+        return _store.Get<Loadout>(id, true);
     }
 
     /// <summary>
@@ -228,9 +257,9 @@ public class LoadoutRegistry : IDisposable
     /// </summary>
     /// <param name="name"></param>
     /// <returns></returns>
-    public Loadout? GetByName(string name)
+    public IEnumerable<Loadout> GetByName(string name)
     {
-        return AllLoadouts().First(l =>
+        return AllLoadouts().Where(l =>
             l.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
     }
 
@@ -365,6 +394,53 @@ public class LoadoutRegistry : IDisposable
     /// <returns></returns>
     public LoadoutMarker GetMarker(LoadoutId loadoutId)
     {
-        return new LoadoutMarker(this, loadoutId);
+        return _markers.GetOrAdd(loadoutId, id => new LoadoutMarker(this, id));
+    }
+
+    /// <summary>
+    /// Suggestions a name for a new loadout.
+    /// </summary>
+    /// <param name="installation"></param>
+    /// <returns></returns>
+    public string SuggestName(GameInstallation installation)
+    {
+        var names = AllLoadouts().Select(l => l.Name).ToHashSet();
+        for (var i = 1; i < 1000; i++)
+        {
+            var name = $"My Loadout {i}";
+            if (!names.Contains(name))
+                return name;
+        }
+
+        return $"My Loadout {Guid.NewGuid()}";
+    }
+
+    /// <summary>
+    /// Manages the given installation, returning a marker for the new loadout.
+    /// </summary>
+    /// <param name="installation"></param>
+    /// <returns></returns>
+    public async Task<LoadoutMarker> Manage(GameInstallation installation, string name = "")
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            name = SuggestName(installation);
+
+        var result = await installation.Game.Synchronizer.Manage(installation);
+        Alter(result.LoadoutId, $"Manage new instance of {installation.Game.Name} as {name}",
+            _ => result with
+        {
+            Name = name
+        });
+        return GetMarker(result.LoadoutId);
+    }
+
+    /// <summary>
+    /// Returns true if the given loadout id exists.
+    /// </summary>
+    /// <param name="loadoutId"></param>
+    /// <returns></returns>
+    public bool Contains(LoadoutId loadoutId)
+    {
+        return GetId(loadoutId) != null;
     }
 }

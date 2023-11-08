@@ -1,7 +1,7 @@
 using NexusMods.Abstractions.CLI;
 using NexusMods.Abstractions.CLI.DataOutputs;
-using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Markers;
+using NexusMods.DataModel.LoadoutSynchronizer;
 
 namespace NexusMods.CLI.Verbs;
 
@@ -11,18 +11,14 @@ namespace NexusMods.CLI.Verbs;
 /// </summary>
 public class FlattenList : AVerb<LoadoutMarker>, IRenderingVerb
 {
-    private readonly LoadoutSynchronizer _loadoutSyncronizer;
-
     /// <inheritdoc />
     public IRenderer Renderer { get; set; } = null!;
 
     /// <summary>
     /// DI constructor
     /// </summary>
-    /// <param name="loadoutSynchronizer"></param>
-    public FlattenList(LoadoutSynchronizer loadoutSynchronizer)
+    public FlattenList()
     {
-        _loadoutSyncronizer = loadoutSynchronizer;
     }
 
     /// <inheritdoc />
@@ -36,8 +32,18 @@ public class FlattenList : AVerb<LoadoutMarker>, IRenderingVerb
     public async Task<int> Run(LoadoutMarker loadout, CancellationToken token)
     {
         var rows = new List<object[]>();
-        foreach (var (path, mod) in (await _loadoutSyncronizer.FlattenLoadout(loadout.Value)).Files)
-            rows.Add(new object[] { mod.Mod.Name, path });
+        var synchronizer = loadout.Value.Installation.Game.Synchronizer as IStandardizedLoadoutSynchronizer;
+        if (synchronizer == null)
+        {
+            await Renderer.Render($"{loadout.Value.Installation.Game.Name} does not support flattening loadouts");
+            return -1;
+        }
+
+        var flattened = await synchronizer.LoadoutToFlattenedLoadout(loadout.Value);
+
+
+        foreach (var (path, pair) in flattened.GetAllDescendentFiles())
+            rows.Add(new object[] { pair!.Mod.Name, path });
 
         await Renderer.Render(new Table(new[] { "Mod", "To" }, rows));
         return 0;

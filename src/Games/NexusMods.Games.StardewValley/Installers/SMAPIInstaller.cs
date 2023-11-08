@@ -33,14 +33,14 @@ public class SMAPIInstaller : AModInstaller
 
     private readonly IOSInformation _osInformation;
     private readonly FileHashCache _fileHashCache;
-    private readonly IDownloadRegistry _downloadRegistry;
+    private readonly IFileOriginRegistry _fileOriginRegistry;
 
-    private SMAPIInstaller(IOSInformation osInformation, FileHashCache fileHashCache, IDownloadRegistry downloadRegistry, IServiceProvider serviceProvider)
+    private SMAPIInstaller(IOSInformation osInformation, FileHashCache fileHashCache, IFileOriginRegistry fileOriginRegistry, IServiceProvider serviceProvider)
         : base(serviceProvider)
     {
         _osInformation = osInformation;
         _fileHashCache = fileHashCache;
-        _downloadRegistry = downloadRegistry;
+        _fileOriginRegistry = fileOriginRegistry;
     }
 
     private static FileTreeNode<RelativePath, ModSourceFileEntry>[] GetInstallDataFiles(FileTreeNode<RelativePath, ModSourceFileEntry> files)
@@ -64,6 +64,7 @@ public class SMAPIInstaller : AModInstaller
 
     public override async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
         GameInstallation gameInstallation,
+        LoadoutId loadoutId,
         ModId baseModId,
         FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
         CancellationToken cancellationToken = default)
@@ -83,7 +84,7 @@ public class SMAPIInstaller : AModInstaller
 
         var (path, file) = installDataFile;
 
-        var found = _downloadRegistry.GetByHash(file!.Hash).ToArray();
+        var found = _fileOriginRegistry.GetByHash(file!.Hash).ToArray();
         DownloadId downloadId;
         if (!found.Any())
             downloadId = await RegisterDataFile(path, file, cancellationToken);
@@ -95,7 +96,7 @@ public class SMAPIInstaller : AModInstaller
 
         var gameFolderPath = gameInstallation.LocationsRegister[LocationId.Game];
 
-        var archiveContents = (await _downloadRegistry.Get(downloadId)).GetFileTree();
+        var archiveContents = (await _fileOriginRegistry.Get(downloadId)).GetFileTree();
 
         // TODO: install.dat is an archive inside an archive see https://github.com/Nexus-Mods/NexusMods.App/issues/244
         // the basicFiles have to be extracted from the nested archive and put inside the game folder
@@ -140,7 +141,7 @@ public class SMAPIInstaller : AModInstaller
 
     private async ValueTask<DownloadId> RegisterDataFile(RelativePath filename, ModSourceFileEntry file, CancellationToken token)
     {
-        return await _downloadRegistry.RegisterDownload(file.StreamFactory, new FilePathMetadata { OriginalName = filename.FileName, Quality = Quality.Low}, token);
+        return await _fileOriginRegistry.RegisterDownload(file.StreamFactory, new FilePathMetadata { OriginalName = filename.FileName, Quality = Quality.Low}, token);
     }
 
     public static SMAPIInstaller Create(IServiceProvider serviceProvider)
@@ -148,7 +149,7 @@ public class SMAPIInstaller : AModInstaller
         return new SMAPIInstaller(
             serviceProvider.GetRequiredService<IOSInformation>(),
             serviceProvider.GetRequiredService<FileHashCache>(),
-            serviceProvider.GetRequiredService<IDownloadRegistry>(),
+            serviceProvider.GetRequiredService<IFileOriginRegistry>(),
             serviceProvider
         );
     }

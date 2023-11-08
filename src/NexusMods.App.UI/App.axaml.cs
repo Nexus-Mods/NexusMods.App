@@ -31,7 +31,7 @@ public class App : Application
     public override void OnFrameworkInitializationCompleted()
     {
         if (!string.IsNullOrEmpty(_launcherSettings.LocaleOverride))
-            Language.Culture = new CultureInfo(_launcherSettings.LocaleOverride);
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo(_launcherSettings.LocaleOverride);
 
         Locator.CurrentMutable.UnregisterCurrent(typeof(IViewLocator));
         Locator.CurrentMutable.Register(() => _provider.GetRequiredService<InjectedViewLocator>(), typeof(IViewLocator));

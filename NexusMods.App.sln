@@ -1,4 +1,3 @@
-﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33122.133
@@ -130,6 +129,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.BladeAndSorcery", "src\Games\NexusMods.Games.BladeAndSorcery\NexusMods.Games.BladeAndSorcery.csproj", "{81F23A27-F517-41AD-B86E-6DCE7B4CCE93}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.BladeAndSorcery.Tests", "tests\Games\NexusMods.Games.BladeAndSorcery.Tests\NexusMods.Games.BladeAndSorcery.Tests.csproj", "{C2F6C9E5-CC53-44B7-994C-5B9287408263}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.AdvancedInstaller.UI", "src\Games\NexusMods.Games.AdvancedInstaller.UI\NexusMods.Games.AdvancedInstaller.UI.csproj", "{07B8ACA6-CE4B-496D-B183-63A57C5F08E1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.AdvancedInstaller.UI.Tests", "tests\Games\NexusMods.Games.AdvancedInstaller.UI.Tests\NexusMods.Games.AdvancedInstaller.UI.Tests.csproj", "{2BFAAE53-AFFF-4F0B-AD76-67918665F298}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -325,6 +327,14 @@ Global
 		{C2F6C9E5-CC53-44B7-994C-5B9287408263}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C2F6C9E5-CC53-44B7-994C-5B9287408263}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C2F6C9E5-CC53-44B7-994C-5B9287408263}.Release|Any CPU.Build.0 = Release|Any CPU
+		{07B8ACA6-CE4B-496D-B183-63A57C5F08E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{07B8ACA6-CE4B-496D-B183-63A57C5F08E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{07B8ACA6-CE4B-496D-B183-63A57C5F08E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{07B8ACA6-CE4B-496D-B183-63A57C5F08E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2BFAAE53-AFFF-4F0B-AD76-67918665F298}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2BFAAE53-AFFF-4F0B-AD76-67918665F298}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2BFAAE53-AFFF-4F0B-AD76-67918665F298}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2BFAAE53-AFFF-4F0B-AD76-67918665F298}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -382,6 +392,8 @@ Global
 		{E7E68E07-6732-4FA4-BC4D-6E4249B592FD} = {70D38D24-79AE-4600-8E83-17F3C11BA81F}
 		{81F23A27-F517-41AD-B86E-6DCE7B4CCE93} = {70D38D24-79AE-4600-8E83-17F3C11BA81F}
 		{C2F6C9E5-CC53-44B7-994C-5B9287408263} = {05B06AC1-7F2B-492F-983E-5BC63CDBF20D}
+		{07B8ACA6-CE4B-496D-B183-63A57C5F08E1} = {70D38D24-79AE-4600-8E83-17F3C11BA81F}
+		{2BFAAE53-AFFF-4F0B-AD76-67918665F298} = {05B06AC1-7F2B-492F-983E-5BC63CDBF20D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9F9F8352-34DD-42C0-8564-EE9AF34A3501}

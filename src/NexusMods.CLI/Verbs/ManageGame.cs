@@ -10,7 +10,7 @@ namespace NexusMods.CLI.Verbs;
 /// </summary>
 public class ManageGame : AVerb<IGame, Version, string>, IRenderingVerb
 {
-    private readonly LoadoutManager _manager;
+    private readonly LoadoutRegistry _loadoutRegistry;
 
     /// <inheritdoc />
     public IRenderer Renderer { get; set; } = null!;
@@ -19,9 +19,9 @@ public class ManageGame : AVerb<IGame, Version, string>, IRenderingVerb
     /// DI constructor
     /// </summary>
     /// <param name="manager"></param>
-    public ManageGame(LoadoutManager manager)
+    public ManageGame(LoadoutRegistry registry)
     {
-        _manager = manager;
+        _loadoutRegistry = registry;
     }
 
     /// <inheritdoc />
@@ -42,7 +42,7 @@ public class ManageGame : AVerb<IGame, Version, string>, IRenderingVerb
 
         await Renderer.WithProgress(token, async () =>
         {
-            await _manager.ManageGameAsync(installation, name, token);
+            var loadout = await _loadoutRegistry.Manage(installation, name);
             return 0;
         });
         return 0;

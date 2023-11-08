@@ -1,6 +1,7 @@
 using JetBrains.Annotations;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.Paths;
 using NexusMods.Paths.FileTree;
 
@@ -18,11 +19,13 @@ public interface IModInstaller
     /// </summary>
     /// <param name="gameInstallation">The game installation.</param>
     /// <param name="baseModId">The base mod id.</param>
+    /// <param name="loadoutId">Id of the Loadout where mods will be installed.</param>
     /// <param name="archiveFiles">Files from the archive.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns></returns>
     public ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
         GameInstallation gameInstallation,
+        LoadoutId loadoutId,
         ModId baseModId,
         FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
         CancellationToken cancellationToken = default);

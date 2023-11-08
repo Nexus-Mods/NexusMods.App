@@ -8,7 +8,6 @@
             <TextBlock Classes="Subheading" Text="Sample Text Subheading" />
             <TextBlock Classes="H5MontserratSemi" Text="Sample Text H5MontserratSemi" />
             <TextBlock Classes="H6MontserratSemi" Text="Sample Text H6MontserratSemi" />
-            <TextBlock Classes="Body_MD_Normal" Text="Sample Text Body_MD_Normal" />
             <TextBlock Classes="CaptionMontserratSemi" Text="Sample Text CaptionMontserratSemi" />
             <TextBlock Classes="ButtonMontserratSemi" Text="Sample Text ButtonMontserratSemi" />
             <TextBlock Classes="Body2RobotoRegularBold" Text="Sample Text Body2RobotoRegularBold" />
@@ -31,10 +30,13 @@
             <TextBlock Classes="BodySMBold" Text="Sample Text BodySMBold" />
             <TextBlock Classes="BodySMNormal" Text="Sample Text BodySMNormal" />
             <TextBlock Classes="UsesBrandWhiteColor" Text="Sample Text UsesBrandWhiteColor" />
-
-
         </StackPanel>
     </Design.PreviewWith>
+
+    <!--
+    NOTE(erri120): dynamic font loading via weights isn't really supported in Avalonia.
+    You need to explicitly use the BOLD font AND change the weight.
+     -->
 
     <Style Selector="TextBlock.Small">
         <Setter Property="FontSize" Value="10" />
@@ -104,14 +106,6 @@
         <Setter Property="FontSize" Value="18" />
         <Setter Property="LineHeight" Value="25" />
         <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
-    </Style>
-
-
-    <Style Selector="TextBlock.Body_MD_Normal">
-        <Setter Property="FontFamily" Value="{DynamicResource FontSecondaryRegular}" />
-        <Setter Property="FontWeight" Value="400" />
-        <Setter Property="FontSize" Value="14" />
-        <Setter Property="LineHeight" Value="12" />
     </Style>
 
     <Style Selector="TextBlock.CaptionMontserratSemi">
@@ -217,7 +211,7 @@
     </Style>
 
     <Style Selector="TextBlock.BodyXLBold">
-        <Setter Property="FontFamily" Value="{DynamicResource FontSecondary}" />
+        <Setter Property="FontFamily" Value="{DynamicResource FontSecondaryBold}" />
         <Setter Property="FontWeight" Value="700" />
         <Setter Property="FontSize" Value="18" />
         <Setter Property="LineHeight" Value="27" />
@@ -233,7 +227,7 @@
     </Style>
 
     <Style Selector="TextBlock.BodyLGBold">
-        <Setter Property="FontFamily" Value="{DynamicResource FontSecondary}" />
+        <Setter Property="FontFamily" Value="{DynamicResource FontSecondaryBold}" />
         <Setter Property="FontWeight" Value="700" />
         <Setter Property="FontSize" Value="16" />
         <Setter Property="LineHeight" Value="24" />
@@ -249,7 +243,7 @@
     </Style>
 
     <Style Selector="TextBlock.BodyMDBold">
-        <Setter Property="FontFamily" Value="{DynamicResource FontSecondary}" />
+        <Setter Property="FontFamily" Value="{DynamicResource FontSecondaryBold}" />
         <Setter Property="FontWeight" Value="700" />
         <Setter Property="FontSize" Value="14" />
         <Setter Property="LineHeight" Value="21" />
@@ -265,7 +259,7 @@
     </Style>
 
     <Style Selector="TextBlock.BodySMBold">
-        <Setter Property="FontFamily" Value="{DynamicResource FontSecondary}" />
+        <Setter Property="FontFamily" Value="{DynamicResource FontSecondaryBold}" />
         <Setter Property="FontWeight" Value="700" />
         <Setter Property="FontSize" Value="12" />
         <Setter Property="LineHeight" Value="18" />

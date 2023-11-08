@@ -8,14 +8,14 @@
             <StackPanel Orientation="Vertical" Spacing="18">
                 <Button Classes="Standard PrimaryOutlined">
                     <StackPanel>
-                        <icons:Icon Classes="Play"/>
+                        <icons:Icon Classes="Play" />
                         <TextBlock Text="BUTTON"></TextBlock>
                     </StackPanel>
                 </Button>
 
                 <Button Classes="Standard PrimaryOutlined" IsEnabled="False">
                     <StackPanel>
-                        <icons:Icon Classes="Play"/>
+                        <icons:Icon Classes="Play" />
                         <TextBlock Text="BUTTON"></TextBlock>
                     </StackPanel>
                 </Button>
@@ -29,6 +29,11 @@
                 </Button>
 
                 <Button Classes="Standard PrimaryOutlined" IsEnabled="False">
+                    <StackPanel>
+                        <TextBlock Text="BUTTON"></TextBlock>
+                    </StackPanel>
+                </Button>
+                <Button Classes="Standard SecondaryOutlined" IsEnabled="True">
                     <StackPanel>
                         <TextBlock Text="BUTTON"></TextBlock>
                     </StackPanel>
@@ -84,6 +89,25 @@
     <Style Selector="Button.Standard.PrimaryOutlined > StackPanel > TextBlock">
         <Setter Property="Foreground" Value="{DynamicResource BrandWhite}"></Setter>
     </Style>
+
+    <Style Selector="Button.Standard.SecondaryOutlined">
+        <Setter Property="Background" Value="{DynamicResource Transparent}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource BrandTertiary}" />
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="BorderBrush" Value="{DynamicResource BrandTertiary}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Background" Value="{DynamicResource BrandSecondaryLighter}" />
+        </Style>
+
+        <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="BorderBrush" Value="{DynamicResource BrandSecondaryLighter}" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+        <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter > StackPanel > TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource FontDarkSecondaryColor}" />
+        </Style>
+    </Style>
+
 
 
 </Styles>

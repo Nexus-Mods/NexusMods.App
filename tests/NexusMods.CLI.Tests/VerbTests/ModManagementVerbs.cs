@@ -41,7 +41,7 @@ public class ModManagementVerbs : AVerbTest
         await RunNoBannerAsync("flatten-list", "-l", listName);
         LastTable.Rows.Count().Should().Be(7);
 
-        await RunNoBannerAsync("apply", "-l", listName, "-r", "false");
-        LastTable.Rows.Count().Should().Be(3);
+        await RunNoBannerAsync("apply", "-l", listName);
+        LastLog.OfType<string>().Last().Should().Contain($"Applied {listName}");
     }
 }

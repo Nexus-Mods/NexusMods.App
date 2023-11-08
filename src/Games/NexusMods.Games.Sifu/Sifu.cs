@@ -7,7 +7,6 @@ namespace NexusMods.Games.Sifu;
 
 public class Sifu : AGame, ISteamGame, IEpicGame
 {
-    private readonly IServiceProvider _serviceProvider;
     public IEnumerable<uint> SteamIds => new[] { 2138710u };
     public IEnumerable<string> EpicCatalogItemId => new[] { "c80a76de890145edbe0d41679dbccc66" };
 
@@ -19,9 +18,8 @@ public class Sifu : AGame, ISteamGame, IEpicGame
         return new(LocationId.Game, "Sifu.exe");
     }
 
-    public Sifu(IEnumerable<IGameLocator> gameLocators, IServiceProvider serviceProvider) : base(gameLocators)
+    public Sifu(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        _serviceProvider = serviceProvider;
     }
 
     protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem,
@@ -33,8 +31,13 @@ public class Sifu : AGame, ISteamGame, IEpicGame
         };
     }
 
-    /// <inheritdoc />
-    public override IEnumerable<IModInstaller> Installers => new[] { new SifuModInstaller(_serviceProvider) };
+    protected override IEnumerable<IModInstaller> MakeInstallers(IServiceProvider provider)
+    {
+        return new[]
+        {
+            new SifuModInstaller(provider)
+        };
+    }
 
     public override List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations)
         => ModInstallDestinationHelpers.GetCommonLocations(locations);

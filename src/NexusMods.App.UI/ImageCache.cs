@@ -11,16 +11,16 @@ namespace NexusMods.App.UI;
 internal sealed class ImageCache : IImageCache
 {
     private readonly ILogger<ImageCache> _logger;
-    private readonly IArchiveManager _archiveManager;
+    private readonly IFileStore _fileStore;
 
     private readonly Dictionary<Hash, Bitmap> _cache = new();
 
     public ImageCache(
         ILogger<ImageCache> logger,
-        IArchiveManager archiveManager)
+        IFileStore fileStore)
     {
         _logger = logger;
-        _archiveManager = archiveManager;
+        _fileStore = fileStore;
     }
 
     public async Task<IImage?> GetImage(OptionImage optionImage, CancellationToken cancellationToken)
@@ -45,7 +45,7 @@ internal sealed class ImageCache : IImageCache
     private Task<Bitmap?> Load(OptionImage optionImage, CancellationToken cancellationToken)
     {
         if (optionImage.IsT0) return LoadRemoteImage(optionImage.AsT0, cancellationToken);
-        if (optionImage.IsT1) return LoadImageFromArchive(optionImage.AsT1, cancellationToken);
+        if (optionImage.IsT1) return LoadImageStoredFile(optionImage.AsT1, cancellationToken);
         throw new UnreachableException();
     }
 
@@ -64,11 +64,11 @@ internal sealed class ImageCache : IImageCache
         }
     }
 
-    private async Task<Bitmap?> LoadImageFromArchive(
-        OptionImage.ImageFromArchive imageFromArchive,
+    private async Task<Bitmap?> LoadImageStoredFile(
+        OptionImage.ImageStoredFile imageStoredFile,
         CancellationToken cancellationToken)
     {
-        await using var stream = await _archiveManager.GetFileStream(imageFromArchive.FileHash, cancellationToken);
+        await using var stream = await _fileStore.GetFileStream(imageStoredFile.FileHash, cancellationToken);
         var res = new Bitmap(stream);
         return res;
     }

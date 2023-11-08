@@ -39,14 +39,14 @@ public class DownloadService : IDownloadService
     private readonly IObservable<IChangeSet<IDownloadTask>> _tasksChangeSet;
     private readonly ReadOnlyObservableCollection<IDownloadTask> _currentDownloads;
     private bool _isDisposed = false;
-    private readonly IDownloadRegistry _downloadRegistry;
+    private readonly IFileOriginRegistry _fileOriginRegistry;
 
-    public DownloadService(ILogger<DownloadService> logger, IServiceProvider provider, IDataStore store, IDownloadRegistry downloadRegistry)
+    public DownloadService(ILogger<DownloadService> logger, IServiceProvider provider, IDataStore store, IFileOriginRegistry fileOriginRegistry)
     {
         _logger = logger;
         _provider = provider;
         _store = store;
-        _downloadRegistry = downloadRegistry;
+        _fileOriginRegistry = fileOriginRegistry;
 
         _tasks = new SourceList<IDownloadTask>();
         _tasksChangeSet = _tasks.Connect();
@@ -189,7 +189,7 @@ public class DownloadService : IDownloadService
         try
         {
             // TODO: Fix this
-            var downloadId = await _downloadRegistry.RegisterDownload(path.Path, new FilePathMetadata
+            var downloadId = await _fileOriginRegistry.RegisterDownload(path.Path, new FilePathMetadata
             {
                 Name = modName,
                 OriginalName = path.Path.FileName,

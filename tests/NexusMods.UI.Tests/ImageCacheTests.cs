@@ -40,17 +40,17 @@ public class ImageCacheTests : AUiTest
     }
 
     [Fact]
-    public async Task Test_LoadAndCache_ImageFromArchive()
+    public async Task Test_LoadAndCache_ImageStoredFile()
     {
         var hash = await PrepareImage();
 
         using var scope = _serviceProvider.CreateScope();
         using var imageCache = scope.ServiceProvider.GetRequiredService<IImageCache>();
 
-        var image1 = await imageCache.GetImage(new OptionImage(new OptionImage.ImageFromArchive(hash)), cancellationToken: default);
+        var image1 = await imageCache.GetImage(new OptionImage(new OptionImage.ImageStoredFile(hash)), cancellationToken: default);
         image1.Should().NotBeNull();
 
-        var image2 = await imageCache.GetImage(new OptionImage(new OptionImage.ImageFromArchive(hash)), cancellationToken: default);
+        var image2 = await imageCache.GetImage(new OptionImage(new OptionImage.ImageStoredFile(hash)), cancellationToken: default);
         image2.Should().NotBeNull();
 
         image1.Should().BeSameAs(image2);
@@ -58,7 +58,7 @@ public class ImageCacheTests : AUiTest
 
     private async Task<Hash> PrepareImage()
     {
-        var archiveManager = _serviceProvider.GetRequiredService<IArchiveManager>();
+        var archiveManager = _serviceProvider.GetRequiredService<IFileStore>();
 
         const string url = "https://http.cat/418.jpg";
         var httpClient = new HttpClient();
