@@ -29,6 +29,9 @@ public partial class LoadoutGridView : ReactiveUserControl<ILoadoutGridViewModel
             AddModButton.Command =
                 ReactiveCommand.CreateFromTask(AddMod);
 
+            AddModAdvancedButton.Command =
+                ReactiveCommand.CreateFromTask(AddModAdvanced);
+
             DeleteModsButton.Command =
                 ReactiveCommand.CreateFromTask(DeleteSelectedMods);
 
@@ -38,9 +41,23 @@ public partial class LoadoutGridView : ReactiveUserControl<ILoadoutGridViewModel
         });
     }
 
-
-
     private async Task AddMod()
+    {
+        foreach (var file in await PickModFiles())
+        {
+            await ViewModel!.AddMod(file.Path.LocalPath);
+        }
+    }
+
+    private async Task AddModAdvanced()
+    {
+        foreach (var file in await PickModFiles())
+        {
+            await ViewModel!.AddModAdvanced(file.Path.LocalPath);
+        }
+    }
+
+    private async Task<IEnumerable<IStorageFile>> PickModFiles()
     {
         var provider = TopLevel.GetTopLevel(this)!.StorageProvider;
         var options =
@@ -54,10 +71,7 @@ public partial class LoadoutGridView : ReactiveUserControl<ILoadoutGridViewModel
                 }
             };
 
-        foreach (var file in await provider.OpenFilePickerAsync(options))
-        {
-            await ViewModel!.AddMod(file.Path.LocalPath);
-        }
+        return await provider.OpenFilePickerAsync(options);
     }
 
     private async Task DeleteSelectedMods()

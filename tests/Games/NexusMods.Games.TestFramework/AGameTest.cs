@@ -173,7 +173,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
         string? defaultModName = null,
         CancellationToken cancellationToken = default)
     {
-        var modIds = await ArchiveInstaller.AddMods(loadout.Value.LoadoutId, downloadId, defaultModName, cancellationToken);
+        var modIds = await ArchiveInstaller.AddMods(loadout.Value.LoadoutId, downloadId, defaultModName, token: cancellationToken);
         return modIds.Select(id => loadout.Value.Mods[id]).ToArray();
     }
 

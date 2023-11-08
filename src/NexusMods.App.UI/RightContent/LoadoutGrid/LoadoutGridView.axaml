@@ -32,6 +32,12 @@
                             <TextBlock Text="{x:Static resources:Language.LoadoutGridView__Add_Mod}"></TextBlock>
                         </StackPanel>
                     </Button>
+                    <Button x:Name="AddModAdvancedButton">
+                        <StackPanel>
+                            <avalonia:Icon Classes="PlusCircleOutline" />
+                            <TextBlock Text="{x:Static resources:Language.LoadoutGridView__Add_Mod_Advanced}"></TextBlock>
+                        </StackPanel>
+                    </Button>
                 </StackPanel>
             </Grid>
         </Border>
