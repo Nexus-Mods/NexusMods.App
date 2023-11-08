@@ -20,7 +20,6 @@ public interface IModContentTreeEntryViewModel : IViewModelInterface, IUnlinkabl
     /// <summary>
     ///     Status of the node in question.
     /// </summary>
-    [Reactive]
     public ModContentNodeStatus Status { get; }
 
     /// <summary>
