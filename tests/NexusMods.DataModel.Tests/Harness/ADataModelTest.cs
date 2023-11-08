@@ -91,7 +91,7 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
     {
         var downloadId = await FileOriginRegistry.RegisterDownload(path,
             new FilePathMetadata {OriginalName = path.FileName, Quality = Quality.Low}, CancellationToken.None);
-        return await ArchiveInstaller.AddMods(mainList.Value.LoadoutId, downloadId, name, CancellationToken.None);
+        return await ArchiveInstaller.AddMods(mainList.Value.LoadoutId, downloadId, name, token: Token);
     }
 
     /// <summary>
@@ -126,7 +126,7 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
     protected async Task<ModId> AddMod(string modName, params (string Name, string Data)[] files)
     {
         var downloadId = await RegisterDownload(files);
-        var modIds = await ArchiveInstaller.AddMods(BaseList.Value.LoadoutId, downloadId, modName, CancellationToken.None);
+        var modIds = await ArchiveInstaller.AddMods(BaseList.Value.LoadoutId, downloadId, modName, token: Token);
         return modIds.First();
     }
 
