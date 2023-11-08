@@ -426,7 +426,7 @@ public class LoadoutRegistry : IDisposable
             name = SuggestName(installation);
 
         var result = await installation.Game.Synchronizer.Manage(installation);
-        Alter(result.LoadoutId, $"Manage new instance of {installation.Game.Name} as {name}",
+        result = Alter(result.LoadoutId, $"Manage new instance of {installation.Game.Name} as {name}",
             _ => result with
         {
             Name = name
