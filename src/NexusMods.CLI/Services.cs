@@ -56,6 +56,7 @@ public static class Services
             .AddVerb<AddGame>()
             .AddVerb<AnalyzeArchive>()
             .AddVerb<Apply>()
+            .AddVerb<Ingest>()
             .AddVerb<AssociateNxm>()
             .AddVerb<ChangeTracking>()
             .AddVerb<DownloadAndInstallMod>()
