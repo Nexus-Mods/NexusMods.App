@@ -14,7 +14,7 @@
         <workspace:PanelTabHeaderDesignViewModel />
     </Design.DataContext>
 
-    <Border x:Name="Container" PointerPressed="InputElement_OnPointerPressed">
+    <Border x:Name="Container">
         <Border.Styles>
             <Style Selector="Border:not(.Selected)">
                 <Setter Property="Background" Value="Transparent"></Setter>
