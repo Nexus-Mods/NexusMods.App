@@ -28,7 +28,7 @@ public sealed class MountAndBlade2Bannerlord : AGame, ISteamGame, IGogGame, IEpi
     public IEnumerable<string> EpicCatalogItemId => new[] { "Chickadee" };
     public IEnumerable<string> XboxIds => new[] { "TaleWorldsEntertainment.MountBladeIIBannerlord" };
 
-    public MountAndBlade2Bannerlord(IServiceProvider serviceProvider, IEnumerable<IGameLocator> gameLocators, LauncherManagerFactory launcherManagerFactory) : base(gameLocators)
+    public MountAndBlade2Bannerlord(IServiceProvider serviceProvider, LauncherManagerFactory launcherManagerFactory) : base(serviceProvider)
     {
         _serviceProvider = serviceProvider;
         _launcherManagerFactory = launcherManagerFactory;

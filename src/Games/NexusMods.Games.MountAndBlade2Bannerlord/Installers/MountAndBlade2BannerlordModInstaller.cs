@@ -54,7 +54,7 @@ public sealed class MountAndBlade2BannerlordModInstaller : AModInstaller
         }).Where(kv => kv.ModuleInfo != null!);
     }
 
-    public override async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(GameInstallation installation, ModId baseModId,
+    public override async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(GameInstallation installation, LoadoutId loadoutId, ModId baseModId,
         FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles, CancellationToken ct = default)
     {
         var moduleInfoFiles = await GetModuleInfoFiles(archiveFiles).ToArrayAsync(ct);
@@ -69,7 +69,7 @@ public sealed class MountAndBlade2BannerlordModInstaller : AModInstaller
                 var (path, file) = kv;
                 var moduleRoot = path.Parent;
 
-                return file!.ToFromArchive(new GamePath(LocationId.Game, ModFolder.Join(path.DropFirst(moduleRoot.Depth - 1))));
+                return file!.ToStoredFile(new GamePath(LocationId.Game, ModFolder.Join(path.DropFirst(moduleRoot.Depth - 1))));
             });
             return new List<ModInstallerResult>
             {
@@ -102,7 +102,7 @@ public sealed class MountAndBlade2BannerlordModInstaller : AModInstaller
                 var relativePath = instruction.Source.ToRelativePath();
                 var (path, file) = moduleRoot.FindNode(relativePath)!;
 
-                var fromArchive = file!.ToFromArchive(new GamePath(LocationId.Game, ModFolder.Join(path.DropFirst(moduleRoot.Depth - 1))));
+                var fromArchive = file!.ToStoredFile(new GamePath(LocationId.Game, ModFolder.Join(path.DropFirst(moduleRoot.Depth - 1))));
                 return fromArchive with
                 {
                     Metadata = fromArchive.Metadata.AddRange(GetMetadata(moduleInfoWithPath, relativePath))

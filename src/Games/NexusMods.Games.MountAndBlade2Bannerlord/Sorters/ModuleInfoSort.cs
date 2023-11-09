@@ -20,21 +20,21 @@ public class ModuleInfoSort : IGeneratedSortRule, ISortRule<Mod, ModId>, ITrigge
     private static async IAsyncEnumerable<ISortRule<Mod, ModId>> GetRules(ModuleInfoExtended moduleInfo, Loadout loadout)
     {
         ModId? GetModIdFromModuleId(string moduleId) => loadout.Mods.Values.FirstOrDefault(x => x.GetModuleInfo() is { } mi && mi.Id == moduleId)?.Id;
-            
+
         await Task.Yield();
 
         foreach (var moduleMetadata in moduleInfo.DependenciesLoadBeforeThisDistinct())
         {
             if (GetModIdFromModuleId(moduleMetadata.Id) is { } modId)
             {
-                yield return new Before<Mod, ModId>(modId); 
+                yield return new Before<Mod, ModId>(modId);
             }
         }
         foreach (var moduleMetadata in moduleInfo.DependenciesLoadAfterThisDistinct())
         {
             if (GetModIdFromModuleId(moduleMetadata.Id) is { } modId)
             {
-                yield return new After<Mod, ModId>(modId); 
+                yield return new After<Mod, ModId> { Other = modId };
             }
         }
         foreach (var moduleMetadata in moduleInfo.DependenciesIncompatiblesDistinct())
@@ -46,7 +46,7 @@ public class ModuleInfoSort : IGeneratedSortRule, ISortRule<Mod, ModId>, ITrigge
             }
         }
     }
-    
+
     public IAsyncEnumerable<ISortRule<Mod, ModId>> GenerateSortRules(ModId selfId, Loadout loadout)
     {
         var thisMod = loadout.Mods[selfId];
@@ -59,7 +59,7 @@ public class ModuleInfoSort : IGeneratedSortRule, ISortRule<Mod, ModId>, ITrigge
     public Hash GetFingerprint(ModId self, Loadout loadout)
     {
         var moduleInfos = loadout.Mods.Select(x => x.Value.GetModuleInfo()).OfType<ModuleInfoExtended>().OrderBy(x => x.Id).ToArray();
-        
+
         using var fp = Fingerprinter.Create();
         fp.Add(loadout.Mods[self].DataStoreId);
         foreach (var moduleInfo in moduleInfos)
