@@ -5,6 +5,7 @@ using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.LoadoutSynchronizerDTOs;
+using NexusMods.DataModel.LoadoutSynchronizer;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.BethesdaGameStudios;
@@ -20,10 +21,13 @@ public abstract class RunGameWithScriptExtender<T> : RunGameTool<T> where T : AG
 
     protected abstract GamePath ScriptLoaderPath { get; }
 
-    protected override AbsolutePath GetGamePath(Loadout loadout, ApplyPlan applyPlan)
+    protected override async ValueTask<AbsolutePath> GetGamePath(Loadout loadout)
     {
-        return applyPlan.Flattened.ContainsKey(ScriptLoaderPath) ?
+        var flattened =
+            await ((IStandardizedLoadoutSynchronizer)loadout.Installation.Game.Synchronizer)
+            .LoadoutToFlattenedLoadout(loadout);
+        return flattened.ContainsKey(ScriptLoaderPath) ?
             ScriptLoaderPath.CombineChecked(loadout.Installation) :
-            base.GetGamePath(loadout, applyPlan);
+            await base.GetGamePath(loadout);
     }
 }

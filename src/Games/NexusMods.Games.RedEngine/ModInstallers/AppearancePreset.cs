@@ -28,6 +28,7 @@ public class AppearancePreset : AModInstaller
 
     public override async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
         GameInstallation gameInstallation,
+        LoadoutId loadoutId,
         ModId baseModId,
         FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
         CancellationToken cancellationToken = default)
@@ -37,7 +38,7 @@ public class AppearancePreset : AModInstaller
             .SelectMany(kv =>
             {
                 var (path, file) = kv;
-                return Paths.Select(relPath => file!.ToFromArchive(
+                return Paths.Select(relPath => file!.ToStoredFile(
                     new GamePath(LocationId.Game, relPath.Join(path))
                 ));
             }).ToArray();

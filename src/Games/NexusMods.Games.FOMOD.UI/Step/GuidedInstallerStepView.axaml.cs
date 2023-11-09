@@ -23,7 +23,8 @@ public partial class GuidedInstallerStepView : ReactiveUserControl<IGuidedInstal
             this.OneWayBind(ViewModel, vm => vm.Groups, view => view.GroupItemsControl.ItemsSource)
                 .DisposeWith(disposables);
 
-            ViewModel?.HighlightedOptionImageObservable
+            this.WhenAnyValue(view => view.ViewModel!.HighlightedOptionImage)
+                .WhereNotNull()
                 .SubscribeWithErrorLogging(image =>
                 {
                     HighlightedOptionImage.IsVisible = true;
@@ -31,7 +32,7 @@ public partial class GuidedInstallerStepView : ReactiveUserControl<IGuidedInstal
                 })
                 .DisposeWith(disposables);
 
-            this.WhenAnyValue(x => x.ViewModel!.HighlightedOptionViewModel)
+            this.WhenAnyValue(view => view.ViewModel!.HighlightedOptionViewModel)
                 .SubscribeWithErrorLogging(optionVM =>
                 {
                     HighlightedOptionImage.IsVisible = false;
@@ -43,7 +44,7 @@ public partial class GuidedInstallerStepView : ReactiveUserControl<IGuidedInstal
                 })
                 .DisposeWith(disposables);
 
-            this.WhenAnyValue(x => x.ViewModel!.ShowInstallationCompleteScreen)
+            this.WhenAnyValue(view => view.ViewModel!.ShowInstallationCompleteScreen)
                 .SubscribeWithErrorLogging(showInstallationCompleteScreen =>
                 {
                     if (showInstallationCompleteScreen)

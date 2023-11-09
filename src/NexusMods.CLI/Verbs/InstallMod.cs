@@ -14,7 +14,7 @@ namespace NexusMods.CLI.Verbs;
 public class InstallMod : AVerb<LoadoutMarker, AbsolutePath, string>, IRenderingVerb
 {
     private readonly IArchiveInstaller _archiveInstaller;
-    private readonly IDownloadRegistry _downloadRegistry;
+    private readonly IFileOriginRegistry _fileOriginRegistry;
 
     /// <inheritdoc />
     public IRenderer Renderer { get; set; } = null!;
@@ -24,10 +24,10 @@ public class InstallMod : AVerb<LoadoutMarker, AbsolutePath, string>, IRendering
     /// </summary>
     /// <param name="archiveInstaller"></param>
     /// <param name="archiveAnalyzer"></param>
-    public InstallMod(IArchiveInstaller archiveInstaller, IDownloadRegistry archiveAnalyzer)
+    public InstallMod(IArchiveInstaller archiveInstaller, IFileOriginRegistry archiveAnalyzer)
     {
         _archiveInstaller = archiveInstaller;
-        _downloadRegistry = archiveAnalyzer;
+        _fileOriginRegistry = archiveAnalyzer;
     }
 
     /// <inheritdoc />
@@ -43,7 +43,7 @@ public class InstallMod : AVerb<LoadoutMarker, AbsolutePath, string>, IRendering
     {
         await Renderer.WithProgress(token, async () =>
         {
-            var downloadId = await _downloadRegistry.RegisterDownload(file, new FilePathMetadata
+            var downloadId = await _fileOriginRegistry.RegisterDownload(file, new FilePathMetadata
             {
                 OriginalName = file.Name,
                 Quality = Quality.Low,

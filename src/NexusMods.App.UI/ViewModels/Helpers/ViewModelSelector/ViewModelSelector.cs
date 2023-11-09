@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Common;
+
 
 namespace NexusMods.App.UI.ViewModels.Helpers.ViewModelSelector;
 
@@ -9,12 +9,13 @@ namespace NexusMods.App.UI.ViewModels.Helpers.ViewModelSelector;
 /// <typeparam name="TEnum"></typeparam>
 /// <typeparam name="TVmType"></typeparam>
 /// <typeparam name="TBase"></typeparam>
-public class ViewModelSelector<TEnum, TVmType, TBase> : 
+public class ViewModelSelector<TEnum, TVmType, TBase> :
     AViewModelSelector<TEnum, TVmType, TBase>
     where TVmType : class, IViewModelInterface
     where TEnum : struct, Enum
+    where TBase : class, IViewModelInterface
 {
-    public ViewModelSelector(IServiceProvider serviceProvider) : 
+    public ViewModelSelector(IServiceProvider serviceProvider) :
         base(Mappings.Select(m => KeyValuePair.Create(m.Key, (TVmType)serviceProvider.GetRequiredService(m.Value)))
         .ToDictionary())
     {

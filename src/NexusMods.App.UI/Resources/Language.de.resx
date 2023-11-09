@@ -11,4 +11,233 @@
     <resheader name="writer">
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
+    <data name="StringFormatters__HoursRemaining__hours" xml:space="preserve">
+        <value>{0} Stunden</value>
+    </data>
+    <data name="StringFormatters__MinutesRemaining_mins" xml:space="preserve">
+        <value>{0} Minuten</value>
+    </data>
+    <data name="StringFormatters__SecondsRemaining_secs" xml:space="preserve">
+        <value>{0} Sekunden</value>
+    </data>
+    <data name="MessageBox_Button_No" xml:space="preserve">
+        <value>NEIN</value>
+    </data>
+    <data name="MessageBox_Button_Yes" xml:space="preserve">
+        <value>JA</value>
+    </data>
+    <data name="MetricsOptIn_DENY" xml:space="preserve">
+        <value>VERBIETEN</value>
+    </data>
+    <data name="MetricsOptIn_ALLOW" xml:space="preserve">
+        <value>ERLAUBEN</value>
+    </data>
+    <data name="Updater_UpdateAvailable" xml:space="preserve">
+        <value>Update verfügbar</value>
+    </data>
+    <data name="Updater_ViewChangelog" xml:space="preserve">
+        <value>Änderungen auf GitHub anzeigen</value>
+    </data>
+    <data name="TopBarActions__LOG_IN" xml:space="preserve">
+        <value>ANMELDEN</value>
+    </data>
+    <data name="Updater_LATER" xml:space="preserve">
+        <value>SPÄTER</value>
+    </data>
+    <data name="Updater_UPDATE" xml:space="preserve">
+        <value>AKTUALISIEREN</value>
+    </data>
+    <data name="Updater_MainMessage" xml:space="preserve">
+        <value>Halten Sie Ihre App auf dem neuesten Stand, um die neuesten Verbesserungen zu erhalten.</value>
+    </data>
+    <data name="SearchBox__Search" xml:space="preserve">
+        <value>Suchen</value>
+    </data>
+    <data name="PanelTabHeaderViewModel_Title_New_Tab" xml:space="preserve">
+        <value>Neuer Tab</value>
+    </data>
+    <data name="Nexus_Premium_Status__Premium" xml:space="preserve">
+        <value>PREMIUM</value>
+    </data>
+    <data name="MyGames" xml:space="preserve">
+        <value>Meine Spiele</value>
+    </data>
+    <data name="MyGamesView__Detected_games" xml:space="preserve">
+        <value>Gefundene Spiele</value>
+    </data>
+    <data name="MyGamesView__Ready_to_mod" xml:space="preserve">
+        <value>Bereit zum Modifizieren</value>
+    </data>
+    <data name="Newsfeed" xml:space="preserve">
+        <value>Nachrichten-Feed</value>
+    </data>
+    <data name="Helpers_GenerateHeader_SIZE" xml:space="preserve">
+        <value>GRÖßE</value>
+    </data>
+    <data name="Helpers_GenerateHeader_STATUS" xml:space="preserve">
+        <value>STATUS</value>
+    </data>
+    <data name="Helpers_GenerateHeader_VERSION" xml:space="preserve">
+        <value>VERSION</value>
+    </data>
+    <data name="Helpers_GenerateHeader_NAME" xml:space="preserve">
+        <value>NAME</value>
+    </data>
+    <data name="Helpers_GenerateHeader_MOD_NAME" xml:space="preserve">
+        <value>MOD NAME</value>
+    </data>
+    <data name="Helpers_GenerateHeader_INSTALLED" xml:space="preserve">
+        <value>INSTALLIERT</value>
+    </data>
+    <data name="Helpers_GenerateHeader_GAME" xml:space="preserve">
+        <value>SPIEL</value>
+    </data>
+    <data name="Helpers_GenerateHeader_CATEGORY" xml:space="preserve">
+        <value>KATEGORIE</value>
+    </data>
+    <data name="GameWidget__Add_game" xml:space="preserve">
+        <value>Spiel hinzufügen</value>
+    </data>
+    <data name="DownloadTaskViewModel_Field_Unknown" xml:space="preserve">
+        <value>Unbekannt</value>
+    </data>
+    <data name="DownloadTaskViewModel_Version_Unknown" xml:space="preserve">
+        <value>Unbekannt</value>
+    </data>
+    <data name="BoldMinutesRemainingTextBlock" xml:space="preserve">
+        <value>0 Minuten</value>
+    </data>
+    <data name="Button_Manage" xml:space="preserve">
+        <value>Verwalten</value>
+    </data>
+    <data name="DownloadInProgressView__Cancel" xml:space="preserve">
+        <value>Abbrechen</value>
+    </data>
+    <data name="DownloadInProgressView__Pause" xml:space="preserve">
+        <value>Anhalten</value>
+    </data>
+    <data name="DownloadInProgressView__Pause_All" xml:space="preserve">
+        <value>Alle anhalten</value>
+    </data>
+    <data name="DownloadStatusDesignViewModel_FormatStatus_Complete" xml:space="preserve">
+        <value>Fertig</value>
+    </data>
+    <data name="DownloadStatusDesignViewModel_FormatStatus_Downloading" xml:space="preserve">
+        <value>Lädt herunter</value>
+    </data>
+    <data name="DownloadStatusDesignViewModel_FormatStatus_Installing" xml:space="preserve">
+        <value>Wird installiert</value>
+    </data>
+    <data name="DownloadStatusDesignViewModel_FormatStatus_Paused" xml:space="preserve">
+        <value>Pausiert</value>
+    </data>
+    <data name="DownloadStatusDesignViewModel_FormatStatus_Queued" xml:space="preserve">
+        <value>In Warteschlange</value>
+    </data>
+    <data name="DownloadStatusDesignViewModel_Text_Queued_0_" xml:space="preserve">
+        <value>In Warteschlange 0%</value>
+    </data>
+    <data name="DownloadStatus_Idle" xml:space="preserve">
+        <value>Inaktiv</value>
+    </data>
+    <data name="DownloadStatus_Progress" xml:space="preserve">
+        <value>Fortschritt</value>
+    </data>
+    <data name="DownloadsView__Completed" xml:space="preserve">
+        <value>Abgeschlossen</value>
+    </data>
+    <data name="DownloadsView__DOWNLOADS" xml:space="preserve">
+        <value>DOWNLOADS</value>
+    </data>
+    <data name="DownloadsView__Download_history" xml:space="preserve">
+        <value>Download-Historie</value>
+    </data>
+    <data name="DownloadsView__In_Progress" xml:space="preserve">
+        <value>In Bearbeitung</value>
+    </data>
+    <data name="BrowseGames" xml:space="preserve">
+        <value>Spiele durchsuchen</value>
+    </data>
+    <data name="DownloadCompleted_Clear_All" xml:space="preserve">
+        <value>Alle löschen</value>
+    </data>
+    <data name="DownloadCompleted_COMPLETED" xml:space="preserve">
+        <value>ABGESCHLOSSEN</value>
+    </data>
+    <data name="DownloadHistoryView__HISTORY" xml:space="preserve">
+        <value>HISTORIE</value>
+    </data>
+    <data name="DownloadInProgressView__IN_PROGRESS" xml:space="preserve">
+        <value>IN BEARBEITUNG</value>
+    </data>
+    <data name="CancelDownloadOverlayView_Title" xml:space="preserve">
+        <value>Download abbrechung und löschen?</value>
+    </data>
+    <data name="CancelDownloadOverlayView_Description_download_will_be_cancelled" xml:space="preserve">
+        <value>{0} Der Download wird abgebrochen und die Dateien werden gelöscht.</value>
+    </data>
+    <data name="HomeView__BROWSE_ALL_GAMES" xml:space="preserve">
+        <value>ALLE SPIELE DURCHSUCHEN</value>
+    </data>
+    <data name="HomeView__CANT_SEE_YOUR_GAME" xml:space="preserve">
+        <value>SPIEL NICHT GEFUNDEN</value>
+    </data>
+    <data name="HomeView__We_found_games" xml:space="preserve">
+        <value>Wir haben Spiele gefunden, die du modden kannst!</value>
+    </data>
+    <data name="InProgressTitleTextBlock" xml:space="preserve">
+        <value>In Bearbeitung (0)</value>
+    </data>
+    <data name="InProgressView_InProgressView_Remaining" xml:space="preserve">
+        <value>verbleibend</value>
+    </data>
+    <data name="LaunchButtonViewModel_LaunchGame_LAUNCH" xml:space="preserve">
+        <value>STARTEN</value>
+    </data>
+    <data name="LaunchButtonViewModel_LaunchGame_RUNNING" xml:space="preserve">
+        <value>LÄUFT...</value>
+    </data>
+    <data name="LoadoutGridView_AddMod_FilePicker_Title" xml:space="preserve">
+        <value>Bitte wählen Sie eine Mod-Datei zur Installation aus.</value>
+    </data>
+    <data name="LoadoutGridView_AddMod_FileType_Archive" xml:space="preserve">
+        <value>Archiv</value>
+    </data>
+    <data name="LoadoutGridView__Add_Mod" xml:space="preserve">
+        <value>Mod hinzufügen</value>
+    </data>
+    <data name="MetricsOptIn_MainMessage" xml:space="preserve">
+        <value>Helfen Sie uns, Ihnen das beste Modding-Erlebnis zu bieten.
+
+Mit Ihrer Erlaubnis sammeln wir Analysedaten und senden sie an unser Team, um die Qualität und Leistung zu verbessern.
+
+Diese Informationen werden anonym gesendet und werden niemals an Dritte weitergegeben.</value>
+    </data>
+    <data name="MetricsOptIn_MoreInfoAboutTheDataWeTrack" xml:space="preserve">
+        <value>Weitere Informationen über die von uns verfolgten Daten</value>
+    </data>
+    <data name="MetricsOptIn_OverlayTitle" xml:space="preserve">
+        <value>Diagnostik und Nutzungsdaten</value>
+    </data>
+    <data name="MinutesRemainingTextBlock" xml:space="preserve">
+        <value>verbleibend</value>
+    </data>
+    <data name="NexusLoginOverlayView_Please_copy_url" xml:space="preserve">
+        <value>Bitte kopieren Sie die folgende URL in Ihr Browserfenster. Wir unterstützen Chrome, Safari, Firefox und Edge.</value>
+    </data>
+    <data name="NexusLoginOverlayView__BROWSER_DIDNT_OPEN" xml:space="preserve">
+        <value>DER BROWSER ÖFFNETE SICH NICHT AUTOMATISCH?</value>
+    </data>
+    <data name="NexusLoginOverlayView__Please_Click_Authorize" xml:space="preserve">
+        <value>BITTE KLICKEN SIE AUF DER WEBSITE AUF "AUTORISIEREN".</value>
+    </data>
+    <data name="ProgressBar_ProgressTextFormat__Total_1_0" xml:space="preserve">
+        <value>Insgesamt {1:0}%</value>
+    </data>
+    <data name="StringFormatters__In_progress__numDownloads" xml:space="preserve">
+        <value>In Bearbeitung ({0})</value>
+    </data>
+    <data name="Updater_UseSystemUpdater" xml:space="preserve">
+        <value>Es scheint, dass Ihre Kopie der Anwendung über einen vom System verwalteten Paketmanager installiert wurde. Bitte aktualisieren Sie sie über die Update-Anwendung Ihres Betriebssystems.</value>
+    </data>
 </root>

@@ -5,6 +5,7 @@ using Avalonia.Controls;
 using Avalonia.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.UI;
+using NexusMods.DataModel.Loadouts;
 using NexusMods.UI.Tests.Framework;
 
 namespace NexusMods.UI.Tests;
@@ -12,6 +13,8 @@ namespace NexusMods.UI.Tests;
 public class AUiTest
 {
     private readonly IServiceProvider _provider;
+
+    protected LoadoutRegistry LoadoutRegistry { get; }
     protected AvaloniaApp App { get; }
 
     public AUiTest(IServiceProvider provider)
@@ -20,6 +23,7 @@ public class AUiTest
 
         // Do this to trigger the AvaloniaApp constructor/initialization
         App = provider.GetRequiredService<AvaloniaApp>();
+        LoadoutRegistry = provider.GetRequiredService<LoadoutRegistry>();
     }
 
     protected VMWrapper<T> GetActivatedViewModel<T>()
@@ -76,7 +80,7 @@ public class AUiTest
             {
                 if (sw.Elapsed >= maxTimeout)
                     throw;
-                await Task.Delay(delay.Value);
+                await Task.Delay(delay.Value).ConfigureAwait(false);
             }
         }
     }
@@ -105,7 +109,7 @@ public class AUiTest
             {
                 if (sw.Elapsed >= maxTimeout)
                     throw;
-                await Task.Delay(delay.Value);
+                await Task.Delay(delay.Value).ConfigureAwait(false);
             }
         }
     }
@@ -182,7 +186,7 @@ public class AUiTest
     {
         await OnUi(() => Click_AlreadyOnUi(button));
     }
-    
+
     /// <summary>
     /// Clicks the button in a way that fires all the proper UI events, use this if you are
     /// already on UI via <see cref="OnUi{T}"/>.

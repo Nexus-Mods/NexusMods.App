@@ -1,0 +1,119 @@
+﻿<reactiveUi:ReactiveUserControl x:TypeArguments="ui:ISelectLocationViewModel"
+                                xmlns="https://github.com/avaloniaui"
+                                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                                xmlns:reactiveUi="http://reactiveui.net"
+                                xmlns:resources="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Resources"
+                                xmlns:ui="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation"
+                                mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="650"
+                                x:Class="NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation.SelectLocationView">
+    <Design.DataContext>
+        <ui:SelectLocationDesignViewModel />
+    </Design.DataContext>
+
+
+    <Border Classes="Rounded StructuralBorderColor OutlineWhite Padding16" x:Name="TopLevelBorder">
+        <Border.Styles>
+
+            <Style Selector="Border#HeaderAreaBorder">
+                <Setter Property="BorderThickness" Value="0, 0, 0, 1" />
+                <Setter Property="BorderBrush" Value="{DynamicResource BorderContainerBrush}" />
+                <Setter Property="Margin" Value="0, 0, 0, 16" />
+            </Style>
+
+            <Style Selector="TextBlock#SelectLocationSubHeading">
+                <Setter Property="Margin" Value="0, 4, 0, 16" />
+            </Style>
+
+            <Style Selector="TextBlock#AllFoldersAreaSubHeaderText">
+                <Setter Property="Margin" Value="0, 0, 0, 8" />
+            </Style>
+
+            <Style Selector="TextBlock.SelectSubHeading">
+                <Setter Property="Foreground" Value="{DynamicResource FontDarkSecondaryColor}" />
+
+            </Style>
+
+            <Style Selector="StackPanel.SuggestedHeaderStackPanel">
+                <Setter Property="Margin" Value="0, 0, 0, 8" />
+            </Style>
+
+            <Style Selector="Border.SuggestedAreaBorder">
+                <Setter Property="Margin" Value="0, 0, 0, 16" />
+            </Style>
+
+        </Border.Styles>
+
+        <Grid RowDefinitions="Auto, Auto, *" x:Name="TopLevelGrid">
+
+            <Border Grid.Row="0" x:Name="HeaderAreaBorder">
+                <StackPanel Orientation="Vertical">
+
+                    <TextBlock Classes="TitleSMSemi"
+                               Text="{x:Static resources:Language.SelectLocationHeaderText_SELECT_INSTALL_LOCATION}"
+                               x:Name="SelectLocationHeader" />
+
+                    <TextBlock Classes="BodySMNormal SelectSubHeading"
+                               Text="{x:Static resources:Language.SelectLocationSubHeadingText_Select_where_to}"
+                               x:Name="SelectLocationSubHeading" />
+                </StackPanel>
+            </Border>
+
+            <Border Grid.Row="1" Classes="Rounded Padding16 ContainerBorderColor SuggestedAreaBorder"
+                    x:Name="SuggestedAreaBorder">
+                <Grid RowDefinitions="Auto, *" Name="SuggestedAreaGrid">
+
+                    <StackPanel Grid.Row="0" Classes="SuggestedHeaderStackPanel" Orientation="Vertical">
+
+                        <TextBlock Classes="TitleXSSemi"
+                                   Text="{x:Static resources:Language.SuggestedHeaderText_SUGGESTED}"
+                                   x:Name="SuggestedHeaderText" />
+
+                        <TextBlock Classes="BodySMNormal SelectSubHeading"
+                                   Text="Temp Skyrim Special Edition Mods are usually installed in the following game folders."
+                                   x:Name="SuggestedSubHeaderText" />
+
+                    </StackPanel>
+
+                    <ItemsControl Grid.Row="1" x:Name="SuggestedLocationItemsControl">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Vertical" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
+
+                </Grid>
+            </Border>
+
+            <Border Grid.Row="2" Classes="Rounded Padding16 OutlineContainer" x:Name="CustomAreaBorder">
+                <Grid RowDefinitions="Auto, *" Name="CustomAreaGrid">
+
+                    <StackPanel Grid.Row="0" Classes="SuggestedHeaderStackPanel" Orientation="Vertical">
+
+                        <TextBlock Classes="TitleXSSemi"
+                                   Text="{x:Static resources:Language.AllFoldersAreaHeaderText_ALL_FOLDERS}"
+                                   x:Name="AllFoldersAreaHeaderText" />
+
+                        <TextBlock Classes="BodySMNormal SelectSubHeading"
+                                   Text="{x:Static resources:Language.AllFoldersAreaSubHeaderText_Select_from_full}"
+                                   x:Name="AllFoldersAreaSubHeaderText" />
+
+                    </StackPanel>
+
+                    <ItemsControl Grid.Row="1" x:Name="AllFoldersItemsControl">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Vertical" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
+
+
+                </Grid>
+            </Border>
+        </Grid>
+
+    </Border>
+</reactiveUi:ReactiveUserControl>

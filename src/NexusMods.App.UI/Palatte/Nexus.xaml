@@ -8,6 +8,10 @@
         <Color x:Key="BrandAccentLighter">#60A5FB</Color>
         <Color x:Key="BrandAccentDarker">#0555B8</Color>
 
+        <SolidColorBrush Color="{DynamicResource BrandAccentLighter}" Opacity="0.1" x:Key="BrandAccentLighterBrush10Percent" />
+        <SolidColorBrush Color="{DynamicResource BrandAccentLighter}" Opacity="0.2" x:Key="BrandAccentLighterBrush20Percent" />
+        <SolidColorBrush Color="{DynamicResource BrandAccentLighter}" Opacity="0.3" x:Key="BrandAccentLighterBrush30Percent" />
+
         <SolidColorBrush Color="{DynamicResource BrandPrimary}" x:Key="BrandPrimaryBrush" />
         <SolidColorBrush Color="{DynamicResource BrandPrimaryLighter}" x:Key="BrandPrimaryLighterBrush" />
         <SolidColorBrush Color="{DynamicResource BrandPrimaryDarker}" x:Key="BrandPrimaryDarkerBrush" />
@@ -52,12 +56,16 @@
 
         <Color x:Key="BrandWhite">#FFFFFF</Color>
         <SolidColorBrush Color="{DynamicResource BrandWhite}" x:Key="BrandWhiteBrush" />
+        <SolidColorBrush Color="{DynamicResource BrandWhite}" Opacity="0.1" x:Key="BrandWhiteBrush10Percent" />
+        <SolidColorBrush Color="{DynamicResource BrandWhite}" Opacity="0.2" x:Key="BrandWhiteBrush20Percent" />
 
         <Color x:Key="BrandWhite30Percent">#4CFFFFFF</Color>
 
         <Color x:Key="FontLightPrimary">#303030</Color>
         <Color x:Key="FontLightSecondary">#666666</Color>
         <Color x:Key="FontDarkPrimary">#FFFFFF</Color>
+        <Color x:Key="FontDarkSecondary">#AAAAAA</Color>
+        <Color x:Key="FontDarkTertiary">#5A5A5A</Color>
 
         <Color x:Key="BrandGray">#DADADA</Color>
 

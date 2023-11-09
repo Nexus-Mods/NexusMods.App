@@ -31,7 +31,7 @@ public class ListModContents : AVerb<LoadoutMarker, string>, IRenderingVerb
         var mod = loadout.Value.Mods.Values.First(m => m.Name == modName);
         foreach (var file in mod.Files.Values)
         {
-            if (file is IToFile tf and IFromArchive fa)
+            if (file is IToFile tf and IStoredFile fa)
             {
                 rows.Add(new object[] { tf.To, fa.Hash });
             }

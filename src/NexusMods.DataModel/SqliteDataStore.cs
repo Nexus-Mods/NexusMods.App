@@ -43,6 +43,7 @@ public class SqliteDataStore : IDataStore, IDisposable
     private readonly ObjectPool<SqliteConnection> _pool;
     private readonly ConnectionPoolPolicy _poolPolicy;
     private readonly ObjectPoolDisposable<SqliteConnection> _globalHandle;
+    private readonly IDataModelSettings _settings;
 
     /// <summary/>
     /// <param name="logger">Logs events.</param>
@@ -56,6 +57,7 @@ public class SqliteDataStore : IDataStore, IDisposable
     {
         _logger = logger;
 
+        _settings = settings;
         string connectionString;
         if (settings.UseInMemoryDataModel)
         {
@@ -170,6 +172,9 @@ public class SqliteDataStore : IDataStore, IDisposable
     /// <inheritdoc />
     public T? Get<T>(IId id, bool canCache) where T : Entity
     {
+        if (id is null)
+            throw new ArgumentNullException(nameof(id));
+
         if (_isDisposed)
             throw new ObjectDisposedException(nameof(SqliteDataStore));
 

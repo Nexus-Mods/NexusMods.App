@@ -26,7 +26,7 @@ public partial class DeploymentDataTests
     }
 
     [Fact]
-    public void AddFolderMapping_Should_MapAllChildrenCorrectly_WhenMappingASubfolderInArchive()
+    public void RemoveFolderMapping_Should_UnmapAllChildrenCorrectly()
     {
         // Arrange
         var data = new DeploymentData();
@@ -42,6 +42,11 @@ public partial class DeploymentDataTests
         AssertMapping(data, "folder/file1.txt", MakeGamePath("Data/file1.txt"));
         AssertMapping(data, "folder/file2.txt", MakeGamePath("Data/file2.txt"));
         AssertMapping(data, "folder/subfolder/file3.txt", MakeGamePath("Data/subfolder/file3.txt"));
+
+        // Now remove it
+        data.RemoveFolderMapping(folderNode);
+        data.ArchiveToOutputMap.Should().BeEmpty();
+        data.OutputToArchiveMap.Should().BeEmpty();
     }
 
     private static GamePath MakeGamePath(string path) => new(LocationId.Game, path);

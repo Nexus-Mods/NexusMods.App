@@ -20,8 +20,29 @@ public class LoadoutMarkerParser : IOptionParser<LoadoutMarker>
     /// <inheritdoc />
     public LoadoutMarker Parse(string input, OptionDefinition<LoadoutMarker> definition)
     {
-        var loadout = _registry.GetByName(input);
-        return new LoadoutMarker(_registry, loadout!.LoadoutId);
+        if (LoadoutId.TryParseFromHex(input, out var parsedId) && _registry.Contains(parsedId))
+        {
+            return _registry.GetMarker(parsedId);
+        }
+
+        var found = _registry.GetByName(input).Select(l => l.LoadoutId)
+            .ToArray();
+        if (found.Length == 0)
+        {
+            throw new Exception($"No loadout found with name or id {input}");
+        }
+        else if (found.Length > 1)
+        {
+            throw new Exception($"Multiple loadouts found with name {input}");
+        }
+        else if (found.Length == 1)
+        {
+            return _registry.GetMarker(found[0]);
+        }
+        else
+        {
+            throw new Exception($"No loadout found with name {input}");
+        }
     }
 
     /// <inheritdoc />

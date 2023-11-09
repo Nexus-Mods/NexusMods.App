@@ -1,0 +1,126 @@
+﻿<reactiveUi:ReactiveUserControl x:TypeArguments="selectableDirectoryEntry:ITreeEntryViewModel"
+                                xmlns="https://github.com/avaloniaui"
+                                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                                xmlns:reactiveUi="http://reactiveui.net"
+                                xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+                                xmlns:resources="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Resources"
+                                xmlns:selectableDirectoryEntry="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation.SelectableDirectoryEntry"
+                                mc:Ignorable="d" d:DesignWidth="710" d:DesignHeight="44"
+                                x:Class="NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation.SelectableDirectoryEntry.TreeEntryView">
+
+    <Design.DataContext>
+        <!-- Pick one -->
+        <selectableDirectoryEntry:TreeEntryStandardDirectoryDesignViewModel />
+        <!-- <selectableDirectoryEntry:TreeEntryCreatingDirectoryDesignViewModel /> -->
+    </Design.DataContext>
+
+    <Grid ColumnDefinitions="*, Auto" Margin="0,5,0,5">
+        <Grid.Styles>
+            <Style Selector="icons|Icon.FileTypeIcon">
+                <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+                <Setter Property="FontSize" Value="18" />
+                <Setter Property="Margin" Value="8, 0, 8, 0" />
+            </Style>
+
+            <Style Selector="Button.RightElements">
+                <Setter Property="Margin" Value="0,0,8,0" />
+            </Style>
+
+            <Style Selector="Button.PillElement">
+                <Setter Property="HorizontalAlignment" Value="Left" />
+            </Style>
+
+            <Style Selector="TextBox.CreateFolderEditBox">
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="CornerRadius" Value="4" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="BorderBrush" Value="{DynamicResource BrandWhite}" />
+            </Style>
+
+            <Style Selector="TextBlock#FileNameTextBlock">
+                <Setter Property="Margin" Value="0,4,8,0" />
+            </Style>
+        </Grid.Styles>
+
+        <!-- Left Elements -->
+        <Grid Grid.Column="0" ColumnDefinitions="*"
+              Name="EntryLeftElementsGrid">
+
+            <!-- Create Folder Button -->
+            <Button Classes="Rounded" HorizontalAlignment="Left" IsVisible="False" x:Name="CreateFolderButton">
+                <StackPanel Orientation="Horizontal">
+                    <icons:Icon Classes="Plus" x:Name="CreateFolderPlusIcon" />
+                    <TextBlock Text="{x:Static resources:Language.CreateFolderButton_Create_new_folder}"
+                               x:Name="CreateFolderButtonTextBlock" />
+                </StackPanel>
+            </Button>
+
+            <!-- File Element -->
+            <Grid ClipToBounds="True" ColumnDefinitions="Auto,Auto" IsVisible="False" x:Name="FileElementGrid">
+
+                <!-- File / Directory Icon -->
+                <icons:Icon Grid.Column="0" Classes="File FileTypeIcon" IsVisible="False" x:Name="FileEntryIcon" />
+                <icons:Icon Grid.Column="0" Classes="FolderOutline FileTypeIcon" IsVisible="False"
+                            x:Name="FolderEntryIcon" />
+
+                <!-- File Name -->
+                <TextBlock Grid.Column="1" Classes="BodyMDNormal" VerticalAlignment="Center"
+                           TextTrimming="CharacterEllipsis"
+                           Text="Example-file.bsa" IsVisible="False"
+                           x:Name="FileNameTextBlock" />
+
+                <!-- Create Folder Name Input Field -->
+                <TextBox Grid.Column="1" Classes="BodyMDNormal CreateFolderEditBox" VerticalAlignment="Center"
+                         Text="" IsVisible="False" BorderBrush="White" BorderThickness="1" CornerRadius="4"
+                         Background="Transparent"
+                         x:Name="CreateFolderNameTextBox" />
+            </Grid>
+        </Grid>
+
+        <!-- Right Elements -->
+        <StackPanel Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal"
+                    x:Name="EntryRightElementsStackPanel">
+
+            <!-- Delete Created Folder Button -->
+            <Button Classes="Rounded RightElements" HorizontalAlignment="Right" IsVisible="False"
+                    x:Name="DeleteCreatedFolderButton">
+                <StackPanel Orientation="Horizontal">
+                    <icons:Icon Classes="DeleteOutline" x:Name="DeleteCreatedFolderDeleteIcon" />
+                    <TextBlock Text="{x:Static resources:Language.DeleteCreatedFolderButton_Delete}"
+                               x:Name="DeleteCreatedFolderButtonTextBlock" />
+                </StackPanel>
+            </Button>
+
+            <!-- Select Button -->
+            <Button Classes="Rounded RightElements" HorizontalAlignment="Right" IsVisible="False"
+                    x:Name="SelectRoundedButton">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{x:Static resources:Language.SelectButton_Select}"
+                               x:Name="SelectButtonTextBlock" />
+                </StackPanel>
+            </Button>
+
+            <!-- Cancel Create Folder Button -->
+            <Button Classes="Rounded RightElements" HorizontalAlignment="Right" IsVisible="False"
+                    x:Name="CancelCreateFolderButton">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{x:Static resources:Language.CancelCreateFolderButton_Cancel}"
+                               x:Name="CancelCreateFolderButtonTextBlock" />
+                </StackPanel>
+            </Button>
+
+            <!-- Save Created Folder Button -->
+            <Button Classes="Rounded RightElements" HorizontalAlignment="Right" IsVisible="False"
+                    x:Name="SaveCreatedFolderButton">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{x:Static resources:Language.SaveCreatedFolderButton_Save}"
+                               x:Name="SaveCreatedFolderButtonTextBlock" />
+                </StackPanel>
+            </Button>
+
+        </StackPanel>
+    </Grid>
+
+</reactiveUi:ReactiveUserControl>

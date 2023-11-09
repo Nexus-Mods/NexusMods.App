@@ -1,6 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.CLI;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveMetaData;
@@ -15,6 +16,7 @@ using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.DataModel.Sorting.Rules;
 using NexusMods.DataModel.TriggerFilter;
+using NexusMods.DataModel.Verbs;
 using NexusMods.Paths;
 
 namespace NexusMods.DataModel;
@@ -53,7 +55,7 @@ public static class Services
         coll.AddSingleton(typeof(EntityLinkConverter<>));
 
         coll.AddSingleton<IDataStore, SqliteDataStore>();
-        coll.AddAllSingleton<IArchiveManager, NxArchiveManager>();
+        coll.AddAllSingleton<IFileStore, NxFileStore>();
         coll.AddAllSingleton<IResource, IResource<FileHashCache, Size>>(s =>
             new Resource<FileHashCache, Size>("File Hashing",
                 Settings(s).MaxHashingJobs,
@@ -62,18 +64,14 @@ public static class Services
 
         coll.AddSingleton(typeof(IFingerprintCache<,>), typeof(DataStoreFingerprintCache<,>));
 
-        coll.AddAllSingleton<IResource, IResource<LoadoutManager, Size>>(s =>
-            new Resource<LoadoutManager, Size>("Load Order Management",
-                Settings(s).LoadoutDeploymentJobs, Size.Zero));
-        coll.AddSingleton<LoadoutManager>();
         coll.AddSingleton<LoadoutRegistry>();
         coll.AddSingleton<IDirectoryIndexer, DirectoryIndexer>();
-        coll.AddSingleton<IDownloadRegistry, DownloadRegistry>();
-        coll.AddSingleton<LoadoutSynchronizer>();
+        coll.AddSingleton<IFileOriginRegistry, FileOriginRegistry>();
         coll.AddSingleton<FileHashCache>();
         coll.AddSingleton<GlobalSettingsManager>();
         coll.AddSingleton<IArchiveInstaller, ArchiveInstaller>();
         coll.AddSingleton<IToolManager, ToolManager>();
+        coll.AddSingleton<DiskStateRegistry>();
 
         coll.AddAllSingleton<IInterprocessJobManager, SqliteIPC>();
         coll.AddSingleton(typeof(IMessageConsumer<>),
@@ -100,6 +98,9 @@ public static class Services
         // Diagnostics
         coll.AddAllSingleton<IDiagnosticManager, DiagnosticManager>();
         coll.AddOptions<DiagnosticOptions>();
+
+        // Verbs
+        coll.AddVerb<GenerateGameFileHashes>();
 
         return coll;
     }

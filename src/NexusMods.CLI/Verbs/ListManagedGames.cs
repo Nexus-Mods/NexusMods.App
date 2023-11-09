@@ -10,7 +10,7 @@ namespace NexusMods.CLI.Verbs;
 /// </summary>
 public class ListManagedGames : AVerb, IRenderingVerb
 {
-    private readonly LoadoutManager _manager;
+    private readonly LoadoutRegistry _registry;
 
     /// <inheritdoc />
     public IRenderer Renderer { get; set; } = null!;
@@ -18,10 +18,10 @@ public class ListManagedGames : AVerb, IRenderingVerb
     /// <summary>
     /// DI constructor
     /// </summary>
-    /// <param name="manager"></param>
-    public ListManagedGames(LoadoutManager manager)
+    /// <param name="registry"></param>
+    public ListManagedGames(LoadoutRegistry registry)
     {
-        _manager = manager;
+        _registry = registry;
     }
 
     /// <inheritdoc />
@@ -33,7 +33,7 @@ public class ListManagedGames : AVerb, IRenderingVerb
     public async Task<int> Run(CancellationToken token)
     {
         var rows = new List<object[]>();
-        foreach (var list in _manager.Registry.AllLoadouts())
+        foreach (var list in _registry.AllLoadouts())
             rows.Add(new object[] { list.Name, list.Installation, list.LoadoutId, list.Mods.Count });
 
         await Renderer.Render(new Table(new[] { "Name", "Game", "Id", "Mod Count" }, rows));

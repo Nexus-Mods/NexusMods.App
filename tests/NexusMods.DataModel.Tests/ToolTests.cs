@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NexusMods.DataModel.Loadouts.ModFiles;
+using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.Tests.Harness;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators.TestHelpers;
@@ -15,28 +16,27 @@ public class ToolTests : ADataModelTest<ToolTests>
     [Fact]
     public async Task CanRunTools()
     {
-        var name = Guid.NewGuid().ToString();
-        var loadout = await LoadoutManager.ManageGameAsync(Install, name);
-        await AddMods(loadout, Data7ZLzma2, "Mod1");
-        var gameFolder = loadout.Value.Installation.LocationsRegister[LocationId.Game];
+        await AddMods(BaseList, Data7ZLzma2, "Mod1");
+        var gameFolder = BaseList.Value.Installation.LocationsRegister[LocationId.Game];
 
         gameFolder.Combine("files.txt").FileExists.Should().BeFalse("tool should not have run yet");
         gameFolder.Combine("rootFile.txt").FileExists.Should().BeFalse("loadout has not yet been applied");
 
-        var tool = ToolManager.GetTools(loadout.Value).OfType<ListFilesTool>().First();
-        await ToolManager.RunTool(tool, loadout.Value);
+        var tool = ToolManager.GetTools(BaseList.Value).OfType<ListFilesTool>().First();
+        var result = await ToolManager.RunTool(tool, BaseList.Value);
+        BaseList.Merge(result);
 
         gameFolder.Combine("files.txt").FileExists.Should().BeTrue("tool should have run");
         gameFolder.Combine("rootFile.txt").FileExists.Should().BeTrue("loadout has been automatically applied");
 
-        var generatedFile = loadout.Value.Mods.Values
+        var generatedFile = BaseList.Value.Mods.Values
             .SelectMany(m => m.Files.Values)
             .OfType<IToFile>()
             .FirstOrDefault(f => f.To == ListFilesTool.GeneratedFilePath);
 
         // Disabled until we rework generated files
-        //generatedFile.Should().NotBeNull("the generated file should be in the loadout");
-        //loadout.Value.Mods.Values.Where(m => m.Name == "List Files Generated Files")
-        //    .Should().HaveCount(1, "the generated file should be in a generated mod");
+        generatedFile.Should().NotBeNull("the generated file should be in the loadout");
+        BaseList.Value.Mods.Values.Where(m => m.ModCategory == Mod.OverridesCategory)
+            .Should().HaveCount(1, "the generated file should be in a generated mod");
     }
 }

@@ -63,7 +63,7 @@ This file is in the `NexusMods.App` project at time of writing and is copied to 
 Language can be switched at runtime with the following code:
 
 ```
-Language.Culture = new CultureInfo(/* locale */);
+Thread.CurrentThread.CurrentUICulture = new CultureInfo(/* locale */);
 ```
 Where `locale` is a string representing the locale, e.g. `it` for Italian.
 

@@ -3,7 +3,7 @@ using NexusMods.Common.GuidedInstaller;
 
 namespace NexusMods.Games.FOMOD.UI;
 
-public interface IGuidedInstallerOptionViewModel : IViewModel
+public interface IGuidedInstallerOptionViewModel : IViewModelInterface
 {
     public Option Option { get; }
 

@@ -21,7 +21,7 @@ public class Startup
 
         IconProvider.Current
             .Register<MaterialDesignIconProvider>();
-        
+
         var app = AppBuilder.Configure(serviceProvider.GetRequiredService<App>)
             .UsePlatformDetect()
             .LogToTrace()

@@ -9,14 +9,14 @@ namespace NexusMods.App.UI;
 public class InjectedViewLocator : IViewLocator
 {
     private readonly IServiceProvider _provider;
-    private readonly MethodInfo _method;
+    private readonly MethodInfo _resolveViewInnerMethod;
     private readonly ILogger<InjectedViewLocator> _logger;
 
     public InjectedViewLocator(ILogger<InjectedViewLocator> logger, IServiceProvider provider)
     {
         _logger = logger;
         _provider = provider;
-        _method = GetType().GetMethod("ResolveViewInner", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        _resolveViewInnerMethod = GetType().GetMethod(nameof(ResolveViewInner), BindingFlags.NonPublic | BindingFlags.Instance)!;
     }
 
     [SuppressMessage("ReSharper", "HeapView.PossibleBoxingAllocation", Justification = "Our ViewModels are always reference types.")]
@@ -31,7 +31,7 @@ public class InjectedViewLocator : IViewLocator
             if (viewModel is IViewModel vm)
             {
                 var intType = vm.ViewModelInterface;
-                var method = _method.MakeGenericMethod(intType);
+                var method = _resolveViewInnerMethod.MakeGenericMethod(intType);
                 var view = (IViewFor?)method.Invoke(this, Array.Empty<object>());
                 if (view is IViewContract vc && contract is not null)
                 {

@@ -1,0 +1,25 @@
+<reactive:ReactiveUserControl
+    x:TypeArguments="workspace:INewTabPageSectionItemViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactive="http://reactiveui.net"
+    xmlns:workspace="clr-namespace:NexusMods.App.UI.WorkspaceSystem"
+    xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+    mc:Ignorable="d" d:DesignWidth="375" d:DesignHeight="56"
+    x:Class="NexusMods.App.UI.WorkspaceSystem.NewTabPageSectionItemView">
+
+    <Design.DataContext>
+        <workspace:NewTabPageSectionItemDesignViewModel/>
+    </Design.DataContext>
+
+    <Border CornerRadius="4" Background="{StaticResource BackgroundTertiaryColor}">
+        <StackPanel Margin="16" Orientation="Horizontal">
+            <icons:Icon Classes="ProgressDownload" Width="24" Height="24" Foreground="{StaticResource BrandWhite}"/>
+
+            <TextBlock x:Name="NameTextBlock" Classes="BodyLGBold">In Progress</TextBlock>
+        </StackPanel>
+    </Border>
+
+</reactive:ReactiveUserControl>

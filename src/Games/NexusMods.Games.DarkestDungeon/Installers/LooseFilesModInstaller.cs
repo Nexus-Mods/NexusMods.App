@@ -22,6 +22,7 @@ public class LooseFilesModInstaller : IModInstaller
 
     public async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
         GameInstallation gameInstallation,
+        LoadoutId loadoutId,
         ModId baseModId,
         FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
         CancellationToken cancellationToken = default)
@@ -31,7 +32,7 @@ public class LooseFilesModInstaller : IModInstaller
             .Select(kv =>
             {
                 var (path, file) = kv;
-                return file!.ToFromArchive(
+                return file!.ToStoredFile(
                     new GamePath(LocationId.Game, ModsFolder.Join(path))
                 );
             });

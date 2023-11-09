@@ -36,13 +36,13 @@ public class ModSourceFileEntry
     }
 
     /// <summary>
-    /// Maps the provided <see cref="ModSourceFileEntry"/> to a <see cref="FromArchive"/> mod file
+    /// Maps the provided <see cref="ModSourceFileEntry"/> to a <see cref="StoredFile"/> mod file
     /// </summary>
     /// <param name="to"></param>
     /// <returns></returns>
-    public FromArchive ToFromArchive(GamePath to)
+    public StoredFile ToStoredFile(GamePath to)
     {
-        return new FromArchive
+        return new StoredFile
         {
             Id = ModFileId.New(),
             To = to,

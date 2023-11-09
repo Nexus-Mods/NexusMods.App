@@ -2,6 +2,7 @@
     <ItemGroup>
         <ProjectReference Include="..\..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
         <ProjectReference Include="..\..\NexusMods.StandardGameLocators\NexusMods.StandardGameLocators.csproj" />
+        <ProjectReference Include="..\NexusMods.Games.AdvancedInstaller.UI\NexusMods.Games.AdvancedInstaller.UI.csproj" />
         <ProjectReference Include="..\NexusMods.Games.FOMOD\NexusMods.Games.FOMOD.csproj" />
         <ProjectReference Include="..\NexusMods.Games.Generic\NexusMods.Games.Generic.csproj" />
     </ItemGroup>
@@ -13,11 +14,11 @@
     <ItemGroup>
         <None Remove="Resources\SkyrimSpecialEdition\game_image.png" />
         <EmbeddedResource Include="Resources\SkyrimSpecialEdition\game_image.png" />
-        <None Remove="Resources\SkyrimSpecialEdition\icon.jpg" />
-        <EmbeddedResource Include="Resources\SkyrimSpecialEdition\icon.jpg" />
         <None Remove="Resources\SkyrimLegendaryEdition\icon.png" />
         <EmbeddedResource Include="Resources\SkyrimLegendaryEdition\icon.png" />
         <None Remove="Resources\SkyrimLegendaryEdition\game_image.jpg" />
         <EmbeddedResource Include="Resources\SkyrimLegendaryEdition\game_image.jpg" />
+        <None Remove="Resources\SkyrimSpecialEdition\icon.png" />
+        <EmbeddedResource Include="Resources\SkyrimSpecialEdition\icon.png" />
     </ItemGroup>
 </Project>

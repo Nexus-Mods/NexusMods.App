@@ -1,6 +1,5 @@
 using System.Collections.ObjectModel;
 using System.Reactive;
-using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using DynamicData;
@@ -60,9 +59,12 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
     private async Task LaunchGame(CancellationToken token)
     {
         Label = Language.LaunchButtonViewModel_LaunchGame_RUNNING;
-        var marker = new LoadoutMarker(_loadoutRegistry, LoadoutId);
+        var marker = _loadoutRegistry.GetMarker(LoadoutId);
         var tool = _toolManager.GetTools(marker.Value).OfType<IRunGameTool>().First();
-        await _toolManager.RunTool(tool, marker.Value, token: token);
+        await Task.Run(async () =>
+        {
+            await _toolManager.RunTool(tool, marker.Value, token: token);
+        }, token);
         Label = Language.LaunchButtonViewModel_LaunchGame_LAUNCH;
     }
 }

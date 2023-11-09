@@ -6,21 +6,21 @@ using NexusMods.Paths;
 namespace NexusMods.DataModel;
 
 /// <summary>
-/// A stream factory that reads from the archive manager
+/// A stream factory that reads from the file store
 /// </summary>
 public class ArchiveManagerStreamFactory : IStreamFactory
 {
-    private readonly IArchiveManager _archiveManager;
+    private readonly IFileStore _fileStore;
     private readonly Hash _hash;
 
     /// <summary>
     /// Main constructor
     /// </summary>
-    /// <param name="archiveManager"></param>
+    /// <param name="fileStore"></param>
     /// <param name="hash"></param>
-    public ArchiveManagerStreamFactory(IArchiveManager archiveManager, Hash hash)
+    public ArchiveManagerStreamFactory(IFileStore fileStore, Hash hash)
     {
-        _archiveManager = archiveManager;
+        _fileStore = fileStore;
         _hash = hash;
     }
 
@@ -37,6 +37,6 @@ public class ArchiveManagerStreamFactory : IStreamFactory
     /// <inheritdoc />
     public async ValueTask<Stream> GetStreamAsync()
     {
-        return await _archiveManager.GetFileStream(_hash);
+        return await _fileStore.GetFileStream(_hash);
     }
 }

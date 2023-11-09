@@ -31,9 +31,10 @@ public static class ReactiveUiExtensions
     /// <returns></returns>
     public static IObservable<T> OffUi<T>(this IObservable<T> observable)
     {
-        return observable.ObserveOn(TaskPoolScheduler.Default);
+        return observable.ObserveOn(RxApp.TaskpoolScheduler);
     }
 
+    [Obsolete("This should not be used anymore. See UI Coding Conventions for more details.")]
     public static IDisposable BindToUi<TValue, TTarget, TTValue>(
         this IObservable<TValue> @this,
         TTarget? target,
@@ -42,6 +43,30 @@ public static class ReactiveUiExtensions
         IBindingTypeConverter? vmToViewConverterOverride = null)
         where TTarget : class =>
         @this.OnUI().BindTo(target, property, conversionHint, vmToViewConverterOverride);
+
+    /// <summary>
+    /// Binds the observable stream to a property on the View Model.
+    /// </summary>
+    public static IDisposable BindToVM<TValue, TTarget>(
+        this IObservable<TValue> @this,
+        TTarget target,
+        Expression<Func<TTarget, TValue?>> property)
+        where TTarget : class, IViewModel
+    {
+        return @this.BindTo(target, property, conversionHint: null, vmToViewConverterOverride: null);
+    }
+
+    /// <summary>
+    /// Binds the observable stream to a property on the View.
+    /// </summary>
+    public static IDisposable BindToView<TValue, TTarget>(
+        this IObservable<TValue> @this,
+        TTarget target,
+        Expression<Func<TTarget, TValue?>> property)
+        where TTarget : class, IViewFor
+    {
+        return @this.BindTo(target, property, conversionHint: null, vmToViewConverterOverride: null);
+    }
 
     /// <summary>
     /// Subscribes to the specified source, re-routing synchronous exceptions during invocation of the

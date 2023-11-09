@@ -1,4 +1,5 @@
 using NexusMods.DataModel.ModInstallers;
+using NexusMods.Games.AdvancedInstaller.Exceptions;
 using NexusMods.Paths;
 using NexusMods.Paths.FileTree;
 
@@ -15,9 +16,14 @@ public static class DeploymentDataExtensions
     /// <param name="data">The instance of <see cref="DeploymentData" />.</param>
     /// <param name="folderNode">The relative path of the source file within the mod archive.</param>
     /// <param name="outputFolder">The folder where the file should be placed in one of the game directories.</param>
+    /// <param name="force">
+    ///     If this is set to true, re-mapping of items is permitted, and remapping will simply unmap existing item.
+    ///     Otherwise <see cref="MappingAlreadyExistsException"/> will be thrown.
+    /// </param>
     /// <returns>True if the mapping was added successfully, false if the key already exists.</returns>
+    /// <exception cref="MappingAlreadyExistsException">If the mapping already exists, unless <see cref="force"/> is specified.</exception>
     public static void AddFolderMapping<TValue>(this DeploymentData data,
-        FileTreeNode<RelativePath, TValue> folderNode, GamePath outputFolder)
+        FileTreeNode<RelativePath, TValue> folderNode, GamePath outputFolder, bool force = false)
     {
         // Check if said location is already mapped.
         // Get all of the children of the folder node.
@@ -33,7 +39,20 @@ public static class DeploymentDataExtensions
         {
             var childPath = child.Path.Path.Substring(substringLength);
             var newPath = new GamePath(outputFolder.LocationId, outputFolder.Path.Join(childPath));
-            data.AddMapping(child.Path, newPath);
+            data.AddMapping(child.Path, newPath, force);
         }
+    }
+
+    /// <summary>
+    ///     Removes the mappings of all of the children of the given node.
+    /// </summary>
+    /// <param name="data">The instance of <see cref="DeploymentData" />.</param>
+    /// <param name="folderNode">The relative path of the source file within the mod archive.</param>
+    /// <returns>True if the mapping was removed successfully, false if the key doesn't exist.</returns>
+    public static void RemoveFolderMapping<TValue>(this DeploymentData data,
+        FileTreeNode<RelativePath, TValue> folderNode)
+    {
+        foreach (var child in folderNode.GetAllDescendentFiles())
+            data.RemoveMapping(child.Path);
     }
 }

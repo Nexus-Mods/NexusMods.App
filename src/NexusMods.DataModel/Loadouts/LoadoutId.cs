@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
@@ -18,6 +19,7 @@ namespace NexusMods.DataModel.Loadouts;
 // ReSharper disable once PartialTypeWithSinglePart
 public readonly partial struct LoadoutId : ICreatable<LoadoutId>
 {
+    public static LoadoutId Null = From(Guid.Empty);
     // Note: We store this as hex because we need to serialize to JSON.
 
     /// <summary>
@@ -111,5 +113,47 @@ public readonly partial struct LoadoutId : ICreatable<LoadoutId>
         Span<byte> span = stackalloc byte[16];
         _value.TryWriteBytes(span);
         return IId.FromSpan(category, span);
+    }
+
+
+
+    /// <summary>
+    /// Parses a loadout ID from the ToString() representation.
+    /// </summary>
+    /// <param name="input"></param>
+    /// <param name="loadoutId"></param>
+    /// <returns></returns>
+    public static bool TryParseFromHex(string input, out LoadoutId loadoutId)
+    {
+        return TryParseFromHex((ReadOnlySpan<char>)input, out loadoutId);
+    }
+
+    /// <summary>
+    /// Parses a loadout ID from the ToString() representation.
+    /// </summary>
+    /// <param name="input"></param>
+    /// <param name="loadoutId"></param>
+    /// <returns></returns>
+    public static bool TryParseFromHex(ReadOnlySpan<char> input, [NotNullWhen(false)] out LoadoutId loadoutId)
+    {
+        if (input.Length != 32)
+        {
+            loadoutId = Null;
+            return false;
+        }
+        else
+        {
+            try
+            {
+                loadoutId = FromHex(input);
+                return true;
+            }
+            catch
+            {
+                loadoutId = Null;
+                return false;
+            }
+        }
+
     }
 }

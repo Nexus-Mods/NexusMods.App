@@ -1,12 +1,18 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <Design.PreviewWith>
-        <StackPanel>
+        <StackPanel Spacing="6">
             <Border Classes="LeftPaneTitle">
                 <TextBlock Text="TITLE"></TextBlock>
             </Border>
             <Border Classes="HighlightedArea">
                 <TextBlock Text="CONTENT"></TextBlock>
+            </Border>
+            <Border Classes="Rounded Padding16 StructuralBorderColor OutlineTertiaryDarker">
+                <TextBlock Text="CONTENT" Foreground="White"></TextBlock>
+            </Border>
+            <Border Classes="Rounded Padding16 ContainerBorderColor OutlineWhite">
+                <TextBlock Text="CONTENT" Foreground="White"></TextBlock>
             </Border>
         </StackPanel>
     </Design.PreviewWith>
@@ -31,6 +37,37 @@
         <Setter Property="LineHeight" Value="25"></Setter>
         <Setter Property="FontWeight" Value="600"></Setter>
         <Setter Property="Foreground" Value="{DynamicResource FontDarkSecondaryColor}"></Setter>
+    </Style>
+
+    <Style Selector="Border.Rounded">
+        <Setter Property="CornerRadius" Value="8" />
+    </Style>
+
+    <Style Selector="Border.ContainerBorderColor">
+        <Setter Property="Background" Value="{DynamicResource BorderContainerColor}" />
+    </Style>
+
+    <Style Selector="Border.StructuralBorderColor">
+        <Setter Property="Background" Value="{DynamicResource StructuralBorderColor}" />
+    </Style>
+
+    <Style Selector="Border.OutlineWhite">
+        <Setter Property="BorderBrush" Value="{DynamicResource BrandWhite}" />
+        <Setter Property="BorderThickness" Value="1" />
+    </Style>
+
+    <Style Selector="Border.OutlineTertiaryDarker">
+        <Setter Property="BorderBrush" Value="{DynamicResource BrandTertiaryDarker}" />
+        <Setter Property="BorderThickness" Value="1" />
+    </Style>
+
+    <Style Selector="Border.OutlineContainer">
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderContainerColor}" />
+        <Setter Property="BorderThickness" Value="1" />
+    </Style>
+
+    <Style Selector="Border.Padding16">
+        <Setter Property="Padding" Value="16" />
     </Style>
 
 

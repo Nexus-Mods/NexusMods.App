@@ -6,7 +6,6 @@ using NexusMods.DataModel.ModInstallers;
 using NexusMods.FileExtractor.StreamFactories;
 using NexusMods.Games.DarkestDungeon.Installers;
 using NexusMods.Paths;
-using OneOf.Types;
 
 namespace NexusMods.Games.DarkestDungeon;
 
@@ -22,7 +21,7 @@ public class DarkestDungeon : AGame, ISteamGame, IGogGame, IEpicGame
 
     public DarkestDungeon(
         IOSInformation osInformation,
-        IEnumerable<IGameLocator> gameLocators) : base(gameLocators)
+        IServiceProvider provider) : base(provider)
     {
         _osInformation = osInformation;
     }
@@ -54,13 +53,16 @@ public class DarkestDungeon : AGame, ISteamGame, IGogGame, IEpicGame
             .GetKnownPath(KnownPath.LocalApplicationDataDirectory)
             .Combine("Red Hook Studios/Darkest/persist.options.json");
 
-        var result =  new Dictionary<LocationId, AbsolutePath>()
+        var result = new Dictionary<LocationId, AbsolutePath>()
         {
             { LocationId.Game, installation.Path },
-            { LocationId.Preferences, globalSettingsFile }
+            { LocationId.Preferences, globalSettingsFile.Parent }
         };
 
-        if (installation.Metadata is SteamLocatorResultMetadata { CloudSavesDirectory: not null } steamLocatorResultMetadata)
+        if (installation.Metadata is SteamLocatorResultMetadata
+            {
+                CloudSavesDirectory: not null
+            } steamLocatorResultMetadata)
         {
             result[LocationId.Saves] = steamLocatorResultMetadata.CloudSavesDirectory.Value;
         }
@@ -76,14 +78,17 @@ public class DarkestDungeon : AGame, ISteamGame, IGogGame, IEpicGame
         return result;
     }
 
-    public override List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations) =>
+    public override List<IModInstallDestination> GetInstallDestinations(
+        IReadOnlyDictionary<LocationId, AbsolutePath> locations) =>
         ModInstallDestinationHelpers.GetCommonLocations(locations);
 
     public override IStreamFactory Icon =>
-        new EmbededResourceStreamFactory<DarkestDungeon>("NexusMods.Games.DarkestDungeon.Resources.DarkestDungeon.icon.png");
+        new EmbededResourceStreamFactory<DarkestDungeon>(
+            "NexusMods.Games.DarkestDungeon.Resources.DarkestDungeon.icon.png");
 
     public override IStreamFactory GameImage =>
-        new EmbededResourceStreamFactory<DarkestDungeon>("NexusMods.Games.DarkestDungeon.Resources.DarkestDungeon.game_image.jpg");
+        new EmbededResourceStreamFactory<DarkestDungeon>(
+            "NexusMods.Games.DarkestDungeon.Resources.DarkestDungeon.game_image.jpg");
 
 
     /// <inheritdoc />

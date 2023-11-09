@@ -16,7 +16,7 @@ namespace NexusMods.DataModel.Abstractions;
 /// which allows you to interface with values in the store using Key-Value semantics.
 /// </summary>
 [JsonConverter(typeof(EntityDictionaryConverterFactory))]
-public struct EntityDictionary<TK, TV> :
+public readonly struct EntityDictionary<TK, TV> :
     IEmptyWithDataStore<EntityDictionary<TK, TV>>,
     IEnumerable<KeyValuePair<TK, TV>>,
     IWalkable<Entity>
@@ -236,6 +236,43 @@ public struct EntityDictionary<TK, TV> :
             state = visitor(state, itm);
             return itm.Walk(visitor, state);
         });
+    }
+
+    /// <summary>
+    /// Merges two dictionaries together, returning a new dictionary, using mergeFn to combine results, return
+    /// null to exclude the item from the resulting dictionary.
+    /// </summary>
+    /// <param name="other"></param>
+    /// <param name="mergeFn"></param>
+    /// <returns></returns>
+    public EntityDictionary<TK, TV> Merge(EntityDictionary<TK, TV> other, Func<TV?, TV?, TV?> mergeFn)
+    {
+        var result = new List<KeyValuePair<TK, IId>>();
+
+        foreach (var (key, iid) in _coll)
+        {
+            var otherValue = other._coll.TryGetValue(key, out var found) ? _store.Get<TV>(found) : null;
+            var newValue = mergeFn(_store.Get<TV>(iid), otherValue);
+            if (newValue is not null)
+            {
+                newValue!.EnsurePersisted(_store);
+                result.Add(KeyValuePair.Create(key, iid));
+            }
+        }
+
+        foreach (var (key, iid) in other._coll)
+        {
+            // We've already processed colliding keys, so skip them.
+            if (_coll.ContainsKey(key)) continue;
+            var newValue = mergeFn(null, _store.Get<TV>(iid));
+            if (newValue is not null)
+            {
+                newValue!.EnsurePersisted(_store);
+                result.Add(KeyValuePair.Create(key, iid));
+            }
+        }
+
+        return new EntityDictionary<TK, TV>(_store, result);
     }
 
     private IEnumerable<TV> GetValues()

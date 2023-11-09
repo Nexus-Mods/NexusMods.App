@@ -233,4 +233,7 @@
     <data name="DownloadStatusDesignViewModel_Text_Queued_0_" xml:space="preserve">
         <value>W kolejce 0%</value>
     </data>
+    <data name="PanelTabHeaderViewModel_Title_New_Tab" xml:space="preserve">
+        <value>Nowa karta</value>						  
+    </data>
 </root>

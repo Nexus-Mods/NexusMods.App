@@ -13,11 +13,12 @@ namespace NexusMods.App.UI.ViewModels.Helpers.ViewModelSelector;
 /// <typeparam name="TEnum"></typeparam>
 /// <typeparam name="TVmType"></typeparam>
 /// <typeparam name="TBase"></typeparam>
-public abstract class AViewModelSelector<TEnum, TVmType, TBase> : 
-    AViewModel<TBase>, 
+public abstract class AViewModelSelector<TEnum, TVmType, TBase> :
+    AViewModel<TBase>,
     IViewModelSelector<TEnum, TVmType>
     where TVmType : class, IViewModelInterface
     where TEnum : struct, Enum
+    where TBase : class, IViewModelInterface
 {
     protected static readonly Dictionary<TEnum,Type> Mappings;
     private readonly Dictionary<TEnum,TVmType> _instances;
@@ -39,7 +40,7 @@ public abstract class AViewModelSelector<TEnum, TVmType, TBase> :
         Current = _instances.First().Key;
         CurrentViewModel = _instances.First().Value;
     }
-    
+
     public void Set(TEnum current)
     {
         CurrentViewModel = _instances[current];
@@ -51,7 +52,7 @@ public abstract class AViewModelSelector<TEnum, TVmType, TBase> :
         return this.WhenAnyValue(vm => vm.Current)
             .Select(val => val.Equals(current));
     }
-    
+
     public ICommand CommandForViewModel(TEnum current)
     {
         return ReactiveCommand.Create(() => Set(current));

@@ -1,5 +1,4 @@
 ﻿using System.Windows.Input;
-using ReactiveUI;
 
 namespace NexusMods.App.UI.Overlays.MetricsOptIn;
 

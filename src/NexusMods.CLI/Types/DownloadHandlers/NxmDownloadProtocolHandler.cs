@@ -19,19 +19,19 @@ public class NxmDownloadProtocolHandler : IDownloadProtocolHandler
     private readonly IHttpDownloader _downloader;
     private readonly TemporaryFileManager _temp;
     private readonly IArchiveInstaller _archiveInstaller;
-    private readonly IDownloadRegistry _downloaderRegistry;
+    private readonly IFileOriginRegistry _downloaderRegistry;
 
     /// <summary/>
     public NxmDownloadProtocolHandler(Client client,
         IHttpDownloader downloader,
         TemporaryFileManager temp,
         IArchiveInstaller archiveInstaller,
-        IDownloadRegistry downloadRegistry)
+        IFileOriginRegistry fileOriginRegistry)
     {
         _archiveInstaller = archiveInstaller;
         _client = client;
         _downloader = downloader;
-        _downloaderRegistry = downloadRegistry;
+        _downloaderRegistry = fileOriginRegistry;
         _temp = temp;
     }
 

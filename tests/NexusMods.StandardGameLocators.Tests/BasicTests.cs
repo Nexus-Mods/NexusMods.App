@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NexusMods.DataModel.Games;
+using NexusMods.Paths;
 
 namespace NexusMods.StandardGameLocators.Tests;
 
@@ -21,6 +22,7 @@ public class BasicTests
             steamInstallation =>
             {
                 steamInstallation.LocationsRegister.LocationDescriptors
+                    .Where(d => d.Value.Id == LocationId.Game)
                     .Should().ContainSingle()
                     .Which.Value.ResolvedPath
                     .ToString().Should().Contain("steam_game");

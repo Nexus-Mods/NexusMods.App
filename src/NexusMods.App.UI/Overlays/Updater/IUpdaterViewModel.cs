@@ -1,6 +1,5 @@
 ﻿using System.Windows.Input;
 using NexusMods.Common;
-using ReactiveUI;
 
 namespace NexusMods.App.UI.Overlays.Updater;
 

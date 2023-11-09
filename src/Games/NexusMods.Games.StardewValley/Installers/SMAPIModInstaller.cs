@@ -54,6 +54,7 @@ public class SMAPIModInstaller : AModInstaller
 
     public override async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
         GameInstallation gameInstallation,
+        LoadoutId loadoutId,
         ModId baseModId,
         FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
         CancellationToken cancellationToken = default)
@@ -74,7 +75,7 @@ public class SMAPIModInstaller : AModInstaller
                     .Select(kv =>
                     {
                         var (path, file) = kv;
-                        return file!.ToFromArchive(
+                        return file!.ToStoredFile(
                             new GamePath(LocationId.Game, Constants.ModsFolder.Join(path.DropFirst(parent.Depth - 1)))
                         );
                     });

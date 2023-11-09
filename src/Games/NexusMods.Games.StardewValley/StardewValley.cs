@@ -26,7 +26,7 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
     public StardewValley(
         IOSInformation osInformation,
         IEnumerable<IGameLocator> gameLocators,
-        IServiceProvider provider) : base(gameLocators)
+        IServiceProvider provider) : base(provider)
     {
         _osInformation = osInformation;
         _serviceProvider = provider;
