@@ -75,6 +75,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         this.WhenActivated(disposables =>
         {
             router.Messages
+                .OnUI()
                 .SubscribeWithErrorLogging(logger, HandleMessage)
                 .DisposeWith(disposables);
 

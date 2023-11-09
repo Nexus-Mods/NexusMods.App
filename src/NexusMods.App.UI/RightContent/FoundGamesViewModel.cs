@@ -52,10 +52,7 @@ public class FoundGamesViewModel : AViewModel<IFoundGamesViewModel>, IFoundGames
                 vm.Installation = install;
                 vm.PrimaryButton = ReactiveCommand.CreateFromTask(async () =>
                 {
-                    await Task.Run(async () =>
-                    {
-                        await ManageGame(install);
-                    });
+                    await Task.Run(async () => await ManageGame(install));
                 });
                 return vm;
             });

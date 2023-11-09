@@ -8,6 +8,7 @@ using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.LoadoutSynchronizerDTOs;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Loadouts.Mods;
+using NexusMods.DataModel.LoadoutSynchronizer.Exceptions;
 using NexusMods.DataModel.Sorting;
 using NexusMods.DataModel.Sorting.Rules;
 using NexusMods.FileExtractor.StreamFactories;
@@ -252,7 +253,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// <param name="entry"></param>
     public virtual void HandleNeedIngest(HashedEntry entry)
     {
-        throw new Exception("File changed during apply, need to ingest");
+        throw new NeedsIngestException();
     }
 
     /// <inheritdoc />
