@@ -30,7 +30,7 @@ jobs:
 
   build-and-test:
     if: github.event_name == 'push' || github.event.pull_request.draft == false
-    uses: Nexus-Mods/NexusMods.App.Meta/.github/workflows/dotnet-build-and-test.yaml@fe67031c793927b62f7a756d26989a7a9ccf715a
+    uses: Nexus-Mods/NexusMods.App.Meta/.github/workflows/dotnet-build-and-test.yaml@c22aee119490b79229eb3f8489d513e01a4e370a
     with:
       test-filter: "RequiresNetworking!=True&FlakeyTest!=True"
       codecov-flags: ",clean_environment_tests"
