@@ -7,7 +7,7 @@ public interface IWorkspaceViewModel : IViewModelInterface
 {
     public ReadOnlyObservableCollection<IPanelViewModel> Panels { get; }
 
-    public IReadOnlyList<IAddPanelButtonViewModel> AddPanelButtonViewModels { get; }
+    public ReadOnlyObservableCollection<IAddPanelButtonViewModel> AddPanelButtonViewModels { get; }
 
     /// <summary>
     /// Called by the View to notify the VM about the new size of the control.
@@ -28,7 +28,7 @@ public interface IWorkspaceViewModel : IViewModelInterface
     /// <summary>
     /// Closes a panel from the workspace.
     /// </summary>
-    public void ClosePanel(IPanelViewModel currentPanel);
+    public void ClosePanel(PanelId panelId);
 
     /// <summary>
     /// Transforms the current state of the workspace into a serializable data format.

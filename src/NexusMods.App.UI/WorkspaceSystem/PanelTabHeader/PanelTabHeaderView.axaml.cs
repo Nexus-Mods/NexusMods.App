@@ -1,4 +1,5 @@
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -18,40 +19,40 @@ public partial class PanelTabHeaderView : ReactiveUserControl<IPanelTabHeaderVie
         this.WhenActivated(disposables =>
         {
             this.WhenAnyValue(view => view.ViewModel!.Icon)
-                .SubscribeWithErrorLogging(icon =>
+                .Do(icon =>
                 {
-                    IconImage.Source = icon;
-
                     var size = icon?.Size ?? new Size(0, 0);
                     IconImage.Width = size.Width;
                     IconImage.Height = size.Height;
                 })
+                .BindToView(this, view => view.IconImage.Source)
                 .DisposeWith(disposables);
 
             this.OneWayBind(ViewModel, vm => vm.Title, view => view.TitleTextBlock.Text)
                 .DisposeWith(disposables);
 
             this.WhenAnyValue(view => view.ViewModel!.Title)
-                .SubscribeWithErrorLogging(title => ToolTip.SetTip(this, title))
+                .Subscribe(title => ToolTip.SetTip(this, title))
                 .DisposeWith(disposables);
 
             this.BindCommand(ViewModel, vm => vm.CloseTabCommand, view => view.CloseTabButton)
                 .DisposeWith(disposables);
 
             this.WhenAnyValue(vm => vm.ViewModel!.IsSelected)
-                .SubscribeWithErrorLogging(isSelected =>
+                .Subscribe(isSelected =>
                 {
                     if (isSelected) Container.Classes.Add("Selected");
                     else Container.Classes.Remove("Selected");
                 })
                 .DisposeWith(disposables);
-        });
-    }
 
-    private void InputElement_OnPointerPressed(object? sender, PointerPressedEventArgs e)
-    {
-        if (ViewModel is null) return;
-        ViewModel.IsSelected = true;
+            Observable.FromEventPattern<PointerPressedEventArgs>(
+                    addHandler => Container.PointerPressed += addHandler,
+                    removeHandler => Container.PointerPressed -= removeHandler
+                ).Select(_ => true)
+                .BindToView(this, view => view.ViewModel!.IsSelected)
+                .DisposeWith(disposables);
+        });
     }
 }
 

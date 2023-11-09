@@ -18,27 +18,17 @@ public class PanelTabHeaderViewModel : AViewModel<IPanelTabHeaderViewModel>, IPa
     [Reactive]
     public IImage? Icon { get; set; }
 
-    [Reactive]
-    public bool IsSelected { get; set; }
+    [Reactive] public bool IsSelected { get; set; } = true;
 
-    public ReactiveCommand<Unit, Unit> CloseTabCommand { get; }
+    public ReactiveCommand<Unit, PanelTabId> CloseTabCommand { get; }
 
-    public PanelTabHeaderViewModel(IPanelViewModel panelViewModel, PanelTabId id)
+    public PanelTabHeaderViewModel(PanelTabId id)
     {
         Id = id;
-
-        CloseTabCommand = ReactiveCommand.Create(() =>
-        {
-            panelViewModel.CloseTab(id);
-        });
+        CloseTabCommand = ReactiveCommand.Create(() => Id);
 
         this.WhenActivated(disposables =>
         {
-            this.WhenAnyValue(vm => vm.IsSelected)
-                .Where(isSelected => isSelected)
-                .SubscribeWithErrorLogging(_ => panelViewModel.SelectedTabId = Id)
-                .DisposeWith(disposables);
-
             Disposable.Create(this, state =>
             {
                 if (state.Icon is IDisposable disposable) disposable.Dispose();
