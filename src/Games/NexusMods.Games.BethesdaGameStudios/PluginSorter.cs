@@ -91,7 +91,7 @@ public class PluginSorter
                     foreach (var itm in allPlugins)
                     {
                         if (DefaultOrdering.Contains(itm.FileName)) continue;
-                        yield return new Before<RuleTuple, RelativePath>(itm.FileName);
+                        yield return new Before<RuleTuple, RelativePath> { Other = itm.FileName };
                     }
 
                     break;
