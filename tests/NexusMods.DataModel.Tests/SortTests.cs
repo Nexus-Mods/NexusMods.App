@@ -33,7 +33,7 @@ public class SortTests
             new Item {Id = "B", Rules = new()},
             new Item {Id = "A", Rules = new()
             {
-                new Before<Item, string>("B")
+                new Before<Item, string> { Other = "B" }
             }},
             new Item {Id = "C", Rules = new()
             {
