@@ -88,10 +88,10 @@
 		<value>Pliki/foldery oznaczone jako „Nowe” zostaną zainstalowane/dodane.</value>
 	</data>
 	<data name="UnsupportedModHeader_Unsupported_mod" xml:space="preserve">
-		<value>Nieobsługiwana modyfikacja</value>
+		<value>Niewspierana modyfikacja</value>
 	</data>
 	<data name="UnsupportedTitleTextBlock_This_mod_is_not_supported" xml:space="preserve">
-		<value>Ta modyfikacja nie jest obsługiwana</value>
+		<value>Ta modyfikacja nie jest wspierana</value>
 	</data>
 	<data name="UnsupportedDescriptionTextBlock_This_mod_is_structured" xml:space="preserve">
 		<value>Modyfikacja ma nierozpoznaną strukturę lub zawiera nierozpoznane typy plików, więc nie może zostać zainstalowana automatycznie.</value>
