@@ -40,7 +40,7 @@
 		<value>NOWY</value>
 	</data>
 	<data name="Pill_DUPE_FOLDER" xml:space="preserve">
-		<value>DUPLIKUJ FOLDER</value>
+		<value>DUPLIKAT FOLDERU</value>
 	</data>
 	<data name="Pill_FOLDER_MERGED" xml:space="preserve">
 		<value>FOLDER POŁĄCZONY</value>
