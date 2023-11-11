@@ -118,22 +118,22 @@
 		<value>Zainstaluj</value>
 	</data>
 	<data name="TreeEntryView_IncludeTransitionButtonTextBlock_Include_folder" xml:space="preserve">
-		<value>Dołącz folder</value>
+		<value>Zawiera folder</value>
 	</data>
 	<data name="TreeEntryView_IncludeTransitionButtonTextBlock_Include_with_folder" xml:space="preserve">
-		<value>Dołącz z folderu</value>
+		<value>Zawiera z folderem</value>
 	</data>
 	<data name="TreeEntryView_IncludedRemoveButtonTextBlock_Included_folder" xml:space="preserve">
-		<value>Dołączony folder</value>
+		<value>Zawrty folder</value>
 	</data>
 	<data name="TreeEntryView_IncludedRemoveButtonTextBlock_Included_with_folder" xml:space="preserve">
-		<value>Dołączone z folderu</value>
+		<value>Zawrty z folderem</value>
 	</data>
 	<data name="TreeEntryView_IncludeTransitionButtonTextBlock_Include" xml:space="preserve">
-		<value>Dołącz</value>
+		<value>Zawiera</value>
 	</data>
 	<data name="TreeEntryView_IncludedRemoveButtonTextBlock_Included" xml:space="preserve">
-		<value>Dołączone</value>
+		<value>Zawarty</value>
 	</data>
 	<data name="AdvancedInstaller_Manual_Mod" xml:space="preserve">
 		<value>Ręczny mod</value>
