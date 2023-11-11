@@ -121,19 +121,19 @@
 		<value>Zawiera folder</value>
 	</data>
 	<data name="TreeEntryView_IncludeTransitionButtonTextBlock_Include_with_folder" xml:space="preserve">
-		<value>Zawiera z folderem</value>
+		<value>Zawarte z folderem</value>
 	</data>
 	<data name="TreeEntryView_IncludedRemoveButtonTextBlock_Included_folder" xml:space="preserve">
 		<value>Zawrty folder</value>
 	</data>
 	<data name="TreeEntryView_IncludedRemoveButtonTextBlock_Included_with_folder" xml:space="preserve">
-		<value>Zawrty z folderem</value>
+		<value>Zawrte z folderem</value>
 	</data>
 	<data name="TreeEntryView_IncludeTransitionButtonTextBlock_Include" xml:space="preserve">
 		<value>Zawiera</value>
 	</data>
 	<data name="TreeEntryView_IncludedRemoveButtonTextBlock_Included" xml:space="preserve">
-		<value>Zawarty</value>
+		<value>Zawarte</value>
 	</data>
 	<data name="AdvancedInstaller_Manual_Mod" xml:space="preserve">
 		<value>Ręczny mod</value>
