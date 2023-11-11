@@ -43,7 +43,7 @@
 		<value>DUPLIKAT FOLDERU</value>
 	</data>
 	<data name="Pill_FOLDER_MERGED" xml:space="preserve">
-		<value>FOLDER POŁĄCZONY</value>
+		<value>POŁĄCZONY FOLDER</value>
 	</data>
 	<data name="SelectLocationButton_Select_location" xml:space="preserve">
 		<value>Wybierz lokalizację</value>
