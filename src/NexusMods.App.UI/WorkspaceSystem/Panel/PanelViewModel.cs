@@ -30,6 +30,9 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
     public ReactiveCommand<Unit, PanelId> CloseCommand { get; }
     public ReactiveCommand<Unit, Unit> PopoutCommand { get; }
 
+    [Reactive]
+    public bool IsNotAlone { get; set; }
+
     [Reactive] private PanelTabId SelectedTabId { get; set; }
 
     private readonly PageFactoryController _factoryController;
@@ -37,8 +40,9 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
     {
         _factoryController = factoryController;
 
-        PopoutCommand = Initializers.DisabledReactiveCommand;
-        CloseCommand = ReactiveCommand.Create(() => Id);
+        var canExecute = this.WhenAnyValue(vm => vm.IsNotAlone);
+        PopoutCommand = ReactiveCommand.Create(() => { }, canExecute);
+        CloseCommand = ReactiveCommand.Create(() => Id, canExecute);
 
         AddTabCommand = ReactiveCommand.Create(() =>
         {

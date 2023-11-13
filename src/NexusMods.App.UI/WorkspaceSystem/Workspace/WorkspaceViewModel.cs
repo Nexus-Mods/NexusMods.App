@@ -5,6 +5,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia;
 using DynamicData;
+using DynamicData.Aggregation;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
@@ -52,6 +53,22 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                 .Connect()
                 .MergeMany(item => item.CloseCommand)
                 .SubscribeWithErrorLogging(ClosePanel)
+                .DisposeWith(disposables);
+
+            // TODO: popout command
+
+            _panelSource
+                .Connect()
+                .Count()
+                .Select(panelCount => panelCount > 1)
+                .Do(hasMultiplePanels =>
+                {
+                    for (var i = 0; i < Panels.Count; i++)
+                    {
+                        Panels[i].IsNotAlone = hasMultiplePanels;
+                    }
+                })
+                .SubscribeWithErrorLogging()
                 .DisposeWith(disposables);
         });
     }
