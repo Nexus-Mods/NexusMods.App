@@ -22,7 +22,9 @@ public record DummyPageContext : IPageFactoryContext
 public class DummyPageFactory : APageFactory<DummyViewModel, DummyPageContext>
 {
     public DummyPageFactory(IServiceProvider serviceProvider) : base(serviceProvider) { }
-    public override PageFactoryId Id => PageFactoryId.From(Guid.Parse("71eeb62b-1d2a-45ec-9924-aa0a80a60478"));
+
+    public static readonly PageFactoryId StaticId = PageFactoryId.From(Guid.Parse("71eeb62b-1d2a-45ec-9924-aa0a80a60478"));
+    public override PageFactoryId Id => StaticId;
 
     public override DummyViewModel CreateViewModel(DummyPageContext context)
     {

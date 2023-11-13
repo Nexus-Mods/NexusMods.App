@@ -37,7 +37,6 @@ public class NewTabPageSectionViewModel : AViewModel<INewTabPageSectionViewModel
             _itemSource
                 .Connect()
                 .MergeMany(item => item.SelectItemCommand)
-                .Do(_ => Console.WriteLine("section view model"))
                 .InvokeCommand(SelectItemCommand)
                 .DisposeWith(disposables);
         });

@@ -127,8 +127,6 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
                 .MergeManyWithSource(item => item.Contents.ViewModel!.ChangePageCommand)
                 .SubscribeWithErrorLogging(tuple =>
                 {
-                    Console.WriteLine("hi");
-
                     var (item, pageData) = tuple;
                     var newPage = _factoryController.Create(pageData);
                     item.Contents = newPage;

@@ -39,7 +39,7 @@ public class LoadoutGridPageFactory : APageFactory<ILoadoutGridViewModel, Loadou
             {
                 // TODO: translations?
                 SectionName = "Collections",
-                ItemName = $"Loadout {loadout.Name}",
+                ItemName = loadout.Name,
                 PageData = new PageData
                 {
                     FactoryId = Id,

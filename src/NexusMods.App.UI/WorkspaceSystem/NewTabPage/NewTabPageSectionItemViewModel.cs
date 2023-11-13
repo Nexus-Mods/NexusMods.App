@@ -17,10 +17,6 @@ public class NewTabPageSectionItemViewModel : AViewModel<INewTabPageSectionItemV
         Name = details.ItemName;
         Icon = null;
 
-        SelectItemCommand = ReactiveCommand.Create(() =>
-        {
-            Console.WriteLine("item view model");
-            return details.PageData;
-        });
+        SelectItemCommand = ReactiveCommand.Create(() => details.PageData);
     }
 }

@@ -1,6 +1,5 @@
 using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using DynamicData;
 using ReactiveUI;
 
@@ -44,7 +43,6 @@ public class NewTabPageViewModel : APageViewModel<INewTabPageViewModel>, INewTab
             _sectionSource
                 .Connect()
                 .MergeMany(item => item.SelectItemCommand)
-                .Do(_ => Console.WriteLine("tab page view model"))
                 .InvokeCommand(ChangePageCommand)
                 .DisposeWith(disposables);
 
