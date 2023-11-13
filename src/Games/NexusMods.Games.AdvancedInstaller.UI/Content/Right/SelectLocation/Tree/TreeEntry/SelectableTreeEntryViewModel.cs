@@ -84,7 +84,7 @@ public class SelectableTreeEntryViewModel : AViewModel<ISelectableTreeEntryViewM
         var trimmed = name.Trim();
         if (trimmed == string.Empty)
             return trimmed;
-        trimmed = Regex.Replace(trimmed, InvalidFolderCharsRegex, "");
+        trimmed = Regex.Replace(trimmed, InvalidFolderCharsRegex, "").Trim();
         return trimmed;
     }
 }
