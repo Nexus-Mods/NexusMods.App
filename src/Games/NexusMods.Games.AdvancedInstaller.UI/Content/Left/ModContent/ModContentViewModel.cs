@@ -72,7 +72,7 @@ internal class ModContentViewModel : AViewModel<IModContentViewModel>, IModConte
             var root = new ModContentTreeEntryViewModel(RelativePath.Empty, true);
             updater.AddOrUpdate(root);
 
-            foreach (var (fileName, fileTreeNode) in allNodes)
+            foreach (var (_, fileTreeNode) in allNodes)
             {
                 var relativePath = fileTreeNode.Path;
                 // All the tree leaf nodes are files, so it's a directory if it has children
