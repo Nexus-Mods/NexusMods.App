@@ -6,6 +6,8 @@ namespace NexusMods.App.UI.WorkspaceSystem;
 
 public interface INewTabPageSectionItemViewModel : IViewModelInterface
 {
+    public string SectionName { get; }
+
     public string Name { get; }
 
     public IImage? Icon { get; }
