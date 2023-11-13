@@ -48,7 +48,7 @@ internal class ModContentViewModel : AViewModel<IModContentViewModel>, IModConte
     {
         foreach (var child in node.Children)
         {
-            if (node.Item.Status != ModContentTreeEntryStatus.Default) continue;
+            if (child.Item.Status != ModContentTreeEntryStatus.Default) continue;
 
             child.Item.Status = ModContentTreeEntryStatus.SelectingViaParent;
             SelectChildrenRecursive(child);
@@ -68,8 +68,13 @@ internal class ModContentViewModel : AViewModel<IModContentViewModel>, IModConte
         // Populate the cache
         cache.Edit(updater =>
         {
-            foreach (var (relativePath, fileTreeNode) in allNodes)
+            // Create the root node
+            var root = new ModContentTreeEntryViewModel(RelativePath.Empty, true);
+            updater.AddOrUpdate(root);
+
+            foreach (var (fileName, fileTreeNode) in allNodes)
             {
+                var relativePath = fileTreeNode.Path;
                 // All the tree leaf nodes are files, so it's a directory if it has children
                 var entry = new ModContentTreeEntryViewModel(relativePath, fileTreeNode.Children.Count > 0);
                 updater.AddOrUpdate(entry);
