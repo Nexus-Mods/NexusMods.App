@@ -38,7 +38,14 @@ public interface IModContentViewModel : IViewModelInterface
     /// Recursively sets the status of all the children to SelectingViaParent.
     /// Skips nodes and subtree that aren't in the default state.
     /// </summary>
-    /// <param name="node"></param>
+    /// <param name="node">Parent node, not included in operation</param>
     public void SelectChildrenRecursive(TreeNodeVM<IModContentTreeEntryViewModel, RelativePath> node);
+
+    /// <summary>
+    /// Recursively resets the status of all the SelectingViaParent children to Default.
+    /// If a child folder isn't in the SelectingViaParent state, it's subtree is skipped.
+    /// </summary>
+    /// <param name="node">Parent node, not included in operation</param>
+    public void DeselectChildrenRecursive(TreeNodeVM<IModContentTreeEntryViewModel, RelativePath> node);
 }
 

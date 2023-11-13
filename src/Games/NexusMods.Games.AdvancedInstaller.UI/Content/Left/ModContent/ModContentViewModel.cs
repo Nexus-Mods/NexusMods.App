@@ -15,11 +15,11 @@ using ModContentNode = TreeNodeVM<IModContentTreeEntryViewModel, RelativePath>;
 
 internal class ModContentViewModel : AViewModel<IModContentViewModel>, IModContentViewModel
 {
-
     [Reactive] public bool IsDisabled { get; set; }
     public ModContentNode Root => _modContentTreeRoots.First();
 
     public TreeDataGridSource Tree { get; }
+
     public SourceCache<IModContentTreeEntryViewModel, RelativePath> SelectedEntriesCache { get; } =
         new(entry => entry.RelativePath);
 
@@ -43,6 +43,7 @@ internal class ModContentViewModel : AViewModel<IModContentViewModel>, IModConte
         Tree = CreateTreeDataGridSource(Root);
     }
 
+    #region utility
 
     public void SelectChildrenRecursive(ModContentNode node)
     {
@@ -54,6 +55,19 @@ internal class ModContentViewModel : AViewModel<IModContentViewModel>, IModConte
             SelectChildrenRecursive(child);
         }
     }
+
+    public void DeselectChildrenRecursive(ModContentNode node)
+    {
+        foreach (var child in node.Children)
+        {
+            if (child.Item.Status != ModContentTreeEntryStatus.SelectingViaParent) continue;
+
+            child.Item.Status = ModContentTreeEntryStatus.Default;
+            DeselectChildrenRecursive(child);
+        }
+    }
+
+    #endregion utility
 
     #region private
 
@@ -101,7 +115,6 @@ internal class ModContentViewModel : AViewModel<IModContentViewModel>, IModConte
             }
         };
     }
-
 
     #endregion private
 }
