@@ -38,6 +38,7 @@
   </ItemGroup>
   <ItemGroup>
     <!-- Microsoft -->
+    <PackageVersion Include="Microsoft.AspNetCore.WebUtilities" Version="8.0.0-rc.2.23480.2" />
     <PackageVersion Include="Microsoft.Data.Sqlite" Version="7.0.13" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
