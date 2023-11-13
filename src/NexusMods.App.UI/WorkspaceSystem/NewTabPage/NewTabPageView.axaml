@@ -5,7 +5,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactive="http://reactiveui.net"
     xmlns:workspace="clr-namespace:NexusMods.App.UI.WorkspaceSystem"
-    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+    mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="500"
     x:Class="NexusMods.App.UI.WorkspaceSystem.NewTabPageView">
 
     <Design.DataContext>
@@ -21,7 +22,31 @@
 
         <ItemsControl.ItemTemplate>
             <DataTemplate DataType="{x:Type workspace:INewTabPageSectionViewModel}">
-                <workspace:NewTabPageSectionView/>
+                <StackPanel Spacing="12" Width="375" Margin="12 0">
+                    <TextBlock x:Name="SectionNameTextBlock" Text="{CompiledBinding SectionName}" Classes="HeadingSMSemi"/>
+
+                    <ItemsControl x:Name="Items" ItemsSource="{CompiledBinding Items}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Spacing="8"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="{x:Type workspace:INewTabPageSectionItemViewModel}">
+
+                                <Border CornerRadius="4" Background="{StaticResource BackgroundTertiaryColor}">
+                                    <StackPanel Margin="16" Orientation="Horizontal">
+                                        <icons:Icon Classes="ProgressDownload" Width="24" Height="24" Foreground="{StaticResource BrandWhite}"/>
+
+                                        <TextBlock x:Name="NameTextBlock" Text="{CompiledBinding Name}" Classes="BodyLGBold"/>
+                                    </StackPanel>
+                                </Border>
+
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
             </DataTemplate>
         </ItemsControl.ItemTemplate>
     </ItemsControl>

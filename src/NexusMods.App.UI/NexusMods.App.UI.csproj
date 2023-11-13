@@ -344,17 +344,8 @@
         <Compile Update="WorkspaceSystem\NewTabPage\NewTabPageViewModel.cs">
           <DependentUpon>INewTabPageViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="WorkspaceSystem\NewTabPageSection\NewTabPageSectionViewModel.cs">
-          <DependentUpon>INewTabPageSectionViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="WorkspaceSystem\NewTabPageSection\NewTabPageSectionDesignViewModel.cs">
-          <DependentUpon>INewTabPageSectionViewModel.cs</DependentUpon>
-        </Compile>
         <Compile Update="WorkspaceSystem\NewTabPage\NewTabPageDesignViewModel.cs">
           <DependentUpon>INewTabPageViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="WorkspaceSystem\NewTabPageSectionItem\NewTabPageSectionItemViewModel.cs">
-          <DependentUpon>INewTabPageSectionItemViewModel.cs</DependentUpon>
         </Compile>
     </ItemGroup>
 

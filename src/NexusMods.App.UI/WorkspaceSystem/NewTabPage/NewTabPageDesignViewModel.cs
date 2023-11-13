@@ -10,7 +10,11 @@ public class NewTabPageDesignViewModel : NewTabPageViewModel
     {
         return Enumerable
             .Range(0, 3)
-            .Select(i => (INewTabPageSectionViewModel)new NewTabPageSectionDesignViewModel($"Section {i}", NewTabPageSectionDesignViewModel.CreateItems()))
+            .Select(i => (INewTabPageSectionViewModel)new NewTabPageSectionViewModel($"Section {i}", Enumerable
+                .Range(0, 3)
+                .Select(j => (INewTabPageSectionItemViewModel)new NewTabPageSectionItemViewModel($"Item {j}", icon: null))
+                .ToArray())
+            )
             .ToArray();
     }
 }
