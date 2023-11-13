@@ -103,7 +103,7 @@ public class AdvancedInstallerHandlerUI: IAdvancedInstallerHandler
         OnUi(_overlayController.Value,
             controller => { controller.SetOverlayContent(new SetOverlayItem(vm, referenceItem), tcs); });
         await tcs.Task;
-        return (!vm.WasCancelled, vm.BodyViewModel.Data);
+        return (!vm.WasCancelled, vm.BodyViewModel.DeploymentData);
     }
 
     private static void OnUi<TState>(TState state, Action<TState> action)

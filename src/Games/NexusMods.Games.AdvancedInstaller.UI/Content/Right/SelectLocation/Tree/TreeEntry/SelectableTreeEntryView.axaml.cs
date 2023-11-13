@@ -20,21 +20,27 @@ public partial class SelectableTreeEntryView : ReactiveUserControl<ISelectableTr
 
             InitView();
 
-            this.BindCommand<SelectableTreeEntryView, ISelectableTreeEntryViewModel, ReactiveCommand<Unit, Unit>, Button>(ViewModel, vm => vm.LinkCommand, v => v.SelectRoundedButton)
+            this.BindCommand<SelectableTreeEntryView, ISelectableTreeEntryViewModel, ReactiveCommand<Unit, Unit>,
+                    Button>(ViewModel, vm => vm.CreateMappingCommand, v => v.SelectRoundedButton)
                 .DisposeWith(disposable);
 
-            this.BindCommand<SelectableTreeEntryView, ISelectableTreeEntryViewModel, ReactiveCommand<Unit, Unit>, Button>(ViewModel, vm => vm.EditCreateFolderCommand, v => v.CreateFolderButton)
+            this.BindCommand<SelectableTreeEntryView, ISelectableTreeEntryViewModel, ReactiveCommand<Unit, Unit>,
+                    Button>(ViewModel, vm => vm.EditCreateFolderCommand, v => v.CreateFolderButton)
                 .DisposeWith(disposable);
 
-            this.BindCommand<SelectableTreeEntryView, ISelectableTreeEntryViewModel, ReactiveCommand<Unit, Unit>, Button>(ViewModel, vm => vm.SaveCreatedFolderCommand, v => v.SaveCreatedFolderButton)
+            this.BindCommand<SelectableTreeEntryView, ISelectableTreeEntryViewModel, ReactiveCommand<Unit, Unit>,
+                    Button>(ViewModel, vm => vm.SaveCreatedFolderCommand, v => v.SaveCreatedFolderButton)
                 .DisposeWith(disposable);
 
-            this.BindCommand<SelectableTreeEntryView, ISelectableTreeEntryViewModel, ReactiveCommand<Unit, Unit>, Button>(ViewModel, vm => vm.CancelCreateFolderCommand, v => v.CancelCreateFolderButton)
+            this.BindCommand<SelectableTreeEntryView, ISelectableTreeEntryViewModel, ReactiveCommand<Unit, Unit>,
+                    Button>(ViewModel, vm => vm.CancelCreateFolderCommand, v => v.CancelCreateFolderButton)
                 .DisposeWith(disposable);
 
-            this.BindCommand<SelectableTreeEntryView, ISelectableTreeEntryViewModel, ReactiveCommand<Unit, Unit>, Button>(ViewModel, vm => vm.DeleteCreatedFolderCommand, v => v.DeleteCreatedFolderButton);
+            this.BindCommand<SelectableTreeEntryView, ISelectableTreeEntryViewModel, ReactiveCommand<Unit, Unit>,
+                Button>(ViewModel, vm => vm.DeleteCreatedFolderCommand, v => v.DeleteCreatedFolderButton);
 
-            this.Bind<ISelectableTreeEntryViewModel, SelectableTreeEntryView, string, string?>(ViewModel, vm => vm.InputText, v => v.CreateFolderNameTextBox.Text)
+            this.Bind<ISelectableTreeEntryViewModel, SelectableTreeEntryView, string, string?>(ViewModel,
+                    vm => vm.InputText, v => v.CreateFolderNameTextBox.Text)
                 .DisposeWith(disposable);
 
 
@@ -90,7 +96,7 @@ public partial class SelectableTreeEntryView : ReactiveUserControl<ISelectableTr
     {
         switch (ViewModel!.Status)
         {
-            case SelectableDirectoryNodeStatus.Regular:
+            case SelectableDirectoryNodeStatus.Regular or SelectableDirectoryNodeStatus.RegularFromMapping:
                 FileElementGrid.IsVisible = true;
                 FolderEntryIcon.IsVisible = true;
                 FileNameTextBlock.IsVisible = true;

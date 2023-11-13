@@ -15,12 +15,13 @@ public partial class SelectLocationView : ReactiveUserControl<ISelectLocationVie
         InitializeComponent();
         this.WhenActivated(disposables =>
         {
-            this.WhenAnyValue(view => view.ViewModel!.SuggestedEntries)
-                .BindTo<ReadOnlyObservableCollection<ISuggestedEntryViewModel>, SelectLocationView, IEnumerable>(this, view => view.SuggestedLocationItemsControl.ItemsSource)
+            this.OneWayBind(ViewModel, vm => vm.SuggestedEntries,
+                    view => view.SuggestedLocationItemsControl.ItemsSource)
                 .DisposeWith(disposables);
 
-            this.OneWayBind<ISelectLocationViewModel, SelectLocationView, ReadOnlyObservableCollection<ISelectLocationTreeViewModel>, IEnumerable?>(ViewModel, vm => vm.AllFoldersTrees,
-                view => view.AllFoldersItemsControl.ItemsSource).DisposeWith(disposables);
+            this.OneWayBind(ViewModel, vm => vm.TreeContainers,
+                    view => view.AllFoldersItemsControl.ItemsSource)
+                .DisposeWith(disposables);
         });
     }
 }

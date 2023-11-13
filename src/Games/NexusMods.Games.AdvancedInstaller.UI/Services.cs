@@ -23,7 +23,7 @@ public static class Services
             .AddView<LocationPreviewTreeView, ILocationPreviewTreeViewModel>()
             .AddView<EmptyPreviewView, IEmptyPreviewViewModel>()
             .AddView<SelectLocationView, ISelectLocationViewModel>()
-            .AddView<SelectLocationTreeView, ISelectLocationTreeViewModel>()
+            .AddView<LocationTreeContainerView, ILocationTreeContainerViewModel>()
             .AddView<SuggestedEntryView, ISuggestedEntryViewModel>()
             .AddView<AdvancedInstallerOverlayView, IAdvancedInstallerOverlayViewModel>()
             .AddView<ModContentTreeEntryView, IModContentTreeEntryViewModel>()

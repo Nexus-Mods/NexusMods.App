@@ -10,7 +10,7 @@
                                 mc:Ignorable="d" d:DesignWidth="710" d:DesignHeight="44"
                                 x:Class="NexusMods.Games.AdvancedInstaller.UI.ModContent.ModContentTreeEntryView">
     <Design.DataContext>
-        <modContent:ModContentTreeEntryDesignViewModelRoot />
+        <modContent:ModContentTreeEntryDesignViewModel />
     </Design.DataContext>
 
     <Grid ColumnDefinitions="*, Auto" Margin="0,5,0,5">

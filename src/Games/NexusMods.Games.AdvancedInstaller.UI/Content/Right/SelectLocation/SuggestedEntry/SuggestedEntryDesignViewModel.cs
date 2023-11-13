@@ -1,24 +1,19 @@
-﻿using System.Reactive;
-using ReactiveUI;
+﻿using NexusMods.Paths;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.SelectLocation;
 
-internal class SuggestedEntryDesignViewModel : AViewModel<ISuggestedEntryViewModel>,
-    ISuggestedEntryViewModel
+public class SuggestedEntryDesignViewModel : SuggestedEntryViewModel
 {
+    public SuggestedEntryDesignViewModel() : base(
+        Guid.NewGuid(),
+        CreateDesignAbsolutePath(),
+        LocationId.From("Data"),
+        new GamePath(LocationId.Game, "Data")
+        ) { }
 
-    // Needed for design time
-    public SuggestedEntryDesignViewModel()
+    private static AbsolutePath CreateDesignAbsolutePath()
     {
-        CorrespondingNode = new SelectableTreeEntryStandardDirectoryDesignViewModel();
-        Title = "Title";
-        Subtitle = "Subtitle";
-        SelectCommand = ReactiveCommand.Create(() => { });
-
+        var fs = new InMemoryFileSystem();
+        return fs.FromUnsanitizedFullPath("C:/Games/Skyrim Special Edition/Data");
     }
-
-    public string Title { get; }
-    public string Subtitle { get; }
-    public ISelectableTreeEntryViewModel CorrespondingNode { get; }
-    public ReactiveCommand<Unit, Unit> SelectCommand { get; }
 }

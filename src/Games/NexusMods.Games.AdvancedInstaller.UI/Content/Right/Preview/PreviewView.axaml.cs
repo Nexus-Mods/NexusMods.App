@@ -14,7 +14,7 @@ public partial class PreviewView : ReactiveUserControl<IPreviewViewModel>
 
         this.WhenActivated(disposables =>
         {
-            this.OneWayBind(ViewModel, vm => vm.Locations, view => view.LocationsPreviewsItemsControl.ItemsSource)
+            this.OneWayBind(ViewModel, vm => vm.TreeContainers, view => view.LocationsPreviewsItemsControl.ItemsSource)
                 .DisposeWith(disposables);
         });
     }

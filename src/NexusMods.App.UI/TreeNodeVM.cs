@@ -53,6 +53,19 @@ public class TreeNodeVM<TItem, TKey> : ReactiveObject, IActivatableViewModel
     }
 
     /// <summary>
+    /// Convenience constructor for creating Design time fake <see cref="TreeNodeVM{TItem,TKey}"/>
+    /// </summary>
+    /// <param name="item">Contained Item</param>
+    /// <param name="id">Contained Id</param>
+    public TreeNodeVM(TItem item, TKey id)
+    {
+        Item = item;
+        Id = id;
+        _children = new ReadOnlyObservableCollection<TreeNodeVM<TItem, TKey>>(
+            new ObservableCollection<TreeNodeVM<TItem, TKey>>());
+    }
+
+    /// <summary>
     /// Recursively search the tree for a node with the given Id.
     /// </summary>
     /// <param name="id">The Id of the node to find</param>
@@ -96,7 +109,7 @@ public class TreeNodeVM<TItem, TKey> : ReactiveObject, IActivatableViewModel
     }
 
     #region private
-    
+
     private void GetAllDescendentIdsRecursive(TreeNodeVM<TItem, TKey> node, List<TKey> results)
     {
         foreach (var child in node.Children)

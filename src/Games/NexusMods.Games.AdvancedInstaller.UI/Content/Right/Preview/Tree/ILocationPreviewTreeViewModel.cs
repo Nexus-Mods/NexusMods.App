@@ -1,8 +1,12 @@
-﻿namespace NexusMods.Games.AdvancedInstaller.UI.Preview;
+﻿using NexusMods.Paths;
+
+namespace NexusMods.Games.AdvancedInstaller.UI.Preview;
+
+using PreviewTreeNode = TreeNodeVM<IPreviewTreeEntryViewModel, GamePath>;
 
 public interface ILocationPreviewTreeViewModel : IViewModelInterface
 {
-    public IPreviewTreeEntryViewModel Root { get; }
+    public PreviewTreeNode Root { get; }
 
-    public HierarchicalTreeDataGridSource<IPreviewTreeEntryViewModel> Tree { get; }
+    public HierarchicalTreeDataGridSource<PreviewTreeNode> Tree { get; }
 }

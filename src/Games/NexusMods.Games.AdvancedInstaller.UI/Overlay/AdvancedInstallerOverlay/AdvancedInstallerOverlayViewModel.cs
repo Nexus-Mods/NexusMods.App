@@ -1,7 +1,6 @@
 ﻿using System.Reactive.Disposables;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.ModInstallers;
-using NexusMods.Games.AdvancedInstaller.UI.Content;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Bottom;
 using NexusMods.Paths;
 using NexusMods.Paths.FileTree;
@@ -17,7 +16,7 @@ public class AdvancedInstallerOverlayViewModel : AViewModel<IAdvancedInstallerOv
         FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
         GameLocationsRegister register, string gameName = "")
     {
-        BodyViewModel = new BodyViewModel(modName, archiveFiles, register, gameName);
+        BodyViewModel = new BodyViewModel(new DeploymentData(), modName, archiveFiles, register, null);
         FooterViewModel = new FooterViewModel();
         WasCancelled = false;
 

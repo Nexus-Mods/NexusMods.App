@@ -1,37 +1,141 @@
 ﻿using System.Collections.ObjectModel;
+using DynamicData;
+using DynamicData.Binding;
 using NexusMods.App.UI.Extensions;
 using NexusMods.DataModel.Games;
+using NexusMods.DataModel.Loadouts;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.SelectLocation;
 
-internal class SelectLocationViewModel : AViewModel<ISelectLocationViewModel>,
+public class SelectLocationViewModel : AViewModel<ISelectLocationViewModel>,
     ISelectLocationViewModel
 {
     public ReadOnlyObservableCollection<ISuggestedEntryViewModel> SuggestedEntries { get; }
-    public ReadOnlyObservableCollection<ISelectLocationTreeViewModel> AllFoldersTrees { get; }
 
-    public SelectLocationViewModel(GameLocationsRegister register,
-        IAdvancedInstallerCoordinator directorySelectedObserver,
-        string gameName = "")
+    public ReadOnlyObservableCollection<TreeNodeVM<ISelectableTreeEntryViewModel, GamePath>> TreeRoots =>
+        _treeRoots;
+    private readonly ReadOnlyObservableCollection<TreeNodeVM<ISelectableTreeEntryViewModel, GamePath>> _treeRoots;
+    public SourceCache<ISelectableTreeEntryViewModel, GamePath> TreeEntriesCache { get; } =
+        new(entry => entry.GamePath);
+
+    public ReadOnlyObservableCollection<ILocationTreeContainerViewModel> TreeContainers => _treeContainers;
+    private readonly ReadOnlyObservableCollection<ILocationTreeContainerViewModel> _treeContainers;
+
+
+    public SelectLocationViewModel(GameLocationsRegister register, Loadout? loadout)
     {
-        List<ISelectLocationTreeViewModel> treeList = new();
-        ObservableCollection<ISuggestedEntryViewModel> suggestedEntries = new();
+        SuggestedEntries = CreateSuggestedEntries(register).ToReadOnlyObservableCollection();
 
-        // We add the 'game name' if we show the game folder, otherwise we use name of LocationId.
-        foreach (var location in register.GetTopLevelLocations())
+        TreeEntriesCache.AddOrUpdate(CreateTreeEntries(register, loadout));
+        TreeEntriesCache.Connect()
+            .TransformToTree(item => item.Parent)
+            .Transform(node => new TreeNodeVM<ISelectableTreeEntryViewModel, GamePath>(node))
+            .Bind(out _treeRoots)
+            .Subscribe();
+
+        _treeRoots.ToObservableChangeSet()
+            .Transform(treeNode => (ILocationTreeContainerViewModel) new LocationTreeContainerViewModel(treeNode))
+            .Bind(out _treeContainers)
+            .Subscribe();
+    }
+
+
+    /// <summary>
+    /// Generates the SuggestedEntries using LocationIds that the game provides.
+    /// </summary>
+    /// <param name="register"></param>
+    /// <returns></returns>
+    private static IEnumerable<ISuggestedEntryViewModel> CreateSuggestedEntries(GameLocationsRegister register)
+    {
+        List<ISuggestedEntryViewModel> suggestedEntries = new();
+
+        // Add all the top level game locations to suggested entries.
+        foreach (var (locationId, fullPath) in register.GetTopLevelLocations())
         {
-            var treeVM = new SelectLocationTreeViewModel(location.Value, location.Key,
-                location.Key == LocationId.Game ? gameName : null, directorySelectedObserver);
-            treeList.Add(treeVM);
+            suggestedEntries.Add(new SuggestedEntryViewModel(
+                Guid.NewGuid(),
+                fullPath,
+                locationId,
+                new GamePath(locationId, RelativePath.Empty)));
 
-            // Add top level locations to suggested entries.
-            // TODO: Add nested locations to suggested entries.
-            // Warning! Each Suggested entry needs to be mapped to a tree item, which will require adding nested locations to the tree.
-            suggestedEntries.Add(new SuggestedEntryViewModel(register, location.Key, null, directorySelectedObserver, treeVM.Root));
+            // Add nested locations to suggested entries.
+            foreach (var nestedLocation in register.GetNestedLocations(locationId))
+            {
+                var nestedFullPath = register.GetResolvedPath(nestedLocation);
+                var relativePath = nestedFullPath.RelativeTo(fullPath);
+                suggestedEntries.Add(new SuggestedEntryViewModel(
+                    Guid.NewGuid(),
+                    nestedFullPath,
+                    nestedLocation,
+                    new GamePath(locationId, relativePath)));
+            }
         }
 
-        SuggestedEntries = suggestedEntries.ToReadOnlyObservableCollection();
-        AllFoldersTrees = treeList.ToReadOnlyObservableCollection();
+        return suggestedEntries;
+    }
+
+    private static IEnumerable<ISelectableTreeEntryViewModel> CreateTreeEntries(GameLocationsRegister register,
+        Loadout? loadout)
+    {
+        // Initial population of the tree based on LocationIds
+        List<ISelectableTreeEntryViewModel> treeEntries = new();
+
+        foreach (var (locationId, fullPath) in register.GetTopLevelLocations())
+        {
+            var treeEntry = new SelectableTreeEntryViewModel(
+                new GamePath(locationId, RelativePath.Empty),
+                SelectableDirectoryNodeStatus.Regular);
+
+            treeEntries.Add(treeEntry);
+
+            // Add nested
+            foreach (var nestedLocation in register.GetNestedLocations(locationId))
+            {
+                var nestedFullPath = register.GetResolvedPath(nestedLocation);
+                var relativePath = nestedFullPath.RelativeTo(fullPath);
+                var relativeGamePath = new GamePath(locationId, relativePath);
+                // Add all nodes from root to nested location.
+                treeEntries.AddRange(CreateMissingEntriesForGamePath(treeEntries.ToArray(), relativeGamePath, false));
+            }
+        }
+
+        if (loadout != null)
+        {
+            // TODO: Potentially add entries to the tree to represent all the folders found in the loadout.
+        }
+
+        return treeEntries;
+    }
+
+    /// <summary>
+    /// Returns a collection of <see cref="ISelectableTreeEntryViewModel" /> that are missing from the passed flat list of entries.
+    /// </summary>
+    /// <param name="currentEntries">The collection of existing entries to check against</param>
+    /// <param name="gamePath">A GamePath relative to a top level location.</param>
+    /// <param name="fromMapping">If the newly created elements are transient</param>
+    /// <returns></returns>
+    private static IEnumerable<ISelectableTreeEntryViewModel> CreateMissingEntriesForGamePath(
+        ISelectableTreeEntryViewModel[] currentEntries, GamePath gamePath, bool fromMapping)
+    {
+        List<ISelectableTreeEntryViewModel> treeEntries = new();
+        foreach (var subPath in gamePath.GetAllParents())
+        {
+            var existingEntry = currentEntries.FirstOrDefault(x => x.GamePath == subPath);
+            if (existingEntry != null)
+            {
+                // If the entry already exists, we don't need to add it again.
+                // We assume all parents also already exist.
+                break;
+            }
+
+            var status = fromMapping
+                ? SelectableDirectoryNodeStatus.RegularFromMapping
+                : SelectableDirectoryNodeStatus.Regular;
+
+            treeEntries.Add(new SelectableTreeEntryViewModel(subPath, status));
+        }
+
+        return treeEntries;
     }
 }

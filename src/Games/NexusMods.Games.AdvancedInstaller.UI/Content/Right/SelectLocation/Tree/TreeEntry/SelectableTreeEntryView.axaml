@@ -12,7 +12,7 @@
 
     <Design.DataContext>
         <!-- Pick one -->
-        <selectLocation:SelectableTreeEntryStandardDirectoryDesignViewModel />
+        <selectLocation:SelectableTreeEntryDesignViewModel/>
         <!-- <selectableDirectoryEntry:TreeEntryCreatingDirectoryDesignViewModel /> -->
     </Design.DataContext>
 

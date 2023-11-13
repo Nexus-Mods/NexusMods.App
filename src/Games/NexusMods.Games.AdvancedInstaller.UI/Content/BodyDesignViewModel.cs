@@ -1,27 +1,57 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using NexusMods.Games.AdvancedInstaller.UI.EmptyPreview;
-using NexusMods.Games.AdvancedInstaller.UI.ModContent;
-using NexusMods.Games.AdvancedInstaller.UI.Preview;
-using NexusMods.Games.AdvancedInstaller.UI.SelectLocation;
-using ReactiveUI.Fody.Helpers;
+﻿using NexusMods.DataModel.Games;
+using NexusMods.DataModel.ModInstallers;
+using NexusMods.Hashing.xxHash64;
+using NexusMods.Paths;
+using NexusMods.Paths.FileTree;
 
 namespace NexusMods.Games.AdvancedInstaller.UI;
 
-[ExcludeFromCodeCoverage]
-// ReSharper disable once UnusedType.Global
-internal class BodyDesignViewModel : AViewModel<IBodyViewModel>,
-    IBodyViewModel
+public class BodyDesignViewModel : BodyViewModel
 {
-    public string ModName { get; set; } = "Design Mod Name";
-    public IModContentViewModel ModContentViewModel { get; } = new ModContentDesignViewModel();
-    public IPreviewViewModel PreviewViewModel { get; } = new PreviewDesignViewModel();
+    public BodyDesignViewModel() : base(
+        new DeploymentData(),
+        "Design Mod Name",
+        CreateDesignFileTree(),
+        CreateDesignGameLocationsRegister(),
+        null) { }
 
-    public IEmptyPreviewViewModel EmptyPreviewViewModel { get; } =
-        new EmptyPreviewDesignViewModel();
+    internal static GameLocationsRegister CreateDesignGameLocationsRegister()
+    {
+        var fs = new InMemoryFileSystem();
+        var locations = new Dictionary<LocationId, AbsolutePath>()
+        {
+            { LocationId.Game, fs.FromUnsanitizedFullPath("C:/Games/Skyrim Special Edition") },
+            { LocationId.AppData, fs.FromUnsanitizedFullPath("C:/Users/Me/AppData/Local/Skyrim Special Edition") },
+            { LocationId.From("Data"), fs.FromUnsanitizedFullPath("C:/Games/Skyrim Special Edition/Data") },
+        };
 
-    public ISelectLocationViewModel SelectLocationViewModel { get; } = new SelectLocationDesignViewModel();
-    [Reactive] public bool CanInstall { get; set; } = false;
+        var register = new GameLocationsRegister(locations);
+        return register;
+    }
 
-    public IViewModelInterface CurrentPreviewViewModel => PreviewViewModel;
-    public DeploymentData Data { get; } = new();
+    internal static FileTreeNode<RelativePath, ModSourceFileEntry> CreateDesignFileTree()
+    {
+        var mockModSourceFileEntry = new ModSourceFileEntry
+        {
+            StreamFactory = null!,
+            Hash = Hash.FromLong(0),
+            Size = Size.FromLong(0),
+        };
+
+        var fileEntries = new Dictionary<RelativePath, ModSourceFileEntry>
+        {
+            { new RelativePath("BWS.bsa"), mockModSourceFileEntry },
+            { new RelativePath("BWS - Textures.bsa"), mockModSourceFileEntry },
+            { new RelativePath("Readme-BWS.txt"), mockModSourceFileEntry },
+            { new RelativePath("Textures/greenBlade.dds"), mockModSourceFileEntry },
+            { new RelativePath("Textures/greenBlade_n.dds"), mockModSourceFileEntry },
+            { new RelativePath("Textures/greenHilt.dds"), mockModSourceFileEntry },
+            { new RelativePath("Textures/Armors/greenArmor.dds"), mockModSourceFileEntry },
+            { new RelativePath("Textures/Armors/greenBlade.dds"), mockModSourceFileEntry },
+            { new RelativePath("Textures/Armors/greenHilt.dds"), mockModSourceFileEntry },
+            { new RelativePath("Meshes/greenBlade.nif"), mockModSourceFileEntry }
+        };
+
+        return FileTreeNode<RelativePath, ModSourceFileEntry>.CreateTree(fileEntries);
+    }
 }

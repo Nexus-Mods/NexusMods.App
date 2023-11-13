@@ -15,13 +15,16 @@ public partial class SuggestedEntryView : ReactiveUserControl<ISuggestedEntryVie
 
         this.WhenActivated(disposables =>
         {
-            this.OneWayBind<ISuggestedEntryViewModel, SuggestedEntryView, string, string?>(ViewModel, vm => vm.Title, v => v.LocationName.Text)
+            this.OneWayBind<ISuggestedEntryViewModel, SuggestedEntryView, string, string?>(ViewModel, vm => vm.Title,
+                    v => v.LocationName.Text)
                 .DisposeWith(disposables);
 
-            this.OneWayBind<ISuggestedEntryViewModel, SuggestedEntryView, string, string?>(ViewModel, vm => vm.Subtitle, v => v.LocationSubHeading.Text)
+            this.OneWayBind<ISuggestedEntryViewModel, SuggestedEntryView, string, string?>(ViewModel, vm => vm.Subtitle,
+                    v => v.LocationSubHeading.Text)
                 .DisposeWith(disposables);
 
-            this.BindCommand<SuggestedEntryView, ISuggestedEntryViewModel, ReactiveCommand<Unit, Unit>, Button>(ViewModel, vm => vm.SelectCommand, v => v.SelectRoundedButton)
+            this.BindCommand<SuggestedEntryView, ISuggestedEntryViewModel, ReactiveCommand<Unit, Unit>, Button>(
+                    ViewModel, vm => vm.CreateMappingCommand, v => v.SelectRoundedButton)
                 .DisposeWith(disposables);
         });
     }

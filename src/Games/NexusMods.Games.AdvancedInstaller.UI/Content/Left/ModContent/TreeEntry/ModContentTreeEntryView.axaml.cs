@@ -29,10 +29,10 @@ public partial class
             this.BindCommand(ViewModel, vm => vm.CancelSelectCommand, view => view.IncludeTransitionButton)
                 .DisposeWith(d);
 
-            this.BindCommand(ViewModel, vm => vm.UnlinkCommand, view => view.RemoveFromLocationButton)
+            this.BindCommand(ViewModel, vm => vm.RemoveMappingCommand, view => view.RemoveFromLocationButton)
                 .DisposeWith(d);
 
-            this.BindCommand(ViewModel, vm => vm.UnlinkCommand, view => view.IncludedRemoveButton)
+            this.BindCommand(ViewModel, vm => vm.RemoveMappingCommand, view => view.IncludedRemoveButton)
                 .DisposeWith(d);
 
             InitView();
@@ -77,15 +77,15 @@ public partial class
         ClearAllButtons();
         switch (status)
         {
-            case ModContentNodeStatus.Default:
+            case ModContentTreeEntryStatus.Default:
                 InstallRoundedButton.IsVisible = true;
                 break;
 
-            case ModContentNodeStatus.Selecting:
+            case ModContentTreeEntryStatus.Selecting:
                 SelectLocationRoundedButton.IsVisible = true;
                 break;
 
-            case ModContentNodeStatus.SelectingViaParent:
+            case ModContentTreeEntryStatus.SelectingViaParent:
                 if (ViewModel.IsDirectory)
                 {
                     IncludeTransitionButtonTextBlock.Text =
@@ -93,7 +93,7 @@ public partial class
                 }
                 else
                 {
-                    IncludeTransitionButtonTextBlock.Text = ViewModel.IsTopLevel
+                    IncludeTransitionButtonTextBlock.Text = ViewModel.IsTopLevelChild
                         ? Language.TreeEntryView_IncludeTransitionButtonTextBlock_Include
                         : Language.TreeEntryView_IncludeTransitionButtonTextBlock_Include_with_folder;
                 }
@@ -101,12 +101,12 @@ public partial class
                 IncludeTransitionButton.IsVisible = true;
                 break;
 
-            case ModContentNodeStatus.IncludedExplicit:
-                RemoveFromLocationButtonTextBlock.Text = ViewModel.LinkedDirectoryName;
+            case ModContentTreeEntryStatus.IncludedExplicit:
+                RemoveFromLocationButtonTextBlock.Text = ViewModel.MappingFolderName;
                 RemoveFromLocationButton.IsVisible = true;
                 break;
 
-            case ModContentNodeStatus.IncludedViaParent:
+            case ModContentTreeEntryStatus.IncludedViaParent:
                 if (ViewModel.IsDirectory)
                 {
                     IncludedRemoveButtonTextBlock.Text =
@@ -114,7 +114,7 @@ public partial class
                 }
                 else
                 {
-                    IncludedRemoveButtonTextBlock.Text = ViewModel.IsTopLevel
+                    IncludedRemoveButtonTextBlock.Text = ViewModel.IsTopLevelChild
                         ? Language.TreeEntryView_IncludedRemoveButtonTextBlock_Included
                         : Language.TreeEntryView_IncludedRemoveButtonTextBlock_Included_with_folder;
                 }

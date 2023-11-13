@@ -1,22 +1,30 @@
 ﻿using System.Collections.ObjectModel;
 using DynamicData;
+using DynamicData.Binding;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Preview;
 
 internal class PreviewViewModel : AViewModel<IPreviewViewModel>, IPreviewViewModel
 {
-    public SourceCache<ILocationPreviewTreeViewModel, LocationId> LocationsCache { get; } =
-        new(x => x.Root.FullPath.LocationId);
+    public SourceCache<IPreviewTreeEntryViewModel, GamePath> TreeEntriesCache { get; } = new(entry => entry.GamePath);
+    public ReadOnlyObservableCollection<TreeNodeVM<IPreviewTreeEntryViewModel, GamePath>> TreeRoots => _treeRoots;
+    private readonly ReadOnlyObservableCollection<TreeNodeVM<IPreviewTreeEntryViewModel, GamePath>> _treeRoots;
 
-    private readonly ReadOnlyObservableCollection<ILocationPreviewTreeViewModel> _locations;
-    public ReadOnlyObservableCollection<ILocationPreviewTreeViewModel> Locations => _locations;
+    private readonly ReadOnlyObservableCollection<ILocationPreviewTreeViewModel> _containers;
+    public ReadOnlyObservableCollection<ILocationPreviewTreeViewModel> TreeContainers => _containers;
 
     public PreviewViewModel()
     {
-        LocationsCache.Connect()
-            .Bind(out _locations)
-            .DisposeMany()
+        TreeEntriesCache.Connect()
+            .TransformToTree(item => item.Parent)
+            .Transform(node => new TreeNodeVM<IPreviewTreeEntryViewModel, GamePath>(node))
+            .Bind(out _treeRoots)
+            .Subscribe();
+
+        _treeRoots.ToObservableChangeSet()
+            .Transform(treeNode => (ILocationPreviewTreeViewModel)new LocationPreviewTreeViewModel(treeNode))
+            .Bind(out _containers)
             .Subscribe();
     }
 }

@@ -1,130 +1,79 @@
-using System.Reactive;
-using NexusMods.Games.AdvancedInstaller.UI.Preview;
+﻿using System.Reactive;
 using NexusMods.Paths;
-using NexusMods.Paths.FileTree;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.ModContent;
 
-/// <summary>
-///     Represents an individual node in the 'Mod Content' section.
-///     A node can represent any file or directory within the mod being unpacked during advanced install.
-/// </summary>
-/// <remarks>
-///     Using this at runtime isn't exactly ideal given how many items there may be, but given everything is virtualized,
-///     things should hopefully be a-ok!
-/// </remarks>
-public interface IModContentTreeEntryViewModel : IViewModelInterface, IUnlinkableItem
+public interface IModContentTreeEntryViewModel : IViewModelInterface
 {
-    /// <summary>
-    ///     Status of the node in question.
-    /// </summary>
-    public ModContentNodeStatus Status { get; }
+    public RelativePath RelativePath { get; }
 
-    /// <summary>
-    ///     True if this is an element child of the root node.
-    /// </summary>
-    /// <remarks>
-    ///     This is useful for the UI, e.g. to determine "Included" vs "Included with folder" text.
-    /// </remarks>
-    bool IsTopLevel { get; }
+    public string FileName { get; }
 
-    /// <summary>
-    ///     The name of this specific file in the tree.
-    /// </summary>
-    string FileName { get; }
+    public bool IsDirectory { get; }
 
-    /// <summary>
-    ///     The name of the directory where the this entry was explicitly added to.
-    /// </summary>
-    string LinkedDirectoryName { get; }
+    public string DisplayName { get; }
 
-    /// <summary>
-    ///     The full relative path of this file in the tree.
-    /// </summary>
-    RelativePath FullPath { get; }
+    public bool IsRoot { get; }
 
-    /// <summary>
-    ///     Name of the linked target which was created with <see cref="Link"/>.
-    /// </summary>
-    /// <remarks>
-    ///     This is used such that we can unlink the entry on the left hand side.
-    /// </remarks>
-    IModContentBindingTarget? LinkedTarget { get; }
+    public RelativePath Parent { get; }
 
-    /// <summary>
-    ///     Contains the children nodes of this node.
-    /// </summary>
-    /// <remarks>
-    ///     (Sewer) I got some notes to make here.
-    ///
-    ///     1. Lazy loading of this item should be investigated, in the case that the user has not yet expanded all
-    ///        items yet.
-    ///
-    ///
-    ///        When you map a folder, the state of all the children (recursively) must be updated;
-    ///        meaning that the items (recursively) need to be loaded. Therefore, opportunities for lazy loading
-    ///        are minimal.
-    ///
-    ///     2. The input collection from which the tree is constructed is immutable.
-    ///
-    ///        Mods cannot dynamically add files in the middle of the Advanced Installer
-    ///        installation process. There is no need to use an observable collection here,
-    ///        as that would just be unnecessary memory overhead.
-    ///
-    ///     Based on the above points, and given that the children count is already known in
-    ///     <see cref="FileTreeNode{TPath,TValue}" />; an array is used, as it's the lowest
-    ///     overhead collection available for the job.
-    /// </remarks>
-    IModContentTreeEntryViewModel[] Children { get; }
+    public bool IsTopLevelChild { get; }
 
-    /// <summary>
-    ///     True if this is the root node.
-    /// </summary>
-    bool IsRoot { get; }
+    public GamePath? MappingFolderTarget { get; set; }
 
-    /// <summary>
-    ///     True if this is a directory, in which case all files from child of this will be mapped to given
-    ///     target folder.
-    /// </summary>
-    bool IsDirectory { get; }
+    public string MappingFolderName { get; }
 
-    /// <summary>
-    ///     Binds the current node/source to the given target.
-    /// </summary>
-    /// <param name="data">The structure keeping track of deployment data.</param>
-    /// <param name="target">
-    ///     The target (directory) to receive the binding.
-    ///     This is usually <see cref="PreviewTreeEntryViewModel"/>, care must be taken to ensure the target path matches the
-    ///     correct path. To do this, search for the <see cref="FullPath"/> in root node/directory of <see cref="IModContentBindingTarget"/>.
-    /// </param>
-    /// <param name="targetAlreadyExisted">
-    ///     Set this to true to indicate that this target has already existed.
-    ///     i.e. The target is a non-user created folder.
-    /// </param>
-    void Link(DeploymentData data, IModContentBindingTarget target, bool targetAlreadyExisted);
+    public GamePath? Mapping { get; set; }
 
-    /// <summary>
-    ///     The action executed when the user clicks 'Install' button.
-    /// </summary>
-    ReactiveCommand<Unit, Unit> BeginSelectCommand { get; }
+    public ModContentTreeEntryStatus Status { get; set; }
 
-    /// <summary>
-    ///     The action executed when the user clicks the `Cancel` button after clicking the 'Install' button.
-    /// </summary>
+    public ReactiveCommand<Unit, Unit> BeginSelectCommand { get; }
+
     ReactiveCommand<Unit, Unit> CancelSelectCommand { get; }
 
+    ReactiveCommand<Unit, Unit> RemoveMappingCommand { get; }
+}
+
+/// <summary>
+///     Represents the current status of the <see cref="IModContentTreeEntryViewModel" />.
+/// </summary>
+public enum ModContentTreeEntryStatus : byte
+{
     /// <summary>
-    ///     Removes itself and all of its children recursively from the deployment data.
-    ///     This is executed when the user hits 'Remove' button from the left hand side.
+    ///     Item is not selected, and available for selection.
     /// </summary>
-    ReactiveCommand<Unit, Unit> UnlinkCommand { get; }
+    Default,
 
     /// <summary>
-    ///     The item with which this item is linked to.
-    ///     If null, it's not been explicitly linked.
+    ///     The item target is currently being selected/mapped.
+    ///     This is used by the item which is currently being mapped into an install location.
     /// </summary>
-    IUnlinkableItem? LinkedItem { get; }
+    Selecting,
 
+    /// <summary>
+    ///     A parent of this item (folder) is currently being selected/mapped.
+    /// </summary>
+    /// <remarks>
+    ///     When this state is active, the UI shows 'include' for files, and 'include folder' for folders.
+    /// </remarks>
+    SelectingViaParent,
+
+    /// <summary>
+    ///     Item is included, with explicit target location.
+    /// </summary>
+    /// <remarks>
+    ///     When this state is active, the UI usually shows the name of the linked folder in the associated button.
+    /// </remarks>
+    IncludedExplicit,
+
+    /// <summary>
+    ///     Item id included, because a parent (folder) of the item is included.
+    ///     When the parent is unlinked, this node is also unlinked.
+    /// </summary>
+    /// <remarks>
+    ///     This is used to indicate a parent of this item which which is a directory has status
+    ///     <see cref="IncludedExplicit" />.
+    /// </remarks>
+    IncludedViaParent
 }

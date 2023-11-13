@@ -12,7 +12,7 @@
         <modContent:ModContentDesignViewModel />
     </Design.DataContext>
 
-    <Grid RowDefinitions="Auto, *">
+    <Grid RowDefinitions="Auto, *" x:Name="TopLevelGrid">
         <Grid.Styles>
             <Style Selector="Border.HeaderAreaBorder">
                 <Setter Property="BorderThickness" Value="0, 0, 0, 1" />
