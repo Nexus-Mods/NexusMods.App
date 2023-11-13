@@ -71,6 +71,11 @@ public class SelectableTreeEntryViewModel : AViewModel<ISelectableTreeEntryViewM
         });
     }
 
+    public RelativePath GetSanitizedInput()
+    {
+        return RelativePath.FromUnsanitizedInput(RemoveInvalidFolderCharacter(InputText));
+    }
+
     private static readonly string InvalidFolderCharsRegex =
         "[" + String.Concat(System.IO.Path.GetInvalidFileNameChars().Concat(new[] { '\\', '/' })) + "]";
 

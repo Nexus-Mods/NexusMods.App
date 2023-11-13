@@ -63,6 +63,30 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
                 .MergeManyItems(entry => entry.CancelSelectCommand)
                 .Subscribe(entry => OnCancelSelect(entry.Item))
                 .DisposeWith(disposables);
+
+            // Handle starting to create a new folder
+            SelectLocationViewModel.TreeEntriesCache.Connect()
+                .MergeManyItems(entry => entry.EditCreateFolderCommand)
+                .Subscribe(entry => OnEditCreateFolder(entry.Item))
+                .DisposeWith(disposables);
+
+            // Handle Canceling the creation of a new folder
+            SelectLocationViewModel.TreeEntriesCache.Connect()
+                .MergeManyItems(entry => entry.CancelCreateFolderCommand)
+                .Subscribe(entry => OnCancelCreateFolder(entry.Item))
+                .DisposeWith(disposables);
+
+            // Handle Saving the creation of a new folder
+            SelectLocationViewModel.TreeEntriesCache.Connect()
+                .MergeManyItems(entry => entry.SaveCreatedFolderCommand)
+                .Subscribe(entry => OnSaveCreateFolder(entry.Item))
+                .DisposeWith(disposables);
+
+            // Handle Deleting the creation of a new folder
+            SelectLocationViewModel.TreeEntriesCache.Connect()
+                .MergeManyItems(entry => entry.DeleteCreatedFolderCommand)
+                .Subscribe(entry => OnDeleteCreatedFolder(entry.Item))
+                .DisposeWith(disposables);
         });
     }
 
@@ -135,4 +159,79 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
                 ? PreviewViewModel
                 : EmptyPreviewViewModel;
     }
+
+    #region CreateFolderFunctionality
+
+    private void OnEditCreateFolder(ISelectableTreeEntryViewModel selectableTreeEntryViewModel)
+    {
+        var foundNode = SelectLocationViewModel.TreeRoots
+            .FirstOrDefault(root => root.Item.GamePath.LocationId == selectableTreeEntryViewModel.GamePath.LocationId)
+            ?.FindNode(selectableTreeEntryViewModel.GamePath);
+        if (foundNode is null)
+            return;
+
+        foundNode.Item.InputText = string.Empty;
+
+        // Set the status of the parent node to Edit
+        foundNode.Item.Status = SelectableDirectoryNodeStatus.Editing;
+
+        // TODO: Disable all other buttons while editing
+    }
+
+    private void OnCancelCreateFolder(ISelectableTreeEntryViewModel selectableTreeEntryViewModel)
+    {
+        var foundNode = SelectLocationViewModel.TreeRoots
+            .FirstOrDefault(root => root.Item.GamePath.LocationId == selectableTreeEntryViewModel.GamePath.LocationId)
+            ?.FindNode(selectableTreeEntryViewModel.GamePath);
+        if (foundNode is null)
+            return;
+
+        // Reset the status to Create
+        foundNode.Item.Status = SelectableDirectoryNodeStatus.Create;
+        foundNode.Item.InputText = string.Empty;
+    }
+
+    private void OnSaveCreateFolder(ISelectableTreeEntryViewModel selectableTreeEntryViewModel)
+    {
+        var foundNode = SelectLocationViewModel.TreeRoots
+            .FirstOrDefault(root => root.Item.GamePath.LocationId == selectableTreeEntryViewModel.GamePath.LocationId)
+            ?.FindNode(selectableTreeEntryViewModel.GamePath);
+        if (foundNode is null)
+            return;
+
+        var folderName = foundNode.Item.GetSanitizedInput();
+        if (folderName == RelativePath.Empty)
+            return;
+
+        // Create a new child node in the parent with the given name.
+        var newNode = new SelectableTreeEntryViewModel(
+            new GamePath(foundNode.Item.GamePath.LocationId, foundNode.Item.GamePath.Parent.Path.Join(folderName)),
+            SelectableDirectoryNodeStatus.Created);
+
+        // Add a new CreateFolder node under it.
+        var newNestedCreateFolder = new SelectableTreeEntryViewModel(
+            new GamePath(newNode.GamePath.LocationId, newNode.GamePath.Path.Join("*CreateFolder*")),
+            SelectableDirectoryNodeStatus.Create);
+
+        // Add the nodes to the tree cache
+        SelectLocationViewModel.TreeEntriesCache.AddOrUpdate(new[] { newNode, newNestedCreateFolder });
+
+        // Reset this to Create state.
+        foundNode.Item.Status = SelectableDirectoryNodeStatus.Create;
+        foundNode.Item.InputText = string.Empty;
+    }
+
+    private void OnDeleteCreatedFolder(ISelectableTreeEntryViewModel selectableTreeEntryViewModel)
+    {
+        var foundNode = SelectLocationViewModel.TreeRoots
+            .FirstOrDefault(root => root.Item.GamePath.LocationId == selectableTreeEntryViewModel.GamePath.LocationId)
+            ?.FindNode(selectableTreeEntryViewModel.GamePath);
+        if (foundNode is null) return;
+
+        // Remove the node and all children from the cache
+        var idsToRemove = foundNode.GetAllDescendentIds().Append(foundNode.Item.GamePath);
+        SelectLocationViewModel.TreeEntriesCache.Remove(idsToRemove);
+    }
+
+    #endregion CreateFolderFunctionality
 }

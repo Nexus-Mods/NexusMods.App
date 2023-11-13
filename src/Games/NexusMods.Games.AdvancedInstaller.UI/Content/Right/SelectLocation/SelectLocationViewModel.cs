@@ -27,7 +27,15 @@ public class SelectLocationViewModel : AViewModel<ISelectLocationViewModel>,
     {
         SuggestedEntries = CreateSuggestedEntries(register).ToReadOnlyObservableCollection();
 
-        TreeEntriesCache.AddOrUpdate(CreateTreeEntries(register, loadout));
+        var treeEntries = CreateTreeEntries(register, loadout);
+        // For each entry, create a CreateFolder entry.
+        var createFolderEntries = treeEntries.Select(existingNode => new SelectableTreeEntryViewModel(
+            new GamePath(existingNode.GamePath.LocationId, existingNode.GamePath.Path.Join("*CreateFolder*")),
+            SelectableDirectoryNodeStatus.Create));
+
+
+        TreeEntriesCache.AddOrUpdate(treeEntries);
+        TreeEntriesCache.AddOrUpdate(createFolderEntries);
         TreeEntriesCache.Connect()
             .TransformToTree(item => item.Parent)
             .Transform(node => new TreeNodeVM<ISelectableTreeEntryViewModel, GamePath>(node))
@@ -75,7 +83,7 @@ public class SelectLocationViewModel : AViewModel<ISelectLocationViewModel>,
         return suggestedEntries;
     }
 
-    private static IEnumerable<ISelectableTreeEntryViewModel> CreateTreeEntries(GameLocationsRegister register,
+    private static List<ISelectableTreeEntryViewModel> CreateTreeEntries(GameLocationsRegister register,
         Loadout? loadout)
     {
         // Initial population of the tree based on LocationIds

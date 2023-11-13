@@ -32,6 +32,8 @@ public interface ISelectableTreeEntryViewModel : IViewModelInterface
     public ReactiveCommand<Unit, Unit> CancelCreateFolderCommand { get; }
 
     public ReactiveCommand<Unit, Unit> DeleteCreatedFolderCommand { get; }
+
+    public RelativePath GetSanitizedInput();
 }
 
 /// <summary>

@@ -67,13 +67,16 @@ public partial class SelectableTreeEntryView : ReactiveUserControl<ISelectableTr
                 FileElementGrid.IsVisible = true;
                 FolderEntryIcon.IsVisible = true;
 
-                // input field
-                CreateFolderNameTextBox.IsVisible = true;
-
                 // buttons
                 CancelCreateFolderButton.IsVisible = true;
                 SaveCreatedFolderButton.IsVisible = true;
+                SaveCreatedFolderButton.IsDefault = true;
+
+                // input field
+                CreateFolderNameTextBox.IsVisible = true;
+                CreateFolderNameTextBox.Focus();
                 break;
+
             case SelectableDirectoryNodeStatus.Create:
                 // Remove Editing state stuff
                 FileElementGrid.IsVisible = false;
@@ -85,6 +88,7 @@ public partial class SelectableTreeEntryView : ReactiveUserControl<ISelectableTr
                 // buttons
                 CancelCreateFolderButton.IsVisible = false;
                 SaveCreatedFolderButton.IsVisible = false;
+                SaveCreatedFolderButton.IsDefault = false;
 
                 // Add Create stuff
                 CreateFolderButton.IsVisible = true;
