@@ -16,7 +16,12 @@ public record LoadoutGridContext : IPageFactoryContext
 [UsedImplicitly]
 public class LoadoutGridPageFactory : APageFactory<ILoadoutGridViewModel, LoadoutGridContext>
 {
-    public LoadoutGridPageFactory(IServiceProvider serviceProvider) : base(serviceProvider) { }
+    private readonly LoadoutRegistry _loadoutRegistry;
+    public LoadoutGridPageFactory(IServiceProvider serviceProvider) : base(serviceProvider)
+    {
+        _loadoutRegistry = serviceProvider.GetRequiredService<LoadoutRegistry>();
+    }
+
     public override PageFactoryId Id => PageFactoryId.From(Guid.Parse("c6221ce6-cf12-49bf-b32c-8138ef701cc5"));
 
     public override ILoadoutGridViewModel CreateViewModel(LoadoutGridContext context)
@@ -24,5 +29,25 @@ public class LoadoutGridPageFactory : APageFactory<ILoadoutGridViewModel, Loadou
         var vm = ServiceProvider.GetRequiredService<ILoadoutGridViewModel>();
         vm.LoadoutId = context.LoadoutId;
         return vm;
+    }
+
+    public override IEnumerable<PageDiscoveryDetails?> GetDiscoveryDetails()
+    {
+        return _loadoutRegistry
+            .AllLoadouts()
+            .Select(loadout => new PageDiscoveryDetails
+            {
+                // TODO: translations?
+                SectionName = "Collections",
+                ItemName = $"Loadout {loadout.Name}",
+                PageData = new PageData
+                {
+                    FactoryId = Id,
+                    Context = new LoadoutGridContext
+                    {
+                        LoadoutId = loadout.LoadoutId
+                    }
+                }
+            });
     }
 }

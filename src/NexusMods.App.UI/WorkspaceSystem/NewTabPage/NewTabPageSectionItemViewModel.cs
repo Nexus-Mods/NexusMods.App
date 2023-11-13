@@ -1,4 +1,6 @@
+using System.Reactive;
 using Avalonia.Media;
+using ReactiveUI;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
@@ -8,9 +10,17 @@ public class NewTabPageSectionItemViewModel : AViewModel<INewTabPageSectionItemV
 
     public IImage? Icon { get; }
 
-    public NewTabPageSectionItemViewModel(string name, IImage? icon)
+    public ReactiveCommand<Unit, PageData> SelectItemCommand { get; }
+
+    public NewTabPageSectionItemViewModel(PageDiscoveryDetails details)
     {
-        Name = name;
-        Icon = icon;
+        Name = details.ItemName;
+        Icon = null;
+
+        SelectItemCommand = ReactiveCommand.Create(() =>
+        {
+            Console.WriteLine("item view model");
+            return details.PageData;
+        });
     }
 }

@@ -19,16 +19,33 @@ public record DummyPageContext : IPageFactoryContext
 }
 
 [UsedImplicitly]
-public class DummyPageFactory : IPageFactory<DummyViewModel, DummyPageContext>
+public class DummyPageFactory : APageFactory<DummyViewModel, DummyPageContext>
 {
-    public static readonly PageFactoryId Id = PageFactoryId.From(Guid.Parse("71eeb62b-1d2a-45ec-9924-aa0a80a60478"));
-    PageFactoryId IPageFactory.Id => Id;
+    public DummyPageFactory(IServiceProvider serviceProvider) : base(serviceProvider) { }
+    public override PageFactoryId Id => PageFactoryId.From(Guid.Parse("71eeb62b-1d2a-45ec-9924-aa0a80a60478"));
 
-    public DummyViewModel CreateViewModel(DummyPageContext context)
+    public override DummyViewModel CreateViewModel(DummyPageContext context)
     {
         return new DummyViewModel
         {
             Color = context.Color
         };
     }
+
+#if DEBUG
+    public override IEnumerable<PageDiscoveryDetails?> GetDiscoveryDetails()
+    {
+        yield return new PageDiscoveryDetails
+        {
+            // TODO: translations?
+            SectionName = "Debug Utilities",
+            ItemName = "Dummy Page",
+            PageData = new PageData
+            {
+                Context = new DummyPageContext(),
+                FactoryId = Id
+            }
+        };
+    }
+#endif
 }

@@ -347,6 +347,15 @@
         <Compile Update="WorkspaceSystem\NewTabPage\NewTabPageDesignViewModel.cs">
           <DependentUpon>INewTabPageViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="WorkspaceSystem\Page\IPageFactoryContext.cs">
+          <DependentUpon>IPageFactory.cs</DependentUpon>
+        </Compile>
+        <Compile Update="WorkspaceSystem\Page\PageFactoryId.cs">
+          <DependentUpon>IPageFactory.cs</DependentUpon>
+        </Compile>
+        <Compile Update="WorkspaceSystem\Page\APageViewModel.cs">
+          <DependentUpon>IPageViewModelInterface.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
