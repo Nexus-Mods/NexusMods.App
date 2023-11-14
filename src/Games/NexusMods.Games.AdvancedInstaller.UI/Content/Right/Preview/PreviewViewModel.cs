@@ -5,11 +5,12 @@ using NexusMods.Paths;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Preview;
 
+using PreviewTreeNode = TreeNodeVM<IPreviewTreeEntryViewModel, GamePath>;
 internal class PreviewViewModel : AViewModel<IPreviewViewModel>, IPreviewViewModel
 {
     public SourceCache<IPreviewTreeEntryViewModel, GamePath> TreeEntriesCache { get; } = new(entry => entry.GamePath);
-    public ReadOnlyObservableCollection<TreeNodeVM<IPreviewTreeEntryViewModel, GamePath>> TreeRoots => _treeRoots;
-    private readonly ReadOnlyObservableCollection<TreeNodeVM<IPreviewTreeEntryViewModel, GamePath>> _treeRoots;
+    public ReadOnlyObservableCollection<PreviewTreeNode> TreeRoots => _treeRoots;
+    private readonly ReadOnlyObservableCollection<PreviewTreeNode> _treeRoots;
 
     private readonly ReadOnlyObservableCollection<ILocationPreviewTreeViewModel> _containers;
     public ReadOnlyObservableCollection<ILocationPreviewTreeViewModel> TreeContainers => _containers;
@@ -18,7 +19,7 @@ internal class PreviewViewModel : AViewModel<IPreviewViewModel>, IPreviewViewMod
     {
         TreeEntriesCache.Connect()
             .TransformToTree(item => item.Parent)
-            .Transform(node => new TreeNodeVM<IPreviewTreeEntryViewModel, GamePath>(node))
+            .Transform(node => new PreviewTreeNode(node))
             .Bind(out _treeRoots)
             .Subscribe();
 
@@ -27,4 +28,6 @@ internal class PreviewViewModel : AViewModel<IPreviewViewModel>, IPreviewViewMod
             .Bind(out _containers)
             .Subscribe();
     }
+
+
 }

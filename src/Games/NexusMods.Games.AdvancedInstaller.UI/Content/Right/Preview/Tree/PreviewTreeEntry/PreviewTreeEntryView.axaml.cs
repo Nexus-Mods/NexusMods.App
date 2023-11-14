@@ -20,6 +20,13 @@ public partial class PreviewTreeEntryView : ReactiveUserControl<IPreviewTreeEntr
             this.BindCommand(ViewModel, vm => vm.RemoveMappingCommand, v => v.XRoundedButton)
                 .DisposeWith(disposable);
 
+            this.WhenAnyValue(view => view.ViewModel!.IsFolderMerged)
+                .Subscribe(isMerged => FolderMergedPill.IsVisible = isMerged && ViewModel.IsDirectory)
+                .DisposeWith(disposable);
+
+            this.OneWayBind(ViewModel,vm => vm.IsRemovable, view => view.XRoundedButton.IsVisible)
+                .DisposeWith(disposable);
+
             InitView();
         });
     }
@@ -29,7 +36,7 @@ public partial class PreviewTreeEntryView : ReactiveUserControl<IPreviewTreeEntr
         FileNameTextBlock.Text = ViewModel!.DisplayName;
         NewPill.IsVisible = ViewModel.IsNew;
         DupeFolderPill.IsVisible = ViewModel.IsFolderDupe;
-        FolderMergedPill.IsVisible = ViewModel.IsFolderMerged;
+        FolderMergedPill.IsVisible = ViewModel.IsFolderMerged && ViewModel.IsDirectory;
 
         // Always show unlink button, it means unlink child nodes if it is a folder.
         if (ViewModel.IsDirectory)

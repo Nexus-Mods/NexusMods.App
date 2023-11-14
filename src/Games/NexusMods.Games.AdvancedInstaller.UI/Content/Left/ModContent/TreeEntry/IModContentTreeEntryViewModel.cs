@@ -1,4 +1,5 @@
 ﻿using System.Reactive;
+using NexusMods.Games.AdvancedInstaller.UI.Preview;
 using NexusMods.Paths;
 using ReactiveUI;
 
@@ -22,7 +23,7 @@ public interface IModContentTreeEntryViewModel : IViewModelInterface
 
     public GamePath? MappingFolderTarget { get; set; }
 
-    public string MappingFolderName { get; }
+    public string MappingFolderName { get; set; }
 
     public GamePath? Mapping { get; set; }
 
@@ -33,10 +34,14 @@ public interface IModContentTreeEntryViewModel : IViewModelInterface
     ReactiveCommand<Unit, Unit> CancelSelectCommand { get; }
 
     ReactiveCommand<Unit, Unit> RemoveMappingCommand { get; }
+
+    public void AddFileMapping(IPreviewTreeEntryViewModel entry, string mappingFolderName, bool isExplicit);
+
+    public void RemoveFileMapping();
 }
 
 /// <summary>
-///     Represents the current status of the <see cref="IModContentTreeEntryViewModel" />.
+///     Represents the current status of the <see cref="NexusMods.Games.AdvancedInstaller.UI.ModContent.IModContentTreeEntryViewModel" />.
 /// </summary>
 public enum ModContentTreeEntryStatus : byte
 {

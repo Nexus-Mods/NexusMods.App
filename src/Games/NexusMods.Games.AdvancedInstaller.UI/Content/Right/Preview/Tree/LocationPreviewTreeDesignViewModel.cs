@@ -12,7 +12,6 @@ public class LocationPreviewTreeDesignViewModel : LocationPreviewTreeViewModel
             new PreviewTreeEntryViewModel(
                 new GamePath(LocationId.Game, ""),
                 true,
-                false,
                 false),
             new GamePath(LocationId.Game, ""))) { }
 }

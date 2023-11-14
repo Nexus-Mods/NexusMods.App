@@ -1,4 +1,6 @@
-﻿using System.Reactive;
+﻿using System.Collections.ObjectModel;
+using System.Reactive;
+using NexusMods.Games.AdvancedInstaller.UI.ModContent;
 using NexusMods.Paths;
 using ReactiveUI;
 
@@ -29,9 +31,19 @@ public interface IPreviewTreeEntryViewModel : IViewModelInterface
 
     public bool IsFolderMerged { get; set; }
 
-    public bool IsFolderDupe { get; set; }
+    public bool IsFolderDupe { get; }
+
+    public IModContentTreeEntryViewModel? MappedEntry { get; set; }
+
+    public ObservableCollection<IModContentTreeEntryViewModel> MappedPaths { get; }
 
     public ReactiveCommand<Unit, Unit> RemoveMappingCommand { get; }
 
+    public void AddFileMapping(IModContentTreeEntryViewModel entry);
+
+    public void RemoveFileMapping();
+
     public static GamePath RootParentGamePath = new(LocationId.Unknown, "");
+
+
 }
