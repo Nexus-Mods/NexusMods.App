@@ -35,9 +35,9 @@ public interface IModContentTreeEntryViewModel : IViewModelInterface
 
     ReactiveCommand<Unit, Unit> RemoveMappingCommand { get; }
 
-    public void AddFileMapping(IPreviewTreeEntryViewModel entry, string mappingFolderName, bool isExplicit);
+    public void SetFileMapping(IPreviewTreeEntryViewModel entry, string mappingFolderName, bool isExplicit);
 
-    public void RemoveFileMapping();
+    public void RemoveMapping();
 }
 
 /// <summary>

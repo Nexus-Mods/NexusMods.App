@@ -21,7 +21,7 @@ public class PreviewTreeEntryViewModel : AViewModel<IPreviewTreeEntryViewModel>,
 
     public IModContentTreeEntryViewModel? MappedEntry { get; set; }
 
-    public ObservableCollection<IModContentTreeEntryViewModel> MappedPaths { get; } = new();
+    public ObservableCollection<IModContentTreeEntryViewModel> MappedEntries { get; } = new();
     public ReactiveCommand<Unit, Unit> RemoveMappingCommand { get; }
 
     public PreviewTreeEntryViewModel(
@@ -43,16 +43,31 @@ public class PreviewTreeEntryViewModel : AViewModel<IPreviewTreeEntryViewModel>,
         RemoveMappingCommand = ReactiveCommand.Create(() => { });
     }
 
-    public void AddFileMapping(IModContentTreeEntryViewModel entry)
+    public void AddMapping(IModContentTreeEntryViewModel entry)
     {
-        MappedEntry = entry;
         IsNew = true;
         IsRemovable = true;
+        if (IsDirectory)
+        {
+            MappedEntries.Add(entry);
+        }
+        else
+        {
+            MappedEntry = entry;
+        }
     }
 
     public void RemoveFileMapping()
     {
         MappedEntry = null;
+        IsNew = false;
+        IsRemovable = false;
+    }
+
+    public void RemoveDirectoryMapping(IModContentTreeEntryViewModel entry)
+    {
+        MappedEntries.Remove(entry);
+        if (MappedEntries.Count != 0) return;
         IsNew = false;
         IsRemovable = false;
     }

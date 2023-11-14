@@ -106,10 +106,22 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
                 .MergeManyItems(entry => entry.CreateMappingCommand)
                 .Subscribe(entry => OnCreateMappingFromSuggestedEntry(entry.Item))
                 .DisposeWith(disposables);
+
+            // Handle RemoveMappingCommand from PreviewTreeEntry
+            PreviewViewModel.TreeEntriesCache.Connect()
+                .MergeManyItems(entry => entry.RemoveMappingCommand)
+                .Subscribe(entry => StartRemoveMappingFromPreview(entry.Item))
+                .DisposeWith(disposables);
+
+            // Handle RemoveMappingCommand from ModContentTreeEntry
+            ModContentViewModel.ModContentEntriesCache.Connect()
+                .MergeManyItems(entry => entry.RemoveMappingCommand)
+                .Subscribe(entry => StartRemoveMapping(entry.Item))
+                .DisposeWith(disposables);
         });
     }
 
-    #region ModContentFunctionality
+    #region ModContentSelectionFunctionality
 
     /// <summary>
     /// Recursively update the tree nodes state to be selected.
@@ -182,7 +194,7 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
                 : EmptyPreviewViewModel;
     }
 
-    #endregion ModContentFunctionality
+    #endregion ModContentSelectionFunctionality
 
     #region CreateMappingFunctionality
 
@@ -212,8 +224,9 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
                 if (selectedModEntry.IsRoot)
                 {
                     selectedModEntry.MappingFolderName = targetLocation.DisplayName;
+                    selectedModEntry.Mapping = targetLocation.GamePath;
                     selectedModEntry.Status = ModContentTreeEntryStatus.IncludedExplicit;
-                    // Don't create mapping for the root element, just map the children to the target folder.
+                    // Don't create a previewNode for the root element, just map the children to the target folder.
                     MapChildrenRecursive(ModContentViewModel.Root, mappingParentPreviewEntry, previewTreeUpdater);
                     continue;
                 }
@@ -251,7 +264,7 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
                 }
                 else
                 {
-                    RemoveFileMapping(previewEntry);
+                    RemovePreviousFileMapping(previewEntry);
                 }
 
                 CreateFileMapping(selectedModEntry, previewEntry, true);
@@ -279,21 +292,21 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
     private void CreateFileMapping(IModContentTreeEntryViewModel sourceEntry,
         IPreviewTreeEntryViewModel destPreviewEntry, bool isExplicit)
     {
-        destPreviewEntry.AddFileMapping(sourceEntry);
+        destPreviewEntry.AddMapping(sourceEntry);
         var mappingFolderName = PreviewViewModel.TreeEntriesCache.Lookup(destPreviewEntry.Parent)
             .ValueOrDefault()?.DisplayName;
-        sourceEntry.AddFileMapping(destPreviewEntry, mappingFolderName ?? string.Empty, isExplicit);
+        sourceEntry.SetFileMapping(destPreviewEntry, mappingFolderName ?? string.Empty, isExplicit);
         DeploymentData.AddMapping(sourceEntry.RelativePath, destPreviewEntry.GamePath);
     }
 
-    private void RemoveFileMapping(IPreviewTreeEntryViewModel previewEntry)
+    private void RemovePreviousFileMapping(IPreviewTreeEntryViewModel previewEntry)
     {
         if (previewEntry.MappedEntry is null)
             return;
         var modEntry = previewEntry.MappedEntry;
 
         previewEntry.RemoveFileMapping();
-        modEntry.RemoveFileMapping();
+        modEntry.RemoveMapping();
         DeploymentData.RemoveMapping(modEntry.RelativePath);
     }
 
@@ -379,7 +392,7 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
             }
             else
             {
-                RemoveFileMapping(previewEntry);
+                RemovePreviousFileMapping(previewEntry);
             }
 
             CreateFileMapping(child.Item, previewEntry, false);
@@ -387,6 +400,163 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
     }
 
     #endregion CreateMappingFunctionality
+
+    #region RemoveMappingFunctionality
+
+    private void StartRemoveMappingFromPreview(IPreviewTreeEntryViewModel previewNode) { }
+
+    private void StartRemoveMapping(IModContentTreeEntryViewModel modEntry)
+    {
+        var wasMappedViaParent = modEntry.Status == ModContentTreeEntryStatus.IncludedViaParent;
+        var mappingPath = modEntry.Mapping ?? new GamePath(LocationId.Unknown, RelativePath.Empty);
+        var previewEntry = modEntry.Mapping.HasValue
+            ? PreviewViewModel.TreeEntriesCache.Lookup(modEntry.Mapping.Value).ValueOrDefault()
+            : null;
+
+        if (modEntry.IsDirectory)
+        {
+            RemoveDirectoryMappingRecursive(modEntry);
+        }
+        else
+        {
+            RemoveFileMapping(modEntry);
+        }
+
+        // Check if parent node can be unmapped as well
+        if (wasMappedViaParent)
+        {
+            RemoveParentMappingIfNecessary(modEntry);
+        }
+
+        CleanupPreviewTree(mappingPath);
+
+        // Switch to empty view if nothing is mapped anymore
+        CurrentRightContentViewModel = PreviewViewModel.TreeEntriesCache.Count > 0
+            ? PreviewViewModel
+            : EmptyPreviewViewModel;
+    }
+
+    private void CleanupPreviewTree(GamePath removedMappingPath)
+    {
+        if (removedMappingPath.LocationId == LocationId.Unknown)
+        {
+            // Shouldn't happen
+            return;
+        }
+
+        foreach (var subPath in removedMappingPath.GetAllParents())
+        {
+            var previewEntry = PreviewViewModel.TreeEntriesCache.Lookup(subPath);
+            if (!previewEntry.HasValue) continue;
+
+            var previewNode = PreviewViewModel.TreeRoots
+                .First(root => root.Item.GamePath.LocationId == previewEntry.Value.GamePath.LocationId)
+                .FindNode(previewEntry.Value.GamePath)!;
+
+            if (previewNode.Children.Count != 0)
+            {
+                break;
+            }
+
+            PreviewViewModel.TreeEntriesCache.Remove(subPath);
+        }
+    }
+
+    private void RemoveParentMappingIfNecessary(IModContentTreeEntryViewModel childEntry)
+    {
+        while (true)
+        {
+            // Parent exists since the child was mapped via parent
+            var parent = ModContentViewModel.Root.FindNode(childEntry.Parent)!;
+            if (parent.Children.Any(x => x.Item.Status == ModContentTreeEntryStatus.IncludedViaParent)) return;
+
+            // Parent needs to be unmapped
+            var previewEntry = parent.Item.Mapping.HasValue
+                ? PreviewViewModel.TreeEntriesCache.Lookup(parent.Item.Mapping.Value).ValueOrDefault()
+                : null;
+
+            if (previewEntry != null)
+            {
+                previewEntry.RemoveDirectoryMapping(parent.Item);
+                RemovePreviewNodeIfNecessary(previewEntry);
+            }
+
+            var parentWasMappedViaParent = parent.Item.Status == ModContentTreeEntryStatus.IncludedViaParent;
+            parent.Item.RemoveMapping();
+
+            if (parentWasMappedViaParent)
+            {
+                childEntry = parent.Item;
+                continue;
+            }
+
+            break;
+        }
+    }
+
+    private void RemoveDirectoryMappingRecursive(IModContentTreeEntryViewModel modEntry)
+    {
+        if (!modEntry.IsDirectory)
+            return;
+
+        var previewEntry = modEntry.Mapping is null
+            ? null
+            : PreviewViewModel.TreeEntriesCache.Lookup(modEntry.Mapping.Value).ValueOrDefault();
+
+        var modNode = ModContentViewModel.Root.FindNode(modEntry.RelativePath)!;
+
+        foreach (var child in modNode.Children.Where(child =>
+                     child.Item.Status == ModContentTreeEntryStatus.IncludedViaParent))
+        {
+            if (child.Item.IsDirectory)
+            {
+                RemoveDirectoryMappingRecursive(child.Item);
+            }
+            else
+            {
+                RemoveFileMapping(child.Item);
+            }
+        }
+
+        modEntry.RemoveMapping();
+        if (previewEntry is null) return;
+
+        previewEntry.RemoveDirectoryMapping(modEntry);
+
+        RemovePreviewNodeIfNecessary(previewEntry);
+    }
+
+    private void RemovePreviewNodeIfNecessary(IPreviewTreeEntryViewModel previewEntry)
+    {
+        // Only remove node if it doesn't have other children left
+        var previewNode = PreviewViewModel.TreeRoots
+            .First(root => root.Item.GamePath.LocationId == previewEntry.GamePath.LocationId)
+            .FindNode(previewEntry.GamePath)!;
+
+        if (previewNode.Children.Count == 0)
+        {
+            PreviewViewModel.TreeEntriesCache.Remove(previewNode.Item);
+        }
+    }
+
+    private void RemoveFileMapping(IModContentTreeEntryViewModel modEntry)
+    {
+        if (modEntry.IsDirectory)
+            return;
+        DeploymentData.RemoveMapping(modEntry.RelativePath);
+
+        var previewEntry = modEntry.Mapping is null
+            ? null
+            : PreviewViewModel.TreeEntriesCache.Lookup(modEntry.Mapping.Value).ValueOrDefault();
+        modEntry.RemoveMapping();
+
+        if (previewEntry is null) return;
+
+        previewEntry.RemoveFileMapping();
+        PreviewViewModel.TreeEntriesCache.Remove(previewEntry!);
+    }
+
+    #endregion RemoveMappingFunctionality
 
     #region CreateFolderFunctionality
 

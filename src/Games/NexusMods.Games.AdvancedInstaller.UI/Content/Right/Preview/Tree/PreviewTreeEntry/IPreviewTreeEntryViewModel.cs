@@ -35,15 +35,17 @@ public interface IPreviewTreeEntryViewModel : IViewModelInterface
 
     public IModContentTreeEntryViewModel? MappedEntry { get; set; }
 
-    public ObservableCollection<IModContentTreeEntryViewModel> MappedPaths { get; }
+    public ObservableCollection<IModContentTreeEntryViewModel> MappedEntries { get; }
 
     public ReactiveCommand<Unit, Unit> RemoveMappingCommand { get; }
 
-    public void AddFileMapping(IModContentTreeEntryViewModel entry);
+    public void AddMapping(IModContentTreeEntryViewModel entry);
 
     public void RemoveFileMapping();
 
+    public void RemoveDirectoryMapping(IModContentTreeEntryViewModel entry);
+
     public static GamePath RootParentGamePath = new(LocationId.Unknown, "");
 
-
 }
+

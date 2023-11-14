@@ -46,14 +46,14 @@ public class ModContentTreeEntryViewModel : AViewModel<IModContentTreeEntryViewM
         RemoveMappingCommand = ReactiveCommand.Create(() => { });
     }
 
-    public void AddFileMapping(IPreviewTreeEntryViewModel entry, string mappingFolderName, bool isExplicit)
+    public void SetFileMapping(IPreviewTreeEntryViewModel entry, string mappingFolderName, bool isExplicit)
     {
         MappingFolderName = mappingFolderName;
         Mapping = entry.GamePath;
         Status = isExplicit ? ModContentTreeEntryStatus.IncludedExplicit : ModContentTreeEntryStatus.IncludedViaParent;
     }
 
-    public void RemoveFileMapping()
+    public void RemoveMapping()
     {
         MappingFolderName = string.Empty;
         MappingFolderTarget = null;
