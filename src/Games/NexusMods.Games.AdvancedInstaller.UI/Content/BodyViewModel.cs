@@ -1,5 +1,7 @@
-﻿using System.Reactive.Disposables;
+﻿using System.Reactive;
+using System.Reactive.Disposables;
 using DynamicData;
+using DynamicData.Binding;
 using DynamicData.Kernel;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
@@ -98,6 +100,12 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
                 .MergeManyItems(entry => entry.CreateMappingCommand)
                 .Subscribe(entry => OnCreateMapping(entry.Item))
                 .DisposeWith(disposables);
+
+            // Handle CreateMappingCommand from PreviewTreeEntry
+            SelectLocationViewModel.SuggestedEntries.ToObservableChangeSet(entry => entry.Id)
+                .MergeManyItems(entry => entry.CreateMappingCommand)
+                .Subscribe(entry => OnCreateMappingFromSuggestedEntry(entry.Item))
+                .DisposeWith(disposables);
         });
     }
 
@@ -176,6 +184,17 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
 
     #endregion ModContentFunctionality
 
+    #region CreateMappingFunctionality
+
+    private void OnCreateMappingFromSuggestedEntry(ISuggestedEntryViewModel suggestedEntry)
+    {
+        // Find the corresponding ISelectableTreeEntryViewModel entry
+        var correspondingTreeEntry = SelectLocationViewModel.TreeEntriesCache
+            .Lookup(suggestedEntry.RelativeToTopLevelLocation).ValueOrDefault();
+        if (correspondingTreeEntry is not null)
+            OnCreateMapping(correspondingTreeEntry);
+    }
+
     private void OnCreateMapping(ISelectableTreeEntryViewModel selectableTreeEntryViewModel)
     {
         var targetLocation = SelectLocationViewModel.TreeEntriesCache.Lookup(selectableTreeEntryViewModel.GamePath)
@@ -213,7 +232,8 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
                     {
                         previewEntry = new PreviewTreeEntryViewModel(entryMappingPath, true, true);
                         previewTreeUpdater.AddOrUpdate(previewEntry);
-                    } else
+                    }
+                    else
                     {
                         previewEntry.IsFolderMerged = true;
                     }
@@ -233,6 +253,7 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
                 {
                     RemoveFileMapping(previewEntry);
                 }
+
                 CreateFileMapping(selectedModEntry, previewEntry, true);
             }
         });
@@ -360,9 +381,12 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
             {
                 RemoveFileMapping(previewEntry);
             }
+
             CreateFileMapping(child.Item, previewEntry, false);
         }
     }
+
+    #endregion CreateMappingFunctionality
 
     #region CreateFolderFunctionality
 
