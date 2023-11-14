@@ -9,12 +9,7 @@ public interface IGameWidgetViewModel : IViewModelInterface
 {
     public GameInstallation Installation { get; set; }
     public string Name { get; }
-
-    /// <summary>
-    /// Please assign <see cref="WriteableBitmap"/> or <see cref="Bitmap"/> if possible; for faster image blur.
-    /// </summary>
-    public IImage Image { get; }
-
+    public Bitmap Image { get; }
     public ICommand PrimaryButton { get; set; }
     public ICommand? SecondaryButton { get; set; }
 }

@@ -1,7 +1,6 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Windows.Input;
-using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Games;
@@ -21,24 +20,27 @@ public class GameWidgetViewModel : AViewModel<IGameWidgetViewModel>, IGameWidget
         PrimaryButton = ReactiveCommand.Create(() => { });
         SecondaryButton = ReactiveCommand.Create(() => { });
 
-        this.WhenActivated(d =>
+        _image = this
+            .WhenAnyValue(vm => vm.Installation)
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+            .Where(installation => installation.Game is not null)
+            .OffUi()
+            .SelectMany(LoadImage)
+            .WhereNotNull()
+            .ToProperty(this, vm => vm.Image, scheduler: RxApp.MainThreadScheduler);
+
+        this.WhenActivated(disposables =>
         {
             this.WhenAnyValue(vm => vm.Installation)
-                .OffUi()
-                .SelectMany(async install => await LoadImage(install))
-                .WhereNotNull()
-                .OnUI()
-                .BindToUi(this, vm => vm.Image)
-                .DisposeWith(d);
-
-            this.WhenAnyValue(vm => vm.Installation)
                 .Select(inst => $"{inst.Game.Name} v{inst.Version}")
-                .BindToUi(this, vm => vm.Name)
-                .DisposeWith(d);
+                .BindToVM(this, vm => vm.Name)
+                .DisposeWith(disposables);
+
+            _image.DisposeWith(disposables);
         });
     }
 
-    private async Task<IImage?> LoadImage(GameInstallation source)
+    private async Task<Bitmap?> LoadImage(GameInstallation source)
     {
         try
         {
@@ -57,7 +59,8 @@ public class GameWidgetViewModel : AViewModel<IGameWidgetViewModel>, IGameWidget
 
     [Reactive] public string Name { get; set; } = "";
 
-    [Reactive] public IImage Image { get; set; } = Initializers.IImage;
+    private readonly ObservableAsPropertyHelper<Bitmap> _image;
+    public Bitmap Image => _image.Value;
 
     [Reactive]
     public ICommand PrimaryButton { get; set; }

@@ -15,17 +15,18 @@ public partial class GameWidget : ReactiveUserControl<IGameWidgetViewModel>
         InitializeComponent();
         this.WhenActivated(d =>
         {
-            this.Bind(ViewModel, vm => vm.Image, v => v.GameImage.Source)
+            this.OneWayBind(ViewModel, vm => vm.Image, v => v.GameImage.Source)
                 .DisposeWith(d);
 
             this.WhenAnyValue(view => view.ViewModel!.Image)
                 .WhereNotNull()
                 .OffUi()
-                .Select(img => BlurAvaloniaImage((Bitmap)img))
-                .BindToUi(this, view => view.BlurryImage.Source)
+                .Select(BlurAvaloniaImage)
+                .OnUI()
+                .BindToView(this, view => view.BlurryImage.Source)
                 .DisposeWith(d);
 
-            this.Bind(ViewModel, vm => vm.Name, v => v.NameTextBlock.Text)
+            this.OneWayBind(ViewModel, vm => vm.Name, v => v.NameTextBlock.Text)
                 .DisposeWith(d);
 
             this.BindCommand(ViewModel, vm => vm.PrimaryButton, v => v.PrimaryButton)
@@ -33,21 +34,24 @@ public partial class GameWidget : ReactiveUserControl<IGameWidgetViewModel>
         });
     }
 
-    private Bitmap BlurAvaloniaImage(Bitmap image)
+    private static Bitmap BlurAvaloniaImage(Bitmap bitmap)
     {
-        switch (image)
+        using var inputSkBitmap = bitmap.ToSkiaBitmap();
+        using var outputSkBitmap = new SKBitmap(inputSkBitmap.Info, SKBitmapAllocFlags.ZeroPixels);
+
+        using (var skCanvas = new SKCanvas(outputSkBitmap))
+        using (var skPaint = new SKPaint())
         {
-            case WriteableBitmap writeable:
-                return writeable.ToSkiaImage().BlurImage().ToAvaloniaImage();
-            case { } bitmap:
-                return bitmap.ToSkiaImage().BlurImage().ToAvaloniaImage();
+            skPaint.ImageFilter = SKImageFilter.CreateBlur(
+                sigmaX: 100f,
+                sigmaY: 100f
+            );
+
+            var skRect = inputSkBitmap.Info.Rect;
+            skCanvas.DrawBitmap(inputSkBitmap, skRect, skPaint);
         }
 
-        // Slow fallback.
-        var ms = new MemoryStream();
-        image.Save(ms);
-        ms.Position = 0;
-        return SKImage.FromEncodedData(ms).BlurImage().ToAvaloniaImage();
+        return outputSkBitmap.ToAvaloniaImage();
     }
 }
 
