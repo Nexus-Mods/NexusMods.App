@@ -185,8 +185,8 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
 
         PreviewViewModel.TreeEntriesCache.Edit(previewTreeUpdater =>
         {
-            // Create the stump path up to the Selected target folder.
-            var mappingParentPreviewNode = PreparePreviewTargetPath(targetLocation.GamePath, previewTreeUpdater);
+            // Ensure the path up to the target folder exists in the preview tree.
+            var mappingParentPreviewEntry = PreparePreviewTargetPath(targetLocation.GamePath, previewTreeUpdater);
 
             foreach (var selectedModEntry in ModContentViewModel.SelectedEntriesCache.Items)
             {
@@ -195,7 +195,7 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
                     selectedModEntry.MappingFolderName = targetLocation.DisplayName;
                     selectedModEntry.Status = ModContentTreeEntryStatus.IncludedExplicit;
                     // Don't create mapping for the root element, just map the children to the target folder.
-                    MapChildrenRecursive(ModContentViewModel.Root, mappingParentPreviewNode.Item, previewTreeUpdater);
+                    MapChildrenRecursive(ModContentViewModel.Root, mappingParentPreviewEntry, previewTreeUpdater);
                     continue;
                 }
 
@@ -216,9 +216,9 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
                     } else
                     {
                         previewEntry.IsFolderMerged = true;
-                        previewEntry.IsRemovable = true;
                     }
 
+                    previewEntry.IsRemovable = true;
                     CreateDirectoryMapping(selectedModNode, previewEntry, previewTreeUpdater, true);
                     continue;
                 }
@@ -236,7 +236,7 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
                 CreateFileMapping(selectedModEntry, previewEntry, true);
             }
         });
-
+        ModContentViewModel.SelectedEntriesCache.Clear();
         CurrentRightContentViewModel = PreviewViewModel;
     }
 
@@ -292,7 +292,7 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
     /// <param name="targetFolder">The GamePath to the folder selected as install location</param>
     /// <param name="previewTreeUpdater">SourceCache updater to make all changes in one operation.</param>
     /// <returns></returns>
-    private PreviewTreeNode PreparePreviewTargetPath(GamePath targetFolder,
+    private IPreviewTreeEntryViewModel PreparePreviewTargetPath(GamePath targetFolder,
         ISourceUpdater<IPreviewTreeEntryViewModel, GamePath> previewTreeUpdater)
     {
         List<IPreviewTreeEntryViewModel> treeEntries = new();
@@ -318,9 +318,7 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
             previewTreeUpdater.AddOrUpdate(treeEntries);
         }
 
-        // We just added the node, so this should never be null.
-        return PreviewViewModel.TreeRoots.FirstOrDefault(node => node.Id.LocationId == targetFolder.LocationId)
-            ?.FindNode(targetFolder)!;
+        return previewTreeUpdater.Lookup(targetFolder).ValueOrDefault()!;
     }
 
     private void MapChildrenRecursive(ModContentTreeNode sourceNode,
@@ -345,9 +343,9 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
                 else
                 {
                     previewEntry.IsFolderMerged = true;
-                    previewEntry.IsRemovable = true;
                 }
 
+                previewEntry.IsRemovable = true;
                 CreateDirectoryMapping(child, previewEntry, previewTreeUpdater);
                 continue;
             }
