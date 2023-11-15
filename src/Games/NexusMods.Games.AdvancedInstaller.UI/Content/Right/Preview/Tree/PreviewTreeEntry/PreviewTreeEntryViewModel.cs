@@ -38,7 +38,7 @@ public class PreviewTreeEntryViewModel : AViewModel<IPreviewTreeEntryViewModel>,
         DisplayName = gamePath.FileName == RelativePath.Empty ? gamePath.LocationId.Value : gamePath.FileName;
         IsFolderDupe = gamePath.FileName == gamePath.Parent.FileName && gamePath.FileName != RelativePath.Empty;
         IsFolderMerged = false;
-        IsRemovable = false;
+        IsRemovable = true;
 
         RemoveMappingCommand = ReactiveCommand.Create(() => { });
     }
@@ -46,7 +46,6 @@ public class PreviewTreeEntryViewModel : AViewModel<IPreviewTreeEntryViewModel>,
     public void AddMapping(IModContentTreeEntryViewModel entry)
     {
         IsNew = true;
-        IsRemovable = true;
         if (IsDirectory)
         {
             MappedEntries.Add(entry);
@@ -61,7 +60,6 @@ public class PreviewTreeEntryViewModel : AViewModel<IPreviewTreeEntryViewModel>,
     {
         MappedEntry = null;
         IsNew = false;
-        IsRemovable = false;
     }
 
     public void RemoveDirectoryMapping(IModContentTreeEntryViewModel entry)
@@ -69,6 +67,5 @@ public class PreviewTreeEntryViewModel : AViewModel<IPreviewTreeEntryViewModel>,
         MappedEntries.Remove(entry);
         if (MappedEntries.Count != 0) return;
         IsNew = false;
-        IsRemovable = false;
     }
 }

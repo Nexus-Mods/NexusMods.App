@@ -110,13 +110,13 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
             // Handle RemoveMappingCommand from PreviewTreeEntry
             PreviewViewModel.TreeEntriesCache.Connect()
                 .MergeManyItems(entry => entry.RemoveMappingCommand)
-                .Subscribe(entry => StartRemoveMappingFromPreview(entry.Item))
+                .Subscribe(entry => OnRemoveMappingFromPreview(entry.Item))
                 .DisposeWith(disposables);
 
             // Handle RemoveMappingCommand from ModContentTreeEntry
             ModContentViewModel.ModContentEntriesCache.Connect()
                 .MergeManyItems(entry => entry.RemoveMappingCommand)
-                .Subscribe(entry => StartRemoveMapping(entry.Item))
+                .Subscribe(entry => OnRemoveMappingFromModContent(entry.Item))
                 .DisposeWith(disposables);
         });
     }
@@ -223,10 +223,10 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
             {
                 if (selectedModEntry.IsRoot)
                 {
-                    selectedModEntry.MappingFolderName = targetLocation.DisplayName;
-                    selectedModEntry.Mapping = targetLocation.GamePath;
-                    selectedModEntry.Status = ModContentTreeEntryStatus.IncludedExplicit;
-                    // Don't create a previewNode for the root element, just map the children to the target folder.
+                    // Map the root node directly to the target folder, without creating a corresponding child node
+                    selectedModEntry.SetFileMapping(mappingParentPreviewEntry, mappingParentPreviewEntry.DisplayName, true);
+                    mappingParentPreviewEntry.MappedEntries.Add(selectedModEntry);
+
                     MapChildrenRecursive(ModContentViewModel.Root, mappingParentPreviewEntry, previewTreeUpdater);
                     continue;
                 }
@@ -380,7 +380,6 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
                     previewEntry.IsFolderMerged = true;
                 }
 
-                previewEntry.IsRemovable = true;
                 CreateDirectoryMapping(child, previewEntry, previewTreeUpdater);
                 continue;
             }
@@ -404,33 +403,86 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
 
     #region RemoveMappingFunctionality
 
-    private void StartRemoveMappingFromPreview(IPreviewTreeEntryViewModel previewNode)
+    private void OnRemoveMappingFromPreview(IPreviewTreeEntryViewModel previewEntry)
     {
-        if (previewNode.IsDirectory)
+        StartRemoveMappingFromPreview(previewEntry);
+        CleanupPreviewTree(previewEntry.GamePath);
+
+        // Switch to empty view if nothing is mapped anymore
+        CurrentRightContentViewModel = PreviewViewModel.TreeEntriesCache.Count > 0
+            ? PreviewViewModel
+            : EmptyPreviewViewModel;
+    }
+
+    private void StartRemoveMappingFromPreview(IPreviewTreeEntryViewModel previewEntry)
+    {
+        if (previewEntry.IsDirectory)
         {
-            foreach (var mappedEntry in previewNode.MappedEntries.ToArray())
-            {
-                StartRemoveMapping(mappedEntry);
-            }
+            RemoveDirectoryMappingFromPreviewRecursive(previewEntry);
         }
         else
         {
-            if (previewNode.MappedEntry is null)
-            {
-                previewNode.RemoveFileMapping();
-                return;
-            }
-            StartRemoveMapping(previewNode.MappedEntry!);
+            RemoveFileMappingFromPreview(previewEntry);
         }
+    }
+
+    private void RemoveDirectoryMappingFromPreviewRecursive(IPreviewTreeEntryViewModel previewEntry)
+    {
+        if (!previewEntry.IsDirectory)
+            return;
+
+        foreach (var mappedEntry in previewEntry.MappedEntries.ToArray())
+        {
+            // Will also remove this preview node.
+            StartRemoveMapping(mappedEntry);
+        }
+
+        // Check if the node still exists and has any children left
+        var previewNode = PreviewViewModel.TreeRoots
+            .FirstOrDefault(root => root.Item.GamePath.LocationId == previewEntry.GamePath.LocationId)?
+            .FindNode(previewEntry.GamePath);
+
+        if (previewNode is not null && previewNode.Children.Count != 0)
+        {
+            // User removed the item from preview, we need force remove all children
+            foreach (var child in previewNode.Children.ToArray())
+            {
+                StartRemoveMappingFromPreview(child.Item);
+            }
+        }
+
+        // Now that all descendent have been properly unmapped, we can remove this node.
+        PreviewViewModel.TreeEntriesCache.Remove(previewEntry);
+    }
+
+    private void RemoveFileMappingFromPreview(IPreviewTreeEntryViewModel previewEntry)
+    {
+        if (previewEntry.MappedEntry is null)
+        {
+            previewEntry.RemoveFileMapping();
+            PreviewViewModel.TreeEntriesCache.Remove(previewEntry);
+            return;
+        }
+        // Will also remove this preview node.
+        StartRemoveMapping(previewEntry.MappedEntry!);
+    }
+
+    private void OnRemoveMappingFromModContent(IModContentTreeEntryViewModel modEntry)
+    {
+        var mappingPath = modEntry.Mapping ?? new GamePath(LocationId.Unknown, RelativePath.Empty);
+
+        StartRemoveMapping(modEntry);
+        CleanupPreviewTree(mappingPath);
+
+        // Switch to empty view if nothing is mapped anymore
+        CurrentRightContentViewModel = PreviewViewModel.TreeEntriesCache.Count > 0
+            ? PreviewViewModel
+            : EmptyPreviewViewModel;
     }
 
     private void StartRemoveMapping(IModContentTreeEntryViewModel modEntry)
     {
         var wasMappedViaParent = modEntry.Status == ModContentTreeEntryStatus.IncludedViaParent;
-        var mappingPath = modEntry.Mapping ?? new GamePath(LocationId.Unknown, RelativePath.Empty);
-        var previewEntry = modEntry.Mapping.HasValue
-            ? PreviewViewModel.TreeEntriesCache.Lookup(modEntry.Mapping.Value).ValueOrDefault()
-            : null;
 
         if (modEntry.IsDirectory)
         {
@@ -445,71 +497,6 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
         if (wasMappedViaParent)
         {
             RemoveParentMappingIfNecessary(modEntry);
-        }
-
-        CleanupPreviewTree(mappingPath);
-
-        // Switch to empty view if nothing is mapped anymore
-        CurrentRightContentViewModel = PreviewViewModel.TreeEntriesCache.Count > 0
-            ? PreviewViewModel
-            : EmptyPreviewViewModel;
-    }
-
-    private void CleanupPreviewTree(GamePath removedMappingPath)
-    {
-        if (removedMappingPath.LocationId == LocationId.Unknown)
-        {
-            // Shouldn't happen
-            return;
-        }
-
-        foreach (var subPath in removedMappingPath.GetAllParents())
-        {
-            var previewEntry = PreviewViewModel.TreeEntriesCache.Lookup(subPath);
-            if (!previewEntry.HasValue) continue;
-
-            var previewNode = PreviewViewModel.TreeRoots
-                .First(root => root.Item.GamePath.LocationId == previewEntry.Value.GamePath.LocationId)
-                .FindNode(previewEntry.Value.GamePath)!;
-
-            if (previewNode.Children.Count != 0)
-            {
-                break;
-            }
-
-            PreviewViewModel.TreeEntriesCache.Remove(subPath);
-        }
-    }
-
-    private void RemoveParentMappingIfNecessary(IModContentTreeEntryViewModel childEntry)
-    {
-        while (true)
-        {
-            // Parent exists since the child was mapped via parent
-            var parent = ModContentViewModel.Root.FindNode(childEntry.Parent)!;
-            if (parent.Children.Any(x => x.Item.Status == ModContentTreeEntryStatus.IncludedViaParent)) return;
-
-            // Parent needs to be unmapped
-            var previewEntry = parent.Item.Mapping.HasValue
-                ? PreviewViewModel.TreeEntriesCache.Lookup(parent.Item.Mapping.Value).ValueOrDefault()
-                : null;
-
-            if (previewEntry != null)
-            {
-                previewEntry.RemoveDirectoryMapping(parent.Item);
-                RemovePreviewNodeIfNecessary(previewEntry);
-            }
-
-            var parentWasMappedViaParent = parent.Item.Status == ModContentTreeEntryStatus.IncludedViaParent;
-            parent.Item.RemoveMapping();
-
-            if (parentWasMappedViaParent)
-            {
-                childEntry = parent.Item;
-                continue;
-            }
-
-            break;
         }
     }
 
@@ -545,19 +532,6 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
         RemovePreviewNodeIfNecessary(previewEntry);
     }
 
-    private void RemovePreviewNodeIfNecessary(IPreviewTreeEntryViewModel previewEntry)
-    {
-        // Only remove node if it doesn't have other children left
-        var previewNode = PreviewViewModel.TreeRoots
-            .First(root => root.Item.GamePath.LocationId == previewEntry.GamePath.LocationId)
-            .FindNode(previewEntry.GamePath)!;
-
-        if (previewNode.Children.Count == 0)
-        {
-            PreviewViewModel.TreeEntriesCache.Remove(previewNode.Item);
-        }
-    }
-
     private void RemoveFileMapping(IModContentTreeEntryViewModel modEntry)
     {
         if (modEntry.IsDirectory)
@@ -573,6 +547,77 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
 
         previewEntry.RemoveFileMapping();
         PreviewViewModel.TreeEntriesCache.Remove(previewEntry!);
+    }
+
+    private void RemovePreviewNodeIfNecessary(IPreviewTreeEntryViewModel previewEntry)
+    {
+        // Only remove node if it doesn't have other children left
+        var previewNode = PreviewViewModel.TreeRoots
+            .First(root => root.Item.GamePath.LocationId == previewEntry.GamePath.LocationId)
+            .FindNode(previewEntry.GamePath)!;
+
+        if (previewNode.Children.Count == 0)
+        {
+            PreviewViewModel.TreeEntriesCache.Remove(previewNode.Item);
+        }
+    }
+
+    private void RemoveParentMappingIfNecessary(IModContentTreeEntryViewModel childEntry)
+    {
+        while (true)
+        {
+            // Parent exists since the child was mapped via parent
+            var parent = ModContentViewModel.Root.FindNode(childEntry.Parent)!;
+            if (parent.Children.Any(x => x.Item.Status == ModContentTreeEntryStatus.IncludedViaParent)) return;
+
+            // Parent needs to be unmapped
+            var previewEntry = parent.Item.Mapping.HasValue
+                ? PreviewViewModel.TreeEntriesCache.Lookup(parent.Item.Mapping.Value).ValueOrDefault()
+                : null;
+
+            if (previewEntry != null)
+            {
+                previewEntry.RemoveDirectoryMapping(parent.Item);
+                RemovePreviewNodeIfNecessary(previewEntry);
+            }
+
+            var parentWasMappedViaParent = parent.Item.Status == ModContentTreeEntryStatus.IncludedViaParent;
+            parent.Item.RemoveMapping();
+
+            if (parentWasMappedViaParent)
+            {
+                childEntry = parent.Item;
+                continue;
+            }
+
+            break;
+        }
+    }
+
+    private void CleanupPreviewTree(GamePath removedMappingPath)
+    {
+        if (removedMappingPath.LocationId == LocationId.Unknown)
+        {
+            // Shouldn't happen
+            return;
+        }
+
+        foreach (var subPath in removedMappingPath.GetAllParents())
+        {
+            var previewEntry = PreviewViewModel.TreeEntriesCache.Lookup(subPath);
+            if (!previewEntry.HasValue) continue;
+
+            var previewNode = PreviewViewModel.TreeRoots
+                .First(root => root.Item.GamePath.LocationId == previewEntry.Value.GamePath.LocationId)
+                .FindNode(previewEntry.Value.GamePath)!;
+
+            if (previewNode.Children.Count != 0)
+            {
+                break;
+            }
+
+            PreviewViewModel.TreeEntriesCache.Remove(subPath);
+        }
     }
 
     #endregion RemoveMappingFunctionality
