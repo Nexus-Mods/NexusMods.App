@@ -26,7 +26,10 @@
             </Style>
         </Border.Styles>
 
-        <TextBlock Text="{x:Static resources:Language.EmptyPreviewText_Select_files_to_install}"
-                   x:Name="EmptyPreviewTextBlock" />
+        <ScrollViewer x:Name="ResultsScrollViewer">
+            <TextBlock Text="{x:Static resources:Language.EmptyPreviewText_Select_files_to_install}"
+                       x:Name="EmptyPreviewTextBlock" />
+        </ScrollViewer>
     </Border>
+
 </reactiveUi:ReactiveUserControl>

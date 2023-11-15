@@ -45,75 +45,78 @@
 
         </Border.Styles>
 
-        <Grid RowDefinitions="Auto, Auto, *" x:Name="TopLevelGrid">
+        <ScrollViewer x:Name="ResultsScrollViewer">
+            <Grid RowDefinitions="Auto, Auto, *" x:Name="TopLevelGrid">
 
-            <Border Grid.Row="0" x:Name="HeaderAreaBorder">
-                <StackPanel Orientation="Vertical">
+                <Border Grid.Row="0" x:Name="HeaderAreaBorder">
+                    <StackPanel Orientation="Vertical">
 
-                    <TextBlock Classes="TitleSMSemi"
-                               Text="{x:Static resources:Language.SelectLocationHeaderText_SELECT_INSTALL_LOCATION}"
-                               x:Name="SelectLocationHeader" />
-
-                    <TextBlock Classes="BodySMNormal SelectSubHeading"
-                               Text="{x:Static resources:Language.SelectLocationSubHeadingText_Select_where_to}"
-                               x:Name="SelectLocationSubHeading" />
-                </StackPanel>
-            </Border>
-
-            <Border Grid.Row="1" Classes="Rounded Padding16 ContainerBorderColor SuggestedAreaBorder"
-                    x:Name="SuggestedAreaBorder">
-                <Grid RowDefinitions="Auto, *" Name="SuggestedAreaGrid">
-
-                    <StackPanel Grid.Row="0" Classes="SuggestedHeaderStackPanel" Orientation="Vertical">
-
-                        <TextBlock Classes="TitleXSSemi"
-                                   Text="{x:Static resources:Language.SuggestedHeaderText_SUGGESTED}"
-                                   x:Name="SuggestedHeaderText" />
+                        <TextBlock Classes="TitleSMSemi"
+                                   Text="{x:Static resources:Language.SelectLocationHeaderText_SELECT_INSTALL_LOCATION}"
+                                   x:Name="SelectLocationHeader" />
 
                         <TextBlock Classes="BodySMNormal SelectSubHeading"
-                                   Text="Temp Skyrim Special Edition Mods are usually installed in the following game folders."
-                                   x:Name="SuggestedSubHeaderText" />
-
+                                   Text="{x:Static resources:Language.SelectLocationSubHeadingText_Select_where_to}"
+                                   x:Name="SelectLocationSubHeading" />
                     </StackPanel>
+                </Border>
 
-                    <ItemsControl Grid.Row="1" x:Name="SuggestedLocationItemsControl">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <StackPanel Orientation="Vertical" />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                    </ItemsControl>
+                <Border Grid.Row="1" Classes="Rounded Padding16 ContainerBorderColor SuggestedAreaBorder"
+                        x:Name="SuggestedAreaBorder">
+                    <Grid RowDefinitions="Auto, *" Name="SuggestedAreaGrid">
 
-                </Grid>
-            </Border>
+                        <StackPanel Grid.Row="0" Classes="SuggestedHeaderStackPanel" Orientation="Vertical">
 
-            <Border Grid.Row="2" Classes="Rounded Padding16 OutlineContainer" x:Name="CustomAreaBorder">
-                <Grid RowDefinitions="Auto, *" Name="CustomAreaGrid">
+                            <TextBlock Classes="TitleXSSemi"
+                                       Text="{x:Static resources:Language.SuggestedHeaderText_SUGGESTED}"
+                                       x:Name="SuggestedHeaderText" />
 
-                    <StackPanel Grid.Row="0" Classes="SuggestedHeaderStackPanel" Orientation="Vertical">
+                            <TextBlock Classes="BodySMNormal SelectSubHeading"
+                                       Text="Temp Skyrim Special Edition Mods are usually installed in the following game folders."
+                                       x:Name="SuggestedSubHeaderText" />
 
-                        <TextBlock Classes="TitleXSSemi"
-                                   Text="{x:Static resources:Language.AllFoldersAreaHeaderText_ALL_FOLDERS}"
-                                   x:Name="AllFoldersAreaHeaderText" />
+                        </StackPanel>
 
-                        <TextBlock Classes="BodySMNormal SelectSubHeading"
-                                   Text="{x:Static resources:Language.AllFoldersAreaSubHeaderText_Select_from_full}"
-                                   x:Name="AllFoldersAreaSubHeaderText" />
+                        <ItemsControl Grid.Row="1" x:Name="SuggestedLocationItemsControl">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Vertical" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
 
-                    </StackPanel>
+                    </Grid>
+                </Border>
 
-                    <ItemsControl Grid.Row="1" x:Name="AllFoldersItemsControl">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <StackPanel Orientation="Vertical" />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                    </ItemsControl>
+                <Border Grid.Row="2" Classes="Rounded Padding16 OutlineContainer" x:Name="CustomAreaBorder">
+                    <Grid RowDefinitions="Auto, *" Name="CustomAreaGrid">
+
+                        <StackPanel Grid.Row="0" Classes="SuggestedHeaderStackPanel" Orientation="Vertical">
+
+                            <TextBlock Classes="TitleXSSemi"
+                                       Text="{x:Static resources:Language.AllFoldersAreaHeaderText_ALL_FOLDERS}"
+                                       x:Name="AllFoldersAreaHeaderText" />
+
+                            <TextBlock Classes="BodySMNormal SelectSubHeading"
+                                       Text="{x:Static resources:Language.AllFoldersAreaSubHeaderText_Select_from_full}"
+                                       x:Name="AllFoldersAreaSubHeaderText" />
+
+                        </StackPanel>
+
+                        <ItemsControl Grid.Row="1" x:Name="AllFoldersItemsControl">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Vertical" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
 
 
-                </Grid>
-            </Border>
-        </Grid>
+                    </Grid>
+                </Border>
+            </Grid>
+        </ScrollViewer>
 
     </Border>
+
 </reactiveUi:ReactiveUserControl>

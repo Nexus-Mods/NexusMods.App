@@ -70,9 +70,7 @@
 
                 <!-- Install Location Preview -->
                 <Border Classes="Rounded" Grid.Column="2" x:Name="ResultsBorder">
-                    <ScrollViewer x:Name="ResultsScrollViewer">
                         <reactiveUi:ViewModelViewHost x:Name="PreviewSectionViewHost" />
-                    </ScrollViewer>
                 </Border>
             </Grid>
         </Border>
