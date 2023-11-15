@@ -251,7 +251,6 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
                         previewEntry.IsFolderMerged = true;
                     }
 
-                    previewEntry.IsRemovable = true;
                     CreateDirectoryMapping(selectedModNode, previewEntry, previewTreeUpdater, true);
                     continue;
                 }
@@ -278,6 +277,8 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
         IPreviewTreeEntryViewModel destPreviewEntry,
         ISourceUpdater<IPreviewTreeEntryViewModel, GamePath> previewTreeUpdater, bool isExplicit = false)
     {
+        destPreviewEntry.AddMapping(sourceNode.Item);
+
         sourceNode.Item.Mapping = destPreviewEntry.GamePath;
         sourceNode.Item.MappingFolderName = PreviewViewModel.TreeEntriesCache.Lookup(destPreviewEntry.Parent)
             .ValueOrDefault()?.DisplayName ?? string.Empty;
@@ -403,7 +404,25 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
 
     #region RemoveMappingFunctionality
 
-    private void StartRemoveMappingFromPreview(IPreviewTreeEntryViewModel previewNode) { }
+    private void StartRemoveMappingFromPreview(IPreviewTreeEntryViewModel previewNode)
+    {
+        if (previewNode.IsDirectory)
+        {
+            foreach (var mappedEntry in previewNode.MappedEntries.ToArray())
+            {
+                StartRemoveMapping(mappedEntry);
+            }
+        }
+        else
+        {
+            if (previewNode.MappedEntry is null)
+            {
+                previewNode.RemoveFileMapping();
+                return;
+            }
+            StartRemoveMapping(previewNode.MappedEntry!);
+        }
+    }
 
     private void StartRemoveMapping(IModContentTreeEntryViewModel modEntry)
     {
