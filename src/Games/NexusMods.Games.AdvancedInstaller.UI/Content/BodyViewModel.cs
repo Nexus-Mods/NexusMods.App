@@ -228,7 +228,8 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
                 if (selectedModEntry.IsRoot)
                 {
                     // Map the root node directly to the target folder, without creating a corresponding child node
-                    selectedModEntry.SetFileMapping(mappingParentPreviewEntry, mappingParentPreviewEntry.DisplayName, true);
+                    selectedModEntry.SetFileMapping(mappingParentPreviewEntry, mappingParentPreviewEntry.DisplayName,
+                        true);
                     mappingParentPreviewEntry.MappedEntries.Add(selectedModEntry);
 
                     MapChildrenRecursive(ModContentViewModel.Root, mappingParentPreviewEntry, previewTreeUpdater);
@@ -273,7 +274,9 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
                 CreateFileMapping(selectedModEntry, previewEntry, true);
             }
         });
+
         ModContentViewModel.SelectedEntriesCache.Clear();
+        ExpandPreviewNodes(targetLocation.GamePath);
         CurrentRightContentViewModel = PreviewViewModel;
     }
 
@@ -356,6 +359,26 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
         }
 
         return previewTreeUpdater.Lookup(targetFolder).ValueOrDefault()!;
+    }
+
+    private void ExpandPreviewNodes(GamePath path)
+    {
+        var currentNode = PreviewViewModel.TreeRoots
+            .FirstOrDefault(root => root.Item.GamePath.LocationId == path.LocationId);
+
+        if (currentNode is null)
+            return;
+
+        currentNode.IsExpanded = true;
+
+        foreach (var subPath in path.GetAllParents().Reverse().Skip(1))
+        {
+            var foundNode = currentNode.FindNode(subPath);
+            if (foundNode is null)
+                continue;
+            foundNode.IsExpanded = true;
+            currentNode = foundNode;
+        }
     }
 
     private void MapChildrenRecursive(ModContentTreeNode sourceNode,
@@ -465,6 +488,7 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
             PreviewViewModel.TreeEntriesCache.Remove(previewEntry);
             return;
         }
+
         // Will also remove this preview node.
         StartRemoveMapping(previewEntry.MappedEntry!);
     }
@@ -564,7 +588,8 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
         }
     }
 
-    private void RemoveParentMappingIfNecessary(IModContentTreeEntryViewModel childEntry, bool removePreviewNodes = true)
+    private void RemoveParentMappingIfNecessary(IModContentTreeEntryViewModel childEntry,
+        bool removePreviewNodes = true)
     {
         while (true)
         {

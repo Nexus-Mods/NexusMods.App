@@ -27,7 +27,6 @@ internal class ModContentViewModel : AViewModel<IModContentViewModel>, IModConte
 
     public ModContentViewModel(FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles)
     {
-        // Crete mod content tree entries
         PopulateModContentEntriesCache(ModContentEntriesCache, archiveFiles);
 
         // Generate the mod content tree structure
@@ -38,7 +37,6 @@ internal class ModContentViewModel : AViewModel<IModContentViewModel>, IModConte
             .DisposeMany()
             .Subscribe();
 
-        // Populate the TreeDataGridSource
         Tree = CreateTreeDataGridSource(Root);
 
         Root.IsExpanded = true;

@@ -6,6 +6,7 @@ using NexusMods.Paths;
 namespace NexusMods.Games.AdvancedInstaller.UI.Preview;
 
 using PreviewTreeNode = TreeNodeVM<IPreviewTreeEntryViewModel, GamePath>;
+
 internal class PreviewViewModel : AViewModel<IPreviewViewModel>, IPreviewViewModel
 {
     public SourceCache<IPreviewTreeEntryViewModel, GamePath> TreeEntriesCache { get; } = new(entry => entry.GamePath);
@@ -28,6 +29,4 @@ internal class PreviewViewModel : AViewModel<IPreviewViewModel>, IPreviewViewMod
             .Bind(out _containers)
             .Subscribe();
     }
-
-
 }

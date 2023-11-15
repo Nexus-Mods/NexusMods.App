@@ -32,7 +32,9 @@ public class LocationPreviewTreeViewModel : AViewModel<ILocationPreviewTreeViewM
                             }),
                         width: new GridLength(1, GridUnitType.Star)
                     ),
-                    x => x.Children)
+                    node => node.Children,
+                    null,
+                    node => node.IsExpanded)
             }
         };
     }
