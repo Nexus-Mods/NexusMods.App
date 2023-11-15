@@ -5,7 +5,6 @@ using DynamicData;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.Paths;
 using NexusMods.Paths.FileTree;
-using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.ModContent;
@@ -41,6 +40,8 @@ internal class ModContentViewModel : AViewModel<IModContentViewModel>, IModConte
 
         // Populate the TreeDataGridSource
         Tree = CreateTreeDataGridSource(Root);
+
+        Root.IsExpanded = true;
     }
 
     #region utility
@@ -98,7 +99,7 @@ internal class ModContentViewModel : AViewModel<IModContentViewModel>, IModConte
 
     private static TreeDataGridSource CreateTreeDataGridSource(ModContentNode root)
     {
-        return new(root)
+        return new TreeDataGridSource(root)
         {
             Columns =
             {
@@ -107,11 +108,14 @@ internal class ModContentViewModel : AViewModel<IModContentViewModel>, IModConte
                         new FuncDataTemplate<ModContentNode>((node, _) =>
                             new ModContentTreeEntryView
                             {
+                                // node can apparently be null even if it isn't nullable, likely for virtualization
                                 DataContext = node?.Item,
                             }),
                         width: new GridLength(1, GridUnitType.Star)
                     ),
-                    x => x.Children)
+                    node => node.Children,
+                    null,
+                    node => node.IsExpanded)
             }
         };
     }

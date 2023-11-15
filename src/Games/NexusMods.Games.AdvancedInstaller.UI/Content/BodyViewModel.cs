@@ -1,5 +1,4 @@
-﻿using System.Reactive;
-using System.Reactive.Disposables;
+﻿using System.Reactive.Disposables;
 using DynamicData;
 using DynamicData.Binding;
 using DynamicData.Kernel;
@@ -549,7 +548,7 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
         if (previewEntry is null) return;
 
         previewEntry.RemoveFileMapping();
-        PreviewViewModel.TreeEntriesCache.Remove(previewEntry!);
+        PreviewViewModel.TreeEntriesCache.Remove(previewEntry);
     }
 
     private void RemovePreviewNodeIfNecessary(IPreviewTreeEntryViewModel previewEntry)

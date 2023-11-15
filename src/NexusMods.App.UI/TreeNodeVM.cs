@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using DynamicData;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI;
 
@@ -33,6 +34,10 @@ public class TreeNodeVM<TItem, TKey> : ReactiveObject, IActivatableViewModel
     /// </summary>
     public TKey Id { get; }
 
+    /// <summary>
+    /// Whether the node is expanded in the UI.
+    /// </summary>
+    [Reactive] public bool IsExpanded { get; set; }
 
     /// <summary>
     /// Creates a new <see cref="TreeNodeVM{TItem,TKey}"/> from a <see cref="Node{TItem,TKey}"/>.
