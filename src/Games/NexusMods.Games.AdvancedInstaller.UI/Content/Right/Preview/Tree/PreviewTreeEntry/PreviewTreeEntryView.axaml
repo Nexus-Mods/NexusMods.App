@@ -46,30 +46,35 @@
                        x:Name="FileNameTextBlock" />
 
             <!-- Pills -->
-            <!-- NEW Pill Label -->
-            <Button Grid.Column="2" Classes="Pill Accent Label PillElement" IsVisible="False" x:Name="NewPill">
-                <StackPanel>
-                    <TextBlock Text="{x:Static resources:Language.NewFilePill_NEW}" />
-                </StackPanel>
-            </Button>
+            <StackPanel Grid.Column="2" Orientation="Horizontal" x:Name="PillStackPanel">
 
-            <!-- Dupe Folder Pill Label -->
-            <Button Grid.Column="2" Classes="Pill Light Label PillElement" IsVisible="False"
-                    x:Name="DupeFolderPill">
-                <StackPanel>
-                    <icons:Icon Classes="Alert" />
-                    <TextBlock Text="{x:Static resources:Language.Pill_DUPE_FOLDER}" />
-                </StackPanel>
-            </Button>
+                <!-- NEW Pill Label -->
+                <Button Classes="Pill Accent Label PillElement" IsVisible="False" x:Name="NewPill">
+                    <StackPanel>
+                        <TextBlock Text="{x:Static resources:Language.NewFilePill_NEW}" />
+                    </StackPanel>
+                </Button>
 
-            <!-- Folder Merged Pill Label -->
-            <Button Grid.Column="2" Classes="Pill Light Label PillElement" IsVisible="False"
-                    x:Name="FolderMergedPill">
-                <StackPanel>
-                    <icons:Icon Classes="Check" />
-                    <TextBlock Text="{x:Static resources:Language.Pill_FOLDER_MERGED}" />
-                </StackPanel>
-            </Button>
+                <!-- Dupe Folder Pill Label -->
+                <Button Classes="Pill Light Label PillElement" IsVisible="False"
+                        x:Name="DupeFolderPill">
+                    <StackPanel>
+                        <icons:Icon Classes="Alert" />
+                        <TextBlock Text="{x:Static resources:Language.Pill_DUPE_FOLDER}" />
+                    </StackPanel>
+                </Button>
+
+                <!-- Folder Merged Pill Label -->
+                <Button Classes="Pill Light Label PillElement" IsVisible="False"
+                        x:Name="FolderMergedPill">
+                    <StackPanel>
+                        <icons:Icon Classes="Check" />
+                        <TextBlock Text="{x:Static resources:Language.Pill_FOLDER_MERGED}" />
+                    </StackPanel>
+                </Button>
+
+            </StackPanel>
+
         </Grid>
 
         <!-- Right Elements // Add StackPanel here if adding additional ones -->
