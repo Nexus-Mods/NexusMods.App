@@ -118,6 +118,11 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
                 .MergeManyItems(entry => entry.RemoveMappingCommand)
                 .Subscribe(entry => OnRemoveMappingFromModContent(entry.Item))
                 .DisposeWith(disposables);
+
+            // Update CanInstall when the PreviewViewModel changes
+            PreviewViewModel.TreeRoots.WhenAnyValue(roots => roots.Count)
+                .Subscribe(count => { CanInstall = count > 0; })
+                .DisposeWith(disposables);
         });
     }
 
