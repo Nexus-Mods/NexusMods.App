@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using DynamicData;
+using DynamicData.Kernel;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -35,23 +36,31 @@ public class TreeNodeVM<TItem, TKey> : ReactiveObject, IActivatableViewModel
     public TKey Id { get; }
 
     /// <summary>
+    /// The parent node.
+    /// </summary>
+    public Optional<TreeNodeVM<TItem, TKey>> Parent { get; }
+
+    /// <summary>
     /// Whether the node is expanded in the UI.
     /// </summary>
-    [Reactive] public bool IsExpanded { get; set; }
+    [Reactive]
+    public bool IsExpanded { get; set; }
 
     /// <summary>
     /// Creates a new <see cref="TreeNodeVM{TItem,TKey}"/> from a <see cref="Node{TItem,TKey}"/>.
     /// <see cref="Node{TItem,TKey}"/> is the output of DynamicData TransformToTree().
     /// </summary>
     /// <param name="node"></param>
-    public TreeNodeVM(Node<TItem, TKey> node)
+    /// <param name="parent"></param>
+    public TreeNodeVM(Node<TItem, TKey> node, TreeNodeVM<TItem, TKey>? parent = null)
     {
         Item = node.Item;
         Id = node.Key;
+        Parent = parent;
 
         node.Children
             .Connect()
-            .Transform(child => new TreeNodeVM<TItem, TKey>(child))
+            .Transform(child => new TreeNodeVM<TItem, TKey>(child, this))
             .Bind(out _children)
             .DisposeMany()
             .Subscribe();
@@ -75,7 +84,7 @@ public class TreeNodeVM<TItem, TKey> : ReactiveObject, IActivatableViewModel
     /// </summary>
     /// <param name="id">The Id of the node to find</param>
     /// <returns>Null if not found</returns>
-    public TreeNodeVM<TItem, TKey>? FindNode(TKey id)
+    public  TreeNodeVM<TItem, TKey>? FindNode(TKey id)
     {
         if (Id.Equals(id))
         {

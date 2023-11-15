@@ -1,4 +1,5 @@
 ﻿using System.Reactive;
+using DynamicData.Kernel;
 using NexusMods.Games.AdvancedInstaller.UI.Preview;
 using NexusMods.Games.AdvancedInstaller.UI.Resources;
 using NexusMods.Paths;
@@ -16,9 +17,9 @@ public class ModContentTreeEntryViewModel : AViewModel<IModContentTreeEntryViewM
     public bool IsRoot { get; }
     public RelativePath Parent { get; }
     public bool IsTopLevelChild { get; }
-    public GamePath? MappingParentPath { get; set; }
+    public Optional<GamePath> MappingParentPath { get; set; }
     public string MappingFolderName { get; set; }
-    public GamePath? Mapping { get; set; }
+    public Optional<GamePath> Mapping { get; set; }
     [Reactive] public ModContentTreeEntryStatus Status { get; set; }
     public ReactiveCommand<Unit, Unit> BeginSelectCommand { get; }
     public ReactiveCommand<Unit, Unit> CancelSelectCommand { get; }
@@ -56,8 +57,8 @@ public class ModContentTreeEntryViewModel : AViewModel<IModContentTreeEntryViewM
     public void RemoveMapping()
     {
         MappingFolderName = string.Empty;
-        MappingParentPath = null;
-        Mapping = null;
+        MappingParentPath = Optional.None<GamePath>();
+        Mapping = Optional.None<GamePath>();
         Status = ModContentTreeEntryStatus.Default;
     }
 }

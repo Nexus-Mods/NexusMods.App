@@ -1,4 +1,5 @@
 ﻿using System.Reactive;
+using DynamicData.Kernel;
 using NexusMods.Games.AdvancedInstaller.UI.Preview;
 using NexusMods.Paths;
 using ReactiveUI;
@@ -21,11 +22,11 @@ public interface IModContentTreeEntryViewModel : IViewModelInterface
 
     public bool IsTopLevelChild { get; }
 
-    public GamePath? MappingParentPath { get; set; }
+    public Optional<GamePath> MappingParentPath { get; set; }
 
     public string MappingFolderName { get; set; }
 
-    public GamePath? Mapping { get; set; }
+    public Optional<GamePath> Mapping { get; set; }
 
     public ModContentTreeEntryStatus Status { get; set; }
 

@@ -495,7 +495,7 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
 
     private void OnRemoveMappingFromModContent(IModContentTreeEntryViewModel modEntry)
     {
-        var mappingPath = modEntry.Mapping ?? new GamePath(LocationId.Unknown, RelativePath.Empty);
+        var mappingPath = modEntry.Mapping.ValueOr(() => new GamePath(LocationId.Unknown, RelativePath.Empty));
 
         StartRemoveMapping(modEntry);
         CleanupPreviewTree(mappingPath);
@@ -531,7 +531,7 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
         if (!modEntry.IsDirectory)
             return;
 
-        var previewEntry = modEntry.Mapping is null
+        var previewEntry = modEntry.Mapping.HasValue
             ? null
             : PreviewViewModel.TreeEntriesCache.Lookup(modEntry.Mapping.Value).ValueOrDefault();
 
@@ -564,7 +564,7 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
             return;
         DeploymentData.RemoveMapping(modEntry.RelativePath);
 
-        var previewEntry = modEntry.Mapping is null
+        var previewEntry = modEntry.Mapping.HasValue
             ? null
             : PreviewViewModel.TreeEntriesCache.Lookup(modEntry.Mapping.Value).ValueOrDefault();
         modEntry.RemoveMapping();
