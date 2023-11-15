@@ -309,20 +309,18 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
     {
         if (previewEntry.MappedEntry is null)
             return;
-        var modEntry = previewEntry.MappedEntry;
+        var modEntry = previewEntry.MappedEntry!;
+        var mappedViaParent = modEntry.Status == ModContentTreeEntryStatus.IncludedViaParent;
 
         previewEntry.RemoveFileMapping();
         modEntry.RemoveMapping();
-        DeploymentData.RemoveMapping(modEntry.RelativePath);
-    }
 
-    private void CreateMapping(ModContentTreeNode sourceNode,
-        GamePath parentDestinationPath)
-    {
-        // Create matching preview node for this mapping
-        var targetPath = sourceNode.Item.RelativePath == RelativePath.Empty
-            ? parentDestinationPath.Path
-            : parentDestinationPath.Path.Join(parentDestinationPath.FileName);
+        if (mappedViaParent)
+        {
+            RemoveParentMappingIfNecessary(modEntry, false);
+        }
+
+        DeploymentData.RemoveMapping(modEntry.RelativePath);
     }
 
     /// <summary>
@@ -567,7 +565,7 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
         }
     }
 
-    private void RemoveParentMappingIfNecessary(IModContentTreeEntryViewModel childEntry)
+    private void RemoveParentMappingIfNecessary(IModContentTreeEntryViewModel childEntry, bool removePreviewNodes = true)
     {
         while (true)
         {
@@ -583,7 +581,8 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
             if (previewEntry != null)
             {
                 previewEntry.RemoveDirectoryMapping(parent.Item);
-                RemovePreviewNodeIfNecessary(previewEntry);
+                if (removePreviewNodes)
+                    RemovePreviewNodeIfNecessary(previewEntry);
             }
 
             var parentWasMappedViaParent = parent.Item.Status == ModContentTreeEntryStatus.IncludedViaParent;
