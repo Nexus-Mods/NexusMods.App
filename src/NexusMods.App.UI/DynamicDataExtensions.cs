@@ -11,7 +11,7 @@ public static class DynamicDataExtensions
     /// </summary>
     public static IObservable<(TSource, TOut)> MergeManyWithSource<TSource, TOut>(
         this IObservable<IChangeSet<TSource>> source,
-        Func<TSource, IObservable<TOut>> observableSelector)
+        Func<TSource, IObservable<TOut>> observableSelector) where TSource : notnull
     {
         return Observable.Create<(TSource, TOut)>(observer =>
         {
