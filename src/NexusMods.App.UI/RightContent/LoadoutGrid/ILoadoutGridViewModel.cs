@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using NexusMods.App.UI.Controls.DataGrid;
+using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Cursors;
 
@@ -8,7 +9,7 @@ namespace NexusMods.App.UI.RightContent.LoadoutGrid;
 /// <summary>
 /// View model for the loadout grid.
 /// </summary>
-public interface ILoadoutGridViewModel : IRightContentViewModel
+public interface ILoadoutGridViewModel : IPageViewModelInterface, IRightContentViewModel
 {
     public ReadOnlyObservableCollection<ModCursor> Mods { get; }
     public LoadoutId LoadoutId { get; set; }

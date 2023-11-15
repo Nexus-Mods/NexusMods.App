@@ -32,4 +32,21 @@ public class PageFactoryController
 
         return factory.Create(pageData.Context);
     }
+
+    public IEnumerable<PageDiscoveryDetails> GetAllDetails()
+    {
+        foreach (var kv in _factories)
+        {
+            var (factoryId, factory) = kv;
+            var details = factory.GetDiscoveryDetails();
+
+            foreach (var detail in details)
+            {
+                if (detail is null) continue;
+
+                Debug.Assert(detail.PageData.FactoryId == factoryId);
+                yield return detail;
+            }
+        }
+    }
 }
