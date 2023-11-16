@@ -16,7 +16,8 @@ namespace NexusMods.CLI;
 internal static class ProtocolVerbs
 {
     internal static IServiceCollection AddProtocolVerbs(this IServiceCollection services) =>
-        services.AddVerb(() => AssociateNxm);
+        services.AddVerb(() => AssociateNxm)
+            .AddVerb(() => ProtocolInvoke);
 
 
     [Verb("associate-nxm", "Associate the nxm:// protocol with this application")]
@@ -65,6 +66,21 @@ internal static class ProtocolVerbs
                 string.IsNullOrWhiteSpace(modName) ? null : modName, token: token);
             return 0;
         });
+    }
+
+    [Verb("protocol-invoke", "Handle a URL with custom protocol")]
+    private static async Task<int> ProtocolInvoke([Injected] IRenderer renderer,
+        [Option("u", "url", "The URL to handle")] Uri uri,
+        [Injected] IEnumerable<IIpcProtocolHandler> handlers,
+        CancellationToken token)
+    {
+        var handler = handlers.FirstOrDefault(iter => iter.Protocol == uri.Scheme);
+        if (handler == null)
+            throw new Exception($"Unsupported protocol \"{uri.Scheme}\"");
+
+        await handler.Handle(uri.ToString(), token);
+
+        return 0;
     }
 
 }

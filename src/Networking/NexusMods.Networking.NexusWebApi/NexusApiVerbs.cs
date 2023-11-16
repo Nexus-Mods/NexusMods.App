@@ -11,7 +11,8 @@ internal static class NexusApiVerbs
 {
     internal static IServiceCollection AddNexusApiVerbs(this IServiceCollection collection) =>
         collection.AddVerb(() => NexusApiVerify)
-            .AddVerb(() => NexusDownloadLinks);
+            .AddVerb(() => NexusDownloadLinks)
+            .AddVerb(() => NexusGames);
 
 
     [Verb("nexus-api-verify", "Verifies the logged in account via the Nexus API")]
@@ -46,6 +47,21 @@ internal static class NexusApiVerbs
 
         await renderer.Table(new[] { "Source", "Link" },
             links.Data.Select(x => new object[] { x.ShortName, x.Uri }));
+        return 0;
+    }
+
+    [Verb("nexus-games", "Lists all games available on Nexus Mods")]
+    private static async Task<int> NexusGames([Injected] IRenderer renderer,
+        [Injected] Client client,
+        CancellationToken token)
+    {
+        var results = await client.Games(token);
+
+        await renderer.Table(new[] { "Name", "Domain", "Downloads", "Files" },
+            results.Data
+                .OrderByDescending(x => x.FileCount)
+                .Select(x => new object[] { x.Name, x.DomainName, x.Downloads, x.FileCount }));
+
         return 0;
     }
 
