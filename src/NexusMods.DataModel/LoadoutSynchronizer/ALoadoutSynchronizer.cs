@@ -303,7 +303,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     {
         var newFile = new StoredFile
         {
-            Id = ModFileId.New(),
+            Id = ModFileId.NewId(),
             Hash = newEntry.Hash,
             Size = newEntry.Size,
             To = gamePath
@@ -335,7 +335,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
 
         var newFile = new StoredFile
         {
-            Id = ModFileId.New(),
+            Id = ModFileId.NewId(),
             Hash = newEntry.Hash,
             Size = newEntry.Size,
             To = gamePath
@@ -363,7 +363,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             {
                 ModCategory = name,
                 Name = name,
-                Id = ModId.New(),
+                Id = ModId.NewId(),
                 Enabled = true,
                 Files = EntityDictionary<ModFileId, AModFile>.Empty(_store)
             };
@@ -539,12 +539,12 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         {
             Name = "Game Files",
             ModCategory = Mod.GameFilesCategory,
-            Id = ModId.New(),
+            Id = ModId.NewId(),
             Enabled = true,
             Files = EntityDictionary<ModFileId, AModFile>.Empty(_store).With(initialState.GetAllDescendentFiles()
                 .Select(f =>
                 {
-                    var id = ModFileId.New();
+                    var id = ModFileId.NewId();
                     return KeyValuePair.Create(id, (AModFile)new StoredFile
                     {
                         Id = id,

@@ -1,12 +1,9 @@
-﻿using Vogen;
+﻿using TransparentValueObjects;
 
 namespace NexusMods.DataModel.Interprocess.Jobs;
 
 /// <summary>
 /// Cross platform wrapper for a process id.
 /// </summary>
-[ValueObject(typeof(uint))]
-public partial class ProcessId
-{
-
-}
+[ValueObject<uint>]
+public readonly partial struct ProcessId { }
