@@ -1,32 +1,45 @@
 using NexusMods.Abstractions.CLI;
+using NexusMods.ProxyConsole.Abstractions;
+using NexusMods.ProxyConsole.Abstractions.Implementations;
+
 
 namespace NexusMods.CLI.Tests;
 
 // ReSharper disable once ClassNeverInstantiated.Global
 public class LoggingRenderer : IRenderer
 {
-    public static readonly AsyncLocal<List<Object>> Logs = new();
-
-    public string Name => "logging";
-
-    public Task Render<T>(T o)
-    {
-        Logs.Value!.Add(o!);
-        return Task.CompletedTask;
-    }
-
-    public void RenderBanner()
-    {
-        Logs.Value!.Add("Banner");
-    }
+    public static readonly List<IRenderable> Logs = new();
 
     public Task<T> WithProgress<T>(CancellationToken token, Func<Task<T>> f, bool showSize = true)
     {
         return f();
     }
 
+    /// <summary>
+    /// Returns the number of items that were rendered
+    /// </summary>
+    public int Size => Logs.Count;
+
+    /// <summary>
+    /// Returns the last table that was rendered
+    /// </summary>
+    /// <exception cref="InvalidOperationException"></exception>
+    public Table LastTable => Logs.OfType<Table>().LastOrDefault() ??
+                              throw new InvalidOperationException("No table was rendered");
+
     public void Reset()
     {
-        Logs.Value!.Clear();
+        Logs.Clear();
+    }
+
+    public ValueTask RenderAsync(IRenderable renderable)
+    {
+        Logs.Add(renderable);
+        return ValueTask.CompletedTask;
+    }
+
+    public ValueTask ClearAsync()
+    {
+        return ValueTask.CompletedTask;
     }
 }

@@ -21,4 +21,8 @@
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
     </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="NexusMods.SingleProcess" />
+    </ItemGroup>
 </Project>

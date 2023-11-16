@@ -5,20 +5,16 @@ using NexusMods.Paths.Extensions;
 
 namespace NexusMods.CLI.Tests.VerbTests;
 
-public class AnalyzeArchive : AVerbTest
+public class AnalyzeArchive(IServiceProvider provider) : AVerbTest(provider)
 {
-    public AnalyzeArchive(TemporaryFileManager temporaryFileManager, IServiceProvider provider) : base(temporaryFileManager, provider)
-    {
-    }
-
     [Fact]
     public async Task CanAnalyzeArchives()
     {
-        await RunNoBannerAsync("analyze-archive", "-i", Data7ZipLZMA2.ToString());
+        var log = await Run("analyze-archive", "-i", Data7ZipLZMA2.ToString());
 
-        LogSize.Should().Be(1);
-        LastTable.Columns.Should().BeEquivalentTo("Path", "Size", "Hash");
-        LastTable.Rows
+        log.Size.Should().Be(1);
+        log.LastTable.Columns.Should().BeEquivalentTo("Path", "Size", "Hash");
+        log.LastTable.Rows
             .Should()
             .BeEquivalentTo(new[]
             {

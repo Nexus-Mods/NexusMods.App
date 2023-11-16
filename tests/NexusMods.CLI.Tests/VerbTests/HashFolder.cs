@@ -5,25 +5,20 @@ using NexusMods.Paths.Extensions;
 
 namespace NexusMods.CLI.Tests.VerbTests;
 
-public class HashFolderTests : AVerbTest
+public class HashFolderTests(IServiceProvider provider) : AVerbTest(provider)
 {
-    public HashFolderTests(TemporaryFileManager temporaryFileManager, IServiceProvider provider)
-        : base(temporaryFileManager, provider)
-    {
-    }
-
     [Fact]
     public async Task CanHashFolder()
     {
         await using var folder = TemporaryFileManager.CreateFolder();
         await folder.Path.Combine("file1.txt").WriteAllTextAsync("file1.txt");
         await folder.Path.Combine("file2.txt").WriteAllTextAsync("file2.txt");
-        await RunNoBannerAsync("hash-folder", "-f", folder.Path.ToString());
+        var log = await Run("hash-folder", "-f", folder.Path.ToString());
 
-        LogSize.Should().Be(1);
-        LastTable.Rows.Count().Should().Be(2);
-        LastTable.Columns.Should().BeEquivalentTo("Path", "Hash", "Size", "LastModified");
-        LastTable.Rows
+        log.Should().Be(1);
+        log.LastTable.Rows.Count().Should().Be(2);
+        log.LastTable.Columns.Should().BeEquivalentTo("Path", "Hash", "Size", "LastModified");
+        log.LastTable.Rows
             .Select(r => r.Take(3))
             .Should()
             .BeEquivalentTo(new[]

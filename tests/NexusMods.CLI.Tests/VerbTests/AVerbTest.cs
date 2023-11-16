@@ -1,64 +1,32 @@
+using FluentAssertions;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Paths;
+using NexusMods.ProxyConsole.Abstractions.Implementations;
+using NexusMods.SingleProcess;
 
 namespace NexusMods.CLI.Tests.VerbTests;
 
-public class AVerbTest
+public class AVerbTest(IServiceProvider provider)
 {
+    internal TemporaryFileManager TemporaryFileManager => provider.GetRequiredService<TemporaryFileManager>();
+
     // ReSharper disable InconsistentNaming
     internal AbsolutePath Data7ZipLZMA2 =>
         FileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine("Resources/data_7zip_lzma2.7z");
     // ReSharper restore InconsistentNaming
 
-    protected List<object> LastLog { get; set; } = new();
 
-    internal readonly TemporaryFileManager TemporaryFileManager;
-    private readonly IServiceProvider _provider;
+    internal readonly IFileSystem FileSystem = ServiceProviderServiceExtensions.GetRequiredService<IFileSystem>(provider);
 
-    internal readonly IFileSystem FileSystem;
 
-    public AVerbTest(TemporaryFileManager temporaryFileManager, IServiceProvider provider)
+    public async Task<LoggingRenderer> Run(string command, params string[] args)
     {
-        _provider = provider;
-        TemporaryFileManager = temporaryFileManager;
-        FileSystem = provider.GetRequiredService<IFileSystem>();
+        var renderer = new LoggingRenderer();
+        var configurator = provider.GetRequiredService<CommandLineConfigurator>();
+        var result = await configurator.RunAsync(args, renderer);
+        result.Should().Be(0, "The command should have succeeded");
+        return renderer;
     }
 
-    // I added this for testing purposes to help diagnose errors easier when needed - Sewer
-    [PublicAPI]
-    internal void RunNoBanner(params string[] args)
-    {
-        using var scope = RunNoBannerInit(out var builder);
-        var id = builder.MakeRoot().Invoke(new[] { "--noBanner" }.Concat(args).ToArray());
-        RunNoBannerFinish(id);
-    }
-
-    public async Task RunNoBannerAsync(params string[] args)
-    {
-        using var scope = RunNoBannerInit(out var builder);
-        var id = await builder.MakeRoot().InvokeAsync(new[] { "--noBanner" }.Concat(args).ToArray());
-        RunNoBannerFinish(id);
-    }
-
-    private void RunNoBannerFinish(int id)
-    {
-        if (id != 0)
-            throw new Exception($"Bad Run Result: {id}");
-
-        LastLog = LoggingRenderer.Logs.Value!;
-    }
-
-    private IServiceScope RunNoBannerInit(out CommandLineConfigurator configurator)
-    {
-        var scope = _provider.CreateScope();
-        _ = scope.ServiceProvider.GetRequiredService<LoggingRenderer>();
-        LoggingRenderer.Logs.Value = new List<object>();
-        configurator = scope.ServiceProvider.GetRequiredService<CommandLineConfigurator>();
-        ;
-        return scope;
-    }
-
-    internal int LogSize => LastLog.Count;
-    public Table LastTable => LastLog.OfType<Table>().First();
 }
