@@ -2,7 +2,6 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.CLI.Types;
-using NexusMods.CLI.Verbs;
 using NSubstitute;
 
 namespace NexusMods.CLI.Tests.VerbTests;

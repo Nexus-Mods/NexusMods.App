@@ -55,4 +55,16 @@ public static class RendererExtensions
         // Need to implement this in the proxy interface
         return await fn();
     }
+
+    /// <summary>
+    /// Prints the given exception to the renderer
+    /// </summary>
+    /// <param name="renderer"></param>
+    /// <param name="ex"></param>
+    /// <param name="template"></param>
+    /// <param name="args"></param>
+    public static async Task Error(this IRenderer renderer, Exception ex, string template, params object[] args)
+    {
+        await renderer.Text(template + "\n\nTraceback: {ex} \n ", args);
+    }
 }

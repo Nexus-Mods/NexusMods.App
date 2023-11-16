@@ -29,7 +29,6 @@ public class Startup
             .AddDownloaders()
             .AddAllSingleton<ITypeFinder, TypeFinder>()
             .AddSingleton<LocalHttpServer>()
-            .AddAllSingleton<IGuidedInstaller, CliGuidedInstaller>()
             .Validate();
     }
 }
