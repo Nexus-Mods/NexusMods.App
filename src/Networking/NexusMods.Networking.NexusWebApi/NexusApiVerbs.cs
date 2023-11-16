@@ -19,7 +19,7 @@ internal static class NexusApiVerbs
     private static async Task<int> NexusApiVerify([Injected] IRenderer renderer,
         [Injected] Client client,
         [Injected] IAuthenticatingMessageFactory messageFactory,
-        CancellationToken token)
+        [Injected] CancellationToken token)
     {
         var userInfo = await messageFactory.Verify(client, token);
         await renderer.Table(new[] { "Name", "Premium" },
@@ -41,7 +41,7 @@ internal static class NexusApiVerbs
         [Option("m", "modId", "Mod ID")] ModId modId,
         [Option("f", "fileId", "File ID")] FileId fileId,
         [Injected] Client client,
-        CancellationToken token)
+        [Injected] CancellationToken token)
     {
         var links = await client.DownloadLinksAsync(gameDomain, modId, fileId, token);
 
@@ -53,7 +53,7 @@ internal static class NexusApiVerbs
     [Verb("nexus-games", "Lists all games available on Nexus Mods")]
     private static async Task<int> NexusGames([Injected] IRenderer renderer,
         [Injected] Client client,
-        CancellationToken token)
+        [Injected] CancellationToken token)
     {
         var results = await client.Games(token);
 

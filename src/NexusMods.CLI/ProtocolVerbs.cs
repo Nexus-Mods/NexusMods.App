@@ -72,7 +72,7 @@ internal static class ProtocolVerbs
     private static async Task<int> ProtocolInvoke([Injected] IRenderer renderer,
         [Option("u", "url", "The URL to handle")] Uri uri,
         [Injected] IEnumerable<IIpcProtocolHandler> handlers,
-        CancellationToken token)
+        [Injected] CancellationToken token)
     {
         var handler = handlers.FirstOrDefault(iter => iter.Protocol == uri.Scheme);
         if (handler == null)

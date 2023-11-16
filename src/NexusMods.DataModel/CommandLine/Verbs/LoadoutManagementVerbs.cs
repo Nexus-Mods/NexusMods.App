@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.CLI;
 using NexusMods.Common;
@@ -41,8 +42,7 @@ public static class LoadoutManagementVerbs
 
     [Verb("apply", "Apply the given loadout to the game folder")]
     private static async Task<int> Apply([Injected] IRenderer renderer,
-        [Option("l", "loadout", "Loadout to apply")]
-        LoadoutMarker loadout)
+        [Option("l", "loadout", "Loadout to apply")] LoadoutMarker loadout)
     {
         var state = await loadout.Value.Apply();
 
@@ -109,15 +109,12 @@ public static class LoadoutManagementVerbs
 
     [Verb("install-mod", "Installs a mod into a loadout")]
     private static async Task<int> InstallMod([Injected] IRenderer renderer,
-        [Option("l", "loadout", "loadout to add the mod to")]
-        LoadoutMarker loadout,
-        [Option("f", "file", "Mod file to install")]
-        AbsolutePath file,
-        [Option("n", "name", "Name of the mod after installing")]
-        string name,
+        [Option("l", "loadout", "loadout to add the mod to")] LoadoutMarker loadout,
+        [Option("f", "file", "Mod file to install")] AbsolutePath file,
+        [Option("n", "name", "Name of the mod after installing")] string name,
         [Injected] IArchiveInstaller archiveInstaller,
         [Injected] IFileOriginRegistry fileOriginRegistry,
-        CancellationToken token)
+        [Injected] CancellationToken token)
     {
         return await renderer.WithProgress(token, async () =>
         {
@@ -135,9 +132,8 @@ public static class LoadoutManagementVerbs
 
     [Verb("list-history", "Lists the history of a loadout")]
     private static async Task<int> ListHistory([Injected] IRenderer renderer,
-        [Option("l", "loadout", "Loadout to load")]
-        LoadoutMarker loadout,
-        CancellationToken token)
+        [Option("l", "loadout", "Loadout to load")] LoadoutMarker loadout,
+        [Injected] CancellationToken token)
     {
         var rows = loadout.History()
             .Select(list => new object[] { list.LastModified, list.ChangeMessage, list.Mods.Count, list.DataStoreId })
@@ -150,7 +146,7 @@ public static class LoadoutManagementVerbs
     [Verb("list-loadouts", "Lists all the loadouts")]
     private static async Task<int> ListLoadouts([Injected] IRenderer renderer,
         [Injected] LoadoutRegistry registry,
-        CancellationToken token)
+        [Injected] CancellationToken token)
     {
         var rows = registry.AllLoadouts()
             .Select(list => new object[] { list.Name, list.Installation, list.LoadoutId, list.Mods.Count })
@@ -162,11 +158,9 @@ public static class LoadoutManagementVerbs
 
     [Verb("list-mod-contents", "Lists the contents of a mod")]
     private static async Task<int> ListModContents([Injected] IRenderer renderer,
-        [Option("l", "loadout", "Loadout to load")]
-        LoadoutMarker loadout,
-        [Option("m", "mod", "Mod to print the contents of")]
-        string modName,
-        CancellationToken token)
+        [Option("l", "loadout", "Loadout to load")] LoadoutMarker loadout,
+        [Option("m", "mod", "Mod to print the contents of")] string modName,
+        [Injected] CancellationToken token)
     {
         var rows = new List<object[]>();
         var mod = loadout.Value.Mods.Values.First(m => m.Name == modName);
@@ -192,9 +186,8 @@ public static class LoadoutManagementVerbs
 
     [Verb("list-mods", "Lists the mods in a loadout")]
     private static async Task<int> ListMods([Injected] IRenderer renderer,
-        [Option("l", "loadout", "Loadout to load")]
-        LoadoutMarker loadout,
-        CancellationToken token)
+        [Option("l", "loadout", "Loadout to load")] LoadoutMarker loadout,
+        [Injected] CancellationToken token)
     {
         var rows = loadout.Value.Mods.Values
             .Select(mod => new object[] { mod.Name, mod.Files.Count })
@@ -205,10 +198,8 @@ public static class LoadoutManagementVerbs
     }
 
     [Verb("rename", "Rename a loadout id to a specific registry name")]
-    private static async Task<int> RenameLoadout([Option("l", "loadout", "Loadout to assign a name")]
-        Loadout loadout,
-        [Option("n", "name", "Name to assign the loadout")]
-        string name,
+    private static async Task<int> RenameLoadout([Option("l", "loadout", "Loadout to assign a name")] Loadout loadout,
+        [Option("n", "name", "Name to assign the loadout")] string name,
         [Injected] LoadoutRegistry registry)
     {
         registry.Alter(loadout.LoadoutId, $"Renamed {loadout.DataStoreId} to {name}", _ => loadout);
@@ -217,12 +208,11 @@ public static class LoadoutManagementVerbs
 
     [Verb("manage-game", "Manage a game")]
     private static async Task<int> ManageGame([Injected] IRenderer renderer,
-        [Option("g", "game", "Game to manage")]
-        IGame game,
+        [Option("g", "game", "Game to manage")] IGame game,
         [Option("v", "version", "Version of the game to manage")] Version version,
         [Injected] LoadoutRegistry loadoutRegistry,
         [Option("n", "name", "The name of the new loadout")] string name,
-        CancellationToken token)
+        [Injected] CancellationToken token)
     {
         var installation = game.Installations.FirstOrDefault(i => i.Version == version);
         if (installation == null)

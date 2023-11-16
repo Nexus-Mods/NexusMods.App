@@ -49,6 +49,7 @@ public static class Services
             .AddSingleton<IAppConfigManager, AppConfigManager>(provider =>
                 new AppConfigManager(config, provider.GetRequiredService<JsonSerializerOptions>()))
             .AddSingleton<IStartupHandler, StartupHandler>()
+            .AddSingleton<CommandLineConfigurator>()
             .AddCLI()
             .AddFileSystem()
             .AddUI(config.LauncherSettings)

@@ -39,7 +39,7 @@ public class StressTest
         [Injected] IFileOriginRegistry fileOriginRegistry,
         [Injected] IEnumerable<IGameLocator> gameLocators,
         [Injected] IGuidedInstaller optionSelector,
-        CancellationToken token)
+        [Injected] CancellationToken token)
     {
         var manualLocator = gameLocators.OfType<ManuallyAddedLocator>().First();
 
