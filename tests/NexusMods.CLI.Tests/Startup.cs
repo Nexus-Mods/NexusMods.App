@@ -31,7 +31,6 @@ public class Startup
                 .AddHttpDownloader()
                 .AddNexusWebApi()
                 .AddNexusWebApiNmaIntegration(true)
-                .AddAllScoped<IRenderer, LoggingRenderer>()
                 .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace))
                 .AddSingleton<LocalHttpServer>()
                 .AddLogging(builder => builder.AddXUnit())

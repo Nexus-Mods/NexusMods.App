@@ -27,6 +27,12 @@ public class LoggingRenderer : IRenderer
     public Table LastTable => Logs.OfType<Table>().LastOrDefault() ??
                               throw new InvalidOperationException("No table was rendered");
 
+    public T Last<T>() where T : IRenderable
+    {
+        return Logs.OfType<T>().LastOrDefault() ??
+               throw new InvalidOperationException($"No {typeof(T).Name} was rendered");
+    }
+
     public void Reset()
     {
         Logs.Clear();

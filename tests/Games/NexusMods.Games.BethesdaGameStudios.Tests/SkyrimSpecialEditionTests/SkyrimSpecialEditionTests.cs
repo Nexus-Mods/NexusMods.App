@@ -12,6 +12,7 @@ using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.LoadoutSynchronizer.Extensions;
 using NexusMods.Games.TestFramework;
 using NexusMods.Paths;
+using NexusMods.ProxyConsole.Abstractions.Implementations;
 using Noggog;
 
 namespace NexusMods.Games.BethesdaGameStudios.Tests.SkyrimSpecialEditionTests;
@@ -25,10 +26,10 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
     /// DI Constructor
     /// </summary>
     /// <param name="serviceProvider"></param>
-    public SkyrimSpecialEditionTests(IServiceProvider serviceProvider) : base(serviceProvider)
+    public SkyrimSpecialEditionTests(TestModDownloader downloader, IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        _downloader = serviceProvider.GetRequiredService<TestModDownloader>();
-        _verbTester = new AVerbTest(serviceProvider.GetRequiredService<TemporaryFileManager>(), serviceProvider);
+        _downloader = downloader;
+        _verbTester = new AVerbTest(serviceProvider);
     }
 
     [Fact]
@@ -64,60 +65,60 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
         var modPath = FileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine("Assets/TruncatedPlugins.7z");
         await InstallModStoredFileIntoLoadout(loadout, modPath, "Skyrim Truncated Plugins");
 
-        await _verbTester.RunNoBannerAsync("list-managed-games");
+        var log = await _verbTester.Run("list-managed-games");
 
-        _verbTester.LastTable.Columns.Should().BeEquivalentTo("Name", "Game", "Id", "Mod Count");
-        _verbTester.LastTable.Rows.FirstOrDefault(r => r.First().Equals(loadoutName)).Should().NotBeNull();
+        log.LastTable.Columns.Should().BeEquivalentTo("Name", "Game", "Id", "Mod Count");
+        log.LastTable.Rows.FirstOrDefault(r => r.OfType<Text>().FirstOrDefault(txt => txt.Template == loadoutName) != default).Should().NotBeNull();
 
-        await _verbTester.RunNoBannerAsync("list-mods", "-l", loadoutName);
-        _verbTester.LastTable.Rows.Count().Should().Be(3);
+        log = await _verbTester.Run("list-mods", "-l", loadoutName);
+        log.LastTable.Rows.Count().Should().Be(3);
 
         // install skse
         var uri = $"nxm://{Game.Domain}/mods/{skseModId}/files/{skseFileId}";
-        await _verbTester.RunNoBannerAsync("download-and-install-mod", "-u", uri, "-l", loadoutName, "-n", skseModName);
+        log = await _verbTester.Run("download-and-install-mod", "-u", uri, "-l", loadoutName, "-n", skseModName);
 
-        await _verbTester.RunNoBannerAsync("list-mods", "-l", loadoutName);
-        _verbTester.LastTable.Rows.Count().Should().Be(4);
+        log = await _verbTester.Run("list-mods", "-l", loadoutName);
+        log.LastTable.Rows.Count().Should().Be(4);
 
-        await _verbTester.RunNoBannerAsync("list-mod-contents", "-l", loadoutName, "-n", skseModName);
-        _verbTester.LastTable.Rows.Count().Should().Be(128);
+        log = await _verbTester.Run("list-mod-contents", "-l", loadoutName, "-n", skseModName);
+        log.LastTable.Rows.Count().Should().Be(128);
 
         // install skyui
         uri = $"nxm://{Game.Domain}/mods/{skyuiModId}/files/{skyuiFileId}";
-        await _verbTester.RunNoBannerAsync("download-and-install-mod", "-u", uri, "-l", loadoutName, "-n",
+        log = await _verbTester.Run("download-and-install-mod", "-u", uri, "-l", loadoutName, "-n",
             skyuiModName);
 
-        await _verbTester.RunNoBannerAsync("list-mods", "-l", loadoutName);
-        _verbTester.LastTable.Rows.Count().Should().Be(5);
+        log = await _verbTester.Run("list-mods", "-l", loadoutName);
+        log.LastTable.Rows.Count().Should().Be(5);
 
-        await _verbTester.RunNoBannerAsync("list-mod-contents", "-l", loadoutName, "-n", skyuiModName);
-        _verbTester.LastTable.Rows.Count().Should().Be(6);
+        log = await _verbTester.Run("list-mod-contents", "-l", loadoutName, "-n", skyuiModName);
+        log.LastTable.Rows.Count().Should().Be(6);
 
         // install ussep
         uri = $"nxm://{Game.Domain}/mods/{ussepModId}/files/{ussepFileId}";
-        await _verbTester.RunNoBannerAsync("download-and-install-mod", "-u", uri, "-l", loadoutName, "-n",
+        log = await _verbTester.Run("download-and-install-mod", "-u", uri, "-l", loadoutName, "-n",
             ussepModName);
 
-        await _verbTester.RunNoBannerAsync("list-mods", "-l", loadoutName);
-        _verbTester.LastTable.Rows.Count().Should().Be(6);
+        log = await _verbTester.Run("list-mods", "-l", loadoutName);
+        log.LastTable.Rows.Count().Should().Be(6);
 
-        await _verbTester.RunNoBannerAsync("list-mod-contents", "-l", loadoutName, "-n", ussepModName);
-        _verbTester.LastTable.Rows.Count().Should().Be(8);
+        log = await _verbTester.Run("list-mod-contents", "-l", loadoutName, "-n", ussepModName);
+        log.LastTable.Rows.Count().Should().Be(8);
 
         // Test Apply
-        await _verbTester.RunNoBannerAsync("flatten-list", "-l", loadoutName);
+        log = await _verbTester.Run("flatten-list", "-l", loadoutName);
         // count plugins.txt
         var logger = ServiceProvider.GetRequiredService<ILogger<SkyrimSpecialEditionTests>>();
         StringBuilder sb = new();
-        _verbTester.LastTable.Rows.ForEach(r =>
+        log.LastTable.Rows.ForEach(r =>
         {
             r.ForEach(c => sb.Append(c.ToString() + ","));
             sb.AppendLine();
         });
         logger.LogInformation("flatten-list table {FlattenTable}", sb.ToString());
-        _verbTester.LastTable.Rows.Count().Should().Be(223);
+        log.LastTable.Rows.Count().Should().Be(223);
 
-        await _verbTester.RunNoBannerAsync("apply", "-l", loadoutName);
+        log = await _verbTester.Run("apply", "-l", loadoutName);
     }
 
     [Fact]

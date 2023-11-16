@@ -4,18 +4,13 @@ using NexusMods.Paths;
 
 namespace NexusMods.CLI.Tests.VerbTests;
 
-public class ListGames : AVerbTest
+public class ListGames(IServiceProvider provider) : AVerbTest(provider)
 {
-    public ListGames(TemporaryFileManager temporaryFileManager, IServiceProvider provider) : base(temporaryFileManager, provider)
-    {
-    }
-
     [Fact]
     public async Task CanListGames()
     {
-        await RunNoBannerAsync("--noBanner", "list-games");
-
-        LogSize.Should().Be(1);
-        LastTable.Rows.First().OfType<IGame>().First().Name.Should().Be("Stubbed Game");
+        var log = await Run("list-games");
+        log.Size.Should().Be(1);
+        log.LastTable.Rows.First().OfType<IGame>().First().Name.Should().Be("Stubbed Game");
     }
 }

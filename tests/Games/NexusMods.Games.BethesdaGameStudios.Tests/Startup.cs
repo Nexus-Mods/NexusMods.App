@@ -24,7 +24,6 @@ public class Startup
             .AddGenericGameSupport()
             .AddFomod()
             .AddCLI()
-            .AddAllScoped<IRenderer, LoggingRenderer>()
             .AddLogging(builder => builder.AddXunitOutput())
             .Validate();
     }

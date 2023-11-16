@@ -34,6 +34,7 @@ internal static class CliVerbs
     {
         var rows = from game in games
             from install in game.Installations
+            orderby game.Name, install.Version
             select new object[]
             {
                 game.Name, install.Version, install.Store, install.LocationsRegister.GetResolvedPath(LocationId.Game)
