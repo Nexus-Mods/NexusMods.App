@@ -1,10 +1,10 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.CLI;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveMetaData;
+using NexusMods.DataModel.CommandLine.Verbs;
 using NexusMods.DataModel.Diagnostics;
 using NexusMods.DataModel.GlobalSettings;
 using NexusMods.DataModel.Interprocess;
@@ -16,7 +16,6 @@ using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.DataModel.Sorting.Rules;
 using NexusMods.DataModel.TriggerFilter;
-using NexusMods.DataModel.Verbs;
 using NexusMods.Paths;
 
 namespace NexusMods.DataModel;
@@ -100,7 +99,7 @@ public static class Services
         coll.AddOptions<DiagnosticOptions>();
 
         // Verbs
-        coll.AddVerb<GenerateGameFileHashes>();
+        coll.AddLoadoutManagementVerbs();
 
         return coll;
     }

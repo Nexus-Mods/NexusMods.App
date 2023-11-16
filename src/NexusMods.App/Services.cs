@@ -34,12 +34,6 @@ namespace NexusMods.App;
 
 public static class Services
 {
-    public static IServiceCollection AddRenderers(this IServiceCollection services)
-    {
-        services.AddScoped<IRenderer, CLI.Renderers.Spectre>();
-        services.AddScoped<IRenderer, Json>();
-        return services;
-    }
 
     public static IServiceCollection AddListeners(this IServiceCollection services)
     {
@@ -69,7 +63,6 @@ public static class Services
             .AddDarkestDungeon()
             .AddSifu()
             .AddStardewValley()
-            .AddRenderers()
             .AddNexusWebApi()
             .AddNexusWebApiNmaIntegration()
             .AddAdvancedHttpDownloader(config.HttpDownloaderSettings)

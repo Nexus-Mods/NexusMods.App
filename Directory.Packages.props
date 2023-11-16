@@ -5,6 +5,7 @@
     <PackageVersion Include="NexusMods.Paths" Version="0.1.8" />
     <PackageVersion Include="NexusMods.Archives.Nx" Version="0.3.7" />
     <PackageVersion Include="NexusMods.Paths.TestingHelpers" Version="0.1.8" />
+    <PackageVersion Include="NexusMods.ProxyConsole.Abstractions" Version="0.5.2" />
     <PackageVersion Include="NexusMods.Telemetry.OpenTelemetry" Version="1.0.0" />
     <PackageVersion Include="FomodInstaller.Interface" Version="1.2.0" />
     <PackageVersion Include="FomodInstaller.Scripting.XmlScript" Version="1.0.0" />

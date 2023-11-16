@@ -59,42 +59,40 @@ public class NXMUrl
     /// <summary>
     /// parse a nxm:// url
     /// </summary>
-    /// <param name="input">the url in string format</param>
+    /// <param name="uri">the url in string format</param>
     /// <returns>parsed object</returns>
     /// <exception cref="ArgumentException">if the input url is not valid</exception>
-    public static NXMUrl Parse(string input)
+    public static NXMUrl Parse(Uri uri)
     {
-        var parsed = new Uri(input);
-
-        if (parsed.Scheme != "nxm")
+        if (uri.Scheme != "nxm")
         {
-            throw new ArgumentException($"invalid url \"{input}\"");
+            throw new ArgumentException($"invalid url \"{uri}\"");
         }
 
         NXMUrl? result = null;
 
-        if (parsed.Host == "oauth")
+        if (uri.Host == "oauth")
         {
-            result = new NXMOAuthUrl(parsed);
+            result = new NXMOAuthUrl(uri);
         }
-        else if (parsed.Segments.Length >= 5)
+        else if (uri.Segments.Length >= 5)
         {
-            if (parsed.Segments[1] == "mods/")
+            if (uri.Segments[1] == "mods/")
             {
-                result = new NXMModUrl(parsed);
+                result = new NXMModUrl(uri);
             }
-            else if (parsed.Segments[1] == "collections/")
+            else if (uri.Segments[1] == "collections/")
             {
-                result = new NXMCollectionUrl(parsed);
+                result = new NXMCollectionUrl(uri);
             }
         }
 
         if (result == null)
         {
-            throw new ArgumentException($"invalid url \"{input}\"");
+            throw new ArgumentException($"invalid url \"{uri}\"");
         }
 
-        result.Query = System.Web.HttpUtility.ParseQueryString(parsed.Query);
+        result.Query = System.Web.HttpUtility.ParseQueryString(uri.Query);
         return result;
     }
 

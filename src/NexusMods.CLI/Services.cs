@@ -52,12 +52,9 @@ public static class Services
         services.AddSingleton<IIpcProtocolHandler, NxmIpcProtocolHandler>();
         services.AddSingleton<IDownloadProtocolHandler, NxmDownloadProtocolHandler>();
 
+        services.AddProtocolVerbs();
+
         services
-            .AddVerb<AddGame>()
-            .AddVerb<AnalyzeArchive>()
-            .AddVerb<Apply>()
-            .AddVerb<Ingest>()
-            .AddVerb<AssociateNxm>()
             .AddVerb<ChangeTracking>()
             .AddVerb<DownloadAndInstallMod>()
             .AddVerb<DownloadLinks>()
@@ -66,7 +63,6 @@ public static class Services
             .AddVerb<FlattenList>()
             .AddVerb<HashFolder>()
             .AddVerb<InstallMod>()
-            .AddVerb<ListGames>()
             .AddVerb<ListHistory>()
             .AddVerb<ListManagedGames>()
             .AddVerb<ListModContents>()
