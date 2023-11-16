@@ -65,7 +65,7 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
         var modPath = FileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine("Assets/TruncatedPlugins.7z");
         await InstallModStoredFileIntoLoadout(loadout, modPath, "Skyrim Truncated Plugins");
 
-        var log = await _verbTester.Run("list-managed-games");
+        var log = await _verbTester.Run("list-loadouts");
 
         log.LastTable.Columns.Should().BeEquivalentTo("Name", "Game", "Id", "Mod Count");
         log.LastTable.Rows.FirstOrDefault(r => r.OfType<Text>().FirstOrDefault(txt => txt.Template == loadoutName) != default).Should().NotBeNull();

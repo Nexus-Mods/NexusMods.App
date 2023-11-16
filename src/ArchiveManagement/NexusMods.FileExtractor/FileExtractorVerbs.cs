@@ -13,7 +13,7 @@ public static class FileExtractorVerbs
     private static async Task<int> ExtractArchive([Option("i", "inputFile", "Input archive to extract")] AbsolutePath inputFile,
         [Option("o", "outputFolder", "Output location for files")] AbsolutePath outputFolder,
         [Injected] FileExtractor extractor,
-        CancellationToken token)
+        [Injected] CancellationToken token)
     {
         await extractor.ExtractAllAsync(inputFile, outputFolder, token);
         return 0;

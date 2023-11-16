@@ -8,7 +8,7 @@ namespace NexusMods.CLI.Tests;
 // ReSharper disable once ClassNeverInstantiated.Global
 public class LoggingRenderer : IRenderer
 {
-    public static readonly List<IRenderable> Logs = new();
+    public readonly List<IRenderable> Logs = new();
 
     public Task<T> WithProgress<T>(CancellationToken token, Func<Task<T>> f, bool showSize = true)
     {
@@ -26,6 +26,49 @@ public class LoggingRenderer : IRenderer
     /// <exception cref="InvalidOperationException"></exception>
     public Table LastTable => Logs.OfType<Table>().LastOrDefault() ??
                               throw new InvalidOperationException("No table was rendered");
+
+    /// <summary>
+    /// Gets the last table's columns
+    /// </summary>
+    public IEnumerable<string> LastTableColumns => LastTable.Columns.OfType<Text>().Select(c => c.Template);
+
+    /// <summary>
+    /// Returns all the text that matches the given string found in the cells of the last table
+    /// </summary>
+    /// <param name="text"></param>
+    /// <returns></returns>
+    public IEnumerable<string> TableCellsWith(string text)
+    {
+        return LastTable.Rows.SelectMany(r => r.OfType<Text>()).Where(t => t.Template == text).Select(t => t.Template);
+    }
+
+    /// <summary>
+    /// Returns all the text that matchestthe given string found in the cells of the given index the last table
+    /// </summary>
+    /// <param name="columnIdx"></param>
+    /// <param name="text"></param>
+    /// <returns></returns>
+    public IEnumerable<string> TableCellsWith(int columnIdx, string text)
+    {
+        return LastTable.Rows
+            .Where(row => row.Length > columnIdx)
+            .Select(row => row[columnIdx])
+            .OfType<Text>()
+            .Where(t => t.Template == text)
+            .Select(t => t.Template);
+    }
+
+    /// <summary>
+    /// Returns all the text from all the cells of the last table in string format
+    /// </summary>
+    /// <returns></returns>
+    public IEnumerable<IEnumerable<string>> LastCellsAsStrings()
+    {
+        return from row in LastTable.Rows
+            select (from cell in row
+                   let text = cell is Text txt ? txt.Template : ""
+                   select text);
+    }
 
     public T Last<T>() where T : IRenderable
     {

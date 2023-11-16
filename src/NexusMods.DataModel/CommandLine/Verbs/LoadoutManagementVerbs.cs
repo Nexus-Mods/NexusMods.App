@@ -38,6 +38,7 @@ public static class LoadoutManagementVerbs
             .AddVerb(() => ListLoadouts)
             .AddVerb(() => ListModContents)
             .AddVerb(() => ListMods)
+            .AddVerb(() => ManageGame)
             .AddVerb(() => RenameLoadout);
 
     [Verb("apply", "Apply the given loadout to the game folder")]
@@ -210,8 +211,8 @@ public static class LoadoutManagementVerbs
     private static async Task<int> ManageGame([Injected] IRenderer renderer,
         [Option("g", "game", "Game to manage")] IGame game,
         [Option("v", "version", "Version of the game to manage")] Version version,
-        [Injected] LoadoutRegistry loadoutRegistry,
         [Option("n", "name", "The name of the new loadout")] string name,
+        [Injected] LoadoutRegistry loadoutRegistry,
         [Injected] CancellationToken token)
     {
         var installation = game.Installations.FirstOrDefault(i => i.Version == version);

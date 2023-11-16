@@ -32,6 +32,7 @@ public static class Services
                 .AddOptionParser<IGame, GameParser>()
                 .AddOptionParser<LoadoutMarker, LoadoutMarkerParser>()
                 .AddOptionParser<Version>(v => (Version.Parse(v), null))
+                .AddOptionParser<string>(s => (s, null))
                 .AddOptionParser<Loadout, LoadoutParser>()
                 .AddOptionParser<ITool, ToolParser>();
 

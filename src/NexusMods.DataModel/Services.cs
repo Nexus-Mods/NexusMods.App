@@ -16,6 +16,7 @@ using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.DataModel.Sorting.Rules;
 using NexusMods.DataModel.TriggerFilter;
+using NexusMods.FileExtractor;
 using NexusMods.Paths;
 
 namespace NexusMods.DataModel;
@@ -99,7 +100,10 @@ public static class Services
         coll.AddOptions<DiagnosticOptions>();
 
         // Verbs
-        coll.AddLoadoutManagementVerbs();
+        coll.AddLoadoutManagementVerbs()
+            .AddToolVerbs()
+            .AddFileHashCacheVerbs()
+            .AddArchiveVerbs();
 
         return coll;
     }

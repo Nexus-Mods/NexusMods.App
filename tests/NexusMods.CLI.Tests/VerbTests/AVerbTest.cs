@@ -20,12 +20,17 @@ public class AVerbTest(IServiceProvider provider)
     internal readonly IFileSystem FileSystem = ServiceProviderServiceExtensions.GetRequiredService<IFileSystem>(provider);
 
 
-    public async Task<LoggingRenderer> Run(string command, params string[] args)
+    public async Task<LoggingRenderer> Run(params string[] args)
     {
         var renderer = new LoggingRenderer();
         var configurator = provider.GetRequiredService<CommandLineConfigurator>();
-        var result = await configurator.RunAsync(args, renderer);
-        result.Should().Be(0, "The command should have succeeded");
+        var result = await configurator.RunAsync(args, renderer, CancellationToken.None);
+        if (result != 0)
+        {
+            var errorLog = renderer.Logs.OfType<Text>().Select(t => t.Template).Aggregate((acc, itm) => acc + itm);
+            throw new Exception($"The command should have succeeded instead got: \n\n {errorLog}");
+        }
+
         return renderer;
     }
 

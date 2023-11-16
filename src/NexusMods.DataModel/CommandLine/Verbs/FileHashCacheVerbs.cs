@@ -17,15 +17,15 @@ public static class FileHashCacheVerbs
     private static async Task<int> HashFolder([Injected] IRenderer renderer,
         [Option("i", "inputFolder", "Input folder to hash")] AbsolutePath inputFolder,
         [Injected] FileHashCache fileHashCache,
-        CancellationToken token)
+        [Injected] CancellationToken token)
     {
         var sw = Stopwatch.StartNew();
         var results = await renderer.WithProgress(token, async () =>
             await fileHashCache.IndexFolderAsync(inputFolder, token).ToArrayAsync(cancellationToken: token));
 
-        var elapsed = sw.Elapsed;
-        await renderer.Table(new[] { "Folder", "Hash", "Size", "Elapsed", "Speed" },
-            new[] { new object[] { inputFolder, results.Sum(r => r.Size), results.Length, elapsed, results.Sum(r => r.Size) / elapsed } });
+        await renderer.Table(new[] { "Path", "Hash", "Size"},
+            results.OrderBy(entry => entry.Path.RelativeTo(inputFolder))
+                .Select(entry => new object[] {entry.Path.RelativeTo(inputFolder), entry.Hash, entry.Size}));
         return 0;
     }
 

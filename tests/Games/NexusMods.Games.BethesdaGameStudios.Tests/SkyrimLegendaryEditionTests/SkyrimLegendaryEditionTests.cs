@@ -37,7 +37,7 @@ public class SkyrimLegendaryEditionTests(IServiceProvider serviceProvider) : AGa
         var loadoutName = loadout.Value.Name;
 
 
-        var log = await _verbTester.Run("list-managed-games");
+        var log = await _verbTester.Run("list-loadouts");
 
         log.LastTable.Columns.Should().BeEquivalentTo("Name", "Game", "Id", "Mod Count");
         log.LastTable.Rows.FirstOrDefault(r => r.OfType<Text>().FirstOrDefault(txt => txt.Template == loadoutName) != default).Should().NotBeNull();

@@ -17,7 +17,7 @@ internal static class ToolVerbs
     [Verb("list-tools", "Lists all tools available")]
     private static async Task<int> ListTools([Injected] IRenderer renderer,
         [Injected] IEnumerable<ITool> tools,
-        CancellationToken token)
+        [Injected] CancellationToken token)
     {
         await renderer.Table(new[] { "Name", "Description" },
             tools.Select(t => new object[] { t.Name, string.Join(", ", t.Domains) }));
@@ -29,7 +29,7 @@ internal static class ToolVerbs
         [Option("t", "tool", "Tool to run")] ITool tool,
         [Option("l", "loadout", "Loadout to run the tool on")] LoadoutMarker loadout,
         [Injected] IToolManager toolManager,
-        CancellationToken token)
+        [Injected] CancellationToken token)
     {
         await renderer.WithProgress(token, async () =>
         {

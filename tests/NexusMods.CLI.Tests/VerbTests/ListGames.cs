@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NexusMods.DataModel.Games;
 using NexusMods.Paths;
+using NexusMods.ProxyConsole.Abstractions.Implementations;
 
 namespace NexusMods.CLI.Tests.VerbTests;
 
@@ -11,6 +12,6 @@ public class ListGames(IServiceProvider provider) : AVerbTest(provider)
     {
         var log = await Run("list-games");
         log.Size.Should().Be(1);
-        log.LastTable.Rows.First().OfType<IGame>().First().Name.Should().Be("Stubbed Game");
+        log.TableCellsWith("Stubbed Game").Should().NotBeEmpty();
     }
 }
