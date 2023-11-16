@@ -2,13 +2,19 @@
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
-namespace NexusMods.Games.AdvancedInstaller.UI.Content.Bottom;
+namespace NexusMods.Games.AdvancedInstaller.UI;
 
 internal class FooterViewModel : AViewModel<IFooterViewModel>, IFooterViewModel
 {
-    [Reactive]
-    public ReactiveCommand<Unit, Unit> CancelCommand { get; set; } = Initializers.DisabledReactiveCommand;
+    public FooterViewModel()
+    {
+        CancelCommand = ReactiveCommand.Create(() => { });
+        InstallCommand = ReactiveCommand.Create(() => { });
+    }
 
     [Reactive]
-    public ReactiveCommand<Unit, Unit> InstallCommand { get; set; } = Initializers.DisabledReactiveCommand;
+    public ReactiveCommand<Unit, Unit> CancelCommand { get; set; }
+
+    [Reactive]
+    public ReactiveCommand<Unit, Unit> InstallCommand { get; set; }
 }

@@ -532,8 +532,8 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
             return;
 
         var previewEntry = modEntry.Mapping.HasValue
-            ? null
-            : PreviewViewModel.TreeEntriesCache.Lookup(modEntry.Mapping.Value).ValueOrDefault();
+            ? PreviewViewModel.TreeEntriesCache.Lookup(modEntry.Mapping.Value).ValueOrDefault()
+            : null;
 
         var modNode = ModContentViewModel.Root.FindNode(modEntry.RelativePath)!;
 
@@ -565,8 +565,9 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
         DeploymentData.RemoveMapping(modEntry.RelativePath);
 
         var previewEntry = modEntry.Mapping.HasValue
-            ? null
-            : PreviewViewModel.TreeEntriesCache.Lookup(modEntry.Mapping.Value).ValueOrDefault();
+            ? PreviewViewModel.TreeEntriesCache.Lookup(modEntry.Mapping.Value).ValueOrDefault()
+            : null;
+
         modEntry.RemoveMapping();
 
         if (previewEntry is null) return;

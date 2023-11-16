@@ -1,7 +1,7 @@
 ﻿using System.Reactive;
 using ReactiveUI;
 
-namespace NexusMods.Games.AdvancedInstaller.UI.Content.Bottom;
+namespace NexusMods.Games.AdvancedInstaller.UI;
 
 public interface IFooterViewModel : IViewModelInterface
 {

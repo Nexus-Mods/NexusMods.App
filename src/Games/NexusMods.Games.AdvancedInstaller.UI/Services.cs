@@ -1,6 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Games.AdvancedInstaller.UI.Content;
-using NexusMods.Games.AdvancedInstaller.UI.Content.Bottom;
 using NexusMods.Games.AdvancedInstaller.UI.EmptyPreview;
 using NexusMods.Games.AdvancedInstaller.UI.ModContent;
 using NexusMods.Games.AdvancedInstaller.UI.Preview;
@@ -15,7 +13,8 @@ public static class Services
     {
         return serviceCollection
             .AddSingleton<IAdvancedInstallerHandler, AdvancedManualInstallerUI>()
-            .AddViewModel<AdvancedInstallerOverlayViewModel, IAdvancedInstallerOverlayViewModel>()
+            .AddViewModel<AdvancedInstallerPageViewModel, IAdvancedInstallerPageViewModel>()
+            .AddViewModel<AdvancedInstallerWindowViewModel, IAdvancedInstallerWindowViewModel>()
             .AddView<FooterView, IFooterViewModel>()
             .AddView<BodyView, IBodyViewModel>()
             .AddView<ModContentView, IModContentViewModel>()
@@ -25,10 +24,11 @@ public static class Services
             .AddView<SelectLocationView, ISelectLocationViewModel>()
             .AddView<LocationTreeContainerView, ILocationTreeContainerViewModel>()
             .AddView<SuggestedEntryView, ISuggestedEntryViewModel>()
-            .AddView<AdvancedInstallerOverlayView, IAdvancedInstallerOverlayViewModel>()
+            .AddView<AdvancedInstallerPageView, IAdvancedInstallerPageViewModel>()
             .AddView<ModContentTreeEntryView, IModContentTreeEntryViewModel>()
             .AddView<PreviewTreeEntryView, IPreviewTreeEntryViewModel>()
             .AddView<SelectableTreeEntryView, ISelectableTreeEntryViewModel>()
-            .AddView<UnsupportedModOverlayView, IUnsupportedModOverlayViewModel>();
+            .AddView<UnsupportedModPageView, IUnsupportedModPageViewModel>()
+            .AddView<AdvancedInstallerWindowView, IAdvancedInstallerWindowViewModel>();
     }
 }

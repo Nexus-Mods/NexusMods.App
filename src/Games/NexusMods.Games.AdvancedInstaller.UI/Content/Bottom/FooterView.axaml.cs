@@ -3,7 +3,7 @@ using System.Reactive.Disposables;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 
-namespace NexusMods.Games.AdvancedInstaller.UI.Content.Bottom;
+namespace NexusMods.Games.AdvancedInstaller.UI;
 
 [ExcludeFromCodeCoverage]
 public partial class FooterView : ReactiveUserControl<IFooterViewModel>

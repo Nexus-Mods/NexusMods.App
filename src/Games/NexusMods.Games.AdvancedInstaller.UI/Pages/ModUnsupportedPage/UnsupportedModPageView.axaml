@@ -1,21 +1,20 @@
-﻿<reactiveUi:ReactiveUserControl x:TypeArguments="ui:IUnsupportedModOverlayViewModel"
+﻿<reactiveUi:ReactiveUserControl x:TypeArguments="ui:IUnsupportedModPageViewModel"
                                 xmlns="https://github.com/avaloniaui"
                                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:ui="clr-namespace:NexusMods.Games.AdvancedInstaller.UI"
-                                xmlns:base="clr-namespace:NexusMods.App.UI.Overlays.Generic.MessageBox.Base;assembly=NexusMods.App.UI"
                                 xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
                                 xmlns:resources="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Resources"
                                 mc:Ignorable="d" d:DesignWidth="1232" d:DesignHeight="672"
-                                x:Class="NexusMods.Games.AdvancedInstaller.UI.UnsupportedModOverlayView">
+                                x:Class="NexusMods.Games.AdvancedInstaller.UI.UnsupportedModPageView">
     <Design.DataContext>
-        <ui:UnsupportedModOverlayDesignViewModel />
+        <ui:UnsupportedModPageDesignViewModel />
     </Design.DataContext>
 
-    <base:MessageBoxBackground Width="1024" Height="576" MaxWidth="1500" MaxHeight="818" >
-        <base:MessageBoxBackground.Styles>
+    <Grid RowDefinitions="*, Auto">
+        <Grid.Styles>
 
             <Style Selector="Border.TopPart">
                 <Setter Property="Background" Value="{DynamicResource BorderContainerColor}" />
@@ -45,9 +44,10 @@
                 <Setter Property="Margin" Value="0,0,0,4" />
             </Style>
 
-        </base:MessageBoxBackground.Styles>
+        </Grid.Styles>
 
-        <base:MessageBoxBackground.TopContent>
+        <Border Grid.Row="0" CornerRadius="8,8,0,0" HorizontalAlignment="Stretch"
+                Background="{DynamicResource BorderContainerColor}">
             <Border Classes="TopPart" x:Name="TopContentBorder">
                 <Grid RowDefinitions="Auto, *">
 
@@ -86,9 +86,10 @@
 
                 </Grid>
             </Border>
-        </base:MessageBoxBackground.TopContent>
+        </Border>
 
-        <base:MessageBoxBackground.BottomContent>
+        <Border Grid.Row="1" CornerRadius="0,0,8,8" HorizontalAlignment="Stretch"
+                Background="{DynamicResource StructuralBorderColor}">
             <Border Classes="BottomPart" x:Name="BottomContentBorder">
                 <Border Classes="FooterBorder" x:Name="FooterBorder"
                         Background="{DynamicResource StructuralBorderColor}"
@@ -123,8 +124,8 @@
                 </Border>
 
             </Border>
-        </base:MessageBoxBackground.BottomContent>
+        </Border>
 
-    </base:MessageBoxBackground>
+    </Grid>
 
 </reactiveUi:ReactiveUserControl>

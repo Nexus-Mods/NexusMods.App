@@ -1,7 +1,8 @@
-﻿using System.Reactive.Disposables;
+﻿using System.Reactive.Concurrency;
+using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.ReactiveUI;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.App.UI.Overlays;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Mods;
@@ -19,18 +20,13 @@ namespace NexusMods.Games.AdvancedInstaller.UI;
 ///     Provides the implementation of the 'Advanced Installer' functionality.
 /// </summary>
 // ReSharper disable once InconsistentNaming
-public class AdvancedManualInstallerUI: IAdvancedInstallerHandler
+public class AdvancedManualInstallerUI : IAdvancedInstallerHandler
 {
-    private readonly Lazy<IOverlayController> _overlayController;
     private readonly Lazy<LoadoutRegistry> _loadoutRegistry;
-    private readonly IServiceProvider _provider;
 
     public AdvancedManualInstallerUI(IServiceProvider provider)
     {
-        _provider = provider;
-
         // Delay to avoid circular dependency.
-        _overlayController = new Lazy<IOverlayController>(provider.GetRequiredService<IOverlayController>);
         _loadoutRegistry = new Lazy<LoadoutRegistry>(provider.GetRequiredService<LoadoutRegistry>);
     }
 
@@ -54,8 +50,8 @@ public class AdvancedManualInstallerUI: IAdvancedInstallerHandler
 
 
         // Note: This code is effectively a stub.
-        var (shouldInstall, deploymentData) = await GetDeploymentDataAsync(gameInstallation, loadout, modName,
-            baseModId, archiveFiles, cancellationToken);
+        var (shouldInstall, deploymentData) = await GetDeploymentDataAsync(gameInstallation, modName,
+            archiveFiles);
 
         if (!shouldInstall)
             return Array.Empty<ModInstallerResult>();
@@ -70,54 +66,48 @@ public class AdvancedManualInstallerUI: IAdvancedInstallerHandler
         };
     }
 
+
     private async Task<(bool shouldInstall, DeploymentData data)> GetDeploymentDataAsync(
-        GameInstallation gameInstallation, Loadout? loadout, string modName, ModId baseModId,
-        FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles, CancellationToken cancellationToken)
+        GameInstallation gameInstallation, string modName,
+        FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles)
     {
-        var showInstaller = await ShowUnsupportedModOverlay(modName);
+        var installerViewModel =
+            new AdvancedInstallerWindowViewModel(modName, archiveFiles, gameInstallation.LocationsRegister);
 
-        // TODO: Abort this somehow so if user closes dialog, the installed data does not change in db.
-        if (!showInstaller)
-            return (false, new DeploymentData());
+        await ShowAdvancedInstallerDialog(installerViewModel);
 
-        // This is a stub, until we implement some UI logic to pull this data
-        return await ShowAdvancedInstallerOverlay(modName, archiveFiles, gameInstallation.LocationsRegister,
-            gameInstallation.Game.Name);
+        return (installerViewModel.AdvancedInstallerVM.ShouldInstall,
+            installerViewModel.AdvancedInstallerVM.BodyViewModel.DeploymentData);
     }
 
-    private async Task<bool> ShowUnsupportedModOverlay(string modName, object? referenceItem = null)
+    private static async Task ShowAdvancedInstallerDialog(IAdvancedInstallerWindowViewModel dialogVM)
     {
-        var tcs = new TaskCompletionSource<bool>();
-        var vm = new UnsupportedModOverlayViewModel(modName);
-        OnUi(_overlayController.Value,
-            controller => { controller.SetOverlayContent(new SetOverlayItem(vm, referenceItem), tcs); });
-        await tcs.Task;
-        return vm.ShouldAdvancedInstall;
-    }
+        var tcs = new TaskCompletionSource();
 
-    private async Task<(bool shouldInstall, DeploymentData data)> ShowAdvancedInstallerOverlay(string modName,
-        FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles, GameLocationsRegister register,
-        string gameName = "", object? referenceItem = null)
-    {
-        var tcs = new TaskCompletionSource<bool>();
-        var vm = new AdvancedInstallerOverlayViewModel(modName, archiveFiles, register, gameName);
-        OnUi(_overlayController.Value,
-            controller => { controller.SetOverlayContent(new SetOverlayItem(vm, referenceItem), tcs); });
-        await tcs.Task;
-        return (!vm.WasCancelled, vm.BodyViewModel.DeploymentData);
-    }
-
-    private static void OnUi<TState>(TState state, Action<TState> action)
-    {
-        // NOTE: AvaloniaScheduler has to be used to do work on the UI thread
-        AvaloniaScheduler.Instance.Schedule(
-            (action, state),
-            AvaloniaScheduler.Instance.Now,
-            (_, tuple) =>
+        OnUi((dialogVM, tcs), async tuple =>
+        {
+            var view = new AdvancedInstallerWindowView
             {
-                var (innerAction, innerState) = tuple;
-                innerAction(innerState);
-                return Disposable.Empty;
-            });
+                ViewModel = tuple.dialogVM
+            };
+
+            // Get the main window.
+            if (Application.Current?.ApplicationLifetime is
+                IClassicDesktopStyleApplicationLifetime { MainWindow: not null } desktop)
+            {
+                await view.ShowDialog(desktop.MainWindow);
+            }
+
+            tcs.SetResult();
+        });
+
+        await tcs.Task;
     }
+
+    private static void OnUi<TState>(TState state, Func<TState, Task> action)
+    {
+        AvaloniaScheduler.Instance.ScheduleAsync(state: (state, action),
+            async (_, innerState, _) => { await innerState.action(innerState.state); });
+    }
+
 }

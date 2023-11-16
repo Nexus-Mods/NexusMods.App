@@ -1,15 +1,15 @@
-﻿<reactiveUi:ReactiveUserControl x:TypeArguments="bottom:IFooterViewModel"
+﻿<reactiveUi:ReactiveUserControl x:TypeArguments="ui:IFooterViewModel"
                                 xmlns="https://github.com/avaloniaui"
                                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:resources="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Resources"
-                                xmlns:bottom="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Content.Bottom"
+                                xmlns:ui="clr-namespace:NexusMods.Games.AdvancedInstaller.UI"
                                 mc:Ignorable="d" d:DesignWidth="1232" d:DesignHeight="84"
-                                x:Class="NexusMods.Games.AdvancedInstaller.UI.Content.Bottom.FooterView">
+                                x:Class="NexusMods.Games.AdvancedInstaller.UI.FooterView">
     <Design.DataContext>
-        <bottom:FooterDesignViewModel />
+        <ui:FooterDesignViewModel />
     </Design.DataContext>
 
     <Border Classes="FooterBorder" x:Name="FooterBorder"

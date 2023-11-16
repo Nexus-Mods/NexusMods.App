@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 
@@ -15,10 +16,11 @@ public partial class SelectableTreeEntryView : ReactiveUserControl<ISelectableTr
 
         this.WhenActivated(disposable =>
         {
-            if (ViewModel == null)
-                return;
-
-            InitView();
+            this.WhenAnyValue(view => view.ViewModel)
+                .WhereNotNull()
+                .Do(InitView)
+                .Subscribe()
+                .DisposeWith(disposable);
 
             this.BindCommand<SelectableTreeEntryView, ISelectableTreeEntryViewModel, ReactiveCommand<Unit, Unit>,
                     Button>(ViewModel, vm => vm.CreateMappingCommand, v => v.SelectRoundedButton)
@@ -96,16 +98,16 @@ public partial class SelectableTreeEntryView : ReactiveUserControl<ISelectableTr
         }
     }
 
-    private void InitView()
+    private void InitView(ISelectableTreeEntryViewModel vm)
     {
-        switch (ViewModel!.Status)
+        switch (vm.Status)
         {
             case SelectableDirectoryNodeStatus.Regular or SelectableDirectoryNodeStatus.RegularFromMapping:
                 FileElementGrid.IsVisible = true;
                 FolderEntryIcon.IsVisible = true;
                 FileNameTextBlock.IsVisible = true;
 
-                FileNameTextBlock.Text = ViewModel.DisplayName;
+                FileNameTextBlock.Text = vm.DisplayName;
 
                 SelectRoundedButton.IsVisible = true;
                 break;
@@ -131,10 +133,9 @@ public partial class SelectableTreeEntryView : ReactiveUserControl<ISelectableTr
                 FileElementGrid.IsVisible = true;
                 FolderEntryIcon.IsVisible = true;
                 FileNameTextBlock.IsVisible = true;
-                FileNameTextBlock.Text = ViewModel.DisplayName;
+                FileNameTextBlock.Text = vm.DisplayName;
                 SelectRoundedButton.IsVisible = true;
                 DeleteCreatedFolderButton.IsVisible = true;
-                this.BringIntoView();
                 break;
         }
     }

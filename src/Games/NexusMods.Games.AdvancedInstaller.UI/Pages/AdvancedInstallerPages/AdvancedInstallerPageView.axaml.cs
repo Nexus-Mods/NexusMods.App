@@ -6,9 +6,9 @@ using ReactiveUI;
 namespace NexusMods.Games.AdvancedInstaller.UI;
 
 [ExcludeFromCodeCoverage]
-public partial class AdvancedInstallerOverlayView : ReactiveUserControl<IAdvancedInstallerOverlayViewModel>
+public partial class AdvancedInstallerPageView : ReactiveUserControl<IAdvancedInstallerPageViewModel>
 {
-    public AdvancedInstallerOverlayView()
+    public AdvancedInstallerPageView()
     {
         InitializeComponent();
 

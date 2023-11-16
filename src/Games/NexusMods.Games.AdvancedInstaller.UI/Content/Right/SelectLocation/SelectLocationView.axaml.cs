@@ -2,7 +2,9 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using Avalonia.ReactiveUI;
+using DynamicData;
 using ReactiveUI;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.SelectLocation;
@@ -15,6 +17,7 @@ public partial class SelectLocationView : ReactiveUserControl<ISelectLocationVie
         InitializeComponent();
         this.WhenActivated(disposables =>
         {
+
             this.OneWayBind(ViewModel, vm => vm.SuggestedEntries,
                     view => view.SuggestedLocationItemsControl.ItemsSource)
                 .DisposeWith(disposables);
