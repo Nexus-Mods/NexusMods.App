@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Reactive;
+using DynamicData.Kernel;
 using NexusMods.Games.AdvancedInstaller.UI.ModContent;
 using NexusMods.Paths;
 using ReactiveUI;
@@ -33,7 +34,7 @@ public interface IPreviewTreeEntryViewModel : IViewModelInterface
 
     public bool IsFolderDupe { get; }
 
-    public IModContentTreeEntryViewModel? MappedEntry { get; set; }
+    public Optional<IModContentTreeEntryViewModel> MappedEntry { get; set; }
 
     public ObservableCollection<IModContentTreeEntryViewModel> MappedEntries { get; }
 

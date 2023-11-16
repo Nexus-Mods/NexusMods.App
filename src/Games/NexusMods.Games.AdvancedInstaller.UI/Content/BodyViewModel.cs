@@ -309,20 +309,20 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
 
     private void RemovePreviousFileMapping(IPreviewTreeEntryViewModel previewEntry)
     {
-        if (previewEntry.MappedEntry is null)
+        if (!previewEntry.MappedEntry.HasValue)
             return;
         var modEntry = previewEntry.MappedEntry!;
-        var mappedViaParent = modEntry.Status == ModContentTreeEntryStatus.IncludedViaParent;
+        var mappedViaParent = modEntry.Value.Status == ModContentTreeEntryStatus.IncludedViaParent;
 
         previewEntry.RemoveFileMapping();
-        modEntry.RemoveMapping();
+        modEntry.Value.RemoveMapping();
 
         if (mappedViaParent)
         {
-            RemoveParentMappingIfNecessary(modEntry, false);
+            RemoveParentMappingIfNecessary(modEntry.Value, false);
         }
 
-        DeploymentData.RemoveMapping(modEntry.RelativePath);
+        DeploymentData.RemoveMapping(modEntry.Value.RelativePath);
     }
 
     /// <summary>
@@ -482,7 +482,7 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
 
     private void RemoveFileMappingFromPreview(IPreviewTreeEntryViewModel previewEntry)
     {
-        if (previewEntry.MappedEntry is null)
+        if (!previewEntry.MappedEntry.HasValue)
         {
             previewEntry.RemoveFileMapping();
             PreviewViewModel.TreeEntriesCache.Remove(previewEntry);
@@ -490,7 +490,7 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
         }
 
         // Will also remove this preview node.
-        StartRemoveMapping(previewEntry.MappedEntry!);
+        StartRemoveMapping(previewEntry.MappedEntry.Value);
     }
 
     private void OnRemoveMappingFromModContent(IModContentTreeEntryViewModel modEntry)

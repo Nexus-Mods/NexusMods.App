@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Reactive;
+using DynamicData.Kernel;
 using NexusMods.Games.AdvancedInstaller.UI.ModContent;
 using NexusMods.Paths;
 using ReactiveUI;
@@ -19,7 +20,7 @@ public class PreviewTreeEntryViewModel : AViewModel<IPreviewTreeEntryViewModel>,
     public bool IsFolderMerged { get; set; }
     public bool IsFolderDupe { get; }
 
-    public IModContentTreeEntryViewModel? MappedEntry { get; set; }
+    public Optional<IModContentTreeEntryViewModel> MappedEntry { get; set; }
 
     public ObservableCollection<IModContentTreeEntryViewModel> MappedEntries { get; } = new();
     public ReactiveCommand<Unit, Unit> RemoveMappingCommand { get; }
@@ -52,7 +53,7 @@ public class PreviewTreeEntryViewModel : AViewModel<IPreviewTreeEntryViewModel>,
         }
         else
         {
-            MappedEntry = entry;
+            MappedEntry = Optional<IModContentTreeEntryViewModel>.Create(entry);
         }
     }
 
