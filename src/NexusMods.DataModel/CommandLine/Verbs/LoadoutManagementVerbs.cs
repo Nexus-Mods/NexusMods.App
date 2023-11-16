@@ -7,6 +7,7 @@ using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Extensions;
 using NexusMods.DataModel.Loadouts.Markers;
+using NexusMods.DataModel.LoadoutSynchronizer;
 using NexusMods.Paths;
 using NexusMods.ProxyConsole.Abstractions;
 using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
@@ -27,6 +28,7 @@ public static class LoadoutManagementVerbs
         services
             .AddVerb(() => Apply)
             .AddVerb(() => ChangeTracking)
+            .AddVerb(() => FlattenLoadout)
             .AddVerb(() => Ingest);
 
     [Verb("apply", "Apply the given loadout to the game folder")]
@@ -70,6 +72,30 @@ public static class LoadoutManagementVerbs
 
         while (!token.IsCancellationRequested)
             await Task.Delay(1000, token);
+        return 0;
+    }
+
+    [Verb("flatten-loadout", "Flatten a loadout into the projected filesystem")]
+    private static async Task<int> FlattenLoadout([Injected] IRenderer renderer,
+        [Option("l", "loadout", "Loadout to flatten")]
+        LoadoutMarker loadout,
+        [Injected] LoadoutRegistry registry,
+        [Injected] CancellationToken token)
+    {
+        var rows = new List<object[]>();
+        var synchronizer = loadout.Value.Installation.Game.Synchronizer as IStandardizedLoadoutSynchronizer;
+        if (synchronizer == null)
+        {
+            await renderer.Text($"{loadout.Value.Installation.Game.Name} does not support flattening loadouts");
+            return -1;
+        }
+
+        var flattened = await synchronizer.LoadoutToFlattenedLoadout(loadout.Value);
+
+        foreach (var (path, pair) in flattened.GetAllDescendentFiles())
+            rows.Add(new object[] { pair!.Mod.Name, path });
+
+        await renderer.Table(new[] { "Mod", "To" }, rows);
         return 0;
     }
 
