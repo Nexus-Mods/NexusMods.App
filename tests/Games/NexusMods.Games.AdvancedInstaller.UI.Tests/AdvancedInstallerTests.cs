@@ -14,7 +14,7 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Tests;
 [Collection("NonParallel")]
 public class AdvancedInstallerTests
 {
-    private readonly AdvancedInstallerHandlerUI _installerHandlerUi;
+    private readonly AdvancedManualInstallerUI _manualInstallerUi;
     private readonly GameInstallation _gameInstallation;
     private readonly ModId _baseModId;
     private readonly FileTreeNode<RelativePath, ModSourceFileEntry> _archiveFiles;
@@ -22,7 +22,7 @@ public class AdvancedInstallerTests
     public AdvancedInstallerTests(IServiceProvider provider)
     {
         // Executed once per method
-        _installerHandlerUi = new AdvancedInstallerHandlerUI( null!);
+        _manualInstallerUi = new AdvancedManualInstallerUI( null!);
         _gameInstallation = new GameInstallation()
         {
             LocationsRegister = new GameLocationsRegister(new Dictionary<LocationId, AbsolutePath>()),
@@ -37,7 +37,7 @@ public class AdvancedInstallerTests
 
     private async ValueTask<IEnumerable<ModInstallerResult>> ExecuteInstaller()
     {
-        return await _installerHandlerUi.GetModsAsync(_gameInstallation, LoadoutId.Null, _baseModId, _archiveFiles);
+        return await _manualInstallerUi.GetModsAsync(_gameInstallation, LoadoutId.Null, _baseModId, _archiveFiles);
     }
 
     [Fact]

@@ -134,6 +134,7 @@ public partial class SelectableTreeEntryView : ReactiveUserControl<ISelectableTr
                 FileNameTextBlock.Text = ViewModel.DisplayName;
                 SelectRoundedButton.IsVisible = true;
                 DeleteCreatedFolderButton.IsVisible = true;
+                this.BringIntoView();
                 break;
         }
     }

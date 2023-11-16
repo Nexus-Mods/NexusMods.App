@@ -18,13 +18,14 @@ namespace NexusMods.Games.AdvancedInstaller.UI;
 /// <summary>
 ///     Provides the implementation of the 'Advanced Installer' functionality.
 /// </summary>
-public class AdvancedInstallerHandlerUI: IAdvancedInstallerHandler
+// ReSharper disable once InconsistentNaming
+public class AdvancedManualInstallerUI: IAdvancedInstallerHandler
 {
     private readonly Lazy<IOverlayController> _overlayController;
     private readonly Lazy<LoadoutRegistry> _loadoutRegistry;
     private readonly IServiceProvider _provider;
 
-    public AdvancedInstallerHandlerUI(IServiceProvider provider)
+    public AdvancedManualInstallerUI(IServiceProvider provider)
     {
         _provider = provider;
 
