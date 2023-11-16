@@ -1,7 +1,5 @@
 using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.CLI;
-using NexusMods.App.CLI.Renderers;
 using NexusMods.App.Listeners;
 using NexusMods.App.UI;
 using NexusMods.CLI;
@@ -25,6 +23,7 @@ using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.NMA;
 using NexusMods.Paths;
+using NexusMods.SingleProcess;
 using NexusMods.StandardGameLocators;
 using NexusMods.Telemetry;
 using NexusMods.Telemetry.OpenTelemetry;
@@ -47,7 +46,9 @@ public static class Services
         config ??= new AppConfig();
 
         services
-            .AddSingleton<IAppConfigManager, AppConfigManager>(provider => new AppConfigManager(config, provider.GetRequiredService<JsonSerializerOptions>()))
+            .AddSingleton<IAppConfigManager, AppConfigManager>(provider =>
+                new AppConfigManager(config, provider.GetRequiredService<JsonSerializerOptions>()))
+            .AddSingleton<IStartupHandler, StartupHandler>()
             .AddCLI()
             .AddFileSystem()
             .AddUI(config.LauncherSettings)
@@ -70,7 +71,8 @@ public static class Services
             .AddSingleton<HttpClient>()
             .AddListeners()
             .AddCommon()
-            .AddDownloaders();
+            .AddDownloaders()
+            .AddSingleProcess((_, settings) => settings);
 
         if (addStandardGameLocators)
             services.AddStandardGameLocators();

@@ -1,7 +1,4 @@
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.CLI;
-using NexusMods.Abstractions.CLI.DataOutputs;
-using NexusMods.CLI;
 using NexusMods.Common;
 using NexusMods.Common.GuidedInstaller;
 using NexusMods.DataModel.Abstractions;

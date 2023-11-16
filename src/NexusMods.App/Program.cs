@@ -1,5 +1,6 @@
 using System.CommandLine.Builder;
 using System.CommandLine.Parsing;
+using System.Diagnostics;
 using System.Reactive;
 using System.Text.Json;
 using Avalonia;
@@ -12,6 +13,7 @@ using NexusMods.App.UI;
 using NexusMods.CLI;
 using NexusMods.Common;
 using NexusMods.Paths;
+using NexusMods.SingleProcess;
 using NLog.Extensions.Logging;
 using NLog.Targets;
 using OpenTelemetry.Metrics;
@@ -41,28 +43,16 @@ public class Program
             _logger.LogError(ex, "Unhandled exception");
         });
 
-        if (args.Length > 0)
-        {
-            var service = host.Services.GetRequiredService<CommandLineConfigurator>();
-            var root = service.MakeRoot();
+        // Run in debug mode if we are in debug mode and the debugger is attached.
+        #if DEBUG
+        var isDebug = Debugger.IsAttached;
+        #else
+        var isDebug = false;
+        #endif
 
-            var builder = new CommandLineBuilder(root)
-                .UseDefaults()
-                .Build();
 
-            return await builder.InvokeAsync(args);
-        }
-        else
-        {
-            var selector = host.Services.GetRequiredService<CliGuidedInstaller>();
-            var renderers = host.Services.GetServices<IRenderer>().ToArray();
-            selector.Renderer = renderers.FirstOrDefault(r => r.Name == "console") ?? renderers.First();
-        }
-
-        // Start listeners only available in GUI mode
-        host.Services.GetRequiredService<NxmRpcListener>();
-        Startup.Main(host.Services, args);
-        return 0;
+        var startup = host.Services.GetRequiredService<StartupDirector>();
+        return await startup.Start(Environment.GetCommandLineArgs(), isDebug);
     }
 
     public static IHost BuildHost()

@@ -56,6 +56,17 @@ public class NXMUrl
     /// </summary>
     protected NameValueCollection Query = new();
 
+
+    /// <summary>
+    /// parse a nxm:// url from a string
+    /// </summary>
+    /// <param name="uri"></param>
+    /// <returns></returns>
+    public static NXMUrl Parse(string uri)
+    {
+        return Parse(new Uri(uri));
+    }
+
     /// <summary>
     /// parse a nxm:// url
     /// </summary>

@@ -1,7 +1,5 @@
-using System.CommandLine;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.CLI.DataOutputs;
 using NexusMods.Paths;
 
 namespace NexusMods.CLI.Tests.VerbTests;
