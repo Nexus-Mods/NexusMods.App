@@ -23,6 +23,7 @@ using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.NMA;
 using NexusMods.Paths;
+using NexusMods.ProxyConsole;
 using NexusMods.SingleProcess;
 using NexusMods.StandardGameLocators;
 using NexusMods.Telemetry;
@@ -73,7 +74,8 @@ public static class Services
             .AddListeners()
             .AddCommon()
             .AddDownloaders()
-            .AddSingleProcess((_, settings) => settings);
+            .AddSingleProcess((_, settings) => settings)
+            .AddDefaultRenderers();
 
         if (addStandardGameLocators)
             services.AddStandardGameLocators();

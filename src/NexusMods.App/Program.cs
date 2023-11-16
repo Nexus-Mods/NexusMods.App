@@ -52,7 +52,7 @@ public class Program
 
 
         var startup = host.Services.GetRequiredService<StartupDirector>();
-        return await startup.Start(Environment.GetCommandLineArgs(), isDebug);
+        return await startup.Start(args, isDebug);
     }
 
     public static IHost BuildHost()
