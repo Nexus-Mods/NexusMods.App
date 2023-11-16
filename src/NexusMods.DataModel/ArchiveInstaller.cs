@@ -181,6 +181,7 @@ public class ArchiveInstaller : IArchiveInstaller
                             Status = ModStatus.Installed,
                             Enabled = true,
                             Name = mod.Name,
+                            Version = mod.Version,
                             Files = mod.Files,
                             Metadata = mod.Metadata
                         });
