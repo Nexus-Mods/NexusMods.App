@@ -1,3 +1,4 @@
+using System.Reactive.Disposables;
 using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
 using ReactiveUI;
@@ -11,9 +12,10 @@ public partial class NewTabPageView : ReactiveUserControl<INewTabPageViewModel>
     {
         InitializeComponent();
 
-        this.WhenActivated(_ =>
+        this.WhenActivated(disposable =>
         {
-            Sections.ItemsSource = ViewModel?.SectionViewModels;
+            this.OneWayBind(ViewModel, vm => vm.Sections, view => view.Sections.ItemsSource)
+                .DisposeWith(disposable);
         });
     }
 }

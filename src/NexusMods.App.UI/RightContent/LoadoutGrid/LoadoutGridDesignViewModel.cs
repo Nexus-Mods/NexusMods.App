@@ -8,6 +8,7 @@ using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModEnabled;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModInstalled;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModName;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModVersion;
+using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Cursors;
 using ReactiveUI;
@@ -19,7 +20,7 @@ using ModVersionView = NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModVers
 
 namespace NexusMods.App.UI.RightContent.LoadoutGrid;
 
-public class LoadoutGridDesignViewModel : AViewModel<ILoadoutGridViewModel>,
+public class LoadoutGridDesignViewModel : APageViewModel<ILoadoutGridViewModel>,
     ILoadoutGridViewModel
 {
     private readonly SourceCache<ModCursor, ModId> _mods;

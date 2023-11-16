@@ -1,7 +1,8 @@
+using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Reactive;
-using System.Reactive.Concurrency;
 using System.Reactive.Linq;
+using Avalonia.Threading;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using ReactiveUI;
@@ -53,6 +54,7 @@ public static class ReactiveUiExtensions
         Expression<Func<TTarget, TValue?>> property)
         where TTarget : class, IViewModel
     {
+        Debug.Assert(Dispatcher.UIThread.CheckAccess());
         return @this.BindTo(target, property, conversionHint: null, vmToViewConverterOverride: null);
     }
 
@@ -65,6 +67,7 @@ public static class ReactiveUiExtensions
         Expression<Func<TTarget, TValue?>> property)
         where TTarget : class, IViewFor
     {
+        Debug.Assert(Dispatcher.UIThread.CheckAccess());
         return @this.BindTo(target, property, conversionHint: null, vmToViewConverterOverride: null);
     }
 

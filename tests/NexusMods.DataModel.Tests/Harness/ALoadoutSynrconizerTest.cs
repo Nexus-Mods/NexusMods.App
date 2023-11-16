@@ -171,7 +171,7 @@ public class AlphabeticalSort : IGeneratedSortRule, ISortRule<Mod, ModId>, ITrig
             if (modId.Equals(selfId)) continue;
             if (string.Compare(other.Name, thisMod.Name, StringComparison.Ordinal) > 0)
             {
-                yield return new Before<Mod, ModId>(other.Id);
+                yield return new Before<Mod, ModId> { Other = other.Id };
             }
             else
             {

@@ -16,6 +16,8 @@ public interface IPageFactory
     /// Creates a new page using the provided context.
     /// </summary>
     public Page Create(IPageFactoryContext context);
+
+    public IEnumerable<PageDiscoveryDetails?> GetDiscoveryDetails();
 }
 
 /// <summary>
@@ -24,7 +26,7 @@ public interface IPageFactory
 /// <typeparam name="TViewModel"></typeparam>
 /// <typeparam name="TContext"></typeparam>
 public interface IPageFactory<out TViewModel, in TContext> : IPageFactory
-    where TViewModel : class, IViewModelInterface
+    where TViewModel : class, IPageViewModelInterface
     where TContext : class, IPageFactoryContext
 {
     Page IPageFactory.Create(IPageFactoryContext context)
@@ -55,7 +57,7 @@ public interface IPageFactory<out TViewModel, in TContext> : IPageFactory
 /// </summary>
 [PublicAPI]
 public abstract class APageFactory<TViewModel, TContext> : IPageFactory<TViewModel, TContext>
-    where TViewModel : class, IViewModelInterface
+    where TViewModel : class, IPageViewModelInterface
     where TContext : class, IPageFactoryContext
 {
     /// <inheritdoc/>
@@ -69,4 +71,7 @@ public abstract class APageFactory<TViewModel, TContext> : IPageFactory<TViewMod
 
     /// <inheritdoc/>
     public abstract TViewModel CreateViewModel(TContext parameter);
+
+    /// <inheritdoc/>
+    public virtual IEnumerable<PageDiscoveryDetails?> GetDiscoveryDetails() => Array.Empty<PageDiscoveryDetails?>();
 }

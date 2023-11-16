@@ -57,6 +57,7 @@ public class ProtocolRegistrationLinux : IProtocolRegistration
         sb.AppendLine($"Path={workingDirectory}");
         sb.AppendLine($"Exec={commandLine}");
         sb.AppendLine($"MimeType=x-scheme-handler/{protocol}");
+        sb.AppendLine("NoDisplay=true");
 
         await desktopEntryFile.WriteAllTextAsync(sb.ToString());
 

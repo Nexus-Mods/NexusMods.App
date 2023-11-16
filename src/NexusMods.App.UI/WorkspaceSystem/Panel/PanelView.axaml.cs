@@ -60,8 +60,16 @@ public partial class PanelView : ReactiveUserControl<IPanelViewModel>
             this.BindCommand(ViewModel, vm => vm.CloseCommand, view => view.ClosePanelButton)
                 .DisposeWith(disposables);
 
+            this.WhenAnyObservable(view => view.ViewModel!.CloseCommand.CanExecute)
+                .BindToView(this, view => view.ClosePanelButton.IsVisible)
+                .DisposeWith(disposables);
+
             // popout panel button
             this.BindCommand(ViewModel, vm => vm.PopoutCommand, view => view.PopOutPanelButton)
+                .DisposeWith(disposables);
+
+            this.WhenAnyObservable(view => view.ViewModel!.PopoutCommand.CanExecute)
+                .BindToView(this, view => view.PopOutPanelButton.IsVisible)
                 .DisposeWith(disposables);
 
             // two "add tab" buttons
