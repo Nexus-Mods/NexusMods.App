@@ -27,7 +27,7 @@ public class ModuleInfoSort : IGeneratedSortRule, ISortRule<Mod, ModId>, ITrigge
         {
             if (GetModIdFromModuleId(moduleMetadata.Id) is { } modId)
             {
-                yield return new Before<Mod, ModId>(modId);
+                yield return new Before<Mod, ModId> { Other = modId };
             }
         }
         foreach (var moduleMetadata in moduleInfo.DependenciesLoadAfterThisDistinct())
