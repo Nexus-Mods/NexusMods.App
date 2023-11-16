@@ -11,9 +11,9 @@ namespace NexusMods.App;
 public class StartupHandler(ILogger<StartupHandler> logger, IServiceProvider provider) :
     AStartupHandler(logger, provider.GetRequiredService<IFileSystem>())
 {
-    public override async Task<int> HandleCliCommandAsync(string[] args, IRenderer renderer, CancellationToken token = new CancellationToken())
+    public override async Task<int> HandleCliCommandAsync(string[] args, IRenderer renderer, CancellationToken token)
     {
-        return await provider.GetRequiredService<CommandLineConfigurator>().RunAsync(args, renderer);
+        return await provider.GetRequiredService<CommandLineConfigurator>().RunAsync(args, renderer, token);
     }
 
     public override Task<int> StartUiWindowAsync()
