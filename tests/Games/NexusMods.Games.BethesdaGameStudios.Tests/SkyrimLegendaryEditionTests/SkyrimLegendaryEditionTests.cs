@@ -39,8 +39,8 @@ public class SkyrimLegendaryEditionTests(IServiceProvider serviceProvider) : AGa
 
         var log = await _verbTester.Run("list-loadouts");
 
-        log.LastTable.Columns.Should().BeEquivalentTo("Name", "Game", "Id", "Mod Count");
-        log.LastTable.Rows.FirstOrDefault(r => r.OfType<Text>().FirstOrDefault(txt => txt.Template == loadoutName) != default).Should().NotBeNull();
+        log.LastTableColumns.Should().BeEquivalentTo("Name", "Game", "Id", "Mod Count");
+        log.TableCellsWith(loadoutName).Should().NotBeNull();
 
         log = await _verbTester.Run("list-mods", "-l", loadoutName);
         log.LastTable.Rows.Count().Should().Be(2);
@@ -51,11 +51,11 @@ public class SkyrimLegendaryEditionTests(IServiceProvider serviceProvider) : AGa
         log = await _verbTester.Run("list-mods", "-l", loadoutName);
         log.LastTable.Rows.Count().Should().Be(3);
 
-        log = await _verbTester.Run("list-mod-contents", "-l", loadoutName, "-n", skseModName);
+        log = await _verbTester.Run("list-mod-contents", "-l", loadoutName, "-m", skseModName);
         log.LastTable.Rows.Count().Should().Be(127);
 
         // Test Apply
-        log = await _verbTester.Run("flatten-list", "-l", loadoutName);
+        log = await _verbTester.Run("flatten-loadout", "-l", loadoutName);
         log.LastTable.Rows.Count().Should().Be(128);
 
         log = await _verbTester.Run("apply", "-l", loadoutName);
@@ -68,7 +68,7 @@ public class SkyrimLegendaryEditionTests(IServiceProvider serviceProvider) : AGa
         log = await _verbTester.Run("list-mods", "-l", loadoutName);
         log.LastTable.Rows.Count().Should().Be(4);
 
-        log = await _verbTester.Run("list-mod-contents", "-l", loadoutName, "-n", skyuiModName);
+        log = await _verbTester.Run("list-mod-contents", "-l", loadoutName, "-m", skyuiModName);
         log.LastTable.Rows.Count().Should().Be(5);
 
         // install uslep
@@ -79,11 +79,11 @@ public class SkyrimLegendaryEditionTests(IServiceProvider serviceProvider) : AGa
         log = await _verbTester.Run("list-mods", "-l", loadoutName);
         log.LastTable.Rows.Count().Should().Be(5);
 
-        log = await _verbTester.Run("list-mod-contents", "-l", loadoutName, "-n", uslepModName);
+        log = await _verbTester.Run("list-mod-contents", "-l", loadoutName, "-m", uslepModName);
         log.LastTable.Rows.Count().Should().Be(5);
 
         // Test Apply
-        log = await _verbTester.Run("flatten-list", "-l", loadoutName);
+        log = await _verbTester.Run("flatten-loadout", "-l", loadoutName);
         // count plugins.txt
         log.LastTable.Rows.Count().Should().Be(138);
 
