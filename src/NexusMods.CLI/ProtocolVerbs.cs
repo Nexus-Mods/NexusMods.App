@@ -13,10 +13,19 @@ using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
 
 namespace NexusMods.CLI;
 
-internal static class ProtocolVerbs
+/// <summary>
+/// CLI verbs for the protocols
+/// </summary>
+public static class ProtocolVerbs
 {
-    internal static IServiceCollection AddProtocolVerbs(this IServiceCollection services) =>
+    /// <summary>
+    /// Adds the protocol verbs to the <see cref="IServiceCollection"/>
+    /// </summary>
+    /// <param name="services"></param>
+    /// <returns></returns>
+    public static IServiceCollection AddProtocolVerbs(this IServiceCollection services) =>
         services.AddVerb(() => AssociateNxm)
+            .AddVerb(() => DownloadAndInstallMod)
             .AddVerb(() => ProtocolInvoke);
 
 

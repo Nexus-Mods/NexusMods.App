@@ -31,6 +31,7 @@ public static class Services
         services.AddOptionParser<AbsolutePath, AbsolutePathParser>()
                 .AddOptionParser<IGame, GameParser>()
                 .AddOptionParser<LoadoutMarker, LoadoutMarkerParser>()
+                .AddOptionParser<Uri>(u => (new Uri(u), null))
                 .AddOptionParser<Version>(v => (Version.Parse(v), null))
                 .AddOptionParser<string>(s => (s, null))
                 .AddOptionParser<Loadout, LoadoutParser>()

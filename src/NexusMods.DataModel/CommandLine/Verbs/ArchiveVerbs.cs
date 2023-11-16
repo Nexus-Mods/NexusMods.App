@@ -10,10 +10,10 @@ using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
 
 namespace NexusMods.DataModel.CommandLine.Verbs;
 
-public static class ArchiveVerbs
+internal static class ArchiveVerbs
 {
-    public static IServiceCollection AddArchiveVerbs(this IServiceCollection services) =>
-        services;
+    internal static IServiceCollection AddArchiveVerbs(this IServiceCollection services) =>
+        services.AddVerb(() => AnalyzeArchive);
 
     [Verb("analyze-archive", "Analyze the given archive")]
     private static async Task<int> AnalyzeArchive([Injected] IRenderer renderer,

@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.CLI;
 using NexusMods.Common;
 using NexusMods.DataModel;
 using NexusMods.FileExtractor;
