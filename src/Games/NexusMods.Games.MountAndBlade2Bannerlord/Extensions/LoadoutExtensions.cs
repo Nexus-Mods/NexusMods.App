@@ -3,37 +3,17 @@ using Bannerlord.LauncherManager.Models;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Loadouts.Mods;
-using NexusMods.DataModel.Sorting;
-using NexusMods.DataModel.Sorting.Rules;
 using NexusMods.Games.MountAndBlade2Bannerlord.Models;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord.Extensions;
 
 internal static class LoadoutExtensions
 {
-    private static async IAsyncEnumerable<ISortRule<Mod, ModId>> GetSortRules(Mod mod, Loadout loadout)
-    {
-        foreach (var sortRule in mod.SortRules.Where(x => x is not IGeneratedSortRule).Select(x => x))
-        {
-            yield return sortRule;
-        }
-
-        await foreach (var sortRule in mod.SortRules.ToAsyncEnumerable().OfType<IGeneratedSortRule>().SelectMany(x => x.GenerateSortRules(mod.Id, loadout)))
-        {
-            yield return sortRule;
-        }
-    }
-
     private static async Task<IEnumerable<Mod>> SortMods(Loadout loadout)
     {
-        var mods = loadout.Mods.Values.Where(mod => mod.Enabled).ToList();
+        var loadoutSynchronizer = (loadout.Installation.Game.Synchronizer as MountAndBlade2BannerlordLoadoutSynchronizer)!;
 
-        var modRules = await mods.ToAsyncEnumerable()
-            .ToDictionaryAwaitAsync(mod => ValueTask.FromResult(mod.Id), async mod => await GetSortRules(mod, loadout).ToArrayAsync());
-        if (modRules.Count == 0)
-            return Array.Empty<Mod>();
-
-        var sorted = Sorter.Sort(mods, m => m.Id, m => modRules[m.Id]);
+        var sorted = await loadoutSynchronizer.SortMods(loadout);
         return sorted;
     }
 

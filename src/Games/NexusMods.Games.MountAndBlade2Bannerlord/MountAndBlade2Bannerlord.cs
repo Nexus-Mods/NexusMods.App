@@ -1,6 +1,7 @@
 using NexusMods.Common;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Games.GameCapabilities.FolderMatchInstallerCapability;
+using NexusMods.DataModel.LoadoutSynchronizer;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.FileExtractor.StreamFactories;
 using NexusMods.Games.MountAndBlade2Bannerlord.Installers;
@@ -65,6 +66,11 @@ public sealed class MountAndBlade2Bannerlord : AGame, ISteamGame, IGogGame, IEpi
             { LocationId.Saves, documentsFolder.Combine($"{DocumentsFolderName}/Game Saves") },
             { LocationId.Preferences, documentsFolder.Combine($"{DocumentsFolderName}/Configs") },
         };
+    }
+
+    protected override IStandardizedLoadoutSynchronizer MakeSynchronizer(IServiceProvider provider)
+    {
+        return new MountAndBlade2BannerlordLoadoutSynchronizer(provider);
     }
 
     public override List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations)
