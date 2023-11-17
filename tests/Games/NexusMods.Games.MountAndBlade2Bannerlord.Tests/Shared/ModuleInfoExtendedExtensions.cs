@@ -3,11 +3,11 @@ using System.Xml;
 using Bannerlord.ModuleManager;
 using NexusMods.Paths;
 
-namespace NexusMods.Games.MountAndBlade2Bannerlord.Tests;
+namespace NexusMods.Games.MountAndBlade2Bannerlord.Tests.Shared;
 
-public static class TestHelper
+public static class ModuleInfoExtendedExtensions
 {
-    public static Dictionary<RelativePath, byte[]> CreateTestFiles(ModuleInfoExtended moduleInfo)
+    public static Dictionary<RelativePath, byte[]> CreateTestFiles(this ModuleInfoExtended moduleInfo)
     {
         var xml = GetXml(moduleInfo);
         var bytes = Encoding.UTF8.GetBytes(xml);
@@ -18,7 +18,7 @@ public static class TestHelper
         };
     }
 
-    public static string GetXml(ModuleInfoExtended moduleInfo)
+    public static string GetXml(this ModuleInfoExtended moduleInfo)
     {
         var doc = new XmlDocument();
 

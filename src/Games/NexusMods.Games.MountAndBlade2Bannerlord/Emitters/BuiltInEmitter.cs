@@ -20,10 +20,12 @@ public class BuiltInEmitter : ILoadoutDiagnosticEmitter
     {
         await Task.Yield();
 
-        var lookup = loadout.GetViewModels().ToDictionary(x => x.ModuleInfoExtended.Id, x => x);
+        var viewModels = (await loadout.GetSortedViewModelsAsync()).ToList();
+        var lookup = viewModels.ToDictionary(x => x.ModuleInfoExtended.Id, x => x);
         var modules = lookup.Values.Select(x => x.ModuleInfoExtended).Concat(FeatureIds.LauncherFeatures.Select(x => new ModuleInfoExtended { Id = x })).ToList();
+
         var ctx = new ModuleContext<LoadoutModuleViewModel>(lookup);
-        foreach (var (id, moduleViewModel) in lookup)
+        foreach (var moduleViewModel in viewModels)
         {
             foreach (var diagnostic in ModuleUtilities.ValidateModule(modules, moduleViewModel.ModuleInfoExtended, ctx.GetIsSelected, ctx.GetIsValid).Select(x => Render(loadout, moduleViewModel.Mod, x)))
             {
@@ -84,7 +86,7 @@ public class BuiltInEmitter : ILoadoutDiagnosticEmitter
             ModuleIssueType.DependencyNotLoadedAfterThis => (DiagnosticSeverity.Warning, new BUTRTextObject("{=2ALJB7z2}'{SOURCEID}' should be loaded after '{TARGETID}'")
                 .SetTextVariable("ID", issue.SourceId)),
 
-            _ => throw new ArgumentOutOfRangeException()
+            _ => throw new ArgumentOutOfRangeException(nameof(issue))
         };
 
         return new Diagnostic

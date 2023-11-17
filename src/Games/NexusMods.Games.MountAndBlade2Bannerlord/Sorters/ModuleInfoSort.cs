@@ -27,14 +27,14 @@ public class ModuleInfoSort : IGeneratedSortRule, ISortRule<Mod, ModId>, ITrigge
         {
             if (GetModIdFromModuleId(moduleMetadata.Id) is { } modId)
             {
-                yield return new Before<Mod, ModId> { Other = modId };
+                yield return new After<Mod, ModId> { Other = modId };
             }
         }
         foreach (var moduleMetadata in moduleInfo.DependenciesLoadAfterThisDistinct())
         {
             if (GetModIdFromModuleId(moduleMetadata.Id) is { } modId)
             {
-                yield return new After<Mod, ModId> { Other = modId };
+                yield return new Before<Mod, ModId> { Other = modId };
             }
         }
         foreach (var moduleMetadata in moduleInfo.DependenciesIncompatiblesDistinct())

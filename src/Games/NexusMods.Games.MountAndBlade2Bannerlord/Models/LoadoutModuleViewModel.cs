@@ -11,11 +11,11 @@ internal class LoadoutModuleViewModel : IModuleViewModel
 
     public ModuleInfoExtendedWithPath ModuleInfoExtended { get; init; } = default!;
 
-    public bool IsValid { get; init; }
+    public bool IsValid { get; init; } = true; // TODO:
 
-    public bool IsSelected { get; set; }
+    public bool IsSelected { get; set; } = true; // TODO:
 
-    public bool IsDisabled { get; set; }
+    public bool IsDisabled { get; set; } = false;
 
     public int Index { get; set; }
 }
