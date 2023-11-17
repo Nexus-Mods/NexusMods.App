@@ -7,7 +7,6 @@ using NexusMods.DataModel.Diagnostics.References;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.Games.MountAndBlade2Bannerlord.Extensions;
-using NexusMods.Games.MountAndBlade2Bannerlord.Models;
 using NexusMods.Games.MountAndBlade2Bannerlord.Utils;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord.Emitters;
@@ -24,7 +23,7 @@ public class BuiltInEmitter : ILoadoutDiagnosticEmitter
         var lookup = viewModels.ToDictionary(x => x.ModuleInfoExtended.Id, x => x);
         var modules = lookup.Values.Select(x => x.ModuleInfoExtended).Concat(FeatureIds.LauncherFeatures.Select(x => new ModuleInfoExtended { Id = x })).ToList();
 
-        var ctx = new ModuleContext<LoadoutModuleViewModel>(lookup);
+        var ctx = new ModuleContext(lookup);
         foreach (var moduleViewModel in viewModels)
         {
             foreach (var diagnostic in ModuleUtilities.ValidateModule(modules, moduleViewModel.ModuleInfoExtended, ctx.GetIsSelected, ctx.GetIsValid).Select(x => Render(loadout, moduleViewModel.Mod, x)))

@@ -13,8 +13,8 @@ public class TypeFinder : ITypeFinder
 
     private static IEnumerable<Type> AllTypes => new[]
     {
-        typeof(ModuleInfoMetadata),
-        typeof(OriginalPathMetadata),
+        typeof(ModuleFileMetadata),
+        typeof(SubModuleFileMetadata),
         typeof(ModuleInfoSort),
     };
 }

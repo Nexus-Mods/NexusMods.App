@@ -95,8 +95,12 @@ public sealed class MountAndBlade2BannerlordModInstaller : AModInstaller
             {
                 static IEnumerable<IMetadata> GetMetadata(ModuleInfoExtendedWithPath moduleInfo, RelativePath relativePath)
                 {
-                    yield return new OriginalPathMetadata { OriginalRelativePath = relativePath.Path };
-                    if (relativePath.Equals(SubModuleFile)) yield return new ModuleInfoMetadata { ModuleInfo = moduleInfo };
+                    yield return new ModuleFileMetadata { OriginalRelativePath = relativePath.Path };
+                    if (relativePath.Equals(SubModuleFile)) yield return new SubModuleFileMetadata
+                    {
+                        IsValid = true, // TODO: For now lets keep it true while we don't have the validation layer
+                        ModuleInfo = moduleInfo
+                    };
                 }
 
                 var relativePath = instruction.Source.ToRelativePath();

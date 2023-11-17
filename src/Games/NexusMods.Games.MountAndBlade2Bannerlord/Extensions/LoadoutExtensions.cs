@@ -7,8 +7,20 @@ using NexusMods.Games.MountAndBlade2Bannerlord.Models;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord.Extensions;
 
+internal delegate LoadoutModuleViewModel ViewModelCreator(Mod mod, ModuleInfoExtendedWithPath moduleInfo, int index);
+
 internal static class LoadoutExtensions
 {
+    private static LoadoutModuleViewModel Default(Mod mod, ModuleInfoExtendedWithPath moduleInfo, int index) => new()
+    {
+        Mod = mod,
+        ModuleInfoExtended = moduleInfo,
+        IsValid = mod.GetSubModuleFileMetadata()?.IsValid == true,
+        IsSelected = mod.Enabled,
+        IsDisabled = mod.Status == ModStatus.Failed,
+        Index = index,
+    };
+
     private static async Task<IEnumerable<Mod>> SortMods(Loadout loadout)
     {
         var loadoutSynchronizer = (loadout.Installation.Game.Synchronizer as MountAndBlade2BannerlordLoadoutSynchronizer)!;
@@ -17,8 +29,9 @@ internal static class LoadoutExtensions
         return sorted;
     }
 
-    public static IEnumerable<LoadoutModuleViewModel> GetViewModels(this Loadout loadout, IEnumerable<Mod> mods)
+    public static IEnumerable<LoadoutModuleViewModel> GetViewModels(this Loadout loadout, IEnumerable<Mod> mods, ViewModelCreator? viewModelCreator = null)
     {
+        viewModelCreator ??= Default;
         var i = 0;
         return mods.Select(x =>
         {
@@ -26,33 +39,26 @@ internal static class LoadoutExtensions
             if (moduleInfo is null) return null;
 
             var subModule = x.Files.Values.OfType<StoredFile>().First(y => y.To.FileName.Path.Equals(Constants.SubModuleName, StringComparison.OrdinalIgnoreCase));
+            var subModulePath = loadout.Installation.LocationsRegister.GetResolvedPath(subModule.To).GetFullPath();
 
-            return new LoadoutModuleViewModel
-            {
-                ModId = x.Id,
-                Mod = x,
-                ModuleInfoExtended = new ModuleInfoExtendedWithPath(moduleInfo, loadout.Installation.LocationsRegister.GetResolvedPath(subModule.To).GetFullPath()),
-                IsSelected = true,
-                IsDisabled = false,
-                Index = i++
-            };
+            return viewModelCreator(x, new ModuleInfoExtendedWithPath(moduleInfo, subModulePath), i++);
         }).OfType<LoadoutModuleViewModel>();
     }
 
-    public static async Task<IEnumerable<LoadoutModuleViewModel>> GetSortedViewModelsAsync(this Loadout loadout)
+    public static async Task<IEnumerable<LoadoutModuleViewModel>> GetSortedViewModelsAsync(this Loadout loadout, ViewModelCreator? viewModelCreator = null)
     {
         var sortedMods = await SortMods(loadout);
-        return GetViewModels(loadout, sortedMods);
+        return GetViewModels(loadout, sortedMods, viewModelCreator);
     }
 
-    public static IEnumerable<LoadoutModuleViewModel> GetViewModels(this Loadout loadout)
+    public static IEnumerable<LoadoutModuleViewModel> GetViewModels(this Loadout loadout, ViewModelCreator? viewModelCreator = null)
     {
-        return GetViewModels(loadout, loadout.Mods.Values);
+        return GetViewModels(loadout, loadout.Mods.Values, viewModelCreator);
     }
 
-    public static bool HasModuleInstalled(this Loadout loadout, string moduleId) => loadout.Mods.Any(x =>
-        x.Value.GetModuleInfo() is { } moduleInfo && moduleInfo.Id.Equals(moduleId, StringComparison.OrdinalIgnoreCase));
+    public static bool HasModuleInstalled(this Loadout loadout, string moduleId) => loadout.Mods.Values.Any(x =>
+        x.GetModuleInfo() is { } moduleInfo && moduleInfo.Id.Equals(moduleId, StringComparison.OrdinalIgnoreCase));
 
-    public static bool HasInstalledFile(this Loadout loadout, string filename) => loadout.Mods.Any(x =>
-        x.Value.GetOriginalRelativePath() is { } originalRelativePath && originalRelativePath.EndsWith(filename, StringComparison.OrdinalIgnoreCase));
+    public static bool HasInstalledFile(this Loadout loadout, string filename) => loadout.Mods.Values.Any(x =>
+        x.GetModuleFileMetadatas().Any(y => y.OriginalRelativePath.EndsWith(filename, StringComparison.OrdinalIgnoreCase)));
 }
