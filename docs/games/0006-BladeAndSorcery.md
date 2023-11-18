@@ -2,6 +2,7 @@
 
 - Name: Blade & Sorcery
 - Release Date: TBD
+- Early Access Release Date: 11 Dec. 2018
 - Engine: Unity
 
 ### Stores and IDs
