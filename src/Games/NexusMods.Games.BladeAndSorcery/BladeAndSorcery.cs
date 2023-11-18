@@ -1,5 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Games.GameCapabilities.FolderMatchInstallerCapability;
@@ -15,7 +13,7 @@ public class BladeAndSorcery : AGame, ISteamGame
     private readonly IServiceProvider _serviceProvider;
     public IEnumerable<uint> SteamIds => new[] { 629730u };
 
-    public BladeAndSorcery(IEnumerable<IGameLocator> gameLocators, IServiceProvider serviceProvider) : base(gameLocators)
+    public BladeAndSorcery(IServiceProvider serviceProvider) : base(serviceProvider)
         => _serviceProvider = serviceProvider;
 
     public override string Name => "Blade & Sorcery";

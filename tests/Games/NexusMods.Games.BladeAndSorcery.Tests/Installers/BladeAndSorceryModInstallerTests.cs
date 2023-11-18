@@ -49,7 +49,7 @@ public class BladeAndSorceryModInstallerTests : AModInstallerTest<BladeAndSorcer
 
         // Dismemberment(U12) 2.4 (https://www.nexusmods.com/bladeandsorcery/mods/1934)
         var downloadId = await DownloadMod(GameInstallation.Game.Domain, ModId.From(1934), FileId.From(21173));
-        var mod = await InstallModFromArchiveIntoLoadout(loadout, downloadId);
+        var mod = await InstallModStoredFileIntoLoadout(loadout, downloadId);
         mod.Files.Should().NotBeEmpty();
         mod.Files.Values.Cast<IToFile>().Should().AllSatisfy(kv => kv.To.Path.StartsWith("Dismemberment"));
     }
@@ -61,7 +61,7 @@ public class BladeAndSorceryModInstallerTests : AModInstallerTest<BladeAndSorcer
 
         new JsonSerializer().Serialize(writer, manifest);
         writer.Flush();
-        
+
         ms.Position = 0;
 
         return ms.ToArray();
