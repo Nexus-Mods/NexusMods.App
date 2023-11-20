@@ -18,7 +18,7 @@
 
             <Style Selector="Border.TopPart">
                 <Setter Property="Background" Value="{DynamicResource BorderContainerColor}" />
-                <Setter Property="Padding" Value="24,16,24,24" />
+                <Setter Property="Padding" Value="24,0,24,24" />
                 <Setter Property="CornerRadius" Value="8,8,0,0" />
             </Style>
 
@@ -58,7 +58,7 @@
 
                             <TextBlock Grid.Column="1" Classes="BodyLGBold"
                                        Text="{x:Static resources:Language.UnsupportedModHeader_Unsupported_mod}"
-                                       x:Name="OverlayHeaderTextBlock" Margin="0,1,0,0" />
+                                       x:Name="OverlayHeaderTextBlock" />
 
                             <Button Grid.Column="2" Classes="BareIcon WindowClose Small"
                                     x:Name="OverlayHeaderCloseButton" />

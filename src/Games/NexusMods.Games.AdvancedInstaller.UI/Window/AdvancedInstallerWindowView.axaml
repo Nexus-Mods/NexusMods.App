@@ -6,12 +6,15 @@
                            xmlns:ui="clr-namespace:NexusMods.Games.AdvancedInstaller.UI"
                            mc:Ignorable="d" d:DesignWidth="1232" d:DesignHeight="672"
                            x:Class="NexusMods.Games.AdvancedInstaller.UI.AdvancedInstallerWindowView"
-                           Title="AdvancedInstallerWindowView"
                            CanResize="True"
+                           ExtendClientAreaChromeHints="NoChrome"
+                           ExtendClientAreaToDecorationsHint="True"
                            MinWidth="1024" MinHeight="540"
-                           Width="1232" Height="672" >
+                           Width="1232" Height="672"
+                           Background="{DynamicResource BorderContainerColor}">
 
-    <reactiveUi:ViewModelViewHost x:Name="CurrentPage" />
+    <Border Margin="0,32,0,0">
+        <reactiveUi:ViewModelViewHost x:Name="CurrentPage" />
+    </Border>
 
 </reactiveUi:ReactiveWindow>
-

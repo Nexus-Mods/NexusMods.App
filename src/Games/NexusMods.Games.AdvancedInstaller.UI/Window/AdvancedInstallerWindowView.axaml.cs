@@ -14,7 +14,6 @@ public partial class AdvancedInstallerWindowView : ReactiveWindow<IAdvancedInsta
 
         this.WhenActivated(disposables =>
         {
-
             ViewModel!.UnsupportedModVM.DeclineCommand
                 .Subscribe(_ => this.Close())
                 .DisposeWith(disposables);
@@ -27,7 +26,8 @@ public partial class AdvancedInstallerWindowView : ReactiveWindow<IAdvancedInsta
                 .Subscribe(_ => Close())
                 .DisposeWith(disposables);
 
-            this.OneWayBind(ViewModel, vm => vm.CurrentPageVM, v => v.CurrentPage.ViewModel)
+            this.OneWayBind(ViewModel, vm => vm.CurrentPageVM,
+                    v => v.CurrentPage.ViewModel)
                 .DisposeWith(disposables);
         });
     }

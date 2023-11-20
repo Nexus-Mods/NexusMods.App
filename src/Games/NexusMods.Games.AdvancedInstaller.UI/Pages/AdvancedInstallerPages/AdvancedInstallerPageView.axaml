@@ -18,7 +18,7 @@
 
             <Style Selector="Border.TopPart">
                 <Setter Property="Background" Value="{DynamicResource BorderContainerColor}" />
-                <Setter Property="Padding" Value="24,16,24,24" />
+                <Setter Property="Padding" Value="24,0,24,24" />
                 <Setter Property="CornerRadius" Value="8,8,0,0" />
             </Style>
 
