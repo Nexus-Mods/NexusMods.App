@@ -135,15 +135,15 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
     /// <param name="modContentTreeEntryViewModel"></param>
     private void OnBeginSelect(IModContentTreeEntryViewModel modContentTreeEntryViewModel)
     {
-        var foundNode = ModContentViewModel.Root.FindNode(modContentTreeEntryViewModel.RelativePath);
-        if (foundNode is null)
+        var foundNode = ModContentViewModel.Root.GetTreeNode(modContentTreeEntryViewModel.RelativePath);
+        if (!foundNode.HasValue)
             return;
 
         // Set the status of the parent node to Selecting
-        foundNode.Item.Status = ModContentTreeEntryStatus.Selecting;
+        foundNode.Value.Item.Status = ModContentTreeEntryStatus.Selecting;
 
         // Set the status of all the children to SelectingViaParent
-        ModContentViewModel.SelectChildrenRecursive(foundNode);
+        ModContentViewModel.SelectChildrenRecursive(foundNode.Value);
         ModContentViewModel.SelectedEntriesCache.AddOrUpdate(modContentTreeEntryViewModel);
 
         // Update the UI to show the SelectLocationViewModel
@@ -152,42 +152,42 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
 
     private void OnCancelSelect(IModContentTreeEntryViewModel modContentTreeEntryViewModel)
     {
-        var foundNode = ModContentViewModel.Root.FindNode(modContentTreeEntryViewModel.RelativePath);
-        if (foundNode is null)
+        var foundNode = ModContentViewModel.Root.GetTreeNode(modContentTreeEntryViewModel.RelativePath);
+        if (!foundNode.HasValue)
             return;
 
-        var oldStatus = foundNode.Item.Status;
+        var oldStatus = foundNode.Value.Item.Status;
 
         // Set the status of the parent node to Default
-        foundNode.Item.Status = ModContentTreeEntryStatus.Default;
+        foundNode.Value.Item.Status = ModContentTreeEntryStatus.Default;
 
         // Set the status of all the children to Default
-        ModContentViewModel.DeselectChildrenRecursive(foundNode);
+        ModContentViewModel.DeselectChildrenRecursive(foundNode.Value);
         ModContentViewModel.SelectedEntriesCache.Remove(modContentTreeEntryViewModel);
 
         // Check if ancestors need to be cleaned up (no more selected children).
         if (oldStatus == ModContentTreeEntryStatus.SelectingViaParent)
         {
-            var parent = ModContentViewModel.Root.FindNode(foundNode.Item.Parent);
-            while (parent is not null)
+            var parent = foundNode.Value.Parent;
+            while (parent.HasValue)
             {
-                if (parent.Children.Any(x =>
+                if (parent.Value.Children.Any(x =>
                         x.Item.Status == ModContentTreeEntryStatus.SelectingViaParent))
                     break;
-                var prevStatus = parent.Item.Status;
+                var prevStatus = parent.Value.Item.Status;
 
                 // If no more children are selected, reset the status of the parent node to Default
-                parent.Item.Status = ModContentTreeEntryStatus.Default;
+                parent.Value.Item.Status = ModContentTreeEntryStatus.Default;
 
                 if (prevStatus == ModContentTreeEntryStatus.Selecting)
                 {
                     // If the parent node was Selecting, remove it from the SelectedEntriesCache and stop
-                    ModContentViewModel.SelectedEntriesCache.Remove(parent.Item);
+                    ModContentViewModel.SelectedEntriesCache.Remove(parent.Value.Item);
                     break;
                 }
 
                 // This was a SelectingViaParent node as well, check the next parent
-                parent = ModContentViewModel.Root.FindNode(parent.Item.Parent);
+                parent = parent.Value.Parent;
             }
         }
 
@@ -243,8 +243,8 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
 
                 if (selectedModEntry.IsDirectory)
                 {
-                    var selectedModNode = ModContentViewModel.Root.FindNode(selectedModEntry.RelativePath);
-                    if (selectedModNode is null)
+                    var selectedModNode = ModContentViewModel.Root.GetTreeNode(selectedModEntry.RelativePath);
+                    if (!selectedModNode.HasValue)
                         continue;
 
                     if (previewEntry is null)
@@ -257,7 +257,7 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
                         previewEntry.IsFolderMerged = true;
                     }
 
-                    CreateDirectoryMapping(selectedModNode, previewEntry, previewTreeUpdater, true);
+                    CreateDirectoryMapping(selectedModNode.Value, previewEntry, previewTreeUpdater, true);
                     continue;
                 }
 
@@ -312,18 +312,18 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
     {
         if (!previewEntry.MappedEntry.HasValue)
             return;
-        var modEntry = previewEntry.MappedEntry!;
-        var mappedViaParent = modEntry.Value.Status == ModContentTreeEntryStatus.IncludedViaParent;
+        var modEntry = previewEntry.MappedEntry.Value;
+        var mappedViaParent = modEntry.Status == ModContentTreeEntryStatus.IncludedViaParent;
 
         previewEntry.RemoveFileMapping();
-        modEntry.Value.RemoveMapping();
+        modEntry.RemoveMapping();
 
         if (mappedViaParent)
         {
-            RemoveParentMappingIfNecessary(modEntry.Value, false);
+            RemoveParentMappingIfNecessary(modEntry, false);
         }
 
-        DeploymentData.RemoveMapping(modEntry.Value.RelativePath);
+        DeploymentData.RemoveMapping(modEntry.RelativePath);
     }
 
     /// <summary>
@@ -364,21 +364,16 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
 
     private void ExpandPreviewNodes(GamePath path)
     {
-        var currentNode = PreviewViewModel.TreeRoots
-            .FirstOrDefault(root => root.Item.GamePath.LocationId == path.LocationId);
-
-        if (currentNode is null)
+        var previewNode = PreviewViewModel.TreeRoots.GetTreeNode(path).ValueOrDefault();
+        if (previewNode is null)
             return;
 
-        currentNode.IsExpanded = true;
+        previewNode.IsExpanded = true;
 
-        foreach (var subPath in path.GetAllParents().Reverse().Skip(1))
+        while (previewNode.Parent.HasValue)
         {
-            var foundNode = currentNode.FindNode(subPath);
-            if (foundNode is null)
-                continue;
-            foundNode.IsExpanded = true;
-            currentNode = foundNode;
+            previewNode.Parent.Value.IsExpanded = true;
+            previewNode = previewNode.Parent.Value;
         }
     }
 
@@ -464,14 +459,12 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
         }
 
         // Check if the node still exists and has any children left
-        var previewNode = PreviewViewModel.TreeRoots
-            .FirstOrDefault(root => root.Item.GamePath.LocationId == previewEntry.GamePath.LocationId)?
-            .FindNode(previewEntry.GamePath);
+        var previewNode = PreviewViewModel.TreeRoots.GetTreeNode(previewEntry.GamePath);
 
-        if (previewNode is not null && previewNode.Children.Count != 0)
+        if (previewNode.HasValue && previewNode.Value.Children.Count != 0)
         {
             // User removed the item from preview, we need force remove all children
-            foreach (var child in previewNode.Children.ToArray())
+            foreach (var child in previewNode.Value.Children.ToArray())
             {
                 StartRemoveMappingFromPreview(child.Item);
             }
@@ -536,7 +529,7 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
             ? PreviewViewModel.TreeEntriesCache.Lookup(modEntry.Mapping.Value).ValueOrDefault()
             : null;
 
-        var modNode = ModContentViewModel.Root.FindNode(modEntry.RelativePath)!;
+        var modNode = ModContentViewModel.Root.GetTreeNode(modEntry.RelativePath).Value;
 
         foreach (var child in modNode.Children.Where(child =>
                      child.Item.Status == ModContentTreeEntryStatus.IncludedViaParent))
@@ -580,9 +573,7 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
     private void RemovePreviewNodeIfNecessary(IPreviewTreeEntryViewModel previewEntry)
     {
         // Only remove node if it doesn't have other children left
-        var previewNode = PreviewViewModel.TreeRoots
-            .First(root => root.Item.GamePath.LocationId == previewEntry.GamePath.LocationId)
-            .FindNode(previewEntry.GamePath)!;
+        var previewNode = PreviewViewModel.TreeRoots.GetTreeNode(previewEntry.GamePath).Value;
 
         if (previewNode.Children.Count == 0)
         {
@@ -596,7 +587,7 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
         while (true)
         {
             // Parent exists since the child was mapped via parent
-            var parent = ModContentViewModel.Root.FindNode(childEntry.Parent)!;
+            var parent = ModContentViewModel.Root.GetTreeNode(childEntry.Parent).Value;
             if (parent.Children.Any(x => x.Item.Status == ModContentTreeEntryStatus.IncludedViaParent)) return;
 
             // Parent needs to be unmapped
@@ -632,21 +623,30 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
             return;
         }
 
+        // The nested paths might be missing, so try all subPaths
         foreach (var subPath in removedMappingPath.GetAllParents())
         {
             var previewEntry = PreviewViewModel.TreeEntriesCache.Lookup(subPath);
             if (!previewEntry.HasValue) continue;
 
-            var previewNode = PreviewViewModel.TreeRoots
-                .First(root => root.Item.GamePath.LocationId == previewEntry.Value.GamePath.LocationId)
-                .FindNode(previewEntry.Value.GamePath)!;
+            var previewNode = PreviewViewModel.TreeRoots.GetTreeNode(previewEntry.Value.GamePath).Value;
 
             if (previewNode.Children.Count != 0)
             {
                 break;
             }
 
-            PreviewViewModel.TreeEntriesCache.Remove(subPath);
+            // We found a node, we can traverse the parents now.
+            while (previewNode.Children.Count != 0)
+            {
+                var parent = previewNode.Parent;
+                PreviewViewModel.TreeEntriesCache.Remove(previewNode.Id);
+
+                if (!parent.HasValue) break;
+                previewNode = parent.Value;
+            }
+
+            break;
         }
     }
 
@@ -656,9 +656,8 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
 
     private void OnEditCreateFolder(ISelectableTreeEntryViewModel selectableTreeEntryViewModel)
     {
-        var foundNode = SelectLocationViewModel.TreeRoots
-            .FirstOrDefault(root => root.Item.GamePath.LocationId == selectableTreeEntryViewModel.GamePath.LocationId)
-            ?.FindNode(selectableTreeEntryViewModel.GamePath);
+        var foundNode = SelectLocationViewModel.TreeRoots.GetTreeNode(selectableTreeEntryViewModel.GamePath)
+            .ValueOrDefault();
         if (foundNode is null)
             return;
 
@@ -672,9 +671,8 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
 
     private void OnCancelCreateFolder(ISelectableTreeEntryViewModel selectableTreeEntryViewModel)
     {
-        var foundNode = SelectLocationViewModel.TreeRoots
-            .FirstOrDefault(root => root.Item.GamePath.LocationId == selectableTreeEntryViewModel.GamePath.LocationId)
-            ?.FindNode(selectableTreeEntryViewModel.GamePath);
+        var foundNode = SelectLocationViewModel.TreeRoots.GetTreeNode(selectableTreeEntryViewModel.GamePath)
+            .ValueOrDefault();
         if (foundNode is null)
             return;
 
@@ -686,8 +684,7 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
     private void OnSaveCreateFolder(ISelectableTreeEntryViewModel selectableTreeEntryViewModel)
     {
         var foundNode = SelectLocationViewModel.TreeRoots
-            .FirstOrDefault(root => root.Item.GamePath.LocationId == selectableTreeEntryViewModel.GamePath.LocationId)
-            ?.FindNode(selectableTreeEntryViewModel.GamePath);
+            .GetTreeNode(selectableTreeEntryViewModel.GamePath).ValueOrDefault();
         if (foundNode is null)
             return;
 
@@ -716,8 +713,7 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
     private void OnDeleteCreatedFolder(ISelectableTreeEntryViewModel selectableTreeEntryViewModel)
     {
         var foundNode = SelectLocationViewModel.TreeRoots
-            .FirstOrDefault(root => root.Item.GamePath.LocationId == selectableTreeEntryViewModel.GamePath.LocationId)
-            ?.FindNode(selectableTreeEntryViewModel.GamePath);
+            .GetTreeNode(selectableTreeEntryViewModel.GamePath).ValueOrDefault();
         if (foundNode is null) return;
 
         // Remove the node and all children from the cache

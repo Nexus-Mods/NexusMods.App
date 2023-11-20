@@ -297,10 +297,6 @@
           <DependentUpon>ISelectableTreeEntryViewModel.cs</DependentUpon>
         </Compile>
 
-        <Compile Update="Content\Left\ModContent\TreeEntry\ModContentTreeNodeVMExtensions.cs">
-          <DependentUpon>IModContentTreeEntryViewModel.cs</DependentUpon>
-        </Compile>
-
         <Compile Update="Window\AdvancedInstallerWindowViewModel.cs">
           <DependentUpon>IAdvancedInstallerWindowViewModel.cs</DependentUpon>
         </Compile>
