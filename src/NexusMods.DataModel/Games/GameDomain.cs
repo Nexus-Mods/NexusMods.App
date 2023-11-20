@@ -1,4 +1,4 @@
-using Vogen;
+using TransparentValueObjects;
 
 namespace NexusMods.DataModel.Games;
 
@@ -12,6 +12,10 @@ namespace NexusMods.DataModel.Games;
 ///    Usually we match these with NexusMods' URLs.
 /// </remarks>
 [ValueObject<string>]
-[Instance("Cyberpunk2077", "cyberpunk2077")]
-// ReSharper disable once PartialTypeWithSinglePart
-public readonly partial struct GameDomain { }
+public readonly partial struct GameDomain : IAugmentWith<DefaultValueAugment, JsonAugment>
+{
+    /// <summary>
+    /// Unknown.
+    /// </summary>
+    public static GameDomain DefaultValue { get; } = From("Unknown");
+}

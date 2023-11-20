@@ -40,7 +40,7 @@ public class AdvancedManualInstallerUI : IAdvancedInstallerHandler
         // Get default name of the mod for UI purposes.
         Loadout? loadout = null;
         Mod? mod = null;
-        if (loadoutId != LoadoutId.Null)
+        if (loadoutId != LoadoutId.DefaultValue)
         {
             loadout = _loadoutRegistry.Value.Get(loadoutId);
             loadout?.Mods.TryGetValue(baseModId, out mod);

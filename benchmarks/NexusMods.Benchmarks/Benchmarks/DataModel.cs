@@ -53,7 +53,7 @@ public class DataStoreBenchmark : IBenchmark, IDisposable
         _dataStore.PutRaw(_rawId, _rawData);
         _record = new StoredFile
         {
-            Id = ModFileId.New(),
+            Id = ModFileId.NewId(),
             Size = Size.FromLong(1024),
             Hash = Hash.From(42),
             To = new GamePath(LocationId.Game, "test.txt")
@@ -84,7 +84,7 @@ public class DataStoreBenchmark : IBenchmark, IDisposable
     {
         var record = new StoredFile
         {
-            Id = ModFileId.New(),
+            Id = ModFileId.NewId(),
             Size = Size.FromLong(1024),
             Hash = Hash.From(42),
             To = new GamePath(LocationId.Game, "test.txt")

@@ -44,7 +44,7 @@ public class ModSourceFileEntry
     {
         return new StoredFile
         {
-            Id = ModFileId.New(),
+            Id = ModFileId.NewId(),
             To = to,
             Hash = Hash,
             Size = Size

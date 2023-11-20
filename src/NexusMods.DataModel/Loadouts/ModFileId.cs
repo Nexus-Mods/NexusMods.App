@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 using NexusMods.DataModel.JsonConverters;
-using Vogen;
+using TransparentValueObjects;
 
 namespace NexusMods.DataModel.Loadouts;
 
@@ -9,15 +9,6 @@ namespace NexusMods.DataModel.Loadouts;
 /// These IDs are assigned to files as they are found, i.e. during archive scan/file
 /// discovery step.
 /// </summary>
-[ValueObject<Guid>(conversions: Conversions.None)]
+[ValueObject<Guid>]
 [JsonConverter(typeof(ModFileIdConverter))]
-public readonly partial struct ModFileId
-{
-    /// <summary>
-    /// Creates a new <see cref="ModFileId"/> with a unique GUID.
-    /// </summary>
-    public static ModFileId New()
-    {
-        return From(Guid.NewGuid());
-    }
-}
+public readonly partial struct ModFileId { }

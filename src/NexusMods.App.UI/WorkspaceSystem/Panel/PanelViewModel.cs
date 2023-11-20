@@ -13,7 +13,7 @@ namespace NexusMods.App.UI.WorkspaceSystem;
 
 public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
 {
-    public PanelId Id { get; } = PanelId.New();
+    public PanelId Id { get; } = PanelId.NewId();
 
     private readonly SourceList<IPanelTabViewModel> _tabsList = new();
     private readonly ReadOnlyObservableCollection<IPanelTabViewModel> _tabs;

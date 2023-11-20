@@ -1,10 +1,10 @@
-using Vogen;
+using TransparentValueObjects;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
 [ValueObject<Guid>]
-public readonly partial struct PanelId
+public readonly partial struct PanelId : IAugmentWith<DefaultValueAugment>
 {
-    public static readonly PanelId Empty = From(Guid.Empty);
-    public static PanelId New() => From(Guid.NewGuid());
+    /// <inheritdoc/>
+    public static PanelId DefaultValue { get; } = From(Guid.Empty);
 }

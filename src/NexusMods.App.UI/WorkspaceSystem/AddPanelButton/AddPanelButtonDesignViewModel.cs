@@ -8,9 +8,9 @@ public class AddPanelButtonDesignViewModel : AddPanelButtonViewModel
 
     private static readonly IReadOnlyDictionary<PanelId, Rect> DummyState = new Dictionary<PanelId, Rect>
     {
-        { PanelId.New(), new Rect(0, 0, 0.5, 0.5) },
-        { PanelId.Empty, new Rect(0.5, 0, 0.5, 0.5) },
-        { PanelId.New(), new Rect(0, 0.5, 0.5, 0.5) },
-        { PanelId.New(), new Rect(0.5, 0.5, 0.5, 0.5) },
+        { PanelId.NewId(), new Rect(0, 0, 0.5, 0.5) },
+        { PanelId.DefaultValue, new Rect(0.5, 0, 0.5, 0.5) },
+        { PanelId.NewId(), new Rect(0, 0.5, 0.5, 0.5) },
+        { PanelId.NewId(), new Rect(0.5, 0.5, 0.5, 0.5) },
     };
 }

@@ -28,7 +28,7 @@ public class DataStoreTests
     {
         var foo = new StoredFile
         {
-            Id = ModFileId.New(),
+            Id = ModFileId.NewId(),
             Hash = Hash.Zero,
             Size = Size.From(42L),
             To = new GamePath(LocationId.Game, "test.foo")
@@ -60,7 +60,7 @@ public class DataStoreTests
                 }
             }))
             .ToArray();
-        
+
         foreach(var thread in threads)
         {
             thread.Start();
@@ -80,7 +80,7 @@ public class DataStoreTests
     {
         var files = Enumerable.Range(0, 1024).Select(idx => new StoredFile
         {
-            Id = ModFileId.New(),
+            Id = ModFileId.NewId(),
             Hash = (Hash)(ulong)idx,
             Size = Size.FromLong(idx),
             To = new GamePath(LocationId.Game, $"{idx}.file"),
@@ -91,7 +91,7 @@ public class DataStoreTests
 
         var mod = new Mod
         {
-            Id = ModId.New(),
+            Id = ModId.NewId(),
             Name = "Large Entity",
             Files = EntityDictionary<ModFileId, AModFile>.Empty(DataStore)
         };

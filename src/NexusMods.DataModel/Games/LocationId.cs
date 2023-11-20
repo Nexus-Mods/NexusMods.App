@@ -1,18 +1,43 @@
-﻿using Vogen;
+﻿using TransparentValueObjects;
 
 namespace NexusMods.DataModel.Games { }
 
 namespace NexusMods.Paths
 {
     /// <summary>
-    ///     The base folder for the GamePath, more values can easily be added here as needed
+    /// The base folder for the GamePath, more values can easily be added here as needed
     /// </summary>
     [ValueObject<string>]
-    [Instance("Unknown", "Unknown", "Unknown game folder type, used for default values.")]
-    [Instance("Game", "Game", "The path for the game installation.")]
-    [Instance("Saves", "Saves", "Path used to store the save data of a game.")]
-    [Instance("Preferences", "Preferences", "Path used to store player settings/preferences.")]
-    [Instance("AppData", "AppData", "Path for game files located under LocalAppdata or equivalent")]
-    [Instance("AppDataRoaming", "AppDataRoaming", "Path for game files located under Appdata/Roaming or equivalent")]
-    public readonly partial struct LocationId { }
+    public readonly partial struct LocationId
+    {
+        /// <summary>
+        /// Unknown game folder type, used for default values.
+        /// </summary>
+        public static readonly LocationId Unknown = From("Unknown");
+
+        /// <summary>
+        /// The path for the game installation.
+        /// </summary>
+        public static readonly LocationId Game = From("Game");
+
+        /// <summary>
+        /// Path used to store the save data of a game.
+        /// </summary>
+        public static readonly LocationId Saves = From("Saves");
+
+        /// <summary>
+        /// Path used to store player settings/preferences.
+        /// </summary>
+        public static readonly LocationId Preferences = From("Preferences");
+
+        /// <summary>
+        /// Path for game files located under LocalAppdata or equivalent.
+        /// </summary>
+        public static readonly LocationId AppData = From("AppData");
+
+        /// <summary>
+        /// Path for game files located under Appdata/Roaming or equivalent.
+        /// </summary>
+        public static readonly LocationId AppDataRoaming = From("AppDataRoaming");
+    }
 }

@@ -5,7 +5,7 @@ namespace NexusMods.App.UI.WorkspaceSystem;
 
 public class PanelTabHeaderDesignViewModel : PanelTabHeaderViewModel
 {
-    public PanelTabHeaderDesignViewModel() : base(PanelTabId.Empty)
+    public PanelTabHeaderDesignViewModel() : base(PanelTabId.DefaultValue)
     {
         Title = "Very long name for tab headers";
 

@@ -64,7 +64,7 @@ public class ArchiveInstaller : IArchiveInstaller
 
         var baseMod = new Mod
         {
-            Id = ModId.New(),
+            Id = ModId.NewId(),
             Name = defaultModName ?? archiveName,
             Files = new EntityDictionary<ModFileId, AModFile>(_dataStore),
             Status = ModStatus.Installing
@@ -159,7 +159,7 @@ public class ArchiveInstaller : IArchiveInstaller
             AModMetadata? modMetadata = mods.Length > 1
                 ? new GroupMetadata
                 {
-                    Id = GroupId.New(),
+                    Id = GroupId.NewId(),
                     CreationReason = GroupCreationReason.MultipleModsOneArchive
                 }
                 : null;
@@ -182,6 +182,7 @@ public class ArchiveInstaller : IArchiveInstaller
                             Enabled = true,
                             Name = mod.Name,
                             Version = mod.Version,
+                            SortRules = mod.SortRules,
                             Files = mod.Files,
                             Metadata = mod.Metadata
                         });

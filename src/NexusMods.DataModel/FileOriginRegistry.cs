@@ -95,7 +95,7 @@ public class FileOriginRegistry : IFileOriginRegistry
         _logger.LogInformation("Calculating metadata");
         var analysis = new DownloadAnalysis()
         {
-            DownloadId = DownloadId.New(),
+            DownloadId = DownloadId.NewId(),
             Hash = finalHash,
             Size = finalSize,
             Contents = paths.Zip(files).Select(pair =>
