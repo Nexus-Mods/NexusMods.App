@@ -12,4 +12,10 @@ namespace NexusMods.DataModel.Games;
 ///    Usually we match these with NexusMods' URLs.
 /// </remarks>
 [ValueObject<string>]
-public readonly partial struct GameDomain { }
+public readonly partial struct GameDomain : IAugmentWith<DefaultValueAugment, JsonAugment>
+{
+    /// <summary>
+    /// Unknown.
+    /// </summary>
+    public static GameDomain DefaultValue { get; } = From("Unknown");
+}

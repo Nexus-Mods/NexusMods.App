@@ -6,4 +6,4 @@ namespace NexusMods.DataModel;
 /// Id for a registered download
 /// </summary>
 [ValueObject<Guid>]
-public readonly partial struct DownloadId { }
+public readonly partial struct DownloadId : IAugmentWith<JsonAugment> { }
