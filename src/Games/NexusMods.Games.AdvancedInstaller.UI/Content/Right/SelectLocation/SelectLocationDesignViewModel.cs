@@ -1,7 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using System.Diagnostics.CodeAnalysis;
-using NexusMods.App.UI.Extensions;
-using NexusMods.DataModel.Games;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.SelectLocation;
 
