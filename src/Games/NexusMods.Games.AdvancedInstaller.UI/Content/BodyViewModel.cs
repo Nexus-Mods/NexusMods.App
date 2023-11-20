@@ -585,30 +585,34 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
     private void RemoveParentMappingIfNecessary(IModContentTreeEntryViewModel childEntry,
         bool removePreviewNodes = true)
     {
+        var currentParent = ModContentViewModel.Root.GetTreeNode(childEntry.RelativePath).ValueOrDefault()?.Parent
+            .ValueOrDefault();
+        if (currentParent is null) return;
+
         while (true)
         {
             // Parent exists since the child was mapped via parent
-            var parent = ModContentViewModel.Root.GetTreeNode(childEntry.Parent).Value;
-            if (parent.Children.Any(x => x.Item.Status == ModContentTreeEntryStatus.IncludedViaParent)) return;
+            if (currentParent.Children.Any(x => x.Item.Status == ModContentTreeEntryStatus.IncludedViaParent)) return;
 
             // Parent needs to be unmapped
-            var previewEntry = parent.Item.Mapping.HasValue
-                ? PreviewViewModel.TreeEntriesCache.Lookup(parent.Item.Mapping.Value).ValueOrDefault()
+            var previewEntry = currentParent.Item.Mapping.HasValue
+                ? PreviewViewModel.TreeEntriesCache.Lookup(currentParent.Item.Mapping.Value).ValueOrDefault()
                 : null;
 
             if (previewEntry != null)
             {
-                previewEntry.RemoveDirectoryMapping(parent.Item);
+                previewEntry.RemoveDirectoryMapping(currentParent.Item);
                 if (removePreviewNodes)
                     RemovePreviewNodeIfNecessary(previewEntry);
             }
 
-            var parentWasMappedViaParent = parent.Item.Status == ModContentTreeEntryStatus.IncludedViaParent;
-            parent.Item.RemoveMapping();
+            var parentWasMappedViaParent = currentParent.Item.Status == ModContentTreeEntryStatus.IncludedViaParent;
+            currentParent.Item.RemoveMapping();
 
             if (parentWasMappedViaParent)
             {
-                childEntry = parent.Item;
+                currentParent = currentParent.Parent.ValueOrDefault();
+                if (currentParent is null) return;
                 continue;
             }
 
@@ -637,17 +641,7 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
                 break;
             }
 
-            // We found a node, we can traverse the parents now.
-            while (previewNode.Children.Count != 0)
-            {
-                var parent = previewNode.Parent;
-                PreviewViewModel.TreeEntriesCache.Remove(previewNode.Id);
-
-                if (!parent.HasValue) break;
-                previewNode = parent.Value;
-            }
-
-            break;
+            PreviewViewModel.TreeEntriesCache.Remove(previewNode.Id);
         }
     }
 
