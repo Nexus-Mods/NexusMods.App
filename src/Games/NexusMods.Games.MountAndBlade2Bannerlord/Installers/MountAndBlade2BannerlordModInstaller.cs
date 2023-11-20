@@ -115,7 +115,7 @@ public sealed class MountAndBlade2BannerlordModInstaller : AModInstaller
 
             return new ModInstallerResult
             {
-                Id = ModId.New(),
+                Id = ModId.NewId(),
                 Files = modFiles,
                 Name = moduleInfo.Name,
                 Version = moduleInfo.Version.ToString(),
