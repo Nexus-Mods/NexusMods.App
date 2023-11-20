@@ -687,25 +687,32 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
         if (folderName == RelativePath.Empty)
             return;
 
-        // Create a new child node in the parent with the given name.
-        var newNode = new SelectableTreeEntryViewModel(
-            new GamePath(foundNode.Item.GamePath.LocationId, foundNode.Item.GamePath.Parent.Path.Join(folderName)),
-            SelectableDirectoryNodeStatus.Created);
+        var newPath = new GamePath(foundNode.Item.GamePath.LocationId,
+            foundNode.Item.GamePath.Parent.Path.Join(folderName));
 
-        // Add a new CreateFolder node under it.
-        var newNestedCreateFolder = new SelectableTreeEntryViewModel(
-            new GamePath(newNode.GamePath.LocationId, newNode.GamePath.Path.Join("*CreateFolder*")),
-            SelectableDirectoryNodeStatus.Create);
+        // If it doesn't exist yet, create a new node
+        if (foundNode.Parent.Value.Children.All(child => child.Item.GamePath != newPath))
+        {
+            // Create a new child node in the parent with the given name.
+            var newNode = new SelectableTreeEntryViewModel(
+                new GamePath(foundNode.Item.GamePath.LocationId, foundNode.Item.GamePath.Parent.Path.Join(folderName)),
+                SelectableDirectoryNodeStatus.Created);
 
-        // Add the nodes to the tree cache
-        SelectLocationViewModel.TreeEntriesCache.AddOrUpdate(new[] { newNode, newNestedCreateFolder });
+            // Add a new CreateFolder node under it.
+            var newNestedCreateFolder = new SelectableTreeEntryViewModel(
+                new GamePath(newNode.GamePath.LocationId, newNode.GamePath.Path.Join("*CreateFolder*")),
+                SelectableDirectoryNodeStatus.Create);
+
+            // Add the nodes to the tree cache
+            SelectLocationViewModel.TreeEntriesCache.AddOrUpdate(new[] { newNode, newNestedCreateFolder });
+        }
 
         // Reset this to Create state.
         foundNode.Item.Status = SelectableDirectoryNodeStatus.Create;
         foundNode.Item.InputText = string.Empty;
 
         // Expand the new node
-        SelectLocationViewModel.TreeRoots.GetTreeNode(newNode.GamePath).Value.IsExpanded = true;
+        SelectLocationViewModel.TreeRoots.GetTreeNode(newPath).Value.IsExpanded = true;
     }
 
     private void OnDeleteCreatedFolder(ISelectableTreeEntryViewModel selectableTreeEntryViewModel)
