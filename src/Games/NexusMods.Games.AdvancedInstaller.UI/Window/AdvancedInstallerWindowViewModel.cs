@@ -17,9 +17,10 @@ public class AdvancedInstallerWindowViewModel: AViewModel<IAdvancedInstallerWind
 
     public AdvancedInstallerWindowViewModel(string modName,
         FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
-        GameLocationsRegister register)
+        GameLocationsRegister register,
+        string gameName)
     {
-       AdvancedInstallerVM = new AdvancedInstallerPageViewModel(modName, archiveFiles, register);
+       AdvancedInstallerVM = new AdvancedInstallerPageViewModel(modName, archiveFiles, register, gameName);
        UnsupportedModVM = new UnsupportedModPageViewModel(modName);
        CurrentPageVM = UnsupportedModVM;
 

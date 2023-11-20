@@ -13,9 +13,6 @@ public class BodyDesignViewModel : BodyViewModel
         "Design Mod Name",
         DesignTimeHelpers.CreateDesignFileTree(),
         DesignTimeHelpers.CreateDesignGameLocationsRegister(),
-        null) { }
-
-
-
-
+        null,
+        "Design Game Name") { }
 }

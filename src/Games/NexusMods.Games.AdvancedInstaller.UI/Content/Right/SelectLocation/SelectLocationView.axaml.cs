@@ -17,6 +17,9 @@ public partial class SelectLocationView : ReactiveUserControl<ISelectLocationVie
         InitializeComponent();
         this.WhenActivated(disposables =>
         {
+            this.OneWayBind(ViewModel, vm => vm.SuggestedAreaSubtitle,
+                    view => view.SuggestedSubHeaderText.Text)
+                .DisposeWith(disposables);
 
             this.OneWayBind(ViewModel, vm => vm.SuggestedEntries,
                     view => view.SuggestedLocationItemsControl.ItemsSource)

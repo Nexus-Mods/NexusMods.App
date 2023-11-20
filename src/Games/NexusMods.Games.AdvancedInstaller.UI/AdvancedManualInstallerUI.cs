@@ -72,7 +72,8 @@ public class AdvancedManualInstallerUI : IAdvancedInstallerHandler
         FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles)
     {
         var installerViewModel =
-            new AdvancedInstallerWindowViewModel(modName, archiveFiles, gameInstallation.LocationsRegister);
+            new AdvancedInstallerWindowViewModel(modName, archiveFiles, gameInstallation.LocationsRegister,
+                gameInstallation.Game.Name);
 
         await ShowAdvancedInstallerDialog(installerViewModel);
 
@@ -109,5 +110,4 @@ public class AdvancedManualInstallerUI : IAdvancedInstallerHandler
         AvaloniaScheduler.Instance.ScheduleAsync(state: (state, action),
             async (_, innerState, _) => { await innerState.action(innerState.state); });
     }
-
 }

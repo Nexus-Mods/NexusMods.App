@@ -144,4 +144,7 @@
     <data name="AdvancedInstaller_Manual_Mod" xml:space="preserve">
         <value>Manual Mod</value>
     </data>
+    <data name="SelectLocationViewModel_SuggestedLocationsSubtitle" xml:space="preserve">
+        <value>{0} Mods are usually installed in the following game folders.</value>
+    </data>
 </root>

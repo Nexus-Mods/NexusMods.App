@@ -4,6 +4,7 @@ using DynamicData.Binding;
 using NexusMods.App.UI.Extensions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.Games.AdvancedInstaller.UI.Resources;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.SelectLocation;
@@ -15,16 +16,21 @@ public class SelectLocationViewModel : AViewModel<ISelectLocationViewModel>,
 
     public ReadOnlyObservableCollection<TreeNodeVM<ISelectableTreeEntryViewModel, GamePath>> TreeRoots =>
         _treeRoots;
+
     private readonly ReadOnlyObservableCollection<TreeNodeVM<ISelectableTreeEntryViewModel, GamePath>> _treeRoots;
+
     public SourceCache<ISelectableTreeEntryViewModel, GamePath> TreeEntriesCache { get; } =
         new(entry => entry.GamePath);
 
     public ReadOnlyObservableCollection<ILocationTreeContainerViewModel> TreeContainers => _treeContainers;
     private readonly ReadOnlyObservableCollection<ILocationTreeContainerViewModel> _treeContainers;
 
+    public string SuggestedAreaSubtitle { get; }
 
-    public SelectLocationViewModel(GameLocationsRegister register, Loadout? loadout)
+    public SelectLocationViewModel(GameLocationsRegister register, Loadout? loadout, string gameName)
     {
+        SuggestedAreaSubtitle = string.Format(Language.SelectLocationViewModel_SuggestedLocationsSubtitle, gameName);
+
         SuggestedEntries = CreateSuggestedEntries(register).ToReadOnlyObservableCollection();
 
         var treeEntries = CreateTreeEntries(register, loadout);
@@ -43,7 +49,7 @@ public class SelectLocationViewModel : AViewModel<ISelectLocationViewModel>,
             .Subscribe();
 
         _treeRoots.ToObservableChangeSet()
-            .Transform(treeNode => (ILocationTreeContainerViewModel) new LocationTreeContainerViewModel(treeNode))
+            .Transform(treeNode => (ILocationTreeContainerViewModel)new LocationTreeContainerViewModel(treeNode))
             .Bind(out _treeContainers)
             .Subscribe();
     }

@@ -39,7 +39,8 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
         string modName,
         FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
         GameLocationsRegister locationRegister,
-        Loadout? loadout)
+        Loadout? loadout,
+        string gameName)
     {
         // Setup child VMs
         ModName = modName;
@@ -50,7 +51,7 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
 
         ModContentViewModel = new ModContentViewModel(archiveFiles);
 
-        SelectLocationViewModel = new SelectLocationViewModel(locationRegister, loadout);
+        SelectLocationViewModel = new SelectLocationViewModel(locationRegister, loadout, gameName);
 
         PreviewViewModel = new PreviewViewModel();
 

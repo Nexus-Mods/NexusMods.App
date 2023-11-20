@@ -12,9 +12,10 @@ public class AdvancedInstallerPageViewModel : AViewModel<IAdvancedInstallerPageV
 {
     public AdvancedInstallerPageViewModel(string modName,
         FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
-        GameLocationsRegister register)
+        GameLocationsRegister register,
+        string gameName)
     {
-        BodyViewModel = new BodyViewModel(new DeploymentData(), modName, archiveFiles, register, null);
+        BodyViewModel = new BodyViewModel(new DeploymentData(), modName, archiveFiles, register, null, gameName);
         FooterViewModel = new FooterViewModel();
         ShouldInstall = false;
 

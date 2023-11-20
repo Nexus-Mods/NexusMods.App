@@ -13,4 +13,6 @@ public interface ISelectLocationViewModel : IViewModelInterface
     public SourceCache<ISelectableTreeEntryViewModel, GamePath> TreeEntriesCache { get; }
 
     public ReadOnlyObservableCollection<TreeNodeVM<ISelectableTreeEntryViewModel, GamePath>> TreeRoots { get; }
+
+    public string SuggestedAreaSubtitle { get; }
 }

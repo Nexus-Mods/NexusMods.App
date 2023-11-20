@@ -13,5 +13,6 @@ internal class AdvancedInstallerPageDesignViewModel : AdvancedInstallerPageViewM
     public AdvancedInstallerPageDesignViewModel() : base(
         "Design Mod Name",
         DesignTimeHelpers.CreateDesignFileTree(),
-        DesignTimeHelpers.CreateDesignGameLocationsRegister()) { }
+        DesignTimeHelpers.CreateDesignGameLocationsRegister(),
+        "Design Game Name") { }
 }

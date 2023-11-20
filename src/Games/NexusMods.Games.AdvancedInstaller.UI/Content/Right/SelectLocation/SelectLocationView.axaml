@@ -73,7 +73,7 @@
 
                             <TextBlock Classes="BodySMNormal SelectSubHeading"
                                        TextWrapping="Wrap"
-                                       Text="Temp GAME SKYRIM SPECIAL EDITION SECOND VERSION Mods are usually installed in the following game folders."
+                                       Text="TEMP SUBTITLE"
                                        x:Name="SuggestedSubHeaderText" />
 
                         </StackPanel>
