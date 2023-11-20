@@ -1,10 +1,10 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
+using JetBrains.Annotations;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.Hashing.xxHash64;
-using Vogen;
+using TransparentValueObjects;
 
 namespace NexusMods.DataModel.Loadouts;
 
@@ -14,12 +14,14 @@ namespace NexusMods.DataModel.Loadouts;
 /// Id. Essentially this is just a Guid, but we wrap this guid so that we can easily
 /// distinguish it from other parts of the code that may use Guids for other object types
 /// </summary>
-[ValueObject<Guid>(conversions: Conversions.None)]
+[ValueObject<Guid>]
 [JsonConverter(typeof(LoadoutIdConverter))]
-// ReSharper disable once PartialTypeWithSinglePart
-public readonly partial struct LoadoutId : ICreatable<LoadoutId>
+[PublicAPI]
+public readonly partial struct LoadoutId : IAugmentWith<DefaultValueAugment>
 {
-    public static LoadoutId Null = From(Guid.Empty);
+    /// <inheritdoc/>
+    public static LoadoutId DefaultValue { get; } = From(Guid.Empty);
+
     // Note: We store this as hex because we need to serialize to JSON.
 
     /// <summary>
@@ -40,7 +42,7 @@ public readonly partial struct LoadoutId : ICreatable<LoadoutId>
     public void ToHex(Span<char> span)
     {
         Span<byte> bytes = stackalloc byte[16];
-        _value.TryWriteBytes(bytes);
+        Value.TryWriteBytes(bytes);
         ((ReadOnlySpan<byte>)bytes).ToHex(span);
     }
 
@@ -48,7 +50,7 @@ public readonly partial struct LoadoutId : ICreatable<LoadoutId>
     public override string ToString()
     {
         Span<byte> span = stackalloc byte[16];
-        _value.TryWriteBytes(span);
+        Value.TryWriteBytes(span);
         return ((ReadOnlySpan<byte>)span).ToHex();
     }
 
@@ -67,7 +69,7 @@ public readonly partial struct LoadoutId : ICreatable<LoadoutId>
     public byte[] ToArray()
     {
         Span<byte> span = stackalloc byte[16];
-        _value.TryWriteBytes(span);
+        Value.TryWriteBytes(span);
         return span.ToArray();
     }
 
@@ -111,11 +113,9 @@ public readonly partial struct LoadoutId : ICreatable<LoadoutId>
     public IId ToEntityId(EntityCategory category)
     {
         Span<byte> span = stackalloc byte[16];
-        _value.TryWriteBytes(span);
+        Value.TryWriteBytes(span);
         return IId.FromSpan(category, span);
     }
-
-
 
     /// <summary>
     /// Parses a loadout ID from the ToString() representation.
@@ -134,25 +134,23 @@ public readonly partial struct LoadoutId : ICreatable<LoadoutId>
     /// <param name="input"></param>
     /// <param name="loadoutId"></param>
     /// <returns></returns>
-    public static bool TryParseFromHex(ReadOnlySpan<char> input, [NotNullWhen(false)] out LoadoutId loadoutId)
+    public static bool TryParseFromHex(ReadOnlySpan<char> input, out LoadoutId loadoutId)
     {
         if (input.Length != 32)
         {
-            loadoutId = Null;
+            loadoutId = DefaultValue;
             return false;
         }
-        else
+
+        try
         {
-            try
-            {
-                loadoutId = FromHex(input);
-                return true;
-            }
-            catch
-            {
-                loadoutId = Null;
-                return false;
-            }
+            loadoutId = FromHex(input);
+            return true;
+        }
+        catch
+        {
+            loadoutId = DefaultValue;
+            return false;
         }
 
     }

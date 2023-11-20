@@ -17,7 +17,7 @@ public class LoadoutGridViewTests : AViewTest<LoadoutGridView, LoadoutGridDesign
     public async Task CanDeleteModsFromLoadout()
     {
         var control = await GetControl<DataGrid>("ModsDataGrid");
-        
+
         var ids = new List<ModCursor>();
         await OnUi(() =>
         {
@@ -32,9 +32,9 @@ public class LoadoutGridViewTests : AViewTest<LoadoutGridView, LoadoutGridDesign
         });
 
         var deleteButton = await GetControl<Button>("DeleteModsButton");
-        
+
         await Click(deleteButton);
-        
+
         await OnUi(() =>
         {
             control.ItemsSource.OfType<ModCursor>().Should().HaveCount(9 - ids.Count);
@@ -49,7 +49,7 @@ public class LoadoutGridViewTests : AViewTest<LoadoutGridView, LoadoutGridDesign
     public async Task AddingModsUpdatesTheDatagrid()
     {
         var control = await GetControl<DataGrid>("ModsDataGrid");
-        
+
         ConcurrentBag<NotifyCollectionChangedEventArgs> events = new();
         ((INotifyCollectionChanged) ViewModel.Mods).CollectionChanged += (sender, args) => events.Add(args);
         var rowsPresenter = (await GetVisualDescendants<DataGridRowsPresenter>(control)).First();
@@ -58,15 +58,15 @@ public class LoadoutGridViewTests : AViewTest<LoadoutGridView, LoadoutGridDesign
         {
             (await GetVisualDescendants<DataGridRow>(rowsPresenter)).Should().HaveCount(9);
         });
-        
+
         events.Clear();
 
         await OnUi(() =>
         {
-            ViewModel.AddMod(new ModCursor(ViewModel.LoadoutId, ModId.New()));
+            ViewModel.AddMod(new ModCursor(ViewModel.LoadoutId, ModId.NewId()));
         });
-        
-        
+
+
         await Eventually(async () =>
         {
             events.Should().HaveCount(1);

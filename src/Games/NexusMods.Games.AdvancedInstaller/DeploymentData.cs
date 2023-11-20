@@ -115,7 +115,7 @@ public readonly struct DeploymentData
 
             yield return new StoredFile
             {
-                Id = ModFileId.New(),
+                Id = ModFileId.NewId(),
                 To = mapping.Value,
                 Hash = file!.Hash,
                 Size = file.Size

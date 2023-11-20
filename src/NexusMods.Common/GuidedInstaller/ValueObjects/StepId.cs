@@ -1,5 +1,5 @@
 using JetBrains.Annotations;
-using Vogen;
+using TransparentValueObjects;
 
 namespace NexusMods.Common.GuidedInstaller.ValueObjects;
 

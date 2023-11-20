@@ -1,4 +1,4 @@
-using Vogen;
+using TransparentValueObjects;
 
 namespace NexusMods.Networking.NexusWebApi.Types;
 
@@ -6,4 +6,8 @@ namespace NexusMods.Networking.NexusWebApi.Types;
 /// Unique identifier for a given site user.
 /// </summary>
 [ValueObject<ulong>]
-public readonly partial struct UserId { }
+public readonly partial struct UserId : IAugmentWith<DefaultValueAugment>
+{
+    /// <inheritdoc/>
+    public static UserId DefaultValue => From(default);
+}

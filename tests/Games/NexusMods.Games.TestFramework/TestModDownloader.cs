@@ -90,7 +90,7 @@ public class TestModDownloader
     {
         // TODO: Nexus Web API needs To Support IFileSystem at some point.
         _logger.LogInformation("Downloading {ModId} {FileId} {Hash}", nexusMod.ModId, nexusMod.FileId, nexusMod.Hash);
-        var uris = await _nexusClient.DownloadLinksAsync(GameDomain.Cyberpunk2077, nexusMod.ModId, nexusMod.FileId, token);
+        var uris = await _nexusClient.DownloadLinksAsync(GameDomain.From("Cyberpunk2077"), nexusMod.ModId, nexusMod.FileId, token);
         var downloadUris = uris.Data.Select(u => new HttpRequestMessage(HttpMethod.Get, u.Uri)).ToArray();
         var downloadHash = await _httpDownloader.DownloadAsync(downloadUris, folderPath, token: token);
         if (downloadHash != nexusMod.Hash)

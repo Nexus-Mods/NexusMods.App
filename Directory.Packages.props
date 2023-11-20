@@ -105,6 +105,6 @@
     <PackageVersion Include="Sewer56.BitStream" Version="1.3.0" />
     <PackageVersion Include="Spectre.Console" Version="0.47.0" />
     <PackageVersion Include="Splat.Microsoft.Extensions.Logging" Version="14.8.6" />
-    <PackageVersion Include="Vogen" Version="3.0.23" />
+    <PackageVersion Include="TransparentValueObjects" Version="1.0.1" />
   </ItemGroup>
 </Project>

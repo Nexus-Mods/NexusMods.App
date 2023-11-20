@@ -1,4 +1,4 @@
-using Vogen;
+using TransparentValueObjects;
 
 namespace NexusMods.Networking.NexusWebApi.Types;
 
@@ -7,5 +7,4 @@ namespace NexusMods.Networking.NexusWebApi.Types;
 /// </summary>
 [ValueObject<string>]
 // ReSharper disable once InconsistentNaming
-// ReSharper disable once StructCanBeMadeReadOnly
 public readonly partial struct NXMKey { }
