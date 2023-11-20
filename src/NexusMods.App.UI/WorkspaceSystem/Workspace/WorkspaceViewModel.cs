@@ -119,7 +119,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
             foreach (var kv in state)
             {
                 var (panelId, logicalBounds) = kv;
-                if (panelId == PanelId.Empty)
+                if (panelId == PanelId.DefaultValue)
                 {
                     panelViewModel = new PanelViewModel(_factoryController)
                     {

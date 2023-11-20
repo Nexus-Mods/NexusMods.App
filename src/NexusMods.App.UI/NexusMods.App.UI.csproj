@@ -101,6 +101,7 @@
         <PackageReference Include="ReactiveUI.Fody" />
         <PackageReference Include="Splat.Microsoft.Extensions.Logging" />
         <PackageReference Include="System.Reactive" />
+        <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
 
     <ItemGroup>

@@ -42,26 +42,26 @@ public class GridUtilsTests
             dict.Should().HaveCount(2).And.Equal(new KeyValuePair<PanelId, Rect>[]
             {
                 new(firstPanel.Id, new Rect(0, 0, 0.5, 1)),
-                new(PanelId.Empty, new Rect(0.5, 0, 0.5, 1)),
+                new(PanelId.DefaultValue, new Rect(0.5, 0, 0.5, 1)),
             });
         }, dict => {
             dict.Should().HaveCount(2).And.Equal(new KeyValuePair<PanelId, Rect>[]
             {
                 new(firstPanel.Id, new Rect(0.5, 0, 0.5, 1)),
-                new(PanelId.Empty, new Rect(0, 0, 0.5, 1)),
+                new(PanelId.DefaultValue, new Rect(0, 0, 0.5, 1)),
             });
         }, dict =>
         {
             dict.Should().HaveCount(2).And.Equal(new KeyValuePair<PanelId, Rect>[]
             {
                 new(firstPanel.Id, new Rect(0, 0, 1, 0.5)),
-                new(PanelId.Empty, new Rect(0, 0.5, 1, 0.5)),
+                new(PanelId.DefaultValue, new Rect(0, 0.5, 1, 0.5)),
             });
         }, dict => {
             dict.Should().HaveCount(2).And.Equal(new KeyValuePair<PanelId, Rect>[]
             {
                 new(firstPanel.Id, new Rect(0, 0.5, 1, 0.5)),
-                new(PanelId.Empty, new Rect(0, 0, 1, 0.5)),
+                new(PanelId.DefaultValue, new Rect(0, 0, 1, 0.5)),
             });
         });
 
@@ -82,14 +82,14 @@ public class GridUtilsTests
             dict.Should().HaveCount(3).And.Equal(new KeyValuePair<PanelId, Rect>[]
             {
                 new(firstPanel.Id, new Rect(0, 0, 0.5, 0.5)),
-                new(PanelId.Empty, new Rect(0, 0.5, 0.5, 0.5)),
+                new(PanelId.DefaultValue, new Rect(0, 0.5, 0.5, 0.5)),
                 new(secondPanel.Id, new Rect(0.5, 0, 0.5, 1)),
             });
         }, dict =>
         {
             dict.Should().HaveCount(3).And.Equal(new KeyValuePair<PanelId, Rect>[]
             {
-                new(PanelId.Empty, new Rect(0, 0, 0.5, 0.5)),
+                new(PanelId.DefaultValue, new Rect(0, 0, 0.5, 0.5)),
                 new(firstPanel.Id, new Rect(0, 0.5, 0.5, 0.5)),
                 new(secondPanel.Id, new Rect(0.5, 0, 0.5, 1)),
             });
@@ -99,7 +99,7 @@ public class GridUtilsTests
             {
                 new(firstPanel.Id, new Rect(0, 0, 0.5, 1)),
                 new(secondPanel.Id, new Rect(0.5, 0, 0.5, 0.5)),
-                new(PanelId.Empty, new Rect(0.5, 0.5, 0.5, 0.5)),
+                new(PanelId.DefaultValue, new Rect(0.5, 0.5, 0.5, 0.5)),
             });
         }, dict =>
         {
@@ -107,7 +107,7 @@ public class GridUtilsTests
             {
                 new(firstPanel.Id, new Rect(0, 0, 0.5, 1)),
                 new(secondPanel.Id, new Rect(0.5, 0.5, 0.5, 0.5)),
-                new(PanelId.Empty, new Rect(0.5, 0, 0.5, 0.5)),
+                new(PanelId.DefaultValue, new Rect(0.5, 0, 0.5, 0.5)),
             });
         });
 
@@ -130,7 +130,7 @@ public class GridUtilsTests
                 new(firstPanel.Id, new Rect(0, 0, 0.5, 0.5)),
                 new(secondPanel.Id, new Rect(0.5, 0, 0.5, 0.5)),
                 new(thirdPanel.Id, new Rect(0, 0.5, 0.5, 0.5)),
-                new(PanelId.Empty, new Rect(0.5, 0.5, 0.5, 0.5)),
+                new(PanelId.DefaultValue, new Rect(0.5, 0.5, 0.5, 0.5)),
             });
         }, dict =>
         {
@@ -139,7 +139,7 @@ public class GridUtilsTests
                 new(firstPanel.Id, new Rect(0, 0, 0.5, 0.5)),
                 new(secondPanel.Id, new Rect(0.5, 0.5, 0.5, 0.5)),
                 new(thirdPanel.Id, new Rect(0, 0.5, 0.5, 0.5)),
-                new(PanelId.Empty, new Rect(0.5, 0, 0.5, 0.5)),
+                new(PanelId.DefaultValue, new Rect(0.5, 0, 0.5, 0.5)),
             });
         });
 

@@ -56,7 +56,7 @@ public class SimpleOverlayModInstaller : IModInstaller
                 var relativePath = filePath.DropFirst(node.Path.Depth);
                 newFiles.Add(new StoredFile()
                 {
-                    Id = ModFileId.New(),
+                    Id = ModFileId.NewId(),
                     Hash = fileInfo!.Hash,
                     Size = fileInfo.Size,
                     To = new GamePath(LocationId.Game, relativePath)

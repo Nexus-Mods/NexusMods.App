@@ -45,7 +45,7 @@ internal static class GridUtils
             var res = currentPanels.SetItems(new []
             {
                 new KeyValuePair<PanelId, Rect>(panel.Id, newPanelLogicalBounds),
-                new KeyValuePair<PanelId, Rect>(PanelId.Empty, updatedLogicalBounds)
+                new KeyValuePair<PanelId, Rect>(PanelId.DefaultValue, updatedLogicalBounds)
             });
 
             return res;
@@ -55,7 +55,7 @@ internal static class GridUtils
             var res = currentPanels.SetItems(new []
             {
                 new KeyValuePair<PanelId, Rect>(panel.Id, updatedLogicalBounds),
-                new KeyValuePair<PanelId, Rect>(PanelId.Empty, newPanelLogicalBounds)
+                new KeyValuePair<PanelId, Rect>(PanelId.DefaultValue, newPanelLogicalBounds)
             });
 
             return res;
@@ -156,11 +156,10 @@ internal static class GridUtils
 
         var currentRect = currentState[panelToRemove];
 
-        // TODO: https://github.com/SteveDunn/Vogen/issues/497
-        Span<PanelId> sameColumn = GC.AllocateUninitializedArray<PanelId>(currentState.Count);
+        Span<PanelId> sameColumn = stackalloc PanelId[currentState.Count];
         var sameColumnCount = 0;
 
-        Span<PanelId> sameRow = GC.AllocateUninitializedArray<PanelId>(currentState.Count);
+        Span<PanelId> sameRow = stackalloc PanelId[currentState.Count];
         var sameRowCount = 0;
 
         foreach (var kv in res)

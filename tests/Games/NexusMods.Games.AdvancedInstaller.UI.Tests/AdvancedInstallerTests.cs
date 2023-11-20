@@ -37,7 +37,7 @@ public class AdvancedInstallerTests
 
     private async ValueTask<IEnumerable<ModInstallerResult>> ExecuteInstaller()
     {
-        return await _installer.GetModsAsync(_gameInstallation, LoadoutId.Null, _baseModId, _archiveFiles);
+        return await _installer.GetModsAsync(_gameInstallation, LoadoutId.DefaultValue, _baseModId, _archiveFiles);
     }
 
     [Fact]

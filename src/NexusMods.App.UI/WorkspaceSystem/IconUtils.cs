@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using Avalonia;
 using Avalonia.Media.Imaging;
-using Avalonia.Platform;
 using NexusMods.App.UI.Extensions;
 using SkiaSharp;
 using Svg.Skia;
@@ -56,7 +55,7 @@ internal static class IconUtils
         foreach (var kv in state)
         {
             var (panelId, rect) = kv;
-            DrawRect(skPathFilled, skPathHollow, rect, isHollow: panelId != PanelId.Empty);
+            DrawRect(skPathFilled, skPathHollow, rect, isHollow: panelId != PanelId.DefaultValue);
         }
 
         using (var skPaint = new SKPaint())

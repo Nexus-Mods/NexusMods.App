@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 using NexusMods.DataModel.JsonConverters;
-using Vogen;
+using TransparentValueObjects;
 
 namespace NexusMods.DataModel.Loadouts;
 
@@ -9,15 +9,6 @@ namespace NexusMods.DataModel.Loadouts;
 /// These IDs are assigned to mods upon installation (i.e. when a mod is
 /// added to a loadout), or when a tool generates some files after running.
 /// </summary>
-[ValueObject<Guid>(conversions: Conversions.None)]
+[ValueObject<Guid>]
 [JsonConverter(typeof(ModIdConverter))]
-public readonly partial struct ModId
-{
-    /// <summary>
-    /// Creates a new <see cref="ModId"/> with a unique GUID.
-    /// </summary>
-    public static ModId New()
-    {
-        return From(Guid.NewGuid());
-    }
-}
+public readonly partial struct ModId { }

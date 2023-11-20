@@ -144,7 +144,7 @@ public class LoadoutRegistry : IDisposable
             {
                 existingMod = new Mod()
                 {
-                    Id = ModId.New(),
+                    Id = ModId.NewId(),
                     Name = "",
                     Files = EntityDictionary<ModFileId, AModFile>.Empty(_store)
                 };

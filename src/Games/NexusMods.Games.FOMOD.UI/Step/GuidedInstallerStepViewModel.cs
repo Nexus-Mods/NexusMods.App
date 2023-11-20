@@ -177,7 +177,7 @@ public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewM
     {
         return Groups
             .SelectMany(groupVM => groupVM.Options
-                .Where(optionVM => optionVM.IsChecked && optionVM.Option.Id != OptionId.None)
+                .Where(optionVM => optionVM.IsChecked && optionVM.Option.Id != OptionId.DefaultValue)
                 .Select(optionVM => new SelectedOption(groupVM.Group.Id, optionVM.Option.Id))
             )
             .ToArray();

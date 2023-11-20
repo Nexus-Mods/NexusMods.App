@@ -13,8 +13,8 @@ public class IconUtilsTests : AUiTest
     {
         var state = new Dictionary<PanelId, Rect>
         {
-            { PanelId.New(), new Rect(0, 0, 0.5, 1) },
-            { PanelId.Empty, new Rect(0.5, 0, 0.5, 1) }
+            { PanelId.NewId(), new Rect(0, 0, 0.5, 1) },
+            { PanelId.DefaultValue, new Rect(0.5, 0, 0.5, 1) }
         };
 
         var bitmap = IconUtils.StateToBitmap(state);

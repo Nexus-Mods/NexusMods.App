@@ -18,7 +18,7 @@ public class ModelTests : ADataModelTest<ModelTests>
     {
         var file = new StoredFile
         {
-            Id = ModFileId.New(),
+            Id = ModFileId.NewId(),
             To = new GamePath(LocationId.Game, "foo/bar.pez"),
             Hash = (Hash)0x42L,
             Size = Size.FromLong(44L)

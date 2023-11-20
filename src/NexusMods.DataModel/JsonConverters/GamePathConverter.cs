@@ -15,7 +15,10 @@ public class GamePathConverter : JsonConverter<GamePath>
             throw new JsonException("While reading Game Path expected object start");
 
         reader.Read();
-        var folder = LocationId.From(reader.GetString());
+
+        var locationIdString = reader.GetString();
+        var folder = locationIdString is null ? LocationId.Unknown : LocationId.From(locationIdString);
+
         reader.Read();
         var path = reader.GetString()!.ToRelativePath();
         reader.Read();

@@ -1,4 +1,4 @@
-using Vogen;
+using TransparentValueObjects;
 
 namespace NexusMods.Networking.NexusWebApi.Types;
 

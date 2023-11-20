@@ -1,4 +1,4 @@
-using Vogen;
+using TransparentValueObjects;
 
 namespace NexusMods.Networking.NexusWebApi.Types;
 
@@ -7,4 +7,8 @@ namespace NexusMods.Networking.NexusWebApi.Types;
 /// </summary>
 [ValueObject<string>]
 // ReSharper disable once InconsistentNaming
-public readonly partial struct CDNName { }
+public readonly partial struct CDNName : IAugmentWith<DefaultValueAugment>
+{
+    /// <inheritdoc/>
+    public static CDNName DefaultValue => From(string.Empty);
+}
