@@ -703,6 +703,9 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
         // Reset this to Create state.
         foundNode.Item.Status = SelectableDirectoryNodeStatus.Create;
         foundNode.Item.InputText = string.Empty;
+
+        // Expand the new node
+        SelectLocationViewModel.TreeRoots.GetTreeNode(newNode.GamePath).Value.IsExpanded = true;
     }
 
     private void OnDeleteCreatedFolder(ISelectableTreeEntryViewModel selectableTreeEntryViewModel)
