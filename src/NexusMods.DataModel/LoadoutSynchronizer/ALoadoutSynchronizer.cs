@@ -579,9 +579,13 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// <param name="mod"></param>
     /// <returns></returns>
     /// <exception cref="NotImplementedException"></exception>
-    protected virtual ValueTask<ISortRule<Mod, ModId>[]> ModSortRules(Loadout loadout, Mod mod)
+    protected virtual async ValueTask<ISortRule<Mod, ModId>[]> ModSortRules(Loadout loadout, Mod mod)
     {
-        return ValueTask.FromResult(mod.SortRules.ToArray());
+        var builtInSortRules = mod.SortRules.Where(x => x is not IGeneratedSortRule);
+        var customSortRules = mod.SortRules.ToAsyncEnumerable()
+            .OfType<IGeneratedSortRule>()
+            .SelectMany(x => x.GenerateSortRules(mod.Id, loadout));
+        return await builtInSortRules.ToAsyncEnumerable().Concat(customSortRules).ToArrayAsync();
     }
 
 

@@ -182,6 +182,7 @@ public class ArchiveInstaller : IArchiveInstaller
                             Enabled = true,
                             Name = mod.Name,
                             Version = mod.Version,
+                            SortRules = mod.SortRules,
                             Files = mod.Files,
                             Metadata = mod.Metadata
                         });
