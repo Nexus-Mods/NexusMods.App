@@ -2,11 +2,8 @@ using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.ModInstallers;
 using NexusMods.FileExtractor.StreamFactories;
-using NexusMods.Games.Generic.Installers;
 using NexusMods.Paths;
-using Vogen;
 
 namespace NexusMods.Games.BethesdaGameStudios;
 
@@ -44,7 +41,7 @@ public class SkyrimSpecialEdition : ABethesdaGame, ISteamGame, IGogGame, IXboxGa
     {
         yield return new PluginOrderFile
         {
-            Id = ModFileId.New()
+            Id = ModFileId.NewId()
         };
     }
 

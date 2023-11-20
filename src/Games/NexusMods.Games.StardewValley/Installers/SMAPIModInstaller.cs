@@ -82,7 +82,7 @@ public class SMAPIModInstaller : AModInstaller
 
                 return new ModInstallerResult
                 {
-                    Id = ModId.New(),
+                    Id = ModId.NewId(),
                     Files = modFiles,
                     Name = manifest.Name,
                     Version = manifest.Version.ToString()

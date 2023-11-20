@@ -126,7 +126,7 @@ public class SMAPIInstaller : AModInstaller
         {
             Hash = gameDepsFileCache.Hash,
             Size = gameDepsFileCache.Size,
-            Id = ModFileId.New(),
+            Id = ModFileId.NewId(),
             Installation = gameInstallation,
             To = new GamePath(LocationId.Game, "StardewModdingAPI.deps.json")
         });

@@ -158,7 +158,7 @@ public class FomodXmlInstaller : AModInstaller
         var file = files.FindNode(src)!.Value;
         return new StoredFile
         {
-            Id = ModFileId.New(),
+            Id = ModFileId.NewId(),
             To = new GamePath(gameTargetPath.LocationId, gameTargetPath.Path.Join(dest)),
             Hash = file!.Hash,
             Size = file.Size
@@ -173,7 +173,7 @@ public class FomodXmlInstaller : AModInstaller
         var dest = RelativePath.FromUnsanitizedInput(instruction.destination);
         return new EmptyDirectory
         {
-            Id = ModFileId.New(),
+            Id = ModFileId.NewId(),
             Directory = new GamePath(gameTargetPath.LocationId, gameTargetPath.Path.Join(dest))
         };
     }

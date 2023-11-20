@@ -29,6 +29,6 @@ public record PluginOrderFile : AModFile, IGeneratedFile, IToFile
 
     public ValueTask<AModFile> Update(DiskStateEntry newEntry, Stream stream)
     {
-        return ValueTask.FromResult<AModFile>(new PluginOrderFile {Id = ModFileId.New()});
+        return ValueTask.FromResult<AModFile>(new PluginOrderFile {Id = ModFileId.NewId()});
     }
 }

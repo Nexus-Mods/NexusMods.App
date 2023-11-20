@@ -565,8 +565,8 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
         // Apply the old state
         await _synchronizer.Apply(BaseList.Value);
 
-        var modId = ModId.New();
-        var fileId = ModFileId.New();
+        var modId = ModId.NewId();
+        var fileId = ModFileId.NewId();
 
         var generatedFile = new GeneratedTestFile()
         {

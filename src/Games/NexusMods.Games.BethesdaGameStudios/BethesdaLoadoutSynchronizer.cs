@@ -31,7 +31,7 @@ public class BethesdaLoadoutSynchronizer : ALoadoutSynchronizer
         ModId metadataModId;
         if (gameMod == default)
         {
-            metadataModId = ModId.New();
+            metadataModId = ModId.NewId();
             loadout = loadout with
             {
                 Mods = loadout.Mods.With(metadataModId, new Mod()
@@ -54,7 +54,7 @@ public class BethesdaLoadoutSynchronizer : ALoadoutSynchronizer
 
         if (pluginFile == default)
         {
-            pluginFile = new PluginOrderFile { Id = ModFileId.New() };
+            pluginFile = new PluginOrderFile { Id = ModFileId.NewId() };
             gameMod = gameMod with
             {
                 Files = gameMod.Files.With(pluginFile.Id, pluginFile)
