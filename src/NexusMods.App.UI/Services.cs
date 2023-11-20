@@ -173,11 +173,12 @@ public static class Services
             .AddView<AddPanelButtonView, IAddPanelButtonViewModel>()
             .AddView<PanelTabHeaderView, IPanelTabHeaderViewModel>()
             .AddView<NewTabPageView, INewTabPageViewModel>()
-            .AddView<NewTabPageSectionView, INewTabPageSectionViewModel>()
 
+            // page factories
             .AddSingleton<PageFactoryController>()
             .AddSingleton<IPageFactory, DummyPageFactory>()
             .AddSingleton<IPageFactory, LoadoutGridPageFactory>()
+            .AddSingleton<IPageFactory, NewTabPageFactory>()
 
             // Other
             .AddViewModel<DummyViewModel, IDummyViewModel>()

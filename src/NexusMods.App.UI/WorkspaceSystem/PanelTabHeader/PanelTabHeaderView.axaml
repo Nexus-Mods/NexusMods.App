@@ -14,12 +14,8 @@
         <workspace:PanelTabHeaderDesignViewModel />
     </Design.DataContext>
 
-    <Border x:Name="Container" PointerPressed="InputElement_OnPointerPressed">
+    <Border x:Name="Container">
         <Border.Styles>
-            <StyleInclude Source="avares://NexusMods.App.UI/Palatte/Nexus.xaml"/>
-            <StyleInclude Source="avares://NexusMods.App.UI/Theme/TextBlockStyles.xaml"/>
-            <StyleInclude Source="avares://NexusMods.App.UI/Theme/IconStyles.xaml"/>
-
             <Style Selector="Border:not(.Selected)">
                 <Setter Property="Background" Value="Transparent"></Setter>
             </Style>

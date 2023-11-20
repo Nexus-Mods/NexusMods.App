@@ -62,7 +62,7 @@ public static class ObservableExtensions
         ToDiffedChangeSet<TInV, TOutV, TOutK>(
             this IObservable<IEnumerable<TInV>> colls,
             Func<TInV, TOutK> keySelector, Func<TInV, TOutV> valueSelector)
-        where TOutK : notnull
+        where TOutK : notnull where TOutV : notnull
     {
         var changeSet =
             new SourceCache<TOutV, TOutK>(x =>

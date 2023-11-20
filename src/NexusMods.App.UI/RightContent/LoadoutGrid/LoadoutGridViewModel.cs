@@ -11,19 +11,21 @@ using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModEnabled;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModInstalled;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModName;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModVersion;
+using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveMetaData;
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Cursors;
+using NexusMods.DataModel.ModInstallers;
 using NexusMods.Paths;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.RightContent.LoadoutGrid;
 
-public class LoadoutGridViewModel : AViewModel<ILoadoutGridViewModel>, ILoadoutGridViewModel
+public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoadoutGridViewModel
 {
     [Reactive]
     public LoadoutId LoadoutId { get; set; }
@@ -39,6 +41,7 @@ public class LoadoutGridViewModel : AViewModel<ILoadoutGridViewModel>, ILoadoutG
     private readonly LoadoutRegistry _loadoutRegistry;
     private readonly IArchiveInstaller _archiveInstaller;
     private readonly IFileOriginRegistry _fileOriginRegistry;
+    private readonly IServiceProvider _provider;
 
     [Reactive]
     public string LoadoutName { get; set; } = "";
@@ -58,6 +61,7 @@ public class LoadoutGridViewModel : AViewModel<ILoadoutGridViewModel>, ILoadoutG
         _loadoutRegistry = loadoutRegistry;
         _archiveInstaller = archiveInstaller;
         _fileOriginRegistry = fileOriginRegistry;
+        _provider = provider;
 
         _columns =
             new SourceCache<IDataGridColumnFactory<LoadoutColumn>, LoadoutColumn>(
@@ -134,6 +138,37 @@ public class LoadoutGridViewModel : AViewModel<ILoadoutGridViewModel>, ILoadoutG
                     Name = file.FileName
                 });
             await _archiveInstaller.AddMods(LoadoutId, downloadId, token: CancellationToken.None);
+        });
+
+        return Task.CompletedTask;
+    }
+
+    public Task AddModAdvanced(string path)
+    {
+        var file = _fileSystem.FromUnsanitizedFullPath(path);
+        if (!_fileSystem.FileExists(file))
+        {
+            _logger.LogError("File {File} does not exist, not installing mod",
+                file);
+            return Task.CompletedTask;
+        }
+
+        // this is one of the worst hacks I've done in recent years, it's bad, and I should feel bad
+        // Likely could be solved by .NET 8's DI improvements, with Keyed services
+        var installer = _provider
+            .GetRequiredService<IEnumerable<IModInstaller>>()
+            .First(i => i.GetType().Name.Contains("AdvancedManualInstaller"));
+
+        var _ = Task.Run(async () =>
+        {
+            var downloadId = await _fileOriginRegistry.RegisterDownload(file,
+                new FilePathMetadata
+                {
+                    OriginalName = file.FileName,
+                    Quality = Quality.Low,
+                    Name = file.FileName
+                });
+            await _archiveInstaller.AddMods(LoadoutId, downloadId, token: CancellationToken.None, installer: installer);
         });
 
         return Task.CompletedTask;

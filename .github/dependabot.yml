@@ -29,3 +29,6 @@ updates:
       Avalonia:
         patterns:
           - "Avalonia*"
+    ignore:
+      # see issue #660
+      - dependency-name: "System.IdentityModel.Tokens.Jwt"

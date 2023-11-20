@@ -12,7 +12,7 @@ public static class Services
     public static IServiceCollection AddAdvancedInstallerUi(this IServiceCollection serviceCollection)
     {
         return serviceCollection
-            .AddSingleton<IAdvancedInstallerHandler, AdvancedManualInstallerUI>()
+            .AddTransient<IAdvancedInstallerHandler, AdvancedManualInstallerUI>()
             .AddViewModel<AdvancedInstallerPageViewModel, IAdvancedInstallerPageViewModel>()
             .AddViewModel<AdvancedInstallerWindowViewModel, IAdvancedInstallerWindowViewModel>()
             .AddView<FooterView, IFooterViewModel>()

@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>1.3</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<data name="Footer_CANCEL" xml:space="preserve">
+		<value>ANULUJ</value>
+	</data>
+	<data name="Footer_INSTALL" xml:space="preserve">
+		<value>ZAINSTALUJ</value>
+	</data>
+	<data name="OverlayHeaderText_Advanced_Installer" xml:space="preserve">
+		<value>Zaawansowany instalator</value>
+	</data>
+	<data name="InstallerNameText" xml:space="preserve">
+		<value>Zaawansowany ręczny instalator modyfikacji</value>
+	</data>
+	<data name="SubHeadingText_Please_select_files" xml:space="preserve">
+		<value>Wybierz pliki do zainstalowania i lokalizację, w której mają zostać zainstalowane.</value>
+	</data>
+	<data name="ModContentTitle_MOD_CONTENT" xml:space="preserve">
+		<value>ZAWARTOŚĆ MODYFIKACJI</value>
+	</data>
+	<data name="ModContentSubHeading_Files_with_no" xml:space="preserve">
+		<value>Pliki bez wybranej lokalizacji nie zostaną zainstalowane.</value>
+	</data>
+	<data name="CreateFolderButton_Create_new_folder" xml:space="preserve">
+		<value>Utwórz nowy folder</value>
+	</data>
+	<data name="NewFilePill_NEW" xml:space="preserve">
+		<value>NOWY</value>
+	</data>
+	<data name="Pill_DUPE_FOLDER" xml:space="preserve">
+		<value>DUPLIKAT FOLDERU</value>
+	</data>
+	<data name="Pill_FOLDER_MERGED" xml:space="preserve">
+		<value>POŁĄCZONY FOLDER</value>
+	</data>
+	<data name="SelectLocationButton_Select_location" xml:space="preserve">
+		<value>Wybierz lokalizację</value>
+	</data>
+	<data name="SelectButton_Select" xml:space="preserve">
+		<value>Wybierz</value>
+	</data>
+	<data name="DeleteCreatedFolderButton_Delete" xml:space="preserve">
+		<value>Usuń</value>
+	</data>
+	<data name="CancelCreateFolderButton_Cancel" xml:space="preserve">
+		<value>Anuluj</value>
+	</data>
+	<data name="SaveCreatedFolderButton_Save" xml:space="preserve">
+		<value>Zapisz</value>
+	</data>
+	<data name="EmptyPreviewText_Select_files_to_install" xml:space="preserve">
+		<value>Wybierz pliki do zainstalowania z archiwum modyfikacji po lewej stronie.</value>
+	</data>
+	<data name="SelectLocationHeaderText_SELECT_INSTALL_LOCATION" xml:space="preserve">
+		<value>WYBIERZ LOKALIZACJĘ INSTALACJI</value>
+	</data>
+	<data name="SelectLocationSubHeadingText_Select_where_to" xml:space="preserve">
+		<value>Wybierz lokalizację instalacji pliku/folderu modyfikacji.</value>
+	</data>
+	<data name="SuggestedHeaderText_SUGGESTED" xml:space="preserve">
+		<value>SUGEROWANE</value>
+	</data>
+	<data name="AllFoldersAreaHeaderText_ALL_FOLDERS" xml:space="preserve">
+		<value>WSZYSTKIE FOLDERY</value>
+	</data>
+	<data name="AllFoldersAreaSubHeaderText_Select_from_full" xml:space="preserve">
+		<value>Wybierz z pełnej struktury folderów</value>
+	</data>
+	<data name="FileTree_ALL_MOD_FILES" xml:space="preserve">
+		<value>Wszystkie pliki modyfikacji</value>
+	</data>
+	<data name="PreviewHeader_INSTALL_LOCATOIN_PREVIEW" xml:space="preserve">
+		<value>PODGLĄD LOKALIZACJI INSTALACJI</value>
+	</data>
+	<data name="PreviewSubHeading_Files_labelled_as_new" xml:space="preserve">
+		<value>Pliki/foldery oznaczone jako „Nowe” zostaną zainstalowane/dodane.</value>
+	</data>
+	<data name="UnsupportedModHeader_Unsupported_mod" xml:space="preserve">
+		<value>Niewspierana modyfikacja</value>
+	</data>
+	<data name="UnsupportedTitleTextBlock_This_mod_is_not_supported" xml:space="preserve">
+		<value>Ta modyfikacja nie jest wspierana</value>
+	</data>
+	<data name="UnsupportedDescriptionTextBlock_This_mod_is_structured" xml:space="preserve">
+		<value>Modyfikacja ma nierozpoznaną strukturę lub zawiera nierozpoznane typy plików, więc nie może zostać zainstalowana automatycznie.</value>
+	</data>
+	<data name="ExtraDescriptionTextBlock_If_you_are_confident" xml:space="preserve">
+		<value>Jeśli masz pewność, że modyfikacja jest bezpieczna i wiesz, gdzie należy zainstalować pliki, możesz spróbować ręcznej zaawansowanej instalacji.</value>
+	</data>
+	<data name="UnsupportedOverlayFooter_ADVANCED_INSTALL" xml:space="preserve">
+		<value>ZAAWANSOWANA INSTALACJA</value>
+	</data>
+	<data name="UnsupportedOverlayFooter_CLOSE" xml:space="preserve">
+		<value>ZAMKNIJ</value>
+	</data>
+	<data name="TreeEntryView_FileNameTextBlock_All_mod_files" xml:space="preserve">
+		<value>Wszystkie pliki modyfikacji</value>
+	</data>
+	<data name="TreeEntryView_InstallRoundedButtonTextBlock_Install_all" xml:space="preserve">
+		<value>Zainstaluj wszystko</value>
+	</data>
+	<data name="TreeEntryView_InstallRoundedButtonTextBlock_Install_folder" xml:space="preserve">
+		<value>Zainstaluj folder</value>
+	</data>
+	<data name="TreeEntryView_InstallRoundedButtonTextBlock_Install" xml:space="preserve">
+		<value>Zainstaluj</value>
+	</data>
+	<data name="TreeEntryView_IncludeTransitionButtonTextBlock_Include_folder" xml:space="preserve">
+		<value>Zawiera folder</value>
+	</data>
+	<data name="TreeEntryView_IncludeTransitionButtonTextBlock_Include_with_folder" xml:space="preserve">
+		<value>Zawarte z folderem</value>
+	</data>
+	<data name="TreeEntryView_IncludedRemoveButtonTextBlock_Included_folder" xml:space="preserve">
+		<value>Zawrty folder</value>
+	</data>
+	<data name="TreeEntryView_IncludedRemoveButtonTextBlock_Included_with_folder" xml:space="preserve">
+		<value>Zawrte z folderem</value>
+	</data>
+	<data name="TreeEntryView_IncludeTransitionButtonTextBlock_Include" xml:space="preserve">
+		<value>Zawiera</value>
+	</data>
+	<data name="TreeEntryView_IncludedRemoveButtonTextBlock_Included" xml:space="preserve">
+		<value>Zawarte</value>
+	</data>
+	<data name="AdvancedInstaller_Manual_Mod" xml:space="preserve">
+		<value>Ręczny mod</value>
+	</data>
+</root>

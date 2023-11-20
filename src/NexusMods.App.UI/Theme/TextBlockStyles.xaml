@@ -8,7 +8,6 @@
             <TextBlock Classes="Subheading" Text="Sample Text Subheading" />
             <TextBlock Classes="H5MontserratSemi" Text="Sample Text H5MontserratSemi" />
             <TextBlock Classes="H6MontserratSemi" Text="Sample Text H6MontserratSemi" />
-            <TextBlock Classes="Body_MD_Normal" Text="Sample Text Body_MD_Normal" />
             <TextBlock Classes="CaptionMontserratSemi" Text="Sample Text CaptionMontserratSemi" />
             <TextBlock Classes="ButtonMontserratSemi" Text="Sample Text ButtonMontserratSemi" />
             <TextBlock Classes="Body2RobotoRegularBold" Text="Sample Text Body2RobotoRegularBold" />
@@ -107,14 +106,6 @@
         <Setter Property="FontSize" Value="18" />
         <Setter Property="LineHeight" Value="25" />
         <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
-    </Style>
-
-
-    <Style Selector="TextBlock.Body_MD_Normal">
-        <Setter Property="FontFamily" Value="{DynamicResource FontSecondaryRegular}" />
-        <Setter Property="FontWeight" Value="400" />
-        <Setter Property="FontSize" Value="14" />
-        <Setter Property="LineHeight" Value="12" />
     </Style>
 
     <Style Selector="TextBlock.CaptionMontserratSemi">

@@ -6,6 +6,7 @@
     <ItemGroup>
         <PackageReference Include="System.Linq.Async" />
         <PackageReference Include="System.IdentityModel.Tokens.Jwt" />
+        <PackageReference Include="Microsoft.AspNetCore.WebUtilities" />
     </ItemGroup>
 
     <ItemGroup>

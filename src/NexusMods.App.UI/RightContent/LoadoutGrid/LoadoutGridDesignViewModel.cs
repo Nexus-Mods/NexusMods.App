@@ -8,6 +8,7 @@ using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModEnabled;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModInstalled;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModName;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModVersion;
+using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Cursors;
 using ReactiveUI;
@@ -19,7 +20,7 @@ using ModVersionView = NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModVers
 
 namespace NexusMods.App.UI.RightContent.LoadoutGrid;
 
-public class LoadoutGridDesignViewModel : AViewModel<ILoadoutGridViewModel>,
+public class LoadoutGridDesignViewModel : APageViewModel<ILoadoutGridViewModel>,
     ILoadoutGridViewModel
 {
     private readonly SourceCache<ModCursor, ModId> _mods;
@@ -28,7 +29,7 @@ public class LoadoutGridDesignViewModel : AViewModel<ILoadoutGridViewModel>,
         new(new ObservableCollection<ModCursor>());
 
     public ReadOnlyObservableCollection<ModCursor> Mods => _filteredMods;
-    
+
     public LoadoutId LoadoutId { get; set; } = Initializers.LoadoutId;
 
     private readonly SourceCache<IDataGridColumnFactory<LoadoutColumn>, LoadoutColumn> _columns;
@@ -41,6 +42,12 @@ public class LoadoutGridDesignViewModel : AViewModel<ILoadoutGridViewModel>,
     public ReadOnlyObservableCollection<IDataGridColumnFactory<LoadoutColumn>> Columns => _filteredColumns;
 
     public Task AddMod(string path)
+    {
+        _mods.Edit(x => { x.AddOrUpdate(new ModCursor(LoadoutId, ModId.From(Guid.NewGuid()))); });
+        return Task.CompletedTask;
+    }
+
+    public Task AddModAdvanced(string path)
     {
         _mods.Edit(x => { x.AddOrUpdate(new ModCursor(LoadoutId, ModId.From(Guid.NewGuid()))); });
         return Task.CompletedTask;

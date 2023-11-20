@@ -1,11 +1,13 @@
 using System.Diagnostics;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.ReactiveUI;
 using DynamicData;
 using DynamicData.Binding;
 using JetBrains.Annotations;
+using NexusMods.App.UI.Extensions;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
@@ -20,46 +22,21 @@ public partial class WorkspaceView : ReactiveUserControl<IWorkspaceViewModel>
         this.WhenActivated(disposables =>
         {
             Debug.Assert(WorkspaceCanvas.Children.Count == 0);
+            var serialDisposable = new SerialDisposable();
 
-            ViewModel!.Panels
-                .ToObservableChangeSet()
-                .SubscribeWithErrorLogging(changeSet =>
+            this.WhenAnyValue(view => view.ViewModel!.Panels)
+                .Do(panels =>
                 {
-                    // TODO: this is stupid, find a better way
-
-                    foreach (var change in changeSet)
-                    {
-                        switch (change.Reason)
-                        {
-                            case ListChangeReason.Add:
-                            {
-                                var item = change.Item.Current;
-                                WorkspaceCanvas.Children.Add(CreateView(item));
-                                break;
-                            }
-                            case ListChangeReason.AddRange:
-                            {
-                                var items = change.Range;
-                                WorkspaceCanvas.Children.AddRange(items.Select(CreateView));
-                                break;
-                            }
-                            case ListChangeReason.Remove:
-                            {
-                                var item = change.Item.Current;
-                                var existingControl = WorkspaceCanvas.Children.FirstOrDefault(x =>
-                                {
-                                    if (x is not PanelView panelView) return false;
-                                    return panelView.ViewModel?.Id == item.Id;
-                                });
-
-                                if (existingControl is null) return;
-                                WorkspaceCanvas.Children.Remove(existingControl);
-                                break;
-                            }
-                        }
-                    }
+                    serialDisposable.Disposable = panels
+                        .ToObservableChangeSet()
+                        .Transform(CreateView)
+                        .Adapt(new ListAdapter<Control>(WorkspaceCanvas.Children))
+                        .Subscribe();
                 })
+                .Subscribe()
                 .DisposeWith(disposables);
+
+            serialDisposable.DisposeWith(disposables);
         });
     }
 

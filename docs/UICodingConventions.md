@@ -786,7 +786,6 @@ public class MyViewModel : ReactiveObject, IActivatableViewModel
         _sourceCache
             .Connect()
             .Bind(out _children)
-            .DisposeMany()
             .Subscribe();
 
         AddChildCommand = ReactiveCommand.Create(() =>
@@ -1077,7 +1076,6 @@ public class MyViewModel : ReactiveObject, IActivatableViewModel
             .TransformToTree(item => item.ParentId)
             .Transform(node => new NodeViewModel(node))
             .Bind(out _nodes)
-            .DisposeMany()
             .Subscribe();
 
         this.WhenActivated(disposables =>
@@ -1118,7 +1116,6 @@ public class NodeViewModel : ReactiveObject, IActivatableViewModel
             .Connect()
             .Transform(child => new NodeViewModel(child))
             .Bind(out _children)
-            .DisposeMany()
             .Subscribe();
     }
 }
@@ -1264,7 +1261,7 @@ Good alternatives to `x`:
 
 ### View Model Properties
 
-**Always** use `ObservableAsPropertyHelper<T>` to expose the latest values from an `IObservable<T>` that is async or runs on the task pool scheduler:
+**Always** use `ObservableAsPropertyHelper<T>` (OAPH) to expose the latest values from an `IObservable<T>` that is async or runs on the task pool scheduler. The OAPH is scheduled by default meaning it doesn't set the value immediately. This is why it's suited for setting the result of asynchronous work or work that ran on another scheduler:
 
 ```csharp
 public class BadExampleViewModel
@@ -1315,7 +1312,7 @@ public class GoodExampleViewModel
 }
 ```
 
-**Always** use `BindToVM` and a reactive property to expose the latest values from an `IObservable<T>` that returns immediately and isn't doing anything async:
+In a View Model, **always** use `BindToVM` and a reactive property to expose the latest values from an `IObservable<T>` that returns immediately and isn't doing anything async:
 
 ```csharp
 public class GoodExampleViewModel
@@ -1332,6 +1329,83 @@ public class GoodExampleViewModel
                 .DisposeWith(disposables);
         });
     }
+}
+```
+
+### Creating and using Design View Models
+
+The design view model should only exist to feed dummy data to the base view model. It can inherit from the normal view model and set properties in the constructor:
+
+```csharp
+interface IMyViewModel : IViewModelInterface
+{
+    public MyData Data { get; }
+}
+
+public class MyViewModel : AViewModel<IMyViewModel>, IMyViewModel
+{
+    public MyData Data { get; }
+
+    // The base View Model doesn't have a default constructor.
+    public MyViewModel(MyData data)
+    {
+        Data = data;
+    }
+}
+
+public class MyDesignViewModel : MyViewModel
+{
+    // To be used as a design context, the design View Model has to have a default
+    // constructor.
+    public MyDesignViewModel() : base(GenerateData()) { }
+
+    private static MyData GenerateData() { /* omitted */ }
+}
+```
+
+The design View Model should be as small and compact as possible. It should also behave the same as the base View Model. The only reason it exist is to populate the base View Model with dummy data to be rendered in the previewer.
+
+If the base View Model creates multiple child View Models, then the design View Model should not create child design View Models:
+
+```csharp
+public interface IMyViewModel : IViewModelInterface
+{
+    public ReadOnlyObservableCollection<IChildViewModel> Children { get; }
+}
+
+public interface IChildViewModel : IViewModelInterface { /* omitted */ }
+```
+
+```csharp
+public class MyViewModel : AViewModel<IMyViewModel>, IMyViewModel
+{
+    private readonly SourceCache<MyData, Guid> _sourceCache = new(x => x.Id);
+
+    private readonly ReadOnlyObservableCollection<IChildViewModel> _children;
+    public ReadOnlyObservableCollection<IChildViewModel> Children { get; }
+
+    public MyViewModel(List<MyData> data)
+    {
+        // The base View Model uses the data to create intances of ChildViewModel
+        _sourceCache
+            .Connect()
+            .Transform(item => new ChildViewModel(item))
+            .Bind(out _children);
+
+        _sourceCache.Edit(updater =>
+        {
+            updater.AddOrUpdate(data);
+        });
+    }
+}
+
+public class MyDesignViewModel : MyViewModel
+{
+    // Instead of using the data to create instances of ChildDesignViewModel,
+    // the MyDesignViewModel will only generate dummy data and pass it to MyViewModel.
+    public MyDesignViewModel : base(GenerateData()) { }
+
+    private static List<MyData> GenerateData() { /* omitted */ }
 }
 ```
 
@@ -1376,6 +1450,18 @@ this.WhenActivated(disposables =>
 this.WhenActivated(disposables =>
 {
     this.Bind(ViewModel, vm => vm.IsChecked, view => view.MyCheckBox.IsChecked)
+        .DisposeWith(disposables);
+});
+```
+
+**Always** use `BindToView` to expose the latest value of an observable stream to the View:
+
+```csharp
+this.WhenActivated(disposables =>
+{
+    this.WhenAnyValue(this, view => view.ViewModel!.SomeFloat)
+        .Select(f => f.ToString("###0.00"))
+        .BindToView(this, view => view.MyTextBlock.Text)
         .DisposeWith(disposables);
 });
 ```
