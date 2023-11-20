@@ -11,7 +11,4 @@ namespace NexusMods.Games.AdvancedInstaller;
 /// for example, if executing in CLI without UI.
 /// </remarks>
 /// </summary>
-public interface IAdvancedInstallerHandler : IModInstaller
-{
-
-}
+public interface IAdvancedInstallerHandler : IModInstaller { }

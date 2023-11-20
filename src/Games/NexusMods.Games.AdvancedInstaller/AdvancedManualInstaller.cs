@@ -7,11 +7,24 @@ using NexusMods.Paths.FileTree;
 
 namespace NexusMods.Games.AdvancedInstaller;
 
+/// <summary>
+/// Advanced interactive mod installer that allows users to manually define files to install and where to install them.
+/// </summary>
 public class AdvancedManualInstaller : AModInstaller
 {
     private readonly Lazy<IAdvancedInstallerHandler?> _handler;
+
+    /// <summary>
+    /// Whether a handler for this installer is available in the current environment.
+    /// E.g. no UI available during CLI execution.
+    /// </summary>
     public bool IsActive => _handler.Value != null;
 
+    /// <summary>
+    /// Creates a new instance of <see cref="AdvancedManualInstaller"/> given the provided <paramref name="provider"/>.
+    /// </summary>
+    /// <param name="provider"></param>
+    /// <returns></returns>
     public static AdvancedManualInstaller Create(IServiceProvider provider) => new(provider);
 
     public AdvancedManualInstaller(IServiceProvider serviceProvider) : base(serviceProvider)
@@ -35,6 +48,13 @@ public class AdvancedManualInstaller : AModInstaller
         return _handler.Value!.GetModsAsync(gameInstallation, loadoutId, baseModId, archiveFiles, cancellationToken);
     }
 
+
+    /// <summary>
+    /// Attempts to obtain an <see cref="IAdvancedInstallerHandler"/> from the <paramref name="provider"/>.
+    /// The main handler is AdvancedManualInstallerUI which might not be available if the current environment does not support UI.
+    /// </summary>
+    /// <param name="provider"></param>
+    /// <returns>Null if no handler is found</returns>
     private static IAdvancedInstallerHandler? GetAdvancedInstallerHandler(IServiceProvider provider)
     {
         try
@@ -47,5 +67,4 @@ public class AdvancedManualInstaller : AModInstaller
             return null;
         }
     }
-
 }
