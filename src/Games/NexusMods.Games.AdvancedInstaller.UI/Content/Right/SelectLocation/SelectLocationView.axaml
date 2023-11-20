@@ -72,7 +72,8 @@
                                        x:Name="SuggestedHeaderText" />
 
                             <TextBlock Classes="BodySMNormal SelectSubHeading"
-                                       Text="Temp Skyrim Special Edition Mods are usually installed in the following game folders."
+                                       TextWrapping="Wrap"
+                                       Text="Temp GAME SKYRIM SPECIAL EDITION SECOND VERSION Mods are usually installed in the following game folders."
                                        x:Name="SuggestedSubHeaderText" />
 
                         </StackPanel>

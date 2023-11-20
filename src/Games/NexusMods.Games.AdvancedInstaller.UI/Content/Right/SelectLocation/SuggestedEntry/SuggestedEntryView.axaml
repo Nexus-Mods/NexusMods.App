@@ -42,11 +42,13 @@
             <!-- Location Title -->
             <TextBlock Grid.Row="0" Classes="BodyMDBold" VerticalAlignment="Center"
                        TextTrimming="CharacterEllipsis"
+                       TextWrapping="Wrap"
                        Text="Temp Skyrim Special Edition"
                        x:Name="LocationName" />
 
             <!-- Location SubHeading -->
             <TextBlock Grid.Row="1" Classes="BodySMNormal SubHeading" VerticalAlignment="Center"
+                       TextWrapping="Wrap"
                        TextTrimming="CharacterEllipsis"
                        Text="Temp Game root folder"
                        x:Name="LocationSubHeading" />
