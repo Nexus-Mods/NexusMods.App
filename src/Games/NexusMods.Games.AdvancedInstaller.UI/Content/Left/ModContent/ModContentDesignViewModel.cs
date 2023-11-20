@@ -10,6 +10,6 @@ namespace NexusMods.Games.AdvancedInstaller.UI.ModContent;
 // ReSharper disable once UnusedType.Global
 internal class ModContentDesignViewModel : ModContentViewModel
 {
-    public ModContentDesignViewModel() : base(BodyDesignViewModel.CreateDesignFileTree()) { }
+    public ModContentDesignViewModel() : base(DesignTimeHelpers.CreateDesignFileTree()) { }
 
 }
