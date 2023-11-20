@@ -2,6 +2,7 @@
 using DynamicData;
 using DynamicData.Binding;
 using DynamicData.Kernel;
+using NexusMods.App.UI.Extensions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.ModInstallers;
@@ -495,7 +496,7 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
 
     private void OnRemoveMappingFromModContent(IModContentTreeEntryViewModel modEntry)
     {
-        var mappingPath = modEntry.Mapping.ValueOr(() => new GamePath(LocationId.Unknown, RelativePath.Empty));
+        var mappingPath = modEntry.Mapping.ValueOr(new GamePath(LocationId.Unknown, RelativePath.Empty));
 
         StartRemoveMapping(modEntry);
         CleanupPreviewTree(mappingPath);
