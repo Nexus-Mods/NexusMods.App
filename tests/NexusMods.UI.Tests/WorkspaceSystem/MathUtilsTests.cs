@@ -69,14 +69,14 @@ public class MathUtilsTests
     };
 
     [Theory]
-    [MemberData(nameof(TestData_GetMidVector))]
-    public void Test_GetMidVector(Rect a, Rect b, bool isHorizontal, Vector expected)
+    [MemberData(nameof(TestData_GetMidPoint))]
+    public void Test_GetMidPoint(Rect a, Rect b, bool isHorizontal, Vector expected)
     {
-        var actual = MathUtils.GetMidVector(a, b, isHorizontal);
+        var actual = MathUtils.GetMidPoint(a, b, isHorizontal);
         actual.Should().Be(expected);
     }
 
-    public static IEnumerable<object[]> TestData_GetMidVector() => new[]
+    public static IEnumerable<object[]> TestData_GetMidPoint() => new[]
     {
         new object[] { new Rect(0, 0, 0.5, 1.0), new Rect(0.5, 0, 0.5, 1.0), false, new Vector(0.5, 0.5) },
         new object[] { new Rect(0, 0, 1.0, 0.5), new Rect(0, 0.5, 1.0, 0.5), true, new Vector(0.5, 0.5) },

@@ -58,7 +58,7 @@ internal static class MathUtils
         return (updatedLogicalBounds, newPanelLogicalBounds);
     }
 
-    internal static Vector GetMidVector(Rect a, Rect b, bool isHorizontal)
+    internal static Point GetMidPoint(Rect a, Rect b, bool isHorizontal)
     {
         var smallerRect = a.Width * a.Height < b.Width * b.Height ? a : b;
 
@@ -74,7 +74,7 @@ internal static class MathUtils
             midY = smallerRect.Y + smallerRect.Height / 2;
         }
 
-        return new Vector(midX, midY);
+        return new Point(midX, midY);
     }
 
     /// <summary>

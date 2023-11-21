@@ -339,10 +339,10 @@ internal static class GridUtils
             var (currentId, currentRect) = current;
             var (otherId, rect) = other;
 
-            var pos = MathUtils.GetMidVector(currentRect, rect, isHorizontal);
+            var pos = MathUtils.GetMidPoint(currentRect, rect, isHorizontal);
             tmp.Add(new ResizerInfo(IsHorizontal: isHorizontal, pos, new[] { currentId, otherId }));
         }
     }
 
-    internal record struct ResizerInfo(bool IsHorizontal, Vector LogicalPosition, PanelId[] ConnectedPanels);
+    internal record struct ResizerInfo(bool IsHorizontal, Point LogicalPosition, PanelId[] ConnectedPanels);
 }
