@@ -10,7 +10,7 @@
         <preview:LocationPreviewTreeDesignViewModel />
     </Design.DataContext>
 
-    <TreeDataGrid Classes="TreeNoSelection TreeNoHeader" x:Name="LocationPreviewTreeDataGrid"
+    <TreeDataGrid Classes="TreeNoSelection TreeNoHeader TreeWhiteCaret" x:Name="LocationPreviewTreeDataGrid"
                   ShowColumnHeaders="True"
                   Foreground="{DynamicResource FontDarkSecondaryColor}" />
 </reactiveUi:ReactiveUserControl>
