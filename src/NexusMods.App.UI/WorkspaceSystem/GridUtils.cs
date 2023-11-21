@@ -9,7 +9,7 @@ internal static class GridUtils
     /// <summary>
     /// Returns all possible new states.
     /// </summary>
-    internal static IEnumerable<IReadOnlyDictionary<PanelId, Rect>> GetPossibleStates(IReadOnlyList<IPanelViewModel> panels, int columns, int rows)
+    internal static IEnumerable<ImmutableDictionary<PanelId, Rect>> GetPossibleStates(IReadOnlyList<IPanelViewModel> panels, int columns, int rows)
     {
         if (panels.Count == columns * rows) yield break;
         var currentPanels = panels.ToImmutableDictionary(panel => panel.Id, panel => panel.LogicalBounds);
@@ -36,7 +36,7 @@ internal static class GridUtils
         }
     }
 
-    private static IReadOnlyDictionary<PanelId, Rect> CreateResult(ImmutableDictionary<PanelId, Rect> currentPanels, IPanelViewModel panel, bool vertical, bool inverse)
+    private static ImmutableDictionary<PanelId, Rect> CreateResult(ImmutableDictionary<PanelId, Rect> currentPanels, IPanelViewModel panel, bool vertical, bool inverse)
     {
         var (updatedLogicalBounds, newPanelLogicalBounds) = MathUtils.Split(panel.LogicalBounds, vertical);
 
@@ -266,4 +266,83 @@ internal static class GridUtils
 
         return res.SetItems(updates);
     }
+
+    internal static IReadOnlyList<ResizerInfo> GetResizers(ImmutableDictionary<PanelId, Rect> currentState)
+    {
+        // TODO: make this less messy
+
+        var res = new List<ResizerInfo>(capacity: currentState.Count);
+        var tmp = new List<ResizerInfo>(capacity: currentState.Count);
+
+        foreach (var current in currentState)
+        {
+            var currentRect = current.Value;
+
+            foreach (var other in currentState)
+            {
+                if (other.Key == current.Key) continue;
+
+                var rect = other.Value;
+
+                // same column
+                // | a | x |  | b | x |
+                // | b | x |  | a | x |
+                if (rect.Left >= currentRect.Left && rect.Right <= currentRect.Right)
+                {
+                    if (rect.Top.IsCloseTo(currentRect.Bottom) || rect.Bottom.IsCloseTo(currentRect.Top))
+                    {
+                        Add(current, other, isHorizontal: true);
+                    }
+                }
+
+                // same row
+                // | a | b |  | b | a |  | a | b |
+                // | x | x |  | x | x |  | a | c |
+                if (rect.Top >= currentRect.Top && rect.Bottom <= currentRect.Bottom)
+                {
+                    if (rect.Left.IsCloseTo(currentRect.Right) || rect.Right.IsCloseTo(currentRect.Left))
+                    {
+                        Add(current, other, isHorizontal: false);
+                    }
+                }
+            }
+
+            foreach (var info in tmp)
+            {
+                var pos = info.LogicalPosition;
+                if (res.Any(x => x.LogicalPosition == pos)) continue;
+
+                var acc = new List<PanelId>();
+                acc.AddRange(info.ConnectedPanels);
+
+                foreach (var other in tmp)
+                {
+                    if (other.IsHorizontal != info.IsHorizontal) continue;
+
+                    var otherPos = other.LogicalPosition;
+                    if (pos == otherPos) continue;
+                    if (!pos.X.IsCloseTo(otherPos.X) && !pos.Y.IsCloseTo(otherPos.Y)) continue;
+
+                    acc.AddRange(other.ConnectedPanels.Where(id => !acc.Contains(id)));
+                }
+
+                res.Add(info with { ConnectedPanels = acc.ToArray() });
+            }
+
+            tmp.Clear();
+        }
+
+        return res;
+
+        void Add(KeyValuePair<PanelId, Rect> current, KeyValuePair<PanelId, Rect> other, bool isHorizontal)
+        {
+            var (currentId, currentRect) = current;
+            var (otherId, rect) = other;
+
+            var pos = MathUtils.GetMidVector(currentRect, rect, isHorizontal);
+            tmp.Add(new ResizerInfo(IsHorizontal: isHorizontal, pos, new[] { currentId, otherId }));
+        }
+    }
+
+    internal record struct ResizerInfo(bool IsHorizontal, Vector LogicalPosition, PanelId[] ConnectedPanels);
 }
