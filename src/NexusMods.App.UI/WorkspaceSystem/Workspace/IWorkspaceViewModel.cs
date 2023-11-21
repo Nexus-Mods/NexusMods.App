@@ -15,20 +15,10 @@ public interface IWorkspaceViewModel : IViewModelInterface
     public void ArrangePanels(Size workspaceSize);
 
     /// <summary>
-    /// Swaps the position of two panels.
-    /// </summary>
-    public void SwapPanels(IPanelViewModel first, IPanelViewModel second);
-
-    /// <summary>
     /// Add a new panel to the workspace.
     /// </summary>
     /// <returns>The newly created <see cref="IPanelViewModel"/>.</returns>
     public IPanelViewModel AddPanel(IReadOnlyDictionary<PanelId, Rect> state);
-
-    /// <summary>
-    /// Closes a panel from the workspace.
-    /// </summary>
-    public void ClosePanel(PanelId panelId);
 
     /// <summary>
     /// Transforms the current state of the workspace into a serializable data format.

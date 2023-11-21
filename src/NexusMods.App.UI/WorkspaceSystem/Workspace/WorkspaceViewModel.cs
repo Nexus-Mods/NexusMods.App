@@ -86,7 +86,6 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         }
     }
 
-    /// <inheritdoc/>
     public void SwapPanels(IPanelViewModel first, IPanelViewModel second)
     {
         (second.LogicalBounds, first.LogicalBounds) = (first.LogicalBounds, second.LogicalBounds);
@@ -145,7 +144,6 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         return panelViewModel;
     }
 
-    /// <inheritdoc/>
     public void ClosePanel(PanelId panelToClose)
     {
         var currentState = _panels.ToImmutableDictionary(panel => panel.Id, panel => panel.LogicalBounds);
