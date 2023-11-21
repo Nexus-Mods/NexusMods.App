@@ -20,22 +20,28 @@ public partial class
                 return;
 
             // Command bindings:
-            this.BindCommand(ViewModel, vm => vm.BeginSelectCommand, view => view.InstallRoundedButton)
+            this.BindCommand(ViewModel, vm => vm.BeginSelectCommand,
+                    view => view.InstallRoundedButton)
                 .DisposeWith(d);
 
-            this.BindCommand(ViewModel, vm => vm.CancelSelectCommand, view => view.SelectLocationRoundedButton)
+            this.BindCommand(ViewModel, vm => vm.CancelSelectCommand,
+                    view => view.SelectLocationRoundedButton)
                 .DisposeWith(d);
 
-            this.BindCommand(ViewModel, vm => vm.CancelSelectCommand, view => view.IncludeTransitionButton)
+            this.BindCommand(ViewModel, vm => vm.CancelSelectCommand,
+                    view => view.IncludeTransitionButton)
                 .DisposeWith(d);
 
-            this.BindCommand(ViewModel, vm => vm.RemoveMappingCommand, view => view.RemoveFromLocationButton)
+            this.BindCommand(ViewModel, vm => vm.RemoveMappingCommand,
+                    view => view.RemoveFromLocationButton)
                 .DisposeWith(d);
 
-            this.BindCommand(ViewModel, vm => vm.RemoveMappingCommand, view => view.IncludedRemoveButton)
+            this.BindCommand(ViewModel, vm => vm.RemoveMappingCommand,
+                    view => view.IncludedRemoveButton)
                 .DisposeWith(d);
 
             InitView();
+
             this.WhenAnyValue(x => x.ViewModel!.Status)
                 .SubscribeWithErrorLogging(_ => { UpdateView(); })
                 .DisposeWith(d);
