@@ -98,10 +98,12 @@ In a subfolder of:
 
 ## Issue: Separate Per User and Per Machine Data
 
+!!! note "We will be using Windows as an example here, but this also applies to other operating systems"
+
 The current issue with idiomatically using [AppData](#option-2-operating-systems-appdata-directory) is
 the presence of multi user systems. For example, offices, LAN centres, etc.
 
-There are two specific issues (we will be using Windows as an example):
+There are two specific issues:
 
 ***1. Network Syncronization***
 
@@ -119,7 +121,7 @@ potentially a huge amount of space
 
 ***Additional Context***
 
-The idiomatic approach for this kind of problem (using Windows as example) is storing mods + backup game files
+The idiomatic approach for this kind of problem is storing mods + backup game files
 in a machine wide location such as `C:\ProgramData`. Per user data (loadouts, mod configs etc.) in `AppData/Roaming`.
 
 When using in a multi-machine setup, like an office, the App would load the loadout from `AppData/Roaming` and start
