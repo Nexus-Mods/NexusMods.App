@@ -21,6 +21,10 @@
                 <Setter Property="Margin" Value="8, 0, 8, 0" />
             </Style>
 
+            <Style Selector="icons|Icon.Close">
+                <Setter Property="FontSize" Value="20" />
+            </Style>
+
             <Style Selector="Button.RightElements">
                 <Setter Property="Margin" Value="0,0,8,0" />
             </Style>
