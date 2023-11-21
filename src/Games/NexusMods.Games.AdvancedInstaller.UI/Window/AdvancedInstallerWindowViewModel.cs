@@ -11,7 +11,7 @@ namespace NexusMods.Games.AdvancedInstaller.UI;
 
 public class AdvancedInstallerWindowViewModel: AViewModel<IAdvancedInstallerWindowViewModel>, IAdvancedInstallerWindowViewModel
 {
-    [Reactive] public IViewModelInterface CurrentPageVM { get; private set; }
+    [Reactive] public IViewModelInterface CurrentPageVM { get; protected set; }
     public IUnsupportedModPageViewModel UnsupportedModVM { get; }
     public IAdvancedInstallerPageViewModel AdvancedInstallerVM { get; }
 

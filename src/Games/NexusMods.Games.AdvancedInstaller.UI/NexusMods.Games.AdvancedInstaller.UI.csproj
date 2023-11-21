@@ -316,6 +316,10 @@
         <Compile Update="Pages\ModUnsupportedPage\UnsupportedModPageViewModel.cs">
           <DependentUpon>IUnsupportedModPageViewModel.cs</DependentUpon>
         </Compile>
+
+        <Compile Update="Window\AdvancedInstallerWindowDesignViewModel.cs">
+          <DependentUpon>IAdvancedInstallerWindowViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
