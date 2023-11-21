@@ -4,15 +4,17 @@ using NexusMods.Paths;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.SelectLocation;
 
+using SelectableTreeNode = TreeNodeVM<ISelectableTreeEntryViewModel, GamePath>;
+
 public interface ISelectLocationViewModel : IViewModelInterface
 {
+    public string SuggestedAreaSubtitle { get; }
+
     public ReadOnlyObservableCollection<ISuggestedEntryViewModel> SuggestedEntries { get; }
 
-    public ReadOnlyObservableCollection<ILocationTreeContainerViewModel> TreeContainers { get; }
+    public HierarchicalTreeDataGridSource<SelectableTreeNode> Tree { get; }
+
+    public ReadOnlyObservableCollection<SelectableTreeNode> TreeRoots { get; }
 
     public SourceCache<ISelectableTreeEntryViewModel, GamePath> TreeEntriesCache { get; }
-
-    public ReadOnlyObservableCollection<TreeNodeVM<ISelectableTreeEntryViewModel, GamePath>> TreeRoots { get; }
-
-    public string SuggestedAreaSubtitle { get; }
 }

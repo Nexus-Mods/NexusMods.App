@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
+using Avalonia.Controls.Models.TreeDataGrid;
+using Avalonia.Controls.Templates;
 using DynamicData;
-using DynamicData.Binding;
 using NexusMods.App.UI.Extensions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
@@ -9,23 +10,24 @@ using NexusMods.Paths;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.SelectLocation;
 
+using SelectableTreeNode = TreeNodeVM<ISelectableTreeEntryViewModel, GamePath>;
+
 public class SelectLocationViewModel : AViewModel<ISelectLocationViewModel>,
     ISelectLocationViewModel
 {
+    public string SuggestedAreaSubtitle { get; }
     public ReadOnlyObservableCollection<ISuggestedEntryViewModel> SuggestedEntries { get; }
 
-    public ReadOnlyObservableCollection<TreeNodeVM<ISelectableTreeEntryViewModel, GamePath>> TreeRoots =>
+    public HierarchicalTreeDataGridSource<SelectableTreeNode> Tree { get; }
+
+    public ReadOnlyObservableCollection<SelectableTreeNode> TreeRoots =>
         _treeRoots;
 
-    private readonly ReadOnlyObservableCollection<TreeNodeVM<ISelectableTreeEntryViewModel, GamePath>> _treeRoots;
+    private readonly ReadOnlyObservableCollection<SelectableTreeNode> _treeRoots;
 
     public SourceCache<ISelectableTreeEntryViewModel, GamePath> TreeEntriesCache { get; } =
         new(entry => entry.GamePath);
 
-    public ReadOnlyObservableCollection<ILocationTreeContainerViewModel> TreeContainers => _treeContainers;
-    private readonly ReadOnlyObservableCollection<ILocationTreeContainerViewModel> _treeContainers;
-
-    public string SuggestedAreaSubtitle { get; }
 
     public SelectLocationViewModel(GameLocationsRegister register, Loadout? loadout, string gameName)
     {
@@ -34,24 +36,48 @@ public class SelectLocationViewModel : AViewModel<ISelectLocationViewModel>,
         SuggestedEntries = CreateSuggestedEntries(register).ToReadOnlyObservableCollection();
 
         var treeEntries = CreateTreeEntries(register, loadout);
-        // For each entry, create a CreateFolder entry.
-        var createFolderEntries = treeEntries.Select(existingNode => new SelectableTreeEntryViewModel(
-            new GamePath(existingNode.GamePath.LocationId, existingNode.GamePath.Path.Join("*CreateFolder*")),
-            SelectableDirectoryNodeStatus.Create));
 
+        // For each entry, create a CreateFolder entry.
+        var createFolderEntries = treeEntries.Select(existingNode =>
+            new SelectableTreeEntryViewModel(
+                new GamePath(existingNode.GamePath.LocationId, existingNode.GamePath.Path.Join("*CreateFolder*")),
+                SelectableDirectoryNodeStatus.Create));
 
         TreeEntriesCache.AddOrUpdate(treeEntries);
         TreeEntriesCache.AddOrUpdate(createFolderEntries);
+
         TreeEntriesCache.Connect()
             .TransformToTree(item => item.Parent)
-            .Transform(node => new TreeNodeVM<ISelectableTreeEntryViewModel, GamePath>(node))
+            .Transform(node => new SelectableTreeNode(node))
             .Bind(out _treeRoots)
             .Subscribe();
 
-        _treeRoots.ToObservableChangeSet()
-            .Transform(treeNode => (ILocationTreeContainerViewModel)new LocationTreeContainerViewModel(treeNode))
-            .Bind(out _treeContainers)
-            .Subscribe();
+        Tree = GetTreeSource(_treeRoots);
+    }
+
+
+    private static HierarchicalTreeDataGridSource<SelectableTreeNode> GetTreeSource(
+        ReadOnlyObservableCollection<SelectableTreeNode> treeRoots)
+    {
+        return new HierarchicalTreeDataGridSource<SelectableTreeNode>(treeRoots)
+        {
+            Columns =
+            {
+                new HierarchicalExpanderColumn<SelectableTreeNode>(
+                    new TemplateColumn<SelectableTreeNode>(null,
+                        new FuncDataTemplate<SelectableTreeNode>((node, _) =>
+                            new SelectableTreeEntryView
+                            {
+                                // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
+                                DataContext = node?.Item,
+                            }),
+                        width: new GridLength(1, GridUnitType.Star)
+                    ),
+                    node => node.Children,
+                    null,
+                    node => node.IsExpanded)
+            }
+        };
     }
 
 

@@ -209,14 +209,6 @@
           <DependentUpon>ISuggestedEntryViewModel.cs</DependentUpon>
         </Compile>
 
-        <Compile Update="Content\Right\SelectLocation\Tree\LocationTreeContainerDesignViewModel.cs">
-          <DependentUpon>ILocationTreeContainerViewModel.cs</DependentUpon>
-        </Compile>
-
-        <Compile Update="Content\Right\SelectLocation\Tree\LocationTreeContainerViewModel.cs">
-          <DependentUpon>ILocationTreeContainerViewModel.cs</DependentUpon>
-        </Compile>
-
         <Compile Update="Content\Right\SelectLocation\SelectLocationDesignViewModel.cs">
           <DependentUpon>ISelectLocationViewModel.cs</DependentUpon>
         </Compile>
@@ -277,14 +269,6 @@
           <DependentUpon>ISelectableTreeEntryViewModel.cs</DependentUpon>
         </Compile>
 
-        <Compile Update="Content\Right\SelectLocation\Tree\TreeEntry\SelectableTreeEntryDesignViewModel.cs">
-          <DependentUpon>ISelectableTreeEntryViewModel.cs</DependentUpon>
-        </Compile>
-
-        <Compile Update="Content\Right\SelectLocation\Tree\TreeEntry\SelectableTreeEntryViewModel.cs">
-          <DependentUpon>ISelectableTreeEntryViewModel.cs</DependentUpon>
-        </Compile>
-
         <Compile Update="Window\AdvancedInstallerWindowViewModel.cs">
           <DependentUpon>IAdvancedInstallerWindowViewModel.cs</DependentUpon>
         </Compile>
@@ -320,6 +304,19 @@
 
         <Compile Update="Content\Right\Preview\Tree\PreviewTreeEntryDesignViewModel.cs">
           <DependentUpon>IPreviewTreeEntryViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="Content\Right\SelectLocation\Tree\SelectableTreeEntryView.axaml.cs">
+          <DependentUpon>SelectableTreeEntryView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+
+        <Compile Update="Content\Right\SelectLocation\Tree\SelectableTreeEntryDesignViewModel.cs">
+          <DependentUpon>ISelectableTreeEntryViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="Content\Right\SelectLocation\Tree\SelectableTreeEntryViewModel.cs">
+          <DependentUpon>ISelectableTreeEntryViewModel.cs</DependentUpon>
         </Compile>
     </ItemGroup>
 

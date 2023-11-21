@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.ReactiveUI;
@@ -22,27 +21,28 @@ public partial class SelectableTreeEntryView : ReactiveUserControl<ISelectableTr
                 .Subscribe()
                 .DisposeWith(disposable);
 
-            this.BindCommand<SelectableTreeEntryView, ISelectableTreeEntryViewModel, ReactiveCommand<Unit, Unit>,
-                    Button>(ViewModel, vm => vm.CreateMappingCommand, v => v.SelectRoundedButton)
+            this.BindCommand(ViewModel, vm =>
+                    vm.CreateMappingCommand, v => v.SelectRoundedButton)
                 .DisposeWith(disposable);
 
-            this.BindCommand<SelectableTreeEntryView, ISelectableTreeEntryViewModel, ReactiveCommand<Unit, Unit>,
-                    Button>(ViewModel, vm => vm.EditCreateFolderCommand, v => v.CreateFolderButton)
+            this.BindCommand(ViewModel, vm =>
+                    vm.EditCreateFolderCommand, v => v.CreateFolderButton)
                 .DisposeWith(disposable);
 
-            this.BindCommand<SelectableTreeEntryView, ISelectableTreeEntryViewModel, ReactiveCommand<Unit, Unit>,
-                    Button>(ViewModel, vm => vm.SaveCreatedFolderCommand, v => v.SaveCreatedFolderButton)
+            this.BindCommand(ViewModel, vm =>
+                    vm.SaveCreatedFolderCommand, v => v.SaveCreatedFolderButton)
                 .DisposeWith(disposable);
 
-            this.BindCommand<SelectableTreeEntryView, ISelectableTreeEntryViewModel, ReactiveCommand<Unit, Unit>,
-                    Button>(ViewModel, vm => vm.CancelCreateFolderCommand, v => v.CancelCreateFolderButton)
+            this.BindCommand(ViewModel, vm =>
+                    vm.CancelCreateFolderCommand, v => v.CancelCreateFolderButton)
                 .DisposeWith(disposable);
 
-            this.BindCommand<SelectableTreeEntryView, ISelectableTreeEntryViewModel, ReactiveCommand<Unit, Unit>,
-                Button>(ViewModel, vm => vm.DeleteCreatedFolderCommand, v => v.DeleteCreatedFolderButton);
+            this.BindCommand(ViewModel, vm =>
+                    vm.DeleteCreatedFolderCommand, v => v.DeleteCreatedFolderButton)
+                .DisposeWith(disposable);
 
-            this.Bind<ISelectableTreeEntryViewModel, SelectableTreeEntryView, string, string?>(ViewModel,
-                    vm => vm.InputText, v => v.CreateFolderNameTextBox.Text)
+            this.Bind(ViewModel, vm =>
+                    vm.InputText, v => v.CreateFolderNameTextBox.Text)
                 .DisposeWith(disposable);
 
 

@@ -27,7 +27,7 @@ internal class PreviewViewModel : AViewModel<IPreviewViewModel>, IPreviewViewMod
         Tree = GetTreeSource(_treeRoots);
     }
 
-    protected static HierarchicalTreeDataGridSource<PreviewTreeNode> GetTreeSource(ReadOnlyObservableCollection<PreviewTreeNode> treeRoots)
+    private static HierarchicalTreeDataGridSource<PreviewTreeNode> GetTreeSource(ReadOnlyObservableCollection<PreviewTreeNode> treeRoots)
     {
         return new HierarchicalTreeDataGridSource<PreviewTreeNode>(treeRoots)
         {
@@ -38,6 +38,7 @@ internal class PreviewViewModel : AViewModel<IPreviewViewModel>, IPreviewViewMod
                         new FuncDataTemplate<PreviewTreeNode>((node, _) =>
                             new PreviewTreeEntryView
                             {
+                                // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
                                 DataContext = node?.Item,
                             }),
                         width: new GridLength(1, GridUnitType.Star)

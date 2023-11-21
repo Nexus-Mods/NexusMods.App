@@ -104,14 +104,9 @@
 
                         </StackPanel>
 
-                        <ItemsControl Grid.Row="1" x:Name="AllFoldersItemsControl">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <StackPanel Orientation="Vertical" />
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                        </ItemsControl>
-
+                        <TreeDataGrid Grid.Row="1" Classes="TreeNoSelection TreeNoHeader TreeWhiteCaret"
+                                      ShowColumnHeaders="True"
+                                      x:Name="SelectTreeDataGrid" />
 
                     </Grid>
                 </Border>

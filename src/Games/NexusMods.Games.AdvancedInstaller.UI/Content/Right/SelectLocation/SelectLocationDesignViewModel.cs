@@ -5,6 +5,8 @@ namespace NexusMods.Games.AdvancedInstaller.UI.SelectLocation;
 [ExcludeFromCodeCoverage]
 internal class SelectLocationDesignViewModel : SelectLocationViewModel
 {
-    public SelectLocationDesignViewModel() : base(DesignTimeHelpers.CreateDesignGameLocationsRegister(), null,
+    public SelectLocationDesignViewModel() : base(
+        DesignTimeHelpers.CreateDesignGameLocationsRegister(),
+        null,
         "Design Game Name") { }
 }
