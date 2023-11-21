@@ -24,6 +24,10 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
     private readonly ReadOnlyObservableCollection<IAddPanelButtonViewModel> _addPanelButtonViewModels;
     public ReadOnlyObservableCollection<IAddPanelButtonViewModel> AddPanelButtonViewModels => _addPanelButtonViewModels;
 
+    private readonly SourceList<IPanelResizerViewModel> _resizersSource = new();
+    private readonly ReadOnlyObservableCollection<IPanelResizerViewModel> _resizers;
+    public ReadOnlyObservableCollection<IPanelResizerViewModel> Resizers => _resizers;
+
     private readonly PageFactoryController _factoryController;
     public WorkspaceViewModel(PageFactoryController factoryController)
     {
@@ -34,11 +38,17 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
             .Bind(out _addPanelButtonViewModels)
             .Subscribe();
 
+        _resizersSource
+            .Connect()
+            .Bind(out _resizers)
+            .Subscribe();
+
         _panelSource
             .Connect()
             .Sort(PanelComparer.Instance)
             .Bind(out _panels)
             .Do(_ => UpdateStates())
+            .Do(_ => UpdateResizers())
             .Subscribe();
 
         this.WhenActivated(disposables =>
@@ -77,19 +87,24 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
     private bool IsHorizontal => _lastWorkspaceSize.Width > _lastWorkspaceSize.Height;
 
     /// <inheritdoc/>
-    public void ArrangePanels(Size workspaceSize)
+    public void Arrange(Size workspaceSize)
     {
         _lastWorkspaceSize = workspaceSize;
         foreach (var panelViewModel in Panels)
         {
             panelViewModel.Arrange(workspaceSize);
         }
+
+        foreach (var resizerViewModel in Resizers)
+        {
+            resizerViewModel.Arrange(workspaceSize);
+        }
     }
 
     public void SwapPanels(IPanelViewModel first, IPanelViewModel second)
     {
         (second.LogicalBounds, first.LogicalBounds) = (first.LogicalBounds, second.LogicalBounds);
-        ArrangePanels(_lastWorkspaceSize);
+        Arrange(_lastWorkspaceSize);
         UpdateStates();
     }
 
@@ -106,6 +121,24 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                 var image = IconUtils.StateToBitmap(state);
                 updater.Add(new AddPanelButtonViewModel(state, image));
             }
+        });
+    }
+
+    private void UpdateResizers()
+    {
+        _resizersSource.Edit(updater =>
+        {
+            updater.Clear();
+
+            var currentState = Panels.ToImmutableDictionary(x => x.Id, x => x.LogicalBounds);
+            var resizers = GridUtils.GetResizers(currentState);
+
+            updater.AddRange(resizers.Select(info =>
+            {
+                var vm = new PanelResizerViewModel(info.LogicalPosition, info.IsHorizontal, info.ConnectedPanels);
+                vm.Arrange(_lastWorkspaceSize);
+                return vm;
+            }));
         });
     }
 

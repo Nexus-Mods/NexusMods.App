@@ -23,8 +23,11 @@ public partial class PanelResizerView : ReactiveUserControl<IPanelResizerViewMod
             this.WhenAnyValue(view => view.ViewModel!.ActualPosition)
                 .SubscribeWithErrorLogging(point =>
                 {
-                    Canvas.SetLeft(this, point.X);
-                    Canvas.SetTop(this, point.Y);
+                    var x = point.X - Bounds.Width / 2;
+                    var y = point.Y - Bounds.Height / 2;
+
+                    Canvas.SetLeft(this, x);
+                    Canvas.SetTop(this, y);
                 })
                 .DisposeWith(disposables);
         });
