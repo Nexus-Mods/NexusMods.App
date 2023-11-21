@@ -6,8 +6,15 @@ using NexusMods.Paths.FileTree;
 
 namespace NexusMods.Games.AdvancedInstaller.UI;
 
+/// <summary>
+/// Collection of convenience methods to generate design-time mock data.
+/// </summary>
 internal static class DesignTimeHelpers
 {
+    /// <summary>
+    /// Create a mock game locations register for design-time purposes.
+    /// </summary>
+    /// <returns></returns>
     internal static GameLocationsRegister CreateDesignGameLocationsRegister()
     {
         var fs = new InMemoryFileSystem();
@@ -22,6 +29,10 @@ internal static class DesignTimeHelpers
         return register;
     }
 
+    /// <summary>
+    /// Create a mock file tree of mod archive contents for design-time purposes.
+    /// </summary>
+    /// <returns></returns>
     internal static FileTreeNode<RelativePath, ModSourceFileEntry> CreateDesignFileTree()
     {
         var mockModSourceFileEntry = new ModSourceFileEntry

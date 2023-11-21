@@ -17,19 +17,24 @@ namespace NexusMods.Games.AdvancedInstaller.UI;
 #pragma warning disable CS1998
 
 /// <summary>
-///     Provides the implementation of the 'Advanced Installer' functionality.
+/// Provides the UI for the Advanced Manual Installer.
 /// </summary>
 // ReSharper disable once InconsistentNaming
 public class AdvancedManualInstallerUI : IAdvancedInstallerHandler
 {
     private readonly Lazy<LoadoutRegistry> _loadoutRegistry;
 
+    /// <summary>
+    /// Construct the UI handler for the Advanced Manual Installer.
+    /// </summary>
+    /// <param name="provider">Service provider required to obtain Loadout information.</param>
     public AdvancedManualInstallerUI(IServiceProvider provider)
     {
         // Delay to avoid circular dependency.
         _loadoutRegistry = new Lazy<LoadoutRegistry>(provider.GetRequiredService<LoadoutRegistry>);
     }
 
+    /// <InheritDoc/>
     public async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
         GameInstallation gameInstallation,
         LoadoutId loadoutId,
@@ -38,11 +43,10 @@ public class AdvancedManualInstallerUI : IAdvancedInstallerHandler
         CancellationToken cancellationToken = default)
     {
         // Get default name of the mod for UI purposes.
-        Loadout? loadout = null;
         Mod? mod = null;
         if (loadoutId != LoadoutId.DefaultValue)
         {
-            loadout = _loadoutRegistry.Value.Get(loadoutId);
+            var loadout = _loadoutRegistry.Value.Get(loadoutId);
             loadout?.Mods.TryGetValue(baseModId, out mod);
         }
 
@@ -81,6 +85,10 @@ public class AdvancedManualInstallerUI : IAdvancedInstallerHandler
             installerViewModel.AdvancedInstallerVM.BodyViewModel.DeploymentData);
     }
 
+    /// <summary>
+    /// Creates a modal Dialog window and shows it, then awaits for it to close.
+    /// </summary>
+    /// <param name="dialogVM">The View Model of the dialog to create.</param>
     private static async Task ShowAdvancedInstallerDialog(IAdvancedInstallerWindowViewModel dialogVM)
     {
         var tcs = new TaskCompletionSource();
@@ -96,6 +104,7 @@ public class AdvancedManualInstallerUI : IAdvancedInstallerHandler
             if (Application.Current?.ApplicationLifetime is
                 IClassicDesktopStyleApplicationLifetime { MainWindow: not null } desktop)
             {
+                // Create the modal dialog, parent window is required for modal.
                 await view.ShowDialog(desktop.MainWindow);
             }
 
@@ -105,6 +114,13 @@ public class AdvancedManualInstallerUI : IAdvancedInstallerHandler
         await tcs.Task;
     }
 
+    /// <summary>
+    /// Schedule an action on the UI thread.
+    /// This returns immediately, without waiting for the action to actually run.
+    /// </summary>
+    /// <param name="state">State data required for the execution of the action.</param>
+    /// <param name="action">The action to execute.</param>
+    /// <typeparam name="TState">The type of the state data.</typeparam>
     private static void OnUi<TState>(TState state, Func<TState, Task> action)
     {
         AvaloniaScheduler.Instance.ScheduleAsync(state: (state, action),
