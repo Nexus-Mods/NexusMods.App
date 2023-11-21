@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
+using Avalonia.Controls.Models.TreeDataGrid;
+using Avalonia.Controls.Templates;
 using DynamicData;
-using DynamicData.Binding;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Preview;
@@ -13,8 +14,7 @@ internal class PreviewViewModel : AViewModel<IPreviewViewModel>, IPreviewViewMod
     public ReadOnlyObservableCollection<PreviewTreeNode> TreeRoots => _treeRoots;
     private readonly ReadOnlyObservableCollection<PreviewTreeNode> _treeRoots;
 
-    private readonly ReadOnlyObservableCollection<ILocationPreviewTreeViewModel> _containers;
-    public ReadOnlyObservableCollection<ILocationPreviewTreeViewModel> TreeContainers => _containers;
+    public HierarchicalTreeDataGridSource<PreviewTreeNode> Tree { get; }
 
     public PreviewViewModel()
     {
@@ -24,9 +24,28 @@ internal class PreviewViewModel : AViewModel<IPreviewViewModel>, IPreviewViewMod
             .Bind(out _treeRoots)
             .Subscribe();
 
-        _treeRoots.ToObservableChangeSet()
-            .Transform(treeNode => (ILocationPreviewTreeViewModel)new LocationPreviewTreeViewModel(treeNode))
-            .Bind(out _containers)
-            .Subscribe();
+        Tree = GetTreeSource(_treeRoots);
+    }
+
+    protected static HierarchicalTreeDataGridSource<PreviewTreeNode> GetTreeSource(ReadOnlyObservableCollection<PreviewTreeNode> treeRoots)
+    {
+        return new HierarchicalTreeDataGridSource<PreviewTreeNode>(treeRoots)
+        {
+            Columns =
+            {
+                new HierarchicalExpanderColumn<PreviewTreeNode>(
+                    new TemplateColumn<PreviewTreeNode>(null,
+                        new FuncDataTemplate<PreviewTreeNode>((node, _) =>
+                            new PreviewTreeEntryView
+                            {
+                                DataContext = node?.Item,
+                            }),
+                        width: new GridLength(1, GridUnitType.Star)
+                    ),
+                    node => node.Children,
+                    null,
+                    node => node.IsExpanded)
+            }
+        };
     }
 }

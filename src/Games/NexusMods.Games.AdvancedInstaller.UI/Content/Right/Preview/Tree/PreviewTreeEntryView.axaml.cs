@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using System.Reactive;
 using System.Reactive.Disposables;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
@@ -24,7 +23,7 @@ public partial class PreviewTreeEntryView : ReactiveUserControl<IPreviewTreeEntr
                 .Subscribe(isMerged => FolderMergedPill.IsVisible = isMerged && ViewModel.IsDirectory)
                 .DisposeWith(disposable);
 
-            this.OneWayBind(ViewModel,vm => vm.IsRemovable, view => view.XRoundedButton.IsVisible)
+            this.OneWayBind(ViewModel, vm => vm.IsRemovable, view => view.XRoundedButton.IsVisible)
                 .DisposeWith(disposable);
 
             InitView();

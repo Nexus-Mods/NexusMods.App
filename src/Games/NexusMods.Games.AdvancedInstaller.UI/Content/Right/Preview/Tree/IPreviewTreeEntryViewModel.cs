@@ -8,7 +8,8 @@ using ReactiveUI;
 namespace NexusMods.Games.AdvancedInstaller.UI.Preview;
 
 /// <summary>
-///     Represents an individual node in the 'All Folders' section when selecting a location.
+///     Represents an individual tree node in the Preview section.
+///     It represents a single file or directory that will be installed, creating the final folder structure of the mod.
 /// </summary>
 /// <remarks>
 ///     Trees are build from top level LocationIds, all descendants are relative to the root GamePath.
@@ -47,6 +48,4 @@ public interface IPreviewTreeEntryViewModel : IViewModelInterface
     public void RemoveDirectoryMapping(IModContentTreeEntryViewModel entry);
 
     public static GamePath RootParentGamePath = new(LocationId.Unknown, "");
-
 }
-

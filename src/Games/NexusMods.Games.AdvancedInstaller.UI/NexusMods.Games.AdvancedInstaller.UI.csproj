@@ -193,18 +193,6 @@
           <DependentUpon>IPreviewViewModel.cs</DependentUpon>
         </Compile>
 
-        <Compile Update="Content\Right\Preview\Tree\LocationPreviewTreeDesignViewModel.cs">
-          <DependentUpon>ILocationPreviewTreeViewModel.cs</DependentUpon>
-        </Compile>
-
-        <Compile Update="Content\Right\Preview\Tree\LocationPreviewTreeViewModel.cs">
-          <DependentUpon>ILocationPreviewTreeViewModel.cs</DependentUpon>
-        </Compile>
-
-        <Compile Update="Content\Right\Preview\Tree\PreviewTreeEntry\PreviewTreeEntryViewModel.cs">
-          <DependentUpon>IPreviewTreeEntryViewModel.cs</DependentUpon>
-        </Compile>
-
         <Compile Update="Content\Right\EmptyPreview\EmptyPreviewViewModel.cs">
           <DependentUpon>IEmptyPreviewViewModel.cs</DependentUpon>
         </Compile>
@@ -320,6 +308,19 @@
         <Compile Update="Window\AdvancedInstallerWindowDesignViewModel.cs">
           <DependentUpon>IAdvancedInstallerWindowViewModel.cs</DependentUpon>
         </Compile>
+
+        <Compile Update="Content\Right\Preview\Tree\PreviewTreeEntryView.axaml.cs">
+          <DependentUpon>PreviewTreeEntryView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+
+        <Compile Update="Content\Right\Preview\Tree\PreviewTreeEntryViewModel.cs">
+          <DependentUpon>IPreviewTreeEntryViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="Content\Right\Preview\Tree\PreviewTreeEntryDesignViewModel.cs">
+          <DependentUpon>IPreviewTreeEntryViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
@@ -329,7 +330,6 @@
     <ItemGroup>
       <AdditionalFiles Include="Content\Right\EmptyPreview\EmptyPreviewView.axaml" />
       <AdditionalFiles Include="Content\Right\Preview\PreviewView.axaml" />
-      <AdditionalFiles Include="Content\Right\Preview\Tree\LocationPreviewTreeView.axaml" />
       <AdditionalFiles Include="Content\Right\SelectLocation\SelectLocationView.axaml" />
       <AdditionalFiles Include="Content\Right\SelectLocation\SuggestedEntry\SuggestedEntryView.axaml" />
     </ItemGroup>

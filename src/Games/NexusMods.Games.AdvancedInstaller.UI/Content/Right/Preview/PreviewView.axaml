@@ -45,13 +45,9 @@
                     </StackPanel>
                 </Border>
 
-                <ItemsControl Grid.Row="1" x:Name="LocationsPreviewsItemsControl">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <StackPanel Orientation="Vertical" />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                </ItemsControl>
+                <TreeDataGrid Grid.Row="1" Classes="TreeNoSelection TreeNoHeader TreeWhiteCaret" x:Name="LocationPreviewTreeDataGrid"
+                              ShowColumnHeaders="True"
+                              Foreground="{DynamicResource FontDarkSecondaryColor}" />
 
 
             </Grid>

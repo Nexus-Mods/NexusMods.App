@@ -19,7 +19,6 @@ public static class Services
             .AddView<BodyView, IBodyViewModel>()
             .AddView<ModContentView, IModContentViewModel>()
             .AddView<PreviewView, IPreviewViewModel>()
-            .AddView<LocationPreviewTreeView, ILocationPreviewTreeViewModel>()
             .AddView<EmptyPreviewView, IEmptyPreviewViewModel>()
             .AddView<SelectLocationView, ISelectLocationViewModel>()
             .AddView<LocationTreeContainerView, ILocationTreeContainerViewModel>()
