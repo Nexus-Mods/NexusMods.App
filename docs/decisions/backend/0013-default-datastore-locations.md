@@ -105,7 +105,7 @@ the presence of multi user systems. For example, offices, LAN centres, etc.
 
 There are two specific issues:
 
-***1. Network Syncronization***
+***1. Network Synchronization***
 
 Files in `AppData/Roaming` are usually downloaded upon login in these configurations, and this download typically
 happens on every login.
@@ -114,10 +114,14 @@ This is bad because it means having to potentially wait a very long time (even a
 data on login. In the case of something like Starfield, game backup + mods could exceed 100GB, meaning a 10+ minute
 download if no data is locally cached.
 
+In the case of alternative [Home Directory](#option-1-users-home-directory) approach however, the home directory can
+just be accessed over the network, avoiding the need for a long synchronization wait time. (At expense of slow
+deployment times as mod archives would be accessed over the network)
+
 ***2. Disk Space (Local)***
 
-If multiple users are using the same local machine, all mod + game backup data is duplicated on storage, wasting
-potentially a huge amount of space
+In the other case of multiple users on same local machine, all mod + game backup data is duplicated on storage, wasting
+potentially a huge amount of space.
 
 ***Additional Context***
 
