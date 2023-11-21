@@ -10,6 +10,14 @@ namespace NexusMods.Games.AdvancedInstaller.UI;
 public class AdvancedInstallerPageViewModel : AViewModel<IAdvancedInstallerPageViewModel>,
     IAdvancedInstallerPageViewModel
 {
+    /// <summary>
+    /// Constructor for the main Manual installer page, this currently contains the footer and body view models.
+    /// TODO: This isn't an actual Page yet, still needs conversion.
+    /// </summary>
+    /// <param name="modName">The display name for the mod to install.</param>
+    /// <param name="archiveFiles">A <see cref="FileTreeNode{RelativePath,ModSourceFileEntry}"/> of the files contained in the mod archive.</param>
+    /// <param name="register">The register containing the game locations.</param>
+    /// <param name="gameName">The display name of the game being managed.</param>
     public AdvancedInstallerPageViewModel(string modName,
         FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
         GameLocationsRegister register,
@@ -19,22 +27,21 @@ public class AdvancedInstallerPageViewModel : AViewModel<IAdvancedInstallerPageV
         FooterViewModel = new FooterViewModel();
         ShouldInstall = false;
 
-        FooterViewModel.InstallCommand = ReactiveCommand.Create(() =>
-        {
-            ShouldInstall = true;
-        }, this.WhenAnyValue(vm => vm.BodyViewModel.CanInstall));
+        FooterViewModel.InstallCommand = ReactiveCommand.Create(() => { ShouldInstall = true; },
+            this.WhenAnyValue(vm => vm.BodyViewModel.CanInstall));
 
         this.WhenActivated(disposables =>
         {
-            FooterViewModel.CancelCommand.Subscribe(_ =>
-            {
-                ShouldInstall = false;
-            }).DisposeWith(disposables);
-
+            FooterViewModel.CancelCommand.Subscribe(_ => { ShouldInstall = false; }).DisposeWith(disposables);
         });
     }
+
+    /// <inheritdoc />
     public IFooterViewModel FooterViewModel { get; }
+
+    /// <inheritdoc />
     public IBodyViewModel BodyViewModel { get; }
 
+    /// <inheritdoc />
     public bool ShouldInstall { get; private set; }
 }

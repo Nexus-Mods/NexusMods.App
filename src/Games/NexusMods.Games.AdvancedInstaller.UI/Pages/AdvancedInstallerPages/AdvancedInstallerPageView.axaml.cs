@@ -14,12 +14,16 @@ public partial class AdvancedInstallerPageView : ReactiveUserControl<IAdvancedIn
 
         this.WhenActivated(disposables =>
         {
-            this.OneWayBind(ViewModel, vm => vm.BodyViewModel, v => v.TopContentViewHost.ViewModel)
-                .DisposeWith(disposables);
-            this.OneWayBind(ViewModel, vm => vm.FooterViewModel, v => v.BottomContentViewHost.ViewModel)
+            this.OneWayBind(ViewModel, vm => vm.BodyViewModel,
+                    v => v.TopContentViewHost.ViewModel)
                 .DisposeWith(disposables);
 
-            this.BindCommand(ViewModel, vm => vm.FooterViewModel.CancelCommand, v => v.OverlayHeaderCloseButton)
+            this.OneWayBind(ViewModel, vm => vm.FooterViewModel,
+                    v => v.BottomContentViewHost.ViewModel)
+                .DisposeWith(disposables);
+
+            this.BindCommand(ViewModel, vm => vm.FooterViewModel.CancelCommand,
+                    v => v.OverlayHeaderCloseButton)
                 .DisposeWith(disposables);
         });
     }

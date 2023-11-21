@@ -19,13 +19,16 @@ public partial class UnsupportedModPageView : ReactiveUserControl<IUnsupportedMo
                 .Subscribe()
                 .DisposeWith(d);
 
-            this.BindCommand(ViewModel, vm => vm.AcceptCommand, view => view.InstallButton)
+            this.BindCommand(ViewModel, vm => vm.AcceptCommand,
+                    view => view.InstallButton)
                 .DisposeWith(d);
 
-            this.BindCommand(ViewModel, vm => vm.DeclineCommand, view => view.CancelButton)
+            this.BindCommand(ViewModel, vm => vm.DeclineCommand,
+                    view => view.CancelButton)
                 .DisposeWith(d);
 
-            this.BindCommand(ViewModel, vm => vm.DeclineCommand, view => view.OverlayHeaderCloseButton)
+            this.BindCommand(ViewModel, vm => vm.DeclineCommand,
+                    view => view.OverlayHeaderCloseButton)
                 .DisposeWith(d);
         });
         InitializeComponent();

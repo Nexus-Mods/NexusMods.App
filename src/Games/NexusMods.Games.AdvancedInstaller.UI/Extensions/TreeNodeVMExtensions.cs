@@ -1,5 +1,4 @@
 ﻿using System.Collections.ObjectModel;
-using DynamicData.Binding;
 using DynamicData.Kernel;
 using NexusMods.Games.AdvancedInstaller.UI.ModContent;
 using NexusMods.Games.AdvancedInstaller.UI.Preview;

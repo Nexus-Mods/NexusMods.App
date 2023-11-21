@@ -5,7 +5,6 @@
 /// </summary>
 public interface IAdvancedInstallerPageViewModel : IViewModelInterface
 {
-
     /// <summary>
     /// Footer element view model.
     /// </summary>
