@@ -14,11 +14,12 @@ public partial class FooterView : ReactiveUserControl<IFooterViewModel>
 
         this.WhenActivated(disposables =>
         {
-
-            this.BindCommand(ViewModel, vm => vm.CancelCommand, view => view.CancelButton)
+            this.BindCommand(ViewModel, vm => vm.CancelCommand,
+                    view => view.CancelButton)
                 .DisposeWith(disposables);
 
-            this.BindCommand(ViewModel, vm => vm.InstallCommand, view => view.InstallButton)
+            this.BindCommand(ViewModel, vm => vm.InstallCommand,
+                    view => view.InstallButton)
                 .DisposeWith(disposables);
         });
     }
