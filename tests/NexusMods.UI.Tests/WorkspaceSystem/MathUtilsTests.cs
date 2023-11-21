@@ -1,10 +1,12 @@
+using System.Diagnostics.CodeAnalysis;
 using Avalonia;
 using FluentAssertions;
 using NexusMods.App.UI.WorkspaceSystem;
-using Xunit.Sdk;
 
 namespace NexusMods.UI.Tests.WorkspaceSystem;
 
+[SuppressMessage("ReSharper", "HeapView.ObjectAllocation.Evident")]
+[SuppressMessage("ReSharper", "HeapView.BoxingAllocation")]
 public class MathUtilsTests
 {
     [Theory]
@@ -64,5 +66,25 @@ public class MathUtilsTests
     {
         new object[] { new Rect(0.0, 0.0, 100, 100), true, new Rect(0.0, 0.0, 50, 100), new Rect(50, 0.0, 50, 100) },
         new object[] { new Rect(0.0, 0.0, 100, 100), false, new Rect(0.0, 0.0, 100, 50), new Rect(0.0, 50, 100, 50) },
+    };
+
+    [Theory]
+    [MemberData(nameof(TestData_GetMidVector))]
+    public void Test_GetMidVector(Rect a, Rect b, bool isHorizontal, Vector expected)
+    {
+        var actual = MathUtils.GetMidVector(a, b, isHorizontal);
+        actual.Should().Be(expected);
+    }
+
+    public static IEnumerable<object[]> TestData_GetMidVector() => new[]
+    {
+        new object[] { new Rect(0, 0, 0.5, 1.0), new Rect(0.5, 0, 0.5, 1.0), false, new Vector(0.5, 0.5) },
+        new object[] { new Rect(0, 0, 1.0, 0.5), new Rect(0, 0.5, 1.0, 0.5), true, new Vector(0.5, 0.5) },
+
+        new object[] { new Rect(0, 0, 0.5, 1.0), new Rect(0.5, 0, 0.5, 0.5), false, new Vector(0.5, 0.25) },
+        new object[] { new Rect(0, 0, 0.5, 1.0), new Rect(0.5, 0.5, 0.5, 0.5), false, new Vector(0.5, 0.75) },
+
+        new object[] { new Rect(0, 0, 1.0, 0.5), new Rect(0, 0.5, 0.5, 0.5), true, new Vector(0.25, 0.5) },
+        new object[] { new Rect(0, 0, 1.0, 0.5), new Rect(0.5, 0.5, 0.5, 0.5), true, new Vector(0.75, 0.5) },
     };
 }
