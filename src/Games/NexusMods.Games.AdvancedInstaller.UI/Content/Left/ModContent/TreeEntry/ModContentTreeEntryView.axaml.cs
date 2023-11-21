@@ -1,6 +1,8 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using Avalonia.ReactiveUI;
+using DynamicData.Binding;
 using NexusMods.Games.AdvancedInstaller.UI.Resources;
 using ReactiveUI;
 
@@ -16,8 +18,15 @@ public partial class
 
         this.WhenActivated(d =>
         {
-            if (ViewModel == null)
-                return;
+            this.WhenAnyValue(view => view.ViewModel)
+                .WhereNotNull()
+                .Do(InitView)
+                .Subscribe()
+                .DisposeWith(d);
+
+            this.WhenAnyValue(view => view.ViewModel!.Status)
+                .Subscribe(_ => { UpdateView(ViewModel!); })
+                .DisposeWith(d);
 
             // Command bindings:
             this.BindCommand(ViewModel, vm => vm.BeginSelectCommand,
@@ -39,18 +48,12 @@ public partial class
             this.BindCommand(ViewModel, vm => vm.RemoveMappingCommand,
                     view => view.IncludedRemoveButton)
                 .DisposeWith(d);
-
-            InitView();
-
-            this.WhenAnyValue(x => x.ViewModel!.Status)
-                .SubscribeWithErrorLogging(_ => { UpdateView(); })
-                .DisposeWith(d);
         });
     }
 
-    private void InitView()
+    private void InitView(IModContentTreeEntryViewModel vm)
     {
-        if (ViewModel!.IsRoot)
+        if (vm.IsRoot)
         {
             MakeTextBlockBold();
             FileNameTextBlock.Text = Language.TreeEntryView_FileNameTextBlock_All_mod_files;
@@ -58,9 +61,9 @@ public partial class
         }
         else
         {
-            FileNameTextBlock.Text = ViewModel!.FileName;
+            FileNameTextBlock.Text = vm.FileName;
 
-            if (ViewModel!.IsDirectory)
+            if (vm.IsDirectory)
             {
                 FolderEntryIcon.IsVisible = true;
                 MakeTextBlockBold();
@@ -74,12 +77,12 @@ public partial class
             }
         }
 
-        UpdateView();
+        UpdateView(vm);
     }
 
-    private void UpdateView()
+    private void UpdateView(IModContentTreeEntryViewModel vm)
     {
-        var status = ViewModel!.Status;
+        var status = vm.Status;
         ClearAllButtons();
         switch (status)
         {
@@ -92,14 +95,14 @@ public partial class
                 break;
 
             case ModContentTreeEntryStatus.SelectingViaParent:
-                if (ViewModel.IsDirectory)
+                if (vm.IsDirectory)
                 {
                     IncludeTransitionButtonTextBlock.Text =
                         Language.TreeEntryView_IncludeTransitionButtonTextBlock_Include_folder;
                 }
                 else
                 {
-                    IncludeTransitionButtonTextBlock.Text = ViewModel.IsTopLevelChild
+                    IncludeTransitionButtonTextBlock.Text = vm.IsTopLevelChild
                         ? Language.TreeEntryView_IncludeTransitionButtonTextBlock_Include
                         : Language.TreeEntryView_IncludeTransitionButtonTextBlock_Include_with_folder;
                 }
@@ -108,19 +111,19 @@ public partial class
                 break;
 
             case ModContentTreeEntryStatus.IncludedExplicit:
-                RemoveFromLocationButtonTextBlock.Text = ViewModel.MappingFolderName;
+                RemoveFromLocationButtonTextBlock.Text = vm.MappingFolderName;
                 RemoveFromLocationButton.IsVisible = true;
                 break;
 
             case ModContentTreeEntryStatus.IncludedViaParent:
-                if (ViewModel.IsDirectory)
+                if (vm.IsDirectory)
                 {
                     IncludedRemoveButtonTextBlock.Text =
                         Language.TreeEntryView_IncludedRemoveButtonTextBlock_Included_folder;
                 }
                 else
                 {
-                    IncludedRemoveButtonTextBlock.Text = ViewModel.IsTopLevelChild
+                    IncludedRemoveButtonTextBlock.Text = vm.IsTopLevelChild
                         ? Language.TreeEntryView_IncludedRemoveButtonTextBlock_Included
                         : Language.TreeEntryView_IncludedRemoveButtonTextBlock_Included_with_folder;
                 }
