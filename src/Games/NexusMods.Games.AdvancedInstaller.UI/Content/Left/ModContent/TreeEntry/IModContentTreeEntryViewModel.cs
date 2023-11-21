@@ -22,8 +22,6 @@ public interface IModContentTreeEntryViewModel : IViewModelInterface
 
     public bool IsTopLevelChild { get; }
 
-    public Optional<GamePath> MappingParentPath { get; set; }
-
     public string MappingFolderName { get; set; }
 
     public Optional<GamePath> Mapping { get; set; }

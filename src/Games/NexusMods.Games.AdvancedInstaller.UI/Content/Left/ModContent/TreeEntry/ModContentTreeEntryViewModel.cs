@@ -17,7 +17,6 @@ public class ModContentTreeEntryViewModel : AViewModel<IModContentTreeEntryViewM
     public bool IsRoot { get; }
     public RelativePath Parent { get; }
     public bool IsTopLevelChild { get; }
-    public Optional<GamePath> MappingParentPath { get; set; }
     public string MappingFolderName { get; set; }
     public Optional<GamePath> Mapping { get; set; }
     [Reactive] public ModContentTreeEntryStatus Status { get; set; }
@@ -57,7 +56,6 @@ public class ModContentTreeEntryViewModel : AViewModel<IModContentTreeEntryViewM
     public void RemoveMapping()
     {
         MappingFolderName = string.Empty;
-        MappingParentPath = Optional.None<GamePath>();
         Mapping = Optional.None<GamePath>();
         Status = ModContentTreeEntryStatus.Default;
     }
