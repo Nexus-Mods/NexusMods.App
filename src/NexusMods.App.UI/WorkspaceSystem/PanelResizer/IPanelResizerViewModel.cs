@@ -1,4 +1,5 @@
 using Avalonia;
+using ReactiveUI;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
@@ -13,4 +14,6 @@ public interface IPanelResizerViewModel : IViewModelInterface
     public PanelId[] ConnectedPanels { get; }
 
     public void Arrange(Size workspaceSize);
+
+    public ReactiveCommand<Point, Point> DragCommand { get; }
 }

@@ -13,11 +13,15 @@ public class PanelResizerViewModel : AViewModel<IPanelResizerViewModel>, IPanelR
     public bool IsHorizontal { get; }
     public PanelId[] ConnectedPanels { get; }
 
+    public ReactiveCommand<Point, Point> DragCommand { get; }
+
     public PanelResizerViewModel(Point logicalPosition, bool isHorizontal, PanelId[] connectedPanels)
     {
         LogicalPosition = logicalPosition;
         IsHorizontal = isHorizontal;
         ConnectedPanels = connectedPanels;
+
+        DragCommand = ReactiveCommand.Create<Point, Point>(input => input);
 
         this.WhenActivated(disposables =>
         {

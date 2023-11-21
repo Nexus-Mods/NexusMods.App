@@ -80,6 +80,24 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                 })
                 .SubscribeWithErrorLogging()
                 .DisposeWith(disposables);
+
+            _resizersSource
+                .Connect()
+                .MergeManyWithSource(item => item.DragCommand)
+                .Where(tuple => tuple.Item2 != new Point(0, 0))
+                .Do(tuple =>
+                {
+                    var (item, newActualPosition) = tuple;
+
+                    var newLogicalPosition = new Point(
+                        newActualPosition.X / _lastWorkspaceSize.Width,
+                        newActualPosition.Y / _lastWorkspaceSize.Height
+                    );
+
+                    item.LogicalPosition = newLogicalPosition;
+                })
+                .Subscribe()
+                .DisposeWith(disposables);
         });
     }
 
