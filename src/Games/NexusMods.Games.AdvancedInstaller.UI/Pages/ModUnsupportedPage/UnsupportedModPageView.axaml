@@ -60,7 +60,7 @@
                                        Text="{x:Static resources:Language.UnsupportedModHeader_Unsupported_mod}"
                                        x:Name="OverlayHeaderTextBlock" />
 
-                            <Button Grid.Column="2" Classes="BareIcon WindowClose Small"
+                            <Button Grid.Column="2" Classes="BareIcon WindowClose"
                                     x:Name="OverlayHeaderCloseButton" />
                         </Grid>
                     </Border>
