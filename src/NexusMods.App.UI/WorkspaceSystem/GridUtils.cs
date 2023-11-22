@@ -267,7 +267,9 @@ internal static class GridUtils
         return res.SetItems(updates);
     }
 
-    internal static IReadOnlyList<ResizerInfo> GetResizers(ImmutableDictionary<PanelId, Rect> currentState)
+    internal static IReadOnlyList<ResizerInfo> GetResizers(
+        ImmutableDictionary<PanelId, Rect> currentState,
+        bool isWorkspaceHorizontal = true)
     {
         // TODO: make this less messy
 

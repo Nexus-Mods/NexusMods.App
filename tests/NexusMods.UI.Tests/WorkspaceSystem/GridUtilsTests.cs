@@ -417,6 +417,7 @@ public class GridUtilsTests
 
 
         // NOTE(erri120):
+        // workspace layout is horizontal (more width than height), columns have priority over rows
         // | a | b |
         // | c | d |
         state = new List<IPanelViewModel>(capacity: columns * rows)
@@ -427,12 +428,12 @@ public class GridUtilsTests
             CreatePanel(fourthPanelId, new Rect(0.5, 0.5, 0.5, 0.5))
         }.ToImmutableDictionary(panel => panel.Id, panel => panel.LogicalBounds);
 
-        res = GridUtils.GetResizers(state);
+        res = GridUtils.GetResizers(state, isWorkspaceHorizontal: true);
         res.Should().HaveCount(4).And.SatisfyRespectively(info =>
         {
             info.IsHorizontal.Should().BeFalse();
             info.LogicalPosition.Should().Be(new Vector(0.5, 0.25));
-            info.ConnectedPanels.Should().HaveCount(2).And.Contain(new[] { firstPanelId, secondPanelId });
+            info.ConnectedPanels.Should().HaveCount(2).And.Contain(new[] { firstPanelId, secondPanelId, thirdPanelId });
         }, info =>
         {
             info.IsHorizontal.Should().BeTrue();
@@ -443,6 +444,33 @@ public class GridUtilsTests
             info.IsHorizontal.Should().BeTrue();
             info.LogicalPosition.Should().Be(new Vector(0.75, 0.5));
             info.ConnectedPanels.Should().HaveCount(2).And.Contain(new[] { secondPanelId, fourthPanelId });
+        }, info =>
+        {
+            info.IsHorizontal.Should().BeFalse();
+            info.LogicalPosition.Should().Be(new Vector(0.5, 0.75));
+            info.ConnectedPanels.Should().HaveCount(2).And.Contain(new[] { thirdPanelId, fourthPanelId, firstPanelId });
+        });
+
+        // NOTE(erri120):
+        // workspace layout is vertical (more height than width), rows have priority over columns
+        // | a | b |
+        // | c | d |
+        res = GridUtils.GetResizers(state, isWorkspaceHorizontal: true);
+        res.Should().HaveCount(4).And.SatisfyRespectively(info =>
+        {
+            info.IsHorizontal.Should().BeFalse();
+            info.LogicalPosition.Should().Be(new Vector(0.5, 0.25));
+            info.ConnectedPanels.Should().HaveCount(2).And.Contain(new[] { firstPanelId, secondPanelId });
+        }, info =>
+        {
+            info.IsHorizontal.Should().BeTrue();
+            info.LogicalPosition.Should().Be(new Vector(0.25, 0.5));
+            info.ConnectedPanels.Should().HaveCount(2).And.Contain(new[] { firstPanelId, thirdPanelId, secondPanelId });
+        }, info =>
+        {
+            info.IsHorizontal.Should().BeTrue();
+            info.LogicalPosition.Should().Be(new Vector(0.75, 0.5));
+            info.ConnectedPanels.Should().HaveCount(2).And.Contain(new[] { secondPanelId, fourthPanelId, firstPanelId });
         }, info =>
         {
             info.IsHorizontal.Should().BeFalse();
