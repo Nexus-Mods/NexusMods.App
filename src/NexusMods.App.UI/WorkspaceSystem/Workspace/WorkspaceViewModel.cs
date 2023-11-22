@@ -95,8 +95,84 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                     );
 
                     item.LogicalPosition = newLogicalPosition;
+
+                    var isHorizontal = item.IsHorizontal;
+                    var connectedPanels = item.ConnectedPanels;
+
+                    var firstOnAxis = true;
+                    var lastAxisValue = 0.0;
+
+                    foreach (var panelId in connectedPanels)
+                    {
+                        var optional = _panelSource.Lookup(panelId);
+                        if (!optional.HasValue) continue;
+
+                        var panel = optional.Value;
+                        var currentSize = panel.LogicalBounds;
+
+                        if (isHorizontal)
+                        {
+                            var newY = firstOnAxis ? currentSize.Y : newLogicalPosition.Y;
+
+                            var isExpanding = firstOnAxis
+                                ? currentSize.Bottom < newLogicalPosition.Y
+                                : currentSize.Y > newLogicalPosition.Y;
+
+                            var diff = firstOnAxis
+                                ? Math.Abs(newLogicalPosition.Y - currentSize.Bottom)
+                                : Math.Abs(newLogicalPosition.Y - currentSize.Y);
+
+                            var newHeight = isExpanding
+                                ? currentSize.Height + diff
+                                : currentSize.Height - diff;
+
+                            panel.LogicalBounds = new Rect(
+                                currentSize.X,
+                                newY,
+                                currentSize.Width,
+                                newHeight
+                            );
+                        }
+                        else
+                        {
+                            var newX = firstOnAxis ? currentSize.X : newLogicalPosition.X;
+
+                            var isExpanding = firstOnAxis
+                                ? currentSize.Right < newLogicalPosition.X
+                                : currentSize.X > newLogicalPosition.X;
+
+                            var diff = firstOnAxis
+                                ? Math.Abs(newLogicalPosition.X - currentSize.Right)
+                                : Math.Abs(newLogicalPosition.X - currentSize.X);
+
+                            var newWidth = isExpanding
+                                ? currentSize.Width + diff
+                                : currentSize.Width - diff;
+
+                            panel.LogicalBounds = new Rect(
+                                newX,
+                                currentSize.Y,
+                                newWidth,
+                                currentSize.Height
+                            );
+                        }
+
+                        if (firstOnAxis) firstOnAxis = false;
+                        if (isHorizontal)
+                        {
+                            if (lastAxisValue.IsCloseTo(currentSize.X)) continue;
+                            lastAxisValue = currentSize.X;
+                            firstOnAxis = true;
+                        }
+                        else
+                        {
+                            if (lastAxisValue.IsCloseTo(currentSize.Y)) continue;
+                            lastAxisValue = currentSize.Y;
+                            firstOnAxis = true;
+                        }
+                    }
                 })
-                .Subscribe()
+                .SubscribeWithErrorLogging()
                 .DisposeWith(disposables);
         });
     }
