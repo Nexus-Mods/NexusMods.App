@@ -271,15 +271,15 @@ internal static class GridUtils
         ImmutableDictionary<PanelId, Rect> currentState,
         bool isWorkspaceHorizontal = true)
     {
-        // TODO: make this less messy
-
-        var res = new List<ResizerInfo>(capacity: currentState.Count);
         var tmp = new List<ResizerInfo>(capacity: currentState.Count);
+        var adjacentPanels = new List<ResizerInfo>(capacity: currentState.Count);
 
+        // Step 1: fill the tmp List with all Resizers
         foreach (var current in currentState)
         {
             var currentRect = current.Value;
 
+            // Step 1.1: go through all panels and find their adjacent panels
             foreach (var other in currentState)
             {
                 if (other.Key == current.Key) continue;
@@ -293,7 +293,7 @@ internal static class GridUtils
                 {
                     if (rect.Top.IsCloseTo(currentRect.Bottom) || rect.Bottom.IsCloseTo(currentRect.Top))
                     {
-                        Add(current, other, isHorizontal: true);
+                        Add(adjacentPanels, current, other, isHorizontal: true);
                     }
                 }
 
@@ -304,20 +304,20 @@ internal static class GridUtils
                 {
                     if (rect.Left.IsCloseTo(currentRect.Right) || rect.Right.IsCloseTo(currentRect.Left))
                     {
-                        Add(current, other, isHorizontal: false);
+                        Add(adjacentPanels, current, other, isHorizontal: false);
                     }
                 }
             }
 
-            foreach (var info in tmp)
+            // Step 1.2: combine the resizers for the current panel
+            foreach (var info in adjacentPanels)
             {
                 var pos = info.LogicalPosition;
-                if (res.Any(x => x.LogicalPosition == pos)) continue;
 
                 var acc = new List<PanelId>();
                 acc.AddRange(info.ConnectedPanels);
 
-                foreach (var other in tmp)
+                foreach (var other in adjacentPanels)
                 {
                     if (other.IsHorizontal != info.IsHorizontal) continue;
 
@@ -328,21 +328,31 @@ internal static class GridUtils
                     acc.AddRange(other.ConnectedPanels.Where(id => !acc.Contains(id)));
                 }
 
-                res.Add(info with { ConnectedPanels = acc.ToArray() });
+                tmp.Add(info with { ConnectedPanels = acc.ToArray() });
             }
 
-            tmp.Clear();
+            adjacentPanels.Clear();
         }
+
+        // Step 2: combine all resizers of all panels
+        var res = tmp
+            .DistinctBy(info => info.LogicalPosition)
+            .GroupBy(info => isWorkspaceHorizontal ? info.LogicalPosition.X : info.LogicalPosition.Y)
+            .SelectMany(group =>
+            {
+                var connectedPanels = group.SelectMany(info => info.ConnectedPanels).Distinct().ToArray();
+                return group.Select(info => info with { ConnectedPanels = connectedPanels });
+            }).ToArray();
 
         return res;
 
-        void Add(KeyValuePair<PanelId, Rect> current, KeyValuePair<PanelId, Rect> other, bool isHorizontal)
+        static void Add(ICollection<ResizerInfo> list, KeyValuePair<PanelId, Rect> current, KeyValuePair<PanelId, Rect> other, bool isHorizontal)
         {
             var (currentId, currentRect) = current;
             var (otherId, rect) = other;
 
             var pos = MathUtils.GetMidPoint(currentRect, rect, isHorizontal);
-            tmp.Add(new ResizerInfo(IsHorizontal: isHorizontal, pos, new[] { currentId, otherId }));
+            list.Add(new ResizerInfo(IsHorizontal: isHorizontal, pos, new[] { currentId, otherId }));
         }
     }
 
