@@ -38,14 +38,7 @@ public class SelectLocationViewModel : AViewModel<ISelectLocationViewModel>,
 
         var treeEntries = CreateTreeEntries(register, loadout);
 
-        // For each entry, create a CreateFolder entry.
-        var createFolderEntries = treeEntries.Select(existingNode =>
-            new SelectableTreeEntryViewModel(
-                new GamePath(existingNode.GamePath.LocationId, existingNode.GamePath.Path.Join("*CreateFolder*")),
-                SelectableDirectoryNodeStatus.Create));
-
         TreeEntriesCache.AddOrUpdate(treeEntries);
-        TreeEntriesCache.AddOrUpdate(createFolderEntries);
 
         TreeEntriesCache.Connect()
             .TransformToTree(item => item.Parent)
@@ -140,7 +133,12 @@ public class SelectLocationViewModel : AViewModel<ISelectLocationViewModel>,
                 new GamePath(locationId, RelativePath.Empty),
                 SelectableDirectoryNodeStatus.Regular);
 
+            var createFolderEntry = new SelectableTreeEntryViewModel(
+                new GamePath(locationId, ISelectableTreeEntryViewModel.CreateFolderEntryName),
+                SelectableDirectoryNodeStatus.Create);
+
             treeEntries.Add(treeEntry);
+            treeEntries.Add(createFolderEntry);
 
             // Add nested
             foreach (var nestedLocation in register.GetNestedLocations(locationId))
@@ -186,7 +184,12 @@ public class SelectLocationViewModel : AViewModel<ISelectLocationViewModel>,
                 ? SelectableDirectoryNodeStatus.RegularFromMapping
                 : SelectableDirectoryNodeStatus.Regular;
 
+
             treeEntries.Add(new SelectableTreeEntryViewModel(subPath, status));
+            treeEntries.Add(new SelectableTreeEntryViewModel(
+                new GamePath(subPath.LocationId,
+                    subPath.Path.Join(ISelectableTreeEntryViewModel.CreateFolderEntryName)),
+                SelectableDirectoryNodeStatus.Create));
         }
 
         return treeEntries;
