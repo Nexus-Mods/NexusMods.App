@@ -16,6 +16,10 @@ internal class PreviewViewModel : AViewModel<IPreviewViewModel>, IPreviewViewMod
 
     public HierarchicalTreeDataGridSource<PreviewTreeNode> Tree { get; }
 
+    /// <summary>
+    /// Constructs a new <see cref="PreviewViewModel"/>.
+    /// Tree elements need to be added from the <see cref="TreeEntriesCache"/>.
+    /// </summary>
     public PreviewViewModel()
     {
         TreeEntriesCache.Connect()
@@ -27,7 +31,13 @@ internal class PreviewViewModel : AViewModel<IPreviewViewModel>, IPreviewViewMod
         Tree = GetTreeSource(_treeRoots);
     }
 
-    private static HierarchicalTreeDataGridSource<PreviewTreeNode> GetTreeSource(ReadOnlyObservableCollection<PreviewTreeNode> treeRoots)
+    /// <summary>
+    /// Generates the required source data for the TreeDataGrid from the observable tree roots.
+    /// </summary>
+    /// <param name="treeRoots">Observable collection of tree roots.</param>
+    /// <returns></returns>
+    private static HierarchicalTreeDataGridSource<PreviewTreeNode> GetTreeSource(
+        ReadOnlyObservableCollection<PreviewTreeNode> treeRoots)
     {
         return new HierarchicalTreeDataGridSource<PreviewTreeNode>(treeRoots)
         {
