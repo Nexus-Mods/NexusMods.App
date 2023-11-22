@@ -1,3 +1,3 @@
 ﻿namespace NexusMods.Games.AdvancedInstaller.UI.EmptyPreview;
 
-public interface IEmptyPreviewViewModel : IViewModelInterface { }
+public interface IEmptyPreviewViewModel : IViewModelInterface;
