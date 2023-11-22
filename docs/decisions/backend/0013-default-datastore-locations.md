@@ -5,7 +5,7 @@ date: {2023-11-21 when the decision was last updated}
 deciders: {App Team}
 ```
 
-# Storage Locations for NexusMods.App Files
+# Default Storage Locations for NexusMods.App Files
 
 ## Context and Problem Statement
 
@@ -40,11 +40,15 @@ application is deployed or executed.
 ## Decision Drivers
 
 * On uninstall, the application should be able to remove all of its files from the system.
+* Default storage locations should be configurable.
+    * This is already the case today, but stating this here marks the functionality as a requirement.
+* The application should be 'portable'.
+    * In other words, it should be able to be run from a USB stick, etc.
 * Application data should be user accessible.
     * In other words, easy to find/navigate to.
     * Because application data, also contains logs and user accessible files.
     * e.g. If the App crashes on boot, finding logs should be easy.
-* Cross-platform consistency
+* Cross-platform consistency.
     * The paths should be consistent across different operating systems.
     * For example, if on one platform it is in entry directory, it should do the same on other platforms too.
 * The user must have write access to the directory.
@@ -59,7 +63,7 @@ application is deployed or executed.
 
 {TBD}
 
-### Consequences
+### Consequences of Chosen Decision
 
 {TBD}
 
@@ -67,7 +71,7 @@ application is deployed or executed.
 
 ### Option 0: Keep using Entry Directory
 
-* Good, because it makes the application portable (e.g. can carry on USB stick).
+* Good, because it easily makes the application portable.
 * Good, because it is consistent across deployment methods.
 * Good, because it makes user data very easy to find.
 * Bad, because it is incompatible with many packaging systems.
@@ -105,7 +109,7 @@ the presence of multi user systems. For example, offices, LAN centres, etc.
 
 There are two specific issues:
 
-***1. Network Synchronization***
+### 1. Network Synchronization
 
 Files in `AppData/Roaming` are usually downloaded upon login in these configurations, and this download typically
 happens on every login.
@@ -118,12 +122,12 @@ In the case of alternative [Home Directory](#option-1-users-home-directory) appr
 just be accessed over the network, avoiding the need for a long synchronization wait time. (At expense of slow
 deployment times as mod archives would be accessed over the network)
 
-***2. Disk Space (Local)***
+### 2. Disk Space (Local)
 
 In the other case of multiple users on same local machine, all mod + game backup data is duplicated on storage, wasting
 potentially a huge amount of space.
 
-***Additional Context***
+### Additional Context
 
 The idiomatic approach for this kind of problem is storing mods + backup game files
 in a machine wide location such as `C:\ProgramData`. Per user data (loadouts, mod configs etc.) in `AppData/Roaming`.
@@ -136,7 +140,59 @@ original state.
 Such as system may mean a slight rework of the DataStore however, as it means having to know where each file was
 originally sourced from and (possibly) having a separate data store for user and machine wide data.
 
-***The Alternative***
+### The Alternative
 
 Pretend the problem doesn't exist. Not uncommon in software development (sadly).
 More convenient for developers, but the App however would work very poorly in multi user environments.
+
+## Action Plan: Moving Default Configuration File
+
+Currently the App stores its configuration file (`AppConfig.json`) for custom paths in the same folder as the
+application (`{EntryFolder}`). This is of course problematic, as many packaging systems make this folder read-only.
+
+### Moving the Configuration File
+
+Once changes tied to this ADR are applied, this config file should be moved to whatever is the new default decided
+as a result of this ADR. If no file exists, the App should create one in the default location with the default values.
+
+### Required: Support for 'Portable Mode'
+
+For users who wish to run the App in 'portable mode' (e.g. in a non-static location), an override will need to exist to
+read paths from the local folder (which is current behaviour).
+
+This can be done in one of following ways:
+
+- `AppConfig.json` in App folder takes precedence over default location `AppConfig.json`.
+- `portable.txt` file forces a default set of 'portable' paths to be used.
+
+The first option is more powerful, but the second option may be more familiar to users. In any case, implementing either
+and switching between them code wise should be rather trivial.
+
+!! danger
+
+'Portable Mode' can only be supported for distribution methods where the App folder is writeable, for a list of these,
+[see 'The Current Situation'](#the-current-situation). How we communicate this to the user is TBD.
+
+## Future Questions: User Path Configuration UX
+
+!! note "This is a pending discussion topic. To be moved to future ADRs."
+
+Discussion on the User Experience of configuring paths is still pending.
+
+Here are some (current) proposed discussion topics:
+
+- How do we advertise 'portable' mode.
+    - Either we copy the App files from a read-only directory to a new location, then tell user to uninstall their '
+      installed' version.
+    - Or users will need to download a separate build (e.g. AppImage instead of Flatpak, i.e. `ZIP` instead of `MSI` on
+      Windows) to use it.
+    - We can't have custom installer logic, as not all packaging formats support it. Do we make a custom installer?
+
+- Support installing archives to multiple locations.
+    - Do we do automated per game rules?
+    - Size based rules?
+    - Delegating to secondary locations if primary is full?
+
+- Support dynamically moving the Archives between folders.
+    - Do we use Steam inspired UI for this?
+    - Reboot required?
