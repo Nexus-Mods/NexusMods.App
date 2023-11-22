@@ -17,18 +17,19 @@ public class SelectLocationViewModel : AViewModel<ISelectLocationViewModel>,
 {
     public string SuggestedAreaSubtitle { get; }
     public ReadOnlyObservableCollection<ISuggestedEntryViewModel> SuggestedEntries { get; }
-
     public HierarchicalTreeDataGridSource<SelectableTreeNode> Tree { get; }
-
-    public ReadOnlyObservableCollection<SelectableTreeNode> TreeRoots =>
-        _treeRoots;
-
+    public ReadOnlyObservableCollection<SelectableTreeNode> TreeRoots => _treeRoots;
     private readonly ReadOnlyObservableCollection<SelectableTreeNode> _treeRoots;
 
     public SourceCache<ISelectableTreeEntryViewModel, GamePath> TreeEntriesCache { get; } =
         new(entry => entry.GamePath);
 
-
+    /// <summary>
+    /// Constructs the view model for the Select Location view.
+    /// </summary>
+    /// <param name="register">The game locations register to obtain the locations.</param>
+    /// <param name="loadout">The loadout, to obtain the loadout folder structure. Can be null.</param>
+    /// <param name="gameName">The name of the Game, to show in the ui.</param>
     public SelectLocationViewModel(GameLocationsRegister register, Loadout? loadout, string gameName)
     {
         SuggestedAreaSubtitle = string.Format(Language.SelectLocationViewModel_SuggestedLocationsSubtitle, gameName);
@@ -55,7 +56,13 @@ public class SelectLocationViewModel : AViewModel<ISelectLocationViewModel>,
         Tree = GetTreeSource(_treeRoots);
     }
 
+    #region private
 
+    /// <summary>
+    /// Generates the Tree source for the TreeDataGrid.
+    /// </summary>
+    /// <param name="treeRoots">An observable collection of the tree roots.</param>
+    /// <returns></returns>
     private static HierarchicalTreeDataGridSource<SelectableTreeNode> GetTreeSource(
         ReadOnlyObservableCollection<SelectableTreeNode> treeRoots)
     {
@@ -115,6 +122,12 @@ public class SelectLocationViewModel : AViewModel<ISelectLocationViewModel>,
         return suggestedEntries;
     }
 
+    /// <summary>
+    /// Creates the tree entries from the LocationIds and potentially the Loadout folder structure.
+    /// </summary>
+    /// <param name="register">The game locations register</param>
+    /// <param name="loadout">The loadout, can be null.</param>
+    /// <returns>The list of created tree entries that need to be added to the cache.</returns>
     private static List<ISelectableTreeEntryViewModel> CreateTreeEntries(GameLocationsRegister register,
         Loadout? loadout)
     {
@@ -178,4 +191,6 @@ public class SelectLocationViewModel : AViewModel<ISelectLocationViewModel>,
 
         return treeEntries;
     }
+
+    #endregion private
 }

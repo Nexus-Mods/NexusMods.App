@@ -22,7 +22,7 @@ public partial class SelectLocationView : ReactiveUserControl<ISelectLocationVie
                 .DisposeWith(disposables);
 
             this.OneWayBind(ViewModel, vm =>
-                vm.Tree, view => view.SelectTreeDataGrid.Source)
+                    vm.Tree, view => view.SelectTreeDataGrid.Source)
                 .DisposeWith(disposables);
         });
     }
