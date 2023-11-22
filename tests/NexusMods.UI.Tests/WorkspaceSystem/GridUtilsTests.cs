@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using Avalonia;
 using FluentAssertions;
 using JetBrains.Annotations;
@@ -8,6 +9,7 @@ using NSubstitute;
 namespace NexusMods.UI.Tests.WorkspaceSystem;
 
 [UsedImplicitly]
+[SuppressMessage("ReSharper", "HeapView.BoxingAllocation")]
 public class GridUtilsTests
 {
     [Fact]
@@ -335,7 +337,7 @@ public class GridUtilsTests
         res.Should().ContainSingle().And.SatisfyRespectively(info =>
         {
             info.IsHorizontal.Should().BeFalse();
-            info.LogicalPosition.Should().Be(new Vector(0.5, 0.5));
+            info.LogicalPosition.Should().Be(new Point(0.5, 0.5));
             info.ConnectedPanels.Should().HaveCount(2).And.Contain(new[] { firstPanelId, secondPanelId });
         });
 
@@ -353,7 +355,7 @@ public class GridUtilsTests
         res.Should().ContainSingle().And.SatisfyRespectively(info =>
         {
             info.IsHorizontal.Should().BeTrue();
-            info.LogicalPosition.Should().Be(new Vector(0.5, 0.5));
+            info.LogicalPosition.Should().Be(new Point(0.5, 0.5));
             info.ConnectedPanels.Should().HaveCount(2).And.Contain(new[] { firstPanelId, secondPanelId });
         });
 
@@ -372,17 +374,17 @@ public class GridUtilsTests
         res.Should().HaveCount(3).And.SatisfyRespectively(info =>
         {
             info.IsHorizontal.Should().BeFalse();
-            info.LogicalPosition.Should().Be(new Vector(0.5, 0.25));
+            info.LogicalPosition.Should().Be(new Point(0.5, 0.25));
             info.ConnectedPanels.Should().HaveCount(3).And.Contain(new[] { firstPanelId, secondPanelId, thirdPanelId });
         }, info =>
         {
             info.IsHorizontal.Should().BeFalse();
-            info.LogicalPosition.Should().Be(new Vector(0.5, 0.75));
+            info.LogicalPosition.Should().Be(new Point(0.5, 0.75));
             info.ConnectedPanels.Should().HaveCount(3).And.Contain(new[] { firstPanelId, secondPanelId, thirdPanelId });
         }, info =>
         {
             info.IsHorizontal.Should().BeTrue();
-            info.LogicalPosition.Should().Be(new Vector(0.75, 0.5));
+            info.LogicalPosition.Should().Be(new Point(0.75, 0.5));
             info.ConnectedPanels.Should().HaveCount(2).And.Contain(new[] { secondPanelId, thirdPanelId });
         });
 
@@ -401,17 +403,17 @@ public class GridUtilsTests
         res.Should().HaveCount(3).And.SatisfyRespectively(info =>
         {
             info.IsHorizontal.Should().BeTrue();
-            info.LogicalPosition.Should().Be(new Vector(0.25, 0.5));
+            info.LogicalPosition.Should().Be(new Point(0.25, 0.5));
             info.ConnectedPanels.Should().HaveCount(3).And.Contain(new[] { firstPanelId, secondPanelId, thirdPanelId });
         }, info =>
         {
             info.IsHorizontal.Should().BeTrue();
-            info.LogicalPosition.Should().Be(new Vector(0.75, 0.5));
+            info.LogicalPosition.Should().Be(new Point(0.75, 0.5));
             info.ConnectedPanels.Should().HaveCount(3).And.Contain(new[] { firstPanelId, secondPanelId, thirdPanelId });
         }, info =>
         {
             info.IsHorizontal.Should().BeFalse();
-            info.LogicalPosition.Should().Be(new Vector(0.5, 0.75));
+            info.LogicalPosition.Should().Be(new Point(0.5, 0.75));
             info.ConnectedPanels.Should().HaveCount(2).And.Contain(new[] { secondPanelId, thirdPanelId });
         });
 
@@ -432,22 +434,22 @@ public class GridUtilsTests
         res.Should().HaveCount(4).And.SatisfyRespectively(info =>
         {
             info.IsHorizontal.Should().BeFalse();
-            info.LogicalPosition.Should().Be(new Vector(0.5, 0.25));
+            info.LogicalPosition.Should().Be(new Point(0.5, 0.25));
             info.ConnectedPanels.Should().HaveCount(2).And.Contain(new[] { firstPanelId, secondPanelId, thirdPanelId });
         }, info =>
         {
             info.IsHorizontal.Should().BeTrue();
-            info.LogicalPosition.Should().Be(new Vector(0.25, 0.5));
+            info.LogicalPosition.Should().Be(new Point(0.25, 0.5));
             info.ConnectedPanels.Should().HaveCount(2).And.Contain(new[] { firstPanelId, thirdPanelId });
         }, info =>
         {
             info.IsHorizontal.Should().BeTrue();
-            info.LogicalPosition.Should().Be(new Vector(0.75, 0.5));
+            info.LogicalPosition.Should().Be(new Point(0.75, 0.5));
             info.ConnectedPanels.Should().HaveCount(2).And.Contain(new[] { secondPanelId, fourthPanelId });
         }, info =>
         {
             info.IsHorizontal.Should().BeFalse();
-            info.LogicalPosition.Should().Be(new Vector(0.5, 0.75));
+            info.LogicalPosition.Should().Be(new Point(0.5, 0.75));
             info.ConnectedPanels.Should().HaveCount(2).And.Contain(new[] { thirdPanelId, fourthPanelId, firstPanelId });
         });
 
@@ -459,22 +461,22 @@ public class GridUtilsTests
         res.Should().HaveCount(4).And.SatisfyRespectively(info =>
         {
             info.IsHorizontal.Should().BeFalse();
-            info.LogicalPosition.Should().Be(new Vector(0.5, 0.25));
+            info.LogicalPosition.Should().Be(new Point(0.5, 0.25));
             info.ConnectedPanels.Should().HaveCount(2).And.Contain(new[] { firstPanelId, secondPanelId });
         }, info =>
         {
             info.IsHorizontal.Should().BeTrue();
-            info.LogicalPosition.Should().Be(new Vector(0.25, 0.5));
+            info.LogicalPosition.Should().Be(new Point(0.25, 0.5));
             info.ConnectedPanels.Should().HaveCount(2).And.Contain(new[] { firstPanelId, thirdPanelId, secondPanelId });
         }, info =>
         {
             info.IsHorizontal.Should().BeTrue();
-            info.LogicalPosition.Should().Be(new Vector(0.75, 0.5));
+            info.LogicalPosition.Should().Be(new Point(0.75, 0.5));
             info.ConnectedPanels.Should().HaveCount(2).And.Contain(new[] { secondPanelId, fourthPanelId, firstPanelId });
         }, info =>
         {
             info.IsHorizontal.Should().BeFalse();
-            info.LogicalPosition.Should().Be(new Vector(0.5, 0.75));
+            info.LogicalPosition.Should().Be(new Point(0.5, 0.75));
             info.ConnectedPanels.Should().HaveCount(2).And.Contain(new[] { thirdPanelId, fourthPanelId });
         });
     }
