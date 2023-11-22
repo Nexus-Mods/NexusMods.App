@@ -74,8 +74,6 @@
                             <TextBlock Grid.Column="1" x:Name="OverlayHeaderTextBlock" Classes="BodyLGBold"
                                        Text="{x:Static resources:Language.OverlayHeaderText_Advanced_Installer}" />
 
-                            <Button Grid.Column="2" Classes="BareIcon WindowClose"
-                                    x:Name="OverlayHeaderCloseButton" />
                         </Grid>
                     </Border>
 

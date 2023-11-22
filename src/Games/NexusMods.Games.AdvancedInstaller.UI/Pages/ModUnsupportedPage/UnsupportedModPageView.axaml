@@ -59,9 +59,6 @@
                             <TextBlock Grid.Column="1" Classes="BodyLGBold"
                                        Text="{x:Static resources:Language.UnsupportedModHeader_Unsupported_mod}"
                                        x:Name="OverlayHeaderTextBlock" />
-
-                            <Button Grid.Column="2" Classes="BareIcon WindowClose"
-                                    x:Name="OverlayHeaderCloseButton" />
                         </Grid>
                     </Border>
                     <Border Grid.Row="1">

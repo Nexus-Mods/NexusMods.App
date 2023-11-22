@@ -21,10 +21,6 @@ public partial class AdvancedInstallerPageView : ReactiveUserControl<IAdvancedIn
             this.OneWayBind(ViewModel, vm => vm.FooterViewModel,
                     v => v.BottomContentViewHost.ViewModel)
                 .DisposeWith(disposables);
-
-            this.BindCommand(ViewModel, vm => vm.FooterViewModel.CancelCommand,
-                    v => v.OverlayHeaderCloseButton)
-                .DisposeWith(disposables);
         });
     }
 }

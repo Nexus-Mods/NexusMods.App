@@ -7,12 +7,13 @@
                            mc:Ignorable="d" d:DesignWidth="1232" d:DesignHeight="672"
                            x:Class="NexusMods.Games.AdvancedInstaller.UI.AdvancedInstallerWindowView"
                            CanResize="True"
-                           ExtendClientAreaChromeHints="NoChrome"
+                           ExtendClientAreaChromeHints="Default"
                            ExtendClientAreaToDecorationsHint="True"
                            MinWidth="1024" MinHeight="540"
                            Width="1232" Height="672"
                            WindowStartupLocation="CenterOwner"
                            Background="{DynamicResource BorderContainerColor}">
+
     <Design.DataContext>
         <ui:AdvancedInstallerWindowDesignViewModel />
     </Design.DataContext>
