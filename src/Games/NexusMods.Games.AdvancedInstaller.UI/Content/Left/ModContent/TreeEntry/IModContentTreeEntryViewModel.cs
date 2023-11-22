@@ -97,6 +97,12 @@ public interface IModContentTreeEntryViewModel : IViewModelInterface
     /// !Doesn't remove mapping information from child entries.
     /// </summary>
     public void RemoveMapping();
+
+    /// <summary>
+    /// The invalid relative path used for the root entry.
+    /// Necessary for DynamicData TransformToTree, we need a RelativePath that is guaranteed not to represent another node.
+    /// </summary>
+    public static RelativePath RootParentRelativePath = new("*rootParent*");
 }
 
 /// <summary>

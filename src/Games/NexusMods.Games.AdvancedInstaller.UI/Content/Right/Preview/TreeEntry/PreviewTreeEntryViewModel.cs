@@ -25,6 +25,12 @@ public class PreviewTreeEntryViewModel : AViewModel<IPreviewTreeEntryViewModel>,
     public ObservableCollection<IModContentTreeEntryViewModel> MappedEntries { get; } = new();
     public ReactiveCommand<Unit, Unit> RemoveMappingCommand { get; }
 
+    /// <summary>
+    /// Constructs a Preview tree entry view model.
+    /// </summary>
+    /// <param name="gamePath">The GamePath relative to a top level LocationId uniquely identifying this entry.</param>
+    /// <param name="isDirectory">Whether the entry represents a directory.</param>
+    /// <param name="isNew">Whether the entry should be marked as new.</param>
     public PreviewTreeEntryViewModel(
         GamePath gamePath,
         bool isDirectory,

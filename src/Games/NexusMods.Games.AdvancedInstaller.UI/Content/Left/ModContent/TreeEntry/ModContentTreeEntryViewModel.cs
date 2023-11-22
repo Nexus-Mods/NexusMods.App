@@ -37,7 +37,7 @@ public class ModContentTreeEntryViewModel : AViewModel<IModContentTreeEntryViewM
         IsRoot = RelativePath == RelativePath.Empty;
 
         // Use invalid parent path for root node, to avoid matching another node by accident.
-        Parent = IsRoot ? new RelativePath("*root*") : RelativePath.Parent;
+        Parent = IsRoot ? IModContentTreeEntryViewModel.RootParentRelativePath : RelativePath.Parent;
 
         IsTopLevelChild = Parent == RelativePath.Empty;
         MappingFolderName = string.Empty;

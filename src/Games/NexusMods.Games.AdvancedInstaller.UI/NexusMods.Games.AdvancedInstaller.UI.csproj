@@ -318,6 +318,14 @@
         <Compile Update="Content\Right\SelectLocation\Tree\SelectableTreeEntryViewModel.cs">
           <DependentUpon>ISelectableTreeEntryViewModel.cs</DependentUpon>
         </Compile>
+
+        <Compile Update="Content\Right\Preview\TreeEntry\PreviewTreeEntryDesignViewModel.cs">
+          <DependentUpon>IPreviewTreeEntryViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="Content\Right\Preview\TreeEntry\PreviewTreeEntryViewModel.cs">
+          <DependentUpon>IPreviewTreeEntryViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
