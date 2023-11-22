@@ -97,17 +97,20 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                     item.LogicalPosition = newLogicalPosition;
 
                     var isHorizontal = item.IsHorizontal;
-                    var connectedPanels = item.ConnectedPanels;
+                    var connectedPanelIds = item.ConnectedPanels;
 
                     var firstOnAxis = true;
                     var lastAxisValue = 0.0;
 
-                    foreach (var panelId in connectedPanels)
-                    {
-                        var optional = _panelSource.Lookup(panelId);
-                        if (!optional.HasValue) continue;
+                    var connectedPanels = connectedPanelIds
+                        .Select(panelId => _panelSource.Lookup(panelId))
+                        .Where(optional => optional.HasValue)
+                        .Select(optional => optional.Value)
+                        .Order(PanelComparer.Instance)
+                        .ToArray();
 
-                        var panel = optional.Value;
+                    foreach (var panel in connectedPanels)
+                    {
                         var currentSize = panel.LogicalBounds;
 
                         if (isHorizontal)
