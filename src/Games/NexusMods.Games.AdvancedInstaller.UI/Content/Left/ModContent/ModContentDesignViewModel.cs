@@ -11,5 +11,4 @@ namespace NexusMods.Games.AdvancedInstaller.UI.ModContent;
 internal class ModContentDesignViewModel : ModContentViewModel
 {
     public ModContentDesignViewModel() : base(DesignTimeHelpers.CreateDesignFileTree()) { }
-
 }

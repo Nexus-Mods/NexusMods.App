@@ -18,12 +18,14 @@ public partial class
 
         this.WhenActivated(d =>
         {
+            // Initialize the view if the view model is not null
             this.WhenAnyValue(view => view.ViewModel)
                 .WhereNotNull()
                 .Do(InitView)
                 .Subscribe()
                 .DisposeWith(d);
 
+            // Update the view when the status changes
             this.WhenAnyValue(view => view.ViewModel!.Status)
                 .Subscribe(_ => { UpdateView(ViewModel!); })
                 .DisposeWith(d);

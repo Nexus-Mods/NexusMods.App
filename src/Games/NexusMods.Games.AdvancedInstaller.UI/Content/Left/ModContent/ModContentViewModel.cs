@@ -72,6 +72,11 @@ internal class ModContentViewModel : AViewModel<IModContentViewModel>, IModConte
 
     private readonly ReadOnlyObservableCollection<ModContentNode> _modContentTreeRoots;
 
+    /// <summary>
+    /// Populates the tree cache from a FileTreeNode structure representing the archive contents.
+    /// </summary>
+    /// <param name="cache">The tree entries cache, where new entries will be added.</param>
+    /// <param name="node">The root node of the filetree containing the archive contents that need to be added.</param>
     private void PopulateModContentEntriesCache(
         ISourceCache<IModContentTreeEntryViewModel, RelativePath> cache,
         FileTreeNode<RelativePath, ModSourceFileEntry> node)
@@ -95,6 +100,11 @@ internal class ModContentViewModel : AViewModel<IModContentViewModel>, IModConte
         });
     }
 
+    /// <summary>
+    /// Required to display the tree in the TreeDataGrid.
+    /// </summary>
+    /// <param name="root">The root node of the view</param>
+    /// <returns></returns>
     private static TreeDataGridSource CreateTreeDataGridSource(ModContentNode root)
     {
         return new TreeDataGridSource(root)

@@ -48,4 +48,3 @@ public interface IModContentViewModel : IViewModelInterface
     /// <param name="node">Parent node, not included in operation</param>
     public void DeselectChildrenRecursive(TreeNodeVM<IModContentTreeEntryViewModel, RelativePath> node);
 }
-
