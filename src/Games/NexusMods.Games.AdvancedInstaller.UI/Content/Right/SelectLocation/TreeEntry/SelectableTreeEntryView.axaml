@@ -11,7 +11,7 @@
                                 x:Class="NexusMods.Games.AdvancedInstaller.UI.SelectLocation.SelectableTreeEntryView">
 
     <Design.DataContext>
-        <selectLocation:SelectableTreeEntryDesignViewModel/>
+        <selectLocation:SelectableTreeEntryDesignViewModel />
     </Design.DataContext>
 
     <Grid ColumnDefinitions="*, Auto" Margin="0,5,0,5">

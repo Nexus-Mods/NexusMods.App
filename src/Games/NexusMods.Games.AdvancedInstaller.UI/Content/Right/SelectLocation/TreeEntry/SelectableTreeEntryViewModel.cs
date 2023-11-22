@@ -13,19 +13,15 @@ public class SelectableTreeEntryViewModel : AViewModel<ISelectableTreeEntryViewM
     public GamePath GamePath { get; }
     public string DisplayName { get; }
     [Reactive] public string InputText { get; set; }
-
     [Reactive] private bool CanSave { get; set; }
     public bool IsRoot { get; }
-
     public GamePath Parent { get; }
     [Reactive] public SelectableDirectoryNodeStatus Status { get; set; }
-    public bool HasActiveLink { get; set; }
     public ReactiveCommand<Unit, Unit> CreateMappingCommand { get; }
     public ReactiveCommand<Unit, Unit> EditCreateFolderCommand { get; }
     public ReactiveCommand<Unit, Unit> SaveCreatedFolderCommand { get; }
     public ReactiveCommand<Unit, Unit> CancelCreateFolderCommand { get; }
     public ReactiveCommand<Unit, Unit> DeleteCreatedFolderCommand { get; }
-
 
     /// <summary>
     /// Constructor
@@ -41,14 +37,14 @@ public class SelectableTreeEntryViewModel : AViewModel<ISelectableTreeEntryViewM
 
         IsRoot = GamePath.Path == RelativePath.Empty;
         // Use invalid parent path for root node, to avoid matching another node by accident.
-        Parent = IsRoot ? new GamePath(LocationId.Unknown, "") : GamePath.Parent;
+        Parent = IsRoot ? ISelectableTreeEntryViewModel.RootParentGamePath : GamePath.Parent;
         DisplayName = gamePath.FileName == RelativePath.Empty ? gamePath.LocationId.Value : gamePath.FileName;
         InputText = string.Empty;
-        HasActiveLink = false;
 
         CreateMappingCommand = ReactiveCommand.Create(() => { });
         EditCreateFolderCommand = ReactiveCommand.Create(() => { });
-        SaveCreatedFolderCommand = ReactiveCommand.Create(() => { }, this.WhenAnyValue(x => x.CanSave));
+        SaveCreatedFolderCommand = ReactiveCommand.Create(() => { },
+            this.WhenAnyValue(x => x.CanSave));
         CancelCreateFolderCommand = ReactiveCommand.Create(() => { });
         DeleteCreatedFolderCommand = ReactiveCommand.Create(() => { });
 
@@ -60,12 +56,11 @@ public class SelectableTreeEntryViewModel : AViewModel<ISelectableTreeEntryViewM
                     if (text == string.Empty)
                     {
                         CanSave = false;
+                        return;
                     }
-                    else
-                    {
-                        var trimmed = RemoveInvalidFolderCharacter(text);
-                        CanSave = trimmed != string.Empty;
-                    }
+
+                    var trimmed = RemoveInvalidFolderCharacter(text);
+                    CanSave = trimmed != string.Empty;
                 })
                 .DisposeWith(disposables);
         });
@@ -76,10 +71,13 @@ public class SelectableTreeEntryViewModel : AViewModel<ISelectableTreeEntryViewM
         return RelativePath.FromUnsanitizedInput(RemoveInvalidFolderCharacter(InputText));
     }
 
+    /// <summary>
+    /// Regex to match invalid characters in folder names.
+    /// </summary>
     private static readonly string InvalidFolderCharsRegex =
         "[" + String.Concat(System.IO.Path.GetInvalidFileNameChars().Concat(new[] { '\\', '/' })) + "]";
 
-    private string RemoveInvalidFolderCharacter(string name)
+    private static string RemoveInvalidFolderCharacter(string name)
     {
         var trimmed = name.Trim();
         if (trimmed == string.Empty)

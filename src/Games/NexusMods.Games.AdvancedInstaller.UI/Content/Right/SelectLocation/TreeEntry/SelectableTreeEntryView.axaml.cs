@@ -15,6 +15,7 @@ public partial class SelectableTreeEntryView : ReactiveUserControl<ISelectableTr
 
         this.WhenActivated(disposable =>
         {
+            // When the ViewModel not null, initialize the view.
             this.WhenAnyValue(view => view.ViewModel)
                 .WhereNotNull()
                 .Do(InitView)
@@ -41,6 +42,7 @@ public partial class SelectableTreeEntryView : ReactiveUserControl<ISelectableTr
                     vm.DeleteCreatedFolderCommand, v => v.DeleteCreatedFolderButton)
                 .DisposeWith(disposable);
 
+            // Two way binding for the input text.
             this.Bind(ViewModel, vm =>
                     vm.InputText, v => v.CreateFolderNameTextBox.Text)
                 .DisposeWith(disposable);

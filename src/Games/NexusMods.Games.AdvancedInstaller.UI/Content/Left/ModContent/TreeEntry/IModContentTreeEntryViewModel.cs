@@ -102,7 +102,7 @@ public interface IModContentTreeEntryViewModel : IViewModelInterface
     /// The invalid relative path used for the root entry.
     /// Necessary for DynamicData TransformToTree, we need a RelativePath that is guaranteed not to represent another node.
     /// </summary>
-    public static RelativePath RootParentRelativePath = new("*rootParent*");
+    public static readonly RelativePath RootParentRelativePath = new("*rootParent*");
 }
 
 /// <summary>

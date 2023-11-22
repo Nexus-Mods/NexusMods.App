@@ -116,5 +116,5 @@ public interface IPreviewTreeEntryViewModel : IViewModelInterface
     /// The invalid GamePath used to represent the parent of a root entry.
     /// Necessary for DynamicData TransformToTree, we need a GamePath that is guaranteed not to represent another node.
     /// </summary>
-    public static GamePath RootParentGamePath = new(LocationId.Unknown, "");
+    public static readonly GamePath RootParentGamePath = new(LocationId.Unknown, "");
 }
