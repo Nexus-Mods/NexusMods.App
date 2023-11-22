@@ -6,13 +6,10 @@ using NexusMods.Paths.FileTree;
 
 namespace NexusMods.Games.AdvancedInstaller.UI;
 
-public class BodyDesignViewModel : BodyViewModel
-{
-    public BodyDesignViewModel() : base(
-        new DeploymentData(),
-        "Design Mod Name",
-        DesignTimeHelpers.CreateDesignFileTree(),
-        DesignTimeHelpers.CreateDesignGameLocationsRegister(),
-        null,
-        "Design Game Name") { }
-}
+public class BodyDesignViewModel() : BodyViewModel(
+    new DeploymentData(),
+    "Design Mod Name",
+    DesignTimeHelpers.CreateDesignFileTree(),
+    DesignTimeHelpers.CreateDesignGameLocationsRegister(),
+    null,
+    "Design Game Name");

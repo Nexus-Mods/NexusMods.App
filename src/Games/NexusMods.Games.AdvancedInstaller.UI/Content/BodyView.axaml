@@ -69,7 +69,7 @@
 
                 <!-- Install Location Preview -->
                 <Border Classes="Rounded" Grid.Column="2" x:Name="ResultsBorder">
-                        <reactiveUi:ViewModelViewHost x:Name="PreviewSectionViewHost" />
+                    <reactiveUi:ViewModelViewHost x:Name="PreviewSectionViewHost" />
                 </Border>
             </Grid>
         </Border>

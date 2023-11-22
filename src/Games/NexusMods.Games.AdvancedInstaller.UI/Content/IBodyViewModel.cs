@@ -5,6 +5,9 @@ using NexusMods.Games.AdvancedInstaller.UI.SelectLocation;
 
 namespace NexusMods.Games.AdvancedInstaller.UI;
 
+/// <summary>
+/// Main body of the Advanced Manual Installer UI. Drives most of the UI logic.
+/// </summary>
 public interface IBodyViewModel : IViewModelInterface
 {
     /// <summary>
@@ -25,13 +28,29 @@ public interface IBodyViewModel : IViewModelInterface
     /// </summary>
     public IViewModelInterface CurrentRightContentViewModel { get; }
 
+    /// <summary>
+    /// ViewModel for the left content area, showing the contents of the mod archive.
+    /// </summary>
     public IModContentViewModel ModContentViewModel { get; }
 
+    /// <summary>
+    /// Empty preview view model, shown in the right area when there are no files to install.
+    /// </summary>
     public IEmptyPreviewViewModel EmptyPreviewViewModel { get; }
 
+    /// <summary>
+    /// Select location view model, shown in the right area when the user needs to select a location to install files to.
+    /// </summary>
     public ISelectLocationViewModel SelectLocationViewModel { get; }
 
+    /// <summary>
+    /// Mod preview view model, shown in the right area if there are files ready for install.
+    /// </summary>
     public IPreviewViewModel PreviewViewModel { get; }
 
+    /// <summary>
+    /// Contains the relevant information for installation of the files.
+    /// Updated when user changes the mappings in the UI.
+    /// </summary>
     public DeploymentData DeploymentData { get; }
 }

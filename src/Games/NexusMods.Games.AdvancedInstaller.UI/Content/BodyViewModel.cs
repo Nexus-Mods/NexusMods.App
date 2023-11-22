@@ -30,10 +30,18 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
     public IEmptyPreviewViewModel EmptyPreviewViewModel { get; }
     public ISelectLocationViewModel SelectLocationViewModel { get; }
     public IPreviewViewModel PreviewViewModel { get; }
-
     public DeploymentData DeploymentData { get; }
 
-
+    /// <summary>
+    /// Constructor for the BodyViewModel.
+    /// Drives most of the UI logic.
+    /// </summary>
+    /// <param name="data">The deployment data used to output the final mappings.</param>
+    /// <param name="modName">The name of the mod to show in the ui.</param>
+    /// <param name="archiveFiles">A fileTree with the mod archive contents.</param>
+    /// <param name="locationRegister">The game locations register, to obtain the potential install locations.</param>
+    /// <param name="loadout">The loadout, potentially null, to obtain the folder structure of the current loadout.</param>
+    /// <param name="gameName">The name of the currently managed game.</param>
     public BodyViewModel(
         DeploymentData data,
         string modName,
@@ -111,7 +119,7 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
             // Handle RemoveMappingCommand from PreviewTreeEntry
             PreviewViewModel.TreeEntriesCache.Connect()
                 .MergeManyItems(entry => entry.RemoveMappingCommand)
-                .Subscribe(entry => OnRemoveMappingFromPreview(entry.Item))
+                .Subscribe(entry => OnRemoveEntryFromPreview(entry.Item))
                 .DisposeWith(disposables);
 
             // Handle RemoveMappingCommand from ModContentTreeEntry
@@ -130,8 +138,9 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
     #region ModContentSelectionFunctionality
 
     /// <summary>
-    /// Recursively update the tree nodes state to be selected.
+    /// Recursively update the mod content tree nodes state to be selected.
     /// Update the SelectedEntriesCache.
+    /// Changes the right content view.
     /// </summary>
     /// <param name="modContentTreeEntryViewModel"></param>
     private void OnBeginSelect(IModContentTreeEntryViewModel modContentTreeEntryViewModel)
@@ -151,6 +160,13 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
         CurrentRightContentViewModel = SelectLocationViewModel;
     }
 
+    /// <summary>
+    /// Recursively deselects the mod content entry and children.
+    /// Removes entries from SelectedEntriesCache.
+    /// Potentially deselects parent if no more children are selected.
+    /// Potentially changes the right content view.
+    /// </summary>
+    /// <param name="modContentTreeEntryViewModel">The mod content entry to deselect.</param>
     private void OnCancelSelect(IModContentTreeEntryViewModel modContentTreeEntryViewModel)
     {
         var foundNode = ModContentViewModel.Root.GetTreeNode(modContentTreeEntryViewModel.RelativePath);
@@ -204,15 +220,25 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
 
     #region CreateMappingFunctionality
 
+    /// <summary>
+    /// Creates a mapping for the selected mod contents to the selected suggested location.
+    /// </summary>
+    /// <param name="suggestedEntry">Suggested location entry.</param>
     private void OnCreateMappingFromSuggestedEntry(ISuggestedEntryViewModel suggestedEntry)
     {
-        // Find the corresponding ISelectableTreeEntryViewModel entry
+        // Find the corresponding Selectable tree entry, and create a mapping using that.
         var correspondingTreeEntry = SelectLocationViewModel.TreeEntriesCache
             .Lookup(suggestedEntry.RelativeToTopLevelLocation).ValueOrDefault();
+
         if (correspondingTreeEntry is not null)
             OnCreateMapping(correspondingTreeEntry);
     }
 
+    /// <summary>
+    /// Recursively map the selected mod contents inside the target folder.
+    /// Changes the right content view.
+    /// </summary>
+    /// <param name="selectableTreeEntryViewModel">Selectable tree folder under which the mod files need to be mapped.</param>
     private void OnCreateMapping(ISelectableTreeEntryViewModel selectableTreeEntryViewModel)
     {
         var targetLocation = SelectLocationViewModel.TreeEntriesCache.Lookup(selectableTreeEntryViewModel.GamePath)
@@ -282,6 +308,13 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
         CurrentRightContentViewModel = PreviewViewModel;
     }
 
+    /// <summary>
+    /// Recursively maps a mod content directory to a preview tree entry.
+    /// </summary>
+    /// <param name="sourceNode"></param>
+    /// <param name="destPreviewEntry"></param>
+    /// <param name="previewTreeUpdater"></param>
+    /// <param name="isExplicit"></param>
     private void CreateDirectoryMapping(ModContentTreeNode sourceNode,
         IPreviewTreeEntryViewModel destPreviewEntry,
         ISourceUpdater<IPreviewTreeEntryViewModel, GamePath> previewTreeUpdater, bool isExplicit = false)
@@ -299,6 +332,12 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
             : ModContentTreeEntryStatus.IncludedViaParent;
     }
 
+    /// <summary>
+    /// Creates a mapping between a mod content file and a preview tree entry.
+    /// </summary>
+    /// <param name="sourceEntry">source ModContent entry</param>
+    /// <param name="destPreviewEntry">Destination Preview entry</param>
+    /// <param name="isExplicit">Whether this was explicitly mapped or mapped through a parent.</param>
     private void CreateFileMapping(IModContentTreeEntryViewModel sourceEntry,
         IPreviewTreeEntryViewModel destPreviewEntry, bool isExplicit)
     {
@@ -309,6 +348,12 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
         DeploymentData.AddMapping(sourceEntry.RelativePath, destPreviewEntry.GamePath);
     }
 
+    /// <summary>
+    /// Removes a previous file mapping from the preview tree entry if present.
+    /// This is in case the user creates a mapping to an already mapped location.
+    /// So previous mapping needs to be removed.
+    /// </summary>
+    /// <param name="previewEntry">The preview entry from which to remove the mapping.</param>
     private void RemovePreviousFileMapping(IPreviewTreeEntryViewModel previewEntry)
     {
         if (!previewEntry.MappedEntry.HasValue)
@@ -363,6 +408,10 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
         return previewTreeUpdater.Lookup(targetFolder).ValueOrDefault()!;
     }
 
+    /// <summary>
+    /// Expands all the preview nodes from the root to the node with the given path.
+    /// </summary>
+    /// <param name="path"></param>
     private void ExpandPreviewNodes(GamePath path)
     {
         var previewNode = PreviewViewModel.TreeRoots.GetTreeNode(path).ValueOrDefault();
@@ -378,6 +427,14 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
         }
     }
 
+    /// <summary>
+    /// Creates mappings for all children of the given Mod content directory.
+    /// </summary>
+    /// <param name="sourceNode">Source mod content folder.</param>
+    /// <param name="mappingParentPreviewNode">The folder under which all the children are to be mapped.</param>
+    /// <param name="previewTreeUpdater">An updater object to be used to add new preview entries to the preview tree.
+    ///     This will result in a single batch update in the end.
+    /// </param>
     private void MapChildrenRecursive(ModContentTreeNode sourceNode,
         IPreviewTreeEntryViewModel mappingParentPreviewNode,
         ISourceUpdater<IPreviewTreeEntryViewModel, GamePath> previewTreeUpdater)
@@ -425,9 +482,15 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
 
     #region RemoveMappingFunctionality
 
-    private void OnRemoveMappingFromPreview(IPreviewTreeEntryViewModel previewEntry)
+    /// <summary>
+    /// Removes the passed entry and all its children from the preview tree and removes all associated mappings.
+    /// Cleans up the preview tree if necessary.
+    /// Potentially changes the right content view.
+    /// </summary>
+    /// <param name="previewEntry">The preview entry the user requested to remove.</param>
+    private void OnRemoveEntryFromPreview(IPreviewTreeEntryViewModel previewEntry)
     {
-        StartRemoveMappingFromPreview(previewEntry);
+        RemoveEntryFromPreview(previewEntry);
         CleanupPreviewTree(previewEntry.GamePath);
 
         // Switch to empty view if nothing is mapped anymore
@@ -436,19 +499,27 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
             : EmptyPreviewViewModel;
     }
 
-    private void StartRemoveMappingFromPreview(IPreviewTreeEntryViewModel previewEntry)
+    /// <summary>
+    /// Removes the passed entry and all its children from the preview tree and removes all associated mappings.
+    /// </summary>
+    /// <param name="previewEntry"></param>
+    private void RemoveEntryFromPreview(IPreviewTreeEntryViewModel previewEntry)
     {
         if (previewEntry.IsDirectory)
         {
-            RemoveDirectoryMappingFromPreviewRecursive(previewEntry);
+            RemoveDirectoryFromPreviewRecursive(previewEntry);
         }
         else
         {
-            RemoveFileMappingFromPreview(previewEntry);
+            RemoveFileFromPreview(previewEntry);
         }
     }
 
-    private void RemoveDirectoryMappingFromPreviewRecursive(IPreviewTreeEntryViewModel previewEntry)
+    /// <summary>
+    /// Removes the passed directory and all its children from the preview tree and removes all associated mappings.
+    /// </summary>
+    /// <param name="previewEntry"></param>
+    private void RemoveDirectoryFromPreviewRecursive(IPreviewTreeEntryViewModel previewEntry)
     {
         if (!previewEntry.IsDirectory)
             return;
@@ -467,7 +538,7 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
             // User removed the item from preview, we need force remove all children
             foreach (var child in previewNode.Value.Children.ToArray())
             {
-                StartRemoveMappingFromPreview(child.Item);
+                RemoveEntryFromPreview(child.Item);
             }
         }
 
@@ -475,7 +546,11 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
         PreviewViewModel.TreeEntriesCache.Remove(previewEntry);
     }
 
-    private void RemoveFileMappingFromPreview(IPreviewTreeEntryViewModel previewEntry)
+    /// <summary>
+    /// Removes the passed file from the preview tree and removes the associated mapping.
+    /// </summary>
+    /// <param name="previewEntry"></param>
+    private void RemoveFileFromPreview(IPreviewTreeEntryViewModel previewEntry)
     {
         if (!previewEntry.MappedEntry.HasValue)
         {
@@ -488,6 +563,13 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
         StartRemoveMapping(previewEntry.MappedEntry.Value);
     }
 
+    /// <summary>
+    /// Removes the mappings from the ModContent entry and all its included children.
+    /// Will remove preview nodes associated with the mappings that have no other mappings.
+    /// Will remove mappings from parent nodes if no mapped children are left.
+    /// Potentially changes the right content view.
+    /// </summary>
+    /// <param name="modEntry"></param>
     private void OnRemoveMappingFromModContent(IModContentTreeEntryViewModel modEntry)
     {
         var mappingPath = modEntry.Mapping.ValueOr(new GamePath(LocationId.Unknown, RelativePath.Empty));
@@ -501,6 +583,12 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
             : EmptyPreviewViewModel;
     }
 
+    /// <summary>
+    /// Removes the mapping from the ModContent entry and all its included children.
+    /// Will remove preview nodes associated with the mappings that have no other mappings.
+    /// Will remove mappings from parent nodes if no mapped children are left.
+    /// </summary>
+    /// <param name="modEntry"></param>
     private void StartRemoveMapping(IModContentTreeEntryViewModel modEntry)
     {
         var wasMappedViaParent = modEntry.Status == ModContentTreeEntryStatus.IncludedViaParent;
@@ -521,6 +609,11 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
         }
     }
 
+    /// <summary>
+    /// Removes the mapping from the ModContent directory and all its included children.
+    /// Will remove preview nodes associated with the mappings that have no other mappings.
+    /// </summary>
+    /// <param name="modEntry"></param>
     private void RemoveDirectoryMappingRecursive(IModContentTreeEntryViewModel modEntry)
     {
         if (!modEntry.IsDirectory)
@@ -553,6 +646,11 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
         RemovePreviewNodeIfNecessary(previewEntry);
     }
 
+    /// <summary>
+    /// Removes a file mapping from the ModContent entry and the associated preview entry.
+    /// Will remove the preview entry from the preview tree.
+    /// </summary>
+    /// <param name="modEntry"></param>
     private void RemoveFileMapping(IModContentTreeEntryViewModel modEntry)
     {
         if (modEntry.IsDirectory)
@@ -571,6 +669,10 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
         PreviewViewModel.TreeEntriesCache.Remove(previewEntry);
     }
 
+    /// <summary>
+    /// Removes the preview node if it is doesn't have any children left.
+    /// </summary>
+    /// <param name="previewEntry"></param>
     private void RemovePreviewNodeIfNecessary(IPreviewTreeEntryViewModel previewEntry)
     {
         // Only remove node if it doesn't have other children left
@@ -582,6 +684,11 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
         }
     }
 
+    /// <summary>
+    /// Removes the mapping from the mod content parent node if none of its children are mapped anymore.
+    /// </summary>
+    /// <param name="childEntry">The child of the parent node to remove the mapping from.</param>
+    /// <param name="removePreviewNodes">Whether to also remove the associated preview entry from the preview tree.</param>
     private void RemoveParentMappingIfNecessary(IModContentTreeEntryViewModel childEntry,
         bool removePreviewNodes = true)
     {
@@ -620,6 +727,10 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
         }
     }
 
+    /// <summary>
+    /// Given the GamePath of a removed preview entry, this function will remove any nodes on the path that have no children left.
+    /// </summary>
+    /// <param name="removedMappingPath"></param>
     private void CleanupPreviewTree(GamePath removedMappingPath)
     {
         if (removedMappingPath.LocationId == LocationId.Unknown)
@@ -649,6 +760,10 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
 
     #region CreateFolderFunctionality
 
+    /// <summary>
+    /// Shows the input box for typing the name of the new folder in Selectable tree.
+    /// </summary>
+    /// <param name="selectableTreeEntryViewModel"></param>
     private void OnEditCreateFolder(ISelectableTreeEntryViewModel selectableTreeEntryViewModel)
     {
         var foundNode = SelectLocationViewModel.TreeRoots.GetTreeNode(selectableTreeEntryViewModel.GamePath)
@@ -664,6 +779,11 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
         // TODO: Disable all other buttons while editing
     }
 
+
+    /// <summary>
+    /// Cancels the creation of a new folder in Selectable tree.
+    /// </summary>
+    /// <param name="selectableTreeEntryViewModel"></param>
     private void OnCancelCreateFolder(ISelectableTreeEntryViewModel selectableTreeEntryViewModel)
     {
         var foundNode = SelectLocationViewModel.TreeRoots.GetTreeNode(selectableTreeEntryViewModel.GamePath)
@@ -676,6 +796,10 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
         foundNode.Item.InputText = string.Empty;
     }
 
+    /// <summary>
+    /// Creates a new folder in Selectable tree from the InputField text.
+    /// </summary>
+    /// <param name="selectableTreeEntryViewModel"></param>
     private void OnSaveCreateFolder(ISelectableTreeEntryViewModel selectableTreeEntryViewModel)
     {
         var foundNode = SelectLocationViewModel.TreeRoots
@@ -715,6 +839,10 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
         SelectLocationViewModel.TreeRoots.GetTreeNode(newPath).Value.IsExpanded = true;
     }
 
+    /// <summary>
+    /// Will remove the created Selectable tree entry and all its created children.
+    /// </summary>
+    /// <param name="selectableTreeEntryViewModel"></param>
     private void OnDeleteCreatedFolder(ISelectableTreeEntryViewModel selectableTreeEntryViewModel)
     {
         var foundNode = SelectLocationViewModel.TreeRoots
