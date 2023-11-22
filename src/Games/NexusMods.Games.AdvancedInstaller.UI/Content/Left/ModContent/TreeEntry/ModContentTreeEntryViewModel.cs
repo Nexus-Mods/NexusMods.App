@@ -1,7 +1,6 @@
 ﻿using System.Reactive;
 using DynamicData.Kernel;
 using NexusMods.Games.AdvancedInstaller.UI.Preview;
-using NexusMods.Games.AdvancedInstaller.UI.Resources;
 using NexusMods.Paths;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -13,7 +12,6 @@ public class ModContentTreeEntryViewModel : AViewModel<IModContentTreeEntryViewM
     public RelativePath RelativePath { get; }
     public string FileName { get; }
     public bool IsDirectory { get; }
-    public string DisplayName { get; }
     public bool IsRoot { get; }
     public RelativePath Parent { get; }
     public bool IsTopLevelChild { get; }
@@ -24,6 +22,11 @@ public class ModContentTreeEntryViewModel : AViewModel<IModContentTreeEntryViewM
     public ReactiveCommand<Unit, Unit> CancelSelectCommand { get; }
     public ReactiveCommand<Unit, Unit> RemoveMappingCommand { get; }
 
+    /// <summary>
+    /// Constructs a ModContent tree entry view model.
+    /// </summary>
+    /// <param name="relativePath">The path relative to the archive root identifying this entry.</param>
+    /// <param name="isDirectory">Whether the path represents a directory or not.</param>
     public ModContentTreeEntryViewModel(
         RelativePath relativePath,
         bool isDirectory)
@@ -36,7 +39,6 @@ public class ModContentTreeEntryViewModel : AViewModel<IModContentTreeEntryViewM
         // Use invalid parent path for root node, to avoid matching another node by accident.
         Parent = IsRoot ? new RelativePath("*root*") : RelativePath.Parent;
 
-        DisplayName = IsRoot ? Language.FileTree_ALL_MOD_FILES : FileName;
         IsTopLevelChild = Parent == RelativePath.Empty;
         MappingFolderName = string.Empty;
         Status = ModContentTreeEntryStatus.Default;
