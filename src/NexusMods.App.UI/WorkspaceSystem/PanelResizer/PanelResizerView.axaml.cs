@@ -36,6 +36,22 @@ public partial class PanelResizerView : ReactiveUserControl<IPanelResizerViewMod
                 })
                 .DisposeWith(disposables);
 
+            // hover
+            Observable.FromEventPattern<PointerEventArgs>(
+                addHandler: handler => PointerEntered += handler,
+                removeHandler: handler => PointerEntered -= handler)
+                .Do(_ =>
+                {
+                    if (ViewModel is null) return;
+
+                    SetCursor(ViewModel.IsHorizontal
+                        ? StandardCursorType.SizeNorthSouth
+                        : StandardCursorType.SizeWestEast
+                    );
+                })
+                .Subscribe()
+                .DisposeWith(disposables);
+
             // pressed
             Observable.FromEventPattern<PointerPressedEventArgs>(
                     addHandler: handler => PointerPressed += handler,
@@ -57,6 +73,8 @@ public partial class PanelResizerView : ReactiveUserControl<IPanelResizerViewMod
                 {
                     _isPressed = false;
                     _startPoint = new Point(0, 0);
+
+                    SetCursor(StandardCursorType.Arrow);
                 })
                 .Subscribe()
                 .DisposeWith(disposables);
@@ -69,6 +87,11 @@ public partial class PanelResizerView : ReactiveUserControl<IPanelResizerViewMod
                 .Select(eventPattern =>
                 {
                     if (ViewModel is null) return new Point(0, 0);
+
+                    SetCursor(ViewModel.IsHorizontal
+                        ? StandardCursorType.SizeNorthSouth
+                        : StandardCursorType.SizeWestEast
+                    );
 
                     var parent = (Parent as Control)!;
                     var currentPos = eventPattern.EventArgs.GetPosition(parent);
@@ -88,6 +111,20 @@ public partial class PanelResizerView : ReactiveUserControl<IPanelResizerViewMod
     private void PopulateFromViewModel(IPanelResizerViewModel viewModel)
     {
         Icon.Classes.Add(viewModel.IsHorizontal ? "DragHorizontal" : "DragVertical");
+    }
+
+    private void SetCursor(StandardCursorType standardCursorType)
+    {
+        // TODO: doesn't work?
+        Cursor = new Cursor(standardCursorType);
+
+        // var topLevel = TopLevel.GetTopLevel(this);
+        // Console.WriteLine(topLevel);
+        //
+        // if (topLevel is not null)
+        // {
+        //     topLevel.Cursor = new Cursor(standardCursorType);
+        // }
     }
 }
 
