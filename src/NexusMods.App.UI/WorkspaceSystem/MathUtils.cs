@@ -61,17 +61,17 @@ internal static class MathUtils
 
     internal static Point GetMidPoint(Rect a, Rect b, bool isHorizontal)
     {
-        var smallerRect = a.Width * a.Height < b.Width * b.Height ? a : b;
+        var (smallerRect, biggerRect) = a.Width * a.Height < b.Width * b.Height ? (a, b) : (b, a);
 
         double midX, midY;
         if (isHorizontal)
         {
-            midX = smallerRect.X + smallerRect.Width / 2;;
-            midY = (a.Y + a.Height + b.Y) / 2;
+            midX = smallerRect.X + smallerRect.Width / 2;
+            midY = (smallerRect.Y + smallerRect.Height + biggerRect.Y) / 2;
         }
         else
         {
-            midX = (a.X + a.Width + b.X) / 2;
+            midX = (smallerRect.X + smallerRect.Width + biggerRect.X) / 2;
             midY = smallerRect.Y + smallerRect.Height / 2;
         }
 

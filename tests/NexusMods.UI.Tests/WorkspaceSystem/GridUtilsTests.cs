@@ -479,6 +479,33 @@ public class GridUtilsTests
             info.LogicalPosition.Should().Be(new Point(0.5, 0.75));
             info.ConnectedPanels.Should().HaveCount(2).And.Contain(new[] { thirdPanelId, fourthPanelId });
         });
+
+
+        // NOTE(erri120): weird sizes
+        state = new List<IPanelViewModel>(capacity: columns * rows)
+        {
+            CreatePanel(firstPanelId, new Rect(0, 0, 0.35, 0.5)),
+            CreatePanel(secondPanelId, new Rect(0, 0.5, 0.35, 0.5)),
+            CreatePanel(thirdPanelId, new Rect(0.35, 0, 0.65, 1)),
+        }.ToImmutableDictionary(panel => panel.Id, panel => panel.LogicalBounds);
+
+        res = GridUtils.GetResizers(state, isWorkspaceHorizontal: true);
+        res.Should().HaveCount(3).And.SatisfyRespectively(info =>
+        {
+            info.IsHorizontal.Should().BeTrue();
+            info.LogicalPosition.Should().Be(new Point(0.175, 0.5));
+            info.ConnectedPanels.Should().HaveCount(2).And.Contain(new[] { firstPanelId, secondPanelId });
+        }, info =>
+        {
+            info.IsHorizontal.Should().BeFalse();
+            info.LogicalPosition.Should().Be(new Point(0.35, 0.25));
+            info.ConnectedPanels.Should().HaveCount(3).And.Contain(new[] { firstPanelId, secondPanelId, thirdPanelId });
+        }, info =>
+        {
+            info.IsHorizontal.Should().BeFalse();
+            info.LogicalPosition.Should().Be(new Point(0.35, 0.75));
+            info.ConnectedPanels.Should().HaveCount(3).And.Contain(new[] { firstPanelId, secondPanelId, thirdPanelId });
+        });
     }
 
     private static IPanelViewModel CreatePanel(PanelId panelId, Rect logicalBounds)

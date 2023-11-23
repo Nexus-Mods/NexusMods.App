@@ -70,7 +70,7 @@ public class MathUtilsTests
 
     [Theory]
     [MemberData(nameof(TestData_GetMidPoint))]
-    public void Test_GetMidPoint(Rect a, Rect b, bool isHorizontal, Vector expected)
+    public void Test_GetMidPoint(Rect a, Rect b, bool isHorizontal, Point expected)
     {
         var actual = MathUtils.GetMidPoint(a, b, isHorizontal);
         actual.Should().Be(expected);
@@ -78,13 +78,16 @@ public class MathUtilsTests
 
     public static IEnumerable<object[]> TestData_GetMidPoint() => new[]
     {
-        new object[] { new Rect(0, 0, 0.5, 1.0), new Rect(0.5, 0, 0.5, 1.0), false, new Vector(0.5, 0.5) },
-        new object[] { new Rect(0, 0, 1.0, 0.5), new Rect(0, 0.5, 1.0, 0.5), true, new Vector(0.5, 0.5) },
+        new object[] { new Rect(0, 0, 0.5, 1.0), new Rect(0.5, 0, 0.5, 1.0), false, new Point(0.5, 0.5) },
+        new object[] { new Rect(0, 0, 1.0, 0.5), new Rect(0, 0.5, 1.0, 0.5), true, new Point(0.5, 0.5) },
 
-        new object[] { new Rect(0, 0, 0.5, 1.0), new Rect(0.5, 0, 0.5, 0.5), false, new Vector(0.5, 0.25) },
-        new object[] { new Rect(0, 0, 0.5, 1.0), new Rect(0.5, 0.5, 0.5, 0.5), false, new Vector(0.5, 0.75) },
+        new object[] { new Rect(0, 0, 0.5, 1.0), new Rect(0.5, 0, 0.5, 0.5), false, new Point(0.5, 0.25) },
+        new object[] { new Rect(0, 0, 0.5, 1.0), new Rect(0.5, 0.5, 0.5, 0.5), false, new Point(0.5, 0.75) },
 
-        new object[] { new Rect(0, 0, 1.0, 0.5), new Rect(0, 0.5, 0.5, 0.5), true, new Vector(0.25, 0.5) },
-        new object[] { new Rect(0, 0, 1.0, 0.5), new Rect(0.5, 0.5, 0.5, 0.5), true, new Vector(0.75, 0.5) },
+        new object[] { new Rect(0, 0, 1.0, 0.5), new Rect(0, 0.5, 0.5, 0.5), true, new Point(0.25, 0.5) },
+        new object[] { new Rect(0, 0, 1.0, 0.5), new Rect(0.5, 0.5, 0.5, 0.5), true, new Point(0.75, 0.5) },
+
+        new object[] { new Rect(0, 0, 0.35, 0.5), new Rect(0.35, 0, 0.65, 1), false, new Point(0.35, 0.25) },
+        new object[] { new Rect(0.35, 0, 0.65, 1), new Rect(0, 0, 0.35, 0.5) , false, new Point(0.35, 0.25) },
     };
 }

@@ -230,7 +230,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         {
             updater.Clear();
 
-            var currentState = Panels.ToImmutableDictionary(x => x.Id, x => x.LogicalBounds);
+            var currentState = _panels.ToImmutableDictionary(x => x.Id, x => x.LogicalBounds);
             var resizers = GridUtils.GetResizers(currentState);
 
             updater.AddRange(resizers.Select(info =>
