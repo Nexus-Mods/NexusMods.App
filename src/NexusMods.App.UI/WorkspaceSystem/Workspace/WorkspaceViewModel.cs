@@ -94,13 +94,11 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                         newActualPosition.Y / _lastWorkspaceSize.Height
                     );
 
+                    var lastItemPosition = item.LogicalPosition;
                     item.LogicalPosition = newLogicalPosition;
 
                     var isHorizontal = item.IsHorizontal;
                     var connectedPanelIds = item.ConnectedPanels;
-
-                    var firstOnAxis = true;
-                    var lastAxisValue = 0.0;
 
                     var connectedPanels = connectedPanelIds
                         .Select(panelId => _panelSource.Lookup(panelId))
@@ -109,27 +107,29 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                         .Order(PanelComparer.Instance)
                         .ToArray();
 
+                    // in case we skip an update, the tolerance for edge checking is higher than usual.
+                    const double defaultTolerance = 0.05;
+
                     foreach (var panel in connectedPanels)
                     {
                         var currentSize = panel.LogicalBounds;
 
+                        Rect newPanelBounds;
                         if (isHorizontal)
                         {
-                            var newY = firstOnAxis ? currentSize.Y : newLogicalPosition.Y;
+                            // true if the resizer sits on the "top" edge of the panel
+                            var isResizerYAligned = lastItemPosition.Y.IsCloseTo(currentSize.Y, tolerance: defaultTolerance);
 
-                            var isExpanding = firstOnAxis
-                                ? currentSize.Bottom < newLogicalPosition.Y
-                                : currentSize.Y > newLogicalPosition.Y;
+                            // if the resizer sits on the "top" edge of the panel, we want to move the panel with the resizer
+                            var newY = isResizerYAligned ? newLogicalPosition.Y : currentSize.Y;
 
-                            var diff = firstOnAxis
-                                ? Math.Abs(newLogicalPosition.Y - currentSize.Bottom)
-                                : Math.Abs(newLogicalPosition.Y - currentSize.Y);
+                            var diff = isResizerYAligned
+                                ? currentSize.Y - newLogicalPosition.Y
+                                : newLogicalPosition.Y - currentSize.Bottom;
 
-                            var newHeight = isExpanding
-                                ? currentSize.Height + diff
-                                : currentSize.Height - diff;
+                            var newHeight = currentSize.Height + diff;
 
-                            panel.LogicalBounds = new Rect(
+                            newPanelBounds = new Rect(
                                 currentSize.X,
                                 newY,
                                 currentSize.Width,
@@ -138,21 +138,19 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                         }
                         else
                         {
-                            var newX = firstOnAxis ? currentSize.X : newLogicalPosition.X;
+                            // true if the resizer sits on the "left" edge of the panel
+                            var isResizerXAligned = lastItemPosition.X.IsCloseTo(currentSize.X, tolerance: defaultTolerance);
 
-                            var isExpanding = firstOnAxis
-                                ? currentSize.Right < newLogicalPosition.X
-                                : currentSize.X > newLogicalPosition.X;
+                            // if the resizer sits on the "left" edge of the panel, we want to move the panel with the resizer
+                            var newX = isResizerXAligned ? newLogicalPosition.X : currentSize.X;
 
-                            var diff = firstOnAxis
-                                ? Math.Abs(newLogicalPosition.X - currentSize.Right)
-                                : Math.Abs(newLogicalPosition.X - currentSize.X);
+                            var diff = isResizerXAligned
+                                ? currentSize.X - newLogicalPosition.X
+                                : newLogicalPosition.X - currentSize.Right;
 
-                            var newWidth = isExpanding
-                                ? currentSize.Width + diff
-                                : currentSize.Width - diff;
+                            var newWidth = currentSize.Width + diff;
 
-                            panel.LogicalBounds = new Rect(
+                            newPanelBounds = new Rect(
                                 newX,
                                 currentSize.Y,
                                 newWidth,
@@ -160,19 +158,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                             );
                         }
 
-                        if (firstOnAxis) firstOnAxis = false;
-                        if (isHorizontal)
-                        {
-                            if (lastAxisValue.IsCloseTo(currentSize.X)) continue;
-                            lastAxisValue = currentSize.X;
-                            firstOnAxis = true;
-                        }
-                        else
-                        {
-                            if (lastAxisValue.IsCloseTo(currentSize.Y)) continue;
-                            lastAxisValue = currentSize.Y;
-                            firstOnAxis = true;
-                        }
+                        panel.LogicalBounds = newPanelBounds;
                     }
                 })
                 .SubscribeWithErrorLogging()

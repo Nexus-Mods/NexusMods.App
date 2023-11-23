@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using Avalonia;
 using Avalonia.Utilities;
 
@@ -82,11 +83,30 @@ internal static class MathUtils
     /// </summary>
     internal static Vector AsVector(this Size size) => new(x: size.Width, y: size.Height);
 
+    private const double DefaultTolerance = 0.001;
+
     /// <summary>
     /// Tolerant equality check.
     /// </summary>
-    internal static bool IsCloseTo(this double left, double right, double tolerance = 0.001)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static bool IsCloseTo(this double left, double right, double tolerance = DefaultTolerance)
     {
-        return MathUtilities.AreClose(left, right, eps: tolerance);
+        if (double.IsInfinity(left) || double.IsInfinity(right))
+            return double.IsInfinity(left) && double.IsInfinity(right);
+
+        var delta = left - right;
+        return -tolerance < delta && tolerance > delta;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static bool IsGreaterThanOrCloseTo(this double left, double right, double tolerance = DefaultTolerance)
+    {
+        return left > right || IsCloseTo(left, right, tolerance);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static bool IsLessThanOrCloseTo(this double left, double right, double tolerance = DefaultTolerance)
+    {
+        return left < right || IsCloseTo(left, right, tolerance);
     }
 }
