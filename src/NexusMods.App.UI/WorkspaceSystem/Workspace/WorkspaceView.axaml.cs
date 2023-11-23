@@ -52,6 +52,7 @@ public partial class WorkspaceView : ReactiveUserControl<IWorkspaceViewModel>
 
                     serialDisposable.Disposable = panelsObservable
                         .Merge(resizersObservable)
+                        .RemoveIndex()
                         .Adapt(new ListAdapter<Control>(WorkspaceCanvas.Children))
                         .Subscribe();
                 })
