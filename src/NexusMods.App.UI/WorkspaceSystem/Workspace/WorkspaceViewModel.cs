@@ -110,6 +110,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                     // in case we skip an update, the tolerance for edge checking is higher than usual.
                     const double defaultTolerance = 0.05;
 
+                    // move panels
                     foreach (var panel in connectedPanels)
                     {
                         var currentSize = panel.LogicalBounds;
@@ -160,12 +161,28 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
 
                         panel.LogicalBounds = newPanelBounds;
                     }
+
+                    // move other resizers
+
+                    // ReSharper disable once ArrangeThisQualifier
+                    if (isHorizontal == this.IsHorizontal) return;
+
+                    foreach (var resizer in Resizers)
+                    {
+                        if (ReferenceEquals(item, resizer)) continue;
+                        if (resizer.IsHorizontal != isHorizontal) continue;
+
+                        resizer.LogicalPosition = isHorizontal
+                            ? resizer.LogicalPosition.WithY(newLogicalPosition.Y)
+                            : resizer.LogicalPosition.WithX(newLogicalPosition.X);
+                    }
                 })
                 .SubscribeWithErrorLogging()
                 .DisposeWith(disposables);
         });
     }
 
+    // TODO: make this reactive
     private Size _lastWorkspaceSize;
     private bool IsHorizontal => _lastWorkspaceSize.Width > _lastWorkspaceSize.Height;
 
