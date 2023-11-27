@@ -20,24 +20,24 @@ public class ProtocolInvocationTests(IServiceProvider provider) : AVerbTest(prov
 
         var secondHandler = Substitute.For<IIpcProtocolHandler>();
         secondHandler.Protocol.Returns("second");
-/* TODO Fix this
-        var invoke = new ProtocolInvoke(_logger, new List<IIpcProtocolHandler> { firstHandler, secondHandler });
-        var res = await invoke.Run("protocol-invoke", url, CancellationToken.None);
 
-        res.Should().Be(0);
-        await firstHandler.Received(firstTimes).Handle(url, CancellationToken.None);
-        await secondHandler.Received(secondTimes).Handle(url, CancellationToken.None);
-        */
+        var loggingRenderer = new LoggingRenderer();
+        var parsed = new Uri(url);
+        var res = await RunDirectly("protocol-invoke", loggingRenderer, parsed, new List<IIpcProtocolHandler> { firstHandler, secondHandler }, CancellationToken.None);
+        res.Should().Be(0, "the command should have succeeded");
+
+        // We convert parsed back to string here because the Uri class will normalize the path (adding a `/` ), which will break the test
+        await firstHandler.Received(firstTimes).Handle(parsed.ToString(), CancellationToken.None);
+        await secondHandler.Received(secondTimes).Handle(parsed.ToString(), CancellationToken.None);
     }
 
     [Fact]
     public async void WillThrowOnUnsupportedProtocol()
     {
-        /* Fix this
-        var invok = new ProtocolInvoke(_logger, new List<IIpcProtocolHandler>());
-        Func<Task<int>> act = async () => await invok.Run("test://foobar", CancellationToken.None);
-        await act.Should().ThrowAsync<Exception>();
-        */
+        var loggingRenderer = new LoggingRenderer();
+        var parsed = new Uri("test://foobar");
+        var action = async () => await RunDirectly("protocol-invoke", loggingRenderer, parsed, new List<IIpcProtocolHandler> { }, CancellationToken.None);
+        await action.Should().ThrowAsync<Exception>();
     }
 
 }

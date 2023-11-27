@@ -3,6 +3,7 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Paths;
 using NexusMods.ProxyConsole.Abstractions.Implementations;
+using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
 using NexusMods.SingleProcess;
 
 namespace NexusMods.CLI.Tests.VerbTests;
@@ -20,6 +21,12 @@ public class AVerbTest(IServiceProvider provider)
     internal readonly IFileSystem FileSystem = ServiceProviderServiceExtensions.GetRequiredService<IFileSystem>(provider);
 
 
+    /// <summary>
+    /// Runs a CLI command as if the program was invoked with the given arguments. The output is captured and returned.
+    /// </summary>
+    /// <param name="args"></param>
+    /// <returns></returns>
+    /// <exception cref="Exception"></exception>
     public async Task<LoggingRenderer> Run(params string[] args)
     {
         var renderer = new LoggingRenderer();
@@ -32,6 +39,21 @@ public class AVerbTest(IServiceProvider provider)
         }
 
         return renderer;
+    }
+
+    /// <summary>
+    /// Runs the given verb with the given arguments. No conversion is done on the arguments, so they must be the correct
+    /// type as defined in the verb definition.
+    /// </summary>
+    /// <param name="verbName"></param>
+    /// <param name="args"></param>
+    /// <returns></returns>
+    public async Task<int> RunDirectly(string verbName, params object[] args)
+    {
+        var verbDefinition = provider.GetServices<VerbDefinition>()
+            .FirstOrDefault(verb => verb.Name == verbName);
+
+        return await (Task<int>)verbDefinition!.Info.Invoke(null, args)!;
     }
 
 }
