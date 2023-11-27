@@ -105,7 +105,7 @@ public class NxmDownloadTask : IDownloadTask, IHaveDownloadVersion, IHaveFileSiz
 
         Version = state.Version!;
         Status = DownloadTaskStatus.Paused;
-        _url = NXMUrl.Parse(data.Query);
+        _url = NXMUrl.Parse(new Uri(data.Query));
     }
 
     public Task StartAsync()

@@ -2,13 +2,14 @@ using NexusMods.Abstractions.CLI;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
 
 namespace NexusMods.CLI.OptionParsers;
 
 /// <summary>
 /// Parses a string into a loadout
 /// </summary>
-public class LoadoutParser : IOptionParser<Loadout>
+internal class LoadoutParser : IOptionParser<Loadout>
 {
     private readonly IDataStore _store;
 
@@ -20,21 +21,16 @@ public class LoadoutParser : IOptionParser<Loadout>
     {
         _store = store;
     }
-
-    /// <inheritdoc />
-    public Loadout Parse(string input, OptionDefinition<Loadout> definition)
+    
+    public bool TryParse(string toParse, out Loadout value, out string error)
     {
-        var bytes = Convert.FromHexString(input);
+        var bytes = Convert.FromHexString(toParse);
         var found = _store.GetByPrefix<Loadout>(new IdVariableLength(EntityCategory.Loadouts, bytes)).ToArray();
         if (found.Length > 1)
             throw new Exception("More than one Loadout with that id prefix found");
 
-        return found.First();
-    }
-
-    /// <inheritdoc />
-    public IEnumerable<string> GetOptions(string input)
-    {
-        return Array.Empty<string>();
+        value = found.First();
+        error = string.Empty;
+        return true;
     }
 }

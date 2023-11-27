@@ -1,6 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.CLI;
-using NexusMods.CLI.Verbs;
 
 namespace NexusMods.Networking.NexusWebApi;
 
@@ -15,6 +13,6 @@ public static class Services
     public static IServiceCollection AddNexusWebApi(this IServiceCollection collection)
     {
         return collection.AddSingleton<Client>()
-            .AddVerb<NexusApiVerify>();
+            .AddNexusApiVerbs();
     }
 }

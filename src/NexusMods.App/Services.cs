@@ -1,7 +1,5 @@
 using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.CLI;
-using NexusMods.App.CLI.Renderers;
 using NexusMods.App.Listeners;
 using NexusMods.App.UI;
 using NexusMods.CLI;
@@ -25,6 +23,8 @@ using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.NMA;
 using NexusMods.Paths;
+using NexusMods.ProxyConsole;
+using NexusMods.SingleProcess;
 using NexusMods.StandardGameLocators;
 using NexusMods.Telemetry;
 using NexusMods.Telemetry.OpenTelemetry;
@@ -34,12 +34,6 @@ namespace NexusMods.App;
 
 public static class Services
 {
-    public static IServiceCollection AddRenderers(this IServiceCollection services)
-    {
-        services.AddScoped<IRenderer, CLI.Renderers.Spectre>();
-        services.AddScoped<IRenderer, Json>();
-        return services;
-    }
 
     public static IServiceCollection AddListeners(this IServiceCollection services)
     {
@@ -53,7 +47,10 @@ public static class Services
         config ??= new AppConfig();
 
         services
-            .AddSingleton<IAppConfigManager, AppConfigManager>(provider => new AppConfigManager(config, provider.GetRequiredService<JsonSerializerOptions>()))
+            .AddSingleton<IAppConfigManager, AppConfigManager>(provider =>
+                new AppConfigManager(config, provider.GetRequiredService<JsonSerializerOptions>()))
+            .AddSingleton<IStartupHandler, StartupHandler>()
+            .AddSingleton<CommandLineConfigurator>()
             .AddCLI()
             .AddFileSystem()
             .AddUI(config.LauncherSettings)
@@ -69,7 +66,6 @@ public static class Services
             .AddDarkestDungeon()
             .AddSifu()
             .AddStardewValley()
-            .AddRenderers()
             .AddNexusWebApi()
             .AddNexusWebApiNmaIntegration()
             .AddAdvancedHttpDownloader(config.HttpDownloaderSettings)
@@ -77,7 +73,14 @@ public static class Services
             .AddSingleton<HttpClient>()
             .AddListeners()
             .AddCommon()
-            .AddDownloaders();
+            .AddDownloaders()
+            .AddSingleProcess()
+            .AddSingleton(s => new SingleProcessSettings
+            {
+                SyncFile = s.GetRequiredService<IFileSystem>().GetKnownPath(KnownPath.ApplicationDataDirectory)
+                    .Combine("single_process.sync")
+            })
+            .AddDefaultRenderers();
 
         if (addStandardGameLocators)
             services.AddStandardGameLocators();

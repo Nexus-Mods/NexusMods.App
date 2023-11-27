@@ -2,19 +2,13 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.CLI.Types;
-using NexusMods.CLI.Verbs;
 using NSubstitute;
 
 namespace NexusMods.CLI.Tests.VerbTests;
 
-public class ProtocolInvocationTests
+public class ProtocolInvocationTests(IServiceProvider provider) : AVerbTest(provider)
 {
-    private readonly ILogger<ProtocolInvoke> _logger;
-
-    public ProtocolInvocationTests(IServiceProvider provider)
-    {
-        _logger = provider.GetRequiredService<ILogger<ProtocolInvoke>>();
-    }
+    private readonly ILogger<ProtocolInvocationTests> _logger = provider.GetRequiredService<ILogger<ProtocolInvocationTests>>();
 
     [Theory]
     [InlineData("first://path", 1, 0)]
@@ -27,20 +21,23 @@ public class ProtocolInvocationTests
         var secondHandler = Substitute.For<IIpcProtocolHandler>();
         secondHandler.Protocol.Returns("second");
 
-        var invoke = new ProtocolInvoke(_logger, new List<IIpcProtocolHandler> { firstHandler, secondHandler });
-        var res = await invoke.Run(url, CancellationToken.None);
+        var loggingRenderer = new LoggingRenderer();
+        var parsed = new Uri(url);
+        var res = await RunDirectly("protocol-invoke", loggingRenderer, parsed, new List<IIpcProtocolHandler> { firstHandler, secondHandler }, CancellationToken.None);
+        res.Should().Be(0, "the command should have succeeded");
 
-        res.Should().Be(0);
-        await firstHandler.Received(firstTimes).Handle(url, CancellationToken.None);
-        await secondHandler.Received(secondTimes).Handle(url, CancellationToken.None);
+        // We convert parsed back to string here because the Uri class will normalize the path (adding a `/` ), which will break the test
+        await firstHandler.Received(firstTimes).Handle(parsed.ToString(), CancellationToken.None);
+        await secondHandler.Received(secondTimes).Handle(parsed.ToString(), CancellationToken.None);
     }
 
     [Fact]
     public async void WillThrowOnUnsupportedProtocol()
     {
-        var invok = new ProtocolInvoke(_logger, new List<IIpcProtocolHandler>());
-        Func<Task<int>> act = async () => await invok.Run("test://foobar", CancellationToken.None);
-        await act.Should().ThrowAsync<Exception>();
+        var loggingRenderer = new LoggingRenderer();
+        var parsed = new Uri("test://foobar");
+        var action = async () => await RunDirectly("protocol-invoke", loggingRenderer, parsed, new List<IIpcProtocolHandler> { }, CancellationToken.None);
+        await action.Should().ThrowAsync<Exception>();
     }
 
 }

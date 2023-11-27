@@ -10,6 +10,7 @@
     <ItemGroup>
         <PackageReference Include="CliWrap" />
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+        <PackageReference Include="NexusMods.ProxyConsole.Abstractions" />
         <PackageReference Include="System.Linq.Async" />
     </ItemGroup>
 

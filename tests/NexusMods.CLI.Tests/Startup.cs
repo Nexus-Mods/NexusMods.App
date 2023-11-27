@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.CLI;
 using NexusMods.Common;
 using NexusMods.DataModel;
 using NexusMods.FileExtractor;
@@ -9,6 +8,7 @@ using NexusMods.Networking.HttpDownloader.Tests;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.NMA;
 using NexusMods.Paths;
+using NexusMods.SingleProcess;
 using NexusMods.StandardGameLocators;
 using NexusMods.StandardGameLocators.TestHelpers;
 
@@ -20,6 +20,7 @@ public class Startup
     {
         services.AddStandardGameLocators(false)
                 .AddStubbedGameLocators()
+                .AddSingleton<CommandLineConfigurator>()
                 .AddFileSystem()
                 .AddDataModel(new DataModelSettings
                 {
@@ -31,7 +32,6 @@ public class Startup
                 .AddHttpDownloader()
                 .AddNexusWebApi()
                 .AddNexusWebApiNmaIntegration(true)
-                .AddAllScoped<IRenderer, LoggingRenderer>()
                 .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace))
                 .AddSingleton<LocalHttpServer>()
                 .AddLogging(builder => builder.AddXUnit())
