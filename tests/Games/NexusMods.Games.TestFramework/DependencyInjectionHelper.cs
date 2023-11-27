@@ -57,8 +57,6 @@ public static class DependencyInjectionHelper
             {
                 UseInMemoryDataModel = true
             })
-            .AddAllSingleton<IResource, IResource<IExtractor, Size>>(_ => new Resource<IExtractor, Size>("File Extraction for tests"))
-            .AddAllSingleton<IResource, IResource<FileHashCache, Size>>(_ => new Resource<FileHashCache, Size>("Hash Cache for tests"))
             .AddFileExtractors();
     }
 
