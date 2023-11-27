@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using Avalonia;
 using Avalonia.Media.Imaging;
-using Avalonia.Platform;
+using NexusMods.App.UI.Extensions;
 using SkiaSharp;
 using Svg.Skia;
 
@@ -36,16 +36,7 @@ internal static class IconUtils
         );
 
         Debug.Assert(skBitmap is not null);
-        var bitmap = new Bitmap(
-            format: PixelFormat.Bgra8888,
-            alphaFormat: AlphaFormat.Premul,
-            data: skBitmap.GetPixels(),
-            size: new PixelSize(skBitmap.Width, skBitmap.Height),
-            dpi: new Vector(96.0, 96.0),
-            stride: skBitmap.RowBytes
-        );
-
-        return bitmap;
+        return skBitmap.ToAvaloniaImage();
     }
 
     private static SKPicture GeneratePicture(IReadOnlyDictionary<PanelId, Rect> state)
@@ -64,7 +55,7 @@ internal static class IconUtils
         foreach (var kv in state)
         {
             var (panelId, rect) = kv;
-            DrawRect(skPathFilled, skPathHollow, rect, isHollow: panelId != PanelId.Empty);
+            DrawRect(skPathFilled, skPathHollow, rect, isHollow: panelId != PanelId.DefaultValue);
         }
 
         using (var skPaint = new SKPaint())

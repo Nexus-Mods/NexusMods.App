@@ -1,8 +1,8 @@
 using System.Reactive.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Text.Encodings.Web;
 using System.Text.Json;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.Common.OSInterop;
@@ -132,8 +132,7 @@ public class OAuth
 
     internal static Uri GenerateAuthorizeUrl(string challenge, string state)
     {
-        // TODO: switch to Microsoft.AspNetCore.WebUtilities when .NET 8 is available
-        var request = new Dictionary<string, string>
+        var request = new Dictionary<string, string?>
         {
             { "response_type", "code" },
             { "scope", "openid profile email" },
@@ -144,28 +143,6 @@ public class OAuth
             { "state", state },
         };
 
-        return new Uri($"{OAuthUrl}/authorize{CreateQueryString(request)}");
-    }
-
-    private static string CreateQueryString(Dictionary<string, string> parameters)
-    {
-        var builder = new StringBuilder();
-        var first = true;
-        foreach (var pair in parameters)
-        {
-            var (key, value) = pair;
-
-            builder.Append(first ? '?' : '&');
-            builder.Append(UrlEncoder.Default.Encode(key));
-            builder.Append('=');
-            if (!string.IsNullOrEmpty(value))
-            {
-                builder.Append(UrlEncoder.Default.Encode(value));
-            }
-
-            first = false;
-        }
-
-        return builder.ToString();
+        return new Uri(QueryHelpers.AddQueryString($"{OAuthUrl}/authorize", request));
     }
 }

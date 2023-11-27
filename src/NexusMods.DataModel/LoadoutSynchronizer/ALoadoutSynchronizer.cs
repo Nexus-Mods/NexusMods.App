@@ -8,6 +8,7 @@ using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.LoadoutSynchronizerDTOs;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Loadouts.Mods;
+using NexusMods.DataModel.LoadoutSynchronizer.Exceptions;
 using NexusMods.DataModel.Sorting;
 using NexusMods.DataModel.Sorting.Rules;
 using NexusMods.FileExtractor.StreamFactories;
@@ -137,6 +138,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                         continue;
                     }
 
+                    resultingItems.Add(newEntry.Path, prevEntry.Value);
                     switch (newEntry.Value!)
                     {
 
@@ -144,6 +146,11 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                             // StoredFile files are special cased so we can batch them up and extract them all at once.
                             // Don't add toExtract to the results yet as we'll need to get the modified file times
                             // after we extract them
+
+                            // If both hashes are the same, we can skip this file
+                            if (fa.Hash == entry.Hash)
+                                continue;
+
                             toExtract.Add(KeyValuePair.Create(entry.Path, fa));
                             continue;
                         case IGeneratedFile gf and IToFile:
@@ -246,7 +253,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// <param name="entry"></param>
     public virtual void HandleNeedIngest(HashedEntry entry)
     {
-        throw new Exception("File changed during apply, need to ingest");
+        throw new NeedsIngestException();
     }
 
     /// <inheritdoc />
@@ -296,7 +303,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     {
         var newFile = new StoredFile
         {
-            Id = ModFileId.New(),
+            Id = ModFileId.NewId(),
             Hash = newEntry.Hash,
             Size = newEntry.Size,
             To = gamePath
@@ -328,7 +335,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
 
         var newFile = new StoredFile
         {
-            Id = ModFileId.New(),
+            Id = ModFileId.NewId(),
             Hash = newEntry.Hash,
             Size = newEntry.Size,
             To = gamePath
@@ -356,7 +363,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             {
                 ModCategory = name,
                 Name = name,
-                Id = ModId.New(),
+                Id = ModId.NewId(),
                 Enabled = true,
                 Files = EntityDictionary<ModFileId, AModFile>.Empty(_store)
             };
@@ -473,6 +480,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         var newLoadout = await FlattenedLoadoutToLoadout(flattenedLoadout, loadout, prevFlattenedLoadout);
 
         await BackupNewFiles(loadout, fileTree);
+        _diskStateRegistry.SaveState(loadout.LoadoutId, diskState);
 
         return newLoadout;
     }
@@ -531,12 +539,12 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         {
             Name = "Game Files",
             ModCategory = Mod.GameFilesCategory,
-            Id = ModId.New(),
+            Id = ModId.NewId(),
             Enabled = true,
             Files = EntityDictionary<ModFileId, AModFile>.Empty(_store).With(initialState.GetAllDescendentFiles()
                 .Select(f =>
                 {
-                    var id = ModFileId.New();
+                    var id = ModFileId.NewId();
                     return KeyValuePair.Create(id, (AModFile)new StoredFile
                     {
                         Id = id,
@@ -571,9 +579,13 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// <param name="mod"></param>
     /// <returns></returns>
     /// <exception cref="NotImplementedException"></exception>
-    protected virtual ValueTask<ISortRule<Mod, ModId>[]> ModSortRules(Loadout loadout, Mod mod)
+    protected virtual async ValueTask<ISortRule<Mod, ModId>[]> ModSortRules(Loadout loadout, Mod mod)
     {
-        return ValueTask.FromResult(mod.SortRules.ToArray());
+        var builtInSortRules = mod.SortRules.Where(x => x is not IGeneratedSortRule);
+        var customSortRules = mod.SortRules.ToAsyncEnumerable()
+            .OfType<IGeneratedSortRule>()
+            .SelectMany(x => x.GenerateSortRules(mod.Id, loadout));
+        return await builtInSortRules.ToAsyncEnumerable().Concat(customSortRules).ToArrayAsync();
     }
 
 

@@ -1,5 +1,5 @@
 using JetBrains.Annotations;
-using Vogen;
+using TransparentValueObjects;
 
 namespace NexusMods.Common.GuidedInstaller.ValueObjects;
 
@@ -8,10 +8,10 @@ namespace NexusMods.Common.GuidedInstaller.ValueObjects;
 /// </summary>
 [PublicAPI]
 [ValueObject<Guid>]
-public readonly partial struct OptionId
+public readonly partial struct OptionId : IAugmentWith<DefaultValueAugment>
 {
     /// <summary>
     /// The "None" option.
     /// </summary>
-    public static readonly OptionId None = From(Guid.Empty);
+    public static OptionId DefaultValue { get; } = From(Guid.Empty);
 }

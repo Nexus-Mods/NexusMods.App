@@ -29,11 +29,6 @@
                     <StackPanel Orientation="Horizontal" Spacing="8"/>
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
-            <ItemsControl.ItemTemplate>
-                <DataTemplate DataType="{x:Type workspace:IAddPanelButtonViewModel}">
-                    <reactive:ViewModelViewHost ViewModel="{Binding}"/>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
         </ItemsControl>
 
         <reactive:ViewModelViewHost Grid.Row="2" x:Name="ViewModelViewHost" />

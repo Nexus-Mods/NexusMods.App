@@ -1,7 +1,7 @@
 using System.Text.Json.Serialization;
 using JetBrains.Annotations;
 using NexusMods.DataModel.JsonConverters;
-using Vogen;
+using TransparentValueObjects;
 
 namespace NexusMods.DataModel;
 
@@ -9,13 +9,6 @@ namespace NexusMods.DataModel;
 /// Represents a unique identifier for a mod group.
 /// </summary>
 [PublicAPI]
-[ValueObject<Guid>(conversions: Conversions.None)]
+[ValueObject<Guid>]
 [JsonConverter(typeof(GroupIdConverter))]
-public readonly partial struct GroupId
-{
-    /// <summary>
-    /// Creates a new <see cref="GroupId"/> from a unique <see cref="Guid"/>.
-    /// </summary>
-    /// <returns></returns>
-    public static GroupId New() => From(Guid.NewGuid());
-}
+public readonly partial struct GroupId { }

@@ -144,7 +144,7 @@ public class LoadoutRegistry : IDisposable
             {
                 existingMod = new Mod()
                 {
-                    Id = ModId.New(),
+                    Id = ModId.NewId(),
                     Name = "",
                     Files = EntityDictionary<ModFileId, AModFile>.Empty(_store)
                 };
@@ -426,11 +426,13 @@ public class LoadoutRegistry : IDisposable
             name = SuggestName(installation);
 
         var result = await installation.Game.Synchronizer.Manage(installation);
-        Alter(result.LoadoutId, $"Manage new instance of {installation.Game.Name} as {name}",
+        result = Alter(result.LoadoutId, $"Manage new instance of {installation.Game.Name} as {name}",
             _ => result with
         {
             Name = name
         });
+        var withExtraFiles = await installation.Game.Synchronizer.Ingest(result);
+        Alter(result.LoadoutId, $"Adding extra files found in game folder", _ => withExtraFiles);
         return GetMarker(result.LoadoutId);
     }
 

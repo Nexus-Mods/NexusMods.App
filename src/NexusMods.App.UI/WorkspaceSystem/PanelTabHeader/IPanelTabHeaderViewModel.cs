@@ -14,5 +14,5 @@ public interface IPanelTabHeaderViewModel : IViewModelInterface
 
     public bool IsSelected { get; set;  }
 
-    public ReactiveCommand<Unit, Unit> CloseTabCommand { get; }
+    public ReactiveCommand<Unit, PanelTabId> CloseTabCommand { get; }
 }

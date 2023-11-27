@@ -8,11 +8,6 @@ public interface IPanelTabViewModel : IViewModelInterface
     public PanelTabId Id { get; }
 
     /// <summary>
-    /// Gets or sets the index of the tab.
-    /// </summary>
-    public PanelTabIndex Index { get; set; }
-
-    /// <summary>
     /// Gets the header view model of the tab.
     /// </summary>
     public IPanelTabHeaderViewModel Header { get; }

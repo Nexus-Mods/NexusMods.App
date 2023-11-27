@@ -100,4 +100,18 @@ public static class EnumerableExtensions
 
         return dict;
     }
+
+    /// <summary>
+    /// Does a linear search and returns the index of the first item that matches the predicate or -1
+    /// if no item matches the predicate.
+    /// </summary>
+    public static int LinearSearch<T>(this IList<T> source, Func<T, bool> predicate)
+    {
+        for (var i = 0; i < source.Count; i++)
+        {
+            if (predicate(source[i])) return i;
+        }
+
+        return -1;
+    }
 }

@@ -8,6 +8,7 @@
         <PackageReference Include="CliWrap" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
         <PackageReference Include="OneOf" />
+        <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
 
     <ItemGroup>
@@ -15,6 +16,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\NexusMods.DataModel.RateLimiting\NexusMods.DataModel.RateLimiting.csproj" />
+        <ProjectReference Include="..\NexusMods.DataModel.RateLimiting\NexusMods.DataModel.RateLimiting.csproj" />
     </ItemGroup>
 </Project>

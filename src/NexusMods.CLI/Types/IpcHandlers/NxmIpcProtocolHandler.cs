@@ -26,7 +26,7 @@ public class NxmIpcProtocolHandler : IIpcProtocolHandler
     /// <inheritdoc/>
     public async Task Handle(string url, CancellationToken cancel)
     {
-        await _messages.Write(new NXMUrlMessage { Value = NXMUrl.Parse(url) }, cancel);
+        await _messages.Write(new NXMUrlMessage { Value = NXMUrl.Parse(new Uri(url)) }, cancel);
         _messages.EnsureWrite(cancel);
     }
 }

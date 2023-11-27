@@ -39,7 +39,7 @@ public class GuidedInstallerGroupViewModel : AViewModel<IGuidedInstallerGroupVie
             {
                 options = options.Prepend(new GuidedInstallerOptionViewModel(new Option
                 {
-                    Id = OptionId.None,
+                    Id = OptionId.DefaultValue,
                     Name = Language.GuidedInstallerGroupViewModel_GuidedInstallerGroupViewModel_None,
                     Type = OptionType.Available,
                     Description = Language.GuidedInstallerGroupViewModel_GuidedInstallerGroupViewModel_Select_nothing,
@@ -85,7 +85,7 @@ public class GuidedInstallerGroupViewModel : AViewModel<IGuidedInstallerGroupVie
                     var selectedOptions = Options
                         .Where(option => option.IsChecked)
                         .Select(option => option.Option.Id)
-                        .Where(optionId => optionId != OptionId.None)
+                        .Where(optionId => optionId != OptionId.DefaultValue)
                         .Select(optionId => new SelectedOption(Group.Id, optionId))
                         .ToArray();
 

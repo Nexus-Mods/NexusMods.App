@@ -1,5 +1,5 @@
 using JetBrains.Annotations;
-using Vogen;
+using TransparentValueObjects;
 
 namespace NexusMods.DataModel.Diagnostics;
 
@@ -11,11 +11,4 @@ namespace NexusMods.DataModel.Diagnostics;
 /// </summary>
 [PublicAPI]
 [ValueObject<string>]
-public readonly partial struct DiagnosticMessage
-{
-    private static Validation Validate(string input)
-    {
-        // TODO: check formatting
-        return Validation.Ok;
-    }
-}
+public readonly partial struct DiagnosticMessage { }

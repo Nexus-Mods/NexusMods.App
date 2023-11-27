@@ -8,18 +8,12 @@ using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 namespace NexusMods.CLI.Tests.VerbTests;
 
 [Trait("RequiresNetworking", "True")]
-public class DownloadAndInstallMod : AGameTest<StubbedGame>
+public class DownloadAndInstallMod(IServiceProvider serviceProvider, LocalHttpServer server) : AGameTest<StubbedGame>(serviceProvider)
 {
-    private readonly LocalHttpServer _server;
-    public AVerbTest Test { get; }
+    public AVerbTest Test { get; } = new(serviceProvider);
 
     // Note: These tests use game testing framework to ensure code reuse.
     // This is needed because some APIs, e.g. loadouts require an actual game instance.
-    public DownloadAndInstallMod(IServiceProvider serviceProvider, LocalHttpServer server) : base(serviceProvider)
-    {
-        Test = new AVerbTest(serviceProvider.GetRequiredService<TemporaryFileManager>(), serviceProvider);
-        _server = server;
-    }
 
     // Not sure what to use for test data, we don't have a designated location,
     // and Nexus doesn't have raw download links.
@@ -42,10 +36,10 @@ public class DownloadAndInstallMod : AGameTest<StubbedGame>
 
         var oldId = loadout.Value.DataStoreId;
         var oldLoadoutId = loadout.Value.LoadoutId;
-        var makeUrl = $"{_server.Uri}{url}";
+        var makeUrl = $"{server.Uri}{url}";
         LoadoutRegistry.AllLoadouts().Should().ContainSingle(l => l.LoadoutId.Equals(oldLoadoutId));
 
-        await Test.RunNoBannerAsync("download-and-install-mod", "-u", makeUrl, "-l", oldLoadoutId.ToString(), "-n", "TestMod");
+        await Test.Run("download-and-install-mod", "-u", makeUrl, "-l", oldLoadoutId.ToString(), "-n", "TestMod");
         loadout.DataStoreId.Should().NotBe(oldId, "the loadout has been updated");
         loadout.Id.Should().Be(oldLoadoutId, "the loadout ID should not change");
 
@@ -64,7 +58,7 @@ public class DownloadAndInstallMod : AGameTest<StubbedGame>
         origNumMods.Should().Be(1); // game files
 
         var uri = $"nxm://{gameDomain}/mods/{modId}/files/{fileId}";
-        await Test.RunNoBannerAsync("download-and-install-mod", "-u", uri, "-l", loadout.Id.ToString(), "-n", "TestMod");
+        await Test.Run("download-and-install-mod", "-u", uri, "-l", loadout.Id.ToString(), "-n", "TestMod");
         loadout.Value.Mods.Count.Should().BeGreaterThan(origNumMods);
     }
 }

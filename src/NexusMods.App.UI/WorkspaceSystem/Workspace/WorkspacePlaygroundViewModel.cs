@@ -65,7 +65,7 @@ public class WorkspacePlaygroundViewModel : AViewModel<IWorkspacePlaygroundViewM
         {
             WorkspaceViewModel.AddPanel(new Dictionary<PanelId, Rect>
             {
-                { PanelId.Empty, MathUtils.One }
+                { PanelId.DefaultValue, MathUtils.One }
             });
 
             Disposable.Create(() => { }).DisposeWith(disposables);

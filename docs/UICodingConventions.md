@@ -786,7 +786,6 @@ public class MyViewModel : ReactiveObject, IActivatableViewModel
         _sourceCache
             .Connect()
             .Bind(out _children)
-            .DisposeMany()
             .Subscribe();
 
         AddChildCommand = ReactiveCommand.Create(() =>
@@ -1077,7 +1076,6 @@ public class MyViewModel : ReactiveObject, IActivatableViewModel
             .TransformToTree(item => item.ParentId)
             .Transform(node => new NodeViewModel(node))
             .Bind(out _nodes)
-            .DisposeMany()
             .Subscribe();
 
         this.WhenActivated(disposables =>
@@ -1118,7 +1116,6 @@ public class NodeViewModel : ReactiveObject, IActivatableViewModel
             .Connect()
             .Transform(child => new NodeViewModel(child))
             .Bind(out _children)
-            .DisposeMany()
             .Subscribe();
     }
 }

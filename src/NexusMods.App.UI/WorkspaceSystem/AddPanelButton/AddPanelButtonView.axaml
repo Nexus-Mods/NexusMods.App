@@ -16,9 +16,6 @@
 
     <Border>
         <Border.Styles>
-            <StyleInclude Source="avares://NexusMods.App.UI/Palatte/Nexus.xaml"/>
-            <StyleInclude Source="avares://NexusMods.App.UI/Theme/IconStyles.xaml"/>
-
             <Style Selector="Button">
                 <Setter Property="Background" Value="{DynamicResource Transparent}"/>
                 <Setter Property="BorderBrush" Value="{DynamicResource BrandPrimary}"/>

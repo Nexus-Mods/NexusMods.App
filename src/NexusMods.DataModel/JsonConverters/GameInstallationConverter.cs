@@ -26,9 +26,12 @@ public class GameInstallationConverter : JsonConverter<GameInstallation>
         reader.Read();
         var version = JsonSerializer.Deserialize<Version>(ref reader, options)!;
         reader.Read();
-        var store = GameStore.From(reader.GetString());
+
+        var storeString = reader.GetString();
+        var store = storeString is null ? GameStore.Unknown : GameStore.From(storeString);
+
         reader.Read();
-        
+
         var foundGame = _games[slug]
             .SelectMany(g => g.Installations)
             .FirstOrDefault(install => install.Version == version && install.Store == store);

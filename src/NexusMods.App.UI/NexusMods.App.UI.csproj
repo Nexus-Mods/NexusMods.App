@@ -101,6 +101,7 @@
         <PackageReference Include="ReactiveUI.Fody" />
         <PackageReference Include="Splat.Microsoft.Extensions.Logging" />
         <PackageReference Include="System.Reactive" />
+        <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
 
     <ItemGroup>
@@ -341,23 +342,26 @@
         <Compile Update="WorkspaceSystem\PanelTabHeader\PanelTabHeaderDesignViewModel.cs">
           <DependentUpon>IPanelTabHeaderViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="WorkspaceSystem\Panel\PanelDesignViewModel.cs">
-          <DependentUpon>IPanelViewModel.cs</DependentUpon>
-        </Compile>
         <Compile Update="WorkspaceSystem\NewTabPage\NewTabPageViewModel.cs">
           <DependentUpon>INewTabPageViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="WorkspaceSystem\NewTabPageSection\NewTabPageSectionViewModel.cs">
-          <DependentUpon>INewTabPageSectionViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="WorkspaceSystem\NewTabPageSection\NewTabPageSectionDesignViewModel.cs">
-          <DependentUpon>INewTabPageSectionViewModel.cs</DependentUpon>
         </Compile>
         <Compile Update="WorkspaceSystem\NewTabPage\NewTabPageDesignViewModel.cs">
           <DependentUpon>INewTabPageViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="WorkspaceSystem\NewTabPageSectionItem\NewTabPageSectionItemViewModel.cs">
-          <DependentUpon>INewTabPageSectionItemViewModel.cs</DependentUpon>
+        <Compile Update="WorkspaceSystem\Page\IPageFactoryContext.cs">
+          <DependentUpon>IPageFactory.cs</DependentUpon>
+        </Compile>
+        <Compile Update="WorkspaceSystem\Page\PageFactoryId.cs">
+          <DependentUpon>IPageFactory.cs</DependentUpon>
+        </Compile>
+        <Compile Update="WorkspaceSystem\Page\APageViewModel.cs">
+          <DependentUpon>IPageViewModelInterface.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\GameWidget\GameWidgetViewModel.cs">
+          <DependentUpon>IGameWidgetViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\GameWidget\GameWidgetDesignViewModel.cs">
+          <DependentUpon>IGameWidgetViewModel.cs</DependentUpon>
         </Compile>
     </ItemGroup>
 

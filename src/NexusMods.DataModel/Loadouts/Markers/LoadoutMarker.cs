@@ -24,6 +24,15 @@ public class LoadoutMarker
     }
 
     /// <summary>
+    /// Converts the marker to a string representation by its name
+    /// </summary>
+    /// <returns></returns>
+    public override string ToString()
+    {
+        return Value.Name;
+    }
+
+    /// <summary>
     /// Sets the current data store ID of the loadout.
     /// </summary>
     /// <param name="id"></param>

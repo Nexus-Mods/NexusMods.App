@@ -19,7 +19,7 @@ public class LoadoutGridViewModelTests : AVmTest<ILoadoutGridViewModel>
         var ids = new List<ModId>();
         for (int x = 0; x < 10; x++)
         {
-            var id = ModId.New();
+            var id = ModId.NewId();
             ids.Add(id);
             Loadout.Add(new Mod
             {
