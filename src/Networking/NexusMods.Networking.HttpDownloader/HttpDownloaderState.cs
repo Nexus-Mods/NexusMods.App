@@ -1,3 +1,4 @@
+using NexusMods.DataModel.Activities;
 using NexusMods.Paths;
 
 namespace NexusMods.Networking.HttpDownloader;
@@ -10,5 +11,5 @@ public class HttpDownloaderState
     /// <summary>
     /// The job associated with the current HTTP Downloader Progress.
     /// </summary>
-    public IJob<IHttpDownloader, Size>? Job { get; set; }
+    public IActivitySource? Activity { get; set; }
 }

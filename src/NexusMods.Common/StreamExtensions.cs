@@ -21,10 +21,9 @@ public static class StreamExtensions
     public static async Task<Hash> HashingCopyAsync(this Stream inputStream, Stream outputStream, IActivitySource<Size> job,
         CancellationToken token)
     {
-        return await inputStream.HashingCopyAsync(outputStream, token, m =>
+        return await inputStream.HashingCopyAsync(outputStream, token, async m =>
         {
-            job.AddProgress(Size.FromLong(m.Length));
-            return Task.CompletedTask;
+            await job.AddProgress(Size.FromLong(m.Length), token);
         });
     }
 
@@ -38,10 +37,9 @@ public static class StreamExtensions
     public static async Task<Hash> XxHash64Async(this Stream inputStream, IActivitySource<Size> job,
         CancellationToken token)
     {
-        return await inputStream.HashingCopyAsync(Stream.Null, token, m =>
+        return await inputStream.HashingCopyAsync(Stream.Null, token, async m =>
         {
-            job.AddProgress(Size.FromLong(m.Length));
-            return Task.CompletedTask;
+            await job.AddProgress(Size.FromLong(m.Length), token);
         });
     }
 

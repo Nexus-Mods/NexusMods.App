@@ -65,4 +65,5 @@ public interface IActivitySource<in T> : IActivitySource
     /// <param name="value"></param>
     /// <param name="token"></param>
     public ValueTask AddProgress(T value, CancellationToken token);
+
 }

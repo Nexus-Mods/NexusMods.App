@@ -12,7 +12,7 @@ public interface IHttpDownloader
     /// <summary>
     /// The activity group for HTTP downloader activities.
     /// </summary>
-    public static ActivityGroup Group => ActivityGroup.From("HttpDownloader");
+    public static readonly ActivityGroup Group = ActivityGroup.From("HttpDownloader");
 
     /// <summary>
     /// Download the file specified by the given requests and save it to the

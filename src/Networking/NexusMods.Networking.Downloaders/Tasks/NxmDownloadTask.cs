@@ -29,15 +29,15 @@ public class NxmDownloadTask : IDownloadTask, IHaveDownloadVersion, IHaveFileSiz
     private long _defaultDownloadedSize;
 
     /// <inheritdoc />
-    public long DownloadedSizeBytes => _state.Job != null ? (long)_state.Job.Current.Value : _defaultDownloadedSize;
+    public long DownloadedSizeBytes => _state.Activity != null ? (long)_state.Activity.Current.Value : _defaultDownloadedSize;
 
     /// <inheritdoc />
     public long CalculateThroughput<TDateTimeProvider>(TDateTimeProvider provider) where TDateTimeProvider : IDateTimeProvider
     {
-        if (_state.Job == null)
+        if (_state.Activity == null)
             return 0;
 
-        return (long)_state.Job.GetThroughput(DateTimeProvider.Instance).Value;
+        return (long)_state.Activity.GetThroughput(DateTimeProvider.Instance).Value;
     }
 
     /// <inheritdoc />

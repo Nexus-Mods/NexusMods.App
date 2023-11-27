@@ -23,10 +23,9 @@ public static class AbsolutePathExtensions
         if (job == null)
             return await inputStream.HashingCopyAsync(Stream.Null, token, async m => await Task.CompletedTask);
         else
-            return await inputStream.HashingCopyAsync(Stream.Null, token,  m =>
+            return await inputStream.HashingCopyAsync(Stream.Null, token,  async m =>
             {
-                job.AddProgress(Size.FromLong(m.Length));
-                return Task.CompletedTask;
+                await job.AddProgress(Size.FromLong(m.Length), token);
             });
     }
 

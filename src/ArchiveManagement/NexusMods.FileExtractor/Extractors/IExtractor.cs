@@ -14,7 +14,7 @@ public interface IExtractor
     /// <summary>
     /// The activity group for activities created by extractors.
     /// </summary>
-    public static ActivityGroup ActivityGroup = ActivityGroup.From("FileExtractor");
+    public static readonly ActivityGroup Group = ActivityGroup.From("FileExtractor");
 
     /// <summary>
     /// A list of all the file type signatures supported by this extractor.

@@ -7,7 +7,4 @@ namespace NexusMods.Abstractions.Activities;
 /// a group could be "Download" or "Mod Install".
 /// </summary>
 [ValueObject<string>]
-public partial struct ActivityGroup
-{
-
-}
+public partial struct ActivityGroup;
