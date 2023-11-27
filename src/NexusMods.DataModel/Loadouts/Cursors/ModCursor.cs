@@ -1,5 +1,6 @@
 ﻿using NexusMods.DataModel.Interprocess;
 using NexusMods.Paths.Extensions;
+using Reloaded.Memory.Extensions;
 
 namespace NexusMods.DataModel.Loadouts.Cursors;
 

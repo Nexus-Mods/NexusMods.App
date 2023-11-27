@@ -18,6 +18,7 @@ using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Utilities;
+using Reloaded.Memory.Extensions;
 
 namespace NexusMods.DataModel;
 
@@ -47,7 +48,6 @@ public class NxFileStore : IFileStore
 
         _logger = logger;
         _store = store;
-
     }
 
     /// <inheritdoc />
@@ -77,7 +77,8 @@ public class NxFileStore : IFileStore
         var id = guid.ToString();
         var outputPath = _archiveLocations.First().Combine(id).AppendExtension(KnownExtensions.Tmp);
 
-        await using (var outputStream = outputPath.Create()){
+        await using (var outputStream = outputPath.Create())
+        {
             builder.WithOutput(outputStream);
             builder.Build();
         }
@@ -132,7 +133,7 @@ public class NxFileStore : IFileStore
     {
         var grouped = files.Distinct()
             .Select(input => TryGetLocation(input.Src, out var archivePath, out var fileEntry)
-                ? (true, Hash:input.Src, ArchivePath:archivePath, FileEntry:fileEntry, input.Dest)
+                ? (true, Hash: input.Src, ArchivePath: archivePath, FileEntry: fileEntry, input.Dest)
                 : default)
             .Where(x => x.Item1)
             .ToLookup(l => l.ArchivePath, l => (l.Hash, l.FileEntry, l.Dest));
@@ -150,7 +151,8 @@ public class NxFileStore : IFileStore
 
             var toExtract = group
                 .Select(entry =>
-                    (IOutputDataProvider)new OutputFileProvider(entry.Dest.Parent.GetFullPath(), entry.Dest.FileName, entry.FileEntry))
+                    (IOutputDataProvider)new OutputFileProvider(entry.Dest.Parent.GetFullPath(), entry.Dest.FileName,
+                        entry.FileEntry))
                 .ToArray();
 
             try
@@ -177,7 +179,7 @@ public class NxFileStore : IFileStore
 
         var grouped = files.Distinct()
             .Select(hash => TryGetLocation(hash, out var archivePath, out var fileEntry)
-                ? (true, Hash:hash, ArchivePath:archivePath, FileEntry:fileEntry)
+                ? (true, Hash: hash, ArchivePath: archivePath, FileEntry: fileEntry)
                 : default)
             .Where(x => x.Item1)
             .ToLookup(l => l.ArchivePath, l => (l.Hash, l.FileEntry));
@@ -195,7 +197,8 @@ public class NxFileStore : IFileStore
             var provider = new FromStreamProvider(file);
             var unpacker = new NxUnpacker(provider);
 
-            var infos = group.Select(entry => (entry.Hash, new OutputArrayProvider("", entry.FileEntry), entry.FileEntry.DecompressedSize)).ToList();
+            var infos = group.Select(entry => (entry.Hash, new OutputArrayProvider("", entry.FileEntry),
+                entry.FileEntry.DecompressedSize)).ToList();
 
             unpacker.ExtractFiles(infos.Select(o => (IOutputDataProvider)o.Item2).ToArray(), settings);
             foreach (var (hash, output, size) in infos)
@@ -220,7 +223,8 @@ public class NxFileStore : IFileStore
         var provider = new FromStreamProvider(file);
         var header = HeaderParser.ParseHeader(provider);
 
-        return Task.FromResult<Stream>(new ChunkedStream<ChunkedArchiveStream>(new ChunkedArchiveStream(entry, header, file)));
+        return Task.FromResult<Stream>(
+            new ChunkedStream<ChunkedArchiveStream>(new ChunkedArchiveStream(entry, header, file)));
     }
 
     private class ChunkedArchiveStream : IChunkedStreamSource
@@ -246,7 +250,8 @@ public class NxFileStore : IFileStore
 
         public async Task ReadChunkAsync(Memory<byte> buffer, ulong localIndex, CancellationToken token = default)
         {
-            var extractable = PreProcessBlock(localIndex, out var blockIndex, out var compressedBlockSize, out var offset);
+            var extractable =
+                PreProcessBlock(localIndex, out var blockIndex, out var compressedBlockSize, out var offset);
             _stream.Position = offset;
             using var compressedBlock = MemoryPool<byte>.Shared.Rent(compressedBlockSize);
             await _stream.ReadExactlyAsync(compressedBlock.Memory[..compressedBlockSize], token);
@@ -255,7 +260,8 @@ public class NxFileStore : IFileStore
 
         public void ReadChunk(Span<byte> buffer, ulong localIndex)
         {
-            var extractable = PreProcessBlock(localIndex, out var blockIndex, out var compressedBlockSize, out var offset);
+            var extractable =
+                PreProcessBlock(localIndex, out var blockIndex, out var compressedBlockSize, out var offset);
             _stream.Position = offset;
             using var compressedBlock = MemoryPool<byte>.Shared.Rent(compressedBlockSize);
             _stream.ReadExactly(compressedBlock.Memory.Span[..compressedBlockSize]);
@@ -271,7 +277,8 @@ public class NxFileStore : IFileStore
         /// <param name="offset"></param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private ExtractableBlock PreProcessBlock(ulong localIndex, out int blockIndex, out int compressedBlockSize, out long offset)
+        private ExtractableBlock PreProcessBlock(ulong localIndex, out int blockIndex, out int compressedBlockSize,
+            out long offset)
         {
             var extractable = _blocks[(int)localIndex];
             blockIndex = extractable.BlockIndex;
@@ -289,7 +296,8 @@ public class NxFileStore : IFileStore
         /// <param name="extractable"></param>
         /// <param name="compressedBlock"></param>
         /// <param name="blockSize"></param>
-        private unsafe void ProcessBlock(Span<byte> buffer, int blockIndex, ExtractableBlock extractable, Span<byte> compressedBlock,
+        private unsafe void ProcessBlock(Span<byte> buffer, int blockIndex, ExtractableBlock extractable,
+            Span<byte> compressedBlock,
             int blockSize)
         {
             var chunkSize = _header.Header.ChunkSizeBytes;
@@ -364,7 +372,8 @@ public class NxFileStore : IFileStore
                 var block = new ExtractableBlock
                 {
                     BlockIndex = blockIndex,
-                    DecompressSize = _entry.DecompressedBlockOffset + (int)Math.Min(remainingDecompSize, (ulong)chunkSize)
+                    DecompressSize = _entry.DecompressedBlockOffset +
+                                     (int)Math.Min(remainingDecompSize, (ulong)chunkSize)
                 };
 
                 _blocks.Add(block);
@@ -411,7 +420,6 @@ public class NxFileStore : IFileStore
                     return true;
                 }
             }
-
         }
 
         archivePath = default;

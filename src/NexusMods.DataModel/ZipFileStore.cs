@@ -9,6 +9,7 @@ using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Utilities;
+using Reloaded.Memory.Extensions;
 
 namespace NexusMods.DataModel;
 

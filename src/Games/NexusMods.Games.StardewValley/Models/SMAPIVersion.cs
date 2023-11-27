@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using JetBrains.Annotations;
 using NexusMods.Paths.Extensions;
+using Reloaded.Memory.Extensions;
 
 namespace NexusMods.Games.StardewValley.Models;
 
