@@ -53,12 +53,14 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
 
         this.WhenActivated(disposables =>
         {
+            // Adding a panel
             _addPanelButtonViewModelSource
                 .Connect()
                 .MergeMany(item => item.AddPanelCommand)
                 .SubscribeWithErrorLogging(nextState => AddPanel(nextState))
                 .DisposeWith(disposables);
 
+            // Closing a panel
             _panelSource
                 .Connect()
                 .MergeMany(item => item.CloseCommand)
@@ -67,6 +69,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
 
             // TODO: popout command
 
+            // Disabling certain features when there is only one panel
             _panelSource
                 .Connect()
                 .Count()
@@ -81,6 +84,15 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                 .SubscribeWithErrorLogging()
                 .DisposeWith(disposables);
 
+            // Finished Resizing
+            _resizersSource
+                .Connect()
+                .MergeMany(item => item.FinishDragCommand)
+                .Do(_ => UpdateStates())
+                .Subscribe()
+                .DisposeWith(disposables);
+
+            // Resizing
             _resizersSource
                 .Connect()
                 .MergeManyWithSource(item => item.DragCommand)

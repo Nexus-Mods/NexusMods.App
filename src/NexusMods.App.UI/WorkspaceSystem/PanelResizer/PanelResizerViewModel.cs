@@ -1,3 +1,4 @@
+using System.Reactive;
 using System.Reactive.Disposables;
 using Avalonia;
 using ReactiveUI;
@@ -15,6 +16,8 @@ public class PanelResizerViewModel : AViewModel<IPanelResizerViewModel>, IPanelR
 
     public ReactiveCommand<Point, Point> DragCommand { get; }
 
+    public ReactiveCommand<Unit, Unit> FinishDragCommand { get; }
+
     public PanelResizerViewModel(Point logicalPosition, bool isHorizontal, PanelId[] connectedPanels)
     {
         LogicalPosition = logicalPosition;
@@ -22,6 +25,7 @@ public class PanelResizerViewModel : AViewModel<IPanelResizerViewModel>, IPanelR
         ConnectedPanels = connectedPanels;
 
         DragCommand = ReactiveCommand.Create<Point, Point>(input => input);
+        FinishDragCommand = ReactiveCommand.Create(() => { });
 
         this.WhenActivated(disposables =>
         {

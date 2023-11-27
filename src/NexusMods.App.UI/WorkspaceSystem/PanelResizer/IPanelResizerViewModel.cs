@@ -1,3 +1,4 @@
+using System.Reactive;
 using Avalonia;
 using ReactiveUI;
 
@@ -16,4 +17,6 @@ public interface IPanelResizerViewModel : IViewModelInterface
     public void Arrange(Size workspaceSize);
 
     public ReactiveCommand<Point, Point> DragCommand { get; }
+
+    public ReactiveCommand<Unit, Unit> FinishDragCommand { get; }
 }

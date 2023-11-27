@@ -1,3 +1,4 @@
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia;
@@ -58,7 +59,8 @@ public partial class PanelResizerView : ReactiveUserControl<IPanelResizerViewMod
                     _isPressed = false;
                     _startPoint = new Point(0, 0);
                 })
-                .Subscribe()
+                .Select(_ => Unit.Default)
+                .InvokeCommand(this, view => view.ViewModel!.FinishDragCommand)
                 .DisposeWith(disposables);
 
             // moved
