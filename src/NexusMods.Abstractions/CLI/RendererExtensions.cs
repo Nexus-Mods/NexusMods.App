@@ -10,7 +10,7 @@ namespace NexusMods.Abstractions.CLI;
 public static class RendererExtensions
 {
     /// <summary>
-    /// Creates a new <see cref="Text"/> renderable from the given column names and rows.
+    /// Creates a new <see cref="Table"/> renderable from the given column names and rows.
     /// </summary>
     /// <param name="renderer"></param>
     /// <param name="columns"></param>

@@ -5,9 +5,4 @@
       <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
       <PackageReference Include="NexusMods.ProxyConsole.Abstractions" />
     </ItemGroup>
-    <ItemGroup>
-      <Folder Include="CLI\DataOutputs\" />
-      <Folder Include="CLI\Rendering\" />
-    </ItemGroup>
-
 </Project>
