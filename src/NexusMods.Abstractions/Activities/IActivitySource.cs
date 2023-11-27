@@ -56,11 +56,13 @@ public interface IActivitySource<in T> : IActivitySource
     /// Sets the progress of the activity, to a specific value.
     /// </summary>
     /// <param name="value"></param>
-    public void SetProgress(T value);
+    /// <param name="token"></param>
+    public ValueTask SetProgress(T value, CancellationToken token);
 
     /// <summary>
     /// Adds to the progress of the activity, by a specific value.
     /// </summary>
     /// <param name="value"></param>
-    public void AddProgress(T value);
+    /// <param name="token"></param>
+    public ValueTask AddProgress(T value, CancellationToken token);
 }

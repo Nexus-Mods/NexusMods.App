@@ -73,7 +73,7 @@ public class ArchiveInstaller : IArchiveInstaller
         try
         {
             // Create the job so the UI can show progress.
-            using var job = _activityFactory.Create("Adding mod files to {Name}", baseMod.Name);
+            using var job = _activityFactory.Create(IArchiveInstaller.Group, "Adding mod files to {Name}", baseMod.Name);
 
             // Create a tree so installers can find the file easily.
             var tree = FileTreeNode<RelativePath, ModSourceFileEntry>.CreateTree(download.Contents
@@ -146,7 +146,7 @@ public class ArchiveInstaller : IArchiveInstaller
                 };
             }
 
-            job.AddProgress(Percent.CreateClamped(0.75));
+            await job.AddProgress(Percent.CreateClamped(0.75), token);
 
             // Step 5: Add the mod to the loadout.
             AModMetadata? modMetadata = mods.Length > 1

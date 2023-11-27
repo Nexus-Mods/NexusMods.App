@@ -1,14 +1,13 @@
 using System.Buffers.Binary;
 using System.Runtime.CompilerServices;
 using System.Text;
-using NexusMods.Archives.Nx.Headers.Managed;
+using NexusMods.Abstractions.Activities;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Activities;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.LoadoutSynchronizer;
-using NexusMods.DataModel.RateLimiting.Extensions;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 
@@ -28,6 +27,11 @@ namespace NexusMods.DataModel;
 /// </remarks>
 public class FileHashCache
 {
+    /// <summary>
+    /// The activity group for file hash cache activities.
+    /// </summary>
+    public static readonly ActivityGroup Group = ActivityGroup.From("FileHashCache");
+
     private readonly IActivityFactory _activityFactory;
     private readonly IDataStore _store;
 
@@ -102,47 +106,29 @@ public class FileHashCache
         var validPaths = paths.Where(p => p.DirectoryExists()).ToList();
 
         var allFiles = validPaths.SelectMany(p => p.EnumerateFiles())
-            .Select(f => (File: f, Info: f.FileInfo))
+            .Select(f => f.FileInfo)
             .ToList();
 
-        using var activity = _activityFactory.Create<Size>(TODO, "Hashing files in {Count} folders", validPaths.Count);
+        using var activity = _activityFactory.Create<Size>(Group, "Hashing files in {Count} folders", validPaths.Count);
 
-        activity.SetMax(allFiles.Sum(f => f.FileInfo.Size));
+        activity.SetMax(allFiles.Sum(f => f.Size));
 
-        var results = await Parallel.ForEachAsync(allFiles, async (tuple, file) =>
+        var results = await allFiles.ParallelForEach(async (info, innerToken) =>
         {
-            var (path, info) = tuple;
-            if (TryGetCached(path, out var found))
+            if (TryGetCached(info.Path, out var found))
             {
                 if (found.Size == info.Size && found.LastModified == info.LastWriteTimeUtc)
                 {
                     return new HashedEntry(info, found.Hash);
                 }
             }
-            var hashed = await info.Path.XxHash64Async(activity, token);
+            var hashed = await info.Path.XxHash64Async(activity, innerToken);
             PutCachedAsync(info.Path, new FileHashCacheEntry(info.LastWriteTimeUtc, hashed, info.Size));
             return new HashedEntry(info, hashed);
 
-        }, token, "Hashing Files");
+        });
 
-
-        var result = _activityFactory.ForEachFileAsync(validPaths, async (job, entry) =>
-        {
-            if (TryGetCached(entry.Path, out var found))
-            {
-                if (found.Size == entry.Size && found.LastModified == entry.LastWriteTimeUtc)
-                {
-                    job.ReportNoWait(entry.Size);
-                    return new HashedEntry(entry, found.Hash);
-                }
-            }
-
-            var hashed = await entry.Path.XxHash64Async(job, token);
-            PutCachedAsync(entry.Path, new FileHashCacheEntry(entry.LastWriteTimeUtc, hashed, entry.Size));
-            return new HashedEntry(entry, hashed);
-        }, token, "Hashing Files");
-
-        await foreach (var itm in result)
+        foreach (var itm in results)
             yield return itm;
     }
 
@@ -168,7 +154,7 @@ public class FileHashCache
             }
         }
 
-        using var job = await _activityFactory.BeginAsync($"Hashing {file.FileName}", size, token);
+        using var job = _activityFactory.Create<Size>(Group, "Hashing {FileName}", file.FileName);
         var hashed = await file.XxHash64Async(job, token);
         PutCachedAsync(file, new FileHashCacheEntry(info.LastWriteTimeUtc, hashed, size));
         return new HashedEntry(file, hashed, info.LastWriteTimeUtc, size);

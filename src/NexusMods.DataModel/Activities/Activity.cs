@@ -10,8 +10,9 @@ public class Activity(ActivityMonitor monitor, ActivityGroup group) : IActivityS
     private readonly Subject<DateTime> _reports = new();
     private readonly DateTime _startTime = DateTime.UtcNow;
     private (string Template, object[] Arguments) _status;
-    private bool _isFinished;
+    private ActivityStatus _runStatus;
     private Percent _percentage;
+    private TaskCompletionSource? _pauseTask = null;
 
 
     /// <summary>
@@ -19,10 +20,64 @@ public class Activity(ActivityMonitor monitor, ActivityGroup group) : IActivityS
     /// </summary>
     public ActivityId Id { get; } = ActivityId.From(Guid.NewGuid());
 
+    /// <summary>
+    /// Cancels the activity.
+    /// </summary>
+    public void Cancel()
+    {
+        lock (this)
+        {
+            if (_runStatus is ActivityStatus.Running or ActivityStatus.Paused)
+            {
+                _pauseTask?.TrySetCanceled();
+                _runStatus = ActivityStatus.Cancelled;
+            }
+        }
+        SendReport();
+    }
+
+    /// <inheritdoc />
+    public void Pause()
+    {
+        lock (this)
+        {
+            if (_runStatus != ActivityStatus.Running)
+            {
+                throw new InvalidOperationException("Can only pause a running activity");
+            }
+            _runStatus = ActivityStatus.Paused;
+            _pauseTask = new TaskCompletionSource();
+        }
+        SendReport();
+    }
+
+    /// <inheritdoc />
+    public void Resume()
+    {
+        lock (this)
+        {
+            if (_runStatus != ActivityStatus.Paused)
+            {
+                throw new InvalidOperationException("Can only resume a paused activity");
+            }
+            _runStatus = ActivityStatus.Running;
+            _pauseTask?.TrySetResult();
+            _pauseTask = null;
+        }
+        SendReport();
+    }
+
     /// <inheritdoc />
     public void Dispose()
     {
-        _isFinished = true;
+        lock (this)
+        {
+            if (_runStatus is ActivityStatus.Running or ActivityStatus.Paused)
+            {
+                _pauseTask?.TrySetCanceled();
+                _runStatus = ActivityStatus.Finished;
+            }
+        }
         SendReport();
         monitor.Remove(this);
     }
@@ -33,17 +88,24 @@ public class Activity(ActivityMonitor monitor, ActivityGroup group) : IActivityS
         _status = (template, arguments);
         SendReport();
     }
+    private ValueTask MaybePause(CancellationToken token)
+    {
+        var val = _pauseTask?.Task;
+        return val is null ? ValueTask.CompletedTask : new ValueTask(val);
+    }
 
     /// <inheritdoc />
-    public void SetProgress(Percent percent, CancellationToken token = bad)
+    public async ValueTask SetProgress(Percent percent, CancellationToken token)
     {
+        await MaybePause(token);
         _percentage = percent;
         SendReport();
     }
 
     /// <inheritdoc />
-    public void AddProgress(Percent percent)
+    public async ValueTask AddProgress(Percent percent, CancellationToken token)
     {
+        await MaybePause(token);
         _percentage += percent;
         SendReport();
     }
@@ -60,7 +122,7 @@ public class Activity(ActivityMonitor monitor, ActivityGroup group) : IActivityS
             ReportTime = DateTime.UtcNow,
             StartTime = _startTime,
             Id = Id,
-            IsFinished = _isFinished,
+            RunStatus = _runStatus,
             Status = _status,
             CurrentProgress = _percentage
         };

@@ -11,7 +11,7 @@ public readonly struct ActivityReport
     /// <summary>
     /// True if the activity has finished, false otherwise.
     /// </summary>
-    public required bool IsFinished { get; init; }
+    public required ActivityStatus RunStatus { get; init; }
 
     /// <summary>
     /// The Unique identifier for the activity.
@@ -58,5 +58,6 @@ public readonly struct ActivityReport
     /// <summary>
     /// The end time of the activity, if it can be calculated.
     /// </summary>
-    public DateTime? EndTime => IsFinished ? StartTime + Elapsed : StartTime + EstimatedTotalTime;
+    public DateTime? EndTime => RunStatus is ActivityStatus.Finished or ActivityStatus.Cancelled ?
+        StartTime + Elapsed : StartTime + EstimatedTotalTime;
 }

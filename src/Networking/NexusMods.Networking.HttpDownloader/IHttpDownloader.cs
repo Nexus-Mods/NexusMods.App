@@ -1,3 +1,4 @@
+using NexusMods.Abstractions.Activities;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 
@@ -9,11 +10,16 @@ namespace NexusMods.Networking.HttpDownloader;
 public interface IHttpDownloader
 {
     /// <summary>
+    /// The activity group for HTTP downloader activities.
+    /// </summary>
+    public static ActivityGroup Group => ActivityGroup.From("HttpDownloader");
+
+    /// <summary>
     /// Download the file specified by the given requests and save it to the
     /// given destination. Returns the hash of the downloaded file.
     /// If multiple source are provided, they are assumed to be mirrors,
     /// and the downloader is free to load balance between them.
-    /// 
+    ///
     /// They are assumed to be in order of preference, with the first being
     /// the most preferred.
     /// </summary>
@@ -32,7 +38,7 @@ public interface IHttpDownloader
     /// given destination. Returns the hash of the downloaded file.
     /// If multiple source are provided, they are assumed to be mirrors,
     /// and the downloader is free to load balance between them.
-    /// 
+    ///
     /// They are assumed to be in order of preference, with the first being
     /// the most preferred.
     /// </summary>
