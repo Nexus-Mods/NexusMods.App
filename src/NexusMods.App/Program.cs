@@ -50,9 +50,12 @@ public class Program
         var isDebug = false;
         #endif
 
-
+        _logger.LogDebug("Application starting in {Mode} mode", isDebug ? "debug" : "release");
         var startup = host.Services.GetRequiredService<StartupDirector>();
-        return await startup.Start(args, isDebug);
+        _logger.LogDebug("Calling startup handler");
+        var result = await startup.Start(args, isDebug);
+        _logger.LogDebug("Startup handler returned {Result}", result);
+        return result;
     }
 
     public static IHost BuildHost()
@@ -80,8 +83,8 @@ public class Program
         // do additional initialization inside their constructors.
         // We need to make sure their constructors are called to
         // finalize our OpenTelemetry configuration.
-        host.Services.GetService<TracerProvider>();
-        host.Services.GetService<MeterProvider>();
+       //host.Services.GetService<TracerProvider>();
+        //host.Services.GetService<MeterProvider>();
         return host;
     }
 

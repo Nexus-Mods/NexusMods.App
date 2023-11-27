@@ -97,6 +97,7 @@ public sealed class SqliteIPC : IDisposable, IInterprocessJobManager
     public SqliteIPC(ILogger<SqliteIPC> logger, IDataModelSettings settings, JsonSerializerOptions jsonSettings)
     {
         _logger = logger;
+        _logger.LogDebug("Creating SqliteIPC on process {ProcessId}", OwnProcessId);
         _jsonSettings = jsonSettings;
         _shutdownToken = new CancellationTokenSource();
 

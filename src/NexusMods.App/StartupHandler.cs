@@ -21,7 +21,9 @@ public class StartupHandler(ILogger<StartupHandler> logger, IServiceProvider pro
         try
         {
             logger.LogDebug("Running command: {Arguments}", string.Join(' ', args));
-            return await provider.GetRequiredService<CommandLineConfigurator>().RunAsync(args, renderer, token);
+            var result = await provider.GetRequiredService<CommandLineConfigurator>().RunAsync(args, renderer, token);
+            logger.LogDebug("Command result: {Result}", result);
+            return result;
         }
         catch (Exception e)
         {

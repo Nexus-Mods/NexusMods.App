@@ -74,7 +74,12 @@ public static class Services
             .AddListeners()
             .AddCommon()
             .AddDownloaders()
-            .AddSingleProcess((_, settings) => settings)
+            .AddSingleProcess()
+            .AddSingleton(s => new SingleProcessSettings
+            {
+                SyncFile = s.GetRequiredService<IFileSystem>().GetKnownPath(KnownPath.ApplicationDataDirectory)
+                    .Combine("single_process.sync")
+            })
             .AddDefaultRenderers();
 
         if (addStandardGameLocators)
