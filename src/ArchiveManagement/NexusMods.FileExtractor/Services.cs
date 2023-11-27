@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using NexusMods.DataModel.RateLimiting;
 using NexusMods.FileExtractor.Extractors;
 using NexusMods.Paths;
 

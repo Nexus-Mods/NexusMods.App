@@ -6,12 +6,10 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.Common.OSInterop;
-using NexusMods.DataModel.Interprocess;
-using NexusMods.DataModel.Interprocess.Jobs;
+using NexusMods.DataModel.Activities;
 using NexusMods.DataModel.Messaging;
 using NexusMods.Networking.NexusWebApi.DTOs.OAuth;
 using NexusMods.Networking.NexusWebApi.NMA.Messages;
-using NexusMods.Networking.NexusWebApi.NMA.Types;
 using NexusMods.Networking.NexusWebApi.Types;
 
 namespace NexusMods.Networking.NexusWebApi.NMA;
@@ -32,7 +30,7 @@ public class OAuth
     private readonly IOSInterop _os;
     private readonly IIDGenerator _idGen;
     private readonly IMessageConsumer<NXMUrlMessage> _nxmUrlMessages;
-    private readonly IInterprocessJobManager _jobManager;
+    private readonly IActivityFactory _activityFactory;
 
     /// <summary>
     /// constructor
@@ -42,13 +40,13 @@ public class OAuth
         IIDGenerator idGen,
         IOSInterop os,
         IMessageConsumer<NXMUrlMessage> nxmUrlMessages,
-        IInterprocessJobManager jobManager)
+        IActivityFactory activityFactory)
     {
         _logger = logger;
         _http = http;
         _os = os;
         _idGen = idGen;
-        _jobManager = jobManager;
+        _activityFactory = activityFactory;
         _nxmUrlMessages = nxmUrlMessages;
     }
 
@@ -87,9 +85,9 @@ public class OAuth
         return await AuthorizeToken(codeVerifier, code, cancellationToken);
     }
 
-    private IInterprocessJob CreateJob(Uri url)
+    private IActivitySource CreateJob(Uri url)
     {
-        return InterprocessJob.Create(_jobManager, new NexusLoginJob {Uri = url});
+        return _activityFactory.Create("Logging into Nexus Mods, redirecting to {Url}", url);
     }
 
     /// <summary>

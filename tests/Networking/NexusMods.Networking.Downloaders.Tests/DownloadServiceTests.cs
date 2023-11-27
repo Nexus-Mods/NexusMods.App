@@ -1,5 +1,4 @@
 using FluentAssertions;
-using NexusMods.DataModel.RateLimiting;
 using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Networking.Downloaders.Tasks.State;
 

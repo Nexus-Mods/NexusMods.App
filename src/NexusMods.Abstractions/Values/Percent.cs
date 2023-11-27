@@ -1,4 +1,4 @@
-namespace NexusMods.DataModel.RateLimiting;
+namespace NexusMods.Abstractions.Values;
 
 /// <summary>
 /// Represents a percentage; used for reporting progress of various operations

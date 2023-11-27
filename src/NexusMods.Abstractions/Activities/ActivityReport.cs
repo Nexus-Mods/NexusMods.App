@@ -1,5 +1,5 @@
 using NexusMods.Abstractions.Activities;
-using NexusMods.DataModel.RateLimiting;
+using NexusMods.Abstractions.Values;
 
 namespace NexusMods.DataModel.Activities;
 

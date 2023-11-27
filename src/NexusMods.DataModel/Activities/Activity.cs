@@ -1,7 +1,7 @@
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using NexusMods.Abstractions.Activities;
-using NexusMods.DataModel.RateLimiting;
+using NexusMods.Abstractions.Values;
 
 namespace NexusMods.DataModel.Activities;
 

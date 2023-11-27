@@ -4,7 +4,6 @@ using NexusMods.Common;
 using NexusMods.Common.GuidedInstaller;
 using NexusMods.DataModel.Diagnostics.Emitters;
 using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
-using NexusMods.DataModel.RateLimiting;
 using NexusMods.DataModel.Tests.Diagnostics;
 using NexusMods.FileExtractor;
 using NexusMods.FileExtractor.Extractors;

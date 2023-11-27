@@ -1,5 +1,4 @@
 using NexusMods.App.UI.Resources;
-using NexusMods.DataModel.RateLimiting;
 using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Networking.Downloaders.Interfaces.Traits;
 using ReactiveUI;

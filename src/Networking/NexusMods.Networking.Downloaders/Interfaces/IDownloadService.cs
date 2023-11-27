@@ -1,6 +1,5 @@
 using DynamicData;
 using NexusMods.DataModel;
-using NexusMods.DataModel.RateLimiting;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Networking.NexusWebApi.Types;
 using NexusMods.Paths;

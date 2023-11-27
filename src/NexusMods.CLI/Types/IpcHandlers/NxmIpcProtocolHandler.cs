@@ -1,4 +1,3 @@
-using NexusMods.DataModel.Interprocess;
 using NexusMods.DataModel.Messaging;
 using NexusMods.Networking.NexusWebApi.NMA.Messages;
 using NexusMods.Networking.NexusWebApi.Types;

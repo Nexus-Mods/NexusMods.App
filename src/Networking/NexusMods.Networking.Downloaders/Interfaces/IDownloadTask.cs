@@ -1,4 +1,3 @@
-using NexusMods.DataModel.RateLimiting;
 using NexusMods.Networking.Downloaders.Tasks.State;
 
 namespace NexusMods.Networking.Downloaders.Interfaces;

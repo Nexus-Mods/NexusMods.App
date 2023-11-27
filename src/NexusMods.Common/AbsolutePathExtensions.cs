@@ -1,4 +1,4 @@
-﻿using NexusMods.DataModel.RateLimiting;
+﻿using NexusMods.DataModel.Activities;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 
@@ -16,14 +16,18 @@ public static class AbsolutePathExtensions
     /// <param name="job"></param>
     /// <param name="token"></param>
     /// <returns></returns>
-    public static async Task<Hash> XxHash64Async(this AbsolutePath input, IJob<Size>? job = null,
+    public static async Task<Hash> XxHash64Async(this AbsolutePath input, IActivitySource<Size>? job = null,
         CancellationToken token = default)
     {
         await using var inputStream = input.Read();
         if (job == null)
             return await inputStream.HashingCopyAsync(Stream.Null, token, async m => await Task.CompletedTask);
         else
-            return await inputStream.HashingCopyAsync(Stream.Null, token, async m => await job.ReportAsync(Size.FromLong(m.Length), token));
+            return await inputStream.HashingCopyAsync(Stream.Null, token,  m =>
+            {
+                job.AddProgress(Size.FromLong(m.Length));
+                return Task.CompletedTask;
+            });
     }
 
 }

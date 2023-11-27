@@ -1,8 +1,8 @@
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using NexusMods.Abstractions.Values;
 using NexusMods.App.UI;
-using NexusMods.DataModel.RateLimiting;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 

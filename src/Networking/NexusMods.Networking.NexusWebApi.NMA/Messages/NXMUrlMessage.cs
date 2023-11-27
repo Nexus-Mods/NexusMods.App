@@ -1,5 +1,3 @@
-using System.Text;
-using NexusMods.DataModel.Interprocess;
 using NexusMods.Networking.NexusWebApi.Types;
 
 namespace NexusMods.Networking.NexusWebApi.NMA.Messages;

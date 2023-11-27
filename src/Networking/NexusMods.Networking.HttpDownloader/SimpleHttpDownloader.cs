@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Logging;
 using NexusMods.Common;
-using NexusMods.DataModel.RateLimiting;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 

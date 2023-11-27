@@ -1,4 +1,3 @@
-using NexusMods.DataModel.RateLimiting;
 using NexusMods.Paths;
 
 namespace NexusMods.Networking.HttpDownloader;

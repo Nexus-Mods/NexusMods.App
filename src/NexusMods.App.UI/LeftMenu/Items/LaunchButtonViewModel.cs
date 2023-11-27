@@ -4,13 +4,13 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using DynamicData;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.Values;
 using NexusMods.App.UI.Resources;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Interprocess.Jobs;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Markers;
-using NexusMods.DataModel.RateLimiting;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 

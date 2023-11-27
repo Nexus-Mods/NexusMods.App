@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.Values;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Interprocess.Jobs;
-using NexusMods.DataModel.RateLimiting;
 using NexusMods.Paths;
 
 namespace NexusMods.DataModel;

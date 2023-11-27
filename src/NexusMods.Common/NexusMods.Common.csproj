@@ -14,4 +14,8 @@
     <ItemGroup>
         <InternalsVisibleTo Include="NexusMods.Common.Tests" />
     </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\NexusMods.Abstractions\NexusMods.Abstractions.csproj" />
+    </ItemGroup>
 </Project>

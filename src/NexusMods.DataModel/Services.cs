@@ -14,7 +14,6 @@ using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.Messaging;
-using NexusMods.DataModel.RateLimiting;
 using NexusMods.DataModel.Sorting.Rules;
 using NexusMods.DataModel.TriggerFilter;
 using NexusMods.FileExtractor;
