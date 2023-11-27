@@ -7,31 +7,29 @@ namespace NexusMods.DataModel.Activities;
 
 public class ActivityMonitor : IActivityFactory, IActivityMonitor
 {
-    private readonly ILogger<ActivityMonitor> _logger;
     private SourceCache<Activity, ActivityId> _activities = new(x => x.Id);
 
     /// <summary>
     /// DI constructor.
     /// </summary>
-    public ActivityMonitor(ILogger<ActivityMonitor> logger)
+    public ActivityMonitor()
     {
-        _logger = logger;
         _activities.Connect()
             .Transform(x => (IReadOnlyActivity) x)
             .Bind(out _activitiesCasted);
     }
 
     /// <inheritdoc />
-    public IActivitySource Create(string template, params object[] arguments)
+    public IActivitySource Create(ActivityGroup group, string template, params object[] arguments)
     {
-        var activity = new Activity(this);
+        var activity = new Activity(this, group);
         activity.SetStatusMessage(template, arguments);
         _activities.AddOrUpdate(activity);
         return activity;
     }
 
 
-    public IActivitySource<T> Create<T>(string template, params object[] arguments)
+    public IActivitySource<T> Create<T>(ActivityGroup group, string template, params object[] arguments)
     {
         throw new NotImplementedException();
     }

@@ -5,7 +5,7 @@ using NexusMods.Abstractions.Values;
 
 namespace NexusMods.DataModel.Activities;
 
-public class Activity(ActivityMonitor monitor) : IActivitySource, IReadOnlyActivity
+public class Activity(ActivityMonitor monitor, ActivityGroup group) : IActivitySource, IReadOnlyActivity
 {
     private readonly Subject<DateTime> _reports = new();
     private readonly DateTime _startTime = DateTime.UtcNow;
@@ -35,7 +35,7 @@ public class Activity(ActivityMonitor monitor) : IActivitySource, IReadOnlyActiv
     }
 
     /// <inheritdoc />
-    public void SetProgress(Percent percent)
+    public void SetProgress(Percent percent, CancellationToken token = bad)
     {
         _percentage = percent;
         SendReport();
@@ -92,4 +92,7 @@ public class Activity(ActivityMonitor monitor) : IActivitySource, IReadOnlyActiv
             // Update the time box
             .Do(report => timeBox.Time = report.ReportTime);
     }
+
+    /// <inheritdoc />
+    public ActivityGroup Group => group;
 }

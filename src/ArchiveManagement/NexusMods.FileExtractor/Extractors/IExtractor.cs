@@ -1,3 +1,4 @@
+using NexusMods.Abstractions.Activities;
 using NexusMods.Common;
 using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.Paths;
@@ -5,11 +6,16 @@ using NexusMods.Paths;
 namespace NexusMods.FileExtractor.Extractors;
 
 /// <summary>
-/// General purpose abstraction over an extracting library for utility.  
-/// Each <see cref="IExtractor"/> can support extracting from one or more archive formats.  
+/// General purpose abstraction over an extracting library for utility.
+/// Each <see cref="IExtractor"/> can support extracting from one or more archive formats.
 /// </summary>
 public interface IExtractor
 {
+    /// <summary>
+    /// The activity group for activities created by extractors.
+    /// </summary>
+    public static ActivityGroup ActivityGroup = ActivityGroup.From("FileExtractor");
+
     /// <summary>
     /// A list of all the file type signatures supported by this extractor.
     /// </summary>
@@ -29,14 +35,14 @@ public interface IExtractor
     /// <typeparam name="T">Return type</typeparam>
     /// <returns>A Dictionary of RelativePath -> Return value from `func`</returns>
     /// <remarks>
-    ///     Does not extract files to disk. If you need to save the data; copy it elsewhere.  
-    ///     The source data passed to func can be in-memory.  
+    ///     Does not extract files to disk. If you need to save the data; copy it elsewhere.
+    ///     The source data passed to func can be in-memory.
     /// </remarks>
     public Task<IDictionary<RelativePath, T>> ForEachEntryAsync<T>(IStreamFactory source,
         Func<RelativePath, IStreamFactory, ValueTask<T>> func, CancellationToken token = default);
 
     /// <summary>
-    /// Unconditionally extract all files from `sFn` to a specific folder.  
+    /// Unconditionally extract all files from `sFn` to a specific folder.
     /// </summary>
     /// <param name="source">The source of the incoming stream</param>
     /// <param name="destination">Where the files are to be extracted</param>

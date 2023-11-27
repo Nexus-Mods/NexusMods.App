@@ -1,4 +1,6 @@
-namespace NexusMods.DataModel.Activities;
+using NexusMods.DataModel.Activities;
+
+namespace NexusMods.Abstractions.Activities;
 
 /// <summary>
 /// An activity is a long running operation that can be monitored by the user. This is the readonly interface for for
@@ -18,4 +20,29 @@ public interface IReadOnlyActivity
     /// </summary>
     /// <returns></returns>
     public IObservable<ActivityReport> GetReports(TimeSpan? maxInterval, TimeSpan? minInterval);
+
+    /// <summary>
+    /// Gets the unique group identifier for this activity.
+    /// </summary>
+    public ActivityGroup Group { get; }
+
+    /// <summary>
+    /// Gets the unique identifier for this activity.
+    /// </summary>
+    public ActivityId Id { get; }
+
+    /// <summary>
+    /// Terminates the activity, and marks it as cancelled.
+    /// </summary>
+    public void Cancel();
+
+    /// <summary>
+    /// Pauses the activity, call Resume() to resume
+    /// </summary>
+    public void Pause();
+
+    /// <summary>
+    /// Continues the activity after it was previously paused
+    /// </summary>
+    public void Resume();
 }

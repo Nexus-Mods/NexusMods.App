@@ -1,3 +1,4 @@
+using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.Values;
 
 namespace NexusMods.DataModel.Activities;
@@ -22,17 +23,20 @@ public interface IActivitySource : IDisposable
     public void SetStatusMessage(string template, params object[] arguments);
 
     /// <summary>
-    /// Sets the progress of the activity, to a specific value.
+    /// Sets the progress of the activity, to a specific value. May not return instantly
+    /// if the activity is throttled or has been paused.
     /// </summary>
     /// <param name="percent"></param>
-    public void SetProgress(Percent percent);
+    /// <param name="token"></param>
+    public ValueTask SetProgress(Percent percent, CancellationToken token = default);
 
     /// <summary>
-    /// Adds to the progress of the activity, by a specific value.
+    /// Adds to the progress of the activity, by a specific value. May not return instantly
+    /// if the activity is throttled or has been paused.
     /// </summary>
     /// <param name="percent"></param>
-    public void AddProgress(Percent percent);
-
+    /// <param name="token"></param>
+    public ValueTask AddProgress(Percent percent, CancellationToken token = default);
 }
 
 /// <summary>

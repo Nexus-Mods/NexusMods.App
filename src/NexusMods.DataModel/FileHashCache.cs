@@ -105,7 +105,7 @@ public class FileHashCache
             .Select(f => (File: f, Info: f.FileInfo))
             .ToList();
 
-        using var activity = _activityFactory.Create<Size>("Hashing files in {Count} folders", validPaths.Count);
+        using var activity = _activityFactory.Create<Size>(TODO, "Hashing files in {Count} folders", validPaths.Count);
 
         activity.SetMax(allFiles.Sum(f => f.FileInfo.Size));
 
