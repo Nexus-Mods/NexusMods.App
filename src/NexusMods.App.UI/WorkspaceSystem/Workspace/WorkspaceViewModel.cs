@@ -89,9 +89,14 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                 {
                     var (item, newActualPosition) = tuple;
 
+                    const double minX = 0.2;
+                    const double minY = 0.2;
+                    const double maxX = 1 - minX;
+                    const double maxY = 1 - minY;
+
                     var newLogicalPosition = new Point(
-                        newActualPosition.X / _lastWorkspaceSize.Width,
-                        newActualPosition.Y / _lastWorkspaceSize.Height
+                        Math.Max(minX, Math.Min(maxX, newActualPosition.X / _lastWorkspaceSize.Width)),
+                        Math.Max(minY, Math.Min(maxY, newActualPosition.Y / _lastWorkspaceSize.Height))
                     );
 
                     var lastItemPosition = item.LogicalPosition;
