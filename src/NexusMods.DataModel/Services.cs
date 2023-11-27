@@ -13,6 +13,7 @@ using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Mods;
+using NexusMods.DataModel.Messaging;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.DataModel.Sorting.Rules;
 using NexusMods.DataModel.TriggerFilter;
@@ -73,11 +74,10 @@ public static class Services
         coll.AddSingleton<IToolManager, ToolManager>();
         coll.AddSingleton<DiskStateRegistry>();
 
-        coll.AddAllSingleton<IInterprocessJobManager, SqliteIPC>();
         coll.AddSingleton(typeof(IMessageConsumer<>),
-            typeof(InterprocessConsumer<>));
+            typeof(MessageConsumer<>));
         coll.AddSingleton(typeof(IMessageProducer<>),
-            typeof(InterprocessProducer<>));
+            typeof(MessageProducer<>));
 
         coll.AddSingleton<ITypeFinder>(_ => new AssemblyTypeFinder(typeof(Services).Assembly));
         coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<AModMetadata>>();

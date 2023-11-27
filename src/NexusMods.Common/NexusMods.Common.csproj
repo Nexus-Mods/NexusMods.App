@@ -14,8 +14,4 @@
     <ItemGroup>
         <InternalsVisibleTo Include="NexusMods.Common.Tests" />
     </ItemGroup>
-
-    <ItemGroup>
-        <ProjectReference Include="..\NexusMods.DataModel.RateLimiting\NexusMods.DataModel.RateLimiting.csproj" />
-    </ItemGroup>
 </Project>

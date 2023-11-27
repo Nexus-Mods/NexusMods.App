@@ -18,6 +18,7 @@ public class StartupHandler(ILogger<StartupHandler> logger, IServiceProvider pro
 
     public override async Task<int> HandleCliCommandAsync(string[] args, IRenderer renderer, CancellationToken token)
     {
+
         try
         {
             logger.LogDebug("Running command: {Arguments}", string.Join(' ', args));
@@ -71,5 +72,6 @@ public class StartupHandler(ILogger<StartupHandler> logger, IServiceProvider pro
         }
     }
 
-    public override string MainProcessArgument => "main-process";
+    public static string MainProcessVerb => "main-process";
+    public override string MainProcessArgument => MainProcessVerb;
 }

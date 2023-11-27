@@ -4,5 +4,6 @@
     <ItemGroup>
       <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
       <PackageReference Include="NexusMods.ProxyConsole.Abstractions" />
+      <PackageReference Include="TransparentValueObjects" />
     </ItemGroup>
 </Project>

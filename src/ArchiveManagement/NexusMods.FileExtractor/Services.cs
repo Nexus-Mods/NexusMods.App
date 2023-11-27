@@ -27,7 +27,6 @@ public static class Services
         coll.AddSingleton<FileExtractor>();
         coll.AddSingleton<IExtractor, SevenZipExtractor>();
         coll.TryAddSingleton<TemporaryFileManager, TemporaryFileManagerEx>();
-        coll.TryAddSingleton<IResource<IExtractor, Size>>(_ => new Resource<IExtractor, Size>("File Extraction"));
         return coll;
     }
 }

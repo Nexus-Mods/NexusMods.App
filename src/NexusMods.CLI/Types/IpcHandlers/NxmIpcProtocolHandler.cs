@@ -1,4 +1,5 @@
 using NexusMods.DataModel.Interprocess;
+using NexusMods.DataModel.Messaging;
 using NexusMods.Networking.NexusWebApi.NMA.Messages;
 using NexusMods.Networking.NexusWebApi.Types;
 
@@ -27,7 +28,6 @@ public class NxmIpcProtocolHandler : IIpcProtocolHandler
     public async Task Handle(string url, CancellationToken cancel)
     {
         await _messages.Write(new NXMUrlMessage { Value = NXMUrl.Parse(new Uri(url)) }, cancel);
-        _messages.EnsureWrite(cancel);
     }
 }
 

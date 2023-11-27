@@ -26,10 +26,23 @@ public class Program
 {
     private static ILogger<Program> _logger = default!;
 
+    // Run in debug mode if we are in debug mode and the debugger is attached. We use preprocessor flags here as
+    // some AV software may be configured to flag processes that look for debuggers as malicious. So we don't even
+    // look for a debugger unless we are in debug mode.
+#if DEBUG
+    private static bool _isDebug = Debugger.IsAttached;
+#else
+    private static bool _isDebug = false;
+#endif
+
+
     [STAThread]
     public static async Task<int> Main(string[] args)
     {
-        var host = BuildHost();
+
+        var isMain = IsMainProcess(args);
+
+        var host = BuildHost(slimMode:!isMain);
 
         _logger = host.Services.GetRequiredService<ILogger<Program>>();
         TaskScheduler.UnobservedTaskException += (_, e) =>
@@ -43,22 +56,36 @@ public class Program
             _logger.LogError(ex, "Unhandled exception");
         });
 
-        // Run in debug mode if we are in debug mode and the debugger is attached.
-        #if DEBUG
-        var isDebug = Debugger.IsAttached;
-        #else
-        var isDebug = false;
-        #endif
 
-        _logger.LogDebug("Application starting in {Mode} mode", isDebug ? "debug" : "release");
+
+        // NOTE(erri120): DI is lazy by default and these services
+        // do additional initialization inside their constructors.
+        // We need to make sure their constructors are called to
+        // finalize our OpenTelemetry configuration.
+        //host.Services.GetService<TracerProvider>();
+        //host.Services.GetService<MeterProvider>();
+
+
+        _logger.LogDebug("Application starting in {Mode} mode", _isDebug ? "debug" : "release");
         var startup = host.Services.GetRequiredService<StartupDirector>();
         _logger.LogDebug("Calling startup handler");
-        var result = await startup.Start(args, isDebug);
+        var result = await startup.Start(args, _isDebug);
         _logger.LogDebug("Startup handler returned {Result}", result);
         return result;
     }
 
-    public static IHost BuildHost()
+    private static bool IsMainProcess(IReadOnlyList<string> args)
+    {
+        return args.Count == 1 && args[0] == StartupHandler.MainProcessVerb;
+    }
+
+    /// <summary>
+    /// Constructs the host for the application, if <paramref name="slimMode"/> is true, the host will not register
+    /// most of the services, and will only register what is required to proxy the app to the main process.
+    /// </summary>
+    /// <param name="slimMode"></param>
+    /// <returns></returns>
+    public static IHost BuildHost(bool slimMode = false)
     {
         // I'm not 100% sure how to wire this up to cleanly pass settings
         // to ConfigureLogging; since the DI container isn't built until the host is.
@@ -74,17 +101,11 @@ public class Program
                 // Note: suppressed because invalid config will throw.
                 config = JsonSerializer.Deserialize<AppConfig>(configJson)!;
                 config.Sanitize();
-                services.AddApp(config).Validate();
+                services.AddApp(config, slimMode:slimMode).Validate();
             })
             .ConfigureLogging((_, builder) => AddLogging(builder, config.LoggingSettings))
             .Build();
 
-        // NOTE(erri120): DI is lazy by default and these services
-        // do additional initialization inside their constructors.
-        // We need to make sure their constructors are called to
-        // finalize our OpenTelemetry configuration.
-       //host.Services.GetService<TracerProvider>();
-        //host.Services.GetService<MeterProvider>();
         return host;
     }
 
