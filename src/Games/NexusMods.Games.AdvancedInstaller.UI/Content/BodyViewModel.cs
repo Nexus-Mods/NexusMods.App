@@ -71,66 +71,66 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
             // Handle user selecting mod content entries
             ModContentViewModel.ModContentEntriesCache.Connect()
                 .MergeManyItems(entry => entry.BeginSelectCommand)
-                .Subscribe(entry => OnBeginSelect(entry.Item))
+                .SubscribeWithErrorLogging(entry => OnBeginSelect(entry.Item))
                 .DisposeWith(disposables);
 
             // Handle user cancelling the selection of mod content entries
             ModContentViewModel.ModContentEntriesCache.Connect()
                 .MergeManyItems(entry => entry.CancelSelectCommand)
-                .Subscribe(entry => OnCancelSelect(entry.Item))
+                .SubscribeWithErrorLogging(entry => OnCancelSelect(entry.Item))
                 .DisposeWith(disposables);
 
             // Handle starting to create a new folder
             SelectLocationViewModel.TreeEntriesCache.Connect()
                 .MergeManyItems(entry => entry.EditCreateFolderCommand)
-                .Subscribe(entry => OnEditCreateFolder(entry.Item))
+                .SubscribeWithErrorLogging(entry => OnEditCreateFolder(entry.Item))
                 .DisposeWith(disposables);
 
             // Handle Canceling the creation of a new folder
             SelectLocationViewModel.TreeEntriesCache.Connect()
                 .MergeManyItems(entry => entry.CancelCreateFolderCommand)
-                .Subscribe(entry => OnCancelCreateFolder(entry.Item))
+                .SubscribeWithErrorLogging(entry => OnCancelCreateFolder(entry.Item))
                 .DisposeWith(disposables);
 
             // Handle Saving the creation of a new folder
             SelectLocationViewModel.TreeEntriesCache.Connect()
                 .MergeManyItems(entry => entry.SaveCreatedFolderCommand)
-                .Subscribe(entry => OnSaveCreateFolder(entry.Item))
+                .SubscribeWithErrorLogging(entry => OnSaveCreateFolder(entry.Item))
                 .DisposeWith(disposables);
 
             // Handle Deleting the creation of a new folder
             SelectLocationViewModel.TreeEntriesCache.Connect()
                 .MergeManyItems(entry => entry.DeleteCreatedFolderCommand)
-                .Subscribe(entry => OnDeleteCreatedFolder(entry.Item))
+                .SubscribeWithErrorLogging(entry => OnDeleteCreatedFolder(entry.Item))
                 .DisposeWith(disposables);
 
             // Handle CreateMappingCommand from SelectTreeEntry
             SelectLocationViewModel.TreeEntriesCache.Connect()
                 .MergeManyItems(entry => entry.CreateMappingCommand)
-                .Subscribe(entry => OnCreateMapping(entry.Item))
+                .SubscribeWithErrorLogging(entry => OnCreateMapping(entry.Item))
                 .DisposeWith(disposables);
 
             // Handle CreateMappingCommand from PreviewTreeEntry
             SelectLocationViewModel.SuggestedEntries.ToObservableChangeSet(entry => entry.Id)
                 .MergeManyItems(entry => entry.CreateMappingCommand)
-                .Subscribe(entry => OnCreateMappingFromSuggestedEntry(entry.Item))
+                .SubscribeWithErrorLogging(entry => OnCreateMappingFromSuggestedEntry(entry.Item))
                 .DisposeWith(disposables);
 
             // Handle RemoveMappingCommand from PreviewTreeEntry
             PreviewViewModel.TreeEntriesCache.Connect()
                 .MergeManyItems(entry => entry.RemoveMappingCommand)
-                .Subscribe(entry => OnRemoveEntryFromPreview(entry.Item))
+                .SubscribeWithErrorLogging(entry => OnRemoveEntryFromPreview(entry.Item))
                 .DisposeWith(disposables);
 
             // Handle RemoveMappingCommand from ModContentTreeEntry
             ModContentViewModel.ModContentEntriesCache.Connect()
                 .MergeManyItems(entry => entry.RemoveMappingCommand)
-                .Subscribe(entry => OnRemoveMappingFromModContent(entry.Item))
+                .SubscribeWithErrorLogging(entry => OnRemoveMappingFromModContent(entry.Item))
                 .DisposeWith(disposables);
 
             // Update CanInstall when the PreviewViewModel changes
             PreviewViewModel.TreeRoots.WhenAnyValue(roots => roots.Count)
-                .Subscribe(count => { CanInstall = count > 0; })
+                .SubscribeWithErrorLogging(count => { CanInstall = count > 0; })
                 .DisposeWith(disposables);
         });
     }
@@ -143,7 +143,7 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
     /// Changes the right content view.
     /// </summary>
     /// <param name="modContentTreeEntryViewModel"></param>
-    private void OnBeginSelect(IModContentTreeEntryViewModel modContentTreeEntryViewModel)
+    internal void OnBeginSelect(IModContentTreeEntryViewModel modContentTreeEntryViewModel)
     {
         var foundNode = ModContentViewModel.Root.GetTreeNode(modContentTreeEntryViewModel.RelativePath);
         if (!foundNode.HasValue)
@@ -156,6 +156,9 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
         ModContentViewModel.SelectChildrenRecursive(foundNode.Value);
         ModContentViewModel.SelectedEntriesCache.AddOrUpdate(modContentTreeEntryViewModel);
 
+        // Expand the node
+        foundNode.Value.IsExpanded = true;
+
         // Update the UI to show the SelectLocationViewModel
         CurrentRightContentViewModel = SelectLocationViewModel;
     }
@@ -167,7 +170,7 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
     /// Potentially changes the right content view.
     /// </summary>
     /// <param name="modContentTreeEntryViewModel">The mod content entry to deselect.</param>
-    private void OnCancelSelect(IModContentTreeEntryViewModel modContentTreeEntryViewModel)
+    internal void OnCancelSelect(IModContentTreeEntryViewModel modContentTreeEntryViewModel)
     {
         var foundNode = ModContentViewModel.Root.GetTreeNode(modContentTreeEntryViewModel.RelativePath);
         if (!foundNode.HasValue)
@@ -224,7 +227,7 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
     /// Creates a mapping for the selected mod contents to the selected suggested location.
     /// </summary>
     /// <param name="suggestedEntry">Suggested location entry.</param>
-    private void OnCreateMappingFromSuggestedEntry(ISuggestedEntryViewModel suggestedEntry)
+    internal void OnCreateMappingFromSuggestedEntry(ISuggestedEntryViewModel suggestedEntry)
     {
         // Find the corresponding Selectable tree entry, and create a mapping using that.
         var correspondingTreeEntry = SelectLocationViewModel.TreeEntriesCache
@@ -239,7 +242,7 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
     /// Changes the right content view.
     /// </summary>
     /// <param name="selectableTreeEntryViewModel">Selectable tree folder under which the mod files need to be mapped.</param>
-    private void OnCreateMapping(ISelectableTreeEntryViewModel selectableTreeEntryViewModel)
+    internal void OnCreateMapping(ISelectableTreeEntryViewModel selectableTreeEntryViewModel)
     {
         var targetLocation = SelectLocationViewModel.TreeEntriesCache.Lookup(selectableTreeEntryViewModel.GamePath)
             .ValueOrDefault();
@@ -304,7 +307,10 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
         });
 
         ModContentViewModel.SelectedEntriesCache.Clear();
-        ExpandPreviewNodes(targetLocation.GamePath);
+
+        ExpandPreviewNodesInPath(targetLocation.GamePath);
+        PreviewViewModel.TreeRoots.GetTreeNode(targetLocation.GamePath).IfHasValue(ExpandPreviewNodesToMatchModContent);
+
         CurrentRightContentViewModel = PreviewViewModel;
     }
 
@@ -409,10 +415,32 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
     }
 
     /// <summary>
+    /// This goes through each preview node in a subTree and sets the expanded state to match the one in the mod content tree.
+    /// </summary>
+    private void ExpandPreviewNodesToMatchModContent(PreviewTreeNode subTree)
+    {
+        foreach (var child in subTree.Children)
+        {
+            if (!child.Item.IsDirectory)
+                continue;
+
+            if (!child.Item.MappedEntries.Any(modEntry =>
+                    ModContentViewModel.Root.GetTreeNode(modEntry.RelativePath).ValueOrDefault() is
+                    {
+                        IsExpanded: true
+                    })) continue;
+
+            // At least one of the mapped entries is expanded in the modContent tree, so we expand this node as well.
+            child.IsExpanded = true;
+            ExpandPreviewNodesToMatchModContent(child);
+        }
+    }
+
+    /// <summary>
     /// Expands all the preview nodes from the root to the node with the given path.
     /// </summary>
     /// <param name="path"></param>
-    private void ExpandPreviewNodes(GamePath path)
+    private void ExpandPreviewNodesInPath(GamePath path)
     {
         var previewNode = PreviewViewModel.TreeRoots.GetTreeNode(path).ValueOrDefault();
         if (previewNode is null)
@@ -488,7 +516,7 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
     /// Potentially changes the right content view.
     /// </summary>
     /// <param name="previewEntry">The preview entry the user requested to remove.</param>
-    private void OnRemoveEntryFromPreview(IPreviewTreeEntryViewModel previewEntry)
+    internal void OnRemoveEntryFromPreview(IPreviewTreeEntryViewModel previewEntry)
     {
         RemoveEntryFromPreview(previewEntry);
         CleanupPreviewTree(previewEntry.GamePath);
@@ -570,7 +598,7 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
     /// Potentially changes the right content view.
     /// </summary>
     /// <param name="modEntry"></param>
-    private void OnRemoveMappingFromModContent(IModContentTreeEntryViewModel modEntry)
+    internal void OnRemoveMappingFromModContent(IModContentTreeEntryViewModel modEntry)
     {
         var mappingPath = modEntry.Mapping.ValueOr(new GamePath(LocationId.Unknown, RelativePath.Empty));
 
