@@ -1,5 +1,6 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.ReactiveUI;
@@ -10,6 +11,7 @@ namespace NexusMods.App.UI.WorkspaceSystem;
 public partial class PanelView : ReactiveUserControl<IPanelViewModel>
 {
     private const double ScrollOffset = 250;
+    private const double DefaultPadding = 6.0;
 
     public PanelView()
     {
@@ -17,6 +19,19 @@ public partial class PanelView : ReactiveUserControl<IPanelViewModel>
 
         this.WhenActivated(disposables =>
         {
+            this.WhenAnyValue(view => view.ViewModel!.LogicalBounds)
+                .Do(logicalBounds =>
+                {
+                    var left = logicalBounds.Left.IsCloseTo(0.0) ? 0.0 : DefaultPadding;
+                    var top = logicalBounds.Top.IsCloseTo(0.0) ? 0.0 : DefaultPadding;
+                    var right = logicalBounds.Right.IsCloseTo(1.0) ? 0.0 : DefaultPadding;
+                    var bottom = logicalBounds.Bottom.IsCloseTo(1.0) ? 0.0 : DefaultPadding;
+
+                    Padding = new Thickness(left, top, right, bottom);
+                })
+                .Subscribe()
+                .DisposeWith(disposables);
+
             // toggle visibility of the scrollbar related elements
             this.WhenAnyValue(
                     view => view.TabHeaderScrollViewer.Extent,

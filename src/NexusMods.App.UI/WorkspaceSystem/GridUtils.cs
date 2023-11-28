@@ -9,42 +9,48 @@ internal static class GridUtils
     /// <summary>
     /// Returns all possible new states.
     /// </summary>
-    internal static IEnumerable<IReadOnlyDictionary<PanelId, Rect>> GetPossibleStates(IReadOnlyList<IPanelViewModel> panels, int columns, int rows)
+    internal static IEnumerable<ImmutableDictionary<PanelId, Rect>> GetPossibleStates(
+        ImmutableDictionary<PanelId, Rect> panels,
+        int columns,
+        int rows)
     {
         if (panels.Count == columns * rows) yield break;
-        var currentPanels = panels.ToImmutableDictionary(panel => panel.Id, panel => panel.LogicalBounds);
 
-        foreach (var panel in panels)
+        foreach (var kv in panels)
         {
-            if (CanAddColumn(panel, panels, columns))
+            if (CanAddColumn(kv, panels, columns))
             {
-                var res = CreateResult(currentPanels, panel, vertical: true, inverse: false);
+                var res = CreateResult(panels, kv, vertical: true, inverse: false);
                 yield return res;
 
                 if (res.First().Value != res.Last().Value)
-                    yield return CreateResult(currentPanels, panel, vertical: true, inverse: true);
+                    yield return CreateResult(panels, kv, vertical: true, inverse: true);
             }
 
-            if (CanAddRow(panel, panels, rows))
+            if (CanAddRow(kv, panels, rows))
             {
-                var res = CreateResult(currentPanels, panel, vertical: false, inverse: false);
+                var res = CreateResult(panels, kv, vertical: false, inverse: false);
                 yield return res;
 
                 if (res.First().Value != res.Last().Value)
-                    yield return CreateResult(currentPanels, panel, vertical: false, inverse: true);
+                    yield return CreateResult(panels, kv, vertical: false, inverse: true);
             }
         }
     }
 
-    private static IReadOnlyDictionary<PanelId, Rect> CreateResult(ImmutableDictionary<PanelId, Rect> currentPanels, IPanelViewModel panel, bool vertical, bool inverse)
+    private static ImmutableDictionary<PanelId, Rect> CreateResult(
+        ImmutableDictionary<PanelId, Rect> currentPanels,
+        KeyValuePair<PanelId, Rect> kv,
+        bool vertical,
+        bool inverse)
     {
-        var (updatedLogicalBounds, newPanelLogicalBounds) = MathUtils.Split(panel.LogicalBounds, vertical);
+        var (updatedLogicalBounds, newPanelLogicalBounds) = MathUtils.Split(kv.Value, vertical);
 
         if (inverse)
         {
             var res = currentPanels.SetItems(new []
             {
-                new KeyValuePair<PanelId, Rect>(panel.Id, newPanelLogicalBounds),
+                new KeyValuePair<PanelId, Rect>(kv.Key, newPanelLogicalBounds),
                 new KeyValuePair<PanelId, Rect>(PanelId.DefaultValue, updatedLogicalBounds)
             });
 
@@ -54,7 +60,7 @@ internal static class GridUtils
         {
             var res = currentPanels.SetItems(new []
             {
-                new KeyValuePair<PanelId, Rect>(panel.Id, updatedLogicalBounds),
+                new KeyValuePair<PanelId, Rect>(kv.Key, updatedLogicalBounds),
                 new KeyValuePair<PanelId, Rect>(PanelId.DefaultValue, newPanelLogicalBounds)
             });
 
@@ -62,19 +68,22 @@ internal static class GridUtils
         }
     }
 
-    private static bool CanAddColumn(IPanelViewModel panel, IReadOnlyList<IPanelViewModel> panels, int maxColumns)
+    private static bool CanAddColumn(
+        KeyValuePair<PanelId, Rect> kv,
+        ImmutableDictionary<PanelId, Rect> panels,
+        int maxColumns)
     {
         var currentColumns = 0;
+        var current = kv.Value;
 
-        // ReSharper disable once ForCanBeConvertedToForeach
-        // ReSharper disable once LoopCanBeConvertedToQuery
-        for (var i = 0; i < panels.Count; i++)
+        // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
+        foreach (var otherPair in panels)
         {
-            var other = panels[i];
+            var other = otherPair.Value;
 
             // NOTE(erri120): +1 column if another panel (self included) has the same Y position.
             // Since self is included, the number of columns is guaranteed to be at least 1.
-            if (other.LogicalBounds.Y.IsCloseTo(panel.LogicalBounds.Y))
+            if (other.Y.IsCloseTo(current.Y))
             {
                 currentColumns++;
                 continue;
@@ -88,31 +97,32 @@ internal static class GridUtils
             // | 3 | 2 |  | 1 | 3 |
 
             // 1) check if the panel is next to us
-            if (!other.LogicalBounds.Left.IsCloseTo(panel.LogicalBounds.Right) &&
-                !other.LogicalBounds.Right.IsCloseTo(panel.LogicalBounds.Left)) continue;
+            if (!other.Left.IsCloseTo(current.Right) && !other.Right.IsCloseTo(current.Left)) continue;
 
             // 2) check if the panel is in the current row
-            if (other.LogicalBounds.Bottom >= panel.LogicalBounds.Y ||
-                other.LogicalBounds.Top <= panel.LogicalBounds.Y)
+            if (other.Bottom.IsGreaterThanOrCloseTo(current.Y) || other.Top.IsLessThanOrCloseTo(current.Y))
                 currentColumns++;
         }
 
         return currentColumns < maxColumns;
     }
 
-    private static bool CanAddRow(IPanelViewModel panel, IReadOnlyList<IPanelViewModel> panels, int maxRows)
+    private static bool CanAddRow(
+        KeyValuePair<PanelId, Rect> kv,
+        ImmutableDictionary<PanelId, Rect> panels,
+        int maxRows)
     {
         var currentRows = 0;
+        var current = kv.Value;
 
-        // ReSharper disable once ForCanBeConvertedToForeach
-        // ReSharper disable once LoopCanBeConvertedToQuery
-        for (var i = 0; i < panels.Count; i++)
+        // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
+        foreach (var otherPair in panels)
         {
-            var other = panels[i];
+            var other = otherPair.Value;
 
             // NOTE(erri120): +1 column if another panel (self included) has the same X position.
             // Since self is included, the number of columns is guaranteed to be at least 1.
-            if (other.LogicalBounds.X.IsCloseTo(panel.LogicalBounds.X))
+            if (other.X.IsCloseTo(current.X))
             {
                 currentRows++;
                 continue;
@@ -126,12 +136,10 @@ internal static class GridUtils
             // | 2 | 2 |  | 2 | 3 |
 
             // 1) check if the panel is above or below us
-            if (!other.LogicalBounds.Top.IsCloseTo(panel.LogicalBounds.Bottom) &&
-                !other.LogicalBounds.Bottom.IsCloseTo(panel.LogicalBounds.Top)) continue;
+            if (!other.Top.IsCloseTo(current.Bottom) && !other.Bottom.IsCloseTo(current.Top)) continue;
 
             // 2) check if the panel is in the current column
-            if (other.LogicalBounds.Right >= panel.LogicalBounds.X ||
-                other.LogicalBounds.Left <= panel.LogicalBounds.X)
+            if (other.Right.IsGreaterThanOrCloseTo(current.X) || other.Left.IsLessThanOrCloseTo(current.X))
                 currentRows++;
         }
 
@@ -169,7 +177,7 @@ internal static class GridUtils
             // same column
             // | a | x |  | b | x |
             // | b | x |  | a | x |
-            if (rect.Left >= currentRect.Left && rect.Right <= currentRect.Right)
+            if (rect.Left.IsGreaterThanOrCloseTo(currentRect.Left) && rect.Right.IsLessThanOrCloseTo(currentRect.Right))
             {
                 if (rect.Top.IsCloseTo(currentRect.Bottom) || rect.Bottom.IsCloseTo(currentRect.Top))
                 {
@@ -180,7 +188,7 @@ internal static class GridUtils
             // same row
             // | a | b |  | b | a |  | a | b |
             // | x | x |  | x | x |  | a | c |
-            if (rect.Top >= currentRect.Top && rect.Bottom <= currentRect.Bottom)
+            if (rect.Top.IsGreaterThanOrCloseTo(currentRect.Top) && rect.Bottom.IsLessThanOrCloseTo(currentRect.Bottom))
             {
                 if (rect.Left.IsCloseTo(currentRect.Right) || rect.Right.IsCloseTo(currentRect.Left))
                 {
@@ -266,4 +274,95 @@ internal static class GridUtils
 
         return res.SetItems(updates);
     }
+
+    internal static IReadOnlyList<ResizerInfo> GetResizers(
+        ImmutableDictionary<PanelId, Rect> currentState,
+        bool isWorkspaceHorizontal = true)
+    {
+        var tmp = new List<ResizerInfo>(capacity: currentState.Count);
+        var adjacentPanels = new List<ResizerInfo>(capacity: currentState.Count);
+
+        // Step 1: fill the tmp List with all Resizers
+        foreach (var current in currentState)
+        {
+            var currentRect = current.Value;
+
+            // Step 1.1: go through all panels and find their adjacent panels
+            foreach (var other in currentState)
+            {
+                if (other.Key == current.Key) continue;
+
+                var rect = other.Value;
+
+                // same column
+                // | a | x |  | b | x |
+                // | b | x |  | a | x |
+                if (rect.Left >= currentRect.Left && rect.Right <= currentRect.Right)
+                {
+                    if (rect.Top.IsCloseTo(currentRect.Bottom) || rect.Bottom.IsCloseTo(currentRect.Top))
+                    {
+                        Add(adjacentPanels, current, other, isHorizontal: true);
+                    }
+                }
+
+                // same row
+                // | a | b |  | b | a |  | a | b |
+                // | x | x |  | x | x |  | a | c |
+                if (rect.Top >= currentRect.Top && rect.Bottom <= currentRect.Bottom)
+                {
+                    if (rect.Left.IsCloseTo(currentRect.Right) || rect.Right.IsCloseTo(currentRect.Left))
+                    {
+                        Add(adjacentPanels, current, other, isHorizontal: false);
+                    }
+                }
+            }
+
+            // Step 1.2: combine the resizers for the current panel
+            foreach (var info in adjacentPanels)
+            {
+                var pos = info.LogicalPosition;
+
+                var acc = new List<PanelId>();
+                acc.AddRange(info.ConnectedPanels);
+
+                foreach (var other in adjacentPanels)
+                {
+                    if (other.IsHorizontal != info.IsHorizontal) continue;
+
+                    var otherPos = other.LogicalPosition;
+                    if (pos == otherPos) continue;
+                    if (!pos.X.IsCloseTo(otherPos.X) && !pos.Y.IsCloseTo(otherPos.Y)) continue;
+
+                    acc.AddRange(other.ConnectedPanels.Where(id => !acc.Contains(id)));
+                }
+
+                tmp.Add(info with { ConnectedPanels = acc.ToArray() });
+            }
+
+            adjacentPanels.Clear();
+        }
+
+        // Step 2: combine all resizers of all panels
+        var res = tmp
+            .DistinctBy(info => info.LogicalPosition)
+            .GroupBy(info => isWorkspaceHorizontal ? info.LogicalPosition.X : info.LogicalPosition.Y)
+            .SelectMany(group =>
+            {
+                var connectedPanels = group.SelectMany(info => info.ConnectedPanels).Distinct().ToArray();
+                return group.Select(info => info with { ConnectedPanels = connectedPanels });
+            }).ToArray();
+
+        return res;
+
+        static void Add(ICollection<ResizerInfo> list, KeyValuePair<PanelId, Rect> current, KeyValuePair<PanelId, Rect> other, bool isHorizontal)
+        {
+            var (currentId, currentRect) = current;
+            var (otherId, rect) = other;
+
+            var pos = MathUtils.GetMidPoint(currentRect, rect, isHorizontal);
+            list.Add(new ResizerInfo(IsHorizontal: isHorizontal, pos, new[] { currentId, otherId }));
+        }
+    }
+
+    internal record struct ResizerInfo(bool IsHorizontal, Point LogicalPosition, PanelId[] ConnectedPanels);
 }
