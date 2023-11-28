@@ -1,6 +1,5 @@
 using System.Runtime.CompilerServices;
 using Avalonia;
-using Avalonia.Utilities;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
@@ -61,18 +60,20 @@ internal static class MathUtils
 
     internal static Point GetMidPoint(Rect a, Rect b, bool isHorizontal)
     {
-        var (smallerRect, biggerRect) = a.Width * a.Height < b.Width * b.Height ? (a, b) : (b, a);
-
         double midX, midY;
         if (isHorizontal)
         {
-            midX = smallerRect.X + smallerRect.Width / 2;
-            midY = (smallerRect.Y + smallerRect.Height + biggerRect.Y) / 2;
+            midX = a.Left.IsLessThanOrCloseTo(b.Left) && a.Right.IsGreaterThanOrCloseTo(b.Right)
+                ? b.Left + b.Width / 2
+                : a.Left + b.Width / 2;
+            midY = Math.Max(a.Top, b.Top);
         }
         else
         {
-            midX = (smallerRect.X + smallerRect.Width + biggerRect.X) / 2;
-            midY = smallerRect.Y + smallerRect.Height / 2;
+            midX = Math.Max(a.Left, b.Left);
+            midY = a.Top.IsLessThanOrCloseTo(b.Top) && a.Bottom.IsGreaterThanOrCloseTo(b.Bottom)
+                ? b.Top + b.Height / 2
+                : a.Top + a.Height / 2;
         }
 
         return new Point(midX, midY);

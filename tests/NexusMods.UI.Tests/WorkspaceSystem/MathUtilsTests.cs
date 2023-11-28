@@ -89,5 +89,8 @@ public class MathUtilsTests
 
         new object[] { new Rect(0, 0, 0.35, 0.5), new Rect(0.35, 0, 0.65, 1), false, new Point(0.35, 0.25) },
         new object[] { new Rect(0.35, 0, 0.65, 1), new Rect(0, 0, 0.35, 0.5) , false, new Point(0.35, 0.25) },
+
+        new object[] { new Rect(0, 0, 0.8, 1.0), new Rect(0.8, 0, 0.2, 0.5), false, new Point(0.8, 0.25) },
+        new object[] { new Rect(0, 0, 0.8, 1.0), new Rect(0.8, 0.5, 0.2, 0.5), false, new Point(0.8, 0.75) }
     };
 }
