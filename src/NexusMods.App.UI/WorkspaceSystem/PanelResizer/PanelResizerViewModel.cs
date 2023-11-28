@@ -14,9 +14,9 @@ public class PanelResizerViewModel : AViewModel<IPanelResizerViewModel>, IPanelR
     public bool IsHorizontal { get; }
     public PanelId[] ConnectedPanels { get; }
 
-    public ReactiveCommand<Point, Point> DragCommand { get; }
+    public ReactiveCommand<Point, Point> DragStartCommand { get; }
 
-    public ReactiveCommand<Unit, Unit> FinishDragCommand { get; }
+    public ReactiveCommand<Unit, Unit> DragEndCommand { get; }
 
     public PanelResizerViewModel(Point logicalPosition, bool isHorizontal, PanelId[] connectedPanels)
     {
@@ -24,8 +24,8 @@ public class PanelResizerViewModel : AViewModel<IPanelResizerViewModel>, IPanelR
         IsHorizontal = isHorizontal;
         ConnectedPanels = connectedPanels;
 
-        DragCommand = ReactiveCommand.Create<Point, Point>(input => input);
-        FinishDragCommand = ReactiveCommand.Create(() => { });
+        DragStartCommand = ReactiveCommand.Create<Point, Point>(input => input);
+        DragEndCommand = ReactiveCommand.Create(() => { });
 
         this.WhenActivated(disposables =>
         {

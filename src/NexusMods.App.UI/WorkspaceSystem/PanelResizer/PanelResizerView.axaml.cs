@@ -60,7 +60,7 @@ public partial class PanelResizerView : ReactiveUserControl<IPanelResizerViewMod
                     _startPoint = new Point(0, 0);
                 })
                 .Select(_ => Unit.Default)
-                .InvokeCommand(this, view => view.ViewModel!.FinishDragCommand)
+                .InvokeCommand(this, view => view.ViewModel!.DragEndCommand)
                 .DisposeWith(disposables);
 
             // moved
@@ -82,7 +82,7 @@ public partial class PanelResizerView : ReactiveUserControl<IPanelResizerViewMod
 
                     return newPosition;
                 })
-                .InvokeCommand(this, view => view.ViewModel!.DragCommand)
+                .InvokeCommand(this, view => view.ViewModel!.DragStartCommand)
                 .DisposeWith(disposables);
         });
     }

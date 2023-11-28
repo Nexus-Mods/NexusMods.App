@@ -87,7 +87,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
             // Finished Resizing
             _resizersSource
                 .Connect()
-                .MergeMany(item => item.FinishDragCommand)
+                .MergeMany(item => item.DragEndCommand)
                 .Do(_ => UpdateStates())
                 .Subscribe()
                 .DisposeWith(disposables);
@@ -95,7 +95,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
             // Resizing
             _resizersSource
                 .Connect()
-                .MergeManyWithSource(item => item.DragCommand)
+                .MergeManyWithSource(item => item.DragStartCommand)
                 .Where(tuple => tuple.Item2 != new Point(0, 0))
                 .Do(tuple =>
                 {
