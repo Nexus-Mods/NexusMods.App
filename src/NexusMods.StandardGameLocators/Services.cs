@@ -12,6 +12,7 @@ using GameFinder.StoreHandlers.Xbox;
 using GameFinder.Wine;
 using GameFinder.Wine.Bottles;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.DataModel.CommandLine.Verbs;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
 using NexusMods.Paths;
@@ -33,10 +34,13 @@ public static class Services
     public static IServiceCollection AddStandardGameLocators(this IServiceCollection services,
         bool registerConcreteLocators = true)
     {
+        services.AddGameLocatorCliVerbs();
+
         // TODO: figure out the Proton-Wine situation
 
         services.AddSingleton<IGameLocator, ManuallyAddedLocator>();
         services.AddSingleton<ITypeFinder, TypeFinder>();
+
 
         OSInformation.Shared.SwitchPlatform(
             onWindows: () =>

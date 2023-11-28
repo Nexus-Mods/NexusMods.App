@@ -5,6 +5,7 @@ using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.LoadoutSynchronizer;
 using NexusMods.DataModel.Sorting;
 using NexusMods.DataModel.Sorting.Rules;
+using NexusMods.Games.BethesdaGameStudios.Exceptions;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 
@@ -50,6 +51,17 @@ public class PluginSorter
             .ToArrayAsync(cancellationToken: token);
 
         if (allPlugins.Length == 0) return Array.Empty<RelativePath>();
+
+        var allNames = allPlugins.Select(p => p.FileName).ToHashSet();
+        var missingMasters = allPlugins
+            .SelectMany(p => p.Masters.Select(m => (Master: m, FileName: p.FileName))
+            .Where(m => !allNames.Contains(m.Master)))
+            .ToHashSet();
+
+        if (missingMasters.Count > 0)
+        {
+            throw new MissingMastersException(missingMasters);
+        }
 
         // Generate the rules for each plugin
         var tuples = allPlugins

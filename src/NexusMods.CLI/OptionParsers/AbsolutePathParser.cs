@@ -1,12 +1,13 @@
 using NexusMods.Abstractions.CLI;
 using NexusMods.Paths;
+using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
 
 namespace NexusMods.CLI.OptionParsers;
 
 /// <summary>
 /// Parses a string into an absolute path
 /// </summary>
-public class AbsolutePathParser : IOptionParser<AbsolutePath>
+internal class AbsolutePathParser : IOptionParser<AbsolutePath>
 {
     private readonly IFileSystem _fileSystem;
 
@@ -19,9 +20,20 @@ public class AbsolutePathParser : IOptionParser<AbsolutePath>
         _fileSystem = fileSystem;
     }
 
-    /// <inheritdoc />
-    public AbsolutePath Parse(string input, OptionDefinition<AbsolutePath> definition) => _fileSystem.FromUnsanitizedFullPath(input);
 
-    /// <inheritdoc />
-    public IEnumerable<string> GetOptions(string input) => Array.Empty<string>();
+    public bool TryParse(string toParse, out AbsolutePath value, out string error)
+    {
+        try
+        {
+            value = _fileSystem.FromUnsanitizedFullPath(toParse);
+            error = string.Empty;
+            return true;
+        }
+        catch (Exception e)
+        {
+            value = default!;
+            error = e.Message;
+            return false;
+        }
+    }
 }

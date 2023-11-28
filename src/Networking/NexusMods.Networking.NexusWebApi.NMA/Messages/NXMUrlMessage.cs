@@ -23,7 +23,7 @@ public readonly struct NXMUrlMessage : IMessage
     public static IMessage Read(ReadOnlySpan<byte> buffer)
     {
         var value = Encoding.UTF8.GetString(buffer);
-        return new NXMUrlMessage { Value = NXMUrl.Parse(value) };
+        return new NXMUrlMessage { Value = NXMUrl.Parse(new Uri(value)) };
     }
 
     /// <inheritdoc/>

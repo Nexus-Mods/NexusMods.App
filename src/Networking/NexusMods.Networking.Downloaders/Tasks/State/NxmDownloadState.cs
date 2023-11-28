@@ -12,9 +12,9 @@ public record NxmDownloadState(string Query) : ITypeSpecificState
 {
     // ReSharper disable once UnusedMember.Global - Required for serialization
     public NxmDownloadState() : this(string.Empty) { }
-    
+
     /// <summary>
     /// Converts the query string back to a Nexus URL.
     /// </summary>
-    public NXMUrl AsUrl() => NXMUrl.Parse(Query);
+    public NXMUrl AsUrl() => NXMUrl.Parse(new Uri(Query));
 }
