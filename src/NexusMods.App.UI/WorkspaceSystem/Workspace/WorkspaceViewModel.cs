@@ -180,14 +180,11 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                     }
 
                     // move other resizers
-
-                    // ReSharper disable once ArrangeThisQualifier
-                    if (isHorizontal == this.IsHorizontal) return;
-
                     foreach (var resizer in Resizers)
                     {
                         if (ReferenceEquals(item, resizer)) continue;
                         if (resizer.IsHorizontal != isHorizontal) continue;
+                        if (!item.ConnectedPanels.Intersect(resizer.ConnectedPanels).Any()) continue;
 
                         resizer.LogicalPosition = isHorizontal
                             ? resizer.LogicalPosition.WithY(newLogicalPosition.Y)
