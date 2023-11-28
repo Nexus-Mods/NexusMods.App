@@ -1,0 +1,15 @@
+<reactive:ReactiveUserControl
+    x:TypeArguments="workspace:IPanelResizerViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactive="http://reactiveui.net"
+    xmlns:workspace="clr-namespace:NexusMods.App.UI.WorkspaceSystem"
+    xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    x:Class="NexusMods.App.UI.WorkspaceSystem.PanelResizerView">
+
+    <icons:Icon x:Name="Icon" FontSize="30" Foreground="{StaticResource FontDarkPrimary}"/>
+
+</reactive:ReactiveUserControl>

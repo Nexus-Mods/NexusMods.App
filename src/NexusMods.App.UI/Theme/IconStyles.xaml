@@ -47,6 +47,8 @@
             <icons:Icon Classes="File"></icons:Icon>
             <icons:Icon Classes="Check"></icons:Icon>
             <icons:Icon Classes="DeleteOutline"></icons:Icon>
+            <icons:Icon Classes="DragHorizontal"></icons:Icon>
+            <icons:Icon Classes="DragVertical"></icons:Icon>
             <Svg Classes="AddCircle" />
         </WrapPanel>
     </Design.PreviewWith>
@@ -209,5 +211,13 @@
 
     <Style Selector="icons|Icon.ChevronRight">
         <Setter Property="Value" Value="mdi-chevron-right"/>
+    </Style>
+
+    <Style Selector="icons|Icon.DragVertical">
+        <Setter Property="Value" Value="mdi-drag-vertical-variant" />
+    </Style>
+
+    <Style Selector="icons|Icon.DragHorizontal">
+        <Setter Property="Value" Value="mdi-drag-horizontal-variant" />
     </Style>
 </Styles>

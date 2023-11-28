@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Common;
+using NexusMods.Common.GuidedInstaller;
 using NexusMods.DataModel.Diagnostics.Emitters;
 using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
 using NexusMods.DataModel.RateLimiting;
@@ -23,6 +24,7 @@ public class Startup
             .Combine($"NexusMods.DataModel.Tests-{Guid.NewGuid()}");
 
         container
+            .AddSingleton<IGuidedInstaller, NullGuidedInstaller>()
             .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug))
             .AddFileSystem()
             .AddSingleton(new TemporaryFileManager(FileSystem.Shared, prefix))

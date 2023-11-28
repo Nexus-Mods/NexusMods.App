@@ -27,6 +27,7 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.Extensions.Hosting" />
         <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+        <PackageReference Include="NexusMods.SingleProcess" />
         <PackageReference Include="NLog.Extensions.Logging" />
         <PackageReference Include="Spectre.Console" />
         <PackageReference Include="NexusMods.Telemetry.OpenTelemetry" />

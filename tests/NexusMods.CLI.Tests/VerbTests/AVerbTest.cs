@@ -1,66 +1,59 @@
-using System.CommandLine;
+using FluentAssertions;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.CLI.DataOutputs;
 using NexusMods.Paths;
+using NexusMods.ProxyConsole.Abstractions.Implementations;
+using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
+using NexusMods.SingleProcess;
 
 namespace NexusMods.CLI.Tests.VerbTests;
 
-public class AVerbTest
+public class AVerbTest(IServiceProvider provider)
 {
+    internal TemporaryFileManager TemporaryFileManager => provider.GetRequiredService<TemporaryFileManager>();
+
     // ReSharper disable InconsistentNaming
     internal AbsolutePath Data7ZipLZMA2 =>
         FileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine("Resources/data_7zip_lzma2.7z");
     // ReSharper restore InconsistentNaming
 
-    protected List<object> LastLog { get; set; } = new();
 
-    internal readonly TemporaryFileManager TemporaryFileManager;
-    private readonly IServiceProvider _provider;
+    internal readonly IFileSystem FileSystem = ServiceProviderServiceExtensions.GetRequiredService<IFileSystem>(provider);
 
-    internal readonly IFileSystem FileSystem;
 
-    public AVerbTest(TemporaryFileManager temporaryFileManager, IServiceProvider provider)
+    /// <summary>
+    /// Runs a CLI command as if the program was invoked with the given arguments. The output is captured and returned.
+    /// </summary>
+    /// <param name="args"></param>
+    /// <returns></returns>
+    /// <exception cref="Exception"></exception>
+    public async Task<LoggingRenderer> Run(params string[] args)
     {
-        _provider = provider;
-        TemporaryFileManager = temporaryFileManager;
-        FileSystem = provider.GetRequiredService<IFileSystem>();
+        var renderer = new LoggingRenderer();
+        var configurator = provider.GetRequiredService<CommandLineConfigurator>();
+        var result = await configurator.RunAsync(args, renderer, CancellationToken.None);
+        if (result != 0)
+        {
+            var errorLog = renderer.Logs.OfType<Text>().Select(t => t.Template).Aggregate((acc, itm) => acc + itm);
+            throw new Exception($"The command should have succeeded instead got: \n\n {errorLog}");
+        }
+
+        return renderer;
     }
 
-    // I added this for testing purposes to help diagnose errors easier when needed - Sewer
-    [PublicAPI]
-    internal void RunNoBanner(params string[] args)
+    /// <summary>
+    /// Runs the given verb with the given arguments. No conversion is done on the arguments, so they must be the correct
+    /// type as defined in the verb definition.
+    /// </summary>
+    /// <param name="verbName"></param>
+    /// <param name="args"></param>
+    /// <returns></returns>
+    public async Task<int> RunDirectly(string verbName, params object[] args)
     {
-        using var scope = RunNoBannerInit(out var builder);
-        var id = builder.MakeRoot().Invoke(new[] { "--noBanner" }.Concat(args).ToArray());
-        RunNoBannerFinish(id);
+        var verbDefinition = provider.GetServices<VerbDefinition>()
+            .FirstOrDefault(verb => verb.Name == verbName);
+
+        return await (Task<int>)verbDefinition!.Info.Invoke(null, args)!;
     }
 
-    public async Task RunNoBannerAsync(params string[] args)
-    {
-        using var scope = RunNoBannerInit(out var builder);
-        var id = await builder.MakeRoot().InvokeAsync(new[] { "--noBanner" }.Concat(args).ToArray());
-        RunNoBannerFinish(id);
-    }
-
-    private void RunNoBannerFinish(int id)
-    {
-        if (id != 0)
-            throw new Exception($"Bad Run Result: {id}");
-
-        LastLog = LoggingRenderer.Logs.Value!;
-    }
-
-    private IServiceScope RunNoBannerInit(out CommandLineConfigurator configurator)
-    {
-        var scope = _provider.CreateScope();
-        _ = scope.ServiceProvider.GetRequiredService<LoggingRenderer>();
-        LoggingRenderer.Logs.Value = new List<object>();
-        configurator = scope.ServiceProvider.GetRequiredService<CommandLineConfigurator>();
-        ;
-        return scope;
-    }
-
-    internal int LogSize => LastLog.Count;
-    public Table LastTable => LastLog.OfType<Table>().First();
 }

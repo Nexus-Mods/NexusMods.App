@@ -14,8 +14,10 @@ public static class Services
     /// </summary>
     public static IServiceCollection AddNexusWebApiNmaIntegration(this IServiceCollection collection, bool? apiKeyAuth = null)
     {
+        collection.AddLoginVerbs();
+
         apiKeyAuth ??= Environment.GetEnvironmentVariable(ApiKeyMessageFactory.NexusApiKeyEnvironmentVariable) != null;
-        
+
         if (apiKeyAuth!.Value)
         {
             collection

@@ -5,26 +5,22 @@ using NexusMods.Paths.Extensions;
 
 namespace NexusMods.CLI.Tests.VerbTests;
 
-public class AnalyzeArchive : AVerbTest
+public class AnalyzeArchive(IServiceProvider provider) : AVerbTest(provider)
 {
-    public AnalyzeArchive(TemporaryFileManager temporaryFileManager, IServiceProvider provider) : base(temporaryFileManager, provider)
-    {
-    }
-
     [Fact]
     public async Task CanAnalyzeArchives()
     {
-        await RunNoBannerAsync("analyze-archive", "-i", Data7ZipLZMA2.ToString());
+        var log = await Run("analyze-archive", "-i", Data7ZipLZMA2.ToString());
 
-        LogSize.Should().Be(1);
-        LastTable.Columns.Should().BeEquivalentTo("Path", "Size", "Hash");
-        LastTable.Rows
+        log.Size.Should().Be(1);
+        log.LastTableColumns.Should().BeEquivalentTo("Path", "Size", "Hash");
+        log.LastCellsAsStrings()
             .Should()
             .BeEquivalentTo(new[]
             {
-                new object[] {"deepFolder/deepFolder2/deepFolder3/deepFolder4/deepFile.txt".ToRelativePath(), (Size)12L, (Hash)0xE405A7CFA6ABBDE3},
-                new object[] {"folder1/folder1file.txt".ToRelativePath(), (Size)15L, (Hash)0xC9E47B1523162066},
-                new object[] {"rootFile.txt".ToRelativePath(), (Size)12L, (Hash)0x33DDBF7930BA002A}
+                new object[] {"deepFolder/deepFolder2/deepFolder3/deepFolder4/deepFile.txt", "12 B", "0xE405A7CFA6ABBDE3"},
+                new object[] {"folder1/folder1file.txt", "15 B", "0xC9E47B1523162066"},
+                new object[] {"rootFile.txt", "12 B", "0x33DDBF7930BA002A"}
             });
     }
 }

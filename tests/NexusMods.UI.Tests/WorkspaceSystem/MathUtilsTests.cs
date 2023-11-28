@@ -1,10 +1,12 @@
+using System.Diagnostics.CodeAnalysis;
 using Avalonia;
 using FluentAssertions;
 using NexusMods.App.UI.WorkspaceSystem;
-using Xunit.Sdk;
 
 namespace NexusMods.UI.Tests.WorkspaceSystem;
 
+[SuppressMessage("ReSharper", "HeapView.ObjectAllocation.Evident")]
+[SuppressMessage("ReSharper", "HeapView.BoxingAllocation")]
 public class MathUtilsTests
 {
     [Theory]
@@ -64,5 +66,31 @@ public class MathUtilsTests
     {
         new object[] { new Rect(0.0, 0.0, 100, 100), true, new Rect(0.0, 0.0, 50, 100), new Rect(50, 0.0, 50, 100) },
         new object[] { new Rect(0.0, 0.0, 100, 100), false, new Rect(0.0, 0.0, 100, 50), new Rect(0.0, 50, 100, 50) },
+    };
+
+    [Theory]
+    [MemberData(nameof(TestData_GetMidPoint))]
+    public void Test_GetMidPoint(Rect a, Rect b, bool isHorizontal, Point expected)
+    {
+        var actual = MathUtils.GetMidPoint(a, b, isHorizontal);
+        actual.Should().Be(expected);
+    }
+
+    public static IEnumerable<object[]> TestData_GetMidPoint() => new[]
+    {
+        new object[] { new Rect(0, 0, 0.5, 1.0), new Rect(0.5, 0, 0.5, 1.0), false, new Point(0.5, 0.5) },
+        new object[] { new Rect(0, 0, 1.0, 0.5), new Rect(0, 0.5, 1.0, 0.5), true, new Point(0.5, 0.5) },
+
+        new object[] { new Rect(0, 0, 0.5, 1.0), new Rect(0.5, 0, 0.5, 0.5), false, new Point(0.5, 0.25) },
+        new object[] { new Rect(0, 0, 0.5, 1.0), new Rect(0.5, 0.5, 0.5, 0.5), false, new Point(0.5, 0.75) },
+
+        new object[] { new Rect(0, 0, 1.0, 0.5), new Rect(0, 0.5, 0.5, 0.5), true, new Point(0.25, 0.5) },
+        new object[] { new Rect(0, 0, 1.0, 0.5), new Rect(0.5, 0.5, 0.5, 0.5), true, new Point(0.75, 0.5) },
+
+        new object[] { new Rect(0, 0, 0.35, 0.5), new Rect(0.35, 0, 0.65, 1), false, new Point(0.35, 0.25) },
+        new object[] { new Rect(0.35, 0, 0.65, 1), new Rect(0, 0, 0.35, 0.5) , false, new Point(0.35, 0.25) },
+
+        new object[] { new Rect(0, 0, 0.8, 1.0), new Rect(0.8, 0, 0.2, 0.5), false, new Point(0.8, 0.25) },
+        new object[] { new Rect(0, 0, 0.8, 1.0), new Rect(0.8, 0.5, 0.2, 0.5), false, new Point(0.8, 0.75) }
     };
 }

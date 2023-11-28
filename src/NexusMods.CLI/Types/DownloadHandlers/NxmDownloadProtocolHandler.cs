@@ -39,7 +39,7 @@ public class NxmDownloadProtocolHandler : IDownloadProtocolHandler
     public string Protocol => "nxm";
 
     /// <inheritdoc />
-    public async Task Handle(string url, LoadoutMarker loadout, string modName, CancellationToken token)
+    public async Task Handle(Uri url, LoadoutMarker loadout, string modName, CancellationToken token)
     {
         await using var tempPath = _temp.CreateFile();
         var parsed = NXMUrl.Parse(url);

@@ -19,5 +19,5 @@ public interface IDownloadProtocolHandler
     /// <param name="modName">Name of the mod to install.</param>
     /// <param name="token">Allows to cancel the operation.</param>
     /// <param name="loadout">Load to install the mod to.</param>
-    public Task Handle(string url, LoadoutMarker loadout, string modName, CancellationToken token);
+    public Task Handle(Uri url, LoadoutMarker loadout, string modName, CancellationToken token);
 }

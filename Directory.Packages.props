@@ -2,9 +2,11 @@
   <ItemGroup>
     <!-- Custom Packages -->
     <PackageVersion Include="NexusMods.Hashing.xxHash64" Version="1.0.1" />
-    <PackageVersion Include="NexusMods.Paths" Version="0.1.8" />
+    <PackageVersion Include="NexusMods.Paths" Version="0.2.0" />
     <PackageVersion Include="NexusMods.Archives.Nx" Version="0.3.7" />
-    <PackageVersion Include="NexusMods.Paths.TestingHelpers" Version="0.1.8" />
+    <PackageVersion Include="NexusMods.Paths.TestingHelpers" Version="0.2.0" />
+    <PackageVersion Include="NexusMods.ProxyConsole.Abstractions" Version="0.6.0" />
+    <PackageVersion Include="NexusMods.SingleProcess" Version="0.6.0" />
     <PackageVersion Include="NexusMods.Telemetry.OpenTelemetry" Version="1.0.0" />
     <PackageVersion Include="FomodInstaller.Interface" Version="1.2.0" />
     <PackageVersion Include="FomodInstaller.Scripting.XmlScript" Version="1.0.0" />
@@ -28,7 +30,7 @@
     <PackageVersion Include="Avalonia.ReactiveUI" Version="11.0.5" />
     <PackageVersion Include="Avalonia.Themes.Fluent" Version="11.0.5" />
     <PackageVersion Include="Projektanker.Icons.Avalonia.MaterialDesign" Version="8.3.0" />
-    <PackageVersion Include="Avalonia.Svg.Skia" Version="11.0.0.4" />
+    <PackageVersion Include="Avalonia.Svg.Skia" Version="11.0.0.6" />
   </ItemGroup>
   <ItemGroup>
     <!-- System -->
