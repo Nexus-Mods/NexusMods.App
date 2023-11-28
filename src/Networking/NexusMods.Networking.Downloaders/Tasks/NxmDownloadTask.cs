@@ -1,3 +1,5 @@
+using NexusMods.Abstractions.DateTime;
+using NexusMods.DataModel.Activities;
 using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Networking.Downloaders.Interfaces.Traits;
 using NexusMods.Networking.Downloaders.Tasks.State;
@@ -29,15 +31,15 @@ public class NxmDownloadTask : IDownloadTask, IHaveDownloadVersion, IHaveFileSiz
     private long _defaultDownloadedSize;
 
     /// <inheritdoc />
-    public long DownloadedSizeBytes => _state.Activity != null ? (long)_state.Activity.Current.Value : _defaultDownloadedSize;
+    public long DownloadedSizeBytes => (long)(_state.ActivityStatus?.GetTypedReport().Current.Value ?? (ulong)_defaultDownloadedSize);
 
     /// <inheritdoc />
-    public long CalculateThroughput<TDateTimeProvider>(TDateTimeProvider provider) where TDateTimeProvider : IDateTimeProvider
+    public long CalculateThroughput()
     {
         if (_state.Activity == null)
             return 0;
 
-        return (long)_state.Activity.GetThroughput(DateTimeProvider.Instance).Value;
+        return (long)(((ActivityReport<Size>?)_state.ActivityStatus?.GetReport())?.Throughput ?? Size.Zero).Value;
     }
 
     /// <inheritdoc />

@@ -5,7 +5,7 @@ using NexusMods.Abstractions.Values;
 
 namespace NexusMods.DataModel.Activities;
 
-public class Activity(ActivityMonitor monitor, ActivityGroup group) : IActivitySource, IReadOnlyActivity
+public class Activity(ActivityMonitor monitor, ActivityGroup group, object? payload) : IActivitySource, IReadOnlyActivity
 {
     private readonly Subject<DateTime> _reports = new();
     private readonly DateTime _startTime = DateTime.UtcNow;
@@ -19,6 +19,11 @@ public class Activity(ActivityMonitor monitor, ActivityGroup group) : IActivityS
     /// The unique identifier of the activity.
     /// </summary>
     public ActivityId Id { get; } = ActivityId.From(Guid.NewGuid());
+
+    /// <summary>
+    /// A user defined object that can be used to store additional information about the activity.
+    /// </summary>
+    public object? Payload => payload;
 
     /// <summary>
     /// Cancels the activity.
@@ -153,6 +158,12 @@ public class Activity(ActivityMonitor monitor, ActivityGroup group) : IActivityS
             .StartWith(MakeReport())
             // Update the time box
             .Do(report => timeBox.Time = report.ReportTime);
+    }
+
+    /// <inheritdoc />
+    public ActivityReport GetReport()
+    {
+        return MakeReport();
     }
 
     /// <inheritdoc />

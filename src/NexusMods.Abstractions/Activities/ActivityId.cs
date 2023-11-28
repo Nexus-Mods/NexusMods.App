@@ -6,7 +6,4 @@ namespace NexusMods.Abstractions.Activities;
 /// A unique identifier for an activity.
 /// </summary>
 [ValueObject<Guid>]
-public readonly partial struct ActivityId
-{
-
-}
+public readonly partial struct ActivityId;

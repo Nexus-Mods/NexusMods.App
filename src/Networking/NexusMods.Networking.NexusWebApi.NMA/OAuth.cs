@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.Json;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.Activities;
 using NexusMods.Common;
 using NexusMods.Common.OSInterop;
 using NexusMods.DataModel.Activities;
@@ -19,6 +20,11 @@ namespace NexusMods.Networking.NexusWebApi.NMA;
 /// </summary>
 public class OAuth
 {
+    /// <summary>
+    /// The activity group for all activities related to OAuth.
+    /// </summary>
+    public static readonly ActivityGroup Group = ActivityGroup.From("OAuth");
+
     private const string OAuthUrl = "https://users.nexusmods.com/oauth";
     // NOTE(erri120): The backend has a list of valid redirect URLs and client IDs.
     // We can't change these on our own.
@@ -87,7 +93,7 @@ public class OAuth
 
     private IActivitySource CreateJob(Uri url)
     {
-        return _activityFactory.Create("Logging into Nexus Mods, redirecting to {Url}", url);
+        return _activityFactory.Create(Group, "Logging into Nexus Mods, redirecting to {Url}", url);
     }
 
     /// <summary>

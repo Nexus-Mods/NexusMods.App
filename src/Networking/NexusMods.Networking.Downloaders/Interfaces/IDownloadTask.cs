@@ -1,4 +1,4 @@
-using NexusMods.Abstractions.Activities;
+using NexusMods.Abstractions.DateTime;
 using NexusMods.Networking.Downloaders.Tasks.State;
 
 namespace NexusMods.Networking.Downloaders.Interfaces;
@@ -8,7 +8,17 @@ namespace NexusMods.Networking.Downloaders.Interfaces;
 /// </summary>
 public interface IDownloadTask
 {
-    public IReadOnlyActivity Activity { get; }
+    /// <summary>
+    /// Total size of items currently downloaded.
+    /// </summary>
+    /// <returns>0 if unknown.</returns>
+    long DownloadedSizeBytes { get; }
+
+    /// <summary>
+    /// Calculates the download speed of the current job.
+    /// </summary>
+    /// <returns>Current speed in terms of bytes per second.</returns>
+    long CalculateThroughput();
 
     /// <summary>
     /// Service this task is associated with.
@@ -54,6 +64,8 @@ public interface IDownloadTask
     /// <remarks>Suspend means 'pause download by terminating it, leaving partial download intact'.</remarks>
     DownloaderState ExportState();
 }
+
+// TODO: These statuses need unit tests for individual downloaders.
 
 /// <summary>
 /// Current status of the task.

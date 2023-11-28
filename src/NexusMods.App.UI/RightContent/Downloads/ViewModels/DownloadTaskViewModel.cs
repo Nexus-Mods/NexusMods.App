@@ -66,7 +66,7 @@ public class DownloadTaskViewModel : AViewModel<IDownloadTaskViewModel>, IDownlo
         }
     }
 
-    public long Throughput => _task.CalculateThroughput(DateTimeProvider.Instance);
+    public long Throughput => _task.CalculateThroughput();
 
     public void Cancel() => _task.Cancel();
     public void Suspend() => _task.Suspend();

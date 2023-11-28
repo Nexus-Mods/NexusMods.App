@@ -12,4 +12,5 @@ public interface IActivityMonitor
     /// The collection of all active activities in the app.
     /// </summary>
     ReadOnlyObservableCollection<IReadOnlyActivity> Activities { get; }
+
 }

@@ -1,16 +1,13 @@
 using System.Collections.ObjectModel;
 using System.Reactive;
-using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using DynamicData;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.Values;
 using NexusMods.App.UI.Resources;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games;
-using NexusMods.DataModel.Interprocess.Jobs;
 using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.Loadouts.Markers;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -25,35 +22,17 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
     [Reactive] public string Label { get; set; } = Language.LaunchButtonViewModel_LaunchGame_LAUNCH;
 
     [Reactive] public Percent? Progress { get; set; }
-
-    private ReadOnlyObservableCollection<IInterprocessJob> _jobs = new(new ObservableCollection<IInterprocessJob>());
-
+    
     private readonly LoadoutRegistry _loadoutRegistry;
     private readonly IToolManager _toolManager;
 
     public LaunchButtonViewModel(ILogger<LaunchButtonViewModel> logger, IToolManager toolManager,
-        IInterprocessJobManager manager, LoadoutRegistry loadoutRegistry)
+        IActivityMonitor manager, LoadoutRegistry loadoutRegistry)
     {
         _toolManager = toolManager;
         _loadoutRegistry = loadoutRegistry;
 
-        this.WhenActivated(d =>
-        {
-            var lockedLoadouts = manager.Jobs
-                .Filter(m => m.Payload is ILoadoutJob);
-
-            var selectedLoadoutFns = this.WhenAnyValue(vm => vm.LoadoutId)
-                .Select<LoadoutId, Func<IInterprocessJob, bool>>(loadoutId =>
-                    job => loadoutId == ((ILoadoutJob)job.Payload).LoadoutId);
-
-            lockedLoadouts.Filter(selectedLoadoutFns)
-                .Bind(out _jobs)
-                .SubscribeWithErrorLogging(logger)
-                .DisposeWith(d);
-
-            var canExecute = _jobs.WhenAnyValue(coll => coll.Count, count => count == 0);
-            Command = ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(LaunchGame, RxApp.TaskpoolScheduler), canExecute.OnUI());
-        });
+        Command = ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(LaunchGame, RxApp.TaskpoolScheduler));
     }
 
     private async Task LaunchGame(CancellationToken token)

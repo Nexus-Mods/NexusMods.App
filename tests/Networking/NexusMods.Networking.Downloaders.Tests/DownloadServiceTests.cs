@@ -92,7 +92,7 @@ public class DownloadServiceTests
         public DummyDownloadTask(DownloadService service) { Owner = service; }
         public long DownloadedSizeBytes => 0;
         public long TotalSizeBytes => 0;
-        public long CalculateThroughput<TDateTimeProvider>(TDateTimeProvider provider) where TDateTimeProvider : IDateTimeProvider => 0;
+        public long CalculateThroughput() => 0;
 
         public IDownloadService Owner { get; set; }
         public DownloadTaskStatus Status { get; set; }

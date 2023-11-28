@@ -6,7 +6,7 @@ namespace NexusMods.DataModel.Activities;
 /// <summary>
 /// A report for an activity, these are immutable and emitted by the <see cref="IActivityMonitor"/>.
 /// </summary>
-public readonly struct ActivityReport
+public class ActivityReport
 {
     /// <summary>
     /// True if the activity has finished, false otherwise.
@@ -60,4 +60,27 @@ public readonly struct ActivityReport
     /// </summary>
     public DateTime? EndTime => RunStatus is ActivityStatus.Finished or ActivityStatus.Cancelled ?
         StartTime + Elapsed : StartTime + EstimatedTotalTime;
+}
+
+
+/// <summary>
+/// A typed report for an activity, these are immutable and emitted by the <see cref="IActivityMonitor"/>.
+/// </summary>
+/// <typeparam name="T"></typeparam>
+public class ActivityReport<T> : ActivityReport
+{
+    /// <summary>
+    /// The maximum value for the activity, if any.
+    /// </summary>
+    public T? Max { get; init; }
+
+    /// <summary>
+    /// The current value for the activity, if any.
+    /// </summary>
+    public T? Current { get; init; }
+
+    /// <summary>
+    /// If the activity has any progress this will return the amount of progress per second
+    /// </summary>
+    public T? Throughput { get; }
 }

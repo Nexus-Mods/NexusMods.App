@@ -3,6 +3,7 @@ using System.Reactive.Subjects;
 using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.DateTime;
 using NexusMods.Common;
 using NexusMods.DataModel;
 using NexusMods.DataModel.Abstractions;
@@ -168,10 +169,9 @@ public class DownloadService : IDownloadService
     /// <inheritdoc />
     public Size GetThroughput()
     {
-        var provider = DateTimeProvider.Instance;
         var totalThroughput = 0L;
         foreach (var download in _currentDownloads)
-            totalThroughput += download.CalculateThroughput(provider);
+            totalThroughput += download.CalculateThroughput();
 
         return Size.FromLong(totalThroughput);
     }

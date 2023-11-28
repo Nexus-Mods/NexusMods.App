@@ -7,8 +7,6 @@ using NexusMods.DataModel.ArchiveMetaData;
 using NexusMods.DataModel.CommandLine.Verbs;
 using NexusMods.DataModel.Diagnostics;
 using NexusMods.DataModel.GlobalSettings;
-using NexusMods.DataModel.Interprocess;
-using NexusMods.DataModel.Interprocess.Jobs;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
 using NexusMods.DataModel.Loadouts;
@@ -16,7 +14,6 @@ using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.Messaging;
 using NexusMods.DataModel.Sorting.Rules;
 using NexusMods.DataModel.TriggerFilter;
-using NexusMods.FileExtractor;
 using NexusMods.Paths;
 
 namespace NexusMods.DataModel;
@@ -56,11 +53,6 @@ public static class Services
 
         coll.AddSingleton<IDataStore, SqliteDataStore>();
         coll.AddAllSingleton<IFileStore, NxFileStore>();
-        coll.AddAllSingleton<IResource, IResource<FileHashCache, Size>>(s =>
-            new Resource<FileHashCache, Size>("File Hashing",
-                Settings(s).MaxHashingJobs,
-                Size.FromLong(Settings(s).MaxHashingThroughputBytesPerSecond)));
-
 
         coll.AddSingleton(typeof(IFingerprintCache<,>), typeof(DataStoreFingerprintCache<,>));
 

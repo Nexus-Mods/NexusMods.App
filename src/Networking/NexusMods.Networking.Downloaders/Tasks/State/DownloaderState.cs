@@ -93,8 +93,8 @@ public record DownloaderState : Entity
             FriendlyName = item.FriendlyName,
             DownloadPath = downloadLocation,
             Status = item.Status,
-            DownloadedBytes = item.,
-
+            DownloadedBytes = item.DownloadedSizeBytes,
+            
             // Conditionals
             GameName = item is IHaveGameName gameName ? gameName.GameName : null,
             GameDomain = item is IHaveGameDomain gameDomain ? gameDomain.GameDomain : null,

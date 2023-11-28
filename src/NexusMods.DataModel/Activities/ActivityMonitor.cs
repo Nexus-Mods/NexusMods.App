@@ -22,7 +22,7 @@ public class ActivityMonitor : IActivityFactory, IActivityMonitor
     /// <inheritdoc />
     public IActivitySource Create(ActivityGroup group, string template, params object[] arguments)
     {
-        var activity = new Activity(this, group);
+        var activity = new Activity(this, group, null);
         activity.SetStatusMessage(template, arguments);
         _activities.AddOrUpdate(activity);
         return activity;

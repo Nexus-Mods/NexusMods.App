@@ -22,6 +22,12 @@ public interface IReadOnlyActivity
     public IObservable<ActivityReport> GetReports(TimeSpan? maxInterval, TimeSpan? minInterval);
 
     /// <summary>
+    /// Gets a report for the current state of the activity.
+    /// </summary>
+    /// <returns></returns>
+    public ActivityReport GetReport();
+
+    /// <summary>
     /// Gets the unique group identifier for this activity.
     /// </summary>
     public ActivityGroup Group { get; }
@@ -45,4 +51,23 @@ public interface IReadOnlyActivity
     /// Continues the activity after it was previously paused
     /// </summary>
     public void Resume();
+
+    /// <summary>
+    /// A user defined object that can be used to store additional information about the activity.
+    /// </summary>
+    public object? Payload { get; }
+}
+
+/// <summary>
+/// </summary>
+/// <typeparam name="T"></typeparam>
+public interface IReadOnlyActivity<T> : IReadOnlyActivity
+{
+    /// <summary>
+    /// Gets the current state of the activity. This is a typed version of the report.
+    /// </summary>
+    public ActivityReport<T> GetTypedReport();
+
+
+
 }
