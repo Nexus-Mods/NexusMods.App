@@ -101,8 +101,8 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                 {
                     var (item, newActualPosition) = tuple;
 
-                    const double minX = 0.2;
-                    const double minY = 0.2;
+                    const double minX = 0.3;
+                    const double minY = 0.3;
                     const double maxX = 1 - minX;
                     const double maxY = 1 - minY;
 
