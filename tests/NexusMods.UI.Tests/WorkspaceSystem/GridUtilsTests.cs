@@ -24,7 +24,7 @@ public class GridUtilsTests
         const int rows = 2;
         var panels = new List<IPanelViewModel>(capacity: columns * rows);
 
-        var res = GridUtils.GetPossibleStates(panels, columns, rows).ToArray();
+        var res = GridUtils.GetPossibleStates(ToInput(), columns, rows).ToArray();
         res.Should().BeEmpty();
 
         // NOTE(erri120): Start with a single "main" panel that takes up the entire space.
@@ -38,7 +38,7 @@ public class GridUtilsTests
         // | 1 | 2 |  | 2 | 1 |  | 1 | 1 |  | 2 | 2 |
         // | 1 | 2 |  | 2 | 1 |  | 2 | 2 |  | 1 | 1 |
 
-        res = GridUtils.GetPossibleStates(panels, columns, rows).ToArray();
+        res = GridUtils.GetPossibleStates(ToInput(), columns, rows).ToArray();
         res.Should().HaveCount(4).And.SatisfyRespectively(dict =>
         {
             dict.Should().HaveCount(2).And.Equal(new KeyValuePair<PanelId, Rect>[]
@@ -78,7 +78,7 @@ public class GridUtilsTests
         // we have 4 possible states (1 = first panel, 2 = second panel, 3 = new panel):
         // | 1 | 2 |  | 3 | 2 |  | 1 | 2 |  | 1 | 3 |
         // | 3 | 2 |  | 1 | 2 |  | 1 | 3 |  | 1 | 2 |
-        res = GridUtils.GetPossibleStates(panels, columns, rows).ToArray();
+        res = GridUtils.GetPossibleStates(ToInput(), columns, rows).ToArray();
         res.Should().HaveCount(4).And.SatisfyRespectively(dict =>
         {
             dict.Should().HaveCount(3).And.Equal(new KeyValuePair<PanelId, Rect>[]
@@ -124,7 +124,7 @@ public class GridUtilsTests
         // in the right column (1 = first panel, 2 = second panel, 3 = third panel, 4 = new panel):
         // | 1 | 2 |  | 1 | 4 |
         // | 3 | 4 |  | 3 | 2 |
-        res = GridUtils.GetPossibleStates(panels, columns, rows).ToArray();
+        res = GridUtils.GetPossibleStates(ToInput(), columns, rows).ToArray();
         res.Should().HaveCount(2).And.SatisfyRespectively(dict =>
         {
             dict.Should().HaveCount(4).And.Equal(new KeyValuePair<PanelId, Rect>[]
@@ -153,8 +153,14 @@ public class GridUtilsTests
         panels.Add(fourthPanel);
 
         // NOTE(erri120): final state reached, no more panels possible.
-        res = GridUtils.GetPossibleStates(panels, columns, rows).ToArray();
+        res = GridUtils.GetPossibleStates(ToInput(), columns, rows).ToArray();
         res.Should().BeEmpty();
+        return;
+
+        ImmutableDictionary<PanelId, Rect> ToInput()
+        {
+            return panels.ToImmutableDictionary(x => x.Id, x => x.LogicalBounds);
+        }
     }
 
     [Fact]

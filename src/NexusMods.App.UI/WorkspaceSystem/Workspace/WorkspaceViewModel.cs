@@ -229,7 +229,8 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
             updater.Clear();
             if (_panels.Count == MaxPanelCount) return;
 
-            var states = GridUtils.GetPossibleStates(_panels, Columns, Rows);
+            var panels = _panels.ToImmutableDictionary(panel => panel.Id, panel => panel.LogicalBounds);
+            var states = GridUtils.GetPossibleStates(panels, Columns, Rows);
             foreach (var state in states)
             {
                 var image = IconUtils.StateToBitmap(state);

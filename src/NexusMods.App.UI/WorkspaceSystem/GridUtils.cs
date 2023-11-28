@@ -10,48 +10,47 @@ internal static class GridUtils
     /// Returns all possible new states.
     /// </summary>
     internal static IEnumerable<ImmutableDictionary<PanelId, Rect>> GetPossibleStates(
-        IReadOnlyList<IPanelViewModel> panels,
+        ImmutableDictionary<PanelId, Rect> panels,
         int columns,
         int rows)
     {
         if (panels.Count == columns * rows) yield break;
-        var currentPanels = panels.ToImmutableDictionary(panel => panel.Id, panel => panel.LogicalBounds);
 
-        foreach (var panel in panels)
+        foreach (var kv in panels)
         {
-            if (CanAddColumn(panel, panels, columns))
+            if (CanAddColumn(kv, panels, columns))
             {
-                var res = CreateResult(currentPanels, panel, vertical: true, inverse: false);
+                var res = CreateResult(panels, kv, vertical: true, inverse: false);
                 yield return res;
 
                 if (res.First().Value != res.Last().Value)
-                    yield return CreateResult(currentPanels, panel, vertical: true, inverse: true);
+                    yield return CreateResult(panels, kv, vertical: true, inverse: true);
             }
 
-            if (CanAddRow(panel, panels, rows))
+            if (CanAddRow(kv, panels, rows))
             {
-                var res = CreateResult(currentPanels, panel, vertical: false, inverse: false);
+                var res = CreateResult(panels, kv, vertical: false, inverse: false);
                 yield return res;
 
                 if (res.First().Value != res.Last().Value)
-                    yield return CreateResult(currentPanels, panel, vertical: false, inverse: true);
+                    yield return CreateResult(panels, kv, vertical: false, inverse: true);
             }
         }
     }
 
     private static ImmutableDictionary<PanelId, Rect> CreateResult(
         ImmutableDictionary<PanelId, Rect> currentPanels,
-        IPanelViewModel panel,
+        KeyValuePair<PanelId, Rect> kv,
         bool vertical,
         bool inverse)
     {
-        var (updatedLogicalBounds, newPanelLogicalBounds) = MathUtils.Split(panel.LogicalBounds, vertical);
+        var (updatedLogicalBounds, newPanelLogicalBounds) = MathUtils.Split(kv.Value, vertical);
 
         if (inverse)
         {
             var res = currentPanels.SetItems(new []
             {
-                new KeyValuePair<PanelId, Rect>(panel.Id, newPanelLogicalBounds),
+                new KeyValuePair<PanelId, Rect>(kv.Key, newPanelLogicalBounds),
                 new KeyValuePair<PanelId, Rect>(PanelId.DefaultValue, updatedLogicalBounds)
             });
 
@@ -61,7 +60,7 @@ internal static class GridUtils
         {
             var res = currentPanels.SetItems(new []
             {
-                new KeyValuePair<PanelId, Rect>(panel.Id, updatedLogicalBounds),
+                new KeyValuePair<PanelId, Rect>(kv.Key, updatedLogicalBounds),
                 new KeyValuePair<PanelId, Rect>(PanelId.DefaultValue, newPanelLogicalBounds)
             });
 
@@ -69,18 +68,22 @@ internal static class GridUtils
         }
     }
 
-    private static bool CanAddColumn(IPanelViewModel panel, IReadOnlyList<IPanelViewModel> panels, int maxColumns)
+    private static bool CanAddColumn(
+        KeyValuePair<PanelId, Rect> kv,
+        ImmutableDictionary<PanelId, Rect> panels,
+        int maxColumns)
     {
         var currentColumns = 0;
+        var current = kv.Value;
 
-        // ReSharper disable once ForCanBeConvertedToForeach
-        for (var i = 0; i < panels.Count; i++)
+        // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
+        foreach (var otherPair in panels)
         {
-            var other = panels[i];
+            var other = otherPair.Value;
 
             // NOTE(erri120): +1 column if another panel (self included) has the same Y position.
             // Since self is included, the number of columns is guaranteed to be at least 1.
-            if (other.LogicalBounds.Y.IsCloseTo(panel.LogicalBounds.Y))
+            if (other.Y.IsCloseTo(current.Y))
             {
                 currentColumns++;
                 continue;
@@ -94,30 +97,32 @@ internal static class GridUtils
             // | 3 | 2 |  | 1 | 3 |
 
             // 1) check if the panel is next to us
-            if (!other.LogicalBounds.Left.IsCloseTo(panel.LogicalBounds.Right) &&
-                !other.LogicalBounds.Right.IsCloseTo(panel.LogicalBounds.Left)) continue;
+            if (!other.Left.IsCloseTo(current.Right) && !other.Right.IsCloseTo(current.Left)) continue;
 
             // 2) check if the panel is in the current row
-            if (other.LogicalBounds.Bottom.IsGreaterThanOrCloseTo(panel.LogicalBounds.Y) ||
-                other.LogicalBounds.Top.IsLessThanOrCloseTo(panel.LogicalBounds.Y))
+            if (other.Bottom.IsGreaterThanOrCloseTo(current.Y) || other.Top.IsLessThanOrCloseTo(current.Y))
                 currentColumns++;
         }
 
         return currentColumns < maxColumns;
     }
 
-    private static bool CanAddRow(IPanelViewModel panel, IReadOnlyList<IPanelViewModel> panels, int maxRows)
+    private static bool CanAddRow(
+        KeyValuePair<PanelId, Rect> kv,
+        ImmutableDictionary<PanelId, Rect> panels,
+        int maxRows)
     {
         var currentRows = 0;
+        var current = kv.Value;
 
-        // ReSharper disable once ForCanBeConvertedToForeach
-        for (var i = 0; i < panels.Count; i++)
+        // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
+        foreach (var otherPair in panels)
         {
-            var other = panels[i];
+            var other = otherPair.Value;
 
             // NOTE(erri120): +1 column if another panel (self included) has the same X position.
             // Since self is included, the number of columns is guaranteed to be at least 1.
-            if (other.LogicalBounds.X.IsCloseTo(panel.LogicalBounds.X))
+            if (other.X.IsCloseTo(current.X))
             {
                 currentRows++;
                 continue;
@@ -131,12 +136,10 @@ internal static class GridUtils
             // | 2 | 2 |  | 2 | 3 |
 
             // 1) check if the panel is above or below us
-            if (!other.LogicalBounds.Top.IsCloseTo(panel.LogicalBounds.Bottom) &&
-                !other.LogicalBounds.Bottom.IsCloseTo(panel.LogicalBounds.Top)) continue;
+            if (!other.Top.IsCloseTo(current.Bottom) && !other.Bottom.IsCloseTo(current.Top)) continue;
 
             // 2) check if the panel is in the current column
-            if (other.LogicalBounds.Right.IsGreaterThanOrCloseTo(panel.LogicalBounds.X) ||
-                other.LogicalBounds.Left.IsLessThanOrCloseTo(panel.LogicalBounds.X))
+            if (other.Right.IsGreaterThanOrCloseTo(current.X) || other.Left.IsLessThanOrCloseTo(current.X))
                 currentRows++;
         }
 
