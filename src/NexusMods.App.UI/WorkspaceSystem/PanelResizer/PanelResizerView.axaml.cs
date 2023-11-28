@@ -41,12 +41,16 @@ public partial class PanelResizerView : ReactiveUserControl<IPanelResizerViewMod
             Observable.FromEventPattern<PointerPressedEventArgs>(
                     addHandler: handler => PointerPressed += handler,
                     removeHandler: handler => PointerPressed -= handler)
-                .Do(eventPattern =>
+                .Do(_ =>
                 {
                     _isPressed = true;
-                    _startPoint = eventPattern.EventArgs.GetPosition(Parent! as Control);
+                    _startPoint = ViewModel!.ActualPosition;
                 })
-                .Finally(() => _isPressed = false)
+                .Finally(() =>
+                {
+                    _isPressed = false;
+                    _startPoint = new Point(0, 0);
+                })
                 .Subscribe()
                 .DisposeWith(disposables);
 

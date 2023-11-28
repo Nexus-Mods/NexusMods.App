@@ -106,12 +106,12 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                     const double maxX = 1 - minX;
                     const double maxY = 1 - minY;
 
+                    var lastItemPosition = item.LogicalPosition;
                     var newLogicalPosition = new Point(
                         Math.Max(minX, Math.Min(maxX, newActualPosition.X / _lastWorkspaceSize.Width)),
                         Math.Max(minY, Math.Min(maxY, newActualPosition.Y / _lastWorkspaceSize.Height))
                     );
 
-                    var lastItemPosition = item.LogicalPosition;
                     item.LogicalPosition = newLogicalPosition;
 
                     var isHorizontal = item.IsHorizontal;
