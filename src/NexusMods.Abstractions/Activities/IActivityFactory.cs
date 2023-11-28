@@ -1,6 +1,7 @@
-using NexusMods.Abstractions.Activities;
+using System.Numerics;
+using NexusMods.DataModel.Activities;
 
-namespace NexusMods.DataModel.Activities;
+namespace NexusMods.Abstractions.Activities;
 
 /// <summary>
 /// An abstract factory for creating activities.
@@ -24,5 +25,6 @@ public interface IActivityFactory
     /// <param name="arguments"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    public IActivitySource<T> Create<T>(ActivityGroup group, string template, params object[] arguments);
+    public IActivitySource<T> Create<T>(ActivityGroup group, string template, params object[] arguments)
+        where T : IDivisionOperators<T, T, double>, IAdditionOperators<T, T, T>;
 }

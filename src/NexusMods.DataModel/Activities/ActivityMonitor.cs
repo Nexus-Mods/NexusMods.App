@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Numerics;
 using DynamicData;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Activities;
@@ -29,9 +30,14 @@ public class ActivityMonitor : IActivityFactory, IActivityMonitor
     }
 
 
+    /// <inheritdoc />
     public IActivitySource<T> Create<T>(ActivityGroup group, string template, params object[] arguments)
+        where T : IDivisionOperators<T, T, double>, IAdditionOperators<T, T, T>
     {
-        throw new NotImplementedException();
+        var activity = new Activity<T>(this, group, null);
+        activity.SetStatusMessage(template, arguments);
+        _activities.AddOrUpdate(activity);
+        return activity;
     }
 
 

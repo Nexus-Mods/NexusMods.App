@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.Values;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;

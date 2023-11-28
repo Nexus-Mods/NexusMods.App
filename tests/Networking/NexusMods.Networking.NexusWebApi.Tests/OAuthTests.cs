@@ -4,6 +4,7 @@ using System.Net;
 using NexusMods.Networking.NexusWebApi.Types;
 using System.Text.Json;
 using FluentAssertions;
+using NexusMods.Abstractions.Activities;
 using NexusMods.Common.OSInterop;
 using NexusMods.DataModel.Activities;
 using NexusMods.DataModel.Messaging;

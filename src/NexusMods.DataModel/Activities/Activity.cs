@@ -1,3 +1,4 @@
+using System.Numerics;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using NexusMods.Abstractions.Activities;
@@ -8,10 +9,10 @@ namespace NexusMods.DataModel.Activities;
 public class Activity(ActivityMonitor monitor, ActivityGroup group, object? payload) : IActivitySource, IReadOnlyActivity
 {
     private readonly Subject<DateTime> _reports = new();
-    private readonly DateTime _startTime = DateTime.UtcNow;
-    private (string Template, object[] Arguments) _status;
-    private ActivityStatus _runStatus;
-    private Percent _percentage;
+    protected readonly DateTime _startTime = DateTime.UtcNow;
+    protected (string Template, object[] Arguments) _status;
+    protected ActivityStatus _runStatus;
+    protected Percent _percentage;
     private TaskCompletionSource? _pauseTask = null;
 
 
@@ -115,7 +116,10 @@ public class Activity(ActivityMonitor monitor, ActivityGroup group, object? payl
         SendReport();
     }
 
-    private void SendReport()
+    /// <summary>
+    /// Sends a report to the monitor.
+    /// </summary>
+    protected void SendReport()
     {
         _reports.OnNext(DateTime.UtcNow);
     }
@@ -168,4 +172,63 @@ public class Activity(ActivityMonitor monitor, ActivityGroup group, object? payl
 
     /// <inheritdoc />
     public ActivityGroup Group => group;
+}
+
+/// <summary>
+/// A variant of <see cref="Activity"/> that allows you to specify a type for the progress value.
+/// </summary>
+/// <typeparam name="T"></typeparam>
+public class Activity<T>(ActivityMonitor monitor, ActivityGroup group, object? payload) : Activity(monitor, group, payload), IActivitySource<T>, IReadOnlyActivity<T>
+where T : IDivisionOperators<T, T, double>, IAdditionOperators<T, T, T>
+{
+    private T? _max;
+    private T? _current;
+
+    /// <inheritdoc />
+    public void SetMax(T? max)
+    {
+        _max = max;
+        SendReport();
+    }
+
+    /// <inheritdoc />
+    public ValueTask SetProgress(T value, CancellationToken token)
+    {
+        _current = value;
+        if (_max is null) return ValueTask.CompletedTask;
+        var percent = _max / value;
+        return SetProgress(Percent.CreateClamped(percent), token);
+    }
+
+    /// <inheritdoc />
+    public ValueTask AddProgress(T value, CancellationToken token)
+    {
+        if (_current is null)
+        {
+            _current = value;
+        }
+        else
+        {
+            _current += value;
+        }
+        if (_max is null) return ValueTask.CompletedTask;
+        var percent = value / _max;
+        return AddProgress(Percent.CreateClamped(percent), token);
+    }
+
+    /// <inheritdoc />
+    public ActivityReport<T> GetTypedReport()
+    {
+        return new ActivityReport<T>
+        {
+            ReportTime = DateTime.UtcNow,
+            StartTime = _startTime,
+            Id = Id,
+            RunStatus = _runStatus,
+            Status = _status,
+            CurrentProgress = _percentage,
+            Max = _max,
+            Current = _current
+        };
+    }
 }

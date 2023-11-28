@@ -1,8 +1,10 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Activities;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Activities;
 using NexusMods.DataModel.ArchiveMetaData;
 using NexusMods.DataModel.CommandLine.Verbs;
 using NexusMods.DataModel.Diagnostics;
@@ -14,7 +16,6 @@ using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.Messaging;
 using NexusMods.DataModel.Sorting.Rules;
 using NexusMods.DataModel.TriggerFilter;
-using NexusMods.Paths;
 
 namespace NexusMods.DataModel;
 
@@ -89,6 +90,9 @@ public static class Services
         // Diagnostics
         coll.AddAllSingleton<IDiagnosticManager, DiagnosticManager>();
         coll.AddOptions<DiagnosticOptions>();
+
+        // Activity Monitor
+        coll.AddAllSingleton<IActivityFactory, IActivityMonitor, ActivityMonitor>();
 
         // Verbs
         coll.AddLoadoutManagementVerbs()

@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.Activities;
 using NexusMods.Common;
 using NexusMods.DataModel.Activities;
 using NexusMods.Hashing.xxHash64;
