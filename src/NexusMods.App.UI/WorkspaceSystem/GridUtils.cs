@@ -9,7 +9,10 @@ internal static class GridUtils
     /// <summary>
     /// Returns all possible new states.
     /// </summary>
-    internal static IEnumerable<ImmutableDictionary<PanelId, Rect>> GetPossibleStates(IReadOnlyList<IPanelViewModel> panels, int columns, int rows)
+    internal static IEnumerable<ImmutableDictionary<PanelId, Rect>> GetPossibleStates(
+        IReadOnlyList<IPanelViewModel> panels,
+        int columns,
+        int rows)
     {
         if (panels.Count == columns * rows) yield break;
         var currentPanels = panels.ToImmutableDictionary(panel => panel.Id, panel => panel.LogicalBounds);
@@ -36,7 +39,11 @@ internal static class GridUtils
         }
     }
 
-    private static ImmutableDictionary<PanelId, Rect> CreateResult(ImmutableDictionary<PanelId, Rect> currentPanels, IPanelViewModel panel, bool vertical, bool inverse)
+    private static ImmutableDictionary<PanelId, Rect> CreateResult(
+        ImmutableDictionary<PanelId, Rect> currentPanels,
+        IPanelViewModel panel,
+        bool vertical,
+        bool inverse)
     {
         var (updatedLogicalBounds, newPanelLogicalBounds) = MathUtils.Split(panel.LogicalBounds, vertical);
 
@@ -67,7 +74,6 @@ internal static class GridUtils
         var currentColumns = 0;
 
         // ReSharper disable once ForCanBeConvertedToForeach
-        // ReSharper disable once LoopCanBeConvertedToQuery
         for (var i = 0; i < panels.Count; i++)
         {
             var other = panels[i];
@@ -92,8 +98,8 @@ internal static class GridUtils
                 !other.LogicalBounds.Right.IsCloseTo(panel.LogicalBounds.Left)) continue;
 
             // 2) check if the panel is in the current row
-            if (other.LogicalBounds.Bottom >= panel.LogicalBounds.Y ||
-                other.LogicalBounds.Top <= panel.LogicalBounds.Y)
+            if (other.LogicalBounds.Bottom.IsGreaterThanOrCloseTo(panel.LogicalBounds.Y) ||
+                other.LogicalBounds.Top.IsLessThanOrCloseTo(panel.LogicalBounds.Y))
                 currentColumns++;
         }
 
@@ -105,7 +111,6 @@ internal static class GridUtils
         var currentRows = 0;
 
         // ReSharper disable once ForCanBeConvertedToForeach
-        // ReSharper disable once LoopCanBeConvertedToQuery
         for (var i = 0; i < panels.Count; i++)
         {
             var other = panels[i];
@@ -130,8 +135,8 @@ internal static class GridUtils
                 !other.LogicalBounds.Bottom.IsCloseTo(panel.LogicalBounds.Top)) continue;
 
             // 2) check if the panel is in the current column
-            if (other.LogicalBounds.Right >= panel.LogicalBounds.X ||
-                other.LogicalBounds.Left <= panel.LogicalBounds.X)
+            if (other.LogicalBounds.Right.IsGreaterThanOrCloseTo(panel.LogicalBounds.X) ||
+                other.LogicalBounds.Left.IsLessThanOrCloseTo(panel.LogicalBounds.X))
                 currentRows++;
         }
 
@@ -169,7 +174,7 @@ internal static class GridUtils
             // same column
             // | a | x |  | b | x |
             // | b | x |  | a | x |
-            if (rect.Left >= currentRect.Left && rect.Right <= currentRect.Right)
+            if (rect.Left.IsGreaterThanOrCloseTo(currentRect.Left) && rect.Right.IsLessThanOrCloseTo(currentRect.Right))
             {
                 if (rect.Top.IsCloseTo(currentRect.Bottom) || rect.Bottom.IsCloseTo(currentRect.Top))
                 {
@@ -180,7 +185,7 @@ internal static class GridUtils
             // same row
             // | a | b |  | b | a |  | a | b |
             // | x | x |  | x | x |  | a | c |
-            if (rect.Top >= currentRect.Top && rect.Bottom <= currentRect.Bottom)
+            if (rect.Top.IsGreaterThanOrCloseTo(currentRect.Top) && rect.Bottom.IsLessThanOrCloseTo(currentRect.Bottom))
             {
                 if (rect.Left.IsCloseTo(currentRect.Right) || rect.Right.IsCloseTo(currentRect.Left))
                 {
