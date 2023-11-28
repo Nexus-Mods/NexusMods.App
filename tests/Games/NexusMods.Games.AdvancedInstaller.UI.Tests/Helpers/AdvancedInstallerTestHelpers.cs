@@ -47,12 +47,12 @@ internal static class AdvancedInstallerTestHelpers
             { new RelativePath("Blue Version/Data/PluginB.esp"), mockModSourceFileEntry },
             { new RelativePath("Blue Version/Data/Textures/textureA.dds"), mockModSourceFileEntry },
             { new RelativePath("Blue Version/Data/Textures/textureB.dds"), mockModSourceFileEntry },
-            { new RelativePath("Green Version/Data/file1.txt"), mockModSourceFileEntry },
-            { new RelativePath("Green Version/Data/file3.txt"), mockModSourceFileEntry },
-            { new RelativePath("Green Version/Data/pluginA.esp"), mockModSourceFileEntry },
-            { new RelativePath("Green Version/Data/PluginC.esp"), mockModSourceFileEntry },
-            { new RelativePath("Green Version/Data/Textures/textureA.dds"), mockModSourceFileEntry },
-            { new RelativePath("Green Version/Data/Textures/textureC.dds"), mockModSourceFileEntry },
+            { new RelativePath("Green Version/data/file1.txt"), mockModSourceFileEntry },
+            { new RelativePath("Green Version/data/file3.txt"), mockModSourceFileEntry },
+            { new RelativePath("Green Version/data/pluginA.esp"), mockModSourceFileEntry },
+            { new RelativePath("Green Version/data/PluginC.esp"), mockModSourceFileEntry },
+            { new RelativePath("Green Version/data/Textures/textureA.dds"), mockModSourceFileEntry },
+            { new RelativePath("Green Version/data/Textures/textureC.dds"), mockModSourceFileEntry },
         };
 
         return FileTreeNode<RelativePath, ModSourceFileEntry>.CreateTree(fileEntries);
