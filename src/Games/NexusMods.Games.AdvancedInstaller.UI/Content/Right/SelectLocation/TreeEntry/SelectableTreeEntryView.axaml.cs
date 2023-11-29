@@ -50,18 +50,18 @@ public partial class SelectableTreeEntryView : ReactiveUserControl<ISelectableTr
 
             // When state changes from Create to Editing or vice versa, update the view.
             this.WhenAnyValue(x => x.ViewModel!.Status)
-                .Subscribe(_ => UpdateView())
+                .Subscribe(UpdateView)
                 .DisposeWith(disposable);
         });
     }
 
-    private void UpdateView()
+    private void UpdateView(SelectableDirectoryNodeStatus status)
     {
         // There are only two cases where the state can change:
         // 1. From Create to Editing
         // 2. From Editing back to Create
         // Entries with other states are created with those states and never change it.
-        switch (ViewModel!.Status)
+        switch (status)
         {
             case SelectableDirectoryNodeStatus.Editing:
                 // Remove Create state stuff
