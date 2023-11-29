@@ -93,33 +93,3 @@ public interface ISelectableTreeEntryViewModel : IViewModelInterface
     public static readonly RelativePath CreateFolderEntryName = new("*CreateFolder*");
 }
 
-/// <summary>
-/// Represents the current status of the <see cref="SelectableTreeEntryViewModel" />.
-/// </summary>
-public enum SelectableDirectoryNodeStatus
-{
-    /// <summary>
-    /// Regular selectable directory node. Generated from game locations and Loadout folders.
-    /// </summary>
-    Regular,
-
-    /// <summary>
-    /// Selectable directory node, volatile, shows folder structure from mappings and removed when mappings are removed.
-    /// </summary>
-    RegularFromMapping,
-
-    /// <summary>
-    /// Special "Create new folder" entry node.
-    /// </summary>
-    Create,
-
-    /// <summary>
-    /// Create node after button was pressed, user can input the name of the new folder.
-    /// </summary>
-    Editing,
-
-    /// <summary>
-    /// A new node created with "Create new folder" button
-    /// </summary>
-    Created,
-}
