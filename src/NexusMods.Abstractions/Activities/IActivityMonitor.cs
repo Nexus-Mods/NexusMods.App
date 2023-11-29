@@ -1,5 +1,4 @@
 using System.Collections.ObjectModel;
-using NexusMods.DataModel.Activities;
 
 namespace NexusMods.Abstractions.Activities;
 
