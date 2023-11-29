@@ -1,4 +1,5 @@
 ﻿using NexusMods.Paths.Extensions;
+using Reloaded.Memory.Extensions;
 
 namespace NexusMods.DataModel.ChunkedStreams;
 
@@ -45,6 +46,7 @@ public struct LightweightLRUCache<TK, TV>
             Touch(index);
             return true;
         }
+
         value = default;
         return false;
     }
@@ -78,6 +80,7 @@ public struct LightweightLRUCache<TK, TV>
         {
             if (_keys[i].Equals(key)) return i;
         }
+
         return -1;
     }
 

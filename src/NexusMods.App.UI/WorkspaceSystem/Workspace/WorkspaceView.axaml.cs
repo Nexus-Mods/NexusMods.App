@@ -24,33 +24,46 @@ public partial class WorkspaceView : ReactiveUserControl<IWorkspaceViewModel>
             Debug.Assert(WorkspaceCanvas.Children.Count == 0);
             var serialDisposable = new SerialDisposable();
 
-            this.WhenAnyValue(view => view.ViewModel!.Panels)
-                .Do(panels =>
+            this.WhenAnyValue(property1: view => view.ViewModel!.Panels, property2: view => view.ViewModel!.Resizers)
+                .Do(tuple =>
                 {
-                    serialDisposable.Disposable = panels
+                    var (panels, resizers) = tuple;
+
+                    var panelsObservable = panels
                         .ToObservableChangeSet()
-                        .Transform(CreateView)
+                        .Transform(panelViewModel => (Control)new PanelView
+                        {
+                            ViewModel = panelViewModel
+                        });
+
+                    var resizersObservable = resizers
+                        .ToObservableChangeSet()
+                        .Transform(resizerViewModel =>
+                        {
+                            var control = (Control)new PanelResizerView
+                            {
+                                ViewModel = resizerViewModel
+                            };
+
+                            // NOTE(erri120): highest number is drawn last
+                            control.SetValue(ZIndexProperty, 999);
+                            return control;
+                        });
+
+                    serialDisposable.Disposable = panelsObservable
+                        .Merge(resizersObservable)
+                        .RemoveIndex()
                         .Adapt(new ListAdapter<Control>(WorkspaceCanvas.Children))
                         .Subscribe();
                 })
                 .Subscribe()
                 .DisposeWith(disposables);
-
-            serialDisposable.DisposeWith(disposables);
         });
-    }
-
-    private static Control CreateView(IPanelViewModel panelViewModel)
-    {
-        return new PanelView
-        {
-            ViewModel = panelViewModel
-        };
     }
 
     protected override Size ArrangeOverride(Size finalSize)
     {
-        ViewModel?.ArrangePanels(finalSize);
+        ViewModel?.Arrange(finalSize);
         return base.ArrangeOverride(finalSize);
     }
 }
