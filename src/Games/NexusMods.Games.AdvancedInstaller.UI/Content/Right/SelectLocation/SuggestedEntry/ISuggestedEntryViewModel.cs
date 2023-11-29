@@ -28,17 +28,6 @@ public interface ISuggestedEntryViewModel : IViewModelInterface
     public Guid Id { get; }
 
     /// <summary>
-    /// The absolute path of this location.
-    /// </summary>
-    public AbsolutePath AbsolutePath { get; }
-
-    /// <summary>
-    /// The LocationId representing this location.
-    /// This can be a nested LocationId (e.g. Data folder in Skyrim).
-    /// </summary>
-    public LocationId AssociatedLocation { get; }
-
-    /// <summary>
     /// The GamePath relative to a top level location.
     /// </summary>
     public GamePath RelativeToTopLevelLocation { get; }
