@@ -220,6 +220,13 @@ where T : IDivisionOperators<T, T, double>, IAdditionOperators<T, T, T>
         }
         if (_max is null) return ValueTask.CompletedTask;
         var percent = value / _max;
+
+        // Is NaN when value is 0 and max is 0
+        if (double.IsNaN(percent))
+        {
+            percent = 0.0;
+        }
+
         return AddProgress(Percent.CreateClamped(percent), token);
     }
 

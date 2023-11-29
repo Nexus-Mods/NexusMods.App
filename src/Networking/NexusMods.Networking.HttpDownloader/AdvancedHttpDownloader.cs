@@ -99,6 +99,7 @@ namespace NexusMods.Networking.HttpDownloader
             var state = await InitiateState(destination, size.Value, sources, cancel);
             state.Sources = sources.Select((source, idx) => new Source { Request = source, Priority = idx }).ToArray();
             state.Destination = destination;
+            primaryJob.SetMax(state.TotalSize);
 
             var writeQueue = Channel.CreateBounded<WriteOrder>(_writeQueueLength);
 
@@ -133,6 +134,7 @@ namespace NexusMods.Networking.HttpDownloader
             {
                 var response = await _client.SendAsync(source.Copy(), cancel);
                 if (!response.IsSuccessStatusCode) continue;
+                primaryJob.SetMax(Size.FromLong(response.Content.Headers.ContentLength ?? 0));
 
                 await using var of = destination.Create();
                 await using var stream = await response.Content.ReadAsStreamAsync(cancel);

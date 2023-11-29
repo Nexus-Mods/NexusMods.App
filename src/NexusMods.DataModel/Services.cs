@@ -39,6 +39,11 @@ public static class Services
             return provider.GetRequiredService<IDataModelSettings>();
         }
 
+        coll.AddSingleton<MessageBus>();
+        coll.AddSingleton(typeof(IMessageConsumer<>), typeof(MessageConsumer<>));
+        coll.AddSingleton(typeof(IMessageProducer<>), typeof(MessageProducer<>));
+
+
         coll.AddSingleton<JsonConverter, AbsolutePathConverter>();
         coll.AddSingleton<JsonConverter, RelativePathConverter>();
         coll.AddSingleton<JsonConverter, GamePathConverter>();
@@ -65,11 +70,6 @@ public static class Services
         coll.AddSingleton<IArchiveInstaller, ArchiveInstaller>();
         coll.AddSingleton<IToolManager, ToolManager>();
         coll.AddSingleton<DiskStateRegistry>();
-
-        coll.AddSingleton(typeof(IMessageConsumer<>),
-            typeof(MessageConsumer<>));
-        coll.AddSingleton(typeof(IMessageProducer<>),
-            typeof(MessageProducer<>));
 
         coll.AddSingleton<ITypeFinder>(_ => new AssemblyTypeFinder(typeof(Services).Assembly));
         coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<AModMetadata>>();

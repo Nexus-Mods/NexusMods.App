@@ -122,6 +122,7 @@ public class FileHashCache
                     return new HashedEntry(info, found.Hash);
                 }
             }
+            activity.SetMax(info.Size);
             var hashed = await info.Path.XxHash64Async(activity, innerToken);
             PutCachedAsync(info.Path, new FileHashCacheEntry(info.LastWriteTimeUtc, hashed, info.Size));
             return new HashedEntry(info, hashed);
