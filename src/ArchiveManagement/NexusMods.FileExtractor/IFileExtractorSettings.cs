@@ -40,8 +40,11 @@ public class FileExtractorSettings : IFileExtractorSettings
 
     private static AbsolutePath GetDefaultBaseDirectory(IFileSystem fs)
     {
+        // Note: The idiomatic place for this is Temporary Directory (/tmp on Linux, %TEMP% on Windows)
+        //       however this can be dangerous to do on Linux, as /tmp is often a RAM disk, and can be
+        //       too small to handle large files.
         return fs.OS.MatchPlatform(
-            () => fs.GetKnownPath(KnownPath.LocalApplicationDataDirectory).Combine("NexusMods.App/Temp"),
+            () => fs.GetKnownPath(KnownPath.TempDirectory).Combine("NexusMods.App/Temp"),
             () => fs.GetKnownPath(KnownPath.XDG_DATA_HOME).Combine("NexusMods.App/Temp"),
             () => throw new NotSupportedException(
                 "(Note: Sewer) Paths needs PR for macOS. I don't have a non-painful way to access a Mac."));
