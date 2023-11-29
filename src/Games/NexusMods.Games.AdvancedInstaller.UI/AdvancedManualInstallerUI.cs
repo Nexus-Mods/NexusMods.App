@@ -13,9 +13,6 @@ using NexusMods.Paths.FileTree;
 
 namespace NexusMods.Games.AdvancedInstaller.UI;
 
-// Temporary.
-#pragma warning disable CS1998
-
 /// <summary>
 /// Provides the UI for the Advanced Manual Installer.
 /// </summary>
