@@ -116,6 +116,7 @@ internal class ModContentViewModel : AViewModel<IModContentViewModel>, IModConte
                             new ModContentTreeEntryView
                             {
                                 // node can apparently be null even if it isn't nullable, likely for virtualization
+                                // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
                                 DataContext = node?.Item,
                             }),
                         width: new GridLength(1, GridUnitType.Star)
