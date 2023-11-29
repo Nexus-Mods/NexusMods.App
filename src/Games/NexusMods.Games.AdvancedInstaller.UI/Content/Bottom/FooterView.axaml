@@ -9,7 +9,7 @@
                                 mc:Ignorable="d" d:DesignWidth="1232" d:DesignHeight="84"
                                 x:Class="NexusMods.Games.AdvancedInstaller.UI.FooterView">
     <Design.DataContext>
-        <ui:FooterDesignViewModel />
+        <ui:FooterViewModel />
     </Design.DataContext>
 
     <Border Classes="FooterBorder" x:Name="FooterBorder"

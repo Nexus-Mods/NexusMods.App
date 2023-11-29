@@ -9,7 +9,7 @@
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="NexusMods.Games.AdvancedInstaller.UI.EmptyPreview.EmptyPreviewView">
     <Design.DataContext>
-        <emptyPreview:EmptyPreviewDesignViewModel />
+        <emptyPreview:EmptyPreviewViewModel />
     </Design.DataContext>
 
     <Border Classes="Rounded ContainerBorderColor OutlineTertiaryDarker">

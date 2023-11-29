@@ -9,7 +9,7 @@
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="NexusMods.Games.AdvancedInstaller.UI.Preview.PreviewView">
     <Design.DataContext>
-        <preview:PreviewDesignViewModel />
+        <preview:PreviewViewModel />
     </Design.DataContext>
 
 

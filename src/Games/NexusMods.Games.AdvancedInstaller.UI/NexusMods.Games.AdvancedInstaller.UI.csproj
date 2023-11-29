@@ -47,10 +47,6 @@
           <SubType>Code</SubType>
         </Compile>
 
-        <Compile Update="Content\Bottom\FooterDesignViewModel.cs">
-          <DependentUpon>IFooterViewModel.cs</DependentUpon>
-        </Compile>
-
         <Compile Update="Content\Bottom\FooterViewModel.cs">
           <DependentUpon>IFooterViewModel.cs</DependentUpon>
         </Compile>
@@ -63,19 +59,11 @@
           <DependentUpon>IModContentTreeEntryViewModel.cs</DependentUpon>
         </Compile>
 
-        <Compile Update="Content\Right\Preview\PreviewDesignViewModel.cs">
-          <DependentUpon>IPreviewViewModel.cs</DependentUpon>
-        </Compile>
-
         <Compile Update="Content\Right\Preview\PreviewViewModel.cs">
           <DependentUpon>IPreviewViewModel.cs</DependentUpon>
         </Compile>
 
         <Compile Update="Content\Right\EmptyPreview\EmptyPreviewViewModel.cs">
-          <DependentUpon>IEmptyPreviewViewModel.cs</DependentUpon>
-        </Compile>
-
-        <Compile Update="Content\Right\EmptyPreview\EmptyPreviewDesignViewModel.cs">
           <DependentUpon>IEmptyPreviewViewModel.cs</DependentUpon>
         </Compile>
 
