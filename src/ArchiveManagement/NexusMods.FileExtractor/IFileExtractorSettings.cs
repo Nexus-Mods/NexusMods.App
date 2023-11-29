@@ -45,7 +45,7 @@ public class FileExtractorSettings : IFileExtractorSettings
         //       too small to handle large files.
         return fs.OS.MatchPlatform(
             () => fs.GetKnownPath(KnownPath.TempDirectory).Combine("NexusMods.App/Temp"),
-            () => fs.GetKnownPath(KnownPath.XDG_DATA_HOME).Combine("NexusMods.App/Temp"),
+            () => fs.GetKnownPath(KnownPath.XDG_STATE_HOME).Combine("NexusMods.App/Temp"),
             () => throw new NotSupportedException(
                 "(Note: Sewer) Paths needs PR for macOS. I don't have a non-painful way to access a Mac."));
     }

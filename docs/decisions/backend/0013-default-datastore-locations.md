@@ -68,11 +68,11 @@ With the following caveats/notes:
 - We will assume the machine is single user for now. (no `Roaming` directory)
 - We will use idiomatic paths for each operating system.
 
-| Directory       | Windows        | Linux            |
-|-----------------|----------------|------------------|
-| DataModel       | %localappdata% | XDG_DATA_HOME    |
-| Temporary Files | %temp%         | XDG_DATA_HOME ⚠️ |
-| Logs            | %localappdata% | XDG_STATE_HOME   |
+| Directory       | Windows        | Linux             |
+|-----------------|----------------|-------------------|
+| DataModel       | %localappdata% | XDG_DATA_HOME     |
+| Temporary Files | %temp%         | XDG_STATE_HOME ⚠️ |
+| Logs            | %localappdata% | XDG_STATE_HOME    |
 
 ⚠️ Non-standard location. This is because we risk RAM starvation on large downloads as `tmpfs` is often in RAM+swap.
 
