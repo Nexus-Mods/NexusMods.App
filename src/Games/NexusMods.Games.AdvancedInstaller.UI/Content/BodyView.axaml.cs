@@ -24,12 +24,12 @@ public partial class BodyView : ReactiveUserControl<IBodyViewModel>
 
             // Bind the mod content view model.
             this.OneWayBind(ViewModel, vm => vm.ModContentViewModel,
-                    view => view.ModContentSectionViewHost.ViewModel!)
+                    view => view.ModContentSectionViewHost.ViewModel)
                 .DisposeWith(disposables);
 
             // Bind the right content view model.
             this.OneWayBind(ViewModel, vm => vm.CurrentRightContentViewModel,
-                    view => view.PreviewSectionViewHost.ViewModel!)
+                    view => view.PreviewSectionViewHost.ViewModel)
                 .DisposeWith(disposables);
         });
     }
