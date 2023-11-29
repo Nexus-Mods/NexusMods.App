@@ -100,7 +100,17 @@ In a subfolder of:
 * Good, because it separates application data from user files, reducing clutter.
 * Bad, because user might struggle to find these locations.
 
+---------
+
+# Additional Considerations
+
 ## Issue: Separate Per User and Per Machine Data
+
+---------
+
+Decision: Discussed in [Meeting Notes: Default Storage Locations](../meeting-notes/0000-datastore-locations.md#default-storage-location). We will pretend multi-user systems don't exist for now.
+
+---------
 
 !!! note "We will be using Windows as an example here, but this also applies to other operating systems"
 
@@ -110,6 +120,8 @@ the presence of multi user systems. For example, offices, LAN centres, etc.
 There are two specific issues:
 
 ### 1. Network Synchronization
+
+!!! Addressed
 
 Files in `AppData/Roaming` are usually downloaded upon login in these configurations, and this download typically
 happens on every login.
@@ -146,6 +158,17 @@ Pretend the problem doesn't exist. Not uncommon in software development (sadly).
 More convenient for developers, but the App however would work very poorly in multi user environments.
 
 ## Action Plan: Moving Default Configuration File
+
+---------
+
+Decision: [Portable mode to be implemented](../meeting-notes/0000-datastore-locations.md#portable-mode) with
+`AppConfig.json` override method. Lack of `AppConfig.json` indicates 'use default paths'. Remaining settings
+to be moved to DataStore. 
+
+For now, as a compromise, as not to not cause a regression in functionality, we will blank out the default
+paths in the `AppConfig.json` file. If they are blank, we will apply the default paths decided upon in this ADR.
+
+---------
 
 Currently the App stores its configuration file (`AppConfig.json`) for custom paths in the same folder as the
 application (`{EntryFolder}`). This is of course problematic, as many packaging systems make this folder read-only.
@@ -196,3 +219,10 @@ Here are some (current) proposed discussion topics:
 - Support dynamically moving the Archives between folders.
     - Do we use Steam inspired UI for this?
     - Reboot required?
+
+
+---------
+
+Decision: To be further discussed later. Location per game to be supported in the future.
+
+---------
