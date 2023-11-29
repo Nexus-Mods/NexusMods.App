@@ -1,4 +1,4 @@
-﻿namespace NexusMods.DataModel.Loadouts.Cursors;
+namespace NexusMods.DataModel.Loadouts.Cursors;
 
 /// <summary>
 /// Groups a <see cref="LoadoutId"/> and a <see cref="ModId"/> together, for

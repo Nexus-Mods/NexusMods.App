@@ -1,5 +1,5 @@
+using System.Runtime.CompilerServices;
 using Avalonia;
-using Avalonia.Utilities;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
@@ -58,16 +58,56 @@ internal static class MathUtils
         return (updatedLogicalBounds, newPanelLogicalBounds);
     }
 
+    internal static Point GetMidPoint(Rect a, Rect b, bool isHorizontal)
+    {
+        double midX, midY;
+        if (isHorizontal)
+        {
+            midX = a.Left.IsLessThanOrCloseTo(b.Left) && a.Right.IsGreaterThanOrCloseTo(b.Right)
+                ? b.Left + b.Width / 2
+                : a.Left + b.Width / 2;
+            midY = Math.Max(a.Top, b.Top);
+        }
+        else
+        {
+            midX = Math.Max(a.Left, b.Left);
+            midY = a.Top.IsLessThanOrCloseTo(b.Top) && a.Bottom.IsGreaterThanOrCloseTo(b.Bottom)
+                ? b.Top + b.Height / 2
+                : a.Top + a.Height / 2;
+        }
+
+        return new Point(midX, midY);
+    }
+
     /// <summary>
     /// Converts a <see cref="Size"/> into a <see cref="Vector"/>.
     /// </summary>
     internal static Vector AsVector(this Size size) => new(x: size.Width, y: size.Height);
 
+    private const double DefaultTolerance = 0.001;
+
     /// <summary>
     /// Tolerant equality check.
     /// </summary>
-    internal static bool IsCloseTo(this double left, double right, double tolerance = 0.001)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static bool IsCloseTo(this double left, double right, double tolerance = DefaultTolerance)
     {
-        return MathUtilities.AreClose(left, right, eps: tolerance);
+        if (double.IsInfinity(left) || double.IsInfinity(right))
+            return double.IsInfinity(left) && double.IsInfinity(right);
+
+        var delta = left - right;
+        return -tolerance < delta && tolerance > delta;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static bool IsGreaterThanOrCloseTo(this double left, double right, double tolerance = DefaultTolerance)
+    {
+        return left > right || IsCloseTo(left, right, tolerance);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static bool IsLessThanOrCloseTo(this double left, double right, double tolerance = DefaultTolerance)
+    {
+        return left < right || IsCloseTo(left, right, tolerance);
     }
 }
