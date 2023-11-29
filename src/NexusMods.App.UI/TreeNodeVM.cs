@@ -62,7 +62,6 @@ public class TreeNodeVM<TItem, TKey> : ReactiveObject, IActivatableViewModel
             .Connect()
             .Transform(child => new TreeNodeVM<TItem, TKey>(child, this))
             .Bind(out _children)
-            .DisposeMany()
             .Subscribe();
     }
 

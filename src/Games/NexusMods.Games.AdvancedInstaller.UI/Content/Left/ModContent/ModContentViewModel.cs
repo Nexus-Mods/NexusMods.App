@@ -34,7 +34,6 @@ internal class ModContentViewModel : AViewModel<IModContentViewModel>, IModConte
             .TransformToTree(item => item.Parent)
             .Transform(node => new ModContentNode(node))
             .Bind(out _modContentTreeRoots)
-            .DisposeMany()
             .Subscribe();
 
         Tree = CreateTreeDataGridSource(Root);
