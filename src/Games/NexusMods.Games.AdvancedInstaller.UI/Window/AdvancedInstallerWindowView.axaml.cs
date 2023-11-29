@@ -1,4 +1,5 @@
 ﻿using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 
@@ -12,16 +13,11 @@ public partial class AdvancedInstallerWindowView : ReactiveWindow<IAdvancedInsta
 
         this.WhenActivated(disposables =>
         {
-            ViewModel!.UnsupportedModVM.DeclineCommand
-                .Subscribe(_ => Close())
-                .DisposeWith(disposables);
-
-            ViewModel!.AdvancedInstallerVM.FooterViewModel.CancelCommand
-                .Subscribe(_ => Close())
-                .DisposeWith(disposables);
-
-            ViewModel!.AdvancedInstallerVM.FooterViewModel.InstallCommand
-                .Subscribe(_ => Close())
+            this.WhenAnyObservable(view => view.ViewModel!.UnsupportedModVM.DeclineCommand,
+                    view => view.ViewModel!.AdvancedInstallerVM.FooterViewModel.CancelCommand,
+                    view => view.ViewModel!.AdvancedInstallerVM.FooterViewModel.InstallCommand)
+                .Do(_ => Close())
+                .Subscribe()
                 .DisposeWith(disposables);
 
             this.OneWayBind(ViewModel, vm => vm.CurrentPageVM,
