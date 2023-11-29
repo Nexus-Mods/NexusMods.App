@@ -27,12 +27,14 @@ public class AdvancedInstallerPageViewModel : AViewModel<IAdvancedInstallerPageV
         FooterViewModel = new FooterViewModel();
         ShouldInstall = false;
 
-        FooterViewModel.InstallCommand = ReactiveCommand.Create(() => { ShouldInstall = true; },
-            this.WhenAnyValue(vm => vm.BodyViewModel.CanInstall));
-
         this.WhenActivated(disposables =>
         {
+            this.WhenAnyValue(vm => vm.BodyViewModel.CanInstall)
+                .BindToVM(this, vm => vm.FooterViewModel.CanInstall)
+                .DisposeWith(disposables);
+
             FooterViewModel.CancelCommand.Subscribe(_ => { ShouldInstall = false; }).DisposeWith(disposables);
+            FooterViewModel.InstallCommand.Subscribe(_ => { ShouldInstall = true; }).DisposeWith(disposables);
         });
     }
 

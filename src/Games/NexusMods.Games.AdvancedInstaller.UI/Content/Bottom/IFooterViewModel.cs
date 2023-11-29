@@ -5,7 +5,12 @@ namespace NexusMods.Games.AdvancedInstaller.UI;
 
 public interface IFooterViewModel : IViewModelInterface
 {
-    ReactiveCommand<Unit, Unit> CancelCommand { get; set; }
+    /// <summary>
+    /// Determines whether the Install button is enabled or not.
+    /// </summary>
+    bool CanInstall { get; set; }
 
-    ReactiveCommand<Unit, Unit> InstallCommand { get; set; }
+    ReactiveCommand<Unit, Unit> CancelCommand { get;  }
+
+    ReactiveCommand<Unit, Unit> InstallCommand { get; }
 }

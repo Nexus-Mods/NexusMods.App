@@ -6,7 +6,14 @@ namespace NexusMods.Games.AdvancedInstaller.UI;
 
 internal class FooterViewModel : AViewModel<IFooterViewModel>, IFooterViewModel
 {
-    [Reactive] public ReactiveCommand<Unit, Unit> CancelCommand { get; set; } = ReactiveCommand.Create(() => { });
+    [Reactive] public bool CanInstall { get; set; }
+    public ReactiveCommand<Unit, Unit> CancelCommand { get; }
+    public ReactiveCommand<Unit, Unit> InstallCommand { get; }
 
-    [Reactive] public ReactiveCommand<Unit, Unit> InstallCommand { get; set; } = ReactiveCommand.Create(() => { });
+    public FooterViewModel()
+    {
+        CancelCommand = ReactiveCommand.Create(() => { });
+        InstallCommand = ReactiveCommand.Create(() => { },
+            this.WhenAnyValue(x => x.CanInstall));
+    }
 }
