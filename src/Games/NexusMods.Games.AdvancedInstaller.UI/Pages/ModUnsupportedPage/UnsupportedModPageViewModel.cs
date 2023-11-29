@@ -9,9 +9,8 @@ public class UnsupportedModPageViewModel : AViewModel<IUnsupportedModPageViewMod
 {
     public UnsupportedModPageViewModel(string modName)
     {
-        WasAccepted = false;
         ModName = modName;
-        AcceptCommand = ReactiveCommand.Create(() => { WasAccepted = true; });
+        AcceptCommand = ReactiveCommand.Create(() => { });
         DeclineCommand = ReactiveCommand.Create(() => { });
     }
 
@@ -23,8 +22,4 @@ public class UnsupportedModPageViewModel : AViewModel<IUnsupportedModPageViewMod
 
     /// <inheritdoc />
     public ReactiveCommand<Unit, Unit> DeclineCommand { get; }
-
-    /// <inheritdoc />
-    [Reactive]
-    public bool WasAccepted { get; set; }
 }
