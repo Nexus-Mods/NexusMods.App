@@ -44,11 +44,11 @@ public class Program
         });
 
         // Run in debug mode if we are in debug mode and the debugger is attached.
-        #if DEBUG
+#if DEBUG
         var isDebug = Debugger.IsAttached;
-        #else
+#else
         var isDebug = false;
-        #endif
+#endif
 
         _logger.LogDebug("Application starting in {Mode} mode", isDebug ? "debug" : "release");
         var startup = host.Services.GetRequiredService<StartupDirector>();
@@ -73,7 +73,7 @@ public class Program
 
                 // Note: suppressed because invalid config will throw.
                 config = JsonSerializer.Deserialize<AppConfig>(configJson)!;
-                config.Sanitize();
+                config.Sanitize(FileSystem.Shared);
                 services.AddApp(config).Validate();
             })
             .ConfigureLogging((_, builder) => AddLogging(builder, config.LoggingSettings))
@@ -83,7 +83,7 @@ public class Program
         // do additional initialization inside their constructors.
         // We need to make sure their constructors are called to
         // finalize our OpenTelemetry configuration.
-       //host.Services.GetService<TracerProvider>();
+        //host.Services.GetService<TracerProvider>();
         //host.Services.GetService<MeterProvider>();
         return host;
     }

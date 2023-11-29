@@ -53,11 +53,12 @@ public class AppConfig
     /// <summary>
     /// Sanitizes the config; e.g.
     /// </summary>
-    public void Sanitize()
+    public void Sanitize(IFileSystem fs)
     {
-        DataModelSettings.Sanitize();
+        DataModelSettings.Sanitize(fs);
+        FileExtractorSettings.Sanitize(fs);
         HttpDownloaderSettings.Sanitize();
-        LoggingSettings.Sanitize();
+        LoggingSettings.Sanitize(fs);
     }
 }
 
@@ -96,7 +97,7 @@ public class LoggingSettings : ILoggingSettings
     /// <summary>
     /// Default constructor for serialization.
     /// </summary>
-    public LoggingSettings() : this(FileSystem.Shared) {}
+    public LoggingSettings() : this(FileSystem.Shared) { }
 
     /// <summary>
     /// Creates the default logger with logs stored in the entry directory.
@@ -104,20 +105,44 @@ public class LoggingSettings : ILoggingSettings
     /// <param name="fileSystem">The FileSystem implementation to use.</param>
     public LoggingSettings(IFileSystem fileSystem)
     {
-        var baseFolder = fileSystem.GetKnownPath(KnownPath.EntryDirectory);
-        baseFolder.CreateDirectory();
-        FilePath = new ConfigurationPath(baseFolder.Combine(LogFileName));
-        ArchiveFilePath = new ConfigurationPath(baseFolder.Combine(LogFileNameTemplate));
+        var baseFolder = GetDefaultBaseDirectory(fileSystem);
+        FilePath = GetFilePath(baseFolder);
+        ArchiveFilePath = GetArchiveFilePath(baseFolder);
         MaxArchivedFiles = 10;
     }
 
     /// <summary>
     /// Expands any user provided paths; and ensures default settings in case of placeholders.
     /// </summary>
-    public void Sanitize()
+    public void Sanitize(IFileSystem fs)
     {
         MaxArchivedFiles = MaxArchivedFiles < 0 ? 10 : MaxArchivedFiles;
+
+        // Set default locations if none are provided.
+        var baseFolder = GetDefaultBaseDirectory(fs);
+        if (string.IsNullOrEmpty(FilePath.RawPath))
+            FilePath = GetFilePath(baseFolder);
+
+        if (string.IsNullOrEmpty(ArchiveFilePath.RawPath))
+            ArchiveFilePath = GetArchiveFilePath(baseFolder);
+
+        FilePath.ToAbsolutePath().Parent.CreateDirectory();
+        ArchiveFilePath.ToAbsolutePath().Parent.CreateDirectory();
     }
+
+    private static AbsolutePath GetDefaultBaseDirectory(IFileSystem fs)
+    {
+        return fs.OS.MatchPlatform(
+            () => fs.GetKnownPath(KnownPath.LocalApplicationDataDirectory).Combine("Logs"),
+            () => fs.GetKnownPath(KnownPath.XDG_DATA_HOME).Combine("Logs"),
+            () => throw new NotSupportedException(
+                "(Note: Sewer) Paths needs PR for macOS. I don't have a non-painful way to access a Mac."));
+    }
+
+    private static ConfigurationPath GetFilePath(AbsolutePath baseFolder) => new(baseFolder.Combine(LogFileName));
+
+    private static ConfigurationPath GetArchiveFilePath(AbsolutePath baseFolder) =>
+        new(baseFolder.Combine(LogFileNameTemplate));
 }
 
 internal class AppConfigManager : IAppConfigManager
