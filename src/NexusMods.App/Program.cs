@@ -111,23 +111,18 @@ public class Program
         const string configFileName = "AppConfig.json";
 
         // TODO: NexusMods.Paths needs ReadAllText API. For now we delegate to standard library because source is `FileSystem.Shared`.
-        var appFolder = FileSystem.Shared.GetKnownPath(KnownPath.EntryDirectory);
-        try
+
+        var fs = FileSystem.Shared;
+        if (fs.OS.IsLinux)
         {
-            return File.ReadAllText(appFolder.Combine(configFileName).GetFullPath());
-        }
-        catch (Exception)
-        {
-            // Config doesn't exist.
-            // Try the OWD environment variable in case this is an AppImage
+            // On AppImage (Linux), 'OWD' should take precedence over the entry directory if it exists.
             var owd = Environment.GetEnvironmentVariable("OWD");
             if (!string.IsNullOrEmpty(owd))
             {
                 try
                 {
-                    var location = FileSystem.Shared.FromUnsanitizedFullPath(owd).Combine(configFileName)
-                        .GetFullPath();
-                    return File.ReadAllText(location);
+                    return File.ReadAllText(fs.FromUnsanitizedFullPath(owd).Combine(configFileName)
+                        .GetFullPath());
                 }
                 catch (Exception)
                 {
@@ -136,6 +131,18 @@ public class Program
             }
         }
 
+        // Try App Folder
+        var appFolder = fs.GetKnownPath(KnownPath.EntryDirectory);
+        try
+        {
+            return File.ReadAllText(appFolder.Combine(configFileName).GetFullPath());
+        }
+        catch (Exception)
+        {
+            /* Ignored */
+        }
+
+        // Config doesn't exist.
         return null;
     }
 
