@@ -61,11 +61,23 @@ application is deployed or executed.
 
 ## Decision Outcome
 
-{TBD}
+We went with `Option 2: Operating System's AppData Directory`.
 
-### Consequences of Chosen Decision
+With the following caveats/notes:
 
-{TBD}
+- We will assume the machine is single user for now. (no `Roaming` directory)
+- We will use idiomatic paths for each operating system.
+
+| Directory       | Windows        | Linux            |
+|-----------------|----------------|------------------|
+| DataModel       | %localappdata% | XDG_DATA_HOME    |
+| Temporary Files | %temp%         | XDG_DATA_HOME ⚠️ |
+| Logs            | %localappdata% | XDG_STATE_HOME   |
+
+⚠️ Non-standard location. This is because we risk RAM starvation on large downloads as `tmpfs` is often in RAM+swap.
+
+Inside `NexusMods.App` subfolder, of course.
+macOS is not yet implemented, so is currently omitted.
 
 ## Pros and Cons of the Options
 
@@ -108,7 +120,9 @@ In a subfolder of:
 
 ---------
 
-Decision: Discussed in [Meeting Notes: Default Storage Locations](../meeting-notes/0000-datastore-locations.md#default-storage-location). We will pretend multi-user systems don't exist for now.
+Decision: Discussed
+in [Meeting Notes: Default Storage Locations](../meeting-notes/0000-datastore-locations.md#default-storage-location). We
+will pretend multi-user systems don't exist for now.
 
 ---------
 
@@ -163,7 +177,7 @@ More convenient for developers, but the App however would work very poorly in mu
 
 Decision: [Portable mode to be implemented](../meeting-notes/0000-datastore-locations.md#portable-mode) with
 `AppConfig.json` override method. Lack of `AppConfig.json` indicates 'use default paths'. Remaining settings
-to be moved to DataStore. 
+to be moved to DataStore.
 
 For now, as a compromise, as not to not cause a regression in functionality, we will blank out the default
 paths in the `AppConfig.json` file. If they are blank, we will apply the default paths decided upon in this ADR.
@@ -219,7 +233,6 @@ Here are some (current) proposed discussion topics:
 - Support dynamically moving the Archives between folders.
     - Do we use Steam inspired UI for this?
     - Reboot required?
-
 
 ---------
 
