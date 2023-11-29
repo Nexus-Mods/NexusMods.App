@@ -155,6 +155,7 @@ public class FileHashCache
         }
 
         using var job = _activityFactory.Create<Size>(Group, "Hashing {FileName}", file.FileName);
+        job.SetMax(info.Size);
         var hashed = await file.XxHash64Async(job, token);
         PutCachedAsync(file, new FileHashCacheEntry(info.LastWriteTimeUtc, hashed, size));
         return new HashedEntry(file, hashed, info.LastWriteTimeUtc, size);

@@ -10,9 +10,16 @@ public class Activity(ActivityMonitor monitor, ActivityGroup group, object? payl
 {
     private readonly Subject<DateTime> _reports = new();
     protected readonly DateTime _startTime = DateTime.UtcNow;
-    protected (string Template, object[] Arguments) _status;
-    protected ActivityStatus _runStatus;
-    protected Percent _percentage;
+    protected (string Template, object[] Arguments) Status;
+    /// <summary>
+    /// The current run status of the activity.
+    /// </summary>
+    protected ActivityStatus RunStatus;
+
+    /// <summary>
+    /// The activity progress, stored as a double so we can handle clamping and overflow for rounding errors
+    /// </summary>
+    protected double Percentage;
     private TaskCompletionSource? _pauseTask = null;
 
 
@@ -33,10 +40,10 @@ public class Activity(ActivityMonitor monitor, ActivityGroup group, object? payl
     {
         lock (this)
         {
-            if (_runStatus is ActivityStatus.Running or ActivityStatus.Paused)
+            if (RunStatus is ActivityStatus.Running or ActivityStatus.Paused)
             {
                 _pauseTask?.TrySetCanceled();
-                _runStatus = ActivityStatus.Cancelled;
+                RunStatus = ActivityStatus.Cancelled;
             }
         }
         SendReport();
@@ -47,11 +54,11 @@ public class Activity(ActivityMonitor monitor, ActivityGroup group, object? payl
     {
         lock (this)
         {
-            if (_runStatus != ActivityStatus.Running)
+            if (RunStatus != ActivityStatus.Running)
             {
                 throw new InvalidOperationException("Can only pause a running activity");
             }
-            _runStatus = ActivityStatus.Paused;
+            RunStatus = ActivityStatus.Paused;
             _pauseTask = new TaskCompletionSource();
         }
         SendReport();
@@ -62,11 +69,11 @@ public class Activity(ActivityMonitor monitor, ActivityGroup group, object? payl
     {
         lock (this)
         {
-            if (_runStatus != ActivityStatus.Paused)
+            if (RunStatus != ActivityStatus.Paused)
             {
                 throw new InvalidOperationException("Can only resume a paused activity");
             }
-            _runStatus = ActivityStatus.Running;
+            RunStatus = ActivityStatus.Running;
             _pauseTask?.TrySetResult();
             _pauseTask = null;
         }
@@ -78,10 +85,10 @@ public class Activity(ActivityMonitor monitor, ActivityGroup group, object? payl
     {
         lock (this)
         {
-            if (_runStatus is ActivityStatus.Running or ActivityStatus.Paused)
+            if (RunStatus is ActivityStatus.Running or ActivityStatus.Paused)
             {
                 _pauseTask?.TrySetCanceled();
-                _runStatus = ActivityStatus.Finished;
+                RunStatus = ActivityStatus.Finished;
             }
         }
         SendReport();
@@ -91,7 +98,7 @@ public class Activity(ActivityMonitor monitor, ActivityGroup group, object? payl
     /// <inheritdoc />
     public void SetStatusMessage(string template, params object[] arguments)
     {
-        _status = (template, arguments);
+        Status = (template, arguments);
         SendReport();
     }
     private ValueTask MaybePause(CancellationToken token)
@@ -104,7 +111,7 @@ public class Activity(ActivityMonitor monitor, ActivityGroup group, object? payl
     public async ValueTask SetProgress(Percent percent, CancellationToken token)
     {
         await MaybePause(token);
-        _percentage = percent;
+        Percentage = percent.Value;
         SendReport();
     }
 
@@ -112,7 +119,7 @@ public class Activity(ActivityMonitor monitor, ActivityGroup group, object? payl
     public async ValueTask AddProgress(Percent percent, CancellationToken token)
     {
         await MaybePause(token);
-        _percentage += percent;
+        Percentage += percent.Value;
         SendReport();
     }
 
@@ -131,9 +138,9 @@ public class Activity(ActivityMonitor monitor, ActivityGroup group, object? payl
             ReportTime = DateTime.UtcNow,
             StartTime = _startTime,
             Id = Id,
-            RunStatus = _runStatus,
-            Status = _status,
-            CurrentProgress = _percentage
+            RunStatus = RunStatus,
+            Status = Status,
+            CurrentProgress = Percent.CreateClamped(Percentage)
         };
     }
 
@@ -224,9 +231,9 @@ where T : IDivisionOperators<T, T, double>, IAdditionOperators<T, T, T>
             ReportTime = DateTime.UtcNow,
             StartTime = _startTime,
             Id = Id,
-            RunStatus = _runStatus,
-            Status = _status,
-            CurrentProgress = _percentage,
+            RunStatus = RunStatus,
+            Status = Status,
+            CurrentProgress = Percent.CreateClamped(Percentage),
             Max = _max,
             Current = _current
         };
