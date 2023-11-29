@@ -154,7 +154,7 @@ public class SevenZipExtractor : IExtractor
                     var newPosition = percentInt == 0 ? Size.Zero : totalSize / 100 * percentInt;
                     var throughput = newPosition - oldPosition;
                     if (throughput > Size.Zero)
-                        activity.AddProgress(throughput, token);
+                        activity.AddProgress(throughput);
 
                     lastPercent = percentInt;
                 }))

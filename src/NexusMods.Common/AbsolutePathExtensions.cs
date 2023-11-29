@@ -1,4 +1,5 @@
-﻿using NexusMods.DataModel.Activities;
+﻿using NexusMods.Abstractions.Activities;
+using NexusMods.DataModel.Activities;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 
@@ -25,7 +26,7 @@ public static class AbsolutePathExtensions
         else
             return await inputStream.HashingCopyAsync(Stream.Null, token,  async m =>
             {
-                await job.AddProgress(Size.FromLong(m.Length), token);
+                job.AddProgress(Size.FromLong(m.Length));
             });
     }
 

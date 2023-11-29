@@ -38,21 +38,6 @@ public interface IReadOnlyActivity
     public ActivityId Id { get; }
 
     /// <summary>
-    /// Terminates the activity, and marks it as cancelled.
-    /// </summary>
-    public void Cancel();
-
-    /// <summary>
-    /// Pauses the activity, call Resume() to resume
-    /// </summary>
-    public void Pause();
-
-    /// <summary>
-    /// Continues the activity after it was previously paused
-    /// </summary>
-    public void Resume();
-
-    /// <summary>
     /// A user defined object that can be used to store additional information about the activity.
     /// </summary>
     public object? Payload { get; }

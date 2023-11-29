@@ -147,7 +147,7 @@ public class ArchiveInstaller : IArchiveInstaller
                 };
             }
 
-            await job.AddProgress(Percent.CreateClamped(0.75), token);
+            job.AddProgress(Percent.CreateClamped(0.75));
 
             // Step 5: Add the mod to the loadout.
             AModMetadata? modMetadata = mods.Length > 1

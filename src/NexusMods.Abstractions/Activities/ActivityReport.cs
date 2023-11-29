@@ -8,10 +8,7 @@ namespace NexusMods.DataModel.Activities;
 /// </summary>
 public class ActivityReport
 {
-    /// <summary>
-    /// True if the activity has finished, false otherwise.
-    /// </summary>
-    public required ActivityStatus RunStatus { get; init; }
+    public bool IsFinished { get; init; }
 
     /// <summary>
     /// The Unique identifier for the activity.
@@ -58,7 +55,7 @@ public class ActivityReport
     /// <summary>
     /// The end time of the activity, if it can be calculated.
     /// </summary>
-    public DateTime? EndTime => RunStatus is ActivityStatus.Finished or ActivityStatus.Cancelled ?
+    public DateTime? EndTime => IsFinished ?
         StartTime + Elapsed : StartTime + EstimatedTotalTime;
 }
 

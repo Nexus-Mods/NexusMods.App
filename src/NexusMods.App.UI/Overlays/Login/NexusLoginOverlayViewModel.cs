@@ -43,7 +43,8 @@ public class NexusLoginOverlayViewModel : AViewModel<INexusLoginOverlayViewModel
 
         currentJob
             .WhereNotNull()
-            .Select(job => ReactiveCommand.Create(job.Cancel))
+            .Select(job => (IActivitySource)job)
+            .Select(job => ReactiveCommand.Create(job.Dispose))
             .BindTo(this, vm => vm.Cancel)
             .DisposeWith(_compositeDisposable);
     }

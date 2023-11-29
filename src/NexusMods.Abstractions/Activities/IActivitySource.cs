@@ -1,7 +1,6 @@
-using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.Values;
 
-namespace NexusMods.DataModel.Activities;
+namespace NexusMods.Abstractions.Activities;
 
 /// <summary>
 /// An activity is a long running code process that can be monitored and (optionally) cancelled. These are useful for
@@ -27,16 +26,14 @@ public interface IActivitySource : IDisposable
     /// if the activity is throttled or has been paused.
     /// </summary>
     /// <param name="percent"></param>
-    /// <param name="token"></param>
-    public ValueTask SetProgress(Percent percent, CancellationToken token = default);
+    public void SetProgress(Percent percent);
 
     /// <summary>
     /// Adds to the progress of the activity, by a specific value. May not return instantly
     /// if the activity is throttled or has been paused.
     /// </summary>
     /// <param name="percent"></param>
-    /// <param name="token"></param>
-    public ValueTask AddProgress(Percent percent, CancellationToken token = default);
+    public void AddProgress(Percent percent);
 }
 
 /// <summary>
@@ -56,14 +53,12 @@ public interface IActivitySource<in T> : IActivitySource
     /// Sets the progress of the activity, to a specific value.
     /// </summary>
     /// <param name="value"></param>
-    /// <param name="token"></param>
-    public ValueTask SetProgress(T value, CancellationToken token);
+    public void SetProgress(T value);
 
     /// <summary>
     /// Adds to the progress of the activity, by a specific value.
     /// </summary>
     /// <param name="value"></param>
-    /// <param name="token"></param>
-    public ValueTask AddProgress(T value, CancellationToken token);
+    public void AddProgress(T value);
 
 }

@@ -178,8 +178,8 @@ namespace NexusMods.Networking.HttpDownloader
                     order.Chunk.Completed += Size.From((ulong)order.Data.Length);
 
                     await WriteDownloadState(state);
-                    // _bufferPool.Return(order.Data);
-                    await job.AddProgress(Size.FromLong(order.Data.Length), cancel);
+
+                    job.AddProgress(Size.FromLong(order.Data.Length));
                 }
                 catch (ChannelClosedException)
                 {
@@ -394,7 +394,7 @@ namespace NexusMods.Networking.HttpDownloader
                 var lastRead = Size.FromLong(filledBuffer.Length);
                 if (lastRead == Size.Zero) break;
 
-                await job.AddProgress(lastRead, cancel);
+                job.AddProgress(lastRead);
                 if (lastRead <= Size.Zero) continue;
                 chunk.Read += lastRead;
 

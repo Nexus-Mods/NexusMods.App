@@ -8,20 +8,23 @@ namespace NexusMods.DataModel.Activities;
 
 public class Activity(ActivityMonitor monitor, ActivityGroup group, object? payload) : IActivitySource, IReadOnlyActivity
 {
+    //
     private readonly Subject<DateTime> _reports = new();
-    protected readonly DateTime _startTime = DateTime.UtcNow;
-    protected (string Template, object[] Arguments) Status;
+
     /// <summary>
-    /// The current run status of the activity.
+    /// The start time of the activity.
     /// </summary>
-    protected ActivityStatus RunStatus;
+    protected readonly DateTime StartTime = DateTime.UtcNow;
+
+    /// <summary>
+    /// The current status (text name) for the activity.
+    /// </summary>
+    protected (string Template, object[] Arguments) Status;
 
     /// <summary>
     /// The activity progress, stored as a double so we can handle clamping and overflow for rounding errors
     /// </summary>
     protected double Percentage;
-    private TaskCompletionSource? _pauseTask = null;
-
 
     /// <summary>
     /// The unique identifier of the activity.
@@ -33,64 +36,9 @@ public class Activity(ActivityMonitor monitor, ActivityGroup group, object? payl
     /// </summary>
     public object? Payload => payload;
 
-    /// <summary>
-    /// Cancels the activity.
-    /// </summary>
-    public void Cancel()
-    {
-        lock (this)
-        {
-            if (RunStatus is ActivityStatus.Running or ActivityStatus.Paused)
-            {
-                _pauseTask?.TrySetCanceled();
-                RunStatus = ActivityStatus.Cancelled;
-            }
-        }
-        SendReport();
-    }
-
-    /// <inheritdoc />
-    public void Pause()
-    {
-        lock (this)
-        {
-            if (RunStatus != ActivityStatus.Running)
-            {
-                throw new InvalidOperationException("Can only pause a running activity");
-            }
-            RunStatus = ActivityStatus.Paused;
-            _pauseTask = new TaskCompletionSource();
-        }
-        SendReport();
-    }
-
-    /// <inheritdoc />
-    public void Resume()
-    {
-        lock (this)
-        {
-            if (RunStatus != ActivityStatus.Paused)
-            {
-                throw new InvalidOperationException("Can only resume a paused activity");
-            }
-            RunStatus = ActivityStatus.Running;
-            _pauseTask?.TrySetResult();
-            _pauseTask = null;
-        }
-        SendReport();
-    }
-
     /// <inheritdoc />
     public void Dispose()
     {
-        lock (this)
-        {
-            if (RunStatus is ActivityStatus.Running or ActivityStatus.Paused)
-            {
-                _pauseTask?.TrySetCanceled();
-                RunStatus = ActivityStatus.Finished;
-            }
-        }
         SendReport();
         monitor.Remove(this);
     }
@@ -101,25 +49,22 @@ public class Activity(ActivityMonitor monitor, ActivityGroup group, object? payl
         Status = (template, arguments);
         SendReport();
     }
-    private ValueTask MaybePause(CancellationToken token)
-    {
-        var val = _pauseTask?.Task;
-        return val is null ? ValueTask.CompletedTask : new ValueTask(val);
-    }
 
     /// <inheritdoc />
-    public async ValueTask SetProgress(Percent percent, CancellationToken token)
+    public void SetProgress(Percent percent)
     {
-        await MaybePause(token);
         Percentage = percent.Value;
         SendReport();
     }
 
     /// <inheritdoc />
-    public async ValueTask AddProgress(Percent percent, CancellationToken token)
+    public void AddProgress(Percent percent)
     {
-        await MaybePause(token);
-        Percentage += percent.Value;
+        lock (this)
+        {
+            Percentage += percent.Value;
+        }
+
         SendReport();
     }
 
@@ -136,9 +81,8 @@ public class Activity(ActivityMonitor monitor, ActivityGroup group, object? payl
         return new ActivityReport
         {
             ReportTime = DateTime.UtcNow,
-            StartTime = _startTime,
+            StartTime = StartTime,
             Id = Id,
-            RunStatus = RunStatus,
             Status = Status,
             CurrentProgress = Percent.CreateClamped(Percentage)
         };
@@ -185,7 +129,10 @@ public class Activity(ActivityMonitor monitor, ActivityGroup group, object? payl
 /// A variant of <see cref="Activity"/> that allows you to specify a type for the progress value.
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public class Activity<T>(ActivityMonitor monitor, ActivityGroup group, object? payload) : Activity(monitor, group, payload), IActivitySource<T>, IReadOnlyActivity<T>
+public class Activity<T>(ActivityMonitor monitor, ActivityGroup group, object? payload) :
+    Activity(monitor, group, payload),
+    IActivitySource<T>,
+    IReadOnlyActivity<T>
 where T : IDivisionOperators<T, T, double>, IAdditionOperators<T, T, T>
 {
     private T? _max;
@@ -199,16 +146,16 @@ where T : IDivisionOperators<T, T, double>, IAdditionOperators<T, T, T>
     }
 
     /// <inheritdoc />
-    public ValueTask SetProgress(T value, CancellationToken token)
+    public void SetProgress(T value)
     {
         _current = value;
-        if (_max is null) return ValueTask.CompletedTask;
+        if (_max is null) return;
         var percent = _max / value;
-        return SetProgress(Percent.CreateClamped(percent), token);
+        SetProgress(Percent.CreateClamped(percent));
     }
 
     /// <inheritdoc />
-    public ValueTask AddProgress(T value, CancellationToken token)
+    public void AddProgress(T value)
     {
         if (_current is null)
         {
@@ -218,7 +165,7 @@ where T : IDivisionOperators<T, T, double>, IAdditionOperators<T, T, T>
         {
             _current += value;
         }
-        if (_max is null) return ValueTask.CompletedTask;
+        if (_max is null) return;
         var percent = value / _max;
 
         // Is NaN when value is 0 and max is 0
@@ -227,7 +174,7 @@ where T : IDivisionOperators<T, T, double>, IAdditionOperators<T, T, T>
             percent = 0.0;
         }
 
-        return AddProgress(Percent.CreateClamped(percent), token);
+        AddProgress(Percent.CreateClamped(percent));
     }
 
     /// <inheritdoc />
@@ -236,9 +183,8 @@ where T : IDivisionOperators<T, T, double>, IAdditionOperators<T, T, T>
         return new ActivityReport<T>
         {
             ReportTime = DateTime.UtcNow,
-            StartTime = _startTime,
+            StartTime = StartTime,
             Id = Id,
-            RunStatus = RunStatus,
             Status = Status,
             CurrentProgress = Percent.CreateClamped(Percentage),
             Max = _max,
