@@ -134,7 +134,7 @@ public class LoggingSettings : ILoggingSettings
     {
         return fs.OS.MatchPlatform(
             () => fs.GetKnownPath(KnownPath.LocalApplicationDataDirectory).Combine("NexusMods.App/Logs"),
-            () => fs.GetKnownPath(KnownPath.XDG_DATA_HOME).Combine("NexusMods.App/Logs"),
+            () => fs.GetKnownPath(KnownPath.XDG_STATE_HOME).Combine("NexusMods.App/Logs"),
             () => throw new NotSupportedException(
                 "(Note: Sewer) Paths needs PR for macOS. I don't have a non-painful way to access a Mac."));
     }
