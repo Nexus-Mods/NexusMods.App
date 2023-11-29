@@ -14,10 +14,10 @@ public interface IUnsupportedModPageViewModel : IViewModelInterface
     /// <summary>
     /// Command to accept the offer to install the mod.
     /// </summary>
-    ReactiveCommand<Unit, Unit> AcceptCommand { get; }
+    public ReactiveCommand<Unit, Unit> AcceptCommand { get; }
 
     /// <summary>
     /// Command to decline the offer to install the mod.
     /// </summary>
-    ReactiveCommand<Unit, Unit> DeclineCommand { get; }
+    public ReactiveCommand<Unit, Unit> DeclineCommand { get; }
 }

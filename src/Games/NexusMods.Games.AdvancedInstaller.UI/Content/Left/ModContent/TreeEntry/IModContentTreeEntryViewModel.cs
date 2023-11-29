@@ -76,13 +76,13 @@ public interface IModContentTreeEntryViewModel : IViewModelInterface
     /// Command invoked when the user clicks the (X Include) button.
     /// Removes this entry and child entries from install selection.
     /// </summary>
-    ReactiveCommand<Unit, Unit> CancelSelectCommand { get; }
+    public ReactiveCommand<Unit, Unit> CancelSelectCommand { get; }
 
     /// <summary>
     /// Command invoked when the user clicks the (X location) or (X Included) button.
     /// Removes the mapping for this entry and child entries mapped with this entry.
     /// </summary>
-    ReactiveCommand<Unit, Unit> RemoveMappingCommand { get; }
+    public ReactiveCommand<Unit, Unit> RemoveMappingCommand { get; }
 
     /// <summary>
     /// Sets the mapping information for this entry and changes the state.
