@@ -105,7 +105,7 @@ public class AdvancedManualInstallerUI : IAdvancedInstallerHandler
                 await view.ShowDialog(desktop.MainWindow);
             }
 
-            tcs.SetResult();
+            tuple.tcs.SetResult();
         });
 
         await tcs.Task;
