@@ -76,6 +76,7 @@ public class Program
 
     private static bool IsMainProcess(IReadOnlyList<string> args)
     {
+        if (_isDebug) return true;
         return args.Count == 1 && args[0] == StartupHandler.MainProcessVerb;
     }
 
