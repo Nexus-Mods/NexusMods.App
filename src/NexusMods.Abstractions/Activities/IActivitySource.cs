@@ -22,15 +22,13 @@ public interface IActivitySource : IDisposable
     public void SetStatusMessage(string template, params object[] arguments);
 
     /// <summary>
-    /// Sets the progress of the activity, to a specific value. May not return instantly
-    /// if the activity is throttled or has been paused.
+    /// Sets the progress of the activity, to a specific value.
     /// </summary>
     /// <param name="percent"></param>
     public void SetProgress(Percent percent);
 
     /// <summary>
-    /// Adds to the progress of the activity, by a specific value. May not return instantly
-    /// if the activity is throttled or has been paused.
+    /// Adds to the progress of the activity, by a specific value.
     /// </summary>
     /// <param name="percent"></param>
     public void AddProgress(Percent percent);

@@ -17,6 +17,17 @@ public interface IActivityFactory
     /// <returns></returns>
     public IActivitySource Create(ActivityGroup group, string template, params object[] arguments);
 
+
+    /// <summary>
+    /// Overload for <see cref="Create(ActivityGroup,string,object[])"/> that accepts a payload.
+    /// </summary>
+    /// <param name="group"></param>
+    /// <param name="payload"></param>
+    /// <param name="template"></param>
+    /// <param name="arguments"></param>
+    /// <returns></returns>
+    public IActivitySource CreateWithPayload(ActivityGroup group, object payload, string template, params object[] arguments);
+
     /// <summary>
     /// Creates a new activity with the specified template and arguments. And a progress value of type <typeparamref name="T"/>.
     /// </summary>

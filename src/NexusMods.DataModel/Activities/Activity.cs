@@ -6,6 +6,12 @@ using NexusMods.Abstractions.Values;
 
 namespace NexusMods.DataModel.Activities;
 
+/// <summary>
+/// A concrete implementation of <see cref="IActivity"/>.
+/// </summary>
+/// <param name="monitor"></param>
+/// <param name="group"></param>
+/// <param name="payload"></param>
 public class Activity(ActivityMonitor monitor, ActivityGroup group, object? payload) : IActivitySource, IReadOnlyActivity
 {
     //
@@ -76,7 +82,7 @@ public class Activity(ActivityMonitor monitor, ActivityGroup group, object? payl
         _reports.OnNext(DateTime.UtcNow);
     }
 
-    private ActivityReport MakeReport()
+    protected virtual ActivityReport MakeReport()
     {
         return new ActivityReport
         {
@@ -178,7 +184,13 @@ where T : IDivisionOperators<T, T, double>, IAdditionOperators<T, T, T>
     }
 
     /// <inheritdoc />
-    public ActivityReport<T> GetTypedReport()
+    protected override ActivityReport MakeReport()
+    {
+        return MakeTypedReport();
+    }
+
+    /// <inheritdoc />
+    public ActivityReport<T> MakeTypedReport()
     {
         return new ActivityReport<T>
         {

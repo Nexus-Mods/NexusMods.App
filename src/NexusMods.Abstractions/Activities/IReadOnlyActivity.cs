@@ -51,8 +51,5 @@ public interface IReadOnlyActivity<T> : IReadOnlyActivity
     /// <summary>
     /// Gets the current state of the activity. This is a typed version of the report.
     /// </summary>
-    public ActivityReport<T> GetTypedReport();
-
-
-
+    public ActivityReport<T> MakeTypedReport();
 }

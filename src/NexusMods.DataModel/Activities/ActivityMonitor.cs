@@ -31,6 +31,16 @@ public class ActivityMonitor : IActivityFactory, IActivityMonitor
 
 
     /// <inheritdoc />
+    public IActivitySource CreateWithPayload(ActivityGroup group, object payload, string template, params object[] arguments)
+    {
+        var activity = new Activity(this, group, payload);
+        activity.SetStatusMessage(template, arguments);
+        _activities.AddOrUpdate(activity);
+        return activity;
+    }
+
+
+    /// <inheritdoc />
     public IActivitySource<T> Create<T>(ActivityGroup group, string template, params object[] arguments)
         where T : IDivisionOperators<T, T, double>, IAdditionOperators<T, T, T>
     {

@@ -31,7 +31,7 @@ public class NxmDownloadTask : IDownloadTask, IHaveDownloadVersion, IHaveFileSiz
     private long _defaultDownloadedSize;
 
     /// <inheritdoc />
-    public long DownloadedSizeBytes => (long)(_state.ActivityStatus?.GetTypedReport().Current.Value ?? (ulong)_defaultDownloadedSize);
+    public long DownloadedSizeBytes => (long)(_state.ActivityStatus?.MakeTypedReport().Current.Value ?? (ulong)_defaultDownloadedSize);
 
     /// <inheritdoc />
     public long CalculateThroughput()

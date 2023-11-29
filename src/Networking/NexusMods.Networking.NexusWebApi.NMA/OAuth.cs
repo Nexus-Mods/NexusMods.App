@@ -93,7 +93,7 @@ public class OAuth
 
     private IActivitySource CreateJob(Uri url)
     {
-        return _activityFactory.Create(Group, "Logging into Nexus Mods, redirecting to {Url}", url);
+        return _activityFactory.CreateWithPayload(Group, url, "Logging into Nexus Mods, redirecting to {Url}", url);
     }
 
     /// <summary>
