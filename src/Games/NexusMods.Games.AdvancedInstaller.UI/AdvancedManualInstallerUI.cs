@@ -90,7 +90,7 @@ public class AdvancedManualInstallerUI : IAdvancedInstallerHandler
     {
         var tcs = new TaskCompletionSource();
 
-        OnUi((dialogVM, tcs), async tuple =>
+        OnUi((dialogVM, tcs), static async tuple =>
         {
             var view = new AdvancedInstallerWindowView
             {
