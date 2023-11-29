@@ -12,7 +12,7 @@ namespace NexusMods.DataModel.Activities;
 /// <param name="monitor"></param>
 /// <param name="group"></param>
 /// <param name="payload"></param>
-public class Activity(ActivityMonitor monitor, ActivityGroup group, object? payload) : IActivitySource, IReadOnlyActivity
+internal class Activity(ActivityMonitor monitor, ActivityGroup group, object? payload) : IActivitySource, IReadOnlyActivity
 {
     //
     private readonly Subject<DateTime> _reports = new();
@@ -135,7 +135,7 @@ public class Activity(ActivityMonitor monitor, ActivityGroup group, object? payl
 /// A variant of <see cref="Activity"/> that allows you to specify a type for the progress value.
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public class Activity<T>(ActivityMonitor monitor, ActivityGroup group, object? payload) :
+internal class Activity<T>(ActivityMonitor monitor, ActivityGroup group, object? payload) :
     Activity(monitor, group, payload),
     IActivitySource<T>,
     IReadOnlyActivity<T>

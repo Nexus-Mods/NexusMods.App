@@ -5,9 +5,9 @@ using NexusMods.Abstractions.Activities;
 
 namespace NexusMods.DataModel.Activities;
 
-public class ActivityMonitor : IActivityFactory, IActivityMonitor
+internal class ActivityMonitor : IActivityFactory, IActivityMonitor
 {
-    private SourceCache<Activity, ActivityId> _activities = new(x => x.Id);
+    private readonly SourceCache<Activity, ActivityId> _activities = new(x => x.Id);
 
     /// <summary>
     /// DI constructor.
