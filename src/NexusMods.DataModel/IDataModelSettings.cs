@@ -141,7 +141,7 @@ public class DataModelSettings : IDataModelSettings
         return fs.OS.MatchPlatform(
             () => fs.GetKnownPath(KnownPath.LocalApplicationDataDirectory).Combine("NexusMods.App/DataModel"),
             () => fs.GetKnownPath(KnownPath.XDG_DATA_HOME).Combine("NexusMods.App/DataModel"),
-            () => throw new NotSupportedException(
+            () => throw new PlatformNotSupportedException(
                 "(Note: Sewer) Paths needs PR for macOS. I don't have a non-painful way to access a Mac."));
     }
 
