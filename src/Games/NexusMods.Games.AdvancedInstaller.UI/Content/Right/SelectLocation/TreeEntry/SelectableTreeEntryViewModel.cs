@@ -1,5 +1,6 @@
 ﻿using System.Reactive;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Text.RegularExpressions;
 using NexusMods.Paths;
 using ReactiveUI;
@@ -51,17 +52,8 @@ public class SelectableTreeEntryViewModel : AViewModel<ISelectableTreeEntryViewM
         this.WhenActivated(disposables =>
         {
             this.WhenAnyValue(x => x.InputText)
-                .Subscribe(text =>
-                {
-                    if (text == string.Empty)
-                    {
-                        CanSave = false;
-                        return;
-                    }
-
-                    var trimmed = RemoveInvalidFolderCharacter(text);
-                    CanSave = trimmed != string.Empty;
-                })
+                .Select(text => text != string.Empty && RemoveInvalidFolderCharacter(text) != string.Empty)
+                .BindToVM(this, vm => vm.CanSave)
                 .DisposeWith(disposables);
         });
     }
