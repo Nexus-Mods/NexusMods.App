@@ -14,6 +14,7 @@ using NexusMods.Games.DarkestDungeon;
 using NexusMods.Games.FOMOD;
 using NexusMods.Games.FOMOD.UI;
 using NexusMods.Games.Generic;
+using NexusMods.Games.MountAndBlade2Bannerlord;
 using NexusMods.Games.RedEngine;
 using NexusMods.Games.Reshade;
 using NexusMods.Games.Sifu;
@@ -59,7 +60,7 @@ public static class Services
                 .AddUI(config.LauncherSettings)
                 .AddGuidedInstallerUi()
                 .AddAdvancedInstaller()
-            .AddAdvancedInstallerUi()
+                .AddAdvancedInstallerUi()
                 .AddFileExtractors(config.FileExtractorSettings)
                 .AddDataModel(config.DataModelSettings)
                 .AddBethesdaGameStudios()
@@ -70,6 +71,7 @@ public static class Services
                 .AddDarkestDungeon()
                 .AddSifu()
                 .AddStardewValley()
+                .AddMountAndBladeBannerlord()
                 .AddNexusWebApi()
                 .AddNexusWebApiNmaIntegration()
                 .AddAdvancedHttpDownloader(config.HttpDownloaderSettings)
