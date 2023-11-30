@@ -1,5 +1,3 @@
-using System.CommandLine.Builder;
-using System.CommandLine.Parsing;
 using System.Diagnostics;
 using System.Reactive;
 using System.Text.Json;
@@ -7,17 +5,12 @@ using Avalonia;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.CLI;
-using NexusMods.App.Listeners;
 using NexusMods.App.UI;
-using NexusMods.CLI;
 using NexusMods.Common;
 using NexusMods.Paths;
 using NexusMods.SingleProcess;
 using NLog.Extensions.Logging;
 using NLog.Targets;
-using OpenTelemetry.Metrics;
-using OpenTelemetry.Trace;
 using ReactiveUI;
 
 namespace NexusMods.App;
@@ -89,9 +82,9 @@ public class Program
     {
         // I'm not 100% sure how to wire this up to cleanly pass settings
         // to ConfigureLogging; since the DI container isn't built until the host is.
-        var config = new AppConfig();
+        var config = ReadAppConfig(new AppConfig());
         var host = new HostBuilder()
-            .ConfigureServices(services => services.AddApp(ReadAppConfig(config, slimMode:slimMode)).Validate())
+            .ConfigureServices(services => services.AddApp(config, slimMode:slimMode).Validate())
             .ConfigureLogging((_, builder) => AddLogging(builder, config.LoggingSettings))
             .Build();
 
