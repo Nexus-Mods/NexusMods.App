@@ -57,7 +57,6 @@ public class Program
         });
 
 
-
         // NOTE(erri120): DI is lazy by default and these services
         // do additional initialization inside their constructors.
         // We need to make sure their constructors are called to
@@ -92,22 +91,81 @@ public class Program
         // to ConfigureLogging; since the DI container isn't built until the host is.
         var config = new AppConfig();
         var host = new HostBuilder()
-            .ConfigureServices(services =>
-            {
-                // Bind the AppSettings class to the configuration and register it as a singleton service
-                // Question to Reviewers: Should this be moved to AddApp?
-                var appFolder = FileSystem.Shared.GetKnownPath(KnownPath.EntryDirectory);
-                var configJson = File.ReadAllText(appFolder.Combine("AppConfig.json").GetFullPath());
-
-                // Note: suppressed because invalid config will throw.
-                config = JsonSerializer.Deserialize<AppConfig>(configJson)!;
-                config.Sanitize();
-                services.AddApp(config, slimMode:slimMode).Validate();
-            })
+            .ConfigureServices(services => services.AddApp(ReadAppConfig(config, slimMode:slimMode)).Validate())
             .ConfigureLogging((_, builder) => AddLogging(builder, config.LoggingSettings))
             .Build();
 
         return host;
+    }
+
+    private static AppConfig ReadAppConfig(AppConfig existingConfig)
+    {
+        // Read an App Config from the entry directory and sanitize if it exists.
+        var configJson = TryReadConfig();
+
+        if (configJson != null)
+        {
+            // If we can't deserialize, use default.
+            try
+            {
+                existingConfig = JsonSerializer.Deserialize<AppConfig>(configJson)!;
+            }
+            catch (Exception)
+            {
+                /* Ignored */
+            }
+
+            existingConfig.Sanitize(FileSystem.Shared);
+        }
+        else
+        {
+            // No custom config so use default.
+            existingConfig.Sanitize(FileSystem.Shared);
+        }
+
+        return existingConfig;
+    }
+
+    private static string? TryReadConfig()
+    {
+        // Try to read an `AppConfig.json` from the entry directory
+        const string configFileName = "AppConfig.json";
+
+        // TODO: NexusMods.Paths needs ReadAllText API. For now we delegate to standard library because source is `FileSystem.Shared`.
+
+        var fs = FileSystem.Shared;
+        if (fs.OS.IsLinux)
+        {
+            // On AppImage (Linux), 'OWD' should take precedence over the entry directory if it exists.
+            // https://docs.appimage.org/packaging-guide/environment-variables.html
+            var owd = Environment.GetEnvironmentVariable("OWD");
+            if (!string.IsNullOrEmpty(owd))
+            {
+                try
+                {
+                    return File.ReadAllText(fs.FromUnsanitizedFullPath(owd).Combine(configFileName)
+                        .GetFullPath());
+                }
+                catch (Exception)
+                {
+                    /* Ignored */
+                }
+            }
+        }
+
+        // Try App Folder
+        var appFolder = fs.GetKnownPath(KnownPath.EntryDirectory);
+        try
+        {
+            return File.ReadAllText(appFolder.Combine(configFileName).GetFullPath());
+        }
+        catch (Exception)
+        {
+            /* Ignored */
+        }
+
+        // Config doesn't exist.
+        return null;
     }
 
     static void AddLogging(ILoggingBuilder loggingBuilder, ILoggingSettings settings)
