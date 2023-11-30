@@ -5,7 +5,6 @@ using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.Values;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.Activities;
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Cursors;
