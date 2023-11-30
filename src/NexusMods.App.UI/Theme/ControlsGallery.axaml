@@ -1,0 +1,141 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:system="clr-namespace:System;assembly=System.Runtime"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="NexusMods.App.UI.Theme.ControlsGallery"
+             Background="{DynamicResource SystemRegionColor}">
+    <ScrollViewer>
+        <StackPanel Margin="24,20,24,20" Orientation="Vertical">
+            <Border Height="40" Margin="0,0,0,20">
+                <TextBlock
+                    VerticalAlignment="Center"
+                    FontWeight="SemiBold"
+                    LineHeight="20"
+                    Text="{Binding #ThisControl.Title, Mode=OneWay}" />
+            </Border>
+            <TextBlock
+                Text="Buttons"
+                Margin="0,0,0,16" />
+            <Button Content="Enabled Button" Margin="0,0,0,12"
+                    CornerRadius="{DynamicResource ControlCornerRadius}" />
+            <Button
+                Content="Disabled Button"
+                Margin="0,0,0,12"
+                IsEnabled="False"
+                CornerRadius="{DynamicResource ControlCornerRadius}" />
+            <ToggleButton Content="Toggle Button" Margin="0,0,0,12" />
+            <ToggleButton
+                Content="Toggled Button"
+                Margin="0,0,0,12"
+                IsChecked="True" />
+            <Button
+                Content="Enabled Accent Button"
+                Margin="0,0,0,12"
+                Classes="accent" />
+            <Button
+                Content="Disabled Accent Button"
+                Margin="0,0,0,28"
+                IsEnabled="False"
+                Classes="accent" />
+            <TextBlock
+                Text="Checkbox"
+                Margin="0,0,0,16" />
+            <CheckBox Content="Unchecked" Margin="0,0,0,12" />
+            <CheckBox
+                Content="Checked"
+                Margin="0,0,0,12"
+                IsChecked="True" />
+            <CheckBox
+                Content="Third State"
+                Margin="0,0,0,12"
+                IsChecked="{x:Null}" />
+            <CheckBox
+                Content="Disabled"
+                Margin="0,0,0,28"
+                IsChecked="True"
+                IsEnabled="False" />
+            <TextBlock
+                Text="Radio Button"
+                Margin="0,0,0,16" />
+            <RadioButton
+                Content="Unchecked"
+                Margin="0,0,0,12"
+                GroupName="Test1" />
+            <RadioButton
+                Content="Checked"
+                Margin="0,0,0,12"
+                GroupName="Test1"
+                IsChecked="True" />
+            <RadioButton
+                Content="Disabled"
+                Margin="0,0,0,28"
+                GroupName="Test2"
+                IsChecked="True"
+                IsEnabled="False" />
+            <TextBlock
+                Text="ComboBlock"
+                Margin="0,0,0,16" />
+            <ComboBox Width="200" Margin="0,0,0,12" SelectedIndex="0">
+                <ComboBox.Items>
+                    <ComboBoxItem Content="Item 1" />
+                    <ComboBoxItem Content="Item 2" />
+                    <ComboBoxItem Content="Item 3" />
+                </ComboBox.Items>
+            </ComboBox>
+            <TextBlock
+                Text="Textbox"
+                Margin="0,0,0,16" />
+            <TextBox
+                Text="TestContentTextbox"
+                Watermark="TextboxPlaceholderText"
+                Width="200"
+                Margin="0,0,0,28"
+                HorizontalAlignment="Left" />
+            <TextBlock
+                Text="Toggle Switch"
+                Margin="0,0,0,16" />
+            <ToggleSwitch Margin="0,0,0,12" IsChecked="False" />
+            <ToggleSwitch Margin="0,0,0,28" IsChecked="True" />
+            <TextBlock Margin="0,0,0,16" Text="Slider" />
+            <Slider
+                Margin="0,0,0,28"
+                HorizontalAlignment="Stretch"
+                Maximum="100"
+                Minimum="0"
+                Value="50" />
+            <TextBlock
+                Text="List View"
+                Margin="0,0,0,16" />
+            <ListBox Margin="0,0,0,28" HorizontalAlignment="Stretch">
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="system:Object">
+                        <TextBlock Text="{Binding}" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+                <ListBox.Items>
+                    <ListBoxItem Content="Howdy! (disabled)" IsEnabled="False" />
+                    <ListBoxItem Content="Aloha! (selected)" IsSelected="True" />
+                    <ListBoxItem Content="Hello!" />
+                    <ListBoxItem Content="Hola!" />
+                </ListBox.Items>
+            </ListBox>
+            <TextBlock
+                Text="Command Bar"
+                Margin="0,0,0,16" />
+            <TextBlock
+                Text="Date Picker"
+                Margin="0,0,0,16" />
+            <DatePicker Margin="0,0,0,28" HorizontalAlignment="Stretch" />
+            <TextBlock
+                Text="Time Picker"
+                Margin="0,0,0,16" />
+            <TimePicker Margin="0,0,0,0" HorizontalAlignment="Stretch" />
+            <TextBlock
+                Text="Calendar View"
+                Margin="0,0,0,16" />
+            <Calendar />
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
