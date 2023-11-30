@@ -803,8 +803,6 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
 
         // Set the status of the parent node to Edit
         foundNode.Item.Status = SelectableDirectoryNodeStatus.Editing;
-
-        // TODO: Disable all other buttons while editing
     }
 
 
