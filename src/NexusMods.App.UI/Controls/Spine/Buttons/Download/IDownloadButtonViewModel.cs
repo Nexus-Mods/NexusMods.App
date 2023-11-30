@@ -1,5 +1,5 @@
 ﻿using System.Windows.Input;
-using NexusMods.DataModel.RateLimiting;
+using NexusMods.Abstractions.Values;
 
 namespace NexusMods.App.UI.Controls.Spine.Buttons.Download;
 

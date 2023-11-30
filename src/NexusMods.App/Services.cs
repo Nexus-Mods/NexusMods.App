@@ -1,7 +1,5 @@
 using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.CLI;
-using NexusMods.App.CLI.Renderers;
 using NexusMods.App.Listeners;
 using NexusMods.App.UI;
 using NexusMods.CLI;
@@ -9,6 +7,7 @@ using NexusMods.Common;
 using NexusMods.DataModel;
 using NexusMods.DataModel.GlobalSettings;
 using NexusMods.FileExtractor;
+using NexusMods.Games.AdvancedInstaller;
 using NexusMods.Games.AdvancedInstaller.UI;
 using NexusMods.Games.BethesdaGameStudios;
 using NexusMods.Games.DarkestDungeon;
@@ -26,6 +25,8 @@ using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.NMA;
 using NexusMods.Paths;
+using NexusMods.ProxyConsole;
+using NexusMods.SingleProcess;
 using NexusMods.StandardGameLocators;
 using NexusMods.Telemetry;
 using NexusMods.Telemetry.OpenTelemetry;
@@ -35,12 +36,6 @@ namespace NexusMods.App;
 
 public static class Services
 {
-    public static IServiceCollection AddRenderers(this IServiceCollection services)
-    {
-        services.AddScoped<IRenderer, CLI.Renderers.Spectre>();
-        services.AddScoped<IRenderer, Json>();
-        return services;
-    }
 
     public static IServiceCollection AddListeners(this IServiceCollection services)
     {
@@ -49,54 +44,75 @@ public static class Services
     }
 
     public static IServiceCollection AddApp(this IServiceCollection services,
-        AppConfig? config = null, bool addStandardGameLocators = true)
+        AppConfig? config = null,
+        bool addStandardGameLocators = true,
+        bool slimMode = false)
     {
         config ??= new AppConfig();
 
-        services
-            .AddSingleton<IAppConfigManager, AppConfigManager>(provider => new AppConfigManager(config, provider.GetRequiredService<JsonSerializerOptions>()))
-            .AddCLI()
-            .AddFileSystem()
-            .AddUI(config.LauncherSettings)
-            .AddGuidedInstallerUi()
-            .AddAdvancedInstallerUi()
-            .AddFileExtractors(config.FileExtractorSettings)
-            .AddDataModel(config.DataModelSettings)
-            .AddBethesdaGameStudios()
-            .AddRedEngineGames()
-            .AddGenericGameSupport()
-            .AddReshade()
-            .AddFomod()
-            .AddDarkestDungeon()
-            .AddSifu()
-            .AddStardewValley()
-            .AddMountAndBladeBannerlord()
-            .AddRenderers()
-            .AddNexusWebApi()
-            .AddNexusWebApiNmaIntegration()
-            .AddAdvancedHttpDownloader(config.HttpDownloaderSettings)
-            .AddTestHarness()
-            .AddSingleton<HttpClient>()
-            .AddListeners()
-            .AddCommon()
-            .AddDownloaders();
-
-        if (addStandardGameLocators)
-            services.AddStandardGameLocators();
-
-        return OpenTelemetryRegistration.AddTelemetry(services, new OpenTelemetrySettings
+        if (!slimMode)
         {
-            IsEnabled = config.EnableTelemetry ?? false,
+            services
+                .AddSingleton<IAppConfigManager, AppConfigManager>(provider =>
+                    new AppConfigManager(config, provider.GetRequiredService<JsonSerializerOptions>()))
+                .AddSingleton<CommandLineConfigurator>()
+                .AddCLI()
+                .AddUI(config.LauncherSettings)
+                .AddGuidedInstallerUi()
+                .AddAdvancedInstaller()
+                .AddAdvancedInstallerUi()
+                .AddFileExtractors(config.FileExtractorSettings)
+                .AddDataModel(config.DataModelSettings)
+                .AddBethesdaGameStudios()
+                .AddRedEngineGames()
+                .AddGenericGameSupport()
+                .AddReshade()
+                .AddFomod()
+                .AddDarkestDungeon()
+                .AddSifu()
+                .AddStardewValley()
+                .AddMountandBladeBannerlord()
+                .AddNexusWebApi()
+                .AddNexusWebApiNmaIntegration()
+                .AddAdvancedHttpDownloader(config.HttpDownloaderSettings)
+                .AddTestHarness()
+                .AddSingleton<HttpClient>()
+                .AddListeners()
+                .AddCommon()
+                .AddDownloaders();
 
-            EnableMetrics = true,
-            EnableTracing = true,
+            services = OpenTelemetryRegistration.AddTelemetry(services, new OpenTelemetrySettings
+            {
+                IsEnabled = config.EnableTelemetry ?? false,
 
-            ApplicationName = Telemetry.LibraryInfo.AssemblyName,
-            ApplicationVersion = Telemetry.LibraryInfo.AssemblyVersion,
+                EnableMetrics = true,
+                EnableTracing = true,
 
-            ExporterProtocol = OtlpExportProtocol.HttpProtobuf,
-            ExporterMetricsEndpoint = new Uri("https://collector.nexusmods.com/v1/metrics"),
-            ExporterTracesEndpoint = new Uri("https://collector.nexusmods.com/v1/traces")
-        }).ConfigureTelemetry(Telemetry.LibraryInfo, configureMetrics: Telemetry.SetupTelemetry);
+                ApplicationName = Telemetry.LibraryInfo.AssemblyName,
+                ApplicationVersion = Telemetry.LibraryInfo.AssemblyVersion,
+
+                ExporterProtocol = OtlpExportProtocol.HttpProtobuf,
+                ExporterMetricsEndpoint = new Uri("https://collector.nexusmods.com/v1/metrics"),
+                ExporterTracesEndpoint = new Uri("https://collector.nexusmods.com/v1/traces")
+            }).ConfigureTelemetry(Telemetry.LibraryInfo, configureMetrics: Telemetry.SetupTelemetry);
+
+
+            if (addStandardGameLocators)
+                services.AddStandardGameLocators();
+
+        }
+
+        services
+            .AddFileSystem()
+            .AddSingleton<IStartupHandler, StartupHandler>()
+            .AddSingleProcess()
+            .AddSingleton(s => new SingleProcessSettings
+            {
+                SyncFile = s.GetRequiredService<IFileSystem>().GetKnownPath(KnownPath.ApplicationDataDirectory)
+                    .Combine("single_process.sync")
+            })
+            .AddDefaultRenderers();
+
+        return services;
     }
 }

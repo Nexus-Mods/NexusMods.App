@@ -1,14 +1,9 @@
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
-using NexusMods.CLI.Verbs;
-using NexusMods.Common;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.ArchiveMetaData;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.Games.StardewValley.Installers;
 using NexusMods.Games.TestFramework;
-using NexusMods.Hashing.xxHash64;
 using NexusMods.Networking.NexusWebApi.Types;
 using NexusMods.Paths;
 using ModId = NexusMods.Networking.NexusWebApi.Types.ModId;

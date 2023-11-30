@@ -4,8 +4,9 @@ using CliWrap;
 using CliWrap.Exceptions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using NexusMods.Abstractions.Activities;
 using NexusMods.Common;
-using NexusMods.DataModel.RateLimiting;
+using NexusMods.DataModel.Activities;
 using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.FileExtractor.StreamFactories;
 using NexusMods.Paths;
@@ -26,7 +27,7 @@ public class SevenZipExtractor : IExtractor
 {
     private readonly TemporaryFileManager _manager;
     private readonly ILogger<SevenZipExtractor> _logger;
-    private readonly IResource<IExtractor, Size> _limiter;
+    private readonly IActivityFactory _activityFactory;
 
     private static readonly IOSInformation OSInformation = Paths.OSInformation.Shared;
 
@@ -45,27 +46,29 @@ public class SevenZipExtractor : IExtractor
     /// </summary>
     /// <param name="logger">Provides logger support. Use <see cref="NullLogger.Instance"/> if you don't want logging.</param>
     /// <param name="fileManager">Manager that can be used to create temporary folders.</param>
-    /// <param name="limiter">Limits CPU core usage depending on our use case.</param>
+    /// <param name="activityFactory"></param>
     /// <param name="fileSystem">Filesystem to use when constructing and using paths</param>
-    public SevenZipExtractor(ILogger<SevenZipExtractor> logger, TemporaryFileManager fileManager, IResource<IExtractor, Size> limiter, IFileSystem fileSystem)
+    public SevenZipExtractor(ILogger<SevenZipExtractor> logger, TemporaryFileManager fileManager, IActivityFactory activityFactory, IFileSystem fileSystem)
     {
         _logger = logger;
         _manager = fileManager;
-        _limiter = limiter;
+        _activityFactory = activityFactory;
         _exePath = fileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine(GetExeLocation().ToRelativePath()).ToString();
     }
 
     /// <inheritdoc />
     public async Task ExtractAllAsync(IStreamFactory sFn, AbsolutePath destination, CancellationToken token)
     {
-        using var job = await _limiter.BeginAsync($"[{nameof(ExtractAllAsync)}] Extracting {sFn.Name.FileName}", sFn.Size, token);
+        using var job = _activityFactory.Create<Size>(IExtractor.Group, "Extracting {File}", sFn.Name);
         await ExtractAllAsync_Impl(sFn, destination, token, job);
     }
 
     /// <inheritdoc />
     public async Task<IDictionary<RelativePath, T>> ForEachEntryAsync<T>(IStreamFactory sFn, Func<RelativePath, IStreamFactory, ValueTask<T>> func, CancellationToken token)
     {
-        using var job = await _limiter.BeginAsync($"[{nameof(ForEachEntryAsync)}] Extracting {sFn.Name.FileName}", sFn.Size, token);
+        using var job = _activityFactory.Create<Size>(IExtractor.Group, "Extracting {File}", sFn.Name);
+        job.SetMax(sFn.Size);
+
         await using var dest = _manager.CreateFolder();
         await ExtractAllAsync_Impl(sFn, dest, token, job);
 
@@ -101,7 +104,7 @@ public class SevenZipExtractor : IExtractor
         return Priority.None;
     }
 
-    private async Task ExtractAllAsync_Impl(IStreamFactory sFn, AbsolutePath destination, CancellationToken token, IJob<IExtractor, Size> job)
+    private async Task ExtractAllAsync_Impl(IStreamFactory sFn, AbsolutePath destination, CancellationToken token, IActivitySource<Size> activity)
     {
         TemporaryPath? spoolFile = null;
         var processStdOutput = new StringBuilder();
@@ -127,9 +130,9 @@ public class SevenZipExtractor : IExtractor
 
             var totalSize = source.FileInfo.Size;
             var lastPercent = 0;
-            
-            job.Size = totalSize;
-            
+
+            activity.SetMax(totalSize);
+
             // NOTE: 7z.exe has a bug with long destination path with forwards `/` separators on windows,
             // as a workaround we need to change the separators to backwards '\' on windows.
             // See: https://sourceforge.net/p/sevenzip/discussion/45797/thread/a9a0f02618/
@@ -143,7 +146,7 @@ public class SevenZipExtractor : IExtractor
                 {
                     if (string.IsNullOrWhiteSpace(line)) return;
                     processStdOutput.AppendLine($"[7z stdout] {line}");
-                    
+
                     if (line.Length <= 4 || line[3] != '%') return;
                     if (!int.TryParse(line.AsSpan()[..3], out var percentInt)) return;
 
@@ -151,12 +154,12 @@ public class SevenZipExtractor : IExtractor
                     var newPosition = percentInt == 0 ? Size.Zero : totalSize / 100 * percentInt;
                     var throughput = newPosition - oldPosition;
                     if (throughput > Size.Zero)
-                        job.ReportNoWait(throughput);
+                        activity.AddProgress(throughput);
 
                     lastPercent = percentInt;
                 }))
                 .WithStandardErrorPipe(PipeTarget.ToDelegate(line =>
-                { 
+                {
                     if (string.IsNullOrWhiteSpace(line)) return;
                     processStdError.AppendLine($"[7z stderr] {line}");
                 }))
@@ -168,7 +171,7 @@ public class SevenZipExtractor : IExtractor
         catch (CommandExecutionException ex)
         {
             _logger.LogError(ex, "While executing 7zip");
-            _logger.LogInformation("Output from the extractor, trying to extract file {File}:\n{StdOutput}\n{StdError}", 
+            _logger.LogInformation("Output from the extractor, trying to extract file {File}:\n{StdOutput}\n{StdError}",
                 sFn.Name, processStdOutput.ToString(), processStdError.ToString());
             throw;
         }

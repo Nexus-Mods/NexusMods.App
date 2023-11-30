@@ -1,5 +1,6 @@
 ﻿using System.Buffers;
 using NexusMods.Paths.Extensions;
+using Reloaded.Memory.Extensions;
 
 namespace NexusMods.DataModel.ChunkedStreams;
 
@@ -28,9 +29,7 @@ public class ChunkedStream<T> : Stream where T : IChunkedStreamSource
     }
 
     /// <inheritdoc />
-    public override void Flush()
-    {
-    }
+    public override void Flush() { }
 
 
     /// <inheritdoc />
@@ -55,6 +54,7 @@ public class ChunkedStream<T> : Stream where T : IChunkedStreamSource
                 toRead = Math.Min(toRead, (int)lastChunkExtraSize);
             }
         }
+
         chunk.Slice((int)chunkOffset, toRead)
             .Span
             .CopyTo(buffer.AsSpan(offset, toRead));
@@ -64,7 +64,8 @@ public class ChunkedStream<T> : Stream where T : IChunkedStreamSource
 
 
     /// <inheritdoc />
-    public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = new CancellationToken())
+    public override async ValueTask<int> ReadAsync(Memory<byte> buffer,
+        CancellationToken cancellationToken = new CancellationToken())
     {
         if (_position >= _source.Size.Value)
         {
@@ -87,12 +88,12 @@ public class ChunkedStream<T> : Stream where T : IChunkedStreamSource
                 toRead = Math.Min(toRead, (int)lastChunkExtraSize);
             }
         }
+
         chunk.Slice((int)chunkOffset, toRead)
             .Span
             .CopyTo(buffer.Span.SliceFast(0, toRead));
         _position += (ulong)toRead;
         return toRead;
-
     }
 
     private async ValueTask<Memory<byte>> GetChunkAsync(ulong index, CancellationToken token)
@@ -101,6 +102,7 @@ public class ChunkedStream<T> : Stream where T : IChunkedStreamSource
         {
             return memory!.Memory;
         }
+
         var memoryOwner = _pool.Rent((int)_source.ChunkSize.Value);
         await _source.ReadChunkAsync(memoryOwner.Memory, index, token);
         _cache.Add(index, memoryOwner);
@@ -113,6 +115,7 @@ public class ChunkedStream<T> : Stream where T : IChunkedStreamSource
         {
             return memory!.Memory;
         }
+
         var memoryOwner = _pool.Rent((int)_source.ChunkSize.Value);
         _source.ReadChunk(memoryOwner.Memory.Span, index);
         _cache.Add(index, memoryOwner);

@@ -1,16 +1,16 @@
 {
   "DataModelSettings": {
-    "DataStoreFilePath": "{EntryFolder}/DataModel/DataModel.sqlite",
-    "IpcDataStoreFilePath": "{EntryFolder}/DataModel/DataModel_IPC.sqlite",
+    "DataStoreFilePath": "",
+    "IpcDataStoreFilePath": "",
     "ArchiveLocations": [
-      "{EntryFolder}/Archives"
+      ""
     ],
     "MaxHashingJobs": -1,
     "LoadoutDeploymentJobs": -1,
     "MaxHashingThroughputBytesPerSecond": -1
   },
   "FileExtractorSettings": {
-    "TempFolderLocation": "{EntryFolder}/Temp"
+    "TempFolderLocation": ""
   },
   "HttpDownloaderSettings": {
     "WriteQueueLength": 16,
@@ -18,8 +18,8 @@
     "CancelSpeedFraction": 0.66
   },
   "LoggingSettings": {
-    "FilePath": "{EntryFolder}/Logs/nexusmods.app.current.log",
-    "ArchiveFilePath": "{EntryFolder}/Logs/nexusmods.app.{##}.log",
+    "FilePath": "",
+    "ArchiveFilePath": "",
     "MaxArchivedFiles": 10
   },
   "LauncherSettings": {

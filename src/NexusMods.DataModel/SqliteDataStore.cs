@@ -1,5 +1,5 @@
-using System.Collections.Concurrent;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Text.Json;
 using BitFaster.Caching.Lru;
 using Microsoft.Data.Sqlite;
@@ -10,8 +10,6 @@ using Microsoft.Extensions.ObjectPool;
 using NexusMods.DataModel.Attributes;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Extensions;
-using NexusMods.DataModel.Interprocess;
-using NexusMods.DataModel.Interprocess.Messages;
 using NexusMods.Hashing.xxHash64;
 
 
@@ -34,30 +32,21 @@ public class SqliteDataStore : IDataStore, IDisposable
     private readonly Dictionary<EntityCategory,string> _allIdsStatements;
 
     private readonly ConcurrentLru<IId, Entity> _cache;
-    private readonly ConcurrentQueue<IdUpdated> _pendingIdPuts = new();
-    private readonly CancellationTokenSource _enqueuerTcs;
     private readonly ILogger<SqliteDataStore> _logger;
-    private readonly IMessageProducer<IdUpdated> _idPutProducer;
-    private readonly IMessageConsumer<IdUpdated> _idPutConsumer;
     private readonly Dictionary<EntityCategory, bool> _immutableFields;
     private readonly ObjectPool<SqliteConnection> _pool;
     private readonly ConnectionPoolPolicy _poolPolicy;
     private readonly ObjectPoolDisposable<SqliteConnection> _globalHandle;
-    private readonly IDataModelSettings _settings;
+    private readonly Subject<IId> _updatedIds;
 
     /// <summary/>
     /// <param name="logger">Logs events.</param>
     /// <param name="settings">Datamodel settings</param>
     /// <param name="provider">Dependency injection container.</param>
-    /// <param name="idPutProducer">Producer of events for updated IDs.</param>
-    /// <param name="idPutConsumer">Consumer of events for updated IDs.</param>
-    public SqliteDataStore(ILogger<SqliteDataStore> logger, IDataModelSettings settings, IServiceProvider provider,
-        IMessageProducer<IdUpdated> idPutProducer,
-        IMessageConsumer<IdUpdated> idPutConsumer)
+    public SqliteDataStore(ILogger<SqliteDataStore> logger, IDataModelSettings settings, IServiceProvider provider)
     {
         _logger = logger;
 
-        _settings = settings;
         string connectionString;
         if (settings.UseInMemoryDataModel)
         {
@@ -89,24 +78,8 @@ public class SqliteDataStore : IDataStore, IDisposable
 
         _jsonOptions = new Lazy<JsonSerializerOptions>(provider.GetRequiredService<JsonSerializerOptions>);
         _cache = new ConcurrentLru<IId, Entity>(10000);
-        _idPutProducer = idPutProducer;
-        _idPutConsumer = idPutConsumer;
 
-        _enqueuerTcs = new CancellationTokenSource();
-        Task.Run(EnqueuerLoop);
-    }
-
-    private async Task EnqueuerLoop()
-    {
-        while (!_enqueuerTcs.Token.IsCancellationRequested)
-        {
-            if (_pendingIdPuts.TryDequeue(out var put))
-            {
-                await _idPutProducer.Write(put, _enqueuerTcs.Token);
-                continue;
-            }
-            await Task.Delay(100);
-        }
+        _updatedIds = new Subject<IId>();
     }
 
     private void EnsureTables()
@@ -165,8 +138,20 @@ public class SqliteDataStore : IDataStore, IDisposable
         cmd.Parameters.AddWithValue("@data", ms.ToArray());
         cmd.ExecuteNonQuery();
 
-        if (!_immutableFields[id.Category])
-            _pendingIdPuts.Enqueue(new IdUpdated(IdUpdated.UpdateType.Put, id));
+        NotifyOfUpdatedId(id);
+    }
+
+    private void NotifyOfUpdatedId(IId id)
+    {
+        try
+        {
+            if (!_immutableFields[id.Category])
+                _updatedIds.OnNext(id);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Failed to notify of updated id {Id}", id);
+        }
     }
 
     /// <inheritdoc />
@@ -230,8 +215,7 @@ public class SqliteDataStore : IDataStore, IDisposable
         cmd.Parameters.AddWithValue("@data", val.ToArray());
         cmd.ExecuteNonQuery();
 
-        if (!_immutableFields[id.Category])
-            _pendingIdPuts.Enqueue(new IdUpdated(IdUpdated.UpdateType.Put, id));
+        NotifyOfUpdatedId(id);
     }
 
     /// <inheritdoc />
@@ -260,8 +244,7 @@ public class SqliteDataStore : IDataStore, IDisposable
             transaction.Commit();
         }
 
-        if (!_immutableFields[id.Category])
-            _pendingIdPuts.Enqueue(new IdUpdated(IdUpdated.UpdateType.Put, id));
+        NotifyOfUpdatedId(id);
         return true;
     }
 
@@ -277,8 +260,7 @@ public class SqliteDataStore : IDataStore, IDisposable
         cmd.Parameters.AddWithValueUntagged("@id", id);
         cmd.ExecuteNonQuery();
 
-        if (!_immutableFields[id.Category])
-            _pendingIdPuts.Enqueue(new IdUpdated(IdUpdated.UpdateType.Delete, id));
+        NotifyOfUpdatedId(id);
     }
 
     /// <inheritdoc />
@@ -361,7 +343,7 @@ public class SqliteDataStore : IDataStore, IDisposable
     }
 
     /// <inheritdoc />
-    public IObservable<IId> IdChanges => _idPutConsumer.Messages.SelectMany(WaitTillPutReady);
+    public IObservable<IId> IdChanges => _updatedIds.SelectMany(WaitTillPutReady);
 
     /// <inheritdoc />
     public IEnumerable<IId> AllIds(EntityCategory category)
@@ -395,20 +377,20 @@ public class SqliteDataStore : IDataStore, IDisposable
     /// Sometimes we may get a change notification before the underlying Sqlite database has actually updated the value.
     /// So we wait a bit to make sure the value is actually there before we forward the change.
     /// </summary>
-    /// <param name="change"></param>
+    /// <param name="id"></param>
     /// <returns></returns>
-    private async Task<IId> WaitTillPutReady(IdUpdated change)
+    private async Task<IId> WaitTillPutReady(IId id)
     {
         var maxCycles = 0;
-        while (change.Type != IdUpdated.UpdateType.Delete && GetRaw(change.Id) == null && maxCycles < 10)
+        while (GetRaw(id) == null && maxCycles < 10)
         {
-            _logger.WaitingForWriteToId(change.Id);
+            _logger.WaitingForWriteToId(id);
             await Task.Delay(100);
             maxCycles++;
         }
 
-        _logger.IdIsUpdated(change.Id);
-        return change.Id;
+        _logger.IdIsUpdated(id);
+        return id;
     }
 
     /// <inheritdoc />
@@ -431,7 +413,6 @@ public class SqliteDataStore : IDataStore, IDisposable
         if (disposing)
         {
             _globalHandle.Dispose();
-            _enqueuerTcs.Dispose();
             if (_pool is IDisposable disposable)
                 disposable.Dispose();
             _poolPolicy.Dispose();

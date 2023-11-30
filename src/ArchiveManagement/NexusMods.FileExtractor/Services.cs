@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using NexusMods.DataModel.RateLimiting;
 using NexusMods.FileExtractor.Extractors;
 using NexusMods.Paths;
 
@@ -19,14 +18,14 @@ public static class Services
     /// <returns>Service collection passed as parameter.</returns>
     public static IServiceCollection AddFileExtractors(this IServiceCollection coll, IFileExtractorSettings? settings = null)
     {
-        if (settings == null) 
+        if (settings == null)
             coll.AddSingleton<IFileExtractorSettings, FileExtractorSettings>();
-        else 
+        else
             coll.AddSingleton(settings);
+        coll.AddFileExtractorVerbs();
         coll.AddSingleton<FileExtractor>();
         coll.AddSingleton<IExtractor, SevenZipExtractor>();
         coll.TryAddSingleton<TemporaryFileManager, TemporaryFileManagerEx>();
-        coll.TryAddSingleton<IResource<IExtractor, Size>>(_ => new Resource<IExtractor, Size>("File Extraction"));
         return coll;
     }
 }

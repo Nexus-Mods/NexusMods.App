@@ -1,7 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Activities;
 using NexusMods.CLI;
 using NexusMods.Common;
 using NexusMods.Common.GuidedInstaller;
+using NexusMods.DataModel.Activities;
 using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
 using NexusMods.Games.BethesdaGameStudios;
 using NexusMods.Games.FOMOD;
@@ -18,7 +20,9 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         // Dummy: We're not injecting anything yet; this is for a time we will need to.
-        services.AddDefaultServicesForTesting()
+        services
+            .AddSingleton<IGuidedInstaller, NullGuidedInstaller>()
+            .AddDefaultServicesForTesting()
             .AddUniversalGameLocator<Cyberpunk2077>(new Version("1.61"))
             .AddUniversalGameLocator<SkyrimSpecialEdition>(new Version("1.6.659.0"))
             .AddStubbedGameLocators()
@@ -29,7 +33,6 @@ public class Startup
             .AddDownloaders()
             .AddAllSingleton<ITypeFinder, TypeFinder>()
             .AddSingleton<LocalHttpServer>()
-            .AddAllSingleton<IGuidedInstaller, CliGuidedInstaller>()
             .Validate();
     }
 }

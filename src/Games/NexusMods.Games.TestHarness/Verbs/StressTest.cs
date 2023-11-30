@@ -1,7 +1,6 @@
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.CLI;
-using NexusMods.Abstractions.CLI.DataOutputs;
-using NexusMods.CLI;
 using NexusMods.Common;
 using NexusMods.Common.GuidedInstaller;
 using NexusMods.DataModel.Abstractions;
@@ -15,67 +14,40 @@ using NexusMods.Networking.NexusWebApi.DTOs;
 using NexusMods.Networking.NexusWebApi.NMA.Extensions;
 using NexusMods.Networking.NexusWebApi.Types;
 using NexusMods.Paths;
+using NexusMods.ProxyConsole.Abstractions;
+using NexusMods.ProxyConsole.Abstractions.Implementations;
+using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
 using NexusMods.StandardGameLocators;
 using ModId = NexusMods.Networking.NexusWebApi.Types.ModId;
 
 namespace NexusMods.Games.TestHarness.Verbs;
 
-public class StressTest : AVerb<IGame, AbsolutePath>, IRenderingVerb
+public class StressTest
 {
-    private readonly Client _client;
-    private readonly TemporaryFileManager _temporaryFileManager;
-    private readonly IHttpDownloader _downloader;
+    private static readonly Size MaxFileSize = Size.GB;
 
-    /// <summary>
-    /// Max file size to download and test
-    /// </summary>
-    public static Size MaxFileSize = Size.MB * 512;
-
-    /// <inheritdoc />
-    public IRenderer Renderer { get; set; } = null!;
-
-    public StressTest(ILogger<StressTest> logger, Client client,
-        TemporaryFileManager temporaryFileManager,
-        LoadoutRegistry loadoutRegistry,
-        IHttpDownloader downloader,
-        IArchiveInstaller archiveInstaller,
-        IFileOriginRegistry fileOriginRegistry,
-        IEnumerable<IGameLocator> gameLocators,
-        IGuidedInstaller optionSelector)
+    [Verb("stress-test", "Stress test the application by installing all recent mods for a given game")]
+    internal static async Task<int> RunStressTest(
+        [Injected] IRenderer renderer,
+        [Option("g", "game", "The game to test")] IGame game,
+        [Option("o", "output", "Output path for the resulting report")] AbsolutePath output,
+        [Injected] Client client,
+        [Injected] TemporaryFileManager temporaryFileManager,
+        [Injected] LoadoutRegistry loadoutRegistry,
+        [Injected] IHttpDownloader downloader,
+        [Injected] IArchiveInstaller archiveInstaller,
+        [Injected] IFileOriginRegistry fileOriginRegistry,
+        [Injected] IEnumerable<IGameLocator> gameLocators,
+        [Injected] IGuidedInstaller optionSelector,
+        [Injected] CancellationToken token)
     {
-        ((CliGuidedInstaller)optionSelector).SkipAll = true;
-        _archiveInstaller = archiveInstaller;
-        _fileOriginRegistry = fileOriginRegistry;
-        _loadoutRegistry = loadoutRegistry;
-        _downloader = downloader;
-        _logger = logger;
-        _client = client;
-        _temporaryFileManager = temporaryFileManager;
-        _manualLocator = gameLocators.OfType<ManuallyAddedLocator>().First();
-    }
+        var manualLocator = gameLocators.OfType<ManuallyAddedLocator>().First();
 
-    public static VerbDefinition Definition =>
-        new("stress-test", "Stress test the application by installing all recent mods for a given game",
-            new OptionDefinition[]
-            {
-                new OptionDefinition<IGame>("g", "game", "The game to install mods for"),
-                new OptionDefinition<AbsolutePath>("l", "loadout", "An exported loadout file to use when priming tests"),
-                new OptionDefinition<AbsolutePath>("o", "output", "The output file to write the markdown report to")
-            });
-
-    private readonly ILogger<StressTest> _logger;
-    private readonly IArchiveInstaller _archiveInstaller;
-    private readonly ManuallyAddedLocator _manualLocator;
-    private readonly IFileOriginRegistry _fileOriginRegistry;
-    private readonly LoadoutRegistry _loadoutRegistry;
-
-    public async Task<int> Run(IGame game, AbsolutePath output, CancellationToken token)
-    {
-        var mods = await _client.ModUpdatesAsync(game.Domain, Client.PastTime.Day, token);
+        var mods = await client.ModUpdatesAsync(game.Domain, Client.PastTime.Day, token);
         var results = new List<(string FileName, ModId ModId, FileId FileId, Hash Hash, bool Passed, Exception? exception)>();
 
-        await using var gameFolder = _temporaryFileManager.CreateFolder();
-        var gameId = _manualLocator.Add(game, new Version(1, 0), gameFolder);
+        await using var gameFolder = temporaryFileManager.CreateFolder();
+        var gameId = manualLocator.Add(game, new Version(1, 0), gameFolder);
         game.ResetInstallations();
         var install = game.Installations.First(f => f.Store == GameStore.ManuallyAdded);
 
@@ -83,16 +55,16 @@ public class StressTest : AVerb<IGame, AbsolutePath>, IRenderingVerb
         {
             foreach (var mod in mods.Data)
             {
-                _logger.LogInformation("Processing {ModId}", mod.ModId);
+                await renderer.Text("Processing {ModId}", mod.ModId);
 
                 Response<ModFiles> files;
                 try
                 {
-                    files = await _client.ModFilesAsync(game.Domain, mod.ModId, token);
+                    files = await client.ModFilesAsync(game.Domain, mod.ModId, token);
                 }
                 catch (HttpRequestException ex)
                 {
-                    _logger.LogInformation(ex, "Failed to get files for {ModId}", mod.ModId);
+                    await renderer.Error(ex, "Failed to get files for {ModId}", mod.ModId);
                     continue;
                 }
 
@@ -102,34 +74,36 @@ public class StressTest : AVerb<IGame, AbsolutePath>, IRenderingVerb
                     try
                     {
                         if (file.CategoryId != 1) continue;
-                        _logger.LogInformation("Downloading {ModId} {FileId} {FileName} - {Size}", mod.ModId,
+                        await renderer.Text("Downloading {ModId} {FileId} {FileName} - {Size}", mod.ModId,
                             file.FileId,
-                            file.FileName, file.SizeInBytes);
+                            file.FileName,
+                            Size.FromLong(file.SizeInBytes ?? 0));
 
-                        var urls = await _client.DownloadLinksAsync(game.Domain, mod.ModId, file.FileId, token);
-                        await using var tmpPath = _temporaryFileManager.CreateFile();
+                        var urls = await client.DownloadLinksAsync(game.Domain, mod.ModId, file.FileId, token);
+                        await using var tmpPath = temporaryFileManager.CreateFile();
 
                         var cts = new CancellationTokenSource();
                         cts.CancelAfter(TimeSpan.FromMinutes(20));
 
-                        hash = await _downloader.DownloadAsync(urls.Data.Select(d => d.Uri), tmpPath, token: cts.Token);
+                        hash = await downloader.DownloadAsync(urls.Data.Select(d => d.Uri), tmpPath, token: cts.Token);
 
-                        _logger.LogInformation("Installing {ModId} {FileId} {FileName} - {Size}", mod.ModId,
+                        await renderer.Text("Installing {ModId} {FileId} {FileName} - {Size}", mod.ModId,
                             file.FileId,
-                            file.FileName, file.SizeInBytes);
+                            file.FileName,
+                            Size.FromLong(file.SizeInBytes ?? 0));
 
-                        var list = await _loadoutRegistry.Manage(install);
-                        var downloadId = await _fileOriginRegistry.RegisterDownload(tmpPath, new FilePathMetadata
+                        var list = await loadoutRegistry.Manage(install);
+                        var downloadId = await fileOriginRegistry.RegisterDownload(tmpPath, new FilePathMetadata
                             { OriginalName = tmpPath.Path.Name, Quality = Quality.Low }, token);
-                        await _archiveInstaller.AddMods(list.Value.LoadoutId, downloadId, token: token);
+                        await archiveInstaller.AddMods(list.Value.LoadoutId, downloadId, token: token);
 
                         results.Add((file.FileName, mod.ModId, file.FileId, hash, true, null));
-                        _logger.LogInformation("Installed {ModId} {FileId} {FileName} - {Size}", mod.ModId, file.FileId,
-                            file.FileName, file.SizeInBytes);
+                        await renderer.Text("Installed {ModId} {FileId} {FileName} - {Size}", mod.ModId, file.FileId,
+                            file.FileName, Size.FromLong(file.SizeInBytes ?? 0));
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError(ex, "Failed to install {ModId} {FileId} {FileName}", mod.ModId, file.FileId,
+                        await renderer.Error(ex, "Failed to install {ModId} {FileId} {FileName}", mod.ModId, file.FileId,
                             file.FileName);
                         results.Add((file.FileName, mod.ModId, file.FileId, hash, false, ex));
                     }
@@ -137,13 +111,12 @@ public class StressTest : AVerb<IGame, AbsolutePath>, IRenderingVerb
                 }
             }
 
-            var table = new Table(new[] { "Name", "ModId", "FileId", "Hash", "Passed", "Exception" },
+            await renderer.Table(new[] { "Name", "ModId", "FileId", "Hash", "Passed", "Exception" },
                 results.Select(r => new object[]
                 {
                     r.FileName, r.ModId.ToString(), r.FileId.ToString(), r.Hash, r.Passed.ToString(),
                     r.exception?.Message ?? ""
                 }));
-            await Renderer.Render(table);
 
             var lines = new List<string>
             {
@@ -167,7 +140,7 @@ public class StressTest : AVerb<IGame, AbsolutePath>, IRenderingVerb
         }
         finally
         {
-            _manualLocator.Remove(gameId);
+            manualLocator.Remove(gameId);
         }
 
         return 0;

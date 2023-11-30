@@ -1,6 +1,6 @@
 using System.Reactive;
+using NexusMods.Abstractions.Values;
 using NexusMods.App.UI;
-using NexusMods.DataModel.RateLimiting;
 using ReactiveUI;
 
 namespace NexusMods.Games.FOMOD.UI;

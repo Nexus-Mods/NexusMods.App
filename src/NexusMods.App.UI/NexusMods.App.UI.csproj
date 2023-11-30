@@ -363,6 +363,9 @@
         <Compile Update="Controls\GameWidget\GameWidgetDesignViewModel.cs">
           <DependentUpon>IGameWidgetViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="WorkspaceSystem\PanelResizer\PanelResizerViewModel.cs">
+          <DependentUpon>IPanelResizerViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>

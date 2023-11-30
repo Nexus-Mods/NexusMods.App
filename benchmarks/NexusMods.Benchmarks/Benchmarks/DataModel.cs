@@ -7,13 +7,10 @@ using NexusMods.Common;
 using NexusMods.DataModel;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
-using NexusMods.DataModel.Interprocess;
-using NexusMods.DataModel.Interprocess.Messages;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
-using NexusMods.Hashing.xxHash64;
+using NexusMods.DataModel.Messaging;
 using NexusMods.Paths;
-using NexusMods.Paths.Extensions;
 using Hash = NexusMods.Hashing.xxHash64.Hash;
 
 namespace NexusMods.Benchmarks.Benchmarks;
@@ -43,9 +40,7 @@ public class DataStoreBenchmark : IBenchmark, IDisposable
         var provider = host.Services.GetRequiredService<IServiceProvider>();
         _dataStore = new SqliteDataStore(
             provider.GetRequiredService<ILogger<SqliteDataStore>>(),
-            new DataModelSettings(FileSystem.Shared), provider,
-        provider.GetRequiredService<IMessageProducer<IdUpdated>>(),
-        provider.GetRequiredService<IMessageConsumer<IdUpdated>>());
+            new DataModelSettings(FileSystem.Shared), provider);
 
         _rawData = new byte[1024];
         Random.Shared.NextBytes(_rawData);

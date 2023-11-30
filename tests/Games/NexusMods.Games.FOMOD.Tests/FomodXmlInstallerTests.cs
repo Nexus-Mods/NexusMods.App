@@ -10,7 +10,6 @@ using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.ModInstallers;
-using NexusMods.DataModel.RateLimiting;
 using NexusMods.Games.BethesdaGameStudios;
 using NexusMods.Games.TestFramework;
 using NexusMods.Games.FOMOD.CoreDelegates;
