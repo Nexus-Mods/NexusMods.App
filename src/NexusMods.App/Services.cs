@@ -10,6 +10,7 @@ using NexusMods.FileExtractor;
 using NexusMods.Games.AdvancedInstaller;
 using NexusMods.Games.AdvancedInstaller.UI;
 using NexusMods.Games.BethesdaGameStudios;
+using NexusMods.Games.BladeAndSorcery;
 using NexusMods.Games.DarkestDungeon;
 using NexusMods.Games.FOMOD;
 using NexusMods.Games.FOMOD.UI;
@@ -69,6 +70,7 @@ public static class Services
                 .AddReshade()
                 .AddFomod()
                 .AddDarkestDungeon()
+                .AddBladeAndSorcery()
                 .AddSifu()
                 .AddStardewValley()
                 .AddMountAndBladeBannerlord()
@@ -103,7 +105,6 @@ public static class Services
         }
 
         services
-            .AddFileSystem()
             .AddSingleton<IStartupHandler, StartupHandler>()
             .AddSingleProcess()
             .AddSingleton(s => new SingleProcessSettings

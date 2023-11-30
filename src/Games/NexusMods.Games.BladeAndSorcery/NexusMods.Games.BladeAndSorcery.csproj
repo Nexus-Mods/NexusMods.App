@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Remove="Resources\BladeAndSorcery\game_image.jpg" />
+        <EmbeddedResource Include="Resources\BladeAndSorcery\game_image.jpg" />
+        <None Remove="Resources\BladeAndSorcery\icon.jpg" />
+        <EmbeddedResource Include="Resources\BladeAndSorcery\icon.jpg" />
+    </ItemGroup>
+
+
+</Project>
