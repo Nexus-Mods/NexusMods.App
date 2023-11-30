@@ -74,7 +74,7 @@ public class BladeAndSorceryModInstaller : AModInstaller
             {
                 Id = mods.Count == 1
                     ? baseModId
-                    : ModId.New(),
+                    : ModId.NewId(),
                 Files = modFileData,
                 Name = manifest.Name,
                 Version = manifest.ModVersion

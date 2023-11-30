@@ -70,7 +70,6 @@ public static class Services
             .AddSifu()
             .AddStardewValley()
             .AddBladeAndSorcery()
-            .AddRenderers()
             .AddNexusWebApi()
             .AddNexusWebApiNmaIntegration()
             .AddAdvancedHttpDownloader(config.HttpDownloaderSettings)
