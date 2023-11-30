@@ -71,7 +71,7 @@ public static class Services
                 .AddDarkestDungeon()
                 .AddSifu()
                 .AddStardewValley()
-                .AddMountandBladeBannerlord()
+                .AddMountAndBladeBannerlord()
                 .AddNexusWebApi()
                 .AddNexusWebApiNmaIntegration()
                 .AddAdvancedHttpDownloader(config.HttpDownloaderSettings)
