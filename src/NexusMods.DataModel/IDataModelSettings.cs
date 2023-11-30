@@ -13,7 +13,7 @@ public interface IDataModelSettings
     /// If true, data model will be stored in memory only and the paths will be ignored.
     /// </summary>
     public bool UseInMemoryDataModel { get; }
-    
+
     /// <summary>
     /// Path of the file which contains the backing data store or database.
     /// </summary>
@@ -60,10 +60,10 @@ public class DataModelSettings : IDataModelSettings
     private const string DataModelFileName = "DataModel.sqlite";
     private const string DataModelIpcFileName = "DataModel_IPC.sqlite";
     private const string ArchivesFileName = "Archives";
-    
+
     /// <inheritdoc />
     public bool UseInMemoryDataModel { get; set; }
-    
+
     /// <inheritdoc />
     public ConfigurationPath DataStoreFilePath { get; set; }
 
@@ -81,7 +81,7 @@ public class DataModelSettings : IDataModelSettings
 
     /// <inheritdoc />
     public long MaxHashingThroughputBytesPerSecond { get; set; } = 0;
-    
+
     /// <summary>
     /// Default constructor for serialization.
     /// </summary>
@@ -90,7 +90,7 @@ public class DataModelSettings : IDataModelSettings
     /// <summary>
     /// Creates the default datamodel settings with a given base directory.
     /// </summary>
-    public DataModelSettings(IFileSystem s) : this(s.GetKnownPath(KnownPath.EntryDirectory).Combine("DataModel")) { }
+    public DataModelSettings(IFileSystem s) : this(GetDefaultBaseDirectory(s)) { }
 
     /// <summary>
     /// Creates the default datamodel settings with a given base directory.
@@ -98,26 +98,62 @@ public class DataModelSettings : IDataModelSettings
     /// <param name="baseDirectory">The base directory to use.</param>
     public DataModelSettings(AbsolutePath baseDirectory)
     {
-        baseDirectory.CreateDirectory();
-        DataStoreFilePath = new ConfigurationPath(baseDirectory.Combine(DataModelFileName));
-        IpcDataStoreFilePath = new ConfigurationPath(baseDirectory.Combine(DataModelIpcFileName));
-        ArchiveLocations = new[]
-        {
-            new ConfigurationPath(baseDirectory.Combine(ArchivesFileName))
-        };
+        DataStoreFilePath = GetDefaultDataStoreFilePath(baseDirectory);
+        IpcDataStoreFilePath = GetDefaultIpcFilePath(baseDirectory);
+        ArchiveLocations = GetDefaultArchiveLocations(baseDirectory);
     }
 
     /// <summary>
-    /// Expands any user provided paths; and ensures default settings in case of placeholders.
+    /// Ensures default settings in case of placeholders of undefined/invalid settings.
     /// </summary>
-    public void Sanitize()
+    public void Sanitize(IFileSystem fs)
     {
         MaxHashingJobs = MaxHashingJobs < 0 ? Environment.ProcessorCount : MaxHashingJobs;
         LoadoutDeploymentJobs = LoadoutDeploymentJobs < 0 ? Environment.ProcessorCount : LoadoutDeploymentJobs;
-        MaxHashingThroughputBytesPerSecond = MaxHashingThroughputBytesPerSecond <= 0 ? 0 : MaxHashingThroughputBytesPerSecond;
+        MaxHashingThroughputBytesPerSecond =
+            MaxHashingThroughputBytesPerSecond <= 0 ? 0 : MaxHashingThroughputBytesPerSecond;
 
-        // Deduplicate: This is necessary in case user has duplicates, or the MSFT configuration
-        //              binder inserts a duplicate.
-        ArchiveLocations = ArchiveLocations.Distinct().ToArray();
+        // Deduplicate: This is necessary in case user has duplicates, or (in the past) MSFT configuration
+        //              binder would insert a duplicate.
+        ArchiveLocations = ArchiveLocations.Distinct().Where(x => !string.IsNullOrEmpty(x.GetFullPath())).ToArray();
+
+        // Set default locations if none are provided.
+        var baseDir = GetDefaultBaseDirectory(fs);
+        if (ArchiveLocations.Length == 0)
+            ArchiveLocations = GetDefaultArchiveLocations(baseDir);
+
+        if (string.IsNullOrEmpty(DataStoreFilePath.RawPath))
+            DataStoreFilePath = GetDefaultDataStoreFilePath(baseDir);
+
+        if (string.IsNullOrEmpty(IpcDataStoreFilePath.RawPath))
+            IpcDataStoreFilePath = GetDefaultIpcFilePath(baseDir);
+
+        // Ensure all locations exist
+        foreach (var location in ArchiveLocations)
+            location.ToAbsolutePath().CreateDirectory();
+
+        DataStoreFilePath.ToAbsolutePath().Parent.CreateDirectory();
+        IpcDataStoreFilePath.ToAbsolutePath().Parent.CreateDirectory();
     }
+
+    private static AbsolutePath GetDefaultBaseDirectory(IFileSystem fs)
+    {
+        return fs.OS.MatchPlatform(
+            () => fs.GetKnownPath(KnownPath.LocalApplicationDataDirectory).Combine("NexusMods.App/DataModel"),
+            () => fs.GetKnownPath(KnownPath.XDG_DATA_HOME).Combine("NexusMods.App/DataModel"),
+            () => throw new PlatformNotSupportedException(
+                "(Note: Sewer) Paths needs PR for macOS. I don't have a non-painful way to access a Mac."));
+    }
+
+    private static ConfigurationPath GetDefaultDataStoreFilePath(AbsolutePath baseDirectory) =>
+        new(baseDirectory.Combine(DataModelFileName));
+
+    private static ConfigurationPath GetDefaultIpcFilePath(AbsolutePath baseDirectory) =>
+        new(baseDirectory.Combine(DataModelIpcFileName));
+
+    private static ConfigurationPath[] GetDefaultArchiveLocations(AbsolutePath baseDirectory) =>
+        new[]
+        {
+            new ConfigurationPath(baseDirectory.Combine(ArchivesFileName))
+        };
 }
