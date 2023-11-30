@@ -36,5 +36,5 @@ public interface IActivityFactory
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
     public IActivitySource<T> Create<T>(ActivityGroup group, string template, params object[] arguments)
-        where T : IDivisionOperators<T, T, double>, IAdditionOperators<T, T, T>, IDivisionOperators<T, double, T>;
+        where T : struct, IDivisionOperators<T, T, double>, IAdditionOperators<T, T, T>, IDivisionOperators<T, double, T>;
 }

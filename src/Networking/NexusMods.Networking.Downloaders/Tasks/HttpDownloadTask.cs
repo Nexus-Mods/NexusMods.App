@@ -29,7 +29,7 @@ public class HttpDownloadTask : IDownloadTask, IHaveFileSize
     private long _defaultDownloadedSize;
 
     /// <inheritdoc />
-    public long DownloadedSizeBytes => (long)(_state.ActivityStatus?.MakeTypedReport().Current.Value ?? (ulong)_defaultDownloadedSize);
+    public long DownloadedSizeBytes => (long)(_state.ActivityStatus?.MakeTypedReport().Current.Value.Value ?? (ulong)_defaultDownloadedSize);
 
     /// <inheritdoc />
     public long CalculateThroughput()
@@ -37,7 +37,7 @@ public class HttpDownloadTask : IDownloadTask, IHaveFileSize
         if (_state.Activity == null)
             return 0;
 
-        return (long)(((ActivityReport<Size>?)_state.ActivityStatus?.GetReport())?.Throughput ?? Size.Zero).Value;
+        return (long)(((ActivityReport<Size>?)_state.ActivityStatus?.GetReport())?.Throughput.Value ?? Size.Zero).Value;
     }
 
 

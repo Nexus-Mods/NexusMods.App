@@ -1,4 +1,5 @@
 using System.Numerics;
+using DynamicData.Kernel;
 using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.Values;
 
@@ -44,20 +45,20 @@ public class ActivityReport
     /// <summary>
     /// The average progress per second.
     /// </summary>
-    public Percent? PercentagePerSecond => CurrentProgress.HasValue && Elapsed.TotalSeconds > 0 ?
-        Percent.CreateClamped(CurrentProgress.Value.Value / Elapsed.TotalSeconds) : null;
+    public Optional<Percent> PercentagePerSecond => CurrentProgress.HasValue && Elapsed.TotalSeconds > 0 ?
+        Percent.CreateClamped(CurrentProgress.Value.Value / Elapsed.TotalSeconds) : Optional<Percent>.None;
 
     /// <summary>
     /// The estimated total time for the activity, if any progress has been made.
     /// </summary>
-    public TimeSpan? EstimatedTotalTime => PercentagePerSecond.HasValue ?
-        TimeSpan.FromSeconds(100 / PercentagePerSecond.Value.Value) : null;
+    public Optional<TimeSpan> EstimatedTotalTime => PercentagePerSecond.HasValue ?
+        Optional.Some(TimeSpan.FromSeconds(100 / PercentagePerSecond.Value.Value)) : Optional<TimeSpan>.None;
 
     /// <summary>
     /// The end time of the activity, if it can be calculated.
     /// </summary>
-    public DateTime? EndTime => IsFinished ?
-        StartTime + Elapsed : StartTime + EstimatedTotalTime;
+    public Optional<DateTime> EndTime => IsFinished ?
+        StartTime + Elapsed : StartTime + EstimatedTotalTime.Value;
 }
 
 
@@ -66,21 +67,21 @@ public class ActivityReport
 /// </summary>
 /// <typeparam name="T"></typeparam>
 public class ActivityReport<T> : ActivityReport
-where T : IDivisionOperators<T, double, T>
+where T : struct, IDivisionOperators<T, double, T>
 {
     /// <summary>
     /// The maximum value for the activity, if any.
     /// </summary>
-    public T? Max { get; init; }
+    public Optional<T> Max { get; init; }
 
     /// <summary>
     /// The current value for the activity, if any.
     /// </summary>
-    public T? Current { get; init; }
+    public Optional<T> Current { get; init; }
 
     /// <summary>
     /// If the activity has any progress this will return the amount of progress per second
     /// </summary>
-    public T? Throughput => Current != null && Elapsed.TotalSeconds > 0 ?
-        Current / Elapsed.TotalSeconds : default;
+    public Optional<T> Throughput => Current != null && Elapsed.TotalSeconds > 0 ?
+        Optional.Some(Current.Value / Elapsed.TotalSeconds) : default;
 }

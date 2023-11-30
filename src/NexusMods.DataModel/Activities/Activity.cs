@@ -1,6 +1,7 @@
 using System.Numerics;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using DynamicData.Kernel;
 using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.Values;
 
@@ -139,13 +140,13 @@ internal class Activity<T>(ActivityMonitor monitor, ActivityGroup group, object?
     Activity(monitor, group, payload),
     IActivitySource<T>,
     IReadOnlyActivity<T>
-    where T : IDivisionOperators<T, T, double>, IAdditionOperators<T, T, T>, IDivisionOperators<T, double, T>
+    where T : struct, IDivisionOperators<T, T, double>, IAdditionOperators<T, T, T>, IDivisionOperators<T, double, T>
 {
-    private T? _max;
-    private T? _current;
+    private Optional<T> _max;
+    private Optional<T> _current;
 
     /// <inheritdoc />
-    public void SetMax(T? max)
+    public void SetMax(T max)
     {
         _max = max;
         SendReport();
@@ -155,24 +156,24 @@ internal class Activity<T>(ActivityMonitor monitor, ActivityGroup group, object?
     public void SetProgress(T value)
     {
         _current = value;
-        if (_max is null) return;
-        var percent = _max / value;
+        if (_max.HasValue) return;
+        var percent = _max.Value / value;
         SetProgress(Percent.CreateClamped(percent));
     }
 
     /// <inheritdoc />
     public void AddProgress(T value)
     {
-        if (_current is null)
+        if (!_current.HasValue)
         {
             _current = value;
         }
         else
         {
-            _current += value;
+            _current = _current.Value + value;
         }
-        if (_max is null) return;
-        var percent = value / _max;
+        if (!_max.HasValue) return;
+        var percent = value / _max.Value;
 
         // Is NaN when value is 0 and max is 0
         if (double.IsNaN(percent))
