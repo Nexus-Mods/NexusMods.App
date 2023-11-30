@@ -35,7 +35,7 @@ internal class Activity(ActivityMonitor monitor, ActivityGroup group, object? pa
     /// <summary>
     /// The unique identifier of the activity.
     /// </summary>
-    public ActivityId Id { get; } = ActivityId.From(Guid.NewGuid());
+    public ActivityId Id { get; } = ActivityId.NewId();
 
     /// <summary>
     /// A user defined object that can be used to store additional information about the activity.
@@ -139,7 +139,7 @@ internal class Activity<T>(ActivityMonitor monitor, ActivityGroup group, object?
     Activity(monitor, group, payload),
     IActivitySource<T>,
     IReadOnlyActivity<T>
-where T : IDivisionOperators<T, T, double>, IAdditionOperators<T, T, T>
+    where T : IDivisionOperators<T, T, double>, IAdditionOperators<T, T, T>, IDivisionOperators<T, double, T>
 {
     private T? _max;
     private T? _current;
@@ -192,9 +192,10 @@ where T : IDivisionOperators<T, T, double>, IAdditionOperators<T, T, T>
     /// <inheritdoc />
     public ActivityReport<T> MakeTypedReport()
     {
+        var reportTime = DateTime.UtcNow;
         return new ActivityReport<T>
         {
-            ReportTime = DateTime.UtcNow,
+            ReportTime = reportTime,
             StartTime = StartTime,
             Id = Id,
             Status = Status,

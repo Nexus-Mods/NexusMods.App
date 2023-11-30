@@ -1,3 +1,4 @@
+using System.Numerics;
 using NexusMods.DataModel.Activities;
 
 namespace NexusMods.Abstractions.Activities;
@@ -47,6 +48,7 @@ public interface IReadOnlyActivity
 /// </summary>
 /// <typeparam name="T"></typeparam>
 public interface IReadOnlyActivity<T> : IReadOnlyActivity
+    where T : IDivisionOperators<T, T, double>, IAdditionOperators<T, T, T>, IDivisionOperators<T, double, T>
 {
     /// <summary>
     /// Gets the current state of the activity. This is a typed version of the report.

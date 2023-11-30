@@ -18,7 +18,6 @@
         <PackageReference Include="NexusMods.Archives.Nx" />
         <PackageReference Include="NexusMods.Hashing.xxHash64" />
         <PackageReference Include="NexusMods.ProxyConsole.Abstractions" />
-        <PackageReference Include="ReactiveUI.Fody" />
         <PackageReference Include="Sewer56.BitStream" />
         <PackageReference Include="System.Reactive" />
     </ItemGroup>

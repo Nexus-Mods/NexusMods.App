@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Activities;
 using NexusMods.Common;
+using NexusMods.DataModel;
 using NexusMods.DataModel.Activities;
 using NexusMods.Paths;
 
@@ -11,7 +12,7 @@ public class Startup
     public void ConfigureServices(IServiceCollection container)
     {
         container.AddFileSystem()
-            .AddAllSingleton<IActivityFactory, IActivityMonitor, ActivityMonitor>()
+            .AddActivityMonitor()
             .AddFileExtractors();
     }
 }

@@ -91,8 +91,7 @@ public static class Services
         coll.AddAllSingleton<IDiagnosticManager, DiagnosticManager>();
         coll.AddOptions<DiagnosticOptions>();
 
-        // Activity Monitor
-        coll.AddAllSingleton<IActivityFactory, IActivityMonitor, ActivityMonitor>();
+        coll.AddActivityMonitor();
 
         // Verbs
         coll.AddLoadoutManagementVerbs()
@@ -100,6 +99,18 @@ public static class Services
             .AddFileHashCacheVerbs()
             .AddArchiveVerbs();
 
+        return coll;
+    }
+
+    /// <summary>
+    /// Adds the <see cref="IActivityMonitor"/> to your dependency injection container. Called as part of <see cref="AddDataModel"/>.
+    /// so don't call this if you've already called <see cref="AddDataModel"/>.
+    /// </summary>
+    /// <param name="coll"></param>
+    /// <returns></returns>
+    public static IServiceCollection AddActivityMonitor(this IServiceCollection coll)
+    {
+        coll.AddAllSingleton<IActivityFactory, IActivityMonitor, ActivityMonitor>();
         return coll;
     }
 }

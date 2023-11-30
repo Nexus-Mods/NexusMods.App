@@ -1,3 +1,4 @@
+using System.Numerics;
 using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.Values;
 
@@ -65,6 +66,7 @@ public class ActivityReport
 /// </summary>
 /// <typeparam name="T"></typeparam>
 public class ActivityReport<T> : ActivityReport
+where T : IDivisionOperators<T, double, T>
 {
     /// <summary>
     /// The maximum value for the activity, if any.
@@ -79,5 +81,6 @@ public class ActivityReport<T> : ActivityReport
     /// <summary>
     /// If the activity has any progress this will return the amount of progress per second
     /// </summary>
-    public T? Throughput { get; }
+    public T? Throughput => Current != null && Elapsed.TotalSeconds > 0 ?
+        Current / Elapsed.TotalSeconds : default;
 }

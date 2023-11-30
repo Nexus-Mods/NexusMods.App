@@ -1,3 +1,4 @@
+using System.Numerics;
 using NexusMods.Abstractions.Values;
 
 namespace NexusMods.Abstractions.Activities;
@@ -40,6 +41,7 @@ public interface IActivitySource : IDisposable
 /// </summary>
 /// <typeparam name="T"></typeparam>
 public interface IActivitySource<in T> : IActivitySource
+    where T : IDivisionOperators<T, T, double>, IAdditionOperators<T, T, T>
 {
     /// <summary>
     /// Sets the maximum value of the progress. If this is null, the progress will be considered indeterminate.

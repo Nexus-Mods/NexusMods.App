@@ -41,7 +41,7 @@ internal class ActivityMonitor : IActivityFactory, IActivityMonitor
 
     /// <inheritdoc />
     public IActivitySource<T> Create<T>(ActivityGroup group, string template, params object[] arguments)
-        where T : IDivisionOperators<T, T, double>, IAdditionOperators<T, T, T>
+        where T : IDivisionOperators<T, T, double>, IAdditionOperators<T, T, T>, IDivisionOperators<T, double, T>
     {
         var activity = new Activity<T>(this, group, null);
         activity.SetStatusMessage(template, arguments);
