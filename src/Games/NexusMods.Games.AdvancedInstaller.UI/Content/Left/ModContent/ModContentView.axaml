@@ -1,18 +1,18 @@
-﻿<reactiveUi:ReactiveUserControl x:TypeArguments="left:ITreeEntryViewModel"
+﻿<reactiveUi:ReactiveUserControl x:TypeArguments="modContent:IModContentTreeEntryViewModel"
                                 xmlns="https://github.com/avaloniaui"
                                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:resources="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Resources"
-                                xmlns:left="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Content.Left"
+                                xmlns:modContent="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.ModContent"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-                                x:Class="NexusMods.Games.AdvancedInstaller.UI.Content.Left.ModContentView">
+                                x:Class="NexusMods.Games.AdvancedInstaller.UI.ModContent.ModContentView">
     <Design.DataContext>
-        <left:ModContentDesignViewModel />
+        <modContent:ModContentDesignViewModel />
     </Design.DataContext>
 
-    <Grid RowDefinitions="Auto, *">
+    <Grid RowDefinitions="Auto, *" x:Name="TopLevelGrid">
         <Grid.Styles>
             <Style Selector="Border.HeaderAreaBorder">
                 <Setter Property="BorderThickness" Value="0, 0, 0, 1" />
@@ -40,7 +40,7 @@
         </Border>
 
         <!-- "Mod Content" Tree -->
-        <TreeDataGrid Grid.Row="1" Classes="TreeNoSelection TreeNoHeader" x:Name="ModContentTreeDataGrid"
+        <TreeDataGrid Grid.Row="1" Classes="TreeNoSelection TreeNoHeader TreeWhiteCaret" x:Name="ModContentTreeDataGrid"
                       ShowColumnHeaders="True"
                       Foreground="{DynamicResource FontDarkSecondaryColor}" />
 

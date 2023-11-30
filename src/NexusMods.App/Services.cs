@@ -7,6 +7,7 @@ using NexusMods.Common;
 using NexusMods.DataModel;
 using NexusMods.DataModel.GlobalSettings;
 using NexusMods.FileExtractor;
+using NexusMods.Games.AdvancedInstaller;
 using NexusMods.Games.AdvancedInstaller.UI;
 using NexusMods.Games.BethesdaGameStudios;
 using NexusMods.Games.DarkestDungeon;
@@ -57,7 +58,8 @@ public static class Services
                 .AddCLI()
                 .AddUI(config.LauncherSettings)
                 .AddGuidedInstallerUi()
-                .AddAdvancedInstallerUi()
+                .AddAdvancedInstaller()
+            .AddAdvancedInstallerUi()
                 .AddFileExtractors(config.FileExtractorSettings)
                 .AddDataModel(config.DataModelSettings)
                 .AddBethesdaGameStudios()
