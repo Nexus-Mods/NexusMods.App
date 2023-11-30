@@ -146,7 +146,7 @@ public class AdvancedInstallerUITests
         var bodyVm = CommonBodyVMSetup(gameDir, appdataDir);
 
         // Check all the locations are present in SuggestedEntries
-        bodyVm.SelectLocationViewModel.SuggestedEntries.Count().Should().Be(3);
+        bodyVm.SelectLocationViewModel.SuggestedEntries.Should().HaveCount(3);
         bodyVm.SelectLocationViewModel.SuggestedEntries.Should().Contain(entry =>
             entry.RelativeToTopLevelLocation == new GamePath(LocationId.Game, "Data"));
 
@@ -190,7 +190,7 @@ public class AdvancedInstallerUITests
         bodyVm.OnCreateMapping(selectableGameEntry.Value);
 
         // Check deployment data
-        bodyVm.DeploymentData.ArchiveToOutputMap.Count.Should().Be(5);
+        bodyVm.DeploymentData.ArchiveToOutputMap.Should().HaveCount(5);
         bodyVm.DeploymentData.ArchiveToOutputMap
             .Should()
             .BeEquivalentTo(
@@ -221,13 +221,13 @@ public class AdvancedInstallerUITests
         bodyVm.OnCreateMapping(selectableGameEntry.Value);
 
         // Check PreviewTree
-        bodyVm.PreviewViewModel.TreeRoots.Count.Should().Be(1);
+        bodyVm.PreviewViewModel.TreeRoots.Should().ContainSingle();
         // 8 files + Data + Textures = 10
         bodyVm.PreviewViewModel.TreeRoots
-            .GetTreeNode(new GamePath(LocationId.Game, "")).Value.GetAllDescendentNodes().Count.Should().Be(10);
+            .GetTreeNode(new GamePath(LocationId.Game, "")).Value.GetAllDescendentNodes().Should().HaveCount(10);
 
         // Check deployment data
-        bodyVm.DeploymentData.ArchiveToOutputMap.Count.Should().Be(8);
+        bodyVm.DeploymentData.ArchiveToOutputMap.Should().HaveCount(8);
         bodyVm.DeploymentData.ArchiveToOutputMap
             .Should()
             .BeEquivalentTo(
@@ -289,7 +289,7 @@ public class AdvancedInstallerUITests
         bodyVm.OnRemoveMappingFromModContent(greenDataModEntry.Value);
 
         // Check Preview tree
-        bodyVm.PreviewViewModel.TreeEntriesCache.Items.Count().Should().Be(4);
+        bodyVm.PreviewViewModel.TreeEntriesCache.Items.Should().HaveCount(4);
         bodyVm.PreviewViewModel.TreeEntriesCache.Items
             .Select(entry => entry.GamePath)
             .Should()
@@ -312,7 +312,7 @@ public class AdvancedInstallerUITests
 
 
         // Check deployment data
-        bodyVm.DeploymentData.ArchiveToOutputMap.Count.Should().Be(2);
+        bodyVm.DeploymentData.ArchiveToOutputMap.Should().HaveCount(2);
         bodyVm.DeploymentData.ArchiveToOutputMap
             .Should()
             .BeEquivalentTo(
@@ -333,7 +333,7 @@ public class AdvancedInstallerUITests
         bodyVm.OnRemoveEntryFromPreview(previewDataEntry.Value);
 
         // Check deployment data
-        bodyVm.DeploymentData.ArchiveToOutputMap.Count.Should().Be(1);
+        bodyVm.DeploymentData.ArchiveToOutputMap.Should().ContainSingle();
         bodyVm.DeploymentData.ArchiveToOutputMap
             .Should()
             .BeEquivalentTo(
@@ -350,8 +350,8 @@ public class AdvancedInstallerUITests
 
 
         // Check preview is empty
-        bodyVm.PreviewViewModel.TreeEntriesCache.Items.Count().Should().Be(0);
-        bodyVm.PreviewViewModel.TreeRoots.Count.Should().Be(0);
+        bodyVm.PreviewViewModel.TreeEntriesCache.Items.Should().BeEmpty();
+        bodyVm.PreviewViewModel.TreeRoots.Should().BeEmpty();
         bodyVm.CurrentRightContentViewModel.Should().Be(bodyVm.EmptyPreviewViewModel);
 
         // Check mod contents tree
@@ -361,7 +361,7 @@ public class AdvancedInstallerUITests
                     or ModContentTreeEntryStatus.IncludedViaParent).Should().Be(0);
 
         // Check deployment data
-        bodyVm.DeploymentData.ArchiveToOutputMap.Count.Should().Be(0);
+        bodyVm.DeploymentData.ArchiveToOutputMap.Should().BeEmpty();
     }
 
     [Theory, AutoFileSystem]
@@ -395,18 +395,18 @@ public class AdvancedInstallerUITests
                               entry.Value == new GamePath(LocationId.Game, "Blue Version/Data/Textures/textureB.dds"));
         // Check preview tree
         bodyVm.PreviewViewModel.TreeRoots.GetTreeNode(new GamePath(LocationId.Game, "")).Value.Children
-            .Count.Should().Be(3);
+            .Should().HaveCount(3);
 
         // Remove the root mapping
         bodyVm.OnRemoveMappingFromModContent(bodyVm.ModContentViewModel.Root.Item);
 
         // Check preview tree
-        bodyVm.PreviewViewModel.TreeEntriesCache.Items.Count().Should().Be(2);
+        bodyVm.PreviewViewModel.TreeEntriesCache.Items.Should().HaveCount(2);
 
 
         // Check deployment data
         bodyVm.DeploymentData.ArchiveToOutputMap
-            .Count.Should().Be(1);
+            .Should().ContainSingle();
         bodyVm.DeploymentData.ArchiveToOutputMap
             .Should()
             .Contain(entry => entry.Key == new RelativePath("Blue Version/Data/Textures/textureA.dds") &&
