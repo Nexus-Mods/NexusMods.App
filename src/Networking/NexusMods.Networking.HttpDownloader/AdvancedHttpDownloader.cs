@@ -5,16 +5,15 @@ using System.Net.Sockets;
 using System.Text.Json;
 using System.Threading.Channels;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.Activities;
 using NexusMods.Common;
-using NexusMods.DataModel.RateLimiting;
+using NexusMods.DataModel.Activities;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Networking.HttpDownloader.DTOs;
 using NexusMods.Paths;
 
 namespace NexusMods.Networking.HttpDownloader
 {
-    using DLJob = IJob<IHttpDownloader, Size>;
-
     /// <summary>
     /// HTTP downloader with the following features<br/>
     ///  - pause/resume support<br/>
@@ -37,7 +36,7 @@ namespace NexusMods.Networking.HttpDownloader
     {
         private readonly ILogger<AdvancedHttpDownloader> _logger;
         private readonly HttpClient _client;
-        private readonly IResource<IHttpDownloader, Size> _limiter;
+        private readonly IActivityFactory _activityFactory;
 
         // These parameters don't need any kind of user tuning; thus are left non-configurable.
         /// <summary>
@@ -67,12 +66,12 @@ namespace NexusMods.Networking.HttpDownloader
         /// <summary>
         /// Constructor
         /// </summary>
-        public AdvancedHttpDownloader(ILogger<AdvancedHttpDownloader> logger, HttpClient client, IResource<IHttpDownloader, Size> limiter,
+        public AdvancedHttpDownloader(ILogger<AdvancedHttpDownloader> logger, HttpClient client, IActivityFactory activityFactory,
             IHttpDownloaderSettings settings)
         {
             _logger = logger;
             _client = client;
-            _limiter = limiter;
+            _activityFactory = activityFactory;
             _writeQueueLength = settings.WriteQueueLength;
             _minCancelAge = settings.MinCancelAge;
             _cancelSpeedFraction = settings.CancelSpeedFraction;
@@ -83,7 +82,7 @@ namespace NexusMods.Networking.HttpDownloader
         public async Task<Hash> DownloadAsync(IReadOnlyList<HttpRequestMessage> sources, AbsolutePath destination, HttpDownloaderState? downloaderState, Size? size, CancellationToken cancel)
         {
             downloaderState ??= new HttpDownloaderState();
-            using var primaryJob = await _limiter.BeginAsync($"Initiating Download {destination.FileName}", size ?? Size.One, cancel);
+            using var primaryJob = _activityFactory.Create<Size>(IHttpDownloader.Group, "Initiating Download {FileName}", destination);
 
             var features = await ServerFeatures.Request(_client, sources[0].Copy(), cancel);
             size ??= features.DownloadSize;
@@ -95,17 +94,18 @@ namespace NexusMods.Networking.HttpDownloader
             }
 
             // Note: All data eventually is piped into primary job (when writing to destination), so we can just use that to track everything as a whole.
-            downloaderState.Job = primaryJob;
+            downloaderState.Activity = primaryJob;
 
             var state = await InitiateState(destination, size.Value, sources, cancel);
             state.Sources = sources.Select((source, idx) => new Source { Request = source, Priority = idx }).ToArray();
             state.Destination = destination;
+            primaryJob.SetMax(state.TotalSize);
 
             var writeQueue = Channel.CreateBounded<WriteOrder>(_writeQueueLength);
 
             var fileWriter = FileWriterTask(state, writeQueue.Reader, primaryJob, cancel);
 
-            await DownloaderTask(state, writeQueue.Writer, cancel);
+            await DownloaderTask(primaryJob, state, writeQueue.Writer, cancel);
 
 
             try
@@ -127,13 +127,14 @@ namespace NexusMods.Networking.HttpDownloader
         private async Task<Hash> DownloadWithoutResume(IReadOnlyList<HttpRequestMessage> sources, AbsolutePath destination,
             HttpDownloaderState downloaderState, Size? size, CancellationToken cancel)
         {
-            using var primaryJob = await _limiter.BeginAsync($"Downloading {destination.FileName}", size ?? Size.One, cancel);
+            using var primaryJob = _activityFactory.Create<Size>(IHttpDownloader.Group, "Downloading {FileName}", destination);
 
             using var buffer = _memoryPool.Rent((int)_readBlockSize.Value);
             foreach (var source in sources)
             {
                 var response = await _client.SendAsync(source.Copy(), cancel);
                 if (!response.IsSuccessStatusCode) continue;
+                primaryJob.SetMax(Size.FromLong(response.Content.Headers.ContentLength ?? 0));
 
                 await using var of = destination.Create();
                 await using var stream = await response.Content.ReadAsStreamAsync(cancel);
@@ -155,7 +156,7 @@ namespace NexusMods.Networking.HttpDownloader
         }
 
         #region Output Writing
-        private async Task FileWriterTask(DownloadState state, ChannelReader<WriteOrder> writes, DLJob job, CancellationToken cancel)
+        private async Task FileWriterTask(DownloadState state, ChannelReader<WriteOrder> writes, IActivitySource<Size> job, CancellationToken cancel)
         {
             var tempPath = state.TempFilePath;
             await using var file = tempPath.Open(FileMode.OpenOrCreate, FileAccess.Write);
@@ -177,8 +178,8 @@ namespace NexusMods.Networking.HttpDownloader
                     order.Chunk.Completed += Size.From((ulong)order.Data.Length);
 
                     await WriteDownloadState(state);
-                    // _bufferPool.Return(order.Data);
-                    await job.ReportAsync(Size.FromLong(order.Data.Length), cancel);
+
+                    job.AddProgress(Size.FromLong(order.Data.Length));
                 }
                 catch (ChannelClosedException)
                 {
@@ -190,20 +191,18 @@ namespace NexusMods.Networking.HttpDownloader
 
         #region Downloading
 
-        private async Task DownloaderTask(DownloadState state, ChannelWriter<WriteOrder> writes, CancellationToken cancel)
+        private async Task DownloaderTask(IActivitySource<Size> activitySource, DownloadState state, ChannelWriter<WriteOrder> writes, CancellationToken cancel)
         {
             var finishReward = 1024;
 
             // start one task per unfinished chunk. We never start additional tasks but a task may take on another chunks
             await Task.WhenAll(state.UnfinishedChunks.Select(async chunk =>
             {
-                using var chunkJob = await _limiter.BeginAsync($"Download Chunk @${chunk.Offset}", chunk.Size, cancel);
-
                 try
                 {
                     while (chunk.Read < chunk.Size)
                     {
-                        await DownloadChunk(chunkJob, state, chunk, writes, MakeChunkCancelToken(chunk, cancel));
+                        await DownloadChunk(activitySource, state, chunk, writes, MakeChunkCancelToken(chunk, cancel));
 
                         // boost source priority on completion, first one gets the biggest boost
                         chunk.Source!.Priority -= finishReward;
@@ -332,7 +331,7 @@ namespace NexusMods.Networking.HttpDownloader
             return response;
         }
 
-        private async Task DownloadChunk(DLJob job, DownloadState download, ChunkState chunk, ChannelWriter<WriteOrder> writes, CancellationToken cancel)
+        private async Task DownloadChunk(IActivitySource<Size> activitySource, DownloadState download, ChunkState chunk, ChannelWriter<WriteOrder> writes, CancellationToken cancel)
         {
             HttpResponseMessage? response = null;
 
@@ -358,7 +357,7 @@ namespace NexusMods.Networking.HttpDownloader
                 try
                 {
                     await using var stream = await response.Content.ReadAsStreamAsync(cancel);
-                    await ReadStreamToEnd(job, stream, chunk, writes, cancel);
+                    await ReadStreamToEnd(activitySource, stream, chunk, writes, cancel);
                 }
                 catch (SocketException)
                 {
@@ -382,7 +381,7 @@ namespace NexusMods.Networking.HttpDownloader
             }
         }
 
-        private async Task ReadStreamToEnd(DLJob job, Stream stream, ChunkState chunk, ChannelWriter<WriteOrder> writes, CancellationToken cancel)
+        private async Task ReadStreamToEnd(IActivitySource<Size> job, Stream stream, ChunkState chunk, ChannelWriter<WriteOrder> writes, CancellationToken cancel)
         {
             var offset = chunk.Offset + chunk.Read;
             var upperBounds = chunk.Offset + chunk.Size;
@@ -395,7 +394,7 @@ namespace NexusMods.Networking.HttpDownloader
                 var lastRead = Size.FromLong(filledBuffer.Length);
                 if (lastRead == Size.Zero) break;
 
-                await job.ReportAsync(lastRead, cancel);
+                job.AddProgress(lastRead);
                 if (lastRead <= Size.Zero) continue;
                 chunk.Read += lastRead;
 

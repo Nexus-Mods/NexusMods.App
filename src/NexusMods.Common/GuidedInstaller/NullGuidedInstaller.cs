@@ -1,4 +1,4 @@
-using NexusMods.DataModel.RateLimiting;
+using NexusMods.Abstractions.Values;
 
 namespace NexusMods.Common.GuidedInstaller;
 

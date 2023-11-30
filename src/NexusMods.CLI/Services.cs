@@ -4,7 +4,6 @@ using NexusMods.Common;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Markers;
-using NexusMods.DataModel.RateLimiting;
 using NexusMods.FileExtractor.Extractors;
 using NexusMods.Paths;
 using NexusMods.CLI.Types;
@@ -50,7 +49,6 @@ public static class Services
         services.AddSingleton<IDownloadProtocolHandler, NxmDownloadProtocolHandler>();
 
         services.AddProtocolVerbs();
-        services.AddAllSingleton<IResource, IResource<IExtractor, Size>>(_ => new Resource<IExtractor, Size>("File Extraction"));
         return services;
     }
 

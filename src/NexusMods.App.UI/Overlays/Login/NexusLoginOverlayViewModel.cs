@@ -2,8 +2,8 @@
 using System.Reactive.Linq;
 using System.Windows.Input;
 using DynamicData;
-using NexusMods.DataModel.Interprocess.Jobs;
-using NexusMods.Networking.NexusWebApi.NMA.Types;
+using NexusMods.Abstractions.Activities;
+using NexusMods.Networking.NexusWebApi.NMA;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -13,21 +13,21 @@ public class NexusLoginOverlayViewModel : AViewModel<INexusLoginOverlayViewModel
 {
     private readonly CompositeDisposable _compositeDisposable;
 
-    public NexusLoginOverlayViewModel(IInterprocessJobManager jobManager, IOverlayController overlayController)
+    public NexusLoginOverlayViewModel(IActivityMonitor activityMonitor, IOverlayController overlayController)
     {
         _compositeDisposable = new CompositeDisposable();
 
-        var currentJob = jobManager.Jobs
-            .QueryWhenChanged(q =>
-                q.Items.FirstOrDefault(j => j.Payload is NexusLoginJob));
+        var currentJob = activityMonitor.Activities
+            .AsObservableChangeSet(x => x.Id)
+            .QueryWhenChanged(q => q.Items.FirstOrDefault(activity => activity.Group == OAuth.Group))
+            .OnUI();
 
         currentJob.WhereNotNull()
-            .Select(job => ((NexusLoginJob)job.Payload).Uri)
-            .BindToUi(this, vm => vm.Uri)
+            .Select(activity => activity.Payload as Uri)
+            .BindTo(this, vm => vm.Uri)
             .DisposeWith(_compositeDisposable);
 
         currentJob.Select(job => job != null)
-            .OnUI()
             .Subscribe(b =>
             {
                 if (!b)
@@ -35,7 +35,7 @@ public class NexusLoginOverlayViewModel : AViewModel<INexusLoginOverlayViewModel
                     IsActive = false;
                     return;
                 }
-                
+
                 IsActive = true;
                 overlayController.SetOverlayContent(new SetOverlayItem(this));
             })
@@ -43,8 +43,9 @@ public class NexusLoginOverlayViewModel : AViewModel<INexusLoginOverlayViewModel
 
         currentJob
             .WhereNotNull()
-            .Select(job => ReactiveCommand.Create(() => jobManager.EndJob(job.JobId)))
-            .BindToUi(this, vm => vm.Cancel)
+            .Select(job => (IActivitySource)job)
+            .Select(job => ReactiveCommand.Create(job.Dispose))
+            .BindTo(this, vm => vm.Cancel)
             .DisposeWith(_compositeDisposable);
     }
 

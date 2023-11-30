@@ -4,9 +4,9 @@ using System.Reactive.Linq;
 using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Values;
 using NexusMods.App.UI;
 using NexusMods.Common.GuidedInstaller;
-using NexusMods.DataModel.RateLimiting;
 using ReactiveUI;
 
 namespace NexusMods.Games.FOMOD.UI;

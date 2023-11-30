@@ -1,6 +1,6 @@
 using System.Reactive;
+using NexusMods.Abstractions.Values;
 using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.RateLimiting;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.LeftMenu.Items;
