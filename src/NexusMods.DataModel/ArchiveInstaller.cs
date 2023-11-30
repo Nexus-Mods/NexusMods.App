@@ -3,8 +3,6 @@ using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.ArchiveContents;
-using NexusMods.DataModel.ArchiveMetaData;
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Interprocess.Jobs;
 using NexusMods.DataModel.Loadouts;
@@ -13,7 +11,6 @@ using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.DataModel.Sorting.Rules;
-using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.FileTree;
 
@@ -54,6 +51,7 @@ public class ArchiveInstaller : IArchiveInstaller
     {
         // Get the loadout and create the mod so we can use it in the job.
         var loadout = _registry.GetMarker(loadoutId);
+        var useCustomInstaller = installer != null;
 
         var download = await _fileOriginRegistry.Get(downloadId);
         var archiveName = "<unknown>";
@@ -123,8 +121,15 @@ public class ArchiveInstaller : IArchiveInstaller
                 .FirstOrDefault(result => result.Item1.Any());
 
 
-            if (results == null || !results.Any())
+            if (results == null || results.Length == 0)
             {
+                if (useCustomInstaller)
+                {
+                    // User was using an explicit installer, if no files were returned, we can assume the user cancelled the installation.
+                    // Remove the mod from the loadout.
+                    _registry.Alter(cursor, $"Cancelled installation of {archiveName}", _ => null);
+                    return Array.Empty<ModId>();
+                }
                 _logger.LogError("No Installer found for {Name}", archiveName);
                 _registry.Alter(cursor, $"Failed to install mod {archiveName}",m => m! with { Status = ModStatus.Failed });
                 throw new NotSupportedException($"No Installer found for {archiveName}");

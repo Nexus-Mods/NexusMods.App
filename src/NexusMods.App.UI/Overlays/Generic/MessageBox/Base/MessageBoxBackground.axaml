@@ -11,16 +11,19 @@
 
         <!-- Top Part -->
         <!-- Expected Size: `MinWidth="386" MinHeight="138"` -->
-        <Border Grid.Row="0" CornerRadius="8,8,0,0" HorizontalAlignment="Stretch" Background="{DynamicResource BorderContainerColor}">
-            <ContentPresenter x:Name="TopContentControl" Content="{Binding TopContent, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" />
+        <Border Grid.Row="0" CornerRadius="8,8,0,0" HorizontalAlignment="Stretch"
+                Background="{DynamicResource BorderContainerColor}">
+            <ContentPresenter x:Name="TopContentControl"
+                              Content="{Binding TopContent, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" />
         </Border>
 
         <!-- Bottom Part -->
         <!-- Expected Size: `MinWidth="386" MinHeight="126" -->
-        <Border Grid.Row="1" CornerRadius="0,0,8,8" HorizontalAlignment="Stretch" Background="{DynamicResource StructuralBorderColor}">
-            <ContentPresenter x:Name="BottomContentControl" Content="{Binding BottomContent, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" />
+        <Border Grid.Row="1" CornerRadius="0,0,8,8" HorizontalAlignment="Stretch"
+                Background="{DynamicResource StructuralBorderColor}">
+            <ContentPresenter x:Name="BottomContentControl"
+                              Content="{Binding BottomContent, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" />
         </Border>
 
     </Grid>
 </UserControl>
-

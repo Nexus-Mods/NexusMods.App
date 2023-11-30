@@ -7,6 +7,7 @@ using NexusMods.Common;
 using NexusMods.DataModel;
 using NexusMods.DataModel.GlobalSettings;
 using NexusMods.FileExtractor;
+using NexusMods.Games.AdvancedInstaller;
 using NexusMods.Games.AdvancedInstaller.UI;
 using NexusMods.Games.BethesdaGameStudios;
 using NexusMods.Games.BladeAndSorcery;
@@ -56,6 +57,7 @@ public static class Services
             .AddFileSystem()
             .AddUI(config.LauncherSettings)
             .AddGuidedInstallerUi()
+            .AddAdvancedInstaller()
             .AddAdvancedInstallerUi()
             .AddFileExtractors(config.FileExtractorSettings)
             .AddDataModel(config.DataModelSettings)
