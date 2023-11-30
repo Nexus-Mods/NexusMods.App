@@ -116,6 +116,7 @@ public class Program
         if (fs.OS.IsLinux)
         {
             // On AppImage (Linux), 'OWD' should take precedence over the entry directory if it exists.
+            // https://docs.appimage.org/packaging-guide/environment-variables.html
             var owd = Environment.GetEnvironmentVariable("OWD");
             if (!string.IsNullOrEmpty(owd))
             {
