@@ -366,6 +366,10 @@
         <Compile Update="WorkspaceSystem\PanelResizer\PanelResizerViewModel.cs">
           <DependentUpon>IPanelResizerViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Theme\ControlsGallery\ControlsGallery.axaml.cs">
+          <DependentUpon>ControlsGallery.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
