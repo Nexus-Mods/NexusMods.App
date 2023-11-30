@@ -1,0 +1,97 @@
+﻿<reactiveUi:ReactiveUserControl x:TypeArguments="ui:IAdvancedInstallerPageViewModel"
+                                xmlns="https://github.com/avaloniaui"
+                                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                                xmlns:reactiveUi="http://reactiveui.net"
+                                xmlns:ui="clr-namespace:NexusMods.Games.AdvancedInstaller.UI"
+                                xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+                                xmlns:resources="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Resources"
+                                mc:Ignorable="d" d:DesignWidth="1232" d:DesignHeight="672"
+                                x:Class="NexusMods.Games.AdvancedInstaller.UI.AdvancedInstallerPageView">
+    <Design.DataContext>
+        <ui:AdvancedInstallerPageDesignViewModel />
+    </Design.DataContext>
+
+    <Grid RowDefinitions="*, Auto">
+        <Grid.Styles>
+
+            <Style Selector="Border.TopPart">
+                <Setter Property="Background" Value="{DynamicResource BorderContainerColor}" />
+                <Setter Property="Padding" Value="24,0,24,24" />
+                <Setter Property="CornerRadius" Value="8,8,0,0" />
+            </Style>
+
+            <Style Selector="Border.OverlayHeaderSection">
+                <Setter Property="Margin" Value="0,0,0,16" />
+            </Style>
+
+            <Style Selector="icons|Icon#OverlayHeaderMultiOptionIcon">
+                <Setter Property="FontSize" Value="20" />
+                <Setter Property="Margin" Value="0,0,8,8" />
+                <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+            </Style>
+
+            <Style Selector="TreeDataGrid.TreeWhiteCaret">
+                <Setter Property="Foreground" Value="{DynamicResource FontDarkSecondaryBrush}"></Setter>
+
+                <Style Selector="^ ToggleButton">
+                    <Setter Property="Width" Value="16" />
+                    <Setter Property="Height" Value="16" />
+
+                    <Style Selector="^:pointerover">
+                        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}"></Setter>
+                    </Style>
+                </Style>
+            </Style>
+
+            <!-- NOTE(Al12rs) This is to hide the TreeDataGrid Headers, without actually removing them.
+                            Hiding the headers completely breaks the Star columns, collapsing them to minimum space-->
+            <Style Selector="TreeDataGrid.TreeNoHeader /template/ Border#ColumnHeadersPresenterBorder">
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="MaxHeight" Value="1" />
+            </Style>
+
+            <Style
+                Selector="TreeDataGrid.TreeNoHeader TreeDataGridColumnHeader:pointerover /template/ Border#DataGridBorder">
+                <Setter Property="Background" Value="{DynamicResource TransparentColor}" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="BorderBrush" Value="Transparent" />
+            </Style>
+
+        </Grid.Styles>
+
+        <Border Grid.Row="0" CornerRadius="8,8,0,0" HorizontalAlignment="Stretch"
+                Background="{DynamicResource BorderContainerColor}">
+            <Border Classes="TopPart" x:Name="TopContentBorder">
+                <Grid RowDefinitions="Auto, *">
+
+                    <Border Grid.Row="0" Classes="OverlayHeaderSection" x:Name="OverlayHeaderBorder">
+                        <Grid x:Name="OverlayHeaderGrid" ColumnDefinitions="Auto, *, Auto">
+
+                            <icons:Icon Grid.Column="0" x:Name="OverlayHeaderMultiOptionIcon" Classes="Tune" />
+
+                            <TextBlock Grid.Column="1" x:Name="OverlayHeaderTextBlock" Classes="BodyLGBold"
+                                       Text="{x:Static resources:Language.OverlayHeaderText_Advanced_Installer}" />
+
+                        </Grid>
+                    </Border>
+
+                    <reactiveUi:ViewModelViewHost Grid.Row="1" x:Name="TopContentViewHost" />
+
+                </Grid>
+            </Border>
+        </Border>
+
+        <Border Grid.Row="1" CornerRadius="0,0,8,8" HorizontalAlignment="Stretch"
+                Background="{DynamicResource StructuralBorderColor}">
+            <Border Classes="BottomPart" x:Name="BottomContentBorder">
+
+                <reactiveUi:ViewModelViewHost x:Name="BottomContentViewHost" />
+
+            </Border>
+        </Border>
+
+    </Grid>
+
+</reactiveUi:ReactiveUserControl>

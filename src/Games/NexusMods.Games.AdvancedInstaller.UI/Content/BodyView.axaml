@@ -1,5 +1,5 @@
 ﻿<reactiveUi:ReactiveUserControl
-    x:TypeArguments="content:IBodyViewModel"
+    x:TypeArguments="ui:IBodyViewModel"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -7,12 +7,12 @@
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
     xmlns:resources="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Resources"
-    xmlns:content="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Content"
+    xmlns:ui="clr-namespace:NexusMods.Games.AdvancedInstaller.UI"
     mc:Ignorable="d" d:DesignWidth="1184" d:DesignHeight="492"
-    x:Class="NexusMods.Games.AdvancedInstaller.UI.Content.BodyView">
+    x:Class="NexusMods.Games.AdvancedInstaller.UI.BodyView">
 
     <Design.DataContext>
-        <content:BodyDesignViewModel />
+        <ui:BodyDesignViewModel />
     </Design.DataContext>
 
     <Grid RowDefinitions="Auto, *">
@@ -69,9 +69,7 @@
 
                 <!-- Install Location Preview -->
                 <Border Classes="Rounded" Grid.Column="2" x:Name="ResultsBorder">
-                    <ScrollViewer x:Name="ResultsScrollViewer">
-                        <reactiveUi:ViewModelViewHost x:Name="PreviewSectionViewHost" />
-                    </ScrollViewer>
+                    <reactiveUi:ViewModelViewHost x:Name="PreviewSectionViewHost" />
                 </Border>
             </Grid>
         </Border>
