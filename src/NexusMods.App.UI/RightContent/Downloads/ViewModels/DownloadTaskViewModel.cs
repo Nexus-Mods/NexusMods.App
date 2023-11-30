@@ -1,5 +1,4 @@
 using NexusMods.App.UI.Resources;
-using NexusMods.DataModel.RateLimiting;
 using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Networking.Downloaders.Interfaces.Traits;
 using ReactiveUI;
@@ -67,7 +66,7 @@ public class DownloadTaskViewModel : AViewModel<IDownloadTaskViewModel>, IDownlo
         }
     }
 
-    public long Throughput => _task.CalculateThroughput(DateTimeProvider.Instance);
+    public long Throughput => _task.CalculateThroughput();
 
     public void Cancel() => _task.Cancel();
     public void Suspend() => _task.Suspend();

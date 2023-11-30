@@ -4,10 +4,10 @@ using System.Reactive.Linq;
 using Avalonia.Media;
 using DynamicData;
 using JetBrains.Annotations;
+using NexusMods.Abstractions.Values;
 using NexusMods.App.UI;
 using NexusMods.Common.GuidedInstaller;
 using NexusMods.Common.GuidedInstaller.ValueObjects;
-using NexusMods.DataModel.RateLimiting;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 

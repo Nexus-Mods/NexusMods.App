@@ -1,4 +1,4 @@
-using NexusMods.DataModel.RateLimiting;
+using NexusMods.Abstractions.DateTime;
 using NexusMods.Networking.Downloaders.Tasks.State;
 
 namespace NexusMods.Networking.Downloaders.Interfaces;
@@ -18,7 +18,7 @@ public interface IDownloadTask
     /// Calculates the download speed of the current job.
     /// </summary>
     /// <returns>Current speed in terms of bytes per second.</returns>
-    long CalculateThroughput<TDateTimeProvider>(TDateTimeProvider provider) where TDateTimeProvider : IDateTimeProvider;
+    long CalculateThroughput();
 
     /// <summary>
     /// Service this task is associated with.

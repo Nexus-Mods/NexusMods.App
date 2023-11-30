@@ -1,10 +1,10 @@
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.Values;
 using NexusMods.Common;
 using NexusMods.Common.GuidedInstaller;
 using NexusMods.Common.GuidedInstaller.ValueObjects;
 using NexusMods.DataModel.ModInstallers;
-using NexusMods.DataModel.RateLimiting;
 using NexusMods.Paths;
 using NexusMods.Paths.FileTree;
 

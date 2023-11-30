@@ -1,6 +1,6 @@
 ﻿using System.Reactive;
+using NexusMods.Abstractions.Values;
 using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.RateLimiting;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
