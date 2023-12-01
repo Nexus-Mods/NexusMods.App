@@ -1,4 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Common;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Games.GameCapabilities.FolderMatchInstallerCapability;

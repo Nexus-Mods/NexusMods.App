@@ -5,8 +5,6 @@ using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.Games.MountAndBlade2Bannerlord.Extensions;
 using NexusMods.Games.MountAndBlade2Bannerlord.LauncherManager.Providers;
-using NexusMods.Games.MountAndBlade2Bannerlord.Services;
-using NexusMods.Paths;
 using static NexusMods.Games.MountAndBlade2Bannerlord.Utils.GamePathProvier;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord;
@@ -38,10 +36,6 @@ public class RunStandaloneTool : ITool
             ? BLSEStandaloneFile(store)
             : PrimaryStandaloneFile(store);
         _logger.LogInformation("Running {Program}", program);
-
-        await using var scope = _serviceProvider.CreateAsyncScope();
-        var gameInstallationContext = scope.ServiceProvider.GetRequiredService<GameInstallationContextAccessor>();
-        gameInstallationContext.GameInstalltionContext = new(loadout.Installation.LocationsRegister[LocationId.Game], loadout.Installation.Store);
 
         var launcherState = loadout.Installation.ServiceScope.ServiceProvider.GetRequiredService<LauncherStateProvider>();
         var psi = new ProcessStartInfo(program.ToString())

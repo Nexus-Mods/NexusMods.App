@@ -7,9 +7,9 @@ namespace NexusMods.Games.MountAndBlade2Bannerlord.LauncherManager.Providers;
 internal sealed class LoadOrderStateProvider : ILoadOrderStateProvider
 {
 
-    public IModuleViewModel[]? GetAllModuleViewModels() => null!;
+    public IModuleViewModel[]? GetAllModuleViewModels() => null;
 
-    public IModuleViewModel[]? GetModuleViewModels() => null!;
+    public IModuleViewModel[]? GetModuleViewModels() => null;
 
     public void SetModuleViewModels(IReadOnlyList<IModuleViewModel> moduleViewModels) { }
 }

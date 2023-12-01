@@ -2,7 +2,6 @@ using System.Diagnostics;
 using Bannerlord.LauncherManager;
 using Bannerlord.LauncherManager.External;
 using Bannerlord.LauncherManager.External.UI;
-using NexusMods.DataModel;
 using NexusMods.DataModel.Games;
 using NexusMods.Games.MountAndBlade2Bannerlord.Utils;
 

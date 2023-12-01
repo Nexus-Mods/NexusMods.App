@@ -1,8 +1,6 @@
 using System.Diagnostics;
 using Bannerlord.LauncherManager.External;
-using NexusMods.DataModel;
 using NexusMods.DataModel.Games;
-using NexusMods.Games.MountAndBlade2Bannerlord.Services;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord.LauncherManager.Providers;
 

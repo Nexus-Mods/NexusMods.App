@@ -22,12 +22,8 @@ public sealed class MountAndBlade2BannerlordModInstaller : AModInstaller
 {
     private sealed record ModuleInfoFile(FileTreeNode<RelativePath, ModSourceFileEntry> File, ModuleInfoExtended ModuleInfo);
 
-    private readonly IServiceProvider _serviceProvider;
 
-    private MountAndBlade2BannerlordModInstaller(IServiceProvider serviceProvider) : base(serviceProvider)
-    {
-        _serviceProvider = serviceProvider;
-    }
+    private MountAndBlade2BannerlordModInstaller(IServiceProvider serviceProvider) : base(serviceProvider) { }
 
     public static MountAndBlade2BannerlordModInstaller Create(IServiceProvider serviceProvider) => new(serviceProvider);
 
