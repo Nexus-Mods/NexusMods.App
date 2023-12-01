@@ -1,11 +1,12 @@
 using System.Diagnostics;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.Loadouts.LoadoutSynchronizerDTOs;
 using NexusMods.Games.MountAndBlade2Bannerlord.Extensions;
+using NexusMods.Games.MountAndBlade2Bannerlord.LauncherManager.Providers;
 using NexusMods.Games.MountAndBlade2Bannerlord.Services;
-
+using NexusMods.Paths;
 using static NexusMods.Games.MountAndBlade2Bannerlord.Utils.GamePathProvier;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord;
@@ -13,15 +14,15 @@ namespace NexusMods.Games.MountAndBlade2Bannerlord;
 public class RunStandaloneTool : ITool
 {
     private readonly ILogger _logger;
-    private readonly LauncherManagerFactory _launcherManagerFactory;
+    private readonly IServiceProvider _serviceProvider;
 
     public string Name => $"Run {MountAndBlade2Bannerlord.DisplayName}";
     public IEnumerable<GameDomain> Domains => new[] { MountAndBlade2Bannerlord.StaticDomain };
 
-    public RunStandaloneTool(ILogger<RunStandaloneTool> logger, LauncherManagerFactory launcherManagerFactory)
+    public RunStandaloneTool(ILogger<RunStandaloneTool> logger, IServiceProvider _serviceProvider)
     {
         _logger = logger;
-        _launcherManagerFactory = launcherManagerFactory;
+        this._serviceProvider = _serviceProvider;
     }
 
     public async Task Execute(Loadout loadout, CancellationToken ct)
@@ -38,10 +39,14 @@ public class RunStandaloneTool : ITool
             : PrimaryStandaloneFile(store);
         _logger.LogInformation("Running {Program}", program);
 
-        var launcherManager = _launcherManagerFactory.Get(loadout.Installation);
+        await using var scope = _serviceProvider.CreateAsyncScope();
+        var gameInstallationContext = scope.ServiceProvider.GetRequiredService<GameInstallationContextAccessor>();
+        gameInstallationContext.SetCurrent(new(loadout.Installation.LocationsRegister[LocationId.Game], loadout.Installation.Store));
+
+        var launcherState = loadout.Installation.ServiceScope.ServiceProvider.GetRequiredService<LauncherStateProvider>();
         var psi = new ProcessStartInfo(program.ToString())
         {
-            Arguments = launcherManager.ExecutableParameters
+            Arguments = launcherState.ExecutableParameters
         };
         var process = Process.Start(psi);
         if (process is null)

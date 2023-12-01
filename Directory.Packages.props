@@ -11,8 +11,8 @@
     <PackageVersion Include="FomodInstaller.Interface" Version="1.2.0" />
     <PackageVersion Include="FomodInstaller.Scripting.XmlScript" Version="1.0.0" />
     <!-- Bannerlord -->
-    <PackageVersion Include="Bannerlord.LauncherManager" Version="1.0.76" />
-    <PackageVersion Include="FetchBannerlordVersion" Version="1.0.6.39" />
+    <PackageVersion Include="Bannerlord.LauncherManager" Version="1.0.81" />
+    <PackageVersion Include="FetchBannerlordVersion" Version="1.0.6.45" />
   </ItemGroup>
   <ItemGroup>
     <PackageVersion Include="JetBrains.Annotations" Version="2023.3.0" PrivateAssets="all" />

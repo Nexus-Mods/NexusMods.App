@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.DataModel.Games.GameCapabilities.FolderMatchInstallerCapability;
 using NexusMods.Paths;
 
@@ -7,7 +8,7 @@ namespace NexusMods.DataModel.Games;
 /// Defines an individual installation of a game, i.e. a unique combination of
 /// Version and Location.
 /// </summary>
-public class GameInstallation
+public class GameInstallation : IDisposable
 {
     /// <summary>
     /// Empty game installation, used for testing and some cases where a property must be set.
@@ -28,6 +29,11 @@ public class GameInstallation
     /// The location on-disk of this game and it's associated paths [e.g. Saves].
     /// </summary>
     public GameLocationsRegister LocationsRegister { get; init; } = null!;
+
+    /// <summary>
+    ///
+    /// </summary>
+    public IServiceScope ServiceScope { get; init; } = null!;
 
     /// <summary>
     /// The game to which this installation belongs.
@@ -72,4 +78,10 @@ public class GameInstallation
     /// The <see cref="IGameLocator"/> that found this installation.
     /// </summary>
     public IGameLocator Locator { get; init; } = null!;
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        ServiceScope.Dispose();
+    }
 }

@@ -58,7 +58,7 @@ public class ModuleInfoSort : IGeneratedSortRule, ISortRule<Mod, ModId>, ITrigge
     // Investigate once testing is available
     public Hash GetFingerprint(ModId self, Loadout loadout)
     {
-        var moduleInfos = loadout.Mods.Select(x => x.Value.GetModuleInfo()).OfType<ModuleInfoExtended>().OrderBy(x => x.Id).ToArray();
+        var moduleInfos = loadout.Mods.Values.Select(x => x.GetModuleInfo()).OfType<ModuleInfoExtended>().OrderBy(x => x.Id).ToArray();
 
         using var fp = Fingerprinter.Create();
         fp.Add(loadout.Mods[self].DataStoreId);

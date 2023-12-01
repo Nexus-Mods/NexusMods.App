@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
@@ -83,12 +84,20 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
 
             _logger.LogInformation("Looking for {Game} in {Count} locators", ToString(), _locators.Count());
             return _locators.SelectMany(l => l.Find(this))
-                .Select((i, idx) => new GameInstallation
+                .Select((i, idx) =>
                 {
-                    Game = this,
-                    LocationsRegister = new GameLocationsRegister(_locations[i.Store]),
-                    Version = Version.Parse($"0.0.{idx}.0"),
-                    Store = GameStore.Unknown,
+                    var scope = _serviceProvider.CreateScope();
+                    var gameInstallationContext = scope.ServiceProvider.GetRequiredService<GameInstallationContextAccessor>();
+                    gameInstallationContext.SetCurrent(new(i.Path, i.Store));
+
+                    return new GameInstallation
+                    {
+                        ServiceScope = scope,
+                        Game = this,
+                        LocationsRegister = new GameLocationsRegister(_locations[i.Store]),
+                        Version = Version.Parse($"0.0.{idx}.0"),
+                        Store = GameStore.Unknown,
+                    };
                 });
         }
     }

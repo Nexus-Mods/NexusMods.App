@@ -139,8 +139,14 @@ public abstract class AGame : IGame
                 (locator, installation) =>
                 {
                     var locations = GetLocations(installation.Path.FileSystem, installation);
+
+                    var scope = _provider.CreateScope();
+                    var gameInstallationContext = scope.ServiceProvider.GetRequiredService<GameInstallationContextAccessor>();
+                    gameInstallationContext.SetCurrent(new(installation.Path, installation.Store));
+
                     return new GameInstallation
                     {
+                        ServiceScope = scope,
                         Game = this,
                         LocationsRegister = new GameLocationsRegister(new Dictionary<LocationId, AbsolutePath>(locations)),
                         InstallDestinations = GetInstallDestinations(locations),

@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Xml;
 using Bannerlord.LauncherManager.Models;
 using Bannerlord.ModuleManager;
@@ -19,40 +20,39 @@ namespace NexusMods.Games.MountAndBlade2Bannerlord.Installers;
 
 public sealed class MountAndBlade2BannerlordModInstaller : AModInstaller
 {
-    private readonly LauncherManagerFactory _launcherManagerFactory;
+    private sealed record ModuleInfoFile(FileTreeNode<RelativePath, ModSourceFileEntry> File, ModuleInfoExtended ModuleInfo);
+
+    private readonly IServiceProvider _serviceProvider;
 
     private MountAndBlade2BannerlordModInstaller(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        _launcherManagerFactory = serviceProvider.GetRequiredService<LauncherManagerFactory>();
+        _serviceProvider = serviceProvider;
     }
 
     public static MountAndBlade2BannerlordModInstaller Create(IServiceProvider serviceProvider) => new(serviceProvider);
 
-    private static IAsyncEnumerable<(FileTreeNode<RelativePath, ModSourceFileEntry> ModuleInfoFile, ModuleInfoExtended ModuleInfo)> GetModuleInfoFiles(
-        FileTreeNode<RelativePath, ModSourceFileEntry> files)
+    private static IAsyncEnumerable<ModuleInfoFile> GetModuleInfoFiles(FileTreeNode<RelativePath, ModSourceFileEntry> files) => files.GetAllDescendentFiles().SelectAsync(async n =>
     {
-        return files.GetAllDescendentFiles().SelectAsync(async kv =>
+        if (n is not { Path: var path, Value: { } file })
+            return null;
+
+        if (!path.FileName.Equals(SubModuleFile))
+            return null;
+
+        await using var stream = await file.Open();
+        try
         {
-            var (path, file) = kv;
-
-            if (!path.FileName.Equals(SubModuleFile))
-                return default;
-
-            await using var stream = await file!.Open();
-            try
-            {
-                var doc = new XmlDocument();
-                doc.Load(stream);
-                var data = ModuleInfoExtended.FromXml(doc);
-                return (ModuleInfoFile: kv, ModuleInfo: data);
-            }
-            catch (Exception e)
-            {
-                return default;
-                //_logger.LogError("Failed to Parse Bannerlord Module: {EMessage}\\n{EStackTrace}", e.Message, e.StackTrace);
-            }
-        }).Where(kv => kv.ModuleInfo != null!);
-    }
+            var doc = new XmlDocument();
+            doc.Load(stream);
+            var data = ModuleInfoExtended.FromXml(doc);
+            return new ModuleInfoFile(n, data);
+        }
+        catch (Exception)
+        {
+            return null;
+            //_logger.LogError("Failed to Parse Bannerlord Module: {EMessage}\\n{EStackTrace}", e.Message, e.StackTrace);
+        }
+    }).OfType<ModuleInfoFile>();
 
     public override async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(GameInstallation installation, LoadoutId loadoutId, ModId baseModId,
         FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles, CancellationToken ct = default)
@@ -60,20 +60,21 @@ public sealed class MountAndBlade2BannerlordModInstaller : AModInstaller
         var moduleInfoFiles = await GetModuleInfoFiles(archiveFiles).ToArrayAsync(ct);
 
         // Not a valid Bannerlord Module - install in root folder the content
-        if (!moduleInfoFiles.Any())
+        if (moduleInfoFiles.Length == 0)
         {
             //return NoResults;
 
             var modFiles = archiveFiles.GetAllDescendentFiles().Select(kv =>
             {
-                var (path, file) = kv;
-                var moduleRoot = path.Parent;
+                if (kv is not { Path: var path, Value: { } file })
+                    throw new UnreachableException();
 
-                return file!.ToStoredFile(new GamePath(LocationId.Game, ModFolder.Join(path.DropFirst(moduleRoot.Depth - 1))));
+                var moduleRoot = path.Parent;
+                return file.ToStoredFile(new GamePath(LocationId.Game, ModFolder.Join(path.DropFirst(moduleRoot.Depth - 1))));
             });
             return new List<ModInstallerResult>
             {
-                new ModInstallerResult
+                new()
                 {
                     Id = baseModId,
                     Files = modFiles
@@ -81,7 +82,7 @@ public sealed class MountAndBlade2BannerlordModInstaller : AModInstaller
             };
         }
 
-        var launcherManager = _launcherManagerFactory.Get(installation);
+        var launcherManager = installation.ServiceScope.ServiceProvider.GetRequiredService<LauncherManagerNexusMods>();
 
         return moduleInfoFiles.Select(node =>
         {
@@ -93,7 +94,7 @@ public sealed class MountAndBlade2BannerlordModInstaller : AModInstaller
             var result = launcherManager.InstallModuleContent(moduleRoot.GetAllDescendentFiles().Select(x => x.Path.ToString()).ToArray(), new[] { moduleInfoWithPath });
             var modFiles = result.Instructions.OfType<CopyInstallInstruction>().Select(instruction =>
             {
-                static IEnumerable<IMetadata> GetMetadata(ModuleInfoExtendedWithPath moduleInfo, RelativePath relativePath)
+                static IEnumerable<IMetadata> GetMetadata(ModuleInfoExtended moduleInfo, RelativePath relativePath)
                 {
                     yield return new ModuleFileMetadata { OriginalRelativePath = relativePath.Path };
                     if (relativePath.Equals(SubModuleFile)) yield return new SubModuleFileMetadata
@@ -104,9 +105,10 @@ public sealed class MountAndBlade2BannerlordModInstaller : AModInstaller
                 }
 
                 var relativePath = instruction.Source.ToRelativePath();
-                var (path, file) = moduleRoot.FindNode(relativePath)!;
+                if (moduleRoot.FindNode(relativePath) is not { Path: var path, Value: { } file })
+                    throw new UnreachableException();
 
-                var fromArchive = file!.ToStoredFile(new GamePath(LocationId.Game, ModFolder.Join(path.DropFirst(moduleRoot.Depth - 1))));
+                var fromArchive = file.ToStoredFile(new GamePath(LocationId.Game, ModFolder.Join(path.DropFirst(moduleRoot.Depth - 1))));
                 return fromArchive with
                 {
                     Metadata = fromArchive.Metadata.AddRange(GetMetadata(moduleInfoWithPath, relativePath))
