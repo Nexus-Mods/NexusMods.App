@@ -105,6 +105,7 @@ public static class Services
         }
 
         services
+            .AddFileSystem()
             .AddSingleton<IStartupHandler, StartupHandler>()
             .AddSingleProcess()
             .AddSingleton(s => new SingleProcessSettings
