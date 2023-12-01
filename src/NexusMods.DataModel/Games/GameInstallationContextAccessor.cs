@@ -6,9 +6,33 @@ public sealed record GameInstallationContext(AbsolutePath InstallationPath, Game
 
 public sealed class GameInstallationContextAccessor
 {
-    private GameInstallationContext? _gameInstalltionCurrent;
+    public GameInstallationContext? GameInstalltionContext { get; set; }
 
-    public GameInstallationContext? GetCurrent() => _gameInstalltionCurrent;
+    private static readonly AsyncLocal<GameInstallationContextHolder> _gameInstallationContextCurrent = new();
 
-    public void SetCurrent(GameInstallationContext? gameInstallation) => _gameInstalltionCurrent = gameInstallation;
+    public GameInstallationContext? GameInstallationContext
+    {
+        get => _gameInstallationContextCurrent.Value?.Context;
+        set
+        {
+            var holder = _gameInstallationContextCurrent.Value;
+            if (holder != null)
+            {
+                // Clear current GameInstallationContext trapped in the AsyncLocals, as its done.
+                holder.Context = null;
+            }
+
+            if (value != null)
+            {
+                // Use an object indirection to hold the GameInstallationContext in the AsyncLocal,
+                // so it can be cleared in all ExecutionContexts when its cleared.
+                _gameInstallationContextCurrent.Value = new GameInstallationContextHolder { Context = value };
+            }
+        }
+    }
+
+    private sealed class GameInstallationContextHolder
+    {
+        public GameInstallationContext? Context;
+    }
 }

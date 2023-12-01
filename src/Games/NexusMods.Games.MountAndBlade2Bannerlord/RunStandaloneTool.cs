@@ -41,7 +41,7 @@ public class RunStandaloneTool : ITool
 
         await using var scope = _serviceProvider.CreateAsyncScope();
         var gameInstallationContext = scope.ServiceProvider.GetRequiredService<GameInstallationContextAccessor>();
-        gameInstallationContext.SetCurrent(new(loadout.Installation.LocationsRegister[LocationId.Game], loadout.Installation.Store));
+        gameInstallationContext.GameInstalltionContext = new(loadout.Installation.LocationsRegister[LocationId.Game], loadout.Installation.Store);
 
         var launcherState = loadout.Installation.ServiceScope.ServiceProvider.GetRequiredService<LauncherStateProvider>();
         var psi = new ProcessStartInfo(program.ToString())

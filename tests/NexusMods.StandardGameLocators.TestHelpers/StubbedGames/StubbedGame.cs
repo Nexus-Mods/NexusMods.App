@@ -88,7 +88,7 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
                 {
                     var scope = _serviceProvider.CreateScope();
                     var gameInstallationContext = scope.ServiceProvider.GetRequiredService<GameInstallationContextAccessor>();
-                    gameInstallationContext.SetCurrent(new(i.Path, i.Store));
+                    gameInstallationContext.GameInstalltionContext = new(i.Path, i.Store);
 
                     return new GameInstallation
                     {

@@ -27,7 +27,7 @@ public sealed partial class LauncherManagerNexusMods : LauncherManagerHandler
         notificationUIProvider,
         loadOrderStateProvider)
     {
-        var installation = gameInstallationContextAccessor.GetCurrent() ?? throw new UnreachableException();
+        var installation = gameInstallationContextAccessor.GameInstalltionContext ?? throw new UnreachableException();
         var store = Converter.ToGameStoreTW(installation.GameStore);
         SetGameStore(store);
     }

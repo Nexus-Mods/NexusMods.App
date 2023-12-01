@@ -142,7 +142,7 @@ public abstract class AGame : IGame
 
                     var scope = _provider.CreateScope();
                     var gameInstallationContext = scope.ServiceProvider.GetRequiredService<GameInstallationContextAccessor>();
-                    gameInstallationContext.SetCurrent(new(installation.Path, installation.Store));
+                    gameInstallationContext.GameInstalltionContext = new(installation.Path, installation.Store);
 
                     return new GameInstallation
                     {

@@ -15,5 +15,5 @@ internal sealed class GameInfoProvider : IGameInfoProvider
         _gameInstallationContextAccessor = gameInstallationContextAccessor;
     }
 
-    public string GetInstallPath() => _gameInstallationContextAccessor.GetCurrent()?.InstallationPath.GetFullPath() ?? throw new UnreachableException();
+    public string GetInstallPath() => _gameInstallationContextAccessor.GameInstalltionContext?.InstallationPath.GetFullPath() ?? throw new UnreachableException();
 }
