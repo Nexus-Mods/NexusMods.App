@@ -157,7 +157,7 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
         // Likely could be solved by .NET 8's DI improvements, with Keyed services
         var installer = _provider
             .GetRequiredService<IEnumerable<IModInstaller>>()
-            .First(i => i.GetType().Name.Contains("AdvancedInstaller"));
+            .First(i => i.GetType().Name.Contains("AdvancedManualInstaller"));
 
         var _ = Task.Run(async () =>
         {

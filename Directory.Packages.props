@@ -2,7 +2,7 @@
   <ItemGroup>
     <!-- Custom Packages -->
     <PackageVersion Include="NexusMods.Hashing.xxHash64" Version="1.0.1" />
-    <PackageVersion Include="NexusMods.Paths" Version="0.2.0" />
+    <PackageVersion Include="NexusMods.Paths" Version="0.3.0" />
     <PackageVersion Include="NexusMods.Archives.Nx" Version="0.3.7" />
     <PackageVersion Include="NexusMods.Paths.TestingHelpers" Version="0.2.0" />
     <PackageVersion Include="NexusMods.ProxyConsole.Abstractions" Version="0.6.0" />
@@ -10,6 +10,9 @@
     <PackageVersion Include="NexusMods.Telemetry.OpenTelemetry" Version="1.0.0" />
     <PackageVersion Include="FomodInstaller.Interface" Version="1.2.0" />
     <PackageVersion Include="FomodInstaller.Scripting.XmlScript" Version="1.0.0" />
+    <!-- Bannerlord -->
+    <PackageVersion Include="Bannerlord.LauncherManager" Version="1.0.76" />
+    <PackageVersion Include="FetchBannerlordVersion" Version="1.0.6.39" />
   </ItemGroup>
   <ItemGroup>
     <PackageVersion Include="JetBrains.Annotations" Version="2023.3.0" PrivateAssets="all" />
@@ -37,7 +40,7 @@
     <PackageVersion Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
     <PackageVersion Include="System.CommandLine.NamingConventionBinder" Version="2.0.0-beta4.22272.1" />
     <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="7.0.0-preview3" />
-    <PackageVersion Include="System.IO.Hashing" Version="8.0.0-rc.2.23479.6" />
+    <PackageVersion Include="System.IO.Hashing" Version="8.0.0" />
     <PackageVersion Include="System.Linq.Async" Version="6.0.1" />
     <PackageVersion Include="System.Reactive" Version="6.0.0" />
   </ItemGroup>

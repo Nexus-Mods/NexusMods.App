@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- Game mod is a end-level project,  -->
+    <NoWarn>$(NoWarn);CS1591;</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" />
+    <PackageReference Include="Bannerlord.LauncherManager" />
+    <PackageReference Include="FetchBannerlordVersion" />
+    <PackageReference Include="System.Linq.Async" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\game_image.jpg" />
+    <EmbeddedResource Include="Resources\icon.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="NexusMods.Games.MountAndBlade2Bannerlord.Tests" />
+  </ItemGroup>
+
+</Project>

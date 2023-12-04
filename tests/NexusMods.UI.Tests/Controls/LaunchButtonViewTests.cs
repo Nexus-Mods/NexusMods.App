@@ -3,8 +3,8 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using Avalonia.Controls;
 using FluentAssertions;
+using NexusMods.Abstractions.Values;
 using NexusMods.App.UI.LeftMenu.Items;
-using NexusMods.DataModel.RateLimiting;
 using ReactiveUI;
 
 namespace NexusMods.UI.Tests.Controls;

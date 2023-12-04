@@ -285,6 +285,15 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} Mods are usually installed in the following game folders..
+        /// </summary>
+        public static string SelectLocationViewModel_SuggestedLocationsSubtitle {
+            get {
+                return ResourceManager.GetString("SelectLocationViewModel_SuggestedLocationsSubtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Please select the files to install and where they should be installed to..
         /// </summary>
         public static string SubHeadingText_Please_select_files {

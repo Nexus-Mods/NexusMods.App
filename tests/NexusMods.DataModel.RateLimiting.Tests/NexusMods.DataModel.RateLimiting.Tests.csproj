@@ -1,9 +1,0 @@
-<Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
-        <EnableXunitDependencyInjectionDefaultTestFrameworkAttribute>false</EnableXunitDependencyInjectionDefaultTestFrameworkAttribute>
-    </PropertyGroup>
-    
-    <ItemGroup>
-        <ProjectReference Include="..\..\src\NexusMods.DataModel.RateLimiting\NexusMods.DataModel.RateLimiting.csproj" />
-    </ItemGroup>
-</Project>

@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <XunitStartupAssembly>NexusMods.Games.MountAndBlade2Bannerlord.Tests</XunitStartupAssembly>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\..\src\Games\NexusMods.Games.MountAndBlade2Bannerlord\NexusMods.Games.MountAndBlade2Bannerlord.csproj" />
+        <ProjectReference Include="..\NexusMods.Games.TestFramework\NexusMods.Games.TestFramework.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Update="Assets\**">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+</Project>

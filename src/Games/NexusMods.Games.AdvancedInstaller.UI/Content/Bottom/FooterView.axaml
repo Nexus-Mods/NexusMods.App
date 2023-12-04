@@ -1,0 +1,46 @@
+﻿<reactiveUi:ReactiveUserControl x:TypeArguments="ui:IFooterViewModel"
+                                xmlns="https://github.com/avaloniaui"
+                                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                                xmlns:reactiveUi="http://reactiveui.net"
+                                xmlns:resources="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Resources"
+                                xmlns:ui="clr-namespace:NexusMods.Games.AdvancedInstaller.UI"
+                                mc:Ignorable="d" d:DesignWidth="1232" d:DesignHeight="84"
+                                x:Class="NexusMods.Games.AdvancedInstaller.UI.FooterView">
+    <Design.DataContext>
+        <ui:FooterViewModel />
+    </Design.DataContext>
+
+    <Border Classes="FooterBorder" x:Name="FooterBorder"
+            Background="{DynamicResource StructuralBorderColor}"
+            CornerRadius="0,0,8,8">
+        <Border.Styles>
+            <Style Selector="Button.FooterButton">
+                <Setter Property="Padding" Value="16, 6, 16, 6" />
+
+                <Style Selector="^#CancelButton">
+                    <Setter Property="Margin" Value="24, 24, 0, 24" />
+                </Style>
+
+                <Style Selector="^#InstallButton">
+                    <Setter Property="Margin" Value="8, 24, 24, 24" />
+                </Style>
+            </Style>
+        </Border.Styles>
+
+        <Grid Classes="FooterGrid" ColumnDefinitions="*, Auto, Auto">
+
+            <Button Classes="Tertiary FooterButton" HorizontalAlignment="Left" Grid.Column="1" x:Name="CancelButton">
+                <TextBlock Text="{x:Static resources:Language.Footer_CANCEL}" />
+            </Button>
+
+            <Button Classes="Primary FooterButton" HorizontalAlignment="Right" Grid.Column="2" x:Name="InstallButton">
+                <TextBlock Text="{x:Static resources:Language.Footer_INSTALL}" />
+            </Button>
+
+        </Grid>
+    </Border>
+
+
+</reactiveUi:ReactiveUserControl>

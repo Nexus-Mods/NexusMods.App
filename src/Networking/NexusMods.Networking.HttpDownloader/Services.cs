@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Common;
-using NexusMods.DataModel.RateLimiting;
 using NexusMods.Paths;
 
 namespace NexusMods.Networking.HttpDownloader;
@@ -17,8 +16,7 @@ public static class Services
     /// <param name="services">Your DI container collection builder.</param>
     public static IServiceCollection AddHttpDownloader(this IServiceCollection services)
     {
-        return services.AddSingleton<IHttpDownloader, SimpleHttpDownloader>()
-            .AddAllSingleton<IResource, IResource<IHttpDownloader, Size>>(_ => new Resource<IHttpDownloader, Size>("Downloads"));
+        return services.AddSingleton<IHttpDownloader, SimpleHttpDownloader>();
     }
 
     /// <summary>
@@ -31,7 +29,6 @@ public static class Services
     {
         settings ??= new HttpDownloaderSettings();
         return services.AddSingleton(settings)
-            .AddSingleton<IHttpDownloader, AdvancedHttpDownloader>()
-            .AddAllSingleton<IResource, IResource<IHttpDownloader, Size>>(_ => new Resource<IHttpDownloader, Size>("Downloads"));
+            .AddSingleton<IHttpDownloader, AdvancedHttpDownloader>();
     }
 }

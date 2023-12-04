@@ -41,6 +41,7 @@ using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
+using NexusMods.Paths;
 using ReactiveUI;
 using DownloadGameNameView = NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadGameName.DownloadGameNameView;
 using DownloadNameView = NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadName.DownloadNameView;
@@ -184,7 +185,8 @@ public static class Services
             .AddViewModel<DummyViewModel, IDummyViewModel>()
             .AddView<DummyView, IDummyViewModel>()
             .AddSingleton<InjectedViewLocator>()
-            .AddSingleton<App>();
+            .AddSingleton<App>()
+            .AddFileSystem();
     }
 
 }

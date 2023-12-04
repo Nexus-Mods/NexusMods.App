@@ -1,4 +1,5 @@
-﻿using NexusMods.DataModel.RateLimiting;
+﻿using NexusMods.Abstractions.Activities;
+using NexusMods.DataModel.Activities;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 
@@ -18,10 +19,13 @@ public static class StreamExtensions
     /// <param name="job"></param>
     /// <param name="token"></param>
     /// <returns></returns>
-    public static async Task<Hash> HashingCopyAsync(this Stream inputStream, Stream outputStream, IJob<Size> job,
+    public static async Task<Hash> HashingCopyAsync(this Stream inputStream, Stream outputStream, IActivitySource<Size> job,
         CancellationToken token)
     {
-        return await inputStream.HashingCopyAsync(outputStream, token, async m => await job.ReportAsync(Size.FromLong(m.Length), token));
+        return await inputStream.HashingCopyAsync(outputStream, token, async m =>
+        {
+            job.AddProgress(Size.FromLong(m.Length));
+        });
     }
 
     /// <summary>
@@ -31,10 +35,13 @@ public static class StreamExtensions
     /// <param name="job"></param>
     /// <param name="token"></param>
     /// <returns></returns>
-    public static async Task<Hash> XxHash64Async(this Stream inputStream, IJob<Size> job,
+    public static async Task<Hash> XxHash64Async(this Stream inputStream, IActivitySource<Size> job,
         CancellationToken token)
     {
-        return await inputStream.HashingCopyAsync(Stream.Null, token, async m => await job.ReportAsync(Size.FromLong(m.Length), token));
+        return await inputStream.HashingCopyAsync(Stream.Null, token, async m =>
+        {
+            job.AddProgress(Size.FromLong(m.Length));
+        });
     }
 
 }

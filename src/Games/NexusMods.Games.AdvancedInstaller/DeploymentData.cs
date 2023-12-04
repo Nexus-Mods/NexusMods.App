@@ -31,13 +31,13 @@ public readonly struct DeploymentData
     /// <remarks>
     /// Paths follow internal Nexus Mods App path standards: they use a "/" as a separator, trim whitespace, and do not alter "..".
     /// </remarks>
-    internal Dictionary<RelativePath, GamePath> ArchiveToOutputMap { get; init; } = new();
+    public Dictionary<RelativePath, GamePath> ArchiveToOutputMap { get; init; } = new();
 
     /// <summary>
     /// This is a reverse lookup for the _archiveToOutputMap.<br/>.
     /// We use this lookup to ensure that a file has not already been mapped to a given location.
     /// </summary>
-    internal Dictionary<GamePath, RelativePath> OutputToArchiveMap { get; init; } = new();
+    public Dictionary<GamePath, RelativePath> OutputToArchiveMap { get; init; } = new();
 
     /// <summary>
     /// Public/Default Constructor.

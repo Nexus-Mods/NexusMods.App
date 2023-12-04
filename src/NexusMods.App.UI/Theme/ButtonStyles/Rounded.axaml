@@ -71,6 +71,14 @@
         <!-- Base Rounded Button (no outline)-->
         <Setter Property="CornerRadius" Value="48" />
         <Setter Property="Background" Value="{DynamicResource BrandWhiteBrush10Percent}" />
+        <Setter Property="BorderThickness" Value="1" />
+
+        <!-- NOTE(Al12rs): Odd border thickness values apparently mess with the alignment of the contents.
+            To counter this, we add a negative margin equivalent to the border thickness.-->
+        <Style Selector="^ > StackPanel">
+            <Setter Property="Margin" Value="-1" />
+        </Style>
+
         <Style Selector="^ > StackPanel > TextBlock">
             <Setter Property="Foreground" Value="{DynamicResource FontDarkPrimary}" />
             <!-- BodyMDNormal -->
@@ -82,6 +90,8 @@
         <!-- When TextBlock isn't wrapped in Stackpanel, i.e. text only -->
         <Style Selector="^ > TextBlock">
             <Setter Property="Foreground" Value="{DynamicResource FontDarkPrimary}" />
+            <!-- Counter the border -->
+            <Setter Property="Margin" Value="-1" />
             <!-- BodyMDNormal -->
             <Setter Property="FontFamily" Value="{DynamicResource FontSecondary}" />
             <Setter Property="FontWeight" Value="400" />
@@ -119,7 +129,6 @@
         <!-- Rounded Button SemiActive -->
         <Style Selector="^.SemiActive">
             <Setter Property="BorderBrush" Value="{DynamicResource BrandWhite}" />
-            <Setter Property="BorderThickness" Value="1" />
 
             <Style Selector="^ > StackPanel > TextBlock">
                 <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
@@ -131,19 +140,16 @@
 
             <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
                 <Setter Property="BorderBrush" Value="{DynamicResource BrandWhite}" />
-                <Setter Property="BorderThickness" Value="1" />
             </Style>
 
             <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
                 <Setter Property="BorderBrush" Value="{DynamicResource BrandWhite}" />
-                <Setter Property="BorderThickness" Value="1" />
             </Style>
         </Style>
 
         <!-- Rounded Button SemiActiveAccent -->
         <Style Selector="^.SemiActiveAccent">
             <Setter Property="BorderBrush" Value="{DynamicResource BrandAccentLighter}" />
-            <Setter Property="BorderThickness" Value="1" />
             <Setter Property="Background" Value="{DynamicResource BrandAccentLighterBrush20Percent}" />
 
             <Style Selector="^ > StackPanel > TextBlock">
@@ -156,13 +162,11 @@
 
             <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
                 <Setter Property="BorderBrush" Value="{DynamicResource BrandAccentLighter}" />
-                <Setter Property="BorderThickness" Value="1" />
                 <Setter Property="Background" Value="{DynamicResource BrandAccentLighterBrush30Percent}" />
             </Style>
 
             <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
                 <Setter Property="BorderBrush" Value="{DynamicResource BrandAccentLighter}" />
-                <Setter Property="BorderThickness" Value="1" />
                 <Setter Property="Background" Value="{DynamicResource BrandAccentLighterBrush20Percent}" />
             </Style>
         </Style>

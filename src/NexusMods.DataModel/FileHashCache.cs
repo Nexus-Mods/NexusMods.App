@@ -1,13 +1,13 @@
 using System.Buffers.Binary;
 using System.Runtime.CompilerServices;
 using System.Text;
+using NexusMods.Abstractions.Activities;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
+using NexusMods.DataModel.Activities;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.LoadoutSynchronizer;
-using NexusMods.DataModel.RateLimiting;
-using NexusMods.DataModel.RateLimiting.Extensions;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 
@@ -27,18 +27,23 @@ namespace NexusMods.DataModel;
 /// </remarks>
 public class FileHashCache
 {
-    private readonly IResource<FileHashCache, Size> _limiter;
+    /// <summary>
+    /// The activity group for file hash cache activities.
+    /// </summary>
+    public static readonly ActivityGroup Group = ActivityGroup.From("FileHashCache");
+
+    private readonly IActivityFactory _activityFactory;
     private readonly IDataStore _store;
 
     /// <summary/>
-    /// <param name="limiter">Limits CPU utilization where possible.</param>
+    /// <param name="activityFactory">Limits CPU utilization where possible.</param>
     /// <param name="store">The store inside which the file hashes are kept within.</param>
     /// <remarks>
     ///    This constructor is usually called from DI.
     /// </remarks>
-    public FileHashCache(IResource<FileHashCache, Size> limiter, IDataStore store)
+    public FileHashCache(IActivityFactory activityFactory, IDataStore store)
     {
-        _limiter = limiter;
+        _activityFactory = activityFactory;
         _store = store;
     }
 
@@ -98,25 +103,32 @@ public class FileHashCache
     public async IAsyncEnumerable<HashedEntry> IndexFoldersAsync(IEnumerable<AbsolutePath> paths, [EnumeratorCancellation] CancellationToken token = default)
     {
         // Don't want to error via a empty folder
-        var validPaths = paths.Where(p => p.DirectoryExists());
+        var validPaths = paths.Where(p => p.DirectoryExists()).ToList();
 
-        var result = _limiter.ForEachFileAsync(validPaths, async (job, entry) =>
+        var allFiles = validPaths.SelectMany(p => p.EnumerateFiles())
+            .Select(f => f.FileInfo)
+            .ToList();
+
+        using var activity = _activityFactory.Create<Size>(Group, "Hashing files in {Count} folders", validPaths.Count);
+
+        activity.SetMax(allFiles.Sum(f => f.Size));
+
+        var results = await allFiles.ParallelForEach(async (info, innerToken) =>
         {
-            if (TryGetCached(entry.Path, out var found))
+            if (TryGetCached(info.Path, out var found))
             {
-                if (found.Size == entry.Size && found.LastModified == entry.LastWriteTimeUtc)
+                if (found.Size == info.Size && found.LastModified == info.LastWriteTimeUtc)
                 {
-                    job.ReportNoWait(entry.Size);
-                    return new HashedEntry(entry, found.Hash);
+                    return new HashedEntry(info, found.Hash);
                 }
             }
+            var hashed = await info.Path.XxHash64Async(activity, innerToken);
+            PutCachedAsync(info.Path, new FileHashCacheEntry(info.LastWriteTimeUtc, hashed, info.Size));
+            return new HashedEntry(info, hashed);
 
-            var hashed = await entry.Path.XxHash64Async(job, token);
-            PutCachedAsync(entry.Path, new FileHashCacheEntry(entry.LastWriteTimeUtc, hashed, entry.Size));
-            return new HashedEntry(entry, hashed);
-        }, token, "Hashing Files");
+        });
 
-        await foreach (var itm in result)
+        foreach (var itm in results)
             yield return itm;
     }
 
@@ -142,7 +154,8 @@ public class FileHashCache
             }
         }
 
-        using var job = await _limiter.BeginAsync($"Hashing {file.FileName}", size, token);
+        using var job = _activityFactory.Create<Size>(Group, "Hashing {FileName}", file.FileName);
+        job.SetMax(info.Size);
         var hashed = await file.XxHash64Async(job, token);
         PutCachedAsync(file, new FileHashCacheEntry(info.LastWriteTimeUtc, hashed, size));
         return new HashedEntry(file, hashed, info.LastWriteTimeUtc, size);

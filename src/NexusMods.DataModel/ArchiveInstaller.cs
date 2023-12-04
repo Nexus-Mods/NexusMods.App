@@ -1,19 +1,16 @@
 ﻿using System.Collections.Immutable;
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.Activities;
+using NexusMods.Abstractions.Values;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.ArchiveContents;
-using NexusMods.DataModel.ArchiveMetaData;
 using NexusMods.DataModel.Extensions;
-using NexusMods.DataModel.Interprocess.Jobs;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Cursors;
 using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.ModInstallers;
-using NexusMods.DataModel.RateLimiting;
 using NexusMods.DataModel.Sorting.Rules;
-using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.FileTree;
 
@@ -27,7 +24,7 @@ public class ArchiveInstaller : IArchiveInstaller
     private readonly ILogger<ArchiveInstaller> _logger;
     private readonly IDataStore _dataStore;
     private readonly LoadoutRegistry _registry;
-    private readonly IInterprocessJobManager _jobManager;
+    private readonly IActivityFactory _activityFactory;
     private readonly IFileStore _fileStore;
     private readonly IFileOriginRegistry _fileOriginRegistry;
 
@@ -39,14 +36,14 @@ public class ArchiveInstaller : IArchiveInstaller
         IDataStore dataStore,
         LoadoutRegistry registry,
         IFileStore fileStore,
-        IInterprocessJobManager jobManager)
+        IActivityFactory activityFactory)
     {
         _logger = logger;
         _dataStore = dataStore;
         _fileOriginRegistry = fileOriginRegistry;
         _registry = registry;
         _fileStore = fileStore;
-        _jobManager = jobManager;
+        _activityFactory = activityFactory;
     }
 
     /// <inheritdoc />
@@ -54,6 +51,7 @@ public class ArchiveInstaller : IArchiveInstaller
     {
         // Get the loadout and create the mod so we can use it in the job.
         var loadout = _registry.GetMarker(loadoutId);
+        var useCustomInstaller = installer != null;
 
         var download = await _fileOriginRegistry.Get(downloadId);
         var archiveName = "<unknown>";
@@ -76,11 +74,7 @@ public class ArchiveInstaller : IArchiveInstaller
         try
         {
             // Create the job so the UI can show progress.
-            using var job = InterprocessJob.Create(_jobManager, new AddModJob
-            {
-                ModId = baseMod.Id,
-                LoadoutId = loadoutId
-            });
+            using var job = _activityFactory.Create(IArchiveInstaller.Group, "Adding mod files to {Name}", baseMod.Name);
 
             // Create a tree so installers can find the file easily.
             var tree = FileTreeNode<RelativePath, ModSourceFileEntry>.CreateTree(download.Contents
@@ -123,8 +117,15 @@ public class ArchiveInstaller : IArchiveInstaller
                 .FirstOrDefault(result => result.Item1.Any());
 
 
-            if (results == null || !results.Any())
+            if (results == null || results.Length == 0)
             {
+                if (useCustomInstaller)
+                {
+                    // User was using an explicit installer, if no files were returned, we can assume the user cancelled the installation.
+                    // Remove the mod from the loadout.
+                    _registry.Alter(cursor, $"Cancelled installation of {archiveName}", _ => null);
+                    return Array.Empty<ModId>();
+                }
                 _logger.LogError("No Installer found for {Name}", archiveName);
                 _registry.Alter(cursor, $"Failed to install mod {archiveName}",m => m! with { Status = ModStatus.Failed });
                 throw new NotSupportedException($"No Installer found for {archiveName}");
@@ -153,7 +154,7 @@ public class ArchiveInstaller : IArchiveInstaller
                 };
             }
 
-            job.Progress = new Percent(0.75);
+            job.AddProgress(Percent.CreateClamped(0.75));
 
             // Step 5: Add the mod to the loadout.
             AModMetadata? modMetadata = mods.Length > 1

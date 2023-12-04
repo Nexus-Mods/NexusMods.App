@@ -45,14 +45,13 @@
     <Style Selector="Button.Standard">
         <Setter Property="CornerRadius" Value="4"></Setter>
         <Setter Property="Height" Value="34"></Setter>
-        <Setter Property="Padding" Value="0"></Setter>
+        <Setter Property="Padding" Value="16,0,16,0"></Setter>
         <Setter Property="BorderThickness" Value="1"></Setter>
     </Style>
 
     <Style Selector="Button.Standard > StackPanel">
         <Setter Property="Orientation" Value="Horizontal"></Setter>
         <Setter Property="Spacing" Value="8"></Setter>
-        <Setter Property="Margin" Value="16,10"></Setter>
     </Style>
 
     <Style Selector="Button.Standard > StackPanel > icons|Icon">
@@ -64,7 +63,7 @@
         <Setter Property="FontFamily" Value="{DynamicResource FontPrimarySemiBold}"></Setter>
         <Setter Property="FontSize" Value="14"></Setter>
         <Setter Property="FontWeight" Value="600"></Setter>
-        <Setter Property="LineHeight" Value="14"></Setter>
+        <!-- <Setter Property="LineHeight" Value="18"></Setter> -->
         <Setter Property="LetterSpacing" Value="0.7"></Setter>
     </Style>
 
@@ -95,13 +94,11 @@
         <Setter Property="BorderBrush" Value="{DynamicResource BrandTertiary}" />
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="BorderBrush" Value="{DynamicResource BrandTertiary}" />
-            <Setter Property="BorderThickness" Value="1" />
             <Setter Property="Background" Value="{DynamicResource BrandSecondaryLighter}" />
         </Style>
 
         <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="BorderBrush" Value="{DynamicResource BrandSecondaryLighter}" />
-            <Setter Property="BorderThickness" Value="1" />
         </Style>
         <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter > StackPanel > TextBlock">
             <Setter Property="Foreground" Value="{DynamicResource FontDarkSecondaryColor}" />

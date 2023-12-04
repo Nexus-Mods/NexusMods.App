@@ -4,7 +4,6 @@ using NexusMods.Common;
 using NexusMods.Common.GuidedInstaller;
 using NexusMods.DataModel.Diagnostics.Emitters;
 using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
-using NexusMods.DataModel.RateLimiting;
 using NexusMods.DataModel.Tests.Diagnostics;
 using NexusMods.FileExtractor;
 using NexusMods.FileExtractor.Extractors;
@@ -32,8 +31,6 @@ public class Startup
             .AddStandardGameLocators(false)
             .AddFileExtractors()
             .AddStubbedGameLocators()
-            .AddAllSingleton<IResource, IResource<IExtractor, Size>>(_ => new Resource<IExtractor, Size>("File Extraction"))
-            //.AddSingleton<IFileAnalyzer, ArchiveContentsCacheTests.MutatingFileAnalyzer>()
             .AddSingleton<ITypeFinder>(_ => new AssemblyTypeFinder(typeof(Startup).Assembly))
 
             // Diagnostics

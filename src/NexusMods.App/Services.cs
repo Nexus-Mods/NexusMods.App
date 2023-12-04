@@ -7,12 +7,15 @@ using NexusMods.Common;
 using NexusMods.DataModel;
 using NexusMods.DataModel.GlobalSettings;
 using NexusMods.FileExtractor;
+using NexusMods.Games.AdvancedInstaller;
 using NexusMods.Games.AdvancedInstaller.UI;
 using NexusMods.Games.BethesdaGameStudios;
+using NexusMods.Games.BladeAndSorcery;
 using NexusMods.Games.DarkestDungeon;
 using NexusMods.Games.FOMOD;
 using NexusMods.Games.FOMOD.UI;
 using NexusMods.Games.Generic;
+using NexusMods.Games.MountAndBlade2Bannerlord;
 using NexusMods.Games.RedEngine;
 using NexusMods.Games.Reshade;
 using NexusMods.Games.Sifu;
@@ -42,38 +45,68 @@ public static class Services
     }
 
     public static IServiceCollection AddApp(this IServiceCollection services,
-        AppConfig? config = null, bool addStandardGameLocators = true)
+        AppConfig? config = null,
+        bool addStandardGameLocators = true,
+        bool slimMode = false)
     {
         config ??= new AppConfig();
 
+        if (!slimMode)
+        {
+            services
+                .AddSingleton<IAppConfigManager, AppConfigManager>(provider =>
+                    new AppConfigManager(config, provider.GetRequiredService<JsonSerializerOptions>()))
+                .AddSingleton<CommandLineConfigurator>()
+                .AddCLI()
+                .AddUI(config.LauncherSettings)
+                .AddGuidedInstallerUi()
+                .AddAdvancedInstaller()
+                .AddAdvancedInstallerUi()
+                .AddFileExtractors(config.FileExtractorSettings)
+                .AddDataModel(config.DataModelSettings)
+                .AddBethesdaGameStudios()
+                .AddRedEngineGames()
+                .AddGenericGameSupport()
+                .AddReshade()
+                .AddFomod()
+                .AddDarkestDungeon()
+                .AddBladeAndSorcery()
+                .AddSifu()
+                .AddStardewValley()
+                .AddMountAndBladeBannerlord()
+                .AddNexusWebApi()
+                .AddNexusWebApiNmaIntegration()
+                .AddAdvancedHttpDownloader(config.HttpDownloaderSettings)
+                .AddTestHarness()
+                .AddSingleton<HttpClient>()
+                .AddListeners()
+                .AddCommon()
+                .AddDownloaders();
+
+            services = OpenTelemetryRegistration.AddTelemetry(services, new OpenTelemetrySettings
+            {
+                IsEnabled = config.EnableTelemetry ?? false,
+
+                EnableMetrics = true,
+                EnableTracing = true,
+
+                ApplicationName = Telemetry.LibraryInfo.AssemblyName,
+                ApplicationVersion = Telemetry.LibraryInfo.AssemblyVersion,
+
+                ExporterProtocol = OtlpExportProtocol.HttpProtobuf,
+                ExporterMetricsEndpoint = new Uri("https://collector.nexusmods.com/v1/metrics"),
+                ExporterTracesEndpoint = new Uri("https://collector.nexusmods.com/v1/traces")
+            }).ConfigureTelemetry(Telemetry.LibraryInfo, configureMetrics: Telemetry.SetupTelemetry);
+
+
+            if (addStandardGameLocators)
+                services.AddStandardGameLocators();
+
+        }
+
         services
-            .AddSingleton<IAppConfigManager, AppConfigManager>(provider =>
-                new AppConfigManager(config, provider.GetRequiredService<JsonSerializerOptions>()))
-            .AddSingleton<IStartupHandler, StartupHandler>()
-            .AddSingleton<CommandLineConfigurator>()
-            .AddCLI()
             .AddFileSystem()
-            .AddUI(config.LauncherSettings)
-            .AddGuidedInstallerUi()
-            .AddAdvancedInstallerUi()
-            .AddFileExtractors(config.FileExtractorSettings)
-            .AddDataModel(config.DataModelSettings)
-            .AddBethesdaGameStudios()
-            .AddRedEngineGames()
-            .AddGenericGameSupport()
-            .AddReshade()
-            .AddFomod()
-            .AddDarkestDungeon()
-            .AddSifu()
-            .AddStardewValley()
-            .AddNexusWebApi()
-            .AddNexusWebApiNmaIntegration()
-            .AddAdvancedHttpDownloader(config.HttpDownloaderSettings)
-            .AddTestHarness()
-            .AddSingleton<HttpClient>()
-            .AddListeners()
-            .AddCommon()
-            .AddDownloaders()
+            .AddSingleton<IStartupHandler, StartupHandler>()
             .AddSingleProcess()
             .AddSingleton(s => new SingleProcessSettings
             {
@@ -82,22 +115,6 @@ public static class Services
             })
             .AddDefaultRenderers();
 
-        if (addStandardGameLocators)
-            services.AddStandardGameLocators();
-
-        return OpenTelemetryRegistration.AddTelemetry(services, new OpenTelemetrySettings
-        {
-            IsEnabled = config.EnableTelemetry ?? false,
-
-            EnableMetrics = true,
-            EnableTracing = true,
-
-            ApplicationName = Telemetry.LibraryInfo.AssemblyName,
-            ApplicationVersion = Telemetry.LibraryInfo.AssemblyVersion,
-
-            ExporterProtocol = OtlpExportProtocol.HttpProtobuf,
-            ExporterMetricsEndpoint = new Uri("https://collector.nexusmods.com/v1/metrics"),
-            ExporterTracesEndpoint = new Uri("https://collector.nexusmods.com/v1/traces")
-        }).ConfigureTelemetry(Telemetry.LibraryInfo, configureMetrics: Telemetry.SetupTelemetry);
+        return services;
     }
 }
