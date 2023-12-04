@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <root>
+																																	
+														 
+			
+					  
+				 
 	<resheader name="resmimetype">
 		<value>text/microsoft-resx</value>
 	</resheader>
@@ -43,7 +49,7 @@
 		<value>DUPLIKAT FOLDERU</value>
 	</data>
 	<data name="Pill_FOLDER_MERGED" xml:space="preserve">
-		<value>POŁĄCZONY FOLDER</value>
+		<value>FOLDER SCALONY</value>
 	</data>
 	<data name="SelectLocationButton_Select_location" xml:space="preserve">
 		<value>Wybierz lokalizację</value>
@@ -138,4 +144,7 @@
 	<data name="AdvancedInstaller_Manual_Mod" xml:space="preserve">
 		<value>Ręczny mod</value>
 	</data>
+    <data name="SelectLocationViewModel_SuggestedLocationsSubtitle" xml:space="preserve">
+        <value>{0} Modyfikacje są zazwyczaj instalowane w następujących folderach gry.</value>
+    </data>
 </root>
