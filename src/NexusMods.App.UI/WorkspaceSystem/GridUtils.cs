@@ -12,22 +12,28 @@ internal static class GridUtils
 
         foreach (var kv in state)
         {
-            totalArea += kv.Value.Height * kv.Value.Width;
+            var rect = kv.Value;
+            if (rect.Left < 0.0 || rect.Right > 1.0 || rect.Top < 0.0 || rect.Bottom > 1.0)
+            {
+                throw new Exception($"Panel {kv.Key} is out of bounds: {rect}");
+            }
+
+            totalArea += rect.Height * rect.Width;
 
             foreach (var other in state)
             {
                 if (kv.Key == other.Key) continue;
 
-                if (kv.Value.Intersects(other.Value))
+                if (rect.Intersects(other.Value))
                 {
-                    throw new InvalidOperationException($"{kv.ToString()} intersects with {other.ToString()}");
+                    throw new Exception($"{kv.ToString()} intersects with {other.ToString()}");
                 }
             }
         }
 
         if (!totalArea.IsCloseTo(1.0))
         {
-            throw new InvalidOperationException($"Area of {totalArea} doesn't match 1.0");
+            throw new Exception($"Area of {totalArea} doesn't match 1.0");
         }
 
         return true;
