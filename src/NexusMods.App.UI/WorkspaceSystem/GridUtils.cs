@@ -6,6 +6,33 @@ namespace NexusMods.App.UI.WorkspaceSystem;
 
 internal static class GridUtils
 {
+    internal static bool IsPerfectGrid(ImmutableDictionary<PanelId, Rect> state)
+    {
+        var totalArea = 0.0;
+
+        foreach (var kv in state)
+        {
+            totalArea += kv.Value.Height * kv.Value.Width;
+
+            foreach (var other in state)
+            {
+                if (kv.Key == other.Key) continue;
+
+                if (kv.Value.Intersects(other.Value))
+                {
+                    throw new InvalidOperationException($"{kv.ToString()} intersects with {other.ToString()}");
+                }
+            }
+        }
+
+        if (!totalArea.IsCloseTo(1.0))
+        {
+            throw new InvalidOperationException($"Area of {totalArea} doesn't match 1.0");
+        }
+
+        return true;
+    }
+
     /// <summary>
     /// Returns all possible new states.
     /// </summary>
@@ -146,7 +173,7 @@ internal static class GridUtils
         return currentRows < maxRows;
     }
 
-    internal static IReadOnlyDictionary<PanelId, Rect> GetStateWithoutPanel(
+    internal static ImmutableDictionary<PanelId, Rect> GetStateWithoutPanel(
         ImmutableDictionary<PanelId, Rect> currentState,
         PanelId panelToRemove,
         bool isHorizontal = true)
@@ -159,7 +186,7 @@ internal static class GridUtils
             return new Dictionary<PanelId, Rect>
             {
                 { res.First().Key, MathUtils.One }
-            };
+            }.ToImmutableDictionary();
         }
 
         var currentRect = currentState[panelToRemove];
