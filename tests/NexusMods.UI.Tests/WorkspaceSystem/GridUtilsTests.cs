@@ -366,8 +366,8 @@ public partial class GridUtilsTests
         return panel;
     }
 
-    private static ImmutableDictionary<PanelId, Rect> CreateState(params KeyValuePair<PanelId, Rect>[] panels)
+    private static WorkspaceGridState CreateState(params KeyValuePair<PanelId, Rect>[] panels)
     {
-        return panels.ToImmutableDictionary();
+        return new WorkspaceGridState(panels.ToImmutableDictionary());
     }
 }

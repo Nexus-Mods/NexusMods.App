@@ -1,4 +1,3 @@
-using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using Avalonia;
 using FluentAssertions;
@@ -14,10 +13,10 @@ public partial class GridUtilsTests
     [Theory]
     [MemberData(nameof(TestData_GetStateWithoutPanel_Generated))]
     public void Test_GetStateWithoutPanel(
-        ImmutableDictionary<PanelId, Rect> currentState,
+        WorkspaceGridState currentState,
         PanelId panelToRemove,
         bool isHorizontal,
-        ImmutableDictionary<PanelId, Rect> expectedOutput,
+        WorkspaceGridState expectedOutput,
         string because)
     {
         GridUtils.IsPerfectGrid(currentState).Should().BeTrue();

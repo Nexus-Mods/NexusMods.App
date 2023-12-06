@@ -6,7 +6,14 @@ namespace NexusMods.App.UI.WorkspaceSystem;
 
 internal static class GridUtils
 {
-    internal static bool IsPerfectGrid(ImmutableDictionary<PanelId, Rect> state)
+    /// <summary>
+    /// Checks whether the given state is a perfect grid.
+    /// </summary>
+    /// <remarks>
+    /// A perfect has no gaps, and no panel is out-of-bounds.
+    /// </remarks>
+    /// <exception cref="Exception">Thrown when the grid is not perfect.</exception>
+    internal static bool IsPerfectGrid(WorkspaceGridState state)
     {
         var totalArea = 0.0;
 
@@ -179,21 +186,15 @@ internal static class GridUtils
         return currentRows < maxRows;
     }
 
-    internal static ImmutableDictionary<PanelId, Rect> GetStateWithoutPanel(
-        ImmutableDictionary<PanelId, Rect> currentState,
+    internal static WorkspaceGridState GetStateWithoutPanel(
+        WorkspaceGridState currentState,
         PanelId panelToRemove,
         bool isHorizontal = true)
     {
-        if (currentState.Count == 1) return ImmutableDictionary<PanelId, Rect>.Empty;
+        if (currentState.Count == 1) return WorkspaceGridState.Empty;
 
         var res = currentState.Remove(panelToRemove);
-        if (res.Count == 1)
-        {
-            return new Dictionary<PanelId, Rect>
-            {
-                { res.First().Key, MathUtils.One }
-            }.ToImmutableDictionary();
-        }
+        if (res.Count == 1) return WorkspaceGridState.Single(res.Keys.First());
 
         var currentRect = currentState[panelToRemove];
 
@@ -258,8 +259,8 @@ internal static class GridUtils
         return res;
     }
 
-    private static ImmutableDictionary<PanelId, Rect> JoinSameColumn(
-        ImmutableDictionary<PanelId, Rect> res,
+    private static WorkspaceGridState JoinSameColumn(
+        WorkspaceGridState res,
         Rect currentRect,
         Span<PanelId> sameColumn,
         int sameColumnCount)
@@ -283,8 +284,8 @@ internal static class GridUtils
         return res.SetItems(updates);
     }
 
-    private static ImmutableDictionary<PanelId, Rect> JoinSameRow(
-        ImmutableDictionary<PanelId, Rect> res,
+    private static WorkspaceGridState JoinSameRow(
+        WorkspaceGridState res,
         Rect currentRect,
         Span<PanelId> sameRow,
         int sameRowCount)
