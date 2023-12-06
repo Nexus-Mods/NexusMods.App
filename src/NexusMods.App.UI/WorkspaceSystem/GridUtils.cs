@@ -188,8 +188,7 @@ internal static class GridUtils
 
     internal static WorkspaceGridState GetStateWithoutPanel(
         WorkspaceGridState currentState,
-        PanelId panelToRemove,
-        bool isHorizontal = true)
+        PanelId panelToRemove)
     {
         if (currentState.Count == 1) return WorkspaceGridState.Empty;
 
@@ -233,7 +232,7 @@ internal static class GridUtils
 
         Debug.Assert(sameColumnCount > 0 || sameRowCount > 0);
 
-        if (isHorizontal)
+        if (currentState.IsHorizontal)
         {
             // prefer columns over rows when horizontal
             if (sameColumnCount > 0)

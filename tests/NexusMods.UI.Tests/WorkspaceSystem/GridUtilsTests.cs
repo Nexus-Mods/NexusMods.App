@@ -366,8 +366,8 @@ public partial class GridUtilsTests
         return panel;
     }
 
-    private static WorkspaceGridState CreateState(params KeyValuePair<PanelId, Rect>[] panels)
+    private static WorkspaceGridState CreateState(bool isHorizontal, params KeyValuePair<PanelId, Rect>[] panels)
     {
-        return new WorkspaceGridState(panels.ToImmutableDictionary());
+        return new WorkspaceGridState(panels.ToImmutableDictionary(), isHorizontal);
     }
 }

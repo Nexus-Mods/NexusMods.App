@@ -15,15 +15,16 @@ public partial class GridUtilsTests
     public void Test_GetStateWithoutPanel(
         WorkspaceGridState currentState,
         PanelId panelToRemove,
-        bool isHorizontal,
         WorkspaceGridState expectedOutput,
         string because)
     {
+        currentState.IsHorizontal.Should().Be(expectedOutput.IsHorizontal, because: "this shouldn't change");
         GridUtils.IsPerfectGrid(currentState).Should().BeTrue();
         GridUtils.IsPerfectGrid(expectedOutput).Should().BeTrue();
 
-        var actualOutput = GridUtils.GetStateWithoutPanel(currentState, panelToRemove, isHorizontal);
-        actualOutput.Should().Equal(expectedOutput, because: because);
+        var actualOutput = GridUtils.GetStateWithoutPanel(currentState, panelToRemove);
+        actualOutput.Inner.Should().Equal(expectedOutput.Inner, because: because);
+        actualOutput.IsHorizontal.Should().Be(expectedOutput.IsHorizontal);
 
         GridUtils.IsPerfectGrid(actualOutput).Should().BeTrue();
     }
@@ -47,24 +48,24 @@ public partial class GridUtilsTests
             yield return new object[]
             {
                 CreateState(
+                    isHorizontal: true,
                     new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, width, 1)),
                     new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(width, 0, 1.0 - width, 1))
                 ),
                 secondPanelId,
-                true,
-                CreateState(new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, 1, 1))),
+                CreateState(isHorizontal: true, new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, 1, 1))),
                 "the second panel should be removed and the first panel should take up the entire space of the workspace"
             };
 
             yield return new object[]
             {
                 CreateState(
+                    isHorizontal: true,
                     new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, width, 1)),
                     new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(width, 0, 1.0 - width, 1))
                 ),
                 firstPanelId,
-                true,
-                CreateState(new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(0, 0, 1, 1))),
+                CreateState(isHorizontal: true, new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(0, 0, 1, 1))),
                 "the first panel should be removed and the second panel should take up the entire space of the workspace"
             };
         }
@@ -77,24 +78,24 @@ public partial class GridUtilsTests
             yield return new object[]
             {
                 CreateState(
+                    isHorizontal: true,
                     new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, 1, height)),
                     new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(0, height, 1, 1.0 - height))
                 ),
                 secondPanelId,
-                true,
-                CreateState(new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, 1, 1))),
+                CreateState(isHorizontal: true, new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, 1, 1))),
                 "the second panel should be removed and the first panel should take up the entire space of the workspace"
             };
 
             yield return new object[]
             {
                 CreateState(
+                    isHorizontal: true,
                     new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, 1, height)),
                     new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(0, height, 1, 1.0 - height))
                 ),
                 firstPanelId,
-                true,
-                CreateState(new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(0, 0, 1, 1))),
+                CreateState(isHorizontal: true, new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(0, 0, 1, 1))),
                 "the first panel should be removed and the second panel should take up the entire space of the workspace"
             };
         }
@@ -109,13 +110,14 @@ public partial class GridUtilsTests
                 yield return new object[]
                 {
                     CreateState(
+                        isHorizontal: true,
                         new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, width, 1)),
                         new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(width, 0, 1.0 - width, height)),
                         new KeyValuePair<PanelId, Rect>(thirdPanelId, new Rect(width, height, 1.0 - width, 1.0 - height))
                     ),
                     thirdPanelId,
-                    true,
                     CreateState(
+                        isHorizontal: true,
                         new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, width, 1)),
                         new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(width, 0, 1.0 - width, 1))
                     ),
@@ -125,13 +127,14 @@ public partial class GridUtilsTests
                 yield return new object[]
                 {
                     CreateState(
+                        isHorizontal: true,
                         new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, width, 1)),
                         new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(width, 0, 1.0 - width, height)),
                         new KeyValuePair<PanelId, Rect>(thirdPanelId, new Rect(width, height, 1.0 - width, 1.0 - height))
                     ),
                     secondPanelId,
-                    true,
                     CreateState(
+                        isHorizontal: true,
                         new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, width, 1)),
                         new KeyValuePair<PanelId, Rect>(thirdPanelId, new Rect(width, 0, 1.0 - width, 1))
                     ),
@@ -141,13 +144,14 @@ public partial class GridUtilsTests
                 yield return new object[]
                 {
                     CreateState(
+                        isHorizontal: true,
                         new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, width, 1)),
                         new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(width, 0, 1.0 - width, height)),
                         new KeyValuePair<PanelId, Rect>(thirdPanelId, new Rect(width, height, 1.0 - width, 1.0 - height))
                     ),
                     firstPanelId,
-                    true,
                     CreateState(
+                        isHorizontal: true,
                         new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(0, 0, 1, height)),
                         new KeyValuePair<PanelId, Rect>(thirdPanelId, new Rect(0, height, 1, 1.0 - height))
                     ),
@@ -166,13 +170,14 @@ public partial class GridUtilsTests
                 yield return new object[]
                 {
                     CreateState(
+                        isHorizontal: true,
                         new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, 1, height)),
                         new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(0, height, width, 1 - height)),
                         new KeyValuePair<PanelId, Rect>(thirdPanelId, new Rect(width, height, 1 - width, 1 - height))
                     ),
                     thirdPanelId,
-                    true,
                     CreateState(
+                        isHorizontal: true,
                         new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, 1, height)),
                         new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(0, height, 1, 1 - height))
                     ),
@@ -182,13 +187,14 @@ public partial class GridUtilsTests
                 yield return new object[]
                 {
                     CreateState(
+                        isHorizontal: true,
                         new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, 1, height)),
                         new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(0, height, width, 1 - height)),
                         new KeyValuePair<PanelId, Rect>(thirdPanelId, new Rect(width, height, 1 - width, 1 - height))
                     ),
                     secondPanelId,
-                    true,
                     CreateState(
+                        isHorizontal: true,
                         new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, 1, height)),
                         new KeyValuePair<PanelId, Rect>(thirdPanelId, new Rect(0, height, 1, 1 - height))
                     ),
@@ -198,13 +204,14 @@ public partial class GridUtilsTests
                 yield return new object[]
                 {
                     CreateState(
+                        isHorizontal: true,
                         new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, 1, height)),
                         new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(0, height, width, 1 - height)),
                         new KeyValuePair<PanelId, Rect>(thirdPanelId, new Rect(width, height, 1 - width, 1 - height))
                     ),
                     firstPanelId,
-                    true,
                     CreateState(
+                        isHorizontal: true,
                         new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(0, 0, width, 1)),
                         new KeyValuePair<PanelId, Rect>(thirdPanelId, new Rect(width, 0, 1 - width, 1))
                     ),
@@ -221,14 +228,15 @@ public partial class GridUtilsTests
             yield return new object[]
             {
                 CreateState(
+                    isHorizontal: true,
                     new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, width, 0.5)),
                     new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(width, 0, 1 - width, 0.5)),
                     new KeyValuePair<PanelId, Rect>(thirdPanelId, new Rect(0, 0.5, width, 0.5)),
                     new KeyValuePair<PanelId, Rect>(fourthPanelId, new Rect(width, 0.5, 1 - width, 0.5))
                 ),
                 firstPanelId,
-                true,
                 CreateState(
+                    isHorizontal: true,
                     new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(width, 0, 1 - width, 0.5)),
                     new KeyValuePair<PanelId, Rect>(thirdPanelId, new Rect(0, 0, width, 1)),
                     new KeyValuePair<PanelId, Rect>(fourthPanelId, new Rect(width, 0.5, 1 - width, 0.5))
@@ -239,14 +247,15 @@ public partial class GridUtilsTests
             yield return new object[]
             {
                 CreateState(
+                    isHorizontal: true,
                     new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, width, 0.5)),
                     new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(width, 0, 1 - width, 0.5)),
                     new KeyValuePair<PanelId, Rect>(thirdPanelId, new Rect(0, 0.5, width, 0.5)),
                     new KeyValuePair<PanelId, Rect>(fourthPanelId, new Rect(width, 0.5, 1 - width, 0.5))
                 ),
                 thirdPanelId,
-                true,
                 CreateState(
+                    isHorizontal: true,
                     new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, width, 1)),
                     new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(width, 0, 1 - width, 0.5)),
                     new KeyValuePair<PanelId, Rect>(fourthPanelId, new Rect(width, 0.5, 1 - width, 0.5))
@@ -257,14 +266,15 @@ public partial class GridUtilsTests
             yield return new object[]
             {
                 CreateState(
+                    isHorizontal: true,
                     new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, width, 0.5)),
                     new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(width, 0, 1 - width, 0.5)),
                     new KeyValuePair<PanelId, Rect>(thirdPanelId, new Rect(0, 0.5, width, 0.5)),
                     new KeyValuePair<PanelId, Rect>(fourthPanelId, new Rect(width, 0.5, 1 - width, 0.5))
                 ),
                 secondPanelId,
-                true,
                 CreateState(
+                    isHorizontal: true,
                     new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, width, 0.5)),
                     new KeyValuePair<PanelId, Rect>(thirdPanelId, new Rect(0, 0.5, width, 0.5)),
                     new KeyValuePair<PanelId, Rect>(fourthPanelId, new Rect(width, 0, 1 - width, 1))
@@ -275,14 +285,15 @@ public partial class GridUtilsTests
             yield return new object[]
             {
                 CreateState(
+                    isHorizontal: true,
                     new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, width, 0.5)),
                     new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(width, 0, 1 - width, 0.5)),
                     new KeyValuePair<PanelId, Rect>(thirdPanelId, new Rect(0, 0.5, width, 0.5)),
                     new KeyValuePair<PanelId, Rect>(fourthPanelId, new Rect(width, 0.5, 1 - width, 0.5))
                 ),
                 fourthPanelId,
-                true,
                 CreateState(
+                    isHorizontal: true,
                     new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, width, 0.5)),
                     new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(width, 0, 1 - width, 1)),
                     new KeyValuePair<PanelId, Rect>(thirdPanelId, new Rect(0, 0.5, width, 0.5))
@@ -299,14 +310,15 @@ public partial class GridUtilsTests
             yield return new object[]
             {
                 CreateState(
+                    isHorizontal: false,
                     new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, 0.5, height)),
                     new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(0.5, 0, 0.5, height)),
                     new KeyValuePair<PanelId, Rect>(thirdPanelId, new Rect(0, height, 0.5, 1 - height)),
                     new KeyValuePair<PanelId, Rect>(fourthPanelId, new Rect(0.5, height, 0.5, 1 - height))
                 ),
                 firstPanelId,
-                false,
                 CreateState(
+                    isHorizontal: false,
                     new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(0, 0, 1, height)),
                     new KeyValuePair<PanelId, Rect>(thirdPanelId, new Rect(0, height, 0.5, 1 - height)),
                     new KeyValuePair<PanelId, Rect>(fourthPanelId, new Rect(0.5, height, 0.5, 1 - height))
@@ -317,14 +329,15 @@ public partial class GridUtilsTests
             yield return new object[]
             {
                 CreateState(
+                    isHorizontal: false,
                     new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, 0.5, height)),
                     new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(0.5, 0, 0.5, height)),
                     new KeyValuePair<PanelId, Rect>(thirdPanelId, new Rect(0, height, 0.5, 1 - height)),
                     new KeyValuePair<PanelId, Rect>(fourthPanelId, new Rect(0.5, height, 0.5, 1 - height))
                 ),
                 secondPanelId,
-                false,
                 CreateState(
+                    isHorizontal: false,
                     new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, 1, height)),
                     new KeyValuePair<PanelId, Rect>(thirdPanelId, new Rect(0, height, 0.5, 1 - height)),
                     new KeyValuePair<PanelId, Rect>(fourthPanelId, new Rect(0.5, height, 0.5, 1 - height))
@@ -335,14 +348,15 @@ public partial class GridUtilsTests
             yield return new object[]
             {
                 CreateState(
+                    isHorizontal: false,
                     new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, 0.5, height)),
                     new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(0.5, 0, 0.5, height)),
                     new KeyValuePair<PanelId, Rect>(thirdPanelId, new Rect(0, height, 0.5, 1 - height)),
                     new KeyValuePair<PanelId, Rect>(fourthPanelId, new Rect(0.5, height, 0.5, 1 - height))
                 ),
                 thirdPanelId,
-                false,
                 CreateState(
+                    isHorizontal: false,
                     new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, 0.5, height)),
                     new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(0.5, 0, 0.5, height)),
                     new KeyValuePair<PanelId, Rect>(fourthPanelId, new Rect(0, height, 1, 1 - height))
@@ -353,14 +367,15 @@ public partial class GridUtilsTests
             yield return new object[]
             {
                 CreateState(
+                    isHorizontal: false,
                     new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, 0.5, height)),
                     new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(0.5, 0, 0.5, height)),
                     new KeyValuePair<PanelId, Rect>(thirdPanelId, new Rect(0, height, 0.5, 1 - height)),
                     new KeyValuePair<PanelId, Rect>(fourthPanelId, new Rect(0.5, height, 0.5, 1 - height))
                 ),
                 fourthPanelId,
-                false,
                 CreateState(
+                    isHorizontal: false,
                     new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, 0.5, height)),
                     new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(0.5, 0, 0.5, height)),
                     new KeyValuePair<PanelId, Rect>(thirdPanelId, new Rect(0, height, 1, 1 - height))
