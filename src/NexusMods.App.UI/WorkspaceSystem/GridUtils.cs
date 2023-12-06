@@ -13,27 +13,27 @@ internal static class GridUtils
     /// A perfect has no gaps, and no panel is out-of-bounds.
     /// </remarks>
     /// <exception cref="Exception">Thrown when the grid is not perfect.</exception>
-    internal static bool IsPerfectGrid(WorkspaceGridState state)
+    internal static bool IsPerfectGrid(WorkspaceGridState gridState)
     {
         var totalArea = 0.0;
 
-        foreach (var kv in state)
+        foreach (var panelState in gridState)
         {
-            var rect = kv.Value;
+            var (id, rect) = panelState;
             if (rect.Left < 0.0 || rect.Right > 1.0 || rect.Top < 0.0 || rect.Bottom > 1.0)
             {
-                throw new Exception($"Panel {kv.Key} is out of bounds: {rect}");
+                throw new Exception($"Panel {panelState} is out of bounds");
             }
 
             totalArea += rect.Height * rect.Width;
 
-            foreach (var other in state)
+            foreach (var other in gridState)
             {
-                if (kv.Key == other.Key) continue;
+                if (id == other.Id) continue;
 
-                if (rect.Intersects(other.Value))
+                if (rect.Intersects(other.Rect))
                 {
-                    throw new Exception($"{kv.ToString()} intersects with {other.ToString()}");
+                    throw new Exception($"{panelState.ToString()} intersects with {other.ToString()}");
                 }
             }
         }
@@ -187,20 +187,21 @@ internal static class GridUtils
     }
 
     internal static WorkspaceGridState GetStateWithoutPanel(
-        WorkspaceGridState currentState,
+        WorkspaceGridState gridState,
         PanelId panelToRemove)
     {
-        if (currentState.Count == 1) return WorkspaceGridState.Empty;
+        if (gridState.Count == 1) return WorkspaceGridState.Empty(gridState.IsHorizontal);
 
-        var res = currentState.Remove(panelToRemove);
-        if (res.Count == 1) return WorkspaceGridState.Single(res.Keys.First());
+        var res = gridState.Remove(gridState[panelToRemove]);
+        if (res.Count == 1) return WorkspaceGridState.Empty(gridState.IsHorizontal).Add(new PanelGridState(res[0].Id, MathUtils.One));
 
-        var currentRect = currentState[panelToRemove];
+        var panelState = gridState[panelToRemove];
+        var currentRect = panelState.Rect;
 
-        Span<PanelId> sameColumn = stackalloc PanelId[currentState.Count];
+        Span<PanelId> sameColumn = stackalloc PanelId[gridState.Count];
         var sameColumnCount = 0;
 
-        Span<PanelId> sameRow = stackalloc PanelId[currentState.Count];
+        Span<PanelId> sameRow = stackalloc PanelId[gridState.Count];
         var sameRowCount = 0;
 
         foreach (var kv in res)
@@ -232,7 +233,7 @@ internal static class GridUtils
 
         Debug.Assert(sameColumnCount > 0 || sameRowCount > 0);
 
-        if (currentState.IsHorizontal)
+        if (gridState.IsHorizontal)
         {
             // prefer columns over rows when horizontal
             if (sameColumnCount > 0)
@@ -264,12 +265,13 @@ internal static class GridUtils
         Span<PanelId> sameColumn,
         int sameColumnCount)
     {
-        var updates = GC.AllocateUninitializedArray<KeyValuePair<PanelId, Rect>>(sameColumnCount);
+        var updates = GC.AllocateUninitializedArray<PanelGridState>(sameColumnCount);
 
         for (var i = 0; i < sameColumnCount; i++)
         {
             var id = sameColumn[i];
-            var rect = res[id];
+            var panel = res[id];
+            var rect = panel.Rect;
 
             var x = rect.X;
             var width = rect.Width;
@@ -277,10 +279,10 @@ internal static class GridUtils
             var y = Math.Min(rect.Y, currentRect.Y);
             var height = rect.Height + currentRect.Height;
 
-            updates[i] = new KeyValuePair<PanelId, Rect>(id, new Rect(x, y, width, height));
+            updates[i] = new PanelGridState(id, new Rect(x, y, width, height));
         }
 
-        return res.SetItems(updates);
+        return res.UnionById(updates);
     }
 
     private static WorkspaceGridState JoinSameRow(
@@ -289,12 +291,13 @@ internal static class GridUtils
         Span<PanelId> sameRow,
         int sameRowCount)
     {
-        var updates = GC.AllocateUninitializedArray<KeyValuePair<PanelId, Rect>>(sameRowCount);
+        var updates = GC.AllocateUninitializedArray<PanelGridState>(sameRowCount);
 
         for (var i = 0; i < sameRowCount; i++)
         {
             var id = sameRow[i];
-            var rect = res[id];
+            var panel = res[id];
+            var rect = panel.Rect;
 
             var y = rect.Y;
             var height = rect.Height;
@@ -302,10 +305,10 @@ internal static class GridUtils
             var x = Math.Min(rect.X, currentRect.X);
             var width = rect.Width + currentRect.Width;
 
-            updates[i] = new KeyValuePair<PanelId, Rect>(id, new Rect(x, y, width, height));
+            updates[i] = new PanelGridState(id, new Rect(x, y, width, height));
         }
 
-        return res.SetItems(updates);
+        return res.UnionById(updates);
     }
 
     internal static IReadOnlyList<ResizerInfo> GetResizers(

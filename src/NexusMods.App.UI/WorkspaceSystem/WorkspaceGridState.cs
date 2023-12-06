@@ -4,66 +4,146 @@ using Avalonia;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
-public readonly struct WorkspaceGridState : IImmutableDictionary<PanelId, Rect>
+public readonly struct WorkspaceGridState :
+    IImmutableSet<PanelGridState>,
+    ISet<PanelGridState>,
+    IReadOnlyList<PanelGridState>,
+    IList<PanelGridState>
 {
-    public ImmutableDictionary<PanelId, Rect> Inner { get; }
-    public bool IsHorizontal { get; }
+    public readonly ImmutableSortedSet<PanelGridState> Inner;
+    public readonly bool IsHorizontal;
 
-    public WorkspaceGridState(ImmutableDictionary<PanelId, Rect> inner, bool isHorizontal)
+    public WorkspaceGridState(ImmutableSortedSet<PanelGridState> inner, bool isHorizontal)
     {
-        Inner = inner;
+        Inner = inner.WithComparer(PanelGridStateComparer.Instance);
         IsHorizontal = isHorizontal;
     }
 
-    public static WorkspaceGridState From(IEnumerable<IPanelViewModel> enumerable, bool isHorizontal)
+    public static WorkspaceGridState From(IEnumerable<KeyValuePair<PanelId, Rect>> values, bool isHorizontal)
     {
-        return new WorkspaceGridState(enumerable.ToImmutableDictionary(panel => panel.Id, panel => panel.LogicalBounds), isHorizontal);
+        return new WorkspaceGridState(
+            inner: values.Select(kv => new PanelGridState(kv.Key, kv.Value)).ToImmutableSortedSet(PanelGridStateComparer.Instance),
+            isHorizontal
+        );
     }
 
-    public static readonly WorkspaceGridState Empty = new(ImmutableDictionary<PanelId, Rect>.Empty, isHorizontal: true);
-    public static WorkspaceGridState Single(PanelId key) => Empty.Add(key, MathUtils.One);
+    public static WorkspaceGridState From(IEnumerable<IPanelViewModel> panels, bool isHorizontal)
+    {
+        return new WorkspaceGridState(
+            inner: panels.Select(panel => new PanelGridState(panel.Id, panel.LogicalBounds)).ToImmutableSortedSet(),
+            isHorizontal
+        );
+    }
 
-    private WorkspaceGridState WithInner(ImmutableDictionary<PanelId, Rect> inner)
+    public static WorkspaceGridState Empty(bool isHorizontal) => new(ImmutableSortedSet<PanelGridState>.Empty, isHorizontal);
+
+    private WorkspaceGridState WithInner(ImmutableSortedSet<PanelGridState> inner)
     {
         return new WorkspaceGridState(inner, IsHorizontal);
     }
 
-    #region IImmutableDictionary implementations
+    public PanelGridState this[PanelId id]
+    {
+        get
+        {
+            foreach (var panel in Inner)
+            {
+                if (panel.Id == id) return panel;
+            }
 
-    public ImmutableDictionary<PanelId, Rect>.Enumerator GetEnumerator() => Inner.GetEnumerator();
-    IEnumerator<KeyValuePair<PanelId, Rect>> IEnumerable<KeyValuePair<PanelId, Rect>>.GetEnumerator() => Inner.GetEnumerator();
+            throw new KeyNotFoundException();
+        }
+    }
+
+    public bool TryGetValue(PanelId id, out PanelGridState panel)
+    {
+        foreach (var item in Inner)
+        {
+            if (item.Id != id) continue;
+            panel = item;
+            return true;
+        }
+
+        panel = default;
+        return false;
+    }
+
+    public WorkspaceGridState UnionById(PanelGridState[] other)
+    {
+        var builder = Inner.ToBuilder();
+        foreach (var panelToAdd in other)
+        {
+            if (TryGetValue(panelToAdd.Id, out var existingPanel))
+            {
+                builder.Remove(existingPanel);
+            }
+
+            builder.Add(panelToAdd);
+        }
+
+        return WithInner(builder.ToImmutable());
+    }
+
+    #region Interface Implementations
+
+    public ImmutableSortedSet<PanelGridState>.Enumerator GetEnumerator() => Inner.GetEnumerator();
+    IEnumerator<PanelGridState> IEnumerable<PanelGridState>.GetEnumerator() => Inner.GetEnumerator();
     IEnumerator IEnumerable.GetEnumerator() => Inner.GetEnumerator();
 
+    bool ICollection<PanelGridState>.Remove(PanelGridState item) => throw new NotSupportedException();
     public int Count => Inner.Count;
-    public bool ContainsKey(PanelId key) => Inner.ContainsKey(key);
-    public bool TryGetValue(PanelId key, out Rect value) => Inner.TryGetValue(key, out value);
-    public Rect this[PanelId key] => Inner[key];
-    public IEnumerable<PanelId> Keys => Inner.Keys;
-    public IEnumerable<Rect> Values => Inner.Values;
+    public bool IsReadOnly => true;
+    public bool Contains(PanelGridState value) => Inner.Contains(value);
 
-    IImmutableDictionary<PanelId, Rect> IImmutableDictionary<PanelId, Rect>.Add(PanelId key, Rect value) => Inner.Add(key, value);
-    public WorkspaceGridState Add(PanelId key, Rect value) => WithInner(Inner.Add(key, value));
+    void ISet<PanelGridState>.ExceptWith(IEnumerable<PanelGridState> other) => throw new NotSupportedException();
+    void ISet<PanelGridState>.IntersectWith(IEnumerable<PanelGridState> other) => throw new NotSupportedException();
+    public bool IsProperSubsetOf(IEnumerable<PanelGridState> other) => Inner.IsProperSubsetOf(other);
+    public bool IsProperSupersetOf(IEnumerable<PanelGridState> other) => Inner.IsProperSubsetOf(other);
+    public bool IsSubsetOf(IEnumerable<PanelGridState> other) => Inner.IsSubsetOf(other);
+    public bool IsSupersetOf(IEnumerable<PanelGridState> other) => Inner.IsSupersetOf(other);
+    public bool Overlaps(IEnumerable<PanelGridState> other) => Inner.Overlaps(other);
+    public bool SetEquals(IEnumerable<PanelGridState> other) => Inner.SetEquals(other);
+    void ISet<PanelGridState>.SymmetricExceptWith(IEnumerable<PanelGridState> other) => throw new NotSupportedException();
+    void ISet<PanelGridState>.UnionWith(IEnumerable<PanelGridState> other) => throw new NotSupportedException();
+    bool ISet<PanelGridState>.Add(PanelGridState item) => throw new NotSupportedException();
+    void ICollection<PanelGridState>.Clear() => throw new NotSupportedException();
+    void ICollection<PanelGridState>.CopyTo(PanelGridState[] array, int arrayIndex) => ((ICollection<PanelGridState>)Inner).CopyTo(array, arrayIndex);
+    void ICollection<PanelGridState>.Add(PanelGridState item) => throw new NotSupportedException();
 
-    IImmutableDictionary<PanelId, Rect> IImmutableDictionary<PanelId, Rect>.AddRange(IEnumerable<KeyValuePair<PanelId, Rect>> pairs) => Inner.AddRange(pairs);
-    public WorkspaceGridState AddRange(IEnumerable<KeyValuePair<PanelId, Rect>> pairs) => WithInner(Inner.AddRange(pairs));
+    IImmutableSet<PanelGridState> IImmutableSet<PanelGridState>.Add(PanelGridState value) => Inner.Add(value);
+    public WorkspaceGridState Add(PanelGridState value) => WithInner(Inner.Add(value));
 
-    IImmutableDictionary<PanelId, Rect> IImmutableDictionary<PanelId, Rect>.Clear() => Inner.Clear();
+    IImmutableSet<PanelGridState> IImmutableSet<PanelGridState>.Clear() => Inner.Clear();
     public WorkspaceGridState Clear() => WithInner(Inner.Clear());
 
-    IImmutableDictionary<PanelId, Rect> IImmutableDictionary<PanelId, Rect>.Remove(PanelId key) => Inner.Remove(key);
-    public WorkspaceGridState Remove(PanelId key) => WithInner(Inner.Remove(key));
+    IImmutableSet<PanelGridState> IImmutableSet<PanelGridState>.Except(IEnumerable<PanelGridState> other) => Inner.Except(other);
+    public WorkspaceGridState Except(IEnumerable<PanelGridState> other) => WithInner(Inner.Except(other));
 
-    IImmutableDictionary<PanelId, Rect> IImmutableDictionary<PanelId, Rect>.RemoveRange(IEnumerable<PanelId> keys) => Inner.RemoveRange(keys);
-    public WorkspaceGridState RemoveRange(IEnumerable<PanelId> keys) => WithInner(Inner.RemoveRange(keys));
+    IImmutableSet<PanelGridState> IImmutableSet<PanelGridState>.Intersect(IEnumerable<PanelGridState> other) => Inner.Intersect(other);
+    public WorkspaceGridState Intersect(IEnumerable<PanelGridState> other) => WithInner(Inner.Intersect(other));
 
-    IImmutableDictionary<PanelId, Rect> IImmutableDictionary<PanelId, Rect>.SetItem(PanelId key, Rect value) => Inner.SetItem(key, value);
-    public WorkspaceGridState SetItem(PanelId key, Rect value) => WithInner(Inner.SetItem(key, value));
+    IImmutableSet<PanelGridState> IImmutableSet<PanelGridState>.Remove(PanelGridState value) => Inner.Remove(value);
+    public WorkspaceGridState Remove(PanelGridState value) => WithInner(Inner.Remove(value));
 
-    IImmutableDictionary<PanelId, Rect> IImmutableDictionary<PanelId, Rect>.SetItems(IEnumerable<KeyValuePair<PanelId, Rect>> items) => Inner.SetItems(items);
-    public WorkspaceGridState SetItems(IEnumerable<KeyValuePair<PanelId, Rect>> items) => WithInner(Inner.SetItems(items));
+    IImmutableSet<PanelGridState> IImmutableSet<PanelGridState>.SymmetricExcept(IEnumerable<PanelGridState> other) => Inner.SymmetricExcept(other);
+    public WorkspaceGridState SymmetricExcept(IEnumerable<PanelGridState> other) => WithInner(Inner.SymmetricExcept(other));
 
-    public bool TryGetKey(PanelId equalKey, out PanelId actualKey) => Inner.TryGetKey(equalKey, out actualKey);
-    public bool Contains(KeyValuePair<PanelId, Rect> pair) => Inner.Contains(pair);
+    bool IImmutableSet<PanelGridState>.TryGetValue(PanelGridState equalValue, out PanelGridState actualValue) => Inner.TryGetValue(equalValue, out actualValue);
+
+    IImmutableSet<PanelGridState> IImmutableSet<PanelGridState>.Union(IEnumerable<PanelGridState> other) => Inner.Union(other);
+    public WorkspaceGridState Union(IEnumerable<PanelGridState> other) => WithInner(Inner.Union(other));
+
+    public int IndexOf(PanelGridState item) => Inner.IndexOf(item);
+
+    void IList<PanelGridState>.Insert(int index, PanelGridState item) => throw new NotSupportedException();
+
+    void IList<PanelGridState>.RemoveAt(int index) => throw new NotSupportedException();
+
+    public PanelGridState this[int index]
+    {
+        get => Inner[index];
+        set => throw new NotSupportedException();
+    }
 
     #endregion
 }
