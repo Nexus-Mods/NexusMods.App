@@ -204,30 +204,15 @@ internal static class GridUtils
         Span<PanelId> sameRow = stackalloc PanelId[gridState.Count];
         var sameRowCount = 0;
 
-        foreach (var kv in res)
+        using (var enumerator = res.EnumerateAdjacentPanels(panelState, includeAnchor: true))
         {
-            var (id, rect) = kv;
-
-            // same column
-            // | a | x |  | b | x |
-            // | b | x |  | a | x |
-            if (rect.Left.IsGreaterThanOrCloseTo(currentRect.Left) && rect.Right.IsLessThanOrCloseTo(currentRect.Right))
+            while (enumerator.MoveNext())
             {
-                if (rect.Top.IsCloseTo(currentRect.Bottom) || rect.Bottom.IsCloseTo(currentRect.Top))
-                {
-                    sameColumn[sameColumnCount++] = id;
-                }
-            }
-
-            // same row
-            // | a | b |  | b | a |  | a | b |
-            // | x | x |  | x | x |  | a | c |
-            if (rect.Top.IsGreaterThanOrCloseTo(currentRect.Top) && rect.Bottom.IsLessThanOrCloseTo(currentRect.Bottom))
-            {
-                if (rect.Left.IsCloseTo(currentRect.Right) || rect.Right.IsCloseTo(currentRect.Left))
-                {
-                    sameRow[sameRowCount++] = id;
-                }
+                var adjacent = enumerator.Current;
+                if ((adjacent.Kind & WorkspaceGridState.AdjacencyKind.SameColumn) == WorkspaceGridState.AdjacencyKind.SameColumn)
+                    sameColumn[sameColumnCount++] = adjacent.Panel.Id;
+                if ((adjacent.Kind & WorkspaceGridState.AdjacencyKind.SameRow) == WorkspaceGridState.AdjacencyKind.SameRow)
+                    sameRow[sameRowCount++] = adjacent.Panel.Id;
             }
         }
 
