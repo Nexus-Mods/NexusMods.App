@@ -301,9 +301,9 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         {
             updater.Remove(panelToClose);
 
-            foreach (var kv in newState)
+            foreach (var panelState in newState)
             {
-                var (panelId, logicalBounds) = kv;
+                var (panelId, logicalBounds) = panelState;
                 {
                     var existingPanel = updater.Lookup(panelId);
                     Debug.Assert(existingPanel.HasValue);

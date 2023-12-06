@@ -7,9 +7,7 @@ namespace NexusMods.App.UI.WorkspaceSystem;
 
 public readonly struct WorkspaceGridState :
     IImmutableSet<PanelGridState>,
-    ISet<PanelGridState>,
-    IReadOnlyList<PanelGridState>,
-    IList<PanelGridState>
+    IReadOnlyList<PanelGridState>
 {
     public readonly ImmutableSortedSet<PanelGridState> Inner;
     public readonly bool IsHorizontal;
@@ -178,25 +176,15 @@ public readonly struct WorkspaceGridState :
     IEnumerator<PanelGridState> IEnumerable<PanelGridState>.GetEnumerator() => Inner.GetEnumerator();
     IEnumerator IEnumerable.GetEnumerator() => Inner.GetEnumerator();
 
-    bool ICollection<PanelGridState>.Remove(PanelGridState item) => throw new NotSupportedException();
     public int Count => Inner.Count;
-    public bool IsReadOnly => true;
     public bool Contains(PanelGridState value) => Inner.Contains(value);
 
-    void ISet<PanelGridState>.ExceptWith(IEnumerable<PanelGridState> other) => throw new NotSupportedException();
-    void ISet<PanelGridState>.IntersectWith(IEnumerable<PanelGridState> other) => throw new NotSupportedException();
     public bool IsProperSubsetOf(IEnumerable<PanelGridState> other) => Inner.IsProperSubsetOf(other);
     public bool IsProperSupersetOf(IEnumerable<PanelGridState> other) => Inner.IsProperSubsetOf(other);
     public bool IsSubsetOf(IEnumerable<PanelGridState> other) => Inner.IsSubsetOf(other);
     public bool IsSupersetOf(IEnumerable<PanelGridState> other) => Inner.IsSupersetOf(other);
     public bool Overlaps(IEnumerable<PanelGridState> other) => Inner.Overlaps(other);
     public bool SetEquals(IEnumerable<PanelGridState> other) => Inner.SetEquals(other);
-    void ISet<PanelGridState>.SymmetricExceptWith(IEnumerable<PanelGridState> other) => throw new NotSupportedException();
-    void ISet<PanelGridState>.UnionWith(IEnumerable<PanelGridState> other) => throw new NotSupportedException();
-    bool ISet<PanelGridState>.Add(PanelGridState item) => throw new NotSupportedException();
-    void ICollection<PanelGridState>.Clear() => throw new NotSupportedException();
-    void ICollection<PanelGridState>.CopyTo(PanelGridState[] array, int arrayIndex) => ((ICollection<PanelGridState>)Inner).CopyTo(array, arrayIndex);
-    void ICollection<PanelGridState>.Add(PanelGridState item) => throw new NotSupportedException();
 
     IImmutableSet<PanelGridState> IImmutableSet<PanelGridState>.Add(PanelGridState value) => Inner.Add(value);
     public WorkspaceGridState Add(PanelGridState value) => WithInner(Inner.Add(value));
@@ -223,15 +211,7 @@ public readonly struct WorkspaceGridState :
 
     public int IndexOf(PanelGridState item) => Inner.IndexOf(item);
 
-    void IList<PanelGridState>.Insert(int index, PanelGridState item) => throw new NotSupportedException();
-
-    void IList<PanelGridState>.RemoveAt(int index) => throw new NotSupportedException();
-
-    public PanelGridState this[int index]
-    {
-        get => Inner[index];
-        set => throw new NotSupportedException();
-    }
+    public PanelGridState this[int index] => Inner[index];
 
     #endregion
 }
