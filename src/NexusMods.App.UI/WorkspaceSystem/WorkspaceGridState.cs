@@ -30,7 +30,15 @@ public readonly struct WorkspaceGridState :
     public static WorkspaceGridState From(IEnumerable<IPanelViewModel> panels, bool isHorizontal)
     {
         return new WorkspaceGridState(
-            inner: panels.Select(panel => new PanelGridState(panel.Id, panel.LogicalBounds)).ToImmutableSortedSet(),
+            inner: panels.Select(panel => new PanelGridState(panel.Id, panel.LogicalBounds)).ToImmutableSortedSet(PanelGridStateComparer.Instance),
+            isHorizontal
+        );
+    }
+
+    public static WorkspaceGridState From(IEnumerable<PanelGridState> panels, bool isHorizontal)
+    {
+        return new WorkspaceGridState(
+            inner: panels.ToImmutableSortedSet(PanelGridStateComparer.Instance),
             isHorizontal
         );
     }

@@ -49,11 +49,11 @@ public partial class GridUtilsTests
             {
                 CreateState(
                     isHorizontal: true,
-                    new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, width, 1)),
-                    new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(width, 0, 1.0 - width, 1))
+                    new PanelGridState(firstPanelId, new Rect(0, 0, width, 1)),
+                    new PanelGridState(secondPanelId, new Rect(width, 0, 1.0 - width, 1))
                 ),
                 secondPanelId,
-                CreateState(isHorizontal: true, new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, 1, 1))),
+                CreateState(isHorizontal: true, new PanelGridState(firstPanelId, new Rect(0, 0, 1, 1))),
                 "the second panel should be removed and the first panel should take up the entire space of the workspace"
             };
 
@@ -61,11 +61,11 @@ public partial class GridUtilsTests
             {
                 CreateState(
                     isHorizontal: true,
-                    new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, width, 1)),
-                    new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(width, 0, 1.0 - width, 1))
+                    new PanelGridState(firstPanelId, new Rect(0, 0, width, 1)),
+                    new PanelGridState(secondPanelId, new Rect(width, 0, 1.0 - width, 1))
                 ),
                 firstPanelId,
-                CreateState(isHorizontal: true, new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(0, 0, 1, 1))),
+                CreateState(isHorizontal: true, new PanelGridState(secondPanelId, new Rect(0, 0, 1, 1))),
                 "the first panel should be removed and the second panel should take up the entire space of the workspace"
             };
         }
@@ -79,11 +79,11 @@ public partial class GridUtilsTests
             {
                 CreateState(
                     isHorizontal: true,
-                    new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, 1, height)),
-                    new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(0, height, 1, 1.0 - height))
+                    new PanelGridState(firstPanelId, new Rect(0, 0, 1, height)),
+                    new PanelGridState(secondPanelId, new Rect(0, height, 1, 1.0 - height))
                 ),
                 secondPanelId,
-                CreateState(isHorizontal: true, new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, 1, 1))),
+                CreateState(isHorizontal: true, new PanelGridState(firstPanelId, new Rect(0, 0, 1, 1))),
                 "the second panel should be removed and the first panel should take up the entire space of the workspace"
             };
 
@@ -91,11 +91,11 @@ public partial class GridUtilsTests
             {
                 CreateState(
                     isHorizontal: true,
-                    new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, 1, height)),
-                    new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(0, height, 1, 1.0 - height))
+                    new PanelGridState(firstPanelId, new Rect(0, 0, 1, height)),
+                    new PanelGridState(secondPanelId, new Rect(0, height, 1, 1.0 - height))
                 ),
                 firstPanelId,
-                CreateState(isHorizontal: true, new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(0, 0, 1, 1))),
+                CreateState(isHorizontal: true, new PanelGridState(secondPanelId, new Rect(0, 0, 1, 1))),
                 "the first panel should be removed and the second panel should take up the entire space of the workspace"
             };
         }
@@ -111,15 +111,15 @@ public partial class GridUtilsTests
                 {
                     CreateState(
                         isHorizontal: true,
-                        new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, width, 1)),
-                        new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(width, 0, 1.0 - width, height)),
-                        new KeyValuePair<PanelId, Rect>(thirdPanelId, new Rect(width, height, 1.0 - width, 1.0 - height))
+                        new PanelGridState(firstPanelId, new Rect(0, 0, width, 1)),
+                        new PanelGridState(secondPanelId, new Rect(width, 0, 1.0 - width, height)),
+                        new PanelGridState(thirdPanelId, new Rect(width, height, 1.0 - width, 1.0 - height))
                     ),
                     thirdPanelId,
                     CreateState(
                         isHorizontal: true,
-                        new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, width, 1)),
-                        new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(width, 0, 1.0 - width, 1))
+                        new PanelGridState(firstPanelId, new Rect(0, 0, width, 1)),
+                        new PanelGridState(secondPanelId, new Rect(width, 0, 1.0 - width, 1))
                     ),
                     "the third panel should be removed and the second panel should take up the space"
                 };
@@ -128,15 +128,15 @@ public partial class GridUtilsTests
                 {
                     CreateState(
                         isHorizontal: true,
-                        new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, width, 1)),
-                        new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(width, 0, 1.0 - width, height)),
-                        new KeyValuePair<PanelId, Rect>(thirdPanelId, new Rect(width, height, 1.0 - width, 1.0 - height))
+                        new PanelGridState(firstPanelId, new Rect(0, 0, width, 1)),
+                        new PanelGridState(secondPanelId, new Rect(width, 0, 1.0 - width, height)),
+                        new PanelGridState(thirdPanelId, new Rect(width, height, 1.0 - width, 1.0 - height))
                     ),
                     secondPanelId,
                     CreateState(
                         isHorizontal: true,
-                        new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, width, 1)),
-                        new KeyValuePair<PanelId, Rect>(thirdPanelId, new Rect(width, 0, 1.0 - width, 1))
+                        new PanelGridState(firstPanelId, new Rect(0, 0, width, 1)),
+                        new PanelGridState(thirdPanelId, new Rect(width, 0, 1.0 - width, 1))
                     ),
                     "the second panel should be removed and the third panel should take up the space"
                 };
@@ -145,15 +145,15 @@ public partial class GridUtilsTests
                 {
                     CreateState(
                         isHorizontal: true,
-                        new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, width, 1)),
-                        new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(width, 0, 1.0 - width, height)),
-                        new KeyValuePair<PanelId, Rect>(thirdPanelId, new Rect(width, height, 1.0 - width, 1.0 - height))
+                        new PanelGridState(firstPanelId, new Rect(0, 0, width, 1)),
+                        new PanelGridState(secondPanelId, new Rect(width, 0, 1.0 - width, height)),
+                        new PanelGridState(thirdPanelId, new Rect(width, height, 1.0 - width, 1.0 - height))
                     ),
                     firstPanelId,
                     CreateState(
                         isHorizontal: true,
-                        new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(0, 0, 1, height)),
-                        new KeyValuePair<PanelId, Rect>(thirdPanelId, new Rect(0, height, 1, 1.0 - height))
+                        new PanelGridState(secondPanelId, new Rect(0, 0, 1, height)),
+                        new PanelGridState(thirdPanelId, new Rect(0, height, 1, 1.0 - height))
                     ),
                     "the first panel should be removed and the second and third panels should take up the space"
                 };
@@ -171,15 +171,15 @@ public partial class GridUtilsTests
                 {
                     CreateState(
                         isHorizontal: true,
-                        new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, 1, height)),
-                        new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(0, height, width, 1 - height)),
-                        new KeyValuePair<PanelId, Rect>(thirdPanelId, new Rect(width, height, 1 - width, 1 - height))
+                        new PanelGridState(firstPanelId, new Rect(0, 0, 1, height)),
+                        new PanelGridState(secondPanelId, new Rect(0, height, width, 1 - height)),
+                        new PanelGridState(thirdPanelId, new Rect(width, height, 1 - width, 1 - height))
                     ),
                     thirdPanelId,
                     CreateState(
                         isHorizontal: true,
-                        new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, 1, height)),
-                        new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(0, height, 1, 1 - height))
+                        new PanelGridState(firstPanelId, new Rect(0, 0, 1, height)),
+                        new PanelGridState(secondPanelId, new Rect(0, height, 1, 1 - height))
                     ),
                     "the third panel should be removed and the second panel should take up the space"
                 };
@@ -188,15 +188,15 @@ public partial class GridUtilsTests
                 {
                     CreateState(
                         isHorizontal: true,
-                        new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, 1, height)),
-                        new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(0, height, width, 1 - height)),
-                        new KeyValuePair<PanelId, Rect>(thirdPanelId, new Rect(width, height, 1 - width, 1 - height))
+                        new PanelGridState(firstPanelId, new Rect(0, 0, 1, height)),
+                        new PanelGridState(secondPanelId, new Rect(0, height, width, 1 - height)),
+                        new PanelGridState(thirdPanelId, new Rect(width, height, 1 - width, 1 - height))
                     ),
                     secondPanelId,
                     CreateState(
                         isHorizontal: true,
-                        new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, 1, height)),
-                        new KeyValuePair<PanelId, Rect>(thirdPanelId, new Rect(0, height, 1, 1 - height))
+                        new PanelGridState(firstPanelId, new Rect(0, 0, 1, height)),
+                        new PanelGridState(thirdPanelId, new Rect(0, height, 1, 1 - height))
                     ),
                     "the second panel should be removed and the third panel should take up the space"
                 };
@@ -205,15 +205,15 @@ public partial class GridUtilsTests
                 {
                     CreateState(
                         isHorizontal: true,
-                        new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, 1, height)),
-                        new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(0, height, width, 1 - height)),
-                        new KeyValuePair<PanelId, Rect>(thirdPanelId, new Rect(width, height, 1 - width, 1 - height))
+                        new PanelGridState(firstPanelId, new Rect(0, 0, 1, height)),
+                        new PanelGridState(secondPanelId, new Rect(0, height, width, 1 - height)),
+                        new PanelGridState(thirdPanelId, new Rect(width, height, 1 - width, 1 - height))
                     ),
                     firstPanelId,
                     CreateState(
                         isHorizontal: true,
-                        new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(0, 0, width, 1)),
-                        new KeyValuePair<PanelId, Rect>(thirdPanelId, new Rect(width, 0, 1 - width, 1))
+                        new PanelGridState(secondPanelId, new Rect(0, 0, width, 1)),
+                        new PanelGridState(thirdPanelId, new Rect(width, 0, 1 - width, 1))
                     ),
                     "the first panel should be removed and the second and third panels should take up the space"
                 };
@@ -229,17 +229,17 @@ public partial class GridUtilsTests
             {
                 CreateState(
                     isHorizontal: true,
-                    new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, width, 0.5)),
-                    new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(width, 0, 1 - width, 0.5)),
-                    new KeyValuePair<PanelId, Rect>(thirdPanelId, new Rect(0, 0.5, width, 0.5)),
-                    new KeyValuePair<PanelId, Rect>(fourthPanelId, new Rect(width, 0.5, 1 - width, 0.5))
+                    new PanelGridState(firstPanelId, new Rect(0, 0, width, 0.5)),
+                    new PanelGridState(secondPanelId, new Rect(width, 0, 1 - width, 0.5)),
+                    new PanelGridState(thirdPanelId, new Rect(0, 0.5, width, 0.5)),
+                    new PanelGridState(fourthPanelId, new Rect(width, 0.5, 1 - width, 0.5))
                 ),
                 firstPanelId,
                 CreateState(
                     isHorizontal: true,
-                    new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(width, 0, 1 - width, 0.5)),
-                    new KeyValuePair<PanelId, Rect>(thirdPanelId, new Rect(0, 0, width, 1)),
-                    new KeyValuePair<PanelId, Rect>(fourthPanelId, new Rect(width, 0.5, 1 - width, 0.5))
+                    new PanelGridState(secondPanelId, new Rect(width, 0, 1 - width, 0.5)),
+                    new PanelGridState(thirdPanelId, new Rect(0, 0, width, 1)),
+                    new PanelGridState(fourthPanelId, new Rect(width, 0.5, 1 - width, 0.5))
                 ),
                 "the first panel should be removed and the third panel should take up the space due to the horizontal layout"
             };
@@ -248,17 +248,17 @@ public partial class GridUtilsTests
             {
                 CreateState(
                     isHorizontal: true,
-                    new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, width, 0.5)),
-                    new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(width, 0, 1 - width, 0.5)),
-                    new KeyValuePair<PanelId, Rect>(thirdPanelId, new Rect(0, 0.5, width, 0.5)),
-                    new KeyValuePair<PanelId, Rect>(fourthPanelId, new Rect(width, 0.5, 1 - width, 0.5))
+                    new PanelGridState(firstPanelId, new Rect(0, 0, width, 0.5)),
+                    new PanelGridState(secondPanelId, new Rect(width, 0, 1 - width, 0.5)),
+                    new PanelGridState(thirdPanelId, new Rect(0, 0.5, width, 0.5)),
+                    new PanelGridState(fourthPanelId, new Rect(width, 0.5, 1 - width, 0.5))
                 ),
                 thirdPanelId,
                 CreateState(
                     isHorizontal: true,
-                    new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, width, 1)),
-                    new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(width, 0, 1 - width, 0.5)),
-                    new KeyValuePair<PanelId, Rect>(fourthPanelId, new Rect(width, 0.5, 1 - width, 0.5))
+                    new PanelGridState(firstPanelId, new Rect(0, 0, width, 1)),
+                    new PanelGridState(secondPanelId, new Rect(width, 0, 1 - width, 0.5)),
+                    new PanelGridState(fourthPanelId, new Rect(width, 0.5, 1 - width, 0.5))
                 ),
                 "the third panel should be removed and the first panel should take up the space due to the horizontal layout"
             };
@@ -267,17 +267,17 @@ public partial class GridUtilsTests
             {
                 CreateState(
                     isHorizontal: true,
-                    new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, width, 0.5)),
-                    new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(width, 0, 1 - width, 0.5)),
-                    new KeyValuePair<PanelId, Rect>(thirdPanelId, new Rect(0, 0.5, width, 0.5)),
-                    new KeyValuePair<PanelId, Rect>(fourthPanelId, new Rect(width, 0.5, 1 - width, 0.5))
+                    new PanelGridState(firstPanelId, new Rect(0, 0, width, 0.5)),
+                    new PanelGridState(secondPanelId, new Rect(width, 0, 1 - width, 0.5)),
+                    new PanelGridState(thirdPanelId, new Rect(0, 0.5, width, 0.5)),
+                    new PanelGridState(fourthPanelId, new Rect(width, 0.5, 1 - width, 0.5))
                 ),
                 secondPanelId,
                 CreateState(
                     isHorizontal: true,
-                    new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, width, 0.5)),
-                    new KeyValuePair<PanelId, Rect>(thirdPanelId, new Rect(0, 0.5, width, 0.5)),
-                    new KeyValuePair<PanelId, Rect>(fourthPanelId, new Rect(width, 0, 1 - width, 1))
+                    new PanelGridState(firstPanelId, new Rect(0, 0, width, 0.5)),
+                    new PanelGridState(thirdPanelId, new Rect(0, 0.5, width, 0.5)),
+                    new PanelGridState(fourthPanelId, new Rect(width, 0, 1 - width, 1))
                 ),
                 "the second panel should be removed and the fourth panel should take up the space due to the horizontal layout"
             };
@@ -286,17 +286,17 @@ public partial class GridUtilsTests
             {
                 CreateState(
                     isHorizontal: true,
-                    new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, width, 0.5)),
-                    new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(width, 0, 1 - width, 0.5)),
-                    new KeyValuePair<PanelId, Rect>(thirdPanelId, new Rect(0, 0.5, width, 0.5)),
-                    new KeyValuePair<PanelId, Rect>(fourthPanelId, new Rect(width, 0.5, 1 - width, 0.5))
+                    new PanelGridState(firstPanelId, new Rect(0, 0, width, 0.5)),
+                    new PanelGridState(secondPanelId, new Rect(width, 0, 1 - width, 0.5)),
+                    new PanelGridState(thirdPanelId, new Rect(0, 0.5, width, 0.5)),
+                    new PanelGridState(fourthPanelId, new Rect(width, 0.5, 1 - width, 0.5))
                 ),
                 fourthPanelId,
                 CreateState(
                     isHorizontal: true,
-                    new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, width, 0.5)),
-                    new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(width, 0, 1 - width, 1)),
-                    new KeyValuePair<PanelId, Rect>(thirdPanelId, new Rect(0, 0.5, width, 0.5))
+                    new PanelGridState(firstPanelId, new Rect(0, 0, width, 0.5)),
+                    new PanelGridState(secondPanelId, new Rect(width, 0, 1 - width, 1)),
+                    new PanelGridState(thirdPanelId, new Rect(0, 0.5, width, 0.5))
                 ),
                 "the fourth panel should be removed and the second panel should take up the space due to the horizontal layout"
             };
@@ -311,17 +311,17 @@ public partial class GridUtilsTests
             {
                 CreateState(
                     isHorizontal: false,
-                    new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, 0.5, height)),
-                    new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(0.5, 0, 0.5, height)),
-                    new KeyValuePair<PanelId, Rect>(thirdPanelId, new Rect(0, height, 0.5, 1 - height)),
-                    new KeyValuePair<PanelId, Rect>(fourthPanelId, new Rect(0.5, height, 0.5, 1 - height))
+                    new PanelGridState(firstPanelId, new Rect(0, 0, 0.5, height)),
+                    new PanelGridState(secondPanelId, new Rect(0.5, 0, 0.5, height)),
+                    new PanelGridState(thirdPanelId, new Rect(0, height, 0.5, 1 - height)),
+                    new PanelGridState(fourthPanelId, new Rect(0.5, height, 0.5, 1 - height))
                 ),
                 firstPanelId,
                 CreateState(
                     isHorizontal: false,
-                    new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(0, 0, 1, height)),
-                    new KeyValuePair<PanelId, Rect>(thirdPanelId, new Rect(0, height, 0.5, 1 - height)),
-                    new KeyValuePair<PanelId, Rect>(fourthPanelId, new Rect(0.5, height, 0.5, 1 - height))
+                    new PanelGridState(secondPanelId, new Rect(0, 0, 1, height)),
+                    new PanelGridState(thirdPanelId, new Rect(0, height, 0.5, 1 - height)),
+                    new PanelGridState(fourthPanelId, new Rect(0.5, height, 0.5, 1 - height))
                 ),
                 "the first panel should be removed and the second panel should take up the space due to the vertical layout"
             };
@@ -330,17 +330,17 @@ public partial class GridUtilsTests
             {
                 CreateState(
                     isHorizontal: false,
-                    new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, 0.5, height)),
-                    new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(0.5, 0, 0.5, height)),
-                    new KeyValuePair<PanelId, Rect>(thirdPanelId, new Rect(0, height, 0.5, 1 - height)),
-                    new KeyValuePair<PanelId, Rect>(fourthPanelId, new Rect(0.5, height, 0.5, 1 - height))
+                    new PanelGridState(firstPanelId, new Rect(0, 0, 0.5, height)),
+                    new PanelGridState(secondPanelId, new Rect(0.5, 0, 0.5, height)),
+                    new PanelGridState(thirdPanelId, new Rect(0, height, 0.5, 1 - height)),
+                    new PanelGridState(fourthPanelId, new Rect(0.5, height, 0.5, 1 - height))
                 ),
                 secondPanelId,
                 CreateState(
                     isHorizontal: false,
-                    new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, 1, height)),
-                    new KeyValuePair<PanelId, Rect>(thirdPanelId, new Rect(0, height, 0.5, 1 - height)),
-                    new KeyValuePair<PanelId, Rect>(fourthPanelId, new Rect(0.5, height, 0.5, 1 - height))
+                    new PanelGridState(firstPanelId, new Rect(0, 0, 1, height)),
+                    new PanelGridState(thirdPanelId, new Rect(0, height, 0.5, 1 - height)),
+                    new PanelGridState(fourthPanelId, new Rect(0.5, height, 0.5, 1 - height))
                 ),
                 "the second panel should be removed and the first panel should take up the space due to the vertical layout"
             };
@@ -349,17 +349,17 @@ public partial class GridUtilsTests
             {
                 CreateState(
                     isHorizontal: false,
-                    new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, 0.5, height)),
-                    new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(0.5, 0, 0.5, height)),
-                    new KeyValuePair<PanelId, Rect>(thirdPanelId, new Rect(0, height, 0.5, 1 - height)),
-                    new KeyValuePair<PanelId, Rect>(fourthPanelId, new Rect(0.5, height, 0.5, 1 - height))
+                    new PanelGridState(firstPanelId, new Rect(0, 0, 0.5, height)),
+                    new PanelGridState(secondPanelId, new Rect(0.5, 0, 0.5, height)),
+                    new PanelGridState(thirdPanelId, new Rect(0, height, 0.5, 1 - height)),
+                    new PanelGridState(fourthPanelId, new Rect(0.5, height, 0.5, 1 - height))
                 ),
                 thirdPanelId,
                 CreateState(
                     isHorizontal: false,
-                    new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, 0.5, height)),
-                    new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(0.5, 0, 0.5, height)),
-                    new KeyValuePair<PanelId, Rect>(fourthPanelId, new Rect(0, height, 1, 1 - height))
+                    new PanelGridState(firstPanelId, new Rect(0, 0, 0.5, height)),
+                    new PanelGridState(secondPanelId, new Rect(0.5, 0, 0.5, height)),
+                    new PanelGridState(fourthPanelId, new Rect(0, height, 1, 1 - height))
                 ),
                 "the third panel should be removed and the fourth panel should take up the space due to the vertical layout"
             };
@@ -368,17 +368,17 @@ public partial class GridUtilsTests
             {
                 CreateState(
                     isHorizontal: false,
-                    new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, 0.5, height)),
-                    new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(0.5, 0, 0.5, height)),
-                    new KeyValuePair<PanelId, Rect>(thirdPanelId, new Rect(0, height, 0.5, 1 - height)),
-                    new KeyValuePair<PanelId, Rect>(fourthPanelId, new Rect(0.5, height, 0.5, 1 - height))
+                    new PanelGridState(firstPanelId, new Rect(0, 0, 0.5, height)),
+                    new PanelGridState(secondPanelId, new Rect(0.5, 0, 0.5, height)),
+                    new PanelGridState(thirdPanelId, new Rect(0, height, 0.5, 1 - height)),
+                    new PanelGridState(fourthPanelId, new Rect(0.5, height, 0.5, 1 - height))
                 ),
                 fourthPanelId,
                 CreateState(
                     isHorizontal: false,
-                    new KeyValuePair<PanelId, Rect>(firstPanelId, new Rect(0, 0, 0.5, height)),
-                    new KeyValuePair<PanelId, Rect>(secondPanelId, new Rect(0.5, 0, 0.5, height)),
-                    new KeyValuePair<PanelId, Rect>(thirdPanelId, new Rect(0, height, 1, 1 - height))
+                    new PanelGridState(firstPanelId, new Rect(0, 0, 0.5, height)),
+                    new PanelGridState(secondPanelId, new Rect(0.5, 0, 0.5, height)),
+                    new PanelGridState(thirdPanelId, new Rect(0, height, 1, 1 - height))
                 ),
                 "the fourth panel should be removed and the third panel should take up the space due to the vertical layout"
             };
