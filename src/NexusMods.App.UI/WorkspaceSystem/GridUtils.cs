@@ -49,83 +49,77 @@ internal static class GridUtils
     /// <summary>
     /// Returns all possible new states.
     /// </summary>
-    internal static IEnumerable<ImmutableDictionary<PanelId, Rect>> GetPossibleStates(
-        ImmutableDictionary<PanelId, Rect> panels,
+    internal static IEnumerable<WorkspaceGridState> GetPossibleStates(
+        WorkspaceGridState workspaceState,
         int columns,
         int rows)
     {
-        if (panels.Count == columns * rows) yield break;
+        if (workspaceState.Count == columns * rows) yield break;
 
-        foreach (var kv in panels)
+        foreach (var panelState in workspaceState)
         {
-            if (CanAddColumn(kv, panels, columns))
+            if (CanAddColumn(workspaceState, panelState, columns))
             {
-                var res = CreateResult(panels, kv, vertical: true, inverse: false);
+                var res = CreateResult(workspaceState, panelState, vertical: true, inverse: false);
                 yield return res;
 
-                if (res.First().Value != res.Last().Value)
-                    yield return CreateResult(panels, kv, vertical: true, inverse: true);
+                if (res[0].Id != res[^1].Id)
+                    yield return CreateResult(workspaceState, panelState, vertical: true, inverse: true);
             }
 
-            if (CanAddRow(kv, panels, rows))
+            if (CanAddRow(workspaceState, panelState, rows))
             {
-                var res = CreateResult(panels, kv, vertical: false, inverse: false);
+                var res = CreateResult(workspaceState, panelState, vertical: false, inverse: false);
                 yield return res;
 
-                if (res.First().Value != res.Last().Value)
-                    yield return CreateResult(panels, kv, vertical: false, inverse: true);
+                if (res[0].Id != res[^1].Id)
+                    yield return CreateResult(workspaceState, panelState, vertical: false, inverse: true);
             }
         }
     }
 
-    private static ImmutableDictionary<PanelId, Rect> CreateResult(
-        ImmutableDictionary<PanelId, Rect> currentPanels,
-        KeyValuePair<PanelId, Rect> kv,
+    private static WorkspaceGridState CreateResult(
+        WorkspaceGridState workspaceState,
+        PanelGridState panelState,
         bool vertical,
         bool inverse)
     {
-        var (updatedLogicalBounds, newPanelLogicalBounds) = MathUtils.Split(kv.Value, vertical);
+        var (updatedLogicalBounds, newPanelLogicalBounds) = MathUtils.Split(panelState.Rect, vertical);
 
+        Span<PanelGridState> updatedValues = stackalloc PanelGridState[2];
         if (inverse)
         {
-            var res = currentPanels.SetItems(new []
-            {
-                new KeyValuePair<PanelId, Rect>(kv.Key, newPanelLogicalBounds),
-                new KeyValuePair<PanelId, Rect>(PanelId.DefaultValue, updatedLogicalBounds)
-            });
-
-            return res;
+            updatedValues[0] = new PanelGridState(PanelId.DefaultValue, updatedLogicalBounds);
+            updatedValues[1] = panelState with { Rect = newPanelLogicalBounds };
         }
         else
         {
-            var res = currentPanels.SetItems(new []
-            {
-                new KeyValuePair<PanelId, Rect>(kv.Key, updatedLogicalBounds),
-                new KeyValuePair<PanelId, Rect>(PanelId.DefaultValue, newPanelLogicalBounds)
-            });
-
-            return res;
+            updatedValues[0] = panelState with { Rect = updatedLogicalBounds };
+            updatedValues[1] = new PanelGridState(PanelId.DefaultValue, newPanelLogicalBounds);
         }
+
+        var res = workspaceState.UnionById(updatedValues);
+        return res;
     }
 
     private static bool CanAddColumn(
-        KeyValuePair<PanelId, Rect> kv,
-        ImmutableDictionary<PanelId, Rect> panels,
+        WorkspaceGridState workspaceState,
+        PanelGridState panelState,
         int maxColumns)
     {
-        var currentColumns = 0;
-        var current = kv.Value;
+        var numColumns = 0;
+        var current = panelState.Rect;
 
         // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
-        foreach (var otherPair in panels)
+        foreach (var otherPanel in workspaceState)
         {
-            var other = otherPair.Value;
+            var other = otherPanel.Rect;
 
             // NOTE(erri120): +1 column if another panel (self included) has the same Y position.
             // Since self is included, the number of columns is guaranteed to be at least 1.
             if (other.Y.IsCloseTo(current.Y))
             {
-                currentColumns++;
+                numColumns++;
                 continue;
             }
 
@@ -141,30 +135,30 @@ internal static class GridUtils
 
             // 2) check if the panel is in the current row
             if (other.Bottom.IsGreaterThanOrCloseTo(current.Y) || other.Top.IsLessThanOrCloseTo(current.Y))
-                currentColumns++;
+                numColumns++;
         }
 
-        return currentColumns < maxColumns;
+        return numColumns < maxColumns;
     }
 
     private static bool CanAddRow(
-        KeyValuePair<PanelId, Rect> kv,
-        ImmutableDictionary<PanelId, Rect> panels,
+        WorkspaceGridState workspaceState,
+        PanelGridState panelState,
         int maxRows)
     {
-        var currentRows = 0;
-        var current = kv.Value;
+        var numRows = 0;
+        var current = panelState.Rect;
 
         // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
-        foreach (var otherPair in panels)
+        foreach (var otherPanel in workspaceState)
         {
-            var other = otherPair.Value;
+            var other = otherPanel.Rect;
 
             // NOTE(erri120): +1 column if another panel (self included) has the same X position.
             // Since self is included, the number of columns is guaranteed to be at least 1.
             if (other.X.IsCloseTo(current.X))
             {
-                currentRows++;
+                numRows++;
                 continue;
             }
 
@@ -180,10 +174,10 @@ internal static class GridUtils
 
             // 2) check if the panel is in the current column
             if (other.Right.IsGreaterThanOrCloseTo(current.X) || other.Left.IsLessThanOrCloseTo(current.X))
-                currentRows++;
+                numRows++;
         }
 
-        return currentRows < maxRows;
+        return numRows < maxRows;
     }
 
     internal static WorkspaceGridState GetStateWithoutPanel(

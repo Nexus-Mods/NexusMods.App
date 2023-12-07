@@ -1,4 +1,3 @@
-using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using Avalonia;
 using FluentAssertions;
@@ -28,27 +27,23 @@ public partial class GridUtilsTests
         }
 
         var actualOutputs = GridUtils.GetPossibleStates(
-            currentState.Inner.ToImmutableDictionary(x => x.Id, x => x.Rect),
+            currentState,
             columns: 2,
             rows: 2
         ).ToArray();
 
-        var convertedOutputs = actualOutputs
-            .Select(actualOutput => new WorkspaceGridState(actualOutput.Select(kv => new PanelGridState(kv.Key, kv.Value)).ToImmutableSortedSet(PanelGridStateComparer.Instance), isHorizontal: currentState.IsHorizontal))
-            .ToArray();
-
-        if (convertedOutputs.Length != 0)
+        if (actualOutputs.Length != 0)
         {
-            convertedOutputs.Should().AllSatisfy(output =>
+            actualOutputs.Should().AllSatisfy(output =>
             {
                 GridUtils.IsPerfectGrid(output).Should().BeTrue();
             });
         }
 
-        convertedOutputs.Should().HaveCount(expectedOutputs.Length);
-        for (var i = 0; i < convertedOutputs.Length; i++)
+        actualOutputs.Should().HaveCount(expectedOutputs.Length);
+        for (var i = 0; i < actualOutputs.Length; i++)
         {
-            convertedOutputs[i].Should().Equal(expectedOutputs[i]);
+            actualOutputs[i].Should().Equal(expectedOutputs[i]);
         }
     }
 

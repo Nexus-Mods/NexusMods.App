@@ -18,12 +18,10 @@ public readonly struct WorkspaceGridState :
         IsHorizontal = isHorizontal;
     }
 
-    public static WorkspaceGridState From(IEnumerable<KeyValuePair<PanelId, Rect>> values, bool isHorizontal)
+    [Obsolete("Usages of the Workspace State as an ImmutableDictionary<> will be phased out.")]
+    public ImmutableDictionary<PanelId, Rect> ToDictionary()
     {
-        return new WorkspaceGridState(
-            inner: values.Select(kv => new PanelGridState(kv.Key, kv.Value)).ToImmutableSortedSet(PanelGridStateComparer.Instance),
-            isHorizontal
-        );
+        return Inner.ToImmutableDictionary(x => x.Id, x => x.Rect);
     }
 
     public static WorkspaceGridState From(IEnumerable<IPanelViewModel> panels, bool isHorizontal)
@@ -77,8 +75,9 @@ public readonly struct WorkspaceGridState :
         return false;
     }
 
-    [SuppressMessage("ReSharper", "ParameterTypeCanBeEnumerable.Global")]
-    public WorkspaceGridState UnionById(PanelGridState[] other)
+    public WorkspaceGridState UnionById(PanelGridState[] other) => UnionById(other.AsSpan());
+
+    public WorkspaceGridState UnionById(ReadOnlySpan<PanelGridState> other)
     {
         var builder = Inner.ToBuilder();
         foreach (var panelToAdd in other)

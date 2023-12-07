@@ -229,12 +229,15 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
             updater.Clear();
             if (_panels.Count == MaxPanelCount) return;
 
-            var panels = _panels.ToImmutableDictionary(panel => panel.Id, panel => panel.LogicalBounds);
-            var states = GridUtils.GetPossibleStates(panels, Columns, Rows);
-            foreach (var state in states)
+            var currentState = WorkspaceGridState.From(_panels, IsHorizontal);
+            var newStates = GridUtils.GetPossibleStates(currentState, Columns, Rows).ToArray();
+
+            foreach (var state in newStates)
             {
-                var image = IconUtils.StateToBitmap(state);
-                updater.Add(new AddPanelButtonViewModel(state, image));
+                var dict = state.ToDictionary();
+
+                var image = IconUtils.StateToBitmap(dict);
+                updater.Add(new AddPanelButtonViewModel(dict, image));
             }
         });
     }
