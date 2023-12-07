@@ -294,16 +294,16 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
 
     public void ClosePanel(PanelId panelToClose)
     {
-        var currentState = _panels.ToImmutableDictionary(panel => panel.Id, panel => panel.LogicalBounds);
-        var newState = GridUtils.GetStateWithoutPanel(currentState, panelToClose, isHorizontal: IsHorizontal);
+        var currentState = WorkspaceGridState.From(_panels, IsHorizontal);
+        var newState = GridUtils.GetStateWithoutPanel(currentState, panelToClose);
 
         _panelSource.Edit(updater =>
         {
             updater.Remove(panelToClose);
 
-            foreach (var kv in newState)
+            foreach (var panelState in newState)
             {
-                var (panelId, logicalBounds) = kv;
+                var (panelId, logicalBounds) = panelState;
                 {
                     var existingPanel = updater.Lookup(panelId);
                     Debug.Assert(existingPanel.HasValue);
