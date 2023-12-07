@@ -14,9 +14,17 @@ public partial class AdvancedInstallerWindowView : ReactiveWindow<IAdvancedInsta
         this.WhenActivated(disposables =>
         {
             this.WhenAnyObservable(view => view.ViewModel!.UnsupportedModVM.DeclineCommand,
-                    view => view.ViewModel!.AdvancedInstallerVM.FooterViewModel.CancelCommand,
-                    view => view.ViewModel!.AdvancedInstallerVM.FooterViewModel.InstallCommand)
+                    view => view.ViewModel!.AdvancedInstallerVM.FooterViewModel.CancelCommand)
                 .Do(_ => Close())
+                .Subscribe()
+                .DisposeWith(disposables);
+
+            this.WhenAnyObservable(view => view.ViewModel!.AdvancedInstallerVM.FooterViewModel.InstallCommand)
+                .Do(_ =>
+                {
+                    ViewModel!.AdvancedInstallerVM.ShouldInstall = true;
+                    Close();
+                })
                 .Subscribe()
                 .DisposeWith(disposables);
 
