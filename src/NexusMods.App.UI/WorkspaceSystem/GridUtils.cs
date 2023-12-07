@@ -198,16 +198,12 @@ internal static class GridUtils
         Span<PanelId> sameRow = stackalloc PanelId[gridState.Count];
         var sameRowCount = 0;
 
-        using (var enumerator = res.EnumerateAdjacentPanels(panelState, includeAnchor: true))
+        foreach (var adjacent in res.EnumerateAdjacentPanels(panelState, includeAnchor: true))
         {
-            while (enumerator.MoveNext())
-            {
-                var adjacent = enumerator.Current;
-                if ((adjacent.Kind & WorkspaceGridState.AdjacencyKind.SameColumn) == WorkspaceGridState.AdjacencyKind.SameColumn)
-                    sameColumn[sameColumnCount++] = adjacent.Panel.Id;
-                if ((adjacent.Kind & WorkspaceGridState.AdjacencyKind.SameRow) == WorkspaceGridState.AdjacencyKind.SameRow)
-                    sameRow[sameRowCount++] = adjacent.Panel.Id;
-            }
+            if ((adjacent.Kind & WorkspaceGridState.AdjacencyKind.SameColumn) == WorkspaceGridState.AdjacencyKind.SameColumn)
+                sameColumn[sameColumnCount++] = adjacent.Panel.Id;
+            if ((adjacent.Kind & WorkspaceGridState.AdjacencyKind.SameRow) == WorkspaceGridState.AdjacencyKind.SameRow)
+                sameRow[sameRowCount++] = adjacent.Panel.Id;
         }
 
         Debug.Assert(sameColumnCount > 0 || sameRowCount > 0);
