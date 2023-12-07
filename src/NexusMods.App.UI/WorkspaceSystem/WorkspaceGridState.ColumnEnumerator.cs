@@ -21,6 +21,9 @@ public readonly partial struct WorkspaceGridState
         }
     }
 
+    /// <summary>
+    /// Efficient column enumerator.
+    /// </summary>
     public ref struct ColumnEnumerator
     {
         private ImmutableSortedSet<PanelGridState>.Enumerator _enumerator;
@@ -61,20 +64,19 @@ public readonly partial struct WorkspaceGridState
 
             if (_currentColumnIndex != _numColumns) _enumerator.Reset();
 
+            // sort the rows by the Y component
             var slice = rowBuffer[..rowCount];
             slice.Sort(YComparer.Instance);
 
             Current = new Column(columnInfo, rowBuffer[..rowCount]);
-
             return true;
         }
 
         private void Setup()
         {
-            for (var i = 0; i < _seenColumns.Length; i++)
-            {
-                _seenColumns[i] = new ColumnInfo(double.PositiveInfinity, double.PositiveInfinity);
-            }
+            // Fill the Span with positive infinity values
+            // This eliminates the need for a running variable and allows us to use BinarySearch
+            _seenColumns.Fill(new ColumnInfo(double.PositiveInfinity, double.PositiveInfinity));
 
             while (_enumerator.MoveNext())
             {
@@ -95,6 +97,7 @@ public readonly partial struct WorkspaceGridState
                     }
                     else
                     {
+                        // the binary search only uses the X component, we want the smallest columns only
                         var other = _seenColumns[index];
                         if (other.Width > rect.Width)
                         {

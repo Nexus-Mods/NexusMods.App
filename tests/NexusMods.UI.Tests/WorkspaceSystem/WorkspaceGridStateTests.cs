@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Avalonia;
 using FluentAssertions;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -37,6 +38,9 @@ public class WorkspaceGridStateTests
         }
     }
 
+    [SuppressMessage("ReSharper", "HeapView.ObjectAllocation.Evident")]
+    [SuppressMessage("ReSharper", "HeapView.ObjectAllocation")]
+    [SuppressMessage("ReSharper", "HeapView.BoxingAllocation")]
     public static IEnumerable<object[]> TestData_ColumnEnumerator()
     {
         var firstPanelId = PanelId.From(Guid.Parse("11111111-1111-1111-1111-111111111111"));
