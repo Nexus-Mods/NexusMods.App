@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Avalonia;
 
@@ -9,8 +10,8 @@ public readonly partial struct WorkspaceGridState :
     IImmutableSet<PanelGridState>,
     IReadOnlyList<PanelGridState>
 {
-    private const int MaxColumns = 8;
-    private const int MaxRows = 8;
+    internal const int MaxColumns = 8;
+    internal const int MaxRows = 8;
 
     public readonly ImmutableSortedSet<PanelGridState> Inner;
     public readonly bool IsHorizontal;
@@ -128,6 +129,18 @@ public readonly partial struct WorkspaceGridState :
         }
 
         return res;
+    }
+
+    [Conditional("DEBUG")]
+    [SuppressMessage("ReSharper", "UnusedMember.Global")]
+    public void DebugPrint()
+    {
+        foreach (var panel in Inner)
+        {
+            Console.WriteLine(panel.ToString());
+        }
+
+        Console.WriteLine();
     }
 
     #region Interface Implementations
