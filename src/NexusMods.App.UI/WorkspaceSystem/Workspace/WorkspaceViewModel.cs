@@ -7,14 +7,15 @@ using Avalonia;
 using DynamicData;
 using DynamicData.Aggregation;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
 public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceViewModel
 {
-    private const int Columns = 2;
-    private const int Rows = 2;
-    private const int MaxPanelCount = Columns * Rows;
+    private const int MaxColumns = 2;
+    private const int MaxRows = 2;
+    private const int MaxPanelCount = MaxColumns * MaxRows;
 
     private readonly SourceCache<IPanelViewModel, PanelId> _panelSource = new(x => x.Id);
     private readonly ReadOnlyObservableCollection<IPanelViewModel> _panels;
@@ -53,6 +54,13 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
 
         this.WhenActivated(disposables =>
         {
+            // Workspace resizing
+            this.WhenAnyValue(vm => vm.IsHorizontal)
+                .Distinct()
+                .Do(_ => UpdateStates())
+                .Do(_ => UpdateResizers())
+                .Subscribe();
+
             // Adding a panel
             _addPanelButtonViewModelSource
                 .Connect()
@@ -196,14 +204,16 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         });
     }
 
-    // TODO: make this reactive
     private Size _lastWorkspaceSize;
-    private bool IsHorizontal => _lastWorkspaceSize.Width > _lastWorkspaceSize.Height;
+
+    [Reactive] private bool IsHorizontal { get; set; }
 
     /// <inheritdoc/>
     public void Arrange(Size workspaceSize)
     {
         _lastWorkspaceSize = workspaceSize;
+        IsHorizontal = _lastWorkspaceSize.Width > _lastWorkspaceSize.Height;
+
         foreach (var panelViewModel in Panels)
         {
             panelViewModel.Arrange(workspaceSize);
@@ -230,7 +240,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
             if (_panels.Count == MaxPanelCount) return;
 
             var currentState = WorkspaceGridState.From(_panels, IsHorizontal);
-            var newStates = GridUtils.GetPossibleStates(currentState, Columns, Rows).ToArray();
+            var newStates = GridUtils.GetPossibleStates(currentState, MaxColumns, MaxRows);
 
             foreach (var state in newStates)
             {
