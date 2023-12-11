@@ -1,14 +1,18 @@
 using System.Collections;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Avalonia;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
-public readonly struct WorkspaceGridState :
+public readonly partial struct WorkspaceGridState :
     IImmutableSet<PanelGridState>,
     IReadOnlyList<PanelGridState>
 {
+    internal const int MaxColumns = 8;
+    internal const int MaxRows = 8;
+
     public readonly ImmutableSortedSet<PanelGridState> Inner;
     public readonly bool IsHorizontal;
 
@@ -18,12 +22,10 @@ public readonly struct WorkspaceGridState :
         IsHorizontal = isHorizontal;
     }
 
-    public static WorkspaceGridState From(IEnumerable<KeyValuePair<PanelId, Rect>> values, bool isHorizontal)
+    [Obsolete("Usages of the Workspace State as an ImmutableDictionary<> will be phased out.")]
+    public ImmutableDictionary<PanelId, Rect> ToDictionary()
     {
-        return new WorkspaceGridState(
-            inner: values.Select(kv => new PanelGridState(kv.Key, kv.Value)).ToImmutableSortedSet(PanelGridStateComparer.Instance),
-            isHorizontal
-        );
+        return Inner.ToImmutableDictionary(x => x.Id, x => x.Rect);
     }
 
     public static WorkspaceGridState From(IEnumerable<IPanelViewModel> panels, bool isHorizontal)
@@ -77,8 +79,9 @@ public readonly struct WorkspaceGridState :
         return false;
     }
 
-    [SuppressMessage("ReSharper", "ParameterTypeCanBeEnumerable.Global")]
-    public WorkspaceGridState UnionById(PanelGridState[] other)
+    public WorkspaceGridState UnionById(PanelGridState[] other) => UnionById(other.AsSpan());
+
+    public WorkspaceGridState UnionById(ReadOnlySpan<PanelGridState> other)
     {
         var builder = Inner.ToBuilder();
         foreach (var panelToAdd in other)
@@ -96,78 +99,48 @@ public readonly struct WorkspaceGridState :
 
     public AdjacentPanelEnumerator EnumerateAdjacentPanels(PanelGridState anchor, bool includeAnchor) => new(this, anchor, includeAnchor);
 
-    [Flags]
-    public enum AdjacencyKind : byte
+    public int CountColumns()
     {
-        None = 0,
-        SameRow = 1 << 0,
-        SameColumn = 1 << 1
+        var res = 0;
+
+        Span<ColumnInfo> seenColumns = stackalloc ColumnInfo[MaxColumns];
+        using var enumerator = new ColumnEnumerator(this, seenColumns);
+
+        Span<PanelGridState> rowBuffer = stackalloc PanelGridState[MaxRows];
+        while (enumerator.MoveNext(rowBuffer))
+        {
+            res += 1;
+        }
+
+        return res;
     }
 
-    public record struct AdjacentPanel(PanelGridState Panel, AdjacencyKind Kind);
-
-    public struct AdjacentPanelEnumerator : IEnumerator<AdjacentPanel>
+    public int CountRows()
     {
-        private ImmutableSortedSet<PanelGridState>.Enumerator _enumerator;
-        private readonly PanelGridState _anchor;
-        private readonly bool _includeAnchor;
+        var res = 0;
 
-        internal AdjacentPanelEnumerator(WorkspaceGridState parent, PanelGridState anchor, bool includeAnchor)
+        Span<RowInfo> seenRows = stackalloc RowInfo[MaxRows];
+        using var enumerator = new RowEnumerator(this, seenRows);
+
+        Span<PanelGridState> columnBuffer = stackalloc PanelGridState[MaxColumns];
+        while (enumerator.MoveNext(columnBuffer))
         {
-            _enumerator = parent.GetEnumerator();
-            _anchor = anchor;
-            _includeAnchor = includeAnchor;
+            res += 1;
         }
 
-        public AdjacentPanel Current { get; private set; }
-        object IEnumerator.Current => Current;
+        return res;
+    }
 
-        public bool MoveNext()
+    [Conditional("DEBUG")]
+    [SuppressMessage("ReSharper", "UnusedMember.Global")]
+    public void DebugPrint()
+    {
+        foreach (var panel in Inner)
         {
-            while (true)
-            {
-                if (!_enumerator.MoveNext()) return false;
-
-                var other = _enumerator.Current;
-                if (!_includeAnchor && other.Id == _anchor.Id) continue;
-
-                var (anchorRect, otherRect) = (_anchor.Rect, other.Rect);
-                var flags = AdjacencyKind.None;
-
-                // same column
-                // | a | x |  | b | x |
-                // | b | x |  | a | x |
-                if (otherRect.Left.IsGreaterThanOrCloseTo(anchorRect.Left) && otherRect.Right.IsLessThanOrCloseTo(anchorRect.Right))
-                {
-                    if (otherRect.Top.IsCloseTo(anchorRect.Bottom) || otherRect.Bottom.IsCloseTo(anchorRect.Top))
-                    {
-                        flags |= AdjacencyKind.SameColumn;
-                    }
-                }
-
-                // same row
-                // | a | b |  | b | a |  | a | b |
-                // | x | x |  | x | x |  | a | c |
-                if (otherRect.Top.IsGreaterThanOrCloseTo(anchorRect.Top) && otherRect.Bottom.IsLessThanOrCloseTo(anchorRect.Bottom))
-                {
-                    if (otherRect.Left.IsCloseTo(anchorRect.Right) || otherRect.Right.IsCloseTo(anchorRect.Left))
-                    {
-                        flags |= AdjacencyKind.SameRow;
-                    }
-                }
-
-                if (flags == AdjacencyKind.None) continue;
-
-                Current = new AdjacentPanel(other, flags);
-                return true;
-            }
+            Console.WriteLine(panel.ToString());
         }
 
-        public void Reset() => _enumerator.Reset();
-        public void Dispose()
-        {
-            _enumerator.Dispose();
-        }
+        Console.WriteLine();
     }
 
     #region Interface Implementations
