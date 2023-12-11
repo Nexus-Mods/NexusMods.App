@@ -145,7 +145,70 @@ internal static class GridUtils
     {
         var res = new List<WorkspaceGridState>();
 
-        // TODO:
+        Span<WorkspaceGridState.RowInfo> seenRows = stackalloc WorkspaceGridState.RowInfo[maxRows];
+        using var rowEnumerator = new WorkspaceGridState.RowEnumerator(currentState, seenRows);
+
+        var rowCount = 0;
+        var columnCount = 0;
+
+        // Step 1: Iterate over all rows.
+        Span<PanelGridState> columnBuffer = stackalloc PanelGridState[maxColumns];
+        while (rowEnumerator.MoveNext(columnBuffer))
+        {
+            rowCount += 1;
+
+            var row = rowEnumerator.Current;
+            var columns = row.Columns;
+            columnCount = Math.Max(columnCount, columns.Length);
+
+            // NOTE(erri120): In a vertical layout, the columns can move independent of columns in other columns.
+            if (columns.Length == maxColumns) continue;
+            foreach (var panelToSplit in columns)
+            {
+                res.Add(CreateResult(currentState, panelToSplit, splitVertically: true, inverse: false));
+                res.Add(CreateResult(currentState, panelToSplit, splitVertically: true, inverse: true));
+            }
+        }
+
+        var seenRowSlice = seenRows[..rowCount];
+
+        Span<WorkspaceGridState.ColumnInfo> seenColumns = stackalloc WorkspaceGridState.ColumnInfo[columnCount];
+        using var columnEnumerator = new WorkspaceGridState.ColumnEnumerator(currentState, seenColumns);
+
+        // Step 2: Iterate over all columns.
+        Span<PanelGridState> rowBuffer = stackalloc PanelGridState[rowCount];
+        while (columnEnumerator.MoveNext(rowBuffer))
+        {
+            var column = columnEnumerator.Current;
+            var rows = column.Rows;
+
+            // NOTE(erri120): In a vertical layout, the rows are linked together.
+            if (rows.Length == maxRows) continue;
+            foreach (var panelToSplit in rows)
+            {
+                var rect = panelToSplit.Rect;
+
+                if (rowCount == 1)
+                {
+                    res.Add(CreateResult(currentState, panelToSplit, splitVertically: false, inverse: false));
+                    res.Add(CreateResult(currentState, panelToSplit, splitVertically: false, inverse: true));
+                }
+
+                foreach (var seenRow in seenRowSlice)
+                {
+                    if (seenRow.Y.IsCloseTo(rect.Y) && seenRow.Height.IsCloseTo(rect.Height)) continue;
+
+                    if (seenRow.Y > rect.Y && seenRow.Bottom().IsLessThanOrCloseTo(rect.Bottom))
+                    {
+                        var updatedLogicalBounds = new Rect(rect.X, rect.Y, rect.Width, seenRow.Height);
+                        var newPanelLogicalBounds = new Rect(rect.X, seenRow.Y, rect.Width, seenRow.Height);
+
+                        res.Add(CreateResult(currentState, panelToSplit,updatedLogicalBounds,newPanelLogicalBounds, inverse: false));
+                        res.Add(CreateResult(currentState, panelToSplit, updatedLogicalBounds, newPanelLogicalBounds, inverse: true));
+                    }
+                }
+            }
+        }
 
         return res;
     }
