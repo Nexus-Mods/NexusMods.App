@@ -13,6 +13,7 @@ public partial class GridUtilsTests
     [Theory]
     [MemberData(nameof(TestData_GetPossibleStates_Generated))]
     public void Test_GetPossibleStates(
+        string name,
         WorkspaceGridState currentState,
         WorkspaceGridState[] expectedOutputs)
     {
@@ -28,11 +29,11 @@ public partial class GridUtilsTests
 
         var actualOutputs = GridUtils.GetPossibleStates(
             currentState,
-            columns: 2,
-            rows: 2
-        ).ToArray();
+            maxColumns: 2,
+            maxRows: 2
+        );
 
-        if (actualOutputs.Length != 0)
+        if (actualOutputs.Count != 0)
         {
             actualOutputs.Should().AllSatisfy(output =>
             {
@@ -41,7 +42,7 @@ public partial class GridUtilsTests
         }
 
         actualOutputs.Should().HaveCount(expectedOutputs.Length);
-        for (var i = 0; i < actualOutputs.Length; i++)
+        for (var i = 0; i < actualOutputs.Count; i++)
         {
             actualOutputs[i].Should().Equal(expectedOutputs[i]);
         }
@@ -65,22 +66,13 @@ public partial class GridUtilsTests
         // 4) split horizontally, new panel is in the first row
         yield return new object[]
         {
+            "one panel",
             CreateState(
                 isHorizontal: true,
                 new PanelGridState(firstPanelId, MathUtils.One)
             ),
             new[]
             {
-                CreateState(
-                    isHorizontal: true,
-                    new PanelGridState(firstPanelId, new Rect(0, 0, 0.5, 1)),
-                    new PanelGridState(newPanelId, new Rect(0.5, 0, 0.5, 1))
-                ),
-                CreateState(
-                    isHorizontal: true,
-                    new PanelGridState(newPanelId, new Rect(0, 0, 0.5, 1)),
-                    new PanelGridState(firstPanelId, new Rect(0.5, 0, 0.5, 1))
-                ),
                 CreateState(
                     isHorizontal: true,
                     new PanelGridState(firstPanelId, new Rect(0, 0, 1, 0.5)),
@@ -90,6 +82,16 @@ public partial class GridUtilsTests
                     isHorizontal: true,
                     new PanelGridState(newPanelId, new Rect(0, 0, 1, 0.5)),
                     new PanelGridState(firstPanelId, new Rect(0, 0.5, 1, 0.5))
+                ),
+                CreateState(
+                    isHorizontal: true,
+                    new PanelGridState(firstPanelId, new Rect(0, 0, 0.5, 1)),
+                    new PanelGridState(newPanelId, new Rect(0.5, 0, 0.5, 1))
+                ),
+                CreateState(
+                    isHorizontal: true,
+                    new PanelGridState(newPanelId, new Rect(0, 0, 0.5, 1)),
+                    new PanelGridState(firstPanelId, new Rect(0.5, 0, 0.5, 1))
                 ),
             }
         };
@@ -106,6 +108,7 @@ public partial class GridUtilsTests
         // TODO: 6) split both the first and second panel horizontally, the new panel will take up the entirety of the first row
         yield return new object[]
         {
+            "two columns",
             CreateState(
                 isHorizontal: true,
                 new PanelGridState(firstPanelId, new Rect(0, 0, 0.5, 1)),
@@ -152,6 +155,7 @@ public partial class GridUtilsTests
         // TODO: 6) split both the first and second panel vertically, the new panel will take up the entirety of the first column
         yield return new object[]
         {
+            "two rows",
             CreateState(
                 isHorizontal: true,
                 new PanelGridState(firstPanelId, new Rect(0, 0, 1, 0.5)),
@@ -194,6 +198,7 @@ public partial class GridUtilsTests
         // 2) split the first panel vertically, the new panel is in the first column
         yield return new object[]
         {
+            "three panels with one large row",
             CreateState(
                 isHorizontal: true,
                 new PanelGridState(firstPanelId, new Rect(0, 0, 1, 0.5)),
@@ -227,6 +232,7 @@ public partial class GridUtilsTests
         // 2) split the first panel horizontally, the new panel is in the first row
         yield return new object[]
         {
+            "three panels with one large column",
             CreateState(
                 isHorizontal: true,
                 new PanelGridState(firstPanelId, new Rect(0, 0, 0.5, 1)),
@@ -256,6 +262,7 @@ public partial class GridUtilsTests
         // Possible States: none
         yield return new object[]
         {
+            "four panels",
             CreateState(
                 isHorizontal: true,
                 new PanelGridState(firstPanelId, new Rect(0, 0, 0.5, 0.5)),
