@@ -11,7 +11,8 @@ namespace NexusMods.UI.Tests.WorkspaceSystem;
 public partial class GridUtilsTests
 {
     [Theory]
-    [MemberData(nameof(TestData_GetPossibleStates_Generated))]
+    [MemberData(nameof(TestData_GetPossibleStates_Horizontal_Generated))]
+    [SuppressMessage("Usage", "xUnit1026:Theory methods should use all of their parameters")]
     public void Test_GetPossibleStates(
         string name,
         WorkspaceGridState currentState,
@@ -48,7 +49,7 @@ public partial class GridUtilsTests
         }
     }
 
-    public static IEnumerable<object[]> TestData_GetPossibleStates_Generated()
+    public static IEnumerable<object[]> TestData_GetPossibleStates_Horizontal_Generated()
     {
         var newPanelId = PanelId.DefaultValue;
         var firstPanelId = PanelId.From(Guid.Parse("11111111-1111-1111-1111-111111111111"));
@@ -56,14 +57,18 @@ public partial class GridUtilsTests
         var thirdPanelId = PanelId.From(Guid.Parse("33333333-3333-3333-3333-333333333333"));
         var fourthPanelId = PanelId.From(Guid.Parse("44444444-4444-4444-4444-444444444444"));
 
+        const double step = 0.1;
+        const double min = 0.2;
+        const double max = 1.0 - min;
+
         // TODO: test with variable sized panels
 
         // Input: one panel
         // Possible States:
-        // 1) split vertically, new panel is in the second column
-        // 2) split vertically, new panel is in the first column
-        // 3) split horizontally, new panel is in the second row
-        // 4) split horizontally, new panel is in the first row
+        // 1) split horizontally, new panel is in the second row
+        // 2) split horizontally, new panel is in the first row
+        // 3) split vertically, new panel is in the second column
+        // 4) split vertically, new panel is in the first column
         yield return new object[]
         {
             "one panel",
@@ -106,42 +111,45 @@ public partial class GridUtilsTests
         // 4) split the second panel horizontally, the new panel is in the first row
         // TODO: 5) split both the first and second panel horizontally, the new panel will take up the entirety of the second row
         // TODO: 6) split both the first and second panel horizontally, the new panel will take up the entirety of the first row
-        yield return new object[]
+        for (var width = min; width < max; width += step)
         {
-            "two columns",
-            CreateState(
-                isHorizontal: true,
-                new PanelGridState(firstPanelId, new Rect(0, 0, 0.5, 1)),
-                new PanelGridState(secondPanelId, new Rect(0.5, 0, 0.5, 1))
-            ),
-            new[]
+            yield return new object[]
             {
+                $"two columns  | width: {width}",
                 CreateState(
                     isHorizontal: true,
-                    new PanelGridState(firstPanelId, new Rect(0, 0, 0.5, 0.5)),
-                    new PanelGridState(newPanelId, new Rect(0, 0.5, 0.5, 0.5)),
-                    new PanelGridState(secondPanelId, new Rect(0.5, 0, 0.5, 1))
+                    new PanelGridState(firstPanelId, new Rect(0, 0, width, 1)),
+                    new PanelGridState(secondPanelId, new Rect(width, 0, 1 - width, 1))
                 ),
-                CreateState(
-                    isHorizontal: true,
-                    new PanelGridState(newPanelId, new Rect(0, 0, 0.5, 0.5)),
-                    new PanelGridState(firstPanelId, new Rect(0, 0.5, 0.5, 0.5)),
-                    new PanelGridState(secondPanelId, new Rect(0.5, 0, 0.5, 1))
-                ),
-                CreateState(
-                    isHorizontal: true,
-                    new PanelGridState(firstPanelId, new Rect(0, 0, 0.5, 1)),
-                    new PanelGridState(secondPanelId, new Rect(0.5, 0, 0.5, 0.5)),
-                    new PanelGridState(newPanelId, new Rect(0.5, 0.5, 0.5, 0.5))
-                ),
-                CreateState(
-                    isHorizontal: true,
-                    new PanelGridState(firstPanelId, new Rect(0, 0, 0.5, 1)),
-                    new PanelGridState(newPanelId, new Rect(0.5, 0, 0.5, 0.5)),
-                    new PanelGridState(secondPanelId, new Rect(0.5, 0.5, 0.5, 0.5))
-                ),
-            }
-        };
+                new[]
+                {
+                    CreateState(
+                        isHorizontal: true,
+                        new PanelGridState(firstPanelId, new Rect(0, 0, width, 0.5)),
+                        new PanelGridState(newPanelId, new Rect(0, 0.5, width, 0.5)),
+                        new PanelGridState(secondPanelId, new Rect(width, 0, 1 - width, 1))
+                    ),
+                    CreateState(
+                        isHorizontal: true,
+                        new PanelGridState(newPanelId, new Rect(0, 0, width, 0.5)),
+                        new PanelGridState(firstPanelId, new Rect(0, 0.5, width, 0.5)),
+                        new PanelGridState(secondPanelId, new Rect(width, 0, 1 - width, 1))
+                    ),
+                    CreateState(
+                        isHorizontal: true,
+                        new PanelGridState(firstPanelId, new Rect(0, 0, width, 1)),
+                        new PanelGridState(secondPanelId, new Rect(width, 0, 1 - width, 0.5)),
+                        new PanelGridState(newPanelId, new Rect(width, 0.5, 1 - width, 0.5))
+                    ),
+                    CreateState(
+                        isHorizontal: true,
+                        new PanelGridState(firstPanelId, new Rect(0, 0, width, 1)),
+                        new PanelGridState(newPanelId, new Rect(width, 0, 1 - width, 0.5)),
+                        new PanelGridState(secondPanelId, new Rect(width, 0.5, 1 - width, 0.5))
+                    ),
+                }
+            };
+        }
 
         // Input: two rows
         // | 1 | 1 |
@@ -196,33 +204,36 @@ public partial class GridUtilsTests
         // Possible States:
         // 1) split the first panel vertically, the new panel is in the second column
         // 2) split the first panel vertically, the new panel is in the first column
-        yield return new object[]
+        for (var width = min; width < max; width += step)
         {
-            "three panels with one large row",
-            CreateState(
-                isHorizontal: true,
-                new PanelGridState(firstPanelId, new Rect(0, 0, 1, 0.5)),
-                new PanelGridState(secondPanelId, new Rect(0, 0.5, 0.5, 0.5)),
-                new PanelGridState(thirdPanelId, new Rect(0.5, 0.5, 0.5, 0.5))
-            ),
-            new[]
+            yield return new object[]
             {
+                $"three panels with one large row | width: {width}",
                 CreateState(
                     isHorizontal: true,
-                    new PanelGridState(firstPanelId, new Rect(0, 0, 0.5, 0.5)),
-                    new PanelGridState(newPanelId, new Rect(0.5, 0, 0.5, 0.5)),
-                    new PanelGridState(secondPanelId, new Rect(0, 0.5, 0.5, 0.5)),
-                    new PanelGridState(thirdPanelId, new Rect(0.5, 0.5, 0.5, 0.5))
+                    new PanelGridState(firstPanelId, new Rect(0, 0, 1, 0.5)),
+                    new PanelGridState(secondPanelId, new Rect(0, 0.5, width, 0.5)),
+                    new PanelGridState(thirdPanelId, new Rect(width, 0.5, 1 - width, 0.5))
                 ),
-                CreateState(
-                    isHorizontal: true,
-                    new PanelGridState(newPanelId, new Rect(0, 0, 0.5, 0.5)),
-                    new PanelGridState(firstPanelId, new Rect(0.5, 0, 0.5, 0.5)),
-                    new PanelGridState(secondPanelId, new Rect(0, 0.5, 0.5, 0.5)),
-                    new PanelGridState(thirdPanelId, new Rect(0.5, 0.5, 0.5, 0.5))
-                )
-            }
-        };
+                new[]
+                {
+                    CreateState(
+                        isHorizontal: true,
+                        new PanelGridState(firstPanelId, new Rect(0, 0, width, 0.5)),
+                        new PanelGridState(newPanelId, new Rect(width, 0, 1 - width, 0.5)),
+                        new PanelGridState(secondPanelId, new Rect(0, 0.5, width, 0.5)),
+                        new PanelGridState(thirdPanelId, new Rect(width, 0.5, 1 - width, 0.5))
+                    ),
+                    CreateState(
+                        isHorizontal: true,
+                        new PanelGridState(newPanelId, new Rect(0, 0, width, 0.5)),
+                        new PanelGridState(firstPanelId, new Rect(width, 0, 1 - width, 0.5)),
+                        new PanelGridState(secondPanelId, new Rect(0, 0.5, width, 0.5)),
+                        new PanelGridState(thirdPanelId, new Rect(width, 0.5, 1 - width, 0.5))
+                    )
+                }
+            };
+        }
 
         // Input: three panels with one large column
         // | 1 | 2 |
