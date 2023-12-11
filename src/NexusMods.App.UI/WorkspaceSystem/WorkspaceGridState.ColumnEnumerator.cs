@@ -9,16 +9,10 @@ public readonly partial struct WorkspaceGridState
         public double Right() => X + Width;
     }
 
-    public ref struct Column
+    public ref struct Column(ColumnInfo info, ReadOnlySpan<PanelGridState> rows)
     {
-        public readonly ColumnInfo Info;
-        public readonly ReadOnlySpan<PanelGridState> Rows;
-
-        public Column(ColumnInfo info, ReadOnlySpan<PanelGridState> rows)
-        {
-            Info = info;
-            Rows = rows;
-        }
+        public readonly ColumnInfo Info = info;
+        public readonly ReadOnlySpan<PanelGridState> Rows = rows;
     }
 
     /// <summary>

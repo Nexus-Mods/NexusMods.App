@@ -9,6 +9,9 @@ public readonly partial struct WorkspaceGridState :
     IImmutableSet<PanelGridState>,
     IReadOnlyList<PanelGridState>
 {
+    private const int MaxColumns = 8;
+    private const int MaxRows = 8;
+
     public readonly ImmutableSortedSet<PanelGridState> Inner;
     public readonly bool IsHorizontal;
 
@@ -94,6 +97,38 @@ public readonly partial struct WorkspaceGridState :
     }
 
     public AdjacentPanelEnumerator EnumerateAdjacentPanels(PanelGridState anchor, bool includeAnchor) => new(this, anchor, includeAnchor);
+
+    public int CountColumns()
+    {
+        var res = 0;
+
+        Span<ColumnInfo> seenColumns = stackalloc ColumnInfo[MaxColumns];
+        using var enumerator = new ColumnEnumerator(this, seenColumns);
+
+        Span<PanelGridState> rowBuffer = stackalloc PanelGridState[MaxRows];
+        while (enumerator.MoveNext(rowBuffer))
+        {
+            res += 1;
+        }
+
+        return res;
+    }
+
+    public int CountRows()
+    {
+        var res = 0;
+
+        Span<RowInfo> seenRows = stackalloc RowInfo[MaxRows];
+        using var enumerator = new RowEnumerator(this, seenRows);
+
+        Span<PanelGridState> columnBuffer = stackalloc PanelGridState[MaxColumns];
+        while (enumerator.MoveNext(columnBuffer))
+        {
+            res += 1;
+        }
+
+        return res;
+    }
 
     #region Interface Implementations
 

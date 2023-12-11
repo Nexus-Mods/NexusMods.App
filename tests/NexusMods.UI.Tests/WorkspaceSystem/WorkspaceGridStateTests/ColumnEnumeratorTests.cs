@@ -36,6 +36,8 @@ public partial class WorkspaceGridStateTests
             actualOutput.Info.Should().Be(expectedOutput.Info);
             actualOutput.Rows.Should().Equal(expectedOutput.Rows);
         }
+
+        currentState.CountColumns().Should().Be(expectedOutputs.Length);
     }
 
     [SuppressMessage("ReSharper", "HeapView.ObjectAllocation.Evident")]
