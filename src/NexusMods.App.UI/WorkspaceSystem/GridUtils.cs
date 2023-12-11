@@ -126,7 +126,7 @@ internal static class GridUtils
                     if (seenColumn.X > rect.X && seenColumn.Right().IsLessThanOrCloseTo(rect.Right))
                     {
                         var updatedLogicalBounds = new Rect(rect.X, rect.Y, seenColumn.X, rect.Height);
-                        var newPanelLogicalBounds = new Rect( seenColumn.X, rect.Y, seenColumn.Width, rect.Height);
+                        var newPanelLogicalBounds = new Rect(seenColumn.X, rect.Y, seenColumn.Width, rect.Height);
 
                         res.Add(CreateResult(currentState, panelToSplit,updatedLogicalBounds,newPanelLogicalBounds, inverse: false));
                         res.Add(CreateResult(currentState, panelToSplit, updatedLogicalBounds, newPanelLogicalBounds, inverse: true));
@@ -200,7 +200,7 @@ internal static class GridUtils
 
                     if (seenRow.Y > rect.Y && seenRow.Bottom().IsLessThanOrCloseTo(rect.Bottom))
                     {
-                        var updatedLogicalBounds = new Rect(rect.X, rect.Y, rect.Width, seenRow.Height);
+                        var updatedLogicalBounds = new Rect(rect.X, rect.Y, rect.Width, seenRow.Y);
                         var newPanelLogicalBounds = new Rect(rect.X, seenRow.Y, rect.Width, seenRow.Height);
 
                         res.Add(CreateResult(currentState, panelToSplit,updatedLogicalBounds,newPanelLogicalBounds, inverse: false));
