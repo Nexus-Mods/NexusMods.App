@@ -68,11 +68,10 @@ internal static class GridUtils
     {
         var res = new List<WorkspaceGridState>();
 
-        Span<WorkspaceGridState.ColumnInfo> seenColumns = stackalloc WorkspaceGridState.ColumnInfo[maxColumns];
-        using var columnEnumerator = new WorkspaceGridState.ColumnEnumerator(currentState, seenColumns);
+        var (columnCount, maxRowCount) = currentState.CountColumns();
 
-        var columnCount = currentState.CountColumns();
-        var maxRowCount = 0;
+        Span<WorkspaceGridState.ColumnInfo> seenColumns = stackalloc WorkspaceGridState.ColumnInfo[columnCount];
+        using var columnEnumerator = new WorkspaceGridState.ColumnEnumerator(currentState, seenColumns);
 
         // Step 1: Iterate over all columns.
         // NOTE(erri120): this will fill up seenColumns
@@ -81,7 +80,6 @@ internal static class GridUtils
         {
             var column = columnEnumerator.Current;
             var rows = column.Rows;
-            maxRowCount = Math.Max(maxRowCount, rows.Length);
 
             // NOTE(erri120): In a horizontal layout, the rows can move independent of rows in other columns.
             if (rows.Length != maxRows)
@@ -154,34 +152,41 @@ internal static class GridUtils
     {
         var res = new List<WorkspaceGridState>();
 
-        Span<WorkspaceGridState.RowInfo> seenRows = stackalloc WorkspaceGridState.RowInfo[maxRows];
-        using var rowEnumerator = new WorkspaceGridState.RowEnumerator(currentState, seenRows);
+        var (rowCount, maxColumnCount) = currentState.CountRows();
 
-        var rowCount = 0;
-        var columnCount = 0;
+        Span<WorkspaceGridState.RowInfo> seenRows = stackalloc WorkspaceGridState.RowInfo[rowCount];
+        using var rowEnumerator = new WorkspaceGridState.RowEnumerator(currentState, seenRows);
 
         // Step 1: Iterate over all rows.
         Span<PanelGridState> columnBuffer = stackalloc PanelGridState[maxColumns];
         while (rowEnumerator.MoveNext(columnBuffer))
         {
-            rowCount += 1;
-
             var row = rowEnumerator.Current;
             var columns = row.Columns;
-            columnCount = Math.Max(columnCount, columns.Length);
 
             // NOTE(erri120): In a vertical layout, the columns can move independent of columns in other columns.
-            if (columns.Length == maxColumns) continue;
-            foreach (var panelToSplit in columns)
+            if (columns.Length != maxColumns)
             {
-                res.Add(SplitPanelInHalf(currentState, panelToSplit, splitVertically: true, inverse: false));
-                res.Add(SplitPanelInHalf(currentState, panelToSplit, splitVertically: true, inverse: true));
+                foreach (var panelToSplit in columns)
+                {
+                    res.Add(SplitPanelInHalf(currentState, panelToSplit, splitVertically: true, inverse: false));
+                    res.Add(SplitPanelInHalf(currentState, panelToSplit, splitVertically: true, inverse: true));
+                }
+            }
+
+            // NOTE(erri120): If these conditions are met, we can split all columns of the current ro win half
+            // to create a new row. Note that this requires knowing the current amount of rows, so two
+            // iterations are required (that's what CountRows does).
+            if (columns.Length > 1 && rowCount != maxRows)
+            {
+                res.Add(AddRow(currentState, row.Info, columns, inverse: false));
+                res.Add(AddRow(currentState, row.Info, columns, inverse: true));
             }
         }
 
         var seenRowSlice = seenRows[..rowCount];
 
-        Span<WorkspaceGridState.ColumnInfo> seenColumns = stackalloc WorkspaceGridState.ColumnInfo[columnCount];
+        Span<WorkspaceGridState.ColumnInfo> seenColumns = stackalloc WorkspaceGridState.ColumnInfo[maxColumnCount];
         using var columnEnumerator = new WorkspaceGridState.ColumnEnumerator(currentState, seenColumns);
 
         // Step 2: Iterate over all columns.
@@ -219,6 +224,35 @@ internal static class GridUtils
             }
         }
 
+        return res;
+    }
+
+    private static WorkspaceGridState AddRow(
+        WorkspaceGridState currentState,
+        WorkspaceGridState.RowInfo rowInfo,
+        ReadOnlySpan<PanelGridState> panelsToSplit,
+        bool inverse)
+    {
+        var newHeight = rowInfo.Height / 2;
+        var currentY = inverse ? newHeight : rowInfo.Y;
+        var newY = inverse ? rowInfo.Y : newHeight;
+
+        Span<PanelGridState> updatedValues = stackalloc PanelGridState[panelsToSplit.Length + 1];
+        for (var i = 0; i < panelsToSplit.Length; i++)
+        {
+            var panelToSplit = panelsToSplit[i];
+            var rect = panelToSplit.Rect;
+            panelToSplit.Rect = new Rect(rect.X, currentY, rect.Width, newHeight);
+
+            updatedValues[i] = panelToSplit;
+        }
+
+        updatedValues[panelsToSplit.Length] = new PanelGridState(
+            PanelId.DefaultValue,
+            new Rect(0, newY, 1.0, newHeight)
+        );
+
+        var res = currentState.UnionById(updatedValues);
         return res;
     }
 
