@@ -342,8 +342,6 @@ public partial class GridUtilsTests
         // 2) split the first panel horizontally, the new panel is in the first row
         // 3) split the second panel horizontally, the new panel is in the second row
         // 4) split the second panel horizontally, the new panel is in the first row
-        // TODO: 5) split both the first and second panel horizontally, the new panel will take up the entirety of the second row
-        // TODO: 6) split both the first and second panel horizontally, the new panel will take up the entirety of the first row
         for (var width = min; width < max; width += step)
         {
             yield return new object[]
@@ -388,12 +386,12 @@ public partial class GridUtilsTests
         // | 1 | 1 |
         // | 2 | 2 |
         // Possible States:
-        // 1) split the first panel vertically, the new panel is in the second column
-        // 2) split the first panel vertically, the new panel is in the first column
-        // 3) split the second panel vertically, the new panel is in the second column
-        // 4) split the second panel vertically, the new panel is in the first column
-        // TODO: 5) split both the first and second panel vertically, the new panel will take up the entirety of the second column
-        // TODO: 6) split both the first and second panel vertically, the new panel will take up the entirety of the first column
+        // 1) split both the first and second panel vertically, the new panel will take up the entirety of the second column
+        // 2) split both the first and second panel vertically, the new panel will take up the entirety of the first column
+        // 3) split the first panel vertically, the new panel is in the second column
+        // 4) split the first panel vertically, the new panel is in the first column
+        // 5) split the second panel vertically, the new panel is in the second column
+        // 6) split the second panel vertically, the new panel is in the first column
         yield return new object[]
         {
             "horizontal | two rows",
@@ -404,6 +402,18 @@ public partial class GridUtilsTests
             ),
             new[]
             {
+                CreateState(
+                    isHorizontal: true,
+                    new PanelGridState(firstPanelId, new Rect(0, 0, 0.5, 0.5)),
+                    new PanelGridState(secondPanelId, new Rect(0, 0.5, 0.5, 0.5)),
+                    new PanelGridState(newPanelId, new Rect(0.5, 0, 0.5, 1))
+                ),
+                CreateState(
+                    isHorizontal: true,
+                    new PanelGridState(newPanelId, new Rect(0, 0, 0.5, 1)),
+                    new PanelGridState(firstPanelId, new Rect(0.5, 0, 0.5, 0.5)),
+                    new PanelGridState(secondPanelId, new Rect(0.5, 0.5, 0.5, 0.5))
+                ),
                 CreateState(
                     isHorizontal: true,
                     new PanelGridState(firstPanelId, new Rect(0, 0, 0.5, 0.5)),
