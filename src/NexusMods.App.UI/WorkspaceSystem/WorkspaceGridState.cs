@@ -99,9 +99,11 @@ public readonly partial struct WorkspaceGridState :
 
     public AdjacentPanelEnumerator EnumerateAdjacentPanels(PanelGridState anchor, bool includeAnchor) => new(this, anchor, includeAnchor);
 
-    public int CountColumns()
+    public (int columnCount, int maxRowCount) CountColumns()
     {
-        var res = 0;
+        // TODO: return maxRowCount as well
+        var columnCount = 0;
+        var maxRowCount = 0;
 
         Span<ColumnInfo> seenColumns = stackalloc ColumnInfo[MaxColumns];
         using var enumerator = new ColumnEnumerator(this, seenColumns);
@@ -109,15 +111,17 @@ public readonly partial struct WorkspaceGridState :
         Span<PanelGridState> rowBuffer = stackalloc PanelGridState[MaxRows];
         while (enumerator.MoveNext(rowBuffer))
         {
-            res += 1;
+            columnCount += 1;
+            maxRowCount = Math.Max(maxRowCount, enumerator.Current.Rows.Length);
         }
 
-        return res;
+        return (columnCount, maxRowCount);
     }
 
-    public int CountRows()
+    public (int rowCount, int maxColumnCount) CountRows()
     {
-        var res = 0;
+        var rowCount = 0;
+        var maxColumnCount = 0;
 
         Span<RowInfo> seenRows = stackalloc RowInfo[MaxRows];
         using var enumerator = new RowEnumerator(this, seenRows);
@@ -125,10 +129,11 @@ public readonly partial struct WorkspaceGridState :
         Span<PanelGridState> columnBuffer = stackalloc PanelGridState[MaxColumns];
         while (enumerator.MoveNext(columnBuffer))
         {
-            res += 1;
+            rowCount += 1;
+            maxColumnCount = Math.Max(maxColumnCount, enumerator.Current.Columns.Length);
         }
 
-        return res;
+        return (rowCount, maxColumnCount);
     }
 
     [Conditional("DEBUG")]

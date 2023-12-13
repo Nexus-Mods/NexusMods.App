@@ -68,35 +68,42 @@ internal static class GridUtils
     {
         var res = new List<WorkspaceGridState>();
 
-        Span<WorkspaceGridState.ColumnInfo> seenColumns = stackalloc WorkspaceGridState.ColumnInfo[maxColumns];
-        using var columnEnumerator = new WorkspaceGridState.ColumnEnumerator(currentState, seenColumns);
+        var (columnCount, maxRowCount) = currentState.CountColumns();
 
-        var columnCount = 0;
-        var rowCount = 0;
+        Span<WorkspaceGridState.ColumnInfo> seenColumns = stackalloc WorkspaceGridState.ColumnInfo[columnCount];
+        using var columnEnumerator = new WorkspaceGridState.ColumnEnumerator(currentState, seenColumns);
 
         // Step 1: Iterate over all columns.
         // NOTE(erri120): this will fill up seenColumns
         Span<PanelGridState> rowBuffer = stackalloc PanelGridState[maxRows];
         while (columnEnumerator.MoveNext(rowBuffer))
         {
-            columnCount += 1;
-
             var column = columnEnumerator.Current;
             var rows = column.Rows;
-            rowCount = Math.Max(rowCount, rows.Length);
 
             // NOTE(erri120): In a horizontal layout, the rows can move independent of rows in other columns.
-            if (rows.Length == maxRows) continue;
-            foreach (var panelToSplit in rows)
+            if (rows.Length != maxRows)
             {
-                res.Add(CreateResult(currentState, panelToSplit, splitVertically: false, inverse: false));
-                res.Add(CreateResult(currentState, panelToSplit, splitVertically: false, inverse: true));
+                foreach (var panelToSplit in rows)
+                {
+                    res.Add(SplitPanelInHalf(currentState, panelToSplit, splitVertically: false, inverse: false));
+                    res.Add(SplitPanelInHalf(currentState, panelToSplit, splitVertically: false, inverse: true));
+                }
+            }
+
+            // NOTE(erri120): If these conditions are met, we can split all rows of the current column in half
+            // to create a new column. Note that this requires knowing the current amount of columns, so two
+            // iterations are required (that's what CountColumns does).
+            if (rows.Length > 1 && columnCount != maxColumns)
+            {
+                res.Add(AddColumn(currentState, column.Info, rows, inverse: false));
+                res.Add(AddColumn(currentState, column.Info, rows, inverse: true));
             }
         }
 
         var seenColumnSlice = seenColumns[..columnCount];
 
-        Span<WorkspaceGridState.RowInfo> seenRows = stackalloc WorkspaceGridState.RowInfo[rowCount];
+        Span<WorkspaceGridState.RowInfo> seenRows = stackalloc WorkspaceGridState.RowInfo[maxRowCount];
         using var rowEnumerator = new WorkspaceGridState.RowEnumerator(currentState, seenRows);
 
         // Step 2: Iterate over all rows.
@@ -114,8 +121,8 @@ internal static class GridUtils
 
                 if (columnCount == 1)
                 {
-                    res.Add(CreateResult(currentState, panelToSplit, splitVertically: true, inverse: false));
-                    res.Add(CreateResult(currentState, panelToSplit, splitVertically: true, inverse: true));
+                    res.Add(SplitPanelInHalf(currentState, panelToSplit, splitVertically: true, inverse: false));
+                    res.Add(SplitPanelInHalf(currentState, panelToSplit, splitVertically: true, inverse: true));
                     continue;
                 }
 
@@ -128,8 +135,8 @@ internal static class GridUtils
                         var updatedLogicalBounds = new Rect(rect.X, rect.Y, seenColumn.X, rect.Height);
                         var newPanelLogicalBounds = new Rect(seenColumn.X, rect.Y, seenColumn.Width, rect.Height);
 
-                        res.Add(CreateResult(currentState, panelToSplit,updatedLogicalBounds,newPanelLogicalBounds, inverse: false));
-                        res.Add(CreateResult(currentState, panelToSplit, updatedLogicalBounds, newPanelLogicalBounds, inverse: true));
+                        res.Add(SplitPanelWithBounds(currentState, panelToSplit,updatedLogicalBounds,newPanelLogicalBounds, inverse: false));
+                        res.Add(SplitPanelWithBounds(currentState, panelToSplit, updatedLogicalBounds, newPanelLogicalBounds, inverse: true));
                     }
                 }
             }
@@ -145,34 +152,41 @@ internal static class GridUtils
     {
         var res = new List<WorkspaceGridState>();
 
-        Span<WorkspaceGridState.RowInfo> seenRows = stackalloc WorkspaceGridState.RowInfo[maxRows];
-        using var rowEnumerator = new WorkspaceGridState.RowEnumerator(currentState, seenRows);
+        var (rowCount, maxColumnCount) = currentState.CountRows();
 
-        var rowCount = 0;
-        var columnCount = 0;
+        Span<WorkspaceGridState.RowInfo> seenRows = stackalloc WorkspaceGridState.RowInfo[rowCount];
+        using var rowEnumerator = new WorkspaceGridState.RowEnumerator(currentState, seenRows);
 
         // Step 1: Iterate over all rows.
         Span<PanelGridState> columnBuffer = stackalloc PanelGridState[maxColumns];
         while (rowEnumerator.MoveNext(columnBuffer))
         {
-            rowCount += 1;
-
             var row = rowEnumerator.Current;
             var columns = row.Columns;
-            columnCount = Math.Max(columnCount, columns.Length);
 
             // NOTE(erri120): In a vertical layout, the columns can move independent of columns in other columns.
-            if (columns.Length == maxColumns) continue;
-            foreach (var panelToSplit in columns)
+            if (columns.Length != maxColumns)
             {
-                res.Add(CreateResult(currentState, panelToSplit, splitVertically: true, inverse: false));
-                res.Add(CreateResult(currentState, panelToSplit, splitVertically: true, inverse: true));
+                foreach (var panelToSplit in columns)
+                {
+                    res.Add(SplitPanelInHalf(currentState, panelToSplit, splitVertically: true, inverse: false));
+                    res.Add(SplitPanelInHalf(currentState, panelToSplit, splitVertically: true, inverse: true));
+                }
+            }
+
+            // NOTE(erri120): If these conditions are met, we can split all columns of the current ro win half
+            // to create a new row. Note that this requires knowing the current amount of rows, so two
+            // iterations are required (that's what CountRows does).
+            if (columns.Length > 1 && rowCount != maxRows)
+            {
+                res.Add(AddRow(currentState, row.Info, columns, inverse: false));
+                res.Add(AddRow(currentState, row.Info, columns, inverse: true));
             }
         }
 
         var seenRowSlice = seenRows[..rowCount];
 
-        Span<WorkspaceGridState.ColumnInfo> seenColumns = stackalloc WorkspaceGridState.ColumnInfo[columnCount];
+        Span<WorkspaceGridState.ColumnInfo> seenColumns = stackalloc WorkspaceGridState.ColumnInfo[maxColumnCount];
         using var columnEnumerator = new WorkspaceGridState.ColumnEnumerator(currentState, seenColumns);
 
         // Step 2: Iterate over all columns.
@@ -190,8 +204,8 @@ internal static class GridUtils
 
                 if (rowCount == 1)
                 {
-                    res.Add(CreateResult(currentState, panelToSplit, splitVertically: false, inverse: false));
-                    res.Add(CreateResult(currentState, panelToSplit, splitVertically: false, inverse: true));
+                    res.Add(SplitPanelInHalf(currentState, panelToSplit, splitVertically: false, inverse: false));
+                    res.Add(SplitPanelInHalf(currentState, panelToSplit, splitVertically: false, inverse: true));
                 }
 
                 foreach (var seenRow in seenRowSlice)
@@ -203,8 +217,8 @@ internal static class GridUtils
                         var updatedLogicalBounds = new Rect(rect.X, rect.Y, rect.Width, seenRow.Y);
                         var newPanelLogicalBounds = new Rect(rect.X, seenRow.Y, rect.Width, seenRow.Height);
 
-                        res.Add(CreateResult(currentState, panelToSplit,updatedLogicalBounds,newPanelLogicalBounds, inverse: false));
-                        res.Add(CreateResult(currentState, panelToSplit, updatedLogicalBounds, newPanelLogicalBounds, inverse: true));
+                        res.Add(SplitPanelWithBounds(currentState, panelToSplit,updatedLogicalBounds,newPanelLogicalBounds, inverse: false));
+                        res.Add(SplitPanelWithBounds(currentState, panelToSplit, updatedLogicalBounds, newPanelLogicalBounds, inverse: true));
                     }
                 }
             }
@@ -213,30 +227,88 @@ internal static class GridUtils
         return res;
     }
 
-    private static WorkspaceGridState CreateResult(
+    private static WorkspaceGridState AddRow(
+        WorkspaceGridState currentState,
+        WorkspaceGridState.RowInfo rowInfo,
+        ReadOnlySpan<PanelGridState> panelsToSplit,
+        bool inverse)
+    {
+        var newHeight = rowInfo.Height / 2;
+        var currentY = inverse ? newHeight : rowInfo.Y;
+        var newY = inverse ? rowInfo.Y : newHeight;
+
+        Span<PanelGridState> updatedValues = stackalloc PanelGridState[panelsToSplit.Length + 1];
+        for (var i = 0; i < panelsToSplit.Length; i++)
+        {
+            var panelToSplit = panelsToSplit[i];
+            var rect = panelToSplit.Rect;
+            panelToSplit.Rect = new Rect(rect.X, currentY, rect.Width, newHeight);
+
+            updatedValues[i] = panelToSplit;
+        }
+
+        updatedValues[panelsToSplit.Length] = new PanelGridState(
+            PanelId.DefaultValue,
+            new Rect(0, newY, 1.0, newHeight)
+        );
+
+        var res = currentState.UnionById(updatedValues);
+        return res;
+    }
+
+    private static WorkspaceGridState AddColumn(
+        WorkspaceGridState currentState,
+        WorkspaceGridState.ColumnInfo columnInfo,
+        ReadOnlySpan<PanelGridState> panelsToSplit,
+        bool inverse)
+    {
+        var newWidth = columnInfo.Width / 2;
+        var currentX = inverse ? newWidth : columnInfo.X;
+        var newX = inverse ? columnInfo.X : newWidth;
+
+        Span<PanelGridState> updatedValues = stackalloc PanelGridState[panelsToSplit.Length + 1];
+        for (var i = 0; i < panelsToSplit.Length; i++)
+        {
+            var panelToSplit = panelsToSplit[i];
+            var rect = panelToSplit.Rect;
+            panelToSplit.Rect = new Rect(currentX, rect.Y, newWidth, rect.Height);
+
+            updatedValues[i] = panelToSplit;
+        }
+
+        updatedValues[panelsToSplit.Length] = new PanelGridState(
+            PanelId.DefaultValue,
+            new Rect(newX, 0, newWidth, 1.0)
+        );
+
+        var res = currentState.UnionById(updatedValues);
+        return res;
+    }
+
+    private static WorkspaceGridState SplitPanelWithBounds(
         WorkspaceGridState currentState,
         PanelGridState panelToSplit,
-        Rect updatedLogicalBounds,
-        Rect newPanelLogicalBounds,
+        Rect updatedBounds,
+        Rect newPanelBounds,
         bool inverse)
     {
         Span<PanelGridState> updatedValues = stackalloc PanelGridState[2];
         if (inverse)
         {
-            updatedValues[0] = new PanelGridState(PanelId.DefaultValue, updatedLogicalBounds);
-            updatedValues[1] = panelToSplit with { Rect = newPanelLogicalBounds };
+            updatedValues[0] = new PanelGridState(PanelId.DefaultValue, updatedBounds);
+            updatedValues[1] = panelToSplit with { Rect = newPanelBounds };
         }
         else
         {
-            updatedValues[0] = panelToSplit with { Rect = updatedLogicalBounds };
-            updatedValues[1] = new PanelGridState(PanelId.DefaultValue, newPanelLogicalBounds);
+            updatedValues[0] = panelToSplit with { Rect = updatedBounds };
+            updatedValues[1] = new PanelGridState(PanelId.DefaultValue, newPanelBounds);
         }
 
         var res = currentState.UnionById(updatedValues);
         return res;
     }
 
-    private static WorkspaceGridState CreateResult(
+    private static WorkspaceGridState SplitPanelInHalf(
         WorkspaceGridState workspaceState,
         PanelGridState panelToSplit,
         bool splitVertically,
