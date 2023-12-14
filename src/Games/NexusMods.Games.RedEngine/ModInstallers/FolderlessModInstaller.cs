@@ -1,9 +1,13 @@
+using Cathei.LinqGen;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.ModInstallers;
+using NexusMods.DataModel.Trees;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
-using NexusMods.Paths.FileTree;
+using NexusMods.Paths.Trees;
+using NexusMods.Paths.Trees.Traits;
+using NexusMods.Paths.Utilities;
 
 namespace NexusMods.Games.RedEngine.ModInstallers;
 
@@ -14,18 +18,24 @@ public class FolderlessModInstaller : IModInstaller
 {
     private static readonly RelativePath Destination = "archive/pc/mod".ToRelativePath();
 
+    private static readonly HashSet<Extension> IgnoreExtensions = new() {
+        KnownExtensions.Txt,
+        KnownExtensions.Md,
+        KnownExtensions.Pdf,
+        KnownExtensions.Png
+    };
+
     public async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
         GameInstallation gameInstallation,
         LoadoutId loadoutId,
         ModId baseModId,
-        FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
+        KeyedBox<RelativePath, ModFileTree> archiveFiles,
         CancellationToken cancellationToken = default)
     {
-
-        var modFiles = archiveFiles.GetAllDescendentFiles()
-            .Where(f => !Helpers.IgnoreExtensions.Contains(f.Path.Extension))
-            .Select(f => f.Value!.ToStoredFile(
-                new GamePath(LocationId.Game, Destination.Join(f.Path.FileName))
+        var modFiles = archiveFiles.EnumerateFilesBfs().Gen()
+            .Where(f => !IgnoreExtensions.Contains(f.Value.Extension()))
+            .Select(f => f.Value.ToStoredFile(
+                new GamePath(LocationId.Game, Destination.Join(f.Value.FileName()))
             ))
             .ToArray();
 

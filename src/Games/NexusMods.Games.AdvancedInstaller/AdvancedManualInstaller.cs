@@ -2,8 +2,10 @@
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.ModInstallers;
+using NexusMods.DataModel.Trees;
 using NexusMods.Paths;
 using NexusMods.Paths.FileTree;
+using NexusMods.Paths.Trees;
 
 namespace NexusMods.Games.AdvancedInstaller;
 
@@ -36,14 +38,12 @@ public class AdvancedManualInstaller : AModInstaller
         GameInstallation gameInstallation,
         LoadoutId loadoutId,
         ModId baseModId,
-        FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
+        KeyedBox<RelativePath, ModFileTree> archiveFiles,
         CancellationToken cancellationToken = default)
     {
         // No UI -> fail install.
         if (!IsActive)
-        {
             return new ValueTask<IEnumerable<ModInstallerResult>>(Enumerable.Empty<ModInstallerResult>());
-        }
 
         return _handler.Value!.GetModsAsync(gameInstallation, loadoutId, baseModId, archiveFiles, cancellationToken);
     }

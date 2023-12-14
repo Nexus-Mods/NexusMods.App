@@ -1,8 +1,8 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using NexusMods.DataModel.Games;
+﻿using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.Trees;
 using NexusMods.Paths;
-using NexusMods.Paths.FileTree;
+using NexusMods.Paths.Trees;
 
 namespace NexusMods.DataModel.ModInstallers;
 
@@ -11,17 +11,15 @@ namespace NexusMods.DataModel.ModInstallers;
 /// </summary>
 public abstract class AModInstaller : IModInstaller
 {
+    // Not used yet, but here to force the service provider to be injected by implementing classes
+    // ReSharper disable once NotAccessedField.Local
     private readonly IServiceProvider _serviceProvider;
 
     /// <summary>
     /// DI Constructor
     /// </summary>
     /// <param name="serviceProvider"></param>
-    protected AModInstaller(IServiceProvider serviceProvider)
-    {
-        // Not used yet, but here to force the service provider to be injected by implementing classes
-        _serviceProvider = serviceProvider;
-    }
+    protected AModInstaller(IServiceProvider serviceProvider) => _serviceProvider = serviceProvider;
 
     /// <summary>
     /// Helper for returning no results
@@ -33,6 +31,6 @@ public abstract class AModInstaller : IModInstaller
         GameInstallation gameInstallation,
         LoadoutId loadoutId,
         ModId baseModId,
-        FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
+        KeyedBox<RelativePath, ModFileTree> archiveFiles,
         CancellationToken cancellationToken = default);
 }

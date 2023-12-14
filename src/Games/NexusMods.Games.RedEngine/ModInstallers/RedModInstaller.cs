@@ -1,13 +1,13 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using NexusMods.Common;
-using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.ModInstallers;
+using NexusMods.DataModel.Trees;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
-using NexusMods.Paths.FileTree;
+using NexusMods.Paths.Trees;
+using NexusMods.Paths.Trees.Traits;
 
 namespace NexusMods.Games.RedEngine.ModInstallers;
 
@@ -20,32 +20,29 @@ public class RedModInstaller : IModInstaller
         GameInstallation gameInstallation,
         LoadoutId loadoutId,
         ModId baseModId,
-        FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
+        KeyedBox<RelativePath, ModFileTree> archiveFiles,
         CancellationToken cancellationToken = default)
     {
-        var infos = (await archiveFiles.GetAllDescendentFiles()
-                .Where(f => f.Path.FileName == InfoJson)
-                .SelectAsync(async f => (File: f, InfoJson: await ReadInfoJson(f.Value!)))
-                .ToArrayAsync())
-            .Where(node => node.InfoJson != null)
-            .ToArray();
+        var infosList = new List<(KeyedBox<RelativePath, ModFileTree>  File, RedModInfo? InfoJson)>();
+        foreach (var f in archiveFiles.GetFiles())
+        {
+            if (f.FileName() != InfoJson)
+                continue;
 
+            var infoJson = await ReadInfoJson(f);
+            if (infoJson != null)
+                infosList.Add((f, infoJson));
+        }
 
         List<ModInstallerResult> results = new();
-
         var baseIdUsed = false;
-        foreach (var node in infos)
+        foreach (var node in infosList)
         {
-            var modFolder = node.File.Parent;
-            var parentName = modFolder.Name;
+            var modFolder = node.File.Parent();
+            var parentName = modFolder!.Segment();
             var files = new List<AModFile>();
-            foreach (var childNode in modFolder.GetAllDescendentFiles())
-            {
-                var path = childNode.Path;
-                var entry = childNode.Value;
-                files.Add(entry!.ToStoredFile(new GamePath(LocationId.Game, Mods.Join(parentName).Join(path.RelativeTo(modFolder.Path)))));
-
-            }
+            foreach (var childNode in modFolder!.GetFiles())
+                files.Add(childNode.ToStoredFile(new GamePath(LocationId.Game, Mods.Join(parentName).Join(childNode.Path().RelativeTo(modFolder!.Item.Path)))));
 
             results.Add(new ModInstallerResult
             {
@@ -59,9 +56,9 @@ public class RedModInstaller : IModInstaller
         return results;
     }
 
-    private static async Task<RedModInfo?> ReadInfoJson(ModSourceFileEntry entry)
+    private static async Task<RedModInfo?> ReadInfoJson(KeyedBox<RelativePath, ModFileTree> entry)
     {
-        await using var stream = await entry.Open();
+        await using var stream = await entry.Item.OpenAsync();
         return await JsonSerializer.DeserializeAsync<RedModInfo>(stream);
     }
 

@@ -1,8 +1,10 @@
 ﻿using System.Reactive.Disposables;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.ModInstallers;
+using NexusMods.DataModel.Trees;
 using NexusMods.Paths;
 using NexusMods.Paths.FileTree;
+using NexusMods.Paths.Trees;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -30,7 +32,7 @@ public class AdvancedInstallerWindowViewModel : AViewModel<IAdvancedInstallerWin
     /// <param name="register">The register of the game locations.</param>
     /// <param name="gameName">The name of the game managed.</param>
     public AdvancedInstallerWindowViewModel(string modName,
-        FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
+        KeyedBox<RelativePath, ModFileTree> archiveFiles,
         GameLocationsRegister register,
         string gameName)
     {

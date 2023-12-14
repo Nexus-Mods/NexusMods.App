@@ -1,8 +1,10 @@
 ﻿using System.Reactive.Disposables;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.ModInstallers;
+using NexusMods.DataModel.Trees;
 using NexusMods.Paths;
 using NexusMods.Paths.FileTree;
+using NexusMods.Paths.Trees;
 using ReactiveUI;
 
 namespace NexusMods.Games.AdvancedInstaller.UI;
@@ -19,7 +21,7 @@ public class AdvancedInstallerPageViewModel : AViewModel<IAdvancedInstallerPageV
     /// <param name="register">The register containing the game locations.</param>
     /// <param name="gameName">The display name of the game being managed.</param>
     public AdvancedInstallerPageViewModel(string modName,
-        FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
+        KeyedBox<RelativePath, ModFileTree> archiveFiles,
         GameLocationsRegister register,
         string gameName)
     {

@@ -4,7 +4,6 @@
 
     <ItemGroup>
         <PackageReference Include="NexusMods.Hashing.xxHash64" />
-        <PackageReference Include="NexusMods.Paths" />
         <PackageReference Include="CliWrap" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
         <PackageReference Include="OneOf" />
@@ -16,6 +15,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\..\NexusMods.Paths\src\NexusMods.Paths\NexusMods.Paths.csproj" />
       <ProjectReference Include="..\NexusMods.Abstractions\NexusMods.Abstractions.csproj" />
     </ItemGroup>
 </Project>

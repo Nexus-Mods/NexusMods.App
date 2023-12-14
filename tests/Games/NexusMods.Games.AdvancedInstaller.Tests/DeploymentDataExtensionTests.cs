@@ -1,6 +1,10 @@
 using FluentAssertions;
+using NexusMods.DataModel.Abstractions.DTOs;
+using NexusMods.DataModel.Trees;
+using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.FileTree;
+using NexusMods.Paths.Trees.Traits;
 
 namespace NexusMods.Games.AdvancedInstaller.Tests;
 
@@ -13,8 +17,7 @@ public partial class DeploymentDataTests
         var data = new DeploymentData();
 
         // Create a File Tree
-        var fileEntries = CreateExtensionTestFileTree();
-        var folderNode = FileTreeNode<RelativePath, int>.CreateTree(fileEntries);
+        var folderNode = ModFileTree.Create(CreateExtensionTestFileTree());
 
         // Act
         data.AddFolderMapping(folderNode, MakeGamePath("Data"));
@@ -32,8 +35,7 @@ public partial class DeploymentDataTests
         var data = new DeploymentData();
 
         // Create a File Tree
-        var fileEntries = CreateExtensionTestFileTree();
-        var folderNode = FileTreeNode<RelativePath, int>.CreateTree(fileEntries).FindNode("folder")!;
+        var folderNode = ModFileTree.Create(CreateExtensionTestFileTree()).FindByPathFromRoot("folder")!;
 
         // Act
         data.AddFolderMapping(folderNode, MakeGamePath("Data"));
@@ -51,15 +53,14 @@ public partial class DeploymentDataTests
 
     private static GamePath MakeGamePath(string path) => new(LocationId.Game, path);
 
-    private static Dictionary<RelativePath, int> CreateExtensionTestFileTree()
+    private static DownloadContentEntry[] CreateExtensionTestFileTree()
     {
-        var fileEntries = new Dictionary<RelativePath, int>
+        return new DownloadContentEntry[]
         {
-            { new RelativePath("folder/file1.txt"), 1 },
-            { new RelativePath("folder/file2.txt"), 2 },
-            { new RelativePath("folder/subfolder/file3.txt"), 3 }
+            new () { Hash = Hash.From(1), Size = Size.From(1), Path = "folder/file1.txt" },
+            new () { Hash = Hash.From(2), Size = Size.From(2), Path = "folder/file2.txt" },
+            new () { Hash = Hash.From(3), Size = Size.From(3), Path = "folder/subfolder/file3.txt" }
         };
-        return fileEntries;
     }
 
     private void AssertMapping(DeploymentData data, string archivePath, GamePath expectedOutputPath)

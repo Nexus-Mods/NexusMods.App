@@ -1,15 +1,13 @@
-using NexusMods.Common;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.ArchiveContents;
-using NexusMods.DataModel.Extensions;
+using Cathei.LinqGen;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.ModInstallers;
+using NexusMods.DataModel.Trees;
 using NexusMods.Games.DarkestDungeon.Models;
-using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
-using NexusMods.Paths.FileTree;
+using NexusMods.Paths.Trees;
+using NexusMods.Paths.Trees.Traits;
 
 namespace NexusMods.Games.DarkestDungeon.Installers;
 
@@ -24,30 +22,28 @@ public class LooseFilesModInstaller : IModInstaller
         GameInstallation gameInstallation,
         LoadoutId loadoutId,
         ModId baseModId,
-        FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
+        KeyedBox<RelativePath, ModFileTree> archiveFiles,
         CancellationToken cancellationToken = default)
     {
         var files = archiveFiles
-            .GetAllDescendentFiles()
-            .Select(kv =>
-            {
-                var (path, file) = kv;
-                return file!.ToStoredFile(
-                    new GamePath(LocationId.Game, ModsFolder.Join(path))
-                );
-            });
+            .GetFiles()
+            .Gen()
+            .Select(kv => kv.ToStoredFile(
+                new GamePath(LocationId.Game, ModsFolder.Join(kv.Path()))
+            ));
 
         // TODO: create project.xml file for the mod
         // this needs to be serialized to XML and added to the files enumerable
+        // ReSharper disable once UnusedVariable
         var modProject = new ModProject
         {
-            Title = archiveFiles.Path.TopParent.ToString()
+            Title = archiveFiles.Path().TopParent.ToString()
         };
 
         return new [] { new ModInstallerResult
         {
             Id = baseModId,
-            Files = files,
+            Files = files.AsEnumerable(),
         }};
     }
 }

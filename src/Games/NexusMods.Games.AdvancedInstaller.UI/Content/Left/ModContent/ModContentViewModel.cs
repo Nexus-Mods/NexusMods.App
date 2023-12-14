@@ -3,8 +3,11 @@ using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Controls.Templates;
 using DynamicData;
 using NexusMods.DataModel.ModInstallers;
+using NexusMods.DataModel.Trees;
 using NexusMods.Paths;
 using NexusMods.Paths.FileTree;
+using NexusMods.Paths.Trees;
+using NexusMods.Paths.Trees.Traits;
 using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.ModContent;
@@ -25,7 +28,7 @@ internal class ModContentViewModel : AViewModel<IModContentViewModel>, IModConte
     public SourceCache<IModContentTreeEntryViewModel, RelativePath> ModContentEntriesCache { get; } =
         new(x => x.RelativePath);
 
-    public ModContentViewModel(FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles)
+    public ModContentViewModel(KeyedBox<RelativePath, ModFileTree> archiveFiles)
     {
         PopulateModContentEntriesCache(ModContentEntriesCache, archiveFiles);
 
@@ -78,9 +81,9 @@ internal class ModContentViewModel : AViewModel<IModContentViewModel>, IModConte
     /// <param name="node">The root node of the filetree containing the archive contents that need to be added.</param>
     private void PopulateModContentEntriesCache(
         ISourceCache<IModContentTreeEntryViewModel, RelativePath> cache,
-        FileTreeNode<RelativePath, ModSourceFileEntry> node)
+        KeyedBox<RelativePath, ModFileTree> node)
     {
-        var allNodes = node.GetAllNodes();
+        var allNodes = node.GetChildrenRecursive();
 
         // Populate the cache
         cache.Edit(updater =>
@@ -89,11 +92,10 @@ internal class ModContentViewModel : AViewModel<IModContentViewModel>, IModConte
             var root = new ModContentTreeEntryViewModel(RelativePath.Empty, true);
             updater.AddOrUpdate(root);
 
-            foreach (var (_, fileTreeNode) in allNodes)
+            foreach (var curNode in allNodes)
             {
-                var relativePath = fileTreeNode.Path;
                 // All the tree leaf nodes are files, so it's a directory if it has children
-                var entry = new ModContentTreeEntryViewModel(relativePath, fileTreeNode.Children.Count > 0);
+                var entry = new ModContentTreeEntryViewModel(curNode.Path(), curNode.IsDirectory());
                 updater.AddOrUpdate(entry);
             }
         });

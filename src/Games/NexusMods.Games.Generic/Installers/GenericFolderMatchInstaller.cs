@@ -1,12 +1,16 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Cathei.LinqGen;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Games.GameCapabilities.FolderMatchInstallerCapability;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.ModInstallers;
+using NexusMods.DataModel.Trees;
 using NexusMods.Paths;
 using NexusMods.Paths.FileTree;
+using NexusMods.Paths.Trees;
+using NexusMods.Paths.Trees.Traits;
 
 namespace NexusMods.Games.Generic.Installers;
 
@@ -47,12 +51,10 @@ public class GenericFolderMatchInstaller : AModInstaller
         GameInstallation gameInstallation,
         LoadoutId loadoutId,
         ModId baseModId,
-        FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
+        KeyedBox<RelativePath, ModFileTree> archiveFiles,
         CancellationToken cancellationToken = default)
     {
-
         List<RelativePath> missedFiles = new();
-
         List<StoredFile> modFiles = new();
 
         foreach (var target in _installFolderTargets)
@@ -94,7 +96,7 @@ public class GenericFolderMatchInstaller : AModInstaller
     /// <param name="target"></param>
     /// <param name="missedFiles"></param>
     /// <returns></returns>
-    private IEnumerable<StoredFile> GetModFilesForTarget(FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
+    private IEnumerable<StoredFile> GetModFilesForTarget(KeyedBox<RelativePath, ModFileTree> archiveFiles,
         InstallFolderTarget target, List<RelativePath> missedFiles)
     {
         List<StoredFile> modFiles = new();
@@ -102,13 +104,13 @@ public class GenericFolderMatchInstaller : AModInstaller
         // TODO: Currently just assumes that the prefix of the first file that matches the target structure is the correct one.
         // Consider checking that each file matches the target at the found location before adding it.
 
-        if (TryFindPrefixToDrop(target, archiveFiles.GetAllDescendentFiles().Select(f => f.Path),
-                out var prefixToDrop))
+        var paths = archiveFiles.GetFiles().Gen().Select(f => f.Path()).AsEnumerable();
+        if (TryFindPrefixToDrop(target, paths, out var prefixToDrop))
         {
-            foreach (var (filePath, fileData) in archiveFiles.GetAllDescendentFiles())
+            foreach (var node in archiveFiles.GetFiles())
             {
+                var filePath = node.Path();
                 var trimmedPath = filePath;
-
                 if (prefixToDrop != RelativePath.Empty)
                 {
                     if (filePath.InFolder(prefixToDrop))
@@ -129,7 +131,7 @@ public class GenericFolderMatchInstaller : AModInstaller
                 var modPath = new GamePath(target.DestinationGamePath.LocationId,
                     target.DestinationGamePath.Path.Join(trimmedPath));
 
-                modFiles.Add(fileData!.ToStoredFile(modPath));
+                modFiles.Add(node.ToStoredFile(modPath));
             }
 
             return modFiles;

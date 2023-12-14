@@ -11,6 +11,7 @@ using NexusMods.DataModel.Loadouts.Cursors;
 using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.DataModel.Sorting.Rules;
+using NexusMods.DataModel.Trees;
 using NexusMods.Paths;
 using NexusMods.Paths.FileTree;
 
@@ -77,16 +78,7 @@ public class ArchiveInstaller : IArchiveInstaller
             using var job = _activityFactory.Create(IArchiveInstaller.Group, "Adding mod files to {Name}", baseMod.Name);
 
             // Create a tree so installers can find the file easily.
-            var tree = FileTreeNode<RelativePath, ModSourceFileEntry>.CreateTree(download.Contents
-                .Select(entry =>
-                KeyValuePair.Create(
-                    entry.Path,
-                    new ModSourceFileEntry
-                    {
-                        Hash = entry.Hash,
-                        Size = entry.Size,
-                        StreamFactory = new ArchiveManagerStreamFactory(_fileStore, entry.Hash) {Name = entry.Path, Size = entry.Size}
-                    })));
+            var tree = ModFileTree.Create(download.Contents, _fileStore);
 
             // Step 3: Run the archive through the installers.
             var installers = loadout.Value.Installation.Game.Installers;

@@ -1,12 +1,16 @@
+using System.Runtime.CompilerServices;
 using System.Text.Json;
+using Cathei.LinqGen;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.ModInstallers;
+using NexusMods.DataModel.Trees;
 using NexusMods.Games.BladeAndSorcery.Models;
 using NexusMods.Paths;
-using NexusMods.Paths.FileTree;
+using NexusMods.Paths.Trees;
+using NexusMods.Paths.Trees.Traits;
 
 namespace NexusMods.Games.BladeAndSorcery.Installers;
 
@@ -30,14 +34,15 @@ public class BladeAndSorceryModInstaller : AModInstaller
         GameInstallation gameInstallation,
         LoadoutId loadoutId,
         ModId baseModId,
-        FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
+        KeyedBox<RelativePath, ModFileTree> archiveFiles,
         CancellationToken cancellationToken = default)
     {
         var modDirectories = archiveFiles
-            .Children
+            .Children()
+            .Gen()
             .Select(x => x.Value)
-            .Where(x => x.IsDirectory)
-            .ToList();
+            .Where(x => x.IsDirectory())
+            .AsEnumerable();
 
         var mods = await GetContainedModsAsync(modDirectories)
             .ToListAsync(cancellationToken);
@@ -48,22 +53,18 @@ public class BladeAndSorceryModInstaller : AModInstaller
     private IEnumerable<ModInstallerResult> PrepareResults(
         GameInstallation gameInstallation,
         ModId baseModId,
-        ICollection<(FileTreeNode<RelativePath, ModSourceFileEntry>, ModManifest)> mods)
+        ICollection<(KeyedBox<RelativePath, ModFileTree>, ModManifest)> mods)
     {
         foreach (var (modRoot, manifest) in mods)
         {
-            var modRootFolder = Constants.ModsDirectory.Join(modRoot.Name);
-
+            var modRootFolder = Constants.ModsDirectory.Join(modRoot.FileName());
             var modFileData = modRoot
-                .GetAllDescendentFiles()
-                .Select(kv =>
-                {
-                    var (path, file) = kv;
-                    var filePath = path.DropFirst();
-                    return file!.ToStoredFile(
-                        new GamePath(LocationId.Game, modRootFolder.Join(filePath))
-                    );
-                });
+                .GetFiles()
+                .Gen()
+                .Select(kv => kv.ToStoredFile(
+                    new GamePath(LocationId.Game, modRootFolder.Join(kv.Path().DropFirst()))
+                ))
+                .AsEnumerable();
 
             if (gameInstallation.Version.ToString() != manifest.GameVersion)
                 _logger.LogDebug(
@@ -82,23 +83,22 @@ public class BladeAndSorceryModInstaller : AModInstaller
         }
     }
 
-    private static async IAsyncEnumerable<(FileTreeNode<RelativePath, ModSourceFileEntry>, ModManifest)>
-        GetContainedModsAsync(IEnumerable<FileTreeNode<RelativePath, ModSourceFileEntry>> modDirectories)
+    private static async IAsyncEnumerable<(KeyedBox<RelativePath, ModFileTree>, ModManifest)>
+        GetContainedModsAsync(IEnumerable<KeyedBox<RelativePath, ModFileTree>> modDirectories)
     {
-        foreach (var fileTreeNode in modDirectories
-                     .Select(x => x.Children.Values.FirstOrDefault(c => c.Name == Constants.ModManifestFileName)))
+        foreach (var directory in modDirectories)
         {
-            if (fileTreeNode?.Value is null)
+            var manifestNode = directory.Children().Values.FirstOrDefault(c => c.FileName() == Constants.ModManifestFileName);
+            if (manifestNode == null)
                 continue;
 
-            await using var stream = await fileTreeNode.Value.Open();
-
+            await using var stream = await manifestNode.Item.OpenAsync();
             var modManifest = await JsonSerializer.DeserializeAsync<ModManifest>(stream);
 
             if (modManifest is null)
                 continue;
 
-            yield return (fileTreeNode.Parent, modManifest);
+            yield return (manifestNode.Parent()!, modManifest);
         }
     }
 }
