@@ -36,3 +36,6 @@ Desktop.ini
 .DS_Store
 
 coverage.json
+
+# Verify
+*.received.*

@@ -64,6 +64,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".solutionItems", ".solution
 		NuGet.Build.props = NuGet.Build.props
 		README.md = README.md
 		Directory.Packages.props = Directory.Packages.props
+		.gitignore = .gitignore
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Games.FOMOD", "src\Games\NexusMods.Games.FOMOD\NexusMods.Games.FOMOD.csproj", "{B43A31B2-1F08-4D8E-9C45-48015FBA983E}"
@@ -129,6 +130,7 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.BladeAndSorcery", "src\Games\NexusMods.Games.BladeAndSorcery\NexusMods.Games.BladeAndSorcery.csproj", "{81F23A27-F517-41AD-B86E-6DCE7B4CCE93}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.BladeAndSorcery.Tests", "tests\Games\NexusMods.Games.BladeAndSorcery.Tests\NexusMods.Games.BladeAndSorcery.Tests.csproj", "{C2F6C9E5-CC53-44B7-994C-5B9287408263}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.AdvancedInstaller.UI", "src\Games\NexusMods.Games.AdvancedInstaller.UI\NexusMods.Games.AdvancedInstaller.UI.csproj", "{07B8ACA6-CE4B-496D-B183-63A57C5F08E1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.AdvancedInstaller.UI.Tests", "tests\Games\NexusMods.Games.AdvancedInstaller.UI.Tests\NexusMods.Games.AdvancedInstaller.UI.Tests.csproj", "{2BFAAE53-AFFF-4F0B-AD76-67918665F298}"

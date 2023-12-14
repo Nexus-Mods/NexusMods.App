@@ -206,7 +206,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
 
     private Size _lastWorkspaceSize;
 
-    [Reactive] private bool IsHorizontal { get; set; }
+    [Reactive] public bool IsHorizontal { get; private set; }
 
     /// <inheritdoc/>
     public void Arrange(Size workspaceSize)
@@ -244,10 +244,8 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
 
             foreach (var state in newStates)
             {
-                var dict = state.ToDictionary();
-
-                var image = IconUtils.StateToBitmap(dict);
-                updater.Add(new AddPanelButtonViewModel(dict, image));
+                var image = IconUtils.StateToBitmap(state);
+                updater.Add(new AddPanelButtonViewModel(state, image));
             }
         });
     }
@@ -271,14 +269,14 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
     }
 
     /// <inheritdoc/>
-    public IPanelViewModel AddPanel(IReadOnlyDictionary<PanelId, Rect> state)
+    public IPanelViewModel AddPanel(WorkspaceGridState state)
     {
         IPanelViewModel panelViewModel = null!;
         _panelSource.Edit(updater =>
         {
-            foreach (var kv in state)
+            foreach (var panel in state)
             {
-                var (panelId, logicalBounds) = kv;
+                var (panelId, logicalBounds) = panel;
                 if (panelId == PanelId.DefaultValue)
                 {
                     panelViewModel = new PanelViewModel(_factoryController)
