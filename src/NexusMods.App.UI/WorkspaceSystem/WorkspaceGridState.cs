@@ -44,6 +44,16 @@ public readonly partial struct WorkspaceGridState :
         );
     }
 
+    public static WorkspaceGridState From(bool isHorizontal, params PanelGridState[] panels) => From(panels, isHorizontal);
+
+    public static WorkspaceGridState From(IReadOnlyDictionary<PanelId, Rect> panels, bool isHorizontal)
+    {
+        return new WorkspaceGridState(
+            inner: panels.Select(kv => new PanelGridState(kv.Key, kv.Value)).ToImmutableSortedSet(PanelGridStateComparer.Instance),
+            isHorizontal
+        );
+    }
+
     public static WorkspaceGridState Empty(bool isHorizontal) => new(ImmutableSortedSet<PanelGridState>.Empty, isHorizontal);
 
     private WorkspaceGridState WithInner(ImmutableSortedSet<PanelGridState> inner)
