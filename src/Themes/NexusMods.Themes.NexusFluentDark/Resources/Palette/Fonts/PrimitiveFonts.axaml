@@ -1,0 +1,25 @@
+<ResourceDictionary
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--
+        When you tell Avalonia for look for fonts, it will use the AvaloniaResource resolver to look in the given folder
+        specified by the prefix, then look at all the fonts in that folder till it finds one with the given name. This means
+        you can't have two fonts with different weights in the same folder. In addition it seems like Avalonia doesn't support
+        variable weight fonts. So...this means you need to pass it a different font for each weight, and put each weight in a
+        separate folder. So if you add more weights/fonts, be sure to set them as "AvaloniaResource" in the project file, then
+        put them in the correct folder, and link them in as shown below.
+
+        Issue on Avalonia's variable font weight support:
+        https://github.com/AvaloniaUI/Avalonia/issues/11092
+    -->
+
+    <FontFamily x:Key="MontserratRegular">/Assets/Fonts/Regular#Montserrat</FontFamily>
+    <FontFamily x:Key="MontserratSemiBold">/Assets/Fonts/Bold#Montserrat</FontFamily>
+    <FontFamily x:Key="MontserratBold">/Assets/Fonts/Bold#Montserrat</FontFamily>
+
+    <FontFamily x:Key="RobotoRegular">/Assets/Fonts/Regular#Roboto</FontFamily>
+    <FontFamily x:Key="RobotoSemiBold">/Assets/Fonts/Bold#Roboto</FontFamily>
+    <FontFamily x:Key="RobotoBold">/Assets/Fonts/Bold#Roboto</FontFamily>
+
+</ResourceDictionary>

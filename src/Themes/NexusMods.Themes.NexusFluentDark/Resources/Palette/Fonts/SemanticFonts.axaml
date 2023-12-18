@@ -1,0 +1,19 @@
+﻿<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Include the Primitive fonts -->
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceInclude Source="/Resources/Palette/Fonts/PrimitiveFonts.axaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+
+    <DynamicResource x:Key="FontHeadlinesRegular" ResourceKey="MontserratRegular"/>
+    <DynamicResource x:Key="FontHeadlinesSemiBold" ResourceKey="MontserratSemiBold"/>
+    <DynamicResource x:Key="FontHeadlinesBold" ResourceKey="MontserratBold"/>
+
+    <DynamicResource x:Key="FontBodyRegular" ResourceKey="RobotoRegular"/>
+    <DynamicResource x:Key="FontBodySemiBold" ResourceKey="RobotoSemiBold"/>
+    <DynamicResource x:Key="FontBodyBold" ResourceKey="RobotoBold"/>
+
+</ResourceDictionary>
+
