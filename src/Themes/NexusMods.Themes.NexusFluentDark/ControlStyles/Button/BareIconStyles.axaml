@@ -6,7 +6,7 @@
     <!-- Preview -->
     <Design.PreviewWith>
         <WrapPanel Width="500">
-            <Button Classes="BareIcon Cog" />
+            <Button Classes="BareIcon Cog"/>
             <Button Classes="BareIcon Cog Small" />
             <Button Classes="BareIcon Help" />
             <Button Classes="BareIcon Bell" />
@@ -46,6 +46,10 @@
         <Style Selector="^:pressed">
             <!-- Accentuate the pressed animation -->
             <Setter Property="RenderTransform" Value="scale(0.9)" />
+        </Style>
+
+        <Style Selector="^:disabled">
+            <Setter Property="Opacity" Value="{StaticResource OpacityDisabledElement}" />
         </Style>
     </Style>
 
