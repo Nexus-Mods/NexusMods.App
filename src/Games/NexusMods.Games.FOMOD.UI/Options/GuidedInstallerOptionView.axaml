@@ -29,7 +29,7 @@
                 <Setter Property="Foreground" Value="{DynamicResource StatusDangerLighter}" />
             </Style>
             <Style Selector="TextBlock.Disabled">
-                <Setter Property="Opacity" Value="0.4"/>
+                <Setter Property="Opacity" Value="{StaticResource OpacityDisabledElement}"/>
             </Style>
             <Style Selector="CheckBox">
                 <Setter Property="Margin" Value="8,0,8,0" />
