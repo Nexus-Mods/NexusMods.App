@@ -183,9 +183,6 @@
                     <TextBlock Theme="{StaticResource Heading2XLSemiTheme}" Text="Sample Text Heading2XLSemi" />
                 </Border>
                 <Border BorderThickness="1" BorderBrush="White" Padding="2">
-                    <TextBlock Theme="{StaticResource Heading2XLSemiTheme}" Text="Sample Text Heading2XLSemi" />
-                </Border>
-                <Border BorderThickness="1" BorderBrush="White" Padding="2">
                     <TextBlock Theme="{StaticResource HeadingXLSemiTheme}" Text="Sample Text HeadingXLSemi" />
                 </Border>
                 <Border BorderThickness="1" BorderBrush="White" Padding="2">

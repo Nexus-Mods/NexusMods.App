@@ -15,11 +15,11 @@
     -->
 
     <FontFamily x:Key="MontserratRegular">/Assets/Fonts/Regular#Montserrat</FontFamily>
-    <FontFamily x:Key="MontserratSemiBold">/Assets/Fonts/Bold#Montserrat</FontFamily>
+    <FontFamily x:Key="MontserratSemiBold">/Assets/Fonts/SemiBold#Montserrat</FontFamily>
     <FontFamily x:Key="MontserratBold">/Assets/Fonts/Bold#Montserrat</FontFamily>
 
     <FontFamily x:Key="RobotoRegular">/Assets/Fonts/Regular#Roboto</FontFamily>
-    <FontFamily x:Key="RobotoSemiBold">/Assets/Fonts/Bold#Roboto</FontFamily>
+    <FontFamily x:Key="RobotoSemiBold">/Assets/Fonts/SemiBold#Roboto</FontFamily>
     <FontFamily x:Key="RobotoBold">/Assets/Fonts/Bold#Roboto</FontFamily>
 
 </ResourceDictionary>
