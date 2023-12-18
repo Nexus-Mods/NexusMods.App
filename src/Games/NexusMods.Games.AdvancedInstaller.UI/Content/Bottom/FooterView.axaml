@@ -35,7 +35,7 @@
                 <TextBlock Text="{x:Static resources:Language.Footer_CANCEL}" />
             </Button>
 
-            <Button Classes="Primary FooterButton" HorizontalAlignment="Right" Grid.Column="2" x:Name="InstallButton">
+            <Button Classes="Standard Primary FooterButton" HorizontalAlignment="Right" Grid.Column="2" x:Name="InstallButton">
                 <TextBlock Text="{x:Static resources:Language.Footer_INSTALL}" />
             </Button>
 

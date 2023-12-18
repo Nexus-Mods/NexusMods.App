@@ -44,7 +44,7 @@
 
                 <!-- Buttons -->
                 <StackPanel Orientation="Vertical" Margin="24" HorizontalAlignment="Stretch">
-                    <Button x:Name="OkButton" Classes="Primary" HorizontalAlignment="Stretch" Margin="0,0,0,10">
+                    <Button x:Name="OkButton" Classes="Standard Primary" HorizontalAlignment="Stretch" Margin="0,0,0,10">
                         <TextBlock Text="{x:Static resources:Language.MessageBox_Button_Yes}"/>
                     </Button>
                     <Button x:Name="CancelButton" Classes="LeftMenuItem" HorizontalAlignment="Stretch">

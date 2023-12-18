@@ -112,7 +112,7 @@
                             <TextBlock Text="{x:Static resources:Language.UnsupportedOverlayFooter_ADVANCED_INSTALL}" />
                         </Button>
 
-                        <Button Classes="Primary FooterButton" HorizontalAlignment="Right" Grid.Column="2"
+                        <Button Classes="Standard Primary FooterButton" HorizontalAlignment="Right" Grid.Column="2"
                                 x:Name="CancelButton">
                             <TextBlock Text="{x:Static resources:Language.UnsupportedOverlayFooter_CLOSE}" />
                         </Button>

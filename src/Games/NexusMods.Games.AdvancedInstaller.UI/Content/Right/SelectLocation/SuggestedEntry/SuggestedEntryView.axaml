@@ -56,7 +56,7 @@
 
 
         <!-- Select Button -->
-        <Button Grid.Column="2" Classes="Rounded RightElements" HorizontalAlignment="Right"
+        <Button Grid.Column="2" Classes="Rounded Primary RightElements" HorizontalAlignment="Right"
                 x:Name="SelectRoundedButton">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="{x:Static resources:Language.SelectButton_Select}"

@@ -54,13 +54,13 @@
                     x:Name="EntryRightElementsStackPanel">
 
             <!-- Install Button (Install / Install all / Install folder) -->
-            <Button Classes="Rounded RightElements" HorizontalAlignment="Right" IsVisible="False"
+            <Button Classes="Rounded Primary RightElements" HorizontalAlignment="Right" IsVisible="False"
                     x:Name="InstallRoundedButton">
                 <TextBlock Text="Install temp text" x:Name="InstallRoundedButtonTextBlock" />
             </Button>
 
             <!-- X Select location ['Selecting' State] -->
-            <Button Classes="Rounded Active RightElements" HorizontalAlignment="Right" IsVisible="False"
+            <Button Classes="Rounded Primary Active RightElements" HorizontalAlignment="Right" IsVisible="False"
                     x:Name="SelectLocationRoundedButton">
                 <StackPanel Orientation="Horizontal">
                     <icons:Icon Classes="Close" x:Name="SelectLocationCloseIcon" />
@@ -79,7 +79,7 @@
             </Button>
 
             <!-- Include Transition Button (Include / Include folder / Include with folder) [`Selecting`,`SelectingViaParent`]-->
-            <Button Classes="Rounded SemiActive RightElements" HorizontalAlignment="Right" IsVisible="False"
+            <Button Classes="Rounded Primary SemiActive RightElements" HorizontalAlignment="Right" IsVisible="False"
                     x:Name="IncludeTransitionButton">
                 <StackPanel Orientation="Horizontal">
                     <icons:Icon Classes="Close" x:Name="IncludeTransitionCloseIcon" />
@@ -88,7 +88,7 @@
             </Button>
 
             <!-- Included Remove Button (Included / Included folder / Included with folder) -->
-            <Button Classes="Rounded SemiActiveAccent RightElements" HorizontalAlignment="Right" IsVisible="False"
+            <Button Classes="Rounded Accent SemiActive RightElements" HorizontalAlignment="Right" IsVisible="False"
                     x:Name="IncludedRemoveButton">
                 <StackPanel Orientation="Horizontal">
                     <icons:Icon Classes="Close" x:Name="IncludedRemoveButtonCloseIcon" />

@@ -47,7 +47,7 @@
               Name="EntryLeftElementsGrid">
 
             <!-- Create Folder Button -->
-            <Button Classes="Rounded" HorizontalAlignment="Left" IsVisible="False" x:Name="CreateFolderButton">
+            <Button Classes="Rounded Primary" HorizontalAlignment="Left" IsVisible="False" x:Name="CreateFolderButton">
                 <StackPanel Orientation="Horizontal">
                     <icons:Icon Classes="Plus" x:Name="CreateFolderPlusIcon" />
                     <TextBlock Text="{x:Static resources:Language.CreateFolderButton_Create_new_folder}"
@@ -82,7 +82,7 @@
                     x:Name="EntryRightElementsStackPanel">
 
             <!-- Delete Created Folder Button -->
-            <Button Classes="Rounded RightElements" HorizontalAlignment="Right" IsVisible="False"
+            <Button Classes="Rounded Primary RightElements" HorizontalAlignment="Right" IsVisible="False"
                     x:Name="DeleteCreatedFolderButton">
                 <StackPanel Orientation="Horizontal">
                     <icons:Icon Classes="DeleteOutline" x:Name="DeleteCreatedFolderDeleteIcon" />
@@ -92,7 +92,7 @@
             </Button>
 
             <!-- Select Button -->
-            <Button Classes="Rounded RightElements" HorizontalAlignment="Right" IsVisible="False"
+            <Button Classes="Rounded Primary RightElements" HorizontalAlignment="Right" IsVisible="False"
                     x:Name="SelectRoundedButton">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="{x:Static resources:Language.SelectButton_Select}"
@@ -101,7 +101,7 @@
             </Button>
 
             <!-- Cancel Create Folder Button -->
-            <Button Classes="Rounded RightElements" HorizontalAlignment="Right" IsVisible="False"
+            <Button Classes="Rounded Primary RightElements" HorizontalAlignment="Right" IsVisible="False"
                     x:Name="CancelCreateFolderButton">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="{x:Static resources:Language.CancelCreateFolderButton_Cancel}"
@@ -110,7 +110,7 @@
             </Button>
 
             <!-- Save Created Folder Button -->
-            <Button Classes="Rounded RightElements" HorizontalAlignment="Right" IsVisible="False"
+            <Button Classes="Rounded Primary RightElements" HorizontalAlignment="Right" IsVisible="False"
                     x:Name="SaveCreatedFolderButton">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="{x:Static resources:Language.SaveCreatedFolderButton_Save}"

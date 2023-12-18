@@ -86,7 +86,7 @@
 
         <!-- Right Elements // Add StackPanel here if adding additional ones -->
         <!-- X Button -->
-        <Button Grid.Column="1" Classes="Rounded RightElements" HorizontalAlignment="Right" x:Name="XRoundedButton">
+        <Button Grid.Column="1" Classes="Rounded Primary RightElements" HorizontalAlignment="Right" x:Name="XRoundedButton">
             <StackPanel Orientation="Horizontal">
                 <icons:Icon Classes="Close" x:Name="StandaloneCloseIcon" />
             </StackPanel>
