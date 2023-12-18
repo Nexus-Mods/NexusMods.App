@@ -1,0 +1,43 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia"/>
+        <PackageReference Include="Avalonia.Themes.Fluent"/>
+        <PackageReference Include="Avalonia.Controls.TreeDataGrid" />
+        <PackageReference Include="Avalonia.Controls.DataGrid" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <AvaloniaResource Include="Assets\DesignTime\cyberpunk_game.png" />
+        <AvaloniaResource Include="Assets\DesignTime\fantasy_game.png" />
+        <AvaloniaResource Include="Assets\Fonts\Bold\Montserrat-Bold.ttf"/>
+        <AvaloniaResource Include="Assets\Fonts\Bold\Roboto-Bold.ttf"/>
+        <AvaloniaResource Include="Assets\Fonts\Regular\Montserrat-Regular.ttf"/>
+        <AvaloniaResource Include="Assets\Fonts\Regular\Roboto-Regular.ttf"/>
+        <AvaloniaResource Include="Assets\Fonts\SemiBold\Montserrat-SemiBold.ttf"/>
+        <AvaloniaResource Include="ControlStyles\Button\PillStyles.xaml" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="Avalonia.Svg.Skia">
+        <HintPath>..\..\..\..\..\..\Users\Al12r\.nuget\packages\avalonia.svg.skia\11.0.0.6\lib\net8.0\Avalonia.Svg.Skia.dll</HintPath>
+      </Reference>
+      <Reference Include="Projektanker.Icons.Avalonia">
+        <HintPath>..\..\..\..\..\..\Users\Al12r\.nuget\packages\projektanker.icons.avalonia\8.3.0\lib\netstandard2.0\Projektanker.Icons.Avalonia.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <UpToDateCheckInput Remove="Playground\ButtonPlaground.axaml" />
+      <UpToDateCheckInput Remove="Palette\Spacing\PrimitiveSpacings.axaml" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <AdditionalFiles Include="Resources\Palette\Colors\BrandColors.axaml" />
+      <AdditionalFiles Include="Resources\Palette\Colors\ElementColors.axaml" />
+      <AdditionalFiles Include="Resources\Palette\Colors\PrimitiveColors.axaml" />
+      <AdditionalFiles Include="Resources\Palette\Fonts\PrimitiveFonts.axaml" />
+      <AdditionalFiles Include="Resources\Palette\Fonts\SemanticFonts.axaml" />
+    </ItemGroup>
+
+</Project>

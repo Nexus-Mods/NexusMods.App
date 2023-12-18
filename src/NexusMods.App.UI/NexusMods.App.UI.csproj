@@ -109,6 +109,7 @@
         <ProjectReference Include="..\Networking\NexusMods.Networking.NexusWebApi.NMA\NexusMods.Networking.NexusWebApi.NMA.csproj" />
         <ProjectReference Include="..\Networking\NexusMods.Networking.NexusWebApi\NexusMods.Networking.NexusWebApi.csproj" />
         <ProjectReference Include="..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
+        <ProjectReference Include="..\Themes\NexusMods.Themes.NexusFluentDark\NexusMods.Themes.NexusFluentDark.csproj" />
     </ItemGroup>
 
     <ItemGroup>
