@@ -251,7 +251,7 @@
 
     <!-- Standard PrimaryOutlined -->
     <Style Selector="Button.Standard.PrimaryOutlined">
-        <Setter Property="Background" Value="{DynamicResource ElementBackgroundTransparent}" />
+        <Setter Property="Background" Value="{DynamicResource ElementBackgroundTransparentBrush}" />
         <Setter Property="BorderBrush" Value="{DynamicResource ElementForegroundPrimaryModerateBrush}" />
 
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
@@ -265,7 +265,7 @@
         </Style>
 
         <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource ElementBackgroundTransparent}" />
+            <Setter Property="Background" Value="{DynamicResource ElementBackgroundTransparentBrush}" />
             <Setter Property="BorderBrush" Value="{DynamicResource ElementForegroundPrimaryModerateBrush}" />
         </Style>
     </Style>
@@ -298,7 +298,7 @@
 
     <!-- Standard SecondaryOutlined -->
     <Style Selector="Button.Standard.SecondaryOutlined">
-        <Setter Property="Background" Value="{DynamicResource ElementBackgroundTransparent}" />
+        <Setter Property="Background" Value="{DynamicResource ElementBackgroundTransparentBrush}" />
         <Setter Property="BorderBrush" Value="{DynamicResource ElementForegroundNeutralModerateBrush}" />
 
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
@@ -312,7 +312,7 @@
         </Style>
 
         <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource ElementBackgroundTransparent}" />
+            <Setter Property="Background" Value="{DynamicResource ElementBackgroundTransparentBrush}" />
             <Setter Property="BorderBrush" Value="{DynamicResource ElementForegroundNeutralWeakBrush}" />
         </Style>
     </Style>
@@ -320,7 +320,7 @@
 
     <!-- Standard Tertiary -->
     <Style Selector="Button.Standard.Tertiary">
-        <Setter Property="Background" Value="{DynamicResource ElementBackgroundTransparent}" />
+        <Setter Property="Background" Value="{DynamicResource ElementBackgroundTransparentBrush}" />
 
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="Background" Value="{DynamicResource ElementBackgroundNeutralTopBrush}" />
@@ -331,7 +331,7 @@
         </Style>
 
         <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource ElementBackgroundTransparent}" />
+            <Setter Property="Background" Value="{DynamicResource ElementBackgroundTransparentBrush}" />
         </Style>
     </Style>
 
