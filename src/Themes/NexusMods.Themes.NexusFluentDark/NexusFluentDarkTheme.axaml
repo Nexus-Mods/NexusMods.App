@@ -1,0 +1,51 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Styles.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="/Resources/ResourceIndex.axaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Styles.Resources>
+
+
+    <FluentTheme>
+        <FluentTheme.Palettes>
+            <ColorPaletteResources x:Key="Dark"
+                           Accent="{DynamicResource ElementForegroundPrimaryModerate}"
+                           AltHigh="{StaticResource ElementBackgroundNeutralBase}"
+                           AltLow="{StaticResource ElementBackgroundNeutralBase}"
+                           AltMedium="{StaticResource ElementBackgroundNeutralBase}"
+                           AltMediumHigh="{StaticResource ElementBackgroundNeutralBase}"
+                           AltMediumLow="{StaticResource ElementBackgroundNeutralBase}"
+                           BaseHigh="{StaticResource ElementBackgroundNeutralInverted}"
+                           BaseLow="{StaticResource ElementStrokeTranslucentSubdued}"
+                           BaseMedium="{StaticResource ElementForegroundNeutralSubdued}"
+                           BaseMediumHigh="{StaticResource ElementForegroundNeutralModerate}"
+                           BaseMediumLow="{StaticResource ElementForegroundNeutralTranslucentWeak}"
+                           ChromeAltLow="{StaticResource ElementForegroundNeutralModerate}"
+                           ChromeBlackHigh="{StaticResource ElementBackgroundNeutralBase}"
+                           ChromeBlackLow="{StaticResource ElementForegroundNeutralModerate}"
+                           ChromeBlackMedium="{StaticResource ElementBackgroundNeutralBase}"
+                           ChromeBlackMediumLow="{StaticResource ElementBackgroundNeutralBase}"
+                           ChromeDisabledHigh="{StaticResource ElementForegroundNeutralTranslucentWeak}"
+                           ChromeDisabledLow="{StaticResource ElementForegroundNeutralSubdued}"
+                           ChromeGray="{StaticResource ElementStrokeTranslucentStrong}"
+                           ChromeHigh="{StaticResource ElementStrokeTranslucentStrong}"
+                           ChromeLow="{StaticResource ElementStrokeTranslucentWeak}"
+                           ChromeMedium="{StaticResource ElementBackgroundNeutralLow}"
+                           ChromeMediumLow="{StaticResource ElementBackgroundNeutralMid}"
+                           ChromeWhite="{StaticResource ElementBackgroundNeutralInverted}"
+                           ListLow="{StaticResource ElementBackgroundNeutralLow}"
+                           ListMedium="{StaticResource ElementStrokeTranslucentSubdued}"
+                           RegionColor="{StaticResource ElementBackgroundNeutralBase}" />
+        </FluentTheme.Palettes>
+    </FluentTheme>
+
+    <StyleInclude Source="avares://Avalonia.Controls.TreeDataGrid/Themes/Fluent.axaml" />
+    <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml" />
+
+    <StyleInclude Source="StylesIndex.axaml"/>
+</Styles>
+

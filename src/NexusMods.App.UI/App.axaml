@@ -9,13 +9,12 @@
     </Application.DataTemplates>
 
     <Application.Styles>
+        <StyleInclude Source="avares://NexusMods.Themes.NexusFluentDark/NexusFluentDarkTheme.axaml" />
         <StyleInclude Source="avares://NexusMods.App.UI/Nexus.xaml" />
     </Application.Styles>
 
     <Application.Resources>
         <ResourceInclude x:Key="Colors" Source="avares://NexusMods.App.UI/Palatte/Colors.axaml"/>
         <ResourceInclude x:Key="Fonts" Source="avares://NexusMods.App.UI/Palatte/Fonts.axaml"/>
-
-        <ResourceInclude x:Key="StandardButtonTheme" Source="avares://NexusMods.App.UI/Controls/Buttons/StandardButtonTheme.axaml"/>
     </Application.Resources>
 </Application>

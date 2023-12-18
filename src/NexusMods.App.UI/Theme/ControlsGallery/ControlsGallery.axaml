@@ -5,7 +5,7 @@
              xmlns:system="clr-namespace:System;assembly=System.Runtime"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="NexusMods.App.UI.Theme.ControlsGallery"
-             Background="{DynamicResource SystemRegionColor}">
+             Background="#ff09090b">
     <ScrollViewer>
         <StackPanel Margin="24,20,24,20" Orientation="Vertical">
             <Border Height="40" Margin="0,0,0,20">

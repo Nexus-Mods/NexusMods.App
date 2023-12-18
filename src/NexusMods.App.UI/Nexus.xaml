@@ -1,31 +1,22 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <FluentTheme>
-        <FluentTheme.Palettes>
-            <ColorPaletteResources x:Key="Light" Accent="#ff0073cf" AltHigh="White" AltLow="White" AltMedium="White"
-                                   AltMediumHigh="White" AltMediumLow="White" BaseHigh="Black" BaseLow="#ffcccccc"
-                                   BaseMedium="#ff898989" BaseMediumHigh="#ff5d5d5d" BaseMediumLow="#ff737373"
-                                   ChromeAltLow="#ff5d5d5d" ChromeBlackHigh="Black" ChromeBlackLow="#ffcccccc"
-                                   ChromeBlackMedium="#ff5d5d5d" ChromeBlackMediumLow="#ff898989"
-                                   ChromeDisabledHigh="#ffcccccc" ChromeDisabledLow="#ff898989" ChromeGray="#ff737373"
-                                   ChromeHigh="#ffcccccc" ChromeLow="#ffececec" ChromeMedium="#ffe6e6e6"
-                                   ChromeMediumLow="#ffececec" ChromeWhite="White" ListLow="#ffe6e6e6"
-                                   ListMedium="#ffcccccc" RegionColor="White" />
-            <ColorPaletteResources x:Key="Dark" Accent="#ff0073cf" AltHigh="Black" AltLow="Black" AltMedium="Black"
-                                   AltMediumHigh="Black" AltMediumLow="Black" BaseHigh="White" BaseLow="#ff333333"
-                                   BaseMedium="#ff9a9a9a" BaseMediumHigh="#ffb4b4b4" BaseMediumLow="#ff676767"
-                                   ChromeAltLow="#ffb4b4b4" ChromeBlackHigh="Black" ChromeBlackLow="#ffb4b4b4"
-                                   ChromeBlackMedium="Black" ChromeBlackMediumLow="Black"
-                                   ChromeDisabledHigh="#ff333333" ChromeDisabledLow="#ff9a9a9a" ChromeGray="Gray"
-                                   ChromeHigh="Gray" ChromeLow="#ff151515" ChromeMedium="#ff1d1d1d"
-                                   ChromeMediumLow="#ff2c2c2c" ChromeWhite="White" ListLow="#ff1d1d1d"
-                                   ListMedium="#ff333333" RegionColor="Black" />
-        </FluentTheme.Palettes>
-    </FluentTheme>
+    <!-- <FluentTheme> -->
+    <!--     <FluentTheme.Palettes> -->
+    <!--         <ColorPaletteResources x:Key="Dark" Accent="#ffd98f40" AltHigh="Black" AltLow="Black" -->
+    <!--                                AltMedium="Black" AltMediumHigh="Black" AltMediumLow="Black" -->
+    <!--                                BaseHigh="White" BaseLow="#4dffffff" BaseMedium="#ffa1a1aa" -->
+    <!--                                BaseMediumHigh="#ffd4d4d8" BaseMediumLow="#66f5f5f5" -->
+    <!--                                ChromeAltLow="#ffd4d4d8" ChromeBlackHigh="Black" ChromeBlackLow="#ffd4d4d8" -->
+    <!--                                ChromeBlackMedium="Black" ChromeBlackMediumLow="Black" -->
+    <!--                                ChromeDisabledHigh="#4dffffff" ChromeDisabledLow="#ffa1a1aa" -->
+    <!--                                ChromeGray="#80ffffff" ChromeHigh="#80ffffff" ChromeLow="#1affffff" -->
+    <!--                                ChromeMedium="#ff18181b" ChromeMediumLow="#ff27272a" ChromeWhite="White" -->
+    <!--                                ListLow="#ff18181b" ListMedium="#4dffffff" RegionColor="#ff09090b" /> -->
+    <!-- -->
+    <!--     </FluentTheme.Palettes> -->
+    <!-- </FluentTheme> -->
 
 
-    <StyleInclude Source="avares://Avalonia.Controls.TreeDataGrid/Themes/Fluent.axaml" />
-    <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml" />
     <StyleInclude Source="avares://NexusMods.App.UI/Palatte/Nexus.xaml" />
-    <StyleInclude Source="avares://NexusMods.App.UI/Controls/GameWidget/GameWidgetStyles.xaml" />
-    <StyleInclude Source="avares://NexusMods.App.UI/Theme/Index.xaml" />
+    <!-- <StyleInclude Source="avares://NexusMods.App.UI/Controls/GameWidget/GameWidgetStyles.xaml" /> -->
+    <!-- <StyleInclude Source="avares://NexusMods.App.UI/Theme/Index.xaml" /> -->
 </Styles>
