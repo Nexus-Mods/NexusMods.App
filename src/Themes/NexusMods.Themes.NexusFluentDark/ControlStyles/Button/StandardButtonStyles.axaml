@@ -70,14 +70,10 @@
                 <StackPanel Classes="VerticalTwoButtonStack" Orientation="Vertical">
                     <TextBlock>Standard Primary</TextBlock>
                     <Button Classes="Standard Primary">
-                        <StackPanel>
                             <TextBlock Text="BUTTON" />
-                        </StackPanel>
                     </Button>
                     <Button Classes="Standard Primary" IsEnabled="False">
-                        <StackPanel>
                             <TextBlock Text="BUTTON" />
-                        </StackPanel>
                     </Button>
                 </StackPanel>
 
@@ -191,6 +187,12 @@
 
         <!-- Allow the BoxShadow for the focus to extend beyond the button bounds -->
         <Setter Property="ClipToBounds" Value="False" />
+
+        <!-- If text is at top level -->
+        <Style Selector="^ > TextBlock">
+            <Setter Property="Theme" Value="{StaticResource TextBlockButtonStandardTheme}" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
 
         <Style Selector="^ > StackPanel">
             <Setter Property="Orientation" Value="Horizontal" />
