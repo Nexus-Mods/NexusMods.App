@@ -1,10 +1,11 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia">
+
     <Design.PreviewWith>
         <Border Padding="20">
             <StackPanel Orientation="Vertical" Spacing="6">
-                <Button Classes="Rounded" IsEnabled="True">
+                <Button Classes="Rounded Primary" IsEnabled="True">
                     <StackPanel Orientation="Horizontal">
                         <icons:Icon Classes="Play" />
                         <TextBlock Text="Rounded" />
@@ -63,18 +64,19 @@
         </Border>
     </Design.PreviewWith>
 
-    <!-- NOTE(Al12rs): Figma currently has three different sections for Rounded buttons,
-    so some additional discrimination classes were needed. Warning they have different roundness as well -->
 
-    <!-- Base Rounded Button (no outline)-->
+    <!-- NOTE(Al12rs): Figma currently has three different sections for Rounded buttons, -->
+    <!-- so some additional discrimination classes were needed. Warning they have different roundness as well -->
+
+    <!-- Base Rounded Button (no outline) -->
     <Style Selector="Button.Rounded">
         <!-- Base Rounded Button (no outline)-->
         <Setter Property="CornerRadius" Value="48" />
         <Setter Property="Background" Value="{DynamicResource BrandWhiteBrush10Percent}" />
         <Setter Property="BorderThickness" Value="1" />
 
-        <!-- NOTE(Al12rs): Odd border thickness values apparently mess with the alignment of the contents.
-            To counter this, we add a negative margin equivalent to the border thickness.-->
+        <!-- NOTE(Al12rs): Odd border thickness values apparently mess with the alignment of the contents. -->
+        <!-- To counter this, we add a negative margin equivalent to the border thickness.-->
         <Style Selector="^ > StackPanel">
             <Setter Property="Margin" Value="-1" />
         </Style>
@@ -102,7 +104,7 @@
         </Style>
         <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="Background" Value="{DynamicResource BrandWhiteBrush10Percent}" />
-            <Setter Property="Opacity" Value="0.4" />
+            <Setter Property="Opacity" Value="{StaticResource OpacityDisabledElement}" />
         </Style>
 
         <!-- Rounded Button Active -->

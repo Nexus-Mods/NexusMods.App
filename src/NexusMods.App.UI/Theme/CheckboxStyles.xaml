@@ -8,16 +8,20 @@
             <CheckBox IsChecked="True">
                 <TextBlock Classes="ButtonMontserratSemi">Checked</TextBlock>
             </CheckBox>
+            <CheckBox IsThreeState="True" IsChecked="{x:Null}">
+                <TextBlock Classes="ButtonMontserratSemi">Tristate</TextBlock>
+            </CheckBox>
             <CheckBox IsChecked="True" IsEnabled="False">
                 <TextBlock Classes="ButtonMontserratSemi">Checked Disabled</TextBlock>
             </CheckBox>
             <CheckBox IsChecked="False" IsEnabled="False">
                 <TextBlock Classes="ButtonMontserratSemi">Unchecked Disabled</TextBlock>
             </CheckBox>
+            <CheckBox IsThreeState="True" IsChecked="{x:Null}" IsEnabled="False">
+                <TextBlock Classes="ButtonMontserratSemi">Tristate Disabled</TextBlock>
+            </CheckBox>
         </StackPanel>
     </Design.PreviewWith>
 
-    <Style Selector="CheckBox:disabled" >
-        <Setter Property="Opacity" Value="0.4"/>
-    </Style>
+
 </Styles>

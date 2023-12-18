@@ -6,7 +6,7 @@
                 <RadioButton IsChecked="False" GroupName="g1">
                     <TextBlock Classes="ButtonMontserratSemi">Unchecked</TextBlock>
                 </RadioButton>
-                <RadioButton IsChecked="True" GroupName="g2">
+                <RadioButton IsChecked="True" GroupName="g1">
                     <TextBlock Classes="ButtonMontserratSemi">Checked</TextBlock>
                 </RadioButton>
                 <RadioButton IsChecked="True" IsEnabled="False" GroupName="g3">
@@ -20,7 +20,7 @@
     </Design.PreviewWith>
 
     <Style Selector="RadioButton:disabled" >
-        <Setter Property="Opacity" Value="0.4"/>
+        <Setter Property="Opacity" Value="{StaticResource OpacityDisabledElement}"/>
     </Style>
 
     <!-- Add Styles Here -->

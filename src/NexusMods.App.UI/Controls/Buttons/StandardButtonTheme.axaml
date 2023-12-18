@@ -249,7 +249,7 @@
         </Style>
 
         <Style Selector="^:disabled">
-            <Setter Property="Opacity" Value="0.4" />
+            <Setter Property="Opacity" Value="{StaticResource OpacityDisabledElement}" />
             <Setter Property="Background" Value="{DynamicResource BrandPrimaryDarker}" />
         </Style>
     </ControlTheme>
@@ -277,7 +277,7 @@
 
         <Style Selector="^:disabled">
             <Setter Property="Foreground" Value="{DynamicResource FontDarkSecondary}" />
-            <Setter Property="Opacity" Value="0.4" />
+            <Setter Property="Opacity" Value="{StaticResource OpacityDisabledElement}" />
         </Style>
     </ControlTheme>
 
@@ -295,7 +295,7 @@
 
         <Style Selector="^:disabled">
             <Setter Property="Background" Value="{DynamicResource BrandTertiary}" />
-            <Setter Property="Opacity" Value="0.4"></Setter>
+            <Setter Property="Opacity" Value="{StaticResource OpacityDisabledElement}"></Setter>
         </Style>
     </ControlTheme>
 
@@ -320,7 +320,7 @@
         </Style>
 
         <Style Selector="^:disabled">
-            <Setter Property="Opacity" Value="0.4" />
+            <Setter Property="Opacity" Value="{StaticResource OpacityDisabledElement}" />
             <Setter Property="Foreground" Value="{DynamicResource FontDarkSecondary}" />
 
             <Style Selector="^ /template/ Border#PART_Border">
@@ -341,7 +341,7 @@
         </Style>
 
         <Style Selector="^:disabled">
-            <Setter Property="Opacity" Value="0.4" />
+            <Setter Property="Opacity" Value="{StaticResource OpacityDisabledElement}" />
             <Setter Property="Foreground" Value="{DynamicResource FontDarkSecondary}" />
         </Style>
     </ControlTheme>
@@ -359,7 +359,7 @@
         </Style>
 
         <Style Selector="^:disabled">
-            <Setter Property="Opacity" Value="0.4" />
+            <Setter Property="Opacity" Value="{StaticResource OpacityDisabledElement}" />
         </Style>
     </ControlTheme>
 </ResourceDictionary>
