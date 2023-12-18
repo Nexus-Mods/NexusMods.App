@@ -65,15 +65,15 @@
 
 
     <Style Selector="icons|Icon.Alert">
-        <Setter Property="Value" Value="mdi-alert"></Setter>
+        <Setter Property="Value" Value="mdi-alert" />
     </Style>
 
     <Style Selector="icons|Icon.AlertOutline">
-        <Setter Property="Value" Value="mdi-alert-outline"></Setter>
+        <Setter Property="Value" Value="mdi-alert-outline" />
     </Style>
 
     <Style Selector="icons|Icon.Bell">
-        <Setter Property="Value" Value="mdi-bell"></Setter>
+        <Setter Property="Value" Value="mdi-bell" />
     </Style>
 
     <Style Selector="icons|Icon.CheckUnderline">
@@ -101,35 +101,35 @@
     </Style>
 
     <Style Selector="icons|Icon.Play">
-        <Setter Property="Value" Value="mdi-play"></Setter>
+        <Setter Property="Value" Value="mdi-play" />
     </Style>
 
     <Style Selector="icons|Icon.PlusCircleOutline">
-        <Setter Property="Value" Value="mdi-plus-circle-outline"></Setter>
+        <Setter Property="Value" Value="mdi-plus-circle-outline" />
     </Style>
 
     <Style Selector="icons|Icon.ProgressDownload">
-        <Setter Property="Value" Value="mdi-progress-download"></Setter>
+        <Setter Property="Value" Value="mdi-progress-download" />
     </Style>
 
     <Style Selector="icons|Icon.PauseCircleOutline">
-        <Setter Property="Value" Value="mdi-pause-circle-outline"></Setter>
+        <Setter Property="Value" Value="mdi-pause-circle-outline" />
     </Style>
 
     <Style Selector="icons|Icon.PauseCircleFilled">
-        <Setter Property="Value" Value="mdi-pause-circle"></Setter>
+        <Setter Property="Value" Value="mdi-pause-circle" />
     </Style>
 
     <Style Selector="icons|Icon.RemoveCircleOutline">
-        <Setter Property="Value" Value="mdi-minus-circle-outline"></Setter>
+        <Setter Property="Value" Value="mdi-minus-circle-outline" />
     </Style>
 
     <Style Selector="icons|Icon.Star">
-        <Setter Property="Value" Value="mdi-star"></Setter>
+        <Setter Property="Value" Value="mdi-star" />
     </Style>
 
     <Style Selector="icons|Icon.TrashCanOutline">
-        <Setter Property="Value" Value="mdi-trash-can-outline"></Setter>
+        <Setter Property="Value" Value="mdi-trash-can-outline" />
     </Style>
 
     <Style Selector="icons|Icon.PlayCircleOutline">
