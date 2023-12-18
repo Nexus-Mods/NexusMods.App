@@ -8,6 +8,8 @@
     <ItemGroup>
         <PackageReference Include="ReactiveUI.Fody" />
         <PackageReference Include="Avalonia.Headless" />
+        <PackageReference Include="Verify.Xunit" />
+        <PackageReference Include="Verify.ImageMagick"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -22,6 +24,10 @@
       </None>
       <None Update="xunit.runner.json">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="WorkspaceSystem\IconUtilsTests.Test_StateToBitmap.verified.png">
+        <ParentFile>IconUtilsTests</ParentFile>
+        <DependentUpon>IconUtilsTests.cs</DependentUpon>
       </None>
     </ItemGroup>
 </Project>

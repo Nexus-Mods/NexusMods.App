@@ -23,7 +23,7 @@ internal static class IconUtils
     /// <summary>
     /// Generates a <see cref="Bitmap"/> for the given state.
     /// </summary>
-    internal static Bitmap StateToBitmap(IReadOnlyDictionary<PanelId, Rect> state)
+    internal static Bitmap StateToBitmap(WorkspaceGridState state)
     {
         using var skPicture = GeneratePicture(state);
         using var skBitmap = skPicture.ToBitmap(
@@ -39,7 +39,7 @@ internal static class IconUtils
         return skBitmap.ToAvaloniaImage();
     }
 
-    private static SKPicture GeneratePicture(IReadOnlyDictionary<PanelId, Rect> state)
+    private static SKPicture GeneratePicture(WorkspaceGridState state)
     {
         using var skPictureRecorder = new SKPictureRecorder();
         using var skCanvas = skPictureRecorder.BeginRecording(new SKRect(0f, 0f, IconSize, IconSize));
@@ -52,9 +52,9 @@ internal static class IconUtils
         using var skPathFilled = new SKPath();
         using var skPathHollow = new SKPath();
 
-        foreach (var kv in state)
+        foreach (var panel in state)
         {
-            var (panelId, rect) = kv;
+            var (panelId, rect) = panel;
             DrawRect(skPathFilled, skPathHollow, rect, isHollow: panelId != PanelId.DefaultValue);
         }
 

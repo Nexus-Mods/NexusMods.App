@@ -24,16 +24,16 @@
   </ItemGroup>
   <ItemGroup>
     <!-- Avalonia -->
-    <PackageVersion Include="Avalonia" Version="11.0.5" />
-    <PackageVersion Include="Avalonia.Controls.DataGrid" Version="11.0.5" />
+    <PackageVersion Include="Avalonia" Version="11.0.6" />
+    <PackageVersion Include="Avalonia.Controls.DataGrid" Version="11.0.6" />
     <PackageVersion Include="Avalonia.Controls.TreeDataGrid" Version="11.0.1" />
-    <PackageVersion Include="Avalonia.Desktop" Version="11.0.5" />
-    <PackageVersion Include="Avalonia.Diagnostics" Version="11.0.5" />
-    <PackageVersion Include="Avalonia.Headless" Version="11.0.5" />
-    <PackageVersion Include="Avalonia.ReactiveUI" Version="11.0.5" />
-    <PackageVersion Include="Avalonia.Themes.Fluent" Version="11.0.5" />
+    <PackageVersion Include="Avalonia.Desktop" Version="11.0.6" />
+    <PackageVersion Include="Avalonia.Diagnostics" Version="11.0.6" />
+    <PackageVersion Include="Avalonia.Headless" Version="11.0.6" />
+    <PackageVersion Include="Avalonia.ReactiveUI" Version="11.0.6" />
+    <PackageVersion Include="Avalonia.Themes.Fluent" Version="11.0.6" />
     <PackageVersion Include="Projektanker.Icons.Avalonia.MaterialDesign" Version="8.3.0" />
-    <PackageVersion Include="Avalonia.Svg.Skia" Version="11.0.0.6" />
+    <PackageVersion Include="Avalonia.Svg.Skia" Version="11.0.0.7" />
   </ItemGroup>
   <ItemGroup>
     <!-- System -->
@@ -58,8 +58,8 @@
   </ItemGroup>
   <ItemGroup>
     <!-- Testing -->
-    <PackageVersion Include="AutoFixture" Version="4.18.0" />
-    <PackageVersion Include="AutoFixture.Xunit2" Version="4.18.0" />
+    <PackageVersion Include="AutoFixture" Version="4.18.1" />
+    <PackageVersion Include="AutoFixture.Xunit2" Version="4.18.1" />
     <PackageVersion Include="coverlet.collector" Version="6.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -80,12 +80,14 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageVersion>
-    <PackageVersion Include="xunit" Version="2.6.1" />
-    <PackageVersion Include="Xunit.DependencyInjection" Version="8.9.0" />
+    <PackageVersion Include="Verify.Xunit" Version="22.8.0" />
+    <PackageVersion Include="Verify.ImageMagick" Version="3.2.2" />
+    <PackageVersion Include="xunit" Version="2.6.3" />
+    <PackageVersion Include="Xunit.DependencyInjection" Version="8.9.1" />
     <PackageVersion Include="Xunit.DependencyInjection.Logging" Version="8.1.0" />
     <PackageVersion Include="Xunit.DependencyInjection.SkippableFact" Version="8.1.0" />
-    <PackageVersion Include="xunit.extensibility.core" Version="2.6.1" />
-    <PackageVersion Include="xunit.runner.visualstudio" Version="2.5.3">
+    <PackageVersion Include="xunit.extensibility.core" Version="2.6.3" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="2.5.5">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageVersion>

@@ -2,11 +2,7 @@ using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Text.Json;
-using Avalonia;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.App.UI.RightContent.LoadoutGrid;
-using NexusMods.Common;
-using NexusMods.DataModel.Loadouts;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -63,10 +59,10 @@ public class WorkspacePlaygroundViewModel : AViewModel<IWorkspacePlaygroundViewM
 
         this.WhenActivated(disposables =>
         {
-            WorkspaceViewModel.AddPanel(new Dictionary<PanelId, Rect>
+            WorkspaceViewModel.AddPanel(WorkspaceGridState.From(new[]
             {
-                { PanelId.DefaultValue, MathUtils.One }
-            });
+                new PanelGridState(PanelId.DefaultValue, MathUtils.One)
+            }, isHorizontal: WorkspaceViewModel.IsHorizontal));
 
             Disposable.Create(() => { }).DisposeWith(disposables);
         });

@@ -19,5 +19,5 @@ public interface IAdvancedInstallerPageViewModel : IViewModelInterface
     /// Indicates whether the user has chosen to install the mod or not.
     /// If false, the DeploymentData should be ignored.
     /// </summary>
-    public bool ShouldInstall { get; }
+    public bool ShouldInstall { get; set;}
 }

@@ -7,199 +7,360 @@ namespace NexusMods.App.UI.WorkspaceSystem;
 internal static class GridUtils
 {
     /// <summary>
-    /// Returns all possible new states.
+    /// Checks whether the given state is a perfect grid.
     /// </summary>
-    internal static IEnumerable<ImmutableDictionary<PanelId, Rect>> GetPossibleStates(
-        ImmutableDictionary<PanelId, Rect> panels,
-        int columns,
-        int rows)
+    /// <remarks>
+    /// A perfect has no gaps, and no panel is out-of-bounds.
+    /// </remarks>
+    /// <exception cref="Exception">Thrown when the grid is not perfect.</exception>
+    internal static bool IsPerfectGrid(WorkspaceGridState gridState)
     {
-        if (panels.Count == columns * rows) yield break;
+        var totalArea = 0.0;
 
-        foreach (var kv in panels)
+        foreach (var panelState in gridState)
         {
-            if (CanAddColumn(kv, panels, columns))
+            var (id, rect) = panelState;
+            if (rect.Left < 0.0 || rect.Right > 1.0 || rect.Top < 0.0 || rect.Bottom > 1.0)
             {
-                var res = CreateResult(panels, kv, vertical: true, inverse: false);
-                yield return res;
-
-                if (res.First().Value != res.Last().Value)
-                    yield return CreateResult(panels, kv, vertical: true, inverse: true);
+                throw new Exception($"Panel {panelState} is out of bounds");
             }
 
-            if (CanAddRow(kv, panels, rows))
-            {
-                var res = CreateResult(panels, kv, vertical: false, inverse: false);
-                yield return res;
+            totalArea += rect.Height * rect.Width;
 
-                if (res.First().Value != res.Last().Value)
-                    yield return CreateResult(panels, kv, vertical: false, inverse: true);
+            foreach (var other in gridState)
+            {
+                if (id == other.Id) continue;
+
+                if (rect.Intersects(other.Rect))
+                {
+                    throw new Exception($"{panelState.ToString()} intersects with {other.ToString()}");
+                }
             }
         }
+
+        if (!totalArea.IsCloseTo(1.0))
+        {
+            throw new Exception($"Area of {totalArea} doesn't match 1.0");
+        }
+
+        return true;
     }
 
-    private static ImmutableDictionary<PanelId, Rect> CreateResult(
-        ImmutableDictionary<PanelId, Rect> currentPanels,
-        KeyValuePair<PanelId, Rect> kv,
-        bool vertical,
+    /// <summary>
+    /// Returns all possible new states.
+    /// </summary>
+    internal static List<WorkspaceGridState> GetPossibleStates(
+        WorkspaceGridState currentState,
+        int maxColumns,
+        int maxRows)
+    {
+        if (currentState.Count == maxColumns * maxRows) return [];
+
+        return currentState.IsHorizontal
+            ? GetPossibleStatesForHorizontal(currentState, maxColumns, maxRows)
+            : GetPossibleStatesForVertical(currentState, maxColumns, maxRows);
+    }
+
+    private static List<WorkspaceGridState> GetPossibleStatesForHorizontal(
+        WorkspaceGridState currentState,
+        int maxColumns,
+        int maxRows)
+    {
+        var res = new List<WorkspaceGridState>();
+
+        var (columnCount, maxRowCount) = currentState.CountColumns();
+
+        Span<WorkspaceGridState.ColumnInfo> seenColumns = stackalloc WorkspaceGridState.ColumnInfo[columnCount];
+        using var columnEnumerator = new WorkspaceGridState.ColumnEnumerator(currentState, seenColumns);
+
+        // Step 1: Iterate over all columns.
+        // NOTE(erri120): this will fill up seenColumns
+        Span<PanelGridState> rowBuffer = stackalloc PanelGridState[maxRows];
+        while (columnEnumerator.MoveNext(rowBuffer))
+        {
+            var column = columnEnumerator.Current;
+            var rows = column.Rows;
+
+            // NOTE(erri120): In a horizontal layout, the rows can move independent of rows in other columns.
+            if (rows.Length != maxRows)
+            {
+                foreach (var panelToSplit in rows)
+                {
+                    res.Add(SplitPanelInHalf(currentState, panelToSplit, splitVertically: false, inverse: false));
+                    res.Add(SplitPanelInHalf(currentState, panelToSplit, splitVertically: false, inverse: true));
+                }
+            }
+
+            // NOTE(erri120): If these conditions are met, we can split all rows of the current column in half
+            // to create a new column. Note that this requires knowing the current amount of columns, so two
+            // iterations are required (that's what CountColumns does).
+            if (rows.Length > 1 && columnCount != maxColumns)
+            {
+                res.Add(AddColumn(currentState, column.Info, rows, inverse: false));
+                res.Add(AddColumn(currentState, column.Info, rows, inverse: true));
+            }
+        }
+
+        var seenColumnSlice = seenColumns[..columnCount];
+
+        Span<WorkspaceGridState.RowInfo> seenRows = stackalloc WorkspaceGridState.RowInfo[maxRowCount];
+        using var rowEnumerator = new WorkspaceGridState.RowEnumerator(currentState, seenRows);
+
+        // Step 2: Iterate over all rows.
+        Span<PanelGridState> columnBuffer = stackalloc PanelGridState[columnCount];
+        while (rowEnumerator.MoveNext(columnBuffer))
+        {
+            var row = rowEnumerator.Current;
+            var columns = row.Columns;
+
+            // NOTE(erri120): In a horizontal layout, the columns are linked together.
+            if (columns.Length == maxColumns) continue;
+            foreach (var panelToSplit in columns)
+            {
+                var rect = panelToSplit.Rect;
+
+                if (columnCount == 1)
+                {
+                    res.Add(SplitPanelInHalf(currentState, panelToSplit, splitVertically: true, inverse: false));
+                    res.Add(SplitPanelInHalf(currentState, panelToSplit, splitVertically: true, inverse: true));
+                    continue;
+                }
+
+                foreach (var seenColumn in seenColumnSlice)
+                {
+                    if (seenColumn.X.IsCloseTo(rect.X) && seenColumn.Width.IsCloseTo(rect.Width)) continue;
+
+                    if (seenColumn.X > rect.X && seenColumn.Right().IsLessThanOrCloseTo(rect.Right))
+                    {
+                        var updatedLogicalBounds = new Rect(rect.X, rect.Y, seenColumn.X, rect.Height);
+                        var newPanelLogicalBounds = new Rect(seenColumn.X, rect.Y, seenColumn.Width, rect.Height);
+
+                        res.Add(SplitPanelWithBounds(currentState, panelToSplit,updatedLogicalBounds,newPanelLogicalBounds, inverse: false));
+                        res.Add(SplitPanelWithBounds(currentState, panelToSplit, updatedLogicalBounds, newPanelLogicalBounds, inverse: true));
+                    }
+                }
+            }
+        }
+
+        return res;
+    }
+
+    private static List<WorkspaceGridState> GetPossibleStatesForVertical(
+        WorkspaceGridState currentState,
+        int maxColumns,
+        int maxRows)
+    {
+        var res = new List<WorkspaceGridState>();
+
+        var (rowCount, maxColumnCount) = currentState.CountRows();
+
+        Span<WorkspaceGridState.RowInfo> seenRows = stackalloc WorkspaceGridState.RowInfo[rowCount];
+        using var rowEnumerator = new WorkspaceGridState.RowEnumerator(currentState, seenRows);
+
+        // Step 1: Iterate over all rows.
+        Span<PanelGridState> columnBuffer = stackalloc PanelGridState[maxColumns];
+        while (rowEnumerator.MoveNext(columnBuffer))
+        {
+            var row = rowEnumerator.Current;
+            var columns = row.Columns;
+
+            // NOTE(erri120): In a vertical layout, the columns can move independent of columns in other columns.
+            if (columns.Length != maxColumns)
+            {
+                foreach (var panelToSplit in columns)
+                {
+                    res.Add(SplitPanelInHalf(currentState, panelToSplit, splitVertically: true, inverse: false));
+                    res.Add(SplitPanelInHalf(currentState, panelToSplit, splitVertically: true, inverse: true));
+                }
+            }
+
+            // NOTE(erri120): If these conditions are met, we can split all columns of the current ro win half
+            // to create a new row. Note that this requires knowing the current amount of rows, so two
+            // iterations are required (that's what CountRows does).
+            if (columns.Length > 1 && rowCount != maxRows)
+            {
+                res.Add(AddRow(currentState, row.Info, columns, inverse: false));
+                res.Add(AddRow(currentState, row.Info, columns, inverse: true));
+            }
+        }
+
+        var seenRowSlice = seenRows[..rowCount];
+
+        Span<WorkspaceGridState.ColumnInfo> seenColumns = stackalloc WorkspaceGridState.ColumnInfo[maxColumnCount];
+        using var columnEnumerator = new WorkspaceGridState.ColumnEnumerator(currentState, seenColumns);
+
+        // Step 2: Iterate over all columns.
+        Span<PanelGridState> rowBuffer = stackalloc PanelGridState[rowCount];
+        while (columnEnumerator.MoveNext(rowBuffer))
+        {
+            var column = columnEnumerator.Current;
+            var rows = column.Rows;
+
+            // NOTE(erri120): In a vertical layout, the rows are linked together.
+            if (rows.Length == maxRows) continue;
+            foreach (var panelToSplit in rows)
+            {
+                var rect = panelToSplit.Rect;
+
+                if (rowCount == 1)
+                {
+                    res.Add(SplitPanelInHalf(currentState, panelToSplit, splitVertically: false, inverse: false));
+                    res.Add(SplitPanelInHalf(currentState, panelToSplit, splitVertically: false, inverse: true));
+                }
+
+                foreach (var seenRow in seenRowSlice)
+                {
+                    if (seenRow.Y.IsCloseTo(rect.Y) && seenRow.Height.IsCloseTo(rect.Height)) continue;
+
+                    if (seenRow.Y > rect.Y && seenRow.Bottom().IsLessThanOrCloseTo(rect.Bottom))
+                    {
+                        var updatedLogicalBounds = new Rect(rect.X, rect.Y, rect.Width, seenRow.Y);
+                        var newPanelLogicalBounds = new Rect(rect.X, seenRow.Y, rect.Width, seenRow.Height);
+
+                        res.Add(SplitPanelWithBounds(currentState, panelToSplit,updatedLogicalBounds,newPanelLogicalBounds, inverse: false));
+                        res.Add(SplitPanelWithBounds(currentState, panelToSplit, updatedLogicalBounds, newPanelLogicalBounds, inverse: true));
+                    }
+                }
+            }
+        }
+
+        return res;
+    }
+
+    private static WorkspaceGridState AddRow(
+        WorkspaceGridState currentState,
+        WorkspaceGridState.RowInfo rowInfo,
+        ReadOnlySpan<PanelGridState> panelsToSplit,
         bool inverse)
     {
-        var (updatedLogicalBounds, newPanelLogicalBounds) = MathUtils.Split(kv.Value, vertical);
+        var newHeight = rowInfo.Height / 2;
+        var currentY = inverse ? newHeight : rowInfo.Y;
+        var newY = inverse ? rowInfo.Y : newHeight;
 
+        Span<PanelGridState> updatedValues = stackalloc PanelGridState[panelsToSplit.Length + 1];
+        for (var i = 0; i < panelsToSplit.Length; i++)
+        {
+            var panelToSplit = panelsToSplit[i];
+            var rect = panelToSplit.Rect;
+            panelToSplit.Rect = new Rect(rect.X, currentY, rect.Width, newHeight);
+
+            updatedValues[i] = panelToSplit;
+        }
+
+        updatedValues[panelsToSplit.Length] = new PanelGridState(
+            PanelId.DefaultValue,
+            new Rect(0, newY, 1.0, newHeight)
+        );
+
+        var res = currentState.UnionById(updatedValues);
+        return res;
+    }
+
+    private static WorkspaceGridState AddColumn(
+        WorkspaceGridState currentState,
+        WorkspaceGridState.ColumnInfo columnInfo,
+        ReadOnlySpan<PanelGridState> panelsToSplit,
+        bool inverse)
+    {
+        var newWidth = columnInfo.Width / 2;
+        var currentX = inverse ? newWidth : columnInfo.X;
+        var newX = inverse ? columnInfo.X : newWidth;
+
+        Span<PanelGridState> updatedValues = stackalloc PanelGridState[panelsToSplit.Length + 1];
+        for (var i = 0; i < panelsToSplit.Length; i++)
+        {
+            var panelToSplit = panelsToSplit[i];
+            var rect = panelToSplit.Rect;
+            panelToSplit.Rect = new Rect(currentX, rect.Y, newWidth, rect.Height);
+
+            updatedValues[i] = panelToSplit;
+        }
+
+        updatedValues[panelsToSplit.Length] = new PanelGridState(
+            PanelId.DefaultValue,
+            new Rect(newX, 0, newWidth, 1.0)
+        );
+
+        var res = currentState.UnionById(updatedValues);
+        return res;
+    }
+
+    private static WorkspaceGridState SplitPanelWithBounds(
+        WorkspaceGridState currentState,
+        PanelGridState panelToSplit,
+        Rect updatedBounds,
+        Rect newPanelBounds,
+        bool inverse)
+    {
+        Span<PanelGridState> updatedValues = stackalloc PanelGridState[2];
         if (inverse)
         {
-            var res = currentPanels.SetItems(new []
-            {
-                new KeyValuePair<PanelId, Rect>(kv.Key, newPanelLogicalBounds),
-                new KeyValuePair<PanelId, Rect>(PanelId.DefaultValue, updatedLogicalBounds)
-            });
-
-            return res;
+            updatedValues[0] = new PanelGridState(PanelId.DefaultValue, updatedBounds);
+            updatedValues[1] = panelToSplit with { Rect = newPanelBounds };
         }
         else
         {
-            var res = currentPanels.SetItems(new []
-            {
-                new KeyValuePair<PanelId, Rect>(kv.Key, updatedLogicalBounds),
-                new KeyValuePair<PanelId, Rect>(PanelId.DefaultValue, newPanelLogicalBounds)
-            });
-
-            return res;
+            updatedValues[0] = panelToSplit with { Rect = updatedBounds };
+            updatedValues[1] = new PanelGridState(PanelId.DefaultValue, newPanelBounds);
         }
+
+        var res = currentState.UnionById(updatedValues);
+        return res;
     }
 
-    private static bool CanAddColumn(
-        KeyValuePair<PanelId, Rect> kv,
-        ImmutableDictionary<PanelId, Rect> panels,
-        int maxColumns)
+    private static WorkspaceGridState SplitPanelInHalf(
+        WorkspaceGridState workspaceState,
+        PanelGridState panelToSplit,
+        bool splitVertically,
+        bool inverse)
     {
-        var currentColumns = 0;
-        var current = kv.Value;
+        var (updatedLogicalBounds, newPanelLogicalBounds) = MathUtils.Split(panelToSplit.Rect, splitVertically);
 
-        // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
-        foreach (var otherPair in panels)
+        Span<PanelGridState> updatedValues = stackalloc PanelGridState[2];
+        if (inverse)
         {
-            var other = otherPair.Value;
-
-            // NOTE(erri120): +1 column if another panel (self included) has the same Y position.
-            // Since self is included, the number of columns is guaranteed to be at least 1.
-            if (other.Y.IsCloseTo(current.Y))
-            {
-                currentColumns++;
-                continue;
-            }
-
-            // NOTE(erri120): See the example tables below. If the current panel is "3"
-            // we need to count 2 columns. With the Y check above, this is not possible,
-            // since the panel "2" in the first table and the panel "1" in the second table
-            // start above but go down and end next to panel "3".
-            // | 1 | 2 |  | 1 | 2 |
-            // | 3 | 2 |  | 1 | 3 |
-
-            // 1) check if the panel is next to us
-            if (!other.Left.IsCloseTo(current.Right) && !other.Right.IsCloseTo(current.Left)) continue;
-
-            // 2) check if the panel is in the current row
-            if (other.Bottom.IsGreaterThanOrCloseTo(current.Y) || other.Top.IsLessThanOrCloseTo(current.Y))
-                currentColumns++;
+            updatedValues[0] = new PanelGridState(PanelId.DefaultValue, updatedLogicalBounds);
+            updatedValues[1] = panelToSplit with { Rect = newPanelLogicalBounds };
+        }
+        else
+        {
+            updatedValues[0] = panelToSplit with { Rect = updatedLogicalBounds };
+            updatedValues[1] = new PanelGridState(PanelId.DefaultValue, newPanelLogicalBounds);
         }
 
-        return currentColumns < maxColumns;
+        var res = workspaceState.UnionById(updatedValues);
+        return res;
     }
 
-    private static bool CanAddRow(
-        KeyValuePair<PanelId, Rect> kv,
-        ImmutableDictionary<PanelId, Rect> panels,
-        int maxRows)
+    internal static WorkspaceGridState GetStateWithoutPanel(
+        WorkspaceGridState gridState,
+        PanelId panelToRemove)
     {
-        var currentRows = 0;
-        var current = kv.Value;
+        if (gridState.Count == 1) return WorkspaceGridState.Empty(gridState.IsHorizontal);
 
-        // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
-        foreach (var otherPair in panels)
-        {
-            var other = otherPair.Value;
+        var res = gridState.Remove(gridState[panelToRemove]);
+        if (res.Count == 1) return WorkspaceGridState.Empty(gridState.IsHorizontal).Add(new PanelGridState(res[0].Id, MathUtils.One));
 
-            // NOTE(erri120): +1 column if another panel (self included) has the same X position.
-            // Since self is included, the number of columns is guaranteed to be at least 1.
-            if (other.X.IsCloseTo(current.X))
-            {
-                currentRows++;
-                continue;
-            }
+        var panelState = gridState[panelToRemove];
+        var currentRect = panelState.Rect;
 
-            // NOTE(erri120): See the example tables below. If the current panel is "3"
-            // we need to count 2 rows. With the X check above, this is not possible,
-            // since the panel "2" in the first table and the panel "1" in the second table
-            // extend above and below to panel "3".
-            // | 1 | 3 |  | 1 | 1 |
-            // | 2 | 2 |  | 2 | 3 |
-
-            // 1) check if the panel is above or below us
-            if (!other.Top.IsCloseTo(current.Bottom) && !other.Bottom.IsCloseTo(current.Top)) continue;
-
-            // 2) check if the panel is in the current column
-            if (other.Right.IsGreaterThanOrCloseTo(current.X) || other.Left.IsLessThanOrCloseTo(current.X))
-                currentRows++;
-        }
-
-        return currentRows < maxRows;
-    }
-
-    internal static IReadOnlyDictionary<PanelId, Rect> GetStateWithoutPanel(
-        ImmutableDictionary<PanelId, Rect> currentState,
-        PanelId panelToRemove,
-        bool isHorizontal = true)
-    {
-        if (currentState.Count == 1) return ImmutableDictionary<PanelId, Rect>.Empty;
-
-        var res = currentState.Remove(panelToRemove);
-        if (res.Count == 1)
-        {
-            return new Dictionary<PanelId, Rect>
-            {
-                { res.First().Key, MathUtils.One }
-            };
-        }
-
-        var currentRect = currentState[panelToRemove];
-
-        Span<PanelId> sameColumn = stackalloc PanelId[currentState.Count];
+        Span<PanelId> sameColumn = stackalloc PanelId[gridState.Count];
         var sameColumnCount = 0;
 
-        Span<PanelId> sameRow = stackalloc PanelId[currentState.Count];
+        Span<PanelId> sameRow = stackalloc PanelId[gridState.Count];
         var sameRowCount = 0;
 
-        foreach (var kv in res)
+        foreach (var adjacent in res.EnumerateAdjacentPanels(panelState, includeAnchor: true))
         {
-            var (id, rect) = kv;
-
-            // same column
-            // | a | x |  | b | x |
-            // | b | x |  | a | x |
-            if (rect.Left.IsGreaterThanOrCloseTo(currentRect.Left) && rect.Right.IsLessThanOrCloseTo(currentRect.Right))
-            {
-                if (rect.Top.IsCloseTo(currentRect.Bottom) || rect.Bottom.IsCloseTo(currentRect.Top))
-                {
-                    sameColumn[sameColumnCount++] = id;
-                }
-            }
-
-            // same row
-            // | a | b |  | b | a |  | a | b |
-            // | x | x |  | x | x |  | a | c |
-            if (rect.Top.IsGreaterThanOrCloseTo(currentRect.Top) && rect.Bottom.IsLessThanOrCloseTo(currentRect.Bottom))
-            {
-                if (rect.Left.IsCloseTo(currentRect.Right) || rect.Right.IsCloseTo(currentRect.Left))
-                {
-                    sameRow[sameRowCount++] = id;
-                }
-            }
+            if ((adjacent.Kind & WorkspaceGridState.AdjacencyKind.SameColumn) == WorkspaceGridState.AdjacencyKind.SameColumn)
+                sameColumn[sameColumnCount++] = adjacent.Panel.Id;
+            if ((adjacent.Kind & WorkspaceGridState.AdjacencyKind.SameRow) == WorkspaceGridState.AdjacencyKind.SameRow)
+                sameRow[sameRowCount++] = adjacent.Panel.Id;
         }
 
         Debug.Assert(sameColumnCount > 0 || sameRowCount > 0);
 
-        if (isHorizontal)
+        if (gridState.IsHorizontal)
         {
             // prefer columns over rows when horizontal
             if (sameColumnCount > 0)
@@ -225,18 +386,19 @@ internal static class GridUtils
         return res;
     }
 
-    private static ImmutableDictionary<PanelId, Rect> JoinSameColumn(
-        ImmutableDictionary<PanelId, Rect> res,
+    private static WorkspaceGridState JoinSameColumn(
+        WorkspaceGridState res,
         Rect currentRect,
         Span<PanelId> sameColumn,
         int sameColumnCount)
     {
-        var updates = GC.AllocateUninitializedArray<KeyValuePair<PanelId, Rect>>(sameColumnCount);
+        var updates = GC.AllocateUninitializedArray<PanelGridState>(sameColumnCount);
 
         for (var i = 0; i < sameColumnCount; i++)
         {
             var id = sameColumn[i];
-            var rect = res[id];
+            var panel = res[id];
+            var rect = panel.Rect;
 
             var x = rect.X;
             var width = rect.Width;
@@ -244,24 +406,25 @@ internal static class GridUtils
             var y = Math.Min(rect.Y, currentRect.Y);
             var height = rect.Height + currentRect.Height;
 
-            updates[i] = new KeyValuePair<PanelId, Rect>(id, new Rect(x, y, width, height));
+            updates[i] = new PanelGridState(id, new Rect(x, y, width, height));
         }
 
-        return res.SetItems(updates);
+        return res.UnionById(updates);
     }
 
-    private static ImmutableDictionary<PanelId, Rect> JoinSameRow(
-        ImmutableDictionary<PanelId, Rect> res,
+    private static WorkspaceGridState JoinSameRow(
+        WorkspaceGridState res,
         Rect currentRect,
         Span<PanelId> sameRow,
         int sameRowCount)
     {
-        var updates = GC.AllocateUninitializedArray<KeyValuePair<PanelId, Rect>>(sameRowCount);
+        var updates = GC.AllocateUninitializedArray<PanelGridState>(sameRowCount);
 
         for (var i = 0; i < sameRowCount; i++)
         {
             var id = sameRow[i];
-            var rect = res[id];
+            var panel = res[id];
+            var rect = panel.Rect;
 
             var y = rect.Y;
             var height = rect.Height;
@@ -269,10 +432,10 @@ internal static class GridUtils
             var x = Math.Min(rect.X, currentRect.X);
             var width = rect.Width + currentRect.Width;
 
-            updates[i] = new KeyValuePair<PanelId, Rect>(id, new Rect(x, y, width, height));
+            updates[i] = new PanelGridState(id, new Rect(x, y, width, height));
         }
 
-        return res.SetItems(updates);
+        return res.UnionById(updates);
     }
 
     internal static IReadOnlyList<ResizerInfo> GetResizers(
