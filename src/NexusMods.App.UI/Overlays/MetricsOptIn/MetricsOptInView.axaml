@@ -23,7 +23,7 @@
                                Text="{x:Static resources:Language.MetricsOptIn_MainMessage}"
                                Classes="BodyMDNormal UsesBrandWhiteColor" />
 
-                    <Button Classes="Hyperlink">
+                    <Button Classes="Hyperlink Primary">
                         <TextBlock Classes="BodyMDNormal"
                                    Text="{x:Static resources:Language.MetricsOptIn_MoreInfoAboutTheDataWeTrack}">
                         </TextBlock>
