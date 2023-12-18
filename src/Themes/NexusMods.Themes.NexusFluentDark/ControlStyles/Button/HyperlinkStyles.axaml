@@ -1,0 +1,39 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <Button Classes="Hyperlink">
+                <TextBlock Classes="BodyMdNormal" Text="More info about this text" />
+            </Button>
+        </Border>
+    </Design.PreviewWith>
+
+    <!-- Style Definitions -->
+    <Style Selector="Button.Hyperlink">
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Background" Value="{StaticResource ElementBackgroundTransparentBrush}" />
+        <Setter Property="Foreground" Value="{StaticResource ElementForegroundPrimaryWeakBrush}" />
+
+        <Style Selector="^ TextBlock">
+            <Setter Property="TextDecorations" Value="Underline" />
+            <Setter Property="Cursor" Value="Hand" />
+        </Style>
+
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource ElementBackgroundTransparentBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource ElementForegroundPrimaryStrongBrush}" />
+        </Style>
+
+        <Style Selector="^:pressed">
+            <Setter Property="RenderTransform" Value="scale(1)" />
+            <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Background" Value="{StaticResource ElementBackgroundTransparentBrush}" />
+                <Setter Property="Foreground" Value="{StaticResource ElementForegroundPrimaryModerateBrush}" />
+            </Style>
+        </Style>
+    </Style>
+
+
+</Styles>
