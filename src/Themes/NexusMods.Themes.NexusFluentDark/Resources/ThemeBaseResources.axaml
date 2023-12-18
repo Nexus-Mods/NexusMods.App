@@ -5,7 +5,21 @@
 
     <!-- Defines misc resources for the Theme -->
 
+    <!-- Opacity levels -->
+    <x:Double x:Key="OpacitySolid">1.00</x:Double>
+    <x:Double x:Key="OpacityTransparent">0.00</x:Double>
+
+    <x:Double x:Key="OpacityStrong">0.60</x:Double>
+    <x:Double x:Key="OpacityModerate">0.40</x:Double>
+    <x:Double x:Key="OpacitySubdued">0.20</x:Double>
+    <x:Double x:Key="OpacityWeak">0.10</x:Double>
+
+    <!-- Disabled Opacity level -->
+    <StaticResource x:Key="OpacityDisabledElement" ResourceKey="OpacityModerate"/>
+
+
     <!-- :focus BoxShadow style -->
     <extensions:BoxShadow x:Key="FocusBoxShadow" BlurRadius="0" SpreadRadius="3" ShadowColor="{StaticResource ElementForegroundInfoSubdued}"/>
+
 
 </ResourceDictionary>

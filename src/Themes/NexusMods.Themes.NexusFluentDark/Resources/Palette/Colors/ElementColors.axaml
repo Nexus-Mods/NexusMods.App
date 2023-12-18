@@ -41,7 +41,8 @@
     <!-- TransparentBrush -->
     <!-- NOTE: Avalonia treats Transparent color as click through, so it can't be used correctly as a background color. -->
     <!-- Use this brush instead of Transparent to make the background transparent but still clickable. -->
-    <SolidColorBrush x:Key="ElementBackgroundTransparent" Color="{StaticResource BrandTranslucentDark50}" Opacity="0.01"/>
+    <SolidColorBrush x:Key="ElementBackgroundTransparentBrush" Color="{StaticResource BrandTranslucentDark50}"
+                     Opacity="{StaticResource OpacityTransparent}" />
 
     <!-- Foreground -->
 
