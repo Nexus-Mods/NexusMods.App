@@ -17,9 +17,7 @@
         <Grid.Styles>
 
             <Style Selector="Border.TopPart">
-                <Setter Property="Background" Value="{DynamicResource BorderContainerColor}" />
                 <Setter Property="Padding" Value="24,0,24,24" />
-                <Setter Property="CornerRadius" Value="8,8,0,0" />
             </Style>
 
             <Style Selector="Border.OverlayHeaderSection">
@@ -29,24 +27,24 @@
             <Style Selector="icons|Icon#OverlayHeaderMultiOptionIcon">
                 <Setter Property="FontSize" Value="20" />
                 <Setter Property="Margin" Value="0,0,8,8" />
-                <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
             </Style>
 
             <Style Selector="TreeDataGrid.TreeWhiteCaret">
-                <Setter Property="Foreground" Value="{DynamicResource FontDarkSecondaryBrush}"></Setter>
+
 
                 <Style Selector="^ ToggleButton">
                     <Setter Property="Width" Value="16" />
                     <Setter Property="Height" Value="16" />
+                    <Setter Property="Foreground" Value="{DynamicResource FontDarkSecondaryBrush}"/>
 
                     <Style Selector="^:pointerover">
-                        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}"></Setter>
+                        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}"/>
                     </Style>
                 </Style>
             </Style>
 
-            <!-- NOTE(Al12rs) This is to hide the TreeDataGrid Headers, without actually removing them.
-                            Hiding the headers completely breaks the Star columns, collapsing them to minimum space-->
+            <!-- NOTE(Al12rs) This is to hide the TreeDataGrid Headers, without actually removing them.  -->
+            <!-- Hiding the headers completely breaks the Star columns, collapsing them to minimum space -->
             <Style Selector="TreeDataGrid.TreeNoHeader /template/ Border#ColumnHeadersPresenterBorder">
                 <Setter Property="BorderThickness" Value="0" />
                 <Setter Property="MaxHeight" Value="1" />
@@ -61,9 +59,8 @@
 
         </Grid.Styles>
 
-        <Border Grid.Row="0" CornerRadius="8,8,0,0" HorizontalAlignment="Stretch"
-                Background="{DynamicResource BorderContainerColor}">
-            <Border Classes="TopPart" x:Name="TopContentBorder">
+        <Border Grid.Row="0" Classes="Top RoundedTop" HorizontalAlignment="Stretch">
+            <Border Classes="Top RoundedTop TopPart" x:Name="TopContentBorder">
                 <Grid RowDefinitions="Auto, *">
 
                     <Border Grid.Row="0" Classes="OverlayHeaderSection" x:Name="OverlayHeaderBorder">
@@ -83,9 +80,8 @@
             </Border>
         </Border>
 
-        <Border Grid.Row="1" CornerRadius="0,0,8,8" HorizontalAlignment="Stretch"
-                Background="{DynamicResource StructuralBorderColor}">
-            <Border Classes="BottomPart" x:Name="BottomContentBorder">
+        <Border Grid.Row="1" Classes="Mid RoundedBottom" HorizontalAlignment="Stretch">
+            <Border x:Name="BottomContentBorder">
 
                 <reactiveUi:ViewModelViewHost x:Name="BottomContentViewHost" />
 

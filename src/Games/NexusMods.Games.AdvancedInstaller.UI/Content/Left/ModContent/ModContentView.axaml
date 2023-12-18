@@ -21,7 +21,6 @@
             </Style>
 
             <Style Selector="TextBlock.ContentSubHeading">
-                <Setter Property="Foreground" Value="{DynamicResource FontDarkSecondaryColor}" />
                 <Setter Property="Margin" Value="0, 4, 0, 16" />
             </Style>
         </Grid.Styles>
@@ -30,10 +29,11 @@
         <Border Grid.Row="0" Classes="HeaderAreaBorder" x:Name="HeaderAreaBorder">
             <StackPanel Orientation="Vertical">
 
-                <TextBlock Classes="TitleSMSemi" Text="{x:Static resources:Language.ModContentTitle_MOD_CONTENT}"
+                <TextBlock Classes="TitleSMSemi"
+                           Text="{x:Static resources:Language.ModContentTitle_MOD_CONTENT}"
                            x:Name="ModContentTitle" />
 
-                <TextBlock Classes="BodySMNormal ContentSubHeading"
+                <TextBlock Classes="BodySMNormal ForegroundSubdued ContentSubHeading"
                            Text="{x:Static resources:Language.ModContentSubHeading_Files_with_no}"
                            x:Name="ModContentSubHeading" />
             </StackPanel>
@@ -41,8 +41,7 @@
 
         <!-- "Mod Content" Tree -->
         <TreeDataGrid Grid.Row="1" Classes="TreeNoSelection TreeNoHeader TreeWhiteCaret" x:Name="ModContentTreeDataGrid"
-                      ShowColumnHeaders="True"
-                      Foreground="{DynamicResource FontDarkSecondaryColor}" />
+                      ShowColumnHeaders="True"/>
 
     </Grid>
 </reactiveUi:ReactiveUserControl>
