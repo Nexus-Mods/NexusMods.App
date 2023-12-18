@@ -56,6 +56,24 @@
                 <Border BorderThickness="1" BorderBrush="White" Padding="2">
                     <TextBlock Classes="BodySMNormal" Text="Sample Text BodySMNormal" />
                 </Border>
+
+                <Border BorderThickness="1" BorderBrush="White" Padding="2">
+                    <TextBlock Classes="BodyMDNormal ForegroundStrong" Text="Sample Text ForegroundStrong" />
+                </Border>
+                <Border BorderThickness="1" BorderBrush="White" Padding="2">
+                    <TextBlock Classes="BodyMDNormal ForegroundModerate" Text="Sample Text ForegroundModerate" />
+                </Border>
+                <Border BorderThickness="1" BorderBrush="White" Padding="2">
+                    <TextBlock Classes="BodyMDNormal ForegroundSubdued" Text="Sample Text ForegroundSubdued" />
+                </Border>
+                <Border BorderThickness="1" BorderBrush="White" Padding="2">
+                    <TextBlock Classes="BodyMDNormal ForegroundWeak" Text="Sample Text ForegroundWeak" />
+                </Border>
+                <Border BorderThickness="1" BorderBrush="White"
+                        Background="{StaticResource ElementBackgroundNeutralInverted}"
+                        Padding="2">
+                    <TextBlock Classes="BodyMDNormal ForegroundInverted" Text="Sample Text ForegroundInverted" />
+                </Border>
             </StackPanel>
         </Border>
     </Design.PreviewWith>
@@ -128,6 +146,27 @@
 
     <Style Selector="TextBlock.BodySMNormal">
         <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
+    </Style>
+
+    <!-- Foreground color classes -->
+    <Style Selector="TextBlock.ForegroundStrong">
+        <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralStrongBrush}" />
+    </Style>
+
+    <Style Selector="TextBlock.ForegroundModerate">
+        <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralModerateBrush}" />
+    </Style>
+
+    <Style Selector="TextBlock.ForegroundSubdued">
+        <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralSubduedBrush}" />
+    </Style>
+
+    <Style Selector="TextBlock.ForegroundWeak">
+        <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralWeakBrush}" />
+    </Style>
+
+    <Style Selector="TextBlock.ForegroundInverted">
+        <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralInvertedBrush}" />
     </Style>
 
 </Styles>

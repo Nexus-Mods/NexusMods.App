@@ -60,9 +60,31 @@
         </WrapPanel>
     </Design.PreviewWith>
 
+    <!-- Foreground color classes -->
+    <Style Selector="icons|Icon.ForegroundStrong">
+        <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralStrongBrush}" />
+    </Style>
+
+    <Style Selector="icons|Icon.ForegroundModerate">
+        <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralModerateBrush}" />
+    </Style>
+
+    <Style Selector="icons|Icon.ForegroundSubdued">
+        <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralSubduedBrush}" />
+    </Style>
+
+    <Style Selector="icons|Icon.ForegroundWeak">
+        <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralWeakBrush}" />
+    </Style>
+
+    <Style Selector="icons|Icon.ForegroundInverted">
+        <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralInvertedBrush}" />
+    </Style>
+
+    <!-- Icon Selection -->
+
     <!-- NOTE: Material icon names are not standardized well, use this site to look them up:  -->
     <!-- https://pictogrammers.com/library/mdi/ -->
-
 
     <Style Selector="icons|Icon.Alert">
         <Setter Property="Value" Value="mdi-alert" />
