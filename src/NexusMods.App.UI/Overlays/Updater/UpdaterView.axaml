@@ -49,10 +49,10 @@
 
             <!-- Buttons -->
             <StackPanel Orientation="Horizontal" Margin="24" HorizontalAlignment="Right" Spacing="8">
-                <Button x:Name="LaterButton" Classes="Button Secondary" HorizontalAlignment="Stretch">
+                <Button x:Name="LaterButton" Classes="Standard Secondary" HorizontalAlignment="Stretch">
                     <TextBlock Text="{x:Static resources:Language.Updater_LATER}" />
                 </Button>
-                <Button x:Name="UpdateButton" Classes="Button Primary" HorizontalAlignment="Stretch">
+                <Button x:Name="UpdateButton" Classes="Standard Primary" HorizontalAlignment="Stretch">
                     <TextBlock Text="{x:Static resources:Language.Updater_UPDATE}"/>
                 </Button>
             </StackPanel>

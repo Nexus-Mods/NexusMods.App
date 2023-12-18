@@ -39,7 +39,7 @@
                 Margin="24,10"
                 Text="{x:Static resources:Language.HomeView__CANT_SEE_YOUR_GAME}" />
             <Button
-                Classes="SecondaryOutlined"
+                Classes="Standard SecondaryOutlined"
                 Grid.Column="0"
                 Grid.ColumnSpan="2"
                 Grid.Row="3"
