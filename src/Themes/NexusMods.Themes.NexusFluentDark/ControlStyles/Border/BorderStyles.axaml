@@ -5,28 +5,28 @@
     <Design.PreviewWith>
         <StackPanel Spacing="6" Margin="10">
             <Border Classes="Rounded OutlineStrong" Padding="16">
-                <TextBlock Text="OUTLINE Strong"/>
+                <TextBlock Text="OUTLINE Strong" />
             </Border>
             <Border Classes="Rounded OutlineModerate" Padding="16">
-                <TextBlock Text="OUTLINE Moderate"/>
+                <TextBlock Text="OUTLINE Moderate" />
             </Border>
             <Border Classes="Rounded OutlineSubdued" Padding="16">
-                <TextBlock Text="OUTLINE Subdued"/>
+                <TextBlock Text="OUTLINE Subdued" />
             </Border>
             <Border Classes="Rounded OutlineWeak" Padding="16">
-                <TextBlock Text="OUTLINE Weak"/>
+                <TextBlock Text="OUTLINE Weak" />
             </Border>
             <Border Classes="Rounded OutlineWeak Base" Padding="16">
-                <TextBlock Text="BASE"/>
+                <TextBlock Text="BASE" />
             </Border>
             <Border Classes="Rounded Low" Padding="16">
-                <TextBlock Text="LOW"/>
+                <TextBlock Text="LOW" />
             </Border>
             <Border Classes="Rounded Mid" Padding="16">
-                <TextBlock Text="MID"/>
+                <TextBlock Text="MID" />
             </Border>
             <Border Classes="Rounded Top" Padding="16">
-                <TextBlock Text="TOP"/>
+                <TextBlock Text="TOP" />
             </Border>
         </StackPanel>
     </Design.PreviewWith>
@@ -37,6 +37,14 @@
 
     <Style Selector="Border.Rounded">
         <Setter Property="CornerRadius" Value="8" />
+    </Style>
+
+    <Style Selector="Border.RoundedTop">
+        <Setter Property="CornerRadius" Value="8,8, 0, 0" />
+    </Style>
+
+    <Style Selector="Border.RoundedBottom">
+        <Setter Property="CornerRadius" Value="0,0, 8,8" />
     </Style>
 
 
@@ -66,7 +74,7 @@
     <!-- Content Background -->
 
     <Style Selector="Border.Base">
-       <Setter Property="Background" Value="{StaticResource ElementBackgroundNeutralBaseBrush}" />
+        <Setter Property="Background" Value="{StaticResource ElementBackgroundNeutralBaseBrush}" />
     </Style>
 
     <Style Selector="Border.Low">
