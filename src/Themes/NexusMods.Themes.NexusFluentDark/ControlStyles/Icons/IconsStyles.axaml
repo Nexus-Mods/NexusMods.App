@@ -1,0 +1,221 @@
+﻿<Styles
+    xmlns="https://github.com/avaloniaui"
+    xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Design.PreviewWith>
+        <WrapPanel>
+            <WrapPanel.Styles>
+                <Style Selector="icons|Icon">
+                    <Setter Property="FontSize" Value="20" />
+                    <Setter Property="Margin" Value="2" />
+                </Style>
+                <Style Selector="Svg">
+                    <Setter Property="Width" Value="20" />
+                    <Setter Property="Height" Value="20" />
+                    <Setter Property="Margin" Value="2" />
+                </Style>
+            </WrapPanel.Styles>
+
+            <icons:Icon Classes="Alert" />
+            <icons:Icon Classes="AlertOutline" />
+            <icons:Icon Classes="Bell" />
+            <icons:Icon Classes="CheckUnderline" />
+            <icons:Icon Classes="ClearAll" />
+            <icons:Icon Classes="Cog" />
+            <icons:Icon Classes="Download" />
+            <icons:Icon Classes="Help" />
+            <icons:Icon Classes="History" />
+            <icons:Icon Classes="Play" />
+            <icons:Icon Classes="PlusCircleOutline" />
+            <icons:Icon Classes="ProgressDownload" />
+            <icons:Icon Classes="PauseCircleOutline" />
+            <icons:Icon Classes="PauseCircleFilled" />
+            <icons:Icon Classes="RemoveCircleOutline" />
+            <icons:Icon Classes="Star" />
+            <icons:Icon Classes="TrashCanOutline" />
+            <icons:Icon Classes="PlayCircleOutline" />
+            <icons:Icon Classes="Image" />
+            <icons:Icon Classes="Description" />
+            <icons:Icon Classes="Tune" />
+            <icons:Icon Classes="ArrowLeft" />
+            <icons:Icon Classes="ArrowRight" />
+            <icons:Icon Classes="Plus" />
+            <icons:Icon Classes="MenuDown" />
+            <icons:Icon Classes="MenuUp" />
+            <icons:Icon Classes="Close" />
+            <icons:Icon Classes="OpenInNew" />
+            <icons:Icon Classes="Tab" />
+            <icons:Icon Classes="ChevronLeft" />
+            <icons:Icon Classes="ChevronRight" />
+            <icons:Icon Classes="FolderOutline" />
+            <icons:Icon Classes="File" />
+            <icons:Icon Classes="Check" />
+            <icons:Icon Classes="DeleteOutline" />
+            <icons:Icon Classes="DragHorizontal" />
+            <icons:Icon Classes="DragVertical" />
+
+            <Svg Classes="AddCircle" />
+
+        </WrapPanel>
+    </Design.PreviewWith>
+
+    <!--
+    NOTE:
+       Material icon names are not standardized well, use this site to look them up:
+       https://pictogrammers.com/library/mdi/
+     -->
+
+    <Style Selector="icons|Icon.Alert">
+        <Setter Property="Value" Value="mdi-alert"></Setter>
+    </Style>
+
+    <Style Selector="icons|Icon.AlertOutline">
+        <Setter Property="Value" Value="mdi-alert-outline"></Setter>
+    </Style>
+
+    <Style Selector="icons|Icon.Bell">
+        <Setter Property="Value" Value="mdi-bell"></Setter>
+    </Style>
+
+    <Style Selector="icons|Icon.CheckUnderline">
+        <Setter Property="Value" Value="mdi-check-underline" />
+    </Style>
+
+    <Style Selector="icons|Icon.ClearAll">
+        <Setter Property="Value" Value="mdi-notification-clear-all" />
+    </Style>
+
+    <Style Selector="icons|Icon.Cog">
+        <Setter Property="Value" Value="mdi-cog" />
+    </Style>
+
+    <Style Selector="icons|Icon.Download">
+        <Setter Property="Value" Value="mdi-download" />
+    </Style>
+
+    <Style Selector="icons|Icon.Help">
+        <Setter Property="Value" Value="mdi-help-circle-outline" />
+    </Style>
+
+    <Style Selector="icons|Icon.History">
+        <Setter Property="Value" Value="mdi-history" />
+    </Style>
+
+    <Style Selector="icons|Icon.Play">
+        <Setter Property="Value" Value="mdi-play"></Setter>
+    </Style>
+
+    <Style Selector="icons|Icon.PlusCircleOutline">
+        <Setter Property="Value" Value="mdi-plus-circle-outline"></Setter>
+    </Style>
+
+    <Style Selector="icons|Icon.ProgressDownload">
+        <Setter Property="Value" Value="mdi-progress-download"></Setter>
+    </Style>
+
+    <Style Selector="icons|Icon.PauseCircleOutline">
+        <Setter Property="Value" Value="mdi-pause-circle-outline"></Setter>
+    </Style>
+
+    <Style Selector="icons|Icon.PauseCircleFilled">
+        <Setter Property="Value" Value="mdi-pause-circle"></Setter>
+    </Style>
+
+    <Style Selector="icons|Icon.RemoveCircleOutline">
+        <Setter Property="Value" Value="mdi-minus-circle-outline"></Setter>
+    </Style>
+
+    <Style Selector="icons|Icon.Star">
+        <Setter Property="Value" Value="mdi-star"></Setter>
+    </Style>
+
+    <Style Selector="icons|Icon.TrashCanOutline">
+        <Setter Property="Value" Value="mdi-trash-can-outline"></Setter>
+    </Style>
+
+    <Style Selector="icons|Icon.PlayCircleOutline">
+        <Setter Property="Value" Value="mdi-play-circle-outline" />
+    </Style>
+
+    <Style Selector="icons|Icon.Image">
+        <Setter Property="Value" Value="mdi-image" />
+    </Style>
+
+    <Style Selector="icons|Icon.Description">
+        <Setter Property="Value" Value="mdi-text-box" />
+    </Style>
+
+    <Style Selector="icons|Icon.Tune">
+        <Setter Property="Value" Value="mdi-tune" />
+    </Style>
+
+    <Style Selector="icons|Icon.ArrowLeft">
+        <Setter Property="Value" Value="mdi-arrow-left" />
+    </Style>
+
+    <Style Selector="icons|Icon.ArrowRight">
+        <Setter Property="Value" Value="mdi-arrow-right" />
+    </Style>
+
+    <Style Selector="icons|Icon.Plus">
+        <Setter Property="Value" Value="mdi-plus" />
+    </Style>
+
+    <Style Selector="icons|Icon.MenuDown">
+        <Setter Property="Value" Value="mdi-menu-down" />
+    </Style>
+
+    <Style Selector="icons|Icon.MenuUp">
+        <Setter Property="Value" Value="mdi-menu-up" />
+    </Style>
+
+    <Style Selector="icons|Icon.Close">
+        <Setter Property="Value" Value="mdi-close" />
+    </Style>
+
+    <Style Selector="icons|Icon.OpenInNew">
+        <Setter Property="Value" Value="mdi-open-in-new" />
+    </Style>
+
+    <Style Selector="icons|Icon.Tab">
+        <Setter Property="Value" Value="mdi-tab" />
+    </Style>
+
+    <Style Selector="icons|Icon.ChevronLeft">
+        <Setter Property="Value" Value="mdi-chevron-left" />
+    </Style>
+
+    <Style Selector="icons|Icon.ChevronRight">
+        <Setter Property="Value" Value="mdi-chevron-right" />
+    </Style>
+
+    <Style Selector="icons|Icon.FolderOutline">
+        <Setter Property="Value" Value="mdi-folder-outline" />
+    </Style>
+
+    <Style Selector="icons|Icon.File">
+        <Setter Property="Value" Value="mdi-file" />
+    </Style>
+
+    <Style Selector="icons|Icon.Check">
+        <Setter Property="Value" Value="mdi-check" />
+    </Style>
+
+    <Style Selector="icons|Icon.DeleteOutline">
+        <Setter Property="Value" Value="mdi-delete-outline" />
+    </Style>
+
+    <Style Selector="icons|Icon.DragHorizontal">
+        <Setter Property="Value" Value="mdi-drag-horizontal-variant" />
+    </Style>
+
+    <Style Selector="icons|Icon.DragVertical">
+        <Setter Property="Value" Value="mdi-drag-vertical-variant" />
+    </Style>
+
+    <Style Selector="Svg.AddCircle">
+        <Setter Property="Path" Value="avares://NexusMods.App.UI/Assets/Icons/add_circle_24px.svg" />
+    </Style>
+
+</Styles>
