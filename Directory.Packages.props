@@ -33,7 +33,7 @@
     <PackageVersion Include="Avalonia.ReactiveUI" Version="11.0.6" />
     <PackageVersion Include="Avalonia.Themes.Fluent" Version="11.0.6" />
     <PackageVersion Include="Projektanker.Icons.Avalonia.MaterialDesign" Version="8.3.0" />
-    <PackageVersion Include="Avalonia.Svg.Skia" Version="11.0.0.7" />
+    <PackageVersion Include="Avalonia.Svg.Skia" Version="11.0.0.9" />
   </ItemGroup>
   <ItemGroup>
     <!-- System -->
