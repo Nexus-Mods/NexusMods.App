@@ -29,34 +29,6 @@
                 <Setter Property="Margin" Value="0,0,8,8" />
             </Style>
 
-            <Style Selector="TreeDataGrid.TreeWhiteCaret">
-
-
-                <Style Selector="^ ToggleButton">
-                    <Setter Property="Width" Value="16" />
-                    <Setter Property="Height" Value="16" />
-                    <Setter Property="Foreground" Value="{DynamicResource FontDarkSecondaryBrush}"/>
-
-                    <Style Selector="^:pointerover">
-                        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}"/>
-                    </Style>
-                </Style>
-            </Style>
-
-            <!-- NOTE(Al12rs) This is to hide the TreeDataGrid Headers, without actually removing them.  -->
-            <!-- Hiding the headers completely breaks the Star columns, collapsing them to minimum space -->
-            <Style Selector="TreeDataGrid.TreeNoHeader /template/ Border#ColumnHeadersPresenterBorder">
-                <Setter Property="BorderThickness" Value="0" />
-                <Setter Property="MaxHeight" Value="1" />
-            </Style>
-
-            <Style
-                Selector="TreeDataGrid.TreeNoHeader TreeDataGridColumnHeader:pointerover /template/ Border#DataGridBorder">
-                <Setter Property="Background" Value="{DynamicResource TransparentColor}" />
-                <Setter Property="BorderThickness" Value="0" />
-                <Setter Property="BorderBrush" Value="Transparent" />
-            </Style>
-
         </Grid.Styles>
 
         <Border Grid.Row="0" Classes="Top RoundedTop" HorizontalAlignment="Stretch">
