@@ -14,7 +14,7 @@
         <ui:AdvancedInstallerWindowDesignViewModel />
     </Design.DataContext>
 
-    <Border Margin="0,32,0,0">
+    <Border>
         <reactiveUi:ViewModelViewHost x:Name="CurrentPage" />
     </Border>
 
