@@ -40,7 +40,7 @@
         </Border>
 
         <!-- "Mod Content" Tree -->
-        <TreeDataGrid Grid.Row="1" Classes="TreeNoSelection TreeNoHeader TreeWhiteCaret" x:Name="ModContentTreeDataGrid"
+        <TreeDataGrid Grid.Row="1" Classes="TreeNoHeader TreeWhiteCaret" x:Name="ModContentTreeDataGrid"
                       ShowColumnHeaders="True"/>
 
     </Grid>

@@ -99,7 +99,7 @@
 
                         </StackPanel>
 
-                        <TreeDataGrid Grid.Row="1" Classes="TreeNoSelection TreeNoHeader TreeWhiteCaret"
+                        <TreeDataGrid Grid.Row="1" Classes="TreeNoHeader TreeWhiteCaret"
                                       ShowColumnHeaders="True"
                                       x:Name="SelectTreeDataGrid" />
 

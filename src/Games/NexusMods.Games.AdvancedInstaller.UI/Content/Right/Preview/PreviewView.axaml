@@ -45,7 +45,7 @@
                     </StackPanel>
                 </Border>
 
-                <TreeDataGrid Grid.Row="1" Classes="TreeNoSelection TreeNoHeader TreeWhiteCaret" x:Name="LocationPreviewTreeDataGrid"
+                <TreeDataGrid Grid.Row="1" Classes="TreeNoHeader TreeWhiteCaret" x:Name="LocationPreviewTreeDataGrid"
                               ShowColumnHeaders="True"
                               Foreground="{DynamicResource FontDarkSecondaryColor}" />
 
