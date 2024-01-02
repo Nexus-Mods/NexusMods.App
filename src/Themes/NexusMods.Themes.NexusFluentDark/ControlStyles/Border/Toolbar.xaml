@@ -32,7 +32,7 @@
         <Setter Property="Height" Value="52"/>
         <Setter Property="Background" Value="{StaticResource ElementBackgroundNeutralLow}"/>
     </Style>
-    
+
     <Style Selector="Border.Toolbar > Grid">
         <Setter Property="Margin" Value="24, 0"/>
     </Style>

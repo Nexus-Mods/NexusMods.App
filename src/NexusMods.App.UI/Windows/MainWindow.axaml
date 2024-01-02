@@ -51,13 +51,11 @@
             Grid.Row="1"
             x:Name="Spine" />
 
-        <Border
-            BorderBrush="{DynamicResource StructuralBorderBrush}"
-            BorderThickness="1,0"
-            Grid.Column="1"
-            Grid.Row="1" />
-        <Border
-            BorderBrush="{DynamicResource StructuralBorderBrush}"
+        <Border Classes="OutlineWeak"
+                BorderThickness="1,0"
+                Grid.Column="1"
+                Grid.Row="1" />
+        <Border Classes="OutlineWeak"
             BorderThickness="0,0,0,1"
             Grid.Column="0"
             Grid.ColumnSpan="3"
