@@ -235,6 +235,11 @@
         <Setter Property="Padding" Value="8, 0" />
     </Style>
 
+    <!-- Pill Hug -->
+    <Style Selector="Button.Pill.Hug">
+        <Setter Property="Padding" Value="0" />
+    </Style>
+
 
     <!-- Pill StandardPill -->
     <Style Selector="Button.Pill.StandardPill">

@@ -16,17 +16,12 @@
     <Grid ColumnDefinitions="Auto, *, Auto">
         <Grid.Styles>
             <Style Selector="icons|Icon.FileTypeIcon">
-                <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
                 <Setter Property="FontSize" Value="18" />
                 <Setter Property="Margin" Value="8, 0, 8, 0" />
             </Style>
 
             <Style Selector="Button.RightElements">
                 <Setter Property="Margin" Value="8,0,8,0" />
-            </Style>
-
-            <Style Selector="TextBlock.SubHeading">
-                <Setter Property="Foreground" Value="{DynamicResource FontDarkSecondaryColor}" />
             </Style>
 
             <Style Selector="TextBlock#LocationName">
@@ -47,7 +42,7 @@
                        x:Name="LocationName" />
 
             <!-- Location SubHeading -->
-            <TextBlock Grid.Row="1" Classes="BodySMNormal SubHeading" VerticalAlignment="Center"
+            <TextBlock Grid.Row="1" Classes="BodySMNormal ForegroundSubdued" VerticalAlignment="Center"
                        TextWrapping="Wrap"
                        TextTrimming="CharacterEllipsis"
                        Text="Temp Game root folder"

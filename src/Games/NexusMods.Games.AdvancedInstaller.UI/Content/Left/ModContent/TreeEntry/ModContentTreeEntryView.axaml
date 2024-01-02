@@ -16,7 +16,6 @@
     <Grid ColumnDefinitions="*, Auto" Margin="0,5,0,5">
         <Grid.Styles>
             <Style Selector="icons|Icon.FileTypeIcon">
-                <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
                 <Setter Property="FontSize" Value="18" />
                 <Setter Property="Margin" Value="8, 0, 0, 0" />
             </Style>
