@@ -16,7 +16,6 @@
         <Grid.Styles>
             <Style Selector="Border.HeaderAreaBorder">
                 <Setter Property="BorderThickness" Value="0, 0, 0, 1" />
-                <Setter Property="BorderBrush" Value="{DynamicResource BorderContainerBrush}" />
                 <Setter Property="Margin" Value="0, 0, 0, 16" />
             </Style>
 
@@ -26,7 +25,7 @@
         </Grid.Styles>
 
         <!-- "Mod Content" Header and "Description" -->
-        <Border Grid.Row="0" Classes="HeaderAreaBorder" x:Name="HeaderAreaBorder">
+        <Border Grid.Row="0" Classes="HeaderAreaBorder OutlineWeak" x:Name="HeaderAreaBorder">
             <StackPanel Orientation="Vertical">
 
                 <TextBlock Classes="TitleSMSemi"

@@ -12,43 +12,36 @@
         <preview:PreviewViewModel />
     </Design.DataContext>
 
-
-    <Border Classes="Rounded StructuralBorderColor Padding16" x:Name="TopLevelBorder">
+    <Border Classes="Rounded Mid" x:Name="TopLevelBorder" Padding="16">
         <Border.Styles>
-            <Style Selector="Border#HeaderAreaBorder">
+            <Style Selector="Border.HeaderAreaBorder">
                 <Setter Property="BorderThickness" Value="0, 0, 0, 1" />
-                <Setter Property="BorderBrush" Value="{DynamicResource BorderContainerBrush}" />
                 <Setter Property="Margin" Value="0, 0, 0, 16" />
             </Style>
 
             <Style Selector="TextBlock#InstallLocationPreviewSubHeading">
                 <Setter Property="Margin" Value="0, 4, 0, 16" />
             </Style>
-
-            <Style Selector="TextBlock.SubHeading">
-                <Setter Property="Foreground" Value="{DynamicResource FontDarkSecondaryColor}" />
-            </Style>
         </Border.Styles>
+
         <ScrollViewer x:Name="ResultsScrollViewer">
             <Grid RowDefinitions="Auto, *" x:Name="TopLevelGrid">
 
-                <Border Grid.Row="0" x:Name="HeaderAreaBorder">
+                <Border Grid.Row="0" Classes="OutlineWeak HeaderAreaBorder" x:Name="HeaderAreaBorder">
                     <StackPanel Orientation="Vertical">
 
                         <TextBlock Classes="TitleSMSemi"
                                    Text="{x:Static resources:Language.PreviewHeader_INSTALL_LOCATOIN_PREVIEW}"
                                    x:Name="InstallLocationPreviewHeader" />
 
-                        <TextBlock Classes="BodySMNormal SubHeading"
+                        <TextBlock Classes="BodySMNormal ForegroundSubdued SubHeading"
                                    Text="{x:Static resources:Language.PreviewSubHeading_Files_labelled_as_new}"
                                    x:Name="InstallLocationPreviewSubHeading" />
                     </StackPanel>
                 </Border>
 
                 <TreeDataGrid Grid.Row="1" Classes="TreeNoHeader TreeWhiteCaret" x:Name="LocationPreviewTreeDataGrid"
-                              ShowColumnHeaders="True"
-                              Foreground="{DynamicResource FontDarkSecondaryColor}" />
-
+                              ShowColumnHeaders="True"/>
 
             </Grid>
         </ScrollViewer>
