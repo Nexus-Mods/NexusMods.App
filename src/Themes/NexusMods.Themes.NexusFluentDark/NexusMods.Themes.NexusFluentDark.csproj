@@ -15,6 +15,7 @@
         <AvaloniaResource Include="Assets\Fonts\Regular\Montserrat-Regular.ttf"/>
         <AvaloniaResource Include="Assets\Fonts\Regular\Roboto-Regular.ttf"/>
         <AvaloniaResource Include="Assets\Fonts\SemiBold\Montserrat-SemiBold.ttf"/>
+        <AvaloniaResource Include="ControlStyles\Border\Toolbar.xaml" />
         <AvaloniaResource Include="ControlStyles\Button\PillStyles.xaml" />
     </ItemGroup>
 

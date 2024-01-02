@@ -6,6 +6,7 @@
     <StyleInclude Source="/ControlStyles/CheckBox/CheckBoxStyles.axaml"/>
     <StyleInclude Source="/ControlStyles/RadioButton/RadioButtonStyles.axaml"/>
     <StyleInclude Source="/ControlStyles/Border/BorderStyles.axaml"/>
+    <StyleInclude Source="/ControlStyles/Border/Toolbar.xaml"/>
     <StyleInclude Source="/ControlStyles/Button/PillStyles.xaml"/>
     <StyleInclude Source="/ControlStyles/Button/StandardButtonStyles.axaml"/>
     <StyleInclude Source="/ControlStyles/Button/RoundedButtonStyles.axaml"/>
@@ -14,5 +15,6 @@
     <StyleInclude Source="/ControlStyles/Window/DialogStyles.axaml"/>
     <StyleInclude Source="/ControlStyles/TreeDataGrid/TreeDataGridStyles.axaml"/>
     <StyleInclude Source="/ControlStyles/TextBox/TextBoxStyles.axaml"/>
+
 
 </Styles>
