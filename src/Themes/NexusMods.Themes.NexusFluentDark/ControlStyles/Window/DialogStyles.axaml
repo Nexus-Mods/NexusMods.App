@@ -19,6 +19,7 @@
         <Setter Property="Background" Value="{StaticResource ElementBackgroundNeutralTopBrush}"/>
         <Setter Property="ExtendClientAreaChromeHints" Value="Default"/>
         <Setter Property="ExtendClientAreaToDecorationsHint" Value="True"/>
+        <Setter Property="Padding" Value="0,32,0,0"/>
         <Setter Property="WindowStartupLocation" Value="CenterOwner"/>
         <Setter Property="CanResize" Value="True"/>
     </Style>
