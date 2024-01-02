@@ -24,8 +24,7 @@
     </Design.DataContext>
 
     <Grid ColumnDefinitions="72, 216, *" RowDefinitions="62, *, 48">
-        <Border
-            Background="#CC2A2C2B"
+        <Border Classes="Mid"
             Grid.Column="0"
             Grid.ColumnSpan="3"
             Grid.Row="0"

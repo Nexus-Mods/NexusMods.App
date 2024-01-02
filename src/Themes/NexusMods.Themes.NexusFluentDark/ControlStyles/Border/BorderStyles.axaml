@@ -3,7 +3,7 @@
 
     <!-- Preview -->
     <Design.PreviewWith>
-        <StackPanel Spacing="6" Margin="10">
+        <WrapPanel Margin="10" Width="600">
             <Border Classes="Rounded OutlineStrong" Padding="16">
                 <TextBlock Text="OUTLINE Strong" />
             </Border>
@@ -28,7 +28,19 @@
             <Border Classes="Rounded Top" Padding="16">
                 <TextBlock Text="TOP" />
             </Border>
-        </StackPanel>
+            <Border Classes="Rounded DangerWeak" Padding="16">
+                <TextBlock Text="DANGER weak" />
+            </Border>
+            <Border Classes="Rounded DangerSubdued" Padding="16">
+                <TextBlock Text="DANGER subdued" />
+            </Border>
+            <Border Classes="Rounded DangerModerate" Padding="16">
+                <TextBlock Text="DANGER moderate" />
+            </Border>
+            <Border Classes="Rounded DangerStrong" Padding="16">
+                <TextBlock Text="DANGER strong" />
+            </Border>
+        </WrapPanel>
     </Design.PreviewWith>
 
     <!-- Style Definitions -->
@@ -87,6 +99,19 @@
 
     <Style Selector="Border.Top">
         <Setter Property="Background" Value="{StaticResource ElementBackgroundNeutralTopBrush}" />
+    </Style>
+
+    <Style Selector="Border.DangerWeak">
+        <Setter Property="Background" Value="{StaticResource ElementForegroundDangerWeakBrush}" />
+    </Style>
+    <Style Selector="Border.DangerSubdued">
+        <Setter Property="Background" Value="{StaticResource ElementForegroundDangerSubduedBrush}" />
+    </Style>
+    <Style Selector="Border.DangerModerate">
+        <Setter Property="Background" Value="{StaticResource ElementForegroundDangerModerateBrush}" />
+    </Style>
+    <Style Selector="Border.DangerStrong">
+        <Setter Property="Background" Value="{StaticResource ElementForegroundDangerStrongBrush}" />
     </Style>
 
 
