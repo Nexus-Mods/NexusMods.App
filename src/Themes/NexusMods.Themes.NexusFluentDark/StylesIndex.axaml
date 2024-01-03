@@ -12,6 +12,8 @@
     <StyleInclude Source="/ControlStyles/Button/RoundedButtonStyles.axaml"/>
     <StyleInclude Source="/ControlStyles/Button/BareIconStyles.axaml"/>
     <StyleInclude Source="/ControlStyles/Button/HyperlinkStyles.axaml"/>
+    <StyleInclude Source="/ControlStyles/Button/SpineButtonStyles.axaml"/>
+    <StyleInclude Source="/ControlStyles/Button/SpineDownloadButtonStyles.axaml"/>
     <StyleInclude Source="/ControlStyles/Window/DialogStyles.axaml"/>
     <StyleInclude Source="/ControlStyles/TreeDataGrid/TreeDataGridStyles.axaml"/>
     <StyleInclude Source="/ControlStyles/TextBox/TextBoxStyles.axaml"/>
