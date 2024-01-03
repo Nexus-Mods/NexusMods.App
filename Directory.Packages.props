@@ -26,7 +26,7 @@
     <!-- Avalonia -->
     <PackageVersion Include="Avalonia" Version="11.0.6" />
     <PackageVersion Include="Avalonia.Controls.DataGrid" Version="11.0.6" />
-    <PackageVersion Include="Avalonia.Controls.TreeDataGrid" Version="11.0.1" />
+    <PackageVersion Include="Avalonia.Controls.TreeDataGrid" Version="11.0.2" />
     <PackageVersion Include="Avalonia.Desktop" Version="11.0.6" />
     <PackageVersion Include="Avalonia.Diagnostics" Version="11.0.6" />
     <PackageVersion Include="Avalonia.Headless" Version="11.0.6" />
