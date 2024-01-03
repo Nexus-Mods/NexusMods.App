@@ -329,6 +329,14 @@ In practice, the difference is that `SolidColorBursh` also includes an `Opacity`
 
 The brush version of a color should be preferred when both can be used.
 
+The only place in the entire code where hex color literals should appear is in the `PrimitiveColors.axaml` file, everywhere else colors should be referenced through higher resource aliases.
+
+### Opacity
+Like the colors, the App has a system of opacity levels, the primitives are defined in `Resources/Palette/Colors/PrimitiveOpacities.axaml`, while the element layer is defined in `ThemeBaseResources.axaml`.
+Developers should avoid using numeric values directly and instead strive to use the semantic aliases instead.
+
+In particular a OpacityDisabledElement alias is defined, which should be used for disabled elements.
+
 ### Typography
 Similarly to the colour system, the app uses a multilayer typography system for fonts and text styles.
 
