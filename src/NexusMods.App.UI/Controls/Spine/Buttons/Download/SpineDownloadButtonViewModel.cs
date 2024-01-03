@@ -4,7 +4,7 @@ using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Controls.Spine.Buttons.Download;
 
-public class DownloadButtonViewModel : AViewModel<IDownloadButtonViewModel>, IDownloadButtonViewModel
+public class SpineDownloadButtonViewModel : AViewModel<ISpineDownloadButtonViewModel>, ISpineDownloadButtonViewModel
 {
     [Reactive]
     public float Number { get; set; } = 4.2f;

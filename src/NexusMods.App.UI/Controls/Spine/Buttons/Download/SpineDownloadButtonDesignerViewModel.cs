@@ -5,7 +5,7 @@ using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Controls.Spine.Buttons.Download;
 
-public class DownloadButtonDesignerViewModel : AViewModel<IDownloadButtonViewModel>, IDownloadButtonViewModel
+public class SpineDownloadButtonDesignerViewModel : AViewModel<ISpineDownloadButtonViewModel>, ISpineDownloadButtonViewModel
 {
     [Reactive]
     public float Number { get; set; } = 4.2f;
@@ -22,7 +22,7 @@ public class DownloadButtonDesignerViewModel : AViewModel<IDownloadButtonViewMod
     [Reactive]
     public bool IsActive { get; set; }
 
-    public DownloadButtonDesignerViewModel()
+    public SpineDownloadButtonDesignerViewModel()
     {
         Click = ReactiveCommand.CreateFromTask(StartProgress);
     }

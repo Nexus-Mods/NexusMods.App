@@ -180,11 +180,11 @@
         <Compile Update="Controls\Spine\Buttons\Icon\IconButtonDesignViewModel.cs">
           <DependentUpon>IIconButtonViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Controls\Spine\Buttons\Download\DownloadButtonDesignerViewModel.cs">
-          <DependentUpon>IDownloadButtonViewModel.cs</DependentUpon>
+        <Compile Update="Controls\Spine\Buttons\Download\SpineDownloadButtonDesignerViewModel.cs">
+          <DependentUpon>ISpineDownloadButtonViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Controls\Spine\Buttons\Download\DownloadButtonViewModel.cs">
-          <DependentUpon>IDownloadButtonViewModel.cs</DependentUpon>
+        <Compile Update="Controls\Spine\Buttons\Download\SpineDownloadButtonViewModel.cs">
+          <DependentUpon>ISpineDownloadButtonViewModel.cs</DependentUpon>
         </Compile>
         <Compile Update="RightContent\Downloads\ViewModels\DownloadTaskDesignViewModel.cs">
           <DependentUpon>IDownloadTaskViewModel.cs</DependentUpon>

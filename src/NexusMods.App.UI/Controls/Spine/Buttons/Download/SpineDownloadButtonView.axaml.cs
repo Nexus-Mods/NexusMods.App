@@ -7,9 +7,9 @@ using static NexusMods.App.UI.Helpers.StyleConstants.SpineDownloadButton;
 
 namespace NexusMods.App.UI.Controls.Spine.Buttons.Download;
 
-public partial class DownloadButtonView : ReactiveUserControl<IDownloadButtonViewModel>
+public partial class SpineDownloadButtonView : ReactiveUserControl<ISpineDownloadButtonViewModel>
 {
-    public DownloadButtonView()
+    public SpineDownloadButtonView()
     {
         InitializeComponent();
 
