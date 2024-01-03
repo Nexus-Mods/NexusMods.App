@@ -18,6 +18,7 @@
     <StyleInclude Source="/ControlStyles/TreeDataGrid/TreeDataGridStyles.axaml"/>
     <StyleInclude Source="/ControlStyles/TextBox/TextBoxStyles.axaml"/>
     <StyleInclude Source="/ControlStyles/ProgressBar/DownloadProgressBarStyles.axaml"/>
+    <StyleInclude Source="/ControlStyles/ProgressBar/LaunchButtonProgressBarStyles.axaml"/>
 
 
 </Styles>
