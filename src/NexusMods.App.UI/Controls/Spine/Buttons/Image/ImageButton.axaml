@@ -13,7 +13,7 @@
     <Design.DataContext>
         <buttons:ImageButtonDesignViewModel />
     </Design.DataContext>
-    
+
     <Button
         Classes="Spine Image"
         Height="64"
@@ -31,8 +31,6 @@
                         </Image.Clip>
                     </Image>
                     <Border
-                        Background="{DynamicResource TransparentBackground}"
-                        CornerRadius="48"
                         Height="48"
                         Width="48" />
                 </Grid>

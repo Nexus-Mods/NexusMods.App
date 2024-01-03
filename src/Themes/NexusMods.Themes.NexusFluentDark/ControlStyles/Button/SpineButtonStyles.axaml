@@ -19,6 +19,11 @@
         <Setter Property="CornerRadius" Value="45" />
         <Setter Property="HorizontalAlignment" Value="Center" />
         <Setter Property="ClipToBounds" Value="False" />
+        <Setter Property="Background" Value="{StaticResource ElementBackgroundTransparentBrush}" />
+
+        <Style Selector="^ Border">
+            <Setter Property="CornerRadius" Value="45" />
+        </Style>
 
         <Style Selector="^:pressed">
             <Setter Property="RenderTransform" Value="scale(0.9)" />
@@ -85,7 +90,6 @@
                             </Image>
                             <Border
                                 Background="{DynamicResource TransparentBackground}"
-                                CornerRadius="48"
                                 Height="48"
                                 Width="48" />
                         </Grid>
@@ -121,7 +125,6 @@
                                 Value="mdi-help-circle"
                                 VerticalAlignment="Center" />
                             <Border
-                                CornerRadius="48"
                                 Height="48"
                                 Width="48" />
                         </Grid>
@@ -136,7 +139,6 @@
             <Style Selector="^.Home /template/ icons|Icon">
                 <Setter Property="Value" Value="mdi-home" />
             </Style>
-
 
             <Style Selector="^.Inactive icons|Icon">
                 <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralSubduedBrush}" />
