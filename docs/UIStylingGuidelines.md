@@ -151,16 +151,6 @@ This should be used to avoid defining many different combinations of appearances
         <Setter Property="Height" Value="36" />
     </Style>
 
-
-    <!-- Standard Primary -->
-    <Style Selector="Button.Standard.Primary">
-        <Setter Property="Background" Value="{DynamicResource ElementForegroundPrimaryModerateBrush}" />
-
-        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource ElementForegroundPrimaryStrongBrush}" />
-        </Style>
-    </Style>
-
     <!-- Standard Primary -->
     <Style Selector="Button.Standard.Primary">
         <Setter Property="Background" Value="{DynamicResource ElementForegroundPrimaryModerateBrush}" />
@@ -171,7 +161,7 @@ This should be used to avoid defining many different combinations of appearances
     </Style>
 
     <!-- Standard Secondary -->
-    <Style Selector="Button.Standard.Primary">
+    <Style Selector="Button.Standard.Secondary">
         <Setter Property="Background" Value="{DynamicResource ElementForegroundPrimaryStrongBrush}" />
 
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
@@ -179,6 +169,35 @@ This should be used to avoid defining many different combinations of appearances
         </Style>
     </Style>
 ```
+
+Styles can also be defined nested in parent Styles, e.g.:
+```xml
+<!-- Base Standard Button (only use with additional qualifiers)-->
+<Style Selector="Button.Standard">
+    <Setter Property="CornerRadius" Value="4"/>
+    <Setter Property="Height" Value="36"/>
+
+    <!-- Standard Primary -->
+    <Style Selector="^.Primary">
+        <Setter Property="Background" Value="{DynamicResource ElementForegroundPrimaryModerateBrush}"/>
+
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource ElementForegroundPrimaryStrongBrush}"/>
+        </Style>
+    </Style>
+
+    <!-- Standard Secondary -->
+    <Style Selector="^.Secondary">
+        <Setter Property="Background" Value="{DynamicResource ElementForegroundPrimaryStrongBrush}"/>
+
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource ElementForegroundPrimaryWeakBrush}"/>
+        </Style>
+    </Style>
+</Style>
+```
+This can be useful to keep the code more organized.
+Usage of nested definitions should be preferred over defining multiple styles with the same prefix.
 
 ## Avalonia ControlThemes
 In addition to Styles, Avalonia also supports WPF like [ControlThemes](https://docs.avaloniaui.net/docs/basics/user-interface/styling/control-themes).
