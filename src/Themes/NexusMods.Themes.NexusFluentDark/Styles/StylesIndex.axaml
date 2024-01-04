@@ -1,0 +1,23 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <StyleInclude Source="/Styles/Controls/TextBlock/TextBlockStyles.axaml"/>
+    <StyleInclude Source="/Styles/Controls/Icons/IconsStyles.axaml"/>
+    <StyleInclude Source="/Styles/Controls/CheckBox/CheckBoxStyles.axaml"/>
+    <StyleInclude Source="/Styles/Controls/RadioButton/RadioButtonStyles.axaml"/>
+    <StyleInclude Source="/Styles/Controls/Border/BorderStyles.axaml"/>
+    <StyleInclude Source="/Styles/Controls/Border/Toolbar.xaml"/>
+    <StyleInclude Source="/Styles/Controls/Button/PillStyles.xaml"/>
+    <StyleInclude Source="/Styles/Controls/Button/StandardButtonStyles.axaml"/>
+    <StyleInclude Source="/Styles/Controls/Button/RoundedButtonStyles.axaml"/>
+    <StyleInclude Source="/Styles/Controls/Button/BareIconStyles.axaml"/>
+    <StyleInclude Source="/Styles/Controls/Button/HyperlinkStyles.axaml"/>
+    <StyleInclude Source="/Styles/Controls/Button/SpineButtonStyles.axaml"/>
+    <StyleInclude Source="/Styles/Controls/Button/SpineDownloadButtonStyles.axaml"/>
+    <StyleInclude Source="/Styles/Controls/Window/DialogStyles.axaml"/>
+    <StyleInclude Source="/Styles/Controls/TreeDataGrid/TreeDataGridStyles.axaml"/>
+    <StyleInclude Source="/Styles/Controls/TextBox/TextBoxStyles.axaml"/>
+    <StyleInclude Source="/Styles/Controls/ProgressBar/ProgressBarStyles.axaml"/>
+
+
+</Styles>
