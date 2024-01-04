@@ -195,7 +195,7 @@
     <Style Selector="Button.SpineDownloadButton:pointerover Border">
         <Setter Property="Background">
             <SolidColorBrush Color="{StaticResource ElementForegroundNeutralStrong}"
-                             Opacity="{StaticResource OpacityWeak}" />
+                             Opacity="{StaticResource OpacitySubdued}" />
         </Setter>
         <Setter Property="BorderBrush" Value="{DynamicResource ElementForegroundNeutralStrong}"/>
     </Style>

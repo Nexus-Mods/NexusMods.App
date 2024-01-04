@@ -31,7 +31,7 @@
         <Setter Property="Foreground" Value="{StaticResource ElementForegroundInfoWeakBrush}" />
         <Setter Property="Background">
             <SolidColorBrush Color="{StaticResource ElementForegroundInfoWeak}"
-                             Opacity="{StaticResource OpacityWeak}" />
+                             Opacity="{StaticResource OpacitySubdued}" />
         </Setter>
         <Setter Property="MinWidth" Value="100" />
 

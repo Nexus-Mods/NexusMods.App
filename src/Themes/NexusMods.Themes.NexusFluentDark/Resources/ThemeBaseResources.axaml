@@ -13,15 +13,13 @@
     <StaticResource x:Key="OpacitySolid" ResourceKey="Alpha100"/>
     <StaticResource x:Key="OpacityTransparent" ResourceKey="Alpha0"/>
 
-    <StaticResource x:Key="OpacityStrong" ResourceKey="Alpha70"/>
-    <StaticResource x:Key="OpacityModerate" ResourceKey="Alpha40"/>
-    <StaticResource x:Key="OpacitySubdued" ResourceKey="Alpha30"/>
-    <StaticResource x:Key="OpacityWeak" ResourceKey="Alpha20"/>
-    <StaticResource x:Key="OpacityWeakest" ResourceKey="Alpha10"/>
+    <StaticResource x:Key="OpacityModerate" ResourceKey="Alpha30"/>
+    <StaticResource x:Key="OpacitySubdued" ResourceKey="Alpha20"/>
+    <StaticResource x:Key="OpacityWeak" ResourceKey="Alpha10"/>
 
 
     <!-- Disabled Opacity level -->
-    <StaticResource x:Key="OpacityDisabledElement" ResourceKey="OpacityModerate"/>
+    <StaticResource x:Key="OpacityDisabledElement" ResourceKey="Alpha40"/>
 
 
     <!-- :focus BoxShadow style -->

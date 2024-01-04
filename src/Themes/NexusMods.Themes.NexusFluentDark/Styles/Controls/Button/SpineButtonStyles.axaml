@@ -47,7 +47,7 @@
         <Style Selector="^.Inactive:pointerover Border">
             <Setter Property="Background">
                 <SolidColorBrush Color="{StaticResource ElementForegroundNeutralStrong}"
-                                 Opacity="{StaticResource OpacitySubdued}" />
+                                 Opacity="{StaticResource OpacityModerate}" />
             </Setter>
             <Setter Property="BorderBrush" Value="{StaticResource ElementForegroundNeutralStrongBrush}" />
             <Setter Property="BorderThickness" Value="1" />

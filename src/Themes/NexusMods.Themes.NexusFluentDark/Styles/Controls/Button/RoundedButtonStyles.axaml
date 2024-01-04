@@ -316,7 +316,7 @@
     <Style Selector="Button.Rounded.Accent.SemiActive">
         <Setter Property="Background">
             <SolidColorBrush Color="{StaticResource ElementForegroundInfoModerate}"
-                             Opacity="{StaticResource OpacityWeakest}" />
+                             Opacity="{StaticResource OpacityWeak}" />
         </Setter>
         <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralStrongBrush}" />
         <Setter Property="BorderBrush" Value="{StaticResource ElementForegroundInfoModerateBrush}" />
@@ -333,7 +333,7 @@
         <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="Background">
                 <SolidColorBrush Color="{StaticResource ElementForegroundInfoModerate}"
-                                 Opacity="{StaticResource OpacityWeakest}" />
+                                 Opacity="{StaticResource OpacityWeak}" />
             </Setter>
             <Setter Property="BorderBrush" Value="{StaticResource ElementForegroundInfoModerateBrush}" />
         </Style>
@@ -341,7 +341,7 @@
         <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="Background">
                 <SolidColorBrush Color="{StaticResource ElementForegroundInfoModerate}"
-                                 Opacity="{StaticResource OpacityWeakest}" />
+                                 Opacity="{StaticResource OpacityWeak}" />
             </Setter>
             <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralStrongBrush}" />
             <Setter Property="BorderBrush" Value="{StaticResource ElementForegroundInfoModerateBrush}" />
