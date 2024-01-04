@@ -104,7 +104,7 @@ public class GenericFolderMatchInstaller : AModInstaller
         // TODO: Currently just assumes that the prefix of the first file that matches the target structure is the correct one.
         // Consider checking that each file matches the target at the found location before adding it.
 
-        var paths = archiveFiles.GetFiles().Gen().Select(f => f.Path()).AsEnumerable();
+        var paths = archiveFiles.GetFiles().Select(f => f.Path()).AsEnumerable();
         if (TryFindPrefixToDrop(target, paths, out var prefixToDrop))
         {
             foreach (var node in archiveFiles.GetFiles())

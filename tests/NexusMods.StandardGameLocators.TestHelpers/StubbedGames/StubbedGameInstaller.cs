@@ -37,7 +37,6 @@ public class StubbedGameInstaller : IModInstaller
         KeyedBox<RelativePath, ModFileTree> archiveFiles)
     {
         var modFiles = archiveFiles.GetFiles()
-            .Gen()
             .Select(kv =>
             {
                 var path = kv.Path();

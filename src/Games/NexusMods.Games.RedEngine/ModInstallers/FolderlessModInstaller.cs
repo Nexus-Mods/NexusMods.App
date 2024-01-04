@@ -32,7 +32,7 @@ public class FolderlessModInstaller : IModInstaller
         KeyedBox<RelativePath, ModFileTree> archiveFiles,
         CancellationToken cancellationToken = default)
     {
-        var modFiles = archiveFiles.EnumerateFilesBfs().Gen()
+        var modFiles = archiveFiles.EnumerateFilesBfs()
             .Where(f => !IgnoreExtensions.Contains(f.Value.Extension()))
             .Select(f => f.Value.ToStoredFile(
                 new GamePath(LocationId.Game, Destination.Join(f.Value.FileName()))

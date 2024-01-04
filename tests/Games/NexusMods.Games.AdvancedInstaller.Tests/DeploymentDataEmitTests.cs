@@ -44,11 +44,11 @@ public partial class DeploymentDataTests
 
     private static ModFileTreeSource[] CreateEmitTestFileTree()
     {
-        return new ModFileTreeSource[]
-        {
+        return
+        [
             new(1, 1, "folder/file1.txt"),
             new(2, 2, "folder/file2.txt"),
-            new(2, 2, "folder/subfolder/file3.txt")
-        };
+            new(3, 3, "folder/subfolder/file3.txt")
+        ];
     }
 }

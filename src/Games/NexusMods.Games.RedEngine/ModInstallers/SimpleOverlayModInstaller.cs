@@ -52,7 +52,7 @@ public class SimpleOverlayModInstaller : IModInstaller
             // If this becomes more commonplace, I'll add specialised helper.
 
             var fullPath = file.Path(); // all the way up to root
-            var relativePath = fullPath.DropFirst(node.Depth()); // get relative path
+            var relativePath = fullPath.DropFirst(node.Depth() - 1); // get relative path
             newFiles.Add(new StoredFile()
             {
                 Id = ModFileId.NewId(),

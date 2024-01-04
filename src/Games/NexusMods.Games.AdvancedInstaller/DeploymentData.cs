@@ -114,7 +114,7 @@ public readonly struct DeploymentData
         {
             // find file in `files` input.
             var src = RelativePath.FromUnsanitizedInput(mapping.Key);
-            var file = archiveFiles.FindByPathFromRoot(src)!;
+            var file = archiveFiles.FindByPathFromChild(src)!;
 
             yield return new StoredFile
             {

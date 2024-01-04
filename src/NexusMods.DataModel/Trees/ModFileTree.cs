@@ -37,7 +37,7 @@ public struct ModFileTree :
     public bool IsFile { get; private set; } // 16
 
     /// <inheritdoc />
-    public ushort Depth { get; } // 17
+    public ushort Depth { get; private set;  } // 17
 
     // Padding Available: 19-23 (inclusive)
 
@@ -132,7 +132,7 @@ public struct ModFileTree :
     public static KeyedBox<RelativePath, ModFileTree> Create(ModFileTreeSource[] entries)
     {
         // Unboxed root node.
-        var root = CreateDirectoryNode(RelativePath.Empty);
+        var root = CreateDirectoryNode(RelativePath.Empty, 0);
 
         // Add each entry to the tree.
         foreach (var entry in entries)
@@ -149,7 +149,8 @@ public struct ModFileTree :
                 // Try get child for this segment.
                 if (!current.Item.Children.TryGetValue(segment, out var child))
                 {
-                    child = isFile ? CreateFileNode(segment, entry.Hash, entry.Size, entry.Factory, current) : CreateDirectoryNode(segment, current);
+                    var depth = (ushort)(x + 1);
+                    child = isFile ? CreateFileNode(segment, entry.Hash, entry.Size, true, depth, entry.Factory, current) : CreateDirectoryNode(segment, depth, current);
                     current.Item.Children.Add(segment, child);
                 }
 
@@ -160,10 +161,10 @@ public struct ModFileTree :
         return root;
     }
 
-    private static KeyedBox<RelativePath, ModFileTree> CreateDirectoryNode(RelativePath segmentName, Box<ModFileTree>? parent = null)
-        => CreateFileNode(segmentName, 0, 0, null, parent);
+    private static KeyedBox<RelativePath, ModFileTree> CreateDirectoryNode(RelativePath segmentName, ushort depth, Box<ModFileTree>? parent = null)
+        => CreateFileNode(segmentName, 0, 0, false, depth, null, parent);
 
-    private static KeyedBox<RelativePath, ModFileTree> CreateFileNode(RelativePath segmentName, ulong hash, ulong size, IStreamFactory? factory,
+    private static KeyedBox<RelativePath, ModFileTree> CreateFileNode(RelativePath segmentName, ulong hash, ulong size, bool isFile, ushort depth, IStreamFactory? factory,
         Box<ModFileTree>? parent)
     {
         return new KeyedBox<RelativePath, ModFileTree>
@@ -172,11 +173,12 @@ public struct ModFileTree :
             {
                 Segment = segmentName,
                 Children = new Dictionary<RelativePath, KeyedBox<RelativePath, ModFileTree>>(),
-                IsFile = true,
+                IsFile = isFile,
                 Parent = parent,
                 _hash = hash,
                 _size = size,
-                StreamFactory = factory
+                StreamFactory = factory,
+                Depth = depth,
             }
         };
     }

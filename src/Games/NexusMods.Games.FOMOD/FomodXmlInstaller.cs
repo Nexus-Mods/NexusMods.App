@@ -156,7 +156,7 @@ public class FomodXmlInstaller : AModInstaller
         var src = RelativePath.FromUnsanitizedInput(instruction.source);
         var dest = RelativePath.FromUnsanitizedInput(instruction.destination);
 
-        var file = files.FindByPathFromRoot(src)!;
+        var file = files.FindByPathFromChild(src)!;
         return new StoredFile
         {
             Id = ModFileId.NewId(),

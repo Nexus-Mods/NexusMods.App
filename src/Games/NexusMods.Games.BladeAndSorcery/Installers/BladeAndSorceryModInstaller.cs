@@ -39,7 +39,6 @@ public class BladeAndSorceryModInstaller : AModInstaller
     {
         var modDirectories = archiveFiles
             .Children()
-            .Gen()
             .Select(x => x.Value)
             .Where(x => x.IsDirectory())
             .AsEnumerable();
@@ -60,7 +59,6 @@ public class BladeAndSorceryModInstaller : AModInstaller
             var modRootFolder = Constants.ModsDirectory.Join(modRoot.FileName());
             var modFileData = modRoot
                 .GetFiles()
-                .Gen()
                 .Select(kv => kv.ToStoredFile(
                     new GamePath(LocationId.Game, modRootFolder.Join(kv.Path().DropFirst()))
                 ))

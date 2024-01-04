@@ -35,7 +35,7 @@ public partial class DeploymentDataTests
         var data = new DeploymentData();
 
         // Create a File Tree
-        var folderNode = ModFileTree.Create(CreateExtensionTestFileTree()).FindByPathFromRoot("folder")!;
+        var folderNode = ModFileTree.Create(CreateExtensionTestFileTree()).FindByPathFromChild("folder")!;
 
         // Act
         data.AddFolderMapping(folderNode, MakeGamePath("Data"));
