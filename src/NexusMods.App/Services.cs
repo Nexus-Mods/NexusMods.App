@@ -59,6 +59,7 @@ public static class Services
                 .AddSingleton<CommandLineConfigurator>()
                 .AddCLI()
                 .AddUI(config.LauncherSettings)
+                .AddSingleton<App>()
                 .AddGuidedInstallerUi()
                 .AddAdvancedInstaller()
                 .AddAdvancedInstallerUi()

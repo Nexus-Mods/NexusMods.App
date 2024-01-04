@@ -2,12 +2,13 @@ using Avalonia;
 using Avalonia.ReactiveUI;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.App.UI;
 using Projektanker.Icons.Avalonia;
 using Projektanker.Icons.Avalonia.MaterialDesign;
 using ReactiveUI;
 using Splat;
 
-namespace NexusMods.App.UI;
+namespace NexusMods.App;
 
 // ReSharper disable once ClassNeverInstantiated.Global
 public class Startup

@@ -4,13 +4,13 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.App.UI.Resources;
+using NexusMods.App.UI;
 using NexusMods.App.UI.Windows;
 using ReactiveUI;
 using Splat;
 using Splat.Microsoft.Extensions.Logging;
 
-namespace NexusMods.App.UI;
+namespace NexusMods.App;
 
 public class App : Application
 {

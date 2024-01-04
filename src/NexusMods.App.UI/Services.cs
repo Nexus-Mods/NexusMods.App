@@ -185,7 +185,6 @@ public static class Services
             .AddViewModel<DummyViewModel, IDummyViewModel>()
             .AddView<DummyView, IDummyViewModel>()
             .AddSingleton<InjectedViewLocator>()
-            .AddSingleton<App>()
             .AddFileSystem();
     }
 

@@ -37,13 +37,13 @@ public class AvaloniaApp : IDisposable
 
         Dispatcher.UIThread.Post(() => app?.Shutdown());
     }
-    
+
     private static IClassicDesktopStyleApplicationLifetime? GetApp() =>
         (IClassicDesktopStyleApplicationLifetime?) Application.Current?.ApplicationLifetime;
 
     private AppBuilder BuildAvaloniaApp()
     {
-        return App.UI.Startup.BuildAvaloniaApp(_provider)
+        return App.Startup.BuildAvaloniaApp(_provider)
             .UseHeadless(new AvaloniaHeadlessPlatformOptions())
             .UseSkia();
     }
@@ -117,7 +117,7 @@ public class AvaloniaApp : IDisposable
 
         return host;
     }
-    
+
     /// <summary>
     /// Constructs a window host that can be used to interact with the window, this will be a fully functional
     /// version of the app with all services connected and using a normal MainWindowViewModel
