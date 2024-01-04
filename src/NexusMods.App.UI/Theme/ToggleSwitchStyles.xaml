@@ -1,4 +1,12 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Design.PreviewWith>
+        <StackPanel Spacing="4" Margin="6">
+            <ToggleSwitch />
+            <ToggleSwitch IsEnabled="False" IsChecked="False"/>
+        </StackPanel>
+    </Design.PreviewWith>
+
     <Style Selector="ToggleSwitch">
         <Setter Property="Template">
             <ControlTemplate>
@@ -43,7 +51,7 @@
                             Content="{TemplateBinding OffContent}"
                             ContentTemplate="{TemplateBinding OffContentTemplate}"
                             Grid.Column="2"
-                            Grid.Row="0" 
+                            Grid.Row="0"
                             Grid.RowSpan="3"
                             HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                             VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
@@ -64,7 +72,7 @@
                             BorderBrush="{DynamicResource ToggleSwitchStrokeOff}"
                             BorderThickness="0"
                             CornerRadius="10"
-                            Grid.Row="1" 
+                            Grid.Row="1"
                             Grid.Column="0"
                             Height="14"
                             Width="34"
@@ -75,14 +83,14 @@
                             BorderBrush="{DynamicResource ToggleSwitchStrokeOn}"
                             BorderThickness="0"
                             CornerRadius="10"
-                            Grid.Row="1" 
+                            Grid.Row="1"
                             Grid.Column="0"
                             Height="14"
                             Width="34"
                             x:Name="SwitchKnobBounds" />
 
                         <Canvas
-                            Grid.Row="1" 
+                            Grid.Row="1"
                             Grid.Column="0"
                             Height="20"
                             HorizontalAlignment="Left"
