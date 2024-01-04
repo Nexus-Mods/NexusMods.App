@@ -291,8 +291,12 @@ Resources can be aliased by declaring a new resource with a new Key, referencing
 Resources can be referenced by either using the `StaticResource` markup extension or the `DynamicResource` one.
 `StaticResource` resolves the resource at compile time, while `DynamicResource` resolves it at runtime.
 
-`StaticResource` should be preferred for both minor performance benefits, and compile time checking of the resource existence.
+`StaticResource` should be preferred inside the Theme project for both minor performance benefits, and compile time checking of the resource existence.
+
 `DynamicResource` should be used when the Value of the resource can change at runtime, which should be rare.
+
+`DynamicResource` also allow referencing a Theme resource from outside the Theme project without requiring a direct Project dependency.
+Occurrences of outside references to resources should be rare, as most resources define appearance properties, which should be set by Styles, which in turn should be defined in the Theme project.
 
 Example:
 ```xml
