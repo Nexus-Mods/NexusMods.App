@@ -67,12 +67,7 @@ public sealed class MountAndBlade2BannerlordModInstaller : AModInstaller
         {
             //return NoResults;
 
-            var modFiles = archiveFiles.GetFiles().Select(kv =>
-            {
-                var path = kv.Path();
-                var moduleRoot = path.Parent;
-                return kv.ToStoredFile(new GamePath(LocationId.Game, ModFolder.Join(path.DropFirst(moduleRoot.Depth - 1))));
-            }).AsEnumerable();
+            var modFiles = archiveFiles.GetFiles().Select(kv => kv.ToStoredFile(new GamePath(LocationId.Game, kv.Path()))).AsEnumerable();
             return new List<ModInstallerResult>
             {
                 new()
@@ -108,8 +103,9 @@ public sealed class MountAndBlade2BannerlordModInstaller : AModInstaller
                 var relativePath = instruction.Source.ToRelativePath();
                 var node = archiveFiles!.FindByPathFromChild(relativePath)!;
                 var path = node.Path();
+                var modulesFolderDepth = moduleRoot!.Parent()!.Depth();
 
-                var fromArchive = node.ToStoredFile(new GamePath(LocationId.Game, ModFolder.Join(path.DropFirst(archiveFiles!.Depth()))));
+                var fromArchive = node.ToStoredFile(new GamePath(LocationId.Game, ModFolder.Join(path.DropFirst(modulesFolderDepth))));
                 return fromArchive with
                 {
                     Metadata = fromArchive.Metadata.AddRange(GetMetadata(moduleInfoWithPath, relativePath))
