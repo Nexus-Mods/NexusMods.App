@@ -103,7 +103,8 @@ public sealed class MountAndBlade2BannerlordModInstaller : AModInstaller
                 var relativePath = instruction.Source.ToRelativePath();
                 var node = archiveFiles!.FindByPathFromChild(relativePath)!;
                 var path = node.Path();
-                var modulesFolderDepth = moduleRoot!.Parent()!.Depth();
+                var parent = moduleRoot!.Parent();
+                var modulesFolderDepth = parent?.Depth() ?? 0;
 
                 var fromArchive = node.ToStoredFile(new GamePath(LocationId.Game, ModFolder.Join(path.DropFirst(modulesFolderDepth))));
                 return fromArchive with
