@@ -2,7 +2,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Games.TestFramework;
 using NexusMods.Networking.HttpDownloader.Tests;
-using NexusMods.Paths;
 using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 
 namespace NexusMods.CLI.Tests.VerbTests;

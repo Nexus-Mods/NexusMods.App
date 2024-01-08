@@ -3,6 +3,7 @@
     <!-- Custom Packages -->
     <PackageVersion Include="LinqGen" Version="0.3.1" />
     <PackageVersion Include="NexusMods.Hashing.xxHash64" Version="1.0.1" />
+    <PackageVersion Include="NexusMods.Paths" Version="0.5.0" />
     <PackageVersion Include="NexusMods.Archives.Nx" Version="0.3.7" />
     <PackageVersion Include="NexusMods.Paths.TestingHelpers" Version="0.2.0" />
     <PackageVersion Include="NexusMods.ProxyConsole.Abstractions" Version="0.6.0" />

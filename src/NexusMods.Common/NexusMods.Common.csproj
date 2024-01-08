@@ -7,6 +7,7 @@
         <PackageReference Include="CliWrap" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
         <PackageReference Include="OneOf" />
+        <PackageReference Include="NexusMods.Paths" />
         <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
 
@@ -15,7 +16,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\..\NexusMods.Paths\src\NexusMods.Paths\NexusMods.Paths.csproj" />
       <ProjectReference Include="..\NexusMods.Abstractions\NexusMods.Abstractions.csproj" />
     </ItemGroup>
 </Project>

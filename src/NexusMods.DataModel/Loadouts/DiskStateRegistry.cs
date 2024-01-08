@@ -3,7 +3,6 @@ using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.LoadoutSynchronizer;
-using NexusMods.Paths.Extensions;
 using Reloaded.Memory.Extensions;
 
 namespace NexusMods.DataModel.Loadouts;
