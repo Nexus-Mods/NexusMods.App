@@ -47,5 +47,5 @@ public class AdvancedInstallerPageViewModel : AViewModel<IAdvancedInstallerPageV
     public IBodyViewModel BodyViewModel { get; }
 
     /// <inheritdoc />
-    public bool ShouldInstall { get; private set; }
+    public bool ShouldInstall { get; set; }
 }

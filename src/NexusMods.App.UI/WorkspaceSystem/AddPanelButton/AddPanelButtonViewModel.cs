@@ -7,12 +7,12 @@ namespace NexusMods.App.UI.WorkspaceSystem;
 
 public class AddPanelButtonViewModel : AViewModel<IAddPanelButtonViewModel>, IAddPanelButtonViewModel
 {
-    public IReadOnlyDictionary<PanelId, Rect> NewLayoutState { get; }
+    public WorkspaceGridState NewLayoutState { get; }
     public IImage ButtonImage { get; }
-    public ReactiveCommand<Unit, IReadOnlyDictionary<PanelId, Rect>> AddPanelCommand { get; }
+    public ReactiveCommand<Unit, WorkspaceGridState> AddPanelCommand { get; }
 
     public AddPanelButtonViewModel(
-        IReadOnlyDictionary<PanelId, Rect> newLayoutState,
+        WorkspaceGridState newLayoutState,
         IImage buttonImage)
     {
         NewLayoutState = newLayoutState;

@@ -7,14 +7,15 @@ using Avalonia;
 using DynamicData;
 using DynamicData.Aggregation;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
 public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceViewModel
 {
-    private const int Columns = 2;
-    private const int Rows = 2;
-    private const int MaxPanelCount = Columns * Rows;
+    private const int MaxColumns = 2;
+    private const int MaxRows = 2;
+    private const int MaxPanelCount = MaxColumns * MaxRows;
 
     private readonly SourceCache<IPanelViewModel, PanelId> _panelSource = new(x => x.Id);
     private readonly ReadOnlyObservableCollection<IPanelViewModel> _panels;
@@ -53,6 +54,13 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
 
         this.WhenActivated(disposables =>
         {
+            // Workspace resizing
+            this.WhenAnyValue(vm => vm.IsHorizontal)
+                .Distinct()
+                .Do(_ => UpdateStates())
+                .Do(_ => UpdateResizers())
+                .Subscribe();
+
             // Adding a panel
             _addPanelButtonViewModelSource
                 .Connect()
@@ -196,14 +204,16 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         });
     }
 
-    // TODO: make this reactive
     private Size _lastWorkspaceSize;
-    private bool IsHorizontal => _lastWorkspaceSize.Width > _lastWorkspaceSize.Height;
+
+    [Reactive] public bool IsHorizontal { get; private set; }
 
     /// <inheritdoc/>
     public void Arrange(Size workspaceSize)
     {
         _lastWorkspaceSize = workspaceSize;
+        IsHorizontal = _lastWorkspaceSize.Width > _lastWorkspaceSize.Height;
+
         foreach (var panelViewModel in Panels)
         {
             panelViewModel.Arrange(workspaceSize);
@@ -229,9 +239,10 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
             updater.Clear();
             if (_panels.Count == MaxPanelCount) return;
 
-            var panels = _panels.ToImmutableDictionary(panel => panel.Id, panel => panel.LogicalBounds);
-            var states = GridUtils.GetPossibleStates(panels, Columns, Rows);
-            foreach (var state in states)
+            var currentState = WorkspaceGridState.From(_panels, IsHorizontal);
+            var newStates = GridUtils.GetPossibleStates(currentState, MaxColumns, MaxRows);
+
+            foreach (var state in newStates)
             {
                 var image = IconUtils.StateToBitmap(state);
                 updater.Add(new AddPanelButtonViewModel(state, image));
@@ -258,14 +269,14 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
     }
 
     /// <inheritdoc/>
-    public IPanelViewModel AddPanel(IReadOnlyDictionary<PanelId, Rect> state)
+    public IPanelViewModel AddPanel(WorkspaceGridState state)
     {
         IPanelViewModel panelViewModel = null!;
         _panelSource.Edit(updater =>
         {
-            foreach (var kv in state)
+            foreach (var panel in state)
             {
-                var (panelId, logicalBounds) = kv;
+                var (panelId, logicalBounds) = panel;
                 if (panelId == PanelId.DefaultValue)
                 {
                     panelViewModel = new PanelViewModel(_factoryController)
@@ -294,16 +305,16 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
 
     public void ClosePanel(PanelId panelToClose)
     {
-        var currentState = _panels.ToImmutableDictionary(panel => panel.Id, panel => panel.LogicalBounds);
-        var newState = GridUtils.GetStateWithoutPanel(currentState, panelToClose, isHorizontal: IsHorizontal);
+        var currentState = WorkspaceGridState.From(_panels, IsHorizontal);
+        var newState = GridUtils.GetStateWithoutPanel(currentState, panelToClose);
 
         _panelSource.Edit(updater =>
         {
             updater.Remove(panelToClose);
 
-            foreach (var kv in newState)
+            foreach (var panelState in newState)
             {
-                var (panelId, logicalBounds) = kv;
+                var (panelId, logicalBounds) = panelState;
                 {
                     var existingPanel = updater.Lookup(panelId);
                     Debug.Assert(existingPanel.HasValue);
