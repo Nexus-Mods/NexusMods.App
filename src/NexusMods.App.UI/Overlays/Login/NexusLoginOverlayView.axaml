@@ -11,11 +11,12 @@
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:login="clr-namespace:NexusMods.App.UI.Overlays.Login"
-    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources">
+    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
+    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls">
     <Design.DataContext>
         <login:NexusLoginOverlayDesignerViewModel />
     </Design.DataContext>
-    <Border Background="{DynamicResource BackgroundSecondaryBrush}" CornerRadius="8">
+    <Border Classes="Rounded Low">
         <StackPanel
             Margin="24"
             Orientation="Vertical"
@@ -29,43 +30,41 @@
                     VerticalAlignment="Center"
                     Width="157" />
                 <Button
-                    Classes="BareIcon WindowClose Small"
+                    Classes="BareIcon WindowClose"
                     Grid.Column="1"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Center"
                     x:Name="CancelButton" />
             </Grid>
-            <TextBlock
-                Classes="ButtonMontserratSemi"
-                HorizontalAlignment="Center"
-                Margin="0,27"
-                Text="{x:Static resources:Language.NexusLoginOverlayView__Please_Click_Authorize}"
-                VerticalAlignment="Center" />
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Center"
+                        Spacing="8">
+                <controls:ProgressRing/>
+                <TextBlock
+                    x:Name="TitleTextBlock"
+                    HorizontalAlignment="Center"
+                    Margin="0,27"
+                    Text="{x:Static resources:Language.NexusLoginOverlayView__Please_Click_Authorize}"
+                    VerticalAlignment="Center" />
+            </StackPanel>
             <Border
-                Background="{DynamicResource BackgroundTertiaryBrush}"
-                CornerRadius="8"
+                Classes="Mid Rounded"
                 VerticalAlignment="Stretch">
                 <StackPanel Margin="24">
-                    <TextBlock
-                        Classes="CaptionMontserratSemi"
+                    <TextBlock x:Name="CaptionTextBlock"
                         Text="{x:Static resources:Language.NexusLoginOverlayView__BROWSER_DIDNT_OPEN}" />
                     <TextBlock
-                        Classes="Body2RobotoRegular"
+                        Classes="BodyMDNormal"
                         Margin="0,16,0,0"
                         Text="{x:Static resources:Language.NexusLoginOverlayView_Please_copy_url}"
-                        Foreground="{DynamicResource FontDarkSecondaryColor}"
                         TextWrapping="Wrap" />
-                    <Border
-                        BorderBrush="{DynamicResource BorderContainerBrush}"
-                        BorderThickness="1"
+                    <Border Classes="OutlineWeak"
                         Height="40"
                         Margin="0,16,0,0">
                         <Grid ColumnDefinitions="*, Auto">
                             <SelectableTextBlock
-                                Classes="LinkBox Body2RobotoRegular"
                                 Grid.Column="0"
                                 Margin="8,9.5"
-                                SelectionBrush="{DynamicResource BrandPrimaryBrush}"
                                 TextTrimming="CharacterEllipsis"
                                 TextWrapping="NoWrap"
                                 x:Name="UrlTextBlock" />

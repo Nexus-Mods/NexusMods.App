@@ -12,48 +12,53 @@
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources">
 
     <base:MessageBoxBackground MinWidth="300" MaxWidth="450">
-            <base:MessageBoxBackground.TopContent>
-                <StackPanel Orientation="Vertical" Margin="24">
+        <base:MessageBoxBackground.TopContent>
+            <StackPanel Orientation="Vertical" Margin="24">
 
-                    <!-- Title -->
-                    <DockPanel HorizontalAlignment="Stretch" Margin="0,0,0,16">
-                        <TextBlock Classes="H6MontserratSemi"
-                                   Text="{Binding Title, RelativeSource={RelativeSource AncestorType={x:Type okCancel:MessageBoxOkCancelView}}}"
-                                   DockPanel.Dock="Left" />
+                <!-- Title -->
+                <DockPanel HorizontalAlignment="Stretch" Margin="0,0,0,16">
+                    <TextBlock
+                        DockPanel.Dock="Left"
+                        x:Name="HeadingText"
+                        Text="{Binding Title, RelativeSource={RelativeSource AncestorType={x:Type okCancel:MessageBoxOkCancelView}}}" />
 
-                        <!-- 'Cross' button. -->
-                        <Button
-                            Classes="BareIcon WindowClose Small"
-                            HorizontalAlignment="Right"
-                            VerticalAlignment="Center"
-                            x:Name="CloseButton"
-                            DockPanel.Dock="Right" />
+                    <!-- 'Cross' button. -->
+                    <Button
+                        x:Name="CloseButton"
+                        DockPanel.Dock="Right"
+                        Classes="BareIcon WindowClose"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"/>
 
-                    </DockPanel>
+                </DockPanel>
 
-                    <!-- Message -->
-                    <TextBlock TextWrapping="WrapWithOverflow"
-                               Text="{Binding Description, RelativeSource={RelativeSource AncestorType={x:Type okCancel:MessageBoxOkCancelView}}}"
-                               Classes="Body2RobotoRegular" />
+                <!-- Message -->
+                <TextBlock x:Name="MessageTextBlock"
+                           TextWrapping="WrapWithOverflow"
+                           Text="{Binding Description, RelativeSource={RelativeSource AncestorType={x:Type okCancel:MessageBoxOkCancelView}}}"/>
 
-                </StackPanel>
+            </StackPanel>
 
-            </base:MessageBoxBackground.TopContent>
+        </base:MessageBoxBackground.TopContent>
 
-            <base:MessageBoxBackground.BottomContent>
+        <base:MessageBoxBackground.BottomContent>
 
-                <!-- Buttons -->
-                <StackPanel Orientation="Vertical" Margin="24" HorizontalAlignment="Stretch">
-                    <Button x:Name="OkButton" Classes="Standard Primary" HorizontalAlignment="Stretch" Margin="0,0,0,10">
-                        <TextBlock Text="{x:Static resources:Language.MessageBox_Button_Yes}"/>
-                    </Button>
-                    <Button x:Name="CancelButton" Classes="LeftMenuItem" HorizontalAlignment="Stretch">
-                        <TextBlock Text="{x:Static resources:Language.MessageBox_Button_No}" />
-                    </Button>
-                </StackPanel>
+            <!-- Buttons -->
+            <StackPanel Orientation="Vertical" Margin="24" HorizontalAlignment="Stretch">
+                <Button x:Name="OkButton"
+                        Classes="Standard Primary"
+                        HorizontalAlignment="Stretch"
+                        Margin="0,0,0,10">
+                    <TextBlock Text="{x:Static resources:Language.MessageBox_Button_Yes}" />
+                </Button>
+                <Button x:Name="CancelButton"
+                        Classes="Standard Tertiary"
+                        HorizontalAlignment="Stretch">
+                    <TextBlock Text="{x:Static resources:Language.MessageBox_Button_No}" />
+                </Button>
+            </StackPanel>
 
-            </base:MessageBoxBackground.BottomContent>
-        </base:MessageBoxBackground>
+        </base:MessageBoxBackground.BottomContent>
+    </base:MessageBoxBackground>
 
 </reactiveUi:ReactiveUserControl>
-

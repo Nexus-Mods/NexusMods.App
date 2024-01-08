@@ -192,6 +192,7 @@
         <Style Selector="^ > TextBlock">
             <Setter Property="Theme" Value="{StaticResource TextBlockButtonStandardTheme}" />
             <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
         </Style>
 
         <Style Selector="^ > StackPanel">

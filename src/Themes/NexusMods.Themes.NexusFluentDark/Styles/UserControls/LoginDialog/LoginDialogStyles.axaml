@@ -1,0 +1,27 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ui="clr-namespace:NexusMods.App.UI.Overlays.Login;assembly=NexusMods.App.UI">
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <ui:NexusLoginOverlayView />
+        </Border>
+    </Design.PreviewWith>
+
+    <!-- Add Styles Here -->
+    <Style Selector="ui|NexusLoginOverlayView">
+        <Style Selector="^ TextBlock#TitleTextBlock">
+            <Setter Property="Theme" Value="{StaticResource ButtonMontserratSemiTheme}" />
+        </Style>
+
+        <Style Selector="^ TextBlock#CaptionTextBlock">
+            <Setter Property="Theme" Value="{StaticResource TitleSMSemiTheme}" />
+            <Setter Property="LetterSpacing" Value="0.6" />
+        </Style>
+
+        <Style Selector="^ SelectableTextBlock#UrlTextBlock">
+            <Setter Property="SelectionBrush" Value="{StaticResource ElementForegroundPrimaryModerateBrush}" />
+            <Setter Property="FontFamily" Value="{StaticResource FontBodyRegular}" />
+            <Setter Property="FontSize" Value="14" />
+        </Style>
+    </Style>
+</Styles>
