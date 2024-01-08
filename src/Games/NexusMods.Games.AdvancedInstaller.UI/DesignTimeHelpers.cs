@@ -1,4 +1,4 @@
-﻿using NexusMods.DataModel.Abstractions.DTOs;
+﻿using NexusMods.DataModel.Abstractions.Games;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Trees;
 using NexusMods.Paths;

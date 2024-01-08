@@ -4,7 +4,6 @@ using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.DataModel.Trees;
 using NexusMods.Paths;
-using NexusMods.Paths.FileTree;
 using NexusMods.Paths.Trees;
 
 namespace NexusMods.Games.AdvancedInstaller;

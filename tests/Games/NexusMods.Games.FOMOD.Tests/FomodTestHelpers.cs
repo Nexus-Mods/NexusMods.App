@@ -1,11 +1,8 @@
 ﻿using NexusMods.Common;
-using NexusMods.DataModel.Abstractions.DTOs;
-using NexusMods.DataModel.ModInstallers;
 using NexusMods.DataModel.Trees;
 using NexusMods.FileExtractor.StreamFactories;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
-using NexusMods.Paths.FileTree;
 using NexusMods.Paths.Trees;
 using FileSystem = NexusMods.Paths.FileSystem;
 

@@ -1,7 +1,6 @@
-using System;
-using System.Collections.Generic;
 using JetBrains.Annotations;
 using NexusMods.Common;
+using NexusMods.DataModel.Abstractions.Games;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Games.GameCapabilities.FolderMatchInstallerCapability;
 using NexusMods.DataModel.ModInstallers;

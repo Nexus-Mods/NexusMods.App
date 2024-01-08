@@ -1,5 +1,5 @@
 ﻿using System.Reactive;
-using NexusMods.Paths;
+using NexusMods.DataModel.Games;
 using ReactiveUI;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.SelectLocation;

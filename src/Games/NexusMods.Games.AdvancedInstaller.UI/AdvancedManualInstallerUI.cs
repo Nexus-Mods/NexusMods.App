@@ -10,7 +10,6 @@ using NexusMods.DataModel.ModInstallers;
 using NexusMods.DataModel.Trees;
 using NexusMods.Games.AdvancedInstaller.UI.Resources;
 using NexusMods.Paths;
-using NexusMods.Paths.FileTree;
 using NexusMods.Paths.Trees;
 
 namespace NexusMods.Games.AdvancedInstaller.UI;

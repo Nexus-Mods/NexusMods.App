@@ -1,12 +1,9 @@
-using System.Collections.Immutable;
-using Cathei.LinqGen;
 using FluentAssertions;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Common;
-using NexusMods.DataModel;
 using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.ArchiveContents;
+using NexusMods.DataModel.Abstractions.Games;
 using NexusMods.DataModel.ArchiveMetaData;
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Games;
@@ -15,12 +12,9 @@ using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.DataModel.Trees;
-using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.FileExtractor.StreamFactories;
-using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
-using NexusMods.Paths.FileTree;
 
 namespace NexusMods.Games.TestFramework;
 

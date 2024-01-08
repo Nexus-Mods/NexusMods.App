@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.CLI.Tests.VerbTests;
 using NexusMods.Games.TestFramework;
 using NexusMods.Paths;
-using NexusMods.ProxyConsole.Abstractions.Implementations;
 
 namespace NexusMods.Games.BethesdaGameStudios.Tests.SkyrimLegendaryEditionTests;
 

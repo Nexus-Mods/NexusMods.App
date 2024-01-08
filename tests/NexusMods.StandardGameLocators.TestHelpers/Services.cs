@@ -12,7 +12,6 @@ using GameFinder.Wine.Bottles;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Common;
 using NexusMods.DataModel.Games;
-using NexusMods.DataModel.ModInstallers;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 using IGame = NexusMods.DataModel.Games.IGame;

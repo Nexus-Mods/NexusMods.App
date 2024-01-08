@@ -12,7 +12,6 @@ using GameFinder.StoreHandlers.Xbox;
 using GameFinder.Wine;
 using GameFinder.Wine.Bottles;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.DataModel.CommandLine.Verbs;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
 using NexusMods.Paths;

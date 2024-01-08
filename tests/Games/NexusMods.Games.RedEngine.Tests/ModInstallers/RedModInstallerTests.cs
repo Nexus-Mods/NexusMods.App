@@ -1,8 +1,8 @@
 ﻿using System.Text;
 using FluentAssertions;
+using NexusMods.DataModel.Abstractions.Games;
 using NexusMods.Games.RedEngine.ModInstallers;
 using NexusMods.Games.TestFramework;
-using NexusMods.Paths;
 
 namespace NexusMods.Games.RedEngine.Tests.ModInstallers;
 

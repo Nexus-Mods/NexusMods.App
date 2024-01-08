@@ -1,9 +1,8 @@
 ﻿using FluentAssertions;
 using NexusMods.Common;
-using NexusMods.FileExtractor.FileSignatures;
+using NexusMods.DataModel.Abstractions.Games;
 using NexusMods.Games.RedEngine.ModInstallers;
 using NexusMods.Games.TestFramework;
-using NexusMods.Paths;
 
 namespace NexusMods.Games.RedEngine.Tests.ModInstallers;
 

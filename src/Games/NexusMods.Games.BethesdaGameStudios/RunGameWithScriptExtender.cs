@@ -4,7 +4,6 @@ using NexusMods.Common.OSInterop;
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.Loadouts.LoadoutSynchronizerDTOs;
 using NexusMods.DataModel.LoadoutSynchronizer;
 using NexusMods.Paths;
 

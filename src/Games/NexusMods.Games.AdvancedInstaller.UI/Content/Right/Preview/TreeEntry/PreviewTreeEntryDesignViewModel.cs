@@ -1,4 +1,5 @@
-﻿using NexusMods.Paths;
+﻿using NexusMods.DataModel.Abstractions.Games;
+using NexusMods.DataModel.Games;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Preview;
 

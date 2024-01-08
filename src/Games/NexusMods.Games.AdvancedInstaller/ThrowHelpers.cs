@@ -1,3 +1,4 @@
+using NexusMods.DataModel.Games;
 using NexusMods.Games.AdvancedInstaller.Exceptions;
 using NexusMods.Paths;
 

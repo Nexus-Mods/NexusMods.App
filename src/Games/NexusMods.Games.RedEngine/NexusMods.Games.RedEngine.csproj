@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <ItemGroup>
-        <ProjectReference Include="..\..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
+        <ProjectReference Include="..\..\DataModel\NexusMods.DataModel\NexusMods.DataModel.csproj" />
     </ItemGroup>
 
     <ItemGroup>

@@ -2,7 +2,6 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.CLI;
 using NexusMods.Networking.NexusWebApi.Types;
 using NexusMods.ProxyConsole.Abstractions;
-using NexusMods.ProxyConsole.Abstractions.Implementations;
 using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
 
 namespace NexusMods.Networking.NexusWebApi;

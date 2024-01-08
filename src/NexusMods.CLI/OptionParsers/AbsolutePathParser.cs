@@ -1,4 +1,3 @@
-using NexusMods.Abstractions.CLI;
 using NexusMods.Paths;
 using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
 

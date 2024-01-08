@@ -6,7 +6,6 @@ using NexusMods.DataModel.Diagnostics.Emitters;
 using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
 using NexusMods.DataModel.Tests.Diagnostics;
 using NexusMods.FileExtractor;
-using NexusMods.FileExtractor.Extractors;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators;
 using NexusMods.StandardGameLocators.TestHelpers;

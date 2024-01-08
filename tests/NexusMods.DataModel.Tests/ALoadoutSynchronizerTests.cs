@@ -1,6 +1,8 @@
 ﻿using FluentAssertions;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Abstractions.Games;
+using NexusMods.DataModel.Games;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.LoadoutSynchronizerDTOs;
@@ -10,7 +12,6 @@ using NexusMods.DataModel.LoadoutSynchronizer;
 using NexusMods.DataModel.Sorting.Rules;
 using NexusMods.DataModel.Tests.Harness;
 using NexusMods.Hashing.xxHash64;
-using NexusMods.Paths;
 using IGeneratedFile = NexusMods.DataModel.LoadoutSynchronizer.IGeneratedFile;
 using ModId = NexusMods.DataModel.Loadouts.ModId;
 

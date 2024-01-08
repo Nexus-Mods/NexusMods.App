@@ -1,5 +1,4 @@
 using FluentAssertions;
-using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.FileExtractor.StreamFactories;
 using NexusMods.Hashing.xxHash64;

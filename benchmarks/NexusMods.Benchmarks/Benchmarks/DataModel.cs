@@ -6,10 +6,11 @@ using NexusMods.Benchmarks.Interfaces;
 using NexusMods.Common;
 using NexusMods.DataModel;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Abstractions.Games;
 using NexusMods.DataModel.Abstractions.Ids;
+using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
-using NexusMods.DataModel.Messaging;
 using NexusMods.Paths;
 using Hash = NexusMods.Hashing.xxHash64.Hash;
 

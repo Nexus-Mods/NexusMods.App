@@ -1,5 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.CLI;
 using NexusMods.Common;
 using NexusMods.Common.GuidedInstaller;
@@ -15,7 +13,6 @@ using NexusMods.Networking.NexusWebApi.NMA.Extensions;
 using NexusMods.Networking.NexusWebApi.Types;
 using NexusMods.Paths;
 using NexusMods.ProxyConsole.Abstractions;
-using NexusMods.ProxyConsole.Abstractions.Implementations;
 using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
 using NexusMods.StandardGameLocators;
 using ModId = NexusMods.Networking.NexusWebApi.Types.ModId;

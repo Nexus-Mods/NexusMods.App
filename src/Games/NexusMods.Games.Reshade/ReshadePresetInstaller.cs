@@ -1,5 +1,6 @@
 using Cathei.LinqGen;
 using NexusMods.Common;
+using NexusMods.DataModel.Abstractions.Games;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.ModInstallers;
@@ -7,10 +8,8 @@ using NexusMods.DataModel.Trees;
 using NexusMods.Games.Generic.FileAnalyzers;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
-using NexusMods.Paths.FileTree;
 using NexusMods.Paths.Trees;
 using NexusMods.Paths.Trees.Traits;
-using NexusMods.Paths.Utilities;
 
 namespace NexusMods.Games.Reshade;
 

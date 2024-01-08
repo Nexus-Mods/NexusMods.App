@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
+    <ProjectReference Include="..\..\DataModel\NexusMods.DataModel\NexusMods.DataModel.csproj" />
   </ItemGroup>
 
   <ItemGroup>

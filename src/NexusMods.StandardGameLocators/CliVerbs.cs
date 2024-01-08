@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.CLI;
+using NexusMods.DataModel.Abstractions.Games;
 using NexusMods.DataModel.Games;
 using NexusMods.Paths;
 using NexusMods.ProxyConsole.Abstractions;

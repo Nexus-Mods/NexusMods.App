@@ -1,10 +1,6 @@
 ﻿using FluentAssertions;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using NexusMods.Common;
-using NexusMods.DataModel;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.ArchiveContents;
+using NexusMods.DataModel.Abstractions.Games;
 using NexusMods.DataModel.ArchiveMetaData;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
@@ -13,11 +9,7 @@ using NexusMods.DataModel.ModInstallers;
 using NexusMods.DataModel.Trees;
 using NexusMods.Games.BethesdaGameStudios;
 using NexusMods.Games.TestFramework;
-using NexusMods.Games.FOMOD.CoreDelegates;
 using NexusMods.Paths;
-using NexusMods.Paths.Extensions;
-using NexusMods.Paths.FileTree;
-using NexusMods.Paths.Utilities;
 using Xunit;
 
 namespace NexusMods.Games.FOMOD.Tests;

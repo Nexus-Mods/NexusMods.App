@@ -1,5 +1,4 @@
 using System.Windows.Input;
-using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using NexusMods.DataModel.Games;
 

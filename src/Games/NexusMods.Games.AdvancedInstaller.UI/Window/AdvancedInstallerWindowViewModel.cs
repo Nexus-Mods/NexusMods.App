@@ -1,9 +1,7 @@
 ﻿using System.Reactive.Disposables;
 using NexusMods.DataModel.Games;
-using NexusMods.DataModel.ModInstallers;
 using NexusMods.DataModel.Trees;
 using NexusMods.Paths;
-using NexusMods.Paths.FileTree;
 using NexusMods.Paths.Trees;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;

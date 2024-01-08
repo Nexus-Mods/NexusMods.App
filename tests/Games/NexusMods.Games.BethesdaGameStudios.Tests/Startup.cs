@@ -1,8 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.CLI;
 using NexusMods.CLI;
-using NexusMods.CLI.Tests;
 using NexusMods.Common;
 using NexusMods.Common.GuidedInstaller;
 using NexusMods.Games.FOMOD;

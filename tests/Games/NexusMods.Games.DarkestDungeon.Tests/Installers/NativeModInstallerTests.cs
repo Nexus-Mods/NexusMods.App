@@ -2,12 +2,10 @@ using System.Diagnostics.CodeAnalysis;
 using System.Xml.Serialization;
 using AutoFixture;
 using FluentAssertions;
-using NexusMods.Common;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.Games.DarkestDungeon.Installers;
 using NexusMods.Games.DarkestDungeon.Models;
 using NexusMods.Games.TestFramework;
-using NexusMods.Hashing.xxHash64;
 using NexusMods.Networking.NexusWebApi.Types;
 using NexusMods.Paths;
 

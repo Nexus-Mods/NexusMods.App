@@ -1,4 +1,3 @@
-using NexusMods.Abstractions.CLI;
 using NexusMods.DataModel.Games;
 using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
 

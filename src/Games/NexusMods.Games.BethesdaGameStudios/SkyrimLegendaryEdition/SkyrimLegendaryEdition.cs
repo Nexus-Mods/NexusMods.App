@@ -1,4 +1,5 @@
 ﻿using NexusMods.Common;
+using NexusMods.DataModel.Abstractions.Games;
 using NexusMods.DataModel.Games;
 using NexusMods.FileExtractor.StreamFactories;
 using NexusMods.Paths;

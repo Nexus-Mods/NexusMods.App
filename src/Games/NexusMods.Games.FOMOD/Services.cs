@@ -1,9 +1,7 @@
 ﻿using FomodInstaller.Interface;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Common;
-using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
-using NexusMods.DataModel.ModInstallers;
 using NexusMods.Games.FOMOD.CoreDelegates;
 
 namespace NexusMods.Games.FOMOD;

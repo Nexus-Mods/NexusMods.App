@@ -1,4 +1,6 @@
 using FluentAssertions;
+using NexusMods.DataModel.Abstractions.Games;
+using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Tests.Harness;

@@ -1,5 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using DynamicData;
+﻿using DynamicData;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.ModContent;

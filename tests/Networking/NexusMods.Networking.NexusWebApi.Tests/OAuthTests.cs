@@ -6,7 +6,6 @@ using System.Text.Json;
 using FluentAssertions;
 using NexusMods.Abstractions.Activities;
 using NexusMods.Common.OSInterop;
-using NexusMods.DataModel.Activities;
 using NexusMods.DataModel.Messaging;
 using NexusMods.Networking.NexusWebApi.DTOs.OAuth;
 using NexusMods.Networking.NexusWebApi.NMA;

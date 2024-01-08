@@ -1,9 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.Activities;
-using NexusMods.CLI;
 using NexusMods.Common;
 using NexusMods.Common.GuidedInstaller;
-using NexusMods.DataModel.Activities;
 using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
 using NexusMods.Games.BethesdaGameStudios;
 using NexusMods.Games.FOMOD;

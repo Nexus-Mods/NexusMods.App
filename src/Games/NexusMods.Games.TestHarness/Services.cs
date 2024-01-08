@@ -1,5 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.CLI;
 using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
 using NexusMods.Games.TestHarness.Verbs;
 using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;

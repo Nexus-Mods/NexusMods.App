@@ -1,4 +1,6 @@
-﻿using NexusMods.Paths;
+﻿using NexusMods.DataModel.Abstractions.Games;
+using NexusMods.DataModel.Games;
+using NexusMods.Paths;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.SelectLocation;
 

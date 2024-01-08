@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using NexusMods.Common.GuidedInstaller.ValueObjects;
+﻿using NexusMods.Common.GuidedInstaller.ValueObjects;
 
 namespace NexusMods.Common.GuidedInstaller;
 

@@ -1,4 +1,3 @@
-using NexusMods.Abstractions.CLI;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Loadouts;

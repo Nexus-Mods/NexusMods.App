@@ -1,6 +1,5 @@
 using NexusMods.ProxyConsole.Abstractions;
 using NexusMods.ProxyConsole.Abstractions.Implementations;
-using static NexusMods.Abstractions.CLI.Renderable;
 
 namespace NexusMods.Abstractions.CLI;
 

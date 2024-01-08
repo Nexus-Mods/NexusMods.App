@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.Common.OSInterop;
+using NexusMods.DataModel.Abstractions.Games;
 using NexusMods.DataModel.Games;
-using NexusMods.Paths;
 
 namespace NexusMods.Games.BethesdaGameStudios;
 

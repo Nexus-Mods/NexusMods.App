@@ -1,9 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.Activities;
 using NexusMods.Common;
 using NexusMods.DataModel;
-using NexusMods.DataModel.Activities;
 using NexusMods.Paths;
 
 namespace NexusMods.Networking.HttpDownloader.Tests;

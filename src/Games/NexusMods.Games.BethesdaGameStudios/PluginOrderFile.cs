@@ -1,10 +1,11 @@
 using NexusMods.DataModel;
+using NexusMods.DataModel.Abstractions.Games;
+using NexusMods.DataModel.Games;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.LoadoutSynchronizer;
 using NexusMods.Hashing.xxHash64;
-using NexusMods.Paths;
 using IGeneratedFile = NexusMods.DataModel.LoadoutSynchronizer.IGeneratedFile;
 
 // ReSharper disable AccessToDisposedClosure

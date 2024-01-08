@@ -1,11 +1,10 @@
 using System.Text;
 using CliWrap;
 using Microsoft.Extensions.Logging;
+using NexusMods.DataModel.Abstractions.Games;
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.Loadouts.LoadoutSynchronizerDTOs;
-using NexusMods.Paths;
 
 namespace NexusMods.Games.RedEngine;
 

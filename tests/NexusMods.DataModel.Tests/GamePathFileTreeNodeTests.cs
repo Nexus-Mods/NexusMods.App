@@ -1,4 +1,6 @@
 ﻿using FluentAssertions;
+using NexusMods.DataModel.Abstractions.Games;
+using NexusMods.DataModel.Games;
 using NexusMods.Paths;
 using NexusMods.Paths.FileTree;
 

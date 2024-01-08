@@ -7,7 +7,6 @@ using System.Threading.Channels;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Activities;
 using NexusMods.Common;
-using NexusMods.DataModel.Activities;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Networking.HttpDownloader.DTOs;
 using NexusMods.Paths;

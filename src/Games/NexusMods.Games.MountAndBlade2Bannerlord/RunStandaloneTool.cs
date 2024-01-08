@@ -2,7 +2,6 @@ using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.Loadouts.LoadoutSynchronizerDTOs;
 using NexusMods.Games.MountAndBlade2Bannerlord.Extensions;
 using NexusMods.Games.MountAndBlade2Bannerlord.Services;
 

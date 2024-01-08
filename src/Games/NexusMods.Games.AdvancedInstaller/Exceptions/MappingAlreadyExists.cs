@@ -1,4 +1,4 @@
-using System.Diagnostics.CodeAnalysis;
+using NexusMods.DataModel.Games;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.AdvancedInstaller.Exceptions;

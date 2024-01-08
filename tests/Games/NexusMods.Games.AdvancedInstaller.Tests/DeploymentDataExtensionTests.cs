@@ -1,9 +1,10 @@
 using FluentAssertions;
 using NexusMods.DataModel.Abstractions.DTOs;
+using NexusMods.DataModel.Abstractions.Games;
+using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Trees;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
-using NexusMods.Paths.FileTree;
 using NexusMods.Paths.Trees.Traits;
 
 namespace NexusMods.Games.AdvancedInstaller.Tests;

@@ -1,5 +1,6 @@
 ﻿using System.Reactive;
 using DynamicData.Kernel;
+using NexusMods.DataModel.Games;
 using NexusMods.Games.AdvancedInstaller.UI.Preview;
 using NexusMods.Paths;
 using ReactiveUI;

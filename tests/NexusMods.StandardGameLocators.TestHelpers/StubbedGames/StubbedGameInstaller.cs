@@ -1,18 +1,12 @@
-using Cathei.LinqGen;
-using NexusMods.Common;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.ArchiveContents;
-using NexusMods.DataModel.Extensions;
+using NexusMods.DataModel.Abstractions.Games;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.DataModel.Trees;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
-using NexusMods.Paths.FileTree;
 using NexusMods.Paths.Trees;
 using NexusMods.Paths.Trees.Traits;
-using Hash = NexusMods.Hashing.xxHash64.Hash;
 
 namespace NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 
@@ -28,12 +22,10 @@ public class StubbedGameInstaller : IModInstaller
         KeyedBox<RelativePath, ModFileTree> archiveFiles,
         CancellationToken cancellationToken = default)
     {
-        return ValueTask.FromResult(GetMods(loadoutId, baseModId, archiveFiles));
+        return ValueTask.FromResult(GetMods(baseModId, archiveFiles));
     }
 
-    private IEnumerable<ModInstallerResult> GetMods(
-        LoadoutId loadoutId,
-        ModId baseModId,
+    private IEnumerable<ModInstallerResult> GetMods(ModId baseModId,
         KeyedBox<RelativePath, ModFileTree> archiveFiles)
     {
         var modFiles = archiveFiles.GetFiles()

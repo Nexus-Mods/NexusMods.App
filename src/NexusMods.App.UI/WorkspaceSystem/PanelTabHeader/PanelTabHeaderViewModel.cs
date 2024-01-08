@@ -1,6 +1,5 @@
 using System.Reactive;
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using Avalonia.Media;
 using NexusMods.App.UI.Resources;
 using ReactiveUI;

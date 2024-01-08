@@ -2,10 +2,10 @@
     <PropertyGroup>
         <XunitStartupAssembly>NexusMods.FileExtractor.Tests</XunitStartupAssembly>
     </PropertyGroup>
-    
+
     <ItemGroup>
       <ProjectReference Include="..\..\src\ArchiveManagement\NexusMods.FileExtractor\NexusMods.FileExtractor.csproj" />
-      <ProjectReference Include="..\..\src\NexusMods.DataModel\NexusMods.DataModel.csproj" />
+      <ProjectReference Include="..\..\src\DataModel\NexusMods.DataModel\NexusMods.DataModel.csproj" />
     </ItemGroup>
 
     <Target Name="CopyResources" AfterTargets="PostBuildEvent">

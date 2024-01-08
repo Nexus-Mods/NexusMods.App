@@ -1,8 +1,7 @@
-using System.Runtime.CompilerServices;
 using System.Text.Json;
-using Cathei.LinqGen;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.DataModel.Abstractions.Games;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.ModInstallers;

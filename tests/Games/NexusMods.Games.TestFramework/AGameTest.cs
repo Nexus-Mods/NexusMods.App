@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.DataModel;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Abstractions.Games;
 using NexusMods.DataModel.ArchiveMetaData;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;

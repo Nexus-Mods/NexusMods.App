@@ -1,5 +1,4 @@
 using NexusMods.Abstractions.Activities;
-using NexusMods.DataModel.Activities;
 using NexusMods.Paths;
 
 namespace NexusMods.Networking.HttpDownloader;

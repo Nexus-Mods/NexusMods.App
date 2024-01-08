@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using IniParser;
 using IniParser.Model.Configuration;
 using IniParser.Parser;

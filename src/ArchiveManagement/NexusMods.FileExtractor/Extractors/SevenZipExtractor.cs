@@ -6,7 +6,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using NexusMods.Abstractions.Activities;
 using NexusMods.Common;
-using NexusMods.DataModel.Activities;
 using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.FileExtractor.StreamFactories;
 using NexusMods.Paths;

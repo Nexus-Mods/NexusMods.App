@@ -12,7 +12,6 @@ using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.LoadoutSynchronizer.Extensions;
 using NexusMods.Games.TestFramework;
 using NexusMods.Paths;
-using NexusMods.ProxyConsole.Abstractions.Implementations;
 using Noggog;
 
 namespace NexusMods.Games.BethesdaGameStudios.Tests.SkyrimSpecialEditionTests;

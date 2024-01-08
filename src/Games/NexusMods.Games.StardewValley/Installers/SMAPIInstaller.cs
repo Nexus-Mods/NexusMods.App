@@ -1,26 +1,17 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Cathei.LinqGen;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Common;
 using NexusMods.DataModel;
 using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.ArchiveContents;
+using NexusMods.DataModel.Abstractions.Games;
 using NexusMods.DataModel.ArchiveMetaData;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.DataModel.Trees;
-using NexusMods.FileExtractor.FileSignatures;
-using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
-using NexusMods.Paths.FileTree;
 using NexusMods.Paths.Trees;
 using NexusMods.Paths.Trees.Traits;
 
@@ -106,6 +97,7 @@ public class SMAPIInstaller : AModInstaller
         // TODO: install.dat is an archive inside an archive see https://github.com/Nexus-Mods/NexusMods.App/issues/244
         // the basicFiles have to be extracted from the nested archive and put inside the game folder
         // https://github.com/Pathoschild/SMAPI/blob/9763bc7484e29cbc9e7f37c61121d794e6720e75/src/SMAPI.Installer/InteractiveInstaller.cs#L380-L384
+        /*
         var basicFiles = archiveContents.EnumerateChildrenBfs()
             .Where(kv => !kv.Value.Item.Path.Equals("unix-launcher.sh")).ToArray();
 
@@ -118,7 +110,7 @@ public class SMAPIInstaller : AModInstaller
 
             var gameLauncherScriptFilePath = gameFolderPath.Combine("StardewValley");
         }
-
+        */
         // TODO: for Xbox Game Pass: replace "Stardew Valley.exe" with "StardewModdingAPI.exe"
 
         // copy "Stardew Valley.deps.json" to "StardewModdingAPI.deps.json"

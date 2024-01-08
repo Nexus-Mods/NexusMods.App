@@ -1,5 +1,5 @@
-﻿using NexusMods.DataModel.Loadouts;
-using NexusMods.Paths;
+﻿using NexusMods.DataModel.Games;
+using NexusMods.DataModel.Loadouts;
 
 namespace NexusMods.Games.FOMOD;
 

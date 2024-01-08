@@ -1,9 +1,10 @@
 using FluentAssertions;
+using NexusMods.DataModel.Abstractions.Games;
+using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.Games.TestFramework;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Networking.NexusWebApi.Types;
-using NexusMods.Paths;
 using ModId = NexusMods.Networking.NexusWebApi.Types.ModId;
 // ReSharper disable StringLiteralTypo
 

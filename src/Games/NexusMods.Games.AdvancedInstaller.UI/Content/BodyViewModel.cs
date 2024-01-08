@@ -3,16 +3,15 @@ using DynamicData;
 using DynamicData.Binding;
 using DynamicData.Kernel;
 using NexusMods.App.UI.Extensions;
+using NexusMods.DataModel.Abstractions.Games;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.ModInstallers;
 using NexusMods.DataModel.Trees;
 using NexusMods.Games.AdvancedInstaller.UI.EmptyPreview;
 using NexusMods.Games.AdvancedInstaller.UI.ModContent;
 using NexusMods.Games.AdvancedInstaller.UI.Preview;
 using NexusMods.Games.AdvancedInstaller.UI.SelectLocation;
 using NexusMods.Paths;
-using NexusMods.Paths.FileTree;
 using NexusMods.Paths.Trees;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -21,7 +20,6 @@ namespace NexusMods.Games.AdvancedInstaller.UI;
 
 using PreviewTreeNode = TreeNodeVM<IPreviewTreeEntryViewModel, GamePath>;
 using ModContentTreeNode = TreeNodeVM<IModContentTreeEntryViewModel, RelativePath>;
-using SelectableTreeNode = TreeNodeVM<ISelectableTreeEntryViewModel, GamePath>;
 
 public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
 {

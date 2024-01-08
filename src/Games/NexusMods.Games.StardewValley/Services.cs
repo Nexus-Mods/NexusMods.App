@@ -4,7 +4,6 @@ using NexusMods.DataModel.Diagnostics.Emitters;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
 using NexusMods.Games.StardewValley.Emitters;
-using NexusMods.Games.StardewValley.Installers;
 
 namespace NexusMods.Games.StardewValley;
 

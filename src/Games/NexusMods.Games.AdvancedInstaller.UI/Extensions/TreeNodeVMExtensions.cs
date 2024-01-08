@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using DynamicData.Kernel;
+using NexusMods.DataModel.Games;
 using NexusMods.Games.AdvancedInstaller.UI.ModContent;
 using NexusMods.Games.AdvancedInstaller.UI.Preview;
 using NexusMods.Games.AdvancedInstaller.UI.SelectLocation;

@@ -1,5 +1,6 @@
 using Bannerlord.LauncherManager;
-using NexusMods.Paths;
+using NexusMods.DataModel.Abstractions.Games;
+using NexusMods.DataModel.Games;
 using NexusMods.Paths.Extensions;
 using GameStore = NexusMods.DataModel.Games.GameStore;
 
