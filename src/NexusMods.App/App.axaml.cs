@@ -12,17 +12,9 @@ using Splat.Microsoft.Extensions.Logging;
 
 namespace NexusMods.App;
 
-public class App : Application
+public class App(IServiceProvider provider, ILauncherSettings launcherSettings)
+    : Application
 {
-    private readonly IServiceProvider _provider;
-    private readonly ILauncherSettings _launcherSettings;
-
-    public App(IServiceProvider provider, ILauncherSettings launcherSettings)
-    {
-        _provider = provider;
-        _launcherSettings = launcherSettings;
-    }
-
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
@@ -30,19 +22,19 @@ public class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
-        if (!string.IsNullOrEmpty(_launcherSettings.LocaleOverride))
-            Thread.CurrentThread.CurrentUICulture = new CultureInfo(_launcherSettings.LocaleOverride);
+        if (!string.IsNullOrEmpty(launcherSettings.LocaleOverride))
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo(launcherSettings.LocaleOverride);
 
         Locator.CurrentMutable.UnregisterCurrent(typeof(IViewLocator));
-        Locator.CurrentMutable.Register(() => _provider.GetRequiredService<InjectedViewLocator>(), typeof(IViewLocator));
+        Locator.CurrentMutable.Register(() => provider.GetRequiredService<InjectedViewLocator>(), typeof(IViewLocator));
 
-        var loggerFactory = _provider.GetRequiredService<ILoggerFactory>();
+        var loggerFactory = provider.GetRequiredService<ILoggerFactory>();
         Locator.CurrentMutable.UseMicrosoftExtensionsLoggingWithWrappingFullLogger(loggerFactory);
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            var reactiveWindow = _provider.GetRequiredService<MainWindow>();
-            reactiveWindow.ViewModel = _provider.GetRequiredService<MainWindowViewModel>();
+            var reactiveWindow = provider.GetRequiredService<MainWindow>();
+            reactiveWindow.ViewModel = provider.GetRequiredService<MainWindowViewModel>();
             desktop.MainWindow = reactiveWindow;
         }
 

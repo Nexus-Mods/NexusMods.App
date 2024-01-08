@@ -11,29 +11,31 @@
                                 d:DesignHeight="664"
                                 x:Class="NexusMods.App.UI.LeftMenu.Downloads.DownloadsView">
     <Design.DataContext>
-        <downloads:DownloadsDesignViewModel></downloads:DownloadsDesignViewModel>
+        <downloads:DownloadsDesignViewModel/>
     </Design.DataContext>
-    <StackPanel Classes="LeftPane">
+    <StackPanel x:Name="LeftPaneStackPanel">
         <Border Classes="LeftPaneTitle">
-            <TextBlock Classes="LeftPaneTitle" Text="{x:Static resources:Language.DownloadsView__DOWNLOADS}"></TextBlock>
+            <TextBlock Classes="LeftPaneTitle" Text="{x:Static resources:Language.DownloadsView__DOWNLOADS}"/>
         </Border>
-        <StackPanel Classes="LeftPaneButtonList">
+        <StackPanel x:Name="LeftPaneListStackPanel"
+                    Spacing="4"
+                    Margin="16">
             <Button x:Name="InProgressButton" Classes="LeftMenuItem">
                 <StackPanel Orientation="Horizontal">
                     <avalonia:Icon Classes="ProgressDownload"/>
-                    <TextBlock Text="{x:Static resources:Language.DownloadsView__In_Progress}"></TextBlock>
+                    <TextBlock Text="{x:Static resources:Language.DownloadsView__In_Progress}"/>
                 </StackPanel>
             </Button>
             <Button x:Name="CompletedButton" Classes="LeftMenuItem">
                 <StackPanel Orientation="Horizontal">
                     <avalonia:Icon Classes="CheckUnderline"/>
-                    <TextBlock Text="{x:Static resources:Language.DownloadsView__Completed}"></TextBlock>
+                    <TextBlock Text="{x:Static resources:Language.DownloadsView__Completed}"/>
                 </StackPanel>
             </Button>
             <Button x:Name="HistoryButton" Classes="LeftMenuItem">
                 <StackPanel Orientation="Horizontal">
                     <avalonia:Icon Classes="History"/>
-                    <TextBlock Text="{x:Static resources:Language.DownloadsView__Download_history}"></TextBlock>
+                    <TextBlock Text="{x:Static resources:Language.DownloadsView__Download_history}"/>
                 </StackPanel>
             </Button>
         </StackPanel>

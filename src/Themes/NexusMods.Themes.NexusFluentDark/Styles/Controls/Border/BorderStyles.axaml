@@ -40,6 +40,9 @@
             <Border Classes="Rounded DangerStrong" Padding="16">
                 <TextBlock Text="DANGER strong" />
             </Border>
+            <Border Classes="LeftPaneTitle" Padding="16">
+                <TextBlock Text="LEFT PANEL TITLE" />
+            </Border>
         </WrapPanel>
     </Design.PreviewWith>
 
@@ -113,6 +116,21 @@
     <Style Selector="Border.DangerStrong">
         <Setter Property="Background" Value="{StaticResource ElementForegroundDangerStrongBrush}" />
     </Style>
+
+    <!-- Left Panel Title -->
+    <Style Selector="Border.LeftPaneTitle">
+        <Setter Property="Background" Value="{DynamicResource BrandSecondaryDarker}"/>
+        <Setter Property="Padding" Value="24, 13.5"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+
+        <Style Selector="^ TextBlock">
+            <Setter Property="Theme" Value="{StaticResource HeadingXSSemiTheme}" />
+            <Setter Property="LineHeight" Value="25"/>
+            <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralSubduedBrush}"/>
+        </Style>
+    </Style>
+
+
 
 
 </Styles>

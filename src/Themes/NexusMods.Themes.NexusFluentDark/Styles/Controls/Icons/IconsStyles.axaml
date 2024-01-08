@@ -55,6 +55,7 @@
             <icons:Icon Classes="DragHorizontal" />
             <icons:Icon Classes="DragVertical" />
             <icons:Icon Classes="Search" />
+            <icons:Icon Classes="Home" />
 
             <Svg Classes="AddCircle" />
 
@@ -237,6 +238,10 @@
 
     <Style Selector="icons|Icon.Search">
         <Setter Property="Value" Value="mdi-magnify" />
+    </Style>
+
+    <Style Selector="icons|Icon.Home">
+        <Setter Property="Value" Value="mdi-home" />
     </Style>
 
 
