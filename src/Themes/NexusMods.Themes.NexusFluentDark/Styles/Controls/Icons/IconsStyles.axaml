@@ -54,6 +54,7 @@
             <icons:Icon Classes="DeleteOutline" />
             <icons:Icon Classes="DragHorizontal" />
             <icons:Icon Classes="DragVertical" />
+            <icons:Icon Classes="Search" />
 
             <Svg Classes="AddCircle" />
 
@@ -233,6 +234,11 @@
     <Style Selector="icons|Icon.DragVertical">
         <Setter Property="Value" Value="mdi-drag-vertical-variant" />
     </Style>
+
+    <Style Selector="icons|Icon.Search">
+        <Setter Property="Value" Value="mdi-magnify" />
+    </Style>
+
 
     <Style Selector="Svg.AddCircle">
         <Setter Property="Path" Value="avares://NexusMods.App.UI/Assets/Icons/add_circle_24px.svg" />

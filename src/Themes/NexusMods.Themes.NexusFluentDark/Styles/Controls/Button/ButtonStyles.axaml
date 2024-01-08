@@ -1,0 +1,55 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:icons="https://github.com/projektanker/icons.avalonia">
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <StackPanel Spacing="20">
+                <Button Classes="Action">
+                    <icons:Icon Classes="Help" />
+                </Button>
+                <Button Classes="Avatar">
+                    <Image Source="avares://NexusMods.Themes.NexusFluentDark/Assets/DesignTime/cyberpunk_game.png"/>
+                </Button>
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+
+    <!--  Style Definitions -->
+
+    <!-- TopBar Action Button -->
+    <Style Selector="Button.Action">
+        <Setter Property="Background" Value="{StaticResource ElementBackgroundTransparentBrush}" />
+        <Setter Property="Width" Value="40" />
+        <Setter Property="Height" Value="40" />
+
+        <Style Selector="^ icons|Icon">
+            <Setter Property="FontSize" Value="20" />
+            <Setter Property="Width" Value="20" />
+            <Setter Property="Height" Value="20" />
+        </Style>
+    </Style>
+
+
+    <!-- Avatar Button -->
+    <Style Selector="Button.Avatar">
+        <Setter Property="Background" Value="{StaticResource ElementBackgroundTransparentBrush}"/>
+        <Setter Property="Width" Value="30"/>
+        <Setter Property="Height" Value="30"/>
+        <Setter Property="Margin" Value="0"/>
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="CornerRadius" Value="15"/>
+
+        <Style Selector="^ Image">
+            <Setter Property="Width" Value="30"/>
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="Clip">
+                <EllipseGeometry Rect="0, 0, 30, 30" />
+            </Setter>
+        </Style>
+
+    </Style>
+
+
+
+
+</Styles>
