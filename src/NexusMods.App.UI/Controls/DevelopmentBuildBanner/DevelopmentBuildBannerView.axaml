@@ -16,8 +16,11 @@
     </Design.DataContext>
     <Border Classes="DangerWeak">
         <StackPanel Orientation="Horizontal">
-            <avalonia:Icon Classes="Alert" Foreground="{DynamicResource BrandWhite}" FontSize="20" Margin="30 2 8 2"
-                           VerticalAlignment="Center" />
+            <avalonia:Icon
+                Classes="Alert"
+                FontSize="20"
+                Margin="30 2 8 2"
+                VerticalAlignment="Center" />
             <TextBlock Classes="TitleSMSemi"
                        Text="{Binding Text, RelativeSource={RelativeSource AncestorType={x:Type developmentBuildBanner:DevelopmentBuildBannerView}}}"
                        VerticalAlignment="Center" />

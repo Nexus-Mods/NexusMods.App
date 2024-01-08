@@ -24,5 +24,7 @@
     <StyleInclude Source="/Styles/UserControls/GameWidget/GameWidgetStyles.axaml"/>
     <StyleInclude Source="/Styles/UserControls/TopBar/TopBarStyles.axaml"/>
     <StyleInclude Source="/Styles/UserControls/LeftPane/LeftPaneDownloadStyles.axaml"/>
+    <StyleInclude Source="/Styles/UserControls/MessageBox/MessageBoxStyles.axaml"/>
+    <StyleInclude Source="/Styles/UserControls/LoginDialog/LoginDialogStyles.axaml"/>
 
 </Styles>
