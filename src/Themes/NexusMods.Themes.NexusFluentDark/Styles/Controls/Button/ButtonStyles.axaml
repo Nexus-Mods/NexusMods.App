@@ -16,6 +16,9 @@
                         <TextBlock Text="Left Menu Item" />
                     </StackPanel>
                 </Button>
+                <Button Classes="Invisible" HorizontalAlignment="Center">
+                    <TextBlock Text="Invisible" />
+                </Button>
             </StackPanel>
         </Border>
     </Design.PreviewWith>
@@ -59,8 +62,8 @@
     <Style Selector="Button.LeftMenuItem">
         <Setter Property="Height" Value="40" />
         <Setter Property="Padding" Value="0" />
-        <Setter Property="CornerRadius" Value="8"/>
-        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="Background" Value="{StaticResource ElementBackgroundTransparentBrush}" />
 
         <Style Selector="^.LeftMenuItem StackPanel">
@@ -77,7 +80,7 @@
 
         <Style Selector="^.LeftMenuItem TextBlock">
             <Setter Property="Theme" Value="{StaticResource BodyMDBoldTheme}" />
-            <Setter Property="LineHeight" Value="16.41"/>
+            <Setter Property="LineHeight" Value="16.41" />
             <Setter Property="Margin" Value="0" />
         </Style>
 
@@ -88,6 +91,19 @@
         <Style Selector="^.Active /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="Background" Value="{StaticResource ElementBackgroundNeutralMidBrush}" />
         </Style>
+    </Style>
+
+
+    <!--  Invisible button  -->
+    <Style Selector="Button.Invisible">
+        <Setter Property="Background" Value="{StaticResource ElementBackgroundTransparentBrush}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Margin" Value="0" />
+    </Style>
+
+    <Style Selector="Button.Invisible:pressed">
+        <Setter Property="Background" Value="{StaticResource ElementBackgroundTransparentBrush}" />
     </Style>
 
 

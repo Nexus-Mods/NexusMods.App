@@ -21,12 +21,17 @@
             HorizontalAlignment="Stretch"
             x:Name="LaunchButton">
             <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
-                <avalonia:Icon Value="mdi-play" x:Name="LaunchIcon" />
+                <avalonia:Icon Classes="Play" x:Name="LaunchIcon" />
                 <TextBlock x:Name="LaunchText" />
             </StackPanel>
         </Button>
-        <ProgressBar Classes="LaunchButton" x:Name="ProgressBarControl" IsVisible="False" ShowProgressText="True" Minimum="0" Maximum="1"
-                     HorizontalAlignment="Stretch"></ProgressBar> 
+        <ProgressBar
+            Classes="LaunchButton"
+            x:Name="ProgressBarControl"
+            IsVisible="False"
+            ShowProgressText="True"
+            Minimum="0"
+            Maximum="1"
+            HorizontalAlignment="Stretch" />
     </StackPanel>
 </reactiveUi:ReactiveUserControl>
-

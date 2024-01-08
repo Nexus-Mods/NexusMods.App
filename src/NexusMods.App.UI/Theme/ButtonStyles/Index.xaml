@@ -47,17 +47,17 @@
     </Design.PreviewWith>
 
     <!--  Invisible button  -->
-    <Style Selector="Button.Invisible">
-        <Setter Property="Background" Value="Transparent" />
-        <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="Padding" Value="0" />
-        <Setter Property="Margin" Value="0" />
-    </Style>
-
-    <Style Selector="Button.Invisible:pressed">
-        <Setter Property="Background" Value="Transparent" />
-        <Setter Property="RenderTransform" Value="scale(0.9)" />
-    </Style>
+    <!-- <Style Selector="Button.Invisible"> -->
+    <!--     <Setter Property="Background" Value="Transparent" /> -->
+    <!--     <Setter Property="BorderThickness" Value="0" /> -->
+    <!--     <Setter Property="Padding" Value="0" /> -->
+    <!--     <Setter Property="Margin" Value="0" /> -->
+    <!-- </Style> -->
+    <!-- -->
+    <!-- <Style Selector="Button.Invisible:pressed"> -->
+    <!--     <Setter Property="Background" Value="Transparent" /> -->
+    <!--     <Setter Property="RenderTransform" Value="scale(0.9)" /> -->
+    <!-- </Style> -->
 
     <!--  End invisible button  -->
 

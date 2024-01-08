@@ -20,14 +20,13 @@
             Height="40"
             Width="184">
             <avalonia:Icon
-                FontSize="15"
-                Foreground="#FFFFFF"
+                FontSize="18"
                 Grid.Column="0"
-                Height="16"
-                Width="15"
+                Height="18"
+                Width="18"
                 x:Name="LeftIcon" />
             <TextBlock
-                Classes="Subheading"
+                Classes="BodyMDBold"
                 Grid.Column="1"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Center"
