@@ -52,20 +52,20 @@ public struct ModFileTree :
     ///     Hash of the file.
     /// </summary>
     public Hash Hash => Hash.From(_hash); // 32
-    private ulong _hash; // Vogen has overhead on object size
+    private ulong _hash; // Vogen has overhead on object size , so we store raw.
 
     /// <summary>
     ///     Size of the file.
     /// </summary>
     public Size Size => Size.From(_size); // 40
-    private ulong _size; // Vogen has overhead on object size
+    private ulong _size; // Vogen has overhead on object size, so we store raw.
 
     /// <summary>
     ///     A factory that can be used to open the file and read its contents
     /// </summary>
-    public required IStreamFactory? StreamFactory { get; init; } // 48 (After TransparentValueObjects)
+    public required IStreamFactory? StreamFactory { get; init; } // 48
 
-    // Struct end at 52 bytes. (After TransparentValueObjects)
+    // Struct end at 56 bytes.
 
     /// <summary>
     ///     Open the file as a readonly seekable stream
