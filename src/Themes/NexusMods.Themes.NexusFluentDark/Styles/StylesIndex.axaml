@@ -20,5 +20,6 @@
     <StyleInclude Source="/Styles/Controls/ProgressBar/ProgressBarStyles.axaml"/>
 
     <StyleInclude Source="/Styles/UserControls/ProgressRing/ProgressRingStyles.axaml"/>
+    <StyleInclude Source="/Styles/UserControls/GameWidget/GameWidgetStyles.axaml"/>
 
 </Styles>

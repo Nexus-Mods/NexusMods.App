@@ -1,0 +1,53 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ui="clr-namespace:NexusMods.App.UI.Controls.GameWidget;assembly=NexusMods.App.UI"
+        xmlns:extensions="clr-namespace:NexusMods.Themes.NexusFluentDark.Extensions"
+        xmlns:icons="https://github.com/projektanker/icons.avalonia">
+    <Design.PreviewWith>
+        <Border Classes="Mid" Padding="20">
+            <ui:GameWidget>
+            </ui:GameWidget>
+        </Border>
+    </Design.PreviewWith>
+
+    <!-- Style Definitions -->
+    <Style Selector="ui|GameWidget">
+        <Setter Property="ClipToBounds" Value="False" />
+
+        <Style Selector="^ > Border">
+            <Setter Property="CornerRadius" Value="25" />
+            <Setter Property="BoxShadow">
+                <extensions:BoxShadow
+                    BlurRadius="5" ShadowColor="{StaticResource BrandTranslucentDark500}"
+                    VerticalLength1="3" BlurRadius1="4" ShadowColor1="{StaticResource BrandTranslucentDark100}"
+                    VerticalLength2="2" BlurRadius2="4" ShadowColor2="{StaticResource BrandTranslucentDark100}" />
+            </Setter>
+        </Style>
+
+        <Style Selector="^ Border.MainBorder">
+            <Setter Property="CornerRadius" Value="25" />
+            <Setter Property="ClipToBounds" Value="True" />
+        </Style>
+
+        <Style Selector="^ TextBlock#NameTextBlock">
+            <Setter Property="Theme" Value="{StaticResource TitleSMSemiTheme}" />
+            <Setter Property="LetterSpacing" Value="0.6" />
+
+        </Style>
+
+        <Style Selector="^ Border#SeparationLine">
+            <Setter Property="BorderBrush" Value="{StaticResource ElementStrokeTranslucentWeakBrush}" />
+        </Style>
+
+        <Style Selector="^ Button.FirstButton icons|Icon">
+            <Setter Property="FontSize" Value="20" />
+            <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralStrongBrush}" />
+        </Style>
+
+        <Style Selector="^ Image#GameImage">
+            <Setter Property="Stretch" Value="UniformToFill" />
+        </Style>
+    </Style>
+
+
+</Styles>
