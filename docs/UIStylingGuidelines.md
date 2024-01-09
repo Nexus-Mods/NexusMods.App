@@ -386,6 +386,9 @@ The UI projects can then use this Style `Class` to set the icon without having t
 
 This way all icons used in the app can easily be found in the `IconsStyles.axaml` file, and the mdi-code can be changed in one place if needed.
 
+To change the Size of an icon, it needs to have its `FontSize` property set, changing the `Width` and `Height` properties will change the bounds of the icon, but not visually scale it.
+Font size appears to closely match the size of the icon, e.g. `FontSize="16"` should be equivalent to `Width="16" Height="16"`.
+
 ### Using Styles in the UI
 In general UI projects will change the appearance of controls by setting Style `Classes` on them.
 
