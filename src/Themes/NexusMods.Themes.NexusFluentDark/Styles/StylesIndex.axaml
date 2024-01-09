@@ -20,6 +20,7 @@
     <StyleInclude Source="/Styles/Controls/TextBox/TextBoxStyles.axaml"/>
     <StyleInclude Source="/Styles/Controls/ProgressBar/ProgressBarStyles.axaml"/>
     <StyleInclude Source="/Styles/Controls/DataGrid/DataGridStyles.axaml"/>
+    <StyleInclude Source="/Styles/Controls/ToggleSwitch/ToggleSwitchStyles.axaml"/>
 
     <StyleInclude Source="/Styles/UserControls/ProgressRing/ProgressRingStyles.axaml"/>
     <StyleInclude Source="/Styles/UserControls/GameWidget/GameWidgetStyles.axaml"/>
