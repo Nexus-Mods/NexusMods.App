@@ -18,6 +18,8 @@
             <Button Classes="BareIcon KeyboardArrowRight" />
             <Button Classes="BareIcon KeyboardArrowLeft" />
             <Button Classes="BareIcon Copy" />
+            <Button Classes="BareIcon PlayCircleOutline" />
+            <Button Classes="BareIcon PauseCircleOutline" />
         </WrapPanel>
     </Design.PreviewWith>
 
@@ -104,6 +106,14 @@
 
     <Style Selector="Button.BareIcon.Copy /template/ icons|Icon">
         <Setter Property="Value" Value="mdi-content-copy" />
+    </Style>
+
+    <Style Selector="Button.BareIcon.PlayCircleOutline /template/ icons|Icon">
+        <Setter Property="Value" Value="mdi-play-circle-outline" />
+    </Style>
+
+    <Style Selector="Button.BareIcon.PauseCircleOutline /template/ icons|Icon">
+        <Setter Property="Value" Value="mdi-pause-circle-outline" />
     </Style>
 
 
