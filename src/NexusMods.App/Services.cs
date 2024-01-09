@@ -108,10 +108,19 @@ public static class Services
             .AddFileSystem()
             .AddSingleton<IStartupHandler, StartupHandler>()
             .AddSingleProcess()
-            .AddSingleton(s => new SingleProcessSettings
+            .AddSingleton(s =>
             {
-                SyncFile = s.GetRequiredService<IFileSystem>().GetKnownPath(KnownPath.ApplicationDataDirectory)
-                    .Combine("single_process.sync")
+                var fs = s.GetRequiredService<IFileSystem>();
+                var directory = fs.OS.MatchPlatform(
+                    () => fs.GetKnownPath(KnownPath.TempDirectory),
+                    () => fs.GetKnownPath(KnownPath.XDG_RUNTIME_DIR),
+                    () => throw new PlatformNotSupportedException()
+                );
+
+                return new SingleProcessSettings
+                {
+                    SyncFile = directory.Combine("NexusMods.App-single_process.sync")
+                };
             })
             .AddDefaultRenderers();
 
