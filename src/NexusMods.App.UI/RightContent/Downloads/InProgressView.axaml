@@ -23,20 +23,20 @@
                     <Button x:Name="CancelButton">
                         <StackPanel>
                             <avalonia:Icon Classes="RemoveCircleOutline" />
-                            <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Cancel}"></TextBlock>
+                            <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Cancel}"/>
                         </StackPanel>
                     </Button>
                     <Button x:Name="PauseButton">
                         <StackPanel>
                             <avalonia:Icon Classes="PauseCircleOutline" />
-                            <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Pause}"></TextBlock>
+                            <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Pause}"/>
                         </StackPanel>
                     </Button>
                     <Line />
                     <Button x:Name="PauseAllButton">
                         <StackPanel>
                             <avalonia:Icon Classes="PauseCircleFilled" />
-                            <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Pause_All}"></TextBlock>
+                            <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Pause_All}"/>
                         </StackPanel>
                     </Button>
                     <Line />
@@ -55,7 +55,7 @@
             <!-- Title & Status -->
             <DockPanel LastChildFill="True" HorizontalAlignment="Stretch" Grid.Row="0">
                 <TextBlock DockPanel.Dock="Left"
-                           Classes="H5MontserratSemi"
+                           Classes="HeadingSMSemi"
                            Text="{x:Static resources:Language.InProgressTitleTextBlock}"
                            x:Name="InProgressTitleTextBlock"
                            Margin="0,0,0,16" />
@@ -63,18 +63,18 @@
                 <!-- Right Side -->
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <TextBlock VerticalAlignment="Center"
-                               Classes="Body2RobotoRegular"
+                               Classes="BodyMDNormal"
                                Text="0GB / 0GB" Margin="0,0,16,0"
                                x:Name="SizeCompletionTextBlock" />
 
                     <!-- Note: Can use 'run' here, but don't want to make separate styles for 'run' -->
                     <TextBlock VerticalAlignment="Center"
-                               Classes="Body2RobotoRegularBold"
+                               Classes="BodyMDBold"
                                Text="{x:Static resources:Language.BoldMinutesRemainingTextBlock}" Margin="0,0,4,0"
                                x:Name="BoldMinutesRemainingTextBlock" />
 
                     <TextBlock VerticalAlignment="Center"
-                               Classes="Body2RobotoRegular"
+                               Classes="BodyMDNormal"
                                Text="{x:Static resources:Language.MinutesRemainingTextBlock}"
                                x:Name="MinutesRemainingTextBlock" />
 
