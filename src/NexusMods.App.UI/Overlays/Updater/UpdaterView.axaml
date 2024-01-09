@@ -8,38 +8,41 @@
     xmlns:updater="clr-namespace:NexusMods.App.UI.Overlays.Updater"
     xmlns:base="clr-namespace:NexusMods.App.UI.Overlays.Generic.MessageBox.Base"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
-    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    mc:Ignorable="d" d:DesignWidth="800"
     x:Class="NexusMods.App.UI.Overlays.Updater.UpdaterView">
     <Design.DataContext>
         <updater:UpdaterDesignViewModel/>
     </Design.DataContext>
     <base:MessageBoxBackground MinWidth="576" MaxWidth="576">
         <base:MessageBoxBackground.TopContent>
-            <StackPanel Orientation="Vertical" Margin="16, 24, 24, 24" Spacing="16">
+            <StackPanel Orientation="Vertical" Margin="16, 24, 24, 0" Spacing="16">
 
-                <TextBlock Classes="H6MontserratSemi"
+                <TextBlock Classes="HeadingXSSemi"
                            Text="{x:Static resources:Language.Updater_UpdateAvailable}"/>
 
                 <!-- Message -->
                 <StackPanel Spacing="8">
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Classes="BodyMDNormal UsesBrandWhiteColor"
+                        <TextBlock Classes="BodyMDBold"
                                    x:Name="FromVersionTextBlock"/>
                         <TextBlock Text=" -> "
-                                   Classes="BodyMDNormal UsesBrandWhiteColor"/>
-                        <TextBlock Classes="BodyMDNormal UsesBrandWhiteColor"
+                                   Classes="BodyMDNormal"/>
+                        <TextBlock Classes="BodyMDBold"
                                    x:Name="ToVersionTextBlock"/>
                     </StackPanel>
                     <TextBlock TextWrapping="WrapWithOverflow"
                                Text="{x:Static resources:Language.Updater_MainMessage}"
-                               Classes="BodyMDNormal UsesBrandWhiteColor" />
+                               Classes="BodyMDNormal" />
 
                     <TextBlock x:Name="UseSystemUpdater"
                                TextWrapping="WrapWithOverflow"
                                Text="{x:Static resources:Language.Updater_UseSystemUpdater}"
-                               Classes="BodyMDNormal UsesBrandWhiteColor" />
+                               Classes="BodyMDNormal" />
 
-                    <Button Classes="Hyperlink Primary" x:Name="ChangelogButton"><TextBlock Classes="BodyMDNormal" Text="{x:Static resources:Language.Updater_ViewChangelog}"></TextBlock></Button>
+                    <Button Classes="Hyperlink Secondary" x:Name="ChangelogButton">
+                        <TextBlock Classes="BodyMDNormal"
+                                   Text="{x:Static resources:Language.Updater_ViewChangelog}"/>
+                    </Button>
                 </StackPanel>
             </StackPanel>
 
@@ -49,7 +52,7 @@
 
             <!-- Buttons -->
             <StackPanel Orientation="Horizontal" Margin="24" HorizontalAlignment="Right" Spacing="8">
-                <Button x:Name="LaterButton" Classes="Standard Secondary" HorizontalAlignment="Stretch">
+                <Button x:Name="LaterButton" Classes="Standard Tertiary" HorizontalAlignment="Stretch">
                     <TextBlock Text="{x:Static resources:Language.Updater_LATER}" />
                 </Button>
                 <Button x:Name="UpdateButton" Classes="Standard Primary" HorizontalAlignment="Stretch">

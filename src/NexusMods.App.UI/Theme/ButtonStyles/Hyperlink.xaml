@@ -5,24 +5,26 @@
 
     <Design.PreviewWith>
         <StackPanel>
-            <Button Classes="Hyperlink Primary"><TextBlock Classes="BodyMdNormal">More info about this text</TextBlock></Button>
+            <Button Classes="Hyperlink Primary">
+                <TextBlock Classes="BodyMdNormal">More info about this text</TextBlock>
+            </Button>
         </StackPanel>
     </Design.PreviewWith>
 
 
     <Style Selector="Button.Hyperlink">
-        <Setter Property="Margin" Value="0"></Setter>
-        <Setter Property="Padding" Value="0"></Setter>
-        <Setter Property="BorderThickness" Value="0"></Setter>
-        <Setter Property="Background" Value="Transparent"></Setter>
+        <Setter Property="Margin" Value="0"/>
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Background" Value="Transparent"/>
     </Style>
 
     <Style Selector="Button.Hyperlink TextBlock">
-        <Setter Property="Margin" Value="0"></Setter>
-        <Setter Property="Background" Value="Transparent"></Setter>
-        <Setter Property="Foreground" Value="{DynamicResource BrandPrimary}"></Setter>
-        <Setter Property="TextDecorations" Value="Underline"></Setter>
-        <Setter Property="Cursor" Value="Hand"></Setter>
+        <Setter Property="Margin" Value="0"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{DynamicResource BrandPrimary}"/>
+        <Setter Property="TextDecorations" Value="Underline"/>
+        <Setter Property="Cursor" Value="Hand"/>
     </Style>
 
 </Styles>

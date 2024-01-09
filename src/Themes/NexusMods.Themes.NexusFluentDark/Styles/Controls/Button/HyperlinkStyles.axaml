@@ -9,6 +9,12 @@
                 <Button Classes="Hyperlink Primary" IsEnabled="False">
                     <TextBlock Classes="BodyMdNormal" Text="More info about this text"  />
                 </Button>
+                <Button Classes="Hyperlink Secondary" IsEnabled="True">
+                    <TextBlock Classes="BodyMdNormal" Text="More info about this text"  />
+                </Button>
+                <Button Classes="Hyperlink Secondary" IsEnabled="False">
+                    <TextBlock Classes="BodyMdNormal" Text="More info about this text"  />
+                </Button>
             </StackPanel>
         </Border>
     </Design.PreviewWith>
@@ -56,9 +62,30 @@
         </Style>
 
         <Style Selector="^:pressed">
-            <Setter Property="RenderTransform" Value="scale(1)" />
             <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
                 <Setter Property="Foreground" Value="{StaticResource ElementForegroundPrimaryStrongBrush}" />
+            </Style>
+        </Style>
+    </Style>
+
+    <Style Selector="Button.Hyperlink.Secondary">
+        <Style Selector="^ > TextBlock">
+            <Setter Property="TextDecorations" Value="Underline" />
+        </Style>
+
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralSubduedBrush}" />
+        </Style>
+
+        <Style Selector="^:pointerover > TextBlock">
+            <!-- Apparently they forgot to add the `None` value to the `TextDecorations` enum... -->
+            <!-- https://github.com/AvaloniaUI/Avalonia/issues/6227 -->
+            <Setter Property="TextDecorations" Value="{x:Null}" />
+        </Style>
+
+        <Style Selector="^:pressed">
+            <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralStrongBrush}" />
             </Style>
         </Style>
     </Style>
