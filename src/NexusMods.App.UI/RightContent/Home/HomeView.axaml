@@ -1,5 +1,4 @@
 ﻿<reactiveUi:ReactiveUserControl
-    d:DesignHeight="550"
     d:DesignWidth="990"
     mc:Ignorable="d"
     x:Class="NexusMods.App.UI.RightContent.Home.HomeView"
@@ -15,15 +14,14 @@
         <home:HomeViewDesignerViewModel />
     </Design.DataContext>
     <Border
-        Classes="HighlightedArea"
-        Height="451"
+        Classes="Low"
         Margin="24">
         <Grid
             ColumnDefinitions="*, Auto"
             Margin="0,0"
             RowDefinitions="Auto, Auto, Auto, Auto">
             <TextBlock
-                Classes="H5MontserratSemi"
+                Classes="HeadingSMSemi"
                 Grid.Row="0"
                 Margin="24,27,0,0"
                 Text="{x:Static resources:Language.HomeView__We_found_games}" />
@@ -33,7 +31,7 @@
                 Grid.Row="1"
                 x:Name="FoundGamesHost" />
             <TextBlock
-                Classes="CaptionMontserratSemi"
+                Classes="TitleSMSemi"
                 Grid.Column="0"
                 Grid.Row="2"
                 Margin="24,10"
@@ -49,4 +47,3 @@
         </Grid>
     </Border>
 </reactiveUi:ReactiveUserControl>
-
