@@ -1,5 +1,6 @@
 ﻿<reactiveUi:ReactiveUserControl
     d:DesignWidth="990"
+    d:DesignHeight="600"
     mc:Ignorable="d"
     x:Class="NexusMods.App.UI.RightContent.Home.HomeView"
     x:TypeArguments="home:IHomeViewModel"
@@ -13,37 +14,25 @@
     <Design.DataContext>
         <home:HomeViewDesignerViewModel />
     </Design.DataContext>
-    <Border
-        Classes="Low"
-        Margin="24">
-        <Grid
-            ColumnDefinitions="*, Auto"
-            Margin="0,0"
-            RowDefinitions="Auto, Auto, Auto, Auto">
-            <TextBlock
-                Classes="HeadingSMSemi"
-                Grid.Row="0"
-                Margin="24,27,0,0"
-                Text="{x:Static resources:Language.HomeView__We_found_games}" />
-            <reactiveUi:ViewModelViewHost
-                Grid.Column="0"
-                Grid.ColumnSpan="2"
-                Grid.Row="1"
-                x:Name="FoundGamesHost" />
-            <TextBlock
-                Classes="TitleSMSemi"
-                Grid.Column="0"
-                Grid.Row="2"
-                Margin="24,10"
-                Text="{x:Static resources:Language.HomeView__CANT_SEE_YOUR_GAME}" />
-            <Button
-                Classes="Standard SecondaryOutlined"
-                Grid.Column="0"
-                Grid.ColumnSpan="2"
-                Grid.Row="3"
-                Margin="24,0,0,0">
-                <TextBlock Text="{x:Static resources:Language.HomeView__BROWSE_ALL_GAMES}" />
-            </Button>
-        </Grid>
-    </Border>
+    <ScrollViewer>
+        <Border Classes="OutlineInfoSubdued Rounded"
+            Margin="24"
+            Padding="24">
+            <StackPanel Spacing="12">
+                <TextBlock
+                    Classes="HeadingSMSemi"
+                    Text="{x:Static resources:Language.HomeView__We_found_games}" />
+                <reactiveUi:ViewModelViewHost
+                    x:Name="FoundGamesHost" />
+                <TextBlock
+                    Classes="TitleSMSemi"
+                    Text="{x:Static resources:Language.HomeView__CANT_SEE_YOUR_GAME}" />
+                <Button
+                    Classes="Standard SecondaryOutlined"
+                    Margin="0,0,0,0">
+                    <TextBlock Text="{x:Static resources:Language.HomeView__BROWSE_ALL_GAMES}" />
+                </Button>
+            </StackPanel>
+        </Border>
+    </ScrollViewer>
 </reactiveUi:ReactiveUserControl>

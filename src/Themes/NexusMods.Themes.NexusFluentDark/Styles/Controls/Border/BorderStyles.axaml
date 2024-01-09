@@ -16,6 +16,18 @@
             <Border Classes="Rounded OutlineWeak" Padding="16">
                 <TextBlock Text="OUTLINE Weak" />
             </Border>
+            <Border Classes="Rounded OutlineInfoStrong" Padding="16">
+                <TextBlock Text="OUTLINE Info Strong" />
+            </Border>
+            <Border Classes="Rounded OutlineInfoModerate" Padding="16">
+                <TextBlock Text="OUTLINE Info Moderate" />
+            </Border>
+            <Border Classes="Rounded OutlineInfoSubdued" Padding="16">
+                <TextBlock Text="OUTLINE Info Subdued" />
+            </Border>
+            <Border Classes="Rounded OutlineInfoWeak" Padding="16">
+                <TextBlock Text="OUTLINE Info Weak" />
+            </Border>
             <Border Classes="Rounded OutlineWeak Base" Padding="16">
                 <TextBlock Text="BASE" />
             </Border>
@@ -83,6 +95,27 @@
     <Style Selector="Border.OutlineWeak">
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="BorderBrush" Value="{StaticResource ElementStrokeTranslucentWeakBrush}" />
+    </Style>
+
+
+    <Style Selector="Border.OutlineInfoStrong">
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="{StaticResource ElementForegroundInfoStrongBrush}" />
+    </Style>
+
+    <Style Selector="Border.OutlineInfoModerate">
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="{StaticResource ElementForegroundInfoModerateBrush}" />
+    </Style>
+
+    <Style Selector="Border.OutlineInfoSubdued">
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="{StaticResource ElementForegroundInfoSubduedBrush}" />
+    </Style>
+
+    <Style Selector="Border.OutlineInfoWeak">
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="{StaticResource ElementForegroundInfoWeakBrush}" />
     </Style>
 
 
