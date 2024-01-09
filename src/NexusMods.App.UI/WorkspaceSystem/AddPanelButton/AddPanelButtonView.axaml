@@ -15,18 +15,6 @@
     </Design.DataContext>
 
     <Border>
-        <Border.Styles>
-            <Style Selector="Button">
-                <Setter Property="Background" Value="{DynamicResource Transparent}"/>
-                <Setter Property="BorderBrush" Value="{DynamicResource BrandPrimary}"/>
-                <Setter Property="Padding" Value="0" />
-            </Style>
-
-            <Style Selector="icons|Icon">
-                <Setter Property="Foreground" Value="{DynamicResource FontDarkSecondaryColor}"/>
-            </Style>
-        </Border.Styles>
-
         <Button x:Name="AddPanelButton">
             <StackPanel Orientation="Horizontal" Spacing="4">
                 <Image x:Name="ButtonImage"/>

@@ -15,6 +15,7 @@
     <StyleInclude Source="/Styles/Controls/Button/HyperlinkStyles.axaml"/>
     <StyleInclude Source="/Styles/Controls/Button/SpineButtonStyles.axaml"/>
     <StyleInclude Source="/Styles/Controls/Button/SpineDownloadButtonStyles.axaml"/>
+    <StyleInclude Source="/Styles/Controls/Button/PanelTitlebarButtonStyles.axaml"/>
     <StyleInclude Source="/Styles/Controls/Window/DialogStyles.axaml"/>
     <StyleInclude Source="/Styles/Controls/TreeDataGrid/TreeDataGridStyles.axaml"/>
     <StyleInclude Source="/Styles/Controls/TextBox/TextBoxStyles.axaml"/>
@@ -28,5 +29,7 @@
     <StyleInclude Source="/Styles/UserControls/LeftPane/LeftPaneDownloadStyles.axaml"/>
     <StyleInclude Source="/Styles/UserControls/MessageBox/MessageBoxStyles.axaml"/>
     <StyleInclude Source="/Styles/UserControls/LoginDialog/LoginDialogStyles.axaml"/>
+    <StyleInclude Source="/Styles/UserControls/WorkspaceSystem/AddPanelButtonStyles.axaml"/>
+    <StyleInclude Source="/Styles/UserControls/WorkspaceSystem/PanelTabHeaderStyles.axaml"/>
 
 </Styles>
