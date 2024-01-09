@@ -56,6 +56,8 @@
             <icons:Icon Classes="DragVertical" />
             <icons:Icon Classes="Search" />
             <icons:Icon Classes="Home" />
+            <icons:Icon Classes="ToggleSwitch" />
+            <icons:Icon Classes="ToggleSwitchOff" />
 
             <Svg Classes="AddCircle" />
 
@@ -243,6 +245,16 @@
     <Style Selector="icons|Icon.Home">
         <Setter Property="Value" Value="mdi-home" />
     </Style>
+
+    <Style Selector="icons|Icon.ToggleSwitch">
+        <Setter Property="Value" Value="mdi-toggle-switch-outline" />
+    </Style>
+
+    <Style Selector="icons|Icon.ToggleSwitchOff">
+        <Setter Property="Value" Value="mdi-toggle-switch-off-outline" />
+    </Style>
+
+
 
 
     <Style Selector="Svg.AddCircle">

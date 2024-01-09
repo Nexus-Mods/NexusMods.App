@@ -14,8 +14,8 @@
     <Design.DataContext>
         <modCategory:ModCategoryDesignViewModel />
     </Design.DataContext>
-    <TextBlock
-        VerticalAlignment="Center"
-        x:Name="CategoryTextBlock" />
+    <TextBlock Classes="BodyMDNormal"
+               TextTrimming="CharacterEllipsis"
+               VerticalAlignment="Center"
+               x:Name="CategoryTextBlock" />
 </reactiveUi:ReactiveUserControl>
-

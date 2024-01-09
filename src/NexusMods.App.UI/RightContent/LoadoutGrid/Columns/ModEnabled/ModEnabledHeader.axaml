@@ -11,17 +11,15 @@
     <Grid>
         <avalonia:Icon
             FontSize="18"
-            Foreground="{DynamicResource BrandWhite}"
             Height="24"
             Margin="0,-10,0,0"
-            Value="mdi-toggle-switch-off-outline"
+            Classes="ToggleSwitch"
             Width="24" />
         <avalonia:Icon
             FontSize="18"
-            Foreground="{DynamicResource BrandWhite}"
             Height="24"
             Margin="0,10,0,0"
-            Value="mdi-toggle-switch-outline"
+            Classes="ToggleSwitchOff"
             Width="24" />
     </Grid>
 </UserControl>

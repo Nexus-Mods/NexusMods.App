@@ -15,7 +15,9 @@
         <modVersion:ModVersionDesignViewModel />
     </Design.DataContext>
     <TextBlock
+        Classes="BodyMDNormal"
         VerticalAlignment="Center"
+        TextTrimming="CharacterEllipsis"
         x:Name="VersionTextBlock" />
 </reactiveUi:ReactiveUserControl>
 
