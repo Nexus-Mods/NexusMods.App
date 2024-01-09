@@ -42,7 +42,6 @@
             </Grid>
         </Border>
         <DataGrid Grid.Row="1"
-            CanUserReorderColumns="True"
             CanUserResizeColumns="True"
             CanUserSortColumns="True"
             Margin="24,16"

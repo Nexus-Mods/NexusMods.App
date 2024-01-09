@@ -60,10 +60,13 @@
             Grid.ColumnSpan="3"
             Grid.Row="0" />
 
-        <reactiveUi:ViewModelViewHost
+        <Border Classes="OutlineWeak"
             Grid.Column="1"
             Grid.Row="1"
-            x:Name="LeftMenuViewModelHost" />
+            BorderThickness="1,0,1,0">
+            <reactiveUi:ViewModelViewHost
+                x:Name="LeftMenuViewModelHost" />
+        </Border>
 
         <reactiveUi:ViewModelViewHost Grid.Column="2" Grid.Row="1" x:Name="RightContent" />
 
