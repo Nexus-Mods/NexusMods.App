@@ -5,6 +5,8 @@
         <PackageReference Include="Avalonia.Themes.Fluent"/>
         <PackageReference Include="Avalonia.Controls.TreeDataGrid" />
         <PackageReference Include="Avalonia.Controls.DataGrid" />
+        <PackageReference Include="Avalonia.Svg.Skia" />
+        <PackageReference Include="Projektanker.Icons.Avalonia.MaterialDesign" />
     </ItemGroup>
 
     <ItemGroup>
@@ -17,15 +19,6 @@
         <AvaloniaResource Include="Assets\Fonts\SemiBold\Montserrat-SemiBold.ttf"/>
         <AvaloniaResource Include="Styles\Controls\Border\Toolbar.xaml" />
         <AvaloniaResource Include="Styles\Controls\Button\PillStyles.xaml" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Reference Include="Avalonia.Svg.Skia">
-        <HintPath>..\..\..\..\..\..\Users\Al12r\.nuget\packages\avalonia.svg.skia\11.0.0.6\lib\net8.0\Avalonia.Svg.Skia.dll</HintPath>
-      </Reference>
-      <Reference Include="Projektanker.Icons.Avalonia">
-        <HintPath>..\..\..\..\..\..\Users\Al12r\.nuget\packages\projektanker.icons.avalonia\8.3.0\lib\netstandard2.0\Projektanker.Icons.Avalonia.dll</HintPath>
-      </Reference>
     </ItemGroup>
 
     <ItemGroup>
