@@ -57,7 +57,7 @@ public static class Services
                         {
                             AppId = AppId.From(42),
                             Name = "Stubbed Game",
-                            InstallationDirectoryName = gamePath.FileName,
+                            InstallationDirectory = gamePath,
                             StateFlags = StateFlags.FullyInstalled,
                             ManifestPath = gamePath.Parent.Parent.Combine("steam_game.acf"),
                         },

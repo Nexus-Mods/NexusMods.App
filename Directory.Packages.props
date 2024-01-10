@@ -2,9 +2,9 @@
   <ItemGroup>
     <!-- Custom Packages -->
     <PackageVersion Include="NexusMods.Hashing.xxHash64" Version="1.0.1" />
-    <PackageVersion Include="NexusMods.Paths" Version="0.3.0" />
+    <PackageVersion Include="NexusMods.Paths" Version="0.4.0" />
     <PackageVersion Include="NexusMods.Archives.Nx" Version="0.3.7" />
-    <PackageVersion Include="NexusMods.Paths.TestingHelpers" Version="0.2.0" />
+    <PackageVersion Include="NexusMods.Paths.TestingHelpers" Version="0.4.0" />
     <PackageVersion Include="NexusMods.ProxyConsole.Abstractions" Version="0.6.0" />
     <PackageVersion Include="NexusMods.SingleProcess" Version="0.6.0" />
     <PackageVersion Include="NexusMods.Telemetry.OpenTelemetry" Version="1.0.0" />
@@ -26,14 +26,14 @@
     <!-- Avalonia -->
     <PackageVersion Include="Avalonia" Version="11.0.6" />
     <PackageVersion Include="Avalonia.Controls.DataGrid" Version="11.0.6" />
-    <PackageVersion Include="Avalonia.Controls.TreeDataGrid" Version="11.0.1" />
+    <PackageVersion Include="Avalonia.Controls.TreeDataGrid" Version="11.0.2" />
     <PackageVersion Include="Avalonia.Desktop" Version="11.0.6" />
     <PackageVersion Include="Avalonia.Diagnostics" Version="11.0.6" />
     <PackageVersion Include="Avalonia.Headless" Version="11.0.6" />
     <PackageVersion Include="Avalonia.ReactiveUI" Version="11.0.6" />
     <PackageVersion Include="Avalonia.Themes.Fluent" Version="11.0.6" />
     <PackageVersion Include="Projektanker.Icons.Avalonia.MaterialDesign" Version="8.3.0" />
-    <PackageVersion Include="Avalonia.Svg.Skia" Version="11.0.0.7" />
+    <PackageVersion Include="Avalonia.Svg.Skia" Version="11.0.0.10" />
   </ItemGroup>
   <ItemGroup>
     <!-- System -->
@@ -54,7 +54,7 @@
     <PackageVersion Include="Microsoft.Extensions.Logging" Version="8.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
     <PackageVersion Include="Microsoft.Extensions.ObjectPool" Version="8.0.0" />
-    <PackageVersion Include="Microsoft.IO.RecyclableMemoryStream" Version="2.3.2" />
+    <PackageVersion Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.0" />
   </ItemGroup>
   <ItemGroup>
     <!-- Testing -->
@@ -99,7 +99,7 @@
     <PackageVersion Include="BitFaster.Caching" Version="2.3.3" />
     <PackageVersion Include="CliWrap" Version="3.6.4" />
     <PackageVersion Include="DynamicData" Version="8.1.1" />
-    <PackageVersion Include="GameFinder" Version="4.0.0" />
+    <PackageVersion Include="GameFinder" Version="4.1.0" />
     <PackageVersion Include="Humanizer" Version="2.14.1" />
     <PackageVersion Include="ini-parser-netstandard" Version="2.5.2" />
     <PackageVersion Include="Mutagen.Bethesda.Skyrim" Version="0.42.0" />
