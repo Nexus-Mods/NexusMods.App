@@ -44,7 +44,7 @@
 
                     <Button Classes="Pill StandardPill Label">
                         <StackPanel>
-                            <icons:Icon Value="mdi-star" />
+                            <icons:Icon Classes="Star" />
                             <TextBlock Text="LABEL" />
                         </StackPanel>
                     </Button>
@@ -63,21 +63,21 @@
                     <TextBlock Text="Pill Light" />
                     <Button Classes="Pill Light">
                         <StackPanel>
-                            <icons:Icon Value="mdi-star" />
+                            <icons:Icon Classes="Star" />
                             <TextBlock Text="BUTTON" />
                         </StackPanel>
                     </Button>
 
                     <Button Classes="Pill Light Label">
                         <StackPanel>
-                            <icons:Icon Value="mdi-star" />
+                            <icons:Icon Classes="Star" />
                             <TextBlock Text="LABEL" />
                         </StackPanel>
                     </Button>
 
                     <Button Classes="Pill Light" IsEnabled="False">
                         <StackPanel>
-                            <icons:Icon Value="mdi-star" />
+                            <icons:Icon Classes="Star" />
                             <TextBlock Text="DISABLED" />
                         </StackPanel>
                     </Button>
@@ -88,21 +88,21 @@
                     <TextBlock Text="Pill Accent" />
                     <Button Classes="Pill Accent">
                         <StackPanel>
-                            <icons:Icon Value="mdi-star" />
+                            <icons:Icon Classes="Star" />
                             <TextBlock Text="BUTTON" />
                         </StackPanel>
                     </Button>
 
                     <Button Classes="Pill Accent Label">
                         <StackPanel>
-                            <icons:Icon Value="mdi-star" />
+                            <icons:Icon Classes="Star" />
                             <TextBlock Text="LABEL" />
                         </StackPanel>
                     </Button>
 
                     <Button Classes="Pill Accent" IsEnabled="False">
                         <StackPanel>
-                            <icons:Icon Value="mdi-star" />
+                            <icons:Icon Classes="Star" />
                             <TextBlock Text="DISABLED" />
                         </StackPanel>
                     </Button>
@@ -118,21 +118,21 @@
 
                     <Button Classes="Pill StandardPillOutline">
                         <StackPanel>
-                            <icons:Icon Value="mdi-star" />
+                            <icons:Icon Classes="Star" />
                             <TextBlock Text="BUTTON" />
                         </StackPanel>
                     </Button>
 
                     <Button Classes="Pill StandardPillOutline Label">
                         <StackPanel>
-                            <icons:Icon Value="mdi-star" />
+                            <icons:Icon Classes="Star" />
                             <TextBlock Text="LABEL" />
                         </StackPanel>
                     </Button>
 
                     <Button Classes="Pill StandardPillOutline" IsEnabled="False">
                         <StackPanel>
-                            <icons:Icon Value="mdi-star" />
+                            <icons:Icon Classes="Star" />
                             <TextBlock Text="DISABLED" />
                         </StackPanel>
                     </Button>
@@ -154,14 +154,14 @@
 
                     <Button Classes="Pill StandardPill Label LG">
                         <StackPanel>
-                            <icons:Icon Value="mdi-star" />
+                            <icons:Icon Classes="Star" />
                             <TextBlock Text="LABEL" />
                         </StackPanel>
                     </Button>
 
                     <Button Classes="Pill StandardPill LG" IsEnabled="False">
                         <StackPanel>
-                            <icons:Icon Value="mdi-star" />
+                            <icons:Icon Classes="Star" />
                             <TextBlock Text="DISABLED" />
                         </StackPanel>
                     </Button>

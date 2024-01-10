@@ -24,11 +24,11 @@
             <ControlTemplate>
                 <Grid>
                     <icons:Icon
+                        Classes="HelpCircle"
                         FontSize="20"
                         HorizontalAlignment="Center"
                         Margin="0"
                         Padding="0"
-                        Value="mdi-help-circle"
                         VerticalAlignment="Center" />
                     <Border
                         CornerRadius="48"

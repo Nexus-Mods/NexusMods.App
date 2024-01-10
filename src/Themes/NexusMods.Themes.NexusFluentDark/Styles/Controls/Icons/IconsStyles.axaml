@@ -25,6 +25,7 @@
             <icons:Icon Classes="ClearAll" />
             <icons:Icon Classes="Cog" />
             <icons:Icon Classes="Download" />
+            <icons:Icon Classes="HelpCircle" />
             <icons:Icon Classes="Help" />
             <icons:Icon Classes="History" />
             <icons:Icon Classes="Play" />
@@ -59,6 +60,10 @@
             <icons:Icon Classes="Home" />
             <icons:Icon Classes="ToggleSwitch" />
             <icons:Icon Classes="ToggleSwitchOff" />
+            <icons:Icon Classes="NewspaperOutline" />
+            <icons:Icon Classes="BookmarkMultiOutline" />
+            <icons:Icon Classes="GamepadOutline" />
+            <icons:Icon Classes="Hourglass" />
 
             <Svg Classes="AddCircle" />
 
@@ -121,6 +126,10 @@
 
     <Style Selector="icons|Icon.Download">
         <Setter Property="Value" Value="mdi-download" />
+    </Style>
+
+    <Style Selector="icons|Icon.HelpCircle">
+        <Setter Property="Value" Value="mdi-help-circle" />
     </Style>
 
     <Style Selector="icons|Icon.Help">
@@ -258,6 +267,23 @@
     <Style Selector="icons|Icon.ToggleSwitchOff">
         <Setter Property="Value" Value="mdi-toggle-switch-off-outline" />
     </Style>
+
+    <Style Selector="icons|Icon.NewspaperOutline">
+        <Setter Property="Value" Value="mdi-newspaper-variant-outline" />
+    </Style>
+
+    <Style Selector="icons|Icon.BookmarkMultiOutline">
+        <Setter Property="Value" Value="mdi-bookmark-multiple-outline" />
+    </Style>
+
+    <Style Selector="icons|Icon.GamepadOutline">
+        <Setter Property="Value" Value="mdi-gamepad-square-outline" />
+    </Style>
+
+    <Style Selector="icons|Icon.Hourglass">
+        <Setter Property="Value" Value="mdi-timer-sand-empty" />
+    </Style>
+
 
 
 
