@@ -5,7 +5,6 @@
     x:Class="NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModEnabled.ModEnabledView"
     x:TypeArguments="modEnabled:IModEnabledViewModel"
     xmlns="https://github.com/avaloniaui"
-    xmlns:columns="clr-namespace:NexusMods.App.UI.RightContent.LoadoutGrid.Columns"
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
