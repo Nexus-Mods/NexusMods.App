@@ -336,6 +336,10 @@
         <Compile Update="WorkspaceSystem\PanelResizer\PanelResizerViewModel.cs">
           <DependentUpon>IPanelResizerViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Controls\ProgressRing\ProgressRing.axaml.cs">
+          <DependentUpon>ProgressRing.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
