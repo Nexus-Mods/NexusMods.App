@@ -1,4 +1,3 @@
-using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Reactive.Disposables;
@@ -97,6 +96,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                 .Connect()
                 .MergeMany(item => item.DragEndCommand)
                 .Do(_ => UpdateStates())
+                .Do(_ => UpdateResizers())
                 .Subscribe()
                 .DisposeWith(disposables);
 
@@ -104,26 +104,26 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
             _resizersSource
                 .Connect()
                 .MergeManyWithSource(item => item.DragStartCommand)
-                .Where(tuple => tuple.Item2 != new Point(0, 0))
+                .Where(tuple => tuple.Item2 != 0.0)
                 .Do(tuple =>
                 {
-                    var (item, newActualPosition) = tuple;
+                    var (item, newValue) = tuple;
 
                     const double minX = 0.3;
                     const double minY = 0.3;
                     const double maxX = 1 - minX;
                     const double maxY = 1 - minY;
 
-                    var lastItemPosition = item.LogicalPosition;
-                    var newLogicalPosition = new Point(
-                        Math.Max(minX, Math.Min(maxX, newActualPosition.X / _lastWorkspaceSize.Width)),
-                        Math.Max(minY, Math.Min(maxY, newActualPosition.Y / _lastWorkspaceSize.Height))
-                    );
-
-                    item.LogicalPosition = newLogicalPosition;
-
                     var isHorizontal = item.IsHorizontal;
                     var connectedPanelIds = item.ConnectedPanels;
+
+                    var lastLogicalValue = GetValue(item.LogicalStartPoint, isHorizontal);
+                    var newLogicalValue = isHorizontal
+                        ? Math.Max(minY, Math.Min(maxY, newValue / _lastWorkspaceSize.Height))
+                        : Math.Max(minX, Math.Min(maxX, newValue / _lastWorkspaceSize.Width));
+
+                    item.LogicalStartPoint = WithValue(item.LogicalStartPoint, newLogicalValue, isHorizontal);
+                    item.LogicalEndPoint = WithValue(item.LogicalEndPoint, newLogicalValue, isHorizontal);
 
                     var connectedPanels = connectedPanelIds
                         .Select(panelId => _panelSource.Lookup(panelId))
@@ -132,7 +132,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                         .Order(PanelComparer.Instance)
                         .ToArray();
 
-                    // in case we skip an update, the tolerance for edge checking is higher than usual.
+                    // In case we skip an update, the tolerance for edge checking is higher than usual.
                     const double defaultTolerance = 0.05;
 
                     // move panels
@@ -144,14 +144,14 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                         if (isHorizontal)
                         {
                             // true if the resizer sits on the "top" edge of the panel
-                            var isResizerYAligned = lastItemPosition.Y.IsCloseTo(currentSize.Y, tolerance: defaultTolerance);
+                            var isResizerYAligned = lastLogicalValue.IsCloseTo(currentSize.Y, tolerance: defaultTolerance);
 
                             // if the resizer sits on the "top" edge of the panel, we want to move the panel with the resizer
-                            var newY = isResizerYAligned ? newLogicalPosition.Y : currentSize.Y;
+                            var newY = isResizerYAligned ? newLogicalValue : currentSize.Y;
 
                             var diff = isResizerYAligned
-                                ? currentSize.Y - newLogicalPosition.Y
-                                : newLogicalPosition.Y - currentSize.Bottom;
+                                ? currentSize.Y - newLogicalValue
+                                : newLogicalValue - currentSize.Bottom;
 
                             var newHeight = currentSize.Height + diff;
 
@@ -165,14 +165,14 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                         else
                         {
                             // true if the resizer sits on the "left" edge of the panel
-                            var isResizerXAligned = lastItemPosition.X.IsCloseTo(currentSize.X, tolerance: defaultTolerance);
+                            var isResizerXAligned = lastLogicalValue.IsCloseTo(currentSize.X, tolerance: defaultTolerance);
 
                             // if the resizer sits on the "left" edge of the panel, we want to move the panel with the resizer
-                            var newX = isResizerXAligned ? newLogicalPosition.X : currentSize.X;
+                            var newX = isResizerXAligned ? newLogicalValue : currentSize.X;
 
                             var diff = isResizerXAligned
-                                ? currentSize.X - newLogicalPosition.X
-                                : newLogicalPosition.X - currentSize.Right;
+                                ? currentSize.X - newLogicalValue
+                                : newLogicalValue - currentSize.Right;
 
                             var newWidth = currentSize.Width + diff;
 
@@ -186,22 +186,17 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
 
                         panel.LogicalBounds = newPanelBounds;
                     }
-
-                    // move other resizers
-                    foreach (var resizer in Resizers)
-                    {
-                        if (ReferenceEquals(item, resizer)) continue;
-                        if (resizer.IsHorizontal != isHorizontal) continue;
-                        if (!item.ConnectedPanels.Intersect(resizer.ConnectedPanels).Any()) continue;
-
-                        resizer.LogicalPosition = isHorizontal
-                            ? resizer.LogicalPosition.WithY(newLogicalPosition.Y)
-                            : resizer.LogicalPosition.WithX(newLogicalPosition.X);
-                    }
                 })
                 .SubscribeWithErrorLogging()
                 .DisposeWith(disposables);
         });
+    }
+
+    private static double GetValue(Point point, bool isHorizontal) => isHorizontal ? point.Y : point.X;
+
+    private static Point WithValue(Point point, double value, bool isHorizontal)
+    {
+        return isHorizontal ? point.WithY(value) : point.WithX(value);
     }
 
     private Size _lastWorkspaceSize;
@@ -256,12 +251,12 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         {
             updater.Clear();
 
-            var currentState = _panels.ToImmutableDictionary(x => x.Id, x => x.LogicalBounds);
-            var resizers = GridUtils.GetResizers(currentState);
+            var currentState =WorkspaceGridState.From(_panels, IsHorizontal);
+            var resizers = GridUtils.GetResizers2(currentState);
 
             updater.AddRange(resizers.Select(info =>
             {
-                var vm = new PanelResizerViewModel(info.LogicalPosition, info.IsHorizontal, info.ConnectedPanels);
+                var vm = new PanelResizerViewModel(info.Start, info.End, info.IsHorizontal, info.ConnectedPanels);
                 vm.Arrange(_lastWorkspaceSize);
                 return vm;
             }));

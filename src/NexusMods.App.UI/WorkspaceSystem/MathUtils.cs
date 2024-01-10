@@ -79,6 +79,26 @@ internal static class MathUtils
         return new Point(midX, midY);
     }
 
+    internal static (Point Start, Point End) GetResizerPoints(Rect a, Rect b, WorkspaceGridState.AdjacencyKind adjacencyKind)
+    {
+        var isSameRow = (adjacencyKind & WorkspaceGridState.AdjacencyKind.SameRow) == WorkspaceGridState.AdjacencyKind.SameRow;
+
+        if (isSameRow)
+        {
+            var x = a.Right.IsCloseTo(b.Left) ? a.Right : b.Right;
+            var yStart = a.Top.IsLessThanOrCloseTo(b.Top) ? a.Top : b.Top;
+            var yEnd = a.Bottom.IsGreaterThanOrCloseTo(b.Bottom) ? a.Bottom : b.Bottom;
+
+            return (new Point(x, yStart), new Point(x, yEnd));
+        }
+
+        var y = a.Bottom.IsCloseTo(b.Top) ? a.Bottom : b.Bottom;
+        var xStart = a.Left.IsLessThanOrCloseTo(b.Left) ? a.Left : b.Left;
+        var xEnd = a.Right.IsGreaterThanOrCloseTo(b.Right) ? a.Right : b.Right;
+
+        return (new Point(xStart, y), new Point(xEnd, y));
+    }
+
     /// <summary>
     /// Converts a <see cref="Size"/> into a <see cref="Vector"/>.
     /// </summary>

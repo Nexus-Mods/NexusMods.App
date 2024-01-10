@@ -4,7 +4,7 @@ using Avalonia;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
-internal static class GridUtils
+public static class GridUtils
 {
     /// <summary>
     /// Checks whether the given state is a perfect grid.
@@ -438,94 +438,245 @@ internal static class GridUtils
         return res.UnionById(updates);
     }
 
-    internal static IReadOnlyList<ResizerInfo> GetResizers(
-        ImmutableDictionary<PanelId, Rect> currentState,
-        bool isWorkspaceHorizontal = true)
+    internal static List<ResizerInfo2> GetResizers2(WorkspaceGridState workspaceState)
     {
-        var tmp = new List<ResizerInfo>(capacity: currentState.Count);
-        var adjacentPanels = new List<ResizerInfo>(capacity: currentState.Count);
+        return workspaceState.IsHorizontal
+            ? GetResizersForHorizontal(workspaceState)
+            : GetResizersForVertical(workspaceState);
+    }
 
-        // Step 1: fill the tmp List with all Resizers
-        foreach (var current in currentState)
+    private static List<ResizerInfo2> GetResizersForVertical(WorkspaceGridState currentState)
+    {
+        var res = new List<ResizerInfo2>();
+
+        var (rowCount, maxColumnCount) = currentState.CountRows();
+
+        Span<WorkspaceGridState.RowInfo> seenRows = stackalloc WorkspaceGridState.RowInfo[rowCount];
+        using var rowEnumerator = new WorkspaceGridState.RowEnumerator(currentState, seenRows);
+
+        Span<PanelGridState> columnBuffer = stackalloc PanelGridState[maxColumnCount];
+        Span<PanelGridState> columnsToAdd = stackalloc PanelGridState[maxColumnCount];
+
+        while (rowEnumerator.MoveNext(columnBuffer))
         {
-            var currentRect = current.Value;
+            var numColumnsToAdd = 0;
 
-            // Step 1.1: go through all panels and find their adjacent panels
-            foreach (var other in currentState)
+            var row = rowEnumerator.Current;
+            var info = row.Info;
+            var columns = row.Columns;
+
+            for (var i = 0; i < columns.Length - 1; i++)
             {
-                if (other.Key == current.Key) continue;
+                var (curId, curRect) = columns[i];
+                var (nextId, nextRect) = columns[i + 1];
 
-                var rect = other.Value;
-
-                // same column
-                // | a | x |  | b | x |
-                // | b | x |  | a | x |
-                if (rect.Left >= currentRect.Left && rect.Right <= currentRect.Right)
+                var (columnStart, columnEnd) = MathUtils.GetResizerPoints(curRect, nextRect, WorkspaceGridState.AdjacencyKind.SameRow);
+                if (!HasOther(columnStart, columnEnd, columns))
                 {
-                    if (rect.Top.IsCloseTo(currentRect.Bottom) || rect.Bottom.IsCloseTo(currentRect.Top))
-                    {
-                        Add(adjacentPanels, current, other, isHorizontal: true);
-                    }
-                }
-
-                // same row
-                // | a | b |  | b | a |  | a | b |
-                // | x | x |  | x | x |  | a | c |
-                if (rect.Top >= currentRect.Top && rect.Bottom <= currentRect.Bottom)
-                {
-                    if (rect.Left.IsCloseTo(currentRect.Right) || rect.Right.IsCloseTo(currentRect.Left))
-                    {
-                        Add(adjacentPanels, current, other, isHorizontal: false);
-                    }
+                    res.Add(new ResizerInfo2(columnStart, columnEnd, IsHorizontal: false, [curId, nextId]));
                 }
             }
 
-            // Step 1.2: combine the resizers for the current panel
-            foreach (var info in adjacentPanels)
+            if (rowCount == 1) break;
+
+            var (minX, maxX) = (1.0, 0.0);
+            foreach (var column in columns)
             {
-                var pos = info.LogicalPosition;
+                var rect = column.Rect;
 
-                var acc = new List<PanelId>();
-                acc.AddRange(info.ConnectedPanels);
+                // panels that go across rows are skipped
+                if (column.IsCrossRow(info)) continue;
 
-                foreach (var other in adjacentPanels)
-                {
-                    if (other.IsHorizontal != info.IsHorizontal) continue;
+                minX = Math.Min(rect.Left, minX);
+                maxX = Math.Max(rect.Right, maxX);
 
-                    var otherPos = other.LogicalPosition;
-                    if (pos == otherPos) continue;
-                    if (!pos.X.IsCloseTo(otherPos.X) && !pos.Y.IsCloseTo(otherPos.Y)) continue;
-
-                    acc.AddRange(other.ConnectedPanels.Where(id => !acc.Contains(id)));
-                }
-
-                tmp.Add(info with { ConnectedPanels = acc.ToArray() });
+                columnsToAdd[numColumnsToAdd++] = column;
             }
 
-            adjacentPanels.Clear();
+            if (minX > maxX)
+            {
+                Debugger.Break();
+                break;
+            }
+
+            ValueTuple<Point, Point> tuple;
+            var isDoubleSided = false;
+
+            if (info.Y.IsCloseTo(0))
+            {
+                tuple = (new Point(minX, info.Bottom()), new Point(maxX, info.Bottom()));
+            } else if (info.Bottom().IsCloseTo(1))
+            {
+                tuple = (new Point(minX, info.Y), new Point(maxX, info.Y));
+            }
+            else
+            {
+                tuple = (new Point(minX, info.Y), new Point(maxX, info.Y));
+                isDoubleSided = true;
+            }
+
+            var (start, end) = tuple;
+
+            var slice = columnsToAdd[..numColumnsToAdd];
+            var hasOther = HasOther(start, end, slice);
+
+            if (isDoubleSided || !hasOther)
+            {
+                var l = new List<PanelId>(capacity: slice.Length);
+                foreach (var item in slice)
+                {
+                    l.Add(item.Id);
+                }
+
+                if (!isDoubleSided)
+                {
+                    res.Add(new ResizerInfo2(start, end, IsHorizontal: true, l));
+                }
+                else
+                {
+                    var (bottomStart, bottomEnd) = (new Point(start.X, info.Bottom()), new Point(end.X, info.Bottom()));
+                    res.Add(new ResizerInfo2(bottomStart, bottomEnd, IsHorizontal: true, l));
+                }
+            }
         }
-
-        // Step 2: combine all resizers of all panels
-        var res = tmp
-            .DistinctBy(info => info.LogicalPosition)
-            .GroupBy(info => isWorkspaceHorizontal ? info.LogicalPosition.X : info.LogicalPosition.Y)
-            .SelectMany(group =>
-            {
-                var connectedPanels = group.SelectMany(info => info.ConnectedPanels).Distinct().ToArray();
-                return group.Select(info => info with { ConnectedPanels = connectedPanels });
-            }).ToArray();
 
         return res;
 
-        static void Add(ICollection<ResizerInfo> list, KeyValuePair<PanelId, Rect> current, KeyValuePair<PanelId, Rect> other, bool isHorizontal)
+        bool HasOther(Point start, Point end, ReadOnlySpan<PanelGridState> columns)
         {
-            var (currentId, currentRect) = current;
-            var (otherId, rect) = other;
+            var hasOther = false;
+            foreach (var other in res)
+            {
+                if (!other.Start.Equals(start) || !other.End.Equals(end)) continue;
+                hasOther = true;
 
-            var pos = MathUtils.GetMidPoint(currentRect, rect, isHorizontal);
-            list.Add(new ResizerInfo(IsHorizontal: isHorizontal, pos, new[] { currentId, otherId }));
+                foreach (var panel in columns)
+                {
+                    if (!other.ConnectedPanels.Contains(panel.Id))
+                        other.ConnectedPanels.Add(panel.Id);
+                }
+            }
+
+            return hasOther;
         }
     }
 
-    internal record struct ResizerInfo(bool IsHorizontal, Point LogicalPosition, PanelId[] ConnectedPanels);
+    private static List<ResizerInfo2> GetResizersForHorizontal(WorkspaceGridState currentState)
+    {
+        var res = new List<ResizerInfo2>();
+
+        var (columnCount, maxRowCount) = currentState.CountColumns();
+
+        Span<WorkspaceGridState.ColumnInfo> seenColumns = stackalloc WorkspaceGridState.ColumnInfo[columnCount];
+        using var columnEnumerator = new WorkspaceGridState.ColumnEnumerator(currentState, seenColumns);
+
+        Span<PanelGridState> rowBuffer = stackalloc PanelGridState[maxRowCount];
+        Span<PanelGridState> rowsToAdd = stackalloc PanelGridState[maxRowCount];
+        while (columnEnumerator.MoveNext(rowBuffer))
+        {
+            var numRowsToAdd = 0;
+
+            var column = columnEnumerator.Current;
+            var info = column.Info;
+            var rows = column.Rows;
+
+            for (var i = 0; i < rows.Length - 1; i++)
+            {
+                var (curId, curRect) = rows[i];
+                var (nextId, nextRect) = rows[i + 1];
+
+                // if (!curRect.X.IsCloseTo(nextRect.X) || !curRect.Right.IsCloseTo(nextRect.Right)) continue;
+
+                var (rowStart, rowEnd) = MathUtils.GetResizerPoints(curRect, nextRect, WorkspaceGridState.AdjacencyKind.SameColumn);
+                if (!HasOther(rowStart, rowEnd, rows))
+                {
+                    res.Add(new ResizerInfo2(rowStart, rowEnd, IsHorizontal: true, [curId, nextId]));
+                }
+            }
+
+            if (columnCount == 1) break;
+
+            var (minY, maxY) = (1.0, 0.0);
+            foreach (var row in rows)
+            {
+                var rect = row.Rect;
+
+                // panels that go across columns are skipped
+                if (row.IsCrossColumn(info)) continue;
+
+                minY = Math.Min(rect.Top, minY);
+                maxY = Math.Max(rect.Bottom, maxY);
+
+                rowsToAdd[numRowsToAdd++] = row;
+            }
+
+            if (minY > maxY)
+            {
+                Debugger.Break();
+                break;
+            }
+
+            ValueTuple<Point, Point> tuple;
+            var isDoubleSided = false;
+
+            if (info.X.IsCloseTo(0))
+            {
+                tuple = (new Point(info.Right(), minY), new Point(info.Right(), maxY));
+            } else if (info.Right().IsCloseTo(1))
+            {
+                tuple = (new Point(info.X, minY), new Point(info.X, maxY));
+            }
+            else
+            {
+                tuple = (new Point(info.X, minY), new Point(info.X, maxY));
+                isDoubleSided = true;
+            }
+
+            var (start, end) = tuple;
+
+            var slice = rowsToAdd[..numRowsToAdd];
+            var hasOther = HasOther(start, end, slice);
+
+            if (isDoubleSided || !hasOther)
+            {
+                var l = new List<PanelId>(capacity: slice.Length);
+                foreach (var item in slice)
+                {
+                    l.Add(item.Id);
+                }
+
+                if (!isDoubleSided)
+                {
+                    res.Add(new ResizerInfo2(start, end, IsHorizontal: false, l));
+                }
+                else
+                {
+                    var (rightStart, rightEnd) = (new Point(info.Right(), start.Y), new Point(info.Right(), end.Y));
+                    res.Add(new ResizerInfo2(rightStart, rightEnd, IsHorizontal: false, l));
+                }
+            }
+        }
+
+        return res;
+
+        bool HasOther(Point start, Point end, ReadOnlySpan<PanelGridState> rows)
+        {
+            var hasOther = false;
+            foreach (var other in res)
+            {
+                if (!other.Start.Equals(start) || !other.End.Equals(end)) continue;
+                hasOther = true;
+
+                foreach (var panel in rows)
+                {
+                    if (!other.ConnectedPanels.Contains(panel.Id))
+                        other.ConnectedPanels.Add(panel.Id);
+                }
+            }
+
+            return hasOther;
+        }
+    }
+
+    public record struct ResizerInfo2(Point Start, Point End, bool IsHorizontal, List<PanelId> ConnectedPanels);
 }

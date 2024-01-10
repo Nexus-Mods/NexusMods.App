@@ -45,10 +45,10 @@ public class MathUtilsTests
 
     public static IEnumerable<object[]> TestData_CalculateActualBounds() => new[]
     {
-        new object[]{ new Size(100, 100), new Rect(0.0, 0.0, 1.0, 1.0), new Rect(0.0, 0.0, 100, 100) },
-        new object[]{ new Size(100, 100), new Rect(0.0, 0.0, 0.5, 1.0), new Rect(0.0, 0.0, 50, 100) },
-        new object[]{ new Size(100, 100), new Rect(0.0, 0.0, 1.0, 0.5), new Rect(0.0, 0.0, 100, 50) },
-        new object[]{ new Size(100, 100), new Rect(0.0, 0.0, 0.5, 0.5), new Rect(0.0, 0.0, 50, 50) },
+        [new Size(100, 100), new Rect(0.0, 0.0, 1.0, 1.0), new Rect(0.0, 0.0, 100, 100)],
+        [new Size(100, 100), new Rect(0.0, 0.0, 0.5, 1.0), new Rect(0.0, 0.0, 50, 100)],
+        [new Size(100, 100), new Rect(0.0, 0.0, 1.0, 0.5), new Rect(0.0, 0.0, 100, 50)],
+        [new Size(100, 100), new Rect(0.0, 0.0, 0.5, 0.5), new Rect(0.0, 0.0, 50, 50)],
 
         new object[]{ new Size(100, 100), new Rect(0.5, 0.5, 0.5, 0.5), new Rect(50, 50, 50, 50) },
     };
@@ -64,7 +64,7 @@ public class MathUtilsTests
 
     public static IEnumerable<object[]> TestData_Split() => new[]
     {
-        new object[] { new Rect(0.0, 0.0, 100, 100), true, new Rect(0.0, 0.0, 50, 100), new Rect(50, 0.0, 50, 100) },
+        [new Rect(0.0, 0.0, 100, 100), true, new Rect(0.0, 0.0, 50, 100), new Rect(50, 0.0, 50, 100)],
         new object[] { new Rect(0.0, 0.0, 100, 100), false, new Rect(0.0, 0.0, 100, 50), new Rect(0.0, 50, 100, 50) },
     };
 
@@ -78,19 +78,43 @@ public class MathUtilsTests
 
     public static IEnumerable<object[]> TestData_GetMidPoint() => new[]
     {
-        new object[] { new Rect(0, 0, 0.5, 1.0), new Rect(0.5, 0, 0.5, 1.0), false, new Point(0.5, 0.5) },
-        new object[] { new Rect(0, 0, 1.0, 0.5), new Rect(0, 0.5, 1.0, 0.5), true, new Point(0.5, 0.5) },
+        [new Rect(0, 0, 0.5, 1.0), new Rect(0.5, 0, 0.5, 1.0), false, new Point(0.5, 0.5)],
+        [new Rect(0, 0, 1.0, 0.5), new Rect(0, 0.5, 1.0, 0.5), true, new Point(0.5, 0.5)],
 
-        new object[] { new Rect(0, 0, 0.5, 1.0), new Rect(0.5, 0, 0.5, 0.5), false, new Point(0.5, 0.25) },
-        new object[] { new Rect(0, 0, 0.5, 1.0), new Rect(0.5, 0.5, 0.5, 0.5), false, new Point(0.5, 0.75) },
+        [new Rect(0, 0, 0.5, 1.0), new Rect(0.5, 0, 0.5, 0.5), false, new Point(0.5, 0.25)],
+        [new Rect(0, 0, 0.5, 1.0), new Rect(0.5, 0.5, 0.5, 0.5), false, new Point(0.5, 0.75)],
 
-        new object[] { new Rect(0, 0, 1.0, 0.5), new Rect(0, 0.5, 0.5, 0.5), true, new Point(0.25, 0.5) },
-        new object[] { new Rect(0, 0, 1.0, 0.5), new Rect(0.5, 0.5, 0.5, 0.5), true, new Point(0.75, 0.5) },
+        [new Rect(0, 0, 1.0, 0.5), new Rect(0, 0.5, 0.5, 0.5), true, new Point(0.25, 0.5)],
+        [new Rect(0, 0, 1.0, 0.5), new Rect(0.5, 0.5, 0.5, 0.5), true, new Point(0.75, 0.5)],
 
-        new object[] { new Rect(0, 0, 0.35, 0.5), new Rect(0.35, 0, 0.65, 1), false, new Point(0.35, 0.25) },
-        new object[] { new Rect(0.35, 0, 0.65, 1), new Rect(0, 0, 0.35, 0.5) , false, new Point(0.35, 0.25) },
+        [new Rect(0, 0, 0.35, 0.5), new Rect(0.35, 0, 0.65, 1), false, new Point(0.35, 0.25)],
+        [new Rect(0.35, 0, 0.65, 1), new Rect(0, 0, 0.35, 0.5) , false, new Point(0.35, 0.25)],
 
-        new object[] { new Rect(0, 0, 0.8, 1.0), new Rect(0.8, 0, 0.2, 0.5), false, new Point(0.8, 0.25) },
+        [new Rect(0, 0, 0.8, 1.0), new Rect(0.8, 0, 0.2, 0.5), false, new Point(0.8, 0.25)],
         new object[] { new Rect(0, 0, 0.8, 1.0), new Rect(0.8, 0.5, 0.2, 0.5), false, new Point(0.8, 0.75) }
+    };
+
+    [Theory]
+    [MemberData(nameof(TestData_GetResizerPoints))]
+    public void Test_GetResizerPoints(Rect a, Rect b, WorkspaceGridState.AdjacencyKind adjacencyKind, Point expectedStart, Point expectedEnd)
+    {
+        var (actualStart, actualEnd) = MathUtils.GetResizerPoints(a, b, adjacencyKind);
+        actualStart.Should().Be(expectedStart);
+        actualEnd.Should().Be(expectedEnd);
+    }
+
+    public static TheoryData<Rect, Rect, WorkspaceGridState.AdjacencyKind, Point, Point> TestData_GetResizerPoints() => new()
+    {
+        { new Rect(0, 0, 0.5, 1), new Rect(0.5, 0, 0.5, 1), WorkspaceGridState.AdjacencyKind.SameRow, new Point(0.5, 0), new Point(0.5, 1) },
+        { new Rect(0.5, 0, 0.5, 1), new Rect(0, 0, 0.5, 1), WorkspaceGridState.AdjacencyKind.SameRow, new Point(0.5, 0), new Point(0.5, 1) },
+
+        { new Rect(0, 0, 0.5, 1), new Rect(0.5, 0, 0.5, 0.5), WorkspaceGridState.AdjacencyKind.SameRow, new Point(0.5, 0), new Point(0.5 ,1) },
+        { new Rect(0, 0, 0.5, 1), new Rect(0.5, 0.5, 0.5, 0.5), WorkspaceGridState.AdjacencyKind.SameRow, new Point(0.5, 0), new Point(0.5 ,1) },
+
+        { new Rect(0, 0, 1, 0.5), new Rect(0, 0.5, 1, 0.5), WorkspaceGridState.AdjacencyKind.SameColumn, new Point(0, 0.5), new Point(1, 0.5) },
+        { new Rect(0, 0.5, 1, 0.5), new Rect(0, 0, 1, 0.5), WorkspaceGridState.AdjacencyKind.SameColumn, new Point(0, 0.5), new Point(1, 0.5) },
+
+        { new Rect(0, 0, 1, 0.5), new Rect(0, 0.5, 0.5, 0.5), WorkspaceGridState.AdjacencyKind.SameColumn, new Point(0, 0.5), new Point(1, 0.5) },
+        { new Rect(0, 0, 1, 0.5), new Rect(0.5, 0.5, 0.5, 0.5), WorkspaceGridState.AdjacencyKind.SameColumn, new Point(0, 0.5), new Point(1, 0.5) },
     };
 }

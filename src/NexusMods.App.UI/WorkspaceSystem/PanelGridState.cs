@@ -2,7 +2,22 @@ using Avalonia;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
-public record struct PanelGridState(PanelId Id, Rect Rect);
+public record struct PanelGridState(PanelId Id, Rect Rect)
+{
+    public bool IsCrossColumn(WorkspaceGridState.ColumnInfo info)
+    {
+        if (Rect.X.IsCloseTo(info.X)) return !Rect.Right.IsCloseTo(info.Right());
+        if (Rect.Right.IsCloseTo(info.Right())) return !Rect.X.IsCloseTo(info.X);
+        return false;
+    }
+
+    public bool IsCrossRow(WorkspaceGridState.RowInfo info)
+    {
+        if (Rect.Y.IsCloseTo(info.Y)) return !Rect.Bottom.IsCloseTo(info.Bottom());
+        if (Rect.Bottom.IsCloseTo(info.Bottom())) return !Rect.Y.IsCloseTo(info.Y);
+        return false;
+    }
+}
 
 public class PanelGridStateComparer : IComparer<PanelGridState>
 {
