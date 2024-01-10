@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Globalization;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -12,9 +13,22 @@ using Splat.Microsoft.Extensions.Logging;
 
 namespace NexusMods.App;
 
-public class App(IServiceProvider provider, ILauncherSettings launcherSettings)
-    : Application
+public class App : Application
 {
+    private readonly IServiceProvider _provider;
+    private readonly ILauncherSettings _launcherSettings;
+
+    public App(IServiceProvider provider, ILauncherSettings launcherSettings)
+    {
+        _provider = provider;
+        _launcherSettings = launcherSettings;
+    }
+
+    public App()
+    {
+        throw new UnreachableException("We don't use the Runtime Loader, so this should never be called.");
+    }
+
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
@@ -22,19 +36,19 @@ public class App(IServiceProvider provider, ILauncherSettings launcherSettings)
 
     public override void OnFrameworkInitializationCompleted()
     {
-        if (!string.IsNullOrEmpty(launcherSettings.LocaleOverride))
-            Thread.CurrentThread.CurrentUICulture = new CultureInfo(launcherSettings.LocaleOverride);
+        if (!string.IsNullOrEmpty(_launcherSettings.LocaleOverride))
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo(_launcherSettings.LocaleOverride);
 
         Locator.CurrentMutable.UnregisterCurrent(typeof(IViewLocator));
-        Locator.CurrentMutable.Register(() => provider.GetRequiredService<InjectedViewLocator>(), typeof(IViewLocator));
+        Locator.CurrentMutable.Register(() => _provider.GetRequiredService<InjectedViewLocator>(), typeof(IViewLocator));
 
-        var loggerFactory = provider.GetRequiredService<ILoggerFactory>();
+        var loggerFactory = _provider.GetRequiredService<ILoggerFactory>();
         Locator.CurrentMutable.UseMicrosoftExtensionsLoggingWithWrappingFullLogger(loggerFactory);
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            var reactiveWindow = provider.GetRequiredService<MainWindow>();
-            reactiveWindow.ViewModel = provider.GetRequiredService<MainWindowViewModel>();
+            var reactiveWindow = _provider.GetRequiredService<MainWindow>();
+            reactiveWindow.ViewModel = _provider.GetRequiredService<MainWindowViewModel>();
             desktop.MainWindow = reactiveWindow;
         }
 

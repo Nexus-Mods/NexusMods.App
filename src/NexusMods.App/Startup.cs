@@ -10,11 +10,15 @@ using Splat;
 
 namespace NexusMods.App;
 
+
+
 // ReSharper disable once ClassNeverInstantiated.Global
 public class Startup
 {
+    #pragma warning disable CS0028 // Disables warning about not being a valid entry point
     public static void Main(IServiceProvider provider, string[] args) => BuildAvaloniaApp(provider)
         .StartWithClassicDesktopLifetime(args);
+    #pragma warning restore CS0028 //
 
     public static AppBuilder BuildAvaloniaApp(IServiceProvider serviceProvider)
     {

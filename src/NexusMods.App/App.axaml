@@ -1,11 +1,11 @@
 <Application
     x:Class="NexusMods.App.App"
     xmlns="https://github.com/avaloniaui"
-    xmlns:local="using:NexusMods.App.UI"
+    xmlns:ui="using:NexusMods.App.UI"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     RequestedThemeVariant="Dark">
     <Application.DataTemplates>
-        <local:ViewLocator />
+        <ui:ViewLocator />
     </Application.DataTemplates>
 
     <Application.Styles>
