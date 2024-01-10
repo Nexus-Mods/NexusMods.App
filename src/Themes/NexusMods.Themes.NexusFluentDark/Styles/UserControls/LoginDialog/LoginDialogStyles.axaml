@@ -10,12 +10,11 @@
     <!-- Add Styles Here -->
     <Style Selector="ui|NexusLoginOverlayView">
         <Style Selector="^ TextBlock#TitleTextBlock">
-            <Setter Property="Theme" Value="{StaticResource ButtonMontserratSemiTheme}" />
+            <Setter Property="Theme" Value="{StaticResource TextBlockButtonStandardTheme}" />
         </Style>
 
         <Style Selector="^ TextBlock#CaptionTextBlock">
             <Setter Property="Theme" Value="{StaticResource TitleSMSemiTheme}" />
-            <Setter Property="LetterSpacing" Value="0.6" />
         </Style>
 
         <Style Selector="^ SelectableTextBlock#UrlTextBlock">

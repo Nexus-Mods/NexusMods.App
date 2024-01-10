@@ -158,7 +158,6 @@
 
         <Style Selector="^ TextBlock">
             <Setter Property="Theme" Value="{StaticResource HeadingXSSemiTheme}" />
-            <Setter Property="LineHeight" Value="25"/>
             <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralSubduedBrush}"/>
         </Style>
     </Style>

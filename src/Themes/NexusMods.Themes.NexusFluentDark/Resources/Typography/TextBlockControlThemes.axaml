@@ -153,6 +153,7 @@
     </ControlTheme>
 
     <!-- Legacy Text Themes -->
+    <!-- Don't use these themes directly! Use the aliases underneath instead. -->
 
     <ControlTheme x:Key="ButtonMontserratSemiTheme" TargetType="TextBlock">
         <Setter Property="FontFamily" Value="{StaticResource FontHeadlinesSemiBold}" />

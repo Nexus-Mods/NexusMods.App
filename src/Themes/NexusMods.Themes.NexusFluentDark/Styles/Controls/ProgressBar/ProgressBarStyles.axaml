@@ -45,7 +45,6 @@
 
         <Style Selector="^ TextBlock">
             <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
-            <Setter Property="LineHeight" Value="16.5" />
             <Setter Property="HorizontalAlignment" Value="Left" />
             <Setter Property="VerticalAlignment" Value="Center" />
 
@@ -71,7 +70,7 @@
         <Setter Property="MinWidth" Value="100" />
 
         <Style Selector="^ TextBlock">
-            <Setter Property="Theme" Value="{StaticResource ButtonMontserratSemiTheme}" />
+            <Setter Property="Theme" Value="{StaticResource TextBlockButtonStandardTheme}" />
         </Style>
     </Style>
 

@@ -80,7 +80,6 @@
 
         <Style Selector="^.LeftMenuItem TextBlock">
             <Setter Property="Theme" Value="{StaticResource BodyMDBoldTheme}" />
-            <Setter Property="LineHeight" Value="16.41" />
             <Setter Property="Margin" Value="0" />
         </Style>
 
