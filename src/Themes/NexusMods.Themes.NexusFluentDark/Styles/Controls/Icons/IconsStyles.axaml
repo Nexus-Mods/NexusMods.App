@@ -60,10 +60,10 @@
             <icons:Icon Classes="Home" />
             <icons:Icon Classes="ToggleSwitch" />
             <icons:Icon Classes="ToggleSwitchOff" />
-            <icons:Icon Classes="NewspaperOutline" />
-            <icons:Icon Classes="BookmarkMultiOutline" />
-            <icons:Icon Classes="GamepadOutline" />
-            <icons:Icon Classes="Hourglass" />
+            <icons:Icon Classes="News" />
+            <icons:Icon Classes="Bookmark" />
+            <icons:Icon Classes="Game" />
+            <icons:Icon Classes="HourglassEmpty" />
 
             <Svg Classes="AddCircle" />
 
@@ -268,19 +268,19 @@
         <Setter Property="Value" Value="mdi-toggle-switch-off-outline" />
     </Style>
 
-    <Style Selector="icons|Icon.NewspaperOutline">
+    <Style Selector="icons|Icon.News">
         <Setter Property="Value" Value="mdi-newspaper-variant-outline" />
     </Style>
 
-    <Style Selector="icons|Icon.BookmarkMultiOutline">
+    <Style Selector="icons|Icon.Bookmark">
         <Setter Property="Value" Value="mdi-bookmark-multiple-outline" />
     </Style>
 
-    <Style Selector="icons|Icon.GamepadOutline">
+    <Style Selector="icons|Icon.Game">
         <Setter Property="Value" Value="mdi-gamepad-square-outline" />
     </Style>
 
-    <Style Selector="icons|Icon.Hourglass">
+    <Style Selector="icons|Icon.HourglassEmpty">
         <Setter Property="Value" Value="mdi-timer-sand-empty" />
     </Style>
 
