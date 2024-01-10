@@ -5,6 +5,6 @@
         <ResourceInclude Source="/Resources/Palette/Colors/ElementColors.axaml"/>
         <ResourceInclude Source="/Resources/Palette/Opacity/ElementOpacities.axaml"/>
         <ResourceInclude Source="/Resources/ThemeBaseResources.axaml"/>
-        <ResourceInclude Source="/Resources/Controls/TextBlockControlThemes.axaml"/>
+        <ResourceInclude Source="/Resources/Typography/TextBlockControlThemes.axaml"/>
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

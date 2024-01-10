@@ -3,6 +3,7 @@
     xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+    <!-- Preview -->
     <Design.PreviewWith>
         <WrapPanel Width="500">
             <WrapPanel.Styles>
@@ -63,6 +64,10 @@
 
         </WrapPanel>
     </Design.PreviewWith>
+
+
+    <!-- Style Definitions -->
+
 
     <!-- Foreground color classes -->
     <Style Selector="icons|Icon.ForegroundStrong">

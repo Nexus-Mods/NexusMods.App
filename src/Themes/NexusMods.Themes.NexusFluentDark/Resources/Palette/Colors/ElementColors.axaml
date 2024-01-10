@@ -17,16 +17,11 @@
     <StaticResource x:Key="ElementBackgroundNeutralInverted" ResourceKey="BrandNeutral50" />
 
     <!-- SolidColorBrushes -->
-    <SolidColorBrush x:Key="ElementBackgroundNeutralBaseBrush"
-                     Color="{StaticResource ElementBackgroundNeutralBase}" />
-    <SolidColorBrush x:Key="ElementBackgroundNeutralLowBrush"
-                     Color="{StaticResource ElementBackgroundNeutralLow}" />
-    <SolidColorBrush x:Key="ElementBackgroundNeutralMidBrush"
-                     Color="{StaticResource ElementBackgroundNeutralMid}" />
-    <SolidColorBrush x:Key="ElementBackgroundNeutralTopBrush"
-                     Color="{StaticResource ElementBackgroundNeutralTop}" />
-    <SolidColorBrush x:Key="ElementBackgroundNeutralInvertedBrush"
-                     Color="{StaticResource ElementBackgroundNeutralInverted}" />
+    <SolidColorBrush x:Key="ElementBackgroundNeutralBaseBrush" Color="{StaticResource ElementBackgroundNeutralBase}" />
+    <SolidColorBrush x:Key="ElementBackgroundNeutralLowBrush" Color="{StaticResource ElementBackgroundNeutralLow}" />
+    <SolidColorBrush x:Key="ElementBackgroundNeutralMidBrush" Color="{StaticResource ElementBackgroundNeutralMid}" />
+    <SolidColorBrush x:Key="ElementBackgroundNeutralTopBrush" Color="{StaticResource ElementBackgroundNeutralTop}" />
+    <SolidColorBrush x:Key="ElementBackgroundNeutralInvertedBrush" Color="{StaticResource ElementBackgroundNeutralInverted}" />
 
 
     <!-- NeutralTranslucent -->
@@ -35,13 +30,13 @@
     <StaticResource x:Key="ElementBackgroundNeutralTranslucentLow" ResourceKey="BrandTranslucentLight100" />
 
     <!-- SolidColorBrushes -->
-    <SolidColorBrush x:Key="ElementBackgroundNeutralTranslucentLowBrush"
-                     Color="{StaticResource ElementBackgroundNeutralTranslucentLow}" />
+    <SolidColorBrush x:Key="ElementBackgroundNeutralTranslucentLowBrush" Color="{StaticResource ElementBackgroundNeutralTranslucentLow}" />
 
     <!-- TransparentBrush -->
     <!-- NOTE: Avalonia treats Transparent color as click through, so it can't be used correctly as a background color. -->
     <!-- Use this brush instead of Transparent to make the background transparent but still clickable. -->
-    <SolidColorBrush x:Key="ElementBackgroundTransparentBrush" Color="{StaticResource BrandTranslucentDark50}"
+    <SolidColorBrush x:Key="ElementBackgroundTransparentBrush"
+                     Color="{StaticResource BrandTranslucentDark50}"
                      Opacity="{StaticResource OpacityTransparent}" />
 
     <!-- Foreground -->
@@ -56,16 +51,11 @@
     <StaticResource x:Key="ElementForegroundNeutralInverted" ResourceKey="BrandNeutral950" />
 
     <!-- SolidColorBrushes -->
-    <SolidColorBrush x:Key="ElementForegroundNeutralWeakBrush"
-                     Color="{StaticResource ElementForegroundNeutralWeak}" />
-    <SolidColorBrush x:Key="ElementForegroundNeutralSubduedBrush"
-                     Color="{StaticResource ElementForegroundNeutralSubdued}" />
-    <SolidColorBrush x:Key="ElementForegroundNeutralModerateBrush"
-                     Color="{StaticResource ElementForegroundNeutralModerate}" />
-    <SolidColorBrush x:Key="ElementForegroundNeutralStrongBrush"
-                     Color="{StaticResource ElementForegroundNeutralStrong}" />
-    <SolidColorBrush x:Key="ElementForegroundNeutralInvertedBrush"
-                     Color="{StaticResource ElementForegroundNeutralInverted}" />
+    <SolidColorBrush x:Key="ElementForegroundNeutralWeakBrush" Color="{StaticResource ElementForegroundNeutralWeak}" />
+    <SolidColorBrush x:Key="ElementForegroundNeutralSubduedBrush" Color="{StaticResource ElementForegroundNeutralSubdued}" />
+    <SolidColorBrush x:Key="ElementForegroundNeutralModerateBrush" Color="{StaticResource ElementForegroundNeutralModerate}" />
+    <SolidColorBrush x:Key="ElementForegroundNeutralStrongBrush" Color="{StaticResource ElementForegroundNeutralStrong}" />
+    <SolidColorBrush x:Key="ElementForegroundNeutralInvertedBrush" Color="{StaticResource ElementForegroundNeutralInverted}" />
 
 
     <!-- Danger -->
@@ -77,14 +67,10 @@
     <StaticResource x:Key="ElementForegroundDangerStrong" ResourceKey="BrandDanger400" />
 
     <!-- SolidColorBrushes -->
-    <SolidColorBrush x:Key="ElementForegroundDangerWeakBrush"
-                     Color="{StaticResource ElementForegroundDangerWeak}" />
-    <SolidColorBrush x:Key="ElementForegroundDangerSubduedBrush"
-                     Color="{StaticResource ElementForegroundDangerSubdued}" />
-    <SolidColorBrush x:Key="ElementForegroundDangerModerateBrush"
-                     Color="{StaticResource ElementForegroundDangerModerate}" />
-    <SolidColorBrush x:Key="ElementForegroundDangerStrongBrush"
-                     Color="{StaticResource ElementForegroundDangerStrong}" />
+    <SolidColorBrush x:Key="ElementForegroundDangerWeakBrush" Color="{StaticResource ElementForegroundDangerWeak}" />
+    <SolidColorBrush x:Key="ElementForegroundDangerSubduedBrush" Color="{StaticResource ElementForegroundDangerSubdued}" />
+    <SolidColorBrush x:Key="ElementForegroundDangerModerateBrush" Color="{StaticResource ElementForegroundDangerModerate}" />
+    <SolidColorBrush x:Key="ElementForegroundDangerStrongBrush" Color="{StaticResource ElementForegroundDangerStrong}" />
 
 
     <!-- Primary -->
@@ -96,12 +82,9 @@
     <StaticResource x:Key="ElementForegroundPrimaryStrong" ResourceKey="BrandLegacyPrimaryStrong" />
 
     <!-- SolidColorBrushes -->
-    <SolidColorBrush x:Key="ElementForegroundPrimaryWeakBrush"
-                     Color="{StaticResource ElementForegroundPrimaryWeak}" />
-    <SolidColorBrush x:Key="ElementForegroundPrimaryModerateBrush"
-                     Color="{StaticResource ElementForegroundPrimaryModerate}" />
-    <SolidColorBrush x:Key="ElementForegroundPrimaryStrongBrush"
-                     Color="{StaticResource ElementForegroundPrimaryStrong}" />
+    <SolidColorBrush x:Key="ElementForegroundPrimaryWeakBrush" Color="{StaticResource ElementForegroundPrimaryWeak}" />
+    <SolidColorBrush x:Key="ElementForegroundPrimaryModerateBrush" Color="{StaticResource ElementForegroundPrimaryModerate}" />
+    <SolidColorBrush x:Key="ElementForegroundPrimaryStrongBrush" Color="{StaticResource ElementForegroundPrimaryStrong}" />
 
 
     <!-- Warning -->
@@ -113,14 +96,10 @@
     <StaticResource x:Key="ElementForegroundWarningStrong" ResourceKey="BrandWarning200" />
 
     <!-- SolidColorBrushes -->
-    <SolidColorBrush x:Key="ElementForegroundWarningWeakBrush"
-                     Color="{StaticResource ElementForegroundWarningWeak}" />
-    <SolidColorBrush x:Key="ElementForegroundWarningSubduedBrush"
-                     Color="{StaticResource ElementForegroundWarningSubdued}" />
-    <SolidColorBrush x:Key="ElementForegroundWarningModerateBrush"
-                     Color="{StaticResource ElementForegroundWarningModerate}" />
-    <SolidColorBrush x:Key="ElementForegroundWarningStrongBrush"
-                     Color="{StaticResource ElementForegroundWarningStrong}" />
+    <SolidColorBrush x:Key="ElementForegroundWarningWeakBrush" Color="{StaticResource ElementForegroundWarningWeak}" />
+    <SolidColorBrush x:Key="ElementForegroundWarningSubduedBrush" Color="{StaticResource ElementForegroundWarningSubdued}" />
+    <SolidColorBrush x:Key="ElementForegroundWarningModerateBrush" Color="{StaticResource ElementForegroundWarningModerate}" />
+    <SolidColorBrush x:Key="ElementForegroundWarningStrongBrush" Color="{StaticResource ElementForegroundWarningStrong}" />
 
 
     <!-- Success -->
@@ -132,14 +111,10 @@
     <StaticResource x:Key="ElementForegroundSuccessStrong" ResourceKey="BrandSuccess300" />
 
     <!-- SolidColorBrushes -->
-    <SolidColorBrush x:Key="ElementForegroundSuccessWeakBrush"
-                     Color="{StaticResource ElementForegroundSuccessWeak}" />
-    <SolidColorBrush x:Key="ElementForegroundSuccessSubduedBrush"
-                     Color="{StaticResource ElementForegroundSuccessSubdued}" />
-    <SolidColorBrush x:Key="ElementForegroundSuccessModerateBrush"
-                     Color="{StaticResource ElementForegroundSuccessModerate}" />
-    <SolidColorBrush x:Key="ElementForegroundSuccessStrongBrush"
-                     Color="{StaticResource ElementForegroundSuccessStrong}" />
+    <SolidColorBrush x:Key="ElementForegroundSuccessWeakBrush" Color="{StaticResource ElementForegroundSuccessWeak}" />
+    <SolidColorBrush x:Key="ElementForegroundSuccessSubduedBrush" Color="{StaticResource ElementForegroundSuccessSubdued}" />
+    <SolidColorBrush x:Key="ElementForegroundSuccessModerateBrush" Color="{StaticResource ElementForegroundSuccessModerate}" />
+    <SolidColorBrush x:Key="ElementForegroundSuccessStrongBrush" Color="{StaticResource ElementForegroundSuccessStrong}" />
 
 
     <!-- Info -->
@@ -152,12 +127,9 @@
 
     <!-- SolidColorBrushes -->
     <SolidColorBrush x:Key="ElementForegroundInfoWeakBrush" Color="{StaticResource ElementForegroundInfoWeak}" />
-    <SolidColorBrush x:Key="ElementForegroundInfoSubduedBrush"
-                     Color="{StaticResource ElementForegroundInfoSubdued}" />
-    <SolidColorBrush x:Key="ElementForegroundInfoModerateBrush"
-                     Color="{StaticResource ElementForegroundInfoModerate}" />
-    <SolidColorBrush x:Key="ElementForegroundInfoStrongBrush"
-                     Color="{StaticResource ElementForegroundInfoStrong}" />
+    <SolidColorBrush x:Key="ElementForegroundInfoSubduedBrush" Color="{StaticResource ElementForegroundInfoSubdued}" />
+    <SolidColorBrush x:Key="ElementForegroundInfoModerateBrush" Color="{StaticResource ElementForegroundInfoModerate}" />
+    <SolidColorBrush x:Key="ElementForegroundInfoStrongBrush" Color="{StaticResource ElementForegroundInfoStrong}" />
 
 
     <!-- NeutralTranslucent -->
@@ -169,14 +141,10 @@
     <StaticResource x:Key="ElementForegroundNeutralTranslucentStrong" ResourceKey="BrandTranslucentLight950" />
 
     <!-- SolidColorBrushes -->
-    <SolidColorBrush x:Key="ElementForegroundNeutralTranslucentWeakBrush"
-                     Color="{StaticResource ElementForegroundNeutralTranslucentWeak}" />
-    <SolidColorBrush x:Key="ElementForegroundNeutralTranslucentSubduedBrush"
-                     Color="{StaticResource ElementForegroundNeutralTranslucentSubdued}" />
-    <SolidColorBrush x:Key="ElementForegroundNeutralTranslucentModerateBrush"
-                     Color="{StaticResource ElementForegroundNeutralTranslucentModerate}" />
-    <SolidColorBrush x:Key="ElementForegroundNeutralTranslucentStrongBrush"
-                     Color="{StaticResource ElementForegroundNeutralTranslucentStrong}" />
+    <SolidColorBrush x:Key="ElementForegroundNeutralTranslucentWeakBrush" Color="{StaticResource ElementForegroundNeutralTranslucentWeak}" />
+    <SolidColorBrush x:Key="ElementForegroundNeutralTranslucentSubduedBrush" Color="{StaticResource ElementForegroundNeutralTranslucentSubdued}" />
+    <SolidColorBrush x:Key="ElementForegroundNeutralTranslucentModerateBrush" Color="{StaticResource ElementForegroundNeutralTranslucentModerate}" />
+    <SolidColorBrush x:Key="ElementForegroundNeutralTranslucentStrongBrush" Color="{StaticResource ElementForegroundNeutralTranslucentStrong}" />
 
 
     <!-- Strokes -->
@@ -190,13 +158,9 @@
     <StaticResource x:Key="ElementStrokeTranslucentStrong" ResourceKey="BrandTranslucentLight800" />
 
     <!-- SolidColorBrushes -->
-    <SolidColorBrush x:Key="ElementStrokeTranslucentWeakBrush"
-                     Color="{StaticResource ElementStrokeTranslucentWeak}" />
-    <SolidColorBrush x:Key="ElementStrokeTranslucentSubduedBrush"
-                     Color="{StaticResource ElementStrokeTranslucentSubdued}" />
-    <SolidColorBrush x:Key="ElementStrokeTranslucentModerateBrush"
-                     Color="{StaticResource ElementStrokeTranslucentModerate}" />
-    <SolidColorBrush x:Key="ElementStrokeTranslucentStrongBrush"
-                     Color="{StaticResource ElementStrokeTranslucentStrong}" />
+    <SolidColorBrush x:Key="ElementStrokeTranslucentWeakBrush" Color="{StaticResource ElementStrokeTranslucentWeak}" />
+    <SolidColorBrush x:Key="ElementStrokeTranslucentSubduedBrush" Color="{StaticResource ElementStrokeTranslucentSubdued}" />
+    <SolidColorBrush x:Key="ElementStrokeTranslucentModerateBrush" Color="{StaticResource ElementStrokeTranslucentModerate}" />
+    <SolidColorBrush x:Key="ElementStrokeTranslucentStrongBrush" Color="{StaticResource ElementStrokeTranslucentStrong}" />
 
 </ResourceDictionary>

@@ -27,6 +27,8 @@
         </StackPanel>
     </Design.PreviewWith>
 
+    <!-- Style Definitions -->
+
     <Style Selector="Border.Toolbar">
         <Setter Property="HorizontalAlignment" Value="Stretch"/>
         <Setter Property="Height" Value="52"/>

@@ -10,7 +10,10 @@
         </Border>
     </Design.PreviewWith>
 
-    <!-- Add Styles Here -->
+
+    <!-- Style Definitions-->
+
+
     <Style Selector="ToggleSwitch">
         <Style.Resources>
             <SolidColorBrush Color="{StaticResource ElementForegroundPrimaryWeak}" x:Key="ToggleSwitchFillOn" />

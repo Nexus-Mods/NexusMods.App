@@ -7,6 +7,7 @@ namespace NexusMods.Themes.NexusFluentDark.Extensions;
 /// <summary>
 /// Xaml extension for BoxShadow.
 /// This allows setting BoxShadow with a resource for the Color instead of a hardcoded hex value.
+/// It is also possible to set multiple BoxShadows on a control, following the same l,t,r,b order.
 /// </summary>
 /// <example>
 ///     <Border BoxShadow="{extensions:BoxShadow BlurRadius=2, SpreadRadius=2, ShadowColor={DynamicResource AccentColor}, IsInset=False}"/>

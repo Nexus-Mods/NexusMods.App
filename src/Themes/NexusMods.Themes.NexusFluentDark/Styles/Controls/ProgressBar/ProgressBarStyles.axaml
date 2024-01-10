@@ -1,5 +1,7 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Preview -->
     <Design.PreviewWith>
         <StackPanel Width="200" Spacing="8" Margin="10">
             <TextBlock Text="DownloadBar" TextAlignment="Center" />
@@ -22,7 +24,8 @@
         </StackPanel>
     </Design.PreviewWith>
 
-    <!-- Add Styles Here -->
+
+    <!-- Style Definitions -->
 
     <!-- Download ProgressBar -->
     <Style Selector="ProgressBar.DownloadBar">
