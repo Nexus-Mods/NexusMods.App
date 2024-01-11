@@ -105,7 +105,7 @@ namespace NexusMods.Networking.HttpDownloader
 
             var fileWriter = FileWriterTask(state, writeQueue.Reader, primaryJob, cancel);
 
-            await DownloaderTask(primaryJob, state, writeQueue.Writer, cancel);
+            await DownloaderTask(state, writeQueue.Writer, cancel);
 
 
             try
@@ -191,18 +191,21 @@ namespace NexusMods.Networking.HttpDownloader
 
         #region Downloading
 
-        private async Task DownloaderTask(IActivitySource<Size> activitySource, DownloadState state, ChannelWriter<WriteOrder> writes, CancellationToken cancel)
+        private async Task DownloaderTask(DownloadState state, ChannelWriter<WriteOrder> writes, CancellationToken cancel)
         {
             var finishReward = 1024;
 
             // start one task per unfinished chunk. We never start additional tasks but a task may take on another chunks
             await Task.WhenAll(state.UnfinishedChunks.Select(async chunk =>
             {
+                using var chunkJob = _activityFactory.Create<Size>(IHttpDownloader.Group, $"Download Chunk @${chunk.Offset}");
+                chunkJob.SetMax(chunk.Size);
+
                 try
                 {
                     while (chunk.Read < chunk.Size)
                     {
-                        await DownloadChunk(activitySource, state, chunk, writes, MakeChunkCancelToken(chunk, cancel));
+                        await DownloadChunk(chunkJob, state, chunk, writes, MakeChunkCancelToken(chunk, cancel));
 
                         // boost source priority on completion, first one gets the biggest boost
                         chunk.Source!.Priority -= finishReward;
