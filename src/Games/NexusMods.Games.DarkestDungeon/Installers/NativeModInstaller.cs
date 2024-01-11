@@ -9,11 +9,14 @@ using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.ModInstallers;
+using NexusMods.DataModel.Trees;
 using NexusMods.Games.DarkestDungeon.Models;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 using NexusMods.Paths.FileTree;
+using NexusMods.Paths.Trees;
+using NexusMods.Paths.Trees.Traits;
 
 namespace NexusMods.Games.DarkestDungeon.Installers;
 
@@ -26,18 +29,17 @@ public class NativeModInstaller : IModInstaller
     private static readonly RelativePath ModsFolder = "mods".ToRelativePath();
     private static readonly RelativePath ProjectFile = "project.xml".ToRelativePath();
 
-    internal static async Task<IEnumerable<(FileTreeNode<RelativePath, ModSourceFileEntry> Node, ModProject Project)>>
-        GetModProjects(
-        FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles)
+    internal static async Task<IEnumerable<(KeyedBox<RelativePath, ModFileTree> Node, ModProject Project)>>
+        GetModProjects(KeyedBox<RelativePath, ModFileTree> archiveFiles)
     {
         return await archiveFiles
-            .GetAllDescendentFiles()
+            .GetFiles()
             .SelectAsync(async kv =>
             {
-                if (kv.Path.FileName != ProjectFile)
+                if (kv.Path().FileName != ProjectFile)
                     return default;
 
-                await using var stream = await kv.Value!.Open();
+                await using var stream = await kv.Item!.OpenAsync();
                 using var reader = XmlReader.Create(stream, new XmlReaderSettings
                 {
                     IgnoreComments = true,
@@ -57,7 +59,7 @@ public class NativeModInstaller : IModInstaller
         GameInstallation gameInstallation,
         LoadoutId loadoutId,
         ModId baseModId,
-        FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
+        KeyedBox<RelativePath, ModFileTree> archiveFiles,
         CancellationToken cancellationToken = default)
     {
         var modProjectFiles = (await GetModProjects(archiveFiles)).ToArray();
@@ -70,19 +72,15 @@ public class NativeModInstaller : IModInstaller
         var mods = modProjectFiles
             .Select(modProjectFile =>
             {
-                var parent = modProjectFile.Node.Parent;
+                var parent = modProjectFile.Node.Parent()!;
                 var modProject = modProjectFile.Project;
 
                 if (modProject is null) throw new UnreachableException();
 
-                var modFiles = parent.GetAllDescendentFiles()
-                    .Select(kv =>
-                    {
-                        var (path, file) = kv;
-                        return file!.ToStoredFile(
-                            new GamePath(LocationId.Game, ModsFolder.Join(path.DropFirst(parent.Depth - 1)))
-                        );
-                    });
+                var modFiles = parent.GetFiles()
+                    .Select(kv => kv.ToStoredFile(
+                        new GamePath(LocationId.Game, ModsFolder.Join(kv.Path().DropFirst(parent.Depth() - 1)))
+                    ));
 
                 return new ModInstallerResult
                 {

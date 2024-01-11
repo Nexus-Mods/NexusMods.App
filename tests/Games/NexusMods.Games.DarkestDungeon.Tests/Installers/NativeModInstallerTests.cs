@@ -48,7 +48,7 @@ public class NativeModInstallerTests : AModInstallerTest<DarkestDungeon, NativeM
         var downloadId = await DownloadMod(GameInstallation.Game.Domain, ModId.From(501), FileId.From(2705));
         var mod = await InstallModStoredFileIntoLoadout(loadout, downloadId);
         mod.Files.Should().NotBeEmpty();
-        mod.Files.Values.Cast<IToFile>().Should().AllSatisfy(kv => kv.To.Path.StartsWith("mods/Lamia Mod Base"));
+        mod.Files.Values.Cast<IToFile>().Should().AllSatisfy(kv => kv.To.Path.StartsWith("mods/Lamia Mod Base").Should().BeTrue());
 
     }
 

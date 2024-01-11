@@ -1,19 +1,21 @@
+using Cathei.LinqGen;
 using NexusMods.Common;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.ModInstallers;
+using NexusMods.DataModel.Trees;
 using NexusMods.Games.Generic.FileAnalyzers;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 using NexusMods.Paths.FileTree;
+using NexusMods.Paths.Trees;
+using NexusMods.Paths.Trees.Traits;
 using NexusMods.Paths.Utilities;
 
 namespace NexusMods.Games.Reshade;
 
 public class ReshadePresetInstaller : AModInstaller
 {
-
-
     private static readonly HashSet<RelativePath> IgnoreFiles = new[]
         {
             "readme.txt",
@@ -31,21 +33,22 @@ public class ReshadePresetInstaller : AModInstaller
         GameInstallation gameInstallation,
         LoadoutId loadoutId,
         ModId baseModId,
-        FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
+        KeyedBox<RelativePath, ModFileTree> archiveFiles,
         CancellationToken cancellationToken = default)
     {
 
-        var filtered = archiveFiles.GetAllDescendentFiles()
-            .Where(f => !IgnoreFiles.Contains(f.Path.FileName))
+        var filtered = archiveFiles.GetFiles()
+            .Gen()
+            .Where(f => !IgnoreFiles.Contains(f.Path().FileName))
             .ToList();
 
         // We only support ini files for now
-        if (filtered.Any(f => f.Path.Extension != Ini))
+        if (filtered.Any(f => f.FileName().Extension != Ini))
             return NoResults;
 
         // Get all the ini data
         var iniData = await filtered
-            .SelectAsync(async f => await IniAnalzyer.AnalyzeAsync(f.Value!.StreamFactory))
+            .SelectAsync(async f => await IniAnalzyer.AnalyzeAsync(f.Item!.StreamFactory!))
             .ToListAsync(cancellationToken: cancellationToken);
 
         // All the files must have ini data
@@ -56,17 +59,14 @@ public class ReshadePresetInstaller : AModInstaller
         if (!iniData.All(f => f.Sections.All(x => x.EndsWith(".fx", StringComparison.CurrentCultureIgnoreCase))))
             return NoResults;
 
-        var modFiles = archiveFiles.GetAllDescendentFiles()
-            .Where(kv => !IgnoreFiles.Contains(kv.Name.FileName))
-            .Select(kv =>
-            {
-                var (path, file) = kv;
-                return file!.ToStoredFile(
-                    new GamePath(LocationId.Game, path.FileName)
-                );
-            }).ToArray();
+        var modFiles = archiveFiles.GetFiles()
+            .Gen()
+            .Where(kv => !IgnoreFiles.Contains(kv.FileName()))
+            .Select(kv => kv.ToStoredFile(
+                new GamePath(LocationId.Game, kv.FileName())
+            )).ToArray();
 
-        if (!modFiles.Any())
+        if (modFiles.Length == 0)
             return NoResults;
 
         return new [] { new ModInstallerResult
@@ -75,6 +75,4 @@ public class ReshadePresetInstaller : AModInstaller
             Files = modFiles
         }};
     }
-
-
 }

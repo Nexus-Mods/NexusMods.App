@@ -6,12 +6,14 @@ using NexusMods.App.UI.Extensions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.ModInstallers;
+using NexusMods.DataModel.Trees;
 using NexusMods.Games.AdvancedInstaller.UI.EmptyPreview;
 using NexusMods.Games.AdvancedInstaller.UI.ModContent;
 using NexusMods.Games.AdvancedInstaller.UI.Preview;
 using NexusMods.Games.AdvancedInstaller.UI.SelectLocation;
 using NexusMods.Paths;
 using NexusMods.Paths.FileTree;
+using NexusMods.Paths.Trees;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -45,7 +47,7 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
     public BodyViewModel(
         DeploymentData data,
         string modName,
-        FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
+        KeyedBox<RelativePath, ModFileTree> archiveFiles,
         GameLocationsRegister locationRegister,
         Loadout? loadout,
         string gameName)
@@ -56,13 +58,9 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
         CanInstall = false;
 
         EmptyPreviewViewModel = new EmptyPreviewViewModel();
-
         ModContentViewModel = new ModContentViewModel(archiveFiles);
-
         SelectLocationViewModel = new SelectLocationViewModel(locationRegister, loadout, gameName);
-
         PreviewViewModel = new PreviewViewModel();
-
         CurrentRightContentViewModel = EmptyPreviewViewModel;
 
         // Setup functionality

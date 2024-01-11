@@ -1,16 +1,12 @@
-using DynamicData;
-using NexusMods.Common;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.ArchiveContents;
-using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.ModInstallers;
-using NexusMods.Hashing.xxHash64;
+using NexusMods.DataModel.Trees;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
-using NexusMods.Paths.FileTree;
+using NexusMods.Paths.Trees;
+using NexusMods.Paths.Trees.Traits;
 
 namespace NexusMods.Games.RedEngine.ModInstallers;
 
@@ -31,40 +27,42 @@ public class SimpleOverlayModInstaller : IModInstaller
         GameInstallation gameInstallation,
         LoadoutId loadoutId,
         ModId baseModId,
-        FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
+        KeyedBox<RelativePath, ModFileTree> archiveFiles,
         CancellationToken cancellationToken = default)
     {
-
+        // Note: Expected search space here is small, highest expected overhead is in FindSubPathRootsByKeyUpward.
+        // Find all paths which match a known base/root directory.
         var roots = RootPaths
-            .SelectMany(archiveFiles.FindSubPath)
-            .OrderBy(node => node.Depth)
+            .SelectMany(x => archiveFiles.FindSubPathRootsByKeyUpward(x.Parts.ToArray()))
+            .OrderBy(node => node!.Depth())
             .ToArray();
 
         if (roots.Length == 0)
             return Array.Empty<ModInstallerResult>();
 
         var highestRoot = roots.First();
-        var siblings= roots.Where(root => root.Depth == highestRoot.Depth)
-            .ToArray();
-
         var newFiles = new List<StoredFile>();
 
-        foreach (var node in siblings)
+        // Enumerate over all directories with the same depth as the most rooted item.
+        foreach (var node in roots.Where(root => root!.Depth() == highestRoot!.Depth()))
+        foreach (var file in node.Item.GetFiles<ModFileTree, RelativePath>())
         {
-            foreach (var (filePath, fileInfo) in node.GetAllDescendentFiles())
+            // TODO: This can probably be optimised away.
+            // For now this is the only use case like this that I (Sewer) have seen while reworking trees.
+            // If this becomes more commonplace, I'll add specialised helper.
+
+            var fullPath = file.Path(); // all the way up to root
+            var relativePath = fullPath.DropFirst(node.Depth() - 1); // get relative path
+            newFiles.Add(new StoredFile()
             {
-                var relativePath = filePath.DropFirst(node.Path.Depth);
-                newFiles.Add(new StoredFile()
-                {
-                    Id = ModFileId.NewId(),
-                    Hash = fileInfo!.Hash,
-                    Size = fileInfo.Size,
-                    To = new GamePath(LocationId.Game, relativePath)
-                });
-            }
+                Id = ModFileId.NewId(),
+                Hash = file!.Item.Hash,
+                Size = file!.Item.Size,
+                To = new GamePath(LocationId.Game, relativePath)
+            });
         }
 
-        if (!newFiles.Any())
+        if (newFiles.Count == 0)
             return Array.Empty<ModInstallerResult>();
 
         return new ModInstallerResult[]{ new()

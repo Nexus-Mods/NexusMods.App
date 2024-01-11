@@ -2,8 +2,10 @@ using JetBrains.Annotations;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Markers;
+using NexusMods.DataModel.Trees;
 using NexusMods.Paths;
 using NexusMods.Paths.FileTree;
+using NexusMods.Paths.Trees;
 
 namespace NexusMods.DataModel.ModInstallers;
 
@@ -27,6 +29,6 @@ public interface IModInstaller
         GameInstallation gameInstallation,
         LoadoutId loadoutId,
         ModId baseModId,
-        FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
+        KeyedBox<RelativePath, ModFileTree> archiveFiles,
         CancellationToken cancellationToken = default);
 }

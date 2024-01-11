@@ -4,10 +4,10 @@
 
     <ItemGroup>
         <PackageReference Include="NexusMods.Hashing.xxHash64" />
-        <PackageReference Include="NexusMods.Paths" />
         <PackageReference Include="CliWrap" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
         <PackageReference Include="OneOf" />
+        <PackageReference Include="NexusMods.Paths" />
         <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
 

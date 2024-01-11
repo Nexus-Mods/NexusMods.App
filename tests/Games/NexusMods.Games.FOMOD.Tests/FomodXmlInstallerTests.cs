@@ -10,6 +10,7 @@ using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.ModInstallers;
+using NexusMods.DataModel.Trees;
 using NexusMods.Games.BethesdaGameStudios;
 using NexusMods.Games.TestFramework;
 using NexusMods.Games.FOMOD.CoreDelegates;
@@ -23,35 +24,20 @@ namespace NexusMods.Games.FOMOD.Tests;
 
 public class FomodXmlInstallerTests : AModInstallerTest<SkyrimSpecialEdition, FomodXmlInstaller>
 {
-    private static Extension NoExtension = new("");
     public FomodXmlInstallerTests(IServiceProvider serviceProvider) : base(serviceProvider) { }
 
     private async Task<IEnumerable<ModInstallerResult>> GetResultsFromDirectory(string testCase)
     {
         var relativePath = $"TestCasesPacked/{testCase}.fomod";
-
         var fullPath = FileSystem.GetKnownPath(KnownPath.EntryDirectory)
             .Combine(relativePath);
         var downloadId = await FileOriginRegistry.RegisterDownload(fullPath, new FilePathMetadata {
             OriginalName = fullPath.FileName,
             Quality = Quality.Low});
+
         var analysis = await FileOriginRegistry.Get(downloadId);
         var installer = FomodXmlInstaller.Create(ServiceProvider, new GamePath(LocationId.Game, ""));
-        var tree =
-            FileTreeNode<RelativePath, ModSourceFileEntry>.CreateTree(analysis.Contents
-            .Select(f => KeyValuePair.Create(
-            f.Path,
-            new ModSourceFileEntry
-            {
-                Size = f.Size,
-                Hash = f.Hash,
-                StreamFactory = new ArchiveManagerStreamFactory(FileStore, f.Hash)
-                {
-                    Name = f.Path,
-                    Size = f.Size
-                }
-            }
-        )));
+        var tree = ModFileTree.Create(analysis.Contents, FileStore);
         return await installer.GetModsAsync(GameInstallation, LoadoutId.DefaultValue, ModId.NewId(), tree);
     }
 
@@ -61,8 +47,6 @@ public class FomodXmlInstallerTests : AModInstallerTest<SkyrimSpecialEdition, Fo
         var results = await GetResultsFromDirectory("SimpleInstaller");
         results.Should().NotBeEmpty();
     }
-
-
 
     [Fact]
     public async Task InstallsFilesSimple()

@@ -7,9 +7,11 @@ using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.ModInstallers;
+using NexusMods.DataModel.Trees;
 using NexusMods.Games.AdvancedInstaller.UI.Resources;
 using NexusMods.Paths;
 using NexusMods.Paths.FileTree;
+using NexusMods.Paths.Trees;
 
 namespace NexusMods.Games.AdvancedInstaller.UI;
 
@@ -36,7 +38,7 @@ public class AdvancedManualInstallerUI : IAdvancedInstallerHandler
         GameInstallation gameInstallation,
         LoadoutId loadoutId,
         ModId baseModId,
-        FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
+        KeyedBox<RelativePath, ModFileTree> archiveFiles,
         CancellationToken cancellationToken = default)
     {
         // Get default name of the mod for UI purposes.
@@ -51,8 +53,7 @@ public class AdvancedManualInstallerUI : IAdvancedInstallerHandler
 
 
         // Note: This code is effectively a stub.
-        var (shouldInstall, deploymentData) = await GetDeploymentDataAsync(gameInstallation, modName,
-            archiveFiles);
+        var (shouldInstall, deploymentData) = await GetDeploymentDataAsync(gameInstallation, modName, archiveFiles);
 
         if (!shouldInstall)
             return Array.Empty<ModInstallerResult>();
@@ -70,7 +71,7 @@ public class AdvancedManualInstallerUI : IAdvancedInstallerHandler
 
     private async Task<(bool shouldInstall, DeploymentData data)> GetDeploymentDataAsync(
         GameInstallation gameInstallation, string modName,
-        FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles)
+        KeyedBox<RelativePath, ModFileTree> archiveFiles)
     {
         var installerViewModel =
             new AdvancedInstallerWindowViewModel(modName, archiveFiles, gameInstallation.LocationsRegister,

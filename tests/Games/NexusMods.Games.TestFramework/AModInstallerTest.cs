@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using Cathei.LinqGen;
 using FluentAssertions;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,6 +14,7 @@ using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.ModInstallers;
+using NexusMods.DataModel.Trees;
 using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.FileExtractor.StreamFactories;
 using NexusMods.Hashing.xxHash64;
@@ -83,21 +85,7 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
         }, cancellationToken);
 
         var contents = await FileOriginRegistry.Get(downloadId);
-
-        var tree = FileTreeNode<RelativePath, ModSourceFileEntry>.CreateTree(contents.Contents
-            .Select(f =>
-                KeyValuePair.Create(f.Path,
-                    new ModSourceFileEntry
-                    {
-                        Hash = f.Hash,
-                        Size = f.Size,
-                        StreamFactory = new ArchiveManagerStreamFactory(FileStore, f.Hash)
-                        {
-                            Name = f.Path,
-                            Size = f.Size
-                        }
-                    })));
-
+        var tree = ModFileTree.Create(contents.Contents, FileStore);
         var results = await ModInstaller.GetModsAsync(
             GameInstallation,
             LoadoutId.DefaultValue,
@@ -166,26 +154,6 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
 
         var mod = mods.OrderBy(m => m.Name).First();
         return (mod, mod.Files.Values.ToArray());
-    }
-
-    /// <summary>
-    /// Builds the analyzed archive description for the provided file data, used
-    /// to create test data for the <typeparamref name="TModInstaller"/>.
-    /// </summary>
-    /// <param name="files"></param>
-    /// <returns></returns>
-    protected FileTreeNode<RelativePath, ModSourceFileEntry> BuildArchiveDescription(
-        IEnumerable<ModInstallerExampleFile> files)
-    {
-        var items = files.Select(file =>
-                KeyValuePair.Create(file.Name.ToRelativePath(),
-            new ModSourceFileEntry
-            {
-                Hash = Hash.From(file.Hash),
-                Size = Size.FromLong(file.Data.Length),
-                StreamFactory = new MemoryStreamFactory(file.Name.ToRelativePath(), new MemoryStream(file.Data))
-            }));
-        return FileTreeNode<RelativePath, ModSourceFileEntry>.CreateTree(items);
     }
 
     /// <summary>
@@ -259,16 +227,11 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
     protected async Task<IEnumerable<(ulong Hash, LocationId LocationId, string Path)>> BuildAndInstall(IEnumerable<ModInstallerExampleFile> files)
     {
         ModInstallerResult[] mods;
+        var sources = files
+            .Select(f => new ModFileTreeSource(f.Hash, (ulong)f.Data.Length, f.Name, new MemoryStreamFactory(f.Name.ToRelativePath(), new MemoryStream(f.Data))))
+            .ToArray();
 
-        var tree = FileTreeNode<RelativePath, ModSourceFileEntry>.CreateTree(files
-            .Select(f =>
-                KeyValuePair.Create(f.Name.ToRelativePath(),
-                    new ModSourceFileEntry
-                    {
-                        Hash = Hash.From(f.Hash),
-                        Size = Size.FromLong(f.Data.Length),
-                        StreamFactory = new MemoryStreamFactory(f.Name.ToRelativePath(), new MemoryStream(f.Data))
-                    })));
+        var tree = ModFileTree.Create(sources);
         mods = (await ModInstaller.GetModsAsync(
             GameInstallation,
             LoadoutId.DefaultValue,

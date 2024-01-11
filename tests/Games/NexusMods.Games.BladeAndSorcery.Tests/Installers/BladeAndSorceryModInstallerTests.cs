@@ -51,7 +51,7 @@ public class BladeAndSorceryModInstallerTests : AModInstallerTest<BladeAndSorcer
         var downloadId = await DownloadMod(GameInstallation.Game.Domain, ModId.From(1934), FileId.From(21173));
         var mod = await InstallModStoredFileIntoLoadout(loadout, downloadId);
         mod.Files.Should().NotBeEmpty();
-        mod.Files.Values.Cast<IToFile>().Should().AllSatisfy(kv => kv.To.Path.StartsWith("Dismemberment"));
+        mod.Files.Values.Cast<IToFile>().Should().AllSatisfy(kv => kv.To.Path.StartsWith("BladeAndSorcery_Data/StreamingAssets/Mods/Dismemberment").Should().BeTrue());
     }
 
     internal static byte[] CreateModManifest(ModManifest manifest)

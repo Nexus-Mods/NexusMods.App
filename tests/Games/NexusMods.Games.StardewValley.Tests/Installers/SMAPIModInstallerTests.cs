@@ -47,7 +47,7 @@ public class SMAPIModInstallerTests : AModInstallerTest<StardewValley, SMAPIModI
 
         var mod = await InstallModStoredFileIntoLoadout(loadout, downloadId);
         mod.Files.Should().NotBeEmpty();
-        mod.Files.Values.Cast<IToFile>().Should().AllSatisfy(kv => kv.To.Path.StartsWith("Mods/NPCMapLocations"));
+        mod.Files.Values.Cast<IToFile>().Should().AllSatisfy(kv => kv.To.Path.StartsWith("Mods/NPCMapLocations").Should().BeTrue());
     }
 
     [Fact]

@@ -1,12 +1,17 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
-using NexusMods.Common;
+using System.Threading;
+using System.Threading.Tasks;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.ModInstallers;
+using NexusMods.DataModel.Trees;
 using NexusMods.Games.StardewValley.Models;
 using NexusMods.Paths;
-using NexusMods.Paths.Extensions;
-using NexusMods.Paths.FileTree;
+using NexusMods.Paths.Trees;
+using NexusMods.Paths.Trees.Traits;
 
 // ReSharper disable IdentifierTypo
 // ReSharper disable InconsistentNaming
@@ -18,8 +23,6 @@ namespace NexusMods.Games.StardewValley.Installers;
 /// </summary>
 public class SMAPIModInstaller : AModInstaller
 {
-
-
     /// <summary>
     /// DI Constructor
     /// </summary>
@@ -33,52 +36,45 @@ public class SMAPIModInstaller : AModInstaller
     /// <returns></returns>
     public static SMAPIModInstaller Create(IServiceProvider serviceProvider) => new(serviceProvider);
 
-    private static IAsyncEnumerable<(FileTreeNode<RelativePath, ModSourceFileEntry>, SMAPIManifest)> GetManifestFiles(
-        FileTreeNode<RelativePath, ModSourceFileEntry> files)
+    private static async ValueTask<List<(KeyedBox<RelativePath, ModFileTree>, SMAPIManifest)>> GetManifestFiles(
+        KeyedBox<RelativePath, ModFileTree> files)
     {
-        return files.GetAllDescendentFiles()
-            .SelectAsync(async kv =>
+        var results = new List<(KeyedBox<RelativePath, ModFileTree>, SMAPIManifest)>();
+        foreach (var kv in files.GetFiles())
         {
-            var (path, file) = kv;
+            if (!kv.FileName().Equals(Constants.ManifestFile))
+                continue;
 
-            if (!path.FileName.Equals(Constants.ManifestFile))
-                return default;
+            await using var stream = await kv.Item.OpenAsync();
+            var manifest = await JsonSerializer.DeserializeAsync<SMAPIManifest>(stream);
+            if (manifest != null)
+                results.Add((kv, manifest));
+        }
 
-            await using var stream = await file!.Open();
-
-            return (kv, await JsonSerializer.DeserializeAsync<SMAPIManifest>(stream));
-        })
-            .Where(manifest => manifest.Item2 != null)
-            .Select(m => (m.kv, m.Item2!));
+        return results;
     }
 
     public override async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
         GameInstallation gameInstallation,
         LoadoutId loadoutId,
         ModId baseModId,
-        FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
+        KeyedBox<RelativePath, ModFileTree> archiveFiles,
         CancellationToken cancellationToken = default)
     {
-        var manifestFiles = await GetManifestFiles(archiveFiles)
-            .ToArrayAsync(cancellationToken: cancellationToken);
-
-        if (!manifestFiles.Any())
+        var manifestFiles = await GetManifestFiles(archiveFiles);
+        if (manifestFiles.Count == 0)
             return NoResults;
 
         var mods = manifestFiles
             .Select(found =>
             {
                 var (manifestFile, manifest) = found;
-                var parent = manifestFile.Parent;
+                var parent = manifestFile.Parent();
 
-                var modFiles = parent.GetAllDescendentFiles()
-                    .Select(kv =>
-                    {
-                        var (path, file) = kv;
-                        return file!.ToStoredFile(
-                            new GamePath(LocationId.Game, Constants.ModsFolder.Join(path.DropFirst(parent.Depth - 1)))
-                        );
-                    });
+                var modFiles = parent!.Item.GetFiles<ModFileTree, RelativePath>()
+                    .Select(kv => kv.ToStoredFile(
+                        new GamePath(LocationId.Game, Constants.ModsFolder.Join(kv.Path().DropFirst(parent.Depth() - 1)))
+                    ));
 
                 return new ModInstallerResult
                 {

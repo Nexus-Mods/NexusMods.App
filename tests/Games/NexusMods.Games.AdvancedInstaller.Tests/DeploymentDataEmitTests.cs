@@ -1,9 +1,12 @@
 using FluentAssertions;
+using NexusMods.DataModel.Abstractions.DTOs;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.ModInstallers;
+using NexusMods.DataModel.Trees;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.FileTree;
+using NexusMods.Paths.Trees;
 
 namespace NexusMods.Games.AdvancedInstaller.Tests;
 
@@ -15,8 +18,7 @@ public partial class DeploymentDataTests
         // Arrange
         var data = new DeploymentData();
 
-        var fileEntries = CreateEmitTestFileTree();
-        var folderNode = FileTreeNode<RelativePath, ModSourceFileEntry>.CreateTree(fileEntries);
+        var folderNode = ModFileTree.Create(CreateEmitTestFileTree());
         data.AddFolderMapping(folderNode, MakeGamePath(""));
 
         // Act
@@ -40,34 +42,13 @@ public partial class DeploymentDataTests
         third.Size.Should().Be(Size.From(3));
     }
 
-    private static Dictionary<RelativePath, ModSourceFileEntry> CreateEmitTestFileTree()
+    private static ModFileTreeSource[] CreateEmitTestFileTree()
     {
-        return new Dictionary<RelativePath, ModSourceFileEntry>
-        {
-            {
-                new RelativePath("folder/file1.txt"), new ModSourceFileEntry
-                {
-                    Hash = Hash.From(1),
-                    Size = Size.From(1),
-                    StreamFactory = null!
-                }
-            },
-            {
-                new RelativePath("folder/file2.txt"), new ModSourceFileEntry
-                {
-                    Hash = Hash.From(2),
-                    Size = Size.From(2),
-                    StreamFactory = null!
-                }
-            },
-            {
-                new RelativePath("folder/subfolder/file3.txt"), new ModSourceFileEntry
-                {
-                    Hash = Hash.From(3),
-                    Size = Size.From(3),
-                    StreamFactory = null!
-                }
-            }
-        };
+        return
+        [
+            new(1, 1, "folder/file1.txt"),
+            new(2, 2, "folder/file2.txt"),
+            new(3, 3, "folder/subfolder/file3.txt")
+        ];
     }
 }
