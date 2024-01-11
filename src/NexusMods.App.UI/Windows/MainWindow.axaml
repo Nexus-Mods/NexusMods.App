@@ -23,7 +23,7 @@
     </Design.DataContext>
 
     <Grid ColumnDefinitions="72, 216, *" RowDefinitions="62, *, 48">
-        <Border Classes="Mid"
+        <Border Classes="Base"
             Grid.Column="0"
             Grid.ColumnSpan="3"
             Grid.Row="0"
