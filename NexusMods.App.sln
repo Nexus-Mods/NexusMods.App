@@ -135,6 +135,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.AdvancedIns
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.AdvancedInstaller.UI.Tests", "tests\Games\NexusMods.Games.AdvancedInstaller.UI.Tests\NexusMods.Games.AdvancedInstaller.UI.Tests.csproj", "{2BFAAE53-AFFF-4F0B-AD76-67918665F298}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Themes", "Themes", "{9B49FEF2-0218-4147-940F-90843731A4A1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Themes.NexusFluentDark", "src\Themes\NexusMods.Themes.NexusFluentDark\NexusMods.Themes.NexusFluentDark.csproj", "{F63AF576-7A7C-4CF1-ADD7-6E95829E5C95}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -337,6 +341,10 @@ Global
 		{2BFAAE53-AFFF-4F0B-AD76-67918665F298}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2BFAAE53-AFFF-4F0B-AD76-67918665F298}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2BFAAE53-AFFF-4F0B-AD76-67918665F298}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F63AF576-7A7C-4CF1-ADD7-6E95829E5C95}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F63AF576-7A7C-4CF1-ADD7-6E95829E5C95}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F63AF576-7A7C-4CF1-ADD7-6E95829E5C95}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F63AF576-7A7C-4CF1-ADD7-6E95829E5C95}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -396,6 +404,8 @@ Global
 		{C2F6C9E5-CC53-44B7-994C-5B9287408263} = {05B06AC1-7F2B-492F-983E-5BC63CDBF20D}
 		{07B8ACA6-CE4B-496D-B183-63A57C5F08E1} = {70D38D24-79AE-4600-8E83-17F3C11BA81F}
 		{2BFAAE53-AFFF-4F0B-AD76-67918665F298} = {05B06AC1-7F2B-492F-983E-5BC63CDBF20D}
+		{9B49FEF2-0218-4147-940F-90843731A4A1} = {E7BAE287-D505-4D6D-A090-665A64309B2D}
+		{F63AF576-7A7C-4CF1-ADD7-6E95829E5C95} = {9B49FEF2-0218-4147-940F-90843731A4A1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9F9F8352-34DD-42C0-8564-EE9AF34A3501}

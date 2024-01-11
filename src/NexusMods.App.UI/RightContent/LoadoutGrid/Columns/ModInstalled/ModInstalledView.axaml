@@ -5,7 +5,6 @@
     x:Class="NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModInstalled.ModInstalledView"
     x:TypeArguments="modInstalled:IModInstalledViewModel"
     xmlns="https://github.com/avaloniaui"
-    xmlns:columns="clr-namespace:NexusMods.App.UI.RightContent.LoadoutGrid.Columns"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
@@ -14,8 +13,9 @@
     <Design.DataContext>
         <modInstalled:ModInstalledDesignViewModel />
     </Design.DataContext>
-    <TextBlock
+    <TextBlock Classes="BodyMDNormal"
         VerticalAlignment="Center"
+        TextTrimming="CharacterEllipsis"
         x:Name="InstalledTextBlock" />
 </reactiveUi:ReactiveUserControl>
 

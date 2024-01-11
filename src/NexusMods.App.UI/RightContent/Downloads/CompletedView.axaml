@@ -15,12 +15,12 @@
     <StackPanel>
         <Border Classes="Toolbar">
             <Grid ColumnDefinitions="*, Auto">
-                <TextBlock Grid.Column="0" Text="{x:Static resources:Language.DownloadCompleted_COMPLETED}"></TextBlock>
+                <TextBlock Grid.Column="0" Text="{x:Static resources:Language.DownloadCompleted_COMPLETED}"/>
                 <StackPanel Grid.Column="1">
                     <Button x:Name="ClearAllButton">
                         <StackPanel>
                             <avalonia:Icon Classes="ClearAll" />
-                            <TextBlock Text="{x:Static resources:Language.DownloadCompleted_Clear_All}"></TextBlock>
+                            <TextBlock Text="{x:Static resources:Language.DownloadCompleted_Clear_All}"/>
                         </StackPanel>
                     </Button>
                     <Line />

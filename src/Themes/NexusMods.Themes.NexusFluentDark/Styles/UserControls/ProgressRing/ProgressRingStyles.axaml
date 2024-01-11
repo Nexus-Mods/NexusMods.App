@@ -1,0 +1,38 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ui="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI">
+
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <ui:ProgressRing />
+        </Border>
+    </Design.PreviewWith>
+
+    <!-- Styles Definitions -->
+    <Style Selector="ui|ProgressRing">
+
+        <Style Selector="^ Arc">
+            <Setter Property="Stroke" Value="{StaticResource ElementForegroundPrimaryModerateBrush}" />
+            <Setter Property="StrokeThickness" Value="2.0" />
+            <Setter Property="SweepAngle" Value="135" />
+
+            <Style.Animations>
+                <Animation Duration="0:0:1" IterationCount="INFINITE">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="StartAngle" Value="0" />
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="StartAngle" Value="360" />
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <Style Selector="^ Ellipse">
+            <Setter Property="Stroke" Value="{StaticResource ElementStrokeTranslucentSubduedBrush}" />
+            <Setter Property="StrokeThickness" Value="2.8" />
+        </Style>
+    </Style>
+
+
+</Styles>

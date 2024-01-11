@@ -1,0 +1,86 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Preview -->
+    <Design.PreviewWith>
+        <StackPanel Width="200" Spacing="8" Margin="10">
+            <TextBlock Text="DownloadBar" TextAlignment="Center" />
+            <ProgressBar Classes="DownloadBar" Minimum="0" Maximum="1" />
+            <ProgressBar Classes="DownloadBar" Minimum="0" Maximum="1" Value="0.75" />
+
+            <!-- For Classes.DisabledDownloadBar see Conditional Classes at https://docs.avaloniaui.net/docs/styling/styles -->
+            <ProgressBar Classes="DownloadBar" Classes.DisabledDownloadBar="true" Minimum="0" Maximum="1" Value="0.4" />
+
+            <TextBlock Text="LaunchButton" TextAlignment="Center" />
+            <ProgressBar Classes="LaunchButton" Minimum="0" Maximum="1" ProgressTextFormat="WAITING" />
+            <ProgressBar Classes="LaunchButton" Minimum="0" Maximum="1" Value="0.75" ProgressTextFormat="PROCESSING..." />
+            <ProgressBar Classes="LaunchButton" Minimum="0" Maximum="1" IsIndeterminate="True"
+                         ProgressTextFormat="RUNNING..." />
+
+            <TextBlock Text="Stepper" TextAlignment="Center" />
+            <ProgressBar Margin="8" Classes="Stepper" Minimum="0" Maximum="1" />
+            <ProgressBar Margin="8, 4" Classes="Stepper" Minimum="0" Maximum="1" Value="0.5" />
+            <ProgressBar Margin="8" Classes="Stepper" Minimum="0" Maximum="1" Value="1" />
+        </StackPanel>
+    </Design.PreviewWith>
+
+
+    <!-- Style Definitions -->
+
+    <!-- Download ProgressBar -->
+    <Style Selector="ProgressBar.DownloadBar">
+        <Setter Property="ShowProgressText" Value="True" />
+        <Setter Property="Height" Value="24" />
+        <Setter Property="Foreground" Value="{StaticResource ElementForegroundInfoWeakBrush}" />
+        <Setter Property="Background">
+            <SolidColorBrush Color="{StaticResource ElementForegroundInfoWeak}"
+                             Opacity="{StaticResource OpacitySubdued}" />
+        </Setter>
+        <Setter Property="MinWidth" Value="100" />
+
+        <Style Selector="^.DisabledDownloadBar">
+            <Setter Property="Background" Value="{StaticResource ElementBackgroundNeutralMidBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource ElementBackgroundNeutralTopBrush}" />
+        </Style>
+
+        <Style Selector="^ TextBlock">
+            <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+
+            <!-- LineHeight messes with text Alignment, this would be a workaround -->
+            <!-- <Setter Property="Margin" Value="0,3,0,0"/> -->
+        </Style>
+
+        <Style Selector="^ LayoutTransformControl">
+            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Padding" Value="8,0,0,0" />
+        </Style>
+    </Style>
+
+
+    <!-- LaunchButton ProgressBar -->
+    <Style Selector="ProgressBar.LaunchButton">
+        <Setter Property="ShowProgressText" Value="True" />
+        <Setter Property="Height" Value="34" />
+        <Setter Property="Foreground" Value="{StaticResource ElementForegroundPrimaryModerateBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="{StaticResource ElementForegroundPrimaryModerateBrush}" />
+        <Setter Property="MinWidth" Value="100" />
+
+        <Style Selector="^ TextBlock">
+            <Setter Property="Theme" Value="{StaticResource TextBlockButtonStandardTheme}" />
+        </Style>
+    </Style>
+
+    <!-- Stepper ProgressBar -->
+    <Style Selector="ProgressBar.Stepper">
+        <Setter Property="ShowProgressText" Value="False" />
+        <Setter Property="Height" Value="16" />
+        <Setter Property="Foreground" Value="{StaticResource ElementForegroundPrimaryModerateBrush}" />
+        <Setter Property="CornerRadius" Value="45" />
+    </Style>
+
+
+</Styles>

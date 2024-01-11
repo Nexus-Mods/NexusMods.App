@@ -6,7 +6,6 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactive="http://reactiveui.net"
     xmlns:workspace="clr-namespace:NexusMods.App.UI.WorkspaceSystem"
-    xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
     mc:Ignorable="d" d:DesignWidth="232" d:DesignHeight="52"
     x:Class="NexusMods.App.UI.WorkspaceSystem.PanelTabHeaderView">
 
@@ -15,48 +14,29 @@
     </Design.DataContext>
 
     <Border x:Name="Container">
-        <Border.Styles>
-            <Style Selector="Border:not(.Selected)">
-                <Setter Property="Background" Value="Transparent"></Setter>
-            </Style>
 
-            <Style Selector="Border:not(.Selected) icons|Icon">
-                <Setter Property="Foreground" Value="{StaticResource FontDarkSecondaryColor}"/>
-            </Style>
-
-            <Style Selector="Border:not(.Selected) TextBlock">
-                <Setter Property="Foreground" Value="{StaticResource FontDarkSecondaryColor}"/>
-            </Style>
-
-            <Style Selector="Border.Selected">
-                <Setter Property="Background" Value="{StaticResource BrandSecondaryDarker}"></Setter>
-            </Style>
-
-            <Style Selector="Border.Selected icons|Icon">
-                <Setter Property="Foreground" Value="{StaticResource BrandWhite}"/>
-            </Style>
-
-            <Style Selector="Border.Selected TextBlock">
-                <Setter Property="Foreground" Value="{StaticResource BrandWhite}"/>
-            </Style>
-        </Border.Styles>
-
-        <StackPanel Orientation="Horizontal" Spacing="12" Height="52" Margin="24, 14, 24, 14">
-            <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-                <Image x:Name="IconImage" MaxHeight="24" MaxWidth="24" Height="100" Width="100" />
-                <TextBlock x:Name="TitleTextBlock" Classes="BodyLGBold" Width="114" TextWrapping="NoWrap" FontSize="14"
-                           LineHeight="21" VerticalAlignment="Bottom" TextTrimming="CharacterEllipsis" />
+        <StackPanel Orientation="Horizontal"
+                    Spacing="12"
+                    Height="52"
+                    Margin="24, 14, 24, 14">
+            <StackPanel Orientation="Horizontal"
+                        Spacing="6"
+                        VerticalAlignment="Center">
+                <Image x:Name="IconImage"
+                       MaxHeight="24"
+                       MaxWidth="24"
+                       Height="100"
+                       Width="100" />
+                <TextBlock x:Name="TitleTextBlock"
+                           Classes="BodyLGBold"
+                           Width="114"
+                           TextWrapping="NoWrap"
+                           VerticalAlignment="Bottom"
+                           TextTrimming="CharacterEllipsis" />
             </StackPanel>
 
-            <Button x:Name="CloseTabButton" Width="28" Height="28">
-                <Button.Template>
-                    <ControlTemplate>
-                        <Border Background="Transparent">
-                            <icons:Icon Classes="Close" Width="22" Height="22" />
-                        </Border>
-                    </ControlTemplate>
-                </Button.Template>
-            </Button>
+            <Button x:Name="CloseTabButton"
+                    Classes="PanelTitlebar Close"/>
 
         </StackPanel>
     </Border>

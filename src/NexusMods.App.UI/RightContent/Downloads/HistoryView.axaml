@@ -12,7 +12,7 @@
     <StackPanel>
         <Border Classes="Toolbar">
             <Grid ColumnDefinitions="*, Auto">
-                <TextBlock Grid.Column="0" Text="{x:Static resources:Language.DownloadHistoryView__HISTORY}"></TextBlock>
+                <TextBlock Grid.Column="0" Text="{x:Static resources:Language.DownloadHistoryView__HISTORY}"/>
                 <StackPanel Grid.Column="1">
                     <Button x:Name="PauseAllButton">
                         <StackPanel>

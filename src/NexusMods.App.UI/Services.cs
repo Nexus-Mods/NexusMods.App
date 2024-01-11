@@ -113,7 +113,7 @@ public static class Services
             .AddViewModel<PlaceholderDesignViewModel, IPlaceholderViewModel>()
             .AddViewModel<SpineViewModel, ISpineViewModel>()
             .AddViewModel<TopBarViewModel, ITopBarViewModel>()
-            .AddViewModel<DownloadButtonViewModel, IDownloadButtonViewModel>()
+            .AddViewModel<SpineDownloadButtonViewModel, ISpineDownloadButtonViewModel>()
             .AddViewModel<DownloadGameNameViewModel, IDownloadGameNameViewModel>()
             .AddViewModel<DownloadNameViewModel, IDownloadNameViewModel>()
             .AddViewModel<DownloadVersionViewModel, IDownloadVersionViewModel>()
@@ -152,7 +152,7 @@ public static class Services
             .AddView<PlaceholderView, IPlaceholderViewModel>()
             .AddView<Spine, ISpineViewModel>()
             .AddView<TopBarView, ITopBarViewModel>()
-            .AddView<DownloadButtonView, IDownloadButtonViewModel>()
+            .AddView<SpineDownloadButtonView, ISpineDownloadButtonViewModel>()
             .AddView<DownloadGameNameView, IDownloadGameNameViewModel>()
             .AddView<DownloadNameView, IDownloadNameViewModel>()
             .AddView<DownloadVersionView, IDownloadVersionViewModel>()
@@ -185,7 +185,6 @@ public static class Services
             .AddViewModel<DummyViewModel, IDummyViewModel>()
             .AddView<DummyView, IDummyViewModel>()
             .AddSingleton<InjectedViewLocator>()
-            .AddSingleton<App>()
             .AddFileSystem();
     }
 

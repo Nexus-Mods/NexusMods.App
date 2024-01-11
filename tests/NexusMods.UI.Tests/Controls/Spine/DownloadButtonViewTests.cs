@@ -6,7 +6,7 @@ using NexusMods.App.UI.Controls.Spine.Buttons.Download;
 
 namespace NexusMods.UI.Tests.Controls.Spine;
 
-public class DownloadButtonViewTests : AViewTest<DownloadButtonView, DownloadButtonDesignerViewModel, IDownloadButtonViewModel>
+public class DownloadButtonViewTests : AViewTest<SpineDownloadButtonView, SpineDownloadButtonDesignerViewModel, ISpineDownloadButtonViewModel>
 {
     public DownloadButtonViewTests(IServiceProvider provider) : base(provider) { }
 

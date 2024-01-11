@@ -1,0 +1,15 @@
+<Application
+    x:Class="NexusMods.App.App"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:ui="using:NexusMods.App.UI"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    RequestedThemeVariant="Dark">
+    <Application.DataTemplates>
+        <ui:ViewLocator />
+    </Application.DataTemplates>
+
+    <Application.Styles>
+        <StyleInclude Source="avares://NexusMods.Themes.NexusFluentDark/NexusFluentDarkTheme.axaml" />
+    </Application.Styles>
+
+</Application>

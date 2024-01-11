@@ -6,42 +6,23 @@
     x:Class="NexusMods.App.UI.Controls.GameWidget.GameWidget"
     x:TypeArguments="gameWidget:IGameWidgetViewModel"
     xmlns="https://github.com/avaloniaui"
-    xmlns:avalonia="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:gameWidget="clr-namespace:NexusMods.App.UI.Controls.GameWidget"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources">
+
     <Design.DataContext>
         <gameWidget:GameWidgetDesignViewModel />
     </Design.DataContext>
-    <UserControl.Styles>
-        <Style Selector="Border.MainBorder">
-            <Setter Property="CornerRadius" Value="25" />
-        </Style>
-
-        <Style Selector="TextBlock.GameName">
-            <Setter Property="Foreground" Value="{DynamicResource FontDarkPrimary}" />
-            <Setter Property="FontFamily" Value="{DynamicResource FontPrimarySemiBold}" />
-            <Setter Property="FontWeight" Value="600" />
-            <Setter Property="FontSize" Value="12" />
-            <Setter Property="LineHeight" Value="16.5" />
-            <Setter Property="LetterSpacing" Value="0.6" />
-        </Style>
-
-
-    </UserControl.Styles>
 
     <Border
-        BoxShadow="0 0 5 0 #80000000, 0 3 4 0 #1E000000, 0 2 4 0 #23000000"
-        CornerRadius="25"
         Height="228"
         Width="180"
         x:Name="DropShadow1Border">
         <Border
             Classes="MainBorder"
-            ClipToBounds="True"
             Height="228"
             Width="180">
             <Grid RowDefinitions="106, *">
@@ -54,37 +35,34 @@
                     x:Name="BlurryImage" />
                 <Image
                     Grid.Row="0"
-                    Stretch="UniformToFill"
                     Width="180"
                     x:Name="GameImage" />
                 <Border Classes="Background" Grid.Row="1">
-                    <Grid
-                        Margin="16,0,16,0"
-                        RowDefinitions="Auto, 1,  *"
-                        VerticalAlignment="Top"
-                        Width="148">
+                    <Grid RowDefinitions="Auto, 1,  *"
+                          Margin="16,0,16,0"
+                          VerticalAlignment="Top"
+                          Width="148">
                         <TextBlock
-                            Classes="CaptionMontserratSemi"
                             Grid.Row="0"
                             Height="34"
                             Margin="0,8"
+                            VerticalAlignment="Center"
                             TextTrimming="CharacterEllipsis"
                             TextWrapping="Wrap"
-                            VerticalAlignment="Center"
                             x:Name="NameTextBlock" />
                         <Border
-                            BorderBrush="{DynamicResource StructuralBorderBrush}"
                             BorderThickness="0,0,0,1"
                             Grid.Row="1"
-                            Margin="0" />
+                            Margin="0"
+                            x:Name="SeparationLine"/>
                         <StackPanel
                             Grid.Row="2"
                             Margin="0,16,0,0"
                             Orientation="Horizontal"
                             VerticalAlignment="Center">
-                            <Button Classes="Rounded" x:Name="PrimaryButton">
+                            <Button Classes="Rounded Primary" x:Name="PrimaryButton">
                                 <StackPanel Orientation="Horizontal">
-                                    <Svg Classes="AddCircle"/>
+                                    <Svg Classes="AddCircle" />
                                     <TextBlock
                                         Text="{x:Static resources:Language.GameWidget__Add_game}">
                                     </TextBlock>
@@ -97,4 +75,3 @@
         </Border>
     </Border>
 </reactiveUi:ReactiveUserControl>
-

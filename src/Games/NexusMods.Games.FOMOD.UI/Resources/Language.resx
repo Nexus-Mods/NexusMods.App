@@ -25,10 +25,10 @@
         <value>Finish</value>
     </data>
     <data name="FooterStepperView_FooterStepperView_Next" xml:space="preserve">
-        <value>Next</value>
+        <value>NEXT</value>
     </data>
     <data name="FooterStepperView_FooterStepperView_Previous" xml:space="preserve">
-        <value>Previous</value>
+        <value>PREVIOUS</value>
     </data>
     <data name="GuidedInstallerGroupView_SelectAtLeastOne" xml:space="preserve">
         <value>(SELECT AT LEAST ONE)</value>

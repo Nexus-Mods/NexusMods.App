@@ -5,28 +5,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <AvaloniaResource Include="Nexus.xaml" />
-        <AvaloniaResource Include="Palatte\Nexus.xaml" />
-        <AvaloniaResource Include="Theme\ButtonStyles\Index.xaml" />
-        <AvaloniaResource Include="Theme\CheckboxStyles.xaml" />
-        <AvaloniaResource Include="Theme\DataGridStyles.xaml" />
-        <AvaloniaResource Include="Theme\Index.xaml" />
-        <AvaloniaResource Include="Theme\LabelStyles.xaml" />
-        <AvaloniaResource Include="Theme\ProgressBar.Download.xaml" />
-        <AvaloniaResource Include="Theme\ProgressBar.LaunchButton.xaml" />
-        <AvaloniaResource Include="Theme\ProgressBar.Stepper.xaml" />
-        <AvaloniaResource Include="Theme\TextBlockStyles.xaml" />
-        <AvaloniaResource Include="Theme\TextBox.xaml" />
-        <AvaloniaResource Include="Theme\ToggleSwitchStyles.xaml" />
-        <AvaloniaResource Include="Theme\WindowStyles.xaml" />
         <AvaloniaResource Include="Assets\**" />
         <None Remove=".gitignore" />
         <None Remove="Theme\BareIcons.xaml" />
-        <AvaloniaResource Include="Theme\BareIcons.xaml" />
         <None Remove="Controls\GameWidget\GameWidgetStyles.xaml" />
         <AvaloniaResource Include="Controls\GameWidget\GameWidgetStyles.xaml" />
         <None Remove="Theme\Borders.xaml" />
-        <AvaloniaResource Include="Theme\Borders.xaml" />
         <None Remove="Fonts\Montserrat\static\Montserrat-Black.ttf" />
         <None Remove="Fonts\Montserrat\static\Montserrat-BlackItalic.ttf" />
         <None Remove="Fonts\Montserrat\static\Montserrat-Bold.ttf" />
@@ -47,33 +31,19 @@
         <None Remove="Fonts\Montserrat\static\Montserrat-ThinItalic.ttf" />
         <None Remove="Fonts\Montserrat\Montserrat-Italic-VariableFont_wght.ttf" />
         <None Remove="Fonts\Regular\Montserrat-Regular.ttf" />
-        <AvaloniaResource Include="Fonts\Regular\Montserrat-Regular.ttf" />
         <None Remove="Fonts\Regular\Roboto-Regular.ttf" />
-        <AvaloniaResource Include="Fonts\Regular\Roboto-Regular.ttf" />
         <None Remove="Fonts\SemiBold\Montserrat-SemiBold.ttf" />
-        <AvaloniaResource Include="Fonts\SemiBold\Montserrat-SemiBold.ttf" />
         <None Remove="Theme\SelectableTextBlock.xaml" />
-        <AvaloniaResource Include="Theme\SelectableTextBlock.xaml" />
         <None Remove="Theme\StackPanelStyles.xaml" />
-        <AvaloniaResource Include="Theme\StackPanelStyles.xaml" />
         <None Remove="Theme\PillStyles.xaml" />
-        <AvaloniaResource Include="Theme\PillStyles.xaml" />
         <None Remove="Theme\IconStyles.xaml" />
-        <AvaloniaResource Include="Theme\IconStyles.xaml" />
         <None Remove="Fonts\Bold\Roboto-Bold.ttf" />
-        <AvaloniaResource Include="Fonts\Bold\Roboto-Bold.ttf" />
         <None Remove="Theme\GridStyles.xaml" />
-        <AvaloniaResource Include="Theme\GridStyles.xaml" />
         <None Remove="Theme\Toolbar.xaml" />
-        <AvaloniaResource Include="Theme\Toolbar.xaml" />
         <None Remove="Theme\MainWindow.xaml" />
-        <AvaloniaResource Include="Theme\MainWindow.xaml" />
         <None Remove="Theme\ButtonStyles\Standard.xaml" />
-        <AvaloniaResource Include="Theme\ButtonStyles\Standard.xaml" />
         <None Remove="Theme\ButtonStyles\Spine\DownloadButton.xaml" />
-        <AvaloniaResource Include="Theme\ButtonStyles\Spine\DownloadButton.xaml" />
         <None Remove="Theme\ButtonStyles\Hyperlink.xaml" />
-        <AvaloniaResource Include="Theme\ButtonStyles\Hyperlink.xaml" />
     </ItemGroup>
 
     <ItemGroup>
@@ -179,11 +149,11 @@
         <Compile Update="Controls\Spine\Buttons\Icon\IconButtonDesignViewModel.cs">
           <DependentUpon>IIconButtonViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Controls\Spine\Buttons\Download\DownloadButtonDesignerViewModel.cs">
-          <DependentUpon>IDownloadButtonViewModel.cs</DependentUpon>
+        <Compile Update="Controls\Spine\Buttons\Download\SpineDownloadButtonDesignerViewModel.cs">
+          <DependentUpon>ISpineDownloadButtonViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Controls\Spine\Buttons\Download\DownloadButtonViewModel.cs">
-          <DependentUpon>IDownloadButtonViewModel.cs</DependentUpon>
+        <Compile Update="Controls\Spine\Buttons\Download\SpineDownloadButtonViewModel.cs">
+          <DependentUpon>ISpineDownloadButtonViewModel.cs</DependentUpon>
         </Compile>
         <Compile Update="RightContent\Downloads\ViewModels\DownloadTaskDesignViewModel.cs">
           <DependentUpon>IDownloadTaskViewModel.cs</DependentUpon>
@@ -366,6 +336,10 @@
         <Compile Update="WorkspaceSystem\PanelResizer\PanelResizerViewModel.cs">
           <DependentUpon>IPanelResizerViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Controls\ProgressRing\ProgressRing.axaml.cs">
+          <DependentUpon>ProgressRing.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
@@ -374,11 +348,12 @@
 
     <ItemGroup>
         <None Remove="Fonts\Bold\Montserrat-Bold.ttf" />
-        <AvaloniaResource Include="Fonts\Bold\Montserrat-Bold.ttf" />
     </ItemGroup>
 
     <ItemGroup>
       <UpToDateCheckInput Remove="Controls\DownloadProgressBar\DownloadProgressBar.axaml" />
+      <UpToDateCheckInput Remove="Controls\Buttons\RoundedButton\RoundedButton.axaml" />
+      <UpToDateCheckInput Remove="Controls\Buttons\StandardButtonTheme.axaml" />
     </ItemGroup>
 
     <ItemGroup>

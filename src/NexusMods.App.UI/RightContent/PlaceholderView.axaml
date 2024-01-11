@@ -14,7 +14,7 @@
         <rightContent:PlaceholderDesignViewModel />
     </Design.DataContext>
     <TextBlock
-        Classes="H5MontserratSemi"
+        Classes="HeadingSMSemi"
         HorizontalAlignment="Center"
         VerticalAlignment="Center">
         Placeholder Content

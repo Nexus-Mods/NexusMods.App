@@ -11,7 +11,7 @@ namespace NexusMods.App.UI;
 
 public static class ReactiveUiExtensions
 {
-    internal static ILogger DefaultLogger = NullLogger.Instance;
+    public static ILogger DefaultLogger = NullLogger.Instance;
 
     /// <summary>
     /// Run the current observable on the UI thread.

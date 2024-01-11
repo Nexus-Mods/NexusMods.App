@@ -31,9 +31,12 @@
             </Style>
 
             <Style Selector="icons|Icon.CentralIcon">
-                <Setter Property="Foreground" Value="{DynamicResource BrandTertiaryDarker}" />
                 <Setter Property="Margin" Value="16,0,16,0" />
-                <Setter Property="FontSize" Value="14" />
+                <Setter Property="FontSize" Value="24" />
+            </Style>
+
+            <Style Selector="Border#ModContentBorder">
+                <Setter Property="Padding" Value="16" />
             </Style>
 
         </Grid.Styles>
@@ -58,14 +61,14 @@
         <Border Grid.Row="1" x:Name="BodyContainerBorder">
             <Grid ColumnDefinitions="*, Auto, *" x:Name="CentralGrid">
                 <!-- Mod Content -->
-                <Border Classes="Rounded Padding16 StructuralBorderColor" Grid.Column="0" x:Name="ModContentBorder">
+                <Border Classes="Rounded Mid" Grid.Column="0" x:Name="ModContentBorder">
                     <ScrollViewer x:Name="ModContentScrollViewer">
                         <reactiveUi:ViewModelViewHost x:Name="ModContentSectionViewHost" />
                     </ScrollViewer>
                 </Border>
 
                 <!-- Arrow to Install Location Preview -->
-                <icons:Icon Classes="Play CentralIcon" Grid.Column="1" x:Name="PlayArrowIcon" />
+                <icons:Icon Classes="Play ForegroundSubdued CentralIcon" Grid.Column="1" x:Name="PlayArrowIcon" />
 
                 <!-- Install Location Preview -->
                 <Border Classes="Rounded" Grid.Column="2" x:Name="ResultsBorder">

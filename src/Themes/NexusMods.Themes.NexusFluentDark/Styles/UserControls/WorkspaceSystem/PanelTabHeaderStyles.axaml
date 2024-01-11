@@ -1,0 +1,38 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ui="clr-namespace:NexusMods.App.UI.WorkspaceSystem;assembly=NexusMods.App.UI"
+        xmlns:icons="https://github.com/projektanker/icons.avalonia">
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <ui:PanelTabHeaderView />
+        </Border>
+    </Design.PreviewWith>
+
+    <!-- Add Styles Here -->
+    <Style Selector="ui|PanelTabHeaderView">
+
+        <Style Selector="^ Border#Container:not(.Selected)">
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
+
+        <Style Selector="^ Border#Container:not(.Selected) icons|Icon">
+            <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralSubduedBrush}"/>
+        </Style>
+
+        <Style Selector="^ Border#Container:not(.Selected) TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralSubduedBrush}"/>
+        </Style>
+
+        <Style Selector="^ Border#Container.Selected">
+            <Setter Property="Background" Value="{StaticResource ElementBackgroundNeutralLowBrush}"/>
+        </Style>
+
+        <Style Selector="^ Border#Container.Selected icons|Icon">
+            <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralStrongBrush}"/>
+        </Style>
+
+        <Style Selector="^ Border#Container.Selected TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralStrongBrush}"/>
+        </Style>
+    </Style>
+</Styles>

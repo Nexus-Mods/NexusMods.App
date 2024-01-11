@@ -1,0 +1,105 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:icons="https://github.com/projektanker/icons.avalonia">
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <WrapPanel Width="300">
+                <Button Classes="PanelTitlebar Close" />
+                <Button Classes="PanelTitlebar Close" IsEnabled="False"/>
+                <Button Classes="PanelTitlebar Close Active"/>
+                <Button Classes="PanelTitlebar OpenInWindow" />
+                <Button Classes="PanelTitlebar AddTab" />
+                <Button Classes="PanelTitlebar ScrollRight" />
+                <Button Classes="PanelTitlebar ScrollLeft" />
+            </WrapPanel>
+        </Border>
+    </Design.PreviewWith>
+
+    <!-- Add Styles Here -->
+    <Style Selector="Button.PanelTitlebar">
+
+        <Style Selector="^ icons|Icon">
+            <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralSubduedBrush}" />
+            <Setter Property="FontSize" Value="24" />
+            <Setter Property="Width" Value="24" />
+            <Setter Property="Height" Value="24" />
+        </Style>
+
+        <Style Selector="^ Border">
+            <Setter Property="Background" Value="{StaticResource ElementBackgroundTransparentBrush}" />
+            <Setter Property="CornerRadius" Value="8" />
+        </Style>
+
+        <Style Selector="^:pointerover icons|Icon">
+            <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralStrongBrush}" />
+        </Style>
+
+        <Style Selector="^:pointerover Border">
+            <Setter Property="Background" Value="{StaticResource ElementBackgroundNeutralTranslucentLow}" />
+        </Style>
+
+        <Style Selector="^:pressed Border">
+            <Setter Property="Background" Value="{StaticResource ElementBackgroundTransparentBrush}" />
+        </Style>
+
+        <Style Selector="^:disabled icons|Icon">
+            <Setter Property="Opacity" Value="{StaticResource OpacityDisabledElement}" />
+        </Style>
+
+        <Style Selector="^.Active icons|Icon">
+            <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralStrongBrush}" />
+        </Style>
+
+        <Style Selector="^.Close">
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border>
+                        <icons:Icon Classes="Close" />
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+
+        <Style Selector="^.OpenInWindow">
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border>
+                        <icons:Icon Classes="OpenInNew" />
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+
+        <Style Selector="^.AddTab">
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border>
+                        <icons:Icon Classes="Plus" />
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+
+        <Style Selector="^.ScrollRight">
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border>
+                        <icons:Icon Classes="ChevronRight" />
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+
+        <Style Selector="^.ScrollLeft">
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border>
+                        <icons:Icon Classes="ChevronLeft" />
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+
+    </Style>
+
+</Styles>

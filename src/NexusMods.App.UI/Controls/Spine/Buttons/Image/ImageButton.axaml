@@ -13,52 +13,9 @@
     <Design.DataContext>
         <buttons:ImageButtonDesignViewModel />
     </Design.DataContext>
-    <UserControl.Styles>
-        <Style Selector="Button.Spine">
-            <Setter Property="CornerRadius" Value="45" />
-            <Setter Property="HorizontalAlignment" Value="Center" />
-        </Style>
-
-        <Style Selector="Button.Spine:pressed">
-            <Setter Property="RenderTransform" Value="scale(0.9)" />
-        </Style>
-
-        <Style Selector="Button.Spine.Inactive Border">
-            <Setter Property="BorderBrush" Value="#28FFFFFF" />
-            <Setter Property="BorderThickness" Value="1" />
-
-            <Setter Property="Transitions">
-                <Transitions>
-                    <BrushTransition Duration="0:0:0.2" Property="Background" />
-                    <BrushTransition Duration="0:0:0.2" Property="BorderBrush" />
-                    <ThicknessTransition Duration="0:0:0.2" Property="BorderThickness" />
-                    <BoxShadowsTransition Duration="0:0:0.2" Property="BoxShadow" />
-                </Transitions>
-            </Setter>
-        </Style>
-
-        <Style Selector="Button.Spine.Inactive:pointerover Border">
-            <Setter Property="Background" Value="#4CFFFFFF" />
-            <Setter Property="BorderBrush" Value="#80FFFFFF" />
-            <Setter Property="BorderThickness" Value="1" />
-        </Style>
-
-        <Style Selector="Button.Spine.Active Border">
-            <Setter Property="Background" Value="#00FFFFFF" />
-            <Setter Property="BorderBrush" Value="#FFFFFF" />
-            <Setter Property="BorderThickness" Value="2" />
-            <Setter Property="BoxShadow" Value="0 0 10 0 #66FFFFFF" />
-        </Style>
-
-        <Style Selector="Button.Spine.Active:pointerover Border">
-            <Setter Property="Background" Value="#80FFFFFF" />
-            <Setter Property="BorderBrush" Value="{DynamicResource BrandPrimary}" />
-            <Setter Property="BorderThickness" Value="2" />
-        </Style>
-    </UserControl.Styles>
 
     <Button
-        Classes="Spine"
+        Classes="Spine Image"
         Height="64"
         Width="64"
         x:Name="Button">
@@ -74,8 +31,6 @@
                         </Image.Clip>
                     </Image>
                     <Border
-                        Background="{DynamicResource TransparentBackground}"
-                        CornerRadius="48"
                         Height="48"
                         Width="48" />
                 </Grid>

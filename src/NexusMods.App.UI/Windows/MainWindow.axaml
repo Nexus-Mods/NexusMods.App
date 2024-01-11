@@ -9,7 +9,6 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:overlays="clr-namespace:NexusMods.App.UI.Overlays"
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:windows="clr-namespace:NexusMods.App.UI.Windows"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
@@ -24,8 +23,7 @@
     </Design.DataContext>
 
     <Grid ColumnDefinitions="72, 216, *" RowDefinitions="62, *, 48">
-        <Border
-            Background="#CC2A2C2B"
+        <Border Classes="Base"
             Grid.Column="0"
             Grid.ColumnSpan="3"
             Grid.Row="0"
@@ -51,22 +49,23 @@
             Grid.Row="1"
             x:Name="Spine" />
 
-        <Border
-            BorderBrush="{DynamicResource StructuralBorderBrush}"
-            BorderThickness="1,0"
-            Grid.Column="1"
-            Grid.Row="1" />
-        <Border
-            BorderBrush="{DynamicResource StructuralBorderBrush}"
+        <Border Classes="OutlineWeak"
+                BorderThickness="1,0"
+                Grid.Column="1"
+                Grid.Row="1" />
+        <Border Classes="OutlineWeak"
             BorderThickness="0,0,0,1"
             Grid.Column="0"
             Grid.ColumnSpan="3"
             Grid.Row="0" />
 
-        <reactiveUi:ViewModelViewHost
+        <Border Classes="OutlineWeak"
             Grid.Column="1"
             Grid.Row="1"
-            x:Name="LeftMenuViewModelHost" />
+            BorderThickness="1,0,1,0">
+            <reactiveUi:ViewModelViewHost
+                x:Name="LeftMenuViewModelHost" />
+        </Border>
 
         <reactiveUi:ViewModelViewHost Grid.Column="2" Grid.Row="1" x:Name="RightContent" />
 
