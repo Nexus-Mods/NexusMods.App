@@ -8,6 +8,7 @@ using NexusMods.DataModel.Activities;
 using NexusMods.DataModel.ArchiveMetaData;
 using NexusMods.DataModel.CommandLine.Verbs;
 using NexusMods.DataModel.Diagnostics;
+using NexusMods.DataModel.Games;
 using NexusMods.DataModel.GlobalSettings;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
@@ -61,6 +62,8 @@ public static class Services
         coll.AddAllSingleton<IFileStore, NxFileStore>();
 
         coll.AddSingleton(typeof(IFingerprintCache<,>), typeof(DataStoreFingerprintCache<,>));
+
+        coll.AddScoped<GameInstallationContextAccessor>();
 
         coll.AddSingleton<LoadoutRegistry>();
         coll.AddSingleton<IDirectoryIndexer, DirectoryIndexer>();

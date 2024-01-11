@@ -22,17 +22,15 @@ public sealed class MountAndBlade2Bannerlord : AGame, ISteamGame, IGogGame, IEpi
     public static string DisplayName => "Mount & Blade II: Bannerlord";
 
     private readonly IServiceProvider _serviceProvider;
-    private readonly LauncherManagerFactory _launcherManagerFactory;
 
     public IEnumerable<uint> SteamIds => new[] { 261550u };
     public IEnumerable<long> GogIds => new long[] { 1802539526, 1564781494 };
     public IEnumerable<string> EpicCatalogItemId => new[] { "Chickadee" };
     public IEnumerable<string> XboxIds => new[] { "TaleWorldsEntertainment.MountBladeIIBannerlord" };
 
-    public MountAndBlade2Bannerlord(IServiceProvider serviceProvider, LauncherManagerFactory launcherManagerFactory) : base(serviceProvider)
+    public MountAndBlade2Bannerlord(IServiceProvider serviceProvider) : base(serviceProvider)
     {
         _serviceProvider = serviceProvider;
-        _launcherManagerFactory = launcherManagerFactory;
     }
 
     public override string Name => DisplayName;
@@ -53,8 +51,8 @@ public sealed class MountAndBlade2Bannerlord : AGame, ISteamGame, IGogGame, IEpi
 
     protected override Version GetVersion(GameLocatorResult installation)
     {
-        var launcherManagerHandler = _launcherManagerFactory.Get(installation);
-        return Version.TryParse(launcherManagerHandler.GetGameVersion(), out var val) ? val : new Version();
+        var gameVersion = LauncherManagerNexusMods.GetGameVersion(installation.Path.GetFullPath());
+        return Version.TryParse(gameVersion, out var val) ? val : new Version();
     }
 
     protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem, GameLocatorResult installation)
