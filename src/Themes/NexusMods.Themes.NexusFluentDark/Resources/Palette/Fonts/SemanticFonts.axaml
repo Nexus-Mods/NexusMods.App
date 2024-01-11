@@ -7,13 +7,13 @@
     </ResourceDictionary.MergedDictionaries>
 
 
-    <DynamicResource x:Key="FontHeadlinesRegular" ResourceKey="MontserratRegular"/>
-    <DynamicResource x:Key="FontHeadlinesSemiBold" ResourceKey="MontserratSemiBold"/>
-    <DynamicResource x:Key="FontHeadlinesBold" ResourceKey="MontserratBold"/>
+    <StaticResource x:Key="FontHeadlinesRegular" ResourceKey="MontserratRegular"/>
+    <StaticResource x:Key="FontHeadlinesSemiBold" ResourceKey="MontserratSemiBold"/>
+    <StaticResource x:Key="FontHeadlinesBold" ResourceKey="MontserratBold"/>
 
-    <DynamicResource x:Key="FontBodyRegular" ResourceKey="RobotoRegular"/>
-    <DynamicResource x:Key="FontBodySemiBold" ResourceKey="RobotoSemiBold"/>
-    <DynamicResource x:Key="FontBodyBold" ResourceKey="RobotoBold"/>
+    <StaticResource x:Key="FontBodyRegular" ResourceKey="RobotoRegular"/>
+    <StaticResource x:Key="FontBodySemiBold" ResourceKey="RobotoSemiBold"/>
+    <StaticResource x:Key="FontBodyBold" ResourceKey="RobotoBold"/>
 
 </ResourceDictionary>
 

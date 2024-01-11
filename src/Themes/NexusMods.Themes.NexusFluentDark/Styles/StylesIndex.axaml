@@ -31,5 +31,8 @@
     <StyleInclude Source="/Styles/UserControls/LoginDialog/LoginDialogStyles.axaml"/>
     <StyleInclude Source="/Styles/UserControls/WorkspaceSystem/AddPanelButtonStyles.axaml"/>
     <StyleInclude Source="/Styles/UserControls/WorkspaceSystem/PanelTabHeaderStyles.axaml"/>
+    <StyleInclude Source="/Styles/UserControls/GuidedInstaller/GroupViewStyles.axaml"/>
+    <StyleInclude Source="/Styles/UserControls/GuidedInstaller/OptionViewStyles.axaml"/>
+    <StyleInclude Source="/Styles/UserControls/GuidedInstaller/StepViewStyles.axaml"/>
 
 </Styles>

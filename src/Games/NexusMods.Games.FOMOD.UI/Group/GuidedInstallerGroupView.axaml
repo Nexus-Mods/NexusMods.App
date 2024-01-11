@@ -15,33 +15,6 @@
     </Design.DataContext>
 
     <StackPanel x:Name="GroupViewContainer">
-        <StackPanel.Styles>
-            <Style Selector="StackPanel#GroupViewContainer">
-                <Setter Property="Margin" Value="0,0,0,32" />
-            </Style>
-            <Style Selector="TextBlock.StatusDangerLighter">
-                <Setter Property="Foreground" Value="{DynamicResource StatusDangerLighter}" />
-            </Style>
-            <Style Selector="TextBlock#GroupName">
-                <Setter Property="Foreground" Value="{DynamicResource StatusDangerLight}" />
-            </Style>
-            <Style Selector="Border#GroupNameBorder">
-                <Setter Property="Margin" Value="0,0,0,16" />
-            </Style>
-            <Style Selector="TextBlock#GroupType">
-                <Setter Property="Margin" Value="0,4,0,0" />
-            </Style>
-            <Style Selector="ListBoxItem">
-                <Setter Property="Padding" Value="0 0 0 0" />
-                <Setter Property="Background" Value="{DynamicResource StructuralBorderColor}" />
-            </Style>
-            <Style Selector="ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
-                <Setter Property="Background" Value="{DynamicResource BorderContainerColor}" />
-            </Style>
-            <Style Selector="ListBoxItem:pointerover:not(:selected) /template/ ContentPresenter#PART_ContentPresenter">
-                <Setter Property="Background" Value="{DynamicResource BorderContainerColor}" />
-            </Style>
-        </StackPanel.Styles>
 
         <Border x:Name="GroupNameBorder">
             <StackPanel Orientation="Vertical">

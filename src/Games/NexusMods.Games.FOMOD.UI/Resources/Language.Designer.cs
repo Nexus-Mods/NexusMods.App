@@ -69,7 +69,7 @@ namespace NexusMods.Games.FOMOD.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Next.
+        ///   Looks up a localized string similar to NEXT.
         /// </summary>
         public static string FooterStepperView_FooterStepperView_Next {
             get {
@@ -87,7 +87,7 @@ namespace NexusMods.Games.FOMOD.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Previous.
+        ///   Looks up a localized string similar to PREVIOUS.
         /// </summary>
         public static string FooterStepperView_FooterStepperView_Previous {
             get {
