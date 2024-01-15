@@ -130,6 +130,8 @@ public class NxmDownloadTask : IDownloadTask, IHaveDownloadVersion, IHaveFileSiz
     {
         var token = _tokenSource.Token;
         await StartOrResumeDownload(token);
+        if (token.IsCancellationRequested)
+            return;
         await Owner.FinalizeDownloadAsync(this, _downloadLocation, FriendlyName);
     }
 
