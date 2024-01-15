@@ -3,13 +3,14 @@ using System.Reactive.Subjects;
 using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.DateTime;
+using NexusMods.Abstractions.Values;
 using NexusMods.Common;
 using NexusMods.DataModel;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.ArchiveMetaData;
 using NexusMods.Networking.Downloaders.Interfaces;
+using NexusMods.Networking.Downloaders.Interfaces.Traits;
 using NexusMods.Networking.Downloaders.Tasks;
 using NexusMods.Networking.Downloaders.Tasks.State;
 using NexusMods.Networking.HttpDownloader;
@@ -174,6 +175,28 @@ public class DownloadService : IDownloadService
             totalThroughput += download.CalculateThroughput();
 
         return Size.FromLong(totalThroughput);
+    }
+
+    /// <inheritdoc />
+    public Percent? GetTotalProgress()
+    {
+        long totalDownloadedBytes = 0;
+        long totalSizeBytes = 0;
+        foreach (var dl in _currentDownloads.Where(x => x.Status == DownloadTaskStatus.Downloading))
+        {
+            // Only compute percent for downloads that have a known size
+            if (dl is not IHaveFileSize size) continue;
+
+            totalSizeBytes += size.SizeBytes;
+            totalDownloadedBytes += dl.DownloadedSizeBytes;
+        }
+
+        if (totalSizeBytes == 0 || totalSizeBytes <= totalDownloadedBytes)
+        {
+            return null;
+        }
+
+        return new Percent(totalDownloadedBytes / (double) totalSizeBytes);
     }
 
     /// <inheritdoc />

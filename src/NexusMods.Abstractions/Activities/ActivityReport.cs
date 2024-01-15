@@ -82,6 +82,6 @@ where T : struct, IDivisionOperators<T, double, T>
     /// <summary>
     /// If the activity has any progress this will return the amount of progress per second
     /// </summary>
-    public Optional<T> Throughput => Current != null && Elapsed.TotalSeconds > 0 ?
+    public Optional<T> Throughput => Current.HasValue && Elapsed.TotalSeconds > 0 ?
         Optional.Some(Current.Value / Elapsed.TotalSeconds) : default;
 }

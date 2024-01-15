@@ -8,7 +8,7 @@ namespace NexusMods.App.UI.Controls.Spine.Buttons.Download;
 public class SpineDownloadButtonDesignerViewModel : AViewModel<ISpineDownloadButtonViewModel>, ISpineDownloadButtonViewModel
 {
     [Reactive]
-    public float Number { get; set; } = 4.2f;
+    public double Number { get; set; } = 4.2f;
 
     [Reactive]
     public string Units { get; set; } = "MB/s";

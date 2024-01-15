@@ -10,7 +10,7 @@ namespace NexusMods.App.UI.RightContent.Downloads;
 
 public class InProgressViewModel : InProgressCommonViewModel
 {
-    public InProgressViewModel(DownloadService downloadService, IOverlayController overlayController)
+    public InProgressViewModel(IDownloadService downloadService, IOverlayController overlayController)
     {
         this.WhenActivated(d =>
         {
@@ -25,7 +25,7 @@ public class InProgressViewModel : InProgressCommonViewModel
             });
 
             SuspendCurrentTask = ReactiveCommand.Create(() => SelectedTask?.Suspend());
-            SuspendAllTasks = ReactiveCommand.Create(() => 
+            SuspendAllTasks = ReactiveCommand.Create(() =>
             {
                 foreach (var task in Tasks.ToArray())
                     task.Suspend();

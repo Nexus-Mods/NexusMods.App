@@ -8,7 +8,7 @@ public interface ISpineDownloadButtonViewModel : IViewModelInterface
     /// <summary>
     /// The number to display for example 8.5 for 8.5 MB/s
     /// </summary>
-    public float Number { get; }
+    public double Number { get; }
 
     /// <summary>
     /// The units to display for example MB/s
