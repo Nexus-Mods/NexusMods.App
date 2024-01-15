@@ -37,7 +37,7 @@ public class DownloadService : IDownloadService
     private readonly Subject<IDownloadTask> _resumed = new();
     private readonly Subject<(IDownloadTask task, DownloadId analyzedHash, string modName)> _analyzed = new();
     private readonly IObservable<IChangeSet<IDownloadTask>> _tasksChangeSet;
-    private ReadOnlyObservableCollection<IDownloadTask> _currentDownloads;
+    private readonly ReadOnlyObservableCollection<IDownloadTask> _currentDownloads;
     private bool _isDisposed = false;
     private readonly IFileOriginRegistry _fileOriginRegistry;
 

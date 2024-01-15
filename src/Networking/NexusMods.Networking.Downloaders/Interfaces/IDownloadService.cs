@@ -102,7 +102,8 @@ public interface IDownloadService : IDisposable
     Size GetThroughput();
 
     /// <summary>
-    /// Gets the total throughput of all download operations in bytes per second.
+    /// Gets total progress percentage of all in progress download operations.
+    /// Returns null if no downloads are in progress.
     /// </summary>
     Percent? GetTotalProgress();
 

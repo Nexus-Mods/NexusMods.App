@@ -1,5 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using System.Reactive;
+﻿using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Windows.Input;
@@ -7,6 +6,7 @@ using DynamicData;
 using NexusMods.Abstractions.Values;
 using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Networking.Downloaders.Interfaces.Traits;
+using NexusMods.Paths;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -23,37 +23,12 @@ public class SpineDownloadButtonViewModel : AViewModel<ISpineDownloadButtonViewM
     {
         this.WhenActivated(disposables =>
         {
-            downloadService.Downloads
-                .Bind(out var downloads)
-                .Subscribe()
-                .DisposeWith(disposables);
-
             Tick.Subscribe(_ =>
             {
-                long totalDownloadedBytes = 0;
-                long totalSizeBytes = 0;
-                long totalThroughput = 0;
-
-                foreach (var dl in downloads.Where(dl => dl.Status == DownloadTaskStatus.Downloading))
-                {
-                    totalThroughput += dl.CalculateThroughput();
-                    // Only compute percent for downloads that have a known size
-                    if (dl is not IHaveFileSize size) continue;
-
-                    totalSizeBytes += size.SizeBytes;
-                    totalDownloadedBytes += dl.DownloadedSizeBytes;
-                }
-
-                Number = totalThroughput / (1024.0 * 1024.0);
+                Number = downloadService.GetThroughput() / Size.MB;
                 Units = "MB/s";
+                Progress = downloadService.GetTotalProgress();
 
-                if (totalSizeBytes == 0 || totalSizeBytes <= totalDownloadedBytes)
-                {
-                    Progress = null;
-                    return;
-                }
-
-                Progress = new Percent(totalDownloadedBytes / (double)totalSizeBytes);
             }).DisposeWith(disposables);
         });
     }
