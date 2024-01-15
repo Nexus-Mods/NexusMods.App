@@ -1,15 +1,12 @@
 ﻿using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Windows.Input;
 using DynamicData;
-using DynamicData.Alias;
 using NexusMods.Abstractions.Values;
 using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Networking.Downloaders.Interfaces.Traits;
-using NexusMods.Paths;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -22,17 +19,12 @@ public class SpineDownloadButtonViewModel : AViewModel<ISpineDownloadButtonViewM
     internal IObservable<Unit> Tick { get; } = Observable.Interval(TimeSpan.FromMilliseconds(PollTimeMilliseconds))
         .Select(_ => Unit.Default);
 
-    private ReadOnlyObservableCollection<IDownloadTask> _downloads = new([]);
-
     public SpineDownloadButtonViewModel(IDownloadService downloadService)
     {
         this.WhenActivated(disposables =>
         {
             downloadService.Downloads
-                .Filter(x => x.Status != DownloadTaskStatus.Completed &&
-                             x.Status != DownloadTaskStatus.Paused &&
-                             x.Status != DownloadTaskStatus.Idle)
-                .Bind(out _downloads)
+                .Bind(out var downloads)
                 .Subscribe()
                 .DisposeWith(disposables);
 
@@ -41,7 +33,8 @@ public class SpineDownloadButtonViewModel : AViewModel<ISpineDownloadButtonViewM
                 long totalDownloadedBytes = 0;
                 long totalSizeBytes = 0;
                 long totalThroughput = 0;
-                foreach (var dl in _downloads)
+
+                foreach (var dl in downloads.Where(dl => dl.Status == DownloadTaskStatus.Downloading))
                 {
                     totalThroughput += dl.CalculateThroughput();
                     // Only compute percent for downloads that have a known size
