@@ -37,7 +37,7 @@ public class DownloadService : IDownloadService
     private readonly Subject<IDownloadTask> _resumed = new();
     private readonly Subject<(IDownloadTask task, DownloadId analyzedHash, string modName)> _analyzed = new();
     private readonly IObservable<IChangeSet<IDownloadTask>> _tasksChangeSet;
-    private readonly ReadOnlyObservableCollection<IDownloadTask> _currentDownloads;
+    private ReadOnlyObservableCollection<IDownloadTask> _currentDownloads;
     private bool _isDisposed = false;
     private readonly IFileOriginRegistry _fileOriginRegistry;
 
@@ -50,7 +50,7 @@ public class DownloadService : IDownloadService
 
         _tasks = new SourceList<IDownloadTask>();
         _tasksChangeSet = _tasks.Connect();
-        _tasksChangeSet.Bind(out _currentDownloads);
+        _tasksChangeSet.Bind(out _currentDownloads).Subscribe();
         _tasks.AddRange(GetItemsToResume());
     }
 
