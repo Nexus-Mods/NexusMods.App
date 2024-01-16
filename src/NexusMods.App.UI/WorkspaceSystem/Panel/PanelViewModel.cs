@@ -77,7 +77,7 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
                 {
                     foreach (var tab in _tabs)
                     {
-                        tab.IsVisible = !hasOneTab;
+                        tab.Header.CanClose = !hasOneTab;
                     }
                 })
                 .SubscribeWithErrorLogging()
