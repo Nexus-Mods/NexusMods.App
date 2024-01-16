@@ -1,5 +1,4 @@
 using DynamicData.Kernel;
-using NexusMods.Abstractions.DateTime;
 using NexusMods.DataModel.Activities;
 using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Networking.Downloaders.Interfaces.Traits;
@@ -198,6 +197,7 @@ public class NxmDownloadTask : IDownloadTask, IHaveDownloadVersion, IHaveFileSiz
         {
             /* ignored */
         }
+        Owner.UpdatePersistedState(this);
 
         // Replace the token source.
         _tokenSource = new CancellationTokenSource();
