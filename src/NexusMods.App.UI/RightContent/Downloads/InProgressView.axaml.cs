@@ -6,6 +6,7 @@ using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Helpers;
 using NexusMods.App.UI.Resources;
+using NexusMods.Networking.Downloaders.Interfaces;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.RightContent.Downloads;
@@ -68,8 +69,20 @@ public partial class InProgressView : ReactiveUserControl<IInProgressViewModel>
                 .Subscribe(_ =>
                 {
                     var vm = ViewModel!;
-                    SizeCompletionTextBlock.Text = StringFormatters.ToSizeString(vm.DownloadedSizeBytes, vm.TotalSizeBytes);
+                    SizeCompletionTextBlock.Text =
+                        StringFormatters.ToSizeString(vm.DownloadedSizeBytes, vm.TotalSizeBytes);
+                    SizeCompletionTextBlock.IsVisible = vm.TotalSizeBytes > 0;
+
+
                     DownloadProgressBar.Value = vm.DownloadedSizeBytes / Math.Max(1.0, vm.TotalSizeBytes);
+                    if (DownloadProgressBar.Value == 0)
+                    {
+                        DownloadProgressBar.IsVisible = false;
+                    }
+                    else
+                    {
+                        DownloadProgressBar.IsVisible = true;
+                    }
                 })
                 .DisposeWith(d);
 
@@ -98,4 +111,3 @@ public partial class InProgressView : ReactiveUserControl<IInProgressViewModel>
         });
     }
 }
-

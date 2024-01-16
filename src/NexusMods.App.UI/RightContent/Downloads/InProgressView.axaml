@@ -50,7 +50,7 @@
         </Border>
 
         <!-- Page Content -->
-        <Grid RowDefinitions="Auto, Auto, *" Margin="24, 16" Grid.Row="1">
+        <Grid RowDefinitions="Auto, 24, *" Margin="24, 16" Grid.Row="1">
 
             <!-- Title & Status -->
             <DockPanel LastChildFill="True" HorizontalAlignment="Stretch" Grid.Row="0">
