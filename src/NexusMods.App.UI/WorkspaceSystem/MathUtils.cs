@@ -119,6 +119,15 @@ internal static class MathUtils
         return -tolerance < delta && tolerance > delta;
     }
 
+    /// <summary>
+    /// Tolerant equality check.
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static bool IsCloseTo(this Point left, Point right, double tolerance = DefaultTolerance)
+    {
+        return left.X.IsCloseTo(right.X, tolerance: tolerance) && left.Y.IsCloseTo(right.Y, tolerance: tolerance);
+    }
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool IsGreaterThanOrCloseTo(this double left, double right, double tolerance = DefaultTolerance)
     {

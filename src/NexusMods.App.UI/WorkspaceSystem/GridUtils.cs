@@ -547,7 +547,7 @@ public static class GridUtils
             var hasOther = false;
             foreach (var other in res)
             {
-                if (!other.Start.Equals(start) || !other.End.Equals(end)) continue;
+                if (!other.Start.IsCloseTo(start) || !other.End.IsCloseTo(end)) continue;
                 hasOther = true;
 
                 foreach (var panel in columns)
@@ -664,7 +664,7 @@ public static class GridUtils
             var hasOther = false;
             foreach (var other in res)
             {
-                if (!other.Start.Equals(start) || !other.End.Equals(end)) continue;
+                if (!other.Start.IsCloseTo(start) || !other.End.IsCloseTo(end)) continue;
                 hasOther = true;
 
                 foreach (var panel in rows)
