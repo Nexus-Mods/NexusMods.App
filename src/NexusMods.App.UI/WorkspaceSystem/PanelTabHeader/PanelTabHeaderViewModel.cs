@@ -18,6 +18,8 @@ public class PanelTabHeaderViewModel : AViewModel<IPanelTabHeaderViewModel>, IPa
     [Reactive]
     public IImage? Icon { get; set; }
 
+    [Reactive] public bool CanClose { get; set; }
+
     [Reactive] public bool IsSelected { get; set; } = true;
 
     public ReactiveCommand<Unit, PanelTabId> CloseTabCommand { get; }
@@ -25,7 +27,7 @@ public class PanelTabHeaderViewModel : AViewModel<IPanelTabHeaderViewModel>, IPa
     public PanelTabHeaderViewModel(PanelTabId id)
     {
         Id = id;
-        CloseTabCommand = ReactiveCommand.Create(() => Id);
+        CloseTabCommand = ReactiveCommand.Create(() => Id, this.WhenAnyValue(vm => vm.CanClose));
 
         this.WhenActivated(disposables =>
         {
