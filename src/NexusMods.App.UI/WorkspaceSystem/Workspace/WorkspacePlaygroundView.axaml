@@ -31,7 +31,7 @@
             </ItemsControl.ItemsPanel>
         </ItemsControl>
 
-        <reactive:ViewModelViewHost Grid.Row="2" x:Name="ViewModelViewHost" />
+        <reactive:ViewModelViewHost Grid.Row="2" Margin="12" x:Name="ViewModelViewHost" />
     </Grid>
 
 </reactive:ReactiveUserControl>

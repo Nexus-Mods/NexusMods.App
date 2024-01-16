@@ -124,6 +124,17 @@ public partial class PanelView : ReactiveUserControl<IPanelViewModel>
                 })
                 .BindToView(this, view => view.TabHeaderScrollViewer.Offset)
                 .DisposeWith(disposables);
+
+            // styling:
+            this.WhenAnyValue(view => view.ViewModel!.Tabs.Count)
+                .Select(count => count == 1)
+                .Do(hasOneTab =>
+                {
+                    if (hasOneTab) TabHeaderBorder.Classes.Remove("Base");
+                    else TabHeaderBorder.Classes.Add("Base");
+                })
+                .SubscribeWithErrorLogging()
+                .DisposeWith(disposables);
         });
     }
 }
