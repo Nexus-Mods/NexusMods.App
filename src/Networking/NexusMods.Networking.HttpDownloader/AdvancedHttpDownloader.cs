@@ -66,7 +66,8 @@ namespace NexusMods.Networking.HttpDownloader
         /// <summary>
         /// Constructor
         /// </summary>
-        public AdvancedHttpDownloader(ILogger<AdvancedHttpDownloader> logger, HttpClient client, IActivityFactory activityFactory,
+        public AdvancedHttpDownloader(ILogger<AdvancedHttpDownloader> logger, HttpClient client,
+            IActivityFactory activityFactory,
             IHttpDownloaderSettings settings)
         {
             _logger = logger;
@@ -79,10 +80,12 @@ namespace NexusMods.Networking.HttpDownloader
         }
 
         /// <inheritdoc />
-        public async Task<Hash> DownloadAsync(IReadOnlyList<HttpRequestMessage> sources, AbsolutePath destination, HttpDownloaderState? downloaderState, Size? size, CancellationToken cancel)
+        public async Task<Hash> DownloadAsync(IReadOnlyList<HttpRequestMessage> sources, AbsolutePath destination,
+            HttpDownloaderState? downloaderState, Size? size, CancellationToken cancel)
         {
             downloaderState ??= new HttpDownloaderState();
-            using var primaryJob = _activityFactory.Create<Size>(IHttpDownloader.Group, "Initiating Download {FileName}", destination);
+            using var primaryJob =
+                _activityFactory.Create<Size>(IHttpDownloader.Group, "Initiating Download {FileName}", destination);
 
             var features = await ServerFeatures.Request(_client, sources[0].Copy(), cancel);
             size ??= features.DownloadSize;
@@ -93,17 +96,21 @@ namespace NexusMods.Networking.HttpDownloader
                 return await DownloadWithoutResume(sources, destination, downloaderState, size, cancel);
             }
 
-            // Note: All data eventually is piped into primary job (when writing to destination), so we can just use that to track everything as a whole.
-            downloaderState.Activity = primaryJob;
-
             var state = await InitiateState(destination, size.Value, sources, cancel);
             state.Sources = sources.Select((source, idx) => new Source { Request = source, Priority = idx }).ToArray();
             state.Destination = destination;
+
             primaryJob.SetMax(state.TotalSize);
+            downloaderState.Activity ??= primaryJob;
+            var activity = downloaderState.Activity as IActivitySource<Size>;
+            activity?.SetProgress(state.CompletedSize);
+            activity?.StartOrResume(state.CompletedSize);
+
 
             var writeQueue = Channel.CreateBounded<WriteOrder>(_writeQueueLength);
 
-            var fileWriter = FileWriterTask(state, writeQueue.Reader, primaryJob, cancel);
+            var fileWriter = FileWriterTask(state, writeQueue.Reader, activity!,
+                cancel);
 
             await DownloaderTask(state, writeQueue.Writer, cancel);
 
@@ -124,10 +131,12 @@ namespace NexusMods.Networking.HttpDownloader
             return await FinalizeDownload(state, cancel);
         }
 
-        private async Task<Hash> DownloadWithoutResume(IReadOnlyList<HttpRequestMessage> sources, AbsolutePath destination,
+        private async Task<Hash> DownloadWithoutResume(IReadOnlyList<HttpRequestMessage> sources,
+            AbsolutePath destination,
             HttpDownloaderState downloaderState, Size? size, CancellationToken cancel)
         {
-            using var primaryJob = _activityFactory.Create<Size>(IHttpDownloader.Group, "Downloading {FileName}", destination);
+            using var primaryJob =
+                _activityFactory.Create<Size>(IHttpDownloader.Group, "Downloading {FileName}", destination);
 
             using var buffer = _memoryPool.Rent((int)_readBlockSize.Value);
             foreach (var source in sources)
@@ -156,7 +165,9 @@ namespace NexusMods.Networking.HttpDownloader
         }
 
         #region Output Writing
-        private async Task FileWriterTask(DownloadState state, ChannelReader<WriteOrder> writes, IActivitySource<Size> job, CancellationToken cancel)
+
+        private async Task FileWriterTask(DownloadState state, ChannelReader<WriteOrder> writes,
+            IActivitySource<Size> job, CancellationToken cancel)
         {
             var tempPath = state.TempFilePath;
             await using var file = tempPath.Open(FileMode.OpenOrCreate, FileAccess.Write);
@@ -179,7 +190,7 @@ namespace NexusMods.Networking.HttpDownloader
 
                     await WriteDownloadState(state);
 
-                    job.AddProgress(Size.FromLong(order.Data.Length));
+                    job.SetProgress(state.CompletedSize);
                 }
                 catch (ChannelClosedException)
                 {
@@ -187,18 +198,21 @@ namespace NexusMods.Networking.HttpDownloader
                 }
             }
         }
+
         #endregion
 
         #region Downloading
 
-        private async Task DownloaderTask(DownloadState state, ChannelWriter<WriteOrder> writes, CancellationToken cancel)
+        private async Task DownloaderTask(DownloadState state, ChannelWriter<WriteOrder> writes,
+            CancellationToken cancel)
         {
             var finishReward = 1024;
 
             // start one task per unfinished chunk. We never start additional tasks but a task may take on another chunks
             await Task.WhenAll(state.UnfinishedChunks.Select(async chunk =>
             {
-                using var chunkJob = _activityFactory.Create<Size>(IHttpDownloader.Group, $"Download Chunk @${chunk.Offset}");
+                using var chunkJob =
+                    _activityFactory.Create<Size>(IHttpDownloader.Group, $"Download Chunk @${chunk.Offset}");
                 chunkJob.SetMax(chunk.Size);
 
                 try
@@ -243,6 +257,7 @@ namespace NexusMods.Networking.HttpDownloader
                 // don't cancel downloads that were only just started
                 return false;
             }
+
             if (chunk.Read / chunk.Size > 0.8f)
             {
                 // don't cancel downloads that are almost done
@@ -294,7 +309,8 @@ namespace NexusMods.Networking.HttpDownloader
             return CancellationTokenSource.CreateLinkedTokenSource(new[] { chunk.Cancel.Token, cancel }).Token;
         }
 
-        private async Task<HttpResponseMessage?> SendRangeRequest(DownloadState state, ChunkState chunk, CancellationToken cancel)
+        private async Task<HttpResponseMessage?> SendRangeRequest(DownloadState state, ChunkState chunk,
+            CancellationToken cancel)
         {
             // Caller passes a full http request but we need to adjust the headers so need a copy
             var request = chunk.Source!.Request!.Copy();
@@ -308,13 +324,12 @@ namespace NexusMods.Networking.HttpDownloader
             HttpResponseMessage response;
             var retries = 0;
 
-            while(true)
+            while (true)
             {
                 try
                 {
                     response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancel);
                     break;
-
                 }
                 catch (HttpRequestException)
                 {
@@ -327,14 +342,16 @@ namespace NexusMods.Networking.HttpDownloader
             if (!response.IsSuccessStatusCode)
             {
                 // TODO should be retrying the source once at least
-                _logger.LogWarning("Failed to download {Source}: {StatusCode}", request.RequestUri, response.StatusCode);
+                _logger.LogWarning("Failed to download {Source}: {StatusCode}", request.RequestUri,
+                    response.StatusCode);
                 return null;
             }
 
             return response;
         }
 
-        private async Task DownloadChunk(IActivitySource<Size> activitySource, DownloadState download, ChunkState chunk, ChannelWriter<WriteOrder> writes, CancellationToken cancel)
+        private async Task DownloadChunk(IActivitySource<Size> activitySource, DownloadState download, ChunkState chunk,
+            ChannelWriter<WriteOrder> writes, CancellationToken cancel)
         {
             HttpResponseMessage? response = null;
 
@@ -379,12 +396,14 @@ namespace NexusMods.Networking.HttpDownloader
                 {
                     throw new InvalidOperationException("no valid download sources");
                 }
+
                 res.Priority += download.Sources?.Length ?? 0;
                 return res;
             }
         }
 
-        private async Task ReadStreamToEnd(IActivitySource<Size> job, Stream stream, ChunkState chunk, ChannelWriter<WriteOrder> writes, CancellationToken cancel)
+        private async Task ReadStreamToEnd(IActivitySource<Size> job, Stream stream, ChunkState chunk,
+            ChannelWriter<WriteOrder> writes, CancellationToken cancel)
         {
             var offset = chunk.Offset + chunk.Read;
             var upperBounds = chunk.Offset + chunk.Size;
@@ -421,7 +440,8 @@ namespace NexusMods.Networking.HttpDownloader
         /// <param name="totalSize"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        private static async ValueTask<Memory<byte>> FillBuffer(Stream stream, Memory<byte> data, Size totalSize, CancellationToken token)
+        private static async ValueTask<Memory<byte>> FillBuffer(Stream stream, Memory<byte> data, Size totalSize,
+            CancellationToken token)
         {
             var totalRead = 0;
             while (totalRead < data.Length && totalRead < (long)totalSize.Value)
@@ -430,6 +450,7 @@ namespace NexusMods.Networking.HttpDownloader
                 if (read == 0) break;
                 totalRead += read;
             }
+
             return data[..totalRead];
         }
 
@@ -437,9 +458,9 @@ namespace NexusMods.Networking.HttpDownloader
 
         #region Download State Persistance
 
-        private async Task<DownloadState> InitiateState(AbsolutePath destination, Size size, IReadOnlyList<HttpRequestMessage> sourceMessages, CancellationToken cancel)
+        private async Task<DownloadState> InitiateState(AbsolutePath destination, Size size,
+            IReadOnlyList<HttpRequestMessage> sourceMessages, CancellationToken cancel)
         {
-
             DownloadState? state = null;
             var stateFilePath = DownloadState.GetStateFilePath(destination);
             if (stateFilePath.FileExists && DownloadState.GetTempFilePath(destination).FileExists)
@@ -450,7 +471,8 @@ namespace NexusMods.Networking.HttpDownloader
             }
 
             var sources = sourceMessages.Select(msg =>
-                new Source{
+                new Source
+                {
                     Request = msg,
                     Priority = 0,
                 }).ToArray();
@@ -466,7 +488,6 @@ namespace NexusMods.Networking.HttpDownloader
                     Size = chunk.Size,
                 }).ToList();
                 state.Sources = sources;
-
             }
             else
             {
@@ -480,7 +501,8 @@ namespace NexusMods.Networking.HttpDownloader
                     });
                 }
 
-                _logger.LogInformation("Starting download {FilePath} in {ChunkCount} chunks of {Size} ", destination, chunks.Count, _chunkSize);
+                _logger.LogInformation("Starting download {FilePath} in {ChunkCount} chunks of {Size} ", destination,
+                    chunks.Count, _chunkSize);
 
                 state = new DownloadState
                 {
@@ -507,7 +529,8 @@ namespace NexusMods.Networking.HttpDownloader
             }
         }
 
-        private static async ValueTask<DownloadState> DeserializeDownloadState(AbsolutePath path, CancellationToken token)
+        private static async ValueTask<DownloadState> DeserializeDownloadState(AbsolutePath path,
+            CancellationToken token)
         {
             await using var fs = path.Read();
             var res = await JsonSerializer.DeserializeAsync<DownloadState>(fs, JsonSerializerOptions.Default, token);
@@ -516,6 +539,5 @@ namespace NexusMods.Networking.HttpDownloader
         }
 
         #endregion // Download State Persistence
-
     }
 }
