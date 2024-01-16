@@ -15,6 +15,9 @@ public partial class PanelResizerView : ReactiveUserControl<IPanelResizerViewMod
 
     private bool _isPressed;
 
+    private static readonly Cursor CursorHorizontal = new(StandardCursorType.SizeNorthSouth);
+    private static readonly Cursor CursorVertical = new(StandardCursorType.SizeWestEast);
+
     public PanelResizerView()
     {
         InitializeComponent();
@@ -105,7 +108,7 @@ public partial class PanelResizerView : ReactiveUserControl<IPanelResizerViewMod
 
     private void PopulateFromViewModel(IPanelResizerViewModel viewModel)
     {
-        Cursor = new Cursor(viewModel.IsHorizontal ? StandardCursorType.SizeNorthSouth : StandardCursorType.SizeWestEast);
+        Cursor = viewModel.IsHorizontal ? CursorHorizontal : CursorVertical;
         Icon.Classes.Add(viewModel.IsHorizontal ? "DragHorizontal" : "DragVertical");
     }
 
