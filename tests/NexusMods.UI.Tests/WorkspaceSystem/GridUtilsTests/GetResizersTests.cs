@@ -16,7 +16,7 @@ public partial class GridUtilsTests
     public void Test_GetResizers2(
         string name,
         WorkspaceGridState workspaceState,
-        List<GridUtils.ResizerInfo2> expectedRes)
+        List<GridUtils.ResizerInfo> expectedRes)
     {
         GridUtils.IsPerfectGrid(workspaceState).Should().BeTrue();
 
@@ -35,7 +35,7 @@ public partial class GridUtilsTests
         }
     }
 
-    public static TheoryData<string, WorkspaceGridState, List<GridUtils.ResizerInfo2>> TestData_GetResizers2_Generated()
+    public static TheoryData<string, WorkspaceGridState, List<GridUtils.ResizerInfo>> TestData_GetResizers2_Generated()
     {
         var firstPanelId = PanelId.From(Guid.Parse("11111111-1111-1111-1111-111111111111"));
         var secondPanelId = PanelId.From(Guid.Parse("22222222-2222-2222-2222-222222222222"));
@@ -46,7 +46,7 @@ public partial class GridUtilsTests
         const double min = 0.2;
         const double max = 1.0 - min;
 
-        var res = new TheoryData<string, WorkspaceGridState, List<GridUtils.ResizerInfo2>>();
+        var res = new TheoryData<string, WorkspaceGridState, List<GridUtils.ResizerInfo>>();
 
         // two columns
         // | 1 | 2 |
@@ -84,9 +84,9 @@ public partial class GridUtilsTests
                 new PanelGridState(fourthPanelId, new Rect(0.5, 0.5, 0.5, 0.5))
             ),
             [
-                new GridUtils.ResizerInfo2(new Point(0, 0.5), new Point(0.5, 0.5), IsHorizontal: true, [firstPanelId, thirdPanelId]),
-                new GridUtils.ResizerInfo2(new Point(0.5, 0), new Point(0.5, 1), IsHorizontal: false, [firstPanelId, secondPanelId, thirdPanelId, fourthPanelId]),
-                new GridUtils.ResizerInfo2(new Point(0.5, 0.5), new Point(1, 0.5), IsHorizontal: true, [secondPanelId, fourthPanelId])
+                new GridUtils.ResizerInfo(new Point(0, 0.5), new Point(0.5, 0.5), IsHorizontal: true, [firstPanelId, thirdPanelId]),
+                new GridUtils.ResizerInfo(new Point(0.5, 0), new Point(0.5, 1), IsHorizontal: false, [firstPanelId, secondPanelId, thirdPanelId, fourthPanelId]),
+                new GridUtils.ResizerInfo(new Point(0.5, 0.5), new Point(1, 0.5), IsHorizontal: true, [secondPanelId, fourthPanelId])
             ]
         );
 
@@ -102,9 +102,9 @@ public partial class GridUtilsTests
                 new PanelGridState(fourthPanelId, new Rect(0.5, 0.5, 0.5, 0.5))
             ),
             [
-                new GridUtils.ResizerInfo2(new Point(0.5, 0), new Point(0.5, 0.5), IsHorizontal: false, [firstPanelId, secondPanelId]),
-                new GridUtils.ResizerInfo2(new Point(0, 0.5), new Point(1, 0.5), IsHorizontal: true, [firstPanelId, secondPanelId, thirdPanelId, fourthPanelId]),
-                new GridUtils.ResizerInfo2(new Point(0.5, 0.5), new Point(0.5, 1), IsHorizontal: false, [thirdPanelId, fourthPanelId]),
+                new GridUtils.ResizerInfo(new Point(0.5, 0), new Point(0.5, 0.5), IsHorizontal: false, [firstPanelId, secondPanelId]),
+                new GridUtils.ResizerInfo(new Point(0, 0.5), new Point(1, 0.5), IsHorizontal: true, [firstPanelId, secondPanelId, thirdPanelId, fourthPanelId]),
+                new GridUtils.ResizerInfo(new Point(0.5, 0.5), new Point(0.5, 1), IsHorizontal: false, [thirdPanelId, fourthPanelId]),
             ]
         );
 
@@ -120,7 +120,7 @@ public partial class GridUtilsTests
                     new PanelGridState(firstPanelId, new Rect(0, 0, 0.7, 1)),
                     new PanelGridState(secondPanelId, new Rect(0.7, 0, 0.3, 1))
                 ), [
-                    new GridUtils.ResizerInfo2(new Point(0.7, 0), new Point(0.7, 1), IsHorizontal: false, [firstPanelId, secondPanelId]),
+                    new GridUtils.ResizerInfo(new Point(0.7, 0), new Point(0.7, 1), IsHorizontal: false, [firstPanelId, secondPanelId]),
                 ]);
         }
 
@@ -132,7 +132,7 @@ public partial class GridUtilsTests
                     new PanelGridState(firstPanelId, new Rect(0, 0, 1, 0.7)),
                     new PanelGridState(secondPanelId, new Rect(0, 0.7, 1, 0.3))
                 ), [
-                    new GridUtils.ResizerInfo2(new Point(0, 0.7), new Point(1, 0.7), IsHorizontal: true, [firstPanelId, secondPanelId]),
+                    new GridUtils.ResizerInfo(new Point(0, 0.7), new Point(1, 0.7), IsHorizontal: true, [firstPanelId, secondPanelId]),
                 ]);
         }
 
@@ -146,8 +146,8 @@ public partial class GridUtilsTests
                     new PanelGridState(thirdPanelId, new Rect(0.7, 0.4, 0.3, 0.6))
                 ),
                 [
-                    new GridUtils.ResizerInfo2(new Point(0.7, 0), new Point(0.7, 1), IsHorizontal: false, [firstPanelId, secondPanelId, thirdPanelId]),
-                    new GridUtils.ResizerInfo2(new Point(0.7, 0.4), new Point(1, 0.4), IsHorizontal: true, [secondPanelId, thirdPanelId])
+                    new GridUtils.ResizerInfo(new Point(0.7, 0), new Point(0.7, 1), IsHorizontal: false, [firstPanelId, secondPanelId, thirdPanelId]),
+                    new GridUtils.ResizerInfo(new Point(0.7, 0.4), new Point(1, 0.4), IsHorizontal: true, [secondPanelId, thirdPanelId])
                 ]
             );
         }
@@ -162,8 +162,8 @@ public partial class GridUtilsTests
                     new PanelGridState(thirdPanelId, new Rect(0.7, 0.4, 0.3, 0.6))
                 ),
                 [
-                    new GridUtils.ResizerInfo2(new Point(0, 0.4), new Point(1, 0.4), IsHorizontal: true, [firstPanelId, secondPanelId, thirdPanelId]),
-                    new GridUtils.ResizerInfo2(new Point(0.7, 0.4), new Point(0.7, 1), IsHorizontal: false, [secondPanelId, thirdPanelId]),
+                    new GridUtils.ResizerInfo(new Point(0, 0.4), new Point(1, 0.4), IsHorizontal: true, [firstPanelId, secondPanelId, thirdPanelId]),
+                    new GridUtils.ResizerInfo(new Point(0.7, 0.4), new Point(0.7, 1), IsHorizontal: false, [secondPanelId, thirdPanelId]),
                 ]
             );
         }

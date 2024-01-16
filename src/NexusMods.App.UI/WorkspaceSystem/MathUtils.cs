@@ -58,27 +58,6 @@ internal static class MathUtils
         return (updatedLogicalBounds, newPanelLogicalBounds);
     }
 
-    internal static Point GetMidPoint(Rect a, Rect b, bool isHorizontal)
-    {
-        double midX, midY;
-        if (isHorizontal)
-        {
-            midX = a.Left.IsLessThanOrCloseTo(b.Left) && a.Right.IsGreaterThanOrCloseTo(b.Right)
-                ? b.Left + b.Width / 2
-                : a.Left + b.Width / 2;
-            midY = Math.Max(a.Top, b.Top);
-        }
-        else
-        {
-            midX = Math.Max(a.Left, b.Left);
-            midY = a.Top.IsLessThanOrCloseTo(b.Top) && a.Bottom.IsGreaterThanOrCloseTo(b.Bottom)
-                ? b.Top + b.Height / 2
-                : a.Top + a.Height / 2;
-        }
-
-        return new Point(midX, midY);
-    }
-
     internal static (Point Start, Point End) GetResizerPoints(Rect a, Rect b, WorkspaceGridState.AdjacencyKind adjacencyKind)
     {
         var isSameRow = (adjacencyKind & WorkspaceGridState.AdjacencyKind.SameRow) == WorkspaceGridState.AdjacencyKind.SameRow;

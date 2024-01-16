@@ -438,16 +438,16 @@ public static class GridUtils
         return res.UnionById(updates);
     }
 
-    internal static List<ResizerInfo2> GetResizers2(WorkspaceGridState workspaceState)
+    internal static List<ResizerInfo> GetResizers2(WorkspaceGridState workspaceState)
     {
         return workspaceState.IsHorizontal
             ? GetResizersForHorizontal(workspaceState)
             : GetResizersForVertical(workspaceState);
     }
 
-    private static List<ResizerInfo2> GetResizersForVertical(WorkspaceGridState currentState)
+    private static List<ResizerInfo> GetResizersForVertical(WorkspaceGridState currentState)
     {
-        var res = new List<ResizerInfo2>();
+        var res = new List<ResizerInfo>();
 
         var (rowCount, maxColumnCount) = currentState.CountRows();
 
@@ -473,7 +473,7 @@ public static class GridUtils
                 var (columnStart, columnEnd) = MathUtils.GetResizerPoints(curRect, nextRect, WorkspaceGridState.AdjacencyKind.SameRow);
                 if (!HasOther(columnStart, columnEnd, columns))
                 {
-                    res.Add(new ResizerInfo2(columnStart, columnEnd, IsHorizontal: false, [curId, nextId]));
+                    res.Add(new ResizerInfo(columnStart, columnEnd, IsHorizontal: false, [curId, nextId]));
                 }
             }
 
@@ -530,12 +530,12 @@ public static class GridUtils
 
                 if (!isDoubleSided)
                 {
-                    res.Add(new ResizerInfo2(start, end, IsHorizontal: true, l));
+                    res.Add(new ResizerInfo(start, end, IsHorizontal: true, l));
                 }
                 else
                 {
                     var (bottomStart, bottomEnd) = (new Point(start.X, info.Bottom()), new Point(end.X, info.Bottom()));
-                    res.Add(new ResizerInfo2(bottomStart, bottomEnd, IsHorizontal: true, l));
+                    res.Add(new ResizerInfo(bottomStart, bottomEnd, IsHorizontal: true, l));
                 }
             }
         }
@@ -561,9 +561,9 @@ public static class GridUtils
         }
     }
 
-    private static List<ResizerInfo2> GetResizersForHorizontal(WorkspaceGridState currentState)
+    private static List<ResizerInfo> GetResizersForHorizontal(WorkspaceGridState currentState)
     {
-        var res = new List<ResizerInfo2>();
+        var res = new List<ResizerInfo>();
 
         var (columnCount, maxRowCount) = currentState.CountColumns();
 
@@ -590,7 +590,7 @@ public static class GridUtils
                 var (rowStart, rowEnd) = MathUtils.GetResizerPoints(curRect, nextRect, WorkspaceGridState.AdjacencyKind.SameColumn);
                 if (!HasOther(rowStart, rowEnd, rows))
                 {
-                    res.Add(new ResizerInfo2(rowStart, rowEnd, IsHorizontal: true, [curId, nextId]));
+                    res.Add(new ResizerInfo(rowStart, rowEnd, IsHorizontal: true, [curId, nextId]));
                 }
             }
 
@@ -647,12 +647,12 @@ public static class GridUtils
 
                 if (!isDoubleSided)
                 {
-                    res.Add(new ResizerInfo2(start, end, IsHorizontal: false, l));
+                    res.Add(new ResizerInfo(start, end, IsHorizontal: false, l));
                 }
                 else
                 {
                     var (rightStart, rightEnd) = (new Point(info.Right(), start.Y), new Point(info.Right(), end.Y));
-                    res.Add(new ResizerInfo2(rightStart, rightEnd, IsHorizontal: false, l));
+                    res.Add(new ResizerInfo(rightStart, rightEnd, IsHorizontal: false, l));
                 }
             }
         }
@@ -678,5 +678,5 @@ public static class GridUtils
         }
     }
 
-    public record struct ResizerInfo2(Point Start, Point End, bool IsHorizontal, List<PanelId> ConnectedPanels);
+    public record struct ResizerInfo(Point Start, Point End, bool IsHorizontal, List<PanelId> ConnectedPanels);
 }
