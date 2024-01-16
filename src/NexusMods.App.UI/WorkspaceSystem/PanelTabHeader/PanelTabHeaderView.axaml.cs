@@ -35,7 +35,11 @@ public partial class PanelTabHeaderView : ReactiveUserControl<IPanelTabHeaderVie
                 .DisposeWith(disposables);
 
             this.WhenAnyValue(view => view.ViewModel!.Title)
-                .Subscribe(title => ToolTip.SetTip(this, title))
+                .Subscribe(title =>
+                {
+                    ToolTip.SetTip(this, title);
+                    ToolTip.SetShowDelay(this, (int)TimeSpan.FromMilliseconds(250).TotalMilliseconds);
+                })
                 .DisposeWith(disposables);
 
             this.BindCommand(ViewModel, vm => vm.CloseTabCommand, view => view.CloseTabButton)
