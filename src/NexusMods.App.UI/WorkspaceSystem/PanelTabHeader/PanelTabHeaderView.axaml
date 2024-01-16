@@ -13,7 +13,7 @@
         <workspace:PanelTabHeaderDesignViewModel />
     </Design.DataContext>
 
-    <Border x:Name="Container">
+    <Border x:Name="Container" Classes="RoundedTop">
 
         <StackPanel Orientation="Horizontal"
                     Spacing="12"

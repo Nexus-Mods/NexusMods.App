@@ -11,7 +11,7 @@
 
     <Border Classes="Rounded Low">
         <Grid RowDefinitions="Auto, *">
-            <Border Grid.Row="0" x:Name="TabHeaderBorder">
+            <Border Grid.Row="0" x:Name="TabHeaderBorder" Classes="OutlineWeak RoundedTop">
                 <Grid ColumnDefinitions="*, Auto">
                     <Grid Grid.Column="0" ColumnDefinitions="Auto, *, Auto, Auto">
                         <Button Grid.Column="0"
