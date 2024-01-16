@@ -164,7 +164,7 @@ public class InProgressCommonViewModel : AViewModel<IInProgressViewModel>, IInPr
         long totalDownloadedBytes = 0;
         long totalSizeBytes = 0;
 
-        foreach (var task in Tasks)
+        foreach (var task in Tasks.Where(x => x.Status == DownloadTaskStatus.Downloading))
         {
             totalDownloadedBytes += task.DownloadedBytes;
             totalSizeBytes += task.SizeBytes;
