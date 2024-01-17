@@ -438,7 +438,7 @@ public static class GridUtils
         return res.UnionById(updates);
     }
 
-    internal static List<ResizerInfo> GetResizers2(WorkspaceGridState workspaceState)
+    internal static List<ResizerInfo> GetResizers(WorkspaceGridState workspaceState)
     {
         return workspaceState.IsHorizontal
             ? GetResizersForHorizontal(workspaceState)

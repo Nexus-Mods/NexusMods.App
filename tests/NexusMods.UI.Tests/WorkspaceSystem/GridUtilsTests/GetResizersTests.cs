@@ -20,7 +20,7 @@ public partial class GridUtilsTests
     {
         GridUtils.IsPerfectGrid(workspaceState).Should().BeTrue();
 
-        var res = GridUtils.GetResizers2(workspaceState);
+        var res = GridUtils.GetResizers(workspaceState);
         res.Should().HaveCount(expectedRes.Count);
 
         for (var i = 0; i < res.Count; i++)

@@ -252,7 +252,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
             updater.Clear();
 
             var currentState =WorkspaceGridState.From(_panels, IsHorizontal);
-            var resizers = GridUtils.GetResizers2(currentState);
+            var resizers = GridUtils.GetResizers(currentState);
 
             updater.AddRange(resizers.Select(info =>
             {
