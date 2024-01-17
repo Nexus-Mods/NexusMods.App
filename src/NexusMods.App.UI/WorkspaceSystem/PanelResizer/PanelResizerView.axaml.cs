@@ -10,7 +10,20 @@ namespace NexusMods.App.UI.WorkspaceSystem;
 
 public partial class PanelResizerView : ReactiveUserControl<IPanelResizerViewModel>
 {
+    /// <summary>
+    /// Resizers take up the space between panels. However, since the logical are of a
+    /// panel doesn't account for that, we use padding to visualize it. The Resizer must
+    /// thus have a width, or height depending on the orientation, of the padding that the
+    /// panels have.
+    ///
+    /// This padding value is multiplied by two, because resizers go between two panels.
+    /// </summary>
     private const double Size = PanelView.DefaultPadding * 2;
+
+    /// <summary>
+    /// This offset is used to prevent resizers from overlapping. As such, it has to be
+    /// a multiple of <see cref="Size"/>.
+    /// </summary>
     private const double Offset = Size * 2.5;
 
     private bool _isPressed;
@@ -69,7 +82,6 @@ public partial class PanelResizerView : ReactiveUserControl<IPanelResizerViewMod
                 .Finally(() =>
                 {
                     _isPressed = false;
-                    Icon.IsVisible = false;
                 })
                 .Subscribe()
                 .DisposeWith(disposables);
@@ -81,7 +93,6 @@ public partial class PanelResizerView : ReactiveUserControl<IPanelResizerViewMod
                 .Do(_ =>
                 {
                     _isPressed = false;
-                    Icon.IsVisible = false;
                 })
                 .Select(_ => Unit.Default)
                 .InvokeCommand(this, view => view.ViewModel!.DragEndCommand)

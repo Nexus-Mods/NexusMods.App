@@ -1,4 +1,3 @@
-using System.Collections.Immutable;
 using System.Diagnostics;
 using Avalonia;
 
@@ -456,7 +455,6 @@ public static class GridUtils
 
         Span<PanelGridState> columnBuffer = stackalloc PanelGridState[maxColumnCount];
         Span<PanelGridState> columnsToAdd = stackalloc PanelGridState[maxColumnCount];
-
         while (rowEnumerator.MoveNext(columnBuffer))
         {
             var numColumnsToAdd = 0;
@@ -465,13 +463,15 @@ public static class GridUtils
             var info = row.Info;
             var columns = row.Columns;
 
+            // Step 1: Create resizers for each column. In a vertical workspace,
+            // these resizers are independent of each other.
             for (var i = 0; i < columns.Length - 1; i++)
             {
                 var (curId, curRect) = columns[i];
                 var (nextId, nextRect) = columns[i + 1];
 
                 var (columnStart, columnEnd) = MathUtils.GetResizerPoints(curRect, nextRect, WorkspaceGridState.AdjacencyKind.SameRow);
-                if (!HasOther(columnStart, columnEnd, columns))
+                if (!HasOther(res, columnStart, columnEnd, columns))
                 {
                     res.Add(new ResizerInfo(columnStart, columnEnd, IsHorizontal: false, [curId, nextId]));
                 }
@@ -479,6 +479,13 @@ public static class GridUtils
 
             if (rowCount == 1) break;
 
+            // Step 2: Create a resizer between this row and another.
+
+            // Step 2.1: The resizer can't go from minX=0.0 to maxX=1.0 because
+            // some columns inside the row may span cross multiple rows.
+            // NOTE(erri120): This code won't work in certain scenarios for workspaces that
+            // are bigger than 2x2. This code will need to be revisited if we want to support
+            // other configurations.
             var (minX, maxX) = (1.0, 0.0);
             foreach (var column in columns)
             {
@@ -493,15 +500,14 @@ public static class GridUtils
                 columnsToAdd[numColumnsToAdd++] = column;
             }
 
-            if (minX > maxX)
-            {
-                Debugger.Break();
-                break;
-            }
+            Debug.Assert(minX < maxX, $"minX is greater than maxX: {minX} > {maxX}. Row:\n{row.ToDebugString()}");
 
             ValueTuple<Point, Point> tuple;
             var isDoubleSided = false;
 
+            // NOTE(erri120): The "double-sided" case is only possible for workspaces larger
+            // than 2x2 where one row can be between two others. With a 2x2 workspace,
+            // the row is either at the top starting at 0.0 or on the bottom ending at 1.0.
             if (info.Y.IsCloseTo(0))
             {
                 tuple = (new Point(minX, info.Bottom()), new Point(maxX, info.Bottom()));
@@ -518,7 +524,7 @@ public static class GridUtils
             var (start, end) = tuple;
 
             var slice = columnsToAdd[..numColumnsToAdd];
-            var hasOther = HasOther(start, end, slice);
+            var hasOther = HasOther(res, start, end, slice);
 
             if (isDoubleSided || !hasOther)
             {
@@ -541,24 +547,6 @@ public static class GridUtils
         }
 
         return res;
-
-        bool HasOther(Point start, Point end, ReadOnlySpan<PanelGridState> columns)
-        {
-            var hasOther = false;
-            foreach (var other in res)
-            {
-                if (!other.Start.IsCloseTo(start) || !other.End.IsCloseTo(end)) continue;
-                hasOther = true;
-
-                foreach (var panel in columns)
-                {
-                    if (!other.ConnectedPanels.Contains(panel.Id))
-                        other.ConnectedPanels.Add(panel.Id);
-                }
-            }
-
-            return hasOther;
-        }
     }
 
     private static List<ResizerInfo> GetResizersForHorizontal(WorkspaceGridState currentState)
@@ -580,15 +568,15 @@ public static class GridUtils
             var info = column.Info;
             var rows = column.Rows;
 
+            // Step 1: Create resizers for each row. In a horizontal workspace,
+            // these resizers are independent of each other.
             for (var i = 0; i < rows.Length - 1; i++)
             {
                 var (curId, curRect) = rows[i];
                 var (nextId, nextRect) = rows[i + 1];
 
-                // if (!curRect.X.IsCloseTo(nextRect.X) || !curRect.Right.IsCloseTo(nextRect.Right)) continue;
-
                 var (rowStart, rowEnd) = MathUtils.GetResizerPoints(curRect, nextRect, WorkspaceGridState.AdjacencyKind.SameColumn);
-                if (!HasOther(rowStart, rowEnd, rows))
+                if (!HasOther(res, rowStart, rowEnd, rows))
                 {
                     res.Add(new ResizerInfo(rowStart, rowEnd, IsHorizontal: true, [curId, nextId]));
                 }
@@ -596,6 +584,13 @@ public static class GridUtils
 
             if (columnCount == 1) break;
 
+            // Step 2: Create a resizer between this column and another.
+
+            // Step 2.1: The resizer can't go from minY=0.0 to maxY=1.0 because
+            // some rows inside the column may span cross multiple columns.
+            // NOTE(erri120): This code won't work in certain scenarios for workspaces that
+            // are bigger than 2x2. This code will need to be revisited if we want to support
+            // other configurations.
             var (minY, maxY) = (1.0, 0.0);
             foreach (var row in rows)
             {
@@ -610,15 +605,14 @@ public static class GridUtils
                 rowsToAdd[numRowsToAdd++] = row;
             }
 
-            if (minY > maxY)
-            {
-                Debugger.Break();
-                break;
-            }
+            Debug.Assert(minY < maxY, $"minY is greater than maxY: {minY} > {maxY}. Columns:\n{column.ToDebugString()}");
 
             ValueTuple<Point, Point> tuple;
             var isDoubleSided = false;
 
+            // NOTE(erri120): The "double-sided" case is only possible for workspaces larger
+            // than 2x2 where one column can be between two others. With a 2x2 workspace,
+            // the column is either on the left starting at 0.0 or on the right ending at 1.0.
             if (info.X.IsCloseTo(0))
             {
                 tuple = (new Point(info.Right(), minY), new Point(info.Right(), maxY));
@@ -635,7 +629,7 @@ public static class GridUtils
             var (start, end) = tuple;
 
             var slice = rowsToAdd[..numRowsToAdd];
-            var hasOther = HasOther(start, end, slice);
+            var hasOther = HasOther(res, start, end, slice);
 
             if (isDoubleSided || !hasOther)
             {
@@ -658,24 +652,28 @@ public static class GridUtils
         }
 
         return res;
+    }
 
-        bool HasOther(Point start, Point end, ReadOnlySpan<PanelGridState> rows)
+    /// <summary>
+    /// Checks whether <paramref name="res"/> already contains a resizer with the same start and end positions.
+    /// If that is the case, add the panels of the current row to the resizer.
+    /// </summary>
+    private static bool HasOther(List<ResizerInfo> res, Point start, Point end, ReadOnlySpan<PanelGridState> rows)
+    {
+        var hasOther = false;
+        foreach (var other in res)
         {
-            var hasOther = false;
-            foreach (var other in res)
+            if (!other.Start.IsCloseTo(start) || !other.End.IsCloseTo(end)) continue;
+            hasOther = true;
+
+            foreach (var panel in rows)
             {
-                if (!other.Start.IsCloseTo(start) || !other.End.IsCloseTo(end)) continue;
-                hasOther = true;
-
-                foreach (var panel in rows)
-                {
-                    if (!other.ConnectedPanels.Contains(panel.Id))
-                        other.ConnectedPanels.Add(panel.Id);
-                }
+                if (!other.ConnectedPanels.Contains(panel.Id))
+                    other.ConnectedPanels.Add(panel.Id);
             }
-
-            return hasOther;
         }
+
+        return hasOther;
     }
 
     public record struct ResizerInfo(Point Start, Point End, bool IsHorizontal, List<PanelId> ConnectedPanels);

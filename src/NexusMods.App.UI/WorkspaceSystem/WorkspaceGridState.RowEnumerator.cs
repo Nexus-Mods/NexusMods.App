@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.Text;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
@@ -9,10 +10,24 @@ public readonly partial struct WorkspaceGridState
         public double Bottom() => Y + Height;
     }
 
-    public ref struct Row(RowInfo info, ReadOnlySpan<PanelGridState> columns)
+    public readonly ref struct Row(RowInfo info, ReadOnlySpan<PanelGridState> columns)
     {
         public readonly RowInfo Info = info;
         public readonly ReadOnlySpan<PanelGridState> Columns = columns;
+
+        public string ToDebugString()
+        {
+            var sb = new StringBuilder();
+
+            sb.AppendLine($"Info: {Info.ToString()}");
+            foreach (var column in Columns)
+            {
+                sb.AppendLine(column.ToString());
+            }
+
+            sb.AppendLine();
+            return sb.ToString();
+        }
     }
 
     /// <summary>

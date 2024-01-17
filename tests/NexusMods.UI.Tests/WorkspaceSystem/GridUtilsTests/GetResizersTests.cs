@@ -11,9 +11,9 @@ namespace NexusMods.UI.Tests.WorkspaceSystem;
 public partial class GridUtilsTests
 {
     [Theory]
-    [MemberData(nameof(TestData_GetResizers2_Generated))]
+    [MemberData(nameof(TestData_GetResizers_Generated))]
     [SuppressMessage("Usage", "xUnit1026:Theory methods should use all of their parameters")]
-    public void Test_GetResizers2(
+    public void Test_GetResizers(
         string name,
         WorkspaceGridState workspaceState,
         List<GridUtils.ResizerInfo> expectedRes)
@@ -35,7 +35,7 @@ public partial class GridUtilsTests
         }
     }
 
-    public static TheoryData<string, WorkspaceGridState, List<GridUtils.ResizerInfo>> TestData_GetResizers2_Generated()
+    public static TheoryData<string, WorkspaceGridState, List<GridUtils.ResizerInfo>> TestData_GetResizers_Generated()
     {
         var firstPanelId = PanelId.From(Guid.Parse("11111111-1111-1111-1111-111111111111"));
         var secondPanelId = PanelId.From(Guid.Parse("22222222-2222-2222-2222-222222222222"));
