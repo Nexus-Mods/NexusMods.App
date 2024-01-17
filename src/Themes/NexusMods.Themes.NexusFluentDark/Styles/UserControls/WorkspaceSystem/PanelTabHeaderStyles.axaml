@@ -35,16 +35,20 @@
     <Style Selector="ui|PanelView ItemsControl#TabHeaders">
         <!-- every tab -->
         <Style Selector="^ ContentPresenter:nth-child(n) ui|PanelTabHeaderView Border#Container">
-            <Setter Property="BorderThickness" Value="1 1 1 0" />
-            <Setter Property="BorderBrush" Value="{StaticResource ElementStrokeTranslucentWeakBrush}" />
+            <!-- <Setter Property="BorderThickness" Value="1 1 1 0" /> -->
+            <!-- <Setter Property="BorderBrush" Value="{StaticResource ElementStrokeTranslucentWeakBrush}" /> -->
+
+            <Setter Property="CornerRadius" Value="0" />
         </Style>
 
         <!-- first tab -->
-        <Style Selector="^ ContentPresenter:nth-child(1) ui|PanelTabHeaderView">
+        <Style Selector="^ ContentPresenter:nth-child(1) ui|PanelTabHeaderView Border#Container">
+            <Setter Property="CornerRadius" Value="8 0 0 0" />
         </Style>
 
         <!-- last tab -->
-        <Style Selector="^ ContentPresenter:nth-last-child(1) ui|PanelTabHeaderView">
+        <Style Selector="^ ContentPresenter:nth-last-child(1) ui|PanelTabHeaderView Border#Container">
+            <!-- <Setter Property="CornerRadius" Value="0 8 0 0" /> -->
         </Style>
     </Style>
 </Styles>
