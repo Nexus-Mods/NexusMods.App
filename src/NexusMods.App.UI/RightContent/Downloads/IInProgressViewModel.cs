@@ -30,6 +30,8 @@ public interface IInProgressViewModel : IRightContentViewModel
     /// </summary>
     bool IsRunning { get; }
 
+    int ActiveDownloadCount { get; set; }
+
     /// <summary>
     /// Total size of items currently downloaded.
     /// </summary>

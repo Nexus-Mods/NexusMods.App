@@ -26,7 +26,8 @@ public class InProgressCommonViewModel : AViewModel<IInProgressViewModel>, IInPr
 {
     internal const int PollTimeMilliseconds = 1000;
 
-    protected ReadOnlyObservableCollection<IDownloadTaskViewModel> TasksObservable = new(new ObservableCollection<IDownloadTaskViewModel>());
+    protected ReadOnlyObservableCollection<IDownloadTaskViewModel> TasksObservable =
+        new(new ObservableCollection<IDownloadTaskViewModel>());
 
     public ReadOnlyObservableCollection<IDownloadTaskViewModel> Tasks => TasksObservable;
 
@@ -39,29 +40,23 @@ public class InProgressCommonViewModel : AViewModel<IInProgressViewModel>, IInPr
 
     public void SuspendSelectedTask() => ((IInProgressViewModel)this).Suspend();
 
-    [Reactive]
-    public bool IsRunning { get; set; }
+    [Reactive] public int ActiveDownloadCount { get; set; }
 
-    [Reactive]
-    public int SecondsRemaining { get; set; }
+    [Reactive] public bool IsRunning { get; set; }
 
-    [Reactive]
-    public IDownloadTaskViewModel? SelectedTask { get; set; }
+    [Reactive] public int SecondsRemaining { get; set; }
 
-    [Reactive]
-    public long DownloadedSizeBytes { get; set; }
+    [Reactive] public IDownloadTaskViewModel? SelectedTask { get; set; }
 
-    [Reactive]
-    public long TotalSizeBytes { get; set; }
+    [Reactive] public long DownloadedSizeBytes { get; set; }
 
-    [Reactive]
-    public ICommand ShowCancelDialog { get; set; }
+    [Reactive] public long TotalSizeBytes { get; set; }
 
-    [Reactive]
-    public ICommand SuspendCurrentTask { get; set; }
+    [Reactive] public ICommand ShowCancelDialog { get; set; }
 
-    [Reactive]
-    public ICommand SuspendAllTasks { get; set; }
+    [Reactive] public ICommand SuspendCurrentTask { get; set; }
+
+    [Reactive] public ICommand SuspendAllTasks { get; set; }
 
     public InProgressCommonViewModel()
     {
@@ -118,15 +113,23 @@ public class InProgressCommonViewModel : AViewModel<IInProgressViewModel>, IInPr
                 .Select(tasks => tasks.ToObservableChangeSet())
                 .Subscribe(changeSet =>
                 {
-                    // Update 'IsRunning' Property when any new task occurs.
-                    changeSet.Select(_ => Tasks.Any(x => !(x.Status is DownloadTaskStatus.Idle or DownloadTaskStatus.Paused)))
-                        .BindToUi(this, vm => vm.IsRunning)
-                        .DisposeWith(d);
-
                     // Update ViewModel Properties (non-polling) when any task arrives.
                     changeSet.OnUI()
                         .Subscribe(set => UpdateWindowInfo())
                         .DisposeWith(d);
+                })
+                .DisposeWith(d);
+
+            this.WhenAnyValue(vm => vm.Tasks)
+                .Select(models => models.ToObservableChangeSet())
+                .Subscribe(x =>
+                {
+                    x.AutoRefresh(task => task.Status)
+                        .Subscribe(_ =>
+                        {
+                            ActiveDownloadCount = Tasks.Count(task => task.Status == DownloadTaskStatus.Downloading);
+                            IsRunning = ActiveDownloadCount > 0;
+                        }).DisposeWith(d);
                 })
                 .DisposeWith(d);
 

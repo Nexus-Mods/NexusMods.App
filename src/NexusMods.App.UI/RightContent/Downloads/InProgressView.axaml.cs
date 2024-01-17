@@ -51,15 +51,11 @@ public partial class InProgressView : ReactiveUserControl<IInProgressViewModel>
                 .DisposeWith(d);
 
             // Dynamically Update Title
-            this.WhenAnyValue(view => view.ViewModel!.Tasks)
+            this.WhenAnyValue(view => view.ViewModel!.ActiveDownloadCount)
                 .OnUI()
-                .Select(models => models.ToObservableChangeSet())
-                .Subscribe(x =>
+                .Subscribe(count =>
                 {
-                    x.Subscribe(_ =>
-                    {
-                        InProgressTitleTextBlock.Text = StringFormatters.ToDownloadsInProgressTitle(ViewModel!.Tasks.Count);
-                    }).DisposeWith(d);
+                    InProgressTitleTextBlock.Text = StringFormatters.ToDownloadsInProgressTitle(count);
                 })
                 .DisposeWith(d);
 
