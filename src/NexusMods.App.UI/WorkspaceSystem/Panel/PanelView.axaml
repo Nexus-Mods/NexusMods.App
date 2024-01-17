@@ -9,7 +9,7 @@
     x:Class="NexusMods.App.UI.WorkspaceSystem.PanelView"
     Width="0" Height="0">
 
-    <Border Classes="Rounded Low">
+    <Border x:Name="PanelBorder" Classes="Rounded Low">
         <Grid RowDefinitions="Auto, *">
             <Border Grid.Row="0" x:Name="TabHeaderBorder">
                 <Grid ColumnDefinitions="*, Auto">
@@ -56,6 +56,7 @@
                     </Grid>
 
                     <StackPanel Grid.Column="1"
+                                x:Name="TabHeaderSideArea"
                                 Orientation="Horizontal"
                                 Spacing="12"
                                 Margin="12, 12, 12, 12">

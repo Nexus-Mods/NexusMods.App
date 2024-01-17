@@ -3,8 +3,83 @@
         xmlns:ui="clr-namespace:NexusMods.App.UI.WorkspaceSystem;assembly=NexusMods.App.UI">
 
     <Style Selector="ui|PanelView">
+        <Style Selector="^ Border#PanelBorder:not(.OneTab)">
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="{StaticResource ElementStrokeTranslucentSubduedBrush}"/>
+        </Style>
+
         <Style Selector="^ Border#TabHeaderBorder">
-            <!-- <Setter Property="CornerRadius" Value=""/> -->
+            <Setter Property="BorderThickness" Value="0 0 0 1" />
+            <Setter Property="BorderBrush" Value="{StaticResource ElementStrokeTranslucentSubduedBrush}"/>
+        </Style>
+
+        <!-- one tab -->
+        <Style Selector="^ Border#TabHeaderBorder.OneTab">
+            <Style Selector="^ ui|PanelTabHeaderView Border#Container">
+                <Setter Property="CornerRadius" Value="8 0 0 0"/>
+            </Style>
+        </Style>
+
+        <!-- multiple tabs -->
+        <Style Selector="^ Border#TabHeaderBorder:not(.OneTab)">
+            <Setter Property="CornerRadius" Value="8 8 0 0" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Background" Value="{StaticResource ElementBackgroundNeutralBaseBrush}" />
+
+            <Style Selector="^ Border#TabHeaderSideArea">
+                <Setter Property="BorderThickness" Value="0 0 0 1"/>
+                <Setter Property="BorderBrush" Value="{StaticResource ElementStrokeTranslucentSubduedBrush}" />
+            </Style>
+
+            <Style Selector="^ ItemsControl#TabHeaders">
+                <!-- every tab -->
+                <Style Selector="^ ContentPresenter:nth-child(n) ui|PanelTabHeaderView">
+                    <Style Selector="^ Border#Container">
+                        <Setter Property="CornerRadius" Value="0" />
+                        <Setter Property="BorderBrush" Value="{StaticResource ElementStrokeTranslucentSubduedBrush}" />
+                    </Style>
+
+                    <!-- selected tab -->
+                    <Style Selector="^ Border#Container.Selected">
+                        <Setter Property="BorderThickness" Value="1 0 1 0" />
+                    </Style>
+
+                    <!-- not selected tab -->
+                    <Style Selector="^ Border#Container:not(.Selected)">
+                        <Setter Property="BorderThickness" Value="0 0 0 1" />
+                    </Style>
+                </Style>
+
+                <!-- first tab -->
+                <Style Selector="^ ContentPresenter:nth-child(1) ui|PanelTabHeaderView">
+                    <Style Selector="^ Border#Container">
+                        <Setter Property="CornerRadius" Value="8 0 0 0" />
+                    </Style>
+
+                    <!-- selected tab -->
+                    <Style Selector="^ Border#Container.Selected">
+                        <Setter Property="BorderThickness" Value="0 0 1 0" />
+                    </Style>
+
+                    <!-- not selected tab -->
+                    <Style Selector="^ Border#Container:not(.Selected)">
+                        <Setter Property="BorderThickness" Value="0 0 0 1" />
+                    </Style>
+                </Style>
+
+                <!-- last tab -->
+                <Style Selector="^ ContentPresenter:nth-last-child(1) ui|PanelTabHeaderView">
+                    <!-- selected tab -->
+                    <Style Selector="^ Border#Container.Selected">
+                        <Setter Property="BorderThickness" Value="1 0 1 0" />
+                    </Style>
+
+                    <!-- not selected tab -->
+                    <Style Selector="^ Border#Container:not(.Selected)">
+                        <Setter Property="BorderThickness" Value="0 0 0 1" />
+                    </Style>
+                </Style>
+            </Style>
         </Style>
     </Style>
 

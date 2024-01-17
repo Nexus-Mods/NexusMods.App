@@ -130,8 +130,16 @@ public partial class PanelView : ReactiveUserControl<IPanelViewModel>
                 .Select(count => count == 1)
                 .Do(hasOneTab =>
                 {
-                    if (hasOneTab) TabHeaderBorder.Classes.Remove("Base");
-                    else TabHeaderBorder.Classes.Add("Base");
+                    if (hasOneTab)
+                    {
+                        TabHeaderBorder.Classes.Add("OneTab");
+                        PanelBorder.Classes.Add("OneTab");
+                    }
+                    else
+                    {
+                        TabHeaderBorder.Classes.Remove("OneTab");
+                        PanelBorder.Classes.Remove("OneTab");
+                    }
                 })
                 .SubscribeWithErrorLogging()
                 .DisposeWith(disposables);
