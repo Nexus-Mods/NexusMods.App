@@ -15,7 +15,7 @@
     </Design.DataContext>
 
     <Border>
-        <Button x:Name="AddPanelButton">
+        <Button x:Name="AddPanelButton" Height="40">
             <StackPanel Orientation="Horizontal" Spacing="4">
                 <Image x:Name="ButtonImage"/>
                 <icons:Icon Classes="Plus"/>
