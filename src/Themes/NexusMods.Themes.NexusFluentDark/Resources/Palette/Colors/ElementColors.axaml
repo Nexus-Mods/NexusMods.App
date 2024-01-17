@@ -132,6 +132,15 @@
     <SolidColorBrush x:Key="ElementForegroundInfoStrongBrush" Color="{StaticResource ElementForegroundInfoStrong}" />
 
 
+    <!-- Focus -->
+
+    <!-- Colors -->
+    <StaticResource x:Key="ElementForegroundFocusDefault" ResourceKey="PrimitiveBlue500" />
+
+    <!-- SolidColorBrushes -->
+    <SolidColorBrush x:Key="ElementForegroundFocusDefaultBrush" Color="{StaticResource ElementForegroundFocusDefault}" />
+
+
     <!-- NeutralTranslucent -->
 
     <!-- Colors -->
