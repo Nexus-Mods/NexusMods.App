@@ -1,0 +1,12 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ui="clr-namespace:NexusMods.App.UI.WorkspaceSystem;assembly=NexusMods.App.UI">
+
+    <Style Selector="ui|PanelView">
+        <Style Selector="^ Border#TabHeaderBorder">
+            <!-- <Setter Property="CornerRadius" Value=""/> -->
+        </Style>
+    </Style>
+
+</Styles>
+

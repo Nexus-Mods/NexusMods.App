@@ -9,9 +9,9 @@
     x:Class="NexusMods.App.UI.WorkspaceSystem.PanelView"
     Width="0" Height="0">
 
-    <Border Classes="Rounded Low">
+    <Border Classes="RoundedBottom Low">
         <Grid RowDefinitions="Auto, *">
-            <Border Grid.Row="0" x:Name="TabHeaderBorder" Classes="OutlineWeak RoundedTop">
+            <Border Grid.Row="0" x:Name="TabHeaderBorder">
                 <Grid ColumnDefinitions="*, Auto">
                     <Grid Grid.Column="0" ColumnDefinitions="Auto, *, Auto, Auto">
                         <Button Grid.Column="0"
