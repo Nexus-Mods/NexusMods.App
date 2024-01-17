@@ -63,18 +63,18 @@
                 <!-- Right Side -->
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <TextBlock VerticalAlignment="Center"
-                               Classes="BodyMDNormal"
+                               Classes="BodyMDNormal ForegroundSubdued"
                                Text="0GB / 0GB" Margin="0,0,16,0"
                                x:Name="SizeCompletionTextBlock" />
 
                     <!-- Note: Can use 'run' here, but don't want to make separate styles for 'run' -->
                     <TextBlock VerticalAlignment="Center"
-                               Classes="BodyMDBold"
+                               Classes="BodyMDBold ForegroundInfoModerate"
                                Text="{x:Static resources:Language.BoldMinutesRemainingTextBlock}" Margin="0,0,4,0"
                                x:Name="BoldMinutesRemainingTextBlock" />
 
                     <TextBlock VerticalAlignment="Center"
-                               Classes="BodyMDNormal"
+                               Classes="BodyMDNormal ForegroundInfoModerate"
                                Text="{x:Static resources:Language.MinutesRemainingTextBlock}"
                                x:Name="MinutesRemainingTextBlock" />
 
