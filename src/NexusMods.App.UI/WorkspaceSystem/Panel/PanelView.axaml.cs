@@ -43,9 +43,19 @@ public partial class PanelView : ReactiveUserControl<IPanelViewModel>
                     ScrollRightButton.IsVisible = isScrollbarVisible;
 
                     // the first button is inside the scroll area
-                    AddTabButton1.IsVisible = !isScrollbarVisible;
+                    AddTabButton1Container.IsVisible = !isScrollbarVisible;
                     // the second button is fixed on the right side
                     AddTabButton2.IsVisible = isScrollbarVisible;
+                })
+                .DisposeWith(disposables);
+
+            this.WhenAnyValue(view => view.AddTabButton1Container.Bounds)
+                .SubscribeWithErrorLogging(bounds =>
+                {
+                    var viewport = TabHeaderScrollViewer.Viewport;
+                    var remaining = viewport.Width - bounds.X;
+
+                    AddTabButton1Container.Width = remaining;
                 })
                 .DisposeWith(disposables);
 
