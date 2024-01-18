@@ -8,38 +8,38 @@
     <Style Selector="ui|PanelTabHeaderView">
 
         <Style Selector="^ Border#Container:not(.Selected)">
-            <Setter Property="Background" Value="Transparent"/>
-        </Style>
+            <Setter Property="Background" Value="Transparent" />
 
-        <Style Selector="^ Border#Container:not(.Selected) icons|Icon">
-            <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralSubduedBrush}"/>
-        </Style>
+            <Style Selector="^ icons|Icon">
+                <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralSubduedBrush}" />
+            </Style>
 
-        <Style Selector="^ Border#Container:not(.Selected) TextBlock">
-            <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralSubduedBrush}"/>
+            <Style Selector="^ TextBlock">
+                <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralSubduedBrush}" />
+            </Style>
         </Style>
 
         <Style Selector="^ Border#Container.Selected">
-            <Setter Property="Background" Value="{StaticResource ElementBackgroundNeutralLowBrush}"/>
-        </Style>
+            <Setter Property="Background" Value="{StaticResource ElementBackgroundNeutralLowBrush}" />
 
-        <Style Selector="^ Border#Container.Selected icons|Icon">
-            <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralStrongBrush}"/>
-        </Style>
+            <Style Selector="^ icons|Icon">
+                <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralStrongBrush}" />
+            </Style>
 
-        <Style Selector="^ Border#Container.Selected TextBlock">
-            <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralStrongBrush}"/>
+            <Style Selector="^ TextBlock">
+                <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralStrongBrush}" />
+            </Style>
         </Style>
 
         <Style Selector="^ Line">
-            <Setter Property="Width" Value="1"/>
-            <Setter Property="Height" Value="28"/>
+            <Setter Property="Width" Value="1" />
+            <Setter Property="Height" Value="28" />
 
-            <Setter Property="StartPoint" Value="1, 0"/>
-            <Setter Property="EndPoint" Value="1, 28"/>
+            <Setter Property="StartPoint" Value="1, 0" />
+            <Setter Property="EndPoint" Value="1, 28" />
 
-            <Setter Property="StrokeThickness" Value="1"/>
-            <Setter Property="Stroke" Value="{StaticResource ElementStrokeTranslucentWeak}"/>
+            <Setter Property="StrokeThickness" Value="1" />
+            <Setter Property="Stroke" Value="{StaticResource ElementStrokeTranslucentWeak}" />
         </Style>
     </Style>
 </Styles>

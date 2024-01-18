@@ -16,7 +16,7 @@
     <Border x:Name="Container">
         <StackPanel Orientation="Horizontal">
             <StackPanel Orientation="Horizontal"
-                        Spacing="12"
+                        Spacing="8"
                         Height="52"
                         Margin="24, 0, 24, 14">
                 <StackPanel Orientation="Horizontal"
@@ -24,23 +24,21 @@
                             VerticalAlignment="Center">
                     <Image x:Name="IconImage"
                            MaxHeight="24"
-                           MaxWidth="24"
-                           Height="100"
-                           Width="100" />
+                           MaxWidth="24"/>
                     <TextBlock x:Name="TitleTextBlock"
+                               Padding="0 6 0 0"
                                Classes="BodyLGBold"
-                               Width="114"
+                               MaxWidth="122"
                                TextWrapping="NoWrap"
-                               VerticalAlignment="Bottom"
-                               TextTrimming="CharacterEllipsis" />
+                               TextTrimming="CharacterEllipsis"/>
                 </StackPanel>
 
-                <Button x:Name="CloseTabButton"
-                        Classes="PanelTitlebar Close" />
-
+                <Button x:Name="CloseTabButton" Classes="PanelTitlebar Close" />
 
             </StackPanel>
+
             <Line />
+
         </StackPanel>
     </Border>
 
