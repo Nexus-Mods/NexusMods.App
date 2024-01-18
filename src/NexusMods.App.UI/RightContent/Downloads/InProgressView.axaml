@@ -17,8 +17,6 @@
         <!-- ToolBar -->
         <Border Classes="Toolbar" Grid.Row="0">
             <Grid ColumnDefinitions="*, Auto">
-                <TextBlock Grid.Column="0" Text="{x:Static resources:Language.DownloadInProgressView__IN_PROGRESS}">
-                </TextBlock>
                 <StackPanel Grid.Column="1">
                     <Button x:Name="CancelButton">
                         <StackPanel>
