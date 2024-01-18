@@ -1,7 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows.Input;
 using DynamicData;
-using DynamicData.Binding;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.RightContent.DownloadGrid;
 using NexusMods.App.UI.RightContent.Downloads.ViewModels;
@@ -43,35 +42,46 @@ public interface IInProgressViewModel : IRightContentViewModel
     /// <summary>
     /// The currently selected task.
     /// </summary>
-    IDownloadTaskViewModel? SelectedTask { get; set; }
-
-    /// <summary>
-    /// The currently selected task.
-    /// </summary>
     SourceList<IDownloadTaskViewModel> SelectedTasks { get; set;}
 
     /// <summary>
     /// Shows the cancel 'dialog' to the user.
     /// </summary>
-    ICommand ShowCancelDialog { get; }
+    ICommand ShowCancelDialogCommand { get; }
 
     /// <summary>
     /// Suspends the current task.
     /// </summary>
-    ICommand SuspendCurrentTask { get; }
+    ICommand SuspendSelectedTasksCommand { get; }
 
     /// <summary>
     /// Resumes the current task.
     /// </summary>
-    ICommand ResumeCurrentTask { get; }
+    ICommand ResumeSelectedTasksCommand { get; }
 
     /// <summary>
     /// Suspends all the tasks.
     /// </summary>
-    ICommand SuspendAllTasks { get; }
+    ICommand SuspendAllTasksCommand { get; }
 
     /// <summary>
     /// Resumes all the tasks.
     /// </summary>
-    ICommand ResumeAllTasks { get; }
+    ICommand ResumeAllTasksCommand { get; }
+
+    /// <summary>
+    /// Cancels all the passed tasks, without asking for confirmation.
+    /// </summary>
+    void CancelTasks(IEnumerable<IDownloadTaskViewModel> tasks);
+
+    /// <summary>
+    /// Suspends all the "Downloading" passed tasks.
+    /// </summary>
+    void SuspendTasks(IEnumerable<IDownloadTaskViewModel> tasks);
+
+    /// <summary>
+    /// Resumes all the "Paused" passed tasks.
+    /// </summary>
+    void ResumeTasks(IEnumerable<IDownloadTaskViewModel> tasks);
+
 }

@@ -1,7 +1,6 @@
 ﻿using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using DynamicData;
-using DynamicData.Binding;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.RightContent.Downloads.ViewModels;
 using NexusMods.Networking.Downloaders.Interfaces;
@@ -15,17 +14,17 @@ public class InProgressViewModel : InProgressCommonViewModel
     {
         this.WhenActivated(d =>
         {
-            ShowCancelDialog = ReactiveCommand.Create(async () =>
+            ShowCancelDialogCommand = ReactiveCommand.Create(async () =>
             {
-                if (SelectedTask == null)
-                    return;
+                // if (SelectedTask == null)
+                //     return;
 
                 // var result = await overlayController.ShowCancelDownloadOverlay(SelectedTask);
                 // if (result)
                 //     SelectedTask.Cancel();
             });
 
-            SuspendCurrentTask = ReactiveCommand.Create(() =>
+            SuspendSelectedTasksCommand = ReactiveCommand.Create(() =>
                 {
                     foreach (var task in SelectedTasks.Items)
                     {
@@ -37,7 +36,7 @@ public class InProgressViewModel : InProgressCommonViewModel
                     .Select(_ => SelectedTasks.Items.Count(task => task.Status == DownloadTaskStatus.Downloading) > 0));
 
 
-            SuspendAllTasks = ReactiveCommand.Create(() =>
+            SuspendAllTasksCommand = ReactiveCommand.Create(() =>
             {
                 foreach (var task in Tasks.ToArray())
                     task.Suspend();

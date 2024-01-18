@@ -20,19 +20,19 @@ public partial class InProgressView : ReactiveUserControl<IInProgressViewModel>
 
         this.WhenActivated(d =>
         {
-            this.BindCommand(ViewModel, vm => vm.ShowCancelDialog, view => view.CancelButton)
+            this.BindCommand(ViewModel, vm => vm.ShowCancelDialogCommand, view => view.CancelButton)
                 .DisposeWith(d);
 
-            this.BindCommand(ViewModel, vm => vm.SuspendCurrentTask, view => view.PauseButton)
+            this.BindCommand(ViewModel, vm => vm.SuspendSelectedTasksCommand, view => view.PauseButton)
                 .DisposeWith(d);
 
-            this.BindCommand(ViewModel, vm => vm.SuspendAllTasks, view => view.PauseAllButton)
+            this.BindCommand(ViewModel, vm => vm.SuspendAllTasksCommand, view => view.PauseAllButton)
                 .DisposeWith(d);
 
-            this.BindCommand(ViewModel, vm => vm.ResumeCurrentTask, view => view.ResumeButton)
+            this.BindCommand(ViewModel, vm => vm.ResumeSelectedTasksCommand, view => view.ResumeButton)
                 .DisposeWith(d);
 
-            this.BindCommand(ViewModel, vm => vm.ResumeAllTasks, view => view.ResumeAllButton)
+            this.BindCommand(ViewModel, vm => vm.ResumeAllTasksCommand, view => view.ResumeAllButton)
                 .DisposeWith(d);
 
             this.OneWayBind(ViewModel, vm => vm.Tasks, view => view.ModsDataGrid.ItemsSource)

@@ -64,14 +64,14 @@ public class InProgressViewModelTests : AViewTest<InProgressView, InProgressDesi
         await OnUi(() =>
         {
             var source = new TaskCompletionSource<bool>();
-            ViewModel.ShowCancelDialog = ReactiveCommand.Create<Unit, Unit>(_ =>
+            ViewModel.ShowCancelDialogCommand = ReactiveCommand.Create<Unit, Unit>(_ =>
             {
                 source.SetResult(true);
                 return Unit.Default;
             });
 
             // Assert Cancel Command
-            View.CancelButton.Command.Should().Be(ViewModel.ShowCancelDialog);
+            View.CancelButton.Command.Should().Be(ViewModel.ShowCancelDialogCommand);
 
             // Click and Ensure it Fired
             Click_AlreadyOnUi(View.CancelButton);

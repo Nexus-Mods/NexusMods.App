@@ -42,29 +42,28 @@ public class InProgressCommonViewModel : AViewModel<IInProgressViewModel>, IInPr
 
     [Reactive] public int SecondsRemaining { get; set; }
 
-    [Reactive] public IDownloadTaskViewModel? SelectedTask { get; set; }
     public SourceList<IDownloadTaskViewModel> SelectedTasks { get; set; } = new();
 
     [Reactive] public long DownloadedSizeBytes { get; set; }
 
     [Reactive] public long TotalSizeBytes { get; set; }
 
-    [Reactive] public ICommand ShowCancelDialog { get; set; }
+    [Reactive] public ICommand ShowCancelDialogCommand { get; set; }
 
-    [Reactive] public ICommand SuspendCurrentTask { get; set; }
+    [Reactive] public ICommand SuspendSelectedTasksCommand { get; set; }
 
-    [Reactive] public ICommand ResumeCurrentTask { get; set; }
+    [Reactive] public ICommand ResumeSelectedTasksCommand { get; set; }
 
-    [Reactive] public ICommand SuspendAllTasks { get; set; }
-    [Reactive] public ICommand ResumeAllTasks { get; set; }
+    [Reactive] public ICommand SuspendAllTasksCommand { get; set; }
+    [Reactive] public ICommand ResumeAllTasksCommand { get; set; }
 
     public InProgressCommonViewModel()
     {
-        ShowCancelDialog = ReactiveCommand.Create(() => { });
-        SuspendCurrentTask = ReactiveCommand.Create(() => { });
-        SuspendAllTasks = ReactiveCommand.Create(() => { });
-        ResumeCurrentTask = ReactiveCommand.Create(() => { });
-        ResumeAllTasks = ReactiveCommand.Create(() => { });
+        ShowCancelDialogCommand = ReactiveCommand.Create(() => { });
+        SuspendSelectedTasksCommand = ReactiveCommand.Create(() => { });
+        SuspendAllTasksCommand = ReactiveCommand.Create(() => { });
+        ResumeSelectedTasksCommand = ReactiveCommand.Create(() => { });
+        ResumeAllTasksCommand = ReactiveCommand.Create(() => { });
 
         // Make Columns
         var columns = new SourceCache<IDataGridColumnFactory<DownloadColumn>, DownloadColumn>(x => x.Type);
@@ -157,6 +156,35 @@ public class InProgressCommonViewModel : AViewModel<IInProgressViewModel>, IInPr
             // here.
             this.RaisePropertyChanged(nameof(Columns));
         });
+    }
+
+    /// <inheritdoc />
+    public virtual void CancelTasks(IEnumerable<IDownloadTaskViewModel> tasks)
+    {
+        foreach (var task in SelectedTasks.Items)
+        {
+            task.Cancel();
+        }
+    }
+
+    /// <inheritdoc />
+    public virtual void SuspendTasks(IEnumerable<IDownloadTaskViewModel> tasks)
+    {
+        foreach (var task in tasks)
+        {
+            if (task.Status == DownloadTaskStatus.Downloading)
+                task.Suspend();
+        }
+    }
+
+    /// <inheritdoc />
+    public virtual void ResumeTasks(IEnumerable<IDownloadTaskViewModel> tasks)
+    {
+        foreach (var task in SelectedTasks.Items)
+        {
+            if (task.Status == DownloadTaskStatus.Paused)
+                task.Resume();
+        }
     }
 
     /// <summary>
