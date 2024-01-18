@@ -41,7 +41,7 @@ public class InProgressCommonViewModel : AViewModel<IInProgressViewModel>, IInPr
 
     [Reactive] public int ActiveDownloadCount { get; set; }
 
-    [Reactive] public bool IsRunning { get; private set; }
+    [Reactive] public bool IsRunning { get; protected set; }
 
     [Reactive] public int SecondsRemaining { get; set; }
 
@@ -114,30 +114,6 @@ public class InProgressCommonViewModel : AViewModel<IInProgressViewModel>, IInPr
 
         this.WhenActivated(d =>
         {
-            this.WhenAnyValue(vm => vm.Tasks)
-                .Select(tasks => tasks.ToObservableChangeSet())
-                .Subscribe(changeSet =>
-                {
-                    // Update ViewModel Properties (non-polling) when any task arrives.
-                    changeSet.OnUI()
-                        .Subscribe(set => UpdateWindowInfo())
-                        .DisposeWith(d);
-                })
-                .DisposeWith(d);
-
-            this.WhenAnyValue(vm => vm.Tasks)
-                .Select(models => models.ToObservableChangeSet())
-                .Subscribe(x =>
-                {
-                    x.AutoRefresh(task => task.Status)
-                        .Subscribe(_ =>
-                        {
-                            ActiveDownloadCount = Tasks.Count(task => task.Status == DownloadTaskStatus.Downloading);
-                            IsRunning = ActiveDownloadCount > 0;
-                        }).DisposeWith(d);
-                })
-                .DisposeWith(d);
-
             columns.Connect()
                 .Bind(out FilteredColumns)
                 .Subscribe()
@@ -165,7 +141,7 @@ public class InProgressCommonViewModel : AViewModel<IInProgressViewModel>, IInPr
     /// <inheritdoc />
     public virtual void CancelTasks(IEnumerable<IDownloadTaskViewModel> tasks)
     {
-        foreach (var task in SelectedTasks.Items)
+        foreach (var task in tasks)
         {
             task.Cancel();
         }
@@ -184,7 +160,7 @@ public class InProgressCommonViewModel : AViewModel<IInProgressViewModel>, IInPr
     /// <inheritdoc />
     public virtual void ResumeTasks(IEnumerable<IDownloadTaskViewModel> tasks)
     {
-        foreach (var task in SelectedTasks.Items)
+        foreach (var task in tasks)
         {
             if (task.Status == DownloadTaskStatus.Paused)
                 task.Resume();

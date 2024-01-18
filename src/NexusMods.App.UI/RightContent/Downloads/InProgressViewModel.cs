@@ -15,6 +15,17 @@ public class InProgressViewModel : InProgressCommonViewModel
     {
         this.WhenActivated(d =>
         {
+
+            downloadService.Downloads
+                .Filter(x => x.Status != DownloadTaskStatus.Completed)
+                .Transform(x => (IDownloadTaskViewModel)new DownloadTaskViewModel(x))
+                .OnUI()
+                .Bind(out TasksObservable)
+                .Subscribe()
+                .DisposeWith(d);
+
+
+
             ShowCancelDialogCommand = ReactiveCommand.Create(async () =>
             {
                 // if (SelectedTask == null)
@@ -29,13 +40,15 @@ public class InProgressViewModel : InProgressCommonViewModel
                 () => { SuspendTasks(SelectedTasks.Items); },
                 SelectedTasks.Connect()
                     .AutoRefresh(task => task.Status)
-                    .Select(_ => SelectedTasks.Items.Any(task => task.Status == DownloadTaskStatus.Downloading)));
+                    .Select(_ => SelectedTasks.Items.Any(task => task.Status == DownloadTaskStatus.Downloading)))
+                .DisposeWith(d);
 
             ResumeSelectedTasksCommand = ReactiveCommand.Create(
                 () => { ResumeTasks(SelectedTasks.Items); },
                 SelectedTasks.Connect()
                     .AutoRefresh(task => task.Status)
-                    .Select(_ => SelectedTasks.Items.Any(task => task.Status == DownloadTaskStatus.Paused)));
+                    .Select(_ => SelectedTasks.Items.Any(task => task.Status == DownloadTaskStatus.Paused)))
+                .DisposeWith(d);
 
             SuspendAllTasksCommand = ReactiveCommand.Create(
                 () => { SuspendTasks(Tasks); },
@@ -49,13 +62,15 @@ public class InProgressViewModel : InProgressCommonViewModel
                     .AutoRefresh(task => task.Status)
                     .Select(_ => Tasks.Any(task => task.Status == DownloadTaskStatus.Paused)));
 
-            downloadService.Downloads
-                .Filter(x => x.Status != DownloadTaskStatus.Completed)
-                .Transform(x => (IDownloadTaskViewModel)new DownloadTaskViewModel(x))
-                .OnUI()
-                .Bind(out TasksObservable)
-                .Subscribe()
-                .DisposeWith(d);
+
+            Tasks.ToObservableChangeSet()
+                .AutoRefresh(task => task.Status)
+                .Subscribe(_ =>
+                {
+                    UpdateWindowInfo();
+                    ActiveDownloadCount = Tasks.Count(task => task.Status == DownloadTaskStatus.Downloading);
+                    IsRunning = ActiveDownloadCount > 0;
+                });
 
             // This is necessary due to inheritance,
             // WhenActivated gets fired in wrong order and
