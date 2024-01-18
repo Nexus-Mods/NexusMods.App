@@ -1,7 +1,7 @@
 using FluentAssertions;
-using NexusMods.DataModel.Abstractions.Games;
-using NexusMods.DataModel.Loadouts.ModFiles;
-using NexusMods.DataModel.Loadouts.Mods;
+using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.Installers.DTO;
+using NexusMods.Abstractions.Installers.DTO.Files;
 using NexusMods.DataModel.Tests.Harness;
 using NexusMods.StandardGameLocators.TestHelpers;
 

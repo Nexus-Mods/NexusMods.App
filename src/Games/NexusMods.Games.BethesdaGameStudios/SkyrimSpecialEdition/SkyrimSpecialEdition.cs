@@ -1,12 +1,16 @@
-using NexusMods.Common;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.Abstractions.Games;
-using NexusMods.DataModel.Games;
-using NexusMods.DataModel.Loadouts;
-using NexusMods.FileExtractor.StreamFactories;
+using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.Games.Stores.GOG;
+using NexusMods.Abstractions.Games.Stores.Steam;
+using NexusMods.Abstractions.Games.Stores.Xbox;
+using NexusMods.Abstractions.Installers.DTO;
+using NexusMods.Abstractions.IO;
+using NexusMods.Abstractions.IO.StreamFactories;
+using NexusMods.Abstractions.Serialization;
 using NexusMods.Paths;
 
-namespace NexusMods.Games.BethesdaGameStudios;
+namespace NexusMods.Games.BethesdaGameStudios.SkyrimSpecialEdition;
 
 public class SkyrimSpecialEdition : ABethesdaGame, ISteamGame, IGogGame, IXboxGame
 {

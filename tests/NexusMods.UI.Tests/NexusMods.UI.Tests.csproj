@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <ItemGroup>
+        <ProjectReference Include="..\..\src\Abstractions\NexusMods.Abstractions.Activities\NexusMods.Abstractions.Activities.csproj" />
         <ProjectReference Include="..\..\src\NexusMods.App.UI\NexusMods.App.UI.csproj" />
         <ProjectReference Include="..\..\src\NexusMods.App\NexusMods.App.csproj" />
         <ProjectReference Include="..\NexusMods.StandardGameLocators.TestHelpers\NexusMods.StandardGameLocators.TestHelpers.csproj" />

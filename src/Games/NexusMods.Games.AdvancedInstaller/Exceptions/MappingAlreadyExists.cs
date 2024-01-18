@@ -1,4 +1,4 @@
-using NexusMods.DataModel.Games;
+using NexusMods.Abstractions.Installers.DTO;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.AdvancedInstaller.Exceptions;

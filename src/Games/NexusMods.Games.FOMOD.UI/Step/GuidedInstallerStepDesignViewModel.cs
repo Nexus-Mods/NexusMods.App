@@ -1,6 +1,3 @@
-using NexusMods.Common.GuidedInstaller;
-using NexusMods.Common.GuidedInstaller.ValueObjects;
-
 namespace NexusMods.Games.FOMOD.UI;
 
 public class GuidedInstallerStepDesignViewModel : GuidedInstallerStepViewModel

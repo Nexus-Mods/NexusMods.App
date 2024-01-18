@@ -1,20 +1,17 @@
 using FluentAssertions;
-using NexusMods.DataModel.Abstractions.Games;
-using NexusMods.DataModel.Games;
-using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.Loadouts.ModFiles;
+using NexusMods.Abstractions.Installers.DTO;
+using NexusMods.Abstractions.Installers.DTO.Files;
 using NexusMods.DataModel.Tests.Harness;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
+using ModFileId = NexusMods.Abstractions.DataModel.Entities.Mods.ModFileId;
 
 namespace NexusMods.DataModel.Tests;
 
 public class ModelTests : ADataModelTest<ModelTests>
 {
+    public ModelTests(IServiceProvider provider) : base(provider) { }
 
-    public ModelTests(IServiceProvider provider) : base(provider)
-    {
-    }
     [Fact]
     public void CanCreateModFile()
     {
@@ -25,9 +22,9 @@ public class ModelTests : ADataModelTest<ModelTests>
             Hash = (Hash)0x42L,
             Size = Size.FromLong(44L)
         };
+
         file.EnsurePersisted(DataStore);
         file.DataStoreId.Should().NotBeNull();
-
         DataStore.Get<StoredFile>(file.DataStoreId)!.To.Should().BeEquivalentTo(file.To);
     }
 
@@ -120,10 +117,6 @@ public class ModelTests : ADataModelTest<ModelTests>
 
         await LoadoutManager.ImportFromAsync(tempFile, CancellationToken.None);
         loadout.Value.Mods.Should().NotBeEmpty("The loadout is restored");
-
-
-
     }
     */
-
 }

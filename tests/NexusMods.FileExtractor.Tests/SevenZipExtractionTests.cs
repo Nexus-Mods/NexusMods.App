@@ -1,7 +1,7 @@
 using FluentAssertions;
-using NexusMods.Common;
-using NexusMods.DataModel.Extensions;
-using NexusMods.FileExtractor.StreamFactories;
+using NexusMods.Abstractions.IO.StreamFactories;
+using NexusMods.BCL.Extensions;
+using NexusMods.Extensions.Hashing;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
@@ -11,12 +11,12 @@ namespace NexusMods.FileExtractor.Tests;
 public class SevenZipExtractionTests
 {
     private readonly FileExtractor _extractor;
-    
+
     private readonly TemporaryFileManager _temporaryFileManager;
-    
+
     private readonly IFileSystem _fileSystem;
 
-    public SevenZipExtractionTests(FileExtractor extractor, TemporaryFileManager temporaryFileManager, 
+    public SevenZipExtractionTests(FileExtractor extractor, TemporaryFileManager temporaryFileManager,
         IFileSystem fileSystem)
     {
         _extractor = extractor;
@@ -29,23 +29,23 @@ public class SevenZipExtractionTests
     {
         await using var tempFolder = _temporaryFileManager.CreateFolder();
         var dest = tempFolder.Path;
-        
+
         // Create a long path
         while (!(dest.GetFullPathLength() > 280))
         {
             dest = dest.Combine("subfolder");
             _fileSystem.CreateDirectory(dest);
         }
-        
+
         dest.GetFullPathLength().Should().BeGreaterThan(280);
-        
+
         _fileSystem.CreateDirectory(dest);
 
         var file = FileSystem.Shared.GetKnownPath(KnownPath.CurrentDirectory)
             .Combine("Resources/data_7zip_lzma2.7z");
-        
+
         var act = async () => await _extractor.ExtractAllAsync(file, dest, CancellationToken.None);
-        
+
         await act.Should().NotThrowAsync();
 
 
@@ -59,8 +59,8 @@ public class SevenZipExtractionTests
                 ("folder1/folder1file.txt".ToRelativePath(), (Hash)0xC9E47B1523162066),
                 ("rootFile.txt".ToRelativePath(), (Hash)0x33DDBF7930BA002A),
             });
-        
-        
+
+
     }
 
     [Fact]

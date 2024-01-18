@@ -2,7 +2,7 @@
 using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Controls.Templates;
 using DynamicData;
-using NexusMods.DataModel.Games;
+using NexusMods.Abstractions.Installers.DTO;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Preview;
 

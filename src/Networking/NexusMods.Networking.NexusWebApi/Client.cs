@@ -1,10 +1,10 @@
 using System.Net.Http.Json;
 using System.Text.Json.Serialization.Metadata;
 using Microsoft.Extensions.Logging;
-using NexusMods.Networking.NexusWebApi.DTOs;
-using NexusMods.Networking.NexusWebApi.DTOs.Interfaces;
-using NexusMods.Networking.NexusWebApi.DTOs.OAuth;
-using NexusMods.Networking.NexusWebApi.Types;
+using NexusMods.Abstractions.NexusWebApi.DTOs;
+using NexusMods.Abstractions.NexusWebApi.DTOs.Interfaces;
+using NexusMods.Abstractions.NexusWebApi.DTOs.OAuth;
+using NexusMods.Abstractions.NexusWebApi.Types;
 
 namespace NexusMods.Networking.NexusWebApi;
 

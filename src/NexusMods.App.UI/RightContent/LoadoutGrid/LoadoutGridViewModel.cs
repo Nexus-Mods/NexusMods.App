@@ -5,6 +5,12 @@ using Avalonia.Controls;
 using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.Games.ArchiveMetadata;
+using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.Games.Loadouts;
+using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Serialization;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModCategory;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModEnabled;
@@ -12,13 +18,8 @@ using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModInstalled;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModName;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModVersion;
 using NexusMods.App.UI.WorkspaceSystem;
-using NexusMods.Common;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.ArchiveMetaData;
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.Loadouts.Cursors;
-using NexusMods.DataModel.ModInstallers;
 using NexusMods.Paths;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -97,7 +98,7 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
         {
             this.WhenAnyValue(vm => vm.LoadoutId)
                 .SelectMany(loadoutRegistry.RevisionsAsLoadouts)
-                .Select(loadout => loadout!.Mods.Values.Select(m => new ModCursor(loadout.LoadoutId, m.Id)))
+                .Select(loadout => loadout.Mods.Values.Select(m => new ModCursor(loadout.LoadoutId, m.Id)))
                 .OnUI()
                 .ToDiffedChangeSet(cur => cur.ModId, cur => cur)
                 .Bind(out _mods)

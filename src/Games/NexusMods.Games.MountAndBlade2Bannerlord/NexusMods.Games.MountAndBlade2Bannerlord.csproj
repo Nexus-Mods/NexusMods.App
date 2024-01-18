@@ -6,7 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\DataModel\NexusMods.DataModel\NexusMods.DataModel.csproj" />
+    <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.Games.Diagnostics\NexusMods.Abstractions.Games.Diagnostics.csproj" />
+    <ProjectReference Include="..\..\Extensions\NexusMods.Extensions.DependencyInjection\NexusMods.Extensions.DependencyInjection.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -14,6 +15,7 @@
     <PackageReference Include="Bannerlord.LauncherManager" />
     <PackageReference Include="FetchBannerlordVersion" />
     <PackageReference Include="System.Linq.Async" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,6 +1,6 @@
-﻿using NexusMods.DataModel.Abstractions.Games;
-using NexusMods.DataModel.Games;
-using NexusMods.DataModel.Trees;
+﻿using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Installers.DTO;
+using NexusMods.Abstractions.Installers.Trees;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees;
 

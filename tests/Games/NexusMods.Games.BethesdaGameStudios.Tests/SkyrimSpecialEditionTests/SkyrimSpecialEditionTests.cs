@@ -3,12 +3,11 @@ using System.Text.Json;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Games.Loadouts;
+using NexusMods.Abstractions.Installers.DTO.Files;
 using NexusMods.CLI.Tests.VerbTests;
-using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Loadouts.Extensions;
-using NexusMods.DataModel.Loadouts.Markers;
-using NexusMods.DataModel.Loadouts.ModFiles;
-using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.LoadoutSynchronizer.Extensions;
 using NexusMods.Games.TestFramework;
 using NexusMods.Paths;
@@ -16,7 +15,7 @@ using Noggog;
 
 namespace NexusMods.Games.BethesdaGameStudios.Tests.SkyrimSpecialEditionTests;
 
-public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
+public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition.SkyrimSpecialEdition>
 {
     private readonly TestModDownloader _downloader;
     private AVerbTest _verbTester;
@@ -35,7 +34,7 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
     public void CanFindGames()
     {
         Game.Name.Should().Be("Skyrim Special Edition");
-        Game.Domain.Should().Be(SkyrimSpecialEdition.StaticDomain);
+        Game.Domain.Should().Be(SkyrimSpecialEdition.SkyrimSpecialEdition.StaticDomain);
         Game.Installations.Count().Should().BeGreaterThan(0);
     }
 
@@ -132,10 +131,10 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
 
 
         var metadataFiles =
-            loadout.Value.Mods.Values.First(m => m.ModCategory == Mod.ModdingMetaData); // <= throws on failure
+            loadout.Value.Mods.Values.First(m => m.ModCategory == Abstractions.DataModel.Entities.Mods.Mod.ModdingMetaData); // <= throws on failure
 
         var gameFiles =
-            loadout.Value.Mods.Values.First(m => m.ModCategory == Mod.GameFilesCategory); // <= throws on failure
+            loadout.Value.Mods.Values.First(m => m.ModCategory == Abstractions.DataModel.Entities.Mods.Mod.GameFilesCategory); // <= throws on failure
 
         var modPath = FileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine("Assets/SMIM_Truncated_Plugins.7z");
         await InstallModStoredFileIntoLoadout(loadout, modPath, "SMIM");
@@ -260,7 +259,7 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
     /// </summary>
     /// <param name="loadout"></param>
     /// <exception cref="NotImplementedException"></exception>
-    private async Task<Mod> InstallTruncatedPlugins(LoadoutMarker loadout)
+    private async Task<Abstractions.DataModel.Entities.Mods.Mod> InstallTruncatedPlugins(LoadoutMarker loadout)
     {
         var path = FileSystem.GetKnownPath(KnownPath.EntryDirectory)
             .Combine("Assets/TruncatedPlugins.7z");

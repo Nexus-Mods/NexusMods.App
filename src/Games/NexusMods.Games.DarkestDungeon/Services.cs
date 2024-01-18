@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.DataModel.Games;
-using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
-using NexusMods.DataModel.ModInstallers;
+using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.Games.DarkestDungeon.Installers;
 
 namespace NexusMods.Games.DarkestDungeon;

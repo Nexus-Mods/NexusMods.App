@@ -1,8 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.GuidedInstallers;
+using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.Common;
-using NexusMods.Common.GuidedInstaller;
-using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
+using NexusMods.Extensions.DependencyInjection;
 using NexusMods.Games.BethesdaGameStudios;
+using NexusMods.Games.BethesdaGameStudios.SkyrimSpecialEdition;
 using NexusMods.Games.FOMOD;
 using NexusMods.Games.Generic;
 using NexusMods.Games.RedEngine;

@@ -5,12 +5,12 @@ using System.Text.Json;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Activities;
-using NexusMods.Common;
-using NexusMods.Common.OSInterop;
-using NexusMods.DataModel.Messaging;
-using NexusMods.Networking.NexusWebApi.DTOs.OAuth;
+using NexusMods.Abstractions.Messaging;
+using NexusMods.Abstractions.NexusWebApi.DTOs.OAuth;
+using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.BCL.Extensions;
+using NexusMods.CrossPlatform.Process;
 using NexusMods.Networking.NexusWebApi.NMA.Messages;
-using NexusMods.Networking.NexusWebApi.Types;
 
 namespace NexusMods.Networking.NexusWebApi.NMA;
 
@@ -33,7 +33,6 @@ public class OAuth
     private readonly ILogger<OAuth> _logger;
     private readonly HttpClient _http;
     private readonly IOSInterop _os;
-    private readonly IIDGenerator _idGen;
     private readonly IMessageConsumer<NXMUrlMessage> _nxmUrlMessages;
     private readonly IActivityFactory _activityFactory;
 
@@ -42,7 +41,6 @@ public class OAuth
     /// </summary>
     public OAuth(ILogger<OAuth> logger,
         HttpClient http,
-        IIDGenerator idGen,
         IOSInterop os,
         IMessageConsumer<NXMUrlMessage> nxmUrlMessages,
         IActivityFactory activityFactory)
@@ -50,7 +48,6 @@ public class OAuth
         _logger = logger;
         _http = http;
         _os = os;
-        _idGen = idGen;
         _activityFactory = activityFactory;
         _nxmUrlMessages = nxmUrlMessages;
     }
@@ -63,13 +60,13 @@ public class OAuth
     public async Task<JwtTokenReply?> AuthorizeRequest(CancellationToken cancellationToken)
     {
         // see https://www.rfc-editor.org/rfc/rfc7636#section-4.1
-        var codeVerifier = _idGen.UUIDv4().ToBase64();
+        var codeVerifier = IDGenerator.UUIDv4().ToBase64();
 
         // see https://www.rfc-editor.org/rfc/rfc7636#section-4.2
         var codeChallengeBytes = SHA256.HashData(Encoding.UTF8.GetBytes(codeVerifier));
-        var codeChallenge = StringEncodingExtension.Base64UrlEncode(codeChallengeBytes);
+        var codeChallenge = StringBase64Extensions.Base64UrlEncode(codeChallengeBytes);
 
-        var state = _idGen.UUIDv4();
+        var state = IDGenerator.UUIDv4();
 
         // Start listening first, otherwise we might miss the message
         var codeTask = _nxmUrlMessages.Messages

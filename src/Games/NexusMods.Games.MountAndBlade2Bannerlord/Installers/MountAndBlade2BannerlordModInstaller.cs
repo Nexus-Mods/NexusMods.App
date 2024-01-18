@@ -2,13 +2,12 @@ using System.Xml;
 using Bannerlord.LauncherManager.Models;
 using Bannerlord.ModuleManager;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Common;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.Abstractions.Games;
-using NexusMods.DataModel.Games;
-using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.ModInstallers;
-using NexusMods.DataModel.Trees;
+using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Installers.DTO;
+using NexusMods.Abstractions.Installers.Trees;
+using NexusMods.Abstractions.Serialization;
+using NexusMods.BCL.Extensions;
 using NexusMods.Games.MountAndBlade2Bannerlord.Models;
 using NexusMods.Games.MountAndBlade2Bannerlord.Services;
 using NexusMods.Games.MountAndBlade2Bannerlord.Sorters;
@@ -40,7 +39,7 @@ public sealed class MountAndBlade2BannerlordModInstaller : AModInstaller
             if (!path.FileName.Equals(SubModuleFile))
                 return default;
 
-            await using var stream = await kv.Item!.OpenAsync();
+            await using var stream = await kv.Item.OpenAsync();
             try
             {
                 var doc = new XmlDocument();
@@ -56,28 +55,27 @@ public sealed class MountAndBlade2BannerlordModInstaller : AModInstaller
         }).Where(kv => kv.ModuleInfo != null!);
     }
 
-    public override async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(GameInstallation installation, LoadoutId loadoutId, ModId baseModId,
-        KeyedBox<RelativePath, ModFileTree> archiveFiles, CancellationToken ct = default)
+    public override async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(ModInstallerInfo info, CancellationToken ct = default)
     {
-        var moduleInfoFiles = await GetModuleInfoFiles(archiveFiles).ToArrayAsync(ct);
+        var moduleInfoFiles = await GetModuleInfoFiles(info.ArchiveFiles).ToArrayAsync(ct);
 
         // Not a valid Bannerlord Module - install in root folder the content
         if (!moduleInfoFiles.Any())
         {
             //return NoResults;
 
-            var modFiles = archiveFiles.GetFiles().Select(kv => kv.ToStoredFile(new GamePath(LocationId.Game, kv.Path()))).AsEnumerable();
+            var modFiles = info.ArchiveFiles.GetFiles().Select(kv => kv.ToStoredFile(new GamePath(LocationId.Game, kv.Path()))).AsEnumerable();
             return new List<ModInstallerResult>
             {
                 new()
                 {
-                    Id = baseModId,
+                    Id = info.BaseModId,
                     Files = modFiles
                 }
             };
         }
 
-        var launcherManager = _launcherManagerFactory.Get(installation);
+        var launcherManager = _launcherManagerFactory.Get(info);
 
         return moduleInfoFiles.Select(node =>
         {
@@ -100,7 +98,7 @@ public sealed class MountAndBlade2BannerlordModInstaller : AModInstaller
                 }
 
                 var relativePath = instruction.Source.ToRelativePath();
-                var node = archiveFiles!.FindByPathFromChild(relativePath)!;
+                var node = info.ArchiveFiles.FindByPathFromChild(relativePath)!;
                 var path = node.Path();
                 var parent = moduleRoot!.Parent();
                 var modulesFolderDepth = parent?.Depth() ?? 0;

@@ -1,10 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using NexusMods.DataModel.Games;
-using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.ModInstallers;
-using NexusMods.DataModel.Trees;
-using NexusMods.Paths;
-using NexusMods.Paths.Trees;
+using NexusMods.Abstractions.Installers;
 
 namespace NexusMods.Games.AdvancedInstaller;
 
@@ -34,17 +29,14 @@ public class AdvancedManualInstaller : AModInstaller
     }
 
     public override ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
-        GameInstallation gameInstallation,
-        LoadoutId loadoutId,
-        ModId baseModId,
-        KeyedBox<RelativePath, ModFileTree> archiveFiles,
+        ModInstallerInfo info,
         CancellationToken cancellationToken = default)
     {
         // No UI -> fail install.
         if (!IsActive)
             return new ValueTask<IEnumerable<ModInstallerResult>>(Enumerable.Empty<ModInstallerResult>());
 
-        return _handler.Value!.GetModsAsync(gameInstallation, loadoutId, baseModId, archiveFiles, cancellationToken);
+        return _handler.Value!.GetModsAsync(info, cancellationToken);
     }
 
 

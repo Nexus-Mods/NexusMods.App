@@ -1,11 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <ItemGroup>
-        <ProjectReference Include="..\..\DataModel\NexusMods.DataModel\NexusMods.DataModel.csproj"/>
+        <InternalsVisibleTo Include="NexusMods.Games.AdvancedInstaller.Tests"/>
+        <InternalsVisibleTo Include="NexusMods.Games.AdvancedInstaller.UI.Tests"/>
     </ItemGroup>
 
     <ItemGroup>
-        <InternalsVisibleTo Include="NexusMods.Games.AdvancedInstaller.Tests"/>
-        <InternalsVisibleTo Include="NexusMods.Games.AdvancedInstaller.UI.Tests"/>
+      <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.Installers\NexusMods.Abstractions.Installers.csproj" />
     </ItemGroup>
 </Project>

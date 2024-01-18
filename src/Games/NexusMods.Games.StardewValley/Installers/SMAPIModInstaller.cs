@@ -1,9 +1,8 @@
 using System.Text.Json;
-using NexusMods.DataModel.Abstractions.Games;
-using NexusMods.DataModel.Games;
-using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.ModInstallers;
-using NexusMods.DataModel.Trees;
+using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Installers.DTO;
+using NexusMods.Abstractions.Installers.Trees;
 using NexusMods.Games.StardewValley.Models;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees;
@@ -51,13 +50,10 @@ public class SMAPIModInstaller : AModInstaller
     }
 
     public override async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
-        GameInstallation gameInstallation,
-        LoadoutId loadoutId,
-        ModId baseModId,
-        KeyedBox<RelativePath, ModFileTree> archiveFiles,
+        ModInstallerInfo info,
         CancellationToken cancellationToken = default)
     {
-        var manifestFiles = await GetManifestFiles(archiveFiles);
+        var manifestFiles = await GetManifestFiles(info.ArchiveFiles);
         if (manifestFiles.Count == 0)
             return NoResults;
 

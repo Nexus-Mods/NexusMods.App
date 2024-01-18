@@ -3,8 +3,10 @@
     <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
 
     <ItemGroup>
-        <ProjectReference Include="..\..\NexusMods.Abstractions\NexusMods.Abstractions.csproj" />
-        <ProjectReference Include="..\..\NexusMods.Common\NexusMods.Common.csproj" />
+        <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.Activities\NexusMods.Abstractions.Activities.csproj" />
+        <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.FileExtractor\NexusMods.Abstractions.FileExtractor.csproj" />
+        <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.IO\NexusMods.Abstractions.IO.csproj" />
+        <ProjectReference Include="..\..\Extensions\NexusMods.Extensions.BCL\NexusMods.Extensions.BCL.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -32,11 +34,6 @@
             <PackagePath>runtimes/linux-x64</PackagePath>
         </None>
 
-        <None Update="FileSignatures\Signatures.tt">
-            <Generator>TextTemplatingFileGenerator</Generator>
-            <LastGenOutput>Signatures.cs</LastGenOutput>
-        </None>
-
         <None Update="build\NexusMods.FileExtractor.targets">
             <Pack>true</Pack>
             <PackagePath>build\NexusMods.FileExtractor.targets</PackagePath>
@@ -44,11 +41,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Compile Update="FileSignatures\Signatures.cs">
-            <AutoGen>True</AutoGen>
-            <DesignTime>True</DesignTime>
-            <DependentUpon>Signatures.tt</DependentUpon>
-        </Compile>
+      <Folder Include="StreamFactories\" />
     </ItemGroup>
 
     <!-- Non-NuGet Only -->

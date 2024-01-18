@@ -1,5 +1,5 @@
-﻿using NexusMods.Hashing.xxHash64;
-using NexusMods.Networking.NexusWebApi.Types;
+﻿using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.Hashing.xxHash64;
 
 namespace NexusMods.Games.TestFramework.Downloader;
 

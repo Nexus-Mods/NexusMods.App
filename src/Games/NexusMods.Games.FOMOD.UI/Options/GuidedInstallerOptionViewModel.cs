@@ -1,5 +1,5 @@
+using NexusMods.Abstractions.GuidedInstallers;
 using NexusMods.App.UI;
-using NexusMods.Common.GuidedInstaller;
 using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.Games.FOMOD.UI;

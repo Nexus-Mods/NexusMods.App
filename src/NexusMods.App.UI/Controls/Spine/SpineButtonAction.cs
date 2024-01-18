@@ -1,4 +1,4 @@
-using NexusMods.DataModel.Games;
+using NexusMods.Abstractions.Games;
 
 namespace NexusMods.App.UI.Controls.Spine;
 

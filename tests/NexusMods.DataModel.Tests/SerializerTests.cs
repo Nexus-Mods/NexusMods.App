@@ -2,8 +2,9 @@ using System.Collections.Immutable;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using FluentAssertions;
+using NexusMods.Abstractions.Serialization.Attributes;
+using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.DataModel.JsonConverters;
-using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
 
 
 namespace NexusMods.DataModel.Tests;
@@ -12,10 +13,7 @@ public class SerializerTests
 {
     private readonly IServiceProvider _provider;
 
-    public SerializerTests(IServiceProvider provider)
-    {
-        _provider = provider;
-    }
+    public SerializerTests(IServiceProvider provider) => _provider = provider;
 
     [Fact]
     public void CanSerializeASimpleType()
@@ -66,14 +64,11 @@ public class SerializerTests
         opts.Converters.Add(new AbstractClassConverterFactory<IInterface>(_provider));
 
         var json = JsonSerializer.Serialize<IInterface>(new BasicClass { SomeString = "One", SomeOtherString = "Two", BaseString = "Base" }, opts);
-
         json.Should().Contain("\"$type\":\"BasicClass\"", "data is serialized with a type hint");
 
         var data = (BasicClass)JsonSerializer.Deserialize<IInterface>(json, opts)!;
-
         data.SomeString.Should().Be("One", "SomeString should be deserialized");
         data.SomeOtherString.Should().Be(null, "SomeOtherString has a JsonIgnore attribute");
-
     }
 
 
@@ -138,23 +133,23 @@ public class SerializerTests
 
         data.Should().BeEquivalentTo(row);
     }
-    
+
     [Fact]
     public void CanSerializeCollectionOfInterfaces()
     {
         var opts = new JsonSerializerOptions();
         opts.Converters.Add(new AbstractClassConverterFactory<IGeneric<int, string>>(_provider));
         opts.Converters.Add(new ConcreteConverterGenerator<NestedGeneric>(_provider));
-        
+
         var row = new Specific<int, ImmutableList<IGeneric<int, string>>>()
         {
-            T1Val = 42, 
+            T1Val = 42,
             T2Val = new List<IGeneric<int, string>>
             {
                 new Specific<int, string> {T1Val = 22, T2Val = "test"}
             }.ToImmutableList()
         };
-        
+
         var json = JsonSerializer.Serialize(row, opts);
 
         var data = JsonSerializer.Deserialize<Specific<int, ImmutableList<IGeneric<int, string>>>>(json, opts);
@@ -175,8 +170,8 @@ public class SerializerTests
         var data2 = JsonSerializer.Deserialize<InjectableClass>(json, opts)!;
         data2.TypeFinder.Should().NotBeNull("because the type finder was injected");
     }
-    
-    
+
+
 
     [Fact]
     public void CanSerializeEnums()

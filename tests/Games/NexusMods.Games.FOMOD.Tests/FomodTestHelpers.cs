@@ -1,6 +1,7 @@
-﻿using NexusMods.Common;
-using NexusMods.DataModel.Trees;
-using NexusMods.FileExtractor.StreamFactories;
+﻿using NexusMods.Abstractions.Installers.Trees;
+using NexusMods.Abstractions.IO.StreamFactories;
+using NexusMods.BCL.Extensions;
+using NexusMods.Extensions.Hashing;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Trees;

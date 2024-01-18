@@ -23,7 +23,7 @@
         <ProjectReference Include="..\Networking\NexusMods.Networking.HttpDownloader\NexusMods.Networking.HttpDownloader.csproj" />
         <ProjectReference Include="..\Networking\NexusMods.Networking.NexusWebApi\NexusMods.Networking.NexusWebApi.csproj" />
         <ProjectReference Include="..\NexusMods.App.UI\NexusMods.App.UI.csproj" />
-        <ProjectReference Include="..\NexusMods.CLI\NexusMods.CLI.csproj" />
+        <ProjectReference Include="..\NexusMods.App.Cli\NexusMods.App.Cli.csproj" />
     </ItemGroup>
 
     <ItemGroup>

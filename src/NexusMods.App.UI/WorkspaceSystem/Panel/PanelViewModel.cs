@@ -5,7 +5,7 @@ using System.Reactive.Linq;
 using Avalonia;
 using DynamicData;
 using DynamicData.Aggregation;
-using NexusMods.Common;
+using NexusMods.BCL.Extensions;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 

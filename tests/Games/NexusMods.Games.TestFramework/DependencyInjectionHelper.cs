@@ -1,7 +1,7 @@
+using Castle.Core.Resource;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Common;
 using NexusMods.DataModel;
 using NexusMods.FileExtractor;
 using NexusMods.FileExtractor.Extractors;
@@ -28,7 +28,7 @@ public static class DependencyInjectionHelper
     ///     <item>Nexus Web API via <see cref="Networking.NexusWebApi.Services.AddNexusWebApi"/></item>
     ///     <item><see cref="IHttpDownloader"/> via <see cref="Networking.HttpDownloader.Services.AddHttpDownloader"/></item>
     ///     <item>All services related to the <see cref="NexusMods.DataModel"/> via <see cref="DataModel.Services.AddDataModel"/></item>
-    ///     <item><see cref="IResource{TResource,TUnit}"/> for <see cref="ArchiveAnalyzer"/></item>
+    ///     <item><see cref="IResource"/> for <see cref="ArchiveAnalyzer"/></item>
     ///     <item><see cref="IResource{TResource,TUnit}"/> for <see cref="IExtractor"/></item>
     ///     <item><see cref="IResource{TResource,TUnit}"/> for <see cref="FileHashCache"/></item>
     ///     <item>File extraction services via <see cref="NexusMods.FileExtractor.Services.AddFileExtractors"/></item>
@@ -44,8 +44,6 @@ public static class DependencyInjectionHelper
 
         return serviceCollection
             .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug))
-            .AddOSInformation()
-            .AddCommon()
             .AddFileSystem()
             .AddSingleton<TemporaryFileManager>(_ => new TemporaryFileManager(FileSystem.Shared, prefix))
             .AddSingleton<HttpClient>()

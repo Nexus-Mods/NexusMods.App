@@ -2,9 +2,12 @@ using GameFinder.Common;
 using GameFinder.StoreHandlers.Steam;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.DataModel.Games;
+using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.Games.Stores.Steam;
+using NexusMods.Abstractions.Installers.DTO;
 using NexusMods.Paths;
-using IGame = NexusMods.DataModel.Games.IGame;
+using IGame = NexusMods.Abstractions.Games.IGame;
 
 namespace NexusMods.StandardGameLocators;
 

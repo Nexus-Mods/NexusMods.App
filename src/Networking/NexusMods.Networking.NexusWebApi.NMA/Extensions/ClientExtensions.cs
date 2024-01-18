@@ -1,6 +1,6 @@
-using NexusMods.DataModel.Games;
-using NexusMods.Networking.NexusWebApi.DTOs;
-using NexusMods.Networking.NexusWebApi.Types;
+using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.NexusWebApi.DTOs;
+using NexusMods.Abstractions.NexusWebApi.Types;
 
 namespace NexusMods.Networking.NexusWebApi.NMA.Extensions;
 

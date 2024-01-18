@@ -1,7 +1,7 @@
+using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Networking.Downloaders.Tasks;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
-using NexusMods.Networking.NexusWebApi.Types;
 using NexusMods.Paths;
 
 namespace NexusMods.Networking.Downloaders.Tests.Tasks;

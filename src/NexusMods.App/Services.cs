@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.Listeners;
 using NexusMods.App.UI;
 using NexusMods.CLI;
-using NexusMods.Common;
 using NexusMods.DataModel;
 using NexusMods.DataModel.GlobalSettings;
 using NexusMods.FileExtractor;
@@ -80,7 +79,6 @@ public static class Services
                 .AddTestHarness()
                 .AddSingleton<HttpClient>()
                 .AddListeners()
-                .AddCommon()
                 .AddDownloaders();
 
             services = OpenTelemetryRegistration.AddTelemetry(services, new OpenTelemetrySettings

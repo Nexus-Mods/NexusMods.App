@@ -1,7 +1,6 @@
 using FluentAssertions;
-using NexusMods.DataModel.Abstractions.Games;
-using NexusMods.DataModel.Games;
-using NexusMods.DataModel.Games.GameCapabilities.FolderMatchInstallerCapability;
+using NexusMods.Abstractions.Games.GameCapabilities;
+using NexusMods.Abstractions.Installers.DTO;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.AdvancedInstaller.Tests;

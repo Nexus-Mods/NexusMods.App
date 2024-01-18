@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <ItemGroup>
-        <ProjectReference Include="..\..\DataModel\NexusMods.DataModel\NexusMods.DataModel.csproj" />
+      <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.Games\NexusMods.Abstractions.Games.csproj" />
+      <ProjectReference Include="..\..\Extensions\NexusMods.Extensions.DependencyInjection\NexusMods.Extensions.DependencyInjection.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -8,5 +9,9 @@
         <EmbeddedResource Include="Resources\Cyberpunk2077\icon.png" />
         <None Remove="Resources\Cyberpunk2077\game_image.jpg" />
         <EmbeddedResource Include="Resources\Cyberpunk2077\game_image.jpg" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="CliWrap" />
     </ItemGroup>
 </Project>

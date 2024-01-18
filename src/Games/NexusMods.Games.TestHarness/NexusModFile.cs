@@ -1,9 +1,10 @@
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.Abstractions.Ids;
-using NexusMods.DataModel.Games;
-using NexusMods.DataModel.JsonConverters;
+using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.Abstractions.Serialization;
+using NexusMods.Abstractions.Serialization.Attributes;
+using NexusMods.Abstractions.Serialization.DataModel;
+using NexusMods.Abstractions.Serialization.DataModel.Ids;
 using NexusMods.Hashing.xxHash64;
-using NexusMods.Networking.NexusWebApi.Types;
 
 namespace NexusMods.Games.TestHarness;
 

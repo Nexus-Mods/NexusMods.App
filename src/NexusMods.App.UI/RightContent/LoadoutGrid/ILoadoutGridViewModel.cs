@@ -1,8 +1,9 @@
 ﻿using System.Collections.ObjectModel;
+using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.WorkspaceSystem;
-using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.Loadouts.Cursors;
 
 namespace NexusMods.App.UI.RightContent.LoadoutGrid;
 

@@ -1,5 +1,5 @@
 using Bannerlord.LauncherManager.Models;
-using NexusMods.DataModel.Loadouts.Mods;
+using NexusMods.Abstractions.DataModel.Entities.Mods;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord.Models;
 

@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.DataModel.Games;
-using NexusMods.DataModel.ModInstallers;
+using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Installers;
 
 namespace NexusMods.Games.Sifu;
 

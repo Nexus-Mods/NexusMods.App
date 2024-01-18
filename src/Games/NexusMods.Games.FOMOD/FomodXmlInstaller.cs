@@ -2,16 +2,17 @@ using FomodInstaller.Interface;
 using FomodInstaller.Scripting.XmlScript;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.DataModel.Games;
-using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.Loadouts.ModFiles;
-using NexusMods.DataModel.ModInstallers;
-using NexusMods.DataModel.Trees;
+using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Installers.DTO;
+using NexusMods.Abstractions.Installers.DTO.Files;
+using NexusMods.Abstractions.Installers.Trees;
 using NexusMods.Games.FOMOD.CoreDelegates;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees;
 using NexusMods.Paths.Trees.Traits;
 using NexusMods.Paths.Utilities;
+using IFileSystem = NexusMods.Paths.IFileSystem;
 using Mod = FomodInstaller.Interface.Mod;
 
 namespace NexusMods.Games.FOMOD;
@@ -52,10 +53,7 @@ public class FomodXmlInstaller : AModInstaller
     }
 
     public override async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
-        GameInstallation gameInstallation,
-        LoadoutId loadoutId,
-        ModId baseModId,
-        KeyedBox<RelativePath, ModFileTree> archiveFiles,
+        ModInstallerInfo info,
         CancellationToken cancellationToken = default)
     {
         // the component dealing with FOMODs is built to support all kinds of mods, including those without a script.
@@ -63,7 +61,7 @@ public class FomodXmlInstaller : AModInstaller
         // we only intend to support xml scripted FOMODs, this should be good enough
         var stopPattern = new List<string> { "fomod" };
 
-        var analyzerInfo = await FomodAnalyzer.AnalyzeAsync(archiveFiles, _fileSystem, cancellationToken);
+        var analyzerInfo = await FomodAnalyzer.AnalyzeAsync(info.ArchiveFiles, _fileSystem, cancellationToken);
         if (analyzerInfo == default)
             return Array.Empty<ModInstallerResult>();
 
@@ -73,7 +71,7 @@ public class FomodXmlInstaller : AModInstaller
         var xmlPath = analyzerInfo.PathPrefix.Join(FomodConstants.XmlConfigRelativePath);
 
         // Setup mod, exclude script path so it doesn't get picked up and thus double read from disk
-        var modFiles = archiveFiles.GetFiles().Select(x => x.Path().ToNativeSeparators(OSInformation.Shared)).ToList();
+        var modFiles = info.ArchiveFiles.GetFiles().Select(x => x.Path().ToNativeSeparators(OSInformation.Shared)).ToList();
         var mod = new Mod(modFiles, stopPattern, xmlPath.ToString(), string.Empty, _scriptType);
         await mod.InitializeWithoutLoadingScript();
 
@@ -81,7 +79,7 @@ public class FomodXmlInstaller : AModInstaller
         var installerDelegates = _delegates as InstallerDelegates;
         if (installerDelegates is not null)
         {
-            installerDelegates.UiDelegates.CurrentArchiveFiles = archiveFiles;
+            installerDelegates.UiDelegates.CurrentArchiveFiles = info.ArchiveFiles;
         }
 
         var executor = _scriptType.CreateExecutor(mod, _delegates);
@@ -90,7 +88,7 @@ public class FomodXmlInstaller : AModInstaller
 
         // NOTE(err120): Reset the previously provided data
         if (installerDelegates is not null)
-            installerDelegates.UiDelegates.CurrentArchiveFiles = archiveFiles;
+            installerDelegates.UiDelegates.CurrentArchiveFiles = info.ArchiveFiles;
 
         var errors = instructions.Where(instruction => instruction.type == "error").ToArray();
         if (errors.Any()) throw new Exception(string.Join("; ", errors.Select(err => err.source)));
@@ -104,8 +102,8 @@ public class FomodXmlInstaller : AModInstaller
         {
             new ModInstallerResult
             {
-                Id = baseModId,
-                Files = InstructionsToModFiles(instructions, archiveFiles, _fomodInstallationPath)
+                Id = info.BaseModId,
+                Files = InstructionsToModFiles(instructions, info.ArchiveFiles, _fomodInstallationPath)
             }
         };
     }

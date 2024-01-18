@@ -3,8 +3,9 @@
     <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
 
     <ItemGroup>
-        <ProjectReference Include="..\..\NexusMods.Abstractions\NexusMods.Abstractions.csproj" />
-        <ProjectReference Include="..\..\NexusMods.Common\NexusMods.Common.csproj" />
+        <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.Cli\NexusMods.Abstractions.Cli.csproj" />
+        <ProjectReference Include="..\..\Extensions\NexusMods.Extensions.Hashing\NexusMods.Extensions.Hashing.csproj" />
+        <ProjectReference Include="..\..\NexusMods.App.BuildInfo\NexusMods.App.BuildInfo.csproj" />
     </ItemGroup>
 
     <ItemGroup>

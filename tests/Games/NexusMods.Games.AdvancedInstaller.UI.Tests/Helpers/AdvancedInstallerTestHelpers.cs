@@ -1,5 +1,5 @@
-using NexusMods.DataModel.Abstractions.DTOs;
-using NexusMods.DataModel.Trees;
+using NexusMods.Abstractions.Games.Downloads;
+using NexusMods.Abstractions.Installers.Trees;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees;
@@ -28,6 +28,6 @@ internal static class AdvancedInstallerTestHelpers
             new() { Hash = Hash.From(12), Size = Size.From(12), Path = "Green Version/data/Textures/textureC.dds" }
         };
 
-        return ModFileTree.Create(fileEntries);
+        return TreeCreator.Create(fileEntries);
     }
 }

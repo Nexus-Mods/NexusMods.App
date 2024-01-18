@@ -1,5 +1,5 @@
 using Microsoft.Extensions.Logging;
-using NexusMods.DataModel.Activities;
+using NexusMods.Abstractions.Activities;
 using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Networking.Downloaders.Interfaces.Traits;
 using NexusMods.Networking.Downloaders.Tasks.State;

@@ -1,7 +1,7 @@
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.Abstractions.Ids;
-using NexusMods.DataModel.JsonConverters;
-using NexusMods.Networking.NexusWebApi.DTOs.OAuth;
+using NexusMods.Abstractions.NexusWebApi.DTOs.OAuth;
+using NexusMods.Abstractions.Serialization.Attributes;
+using NexusMods.Abstractions.Serialization.DataModel;
+using NexusMods.Abstractions.Serialization.DataModel.Ids;
 
 namespace NexusMods.Networking.NexusWebApi.NMA;
 

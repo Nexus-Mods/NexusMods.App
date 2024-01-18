@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Common;
-using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
+using NexusMods.Abstractions.Serialization.ExpressionGenerator;
+using NexusMods.Extensions.DependencyInjection;
 
 namespace NexusMods.Networking.NexusWebApi.NMA;
 

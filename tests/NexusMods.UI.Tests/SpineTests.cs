@@ -1,7 +1,7 @@
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Games;
 using NexusMods.App.UI.Controls.Spine;
-using NexusMods.DataModel.Games;
 using NexusMods.Games.RedEngine;
 using Type = NexusMods.App.UI.Controls.Spine.Type;
 

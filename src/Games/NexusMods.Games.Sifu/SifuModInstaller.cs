@@ -1,12 +1,9 @@
 using System.Diagnostics.CodeAnalysis;
-using NexusMods.DataModel.Abstractions.Games;
-using NexusMods.DataModel.Games;
-using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.ModInstallers;
-using NexusMods.DataModel.Trees;
+using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Installers.DTO;
+using NexusMods.Abstractions.Installers.Trees;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
-using NexusMods.Paths.Trees;
 using NexusMods.Paths.Trees.Traits;
 
 namespace NexusMods.Games.Sifu;
@@ -21,13 +18,10 @@ public class SifuModInstaller : AModInstaller
     public SifuModInstaller(IServiceProvider serviceProvider) : base(serviceProvider) { }
 
     public override async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
-        GameInstallation gameInstallation,
-        LoadoutId loadoutId,
-        ModId baseModId,
-        KeyedBox<RelativePath, ModFileTree> archiveFiles,
+        ModInstallerInfo info,
         CancellationToken cancellationToken = default)
     {
-        var pakFile = archiveFiles.GetFiles()
+        var pakFile = info.ArchiveFiles.GetFiles()
             .FirstOrDefault(node => node.Path().Extension == PakExt);
 
         if (pakFile == null)
@@ -41,7 +35,7 @@ public class SifuModInstaller : AModInstaller
 
         return new [] { new ModInstallerResult
         {
-            Id = baseModId,
+            Id = info.BaseModId,
             Files = modFiles,
             Name = pakPath!.FileName()
         }};

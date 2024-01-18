@@ -1,6 +1,7 @@
-﻿using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.Games;
-using NexusMods.DataModel.JsonConverters;
+﻿using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.Serialization.Attributes;
+using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.Paths;
 
 namespace NexusMods.StandardGameLocators;

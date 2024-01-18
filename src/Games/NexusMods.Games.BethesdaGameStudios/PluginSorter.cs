@@ -1,10 +1,10 @@
 using DynamicData;
-using NexusMods.Common;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.Loadouts.ModFiles;
-using NexusMods.DataModel.LoadoutSynchronizer;
-using NexusMods.DataModel.Sorting;
-using NexusMods.DataModel.Sorting.Rules;
+using NexusMods.Abstractions.DataModel.Entities.Sorting;
+using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.Games.Loadouts.Sorting;
+using NexusMods.Abstractions.Installers.DTO.Files;
+using NexusMods.Abstractions.IO;
+using NexusMods.BCL.Extensions;
 using NexusMods.Games.BethesdaGameStudios.Exceptions;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
@@ -27,11 +27,13 @@ public class PluginSorter
 
     private readonly PluginAnalyzer _pluginAnalyzer;
     private readonly IFileStore _fileStore;
+    private readonly ISorter _sorter;
 
-    public PluginSorter(PluginAnalyzer pluginAnalyzer, IFileStore fileStore)
+    public PluginSorter(PluginAnalyzer pluginAnalyzer, IFileStore fileStore, ISorter sorter)
     {
         _pluginAnalyzer = pluginAnalyzer;
         _fileStore = fileStore;
+        _sorter = sorter;
     }
 
     public async Task<RelativePath[]> Sort(FileTree tree, CancellationToken token)
@@ -44,7 +46,7 @@ public class PluginSorter
             .Select(c => c.Value)
             // For now we only support plugins that are not generated on-the-fly
             .OfType<StoredFile>()
-            .Where(f => SkyrimSpecialEdition.PluginExtensions.Contains(f.To.Extension))
+            .Where(f => SkyrimSpecialEdition.SkyrimSpecialEdition.PluginExtensions.Contains(f.To.Extension))
             .SelectAsync(async f => await GetAnalysis(f, token))
             .Where(result => result is not null)
             .Select(result => result!)
@@ -73,7 +75,7 @@ public class PluginSorter
             .ToArray();
 
         // Sort the plugins
-        var results = Sorter.Sort<RuleTuple, RelativePath, RuleTuple[]>(tuples,
+        var results = _sorter.Sort<RuleTuple, RelativePath, RuleTuple[]>(tuples,
             i => i.Plugin,
             i => i.Rules,
             RelativePath.Comparer);
@@ -119,15 +121,15 @@ public class PluginSorter
                     }
 
                     // ESLs come right after the last ESM
-                    if (plugin.FileName.Extension == SkyrimSpecialEdition.ESL)
+                    if (plugin.FileName.Extension == SkyrimSpecialEdition.SkyrimSpecialEdition.ESL)
                     {
-                        foreach (var file in allPlugins.Where(m => m.FileName.Extension == SkyrimSpecialEdition.ESM))
+                        foreach (var file in allPlugins.Where(m => m.FileName.Extension == SkyrimSpecialEdition.SkyrimSpecialEdition.ESM))
                             yield return new After<RuleTuple, RelativePath> { Other = file.FileName};
                     }
                     // ESPs come right after the last ESL
-                    else if (plugin.FileName.Extension == SkyrimSpecialEdition.ESP)
+                    else if (plugin.FileName.Extension == SkyrimSpecialEdition.SkyrimSpecialEdition.ESP)
                     {
-                        foreach (var file in allPlugins.Where(m => m.FileName.Extension != SkyrimSpecialEdition.ESP))
+                        foreach (var file in allPlugins.Where(m => m.FileName.Extension != SkyrimSpecialEdition.SkyrimSpecialEdition.ESP))
                             yield return new After<RuleTuple, RelativePath> { Other = file.FileName};
                     }
                     break;

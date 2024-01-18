@@ -1,4 +1,4 @@
-﻿using NexusMods.DataModel.LoadoutSynchronizer;
+﻿using NexusMods.Abstractions.Games.Loadouts;
 
 namespace NexusMods.DataModel.Tests;
 

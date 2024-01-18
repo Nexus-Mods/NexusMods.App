@@ -1,8 +1,8 @@
 using BenchmarkDotNet.Attributes;
+using NexusMods.Abstractions.DataModel.Entities;
+using NexusMods.Abstractions.DataModel.Entities.Sorting;
 using NexusMods.Benchmarks.Interfaces;
-using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Sorting;
-using NexusMods.DataModel.Sorting.Rules;
 
 namespace NexusMods.Benchmarks.Benchmarks;
 
@@ -15,6 +15,8 @@ public class Sorting : IBenchmark
     [Params(100, 1000, 2000, 5000, 10000)]
     // ReSharper disable once UnusedAutoPropertyAccessor.Global
     public int NumItems { get; set; }
+
+    private readonly Sorter _sorter = new();
 
     [GlobalSetup]
     public void Setup()
@@ -66,7 +68,7 @@ public class Sorting : IBenchmark
     [Benchmark]
     public Item[] Sort()
     {
-        return Sorter.Sort<Item, string>(_rules, x => x.Id, x => x.Rules).ToArray();
+        return _sorter.Sort<Item, string>(_rules, x => x.Id, x => x.Rules).ToArray();
     }
 
     private IEnumerable<Item> Shuffle(List<Item> rules)

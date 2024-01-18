@@ -1,14 +1,11 @@
 using Cathei.LinqGen;
-using NexusMods.Common;
-using NexusMods.DataModel.Abstractions.Games;
-using NexusMods.DataModel.Games;
-using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.ModInstallers;
-using NexusMods.DataModel.Trees;
+using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Installers.DTO;
+using NexusMods.Abstractions.Installers.Trees;
+using NexusMods.BCL.Extensions;
 using NexusMods.Games.Generic.FileAnalyzers;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
-using NexusMods.Paths.Trees;
 using NexusMods.Paths.Trees.Traits;
 
 namespace NexusMods.Games.Reshade;
@@ -29,14 +26,11 @@ public class ReshadePresetInstaller : AModInstaller
     public ReshadePresetInstaller(IServiceProvider serviceProvider) : base(serviceProvider) {}
 
     public override async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
-        GameInstallation gameInstallation,
-        LoadoutId loadoutId,
-        ModId baseModId,
-        KeyedBox<RelativePath, ModFileTree> archiveFiles,
+        ModInstallerInfo info,
         CancellationToken cancellationToken = default)
     {
 
-        var filtered = archiveFiles.GetFiles()
+        var filtered = info.ArchiveFiles.GetFiles()
             .Gen()
             .Where(f => !IgnoreFiles.Contains(f.Path().FileName))
             .ToList();
@@ -47,7 +41,7 @@ public class ReshadePresetInstaller : AModInstaller
 
         // Get all the ini data
         var iniData = await filtered
-            .SelectAsync(async f => await IniAnalzyer.AnalyzeAsync(f.Item!.StreamFactory!))
+            .SelectAsync(async f => await IniAnalzyer.AnalyzeAsync(f.Item.StreamFactory!))
             .ToListAsync(cancellationToken: cancellationToken);
 
         // All the files must have ini data
@@ -58,7 +52,7 @@ public class ReshadePresetInstaller : AModInstaller
         if (!iniData.All(f => f.Sections.All(x => x.EndsWith(".fx", StringComparison.CurrentCultureIgnoreCase))))
             return NoResults;
 
-        var modFiles = archiveFiles.GetFiles()
+        var modFiles = info.ArchiveFiles.GetFiles()
             .Gen()
             .Where(kv => !IgnoreFiles.Contains(kv.FileName()))
             .Select(kv => kv.ToStoredFile(
@@ -70,7 +64,7 @@ public class ReshadePresetInstaller : AModInstaller
 
         return new [] { new ModInstallerResult
         {
-            Id = baseModId,
+            Id = info.BaseModId,
             Files = modFiles
         }};
     }

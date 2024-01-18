@@ -4,23 +4,25 @@ using FluentAssertions;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Common;
-using NexusMods.DataModel;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.Abstractions.Games;
-using NexusMods.DataModel.ArchiveMetaData;
-using NexusMods.DataModel.Games;
+using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Games.ArchiveMetadata;
+using NexusMods.Abstractions.Games.Downloads;
+using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.Games.Loadouts;
+using NexusMods.Abstractions.Installers.DTO;
+using NexusMods.Abstractions.IO;
+using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.Abstractions.Serialization;
 using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.Loadouts.Markers;
-using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.NMA.Extensions;
-using NexusMods.Networking.NexusWebApi.Types;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators.TestHelpers;
-using ModId = NexusMods.Networking.NexusWebApi.Types.ModId;
+using IGame = GameFinder.Common.IGame;
+using ModId = NexusMods.Abstractions.NexusWebApi.Types.ModId;
 
 namespace NexusMods.Games.TestFramework;
 
@@ -181,7 +183,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
 
     /// <summary>
     /// Installs a single mod from the archive into the loadout. This calls
-    /// <see cref="InstallModsStoredFileIntoLoadout(NexusMods.DataModel.Loadouts.Markers.LoadoutMarker,NexusMods.Hashing.xxHash64.Hash,string?,System.Threading.CancellationToken)"/> and asserts only one mod
+    /// <see cref="InstallModsStoredFileIntoLoadout(LoadoutMarker,NexusMods.Hashing.xxHash64.Hash,string?,System.Threading.CancellationToken)"/> and asserts only one mod
     /// exists in the archive.
     /// </summary>
     /// <param name="loadout"></param>
@@ -206,7 +208,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
     }
 
     /// <summary>
-    /// Variant of <see cref="InstallModStoredFileIntoLoadout(NexusMods.DataModel.Loadouts.Markers.LoadoutMarker,NexusMods.Hashing.xxHash64.Hash,string?,System.Threading.CancellationToken)"/> that takes a file path instead of a hash.
+    /// Variant of <see cref="InstallModStoredFileIntoLoadout(LoadoutMarker,NexusMods.Hashing.xxHash64.Hash,string?,System.Threading.CancellationToken)"/> that takes a file path instead of a hash.
     /// </summary>
     /// <param name="loadout"></param>
     /// <param name="path"></param>

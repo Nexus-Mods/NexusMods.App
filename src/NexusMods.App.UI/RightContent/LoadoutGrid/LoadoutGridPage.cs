@@ -1,7 +1,8 @@
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Games.Loadouts;
+using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.App.UI.WorkspaceSystem;
-using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.Loadouts;
 
 namespace NexusMods.App.UI.RightContent.LoadoutGrid;

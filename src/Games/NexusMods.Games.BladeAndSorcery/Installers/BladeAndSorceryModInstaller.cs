@@ -1,11 +1,10 @@
 using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.DataModel.Abstractions.Games;
-using NexusMods.DataModel.Games;
-using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.ModInstallers;
-using NexusMods.DataModel.Trees;
+using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Installers.DTO;
+using NexusMods.Abstractions.Installers.Trees;
 using NexusMods.Games.BladeAndSorcery.Models;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees;
@@ -30,13 +29,10 @@ public class BladeAndSorceryModInstaller : AModInstaller
         => new(serviceProvider, serviceProvider.GetRequiredService<ILogger<BladeAndSorceryModInstaller>>());
 
     public override async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
-        GameInstallation gameInstallation,
-        LoadoutId loadoutId,
-        ModId baseModId,
-        KeyedBox<RelativePath, ModFileTree> archiveFiles,
+        ModInstallerInfo info,
         CancellationToken cancellationToken = default)
     {
-        var modDirectories = archiveFiles
+        var modDirectories = info.ArchiveFiles
             .Children()
             .Select(x => x.Value)
             .Where(x => x.IsDirectory())
@@ -45,12 +41,11 @@ public class BladeAndSorceryModInstaller : AModInstaller
         var mods = await GetContainedModsAsync(modDirectories)
             .ToListAsync(cancellationToken);
 
-        return PrepareResults(gameInstallation, baseModId, mods);
+        return PrepareResults(info, mods);
     }
 
     private IEnumerable<ModInstallerResult> PrepareResults(
-        GameInstallation gameInstallation,
-        ModId baseModId,
+        ModInstallerInfo info,
         ICollection<(KeyedBox<RelativePath, ModFileTree>, ModManifest)> mods)
     {
         foreach (var (modRoot, manifest) in mods)
@@ -63,15 +58,15 @@ public class BladeAndSorceryModInstaller : AModInstaller
                 ))
                 .AsEnumerable();
 
-            if (gameInstallation.Version.ToString() != manifest.GameVersion)
+            if (info.Version.ToString() != manifest.GameVersion)
                 _logger.LogDebug(
-                    "Mod {ModName} v{ModVersion} specifies game version {ModGameVersion}, but {CurrentGameVersion} is installed.",
-                    manifest.Name, manifest.ModVersion, manifest.GameVersion, gameInstallation.Version);
+                    "Mod {ModName} v{ModVersion} specifies game version {ModGameVersion}, but {CurrentGameVersion} is installed",
+                    manifest.Name, manifest.ModVersion, manifest.GameVersion, info.Version);
 
             yield return new ModInstallerResult
             {
                 Id = mods.Count == 1
-                    ? baseModId
+                    ? info.BaseModId
                     : ModId.NewId(),
                 Files = modFileData,
                 Name = manifest.Name,

@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <!-- NuGet Package Shared Details -->
+    <PropertyGroup>
+      <RootNamespace>NexusMods.Abstractions</RootNamespace>
+    </PropertyGroup>
+    <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+    <ItemGroup>
+      <PackageReference Include="NexusMods.ProxyConsole.Abstractions" />
+    </ItemGroup>
+
+</Project>

@@ -1,6 +1,6 @@
 ﻿using System.Reactive.Disposables;
-using NexusMods.DataModel.Games;
-using NexusMods.DataModel.Trees;
+using NexusMods.Abstractions.Installers.Info;
+using NexusMods.Abstractions.Installers.Trees;
 using NexusMods.Paths;
 using NexusMods.Paths.FileTree;
 using NexusMods.Paths.Trees;
@@ -21,7 +21,7 @@ public class AdvancedInstallerPageViewModel : AViewModel<IAdvancedInstallerPageV
     /// <param name="gameName">The display name of the game being managed.</param>
     public AdvancedInstallerPageViewModel(string modName,
         KeyedBox<RelativePath, ModFileTree> archiveFiles,
-        GameLocationsRegister register,
+        IGameLocationsRegister register,
         string gameName)
     {
         BodyViewModel = new BodyViewModel(new DeploymentData(), modName, archiveFiles, register, null, gameName);

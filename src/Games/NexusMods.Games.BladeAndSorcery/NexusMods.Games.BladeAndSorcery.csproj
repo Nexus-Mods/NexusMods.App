@@ -1,15 +1,20 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <ItemGroup>
-        <ProjectReference Include="..\..\DataModel\NexusMods.DataModel\NexusMods.DataModel.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
         <None Remove="Resources\BladeAndSorcery\game_image.jpg" />
         <EmbeddedResource Include="Resources\BladeAndSorcery\game_image.jpg" />
         <None Remove="Resources\BladeAndSorcery\icon.jpg" />
         <EmbeddedResource Include="Resources\BladeAndSorcery\icon.jpg" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.Games\NexusMods.Abstractions.Games.csproj" />
+      <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.Installers\NexusMods.Abstractions.Installers.csproj" />
+      <ProjectReference Include="..\..\Extensions\NexusMods.Extensions.DependencyInjection\NexusMods.Extensions.DependencyInjection.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    </ItemGroup>
 
 </Project>

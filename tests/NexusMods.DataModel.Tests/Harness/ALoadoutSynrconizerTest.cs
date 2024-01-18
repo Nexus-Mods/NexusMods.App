@@ -1,20 +1,25 @@
 ﻿using System.Runtime.CompilerServices;
 using FluentAssertions;
-using NexusMods.Common;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.Abstractions.Games;
-using NexusMods.DataModel.Abstractions.Ids;
-using NexusMods.DataModel.Games;
-using NexusMods.DataModel.JsonConverters;
-using NexusMods.DataModel.Loadouts;
+using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.DataModel.Entities.Sorting;
+using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.Games.Loadouts;
+using NexusMods.Abstractions.Games.Loadouts.Sorting;
+using NexusMods.Abstractions.Games.Triggers;
+using NexusMods.Abstractions.Installers.DTO;
+using NexusMods.Abstractions.Installers.DTO.Files;
+using NexusMods.Abstractions.IO;
+using NexusMods.Abstractions.IO.StreamFactories;
+using NexusMods.Abstractions.Serialization.Attributes;
+using NexusMods.Abstractions.Serialization.DataModel;
+using NexusMods.Abstractions.Serialization.DataModel.Ids;
 using NexusMods.DataModel.Loadouts.LoadoutSynchronizerDTOs;
-using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Loadouts.Mods;
-using NexusMods.DataModel.Sorting.Rules;
 using NexusMods.DataModel.TriggerFilter;
-using NexusMods.FileExtractor.StreamFactories;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
+
 #pragma warning disable CS1998
 
 namespace NexusMods.DataModel.Tests.Harness;
@@ -24,7 +29,6 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
     protected readonly TestDirectoryIndexer TestIndexer;
     protected readonly TestFileStore TestFileStoreInstance;
     protected readonly TestFingerprintCache<Mod, CachedModSortRules> TestFingerprintCacheInstance;
-    protected readonly TestFingerprintCache<IGeneratedFile, CachedGeneratedFileData> TestGeneratedFileFingerprintCache;
 
     public ALoadoutSynrchonizerTest(IServiceProvider provider) : base(provider)
     {
@@ -33,10 +37,7 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
         TestIndexer = new TestDirectoryIndexer();
         TestFileStoreInstance = new TestFileStore();
         TestFingerprintCacheInstance = new TestFingerprintCache<Mod, CachedModSortRules>();
-        TestGeneratedFileFingerprintCache = new TestFingerprintCache<IGeneratedFile, CachedGeneratedFileData>();
     }
-
-
 
     /// <summary>
     /// Get the `To` location of the first file in the first mod that is IToFile
@@ -124,7 +125,7 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
 }
 
 [JsonName("TestGeneratedFile")]
-public record TestGeneratedFile : AModFile, IGeneratedFile, IToFile, ITriggerFilter<ModFilePair, Plan>
+public record TestGeneratedFile : AModFile, IToFile, ITriggerFilter<ModFilePair, Plan>
 {
     public ITriggerFilter<ModFilePair, Plan> TriggerFilter => this;
     public Task<Hash> GenerateAsync(Stream stream, ApplyPlan loadout, CancellationToken cancellationToken = default)
@@ -188,6 +189,4 @@ public class AlphabeticalSort : IGeneratedSortRule, ISortRule<Mod, ModId>, ITrig
         }
         return fp.Digest();
     }
-
-
 }

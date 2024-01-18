@@ -1,9 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.Diagnostics.Emitters;
+using NexusMods.Abstractions.GuidedInstallers;
+using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.Common;
-using NexusMods.Common.GuidedInstaller;
-using NexusMods.DataModel.Diagnostics.Emitters;
-using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
 using NexusMods.DataModel.Tests.Diagnostics;
 using NexusMods.FileExtractor;
 using NexusMods.Paths;

@@ -6,7 +6,7 @@ using NexusMods.Paths;
 
 namespace NexusMods.Games.BethesdaGameStudios.Tests.SkyrimLegendaryEditionTests;
 
-public class SkyrimLegendaryEditionTests(IServiceProvider serviceProvider) : AGameTest<SkyrimLegendaryEdition>(serviceProvider)
+public class SkyrimLegendaryEditionTests(IServiceProvider serviceProvider) : AGameTest<SkyrimLegendaryEdition.SkyrimLegendaryEdition>(serviceProvider)
 {
     private readonly TestModDownloader _downloader = serviceProvider.GetRequiredService<TestModDownloader>();
     private readonly AVerbTest _verbTester = new AVerbTest(serviceProvider);

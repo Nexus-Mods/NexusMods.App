@@ -1,6 +1,6 @@
 using JetBrains.Annotations;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.JsonConverters;
+using NexusMods.Abstractions.Serialization;
+using NexusMods.Abstractions.Serialization.Attributes;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord.Models;
 

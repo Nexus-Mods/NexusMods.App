@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.GuidedInstallers;
 using NexusMods.App.UI;
-using NexusMods.Common.GuidedInstaller;
 
 namespace NexusMods.Games.FOMOD.UI;
 

@@ -1,4 +1,4 @@
-using NexusMods.DataModel.JsonConverters;
+using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.BethesdaGameStudios;

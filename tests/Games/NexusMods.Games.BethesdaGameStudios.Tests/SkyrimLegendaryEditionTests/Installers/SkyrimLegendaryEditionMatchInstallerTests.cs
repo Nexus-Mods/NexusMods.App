@@ -4,7 +4,7 @@ using NexusMods.Paths;
 
 namespace NexusMods.Games.BethesdaGameStudios.Tests.SkyrimLegendaryEditionTests.Installers;
 
-public class SkyrimLegendaryEditionMatchInstallerTests : GenericFolderMatchInstallerTests<SkyrimLegendaryEdition>
+public class SkyrimLegendaryEditionMatchInstallerTests : GenericFolderMatchInstallerTests<SkyrimLegendaryEdition.SkyrimLegendaryEdition>
 {
     public SkyrimLegendaryEditionMatchInstallerTests(
         IServiceProvider serviceProvider, 

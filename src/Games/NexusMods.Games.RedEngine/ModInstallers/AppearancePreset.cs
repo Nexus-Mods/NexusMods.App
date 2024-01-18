@@ -1,11 +1,8 @@
-using NexusMods.DataModel.Abstractions.Games;
-using NexusMods.DataModel.Games;
-using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.ModInstallers;
-using NexusMods.DataModel.Trees;
+using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Installers.DTO;
+using NexusMods.Abstractions.Installers.Trees;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
-using NexusMods.Paths.Trees;
 using NexusMods.Paths.Trees.Traits;
 using NexusMods.Paths.Utilities;
 
@@ -28,15 +25,11 @@ public class AppearancePreset : AModInstaller
     /// <param name="serviceProvider"></param>
     public AppearancePreset(IServiceProvider serviceProvider) : base(serviceProvider) { }
 
-
     public override async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
-        GameInstallation gameInstallation,
-        LoadoutId loadoutId,
-        ModId baseModId,
-        KeyedBox<RelativePath, ModFileTree> archiveFiles,
+        ModInstallerInfo info,
         CancellationToken cancellationToken = default)
     {
-        var modFiles = archiveFiles.GetFiles()
+        var modFiles = info.ArchiveFiles.GetFiles()
             .Where(kv => kv.Path().Extension == KnownExtensions.Preset)
             .SelectMany(kv => Paths.Select(relPath => kv.ToStoredFile(
                 new GamePath(LocationId.Game, relPath.Join(kv.Path()))
@@ -47,7 +40,7 @@ public class AppearancePreset : AModInstaller
 
         return new ModInstallerResult[] { new()
         {
-            Id = baseModId,
+            Id = info.BaseModId,
             Files = modFiles
         }};
     }

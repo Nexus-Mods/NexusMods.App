@@ -1,10 +1,9 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using NexusMods.DataModel.Abstractions.Games;
-using NexusMods.DataModel.Games;
-using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.ModInstallers;
-using NexusMods.DataModel.Trees;
+using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Installers.DTO;
+using NexusMods.Abstractions.Installers.Trees;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Trees;
@@ -18,14 +17,11 @@ public class RedModInstaller : IModInstaller
     private static readonly RelativePath Mods = "mods".ToRelativePath();
 
     public async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
-        GameInstallation gameInstallation,
-        LoadoutId loadoutId,
-        ModId baseModId,
-        KeyedBox<RelativePath, ModFileTree> archiveFiles,
+        ModInstallerInfo info,
         CancellationToken cancellationToken = default)
     {
         var infosList = new List<(KeyedBox<RelativePath, ModFileTree>  File, RedModInfo? InfoJson)>();
-        foreach (var f in archiveFiles.GetFiles())
+        foreach (var f in info.ArchiveFiles.GetFiles())
         {
             if (f.FileName() != InfoJson)
                 continue;
@@ -47,7 +43,7 @@ public class RedModInstaller : IModInstaller
 
             results.Add(new ModInstallerResult
             {
-                Id = baseIdUsed ? ModId.NewId() : baseModId,
+                Id = baseIdUsed ? ModId.NewId() : info.BaseModId,
                 Files = files,
                 Name = node.InfoJson?.Name ?? "<unknown>"
             });

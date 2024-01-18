@@ -1,0 +1,20 @@
+﻿using NexusMods.Hashing.xxHash64;
+using NexusMods.Paths;
+
+namespace NexusMods.Abstractions.Installers.DTO.Files;
+
+/// <summary>
+/// Used to indicate that a mod file will be installed from an archive.
+/// </summary>
+public interface IStoredFile
+{
+    /// <summary>
+    /// The size of the file.
+    /// </summary>
+    public Size Size { get; }
+
+    /// <summary>
+    /// The hash of the file.
+    /// </summary>
+    public Hash Hash { get; }
+}

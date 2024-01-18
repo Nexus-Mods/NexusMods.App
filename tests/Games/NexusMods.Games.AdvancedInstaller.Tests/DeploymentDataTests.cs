@@ -1,6 +1,5 @@
 using FluentAssertions;
-using NexusMods.DataModel.Abstractions.Games;
-using NexusMods.DataModel.Games;
+using NexusMods.Abstractions.Installers.DTO;
 using NexusMods.Games.AdvancedInstaller.Exceptions;
 using NexusMods.Paths;
 

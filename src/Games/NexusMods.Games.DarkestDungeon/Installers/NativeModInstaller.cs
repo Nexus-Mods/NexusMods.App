@@ -2,13 +2,11 @@ using System.Diagnostics;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
-using NexusMods.Common;
-using NexusMods.DataModel.Abstractions.Games;
-using NexusMods.DataModel.Extensions;
-using NexusMods.DataModel.Games;
-using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.ModInstallers;
-using NexusMods.DataModel.Trees;
+using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Installers.DTO;
+using NexusMods.Abstractions.Installers.Trees;
+using NexusMods.BCL.Extensions;
 using NexusMods.Games.DarkestDungeon.Models;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
@@ -36,7 +34,7 @@ public class NativeModInstaller : IModInstaller
                 if (kv.Path().FileName != ProjectFile)
                     return default;
 
-                await using var stream = await kv.Item!.OpenAsync();
+                await using var stream = await kv.Item.OpenAsync();
                 using var reader = XmlReader.Create(stream, new XmlReaderSettings
                 {
                     IgnoreComments = true,
@@ -53,13 +51,10 @@ public class NativeModInstaller : IModInstaller
     }
 
     public async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
-        GameInstallation gameInstallation,
-        LoadoutId loadoutId,
-        ModId baseModId,
-        KeyedBox<RelativePath, ModFileTree> archiveFiles,
+        ModInstallerInfo info,
         CancellationToken cancellationToken = default)
     {
-        var modProjectFiles = (await GetModProjects(archiveFiles)).ToArray();
+        var modProjectFiles = (await GetModProjects(info.ArchiveFiles)).ToArray();
         if (!modProjectFiles.Any())
             return Array.Empty<ModInstallerResult>();
 

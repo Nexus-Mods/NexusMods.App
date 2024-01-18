@@ -1,8 +1,7 @@
 using Bannerlord.LauncherManager;
-using NexusMods.DataModel.Abstractions.Games;
-using NexusMods.DataModel.Games;
+using NexusMods.Abstractions.Installers.DTO;
 using NexusMods.Paths.Extensions;
-using GameStore = NexusMods.DataModel.Games.GameStore;
+using GameStore = NexusMods.Abstractions.Installers.DTO.GameStore;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord.Utils;
 

@@ -1,6 +1,7 @@
 using System.Runtime.Versioning;
 using FluentAssertions;
-using NexusMods.Common.ProtocolRegistration;
+using NexusMods.CrossPlatform.Process;
+using NexusMods.CrossPlatform.ProtocolRegistration;
 using NexusMods.Paths;
 
 namespace NexusMods.Common.Tests;

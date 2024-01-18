@@ -1,19 +1,17 @@
 ﻿using FluentAssertions;
-using NexusMods.Common;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.Abstractions.Games;
-using NexusMods.DataModel.Games;
-using NexusMods.DataModel.JsonConverters;
-using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.Loadouts.LoadoutSynchronizerDTOs;
-using NexusMods.DataModel.Loadouts.ModFiles;
-using NexusMods.DataModel.Loadouts.Mods;
-using NexusMods.DataModel.LoadoutSynchronizer;
-using NexusMods.DataModel.Sorting.Rules;
+using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.DataModel.Entities.Sorting;
+using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.Games.Loadouts;
+using NexusMods.Abstractions.Installers.DTO;
+using NexusMods.Abstractions.Installers.DTO.Files;
+using NexusMods.Abstractions.Serialization.Attributes;
+using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.DataModel.Tests.Harness;
+using NexusMods.Extensions.Hashing;
 using NexusMods.Hashing.xxHash64;
-using IGeneratedFile = NexusMods.DataModel.LoadoutSynchronizer.IGeneratedFile;
-using ModId = NexusMods.DataModel.Loadouts.ModId;
+using Loadouts_IGeneratedFile = NexusMods.Abstractions.Games.Loadouts.IGeneratedFile;
+using ModFileId = NexusMods.Abstractions.DataModel.Entities.Mods.ModFileId;
 
 namespace NexusMods.DataModel.Tests;
 
@@ -229,7 +227,7 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
         {
             var path = Install.LocationsRegister.GetResolvedPath(file.Path);
             path.FileExists.Should().BeTrue("the file should exist on disk");
-            path.FileInfo.Size.Should().Be(file.Value!.Size, "the file size should match");
+            path.FileInfo.Size.Should().Be(file.Value.Size, "the file size should match");
             path.FileInfo.LastWriteTimeUtc.Should()
                 .Be(file.Value.LastModified, "the file last modified time should match");
             (await path.XxHash64Async()).Should().Be(file.Value.Hash, "the file hash should match");
@@ -279,8 +277,8 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
                 },
                 "files have all been written to disk");
 
-        diskState[modifiedFile].Value!.Hash.Should().Be(new byte[] { 0x01, 0x02, 0x03 }.XxHash64(), "the file should have been modified");
-        diskState[newFile].Value!.Hash.Should().Be(new byte[] { 0x04, 0x05, 0x06 }.XxHash64(), "the file should have been created");
+        diskState[modifiedFile].Value.Hash.Should().Be(new byte[] { 0x01, 0x02, 0x03 }.XxHash64(), "the file should have been modified");
+        diskState[newFile].Value.Hash.Should().Be(new byte[] { 0x04, 0x05, 0x06 }.XxHash64(), "the file should have been created");
 
     }
 
@@ -542,7 +540,7 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
 
 
     [JsonName("GeneratedTestFile")]
-    record GeneratedTestFile : AModFile, IGeneratedFile, IToFile
+    record GeneratedTestFile : AModFile, Loadouts_IGeneratedFile, IToFile
     {
         public GamePath To => new(LocationId.Game, "generated.txt");
 
@@ -591,7 +589,7 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
         var outputPath = Install.LocationsRegister.GetResolvedPath(generatedFile.To);
         var state = await _synchronizer.Apply(BaseList.Value);
 
-        state[generatedFile.To].Value!.Hash.Should().Be("ABC".XxHash64AsUtf8(), "the file should have been generated");
+        state[generatedFile.To].Value.Hash.Should().Be("ABC".XxHash64AsUtf8(), "the file should have been generated");
 
         outputPath.FileExists.Should().BeTrue("the file should have been written to disk");
         (await outputPath.ReadAllTextAsync()).Should().Be("ABC", "the file should contain the generated data");
@@ -605,7 +603,7 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
 
         var newState = await _synchronizer.Apply(BaseList.Value);
 
-        newState[generatedFile.To].Value!.Hash.Should().Be("DEF".XxHash64AsUtf8(), "the file should have been generated");
+        newState[generatedFile.To].Value.Hash.Should().Be("DEF".XxHash64AsUtf8(), "the file should have been generated");
         outputPath.FileExists.Should().BeTrue("the file should still exist");
         (await outputPath.ReadAllTextAsync()).Should().Be("DEF", "the file should contain the new generated data");
 

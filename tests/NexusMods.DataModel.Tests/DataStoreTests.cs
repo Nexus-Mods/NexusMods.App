@@ -1,15 +1,15 @@
 using System.Buffers.Binary;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.Abstractions.Games;
-using NexusMods.DataModel.Abstractions.Ids;
-using NexusMods.DataModel.Games;
-using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.Loadouts.ModFiles;
-using NexusMods.DataModel.Loadouts.Mods;
+using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.Installers.DTO;
+using NexusMods.Abstractions.Installers.DTO.Files;
+using NexusMods.Abstractions.Serialization;
+using NexusMods.Abstractions.Serialization.DataModel;
+using NexusMods.Abstractions.Serialization.DataModel.Ids;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
+using ModFileId = NexusMods.Abstractions.DataModel.Entities.Mods.ModFileId;
 
 namespace NexusMods.DataModel.Tests;
 

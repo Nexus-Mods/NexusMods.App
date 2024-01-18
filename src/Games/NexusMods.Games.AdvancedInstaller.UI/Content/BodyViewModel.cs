@@ -2,11 +2,11 @@
 using DynamicData;
 using DynamicData.Binding;
 using DynamicData.Kernel;
+using NexusMods.Abstractions.Games.Loadouts;
+using NexusMods.Abstractions.Installers.DTO;
+using NexusMods.Abstractions.Installers.Info;
+using NexusMods.Abstractions.Installers.Trees;
 using NexusMods.App.UI.Extensions;
-using NexusMods.DataModel.Abstractions.Games;
-using NexusMods.DataModel.Games;
-using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.Trees;
 using NexusMods.Games.AdvancedInstaller.UI.EmptyPreview;
 using NexusMods.Games.AdvancedInstaller.UI.ModContent;
 using NexusMods.Games.AdvancedInstaller.UI.Preview;
@@ -46,7 +46,7 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
         DeploymentData data,
         string modName,
         KeyedBox<RelativePath, ModFileTree> archiveFiles,
-        GameLocationsRegister locationRegister,
+        IGameLocationsRegister locationRegister,
         Loadout? loadout,
         string gameName)
     {

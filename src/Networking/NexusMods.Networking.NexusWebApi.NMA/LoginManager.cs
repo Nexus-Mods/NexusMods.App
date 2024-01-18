@@ -2,10 +2,10 @@ using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
-using NexusMods.Common;
-using NexusMods.Common.ProtocolRegistration;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.Networking.NexusWebApi.Types;
+using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.Abstractions.Serialization;
+using NexusMods.BCL.Extensions;
+using NexusMods.CrossPlatform.ProtocolRegistration;
 
 namespace NexusMods.Networking.NexusWebApi.NMA;
 
@@ -78,7 +78,7 @@ public sealed class LoginManager : IDisposable
         var cachedValue = _cachedUserInfo.Get();
         if (cachedValue is not null) return cachedValue;
 
-        using var waiter = _verifySemaphore.CustomWait(cancellationToken);
+        using var waiter = _verifySemaphore.WaitDisposable(cancellationToken);
         cachedValue = _cachedUserInfo.Get();
         if (cachedValue is not null) return cachedValue;
 

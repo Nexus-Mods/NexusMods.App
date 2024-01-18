@@ -1,5 +1,4 @@
-using NexusMods.DataModel.Abstractions.Games;
-using NexusMods.DataModel.Games;
+using NexusMods.Abstractions.Installers.DTO;
 using NexusMods.Paths.Extensions;
 
 namespace NexusMods.Games.BethesdaGameStudios;

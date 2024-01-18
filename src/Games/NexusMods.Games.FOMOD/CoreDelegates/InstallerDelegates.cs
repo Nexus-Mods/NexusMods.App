@@ -2,7 +2,7 @@ using FomodInstaller.Interface;
 using FomodInstaller.Interface.ui;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
-using NexusMods.Common.GuidedInstaller;
+using NexusMods.Abstractions.GuidedInstallers;
 
 namespace NexusMods.Games.FOMOD.CoreDelegates;
 

@@ -1,6 +1,6 @@
 using FluentAssertions;
-using NexusMods.DataModel.Diagnostics;
-using NexusMods.DataModel.Diagnostics.References;
+using NexusMods.Abstractions.Diagnostics;
+using NexusMods.Abstractions.Diagnostics.References;
 using NexusMods.Games.StardewValley.Emitters;
 using NexusMods.Games.StardewValley.Models;
 using NexusMods.Games.TestFramework;

@@ -1,11 +1,8 @@
-using NexusMods.DataModel.Abstractions.Games;
-using NexusMods.DataModel.Games;
-using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.ModInstallers;
-using NexusMods.DataModel.Trees;
+using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Installers.DTO;
+using NexusMods.Abstractions.Installers.Trees;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
-using NexusMods.Paths.Trees;
 using NexusMods.Paths.Trees.Traits;
 
 namespace NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
@@ -16,19 +13,15 @@ public class StubbedGameInstaller : IModInstaller
     private readonly RelativePath _savesPrefix = "saves".ToRelativePath();
 
     public ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
-        GameInstallation gameInstallation,
-        LoadoutId loadoutId,
-        ModId baseModId,
-        KeyedBox<RelativePath, ModFileTree> archiveFiles,
+        ModInstallerInfo info,
         CancellationToken cancellationToken = default)
     {
-        return ValueTask.FromResult(GetMods(baseModId, archiveFiles));
+        return ValueTask.FromResult(GetMods(info));
     }
 
-    private IEnumerable<ModInstallerResult> GetMods(ModId baseModId,
-        KeyedBox<RelativePath, ModFileTree> archiveFiles)
+    private IEnumerable<ModInstallerResult> GetMods(ModInstallerInfo info)
     {
-        var modFiles = archiveFiles.GetFiles()
+        var modFiles = info.ArchiveFiles.GetFiles()
             .Select(kv =>
             {
                 var path = kv.Path();
@@ -43,7 +36,7 @@ public class StubbedGameInstaller : IModInstaller
 
         yield return new ModInstallerResult
         {
-            Id = baseModId,
+            Id = info.BaseModId,
             Files = modFiles.AsEnumerable()
         };
     }

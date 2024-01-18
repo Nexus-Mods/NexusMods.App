@@ -1,6 +1,6 @@
 ﻿using System.Reactive;
-using NexusMods.Abstractions.Values;
-using NexusMods.DataModel.Loadouts;
+using NexusMods.Abstractions.Activities;
+using NexusMods.Abstractions.Games.Loadouts;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 

@@ -1,11 +1,11 @@
-using NexusMods.DataModel.Activities;
+using NexusMods.Abstractions.Activities;
+using NexusMods.Abstractions.NexusWebApi.DTOs;
+using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Networking.Downloaders.Interfaces.Traits;
 using NexusMods.Networking.Downloaders.Tasks.State;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
-using NexusMods.Networking.NexusWebApi.DTOs;
-using NexusMods.Networking.NexusWebApi.Types;
 using NexusMods.Paths;
 
 namespace NexusMods.Networking.Downloaders.Tasks;

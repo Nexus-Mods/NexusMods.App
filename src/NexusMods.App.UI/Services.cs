@@ -1,6 +1,7 @@
 
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.Controls.DevelopmentBuildBanner;
@@ -40,7 +41,6 @@ using NexusMods.App.UI.Routing;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.DataModel.JsonConverters;
-using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
 using NexusMods.Paths;
 using ReactiveUI;
 using DownloadGameNameView = NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadGameName.DownloadGameNameView;

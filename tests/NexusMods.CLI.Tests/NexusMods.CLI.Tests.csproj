@@ -4,9 +4,11 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\..\src\Abstractions\NexusMods.Abstractions.Games\NexusMods.Abstractions.Games.csproj" />
         <ProjectReference Include="..\..\src\Games\NexusMods.Games.BethesdaGameStudios\NexusMods.Games.BethesdaGameStudios.csproj" />
         <ProjectReference Include="..\..\src\Networking\NexusMods.Networking.HttpDownloader\NexusMods.Networking.HttpDownloader.csproj" />
-        <ProjectReference Include="..\..\src\NexusMods.CLI\NexusMods.CLI.csproj" />
+        <ProjectReference Include="..\..\src\NexusMods.App.Cli\NexusMods.App.Cli.csproj" />
+        <ProjectReference Include="..\..\src\NexusMods.DataModel\NexusMods.DataModel.csproj" />
         <ProjectReference Include="..\..\src\NexusMods.StandardGameLocators\NexusMods.StandardGameLocators.csproj" />
         <ProjectReference Include="..\Games\NexusMods.Games.TestFramework\NexusMods.Games.TestFramework.csproj" />
         <ProjectReference Include="..\Networking\NexusMods.Networking.HttpDownloader.Tests\NexusMods.Networking.HttpDownloader.Tests.csproj" />

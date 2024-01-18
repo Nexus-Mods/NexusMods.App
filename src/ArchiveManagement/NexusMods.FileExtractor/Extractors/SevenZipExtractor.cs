@@ -5,9 +5,10 @@ using CliWrap.Exceptions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using NexusMods.Abstractions.Activities;
-using NexusMods.Common;
+using NexusMods.Abstractions.IO;
+using NexusMods.Abstractions.IO.StreamFactories;
+using NexusMods.BCL.Extensions;
 using NexusMods.FileExtractor.FileSignatures;
-using NexusMods.FileExtractor.StreamFactories;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Utilities;
@@ -177,7 +178,8 @@ public class SevenZipExtractor : IExtractor
         finally
         {
             _logger.LogDebug("Cleaning up after extraction");
-            await spoolFile.DisposeIfNotNullAsync();
+            if (spoolFile.HasValue)
+                await spoolFile.Value.DisposeAsync();
         }
     }
 

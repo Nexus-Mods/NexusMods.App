@@ -1,5 +1,5 @@
 using FluentAssertions;
-using NexusMods.DataModel.Loadouts.ModFiles;
+using NexusMods.Abstractions.Installers.DTO.Files;
 using NexusMods.Games.TestFramework;
 using NexusMods.Paths;
 

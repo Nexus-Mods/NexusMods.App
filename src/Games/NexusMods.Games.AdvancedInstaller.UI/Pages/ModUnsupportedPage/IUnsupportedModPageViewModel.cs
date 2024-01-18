@@ -5,7 +5,6 @@ namespace NexusMods.Games.AdvancedInstaller.UI;
 
 public interface IUnsupportedModPageViewModel : IViewModelInterface
 {
-
     /// <summary>
     /// Name of the mod to be installed.
     /// </summary>

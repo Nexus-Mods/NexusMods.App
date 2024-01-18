@@ -1,4 +1,4 @@
-﻿using NexusMods.DataModel.Loadouts.Cursors;
+﻿using NexusMods.Abstractions.Games.DTO;
 
 namespace NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModCategory;
 

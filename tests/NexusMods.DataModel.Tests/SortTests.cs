@@ -1,7 +1,7 @@
 using FluentAssertions;
-using NexusMods.DataModel.Abstractions;
+using NexusMods.Abstractions.DataModel.Entities;
+using NexusMods.Abstractions.DataModel.Entities.Sorting;
 using NexusMods.DataModel.Sorting;
-using NexusMods.DataModel.Sorting.Rules;
 
 namespace NexusMods.DataModel.Tests;
 
@@ -20,7 +20,7 @@ public class SortTests
             }},
         };
 
-        Sorter.Sort<Item, string>(data, x => x.Id, x => x.Rules)
+        new Sorter().Sort<Item, string>(data, x => x.Id, x => x.Rules)
             .Select(i => i.Id)
             .Should().BeEquivalentTo("A", "B");
     }
@@ -41,7 +41,7 @@ public class SortTests
             }}
         };
 
-        Sorter.Sort<Item, string>(data, x => x.Id, x => x.Rules)
+        new Sorter().Sort<Item, string>(data, x => x.Id, x => x.Rules)
             .Select(i => i.Id)
             .Should().BeEquivalentTo("A", "B", "C");
     }
@@ -92,7 +92,7 @@ public class SortTests
 
         rules = Shuffle(rules).ToList();
 
-        Sorter.Sort<Item, string>(rules, x => x.Id, x => x.Rules)
+        new Sorter().Sort<Item, string>(rules, x => x.Id, x => x.Rules)
             .Select(i => i.Id)
             .Should().BeEquivalentTo(letters.Concat(numbers));
     }

@@ -1,5 +1,5 @@
 using JetBrains.Annotations;
-using NexusMods.DataModel.JsonConverters;
+using NexusMods.Abstractions.Serialization.Attributes;
 
 namespace NexusMods.Games.StardewValley.Models;
 

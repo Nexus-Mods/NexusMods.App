@@ -1,6 +1,6 @@
 ﻿using System.Text;
 using FluentAssertions;
-using NexusMods.DataModel.Abstractions.Games;
+using NexusMods.Abstractions.Installers.DTO;
 using NexusMods.Games.RedEngine.ModInstallers;
 using NexusMods.Games.TestFramework;
 

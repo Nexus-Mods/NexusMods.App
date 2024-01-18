@@ -1,5 +1,5 @@
+using NexusMods.Abstractions.Games;
 using NexusMods.App.UI.LeftMenu.Items;
-using NexusMods.DataModel.Games;
 
 namespace NexusMods.App.UI.LeftMenu.Game;
 

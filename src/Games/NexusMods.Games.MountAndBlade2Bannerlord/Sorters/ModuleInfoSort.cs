@@ -1,11 +1,12 @@
 ﻿using System.Diagnostics;
 using Bannerlord.ModuleManager;
 using JetBrains.Annotations;
-using NexusMods.DataModel.JsonConverters;
-using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.Loadouts.Mods;
-using NexusMods.DataModel.Sorting.Rules;
-using NexusMods.DataModel.TriggerFilter;
+using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.DataModel.Entities.Sorting;
+using NexusMods.Abstractions.Games.Loadouts;
+using NexusMods.Abstractions.Games.Loadouts.Sorting;
+using NexusMods.Abstractions.Games.Triggers;
+using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.Games.MountAndBlade2Bannerlord.Extensions;
 using NexusMods.Hashing.xxHash64;
 

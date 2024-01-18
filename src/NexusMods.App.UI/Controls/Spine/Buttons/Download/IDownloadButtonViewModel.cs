@@ -1,5 +1,5 @@
 ﻿using System.Windows.Input;
-using NexusMods.Abstractions.Values;
+using NexusMods.Abstractions.Activities;
 
 namespace NexusMods.App.UI.Controls.Spine.Buttons.Download;
 

@@ -3,8 +3,6 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using DynamicData;
 using NexusMods.App.UI;
-using NexusMods.Common.GuidedInstaller;
-using NexusMods.Common.GuidedInstaller.ValueObjects;
 using NexusMods.Games.FOMOD.UI.Resources;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;

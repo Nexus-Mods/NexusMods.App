@@ -1,21 +1,19 @@
-using NexusMods.Abstractions.CLI;
-using NexusMods.Common;
-using NexusMods.Common.GuidedInstaller;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.ArchiveMetaData;
-using NexusMods.DataModel.Games;
-using NexusMods.DataModel.Loadouts;
+using NexusMods.Abstractions;
+using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Games.ArchiveMetadata;
+using NexusMods.Abstractions.Games.Loadouts;
+using NexusMods.Abstractions.GuidedInstallers;
+using NexusMods.Abstractions.Installers.DTO;
+using NexusMods.Abstractions.NexusWebApi.DTOs;
+using NexusMods.Abstractions.Serialization;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
-using NexusMods.Networking.NexusWebApi.DTOs;
-using NexusMods.Networking.NexusWebApi.NMA.Extensions;
-using NexusMods.Networking.NexusWebApi.Types;
 using NexusMods.Paths;
 using NexusMods.ProxyConsole.Abstractions;
 using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
 using NexusMods.StandardGameLocators;
-using ModId = NexusMods.Networking.NexusWebApi.Types.ModId;
+using ModId = NexusMods.Abstractions.NexusWebApi.Types.ModId;
 
 namespace NexusMods.Games.TestHarness.Verbs;
 
@@ -30,7 +28,7 @@ public class StressTest
         [Option("o", "output", "Output path for the resulting report")] AbsolutePath output,
         [Injected] Client client,
         [Injected] TemporaryFileManager temporaryFileManager,
-        [Injected] LoadoutRegistry loadoutRegistry,
+        [Injected] ILoadoutRegistry loadoutRegistry,
         [Injected] IHttpDownloader downloader,
         [Injected] IArchiveInstaller archiveInstaller,
         [Injected] IFileOriginRegistry fileOriginRegistry,
@@ -40,8 +38,8 @@ public class StressTest
     {
         var manualLocator = gameLocators.OfType<ManuallyAddedLocator>().First();
 
-        var mods = await client.ModUpdatesAsync(game.Domain, Client.PastTime.Day, token);
-        var results = new List<(string FileName, ModId ModId, FileId FileId, Hash Hash, bool Passed, Exception? exception)>();
+        var mods = await client.ModUpdatesAsync(game.Domain.Value, Client.PastTime.Day, token);
+        var results = new List<(string FileName, ModId ModId, Abstractions.NexusWebApi.Types.FileId FileId, Hash Hash, bool Passed, Exception? exception)>();
 
         await using var gameFolder = temporaryFileManager.CreateFolder();
         var gameId = manualLocator.Add(game, new Version(1, 0), gameFolder);
@@ -57,7 +55,7 @@ public class StressTest
                 Response<ModFiles> files;
                 try
                 {
-                    files = await client.ModFilesAsync(game.Domain, mod.ModId, token);
+                    files = await client.ModFilesAsync(game.Domain.Value, mod.ModId, token);
                 }
                 catch (HttpRequestException ex)
                 {
@@ -76,7 +74,7 @@ public class StressTest
                             file.FileName,
                             Size.FromLong(file.SizeInBytes ?? 0));
 
-                        var urls = await client.DownloadLinksAsync(game.Domain, mod.ModId, file.FileId, token);
+                        var urls = await client.DownloadLinksAsync(game.Domain.Value, mod.ModId, file.FileId, token);
                         await using var tmpPath = temporaryFileManager.CreateFile();
 
                         var cts = new CancellationTokenSource();

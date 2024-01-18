@@ -1,8 +1,8 @@
 using System.Reactive.Linq;
 using Microsoft.Extensions.Logging;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.Networking.NexusWebApi.DTOs.OAuth;
-using NexusMods.Networking.NexusWebApi.Types;
+using NexusMods.Abstractions.NexusWebApi.DTOs.OAuth;
+using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.Abstractions.Serialization;
 
 namespace NexusMods.Networking.NexusWebApi.NMA;
 

@@ -23,9 +23,6 @@
             <LastGenOutput>Language.Designer.cs</LastGenOutput>
         </EmbeddedResource>
 
-
-
-
         <Compile Update="Content\Left\ModContent\ModContentDesignViewModel.cs">
             <DependentUpon>IModContentViewModel.cs</DependentUpon>
         </Compile>

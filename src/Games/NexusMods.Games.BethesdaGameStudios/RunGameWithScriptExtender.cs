@@ -1,10 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
-using NexusMods.Common;
-using NexusMods.Common.OSInterop;
-using NexusMods.DataModel.Extensions;
+using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Games.Loadouts;
+using NexusMods.Abstractions.Installers.DTO;
+using NexusMods.CrossPlatform.Process;
 using NexusMods.DataModel.Games;
-using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.LoadoutSynchronizer;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.BethesdaGameStudios;

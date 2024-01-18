@@ -1,10 +1,10 @@
 using System.Collections.ObjectModel;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Games;
 using NexusMods.App.UI.Controls.GameWidget;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Routing;
 using NexusMods.App.UI.Routing.Messages;
-using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;

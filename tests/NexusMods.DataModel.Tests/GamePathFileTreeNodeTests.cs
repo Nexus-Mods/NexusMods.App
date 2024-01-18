@@ -1,6 +1,5 @@
 ﻿using FluentAssertions;
-using NexusMods.DataModel.Abstractions.Games;
-using NexusMods.DataModel.Games;
+using NexusMods.Abstractions.Installers.DTO;
 using NexusMods.Paths;
 using NexusMods.Paths.FileTree;
 
@@ -26,7 +25,7 @@ public class GamePathFileTreeNodeTests
         {
             node.Should().NotBeNull();
             node!.Path.Should().Be(new GamePath(LocationId.From(locationId), (RelativePath)path));
-            node!.Value.Should().Be(value);
+            node.Value.Should().Be(value);
         }
         else
         {

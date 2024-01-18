@@ -1,5 +1,5 @@
 using CliWrap;
-using NexusMods.Common.OSInterop;
+using NexusMods.CrossPlatform.Process;
 using NSubstitute;
 
 namespace NexusMods.Common.Tests;

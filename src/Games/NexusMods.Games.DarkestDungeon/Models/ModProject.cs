@@ -1,5 +1,5 @@
 using System.Xml.Serialization;
-using NexusMods.DataModel.JsonConverters;
+using NexusMods.Abstractions.Serialization.Attributes;
 
 namespace NexusMods.Games.DarkestDungeon.Models;
 
