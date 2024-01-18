@@ -5,12 +5,12 @@
     <Style Selector="ui|PanelView">
         <Style Selector="^ Border#PanelBorder:not(.OneTab)">
             <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="BorderBrush" Value="{StaticResource ElementStrokeTranslucentSubduedBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource ElementStrokeTranslucentWeak}"/>
         </Style>
 
         <Style Selector="^ Border#TabHeaderBorder">
             <Setter Property="BorderThickness" Value="0 0 0 1" />
-            <Setter Property="BorderBrush" Value="{StaticResource ElementStrokeTranslucentSubduedBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource ElementStrokeTranslucentWeak}"/>
         </Style>
 
         <!-- one tab -->
@@ -28,7 +28,7 @@
 
             <Style Selector="^ Border#AddTabButton1Container, ^ Border#TabHeaderAddAndScrollBorder, ^ Border#TabHeaderSideAreaBorder">
                 <Setter Property="BorderThickness" Value="0 0 0 1"/>
-                <Setter Property="BorderBrush" Value="{StaticResource ElementStrokeTranslucentSubduedBrush}" />
+                <Setter Property="BorderBrush" Value="{StaticResource ElementStrokeTranslucentWeak}" />
             </Style>
 
             <Style Selector="^ ItemsControl#TabHeaders">
@@ -36,7 +36,7 @@
                 <Style Selector="^ ContentPresenter:nth-child(n) ui|PanelTabHeaderView">
                     <Style Selector="^ Border#Container">
                         <Setter Property="CornerRadius" Value="0" />
-                        <Setter Property="BorderBrush" Value="{StaticResource ElementStrokeTranslucentSubduedBrush}" />
+                        <Setter Property="BorderBrush" Value="{StaticResource ElementStrokeTranslucentWeak}" />
                     </Style>
 
                     <!-- selected tab -->
