@@ -47,7 +47,7 @@ public interface IInProgressViewModel : IRightContentViewModel
     /// <summary>
     /// Shows the cancel 'dialog' to the user.
     /// </summary>
-    ICommand ShowCancelDialogCommand { get; }
+    ICommand ShowCancelDialogCommand { get; set; }
 
     /// <summary>
     /// Suspends the current task.

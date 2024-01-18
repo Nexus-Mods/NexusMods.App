@@ -1,6 +1,7 @@
 ﻿using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using DynamicData;
+using DynamicData.Binding;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.RightContent.Downloads.ViewModels;
 using NexusMods.Networking.Downloaders.Interfaces;
@@ -24,23 +25,29 @@ public class InProgressViewModel : InProgressCommonViewModel
                 //     SelectedTask.Cancel();
             });
 
-            SuspendSelectedTasksCommand = ReactiveCommand.Create(() =>
-                {
-                    foreach (var task in SelectedTasks.Items)
-                    {
-                        if (task.Status == DownloadTaskStatus.Downloading)
-                            task.Suspend();
-                    }
-                }, SelectedTasks.Connect()
+            SuspendSelectedTasksCommand = ReactiveCommand.Create(
+                () => { SuspendTasks(SelectedTasks.Items); },
+                SelectedTasks.Connect()
                     .AutoRefresh(task => task.Status)
-                    .Select(_ => SelectedTasks.Items.Count(task => task.Status == DownloadTaskStatus.Downloading) > 0));
+                    .Select(_ => SelectedTasks.Items.Any(task => task.Status == DownloadTaskStatus.Downloading)));
 
+            ResumeSelectedTasksCommand = ReactiveCommand.Create(
+                () => { ResumeTasks(SelectedTasks.Items); },
+                SelectedTasks.Connect()
+                    .AutoRefresh(task => task.Status)
+                    .Select(_ => SelectedTasks.Items.Any(task => task.Status == DownloadTaskStatus.Paused)));
 
-            SuspendAllTasksCommand = ReactiveCommand.Create(() =>
-            {
-                foreach (var task in Tasks.ToArray())
-                    task.Suspend();
-            });
+            SuspendAllTasksCommand = ReactiveCommand.Create(
+                () => { SuspendTasks(Tasks); },
+                 Tasks.ToObservableChangeSet()
+                    .AutoRefresh(task => task.Status)
+                    .Select(_ => Tasks.Any(task => task.Status == DownloadTaskStatus.Downloading)));
+
+            ResumeAllTasksCommand = ReactiveCommand.Create(
+                () => { ResumeTasks(Tasks); },
+                Tasks.ToObservableChangeSet()
+                    .AutoRefresh(task => task.Status)
+                    .Select(_ => Tasks.Any(task => task.Status == DownloadTaskStatus.Paused)));
 
             downloadService.Downloads
                 .Filter(x => x.Status != DownloadTaskStatus.Completed)

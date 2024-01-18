@@ -26,6 +26,9 @@ public class InProgressCommonViewModel : AViewModel<IInProgressViewModel>, IInPr
 {
     internal const int PollTimeMilliseconds = 1000;
 
+    protected IObservable<IChangeSet<IDownloadTaskViewModel>> TasksChangeSet { get; set; } =
+        Observable.Empty<IChangeSet<IDownloadTaskViewModel>>();
+
     protected ReadOnlyObservableCollection<IDownloadTaskViewModel> TasksObservable =
         new(new ObservableCollection<IDownloadTaskViewModel>());
 
@@ -38,27 +41,28 @@ public class InProgressCommonViewModel : AViewModel<IInProgressViewModel>, IInPr
 
     [Reactive] public int ActiveDownloadCount { get; set; }
 
-    [Reactive] public bool IsRunning { get; set; }
+    [Reactive] public bool IsRunning { get; private set; }
 
     [Reactive] public int SecondsRemaining { get; set; }
 
     public SourceList<IDownloadTaskViewModel> SelectedTasks { get; set; } = new();
 
-    [Reactive] public long DownloadedSizeBytes { get; set; }
+    [Reactive] public long DownloadedSizeBytes { get; private set; }
 
-    [Reactive] public long TotalSizeBytes { get; set; }
+    [Reactive] public long TotalSizeBytes { get; private set; }
 
     [Reactive] public ICommand ShowCancelDialogCommand { get; set; }
 
-    [Reactive] public ICommand SuspendSelectedTasksCommand { get; set; }
+    [Reactive] public ICommand SuspendSelectedTasksCommand { get; protected set; }
 
-    [Reactive] public ICommand ResumeSelectedTasksCommand { get; set; }
+    [Reactive] public ICommand ResumeSelectedTasksCommand { get; protected set; }
 
-    [Reactive] public ICommand SuspendAllTasksCommand { get; set; }
-    [Reactive] public ICommand ResumeAllTasksCommand { get; set; }
+    [Reactive] public ICommand SuspendAllTasksCommand { get; protected set; }
+    [Reactive] public ICommand ResumeAllTasksCommand { get; protected set; }
 
     public InProgressCommonViewModel()
     {
+        // Stub commands for design time.
         ShowCancelDialogCommand = ReactiveCommand.Create(() => { });
         SuspendSelectedTasksCommand = ReactiveCommand.Create(() => { });
         SuspendAllTasksCommand = ReactiveCommand.Create(() => { });
