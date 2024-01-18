@@ -1,19 +1,18 @@
 ﻿using System.Reactive.Disposables;
 using DynamicData;
+using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.RightContent.Downloads.ViewModels;
+using NexusMods.Networking.Downloaders;
 using NexusMods.Networking.Downloaders.Interfaces;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.RightContent.Downloads;
 
-public class InProgressDesignViewModel : InProgressCommonViewModel
+public class InProgressDesignViewModel : InProgressViewModel
 {
-    private SourceList<IDownloadTaskViewModel> _tasks;
-    
     public InProgressDesignViewModel()
     {
-        _tasks = new();
-        _tasks.Add(new DownloadTaskDesignViewModel()
+        DesignTimeDownloadTasks.Add(new DownloadTaskDesignViewModel()
         {
             Name = "Invisible Camouflage",
             Game = "Hide and Seek Pro",
@@ -23,8 +22,8 @@ public class InProgressDesignViewModel : InProgressCommonViewModel
             Status = DownloadTaskStatus.Downloading,
             Throughput = 10_000_000
         });
-        
-        _tasks.Add(new DownloadTaskDesignViewModel()
+
+        DesignTimeDownloadTasks.Add(new DownloadTaskDesignViewModel()
         {
             Name = "Time Travel Mod",
             Game = "Chronos Unleashed",
@@ -34,8 +33,8 @@ public class InProgressDesignViewModel : InProgressCommonViewModel
             Status = DownloadTaskStatus.Downloading,
             Throughput = 4_500_000
         });
-        
-        _tasks.Add(new DownloadTaskDesignViewModel()
+
+        DesignTimeDownloadTasks.Add(new DownloadTaskDesignViewModel()
         {
             Name = "Unlimited Lives",
             Game = "Endless Quest",
@@ -45,30 +44,16 @@ public class InProgressDesignViewModel : InProgressCommonViewModel
             Status = DownloadTaskStatus.Paused
         });
 
-        _tasks.Add(new DownloadTaskDesignViewModel()
+        DesignTimeDownloadTasks.Add(new DownloadTaskDesignViewModel()
         {
             Name = "Silent Karaoke Mode",
             Game = "Pop Star World",
             Version = "0.0.0",
             DownloadedBytes = 0
         });
-
-        this.WhenActivated(d =>
-        {
-            _tasks.Connect()
-                .Bind(out TasksObservable)
-                .Subscribe()
-                .DisposeWith(d);
-            
-            // This is necessary due to inheritance,
-            // WhenActivated gets fired in wrong order and
-            // parent classes need to be able to properly subscribe
-            // here.
-            this.RaisePropertyChanged(nameof(Tasks));
-        });
     }
 
-    public void AddDownload(DownloadTaskDesignViewModel vm) => _tasks.Add(vm);
+    public void AddDownload(DownloadTaskDesignViewModel vm) => DesignTimeDownloadTasks.Add(vm);
 
-    public void ClearDownloads() => _tasks.Clear();
+    public void ClearDownloads() => DesignTimeDownloadTasks.Clear();
 }

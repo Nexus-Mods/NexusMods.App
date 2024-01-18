@@ -283,7 +283,7 @@ public class InProgressViewModelTests : AViewTest<InProgressView, InProgressDesi
             // Update the Data, and wait for Poll
             vm.DownloadedBytes = 1337;
             vm.SizeBytes = 4200;
-            await Task.Delay((int)(InProgressCommonViewModel.PollTimeMilliseconds * 1.5));
+            await Task.Delay((int)(InProgressViewModel.PollTimeMilliseconds * 1.5));
 
             // Assert the data has been updated.
             ViewModel.DownloadedSizeBytes.Should().Be(1337);
