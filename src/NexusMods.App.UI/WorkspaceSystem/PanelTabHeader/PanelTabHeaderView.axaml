@@ -14,30 +14,33 @@
     </Design.DataContext>
 
     <Border x:Name="Container">
-
-        <StackPanel Orientation="Horizontal"
-                    Spacing="12"
-                    Height="52"
-                    Margin="24, 14, 24, 14">
+        <StackPanel Orientation="Horizontal">
             <StackPanel Orientation="Horizontal"
-                        Spacing="6"
-                        VerticalAlignment="Center">
-                <Image x:Name="IconImage"
-                       MaxHeight="24"
-                       MaxWidth="24"
-                       Height="100"
-                       Width="100" />
-                <TextBlock x:Name="TitleTextBlock"
-                           Classes="BodyLGBold"
-                           Width="114"
-                           TextWrapping="NoWrap"
-                           VerticalAlignment="Bottom"
-                           TextTrimming="CharacterEllipsis" />
+                        Spacing="12"
+                        Height="52"
+                        Margin="24, 0, 24, 14">
+                <StackPanel Orientation="Horizontal"
+                            Spacing="6"
+                            VerticalAlignment="Center">
+                    <Image x:Name="IconImage"
+                           MaxHeight="24"
+                           MaxWidth="24"
+                           Height="100"
+                           Width="100" />
+                    <TextBlock x:Name="TitleTextBlock"
+                               Classes="BodyLGBold"
+                               Width="114"
+                               TextWrapping="NoWrap"
+                               VerticalAlignment="Bottom"
+                               TextTrimming="CharacterEllipsis" />
+                </StackPanel>
+
+                <Button x:Name="CloseTabButton"
+                        Classes="PanelTitlebar Close" />
+
+
             </StackPanel>
-
-            <Button x:Name="CloseTabButton"
-                    Classes="PanelTitlebar Close"/>
-
+            <Line />
         </StackPanel>
     </Border>
 
