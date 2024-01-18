@@ -246,4 +246,10 @@
     <data name="PanelTabHeaderViewModel_Title_New_Tab" xml:space="preserve">
         <value>New Tab</value>
     </data>
+    <data name="DownloadInProgressView__Resume" xml:space="preserve">
+        <value>Resume</value>
+    </data>
+    <data name="DownloadInProgressView__Resume_All" xml:space="preserve">
+        <value>Resume All</value>
+    </data>
 </root>

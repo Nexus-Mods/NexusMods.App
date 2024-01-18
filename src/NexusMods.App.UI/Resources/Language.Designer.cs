@@ -168,6 +168,24 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Resume.
+        /// </summary>
+        public static string DownloadInProgressView__Resume {
+            get {
+                return ResourceManager.GetString("DownloadInProgressView__Resume", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Resume All.
+        /// </summary>
+        public static string DownloadInProgressView__Resume_All {
+            get {
+                return ResourceManager.GetString("DownloadInProgressView__Resume_All", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Idle.
         /// </summary>
         public static string DownloadStatus_Idle {
