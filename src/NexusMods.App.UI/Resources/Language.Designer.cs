@@ -87,7 +87,16 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} download will be cancelled and the files will be deleted..
+        ///   Looks up a localized string similar to download.
+        /// </summary>
+        public static string CancelDownloadOverlayView_Description__Download {
+            get {
+                return ResourceManager.GetString("CancelDownloadOverlayView_Description__Download", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} will be cancelled and the files will be deleted..
         /// </summary>
         public static string CancelDownloadOverlayView_Description_download_will_be_cancelled {
             get {
@@ -96,7 +105,16 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cancel and delete download?.
+        ///   Looks up a localized string similar to downloads.
+        /// </summary>
+        public static string CancelDownloadOverlayView_Description_downloads {
+            get {
+                return ResourceManager.GetString("CancelDownloadOverlayView_Description_downloads", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancel and delete downloads?.
         /// </summary>
         public static string CancelDownloadOverlayView_Title {
             get {

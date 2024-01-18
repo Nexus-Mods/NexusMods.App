@@ -9,11 +9,17 @@ public partial class CancelDownloadOverlayView : ReactiveUserControl<ICancelDown
     public CancelDownloadOverlayView()
     {
         InitializeComponent();
+
         this.WhenActivated(_ =>
         {
-            OkCancelView.Description =
+
+            OkCancelView.Description = ViewModel?.DownloadTasks.Count() == 1 ?
                 string.Format(Language.CancelDownloadOverlayView_Description_download_will_be_cancelled,
-                    ViewModel?.DownloadTask.Name);
+                    ViewModel?.DownloadTasks.First().Name + " " +
+                    Language.CancelDownloadOverlayView_Description__Download) :
+                string.Format(Language.CancelDownloadOverlayView_Description_download_will_be_cancelled,
+                    ViewModel?.DownloadTasks.Count() + " " +
+                    Language.CancelDownloadOverlayView_Description_downloads );
         });
     }
 }

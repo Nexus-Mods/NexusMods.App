@@ -44,17 +44,19 @@
         <base:MessageBoxBackground.BottomContent>
 
             <!-- Buttons -->
-            <StackPanel Orientation="Vertical" Margin="24" HorizontalAlignment="Stretch">
-                <Button x:Name="OkButton"
-                        Classes="Standard Primary"
-                        HorizontalAlignment="Stretch"
-                        Margin="0,0,0,10">
-                    <TextBlock Text="{x:Static resources:Language.MessageBox_Button_Yes}" />
-                </Button>
+            <StackPanel Orientation="Horizontal" Margin="24" VerticalAlignment="Center" HorizontalAlignment="Right" Spacing="24">
+
                 <Button x:Name="CancelButton"
                         Classes="Standard Tertiary"
-                        HorizontalAlignment="Stretch">
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center">
                     <TextBlock Text="{x:Static resources:Language.MessageBox_Button_No}" />
+                </Button>
+                <Button x:Name="OkButton"
+                        Classes="Standard Primary"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center">
+                    <TextBlock Text="{x:Static resources:Language.MessageBox_Button_Yes}" />
                 </Button>
             </StackPanel>
 

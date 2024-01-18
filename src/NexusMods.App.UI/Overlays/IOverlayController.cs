@@ -20,15 +20,15 @@ public interface IOverlayController
     SetOverlayItem? GetLastOverlay();
 
     /// <summary>
-    /// Shows the overlay responsible for user being asked if they want to cancel a download.
+    /// Shows the overlay responsible for user being asked if they want to cancel one or more downloads.
     /// </summary>
-    /// <param name="task">The download task to cancel.</param>
+    /// <param name="tasks">The download tasks to cancel.</param>
     /// <param name="viewItem">
     ///     Any Avalonia control/item.
     ///     This is used to determine which window to spawn the overlay in.
     /// </param>
-    public Task<bool> ShowCancelDownloadOverlay(IDownloadTaskViewModel task, object? viewItem = null);
-    
+    public Task<bool> ShowCancelDownloadOverlay(IEnumerable<IDownloadTaskViewModel> tasks, object? viewItem = null);
+
     /// <summary>
     /// Sets the current overlay.
     /// </summary>
@@ -44,23 +44,23 @@ public interface IOverlayController
 public struct SetOverlayItem
 {
     // Note: Needs to be property for Reactive binding. Do not refactor to field (this includes use of Records).
-    
+
     /// <summary>
     /// The ViewModel to be displayed.
     /// </summary>
     public IOverlayViewModel VM { get; }
-    
+
     /// <summary>
     /// Any Avalonia control/item.
     /// This is used to determine which window to spawn the overlay in.
     /// </summary>
     public object? ViewItem { get; }
-    
+
     public SetOverlayItem(IOverlayViewModel vm)
     {
         this.VM = vm;
     }
-    
+
     public SetOverlayItem(IOverlayViewModel vm, object? viewItem)
     {
         this.VM = vm;

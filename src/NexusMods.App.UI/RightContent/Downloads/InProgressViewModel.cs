@@ -15,7 +15,6 @@ public class InProgressViewModel : InProgressCommonViewModel
     {
         this.WhenActivated(d =>
         {
-
             downloadService.Downloads
                 .Filter(x => x.Status != DownloadTaskStatus.Completed)
                 .Transform(x => (IDownloadTaskViewModel)new DownloadTaskViewModel(x))
@@ -24,17 +23,17 @@ public class InProgressViewModel : InProgressCommonViewModel
                 .Subscribe()
                 .DisposeWith(d);
 
-
-
             ShowCancelDialogCommand = ReactiveCommand.Create(async () =>
             {
-                // if (SelectedTask == null)
-                //     return;
-
-                // var result = await overlayController.ShowCancelDownloadOverlay(SelectedTask);
-                // if (result)
-                //     SelectedTask.Cancel();
-            });
+                if (SelectedTasks.Items.Any())
+                {
+                    var result = await overlayController.ShowCancelDownloadOverlay(SelectedTasks.Items);
+                    if (result)
+                        CancelTasks(SelectedTasks.Items);
+                }
+            }, Tasks.ToObservableChangeSet()
+                .AutoRefresh(task => task.Status)
+                .Select(_ => Tasks.Any()));
 
             SuspendSelectedTasksCommand = ReactiveCommand.Create(
                 () => { SuspendTasks(SelectedTasks.Items); },

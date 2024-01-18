@@ -79,10 +79,10 @@
         <value>NO</value>
     </data>
     <data name="CancelDownloadOverlayView_Description_download_will_be_cancelled" xml:space="preserve">
-        <value>{0} download will be cancelled and the files will be deleted.</value>
+        <value>{0} will be cancelled and the files will be deleted.</value>
     </data>
     <data name="CancelDownloadOverlayView_Title" xml:space="preserve">
-        <value>Cancel and delete download?</value>
+        <value>Cancel and delete downloads?</value>
     </data>
     <data name="Helpers_GenerateHeader_NAME" xml:space="preserve">
         <value>NAME</value>
@@ -251,5 +251,11 @@
     </data>
     <data name="DownloadInProgressView__Resume_All" xml:space="preserve">
         <value>Resume All</value>
+    </data>
+    <data name="CancelDownloadOverlayView_Description__Download" xml:space="preserve">
+        <value>download</value>
+    </data>
+    <data name="CancelDownloadOverlayView_Description_downloads" xml:space="preserve">
+        <value>downloads</value>
     </data>
 </root>
