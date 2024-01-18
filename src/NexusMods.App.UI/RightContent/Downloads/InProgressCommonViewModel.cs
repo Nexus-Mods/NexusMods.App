@@ -41,7 +41,7 @@ public class InProgressCommonViewModel : AViewModel<IInProgressViewModel>, IInPr
 
     [Reactive] public int ActiveDownloadCount { get; set; }
 
-    [Reactive] public bool IsRunning { get; protected set; }
+    [Reactive] public bool HasDownloads { get; protected set; }
 
     [Reactive] public int SecondsRemaining { get; set; }
 

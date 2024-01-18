@@ -86,7 +86,7 @@ public class InProgressViewModelTests : AViewTest<InProgressView, InProgressDesi
         await OnUi(() =>
         {
             ViewModel.ClearDownloads();
-            ViewModel.IsRunning.Should().BeFalse();
+            ViewModel.HasDownloads.Should().BeFalse();
         });
     }
 
@@ -96,13 +96,13 @@ public class InProgressViewModelTests : AViewTest<InProgressView, InProgressDesi
         await OnUi(() =>
         {
             ViewModel.ClearDownloads();
-            ViewModel.IsRunning.Should().BeFalse();
+            ViewModel.HasDownloads.Should().BeFalse();
 
             ViewModel.AddDownload(new DownloadTaskDesignViewModel()
             {
                 Status = DownloadTaskStatus.Downloading
             });
-            ViewModel.IsRunning.Should().BeTrue();
+            ViewModel.HasDownloads.Should().BeTrue();
         });
     }
 
@@ -112,14 +112,14 @@ public class InProgressViewModelTests : AViewTest<InProgressView, InProgressDesi
         await OnUi(() =>
         {
             ViewModel.ClearDownloads();
-            ViewModel.IsRunning.Should().BeFalse();
+            ViewModel.HasDownloads.Should().BeFalse();
 
             // No downloads are running
-            View.BoldMinutesRemainingTextBlock.Classes.Should().NotContain(StyleConstants.TextBlock.UsesAccentLighterColor);
-            View.MinutesRemainingTextBlock.Classes.Should().NotContain(StyleConstants.TextBlock.UsesAccentLighterColor);
+            View.InProgressTitleCountTextBlock.Classes.Should().Contain("ForegroundWeak");
+            View.NoDownloadsTextBlock.IsVisible.Should().Be(true);
 
             // Check the title is correct with 0 elements.
-            View.InProgressTitleTextBlock.Text.Should().Be(StringFormatters.ToDownloadsInProgressTitle(0));
+            View.InProgressTitleCountTextBlock.Text.Should().Be(StringFormatters.ToDownloadsInProgressTitle(0));
 
             // Now let's add an element.
             ViewModel.AddDownload(new DownloadTaskDesignViewModel()
@@ -127,8 +127,12 @@ public class InProgressViewModelTests : AViewTest<InProgressView, InProgressDesi
                 Status = DownloadTaskStatus.Downloading
             });
 
-            View.BoldMinutesRemainingTextBlock.Classes.Should().Contain(StyleConstants.TextBlock.UsesAccentLighterColor);
-            View.MinutesRemainingTextBlock.Classes.Should().Contain(StyleConstants.TextBlock.UsesAccentLighterColor);
+            // Count color should no longer be weak, and the no downloads text should be hidden.
+            View.InProgressTitleCountTextBlock.Classes.Should().NotContain("ForegroundWeak");
+            View.NoDownloadsTextBlock.IsVisible.Should().Be(false);
+
+            // Check the title is correct with 0 elements.
+            View.InProgressTitleCountTextBlock.Text.Should().Be(StringFormatters.ToDownloadsInProgressTitle(1));
         });
     }
 
@@ -138,7 +142,7 @@ public class InProgressViewModelTests : AViewTest<InProgressView, InProgressDesi
         await OnUi(() =>
         {
             ViewModel.ClearDownloads();
-            ViewModel.IsRunning.Should().BeFalse();
+            ViewModel.HasDownloads.Should().BeFalse();
 
             // Check the title is correct with 0 elements.
             View.InProgressTitleTextBlock.Text.Should().Be(StringFormatters.ToDownloadsInProgressTitle(0));
@@ -155,7 +159,7 @@ public class InProgressViewModelTests : AViewTest<InProgressView, InProgressDesi
         await OnUi(() =>
         {
             ViewModel.ClearDownloads();
-            ViewModel.IsRunning.Should().BeFalse();
+            ViewModel.HasDownloads.Should().BeFalse();
 
             // Check the total completion is correct with 0 elements.
             View.SizeCompletionTextBlock.Text.Should().Be(StringFormatters.ToSizeString(0, 0));
@@ -178,7 +182,7 @@ public class InProgressViewModelTests : AViewTest<InProgressView, InProgressDesi
         await OnUi(() =>
         {
             ViewModel.ClearDownloads();
-            ViewModel.IsRunning.Should().BeFalse();
+            ViewModel.HasDownloads.Should().BeFalse();
 
             // Check the total completion is correct with 0 elements.
             View.DownloadProgressBar.Value.Should().Be(0);
@@ -201,7 +205,7 @@ public class InProgressViewModelTests : AViewTest<InProgressView, InProgressDesi
         await OnUi(() =>
         {
             ViewModel.ClearDownloads();
-            ViewModel.IsRunning.Should().BeFalse();
+            ViewModel.HasDownloads.Should().BeFalse();
 
             // Check the total completion is correct with 0 elements.
             var originalTimeRemaining = StringFormatters.ToTimeRemainingShort(ViewModel.SecondsRemaining);

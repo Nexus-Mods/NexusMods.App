@@ -60,15 +60,21 @@
         </Border>
 
         <!-- Page Content -->
-        <Grid RowDefinitions="Auto, 24, *" Margin="24, 16" Grid.Row="1">
+        <Grid RowDefinitions="Auto, 24, *, Auto" Margin="24, 16" Grid.Row="1">
 
             <!-- Title & Status -->
             <DockPanel LastChildFill="True" HorizontalAlignment="Stretch" Grid.Row="0">
-                <TextBlock DockPanel.Dock="Left"
-                           Classes="HeadingSMSemi"
-                           Text="{x:Static resources:Language.InProgressTitleTextBlock}"
-                           x:Name="InProgressTitleTextBlock"
-                           Margin="0,0,0,16" />
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
+                    <TextBlock Classes="HeadingSMSemi"
+                               Text="{x:Static resources:Language.DownloadsView__In_Progress}"
+                               x:Name="InProgressTitleTextBlock"
+                               Margin="0,0,0,16" />
+                    <TextBlock Classes="HeadingSMSemi ForegroundWeak"
+                               Text=" (0)"
+                               x:Name="InProgressTitleCountTextBlock"
+                               Margin="0,0,0,16" />
+                </StackPanel>
+
 
                 <!-- Right Side -->
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
@@ -103,6 +109,15 @@
                       CanUserSortColumns="True"
                       Margin="-16,16"
                       x:Name="ModsDataGrid" />
+
+            <TextBlock Grid.Row="2"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Top"
+                       Margin="0,66,0,0"
+                       Classes="HeadingXSSemi ForegroundWeak"
+                       IsVisible="False"
+                       Text="{x:Static resources:Language.InProgress_NoDownloadsTextBlock}"
+                       x:Name="NoDownloadsTextBlock"/>
         </Grid>
     </Grid>
 </reactiveUi:ReactiveUserControl>

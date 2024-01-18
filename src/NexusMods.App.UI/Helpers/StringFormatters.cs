@@ -42,8 +42,6 @@ public static class StringFormatters
     /// <param name="itemCount">Number of items in the menu.</param>
     public static string ToDownloadsInProgressTitle(int itemCount)
     {
-        return itemCount > 0
-            ? string.Format(Language.StringFormatters__In_progress__numDownloads, itemCount)
-            : Language.DownloadsView__In_Progress;
+        return string.Format(Language.StringFormatters__In_progress__numDownloads, itemCount);
     }
 }

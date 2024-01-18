@@ -20,7 +20,7 @@ public interface IInProgressViewModel : IRightContentViewModel
     /// <summary>
     /// True if download is running, else false.
     /// </summary>
-    bool IsRunning { get; }
+    bool HasDownloads { get; }
 
     int ActiveDownloadCount { get; }
 

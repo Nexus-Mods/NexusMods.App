@@ -438,7 +438,16 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to In progress (0).
+        ///   Looks up a localized string similar to No Downloads.
+        /// </summary>
+        public static string InProgress_NoDownloadsTextBlock {
+            get {
+                return ResourceManager.GetString("InProgress_NoDownloadsTextBlock", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to In progress.
         /// </summary>
         public static string InProgressTitleTextBlock {
             get {
@@ -694,7 +703,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to In progress ({0}).
+        ///   Looks up a localized string similar to  ({0}).
         /// </summary>
         public static string StringFormatters__In_progress__numDownloads {
             get {

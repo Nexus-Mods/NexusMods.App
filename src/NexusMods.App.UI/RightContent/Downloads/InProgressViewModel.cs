@@ -68,7 +68,7 @@ public class InProgressViewModel : InProgressCommonViewModel
                 {
                     UpdateWindowInfo();
                     ActiveDownloadCount = Tasks.Count(task => task.Status == DownloadTaskStatus.Downloading);
-                    IsRunning = ActiveDownloadCount > 0;
+                    HasDownloads = Tasks.Any();
                 });
 
             // This is necessary due to inheritance,

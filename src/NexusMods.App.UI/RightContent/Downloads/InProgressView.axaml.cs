@@ -2,7 +2,6 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Controls;
 using Avalonia.ReactiveUI;
-using DynamicData;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Helpers;
@@ -42,24 +41,26 @@ public partial class InProgressView : ReactiveUserControl<IInProgressViewModel>
                 .GenerateColumns(ModsDataGrid)
                 .DisposeWith(d);
 
-            // Dynamically Update Accented Items During Active Download
-            this.WhenAnyValue(view => view.ViewModel!.IsRunning)
-                .OnUI()
-                .BindToClasses(BoldMinutesRemainingTextBlock, StyleConstants.TextBlock.UsesAccentLighterColor)
+            // Dynamically hide the "No Downloads" TextBlock
+            this.WhenAnyValue(view =>  view.ViewModel!.HasDownloads)
+                .Select(hasDownloads => !hasDownloads)
+                .BindToView(this, view => view.NoDownloadsTextBlock.IsVisible)
                 .DisposeWith(d);
 
-            this.WhenAnyValue(view => view.ViewModel!.IsRunning)
-                .OnUI()
-                .BindToClasses(MinutesRemainingTextBlock, StyleConstants.TextBlock.UsesAccentLighterColor)
-                .DisposeWith(d);
-
-            // Dynamically Update Title
+            // Dynamically Update Download Count
             this.WhenAnyValue(view => view.ViewModel!.ActiveDownloadCount)
                 .OnUI()
                 .Subscribe(count =>
                 {
-                    InProgressTitleTextBlock.Text = StringFormatters.ToDownloadsInProgressTitle(count);
+                    InProgressTitleCountTextBlock.Text = StringFormatters.ToDownloadsInProgressTitle(count);
                 })
+                .DisposeWith(d);
+
+            // Dynamically Update Download Count color
+            this.WhenAnyValue(view => view.ViewModel!.ActiveDownloadCount)
+                .Select(count => count > 0)
+                .OnUI()
+                .BindToClasses(InProgressTitleCountTextBlock, "ForegroundStrong", "ForegroundWeak")
                 .DisposeWith(d);
 
             // Dynamically Update Downloaded Bytes Text
