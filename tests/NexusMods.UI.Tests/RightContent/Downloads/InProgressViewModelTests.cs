@@ -145,11 +145,14 @@ public class InProgressViewModelTests : AViewTest<InProgressView, InProgressDesi
             ViewModel.HasDownloads.Should().BeFalse();
 
             // Check the title is correct with 0 elements.
-            View.InProgressTitleTextBlock.Text.Should().Be(StringFormatters.ToDownloadsInProgressTitle(0));
+            View.InProgressTitleCountTextBlock.Text.Should().Be(StringFormatters.ToDownloadsInProgressTitle(0));
 
             // Now let's add an element.
-            ViewModel.AddDownload(new DownloadTaskDesignViewModel());
-            View.InProgressTitleTextBlock.Text.Should().Be(StringFormatters.ToDownloadsInProgressTitle(1));
+            ViewModel.AddDownload(new DownloadTaskDesignViewModel
+            {
+                Status = DownloadTaskStatus.Downloading
+            });
+            View.InProgressTitleCountTextBlock.Text.Should().Be(StringFormatters.ToDownloadsInProgressTitle(1));
         });
     }
 
