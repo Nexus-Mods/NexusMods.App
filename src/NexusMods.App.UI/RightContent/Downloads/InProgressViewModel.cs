@@ -1,8 +1,9 @@
 ﻿using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using DynamicData;
+using DynamicData.Binding;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.RightContent.Downloads.ViewModels;
-using NexusMods.Networking.Downloaders;
 using NexusMods.Networking.Downloaders.Interfaces;
 using ReactiveUI;
 
@@ -19,12 +20,23 @@ public class InProgressViewModel : InProgressCommonViewModel
                 if (SelectedTask == null)
                     return;
 
-                var result = await overlayController.ShowCancelDownloadOverlay(SelectedTask);
-                if (result)
-                    CancelSelectedTask();
+                // var result = await overlayController.ShowCancelDownloadOverlay(SelectedTask);
+                // if (result)
+                //     SelectedTask.Cancel();
             });
 
-            SuspendCurrentTask = ReactiveCommand.Create(() => SelectedTask?.Suspend());
+            SuspendCurrentTask = ReactiveCommand.Create(() =>
+                {
+                    foreach (var task in SelectedTasks.Items)
+                    {
+                        if (task.Status == DownloadTaskStatus.Downloading)
+                            task.Suspend();
+                    }
+                }, SelectedTasks.Connect()
+                    .AutoRefresh(task => task.Status)
+                    .Select(_ => SelectedTasks.Items.Count(task => task.Status == DownloadTaskStatus.Downloading) > 0));
+
+
             SuspendAllTasks = ReactiveCommand.Create(() =>
             {
                 foreach (var task in Tasks.ToArray())
@@ -33,7 +45,7 @@ public class InProgressViewModel : InProgressCommonViewModel
 
             downloadService.Downloads
                 .Filter(x => x.Status != DownloadTaskStatus.Completed)
-                .Transform(x => (IDownloadTaskViewModel) new DownloadTaskViewModel(x))
+                .Transform(x => (IDownloadTaskViewModel)new DownloadTaskViewModel(x))
                 .OnUI()
                 .Bind(out TasksObservable)
                 .Subscribe()

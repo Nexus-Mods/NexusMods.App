@@ -36,10 +36,6 @@ public class InProgressCommonViewModel : AViewModel<IInProgressViewModel>, IInPr
 
     public ReadOnlyObservableCollection<IDataGridColumnFactory<DownloadColumn>> Columns => FilteredColumns;
 
-    public void CancelSelectedTask() => ((IInProgressViewModel)this).Cancel();
-
-    public void SuspendSelectedTask() => ((IInProgressViewModel)this).Suspend();
-
     [Reactive] public int ActiveDownloadCount { get; set; }
 
     [Reactive] public bool IsRunning { get; set; }
@@ -47,6 +43,7 @@ public class InProgressCommonViewModel : AViewModel<IInProgressViewModel>, IInPr
     [Reactive] public int SecondsRemaining { get; set; }
 
     [Reactive] public IDownloadTaskViewModel? SelectedTask { get; set; }
+    public SourceList<IDownloadTaskViewModel> SelectedTasks { get; set; } = new();
 
     [Reactive] public long DownloadedSizeBytes { get; set; }
 
@@ -56,13 +53,18 @@ public class InProgressCommonViewModel : AViewModel<IInProgressViewModel>, IInPr
 
     [Reactive] public ICommand SuspendCurrentTask { get; set; }
 
+    [Reactive] public ICommand ResumeCurrentTask { get; set; }
+
     [Reactive] public ICommand SuspendAllTasks { get; set; }
+    [Reactive] public ICommand ResumeAllTasks { get; set; }
 
     public InProgressCommonViewModel()
     {
         ShowCancelDialog = ReactiveCommand.Create(() => { });
         SuspendCurrentTask = ReactiveCommand.Create(() => { });
         SuspendAllTasks = ReactiveCommand.Create(() => { });
+        ResumeCurrentTask = ReactiveCommand.Create(() => { });
+        ResumeAllTasks = ReactiveCommand.Create(() => { });
 
         // Make Columns
         var columns = new SourceCache<IDataGridColumnFactory<DownloadColumn>, DownloadColumn>(x => x.Type);

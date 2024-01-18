@@ -1,5 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows.Input;
+using DynamicData;
+using DynamicData.Binding;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.RightContent.DownloadGrid;
 using NexusMods.App.UI.RightContent.Downloads.ViewModels;
@@ -15,22 +17,13 @@ public interface IInProgressViewModel : IRightContentViewModel
 
     ReadOnlyObservableCollection<IDataGridColumnFactory<DownloadColumn>> Columns { get; }
 
-    /// <summary>
-    /// This command cancels the currently selected task.
-    /// </summary>
-    void CancelSelectedTask();
-
-    /// <summary>
-    /// This command suspends the currently selected task.
-    /// </summary>
-    void SuspendSelectedTask();
 
     /// <summary>
     /// True if download is running, else false.
     /// </summary>
     bool IsRunning { get; }
 
-    int ActiveDownloadCount { get; set; }
+    int ActiveDownloadCount { get; }
 
     /// <summary>
     /// Total size of items currently downloaded.
@@ -45,7 +38,7 @@ public interface IInProgressViewModel : IRightContentViewModel
     /// <summary>
     /// Seconds remaining until the download completes.
     /// </summary>
-    int SecondsRemaining { get; set; }
+    int SecondsRemaining { get; }
 
     /// <summary>
     /// The currently selected task.
@@ -53,14 +46,9 @@ public interface IInProgressViewModel : IRightContentViewModel
     IDownloadTaskViewModel? SelectedTask { get; set; }
 
     /// <summary>
-    /// Cancels the selected task.
+    /// The currently selected task.
     /// </summary>
-    void Cancel() => SelectedTask?.Cancel();
-
-    /// <summary>
-    /// Suspends the selected task.
-    /// </summary>
-    void Suspend() => SelectedTask?.Suspend();
+    SourceList<IDownloadTaskViewModel> SelectedTasks { get; set;}
 
     /// <summary>
     /// Shows the cancel 'dialog' to the user.
@@ -73,7 +61,17 @@ public interface IInProgressViewModel : IRightContentViewModel
     ICommand SuspendCurrentTask { get; }
 
     /// <summary>
+    /// Resumes the current task.
+    /// </summary>
+    ICommand ResumeCurrentTask { get; }
+
+    /// <summary>
     /// Suspends all the tasks.
     /// </summary>
     ICommand SuspendAllTasks { get; }
+
+    /// <summary>
+    /// Resumes all the tasks.
+    /// </summary>
+    ICommand ResumeAllTasks { get; }
 }

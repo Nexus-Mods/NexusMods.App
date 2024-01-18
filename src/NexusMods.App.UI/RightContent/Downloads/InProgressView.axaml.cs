@@ -1,12 +1,13 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using Avalonia.Controls;
 using Avalonia.ReactiveUI;
-using DynamicData.Binding;
+using DynamicData;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Helpers;
 using NexusMods.App.UI.Resources;
-using NexusMods.Networking.Downloaders.Interfaces;
+using NexusMods.App.UI.RightContent.Downloads.ViewModels;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.RightContent.Downloads;
@@ -19,20 +20,22 @@ public partial class InProgressView : ReactiveUserControl<IInProgressViewModel>
 
         this.WhenActivated(d =>
         {
-            this.WhenAnyValue(view => view.ViewModel!.ShowCancelDialog)
-                .BindToUi(this, view => view.CancelButton.Command)
+            this.BindCommand(ViewModel, vm => vm.ShowCancelDialog, view => view.CancelButton)
                 .DisposeWith(d);
 
-            this.WhenAnyValue(view => view.ViewModel!.SuspendCurrentTask)
-                .BindToUi(this, view => view.PauseButton.Command)
+            this.BindCommand(ViewModel, vm => vm.SuspendCurrentTask, view => view.PauseButton)
                 .DisposeWith(d);
 
-            this.WhenAnyValue(view => view.ViewModel!.SuspendAllTasks)
-                .BindToUi(this, view => view.PauseAllButton.Command)
+            this.BindCommand(ViewModel, vm => vm.SuspendAllTasks, view => view.PauseAllButton)
                 .DisposeWith(d);
 
-            this.WhenAnyValue(view => view.ViewModel!.Tasks)
-                .BindToUi(this, view => view.ModsDataGrid.ItemsSource)
+            this.BindCommand(ViewModel, vm => vm.ResumeCurrentTask, view => view.ResumeButton)
+                .DisposeWith(d);
+
+            this.BindCommand(ViewModel, vm => vm.ResumeAllTasks, view => view.ResumeAllButton)
+                .DisposeWith(d);
+
+            this.OneWayBind(ViewModel, vm => vm.Tasks, view => view.ModsDataGrid.ItemsSource)
                 .DisposeWith(d);
 
             this.WhenAnyValue(view => view.ViewModel!.Columns)
@@ -71,14 +74,7 @@ public partial class InProgressView : ReactiveUserControl<IInProgressViewModel>
 
 
                     DownloadProgressBar.Value = vm.DownloadedSizeBytes / Math.Max(1.0, vm.TotalSizeBytes);
-                    if (DownloadProgressBar.Value == 0)
-                    {
-                        DownloadProgressBar.IsVisible = false;
-                    }
-                    else
-                    {
-                        DownloadProgressBar.IsVisible = true;
-                    }
+                    DownloadProgressBar.IsVisible = DownloadProgressBar.Value > 0;
                 })
                 .DisposeWith(d);
 
@@ -101,9 +97,26 @@ public partial class InProgressView : ReactiveUserControl<IInProgressViewModel>
                 })
                 .DisposeWith(d);
 
-            // Bind Selected Item
-            this.Bind(ViewModel!, model => model.SelectedTask, view => view.ModsDataGrid.SelectedItem)
+            // Bind Selected Items
+            Observable.FromEventPattern<SelectionChangedEventArgs>(
+                    addHandler => ModsDataGrid.SelectionChanged += addHandler,
+                    removeHandler => ModsDataGrid.SelectionChanged -= removeHandler)
+                .Do(_ =>
+                {
+                    ViewModel!.SelectedTasks.Edit(updater =>
+                    {
+                        updater.Clear();
+                        foreach (var item in ModsDataGrid.SelectedItems)
+                        {
+                            if (item is IDownloadTaskViewModel task)
+                                updater.Add(task);
+                        }
+                    });
+
+                })
+                .Subscribe()
                 .DisposeWith(d);
+
         });
     }
 }
