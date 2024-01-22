@@ -63,6 +63,9 @@ public class InProgressViewModel : AViewModel<IInProgressViewModel>, IInProgress
     [Reactive] public ICommand SuspendAllTasksCommand { get; private set; } = ReactiveCommand.Create(() => { });
     [Reactive] public ICommand ResumeAllTasksCommand { get; private set; } = ReactiveCommand.Create(() => { });
 
+    // Do nothing for now and keep disabled.
+    [Reactive] public ICommand ShowSettings { get; private set; } = ReactiveCommand.Create(() => { }, Observable.Return(false));
+
     /// <summary>
     /// Main constructor
     /// </summary>

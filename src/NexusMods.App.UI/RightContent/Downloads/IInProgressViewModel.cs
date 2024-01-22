@@ -70,6 +70,11 @@ public interface IInProgressViewModel : IRightContentViewModel
     ICommand ResumeAllTasksCommand { get; }
 
     /// <summary>
+    /// Shows the additional settings for the current task (there is nothing for now).
+    /// </summary>
+    ICommand ShowSettings { get; }
+
+    /// <summary>
     /// Cancels all the passed tasks, without asking for confirmation.
     /// </summary>
     void CancelTasks(IEnumerable<IDownloadTaskViewModel> tasks);
