@@ -1,6 +1,11 @@
+using System.Collections.ObjectModel;
+using DynamicData;
 using FluentAssertions;
+using NexusMods.Abstractions.Values;
 using NexusMods.Networking.Downloaders.Interfaces;
+using NexusMods.Networking.Downloaders.Interfaces.Traits;
 using NexusMods.Networking.Downloaders.Tasks.State;
+using NexusMods.Paths;
 
 namespace NexusMods.Networking.Downloaders.Tests;
 
@@ -8,12 +13,14 @@ public class DownloadServiceTests
 {
     // For the uninitiated with xUnit: This is initialized before every test.
     private readonly DownloadService _downloadService;
+    private readonly ReadOnlyObservableCollection<IDownloadTask> _currentDownloads;
     private readonly DummyDownloadTask _dummyTask;
 
     public DownloadServiceTests(DownloadService downloadService)
     {
         // Create a new instance of the DownloadService
         _downloadService = downloadService;
+        _downloadService.Downloads.Bind(out _currentDownloads).Subscribe();
         _dummyTask = new DummyDownloadTask(_downloadService);
     }
 
@@ -87,11 +94,52 @@ public class DownloadServiceTests
         resumedObservableFired.Should().BeTrue();
     }
 
-    private class DummyDownloadTask : IDownloadTask
+    [Fact]
+    public void GetTotalProgress_Test()
+    {
+        // Arrange
+        _dummyTask.SizeBytes = 100;
+        _dummyTask.DownloadedSizeBytes = 25;
+        _dummyTask.Status = DownloadTaskStatus.Downloading;
+
+        // Act
+        _downloadService.AddTaskWithoutStarting(_dummyTask);
+
+        // Assert
+        _currentDownloads.Should().ContainSingle();
+        _downloadService.GetTotalProgress().Should().Be(new Percent(0.25));
+    }
+
+    [Fact]
+    public void GetTotalProgress_MultipleTest()
+    {
+        // Arrange
+        _dummyTask.SizeBytes = 100;
+        _dummyTask.DownloadedSizeBytes = 60;
+        _dummyTask.Status = DownloadTaskStatus.Downloading;
+
+        var dummyTask2 = new DummyDownloadTask(_downloadService)
+        {
+            SizeBytes = 100,
+            DownloadedSizeBytes = 0,
+            Status = DownloadTaskStatus.Downloading
+        };
+
+        // Act
+        _downloadService.AddTaskWithoutStarting(_dummyTask);
+        _downloadService.AddTaskWithoutStarting(dummyTask2);
+
+        // Assert
+        _currentDownloads.Should().HaveCount(2);
+        _downloadService.GetTotalProgress().Should().Be(new Percent(0.30));
+    }
+
+    private class DummyDownloadTask : IDownloadTask, IHaveFileSize
     {
         public DummyDownloadTask(DownloadService service) { Owner = service; }
-        public long DownloadedSizeBytes => 0;
-        public long TotalSizeBytes => 0;
+        public long DownloadedSizeBytes { get; internal set; } = 0;
+        public long SizeBytes { get; internal set;  } = 0;
+
         public long CalculateThroughput() => 0;
 
         public IDownloadService Owner { get; set; }
@@ -113,6 +161,7 @@ public class DownloadServiceTests
         }
 
         public DownloaderState ExportState() => DownloaderState.Create(this, null!, "");
+
     }
 }
 
