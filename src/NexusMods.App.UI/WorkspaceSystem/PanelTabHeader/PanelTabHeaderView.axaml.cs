@@ -21,9 +21,15 @@ public partial class PanelTabHeaderView : ReactiveUserControl<IPanelTabHeaderVie
             this.WhenAnyValue(view => view.ViewModel!.Icon)
                 .Do(icon =>
                 {
-                    var size = icon?.Size ?? new Size(0, 0);
-                    IconImage.Width = size.Width;
-                    IconImage.Height = size.Height;
+                    if (icon is null)
+                    {
+                        IconImage.IsVisible = false;
+                    }
+                    else
+                    {
+                        IconImage.Width = icon.Size.Width;
+                        IconImage.Height = icon.Size.Height;
+                    }
                 })
                 .BindToView(this, view => view.IconImage.Source)
                 .DisposeWith(disposables);
@@ -38,7 +44,7 @@ public partial class PanelTabHeaderView : ReactiveUserControl<IPanelTabHeaderVie
                 .Subscribe(title =>
                 {
                     ToolTip.SetTip(this, title);
-                    ToolTip.SetShowDelay(this, (int)TimeSpan.FromMilliseconds(250).TotalMilliseconds);
+                    ToolTip.SetShowDelay(this, (int)TimeSpan.FromMilliseconds(500).TotalMilliseconds);
                 })
                 .DisposeWith(disposables);
 
@@ -62,4 +68,3 @@ public partial class PanelTabHeaderView : ReactiveUserControl<IPanelTabHeaderVie
         });
     }
 }
-

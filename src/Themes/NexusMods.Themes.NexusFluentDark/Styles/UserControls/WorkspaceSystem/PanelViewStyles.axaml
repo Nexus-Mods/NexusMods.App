@@ -4,7 +4,7 @@
 
     <Style Selector="ui|PanelView">
         <Style Selector="^ ItemsControl#TabContents">
-            <Setter Property="Padding" Value="24" />
+            <Setter Property="Padding" Value="0" />
         </Style>
 
         <Style Selector="^ Border#PanelBorder:not(.OneTab)">
