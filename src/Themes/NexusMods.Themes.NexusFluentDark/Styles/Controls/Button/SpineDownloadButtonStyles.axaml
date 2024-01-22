@@ -88,151 +88,169 @@
 
 
     <!-- Style Definitions -->
+
+    <!-- Base Styles -->
     <Style Selector="Button.SpineDownloadButton">
         <Setter Property="Width" Value="60" />
         <Setter Property="Height" Value="60" />
+
         <Setter Property="Margin" Value="0" />
         <Setter Property="Padding" Value="0" />
+
         <Setter Property="CornerRadius" Value="45" />
-        <Setter Property="Background" Value="{StaticResource ElementBackgroundTransparentBrush}" />
-        <Setter Property="HorizontalAlignment" Value="Center" />
-        <Setter Property="ClipToBounds" Value="False" />
-    </Style>
-
-    <Style Selector="Button.SpineDownloadButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-        <Setter Property="Background" Value="{StaticResource ElementBackgroundTransparentBrush}" />
-    </Style>
-
-    <Style Selector="Button.SpineDownloadButton">
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="BorderBrush" Value="{StaticResource ElementBackgroundNeutralMidBrush}" />
-    </Style>
 
-    <Style Selector="Button.SpineDownloadButton Border">
-        <Setter Property="Width" Value="50" />
-        <Setter Property="Height" Value="50" />
-        <Setter Property="VerticalAlignment" Value="Center" />
-        <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="CornerRadius" Value="45" />
-        <Setter Property="BorderBrush" Value="{StaticResource ElementBackgroundNeutralMidBrush}" />
-    </Style>
-
-    <Style Selector="Button.SpineDownloadButton.Active.Idle Border">
-        <Setter Property="BorderThickness" Value="2" />
-        <Setter Property="CornerRadius" Value="45" />
-        <Setter Property="BorderBrush" Value="{StaticResource ElementForegroundNeutralStrong}" />
-        <Setter Property="ClipToBounds" Value="False" />
-    </Style>
-
-    <Style Selector="Button.SpineDownloadButton.Active.Progress Border">
-        <Setter Property="BorderThickness" Value="2" />
-        <Setter Property="CornerRadius" Value="45" />
-        <Setter Property="BorderBrush" Value="{StaticResource ElementForegroundNeutralModerateBrush}" />
-    </Style>
-
-
-    <Style Selector="Button.SpineDownloadButton.Progress Border">
-        <Setter Property="BorderThickness" Value="3" />
-        <Setter Property="CornerRadius" Value="45" />
-    </Style>
-
-    <Style Selector="Button.SpineDownloadButton.Progress Arc">
-        <Setter Property="Width" Value="50" />
-        <Setter Property="Height" Value="50" />
-        <Setter Property="StrokeThickness" Value="3" />
-        <Setter Property="StartAngle" Value="270" />
-        <Setter Property="Stroke" Value="{StaticResource ElementForegroundInfoWeakBrush}" />
-    </Style>
-
-    <Style Selector="Button.SpineDownloadButton > Grid > StackPanel">
-        <Setter Property="Orientation" Value="Vertical" />
-        <Setter Property="Spacing" Value="0" />
         <Setter Property="HorizontalAlignment" Value="Center" />
-        <Setter Property="VerticalAlignment" Value="Center" />
-        <Setter Property="Margin" Value="0, 10" />
-    </Style>
-
-    <Style Selector="Button.SpineDownloadButton icons|Icon">
-        <Setter Property="Width" Value="24" />
-        <Setter Property="Height" Value="24" />
-        <Setter Property="Margin" Value="12" />
-        <Setter Property="FontSize" Value="18" />
-        <Setter Property="Foreground" Value="{DynamicResource ElementForegroundNeutralStrongBrush}" />
-    </Style>
-
-    <Style Selector="Button.SpineDownloadButton.Active icons|Icon">
-        <Setter Property="Foreground" Value="{DynamicResource ElementForegroundNeutralStrongBrush}" />
-    </Style>
-
-    <Style Selector="Button.SpineDownloadButton.Active Border">
         <Setter Property="ClipToBounds" Value="False" />
-        <Setter Property="BoxShadow">
-            <extensions:BoxShadow BlurRadius="10" SpreadRadius="1"
-                                  ShadowColor="{StaticResource BrandNeutral200}" />
-        </Setter>
-        <Setter Property="Background">
-            <SolidColorBrush Color="{StaticResource ElementForegroundNeutralStrong}"
-                             Opacity="{StaticResource OpacityWeak}" />
-        </Setter>
-    </Style>
 
-    <Style Selector="Button.SpineDownloadButton.Active.Progress Border">
-        <Setter Property="BoxShadow">
-            <extensions:BoxShadow BlurRadius="10" SpreadRadius="2"
-                                  ShadowColor="{StaticResource BrandNeutral200}" />
-        </Setter>
-    </Style>
+        <Setter Property="Background" Value="{StaticResource ElementBackgroundTransparentBrush}" />
 
-    <Style Selector="Button.SpineDownloadButton.Idle > Grid > icons|Icon">
-        <Setter Property="IsVisible" Value="True" />
-    </Style>
+        <!-- Border -->
+        <Style Selector="^ Border">
+            <Setter Property="Width" Value="50" />
+            <Setter Property="Height" Value="50" />
+            <Setter Property="CornerRadius" Value="45" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="{StaticResource ElementBackgroundNeutralMidBrush}" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="ClipToBounds" Value="False" />
+        </Style>
 
-    <Style Selector="Button.SpineDownloadButton.Idle > Grid > StackPanel">
-        <Setter Property="IsVisible" Value="False" />
-    </Style>
+        <!-- Icon -->
+        <Style Selector="^ icons|Icon">
+            <Setter Property="Width" Value="24" />
+            <Setter Property="Height" Value="24" />
+            <Setter Property="Margin" Value="12" />
+            <Setter Property="FontSize" Value="18" />
+            <Setter Property="Foreground" Value="{DynamicResource ElementForegroundNeutralStrongBrush}" />
+        </Style>
 
-    <Style Selector="Button.SpineDownloadButton.Progress > Grid > icons|Icon">
-        <Setter Property="IsVisible" Value="False" />
-    </Style>
+        <!-- StackPanel -->
+        <Style Selector="^ > Grid > StackPanel">
+            <Setter Property="Spacing" Value="0" />
+            <Setter Property="Orientation" Value="Vertical" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="0" />
+        </Style>
 
-    <Style Selector="Button.SpineDownloadButton.Progress > Grid > StackPanel">
-        <Setter Property="IsVisible" Value="True" />
-    </Style>
+        <!-- TextBlock -->
+        <Style Selector="^ TextBlock">
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="TextAlignment" Value="Center" />
 
-    <Style Selector="Button.SpineDownloadButton TextBlock">
-        <Setter Property="Margin" Value="0" />
-        <Setter Property="Padding" Value="0" />
-        <Setter Property="HorizontalAlignment" Value="Center" />
-        <Setter Property="TextAlignment" Value="Center" />
-        <Setter Property="VerticalAlignment" Value="Center" />
-    </Style>
+            <!-- Download Speed value -->
+            <Style Selector="^.Number">
+                <Setter Property="Theme" Value="{StaticResource TitleXSSemiTheme}" />
+            </Style>
 
-    <Style Selector="Button.SpineDownloadButton TextBlock.Number">
-        <Setter Property="Theme" Value="{StaticResource TitleXSSemiTheme}" />
-    </Style>
+            <!-- Download Speed units -->
+            <Style Selector="^.Units">
+                <Setter Property="FontFamily" Value="{StaticResource FontHeadlinesSemiBold}" />
+                <Setter Property="FontWeight" Value="SemiBold" />
+                <Setter Property="FontSize" Value="6" />
+                <Setter Property="LineHeight" Value="9" />
+                <Setter Property="LetterSpacing" Value="1" />
+            </Style>
+        </Style>
 
-    <Style Selector="Button.SpineDownloadButton TextBlock.Units">
-        <Setter Property="FontFamily" Value="{StaticResource FontHeadlinesSemiBold}" />
-        <Setter Property="FontWeight" Value="SemiBold" />
-        <Setter Property="FontSize" Value="6" />
-        <Setter Property="LineHeight" Value="9" />
-        <Setter Property="LetterSpacing" Value="1" />
-    </Style>
+        <!-- Hover -->
+        <Style Selector="^:pointerover">
 
-    <Style Selector="Button.SpineDownloadButton:pointerover Border">
-        <Setter Property="Background">
-            <SolidColorBrush Color="{StaticResource ElementForegroundNeutralStrong}"
-                             Opacity="{StaticResource OpacitySubdued}" />
-        </Setter>
-        <Setter Property="BorderBrush" Value="{DynamicResource ElementForegroundNeutralModerateBrush}" />
-    </Style>
+            <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Background" Value="{StaticResource ElementBackgroundTransparentBrush}" />
+            </Style>
 
-    <Style Selector="Button.SpineDownloadButton:pointerover icons|Icon">
-        <Setter Property="Foreground" Value="{DynamicResource ElementForegroundNeutralStrongBrush}" />
-    </Style>
+            <!-- Border -->
+            <Style Selector="^ Border">
+                <Setter Property="BorderBrush" Value="{DynamicResource ElementForegroundNeutralModerateBrush}" />
+                <Setter Property="Background">
+                    <SolidColorBrush Color="{StaticResource ElementForegroundNeutralStrong}"
+                                     Opacity="{StaticResource OpacitySubdued}" />
+                </Setter>
+            </Style>
 
-    <Style Selector="Button.SpineDownloadButton.Progress:pointerover Arc">
-        <Setter Property="Stroke" Value="{StaticResource ElementForegroundInfoSubduedBrush}" />
+            <!-- Icon -->
+            <Style Selector="^ icons|Icon">
+                <Setter Property="Foreground" Value="{DynamicResource ElementForegroundNeutralStrongBrush}" />
+            </Style>
+
+            <!-- Arc -->
+            <Style Selector="^ Arc">
+                <Setter Property="Stroke" Value="{StaticResource ElementForegroundInfoSubduedBrush}" />
+            </Style>
+        </Style>
+
+        <!-- Progress variation -->
+        <Style Selector="^.Progress">
+
+            <Style Selector="^ Border">
+                <Setter Property="BorderThickness" Value="2" />
+                <Setter Property="CornerRadius" Value="45" />
+            </Style>
+
+            <Style Selector="^ Arc">
+                <Setter Property="Width" Value="50" />
+                <Setter Property="Height" Value="50" />
+                <Setter Property="StrokeThickness" Value="3" />
+                <Setter Property="StartAngle" Value="270" />
+                <Setter Property="Stroke" Value="{StaticResource ElementForegroundInfoWeakBrush}" />
+            </Style>
+
+            <Style Selector="^ > Grid > icons|Icon">
+                <Setter Property="IsVisible" Value="False" />
+            </Style>
+
+            <Style Selector="^ > Grid > StackPanel">
+                <Setter Property="IsVisible" Value="True" />
+            </Style>
+        </Style>
+
+        <!-- Idle variation -->
+        <Style Selector="^.Idle">
+
+            <Style Selector="^ > Grid > icons|Icon">
+                <Setter Property="IsVisible" Value="True" />
+            </Style>
+
+            <Style Selector="^ > Grid > StackPanel">
+                <Setter Property="IsVisible" Value="False" />
+            </Style>
+        </Style>
+
+        <!-- Active variation (Selected) -->
+        <Style Selector="^.Active">
+
+            <Style Selector="^ Border">
+                <Setter Property="Background">
+                    <SolidColorBrush Color="{StaticResource ElementForegroundNeutralStrong}"
+                                     Opacity="{StaticResource OpacityWeak}" />
+                </Setter>
+                <Setter Property="BoxShadow">
+                    <extensions:BoxShadow BlurRadius="10" SpreadRadius="1"
+                                          ShadowColor="{StaticResource BrandNeutral200}" />
+                </Setter>
+            </Style>
+
+            <Style Selector="^.Progress Border">
+                <Setter Property="BorderThickness" Value="2" />
+                <Setter Property="CornerRadius" Value="45" />
+                <Setter Property="BorderBrush" Value="{StaticResource ElementForegroundNeutralModerateBrush}" />
+                <Setter Property="BoxShadow">
+                    <extensions:BoxShadow BlurRadius="10" SpreadRadius="2"
+                                          ShadowColor="{StaticResource BrandNeutral200}" />
+                </Setter>
+            </Style>
+
+            <Style Selector="^ icons|Icon">
+                <Setter Property="Foreground" Value="{DynamicResource ElementForegroundNeutralStrongBrush}" />
+            </Style>
+        </Style>
+
     </Style>
 
 </Styles>
