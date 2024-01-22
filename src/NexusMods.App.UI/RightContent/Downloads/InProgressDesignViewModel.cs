@@ -12,6 +12,12 @@ public class InProgressDesignViewModel : InProgressViewModel
 {
     public InProgressDesignViewModel()
     {
+        // Note (Al12rs): We can't simply assign a new collection to the Tasks property,
+        // because all the bindings are already subscribed to the old collection.
+        // It would be possible to unsubscribe from the old collection and subscribe to the new one,
+        // but that would make all the bindings code much more messy, with nested subscriptions.
+        // Instead, we add items to an existing collection initialized in the parent VM, so bindings are maintained.
+
         DesignTimeDownloadTasks.Add(new DownloadTaskDesignViewModel()
         {
             Name = "Invisible Camouflage",
@@ -53,7 +59,7 @@ public class InProgressDesignViewModel : InProgressViewModel
         });
     }
 
-    public void AddDownload(DownloadTaskDesignViewModel vm) => DesignTimeDownloadTasks.Add(vm);
+    internal void AddDownload(DownloadTaskDesignViewModel vm) => DesignTimeDownloadTasks.Add(vm);
 
-    public void ClearDownloads() => DesignTimeDownloadTasks.Clear();
+    internal void ClearDownloads() => DesignTimeDownloadTasks.Clear();
 }

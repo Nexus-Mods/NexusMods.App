@@ -1,5 +1,4 @@
 ﻿using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Windows.Input;
@@ -109,10 +108,10 @@ public class InProgressViewModel : AViewModel<IInProgressViewModel>, IInProgress
     private void Init()
     {
         // Make Columns
-        var columns = new SourceCache<IDataGridColumnFactory<DownloadColumn>, DownloadColumn>(x => x.Type);
-        columns.Edit(x =>
+        var columns = new SourceCache<IDataGridColumnFactory<DownloadColumn>, DownloadColumn>(colFactory => colFactory.Type);
+        columns.Edit(colUpdater =>
         {
-            x.AddOrUpdate(
+            colUpdater.AddOrUpdate(
                 new DataGridColumnDesignFactory<IDownloadNameViewModel, IDownloadTaskViewModel, DownloadColumn>(
                     x => new DownloadNameView()
                     {
@@ -122,28 +121,28 @@ public class InProgressViewModel : AViewModel<IInProgressViewModel>, IInProgress
                     Width = new DataGridLength(1, DataGridLengthUnitType.Star)
                 });
 
-            x.AddOrUpdate(
+            colUpdater.AddOrUpdate(
                 new DataGridColumnDesignFactory<IDownloadVersionViewModel, IDownloadTaskViewModel, DownloadColumn>(
                     x => new DownloadVersionView()
                     {
                         ViewModel = new DownloadVersionViewModel() { Row = x }
                     }, DownloadColumn.DownloadVersion));
 
-            x.AddOrUpdate(
+            colUpdater.AddOrUpdate(
                 new DataGridColumnDesignFactory<IDownloadGameNameViewModel, IDownloadTaskViewModel, DownloadColumn>(
                     x => new DownloadGameNameView()
                     {
                         ViewModel = new DownloadGameNameViewModel() { Row = x }
                     }, DownloadColumn.DownloadGameName));
 
-            x.AddOrUpdate(
+            colUpdater.AddOrUpdate(
                 new DataGridColumnDesignFactory<IDownloadSizeViewModel, IDownloadTaskViewModel, DownloadColumn>(
                     x => new DownloadSizeView()
                     {
                         ViewModel = new DownloadSizeViewModel() { Row = x }
                     }, DownloadColumn.DownloadSize));
 
-            x.AddOrUpdate(
+            colUpdater.AddOrUpdate(
                 new DataGridColumnDesignFactory<IDownloadStatusViewModel, IDownloadTaskViewModel, DownloadColumn>(
                     x => new DownloadStatusView()
                     {
