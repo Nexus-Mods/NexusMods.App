@@ -23,16 +23,16 @@
             <ControlTemplate>
                 <Grid>
                     <Image
-                        Height="48"
-                        Width="48"
+                        Height="50"
+                        Width="50"
                         x:Name="Image">
                         <Image.Clip>
-                            <EllipseGeometry Rect="0, 0, 48, 48" />
+                            <EllipseGeometry Rect="0, 0, 50, 50" />
                         </Image.Clip>
                     </Image>
                     <Border
-                        Height="48"
-                        Width="48" />
+                        Height="50"
+                        Width="50" />
                 </Grid>
             </ControlTemplate>
         </Button.Template>
