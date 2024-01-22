@@ -43,15 +43,9 @@ public static class Services
         else
             coll.AddSingleton(settings);
 
-        IDataModelSettings Settings(IServiceProvider provider)
-        {
-            return provider.GetRequiredService<IDataModelSettings>();
-        }
-
         coll.AddSingleton<MessageBus>();
         coll.AddSingleton(typeof(IMessageConsumer<>), typeof(MessageConsumer<>));
         coll.AddSingleton(typeof(IMessageProducer<>), typeof(MessageProducer<>));
-
 
         coll.AddSingleton<JsonConverter, AbsolutePathConverter>();
         coll.AddSingleton<JsonConverter, RelativePathConverter>();
@@ -66,19 +60,19 @@ public static class Services
         coll.AddSingleton<JsonConverter, EntityLinkConverterFactory>();
         coll.AddSingleton(typeof(EntityLinkConverter<>));
 
-        coll.AddSingleton<IDataStore, SqliteDataStore>();
+        coll.AddAllSingleton<IDataStore, SqliteDataStore>();
         coll.AddAllSingleton<IFileStore, NxFileStore>();
 
         coll.AddSingleton(typeof(IFingerprintCache<,>), typeof(DataStoreFingerprintCache<,>));
 
-        coll.AddSingleton<ILoadoutRegistry, LoadoutRegistry>();
-        coll.AddSingleton<IDirectoryIndexer, DirectoryIndexer>();
-        coll.AddSingleton<IFileOriginRegistry, FileOriginRegistry>();
-        coll.AddSingleton<IFileHashCache, FileHashCache>();
         coll.AddSingleton<GlobalSettingsManager>();
-        coll.AddSingleton<IArchiveInstaller, ArchiveInstaller>();
-        coll.AddSingleton<IToolManager, ToolManager>();
-        coll.AddSingleton<DiskStateRegistry>();
+        coll.AddAllSingleton<ILoadoutRegistry, LoadoutRegistry>();
+        coll.AddAllSingleton<IDirectoryIndexer, DirectoryIndexer>();
+        coll.AddAllSingleton<IFileOriginRegistry, FileOriginRegistry>();
+        coll.AddAllSingleton<IFileHashCache, FileHashCache>();
+        coll.AddAllSingleton<IArchiveInstaller, ArchiveInstaller>();
+        coll.AddAllSingleton<IToolManager, ToolManager>();
+        coll.AddAllSingleton<IDiskStateRegistry, DiskStateRegistry>();
 
         coll.AddSingleton<ITypeFinder>(_ => new AssemblyTypeFinder(typeof(Services).Assembly));
         coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<AModMetadata>>();
@@ -86,7 +80,6 @@ public static class Services
         coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<IMetadata>>();
         coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<ISortRule<Mod, ModId>>>();
         coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<AArchiveMetaData>>();
-
         coll.AddAllSingleton<ISorter, Sorter>();
 
         coll.AddSingleton(s =>

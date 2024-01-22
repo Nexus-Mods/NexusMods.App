@@ -3,7 +3,6 @@
     <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
 
     <ItemGroup>
-        <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.DataModel\NexusMods.Abstractions.DataModel.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Games.Diagnostics\NexusMods.Abstractions.Games.Diagnostics.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Games\NexusMods.Abstractions.Games.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Messaging\NexusMods.Abstractions.Messaging.csproj" />
@@ -47,6 +46,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Games\" />
       <Folder Include="LoadoutSynchronizer\Exceptions\" />
       <Folder Include="Loadouts\Markers\" />
     </ItemGroup>

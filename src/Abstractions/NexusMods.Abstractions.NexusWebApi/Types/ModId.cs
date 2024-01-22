@@ -10,5 +10,5 @@ namespace NexusMods.Abstractions.NexusWebApi.Types;
 public readonly partial struct ModId : IAugmentWith<DefaultValueAugment>
 {
     /// <inheritdoc/>
-    public static ModId DefaultValue => ModId.From(default);
+    public static ModId DefaultValue => From(default);
 }

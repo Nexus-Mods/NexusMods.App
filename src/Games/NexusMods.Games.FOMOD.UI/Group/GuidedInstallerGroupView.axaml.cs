@@ -2,6 +2,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
+using NexusMods.Abstractions.GuidedInstallers;
 using ReactiveUI;
 
 namespace NexusMods.Games.FOMOD.UI;

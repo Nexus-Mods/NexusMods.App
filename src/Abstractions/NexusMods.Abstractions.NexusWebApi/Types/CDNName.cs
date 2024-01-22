@@ -10,5 +10,5 @@ namespace NexusMods.Abstractions.NexusWebApi.Types;
 public readonly partial struct CDNName : IAugmentWith<DefaultValueAugment>
 {
     /// <inheritdoc/>
-    public static CDNName DefaultValue => CDNName.From(string.Empty);
+    public static CDNName DefaultValue => From(string.Empty);
 }

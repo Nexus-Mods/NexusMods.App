@@ -8,7 +8,7 @@ namespace NexusMods.Abstractions.Diagnostics;
 /// Options to configure the <see cref="IDiagnosticManager"/>.
 /// </summary>
 [PublicAPI]
-[JsonName("NexusMods.DataModel.Diagnostics.Options")]
+[JsonName("NexusMods.Abstractions.Diagnostics.DiagnosticOptions")]
 public record DiagnosticOptions
 {
     /// <summary>

@@ -13,7 +13,7 @@ using NexusMods.Hashing.xxHash64;
 namespace NexusMods.Games.MountAndBlade2Bannerlord.Sorters;
 
 [PublicAPI]
-[JsonName("MountAndBlade2Bannerlord.Sorters.ModuleInfoSort")]
+[JsonName("NexusMods.Games.MountAndBlade2Bannerlord.Sorters.ModuleInfoSort")]
 public class ModuleInfoSort : IGeneratedSortRule, ISortRule<Mod, ModId>, ITriggerFilter<ModId, Loadout>
 {
     public ITriggerFilter<ModId, Loadout> TriggerFilter => this;

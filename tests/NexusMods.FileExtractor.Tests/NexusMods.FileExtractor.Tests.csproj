@@ -5,7 +5,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\src\ArchiveManagement\NexusMods.FileExtractor\NexusMods.FileExtractor.csproj" />
-      <ProjectReference Include="..\..\src\DataModel\NexusMods.DataModel\NexusMods.DataModel.csproj" />
+      <ProjectReference Include="..\..\src\NexusMods.DataModel\NexusMods.DataModel.csproj" />
       <ProjectReference Include="..\..\src\Extensions\NexusMods.Extensions.BCL\NexusMods.Extensions.BCL.csproj" />
       <ProjectReference Include="..\..\src\Extensions\NexusMods.Extensions.Hashing\NexusMods.Extensions.Hashing.csproj" />
       <ProjectReference Include="..\..\src\NexusMods.App.BuildInfo\NexusMods.App.BuildInfo.csproj" />

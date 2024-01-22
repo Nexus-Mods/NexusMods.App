@@ -22,7 +22,7 @@ public class ValidateInfo : IJsonSerializable<ValidateInfo>
     /// <summary>
     /// Unique identifier for the current user.
     /// </summary>
-    public UserId UserId => Types.UserId.From(_UserId);
+    public UserId UserId => UserId.From(_UserId);
 
     /// <summary>
     /// The API key associated with this request.

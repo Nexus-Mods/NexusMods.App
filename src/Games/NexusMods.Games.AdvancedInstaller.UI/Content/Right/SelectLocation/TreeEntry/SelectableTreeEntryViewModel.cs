@@ -68,7 +68,7 @@ public class SelectableTreeEntryViewModel : AViewModel<ISelectableTreeEntryViewM
     /// Pattern to match invalid characters in folder names.
     /// </summary>
     private static readonly string InvalidFolderCharsPattern =
-        "[" + String.Concat(System.IO.Path.GetInvalidFileNameChars().Concat(new[] { '\\', '/' })) + "]";
+        "[" + String.Concat(Path.GetInvalidFileNameChars().Concat(new[] { '\\', '/' })) + "]";
 
     /// <summary>
     /// Compiled Regex to match invalid characters in folder names.

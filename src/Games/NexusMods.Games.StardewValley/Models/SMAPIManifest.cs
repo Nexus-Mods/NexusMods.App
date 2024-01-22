@@ -9,7 +9,7 @@ namespace NexusMods.Games.StardewValley.Models;
 /// https://github.com/Pathoschild/SMAPI/blob/9763bc7484e29cbc9e7f37c61121d794e6720e75/src/SMAPI.Toolkit/Serialization/Models/Manifest.cs#L11
 /// </summary>
 [PublicAPI]
-[JsonName("NexusMods.Games.StardewValley.SMAPIManifest")]
+[JsonName("NexusMods.Games.StardewValley.Models.SMAPIManifest")]
 public record SMAPIManifest
 {
     /// <summary>

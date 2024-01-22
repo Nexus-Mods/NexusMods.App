@@ -77,7 +77,7 @@ public interface IFileHashCache
 /// <param name="Hash">The hash of the file.</param>
 /// <param name="LastModified">The last time the entry was modified on disk.</param>
 /// <param name="Size">Size of the file in bytes.</param>
-public record HashedEntry(AbsolutePath Path, Hash Hash, System.DateTime LastModified, Size Size)
+public record HashedEntry(AbsolutePath Path, Hash Hash, DateTime LastModified, Size Size)
 {
     /// <summary>
     ///     Creates a hashed entry from an existing file entry obtained through a file search.
@@ -93,7 +93,7 @@ public record HashedEntry(AbsolutePath Path, Hash Hash, System.DateTime LastModi
 /// <param name="Hash">The hash of the file.</param>
 /// <param name="LastModified">The last time the entry was modified on disk.</param>
 /// <param name="Size">Size of the file in bytes.</param>
-public readonly record struct FileHashCacheEntry(System.DateTime LastModified, Hash Hash, Size Size)
+public readonly record struct FileHashCacheEntry(DateTime LastModified, Hash Hash, Size Size)
 {
     // TODO: SliceFast here, with only one size check for safety https://github.com/Nexus-Mods/NexusMods.App/issues/214
 
@@ -106,7 +106,7 @@ public readonly record struct FileHashCacheEntry(System.DateTime LastModified, H
         var date = BinaryPrimitives.ReadInt64BigEndian(span);
         var hash = BinaryPrimitives.ReadUInt64BigEndian(span[8..]);
         var size = BinaryPrimitives.ReadInt64BigEndian(span[16..]);
-        return new FileHashCacheEntry(System.DateTime.FromFileTimeUtc(date), Hash.FromULong(hash), Size.FromLong(size));
+        return new FileHashCacheEntry(DateTime.FromFileTimeUtc(date), Hash.FromULong(hash), Size.FromLong(size));
     }
 
     /// <summary>

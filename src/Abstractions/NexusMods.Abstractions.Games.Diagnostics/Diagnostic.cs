@@ -9,7 +9,7 @@ namespace NexusMods.Abstractions.Diagnostics;
 /// Represents a diagnostic.
 /// </summary>
 [PublicAPI]
-[JsonName("NexusMods.DataModel.Diagnostic")]
+[JsonName("NexusMods.Abstractions.Diagnostics.Diagnostic")]
 public record Diagnostic : Entity
 {
     /// <summary>

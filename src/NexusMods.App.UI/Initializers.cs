@@ -42,7 +42,7 @@ public static class Initializers
         ModId.From(new Guid("00000000-0000-0000-0000-000000000002")));
 
     public static LoadoutId LoadoutId =
-        Abstractions.Games.Loadouts.LoadoutId.From(new Guid("00000000-0000-0000-0000-000000000001"));
+        LoadoutId.From(new Guid("00000000-0000-0000-0000-000000000001"));
 
     public static ReadOnlyObservableCollection<T> ReadOnlyObservableCollection<T>()
     {

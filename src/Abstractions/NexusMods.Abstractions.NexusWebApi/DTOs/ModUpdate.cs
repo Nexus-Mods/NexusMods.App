@@ -25,7 +25,7 @@ public class ModUpdate : IJsonArraySerializable<ModUpdate>
     /// <summary>
     /// An individual mod ID that is unique for this game.
     /// </summary>
-    public ModId ModId => Types.ModId.From(_ModId);
+    public ModId ModId => ModId.From(_ModId);
 
     /// <summary>
     /// The last time a file on the mod page was updated.

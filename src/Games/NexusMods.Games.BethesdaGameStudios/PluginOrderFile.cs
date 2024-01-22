@@ -11,7 +11,7 @@ using NexusMods.Hashing.xxHash64;
 
 namespace NexusMods.Games.BethesdaGameStudios;
 
-[JsonName("BethesdaGameStudios.PluginOrderFile")]
+[JsonName("NexusMods.Games.BethesdaGameStudios.PluginOrderFile")]
 public record PluginOrderFile : AModFile, IGeneratedFile, IToFile
 {
     public static GamePath Path = new(LocationId.AppData, "plugins.txt");

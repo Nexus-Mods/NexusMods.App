@@ -9,5 +9,5 @@ namespace NexusMods.Abstractions.NexusWebApi.Types;
 public readonly partial struct UserId : IAugmentWith<DefaultValueAugment>
 {
     /// <inheritdoc/>
-    public static UserId DefaultValue => UserId.From(default);
+    public static UserId DefaultValue => From(default);
 }

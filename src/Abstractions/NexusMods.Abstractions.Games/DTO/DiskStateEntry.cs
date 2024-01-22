@@ -22,7 +22,7 @@ public readonly struct DiskStateEntry
     /// <summary>
     /// The last modified time of the file.
     /// </summary>
-    public required System.DateTime LastModified { get; init; }
+    public required DateTime LastModified { get; init; }
 
     /// <summary>
     /// Converts a <see cref="HashedEntry"/> to a <see cref="DiskStateEntry"/>.
@@ -50,7 +50,7 @@ public readonly struct DiskStateEntry
         {
             Hash = hashedEntry.Hash,
             Size = hashedEntry.Size,
-            LastModified = System.DateTime.Now
+            LastModified = DateTime.Now
         };
     }
 

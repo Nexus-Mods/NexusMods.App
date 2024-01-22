@@ -4,9 +4,9 @@
 
     <ItemGroup>
         <!-- TODO: This library needs stabilized -->
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
         <PackageReference Include="NexusMods.Paths" />
-        <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
+        <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
 
         <!-- TODO: This doesn't belong in an 'abstractions' package, but that would require rewiring some code, or PR'ing an 'abstractions' package for DynamicData -->
         <PackageReference Include="DynamicData" />
@@ -24,6 +24,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\Extensions\NexusMods.Extensions.BCL\NexusMods.Extensions.BCL.csproj" />
+        <ProjectReference Include="..\..\NexusMods.CrossPlatform\NexusMods.CrossPlatform.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.Activities\NexusMods.Abstractions.Activities.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.Installers\NexusMods.Abstractions.Installers.csproj" />
 

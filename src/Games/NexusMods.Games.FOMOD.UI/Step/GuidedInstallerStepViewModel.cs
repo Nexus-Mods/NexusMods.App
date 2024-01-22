@@ -5,6 +5,8 @@ using Avalonia.Media;
 using DynamicData;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Activities;
+using NexusMods.Abstractions.GuidedInstallers;
+using NexusMods.Abstractions.GuidedInstallers.ValueObjects;
 using NexusMods.App.UI;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;

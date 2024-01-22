@@ -15,7 +15,7 @@ namespace NexusMods.Abstractions.Games.Downloads;
 /// <summary>
 /// Analysis of the contents of a download
 /// </summary>
-[JsonName("NexusMods.DataModel.Abstractions.DTOs.DownloadAnalysis")]
+[JsonName("NexusMods.Abstractions.Games.Downloads.DownloadAnalysis")]
 public record DownloadAnalysis : Entity
 {
     /// <summary>

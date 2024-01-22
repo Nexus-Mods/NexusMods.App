@@ -13,13 +13,13 @@ namespace NexusMods.Abstractions.Games.Loadouts;
 ///    We treat loadouts kind of like git branches, the document <a href="https://github.com/Nexus-Mods/NexusMods.App/blob/main/docs/ImmutableModlists.md">Immutable Mod Lists</a>
 ///    might provide you with some additional insight into the idea.
 /// </remarks>
-[JsonName("NexusMods.DataModel.Loadout")]
+[JsonName("NexusMods.Abstractions.Games.Loadouts.Loadout")]
 public record Loadout : Entity, IEmptyWithDataStore<Loadout>
 {
     /// <summary>
     /// Collection of mods.
     /// </summary>
-    public required EntityDictionary<DataModel.Entities.Mods.ModId, Mod> Mods { get; init; }
+    public required EntityDictionary<ModId, Mod> Mods { get; init; }
 
     /// <summary>
     /// Unique identifier for this loadout in question.
@@ -39,7 +39,7 @@ public record Loadout : Entity, IEmptyWithDataStore<Loadout>
     /// <summary>
     /// The time this loadout is last modified.
     /// </summary>
-    public required System.DateTime LastModified { get; init; }
+    public required DateTime LastModified { get; init; }
 
     /// <summary>
     /// Link to the previous version of this loadout on the data store.
@@ -61,8 +61,8 @@ public record Loadout : Entity, IEmptyWithDataStore<Loadout>
         LoadoutId = LoadoutId.Create(),
         Installation = GameInstallation.Empty,
         Name = "",
-        Mods = EntityDictionary<DataModel.Entities.Mods.ModId, Mod>.Empty(store),
-        LastModified = System.DateTime.UtcNow,
+        Mods = EntityDictionary<ModId, Mod>.Empty(store),
+        LastModified = DateTime.UtcNow,
         PreviousVersion = EntityLink<Loadout>.Empty(store),
         ChangeMessage = ""
     };
@@ -73,7 +73,7 @@ public record Loadout : Entity, IEmptyWithDataStore<Loadout>
     /// <param name="modId">Unique identifier for this mod.</param>
     /// <param name="func">Function used to change the details of this mod.</param>
     /// <returns>A new loadout with the details of a single mod changed.</returns>
-    public Loadout Alter(DataModel.Entities.Mods.ModId modId, Func<Mod, Mod?> func)
+    public Loadout Alter(ModId modId, Func<Mod, Mod?> func)
     {
         return this with
         {

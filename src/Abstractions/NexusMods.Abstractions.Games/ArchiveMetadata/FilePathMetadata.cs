@@ -6,7 +6,7 @@ namespace NexusMods.Abstractions.Games.ArchiveMetadata;
 /// <summary>
 /// Archive metadata for a download that was installed from a file path.
 /// </summary>
-[JsonName("NexusMods.DataModel.ArchiveMetaData.FilePathMetadata")]
+[JsonName("NexusMods.Abstractions.Games.ArchiveMetadata.FilePathMetadata")]
 public record FilePathMetadata : AArchiveMetaData
 {
     /// <summary>

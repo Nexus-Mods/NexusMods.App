@@ -52,7 +52,7 @@ public class RecentModsTest
 
         var updates = await _client.ModUpdatesAsync(_game.Domain.Value, Client.PastTime.Day);
         _logger.LogInformation("Found {Count} updates", updates.Data.Length);
-        var files = new List<(Abstractions.NexusWebApi.Types.ModId ModId, ModFile File)>();
+        var files = new List<(ModId ModId, ModFile File)>();
         foreach (var mod in updates.Data)
         {
             try

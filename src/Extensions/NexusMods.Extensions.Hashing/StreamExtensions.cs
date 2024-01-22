@@ -40,7 +40,7 @@ public static class StreamExtensions
     {
         return await inputStream.HashingCopyAsync(Stream.Null, token, async m =>
         {
-            job.AddProgress(Size.FromLong(m.Length));
+            job.AddProgress(FromLong(m.Length));
         });
     }
 

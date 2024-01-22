@@ -16,7 +16,7 @@ namespace NexusMods.Abstractions.DataModel.Entities.Mods;
 ///
 ///    This will change some time in the future.
 /// </remarks>
-[JsonName("NexusMods.DataModel.Mod")]
+[JsonName("NexusMods.Abstractions.DataModel.Entities.Mods.Mod")]
 public record Mod : Entity, IHasEntityId<ModId>
 {
     /// <summary>

@@ -9,5 +9,5 @@ namespace NexusMods.Abstractions.NexusWebApi.Types;
 public readonly partial struct GameId : IAugmentWith<DefaultValueAugment>
 {
     /// <inheritdoc/>
-    public static GameId DefaultValue => GameId.From(default);
+    public static GameId DefaultValue => From(default);
 }

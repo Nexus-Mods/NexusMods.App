@@ -8,7 +8,7 @@ namespace NexusMods.Networking.NexusWebApi.NMA;
 /// <summary>
 /// Represents a JWT Token in our DataStore.
 /// </summary>
-[JsonName("JWTTokens")]
+[JsonName("NexusMods.Networking.NexusWebApi.NMA.JWTTokenEntity")]
 public record JWTTokenEntity : Entity
 {
     /// <summary>

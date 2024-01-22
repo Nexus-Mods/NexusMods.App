@@ -9,7 +9,7 @@ namespace NexusMods.Abstractions.Installers.DTO.Files;
 /// This record is used for denoting files which belong to the game itself,
 /// as opposed to one sourced from a game mod.
 /// </summary>
-[JsonName("NexusMods.DataModel.ModFiles.GameFile")]
+[JsonName("NexusMods.Abstractions.Installers.DTO.Files.GameFile")]
 public record GameFile : AModFile, IToFile, IStoredFile
 {
     /// <inheritdoc />

@@ -1,3 +1,6 @@
+using NexusMods.Abstractions.GuidedInstallers;
+using NexusMods.Abstractions.GuidedInstallers.ValueObjects;
+
 namespace NexusMods.Games.FOMOD.UI;
 
 public class GuidedInstallerGroupDesignViewModel : GuidedInstallerGroupViewModel

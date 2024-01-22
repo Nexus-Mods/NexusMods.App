@@ -12,7 +12,7 @@ namespace NexusMods.Abstractions.Installers.DTO.Files;
 /// and the size. This file may originally come from a download, a
 /// tool's output, or a backed up game file.
 /// </summary>
-[JsonName("NexusMods.DataModel.GameFiles.StoredFile")]
+[JsonName("NexusMods.Abstractions.Installers.DTO.Files.StoredFile")]
 public record StoredFile : AModFile, IStoredFile, IToFile
 {
     /// <inheritdoc />

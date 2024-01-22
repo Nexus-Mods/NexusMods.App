@@ -7,7 +7,7 @@ namespace NexusMods.Abstractions.Games.ArchiveMetadata;
 /// <summary>
 /// Archive metadata for a download that was installed from a NexusMods mod.
 /// </summary>
-[JsonName("NexusMods.DataModel.ArchiveMetaData.NexusModsArchiveMetadata")]
+[JsonName("NexusMods.Abstractions.Games.ArchiveMetadata.NexusModsArchiveMetadata")]
 public record NexusModsArchiveMetadata : AArchiveMetaData
 {
     /// <summary>

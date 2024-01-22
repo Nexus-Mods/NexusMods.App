@@ -53,7 +53,7 @@ class DiskStateConverter : JsonConverter<DiskState>
             reader.Read();
             var size = Size.From(reader.GetUInt64());
             reader.Read();
-            var lastModified = System.DateTime.FromFileTimeUtc(reader.GetInt64());
+            var lastModified = DateTime.FromFileTimeUtc(reader.GetInt64());
             reader.Read();
             if (reader.TokenType != JsonTokenType.EndArray)
                 throw new JsonException();

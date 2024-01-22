@@ -3,7 +3,7 @@ using NexusMods.Paths;
 
 namespace NexusMods.Games.BethesdaGameStudios;
 
-[JsonName("BethesdaGameStudios.FileAnalysisData")]
+[JsonName("NexusMods.Games.BethesdaGameStudios.FileAnalysisData")]
 public class PluginAnalysisData
 {
     /// <summary>

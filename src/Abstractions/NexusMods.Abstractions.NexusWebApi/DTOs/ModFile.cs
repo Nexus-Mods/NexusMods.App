@@ -47,7 +47,7 @@ public class ModFile : IJsonSerializable<ModFile>
     ///    This ID is unique within the context of the game.
     ///    i.e. This ID might be used for another mod if you search for mods for another game.
     /// </remarks>
-    public FileId FileId => Types.FileId.From(_FileId);
+    public FileId FileId => FileId.From(_FileId);
 
     /// <summary>
     /// Name (title) of the mod file as seen on the `Files` section of the mod page.

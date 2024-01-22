@@ -8,7 +8,7 @@ namespace NexusMods.DataModel.Loadouts;
 /// Represents metadata that groups multiple <see cref="Mod"/> entities together.
 /// </summary>
 [PublicAPI]
-[JsonName("NexusMods.DataModel.GroupMetadata")]
+[JsonName("NexusMods.NexusMods.DataModel.Loadouts.GroupMetadata")]
 public record GroupMetadata : AModMetadata
 {
     /// <summary>

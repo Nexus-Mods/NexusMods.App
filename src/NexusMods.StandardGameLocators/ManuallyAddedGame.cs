@@ -9,7 +9,7 @@ namespace NexusMods.StandardGameLocators;
 /// <summary>
 /// Used to store information about manually added games.
 /// </summary>
-[JsonName("ManuallyAddedGame")]
+[JsonName("NexusMods.StandardGameLocators.ManuallyAddedGame")]
 public record ManuallyAddedGame : Entity, IGameLocatorResultMetadata
 {
     /// <inheritdoc />

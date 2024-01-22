@@ -35,7 +35,6 @@ public class SkyrimLegendaryEditionTests(IServiceProvider serviceProvider) : AGa
         var loadout = await CreateLoadout(indexGameFiles: false);
         var loadoutName = loadout.Value.Name;
 
-
         var log = await _verbTester.Run("list-loadouts");
 
         log.LastTableColumns.Should().BeEquivalentTo("Name", "Game", "Id", "Mod Count");
