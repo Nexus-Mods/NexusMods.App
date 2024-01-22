@@ -8,44 +8,50 @@ namespace NexusMods.App.UI.WorkspaceSystem;
 
 public class PanelResizerViewModel : AViewModel<IPanelResizerViewModel>, IPanelResizerViewModel
 {
-    [Reactive] public Point LogicalPosition { get; set; }
-    [Reactive] public Point ActualPosition { get; set; }
+    [Reactive] public Point LogicalStartPoint { get; set; }
+    [Reactive] public Point LogicalEndPoint { get; set; }
+
+    [Reactive] public Point ActualStartPoint { get; set; }
+    [Reactive] public Point ActualEndPoint { get; set; }
 
     public bool IsHorizontal { get; }
-    public PanelId[] ConnectedPanels { get; }
 
-    public ReactiveCommand<Point, Point> DragStartCommand { get; }
+    public IReadOnlyList<PanelId> ConnectedPanels { get; }
+
+    public ReactiveCommand<double, double> DragStartCommand { get; }
 
     public ReactiveCommand<Unit, Unit> DragEndCommand { get; }
 
-    public PanelResizerViewModel(Point logicalPosition, bool isHorizontal, PanelId[] connectedPanels)
+    public PanelResizerViewModel(Point logicalStartPoint, Point logicalEndPoint, bool isHorizontal, IReadOnlyList<PanelId> connectedPanels)
     {
-        LogicalPosition = logicalPosition;
+        LogicalStartPoint = logicalStartPoint;
+        LogicalEndPoint = logicalEndPoint;
         IsHorizontal = isHorizontal;
         ConnectedPanels = connectedPanels;
 
-        DragStartCommand = ReactiveCommand.Create<Point, Point>(input => input);
+        DragStartCommand = ReactiveCommand.Create<double, double>(input => input);
         DragEndCommand = ReactiveCommand.Create(() => { });
 
         this.WhenActivated(disposables =>
         {
-            this.WhenAnyValue(vm => vm.LogicalPosition)
-                .SubscribeWithErrorLogging(_ => UpdateActualPosition())
+            this.WhenAnyValue(vm => vm.LogicalStartPoint, vm => vm.LogicalEndPoint)
+                .SubscribeWithErrorLogging(_ => UpdateActualPoints())
                 .DisposeWith(disposables);
         });
     }
 
     private Size _workspaceSize = MathUtils.Zero;
-    private void UpdateActualPosition()
+    private void UpdateActualPoints()
     {
-        var x = LogicalPosition.X * _workspaceSize.Width;
-        var y = LogicalPosition.Y * _workspaceSize.Height;
-        ActualPosition = new Point(x, y);
+        var matrix = Matrix.CreateScale(_workspaceSize.Width, _workspaceSize.Height);
+
+        ActualStartPoint = LogicalStartPoint.Transform(matrix);
+        ActualEndPoint = LogicalEndPoint.Transform(matrix);
     }
 
     public void Arrange(Size workspaceSize)
     {
         _workspaceSize = workspaceSize;
-        UpdateActualPosition();
+        UpdateActualPoints();
     }
 }

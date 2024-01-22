@@ -17,8 +17,7 @@ public class AdvancedInstallerUITests
     {
         var deploymentData = new DeploymentData();
         var fileTreeNode = AdvancedInstallerTestHelpers.CreateTestFileTree();
-
-        var fs = AdvancedInstallerTestHelpers.CreateInMemoryFs(gameDir);
+        var fs = AdvancedInstallerTestHelpers.CreateInMemoryFs();
 
         var gameLocationsRegister = new GameLocationsRegister(new Dictionary<LocationId, AbsolutePath>()
         {

@@ -6,9 +6,12 @@ using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.ModInstallers;
+using NexusMods.DataModel.Trees;
 using NexusMods.Games.FOMOD.CoreDelegates;
 using NexusMods.Paths;
 using NexusMods.Paths.FileTree;
+using NexusMods.Paths.Trees;
+using NexusMods.Paths.Trees.Traits;
 using NexusMods.Paths.Utilities;
 using Mod = FomodInstaller.Interface.Mod;
 
@@ -53,7 +56,7 @@ public class FomodXmlInstaller : AModInstaller
         GameInstallation gameInstallation,
         LoadoutId loadoutId,
         ModId baseModId,
-        FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
+        KeyedBox<RelativePath, ModFileTree> archiveFiles,
         CancellationToken cancellationToken = default)
     {
         // the component dealing with FOMODs is built to support all kinds of mods, including those without a script.
@@ -71,7 +74,7 @@ public class FomodXmlInstaller : AModInstaller
         var xmlPath = analyzerInfo.PathPrefix.Join(FomodConstants.XmlConfigRelativePath);
 
         // Setup mod, exclude script path so it doesn't get picked up and thus double read from disk
-        var modFiles = archiveFiles.GetAllDescendentFiles().Select(x => x.Path.ToNativeSeparators(OSInformation.Shared)).ToList();
+        var modFiles = archiveFiles.GetFiles().Select(x => x.Path().ToNativeSeparators(OSInformation.Shared)).ToList();
         var mod = new Mod(modFiles, stopPattern, xmlPath.ToString(), string.Empty, _scriptType);
         await mod.InitializeWithoutLoadingScript();
 
@@ -88,9 +91,7 @@ public class FomodXmlInstaller : AModInstaller
 
         // NOTE(err120): Reset the previously provided data
         if (installerDelegates is not null)
-        {
             installerDelegates.UiDelegates.CurrentArchiveFiles = archiveFiles;
-        }
 
         var errors = instructions.Where(instruction => instruction.type == "error").ToArray();
         if (errors.Any()) throw new Exception(string.Join("; ", errors.Select(err => err.source)));
@@ -121,7 +122,7 @@ public class FomodXmlInstaller : AModInstaller
 
     private IEnumerable<AModFile> InstructionsToModFiles(
         IList<Instruction> instructions,
-        FileTreeNode<RelativePath, ModSourceFileEntry> files,
+        KeyedBox<RelativePath, ModFileTree> files,
         GamePath gameTargetPath)
     {
         var res = instructions.Select(instruction =>
@@ -149,19 +150,19 @@ public class FomodXmlInstaller : AModInstaller
 
     private static AModFile ConvertInstructionCopy(
         Instruction instruction,
-        FileTreeNode<RelativePath, ModSourceFileEntry>  files,
+        KeyedBox<RelativePath, ModFileTree> files,
         GamePath gameTargetPath)
     {
         var src = RelativePath.FromUnsanitizedInput(instruction.source);
         var dest = RelativePath.FromUnsanitizedInput(instruction.destination);
 
-        var file = files.FindNode(src)!.Value;
+        var file = files.FindByPathFromChild(src)!;
         return new StoredFile
         {
             Id = ModFileId.NewId(),
             To = new GamePath(gameTargetPath.LocationId, gameTargetPath.Path.Join(dest)),
-            Hash = file!.Hash,
-            Size = file.Size
+            Hash = file!.Item.Hash,
+            Size = file.Item.Size
         };
     }
 

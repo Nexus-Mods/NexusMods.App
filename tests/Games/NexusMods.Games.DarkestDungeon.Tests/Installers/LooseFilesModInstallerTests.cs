@@ -42,7 +42,7 @@ public class LooseFilesModInstallerTests : AModInstallerTest<DarkestDungeon, Loo
 
         var mod = await InstallModStoredFileIntoLoadout(loadout, downloadId);
         mod.Files.Should().NotBeEmpty();
-        mod.Files.Values.Cast<IToFile>().Should().AllSatisfy(kv => kv.To.Path.StartsWith("mods/Oks_BetterTrinkets_v2.03"));
+        mod.Files.Values.Cast<IToFile>().Should().AllSatisfy(kv => kv.To.Path.StartsWith("mods/Oks_BetterTrinkets_v2.03").Should().BeTrue());
 
     }
 }

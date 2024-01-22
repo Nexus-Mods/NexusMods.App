@@ -1,9 +1,12 @@
 ﻿using NexusMods.Common;
+using NexusMods.DataModel.Abstractions.DTOs;
 using NexusMods.DataModel.ModInstallers;
+using NexusMods.DataModel.Trees;
 using NexusMods.FileExtractor.StreamFactories;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 using NexusMods.Paths.FileTree;
+using NexusMods.Paths.Trees;
 using FileSystem = NexusMods.Paths.FileSystem;
 
 namespace NexusMods.Games.FOMOD.Tests;
@@ -18,22 +21,22 @@ public static class FomodTestHelpers
     /// </summary>
     /// <param name="testCase"></param>
     /// <returns></returns>
-    public static async ValueTask<FileTreeNode<RelativePath, ModSourceFileEntry>> GetFomodTree(string testCase)
+    public static async ValueTask<KeyedBox<RelativePath, ModFileTree>> GetFomodTree(string testCase)
     {
         var relativePath = $"TestCases/{testCase}".ToRelativePath();
-        var baseFolder = FileSystem.Shared.GetKnownPath(KnownPath.EntryDirectory)
-            .Combine(relativePath);
+        var baseFolder = FileSystem.Shared.GetKnownPath(KnownPath.EntryDirectory).Combine(relativePath);
 
-        var entries = baseFolder
+        var entries = await baseFolder
             .EnumerateFileEntries()
-            .SelectAsync(async entry => KeyValuePair.Create(entry.Path.RelativeTo(baseFolder),
-                new ModSourceFileEntry
-                {
-                    Size = entry.Size,
-                    Hash = await entry.Path.XxHash64Async(),
-                    StreamFactory = new NativeFileStreamFactory(entry.Path)
-                }))
+            .SelectAsync(async entry => new ModFileTreeSource()
+            {
+                Path = entry.Path.RelativeTo(baseFolder),
+                Hash = (await entry.Path.XxHash64Async()).Value,
+                Size = entry.Size.Value,
+                Factory = new NativeFileStreamFactory(entry.Path)
+            })
             .ToArrayAsync();
-        return FileTreeNode<RelativePath, ModSourceFileEntry>.CreateTree(await entries);
+
+        return ModFileTree.Create(entries);
     }
 }

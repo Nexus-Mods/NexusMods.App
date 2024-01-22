@@ -1,9 +1,12 @@
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.ModInstallers;
+using NexusMods.DataModel.Trees;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 using NexusMods.Paths.FileTree;
+using NexusMods.Paths.Trees;
+using NexusMods.Paths.Trees.Traits;
 using NexusMods.Paths.Utilities;
 
 namespace NexusMods.Games.RedEngine.ModInstallers;
@@ -30,18 +33,14 @@ public class AppearancePreset : AModInstaller
         GameInstallation gameInstallation,
         LoadoutId loadoutId,
         ModId baseModId,
-        FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
+        KeyedBox<RelativePath, ModFileTree> archiveFiles,
         CancellationToken cancellationToken = default)
     {
-        var modFiles = archiveFiles.GetAllDescendentFiles()
-            .Where(kv => kv.Path.Extension == KnownExtensions.Preset)
-            .SelectMany(kv =>
-            {
-                var (path, file) = kv;
-                return Paths.Select(relPath => file!.ToStoredFile(
-                    new GamePath(LocationId.Game, relPath.Join(path))
-                ));
-            }).ToArray();
+        var modFiles = archiveFiles.GetFiles()
+            .Where(kv => kv.Path().Extension == KnownExtensions.Preset)
+            .SelectMany(kv => Paths.Select(relPath => kv.ToStoredFile(
+                new GamePath(LocationId.Game, relPath.Join(kv.Path()))
+            ))).ToArray();
 
         if (!modFiles.Any())
             return NoResults;

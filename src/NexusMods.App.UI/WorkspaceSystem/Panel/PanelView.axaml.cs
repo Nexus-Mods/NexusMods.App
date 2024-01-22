@@ -11,7 +11,7 @@ namespace NexusMods.App.UI.WorkspaceSystem;
 public partial class PanelView : ReactiveUserControl<IPanelViewModel>
 {
     private const double ScrollOffset = 250;
-    private const double DefaultPadding = 6.0;
+    internal const double DefaultPadding = 6.0;
 
     public PanelView()
     {

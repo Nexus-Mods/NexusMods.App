@@ -6,10 +6,13 @@ using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.ModInstallers;
+using NexusMods.DataModel.Trees;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 using NexusMods.Paths.FileTree;
+using NexusMods.Paths.Trees;
+using NexusMods.Paths.Trees.Traits;
 
 namespace NexusMods.Games.Sifu;
 
@@ -26,31 +29,26 @@ public class SifuModInstaller : AModInstaller
         GameInstallation gameInstallation,
         LoadoutId loadoutId,
         ModId baseModId,
-        FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
+        KeyedBox<RelativePath, ModFileTree> archiveFiles,
         CancellationToken cancellationToken = default)
     {
-        var pakFile = archiveFiles.GetAllDescendentFiles()
-            .FirstOrDefault(node => node.Path.Extension == PakExt);
+        var pakFile = archiveFiles.GetFiles()
+            .FirstOrDefault(node => node.Path().Extension == PakExt);
 
         if (pakFile == null)
             return NoResults;
 
-        var pakPath = pakFile.Parent;
-
-        var modFiles = pakPath.GetAllDescendentFiles()
-            .Select(kv =>
-            {
-                var (path, file) = kv;
-                return file!.ToStoredFile(
-                    new GamePath(LocationId.Game, ModsPath.Join(path.RelativeTo(pakPath.Path)))
-                );
-            });
+        var pakPath = pakFile.Parent();
+        var modFiles = pakPath!.GetFiles()
+            .Select(kv => kv.ToStoredFile(
+                new GamePath(LocationId.Game, ModsPath.Join(kv.Path().RelativeTo(pakPath!.Path())))
+            ));
 
         return new [] { new ModInstallerResult
         {
             Id = baseModId,
             Files = modFiles,
-            Name = pakPath.Name.FileName
+            Name = pakPath!.FileName()
         }};
     }
 

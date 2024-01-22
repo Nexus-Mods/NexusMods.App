@@ -1,8 +1,8 @@
-﻿using NexusMods.DataModel.Games;
-using NexusMods.DataModel.ModInstallers;
-using NexusMods.Hashing.xxHash64;
+﻿using NexusMods.DataModel.Abstractions.DTOs;
+using NexusMods.DataModel.Games;
+using NexusMods.DataModel.Trees;
 using NexusMods.Paths;
-using NexusMods.Paths.FileTree;
+using NexusMods.Paths.Trees;
 
 namespace NexusMods.Games.AdvancedInstaller.UI;
 
@@ -33,29 +33,20 @@ internal static class DesignTimeHelpers
     /// Create a mock file tree of mod archive contents for design-time purposes.
     /// </summary>
     /// <returns></returns>
-    internal static FileTreeNode<RelativePath, ModSourceFileEntry> CreateDesignFileTree()
+    internal static KeyedBox<RelativePath, ModFileTree> CreateDesignFileTree()
     {
-        var mockModSourceFileEntry = new ModSourceFileEntry
+        return ModFileTree.Create(new ModFileTreeSource[]
         {
-            StreamFactory = null!,
-            Hash = Hash.FromLong(0),
-            Size = Size.FromLong(0),
-        };
-
-        var fileEntries = new Dictionary<RelativePath, ModSourceFileEntry>
-        {
-            { new RelativePath("BWS.bsa"), mockModSourceFileEntry },
-            { new RelativePath("BWS - Textures.bsa"), mockModSourceFileEntry },
-            { new RelativePath("Readme-BWS.txt"), mockModSourceFileEntry },
-            { new RelativePath("Textures/greenBlade.dds"), mockModSourceFileEntry },
-            { new RelativePath("Textures/greenBlade_n.dds"), mockModSourceFileEntry },
-            { new RelativePath("Textures/greenHilt.dds"), mockModSourceFileEntry },
-            { new RelativePath("Textures/Armors/greenArmor.dds"), mockModSourceFileEntry },
-            { new RelativePath("Textures/Armors/greenBlade.dds"), mockModSourceFileEntry },
-            { new RelativePath("Textures/Armors/greenHilt.dds"), mockModSourceFileEntry },
-            { new RelativePath("Meshes/greenBlade.nif"), mockModSourceFileEntry }
-        };
-
-        return FileTreeNode<RelativePath, ModSourceFileEntry>.CreateTree(fileEntries);
+            new(0, 0, "BWS.bsa"),
+            new(0, 0, "BWS - Textures.bsa"),
+            new(0, 0, "Readme-BWS.txt"),
+            new(0, 0, "Textures/greenBlade.dds"),
+            new(0, 0, "Textures/greenBlade_n.dds"),
+            new(0, 0, "Textures/greenHilt.dds"),
+            new(0, 0, "Textures/Armors/greenArmor.dds"),
+            new(0, 0, "Textures/Armors/greenBlade.dds"),
+            new(0, 0, "Textures/Armors/greenHilt.dds"),
+            new(0, 0, "Meshes/greenBlade.nif")
+        });
     }
 }
