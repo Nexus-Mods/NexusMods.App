@@ -15,8 +15,6 @@
 
     <Border x:Name="Container">
         <StackPanel Orientation="Horizontal">
-            <Line x:Name="LineLeft"/>
-
             <StackPanel Orientation="Horizontal"
                         Spacing="8"
                         Height="52"
@@ -38,8 +36,6 @@
                 <Button x:Name="CloseTabButton" Classes="PanelTitlebar Close" />
 
             </StackPanel>
-
-            <Line x:Name="LineRight"/>
 
         </StackPanel>
     </Border>

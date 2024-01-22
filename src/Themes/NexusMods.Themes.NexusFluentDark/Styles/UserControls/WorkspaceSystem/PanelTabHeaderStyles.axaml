@@ -30,16 +30,5 @@
                 <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralStrongBrush}" />
             </Style>
         </Style>
-
-        <Style Selector="^ Line">
-            <Setter Property="Width" Value="1" />
-            <Setter Property="Height" Value="28" />
-
-            <Setter Property="StartPoint" Value="1, 0" />
-            <Setter Property="EndPoint" Value="1, 28" />
-
-            <Setter Property="StrokeThickness" Value="1" />
-            <Setter Property="Stroke" Value="{StaticResource ElementStrokeTranslucentWeak}" />
-        </Style>
     </Style>
 </Styles>

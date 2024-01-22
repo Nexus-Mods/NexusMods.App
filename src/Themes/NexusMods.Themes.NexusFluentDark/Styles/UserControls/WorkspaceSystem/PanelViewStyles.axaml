@@ -18,13 +18,8 @@
             <Style Selector="^ ui|PanelTabHeaderView Border#Container">
                 <Setter Property="CornerRadius" Value="8 0 0 0"/>
 
-                <Style Selector="^ Line#LineLeft">
-                    <Setter Property="IsVisible" Value="False" />
-                </Style>
-
-                <Style Selector="^ Line#LineRight">
-                    <Setter Property="IsVisible" Value="True" />
-                </Style>
+                <Setter Property="BorderBrush" Value="{StaticResource ElementStrokeTranslucentWeak}"/>
+                <Setter Property="BorderThickness" Value="0 0 1 0" />
             </Style>
         </Style>
 
@@ -49,30 +44,12 @@
 
                     <!-- selected tab -->
                     <Style Selector="^ Border#Container.Selected">
-                        <Setter Property="BorderThickness" Value="1 0 1 0" />
-
-                        <!-- hide both lines -->
-                        <Style Selector="^ Line#LineLeft">
-                            <Setter Property="IsVisible" Value="False" />
-                        </Style>
-
-                        <Style Selector="^ Line#LineRight">
-                            <Setter Property="IsVisible" Value="False" />
-                        </Style>
+                        <Setter Property="BorderThickness" Value="1 0 0 0" />
                     </Style>
 
                     <!-- not selected tab -->
                     <Style Selector="^ Border#Container:not(.Selected)">
-                        <Setter Property="BorderThickness" Value="0 0 0 1" />
-
-                        <!-- show the left line -->
-                        <Style Selector="^ Line#LineLeft">
-                            <Setter Property="IsVisible" Value="True" />
-                        </Style>
-
-                        <Style Selector="^ Line#LineRight">
-                            <Setter Property="IsVisible" Value="False" />
-                        </Style>
+                        <Setter Property="BorderThickness" Value="1 0 0 1" />
                     </Style>
                 </Style>
 
@@ -82,18 +59,9 @@
                         <Setter Property="CornerRadius" Value="8 0 0 0" />
                     </Style>
 
-                    <!-- hide both lines -->
-                    <Style Selector="^ Line#LineLeft">
-                        <Setter Property="IsVisible" Value="False" />
-                    </Style>
-
-                    <Style Selector="^ Line#LineRight">
-                        <Setter Property="IsVisible" Value="False" />
-                    </Style>
-
                     <!-- selected tab -->
                     <Style Selector="^ Border#Container.Selected">
-                        <Setter Property="BorderThickness" Value="0 0 1 0" />
+                        <Setter Property="BorderThickness" Value="0 0 0 0" />
                     </Style>
 
                     <!-- not selected tab -->
@@ -107,29 +75,11 @@
                     <!-- selected tab -->
                     <Style Selector="^ Border#Container.Selected">
                         <Setter Property="BorderThickness" Value="1 0 1 0" />
-
-                        <!-- hide both lines -->
-                        <Style Selector="^ Line#LineLeft">
-                            <Setter Property="IsVisible" Value="False" />
-                        </Style>
-
-                        <Style Selector="^ Line#LineRight">
-                            <Setter Property="IsVisible" Value="False" />
-                        </Style>
                     </Style>
 
                     <!-- not selected tab -->
                     <Style Selector="^ Border#Container:not(.Selected)">
-                        <Setter Property="BorderThickness" Value="0 0 0 1" />
-
-                        <!-- show both lines -->
-                        <Style Selector="^ Line#LineLeft">
-                            <Setter Property="IsVisible" Value="True" />
-                        </Style>
-
-                        <Style Selector="^ Line#LineRight">
-                            <Setter Property="IsVisible" Value="True" />
-                        </Style>
+                        <Setter Property="BorderThickness" Value="1 0 1 1" />
                     </Style>
                 </Style>
             </Style>
