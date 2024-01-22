@@ -78,6 +78,8 @@ public class InProgressViewModel : AViewModel<IInProgressViewModel>, IInProgress
             .Transform(x => (IDownloadTaskViewModel)new DownloadTaskViewModel(x))
             .OnUI();
 
+        Init();
+
         this.WhenActivated(d =>
         {
             ShowCancelDialogCommand = ReactiveCommand.Create(async () =>
@@ -92,8 +94,6 @@ public class InProgressViewModel : AViewModel<IInProgressViewModel>, IInProgress
                 .AutoRefresh(task => task.Status)
                 .Select(_ => Tasks.Any())).DisposeWith(d);
         });
-
-        Init();
     }
 
     /// <summary>
