@@ -17,6 +17,14 @@
         <Style Selector="^ Border#TabHeaderBorder.OneTab">
             <Style Selector="^ ui|PanelTabHeaderView Border#Container">
                 <Setter Property="CornerRadius" Value="8 0 0 0"/>
+
+                <Style Selector="^ Line#LineLeft">
+                    <Setter Property="IsVisible" Value="False" />
+                </Style>
+
+                <Style Selector="^ Line#LineRight">
+                    <Setter Property="IsVisible" Value="True" />
+                </Style>
             </Style>
         </Style>
 
@@ -42,11 +50,29 @@
                     <!-- selected tab -->
                     <Style Selector="^ Border#Container.Selected">
                         <Setter Property="BorderThickness" Value="1 0 1 0" />
+
+                        <!-- hide both lines -->
+                        <Style Selector="^ Line#LineLeft">
+                            <Setter Property="IsVisible" Value="False" />
+                        </Style>
+
+                        <Style Selector="^ Line#LineRight">
+                            <Setter Property="IsVisible" Value="False" />
+                        </Style>
                     </Style>
 
                     <!-- not selected tab -->
                     <Style Selector="^ Border#Container:not(.Selected)">
                         <Setter Property="BorderThickness" Value="0 0 0 1" />
+
+                        <!-- show the left line -->
+                        <Style Selector="^ Line#LineLeft">
+                            <Setter Property="IsVisible" Value="True" />
+                        </Style>
+
+                        <Style Selector="^ Line#LineRight">
+                            <Setter Property="IsVisible" Value="False" />
+                        </Style>
                     </Style>
                 </Style>
 
@@ -54,6 +80,15 @@
                 <Style Selector="^ ContentPresenter:nth-child(1) ui|PanelTabHeaderView">
                     <Style Selector="^ Border#Container">
                         <Setter Property="CornerRadius" Value="8 0 0 0" />
+                    </Style>
+
+                    <!-- hide both lines -->
+                    <Style Selector="^ Line#LineLeft">
+                        <Setter Property="IsVisible" Value="False" />
+                    </Style>
+
+                    <Style Selector="^ Line#LineRight">
+                        <Setter Property="IsVisible" Value="False" />
                     </Style>
 
                     <!-- selected tab -->
@@ -72,11 +107,29 @@
                     <!-- selected tab -->
                     <Style Selector="^ Border#Container.Selected">
                         <Setter Property="BorderThickness" Value="1 0 1 0" />
+
+                        <!-- hide both lines -->
+                        <Style Selector="^ Line#LineLeft">
+                            <Setter Property="IsVisible" Value="False" />
+                        </Style>
+
+                        <Style Selector="^ Line#LineRight">
+                            <Setter Property="IsVisible" Value="False" />
+                        </Style>
                     </Style>
 
                     <!-- not selected tab -->
                     <Style Selector="^ Border#Container:not(.Selected)">
                         <Setter Property="BorderThickness" Value="0 0 0 1" />
+
+                        <!-- show both lines -->
+                        <Style Selector="^ Line#LineLeft">
+                            <Setter Property="IsVisible" Value="True" />
+                        </Style>
+
+                        <Style Selector="^ Line#LineRight">
+                            <Setter Property="IsVisible" Value="True" />
+                        </Style>
                     </Style>
                 </Style>
             </Style>

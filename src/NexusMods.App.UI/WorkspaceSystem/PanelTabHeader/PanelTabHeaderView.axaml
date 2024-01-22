@@ -15,6 +15,8 @@
 
     <Border x:Name="Container">
         <StackPanel Orientation="Horizontal">
+            <Line x:Name="LineLeft"/>
+
             <StackPanel Orientation="Horizontal"
                         Spacing="8"
                         Height="52"
@@ -37,7 +39,7 @@
 
             </StackPanel>
 
-            <Line />
+            <Line x:Name="LineRight"/>
 
         </StackPanel>
     </Border>
