@@ -11,5 +11,5 @@ public interface ICancelDownloadOverlayViewModel : IMessageBoxOkCancelViewModel
     /// <summary>
     /// The task that we will request if it's means to be cancelled.
     /// </summary>
-    public IEnumerable<IDownloadTaskViewModel> DownloadTasks { get; }
+    public IReadOnlyList<IDownloadTaskViewModel> DownloadTasks { get; }
 }

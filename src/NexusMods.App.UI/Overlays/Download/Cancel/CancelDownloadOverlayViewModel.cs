@@ -5,7 +5,7 @@ namespace NexusMods.App.UI.Overlays.Download.Cancel;
 
 public class CancelDownloadOverlayViewModel : AViewModel<ICancelDownloadOverlayViewModel>, ICancelDownloadOverlayViewModel
 {
-    public IEnumerable<IDownloadTaskViewModel> DownloadTasks { get; } = Enumerable.Empty<IDownloadTaskViewModel>();
+    public IReadOnlyList<IDownloadTaskViewModel> DownloadTasks { get; } = new List<IDownloadTaskViewModel>();
 
     [Reactive]
     public bool DialogResult { get; set; }
@@ -17,5 +17,5 @@ public class CancelDownloadOverlayViewModel : AViewModel<ICancelDownloadOverlayV
     public CancelDownloadOverlayViewModel() { }
 
     // For runtime.
-    public CancelDownloadOverlayViewModel(IEnumerable<IDownloadTaskViewModel> tasks) { DownloadTasks = tasks; }
+    public CancelDownloadOverlayViewModel(IReadOnlyList<IDownloadTaskViewModel> tasks) { DownloadTasks = tasks; }
 }

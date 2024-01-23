@@ -42,7 +42,7 @@ public class OverlayController : IOverlayController
     }
 
     /// <inheritdoc />
-    public async Task<bool> ShowCancelDownloadOverlay(IEnumerable<IDownloadTaskViewModel> tasks, object? referenceItem = null)
+    public async Task<bool> ShowCancelDownloadOverlay(IReadOnlyList<IDownloadTaskViewModel> tasks, object? referenceItem = null)
     {
         var tcs = new TaskCompletionSource<bool>();
         var vm = new CancelDownloadOverlayViewModel(tasks);

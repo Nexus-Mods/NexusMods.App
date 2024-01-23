@@ -86,7 +86,7 @@ public class InProgressViewModel : AViewModel<IInProgressViewModel>, IInProgress
             {
                 if (SelectedTasks.Items.Any())
                 {
-                    var result = await overlayController.ShowCancelDownloadOverlay(SelectedTasks.Items);
+                    var result = await overlayController.ShowCancelDownloadOverlay(SelectedTasks.Items.ToList());
                     if (result)
                         CancelTasks(SelectedTasks.Items);
                 }

@@ -27,7 +27,7 @@ public interface IOverlayController
     ///     Any Avalonia control/item.
     ///     This is used to determine which window to spawn the overlay in.
     /// </param>
-    public Task<bool> ShowCancelDownloadOverlay(IEnumerable<IDownloadTaskViewModel> tasks, object? viewItem = null);
+    public Task<bool> ShowCancelDownloadOverlay(IReadOnlyList<IDownloadTaskViewModel> tasks, object? viewItem = null);
 
     /// <summary>
     /// Sets the current overlay.
