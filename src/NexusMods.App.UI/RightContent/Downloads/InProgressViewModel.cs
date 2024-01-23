@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Windows.Input;
@@ -25,6 +26,9 @@ namespace NexusMods.App.UI.RightContent.Downloads;
 public class InProgressViewModel : AViewModel<IInProgressViewModel>, IInProgressViewModel
 {
     internal const int PollTimeMilliseconds = 1000;
+
+    private IObservable<Unit> Tick { get; set; } = Observable.Interval(TimeSpan.FromMilliseconds(PollTimeMilliseconds))
+        .Select(_ => Unit.Default);
 
     /// <summary>
     /// For designTime and Testing, provides an alternative list of tasks to use.
@@ -211,11 +215,9 @@ public class InProgressViewModel : AViewModel<IInProgressViewModel>, IInProgress
             // changes in progress (e.g. when file name is resolved, or download progress is made).
 
             // This is not the only mechanism, a manual refresh also can occur when tasks are added/removed.
-            var timer = new DispatcherTimer();
-            timer.Interval = TimeSpan.FromMilliseconds(PollTimeMilliseconds);
-            timer.Tick += UpdateWindowInfoEvent;
-            timer.Start();
-            Disposable.Create(timer, (tmr) => tmr.Stop()).DisposeWith(d);
+            Tick.OnUI()
+                .Subscribe(_ => UpdateWindowInfo())
+                .DisposeWith(d);
         });
     }
 
@@ -285,6 +287,4 @@ public class InProgressViewModel : AViewModel<IInProgressViewModel>, IInProgress
         var remainingBytes = totalSizeBytes - totalDownloadedBytes;
         SecondsRemaining = throughput < 1.0 ? 0 : (int)(remainingBytes / Math.Max(throughput, 1));
     }
-
-    private void UpdateWindowInfoEvent(object? sender, object? state) => UpdateWindowInfo();
 }
