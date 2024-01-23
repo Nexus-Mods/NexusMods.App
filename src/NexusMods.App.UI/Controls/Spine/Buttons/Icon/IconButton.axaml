@@ -32,8 +32,8 @@
                         VerticalAlignment="Center" />
                     <Border
                         CornerRadius="48"
-                        Height="48"
-                        Width="48" />
+                        Height="50"
+                        Width="50" />
                 </Grid>
             </ControlTemplate>
         </Button.Template>

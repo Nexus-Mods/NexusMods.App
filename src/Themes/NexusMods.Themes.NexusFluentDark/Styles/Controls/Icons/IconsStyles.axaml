@@ -37,6 +37,7 @@
             <icons:Icon Classes="Star" />
             <icons:Icon Classes="TrashCanOutline" />
             <icons:Icon Classes="PlayCircleOutline" />
+            <icons:Icon Classes="PlayCircleFilled" />
             <icons:Icon Classes="Image" />
             <icons:Icon Classes="Description" />
             <icons:Icon Classes="Tune" />
@@ -174,6 +175,10 @@
 
     <Style Selector="icons|Icon.PlayCircleOutline">
         <Setter Property="Value" Value="mdi-play-circle-outline" />
+    </Style>
+
+    <Style Selector="icons|Icon.PlayCircleFilled">
+        <Setter Property="Value" Value="mdi-play-circle" />
     </Style>
 
     <Style Selector="icons|Icon.Image">

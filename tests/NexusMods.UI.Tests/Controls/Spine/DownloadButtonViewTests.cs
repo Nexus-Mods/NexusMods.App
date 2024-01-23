@@ -1,5 +1,6 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
+using DynamicData.Kernel;
 using FluentAssertions;
 using NexusMods.Abstractions.Values;
 using NexusMods.App.UI.Controls.Spine.Buttons.Download;
@@ -14,7 +15,7 @@ public class DownloadButtonViewTests : AViewTest<SpineDownloadButtonView, SpineD
     public async Task SettingButtonToActiveAppliesProperClass()
     {
         var button = await Host.GetViewControl<Button>("ParentButton");
-        
+
         await OnUi(() =>
         {
             button.Classes.Should().NotContain("Active");
@@ -27,13 +28,13 @@ public class DownloadButtonViewTests : AViewTest<SpineDownloadButtonView, SpineD
             button.Classes.Should().Contain("Active");
         });
     }
-    
+
     [Fact]
     public async Task SettingProgressSetsClassesAndValues()
     {
         var button = await Host.GetViewControl<Button>("ParentButton");
         var arc = await Host.GetViewControl<Arc>("ProgressArc");
-        
+
         await OnUi(() =>
         {
             button.Classes.Should().Contain("Idle");
@@ -51,8 +52,8 @@ public class DownloadButtonViewTests : AViewTest<SpineDownloadButtonView, SpineD
                 arc.SweepAngle.Should().Be(180);
             });
         });
-        
-        
+
+
         ViewModel.Progress = Percent.CreateClamped(0.25);
 
         await Eventually(async () =>
@@ -65,7 +66,7 @@ public class DownloadButtonViewTests : AViewTest<SpineDownloadButtonView, SpineD
             });
         });
 
-        ViewModel.Progress = null;
+        ViewModel.Progress = Optional<Percent>.None;
     }
 
     [Fact]
@@ -73,34 +74,34 @@ public class DownloadButtonViewTests : AViewTest<SpineDownloadButtonView, SpineD
     {
         var numberBlock = await Host.GetViewControl<TextBlock>("NumberTextBlock");
         var unitsBlock = await Host.GetViewControl<TextBlock>("UnitsTextBlock");
-        
+
         ViewModel.Number = 4.2f;
         ViewModel.Units = "foos";
-        
+
         await EventuallyOnUi(() =>
         {
             numberBlock.Text.Should().Be("4.20");
             unitsBlock.Text.Should().Be("FOOS");
         });
-        
+
         ViewModel.Number = 0.0f;
-        
+
         await EventuallyOnUi(() =>
         {
             numberBlock.Text.Should().Be("0.00");
             unitsBlock.Text.Should().Be("FOOS");
         });
-        
+
         ViewModel.Number = 0.0001f;
-        
+
         await EventuallyOnUi(() =>
         {
             numberBlock.Text.Should().Be("0.00");
             unitsBlock.Text.Should().Be("FOOS");
         });
-        
+
         ViewModel.Number = 1000.0f;
-        
+
         await EventuallyOnUi(() =>
         {
             numberBlock.Text.Should().Be("1000.00");

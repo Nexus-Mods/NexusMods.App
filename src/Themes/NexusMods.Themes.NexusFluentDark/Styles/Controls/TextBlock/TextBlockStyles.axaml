@@ -169,4 +169,20 @@
         <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralInvertedBrush}" />
     </Style>
 
+    <Style Selector="TextBlock.ForegroundInfoStrong">
+        <Setter Property="Foreground" Value="{StaticResource ElementForegroundInfoStrongBrush}" />
+    </Style>
+
+    <Style Selector="TextBlock.ForegroundInfoModerate">
+        <Setter Property="Foreground" Value="{StaticResource ElementForegroundInfoModerateBrush}" />
+    </Style>
+
+    <Style Selector="TextBlock.ForegroundInfoSubdued">
+        <Setter Property="Foreground" Value="{StaticResource ElementForegroundInfoSubduedBrush}" />
+    </Style>
+
+    <Style Selector="TextBlock.ForegroundInfoWeak">
+        <Setter Property="Foreground" Value="{StaticResource ElementForegroundInfoWeakBrush}" />
+    </Style>
+
 </Styles>

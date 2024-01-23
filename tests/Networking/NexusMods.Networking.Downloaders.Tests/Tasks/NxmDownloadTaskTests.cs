@@ -53,6 +53,37 @@ public class NxmDownloadTaskTests
         await task.Resume();
     }
 
+    private async Task DelayedSuspend(NxmDownloadTask task)
+    {
+        await Task.Delay(500);
+        task.Suspend();
+    }
+
+    [Theory]
+    [InlineData("cyberpunk2077", 107, 33156)]
+    public async Task SuspendAndResumeDownload(string gameDomain, ulong modId, ulong fileId)
+    {
+        // This test requires Premium. If it fails w/o Premium, ignore that.
+
+        // This test fails if mock throws.
+        // DownloadTasks report their results to IDownloadService, so we intercept them from there.
+        var downloadService = DownloadTasksCommon.CreateMockWithConfirmFileReceive();
+        var task = new NxmDownloadTask(_temporaryFileManager, _nexusClient, _httpDownloader, downloadService);
+
+        var uri = $"nxm://{gameDomain}/mods/{modId}/files/{fileId}";
+        task.Init(NXMUrl.Parse(uri));
+        try
+        {
+            await Task.WhenAll(task.StartAsync(), DelayedSuspend(task));
+        }
+        catch(TaskCanceledException)
+        {
+            // Ignore
+        }
+
+        await task.Resume();
+    }
+
     [Theory]
     [InlineData("cyberpunk2077", 107, 33156)]
     public async Task ResumeDownload_AfterAppReboot(string gameDomain, ulong modId, ulong fileId)

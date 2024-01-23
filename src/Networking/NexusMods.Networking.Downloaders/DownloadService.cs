@@ -1,15 +1,17 @@
 using System.Collections.ObjectModel;
 using System.Reactive.Subjects;
 using DynamicData;
+using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.DateTime;
+using NexusMods.Abstractions.Values;
 using NexusMods.Common;
 using NexusMods.DataModel;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.ArchiveMetaData;
 using NexusMods.Networking.Downloaders.Interfaces;
+using NexusMods.Networking.Downloaders.Interfaces.Traits;
 using NexusMods.Networking.Downloaders.Tasks;
 using NexusMods.Networking.Downloaders.Tasks.State;
 using NexusMods.Networking.HttpDownloader;
@@ -49,7 +51,7 @@ public class DownloadService : IDownloadService
 
         _tasks = new SourceList<IDownloadTask>();
         _tasksChangeSet = _tasks.Connect();
-        _tasksChangeSet.Bind(out _currentDownloads);
+        _tasksChangeSet.Bind(out _currentDownloads).Subscribe();
         _tasks.AddRange(GetItemsToResume());
     }
 
@@ -57,7 +59,7 @@ public class DownloadService : IDownloadService
     {
         return _store.AllIds(EntityCategory.DownloadStates)
             .Select(id => _store.Get<DownloaderState>(id))
-            .Where(x => x!.Status != DownloadTaskStatus.Completed)
+            .Where(x => x != null && x.Status != DownloadTaskStatus.Completed)
             .Select(state => GetTaskFromState(state!))
             .Where(x => x != null)
             .Cast<IDownloadTask>();
@@ -174,6 +176,31 @@ public class DownloadService : IDownloadService
             totalThroughput += download.CalculateThroughput();
 
         return Size.FromLong(totalThroughput);
+    }
+
+    /// <inheritdoc />
+    public Optional<Percent> GetTotalProgress()
+    {
+        long totalDownloadedBytes = 0;
+        long totalSizeBytes = 0;
+        var active = false;
+
+        foreach (var dl in _currentDownloads.Where(x => x.Status == DownloadTaskStatus.Downloading))
+        {
+            // Only compute percent for downloads that have a known size
+            if (dl is not IHaveFileSize size) continue;
+
+            totalSizeBytes += size.SizeBytes;
+            totalDownloadedBytes += dl.DownloadedSizeBytes;
+            active = true;
+        }
+
+        if (!active || totalSizeBytes == 0 || totalSizeBytes <= totalDownloadedBytes)
+        {
+            return Optional.None<Percent>();
+        }
+
+        return new Percent(totalDownloadedBytes / (double) totalSizeBytes);
     }
 
     /// <inheritdoc />

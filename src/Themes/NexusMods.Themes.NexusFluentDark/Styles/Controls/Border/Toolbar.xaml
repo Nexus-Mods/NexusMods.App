@@ -21,6 +21,12 @@
                                 <TextBlock Text="Remove All"/>
                             </StackPanel>
                         </Button>
+                        <Button IsEnabled="False">
+                            <StackPanel>
+                                <avalonia:Icon Classes="RemoveCircleOutline"/>
+                                <TextBlock Text="Remove All"/>
+                            </StackPanel>
+                        </Button>
                     </StackPanel>
                 </Grid>
             </Border>
@@ -63,6 +69,10 @@
         <Setter Property="Background" Value="{StaticResource ElementBackgroundTransparentBrush}" />
         <Setter Property="Height" Value="32" />
         <Setter Property="Padding" Value="0" />
+    </Style>
+
+    <Style Selector="Border.Toolbar Button:disabled /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource ElementBackgroundTransparentBrush}" />
     </Style>
 
     <Style Selector="Border.Toolbar Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">

@@ -1,23 +1,44 @@
-﻿using System.Windows.Input;
+﻿using System.Reactive;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
+using System.Windows.Input;
+using DynamicData.Kernel;
 using NexusMods.Abstractions.Values;
+using NexusMods.Networking.Downloaders.Interfaces;
+using NexusMods.Paths;
+using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Controls.Spine.Buttons.Download;
 
 public class SpineDownloadButtonViewModel : AViewModel<ISpineDownloadButtonViewModel>, ISpineDownloadButtonViewModel
 {
-    [Reactive]
-    public float Number { get; set; } = 4.2f;
-    
-    [Reactive]
-    public string Units { get; set; } = "MB/s";
-    
-    [Reactive]
-    public Percent? Progress { get; set; }
-    
-    [Reactive]
-    public ICommand Click { get; set; } = Initializers.ICommand;
-    
-    [Reactive]
-    public bool IsActive { get; set; }
+    private const int PollTimeMilliseconds = 1000;
+
+    private IObservable<Unit> Tick { get; } = Observable.Interval(TimeSpan.FromMilliseconds(PollTimeMilliseconds))
+        .Select(_ => Unit.Default);
+
+    public SpineDownloadButtonViewModel(IDownloadService downloadService)
+    {
+        this.WhenActivated(disposables =>
+        {
+            Tick.OnUI().Subscribe(_ =>
+            {
+                Number = downloadService.GetThroughput() / Size.MB;
+                Units = "MB/s";
+                Progress = downloadService.GetTotalProgress();
+
+            }).DisposeWith(disposables);
+        });
+    }
+
+    [Reactive] public double Number { get; set; }
+
+    [Reactive] public string Units { get; set; } = "MB/s";
+
+    [Reactive] public Optional<Percent> Progress { get; set; }
+
+    [Reactive] public ICommand Click { get; set; } = Initializers.ICommand;
+
+    [Reactive] public bool IsActive { get; set; }
 }

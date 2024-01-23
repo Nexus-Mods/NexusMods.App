@@ -36,6 +36,13 @@
             <SolidColorBrush Color="{StaticResource ElementForegroundInfoWeak}"
                              Opacity="{StaticResource OpacitySubdued}" />
         </Setter>
+
+        <Setter Property="CornerRadius" Value="2" />
+
+        <Style Selector="^ /template/ Border#PART_Indicator">
+            <Setter Property="CornerRadius" Value="0" />
+        </Style>
+
         <Setter Property="MinWidth" Value="100" />
 
         <Style Selector="^.DisabledDownloadBar">

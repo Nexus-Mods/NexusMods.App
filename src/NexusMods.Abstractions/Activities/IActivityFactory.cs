@@ -25,7 +25,8 @@ public interface IActivityFactory
     /// <param name="template"></param>
     /// <param name="arguments"></param>
     /// <returns></returns>
-    public IActivitySource CreateWithPayload(ActivityGroup group, object payload, string template, params object[] arguments);
+    public IActivitySource CreateWithPayload(ActivityGroup group, object payload, string template,
+        params object[] arguments);
 
     /// <summary>
     /// Creates a new activity with the specified template and arguments. And a progress value of type <typeparamref name="T"/>.
@@ -36,5 +37,6 @@ public interface IActivityFactory
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
     public IActivitySource<T> Create<T>(ActivityGroup group, string template, params object[] arguments)
-        where T : struct, IDivisionOperators<T, T, double>, IAdditionOperators<T, T, T>, IDivisionOperators<T, double, T>;
+        where T : struct, IDivisionOperators<T, T, double>, IAdditionOperators<T, T, T>,
+        IDivisionOperators<T, double, T>, ISubtractionOperators<T, T, T>;
 }

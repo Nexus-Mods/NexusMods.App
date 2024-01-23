@@ -17,8 +17,6 @@
         <!-- ToolBar -->
         <Border Classes="Toolbar" Grid.Row="0">
             <Grid ColumnDefinitions="*, Auto">
-                <TextBlock Grid.Column="0" Text="{x:Static resources:Language.DownloadInProgressView__IN_PROGRESS}">
-                </TextBlock>
                 <StackPanel Grid.Column="1">
                     <Button x:Name="CancelButton">
                         <StackPanel>
@@ -32,7 +30,19 @@
                             <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Pause}"/>
                         </StackPanel>
                     </Button>
+                    <Button x:Name="ResumeButton">
+                        <StackPanel>
+                            <avalonia:Icon Classes="PlayCircleOutline" />
+                            <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Resume}"/>
+                        </StackPanel>
+                    </Button>
                     <Line />
+                    <Button x:Name="ResumeAllButton">
+                        <StackPanel>
+                            <avalonia:Icon Classes="PlayCircleFilled" />
+                            <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Resume_All}"/>
+                        </StackPanel>
+                    </Button>
                     <Button x:Name="PauseAllButton">
                         <StackPanel>
                             <avalonia:Icon Classes="PauseCircleFilled" />
@@ -50,31 +60,37 @@
         </Border>
 
         <!-- Page Content -->
-        <Grid RowDefinitions="Auto, Auto, *" Margin="24, 16" Grid.Row="1">
+        <Grid RowDefinitions="Auto, 24, *, Auto" Margin="24, 16" Grid.Row="1">
 
             <!-- Title & Status -->
             <DockPanel LastChildFill="True" HorizontalAlignment="Stretch" Grid.Row="0">
-                <TextBlock DockPanel.Dock="Left"
-                           Classes="HeadingSMSemi"
-                           Text="{x:Static resources:Language.InProgressTitleTextBlock}"
-                           x:Name="InProgressTitleTextBlock"
-                           Margin="0,0,0,16" />
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
+                    <TextBlock Classes="HeadingSMSemi"
+                               Text="{x:Static resources:Language.DownloadsView__In_Progress}"
+                               x:Name="InProgressTitleTextBlock"
+                               Margin="0,0,0,16" />
+                    <TextBlock Classes="HeadingSMSemi ForegroundWeak"
+                               Text=" (0)"
+                               x:Name="InProgressTitleCountTextBlock"
+                               Margin="0,0,0,16" />
+                </StackPanel>
+
 
                 <!-- Right Side -->
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <TextBlock VerticalAlignment="Center"
-                               Classes="BodyMDNormal"
+                               Classes="BodyMDNormal ForegroundSubdued"
                                Text="0GB / 0GB" Margin="0,0,16,0"
                                x:Name="SizeCompletionTextBlock" />
 
                     <!-- Note: Can use 'run' here, but don't want to make separate styles for 'run' -->
                     <TextBlock VerticalAlignment="Center"
-                               Classes="BodyMDBold"
+                               Classes="BodyMDBold ForegroundInfoModerate"
                                Text="{x:Static resources:Language.BoldMinutesRemainingTextBlock}" Margin="0,0,4,0"
                                x:Name="BoldMinutesRemainingTextBlock" />
 
                     <TextBlock VerticalAlignment="Center"
-                               Classes="BodyMDNormal"
+                               Classes="BodyMDNormal ForegroundInfoModerate"
                                Text="{x:Static resources:Language.MinutesRemainingTextBlock}"
                                x:Name="MinutesRemainingTextBlock" />
 
@@ -93,6 +109,15 @@
                       CanUserSortColumns="True"
                       Margin="-16,16"
                       x:Name="ModsDataGrid" />
+
+            <TextBlock Grid.Row="2"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Top"
+                       Margin="0,66,0,0"
+                       Classes="HeadingXSSemi ForegroundWeak"
+                       IsVisible="False"
+                       Text="{x:Static resources:Language.InProgress_NoDownloadsTextBlock}"
+                       x:Name="NoDownloadsTextBlock"/>
         </Grid>
     </Grid>
 </reactiveUi:ReactiveUserControl>

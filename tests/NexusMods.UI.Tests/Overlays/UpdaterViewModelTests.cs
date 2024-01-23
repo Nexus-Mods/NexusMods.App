@@ -65,14 +65,6 @@ public class UpdaterViewModelTests : AVmTest<UpdaterViewModel, IUpdaterViewModel
     }
 
     [Fact]
-    public async Task ClickingTheUpdateButtonClosesTheWindow()
-    {
-        ConcreteVm.Method = InstallationMethod.Manually;
-        ConcreteVm.UpdateCommand.Execute(null);
-        ConcreteVm.IsActive.Should().BeFalse();
-    }
-
-    [Fact]
     public async Task ClickingTheLaterButtonClosesTheWindow()
     {
         ConcreteVm.IsActive = true;

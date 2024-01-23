@@ -228,9 +228,6 @@
         <Compile Update="RightContent\LoadoutGrid\Columns\DownloadGameName\DownloadGameNameDesignViewModel.cs">
           <DependentUpon>IDownloadGameNameViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="RightContent\Downloads\InProgressCommonViewModel.cs">
-          <DependentUpon>IInProgressViewModel.cs</DependentUpon>
-        </Compile>
         <Compile Update="Overlays\Generic\MessageBox\OkCancel\MessageBoxOkCancelView.axaml.cs">
           <DependentUpon>MessageBoxOkCancelView.axaml</DependentUpon>
           <SubType>Code</SubType>
