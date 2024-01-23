@@ -59,7 +59,7 @@ public class DownloadService : IDownloadService
     {
         return _store.AllIds(EntityCategory.DownloadStates)
             .Select(id => _store.Get<DownloaderState>(id))
-            .Where(x => x!.Status != DownloadTaskStatus.Completed)
+            .Where(x => x != null && x.Status != DownloadTaskStatus.Completed)
             .Select(state => GetTaskFromState(state!))
             .Where(x => x != null)
             .Cast<IDownloadTask>();
