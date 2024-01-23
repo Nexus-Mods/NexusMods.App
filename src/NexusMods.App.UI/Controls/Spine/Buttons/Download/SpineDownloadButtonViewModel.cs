@@ -22,7 +22,7 @@ public class SpineDownloadButtonViewModel : AViewModel<ISpineDownloadButtonViewM
     {
         this.WhenActivated(disposables =>
         {
-            Tick.Subscribe(_ =>
+            Tick.OnUI().Subscribe(_ =>
             {
                 Number = downloadService.GetThroughput() / Size.MB;
                 Units = "MB/s";
