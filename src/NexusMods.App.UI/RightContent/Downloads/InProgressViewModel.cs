@@ -65,7 +65,8 @@ public class InProgressViewModel : AViewModel<IInProgressViewModel>, IInProgress
     [Reactive] public ICommand ResumeAllTasksCommand { get; private set; } = ReactiveCommand.Create(() => { });
 
     // Do nothing for now and keep disabled.
-    [Reactive] public ICommand ShowSettings { get; private set; } = ReactiveCommand.Create(() => { }, Observable.Return(false));
+    [Reactive]
+    public ICommand ShowSettings { get; private set; } = ReactiveCommand.Create(() => { }, Observable.Return(false));
 
     /// <summary>
     /// Main constructor
@@ -85,16 +86,17 @@ public class InProgressViewModel : AViewModel<IInProgressViewModel>, IInProgress
         this.WhenActivated(d =>
         {
             ShowCancelDialogCommand = ReactiveCommand.Create(async () =>
-            {
-                if (SelectedTasks.Items.Any())
                 {
-                    var result = await overlayController.ShowCancelDownloadOverlay(SelectedTasks.Items.ToList());
-                    if (result)
-                        CancelTasks(SelectedTasks.Items);
-                }
-            }, Tasks.ToObservableChangeSet()
-                .AutoRefresh(task => task.Status)
-                .Select(_ => Tasks.Any())).DisposeWith(d);
+                    if (SelectedTasks.Items.Any())
+                    {
+                        var result = await overlayController.ShowCancelDownloadOverlay(SelectedTasks.Items.ToList());
+                        if (result)
+                            CancelTasks(SelectedTasks.Items);
+                    }
+                }, Tasks.ToObservableChangeSet()
+                    .AutoRefresh(task => task.Status)
+                    .Select(_ => Tasks.Any()))
+                .DisposeWith(d);
         });
     }
 
@@ -113,7 +115,8 @@ public class InProgressViewModel : AViewModel<IInProgressViewModel>, IInProgress
     private void Init()
     {
         // Make Columns
-        var columns = new SourceCache<IDataGridColumnFactory<DownloadColumn>, DownloadColumn>(colFactory => colFactory.Type);
+        var columns =
+            new SourceCache<IDataGridColumnFactory<DownloadColumn>, DownloadColumn>(colFactory => colFactory.Type);
         columns.Edit(colUpdater =>
         {
             colUpdater.AddOrUpdate(
@@ -181,16 +184,18 @@ public class InProgressViewModel : AViewModel<IInProgressViewModel>, IInProgress
                 .DisposeWith(d);
 
             SuspendAllTasksCommand = ReactiveCommand.Create(
-                () => { SuspendTasks(Tasks); },
-                Tasks.ToObservableChangeSet()
-                    .AutoRefresh(task => task.Status)
-                    .Select(_ => Tasks.Any(task => task.Status == DownloadTaskStatus.Downloading)));
+                    () => { SuspendTasks(Tasks); },
+                    Tasks.ToObservableChangeSet()
+                        .AutoRefresh(task => task.Status)
+                        .Select(_ => Tasks.Any(task => task.Status == DownloadTaskStatus.Downloading)))
+                .DisposeWith(d);
 
             ResumeAllTasksCommand = ReactiveCommand.Create(
-                () => { ResumeTasks(Tasks); },
-                Tasks.ToObservableChangeSet()
-                    .AutoRefresh(task => task.Status)
-                    .Select(_ => Tasks.Any(task => task.Status == DownloadTaskStatus.Paused)));
+                    () => { ResumeTasks(Tasks); },
+                    Tasks.ToObservableChangeSet()
+                        .AutoRefresh(task => task.Status)
+                        .Select(_ => Tasks.Any(task => task.Status == DownloadTaskStatus.Paused)))
+                .DisposeWith(d);
 
             Tasks.ToObservableChangeSet()
                 .AutoRefresh(task => task.Status)
@@ -199,7 +204,7 @@ public class InProgressViewModel : AViewModel<IInProgressViewModel>, IInProgress
                     UpdateWindowInfo();
                     ActiveDownloadCount = Tasks.Count(task => task.Status == DownloadTaskStatus.Downloading);
                     HasDownloads = Tasks.Any();
-                });
+                }).DisposeWith(d);
 
             // Start updating on the UI thread
             // This is a service to provide polling in case of downloaders that don't have a way of notifying
