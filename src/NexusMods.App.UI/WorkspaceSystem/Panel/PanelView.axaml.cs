@@ -34,9 +34,10 @@ public partial class PanelView : ReactiveUserControl<IPanelViewModel>
 
             // toggle visibility of the scrollbar related elements
             this.WhenAnyValue(
+                    view => view.ViewModel!.ActualBounds,
                     view => view.TabHeaderScrollViewer.Extent,
                     view => view.TabHeaderScrollViewer.Viewport,
-                    (extent, viewport) => extent.Width > viewport.Width)
+                    (_, extent, viewport) => extent.Width > viewport.Width)
                 .SubscribeWithErrorLogging(isScrollbarVisible =>
                 {
                     ScrollLeftButton.IsVisible = isScrollbarVisible;
@@ -49,7 +50,10 @@ public partial class PanelView : ReactiveUserControl<IPanelViewModel>
                 })
                 .DisposeWith(disposables);
 
-            this.WhenAnyValue(view => view.AddTabButton1Container.Bounds)
+            this.WhenAnyValue(
+                    view => view.ViewModel!.ActualBounds,
+                    view => view.AddTabButton1Container.Bounds,
+                    (_, bounds) => bounds)
                 .SubscribeWithErrorLogging(bounds =>
                 {
                     var viewport = TabHeaderScrollViewer.Viewport;
@@ -60,8 +64,10 @@ public partial class PanelView : ReactiveUserControl<IPanelViewModel>
                 .DisposeWith(disposables);
 
             this.WhenAnyValue(
+                    view => view.ViewModel!.ActualBounds,
                     view => view.TabHeaderScrollViewer.ScrollBarMaximum,
-                    view => view.TabHeaderScrollViewer.Offset)
+                    view => view.TabHeaderScrollViewer.Offset,
+                    (_, a, b) => (a, b))
                 .SubscribeWithErrorLogging(tuple =>
                 {
                     var (scrollBarMaximum, offset) = tuple;
