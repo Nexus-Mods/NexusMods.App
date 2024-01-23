@@ -102,10 +102,9 @@ namespace NexusMods.Networking.HttpDownloader
 
             primaryJob.SetMax(state.TotalSize);
             downloaderState.Activity ??= primaryJob;
-            var activity = downloaderState.Activity as IActivitySource<Size>;
-            activity?.SetProgress(state.CompletedSize);
-            activity?.StartOrResume(state.CompletedSize);
-
+            var activity = (IActivitySource<Size>)downloaderState.Activity;
+            activity.SetProgress(state.CompletedSize);
+            activity.StartOrResume(state.CompletedSize);
 
             var writeQueue = Channel.CreateBounded<WriteOrder>(_writeQueueLength);
 
