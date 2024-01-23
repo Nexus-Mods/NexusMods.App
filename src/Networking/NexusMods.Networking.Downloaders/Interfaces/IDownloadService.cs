@@ -1,4 +1,5 @@
 using DynamicData;
+using DynamicData.Kernel;
 using NexusMods.Abstractions.Values;
 using NexusMods.DataModel;
 using NexusMods.Networking.NexusWebApi.Types;
@@ -105,7 +106,7 @@ public interface IDownloadService : IDisposable
     /// Gets total progress percentage of all in progress download operations.
     /// Returns null if no downloads are in progress.
     /// </summary>
-    Percent? GetTotalProgress();
+    Optional<Percent> GetTotalProgress();
 
     /// <summary>
     /// Updates the state of the task that's persisted behind the scenes.

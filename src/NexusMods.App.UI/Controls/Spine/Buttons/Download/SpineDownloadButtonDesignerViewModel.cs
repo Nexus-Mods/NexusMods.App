@@ -1,4 +1,5 @@
 ﻿using System.Windows.Input;
+using DynamicData.Kernel;
 using NexusMods.Abstractions.Values;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -14,7 +15,7 @@ public class SpineDownloadButtonDesignerViewModel : AViewModel<ISpineDownloadBut
     public string Units { get; set; } = "MB/s";
 
     [Reactive]
-    public Percent? Progress { get; set; }
+    public Optional<Percent> Progress { get; set; }
 
     [Reactive]
     public ICommand Click { get; set; }
@@ -29,13 +30,13 @@ public class SpineDownloadButtonDesignerViewModel : AViewModel<ISpineDownloadBut
 
     private async Task StartProgress()
     {
-        if (Progress != null) return;
+        if (Progress.HasValue) return;
         foreach (var i in Enumerable.Range(0, 100))
         {
             Progress = new Percent(i / 100d);
             Number = Random.Shared.NextSingle() * 10f;
             await Task.Delay(100);
         }
-        Progress = null;
+        Progress = Optional<Percent>.None;
     }
 }

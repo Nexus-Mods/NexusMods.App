@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Reactive.Subjects;
 using DynamicData;
+using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Values;
@@ -178,10 +179,12 @@ public class DownloadService : IDownloadService
     }
 
     /// <inheritdoc />
-    public Percent? GetTotalProgress()
+    public Optional<Percent> GetTotalProgress()
     {
         long totalDownloadedBytes = 0;
         long totalSizeBytes = 0;
+        var active = false;
+
         foreach (var dl in _currentDownloads.Where(x => x.Status == DownloadTaskStatus.Downloading))
         {
             // Only compute percent for downloads that have a known size
@@ -189,11 +192,12 @@ public class DownloadService : IDownloadService
 
             totalSizeBytes += size.SizeBytes;
             totalDownloadedBytes += dl.DownloadedSizeBytes;
+            active = true;
         }
 
-        if (totalSizeBytes == 0 || totalSizeBytes <= totalDownloadedBytes)
+        if (!active || totalSizeBytes == 0 || totalSizeBytes <= totalDownloadedBytes)
         {
-            return null;
+            return Optional.None<Percent>();
         }
 
         return new Percent(totalDownloadedBytes / (double) totalSizeBytes);

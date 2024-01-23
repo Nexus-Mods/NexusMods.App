@@ -2,6 +2,7 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Windows.Input;
+using DynamicData.Kernel;
 using NexusMods.Abstractions.Values;
 using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Paths;
@@ -12,9 +13,9 @@ namespace NexusMods.App.UI.Controls.Spine.Buttons.Download;
 
 public class SpineDownloadButtonViewModel : AViewModel<ISpineDownloadButtonViewModel>, ISpineDownloadButtonViewModel
 {
-    internal const int PollTimeMilliseconds = 1000;
+    private const int PollTimeMilliseconds = 1000;
 
-    internal IObservable<Unit> Tick { get; } = Observable.Interval(TimeSpan.FromMilliseconds(PollTimeMilliseconds))
+    private IObservable<Unit> Tick { get; } = Observable.Interval(TimeSpan.FromMilliseconds(PollTimeMilliseconds))
         .Select(_ => Unit.Default);
 
     public SpineDownloadButtonViewModel(IDownloadService downloadService)
@@ -31,11 +32,11 @@ public class SpineDownloadButtonViewModel : AViewModel<ISpineDownloadButtonViewM
         });
     }
 
-    [Reactive] public double Number { get; set; } = 4.2f;
+    [Reactive] public double Number { get; set; }
 
     [Reactive] public string Units { get; set; } = "MB/s";
 
-    [Reactive] public Percent? Progress { get; set; }
+    [Reactive] public Optional<Percent> Progress { get; set; }
 
     [Reactive] public ICommand Click { get; set; } = Initializers.ICommand;
 

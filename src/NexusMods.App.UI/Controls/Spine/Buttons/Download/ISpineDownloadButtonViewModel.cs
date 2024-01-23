@@ -1,4 +1,5 @@
 ﻿using System.Windows.Input;
+using DynamicData.Kernel;
 using NexusMods.Abstractions.Values;
 
 namespace NexusMods.App.UI.Controls.Spine.Buttons.Download;
@@ -18,7 +19,7 @@ public interface ISpineDownloadButtonViewModel : IViewModelInterface
     /// <summary>
     /// The progress of the downloads
     /// </summary>
-    public Percent? Progress { get; }
+    public Optional<Percent> Progress { get; }
 
     /// <summary>
     /// Command to execute when the button is clicked
