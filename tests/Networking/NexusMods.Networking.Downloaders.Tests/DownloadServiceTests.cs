@@ -98,6 +98,11 @@ public class DownloadServiceTests
     public void GetTotalProgress_Test()
     {
         // Arrange
+        // Clear all current downloads
+        foreach (var task in _currentDownloads.ToArray())
+        {
+            task.Cancel();
+        }
         _dummyTask.SizeBytes = 100;
         _dummyTask.DownloadedSizeBytes = 25;
         _dummyTask.Status = DownloadTaskStatus.Downloading;
@@ -114,6 +119,11 @@ public class DownloadServiceTests
     public void GetTotalProgress_MultipleTest()
     {
         // Arrange
+        // Clear all current downloads
+        foreach (var task in _currentDownloads.ToArray())
+        {
+            task.Cancel();
+        }
         _dummyTask.SizeBytes = 100;
         _dummyTask.DownloadedSizeBytes = 60;
         _dummyTask.Status = DownloadTaskStatus.Downloading;
