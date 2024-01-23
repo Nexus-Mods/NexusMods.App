@@ -32,8 +32,11 @@ public class NxmDownloadTask : IDownloadTask, IHaveDownloadVersion, IHaveFileSiz
 
     /// <inheritdoc />
     public long DownloadedSizeBytes =>
-        (long)(_state.ActivityStatus?.MakeTypedReport().Current.ValueOr(() => Size.Zero).Value ??
-               (ulong)_defaultDownloadedSize);
+        (long)(_state.ActivityStatus?
+                   .MakeTypedReport()
+                   .Current
+                   .ValueOr(() => Size.Zero)
+                   .Value ?? (ulong)_defaultDownloadedSize);
 
     /// <inheritdoc />
     public long CalculateThroughput()
@@ -41,9 +44,12 @@ public class NxmDownloadTask : IDownloadTask, IHaveDownloadVersion, IHaveFileSiz
         if (_state.Activity == null)
             return 0;
 
-        return (long)
-            (((ActivityReport<Size>?)_state.ActivityStatus?.GetReport())?.Throughput.ValueOr(() => Size.Zero) ??
-             Size.Zero).Value;
+        var report = _state.ActivityStatus?.GetReport() as ActivityReport<Size>;
+        var size = report?
+            .Throughput
+            .ValueOr(() => Size.Zero) ?? Size.Zero;
+
+        return (long)size.Value;
     }
 
     /// <inheritdoc />
