@@ -6,6 +6,7 @@ using Avalonia.Controls;
 using Avalonia.Threading;
 using DynamicData;
 using DynamicData.Binding;
+using JetBrains.Annotations;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.RightContent.DownloadGrid;
@@ -71,6 +72,7 @@ public class InProgressViewModel : AViewModel<IInProgressViewModel>, IInProgress
     /// </summary>
     /// <param name="downloadService"></param>
     /// <param name="overlayController"></param>
+    [UsedImplicitly]
     public InProgressViewModel(IDownloadService downloadService, IOverlayController overlayController)
     {
         TaskSourceChangeSet = downloadService.Downloads
