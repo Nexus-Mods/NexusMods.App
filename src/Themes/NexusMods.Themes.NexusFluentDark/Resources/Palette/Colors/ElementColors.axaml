@@ -47,7 +47,7 @@
     <StaticResource x:Key="ElementForegroundNeutralWeak" ResourceKey="BrandNeutral500" />
     <StaticResource x:Key="ElementForegroundNeutralSubdued" ResourceKey="BrandNeutral400" />
     <StaticResource x:Key="ElementForegroundNeutralModerate" ResourceKey="BrandNeutral300" />
-    <StaticResource x:Key="ElementForegroundNeutralStrong" ResourceKey="BrandNeutral200" />
+    <StaticResource x:Key="ElementForegroundNeutralStrong" ResourceKey="BrandNeutral100" />
     <StaticResource x:Key="ElementForegroundNeutralInverted" ResourceKey="BrandNeutral950" />
 
     <!-- SolidColorBrushes -->

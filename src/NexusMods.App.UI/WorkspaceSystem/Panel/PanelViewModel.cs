@@ -68,6 +68,21 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
                 .InvokeCommand(CloseCommand)
                 .DisposeWith(disposables);
 
+            // change the header when the panel only has a single tab vs multiple tabs
+            _tabsList
+                .Connect()
+                .Count()
+                .Select(count => count == 1)
+                .Do(hasOneTab =>
+                {
+                    foreach (var tab in _tabs)
+                    {
+                        tab.Header.CanClose = !hasOneTab;
+                    }
+                })
+                .SubscribeWithErrorLogging()
+                .DisposeWith(disposables);
+
             // handle when a tab gets removed
             _tabsList
                 .Connect()

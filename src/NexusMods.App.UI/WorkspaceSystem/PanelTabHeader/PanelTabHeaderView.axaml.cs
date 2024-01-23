@@ -21,9 +21,11 @@ public partial class PanelTabHeaderView : ReactiveUserControl<IPanelTabHeaderVie
             this.WhenAnyValue(view => view.ViewModel!.Icon)
                 .Do(icon =>
                 {
-                    var size = icon?.Size ?? new Size(0, 0);
-                    IconImage.Width = size.Width;
-                    IconImage.Height = size.Height;
+                    IconImage.IsVisible = icon is null;
+                    if (icon is null) return;
+
+                    IconImage.Width = icon.Size.Width;
+                    IconImage.Height = icon.Size.Height;
                 })
                 .BindToView(this, view => view.IconImage.Source)
                 .DisposeWith(disposables);
@@ -31,8 +33,15 @@ public partial class PanelTabHeaderView : ReactiveUserControl<IPanelTabHeaderVie
             this.OneWayBind(ViewModel, vm => vm.Title, view => view.TitleTextBlock.Text)
                 .DisposeWith(disposables);
 
+            this.OneWayBind(ViewModel, vm => vm.CanClose, view => view.CloseTabButton.IsVisible)
+                .DisposeWith(disposables);
+
             this.WhenAnyValue(view => view.ViewModel!.Title)
-                .Subscribe(title => ToolTip.SetTip(this, title))
+                .Subscribe(title =>
+                {
+                    ToolTip.SetTip(this, title);
+                    ToolTip.SetShowDelay(this, (int)TimeSpan.FromMilliseconds(500).TotalMilliseconds);
+                })
                 .DisposeWith(disposables);
 
             this.BindCommand(ViewModel, vm => vm.CloseTabCommand, view => view.CloseTabButton)
@@ -55,4 +64,3 @@ public partial class PanelTabHeaderView : ReactiveUserControl<IPanelTabHeaderVie
         });
     }
 }
-
