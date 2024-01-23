@@ -29,6 +29,7 @@ public sealed class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates, IDis
     /// <param name="selectedGroupId">The ID of the selected group.</param>
     /// <param name="selectedOptionIds">The IDs of the selected options.</param>
     private delegate void SelectOptions(int stepId, int selectedGroupId, int[] selectedOptionIds);
+
     private static void DummySelectOptions(int stepId, int selectedGroupId, int[] selectedOptionIds) { }
 
     /// <summary>
@@ -38,6 +39,7 @@ public sealed class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates, IDis
     /// <param name="forward">Whether to move forward or backwards in the installer.</param>
     /// <param name="currentStepId">The ID of the current step.</param>
     private delegate void ContinueToNextStep(bool forward, int currentStepId);
+
     private static void DummyContinueToNextStep(bool forward, int currentStepId) { }
 
     /// <summary>
@@ -45,6 +47,7 @@ public sealed class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates, IDis
     /// should exit.
     /// </summary>
     private delegate void CancelInstaller();
+
     private static void DummyCancelInstaller() { }
 
     private readonly ILogger<UiDelegates> _logger;
@@ -54,7 +57,7 @@ public sealed class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates, IDis
     private ContinueToNextStep _continueToNextStep = DummyContinueToNextStep;
     private CancelInstaller _cancelInstaller = DummyCancelInstaller;
 
-    private readonly SemaphoreSlim _semaphoreSlim = new (1, 1);
+    private readonly SemaphoreSlim _semaphoreSlim = new(1, 1);
     private readonly EventWaitHandle _waitHandle = new ManualResetEvent(initialState: false);
     private long _taskWaitingState;
 
@@ -150,10 +153,12 @@ public sealed class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates, IDis
 
                     // NOTE(erri120): We have to manually call this method.
                     EndDialog();
-                } else if (result.IsGoToPreviousStep)
+                }
+                else if (result.IsGoToPreviousStep)
                 {
                     _continueToNextStep(forward: false, currentStepId);
-                } else if (result.IsGoToNextStep)
+                }
+                else if (result.IsGoToNextStep)
                 {
                     var selectedOptions = result.AsT2.SelectedOptions;
 
@@ -196,7 +201,8 @@ public sealed class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates, IDis
                         _waitHandle.WaitOne(TimeSpan.FromMilliseconds(200), exitContext: false);
                         _waitHandle.Reset();
 
-                        if (Interlocked.CompareExchange(ref _taskWaitingState, Ready, WaitingForCallback) != WaitingForCallback)
+                        if (Interlocked.CompareExchange(ref _taskWaitingState, Ready, WaitingForCallback) !=
+                            WaitingForCallback)
                             _logger.LogWarning("Unable to CAS!");
                     }
 
@@ -283,7 +289,9 @@ public sealed class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates, IDis
         if (CurrentArchiveFiles is null) return null;
 
         var asPath = RelativePath.FromUnsanitizedInput(image);
-        var node = CurrentArchiveFiles.FindByPathFromRoot(asPath);
+        var node = CurrentArchiveFiles.Path() != RelativePath.Empty
+            ? CurrentArchiveFiles.FindByPathFromRoot(asPath)
+            : CurrentArchiveFiles.FindByPathFromChild(asPath);
         if (node is not null)
             return new OptionImage(new OptionImage.ImageStoredFile(node.Item.Hash));
 

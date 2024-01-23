@@ -1,4 +1,4 @@
-using System.Text;
+﻿using System.Text;
 using FomodInstaller.Scripting.XmlScript;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Installers.Trees;
@@ -42,7 +42,9 @@ public class FomodAnalyzer
                 byte[] bytes;
                 try
                 {
-                    var node = allFiles.FindByPathFromRoot(imagePath);
+                    var node = allFiles.Path() != RelativePath.Empty
+                        ? allFiles.FindByPathFromRoot(imagePath)
+                        : allFiles.FindByPathFromChild(imagePath);
                     await using var imageStream = await node!.Item.OpenAsync();
                     using var ms = new MemoryStream();
                     await imageStream.CopyToAsync(ms, ct);
