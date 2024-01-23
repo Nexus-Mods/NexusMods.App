@@ -1,3 +1,5 @@
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using Avalonia.ReactiveUI;
 using NexusMods.App.UI.Resources;
 using ReactiveUI;
@@ -10,16 +12,29 @@ public partial class CancelDownloadOverlayView : ReactiveUserControl<ICancelDown
     {
         InitializeComponent();
 
-        this.WhenActivated(_ =>
+        this.WhenActivated(d =>
         {
-
-            OkCancelView.Description = ViewModel?.DownloadTasks.Count() == 1 ?
-                string.Format(Language.CancelDownloadOverlayView_Description_download_will_be_cancelled,
-                    ViewModel?.DownloadTasks.First().Name + " " +
-                    Language.CancelDownloadOverlayView_Description__Download) :
-                string.Format(Language.CancelDownloadOverlayView_Description_download_will_be_cancelled,
-                    ViewModel?.DownloadTasks.Count() + " " +
-                    Language.CancelDownloadOverlayView_Description_downloads );
+            this.WhenAnyValue(view => view.ViewModel)
+                .WhereNotNull()
+                .Do(PopulateFromViewModel)
+                .Subscribe()
+                .DisposeWith(d);
         });
+    }
+
+    void PopulateFromViewModel(ICancelDownloadOverlayViewModel vm)
+    {
+        if (vm.DownloadTasks.Count == 1)
+        {
+            OkCancelView.Description = string.Format(
+                Language.CancelDownloadOverlayView_Description_download_will_be_cancelled,
+                vm.DownloadTasks[0].Name + " " + Language.CancelDownloadOverlayView_Description__Download);
+        }
+        else
+        {
+            OkCancelView.Description = string.Format(
+                Language.CancelDownloadOverlayView_Description_download_will_be_cancelled,
+                vm.DownloadTasks.Count + " " + Language.CancelDownloadOverlayView_Description_downloads);
+        }
     }
 }
