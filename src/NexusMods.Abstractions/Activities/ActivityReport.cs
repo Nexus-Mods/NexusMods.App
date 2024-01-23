@@ -51,22 +51,27 @@ public class ActivityReport
     /// The average progress per second.
     /// </summary>
     public Optional<Percent> PercentagePerSecond =>
-        CurrentProgress.HasValue && StartingProgress.HasValue && Elapsed.TotalSeconds > 0
+        CurrentProgress.HasValue &&
+        StartingProgress.HasValue &&
+        Elapsed.TotalSeconds > 0
             ? Percent.CreateClamped((CurrentProgress.Value.Value - StartingProgress.Value.Value) / Elapsed.TotalSeconds)
             : Optional<Percent>.None;
 
     /// <summary>
     /// The estimated remaining time for the activity, if any progress has been made.
     /// </summary>
-    public Optional<TimeSpan> EstimatedRemainingTime => PercentagePerSecond.HasValue && CurrentProgress.HasValue
-        ? Optional.Some(TimeSpan.FromSeconds((100 - CurrentProgress.Value.Value) / PercentagePerSecond.Value.Value))
-        : Optional<TimeSpan>.None;
+    public Optional<TimeSpan> EstimatedRemainingTime =>
+        PercentagePerSecond.HasValue &&
+        CurrentProgress.HasValue
+            ? Optional.Some(TimeSpan.FromSeconds((100 - CurrentProgress.Value.Value) / PercentagePerSecond.Value.Value))
+            : Optional<TimeSpan>.None;
 
     /// <summary>
     /// The end time of the activity, if it can be calculated.
     /// </summary>
-    public Optional<DateTime> EndTime => IsFinished ?
-        StartTime + Elapsed : StartTime + EstimatedRemainingTime.Value;
+    public Optional<DateTime> EndTime => IsFinished
+        ? StartTime + Elapsed
+        : StartTime + EstimatedRemainingTime.Value;
 }
 
 /// <summary>
