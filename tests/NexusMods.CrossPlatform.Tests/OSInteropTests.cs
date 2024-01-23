@@ -2,7 +2,7 @@ using CliWrap;
 using NexusMods.CrossPlatform.Process;
 using NSubstitute;
 
-namespace NexusMods.Common.Tests;
+namespace NexusMods.CrossPlatform.Tests;
 
 // ReSharper disable once InconsistentNaming
 public class OSInteropTests

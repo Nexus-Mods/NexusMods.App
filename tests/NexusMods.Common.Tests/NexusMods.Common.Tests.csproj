@@ -1,7 +1,0 @@
-<Project Sdk="Microsoft.NET.Sdk">
-    <ItemGroup>
-        <ProjectReference Include="..\..\src\Abstractions\NexusMods.Abstractions.GuidedInstallers\NexusMods.Abstractions.GuidedInstallers.csproj" />
-        <ProjectReference Include="..\..\src\NexusMods.App.BuildInfo\NexusMods.App.BuildInfo.csproj" />
-        <ProjectReference Include="..\..\src\NexusMods.CrossPlatform\NexusMods.CrossPlatform.csproj" />
-    </ItemGroup>
-</Project>

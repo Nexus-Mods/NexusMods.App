@@ -103,7 +103,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Networking", "Networking", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "benchmarks", "benchmarks", "{CF7454A5-0EBB-46E7-9A10-614380DB95D9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Common.Tests", "tests\NexusMods.Common.Tests\NexusMods.Common.Tests.csproj", "{FE0B804A-949E-44E7-9531-B16664ACEC01}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.CrossPlatform.Tests", "tests\NexusMods.CrossPlatform.Tests\NexusMods.CrossPlatform.Tests.csproj", "{FE0B804A-949E-44E7-9531-B16664ACEC01}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.MountAndBlade2Bannerlord", "src\Games\NexusMods.Games.MountAndBlade2Bannerlord\NexusMods.Games.MountAndBlade2Bannerlord.csproj", "{3E970563-DAE0-4168-AE8D-AB09A786C8A3}"
 EndProject
@@ -172,6 +172,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.NexusWebApi", "src\Abstractions\NexusMods.Abstractions.NexusWebApi\NexusMods.Abstractions.NexusWebApi.csproj", "{0105A369-AC7D-49BA-A560-F194E425D172}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Activities", "src\NexusMods.Activities\NexusMods.Activities.csproj", "{9A43AABA-C158-47F9-B724-271216536CA4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Abstractions", "Abstractions", "{77FD7E0D-2180-4518-82E5-B3D0FDFD76C5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.GuidedInstallers.Tests", "tests\Abstractions\NexusMods.Abstractions.GuidedInstallers.Tests\NexusMods.Abstractions.GuidedInstallers.Tests.csproj", "{65208CB5-C0FF-43D3-9920-F527666E76F4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -447,6 +451,10 @@ Global
 		{9A43AABA-C158-47F9-B724-271216536CA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9A43AABA-C158-47F9-B724-271216536CA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9A43AABA-C158-47F9-B724-271216536CA4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{65208CB5-C0FF-43D3-9920-F527666E76F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65208CB5-C0FF-43D3-9920-F527666E76F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65208CB5-C0FF-43D3-9920-F527666E76F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65208CB5-C0FF-43D3-9920-F527666E76F4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -526,6 +534,8 @@ Global
 		{3D21A286-CADC-40CF-AF29-790DAAD4363A} = {E7BAE287-D505-4D6D-A090-665A64309B2D}
 		{83B2A024-0218-4F65-B75B-0102DAF38443} = {E7BAE287-D505-4D6D-A090-665A64309B2D}
 		{9A43AABA-C158-47F9-B724-271216536CA4} = {E7BAE287-D505-4D6D-A090-665A64309B2D}
+		{77FD7E0D-2180-4518-82E5-B3D0FDFD76C5} = {52AF9D62-7D5B-4AD0-BA12-86F2AA67428B}
+		{65208CB5-C0FF-43D3-9920-F527666E76F4} = {77FD7E0D-2180-4518-82E5-B3D0FDFD76C5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9F9F8352-34DD-42C0-8564-EE9AF34A3501}

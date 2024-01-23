@@ -4,7 +4,7 @@ using NexusMods.CrossPlatform.Process;
 using NexusMods.CrossPlatform.ProtocolRegistration;
 using NexusMods.Paths;
 
-namespace NexusMods.Common.Tests;
+namespace NexusMods.CrossPlatform.Tests;
 
 public class ProtocolRegistrationTests
 {
