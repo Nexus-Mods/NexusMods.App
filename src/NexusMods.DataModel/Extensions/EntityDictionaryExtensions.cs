@@ -50,9 +50,12 @@ public static class EntityDictionaryExtensions
         where TV : Entity
     {
         var changes = new ChangeSet<IId,TK>();
-        foreach (var (key, id) in dict.Collection)
+        var dictCollection = dict.Collection;
+        var oldCollection = old.Collection;
+
+        foreach (var (key, id) in dictCollection)
         {
-            if (!dict.Collection.TryGetValue(key, out var oldId))
+            if (!oldCollection.TryGetValue(key, out var oldId))
             {
                 changes.Add(new Change<IId, TK>(ChangeReason.Add, key, id));
                 continue;
@@ -64,9 +67,9 @@ public static class EntityDictionaryExtensions
             }
         }
 
-        foreach (var (key, id) in dict.Collection)
+        foreach (var (key, id) in oldCollection)
         {
-            if (!dict.Collection.ContainsKey(key))
+            if (!dictCollection.ContainsKey(key))
                 changes.Add(new Change<IId, TK>(ChangeReason.Remove, key, id));
         }
 
