@@ -1,8 +1,9 @@
 using System.Linq.Expressions;
 using System.Text.Json;
+
 #pragma warning disable CS1591
 
-namespace NexusMods.DataModel.JsonConverters;
+namespace NexusMods.Abstractions.Serialization.Json;
 
 /// <summary>
 /// Several classes in the app don't map directly to JSON classes. Inheritance isn't supported super well, and in some

@@ -33,6 +33,7 @@ public class OAuth
     private readonly ILogger<OAuth> _logger;
     private readonly HttpClient _http;
     private readonly IOSInterop _os;
+    private readonly IIDGenerator _idGenerator;
     private readonly IMessageConsumer<NXMUrlMessage> _nxmUrlMessages;
     private readonly IActivityFactory _activityFactory;
 
@@ -41,6 +42,7 @@ public class OAuth
     /// </summary>
     public OAuth(ILogger<OAuth> logger,
         HttpClient http,
+        IIDGenerator idGenerator,
         IOSInterop os,
         IMessageConsumer<NXMUrlMessage> nxmUrlMessages,
         IActivityFactory activityFactory)
@@ -48,6 +50,7 @@ public class OAuth
         _logger = logger;
         _http = http;
         _os = os;
+        _idGenerator = idGenerator;
         _activityFactory = activityFactory;
         _nxmUrlMessages = nxmUrlMessages;
     }
@@ -56,17 +59,18 @@ public class OAuth
     /// Make an authorization request
     /// </summary>
     /// <param name="cancellationToken"></param>
+    /// <param name="state">Pre-computed 'state' value for the authorize URL.</param>
     /// <returns>task with the jwt token once we receive one</returns>
     public async Task<JwtTokenReply?> AuthorizeRequest(CancellationToken cancellationToken)
     {
         // see https://www.rfc-editor.org/rfc/rfc7636#section-4.1
-        var codeVerifier = IDGenerator.UUIDv4().ToBase64();
+        var codeVerifier = _idGenerator.UUIDv4().ToBase64();
 
         // see https://www.rfc-editor.org/rfc/rfc7636#section-4.2
         var codeChallengeBytes = SHA256.HashData(Encoding.UTF8.GetBytes(codeVerifier));
         var codeChallenge = StringBase64Extensions.Base64UrlEncode(codeChallengeBytes);
 
-        var state = IDGenerator.UUIDv4();
+        var state = _idGenerator.UUIDv4();
 
         // Start listening first, otherwise we might miss the message
         var codeTask = _nxmUrlMessages.Messages

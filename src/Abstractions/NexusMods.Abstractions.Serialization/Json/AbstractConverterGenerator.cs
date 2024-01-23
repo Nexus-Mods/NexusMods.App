@@ -6,7 +6,7 @@ using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 
 #pragma warning disable CS1591
 
-namespace NexusMods.DataModel.JsonConverters;
+namespace NexusMods.Abstractions.Serialization.Json;
 
 public class AbstractClassConverterFactory<T> : JsonConverterFactory
 {

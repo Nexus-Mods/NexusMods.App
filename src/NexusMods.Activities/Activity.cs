@@ -4,7 +4,7 @@ using System.Reactive.Subjects;
 using DynamicData.Kernel;
 using NexusMods.Abstractions.Activities;
 
-namespace NexusMods.DataModel.Activities;
+namespace NexusMods.Activities;
 
 /// <summary>
 /// A concrete implementation of <see cref="IReadOnlyActivity"/>.

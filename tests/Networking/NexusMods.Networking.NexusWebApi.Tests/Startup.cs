@@ -1,7 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.Activities;
 using NexusMods.Common;
 using NexusMods.CrossPlatform.Process;
+using NexusMods.DataModel;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.HttpDownloader.Tests;
 using NexusMods.Networking.NexusWebApi.NMA;
@@ -23,6 +25,8 @@ public class Startup
             .AddSingleton<LocalHttpServer>()
             .AddNexusWebApi()
             .AddNexusWebApiNmaIntegration(true)
+            .AddActivityMonitor()
+            .AddDataModel() // this is required because we're also using NMA integration
             .AddLogging(builder => builder.AddXUnit())
             .Validate();
     }

@@ -1,7 +1,12 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.DataModel.Entities;
+using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Serialization;
+using NexusMods.Activities;
 using NexusMods.App;
 using NexusMods.Common;
+using NexusMods.CrossPlatform;
 using NexusMods.Games.RedEngine;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators.TestHelpers;
@@ -26,6 +31,11 @@ public class Startup
         services.AddUniversalGameLocator<Cyberpunk2077>(new Version("1.61"))
                 .AddApp(config: config)
                 .AddStubbedGameLocators()
+                .AddCrossPlatform()
+                .AddActivityMonitor()
+                .AddDataModelBaseEntities()
+                .AddDataModelEntities()
+                .AddInstallerTypes()
                 .AddSingleton<AvaloniaApp>()
                 .AddLogging(builder => builder.AddXUnit())
                 .Validate();

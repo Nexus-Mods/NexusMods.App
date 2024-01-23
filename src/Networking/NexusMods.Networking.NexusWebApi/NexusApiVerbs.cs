@@ -1,5 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions;
+using NexusMods.Abstractions.Cli;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.ProxyConsole.Abstractions;
 using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;

@@ -1,8 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Games.Tools;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
-using NexusMods.DataModel.Games;
 using NexusMods.Extensions.DependencyInjection;
 using NexusMods.Games.BladeAndSorcery.Installers;
 

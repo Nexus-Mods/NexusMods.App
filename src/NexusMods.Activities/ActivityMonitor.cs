@@ -1,9 +1,11 @@
+
+
 using System.Collections.ObjectModel;
 using System.Numerics;
 using DynamicData;
 using NexusMods.Abstractions.Activities;
 
-namespace NexusMods.DataModel.Activities;
+namespace NexusMods.Activities;
 
 internal class ActivityMonitor : IActivityFactory, IActivityMonitor
 {

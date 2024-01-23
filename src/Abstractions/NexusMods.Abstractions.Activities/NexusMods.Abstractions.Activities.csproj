@@ -4,6 +4,6 @@
     <ItemGroup>
         <!-- Todo: We need to get rid of 'optional' to remove this heavy dependency.  -->
         <PackageReference Include="DynamicData" />
-        <PackageReference Include="TransparentValueObjects" />
+        <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
 </Project>

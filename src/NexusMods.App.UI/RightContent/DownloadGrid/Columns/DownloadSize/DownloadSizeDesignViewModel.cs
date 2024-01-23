@@ -6,7 +6,7 @@ using NexusMods.App.UI.RightContent.Downloads.ViewModels;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
-namespace NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadSize;
+namespace NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadSize;
 
 public class DownloadSizeDesignViewModel : AViewModel<IDownloadSizeViewModel>, IDownloadSizeViewModel, IComparableColumn<IDownloadTaskViewModel>
 {

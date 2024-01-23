@@ -3,8 +3,8 @@ using System.Reactive.Linq;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.Games.Loadouts;
+using NexusMods.Abstractions.Games.Tools;
 using NexusMods.App.UI.Resources;
-using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -20,7 +20,7 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
     [Reactive] public string Label { get; set; } = Language.LaunchButtonViewModel_LaunchGame_LAUNCH;
 
     [Reactive] public Percent? Progress { get; set; }
-    
+
     private readonly LoadoutRegistry _loadoutRegistry;
     private readonly IToolManager _toolManager;
 

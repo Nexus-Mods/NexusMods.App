@@ -1,6 +1,6 @@
 using NexusMods.ProxyConsole.Abstractions.Implementations;
 
-namespace NexusMods.Abstractions;
+namespace NexusMods.Abstractions.Cli;
 
 /// <summary>
 ///     Used for creating items which can be rendered to CLI.

@@ -124,7 +124,7 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
     }
 }
 
-[JsonName("TestGeneratedFile")]
+[JsonName("NexusMods.DataModel.Tests.Harness.TestGeneratedFile")]
 public record TestGeneratedFile : AModFile, IToFile, ITriggerFilter<ModFilePair, Plan>
 {
     public ITriggerFilter<ModFilePair, Plan> TriggerFilter => this;
@@ -155,7 +155,7 @@ public record TestGeneratedFile : AModFile, IToFile, ITriggerFilter<ModFilePair,
 /// <summary>
 /// Example generated sort rule that sorts all mods alphabetically
 /// </summary>
-[JsonName("TestGeneratedSortRule")]
+[JsonName("NexusMods.DataModel.Tests.Harness.TestGeneratedSortRule")]
 public class AlphabeticalSort : IGeneratedSortRule, ISortRule<Mod, ModId>, ITriggerFilter<ModId, Loadout>
 {
     public ITriggerFilter<ModId, Loadout> TriggerFilter => this;

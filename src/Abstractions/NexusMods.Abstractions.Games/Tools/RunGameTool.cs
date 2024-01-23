@@ -3,7 +3,6 @@ using System.Globalization;
 using System.Text;
 using CliWrap;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Games.Stores.Steam;
@@ -11,7 +10,7 @@ using NexusMods.CrossPlatform.Process;
 using NexusMods.Paths;
 using LocationId = NexusMods.Abstractions.Installers.DTO.LocationId;
 
-namespace NexusMods.DataModel.Games;
+namespace NexusMods.Abstractions.Games.Tools;
 
 
 /// <summary>

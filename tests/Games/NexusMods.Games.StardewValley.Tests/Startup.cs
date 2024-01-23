@@ -1,6 +1,12 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.DataModel.Entities;
+using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Serialization;
+using NexusMods.Activities;
 using NexusMods.Common;
+using NexusMods.CrossPlatform;
 using NexusMods.Games.TestFramework;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators.TestHelpers;
@@ -21,6 +27,12 @@ public class Startup
             .AddUniversalGameLocator<StardewValley>(new Version(1, 0), gameFiles)
             .AddStardewValley()
             .AddLogging(builder => builder.AddXUnit())
+            .AddGames()
+            .AddActivityMonitor()
+            .AddDataModelEntities()
+            .AddDataModelBaseEntities()
+            .AddInstallerTypes()
+            .AddCrossPlatform()
             .Validate();
     }
 }

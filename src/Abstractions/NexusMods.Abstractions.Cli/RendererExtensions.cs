@@ -1,7 +1,7 @@
 using NexusMods.ProxyConsole.Abstractions;
 using NexusMods.ProxyConsole.Abstractions.Implementations;
 
-namespace NexusMods.Abstractions;
+namespace NexusMods.Abstractions.Cli;
 
 /// <summary>
 /// Extensions to the <see cref="IRenderer"/> interface to make rendering easier and to do common converssions

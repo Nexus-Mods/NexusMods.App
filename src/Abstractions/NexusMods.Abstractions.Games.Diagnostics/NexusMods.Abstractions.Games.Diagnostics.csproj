@@ -7,7 +7,7 @@
 
     <ItemGroup>
         <PackageReference Include="NetEscapades.EnumGenerators" />
-        <PackageReference Include="TransparentValueObjects" />
+        <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
 
     <ItemGroup>

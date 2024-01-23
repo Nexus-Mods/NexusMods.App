@@ -1,5 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.DataModel.Entities;
+using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Serialization;
+using NexusMods.Activities;
 using NexusMods.Common;
 using NexusMods.DataModel;
 using NexusMods.FileExtractor;
@@ -32,6 +37,11 @@ public class Startup
                 .AddHttpDownloader()
                 .AddNexusWebApi()
                 .AddNexusWebApiNmaIntegration(true)
+                .AddActivityMonitor()
+                .AddDataModelBaseEntities()
+                .AddGames()
+                .AddDataModelEntities()
+                .AddInstallerTypes()
                 .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace))
                 .AddSingleton<LocalHttpServer>()
                 .AddLogging(builder => builder.AddXUnit())

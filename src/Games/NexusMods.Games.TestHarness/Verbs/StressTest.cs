@@ -1,4 +1,4 @@
-using NexusMods.Abstractions;
+using NexusMods.Abstractions.Cli;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.ArchiveMetadata;
 using NexusMods.Abstractions.Games.Loadouts;

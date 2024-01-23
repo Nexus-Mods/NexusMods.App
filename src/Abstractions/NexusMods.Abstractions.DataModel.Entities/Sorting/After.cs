@@ -3,7 +3,7 @@ using NexusMods.Abstractions.Serialization.Attributes;
 namespace NexusMods.Abstractions.DataModel.Entities.Sorting;
 
 /// <summary />
-[JsonName("After")]
+[JsonName("NexusMods.Abstractions.DataModel.Entities.Sorting.After")]
 public record After<TType, TId> : ISortRule<TType, TId>
 {
     /// <summary>

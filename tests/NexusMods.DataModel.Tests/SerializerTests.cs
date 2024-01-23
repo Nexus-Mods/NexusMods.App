@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 using FluentAssertions;
 using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
-using NexusMods.DataModel.JsonConverters;
+using NexusMods.Abstractions.Serialization.Json;
 
 
 namespace NexusMods.DataModel.Tests;

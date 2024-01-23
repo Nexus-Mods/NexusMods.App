@@ -3,7 +3,7 @@ using NexusMods.Abstractions.Serialization.Attributes;
 namespace NexusMods.Abstractions.DataModel.Entities.Sorting;
 
 /// <summary />
-[JsonName("Before")]
+[JsonName("NexusMods.Abstractions.DataModel.Entities.Sorting.Before")]
 public record Before<TType, TId>: ISortRule<TType, TId>
 {
     /// <summary>

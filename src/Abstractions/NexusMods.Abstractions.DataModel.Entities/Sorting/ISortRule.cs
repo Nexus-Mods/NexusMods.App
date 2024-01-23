@@ -6,7 +6,4 @@ namespace NexusMods.Abstractions.DataModel.Entities.Sorting;
 /// </summary>
 /// <typeparam name="TType"></typeparam>
 /// <typeparam name="TId"></typeparam>
-public interface ISortRule<TType, TId>
-{
-
-}
+public interface ISortRule<TType, TId>;

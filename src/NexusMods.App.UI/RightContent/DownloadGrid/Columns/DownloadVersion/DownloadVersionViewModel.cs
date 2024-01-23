@@ -1,3 +1,3 @@
-namespace NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadVersion;
+namespace NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadVersion;
 
 public class DownloadVersionViewModel : DownloadVersionDesignViewModel { }

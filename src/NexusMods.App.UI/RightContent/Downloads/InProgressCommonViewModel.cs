@@ -9,16 +9,19 @@ using DynamicData.Binding;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.RightContent.DownloadGrid;
 using NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadGameName;
+using NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadName;
+using NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadSize;
 using NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadStatus;
+using NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadVersion;
 using NexusMods.App.UI.RightContent.Downloads.ViewModels;
-using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadName;
-using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadSize;
-using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadVersion;
 using NexusMods.Networking.Downloaders.Interfaces;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using DownloadGameNameView = NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadGameName.DownloadGameNameView;
+using DownloadNameView = NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadName.DownloadNameView;
+using DownloadSizeView = NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadSize.DownloadSizeView;
 using DownloadStatusView = NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadStatus.DownloadStatusView;
+using DownloadVersionView = NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadVersion.DownloadVersionView;
 
 namespace NexusMods.App.UI.RightContent.Downloads;
 

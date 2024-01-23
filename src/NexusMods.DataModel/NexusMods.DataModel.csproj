@@ -46,7 +46,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Games\" />
       <Folder Include="LoadoutSynchronizer\Exceptions\" />
       <Folder Include="Loadouts\Markers\" />
     </ItemGroup>

@@ -16,7 +16,6 @@ using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.DataModel.Extensions;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
-using IGame = GameFinder.Common.IGame;
 
 namespace NexusMods.Games.TestFramework;
 

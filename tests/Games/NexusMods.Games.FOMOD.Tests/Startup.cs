@@ -1,6 +1,11 @@
 ﻿using FomodInstaller.Interface;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.DataModel.Entities;
+using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Serialization;
+using NexusMods.Activities;
 using NexusMods.Common;
 using NexusMods.Games.BethesdaGameStudios;
 using NexusMods.Games.BethesdaGameStudios.SkyrimSpecialEdition;
@@ -22,6 +27,11 @@ public class Startup
             .AddFomod()
             .AddSingleton<ICoreDelegates, MockDelegates>()
             .AddLogging(builder => builder.AddXUnit())
+            .AddGames()
+            .AddActivityMonitor()
+            .AddDataModelEntities()
+            .AddDataModelBaseEntities()
+            .AddInstallerTypes()
             .Validate();
     }
 }

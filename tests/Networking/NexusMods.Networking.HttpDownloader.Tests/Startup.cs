@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.Activities;
 using NexusMods.Common;
 using NexusMods.Paths;
 
@@ -20,6 +21,7 @@ public class Startup
                  .AddSingleton(new TemporaryFileManager(FileSystem.Shared, prefix))
                  .AddSingleton<HttpClient>()
                  .AddSingleton<LocalHttpServer>()
+                 .AddActivityMonitor()
                  .AddLogging(builder => builder.AddXUnit())
                  .Validate();
     }

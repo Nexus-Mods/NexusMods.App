@@ -1,5 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.DataModel.Entities;
+using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Serialization;
 using NexusMods.Common;
 using NexusMods.Games.TestFramework;
 
@@ -13,6 +17,10 @@ public class Startup
             .AddDefaultServicesForTesting()
             .AddGenericGameSupport()
             .AddLogging(builder => builder.AddXUnit())
+            .AddGames()
+            .AddDataModelEntities()
+            .AddDataModelBaseEntities()
+            .AddInstallerTypes()
             .Validate();
     }
 }

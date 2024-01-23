@@ -1,5 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.DataModel.Entities;
+using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.GuidedInstallers;
+using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Serialization;
+using NexusMods.Activities;
 using NexusMods.CLI;
 using NexusMods.Common;
 using NexusMods.Games.FOMOD;
@@ -21,6 +26,11 @@ public class Startup
             .AddUniversalGameLocator<SkyrimLegendaryEdition.SkyrimLegendaryEdition>(new Version("1.9.32.0"))
             .AddSingleton<CommandLineConfigurator>()
             .AddBethesdaGameStudios()
+            .AddGames()
+            .AddActivityMonitor()
+            .AddDataModelEntities()
+            .AddDataModelBaseEntities()
+            .AddInstallerTypes()
             .AddGenericGameSupport()
             .AddFomod()
             .AddCLI()
