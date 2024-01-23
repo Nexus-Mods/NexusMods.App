@@ -40,12 +40,12 @@ public class ActivityReport
     /// <summary>
     /// The current progress of the activity, if any.
     /// </summary>
-    public Percent? CurrentProgress { get; init; }
+    public Optional<Percent> CurrentProgress { get; init; }
 
     /// <summary>
     /// The current progress of the activity, if any.
     /// </summary>
-    public Percent? StartingProgress { get; init; }
+    public Optional<Percent> StartingProgress { get; init; }
 
     /// <summary>
     /// The average progress per second.
