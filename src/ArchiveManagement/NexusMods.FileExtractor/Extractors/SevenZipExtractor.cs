@@ -140,7 +140,7 @@ public class SevenZipExtractor : IExtractor
 
             var result = await process.WithArguments(new[]
                     {
-                        "x", "-bsp1", "-y", $"-o{fixedDestination}", source.ToString(), "-mmt=off"
+                        "x", "-bsp1", "-y", $"-o{fixedDestination}", source.ToString()
                     }, true)
                 .WithStandardOutputPipe(PipeTarget.ToDelegate(line =>
                 {
