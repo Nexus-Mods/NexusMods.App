@@ -216,18 +216,6 @@ public class InProgressViewModel : AViewModel<IInProgressViewModel>, IInProgress
             timer.Tick += UpdateWindowInfoEvent;
             timer.Start();
             Disposable.Create(timer, (tmr) => tmr.Stop()).DisposeWith(d);
-
-            // This is necessary due to inheritance,
-            // WhenActivated gets fired in wrong order and
-            // parent classes need to be able to properly subscribe
-            // here.
-            this.RaisePropertyChanged(nameof(Tasks));
-
-            // This is necessary due to inheritance,
-            // WhenActivated gets fired in wrong order and
-            // parent classes need to be able to properly subscribe
-            // here.
-            this.RaisePropertyChanged(nameof(Columns));
         });
     }
 
