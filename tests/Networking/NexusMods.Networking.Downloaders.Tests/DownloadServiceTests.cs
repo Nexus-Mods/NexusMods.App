@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using DynamicData;
+using DynamicData.Kernel;
 using FluentAssertions;
 using NexusMods.Abstractions.Values;
 using NexusMods.Networking.Downloaders.Interfaces;
@@ -112,7 +113,7 @@ public class DownloadServiceTests
 
         // Assert
         _currentDownloads.Should().ContainSingle();
-        _downloadService.GetTotalProgress().Should().Be(new Percent(0.25));
+        _downloadService.GetTotalProgress().Should().Be(Optional.Some(new Percent(0.25)));
     }
 
     [Fact]
@@ -141,7 +142,7 @@ public class DownloadServiceTests
 
         // Assert
         _currentDownloads.Should().HaveCount(2);
-        _downloadService.GetTotalProgress().Should().Be(new Percent(0.30));
+        _downloadService.GetTotalProgress().Should().Be(Optional.Some(new Percent(0.30)));
     }
 
     private class DummyDownloadTask : IDownloadTask, IHaveFileSize
