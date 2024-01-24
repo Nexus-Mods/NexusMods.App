@@ -33,4 +33,9 @@ public record GuidedInstallationStep
     /// Gets whether or not there is a next step.
     /// </summary>
     public bool HasNextStep { get; init; }
+
+    /// <summary>
+    /// Gets whether or not the step is visible.
+    /// </summary>
+    public bool IsVisible { get; init; }
 }

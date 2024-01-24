@@ -139,7 +139,11 @@ public sealed class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates, IDis
             optionIdMappings
         );
 
-        var progress = Percent.CreateClamped(currentStepId, installSteps.Length);
+
+        // Progress is computed as currentIndex + 1 /(all steps before the current step + future visible steps + 1).
+        // The +1 are to avoid having the bar at 0% when we're at the first step, and to account for the extra finish screen.
+        var progress = Percent.CreateClamped(currentStepId + 1,
+            currentStepId + 1 + installSteps.Skip(currentStepId + 1).Count(step => step.visible) + 1);
 
         _guidedInstaller
             .RequestUserChoice(guidedInstallationStep, progress, CancellationToken.None)
@@ -243,6 +247,7 @@ public sealed class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates, IDis
             Id = StepId.From(Guid.NewGuid()),
             Name = installSteps[currentStepId].name ?? string.Empty,
             Groups = stepGroups.ToArray(),
+            IsVisible = installSteps[currentStepId].visible,
             HasPreviousStep = currentStepId != 0,
             HasNextStep = currentStepId != installSteps.Count - 1,
         };
