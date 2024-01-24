@@ -293,9 +293,7 @@ public sealed class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates, IDis
         if (CurrentArchiveFiles is null) return null;
 
         var asPath = RelativePath.FromUnsanitizedInput(image);
-        var node = CurrentArchiveFiles.Path() != RelativePath.Empty
-            ? CurrentArchiveFiles.FindByPathFromRoot(asPath)
-            : CurrentArchiveFiles.FindByPathFromChild(asPath);
+        var node = CurrentArchiveFiles.FindByPathFromChild(asPath);
         if (node is not null)
             return new OptionImage(new OptionImage.ImageStoredFile(node.Item.Hash));
 

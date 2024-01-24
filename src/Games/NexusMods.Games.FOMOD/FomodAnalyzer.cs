@@ -42,9 +42,7 @@ public class FomodAnalyzer
                 byte[] bytes;
                 try
                 {
-                    var node = allFiles.Path() != RelativePath.Empty
-                        ? allFiles.FindByPathFromRoot(imagePath)
-                        : allFiles.FindByPathFromChild(imagePath);
+                    var node = allFiles.FindByPathFromChild(imagePath);
                     await using var imageStream = await node!.Item.OpenAsync();
                     using var ms = new MemoryStream();
                     await imageStream.CopyToAsync(ms, ct);
