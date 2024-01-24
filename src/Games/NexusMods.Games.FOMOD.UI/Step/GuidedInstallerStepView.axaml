@@ -57,7 +57,8 @@
                             </Border>
 
                             <Grid Grid.Column="1" x:Name="PreviewStackPanel" RowDefinitions="Auto,*">
-                                <Border Grid.Row="0" x:Name="PreviewTitleBorder" Classes="Rounded OutlineStrong">
+                                <Border Grid.Row="0" x:Name="PreviewTitleBorder"
+                                        Classes="RoundedTop OutlineStrong">
                                     <Grid ColumnDefinitions="*, Auto, Auto">
 
                                         <TextBlock Grid.Column="0" x:Name="PreviewTitleTextBox" Classes="BodyXLBold" />
@@ -69,7 +70,9 @@
                                     </Grid>
                                 </Border>
 
-                                <Border Grid.Row="1" x:Name="PreviewContentBorder" Classes="Rounded OutlineStrong">
+                                <Border Grid.Row="1" x:Name="PreviewContentBorder"
+                                        Classes="RoundedBottom OutlineStrong"
+                                        BorderThickness="1,0,1,1">
                                     <ScrollViewer x:Name="PreviewScrollViewer">
                                         <StackPanel x:Name="PreviewContentsStackPanel" Orientation="Vertical"
                                                     VerticalAlignment="Stretch">
