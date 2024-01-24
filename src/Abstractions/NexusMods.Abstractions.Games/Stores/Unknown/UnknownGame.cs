@@ -1,6 +1,5 @@
 using NexusMods.Abstractions.DataModel.Entities.Mods;
 using NexusMods.Abstractions.Games.DTO;
-using NexusMods.Abstractions.Games.GameCapabilities;
 using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
@@ -65,9 +64,6 @@ public class UnknownGame : IGame
 
     /// <inheritdoc />
     public ILoadoutSynchronizer Synchronizer => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public List<IModInstallDestination> InstallDestinations { get; } = new();
 
     /// <inheritdoc />
     public IStreamFactory Icon => throw new NotImplementedException("No icon provided for this game.");
