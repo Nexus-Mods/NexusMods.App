@@ -247,7 +247,6 @@ public sealed class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates, IDis
             Id = StepId.From(Guid.NewGuid()),
             Name = installSteps[currentStepId].name ?? string.Empty,
             Groups = stepGroups.ToArray(),
-            IsVisible = installSteps[currentStepId].visible,
             HasPreviousStep = currentStepId != 0,
             HasNextStep = currentStepId != installSteps.Count - 1,
         };
