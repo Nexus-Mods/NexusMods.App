@@ -27,8 +27,9 @@ public class InProgressViewModel : AViewModel<IInProgressViewModel>, IInProgress
 {
     internal const int PollTimeMilliseconds = 1000;
 
-    private IObservable<Unit> Tick { get; set; } = Observable.Interval(TimeSpan.FromMilliseconds(PollTimeMilliseconds))
-        .Select(_ => Unit.Default);
+    private IObservable<Unit> Tick { get; set; } = Observable.Defer(() =>
+        Observable.Interval(TimeSpan.FromMilliseconds(PollTimeMilliseconds))
+            .Select(_ => Unit.Default));
 
     /// <summary>
     /// For designTime and Testing, provides an alternative list of tasks to use.

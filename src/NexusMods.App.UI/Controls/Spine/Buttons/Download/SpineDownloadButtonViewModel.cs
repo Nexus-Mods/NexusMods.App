@@ -15,8 +15,9 @@ public class SpineDownloadButtonViewModel : AViewModel<ISpineDownloadButtonViewM
 {
     private const int PollTimeMilliseconds = 1000;
 
-    private IObservable<Unit> Tick { get; } = Observable.Interval(TimeSpan.FromMilliseconds(PollTimeMilliseconds))
-        .Select(_ => Unit.Default);
+    private IObservable<Unit> Tick { get; } = Observable.Defer(() =>
+        Observable.Interval(TimeSpan.FromMilliseconds(PollTimeMilliseconds))
+            .Select(_ => Unit.Default));
 
     public SpineDownloadButtonViewModel(IDownloadService downloadService)
     {
@@ -27,7 +28,6 @@ public class SpineDownloadButtonViewModel : AViewModel<ISpineDownloadButtonViewM
                 Number = downloadService.GetThroughput() / Size.MB;
                 Units = "MB/s";
                 Progress = downloadService.GetTotalProgress();
-
             }).DisposeWith(disposables);
         });
     }
