@@ -8,6 +8,7 @@ using NexusMods.BCL.Extensions;
 using NexusMods.Games.BethesdaGameStudios.Exceptions;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
+using NexusMods.Paths.Trees.Traits;
 
 namespace NexusMods.Games.BethesdaGameStudios;
 
@@ -40,10 +41,9 @@ public class PluginSorter
     {
         // Get all plugins and analyze them
         var allPlugins = await tree[Constants.DataFolder]
-            .Children
-            .Values
-            .Where(c => c.IsFile)
-            .Select(c => c.Value)
+            .Children()
+            .Where(c => c.IsFile())
+            .Select(c => c.Value.Item.Value)
             // For now we only support plugins that are not generated on-the-fly
             .OfType<StoredFile>()
             .Where(f => SkyrimSpecialEdition.SkyrimSpecialEdition.PluginExtensions.Contains(f.To.Extension))

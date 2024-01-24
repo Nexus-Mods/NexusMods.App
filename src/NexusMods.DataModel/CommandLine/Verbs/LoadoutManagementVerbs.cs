@@ -3,6 +3,7 @@ using NexusMods.Abstractions.Cli;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.ArchiveMetadata;
 using NexusMods.Abstractions.Games.Loadouts;
+using NexusMods.Abstractions.Games.Trees;
 using NexusMods.Abstractions.Installers.DTO.Files;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.DataModel.Loadouts;
@@ -45,7 +46,7 @@ public static class LoadoutManagementVerbs
         var state = await loadout.Value.Apply();
 
         var summary = state.GetAllDescendentFiles()
-            .Aggregate((Count:0, Size:Size.Zero), (acc, file) => (acc.Item1 + 1, acc.Item2 + file.Value.Size));
+            .Aggregate((Count:0, Size:Size.Zero), (acc, file) => (acc.Item1 + 1, acc.Item2 + file.Item.Value.Size));
 
         await renderer.Text($"Applied {loadout} resulting state contains {summary.Count} files and {summary.Size} of data");
 
@@ -98,8 +99,8 @@ public static class LoadoutManagementVerbs
 
         var flattened = await synchronizer.LoadoutToFlattenedLoadout(loadout.Value);
 
-        foreach (var (path, pair) in flattened.GetAllDescendentFiles())
-            rows.Add(new object[] { pair!.Mod.Name, path });
+        foreach (var item in flattened.GetAllDescendentFiles())
+            rows.Add([item.Item.Value!.Mod.Name, item.GamePath()]);
 
         await renderer.Table(new[] { "Mod", "To" }, rows);
         return 0;

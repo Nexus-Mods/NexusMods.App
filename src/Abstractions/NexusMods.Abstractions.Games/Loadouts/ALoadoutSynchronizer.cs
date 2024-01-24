@@ -7,6 +7,7 @@ using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Games.Loadouts.Sorting;
 using NexusMods.Abstractions.Games.Loadouts.Transformer;
 using NexusMods.Abstractions.Games.Loadouts.Visitors;
+using NexusMods.Abstractions.Games.Trees;
 using NexusMods.Abstractions.Installers.DTO;
 using NexusMods.Abstractions.Installers.DTO.Files;
 using NexusMods.Abstractions.IO;
@@ -16,6 +17,7 @@ using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.BCL.Extensions;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
+using NexusMods.Paths.Trees.Traits;
 using LocationId = NexusMods.Abstractions.Installers.DTO.LocationId;
 
 namespace NexusMods.Abstractions.Games.Loadouts;
@@ -108,7 +110,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     public ValueTask<FileTree> FlattenedLoadoutToFileTree(FlattenedLoadout flattenedLoadout, Loadout loadout)
     {
         return ValueTask.FromResult(FileTree.Create(flattenedLoadout.GetAllDescendentFiles()
-            .Select(f => KeyValuePair.Create(f.Path, f.Value!.File))));
+            .Select(f => KeyValuePair.Create(f.GamePath(), f.Item.Value!.File))));
     }
 
 
@@ -132,7 +134,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                 if (prevState.TryGetValue(gamePath, out var prevEntry))
                 {
                     // If the file has been modified outside of the app since the last apply, we need to ingest it.
-                    if (prevEntry.Value.Hash != entry.Hash)
+                    if (prevEntry.Item.Value.Hash != entry.Hash)
                     {
                         HandleNeedIngest(entry);
                         throw new UnreachableException("HandleNeedIngest should have thrown");
@@ -146,8 +148,8 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                         continue;
                     }
 
-                    resultingItems.Add(newEntry.Path, prevEntry.Value);
-                    switch (newEntry.Value!)
+                    resultingItems.Add(newEntry.GamePath(), prevEntry.Item.Value);
+                    switch (newEntry.Item.Value!)
                     {
 
                         case StoredFile fa:
@@ -177,15 +179,17 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         }
 
         // Now we look for completely new files
-        foreach (var (path, entry) in fileTree.GetAllDescendentFiles())
+        foreach (var item in fileTree.GetAllDescendentFiles())
         {
+            var path = item.GamePath();
+
             // If the file has already been handled above, skip it
             if (resultingItems.ContainsKey(path))
                 continue;
 
             var absolutePath = installation.LocationsRegister.GetResolvedPath(path);
 
-            switch (entry!)
+            switch (item.Item.Value!)
             {
                 case StoredFile fa:
                     // Don't add toExtract to the results yet as we'll need to get the modified file times
@@ -268,29 +272,30 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     public async ValueTask<FileTree> DiskToFileTree(DiskState diskState, Loadout prevLoadout, FileTree prevFileTree, DiskState prevDiskState)
     {
         List<KeyValuePair<GamePath, AModFile>> results = new();
-        foreach (var (path, newEntry) in diskState.GetAllDescendentFiles())
+        foreach (var item in diskState.GetAllDescendentFiles())
         {
-            var absPath = prevLoadout.Installation.LocationsRegister.GetResolvedPath(path);
-            if (prevDiskState.TryGetValue(path, out var prevEntry))
+            var gamePath = item.GamePath();
+            var absPath = prevLoadout.Installation.LocationsRegister.GetResolvedPath(item.GamePath());
+            if (prevDiskState.TryGetValue(gamePath, out var prevEntry))
             {
-                var prevFile = prevFileTree[path].Value!;
-                if (prevEntry.Value.Hash == newEntry.Hash)
+                var prevFile = prevFileTree[gamePath].Item.Value!;
+                if (prevEntry.Item.Value.Hash == item.Item.Value.Hash)
                 {
                     // If the file hasn't changed, use it as-is
-                    results.Add(KeyValuePair.Create(path, prevFile));
+                    results.Add(KeyValuePair.Create(gamePath, prevFile));
                     continue;
                 }
 
 
                 // Else, the file has changed, so we need to update it.
-                var newFile = await HandleChangedFile(prevFile, prevEntry.Value, newEntry, path, absPath);
-                results.Add(KeyValuePair.Create(path, newFile));
+                var newFile = await HandleChangedFile(prevFile, prevEntry.Item.Value, item.Item.Value, gamePath, absPath);
+                results.Add(KeyValuePair.Create(gamePath, newFile));
             }
             else
             {
                 // Else, the file is new, so we need to add it.
-                var newFile = await HandleNewFile(newEntry, path, absPath);
-                results.Add(KeyValuePair.Create(path, newFile));
+                var newFile = await HandleNewFile(item.Item.Value, gamePath, absPath);
+                results.Add(KeyValuePair.Create(gamePath, newFile));
             }
         }
 
@@ -381,14 +386,16 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
 
 
         // Find all the files, and try to find a match in the previous state
-        foreach (var (path, file) in fileTree.GetAllDescendentFiles())
+        foreach (var item in fileTree.GetAllDescendentFiles())
         {
+            var path = item.GamePath();
+            var file = item.Item.Value;
             if (prevFlattenedLoadout.TryGetValue(path, out var prevPair))
             {
-                if (prevPair.Value!.File.DataStoreId.Equals(file!.DataStoreId))
+                if (prevPair.Item.Value!.File.DataStoreId.Equals(file.DataStoreId))
                 {
                     // File hasn't changed, so we can use the previous entry
-                    results.Add(KeyValuePair.Create(path, prevPair.Value!));
+                    results.Add(KeyValuePair.Create(path, prevPair.Item.Value!));
                     continue;
                 }
                 else
@@ -396,7 +403,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                     // Use the previous mod, but the new file
                     results.Add(KeyValuePair.Create(path, new ModFilePair
                     {
-                        Mod = prevPair.Value!.Mod,
+                        Mod = prevPair.Item.Value!.Mod,
                         File = file
                     }));
                     continue;
@@ -404,7 +411,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             }
 
             // Assign the new files to a mod
-            var mod = GetModForNewFile(prevLoadout, path, file!, ModForCategory);
+            var mod = GetModForNewFile(prevLoadout, path, file, ModForCategory);
             results.Add(KeyValuePair.Create(path, new ModFilePair
             {
                 Mod = mod,
@@ -516,7 +523,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
 
         // Backup the files that are new or changed
         await _fileStore.BackupFiles(await fileTree.GetAllDescendentFiles()
-            .Select(n => n.Value)
+            .Select(n => n.Item.Value)
             .OfType<StoredFile>()
             .SelectAsync(async f =>
             {
@@ -556,9 +563,9 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                     return KeyValuePair.Create(id, (AModFile)new StoredFile
                     {
                         Id = id,
-                        Hash = f.Value.Hash,
-                        Size = f.Value.Size,
-                        To = f.Path
+                        Hash = f.Item.Value.Hash,
+                        Size = f.Item.Value.Size,
+                        To = f.GamePath()
                     });
                 }))
         };

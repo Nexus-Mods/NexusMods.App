@@ -1,6 +1,7 @@
 ﻿using NexusMods.Abstractions.DataModel.Entities.Mods;
 using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Games.Loadouts.Visitors;
+using NexusMods.Abstractions.Games.Trees;
 using NexusMods.Abstractions.Installers.DTO;
 using NexusMods.Abstractions.Installers.DTO.Files;
 
@@ -33,9 +34,10 @@ public class FlattenedToLoadoutTransformer : ALoadoutVisitor
         _modReplacements = new Dictionary<ModId, Mod>();
 
         // These are files that no longer exist in the loadout, so we need to delete them
+        // TODO: This is inefficient due to double call of GamePath()
         _toDelete = prevFlattenedLoadout.GetAllDescendentFiles()
-            .Where(f => !flattenedLoadout.TryGetValue(f.Path, out _))
-            .Select(f => f.Path)
+            .Where(f => !flattenedLoadout.TryGetValue(f.Item.GetGamePath(), out _))
+            .Select(f => f.GamePath())
             .ToHashSet();
 
         _moveFrom = new Dictionary<ModId, List<AModFile>>();
@@ -56,16 +58,18 @@ public class FlattenedToLoadoutTransformer : ALoadoutVisitor
         _fileReplacements = new Dictionary<(ModId, ModFileId), AModFile>();
 
         // These are files that have changed or are new, so we need to add/update them
-        foreach (var (path, newPair) in flattenedLoadout.GetAllDescendentFiles())
+        foreach (var item in flattenedLoadout.GetAllDescendentFiles())
         {
+            var newPair = item.Item.Value;
+            var path = item.GamePath();
             if (prevFlattenedLoadout.TryGetValue(path, out var prevPair))
             {
-                if (!prevPair.Value!.Mod.Id.Equals(newPair!.Mod.Id))
+                if (!prevPair.Item.Value!.Mod.Id.Equals(newPair!.Mod.Id))
                     continue;
 
-                if (prevPair.Value!.File.Id.Equals(newPair.File.Id))
+                if (prevPair.Item.Value!.File.Id.Equals(newPair.File.Id))
                 {
-                    if (prevPair.Value!.File.DataStoreId.Equals(newPair.File.DataStoreId))
+                    if (prevPair.Item.Value!.File.DataStoreId.Equals(newPair.File.DataStoreId))
                     {
                         // Nothing to change
                         continue;
@@ -74,7 +78,7 @@ public class FlattenedToLoadoutTransformer : ALoadoutVisitor
                 }
                 else
                 {
-                    AddToValues(_moveFrom, prevPair.Value.Mod.Id, prevPair.Value.File);
+                    AddToValues(_moveFrom, prevPair.Item.Value.Mod.Id, prevPair.Item.Value.File);
                     AddToValues(_moveTo, newPair.Mod.Id, newPair.File);
                 }
             }

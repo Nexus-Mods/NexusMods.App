@@ -1,9 +1,10 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
-using NexusMods.Abstractions.Games.Legacy;
+using NexusMods.Abstractions.Games.Trees;
 using NexusMods.Abstractions.Installers.DTO;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
+using NexusMods.Paths.Trees.Traits;
 using LocationId = NexusMods.Abstractions.Installers.DTO.LocationId;
 
 namespace NexusMods.Abstractions.Games.DTO;
@@ -12,25 +13,19 @@ namespace NexusMods.Abstractions.Games.DTO;
 /// A tree representing the current state of files on disk.
 /// </summary>
 [JsonConverter(typeof(DiskStateConverter))]
-public class DiskState : AGamePathTree<DiskStateEntry>
+public class DiskState : AGamePathNodeTree<DiskStateEntry>
 {
     private DiskState(IEnumerable<KeyValuePair<GamePath, DiskStateEntry>> tree) : base(tree) { }
 
     /// <summary>
-    /// Creates a disk state from a list of files.
+    ///     Creates a disk state from a list of files.
     /// </summary>
-    /// <param name="tree"></param>
-    /// <returns></returns>
-    public static DiskState Create(IEnumerable<KeyValuePair<GamePath, DiskStateEntry>> tree)
-    {
-        return new DiskState(tree);
-    }
+    public static DiskState Create(IEnumerable<KeyValuePair<GamePath, DiskStateEntry>> items) => new(items);
 }
-
 
 class DiskStateConverter : JsonConverter<DiskState>
 {
-    public override DiskState? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override DiskState Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         if (reader.TokenType != JsonTokenType.StartArray)
             throw new JsonException();
@@ -73,15 +68,16 @@ class DiskStateConverter : JsonConverter<DiskState>
     public override void Write(Utf8JsonWriter writer, DiskState value, JsonSerializerOptions options)
     {
         writer.WriteStartArray();
-        foreach (var (path, entry) in value.GetAllDescendentFiles())
+        foreach (var boxed in value.GetAllDescendentFiles())
         {
+            ref var item = ref boxed.Item;
             writer.WriteStartArray();
 
-            writer.WriteStringValue(path.LocationId.Value);
-            writer.WriteStringValue(path.Path);
-            writer.WriteNumberValue(entry.Hash.Value);
-            writer.WriteNumberValue(entry.Size.Value);
-            writer.WriteNumberValue(entry.LastModified.ToFileTimeUtc());
+            writer.WriteStringValue(item.Id.Value);
+            writer.WriteStringValue(item.ReconstructPath());
+            writer.WriteNumberValue(item.Value.Hash.Value);
+            writer.WriteNumberValue(item.Value.Size.Value);
+            writer.WriteNumberValue(item.Value.LastModified.ToFileTimeUtc());
 
             writer.WriteEndArray();
         }
