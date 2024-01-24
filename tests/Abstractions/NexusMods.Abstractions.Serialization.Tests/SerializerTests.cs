@@ -6,8 +6,7 @@ using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.Abstractions.Serialization.Json;
 
-
-namespace NexusMods.DataModel.Tests;
+namespace NexusMods.Abstractions.Serialization.Tests;
 
 public class SerializerTests
 {

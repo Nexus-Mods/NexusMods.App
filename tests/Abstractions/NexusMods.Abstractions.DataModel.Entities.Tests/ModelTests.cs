@@ -6,7 +6,7 @@ using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using ModFileId = NexusMods.Abstractions.DataModel.Entities.Mods.ModFileId;
 
-namespace NexusMods.DataModel.Tests;
+namespace NexusMods.Abstractions.DataModel.Entities.Tests;
 
 public class ModelTests : ADataModelTest<ModelTests>
 {

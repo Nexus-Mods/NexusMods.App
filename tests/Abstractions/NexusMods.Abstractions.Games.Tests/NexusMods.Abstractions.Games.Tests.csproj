@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\Abstractions\NexusMods.Abstractions.Games\NexusMods.Abstractions.Games.csproj" />
+  </ItemGroup>
+</Project>

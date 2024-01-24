@@ -4,7 +4,7 @@ using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Utilities;
 
-namespace NexusMods.DataModel.Tests;
+namespace NexusMods.Abstractions.Installers.Tests;
 
 public class GamePathTests
 {

@@ -1,6 +1,5 @@
 using System.Buffers.Binary;
 using FluentAssertions;
-using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.DataModel.Entities.Mods;
 using NexusMods.Abstractions.Installers.DTO;
 using NexusMods.Abstractions.Installers.DTO.Files;
@@ -15,15 +14,9 @@ namespace NexusMods.DataModel.Tests;
 
 public class DataStoreTests
 {
-    private readonly ILogger<DataStoreTests> _logger;
-
-    public DataStoreTests(ILogger<DataStoreTests> logger, IDataStore store)
-    {
-        _logger = logger;
-        DataStore = store;
-    }
-
     public IDataStore DataStore { get; set; }
+
+    public DataStoreTests(IDataStore store) => DataStore = store;
 
     [Fact]
     public void CanGetAndSetHashedValues()

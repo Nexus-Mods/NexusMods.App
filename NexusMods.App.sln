@@ -177,6 +177,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Abstractions", "Abstraction
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.GuidedInstallers.Tests", "tests\Abstractions\NexusMods.Abstractions.GuidedInstallers.Tests\NexusMods.Abstractions.GuidedInstallers.Tests.csproj", "{65208CB5-C0FF-43D3-9920-F527666E76F4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.Installers.Tests", "tests\Abstractions\NexusMods.Abstractions.Installers.Tests\NexusMods.Abstractions.Installers.Tests.csproj", "{F4A55DFF-094F-4471-9535-DB516BDC08D4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.Serialization.Tests", "tests\Abstractions\NexusMods.Abstractions.Serialization.Tests\NexusMods.Abstractions.Serialization.Tests.csproj", "{2969394F-CD30-4CF5-A13D-C8A45DEA6768}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.DataModel.Entities.Tests", "tests\Abstractions\NexusMods.Abstractions.DataModel.Entities.Tests\NexusMods.Abstractions.DataModel.Entities.Tests.csproj", "{AB8EDFAC-158A-4984-B53D-9396B8282B8A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.Games.Tests", "tests\Abstractions\NexusMods.Abstractions.Games.Tests\NexusMods.Abstractions.Games.Tests.csproj", "{7553800B-49FC-46CB-AD06-0742B795E73E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -455,6 +463,22 @@ Global
 		{65208CB5-C0FF-43D3-9920-F527666E76F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{65208CB5-C0FF-43D3-9920-F527666E76F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{65208CB5-C0FF-43D3-9920-F527666E76F4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F4A55DFF-094F-4471-9535-DB516BDC08D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F4A55DFF-094F-4471-9535-DB516BDC08D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F4A55DFF-094F-4471-9535-DB516BDC08D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F4A55DFF-094F-4471-9535-DB516BDC08D4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2969394F-CD30-4CF5-A13D-C8A45DEA6768}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2969394F-CD30-4CF5-A13D-C8A45DEA6768}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2969394F-CD30-4CF5-A13D-C8A45DEA6768}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2969394F-CD30-4CF5-A13D-C8A45DEA6768}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB8EDFAC-158A-4984-B53D-9396B8282B8A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB8EDFAC-158A-4984-B53D-9396B8282B8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB8EDFAC-158A-4984-B53D-9396B8282B8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB8EDFAC-158A-4984-B53D-9396B8282B8A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7553800B-49FC-46CB-AD06-0742B795E73E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7553800B-49FC-46CB-AD06-0742B795E73E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7553800B-49FC-46CB-AD06-0742B795E73E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7553800B-49FC-46CB-AD06-0742B795E73E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -536,6 +560,10 @@ Global
 		{9A43AABA-C158-47F9-B724-271216536CA4} = {E7BAE287-D505-4D6D-A090-665A64309B2D}
 		{77FD7E0D-2180-4518-82E5-B3D0FDFD76C5} = {52AF9D62-7D5B-4AD0-BA12-86F2AA67428B}
 		{65208CB5-C0FF-43D3-9920-F527666E76F4} = {77FD7E0D-2180-4518-82E5-B3D0FDFD76C5}
+		{F4A55DFF-094F-4471-9535-DB516BDC08D4} = {77FD7E0D-2180-4518-82E5-B3D0FDFD76C5}
+		{2969394F-CD30-4CF5-A13D-C8A45DEA6768} = {77FD7E0D-2180-4518-82E5-B3D0FDFD76C5}
+		{AB8EDFAC-158A-4984-B53D-9396B8282B8A} = {77FD7E0D-2180-4518-82E5-B3D0FDFD76C5}
+		{7553800B-49FC-46CB-AD06-0742B795E73E} = {77FD7E0D-2180-4518-82E5-B3D0FDFD76C5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9F9F8352-34DD-42C0-8564-EE9AF34A3501}

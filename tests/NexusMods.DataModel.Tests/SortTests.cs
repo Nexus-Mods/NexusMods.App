@@ -13,8 +13,9 @@ public class SortTests
     {
         var data = new List<Item>
         {
-            new Item {Id = "B", Rules = new()},
-            new Item {Id = "A", Rules = new()
+            new() {Id = "B", Rules = new()},
+            new()
+            {Id = "A", Rules = new()
             {
                 new First<Item, string>()
             }},
@@ -30,12 +31,14 @@ public class SortTests
     {
         var data = new List<Item>
         {
-            new Item {Id = "B", Rules = new()},
-            new Item {Id = "A", Rules = new()
+            new() {Id = "B", Rules = new()},
+            new()
+            {Id = "A", Rules = new()
             {
                 new Before<Item, string> { Other = "B" }
             }},
-            new Item {Id = "C", Rules = new()
+            new()
+            {Id = "C", Rules = new()
             {
                 new After<Item, string> { Other = "B" }
             }}
