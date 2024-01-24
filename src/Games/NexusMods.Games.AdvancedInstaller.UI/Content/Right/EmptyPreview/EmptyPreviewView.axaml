@@ -12,22 +12,18 @@
         <emptyPreview:EmptyPreviewViewModel />
     </Design.DataContext>
 
-    <Border Classes="Rounded ContainerBorderColor OutlineTertiaryDarker">
+    <Border Classes="Rounded OutlineModerate">
         <Border.Styles>
             <Style Selector="TextBlock#EmptyPreviewTextBlock">
-                <Setter Property="Foreground" Value="{DynamicResource FontDarkSecondaryColor}" />
                 <Setter Property="VerticalAlignment" Value="Center" />
                 <Setter Property="HorizontalAlignment" Value="Center" />
-                <!-- BodyMDNormal - Can't set the class or it would override the foreground color -->
-                <Setter Property="FontFamily" Value="{DynamicResource FontSecondary}" />
-                <Setter Property="FontWeight" Value="400" />
-                <Setter Property="FontSize" Value="14" />
-                <Setter Property="LineHeight" Value="21" />
+                <Setter Property="TextAlignment" Value="Center" />
             </Style>
         </Border.Styles>
 
         <ScrollViewer x:Name="ResultsScrollViewer">
-            <TextBlock Text="{x:Static resources:Language.EmptyPreviewText_Select_files_to_install}"
+            <TextBlock Classes="BodyMDNormal ForegroundSubdued"
+                       Text="{x:Static resources:Language.EmptyPreviewText_Select_files_to_install}"
                        x:Name="EmptyPreviewTextBlock" />
         </ScrollViewer>
     </Border>

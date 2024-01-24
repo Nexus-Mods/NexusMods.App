@@ -1,0 +1,18 @@
+﻿<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <x:Double x:Key="Alpha100">1.00</x:Double>
+    <x:Double x:Key="Alpha95">0.95</x:Double>
+    <x:Double x:Key="Alpha90">0.90</x:Double>
+    <x:Double x:Key="Alpha80">0.80</x:Double>
+    <x:Double x:Key="Alpha70">0.70</x:Double>
+    <x:Double x:Key="Alpha60">0.60</x:Double>
+    <x:Double x:Key="Alpha50">0.50</x:Double>
+    <x:Double x:Key="Alpha40">0.40</x:Double>
+    <x:Double x:Key="Alpha30">0.30</x:Double>
+    <x:Double x:Key="Alpha20">0.20</x:Double>
+    <x:Double x:Key="Alpha10">0.10</x:Double>
+    <x:Double x:Key="Alpha5">0.05</x:Double>
+    <x:Double x:Key="Alpha0">0.00</x:Double>
+
+</ResourceDictionary>

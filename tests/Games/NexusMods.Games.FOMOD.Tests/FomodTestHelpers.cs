@@ -1,4 +1,4 @@
-﻿using NexusMods.Abstractions.Installers.Trees;
+using NexusMods.Abstractions.Installers.Trees;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.BCL.Extensions;
 using NexusMods.Extensions.Hashing;

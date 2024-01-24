@@ -47,6 +47,16 @@ class DownloadState
         }
     }
 
+    /// <summary>
+    /// Returns the number of bytes that have been already been downloaded
+    /// </summary>
+    [JsonIgnore]
+    public Size CompletedSize
+    {
+        get {
+            return Chunks.Select(chunk => chunk.Completed).Aggregate((a, b) => a + b);
+        }
+    }
 
     /// <summary>
     /// The file where the download state is stored

@@ -1,0 +1,71 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.PreviewWith>
+        <Border Padding="20" Classes="Low">
+            <DataGrid CanUserReorderColumns="True"
+                      CanUserResizeColumns="True"
+                      CanUserSortColumns="True"
+                      Margin="24,16">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Name"
+                                        Width="SizeToCells"
+                                        Binding="{Binding Name}" />
+                    <DataGridTextColumn Header="Age"
+                                        Width="SizeToCells"
+                                        Binding="{Binding Age}" />
+                    <DataGridTextColumn Header="Occupation"
+                                        Width="SizeToCells"
+                                        Binding="{Binding Occupation}" />
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+    </Design.PreviewWith>
+
+    <!-- Add Styles Here -->
+
+    <Style Selector="DataGrid">
+        <Setter Property="Background" Value="{StaticResource ElementBackgroundTransparentBrush}" />
+    </Style>
+
+    <Style Selector="DataGridColumnHeader">
+        <Setter Property="Background" Value="{StaticResource ElementBackgroundTransparentBrush}" />
+        <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralStrongBrush}" />
+        <Setter Property="Padding" Value="16, 0, 0, 0" />
+    </Style>
+
+    <Style Selector="DataGridColumnHeader:sortascending /template/ Path#SortIcon">
+        <Setter Property="Data" Value="{StaticResource DataGridSortIconAscendingPath}" />
+    </Style>
+
+    <Style Selector="DataGridColumnHeader:sortdescending /template/ Path#SortIcon">
+        <Setter Property="Data" Value="{StaticResource DataGridSortIconDescendingPath}" />
+    </Style>
+
+    <Style Selector="DataGridColumnHeader TextBlock">
+        <Setter Property="Theme" Value="{StaticResource TitleXSSemiTheme}" />
+        <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralStrongBrush}" />
+    </Style>
+
+    <Style Selector="DataGridRow:selected Rectangle#BackgroundRectangle">
+        <Setter Property="Fill" Value="{StaticResource ElementBackgroundNeutralMidBrush}" />
+    </Style>
+
+    <Style Selector="DataGridCell">
+        <Setter Property="Height" Value="44" />
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="Padding" Value="16, 0, 0, 0" />
+    </Style>
+
+    <Style Selector="DataGridCell:selected">
+        <Setter Property="BorderThickness" Value="0" />
+    </Style>
+
+    <Style Selector="DataGridCell /template/ Rectangle">
+        <Setter Property="IsVisible" Value="False" />
+    </Style>
+
+    <Style Selector="DataGridCell TextBlock">
+        <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
+        <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralStrongBrush}" />
+    </Style>
+</Styles>

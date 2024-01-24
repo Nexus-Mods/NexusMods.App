@@ -1,0 +1,156 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:icons="https://github.com/projektanker/icons.avalonia"
+        xmlns:extensions="clr-namespace:NexusMods.Themes.NexusFluentDark.Extensions">
+    <Design.PreviewWith>
+        <WrapPanel Width="500">
+            <Button Classes="Spine Icon Inactive Add IconTemplate" Margin="10" />
+            <Button Classes="Spine Icon Active Add IconTemplate" Margin="10" />
+            <Button Classes="Spine Icon Inactive Home IconTemplate" Margin="10" />
+            <Button Classes="Spine Icon Active Home IconTemplate" Margin="10" />
+            <Button Classes="Spine Image Inactive ImageTemplate" Margin="10" />
+            <Button Classes="Spine Image Active ImageTemplate" Margin="10" />
+        </WrapPanel>
+    </Design.PreviewWith>
+
+    <!-- Styles Definitions-->
+
+    <Style Selector="Button.Spine">
+        <Setter Property="CornerRadius" Value="45" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="ClipToBounds" Value="False" />
+        <Setter Property="Background" Value="{StaticResource ElementBackgroundTransparentBrush}" />
+
+        <Style Selector="^ Border">
+            <Setter Property="CornerRadius" Value="45" />
+        </Style>
+
+        <Style Selector="^:pressed">
+            <Setter Property="RenderTransform" Value="scale(0.9)" />
+        </Style>
+
+        <Style Selector="^.Inactive Border">
+            <Setter Property="BorderBrush" Value="{StaticResource ElementBackgroundNeutralMidBrush}" />
+            <Setter Property="Background" Value="{StaticResource ElementBackgroundTransparentBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Duration="0:0:0.2" Property="Background" />
+                    <BrushTransition Duration="0:0:0.2" Property="BorderBrush" />
+                    <ThicknessTransition Duration="0:0:0.2" Property="BorderThickness" />
+                    <BoxShadowsTransition Duration="0:0:0.2" Property="BoxShadow" />
+                </Transitions>
+            </Setter>
+        </Style>
+
+        <Style Selector="^.Inactive:pointerover Border">
+            <Setter Property="Background">
+                <SolidColorBrush Color="{StaticResource ElementForegroundNeutralStrong}"
+                                 Opacity="{StaticResource OpacityModerate}" />
+            </Setter>
+            <Setter Property="BorderBrush" Value="{StaticResource ElementForegroundNeutralStrongBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+
+        <Style Selector="^.Active Border">
+            <Setter Property="Background" Value="{StaticResource ElementBackgroundTransparentBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource ElementForegroundNeutralStrongBrush}" />
+            <Setter Property="BorderThickness" Value="2" />
+            <Setter Property="BoxShadow">
+                <extensions:BoxShadow BlurRadius="12" SpreadRadius="0" ShadowColor="{StaticResource BrandNeutral200}" />
+            </Setter>
+        </Style>
+
+        <Style Selector="^.Active:pointerover Border">
+            <Setter Property="Background">
+                <SolidColorBrush Color="{StaticResource ElementForegroundNeutralStrong}"
+                                 Opacity="{StaticResource Alpha50}" />
+            </Setter>
+            <Setter Property="BorderBrush" Value="{StaticResource ElementForegroundNeutralStrongBrush}" />
+            <Setter Property="BorderThickness" Value="2" />
+        </Style>
+
+        <!-- ImageButton Styles -->
+        <Style Selector="^.Image">
+
+            <!-- Set the template of the button for preview purposes, actual template is defined in `ImageButton.axaml` -->
+            <Style Selector="^.ImageTemplate">
+                <Setter Property="Template">
+                    <ControlTemplate>
+                        <Grid>
+                            <Image
+                                Height="50"
+                                Width="50"
+                                x:Name="Image"
+                                Source="avares://NexusMods.Themes.NexusFluentDark/Assets/DesignTime/cyberpunk_game.png">
+                                <Image.Clip>
+                                    <EllipseGeometry Rect="0, 0, 50, 50" />
+                                </Image.Clip>
+                            </Image>
+                            <Border
+                                Background="{DynamicResource TransparentBackground}"
+                                Height="50"
+                                Width="50" />
+                        </Grid>
+                    </ControlTemplate>
+                </Setter>
+            </Style>
+
+            <Style Selector="^.Inactive:pointerover Border">
+                <Setter Property="BorderBrush">
+                    <SolidColorBrush Color="{StaticResource ElementForegroundNeutralStrong}"
+                                     Opacity="{StaticResource Alpha50}" />
+                </Setter>
+            </Style>
+
+            <Style Selector="^.Active:pointerover Border">
+                <Setter Property="BorderBrush" Value="{DynamicResource ElementForegroundPrimaryModerateBrush}" />
+            </Style>
+        </Style>
+
+        <!-- IconButton Styles -->
+        <Style Selector="^.Icon">
+
+            <!-- Set the template of the button for preview purposes, actual template is defined in `IconButton.axaml` -->
+            <Style Selector="^.IconTemplate">
+                <Setter Property="Template">
+                    <ControlTemplate>
+                        <Grid>
+                            <icons:Icon
+                                Classes="HelpCircle"
+                                FontSize="20"
+                                HorizontalAlignment="Center"
+                                Margin="0"
+                                Padding="0"
+                                VerticalAlignment="Center" />
+                            <Border
+                                Height="50"
+                                Width="50" />
+                        </Grid>
+                    </ControlTemplate>
+                </Setter>
+            </Style>
+
+            <Style Selector="^.Add /template/ icons|Icon">
+                <Setter Property="Value" Value="mdi-plus" />
+            </Style>
+
+            <Style Selector="^.Home /template/ icons|Icon">
+                <Setter Property="Value" Value="mdi-home" />
+            </Style>
+
+            <Style Selector="^.Inactive icons|Icon">
+                <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralSubduedBrush}" />
+            </Style>
+
+            <Style Selector="^.Active icons|Icon">
+                <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralStrongBrush}" />
+            </Style>
+
+        </Style>
+
+    </Style>
+
+
+</Styles>

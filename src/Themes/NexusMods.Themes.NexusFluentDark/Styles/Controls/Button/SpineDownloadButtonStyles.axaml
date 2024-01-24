@@ -1,0 +1,256 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:icons="https://github.com/projektanker/icons.avalonia"
+        xmlns:ui="clr-namespace:NexusMods.App.UI.Controls.Spine.Buttons.Download;assembly=NexusMods.App.UI"
+        xmlns:extensions="clr-namespace:NexusMods.Themes.NexusFluentDark.Extensions">
+
+    <!-- Preview -->
+    <Design.PreviewWith>
+        <StackPanel Orientation="Horizontal" Margin="24" Spacing="8">
+            <ui:SpineDownloadButtonView />
+            <StackPanel Orientation="Vertical" Spacing="8">
+                <Button Classes="SpineDownloadButton Idle">
+                    <Grid>
+                        <Border></Border>
+                        <Arc></Arc>
+                        <icons:Icon Classes="Download" />
+                        <StackPanel>
+                            <TextBlock Text="8.6" Classes="Number" />
+                            <TextBlock Text="MB/s" Classes="Units" />
+                        </StackPanel>
+                    </Grid>
+                </Button>
+                <Button Classes="SpineDownloadButton Idle Active">
+                    <Grid>
+                        <Border></Border>
+                        <Arc></Arc>
+                        <icons:Icon Classes="Download" />
+                        <StackPanel>
+                            <TextBlock Text="8.6" Classes="Number" />
+                            <TextBlock Text="MB/s" Classes="Units" />
+                        </StackPanel>
+                    </Grid>
+                </Button>
+            </StackPanel>
+
+            <StackPanel Orientation="Vertical" Spacing="8">
+                <Button Classes="SpineDownloadButton Progress">
+                    <Grid>
+                        <Border></Border>
+                        <Arc SweepAngle="270"></Arc>
+                        <icons:Icon Classes="Download" />
+                        <StackPanel>
+                            <TextBlock Text="18.6" Classes="Number" />
+                            <TextBlock Text="MB/s" Classes="Units" />
+                        </StackPanel>
+                    </Grid>
+                </Button>
+                <Button Classes="SpineDownloadButton Progress Active">
+                    <Grid>
+                        <Border></Border>
+                        <Arc SweepAngle="90"></Arc>
+                        <icons:Icon Classes="Download" />
+                        <StackPanel>
+                            <TextBlock Text="18.6" Classes="Number" />
+                            <TextBlock Text="MB/s" Classes="Units" />
+                        </StackPanel>
+                    </Grid>
+                </Button>
+            </StackPanel>
+
+            <StackPanel Orientation="Vertical" Spacing="8">
+                <Button Classes="SpineDownloadButton Progress">
+                    <Grid>
+                        <Border></Border>
+                        <Arc SweepAngle="180"></Arc>
+                        <icons:Icon Classes="Download" />
+                        <StackPanel>
+                            <TextBlock Text="48" Classes="Number" />
+                            <TextBlock Text="MINS" Classes="Units" />
+                        </StackPanel>
+                    </Grid>
+                </Button>
+                <Button Classes="SpineDownloadButton Progress Active">
+                    <Grid>
+                        <Border></Border>
+                        <Arc SweepAngle="90"></Arc>
+                        <icons:Icon Classes="Download" />
+                        <StackPanel>
+                            <TextBlock Text="48" Classes="Number" />
+                            <TextBlock Text="MINS" Classes="Units" />
+                        </StackPanel>
+                    </Grid>
+                </Button>
+            </StackPanel>
+
+        </StackPanel>
+    </Design.PreviewWith>
+
+
+    <!-- Style Definitions -->
+
+    <!-- Base Styles -->
+    <Style Selector="Button.SpineDownloadButton">
+        <Setter Property="Width" Value="60" />
+        <Setter Property="Height" Value="60" />
+
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="Padding" Value="0" />
+
+        <Setter Property="CornerRadius" Value="45" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="BorderBrush" Value="{StaticResource ElementBackgroundNeutralMidBrush}" />
+
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="ClipToBounds" Value="False" />
+
+        <Setter Property="Background" Value="{StaticResource ElementBackgroundTransparentBrush}" />
+
+        <!-- Border -->
+        <Style Selector="^ Border">
+            <Setter Property="Width" Value="50" />
+            <Setter Property="Height" Value="50" />
+            <Setter Property="CornerRadius" Value="45" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="{StaticResource ElementBackgroundNeutralMidBrush}" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="ClipToBounds" Value="False" />
+        </Style>
+
+        <!-- Icon -->
+        <Style Selector="^ icons|Icon">
+            <Setter Property="Width" Value="24" />
+            <Setter Property="Height" Value="24" />
+            <Setter Property="Margin" Value="12" />
+            <Setter Property="FontSize" Value="18" />
+            <Setter Property="Foreground" Value="{DynamicResource ElementForegroundNeutralStrongBrush}" />
+        </Style>
+
+        <!-- StackPanel -->
+        <Style Selector="^ > Grid > StackPanel">
+            <Setter Property="Spacing" Value="0" />
+            <Setter Property="Orientation" Value="Vertical" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="0" />
+        </Style>
+
+        <!-- TextBlock -->
+        <Style Selector="^ TextBlock">
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="TextAlignment" Value="Center" />
+
+            <!-- Download Speed value -->
+            <Style Selector="^.Number">
+                <Setter Property="Theme" Value="{StaticResource TitleXSSemiTheme}" />
+            </Style>
+
+            <!-- Download Speed units -->
+            <Style Selector="^.Units">
+                <Setter Property="FontFamily" Value="{StaticResource FontHeadlinesSemiBold}" />
+                <Setter Property="FontWeight" Value="SemiBold" />
+                <Setter Property="FontSize" Value="6" />
+                <Setter Property="LineHeight" Value="9" />
+                <Setter Property="LetterSpacing" Value="1" />
+            </Style>
+        </Style>
+
+        <!-- Hover -->
+        <Style Selector="^:pointerover">
+
+            <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Background" Value="{StaticResource ElementBackgroundTransparentBrush}" />
+            </Style>
+
+            <!-- Border -->
+            <Style Selector="^ Border">
+                <Setter Property="BorderBrush" Value="{DynamicResource ElementForegroundNeutralModerateBrush}" />
+                <Setter Property="Background">
+                    <SolidColorBrush Color="{StaticResource ElementForegroundNeutralStrong}"
+                                     Opacity="{StaticResource OpacitySubdued}" />
+                </Setter>
+            </Style>
+
+            <!-- Icon -->
+            <Style Selector="^ icons|Icon">
+                <Setter Property="Foreground" Value="{DynamicResource ElementForegroundNeutralStrongBrush}" />
+            </Style>
+
+            <!-- Arc -->
+            <Style Selector="^ Arc">
+                <Setter Property="Stroke" Value="{StaticResource ElementForegroundInfoSubduedBrush}" />
+            </Style>
+        </Style>
+
+        <!-- Progress variation -->
+        <Style Selector="^.Progress">
+
+            <Style Selector="^ Border">
+                <Setter Property="BorderThickness" Value="2" />
+                <Setter Property="CornerRadius" Value="45" />
+            </Style>
+
+            <Style Selector="^ Arc">
+                <Setter Property="Width" Value="50" />
+                <Setter Property="Height" Value="50" />
+                <Setter Property="StrokeThickness" Value="3" />
+                <Setter Property="StartAngle" Value="270" />
+                <Setter Property="Stroke" Value="{StaticResource ElementForegroundInfoWeakBrush}" />
+            </Style>
+
+            <Style Selector="^ > Grid > icons|Icon">
+                <Setter Property="IsVisible" Value="False" />
+            </Style>
+
+            <Style Selector="^ > Grid > StackPanel">
+                <Setter Property="IsVisible" Value="True" />
+            </Style>
+        </Style>
+
+        <!-- Idle variation -->
+        <Style Selector="^.Idle">
+
+            <Style Selector="^ > Grid > icons|Icon">
+                <Setter Property="IsVisible" Value="True" />
+            </Style>
+
+            <Style Selector="^ > Grid > StackPanel">
+                <Setter Property="IsVisible" Value="False" />
+            </Style>
+        </Style>
+
+        <!-- Active variation (Selected) -->
+        <Style Selector="^.Active">
+
+            <Style Selector="^ Border">
+                <Setter Property="Background">
+                    <SolidColorBrush Color="{StaticResource ElementForegroundNeutralStrong}"
+                                     Opacity="{StaticResource OpacityWeak}" />
+                </Setter>
+                <Setter Property="BoxShadow">
+                    <extensions:BoxShadow BlurRadius="10" SpreadRadius="1"
+                                          ShadowColor="{StaticResource BrandNeutral200}" />
+                </Setter>
+            </Style>
+
+            <Style Selector="^.Progress Border">
+                <Setter Property="BorderThickness" Value="2" />
+                <Setter Property="CornerRadius" Value="45" />
+                <Setter Property="BorderBrush" Value="{StaticResource ElementForegroundNeutralModerateBrush}" />
+                <Setter Property="BoxShadow">
+                    <extensions:BoxShadow BlurRadius="10" SpreadRadius="2"
+                                          ShadowColor="{StaticResource BrandNeutral200}" />
+                </Setter>
+            </Style>
+
+            <Style Selector="^ icons|Icon">
+                <Setter Property="Foreground" Value="{DynamicResource ElementForegroundNeutralStrongBrush}" />
+            </Style>
+        </Style>
+
+    </Style>
+
+</Styles>

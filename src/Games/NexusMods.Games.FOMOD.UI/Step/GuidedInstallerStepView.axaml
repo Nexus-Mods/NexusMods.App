@@ -15,61 +15,12 @@
     </Design.DataContext>
 
     <Grid RowDefinitions="*,Auto">
-        <Grid.Styles>
-            <Style Selector="Border#TopPart">
-                <Setter Property="Padding" Value="24, 16, 24, 24" />
-                <Setter Property="Background" Value="{DynamicResource BorderContainerColor}" />
-            </Style>
-            <Style Selector="Border#MultiOptionHeaderBorder">
-                <Setter Property="Padding" Value="0,0,0,16" />
-            </Style>
-            <Style Selector="icons|Icon#MultiOptionHeaderIcon">
-                <Setter Property="FontSize" Value="20" />
-                <Setter Property="Margin" Value="0,0,8,8" />
-                <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
-            </Style>
-            <Style Selector="Border#HeadingAndSubHeadingBorder">
-                <Setter Property="Padding" Value="0,0,0,16" />
-            </Style>
-
-            <Style Selector="Border#GroupsBorder">
-                <Setter Property="Background" Value="{DynamicResource StructuralBorderColor}" />
-                <Setter Property="CornerRadius" Value="8,8, 8,8" />
-                <Setter Property="Padding" Value="8,8,8,8" />
-                <Setter Property="Margin" Value="0,0,16,0" />
-            </Style>
-
-            <Style Selector="Border.WhiteRounded">
-                <Setter Property="BorderThickness" Value="1" />
-                <Setter Property="BorderBrush" Value="{DynamicResource BrandTertiaryDarker}" />
-            </Style>
-            <Style Selector="Border#PreviewTitleBorder">
-                <Setter Property="Padding" Value="16,12,16,12" />
-                <Setter Property="CornerRadius" Value="8,8,0,0" />
-            </Style>
-            <Style Selector="icons|Icon.PreviewIcon">
-                <Setter Property="FontSize" Value="18"></Setter>
-                <Setter Property="Foreground" Value="{DynamicResource FontDarkPrimary}" />
-                <Setter Property="Margin" Value="8,0,0,0" />
-            </Style>
-            <Style Selector="Border#PreviewContentBorder">
-                <Setter Property="Padding" Value="16,16,8,0" />
-                <Setter Property="CornerRadius" Value="0,0,8,8" />
-            </Style>
-            <Style Selector="TextBlock#HighlightedOptionDescription">
-                <Setter Property="Margin" Value="0,16,0,0" />
-            </Style>
-            <Style Selector="StackPanel#PreviewContentsStackPanel">
-                <Setter Property="Margin" Value="0,0,12,0" />
-            </Style>
-        </Grid.Styles>
-
         <Border Grid.Row="0" x:Name="TopPart">
             <Grid x:Name="TopPartGrid" RowDefinitions="Auto,*">
                 <Border Grid.Row="0" x:Name="MultiOptionHeaderBorder">
                     <StackPanel x:Name="MultiOptionHeaderStackPanel" Orientation="Horizontal">
 
-                        <icons:Icon x:Name="MultiOptionHeaderIcon" Classes="Tune"></icons:Icon>
+                        <icons:Icon x:Name="MultiOptionHeaderIcon" Classes="Tune"/>
                         <TextBlock x:Name="MultiOptionHeaderTextBlock" Classes="BodyLGBold"
                                    Text="{x:Static resources:Language.MultiOptionHeader_Multi_Otion_Mod}" />
 
@@ -81,7 +32,7 @@
                         <Border Grid.Row="0" x:Name="HeadingAndSubHeadingBorder">
                             <StackPanel x:Name="HeadingAndSubHeadingStackPanel">
 
-                                <TextBlock Classes="H6MontserratSemi" x:Name="ModName" />
+                                <TextBlock Classes="HeadingXSSemi" x:Name="ModName" />
                                 <TextBlock Classes="HeadingMDSemi" x:Name="StepName" />
 
                             </StackPanel>
@@ -106,7 +57,7 @@
                             </Border>
 
                             <Grid Grid.Column="1" x:Name="PreviewStackPanel" RowDefinitions="Auto,*">
-                                <Border Grid.Row="0" x:Name="PreviewTitleBorder" Classes="WhiteRounded">
+                                <Border Grid.Row="0" x:Name="PreviewTitleBorder" Classes="Rounded OutlineStrong">
                                     <Grid ColumnDefinitions="*, Auto, Auto">
 
                                         <TextBlock Grid.Column="0" x:Name="PreviewTitleTextBox" Classes="BodyXLBold" />
@@ -118,7 +69,7 @@
                                     </Grid>
                                 </Border>
 
-                                <Border Grid.Row="1" x:Name="PreviewContentBorder" Classes="WhiteRounded">
+                                <Border Grid.Row="1" x:Name="PreviewContentBorder" Classes="Rounded OutlineStrong">
                                     <ScrollViewer x:Name="PreviewScrollViewer">
                                         <StackPanel x:Name="PreviewContentsStackPanel" Orientation="Vertical"
                                                     VerticalAlignment="Stretch">

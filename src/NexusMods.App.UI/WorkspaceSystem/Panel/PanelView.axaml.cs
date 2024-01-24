@@ -11,7 +11,7 @@ namespace NexusMods.App.UI.WorkspaceSystem;
 public partial class PanelView : ReactiveUserControl<IPanelViewModel>
 {
     private const double ScrollOffset = 250;
-    private const double DefaultPadding = 6.0;
+    internal const double DefaultPadding = 6.0;
 
     public PanelView()
     {
@@ -34,24 +34,40 @@ public partial class PanelView : ReactiveUserControl<IPanelViewModel>
 
             // toggle visibility of the scrollbar related elements
             this.WhenAnyValue(
+                    view => view.ViewModel!.ActualBounds,
                     view => view.TabHeaderScrollViewer.Extent,
                     view => view.TabHeaderScrollViewer.Viewport,
-                    (extent, viewport) => extent.Width > viewport.Width)
+                    (_, extent, viewport) => extent.Width > viewport.Width)
                 .SubscribeWithErrorLogging(isScrollbarVisible =>
                 {
                     ScrollLeftButton.IsVisible = isScrollbarVisible;
                     ScrollRightButton.IsVisible = isScrollbarVisible;
 
                     // the first button is inside the scroll area
-                    AddTabButton1.IsVisible = !isScrollbarVisible;
+                    AddTabButton1Container.IsVisible = !isScrollbarVisible;
                     // the second button is fixed on the right side
                     AddTabButton2.IsVisible = isScrollbarVisible;
                 })
                 .DisposeWith(disposables);
 
             this.WhenAnyValue(
+                    view => view.ViewModel!.ActualBounds,
+                    view => view.AddTabButton1Container.Bounds,
+                    (_, bounds) => bounds)
+                .SubscribeWithErrorLogging(bounds =>
+                {
+                    var viewport = TabHeaderScrollViewer.Viewport;
+                    var remaining = viewport.Width - bounds.X;
+
+                    AddTabButton1Container.Width = remaining;
+                })
+                .DisposeWith(disposables);
+
+            this.WhenAnyValue(
+                    view => view.ViewModel!.ActualBounds,
                     view => view.TabHeaderScrollViewer.ScrollBarMaximum,
-                    view => view.TabHeaderScrollViewer.Offset)
+                    view => view.TabHeaderScrollViewer.Offset,
+                    (_, a, b) => (a, b))
                 .SubscribeWithErrorLogging(tuple =>
                 {
                     var (scrollBarMaximum, offset) = tuple;
@@ -123,6 +139,25 @@ public partial class PanelView : ReactiveUserControl<IPanelViewModel>
                     return currentOffset.WithX(currentOffset.X + ScrollOffset);
                 })
                 .BindToView(this, view => view.TabHeaderScrollViewer.Offset)
+                .DisposeWith(disposables);
+
+            // styling:
+            this.WhenAnyValue(view => view.ViewModel!.Tabs.Count)
+                .Select(count => count == 1)
+                .Do(hasOneTab =>
+                {
+                    if (hasOneTab)
+                    {
+                        TabHeaderBorder.Classes.Add("OneTab");
+                        PanelBorder.Classes.Add("OneTab");
+                    }
+                    else
+                    {
+                        TabHeaderBorder.Classes.Remove("OneTab");
+                        PanelBorder.Classes.Remove("OneTab");
+                    }
+                })
+                .SubscribeWithErrorLogging()
                 .DisposeWith(disposables);
         });
     }

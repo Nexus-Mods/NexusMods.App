@@ -1,0 +1,40 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:messageBox="clr-namespace:NexusMods.App.UI.Overlays.Generic.MessageBox.Base;assembly=NexusMods.App.UI"
+        xmlns:okCancel="clr-namespace:NexusMods.App.UI.Overlays.Generic.MessageBox.OkCancel;assembly=NexusMods.App.UI">
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <StackPanel Spacing="8">
+                <messageBox:MessageBoxBackground />
+                <okCancel:MessageBoxOkCancelView />
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+
+    <!-- Style Definitions-->
+
+    <!-- MessageBoxBackground -->
+    <Style Selector="messageBox|MessageBoxBackground">
+
+        <Style Selector="^ Border#TopBorder">
+            <Setter Property="Background" Value="{StaticResource ElementBackgroundNeutralTopBrush}" />
+        </Style>
+
+        <Style Selector="^ Border#BottomBorder">
+            <Setter Property="Background" Value="{StaticResource ElementBackgroundNeutralMidBrush}" />
+        </Style>
+    </Style>
+
+    <!-- OkCancelMessageBox -->
+    <Style Selector="okCancel|MessageBoxOkCancelView">
+        <Style Selector="^ TextBlock#HeadingText">
+            <Setter Property="Theme" Value="{StaticResource HeadingXSSemiTheme}" />
+        </Style>
+
+        <Style Selector="^ TextBlock#MessageTextBlock">
+            <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
+        </Style>
+
+
+    </Style>
+</Styles>

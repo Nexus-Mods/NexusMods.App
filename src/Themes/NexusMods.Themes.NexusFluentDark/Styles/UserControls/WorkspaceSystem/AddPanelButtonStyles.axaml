@@ -1,0 +1,24 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ui="clr-namespace:NexusMods.App.UI.WorkspaceSystem;assembly=NexusMods.App.UI"
+        xmlns:icons="https://github.com/projektanker/icons.avalonia">
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <ui:AddPanelButtonView Width="60" Height="40"/>
+        </Border>
+    </Design.PreviewWith>
+
+    <!-- Add Styles Here -->
+    <Style Selector="ui|AddPanelButtonView">
+
+        <Style Selector="^ Button">
+            <Setter Property="Background" Value="{StaticResource ElementBackgroundTransparentBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource ElementForegroundPrimaryModerateBrush}"/>
+            <Setter Property="Padding" Value="0" />
+        </Style>
+
+        <Style Selector="^ icons|Icon">
+            <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralSubduedBrush}"/>
+        </Style>
+    </Style>
+</Styles>

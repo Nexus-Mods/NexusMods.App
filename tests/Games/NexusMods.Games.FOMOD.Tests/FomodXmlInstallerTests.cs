@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using NexusMods.Abstractions.DataModel.Entities.Mods;
 using NexusMods.Abstractions.Games.ArchiveMetadata;
 using NexusMods.Abstractions.Games.Downloads;

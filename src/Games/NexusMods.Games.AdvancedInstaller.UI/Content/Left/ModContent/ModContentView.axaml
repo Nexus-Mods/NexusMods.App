@@ -16,33 +16,31 @@
         <Grid.Styles>
             <Style Selector="Border.HeaderAreaBorder">
                 <Setter Property="BorderThickness" Value="0, 0, 0, 1" />
-                <Setter Property="BorderBrush" Value="{DynamicResource BorderContainerBrush}" />
                 <Setter Property="Margin" Value="0, 0, 0, 16" />
             </Style>
 
             <Style Selector="TextBlock.ContentSubHeading">
-                <Setter Property="Foreground" Value="{DynamicResource FontDarkSecondaryColor}" />
                 <Setter Property="Margin" Value="0, 4, 0, 16" />
             </Style>
         </Grid.Styles>
 
         <!-- "Mod Content" Header and "Description" -->
-        <Border Grid.Row="0" Classes="HeaderAreaBorder" x:Name="HeaderAreaBorder">
+        <Border Grid.Row="0" Classes="HeaderAreaBorder OutlineWeak" x:Name="HeaderAreaBorder">
             <StackPanel Orientation="Vertical">
 
-                <TextBlock Classes="TitleSMSemi" Text="{x:Static resources:Language.ModContentTitle_MOD_CONTENT}"
+                <TextBlock Classes="TitleSMSemi"
+                           Text="{x:Static resources:Language.ModContentTitle_MOD_CONTENT}"
                            x:Name="ModContentTitle" />
 
-                <TextBlock Classes="BodySMNormal ContentSubHeading"
+                <TextBlock Classes="BodySMNormal ForegroundSubdued ContentSubHeading"
                            Text="{x:Static resources:Language.ModContentSubHeading_Files_with_no}"
                            x:Name="ModContentSubHeading" />
             </StackPanel>
         </Border>
 
         <!-- "Mod Content" Tree -->
-        <TreeDataGrid Grid.Row="1" Classes="TreeNoSelection TreeNoHeader TreeWhiteCaret" x:Name="ModContentTreeDataGrid"
-                      ShowColumnHeaders="True"
-                      Foreground="{DynamicResource FontDarkSecondaryColor}" />
+        <TreeDataGrid Grid.Row="1" Classes="TreeNoHeader TreeWhiteCaret" x:Name="ModContentTreeDataGrid"
+                      ShowColumnHeaders="True"/>
 
     </Grid>
 </reactiveUi:ReactiveUserControl>

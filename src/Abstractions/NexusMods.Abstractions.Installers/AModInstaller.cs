@@ -1,4 +1,4 @@
-﻿namespace NexusMods.Abstractions.Installers;
+namespace NexusMods.Abstractions.Installers;
 
 /// <summary>
 ///     Mod installer base class that provides support for the installation of mods

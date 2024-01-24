@@ -1,3 +1,4 @@
+using DynamicData.Kernel;
 using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.NexusWebApi.DTOs;
 using NexusMods.Abstractions.NexusWebApi.Types;
@@ -30,7 +31,12 @@ public class NxmDownloadTask : IDownloadTask, IHaveDownloadVersion, IHaveFileSiz
     private long _defaultDownloadedSize;
 
     /// <inheritdoc />
-    public long DownloadedSizeBytes => (long)(_state.ActivityStatus?.MakeTypedReport().Current.Value.Value ?? (ulong)_defaultDownloadedSize);
+    public long DownloadedSizeBytes =>
+        (long)(_state.ActivityStatus?
+                   .MakeTypedReport()
+                   .Current
+                   .ValueOr(() => Size.Zero)
+                   .Value ?? (ulong)_defaultDownloadedSize);
 
     /// <inheritdoc />
     public long CalculateThroughput()
@@ -38,7 +44,12 @@ public class NxmDownloadTask : IDownloadTask, IHaveDownloadVersion, IHaveFileSiz
         if (_state.Activity == null)
             return 0;
 
-        return (long)(((ActivityReport<Size>?)_state.ActivityStatus?.GetReport())?.Throughput.Value ?? Size.Zero).Value;
+        var report = _state.ActivityStatus?.GetReport() as ActivityReport<Size>;
+        var size = report?
+            .Throughput
+            .ValueOr(() => Size.Zero) ?? Size.Zero;
+
+        return (long)size.Value;
     }
 
     /// <inheritdoc />
@@ -124,6 +135,8 @@ public class NxmDownloadTask : IDownloadTask, IHaveDownloadVersion, IHaveFileSiz
     {
         var token = _tokenSource.Token;
         await StartOrResumeDownload(token);
+        if (token.IsCancellationRequested)
+            return;
         await Owner.FinalizeDownloadAsync(this, _downloadLocation, FriendlyName);
     }
 
@@ -166,8 +179,14 @@ public class NxmDownloadTask : IDownloadTask, IHaveDownloadVersion, IHaveFileSiz
 
     public void Cancel()
     {
-        try { _tokenSource.Cancel(); }
-        catch (Exception) { /* ignored */ }
+        try
+        {
+            _tokenSource.Cancel();
+        }
+        catch (Exception)
+        {
+            /* ignored */
+        }
 
         // Do not _task.Wait() here, as it will deadlock without async.
         Owner.OnCancelled(this);
@@ -176,8 +195,15 @@ public class NxmDownloadTask : IDownloadTask, IHaveDownloadVersion, IHaveFileSiz
     public void Suspend()
     {
         Status = DownloadTaskStatus.Paused;
-        try { _tokenSource.Cancel(); }
-        catch (Exception) { /* ignored */ }
+        try
+        {
+            _tokenSource.Cancel();
+        }
+        catch (Exception)
+        {
+            /* ignored */
+        }
+        Owner.UpdatePersistedState(this);
 
         // Replace the token source.
         _tokenSource = new CancellationTokenSource();
@@ -191,9 +217,11 @@ public class NxmDownloadTask : IDownloadTask, IHaveDownloadVersion, IHaveFileSiz
         return _task;
     }
 
-    public DownloaderState ExportState() => DownloaderState.Create(this, new NxmDownloadState(_url.Mod.ToString()), _downloadLocation.ToString());
+    public DownloaderState ExportState() => DownloaderState.Create(this, new NxmDownloadState(_url.Mod.ToString()),
+        _downloadLocation.ToString());
 
     #region Test Only
+
     internal Task StartSuspended()
     {
         _task = StartSuspendedImpl();
@@ -205,5 +233,6 @@ public class NxmDownloadTask : IDownloadTask, IHaveDownloadVersion, IHaveFileSiz
         await InitDownload();
         Suspend();
     }
+
     #endregion
 }

@@ -1,4 +1,4 @@
-﻿using System.IO.Compression;
+using System.IO.Compression;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Games.DTO;

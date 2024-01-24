@@ -1,4 +1,4 @@
-﻿using System.Reactive.Disposables;
+using System.Reactive.Disposables;
 using DynamicData;
 using DynamicData.Binding;
 using DynamicData.Kernel;

@@ -8,6 +8,6 @@ public class AdvancedInstallerWindowDesignViewModel : AdvancedInstallerWindowVie
         DesignTimeHelpers.CreateDesignGameLocationsRegister(),
         "Design Game Name")
     {
-        CurrentPageVM = AdvancedInstallerVM;
+        CurrentPageVM = UnsupportedModVM;
     }
 }

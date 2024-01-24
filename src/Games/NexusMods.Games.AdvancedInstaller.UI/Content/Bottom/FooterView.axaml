@@ -12,9 +12,7 @@
         <ui:FooterViewModel />
     </Design.DataContext>
 
-    <Border Classes="FooterBorder" x:Name="FooterBorder"
-            Background="{DynamicResource StructuralBorderColor}"
-            CornerRadius="0,0,8,8">
+    <Border Classes="Mid RoundedBottom" x:Name="FooterBorder">
         <Border.Styles>
             <Style Selector="Button.FooterButton">
                 <Setter Property="Padding" Value="16, 6, 16, 6" />
@@ -31,11 +29,11 @@
 
         <Grid Classes="FooterGrid" ColumnDefinitions="*, Auto, Auto">
 
-            <Button Classes="Tertiary FooterButton" HorizontalAlignment="Left" Grid.Column="1" x:Name="CancelButton">
+            <Button Classes="Standard Tertiary FooterButton" HorizontalAlignment="Left" Grid.Column="1" x:Name="CancelButton">
                 <TextBlock Text="{x:Static resources:Language.Footer_CANCEL}" />
             </Button>
 
-            <Button Classes="Primary FooterButton" HorizontalAlignment="Right" Grid.Column="2" x:Name="InstallButton">
+            <Button Classes="Standard Primary FooterButton" HorizontalAlignment="Right" Grid.Column="2" x:Name="InstallButton">
                 <TextBlock Text="{x:Static resources:Language.Footer_INSTALL}" />
             </Button>
 

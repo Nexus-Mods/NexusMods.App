@@ -46,7 +46,7 @@ public partial class DownloadStatusView : ReactiveUserControl<IDownloadStatusVie
                     // TODO: Not a fan of this either, but best we got.
                     const string playIcon = "PlayCircleOutline";
                     const string pauseIcon = "PauseCircleOutline";
-                    var classes = PlayPauseIcon.Classes;
+                    var classes = PlayPauseButton.Classes;
 
                     if (canPause)
                     {

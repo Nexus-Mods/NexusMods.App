@@ -1,5 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions;
 using NexusMods.Abstractions.Cli;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.Loadouts;

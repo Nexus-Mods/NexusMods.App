@@ -1,0 +1,30 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Design.PreviewWith>
+        <StackPanel Orientation="Vertical" Spacing="4" Margin="8">
+            <CheckBox IsChecked="False">
+                <TextBlock Theme="{StaticResource BodyLGBoldTheme}" Text="Unchecked"/>
+            </CheckBox>
+            <CheckBox IsChecked="True">
+                <TextBlock Theme="{StaticResource BodyLGBoldTheme}" Text="Checked"/>
+            </CheckBox>
+            <CheckBox IsThreeState="True" IsChecked="{x:Null}">
+                <TextBlock Theme="{StaticResource BodyLGBoldTheme}" Text="Tristate"/>
+            </CheckBox>
+            <CheckBox IsChecked="False" IsEnabled="False">
+                <TextBlock Theme="{StaticResource BodyLGBoldTheme}" Text="Unchecked Disabled"/>
+            </CheckBox>
+            <CheckBox IsChecked="True" IsEnabled="False">
+                <TextBlock Theme="{StaticResource BodyLGBoldTheme}" Text="Checked Disabled"/>
+            </CheckBox>
+            <CheckBox IsThreeState="True" IsChecked="{x:Null}" IsEnabled="False">
+                <TextBlock Theme="{StaticResource BodyLGBoldTheme}" Text="Tristate Disabled"/>
+            </CheckBox>
+        </StackPanel>
+    </Design.PreviewWith>
+
+    <Style Selector="CheckBox:disabled">
+        <Setter Property="Opacity" Value="{StaticResource OpacityDisabledElement}" />
+    </Style>
+</Styles>

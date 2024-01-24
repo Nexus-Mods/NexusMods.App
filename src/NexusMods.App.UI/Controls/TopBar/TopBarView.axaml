@@ -24,7 +24,7 @@
             Height="30"
             HorizontalAlignment="Center"
             Path="avares://NexusMods.App.UI/Assets/nexus-logo-with-text.svg"
-            VerticalAlignment="Center"/>
+            VerticalAlignment="Center" />
 
         <Button Classes="Pill Light" Grid.Column="1" Grid.Row="0" x:Name="Premium" IsVisible="False">
             <StackPanel>
@@ -33,23 +33,18 @@
             </StackPanel>
         </Button>
 
-        <Border
-            BorderBrush="{DynamicResource StructuralBorderBrush}"
-            BorderThickness="1"
-            CornerRadius="4"
-            Grid.Column="2"
-            Height="36"
-            Margin="12,0">
+        <Border Grid.Column="2"
+                Classes="OutlineWeak"
+                x:Name="SearchBoxBorder"
+                Height="36"
+                Margin="12,0">
             <StackPanel
-                Margin="11"
+                Margin="11,0"
                 Orientation="Horizontal"
                 VerticalAlignment="Center">
-                <avalonia:Icon
-                    FontSize="11"
-                    Foreground="{DynamicResource StructuralBorderBrush}"
-                    Value="mdi-magnify" />
+                <avalonia:Icon Classes="Search"
+                               FontSize="20" />
                 <TextBlock
-                    Foreground="{DynamicResource StructuralBorderBrush}"
                     HorizontalAlignment="Left"
                     Margin="7,0"
                     Text="{x:Static resources:Language.SearchBox__Search}"
@@ -57,12 +52,16 @@
             </StackPanel>
         </Border>
 
-        <StackPanel Grid.Column="3" Classes="TopBarActions">
+        <StackPanel Grid.Column="3"
+                    Classes="TopBarActions"
+                    Orientation="Horizontal"
+                    Spacing="16"
+                    Margin="16,0">
             <Button Classes="Action">
                 <avalonia:Icon Classes="Help" />
             </Button>
             <Button Classes="Action">
-                <avalonia:Icon Classes="Cog"></avalonia:Icon>
+                <avalonia:Icon Classes="Cog" />
             </Button>
             <Button
                 Classes="Standard Primary"
@@ -75,11 +74,11 @@
             </Button>
         </StackPanel>
 
-        <Border
-            BorderBrush="{DynamicResource StructuralBorderBrush}"
-            BorderThickness="1,0,0,0"
-            Grid.Column="4"
-            x:Name="UserPanel" IsVisible="False">
+        <Border Classes="OutlineWeak"
+                BorderThickness="1,0,0,0"
+                Grid.Column="4"
+                x:Name="UserPanel"
+                IsVisible="False">
             <StackPanel Orientation="Horizontal" Spacing="16" Margin="16, 0">
                 <Button
                     Classes="Action"
@@ -87,8 +86,8 @@
                     <avalonia:Icon Classes="Bell" />
                 </Button>
                 <Button Classes="Avatar"
-                    HorizontalAlignment="Center"
-                    x:Name="UserButton">
+                        HorizontalAlignment="Center"
+                        x:Name="UserButton">
                     <Image
                         Height="30"
                         Width="30"

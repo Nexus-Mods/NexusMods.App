@@ -1,11 +1,10 @@
 ﻿<reactiveUi:ReactiveUserControl
     d:DesignHeight="44"
-    d:DesignWidth="400"
+    d:DesignWidth="300"
     mc:Ignorable="d"
     x:Class="NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModName.ModNameView"
     x:TypeArguments="modName:IModNameViewModel"
     xmlns="https://github.com/avaloniaui"
-    xmlns:columns="clr-namespace:NexusMods.App.UI.RightContent.LoadoutGrid.Columns"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
@@ -15,7 +14,9 @@
         <modName:ModNameDesignViewModel />
     </Design.DataContext>
     <TextBlock
+        Classes="BodyMDNormal"
         VerticalAlignment="Center"
+        TextTrimming="CharacterEllipsis"
         x:Name="NameTextBox" />
 </reactiveUi:ReactiveUserControl>
 

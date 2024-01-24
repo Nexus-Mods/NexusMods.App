@@ -13,6 +13,11 @@ public interface IActivitySource : IDisposable
 {
 
     /// <summary>
+    /// Updates the StartTime and starting percentage of the activity, for activities that can be paused and resumed.
+    /// </summary>
+    public void StartOrResume();
+
+    /// <summary>
     /// Updates the status message for the activity, keep parameters in their native format so that the message
     /// can be formatted in the UI with links, etc.
     /// </summary>
@@ -40,7 +45,7 @@ public interface IActivitySource : IDisposable
 /// </summary>
 /// <typeparam name="T"></typeparam>
 public interface IActivitySource<in T> : IActivitySource
-    where T : IDivisionOperators<T, T, double>, IAdditionOperators<T, T, T>
+    where T : IDivisionOperators<T, T, double>, IAdditionOperators<T, T, T>, ISubtractionOperators<T, T, T>
 {
     /// <summary>
     /// Sets the maximum value of the progress. If this is null, the progress will be considered indeterminate.
@@ -59,5 +64,11 @@ public interface IActivitySource<in T> : IActivitySource
     /// </summary>
     /// <param name="value"></param>
     public void AddProgress(T value);
+
+    /// <summary>
+    /// Sets the StartingTime and starting value of the activity, for activities that can be paused and resumed.
+    /// </summary>
+    /// <param name="startingValue"></param>
+    public void StartOrResume(T startingValue);
 
 }

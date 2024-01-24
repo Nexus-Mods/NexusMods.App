@@ -17,7 +17,6 @@
     <Grid ColumnDefinitions="*, Auto" Margin="0,5,0,5">
         <Grid.Styles>
             <Style Selector="icons|Icon.FileTypeIcon">
-                <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
                 <Setter Property="FontSize" Value="18" />
                 <Setter Property="Margin" Value="8, 0, 8, 0" />
             </Style>
@@ -30,13 +29,6 @@
                 <Setter Property="HorizontalAlignment" Value="Left" />
             </Style>
 
-            <Style Selector="TextBox.CreateFolderEditBox">
-                <Setter Property="Background" Value="Transparent" />
-                <Setter Property="CornerRadius" Value="4" />
-                <Setter Property="BorderThickness" Value="1" />
-                <Setter Property="BorderBrush" Value="{DynamicResource BrandWhite}" />
-            </Style>
-
             <Style Selector="TextBlock#FileNameTextBlock">
                 <Setter Property="Margin" Value="0,4,8,0" />
             </Style>
@@ -47,7 +39,7 @@
               Name="EntryLeftElementsGrid">
 
             <!-- Create Folder Button -->
-            <Button Classes="Rounded" HorizontalAlignment="Left" IsVisible="False" x:Name="CreateFolderButton">
+            <Button Classes="Rounded Primary" HorizontalAlignment="Left" IsVisible="False" x:Name="CreateFolderButton">
                 <StackPanel Orientation="Horizontal">
                     <icons:Icon Classes="Plus" x:Name="CreateFolderPlusIcon" />
                     <TextBlock Text="{x:Static resources:Language.CreateFolderButton_Create_new_folder}"
@@ -64,15 +56,16 @@
                             x:Name="FolderEntryIcon" />
 
                 <!-- File Name -->
-                <TextBlock Grid.Column="1" Classes="BodyMDNormal" VerticalAlignment="Center"
+                <TextBlock Grid.Column="1" Classes="BodyMDNormal"
+                           VerticalAlignment="Center"
                            TextTrimming="CharacterEllipsis"
                            Text="Example-file.bsa" IsVisible="False"
                            x:Name="FileNameTextBlock" />
 
                 <!-- Create Folder Name Input Field -->
-                <TextBox Grid.Column="1" Classes="BodyMDNormal CreateFolderEditBox" VerticalAlignment="Center"
-                         Text="" IsVisible="False" BorderBrush="White" BorderThickness="1" CornerRadius="4"
-                         Background="Transparent"
+                <TextBox Grid.Column="1" Classes="BodyMDNormal"
+                         VerticalAlignment="Center"
+                         Text="" IsVisible="False"
                          x:Name="CreateFolderNameTextBox" />
             </Grid>
         </Grid>
@@ -82,7 +75,7 @@
                     x:Name="EntryRightElementsStackPanel">
 
             <!-- Delete Created Folder Button -->
-            <Button Classes="Rounded RightElements" HorizontalAlignment="Right" IsVisible="False"
+            <Button Classes="Rounded Primary RightElements" HorizontalAlignment="Right" IsVisible="False"
                     x:Name="DeleteCreatedFolderButton">
                 <StackPanel Orientation="Horizontal">
                     <icons:Icon Classes="DeleteOutline" x:Name="DeleteCreatedFolderDeleteIcon" />
@@ -92,7 +85,7 @@
             </Button>
 
             <!-- Select Button -->
-            <Button Classes="Rounded RightElements" HorizontalAlignment="Right" IsVisible="False"
+            <Button Classes="Rounded Primary RightElements" HorizontalAlignment="Right" IsVisible="False"
                     x:Name="SelectRoundedButton">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="{x:Static resources:Language.SelectButton_Select}"
@@ -101,7 +94,7 @@
             </Button>
 
             <!-- Cancel Create Folder Button -->
-            <Button Classes="Rounded RightElements" HorizontalAlignment="Right" IsVisible="False"
+            <Button Classes="Rounded Primary RightElements" HorizontalAlignment="Right" IsVisible="False"
                     x:Name="CancelCreateFolderButton">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="{x:Static resources:Language.CancelCreateFolderButton_Cancel}"
@@ -110,7 +103,7 @@
             </Button>
 
             <!-- Save Created Folder Button -->
-            <Button Classes="Rounded RightElements" HorizontalAlignment="Right" IsVisible="False"
+            <Button Classes="Rounded Primary RightElements" HorizontalAlignment="Right" IsVisible="False"
                     x:Name="SaveCreatedFolderButton">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="{x:Static resources:Language.SaveCreatedFolderButton_Save}"

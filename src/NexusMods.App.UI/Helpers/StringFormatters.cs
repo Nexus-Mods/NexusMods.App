@@ -40,6 +40,8 @@ public static class StringFormatters
     /// Formats the 'In Progress' title in Downloads Menu.
     /// </summary>
     /// <param name="itemCount">Number of items in the menu.</param>
-    public static string ToDownloadsInProgressTitle(int itemCount) =>
-        string.Format(Language.StringFormatters__In_progress__numDownloads, itemCount);
+    public static string ToDownloadsInProgressTitle(int itemCount)
+    {
+        return string.Format(Language.StringFormatters__In_progress__numDownloads, itemCount);
+    }
 }

@@ -1,0 +1,57 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:fomod="clr-namespace:NexusMods.Games.FOMOD.UI;assembly=NexusMods.Games.FOMOD.UI"
+        xmlns:icons="https://github.com/projektanker/icons.avalonia">
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <fomod:GuidedInstallerStepView MinHeight="672" MinWidth="1232" MaxHeight="818" MaxWidth="1500"/>
+        </Border>
+    </Design.PreviewWith>
+
+
+    <!-- Style Definitions -->
+
+    <Style Selector="fomod|GuidedInstallerStepView">
+        <Style Selector="^ Border#TopPart">
+                <Setter Property="Padding" Value="24, 16, 24, 24" />
+                <Setter Property="Background" Value="{StaticResource ElementBackgroundNeutralTopBrush}" />
+            </Style>
+            <Style Selector="^ Border#MultiOptionHeaderBorder">
+                <Setter Property="Padding" Value="0,0,0,16" />
+            </Style>
+            <Style Selector="^ icons|Icon#MultiOptionHeaderIcon">
+                <Setter Property="FontSize" Value="20" />
+                <Setter Property="Margin" Value="0,0,8,8" />
+            </Style>
+            <Style Selector="^ Border#HeadingAndSubHeadingBorder">
+                <Setter Property="Padding" Value="0,0,0,16" />
+            </Style>
+
+            <Style Selector="^ Border#GroupsBorder">
+                <Setter Property="Background" Value="{StaticResource ElementBackgroundNeutralMidBrush}" />
+                <Setter Property="CornerRadius" Value="8,8, 8,8" />
+                <Setter Property="Padding" Value="8,8,8,8" />
+                <Setter Property="Margin" Value="0,0,16,0" />
+            </Style>
+
+            <Style Selector="^ Border#PreviewTitleBorder">
+                <Setter Property="Padding" Value="16,12,16,12" />
+                <Setter Property="CornerRadius" Value="8,8,0,0" />
+            </Style>
+            <Style Selector="^ icons|Icon.PreviewIcon">
+                <Setter Property="FontSize" Value="18"/>
+                <Setter Property="Margin" Value="8,0,0,0" />
+            </Style>
+            <Style Selector="^ Border#PreviewContentBorder">
+                <Setter Property="Padding" Value="16,16,8,0" />
+                <Setter Property="CornerRadius" Value="0,0,8,8" />
+            </Style>
+            <Style Selector="^ TextBlock#HighlightedOptionDescription">
+                <Setter Property="Margin" Value="0,16,0,0" />
+            </Style>
+            <Style Selector="^ StackPanel#PreviewContentsStackPanel">
+                <Setter Property="Margin" Value="0,0,12,0" />
+            </Style>
+    </Style>
+</Styles>
+

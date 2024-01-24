@@ -7,22 +7,25 @@ namespace NexusMods.App.UI.WorkspaceSystem;
 public interface IPanelResizerViewModel : IViewModelInterface
 {
     /// <summary>
-    /// Gets or sets the logical position of the resizer in the workspace.
+    /// Gets or sets the logical start position of the resizer in the workspace.
     /// </summary>
     /// <remarks>
     /// Logical positions range from 0.0 to 1.0. A logical position of
     /// X=0.5 and Y=0.5 will be in the center of the workspace.
     /// </remarks>
-    public Point LogicalPosition { get; set; }
+    public Point LogicalStartPoint { get; set; }
 
     /// <summary>
-    /// Gets or sets the actual position of the resizer in the workspace.
+    /// Gets or sets the logical end position of the resizer in the workspace.
     /// </summary>
     /// <remarks>
-    /// This gets calculated from the <see cref="LogicalPosition"/> using
-    /// <see cref="Arrange"/>.
+    /// Logical positions range from 0.0 to 1.0. A logical position of
+    /// X=0.5 and Y=0.5 will be in the center of the workspace.
     /// </remarks>
-    public Point ActualPosition { get; set; }
+    public Point LogicalEndPoint { get; set; }
+
+    public Point ActualStartPoint { get; set; }
+    public Point ActualEndPoint { get; set; }
 
     /// <summary>
     /// Gets whether the resizer is horizontally aligned.
@@ -32,21 +35,11 @@ public interface IPanelResizerViewModel : IViewModelInterface
     /// <summary>
     /// Gets all connected panels that have to move with the resizer.
     /// </summary>
-    public PanelId[] ConnectedPanels { get; }
+    public IReadOnlyList<PanelId> ConnectedPanels { get; }
 
-    /// <summary>
-    /// Arranges the resizer with the size of the workspace by
-    /// updating the <see cref="ActualPosition"/>.
-    /// </summary>
     public void Arrange(Size workspaceSize);
 
-    /// <summary>
-    /// Gets the command invoked by the resizer when the user drags the control around.
-    /// </summary>
-    /// <remarks>
-    /// This will return the current position of the control.
-    /// </remarks>
-    public ReactiveCommand<Point, Point> DragStartCommand { get; }
+    public ReactiveCommand<double, double> DragStartCommand { get; }
 
     /// <summary>
     /// Gets the command invoked by the resizer when the user stopped dragging the control.

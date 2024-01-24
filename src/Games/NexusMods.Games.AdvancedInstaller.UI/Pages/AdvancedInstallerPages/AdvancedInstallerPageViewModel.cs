@@ -1,4 +1,4 @@
-﻿using System.Reactive.Disposables;
+using System.Reactive.Disposables;
 using NexusMods.Abstractions.Installers.Info;
 using NexusMods.Abstractions.Installers.Trees;
 using NexusMods.Paths;

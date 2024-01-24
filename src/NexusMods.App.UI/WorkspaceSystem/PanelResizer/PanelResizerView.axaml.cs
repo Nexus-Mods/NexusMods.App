@@ -1,7 +1,6 @@
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.ReactiveUI;
@@ -11,8 +10,26 @@ namespace NexusMods.App.UI.WorkspaceSystem;
 
 public partial class PanelResizerView : ReactiveUserControl<IPanelResizerViewModel>
 {
+    /// <summary>
+    /// Resizers take up the space between panels. However, since the logical are of a
+    /// panel doesn't account for that, we use padding to visualize it. The Resizer must
+    /// thus have a width, or height depending on the orientation, of the padding that the
+    /// panels have.
+    ///
+    /// This padding value is multiplied by two, because resizers go between two panels.
+    /// </summary>
+    private const double Size = PanelView.DefaultPadding * 2;
+
+    /// <summary>
+    /// This offset is used to prevent resizers from overlapping. As such, it has to be
+    /// a multiple of <see cref="Size"/>.
+    /// </summary>
+    private const double Offset = Size * 2.5;
+
     private bool _isPressed;
-    private Point _startPoint;
+
+    private static readonly Cursor CursorHorizontal = new(StandardCursorType.SizeNorthSouth);
+    private static readonly Cursor CursorVertical = new(StandardCursorType.SizeWestEast);
 
     public PanelResizerView()
     {
@@ -26,14 +43,30 @@ public partial class PanelResizerView : ReactiveUserControl<IPanelResizerViewMod
                 .Subscribe()
                 .DisposeWith(disposables);
 
-            this.WhenAnyValue(view => view.ViewModel!.ActualPosition)
-                .SubscribeWithErrorLogging(point =>
+            this.WhenAnyValue(
+                    view => view.ViewModel!.ActualStartPoint,
+                    view => view.ViewModel!.ActualEndPoint)
+                .SubscribeWithErrorLogging(tuple =>
                 {
-                    var x = point.X - Bounds.Width / 2;
-                    var y = point.Y - Bounds.Height / 2;
+                    if (ViewModel is null) return;
 
-                    Canvas.SetLeft(this, x);
-                    Canvas.SetTop(this, y);
+                    var (startPoint, endPoint) = tuple;
+                    var isHorizontal = ViewModel.IsHorizontal;
+
+                    if (isHorizontal)
+                    {
+                        Canvas.SetLeft(this, startPoint.X + Offset / 2);
+                        Canvas.SetTop(this, startPoint.Y - Size / 2);
+                        Width = endPoint.X - startPoint.X - Offset;
+                        Height = Size;
+                    }
+                    else
+                    {
+                        Canvas.SetTop(this, startPoint.Y + Offset / 2);
+                        Canvas.SetLeft(this, startPoint.X - Size / 2);
+                        Height = endPoint.Y - startPoint.Y - Offset;
+                        Width = Size;
+                    }
                 })
                 .DisposeWith(disposables);
 
@@ -44,12 +77,11 @@ public partial class PanelResizerView : ReactiveUserControl<IPanelResizerViewMod
                 .Do(_ =>
                 {
                     _isPressed = true;
-                    _startPoint = ViewModel!.ActualPosition;
+                    Icon.IsVisible = true;
                 })
                 .Finally(() =>
                 {
                     _isPressed = false;
-                    _startPoint = new Point(0, 0);
                 })
                 .Subscribe()
                 .DisposeWith(disposables);
@@ -61,30 +93,24 @@ public partial class PanelResizerView : ReactiveUserControl<IPanelResizerViewMod
                 .Do(_ =>
                 {
                     _isPressed = false;
-                    _startPoint = new Point(0, 0);
                 })
                 .Select(_ => Unit.Default)
                 .InvokeCommand(this, view => view.ViewModel!.DragEndCommand)
                 .DisposeWith(disposables);
 
-            // moved
+            // drag
             Observable.FromEventPattern<PointerEventArgs>(
                     addHandler: handler => PointerMoved += handler,
                     removeHandler: handler => PointerMoved -= handler)
-                .Where(_ => _isPressed && _startPoint != new Point(0, 0))
+                .Where(_ => _isPressed)
                 .Select(eventPattern =>
                 {
-                    if (ViewModel is null) return new Point(0, 0);
+                    if (ViewModel is null) return 0.0;
 
                     var parent = (Parent as Control)!;
                     var currentPos = eventPattern.EventArgs.GetPosition(parent);
 
-                    var newPosition = new Point(
-                        ViewModel.IsHorizontal ? _startPoint.X : currentPos.X,
-                        ViewModel.IsHorizontal ? currentPos.Y: _startPoint.Y
-                    );
-
-                    return newPosition;
+                    return ViewModel.IsHorizontal ? currentPos.Y : currentPos.X;
                 })
                 .InvokeCommand(this, view => view.ViewModel!.DragStartCommand)
                 .DisposeWith(disposables);
@@ -93,8 +119,19 @@ public partial class PanelResizerView : ReactiveUserControl<IPanelResizerViewMod
 
     private void PopulateFromViewModel(IPanelResizerViewModel viewModel)
     {
-        Cursor = new Cursor(viewModel.IsHorizontal ? StandardCursorType.SizeNorthSouth : StandardCursorType.SizeWestEast);
+        Cursor = viewModel.IsHorizontal ? CursorHorizontal : CursorVertical;
         Icon.Classes.Add(viewModel.IsHorizontal ? "DragHorizontal" : "DragVertical");
     }
-}
 
+    protected override void OnPointerEntered(PointerEventArgs e)
+    {
+        Icon.IsVisible = true;
+        base.OnPointerEntered(e);
+    }
+
+    protected override void OnPointerExited(PointerEventArgs e)
+    {
+        if (!_isPressed) Icon.IsVisible = false;
+        base.OnPointerExited(e);
+    }
+}

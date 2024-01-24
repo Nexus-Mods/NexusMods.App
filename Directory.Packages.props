@@ -5,7 +5,7 @@
     <PackageVersion Include="NexusMods.Hashing.xxHash64" Version="1.0.1" />
     <PackageVersion Include="NexusMods.Paths" Version="0.5.0" />
     <PackageVersion Include="NexusMods.Archives.Nx" Version="0.3.7" />
-    <PackageVersion Include="NexusMods.Paths.TestingHelpers" Version="0.4.0" />
+    <PackageVersion Include="NexusMods.Paths.TestingHelpers" Version="0.5.0" />
     <PackageVersion Include="NexusMods.ProxyConsole.Abstractions" Version="0.6.0" />
     <PackageVersion Include="NexusMods.SingleProcess" Version="0.6.0" />
     <PackageVersion Include="NexusMods.Telemetry.OpenTelemetry" Version="1.0.0" />
@@ -34,13 +34,13 @@
     <PackageVersion Include="Avalonia.ReactiveUI" Version="11.0.6" />
     <PackageVersion Include="Avalonia.Themes.Fluent" Version="11.0.6" />
     <PackageVersion Include="Projektanker.Icons.Avalonia.MaterialDesign" Version="8.3.0" />
-    <PackageVersion Include="Avalonia.Svg.Skia" Version="11.0.0.7" />
+    <PackageVersion Include="Avalonia.Svg.Skia" Version="11.0.0.10" />
   </ItemGroup>
   <ItemGroup>
     <!-- System -->
     <PackageVersion Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
     <PackageVersion Include="System.CommandLine.NamingConventionBinder" Version="2.0.0-beta4.22272.1" />
-    <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="7.0.0-preview3" />
+    <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="7.2.0" />
     <PackageVersion Include="System.IO.Hashing" Version="8.0.0" />
     <PackageVersion Include="System.Linq.Async" Version="6.0.1" />
     <PackageVersion Include="System.Reactive" Version="6.0.0" />
@@ -55,7 +55,7 @@
     <PackageVersion Include="Microsoft.Extensions.Logging" Version="8.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
     <PackageVersion Include="Microsoft.Extensions.ObjectPool" Version="8.0.0" />
-    <PackageVersion Include="Microsoft.IO.RecyclableMemoryStream" Version="2.3.2" />
+    <PackageVersion Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.0" />
   </ItemGroup>
   <ItemGroup>
     <!-- Testing -->

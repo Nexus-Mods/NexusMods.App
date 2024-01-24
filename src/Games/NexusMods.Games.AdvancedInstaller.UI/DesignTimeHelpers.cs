@@ -1,4 +1,4 @@
-﻿using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Installers.DTO;
 using NexusMods.Abstractions.Installers.Trees;
 using NexusMods.Paths;

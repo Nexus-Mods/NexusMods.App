@@ -96,6 +96,7 @@ public class DownloadServiceDataStoreTests : AGameTest<SkyrimSpecialEdition>
     {
         return _store.AllIds(EntityCategory.DownloadStates)
             .Select(id => _store.Get<DownloaderState>(id))
+            .Where(state => state != null)
             .Select(state => _downloadService.GetTaskFromState(state!))
             .Where(x => x != null)
             .Cast<IDownloadTask>();

@@ -5,125 +5,94 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactive="http://reactiveui.net"
     xmlns:workspace="clr-namespace:NexusMods.App.UI.WorkspaceSystem"
-    xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
     mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="400"
     x:Class="NexusMods.App.UI.WorkspaceSystem.PanelView"
     Width="0" Height="0">
 
-    <Grid RowDefinitions="Auto, *" Background="{StaticResource BrandSecondaryDarker}">
-        <Grid.Styles>
-            <Style Selector="Button icons|Icon">
-                <Setter Property="Foreground" Value="{StaticResource FontDarkSecondaryColor}" />
-            </Style>
+    <Border x:Name="PanelBorder" Classes="Rounded Low">
+        <Grid RowDefinitions="Auto, *">
+            <Border Grid.Row="0" x:Name="TabHeaderBorder">
+                <Grid ColumnDefinitions="*, Auto">
+                    <Grid Grid.Column="0" ColumnDefinitions="Auto, *, Auto">
+                        <Button Grid.Column="0"
+                                x:Name="ScrollLeftButton"
+                                Margin="24 12 12 12"
+                                Classes="PanelTitlebar ScrollLeft" />
 
-            <Style Selector="Button:pointerover icons|Icon">
-                <Setter Property="Foreground" Value="{StaticResource FontDarkPrimary}" />
-            </Style>
+                        <ScrollViewer Grid.Column="1"
+                                      x:Name="TabHeaderScrollViewer"
+                                      VerticalScrollBarVisibility="Disabled"
+                                      HorizontalScrollBarVisibility="Hidden">
+                            <StackPanel Orientation="Horizontal">
+                                <ItemsControl x:Name="TabHeaders" Height="52">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel Orientation="Horizontal" Spacing="0" />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
 
-            <Style Selector="Button:disabled icons|Icon">
-                <Setter Property="Opacity" Value="0.2" />
-            </Style>
-        </Grid.Styles>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate DataType="{x:Type workspace:IPanelTabViewModel}">
+                                            <reactive:ViewModelViewHost ViewModel="{CompiledBinding Header}" />
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
 
-        <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Background="{StaticResource BackgroundPrimaryColor}">
-            <Grid Grid.Column="0" ColumnDefinitions="Auto, *, Auto, Auto">
-                <Button Grid.Column="0" x:Name="ScrollLeftButton" Margin="24 12 12 12">
-                    <Button.Template>
-                        <ControlTemplate>
-                            <Border Background="Transparent">
-                                <icons:Icon Classes="ChevronLeft" Width="24" Height="24" />
-                            </Border>
-                        </ControlTemplate>
-                    </Button.Template>
-                </Button>
+                                <Border x:Name="AddTabButton1Container">
+                                    <Button x:Name="AddTabButton1"
+                                            Margin="12 12 10 12"
+                                            Classes="PanelTitlebar AddTab" />
+                                </Border>
+                            </StackPanel>
+                        </ScrollViewer>
 
-                <ScrollViewer Grid.Column="1" x:Name="TabHeaderScrollViewer" VerticalScrollBarVisibility="Disabled"
-                              HorizontalScrollBarVisibility="Auto">
-                    <StackPanel Orientation="Horizontal">
-                        <ItemsControl x:Name="TabHeaders" Height="52">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <StackPanel Orientation="Horizontal" Spacing="0" />
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
+                        <Border Grid.Column="2" x:Name="TabHeaderAddAndScrollBorder">
+                            <StackPanel Orientation="Horizontal">
+                                <Button
+                                    x:Name="AddTabButton2"
+                                    Margin="12 12 10 12"
+                                    Classes="PanelTitlebar AddTab" />
 
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate DataType="{x:Type workspace:IPanelTabViewModel}">
-                                    <reactive:ViewModelViewHost ViewModel="{CompiledBinding Header}"/>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
+                                <Button
+                                    x:Name="ScrollRightButton"
+                                    Margin="10 12 12 12"
+                                    Classes="PanelTitlebar ScrollRight" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
 
-                        <Button x:Name="AddTabButton1" Margin="12 12 10 12">
-                            <Button.Template>
-                                <ControlTemplate>
-                                    <Border Background="Transparent">
-                                        <icons:Icon Classes="Plus" Width="24" Height="24" />
-                                    </Border>
-                                </ControlTemplate>
-                            </Button.Template>
-                        </Button>
-                    </StackPanel>
-                </ScrollViewer>
+                    <Border Grid.Column="1" x:Name="TabHeaderSideAreaBorder">
+                        <StackPanel
+                            x:Name="TabHeaderSideArea"
+                            Orientation="Horizontal"
+                            Spacing="12"
+                            Margin="12, 12, 12, 12">
+                            <Button x:Name="PopOutPanelButton"
+                                    Classes="PanelTitlebar OpenInWindow" />
 
-                <Button Grid.Column="2" x:Name="AddTabButton2" Margin="12 12 10 12">
-                    <Button.Template>
-                        <ControlTemplate>
-                            <Border Background="Transparent">
-                                <icons:Icon Classes="Plus" Width="24" Height="24" />
-                            </Border>
-                        </ControlTemplate>
-                    </Button.Template>
-                </Button>
+                            <Button x:Name="ClosePanelButton"
+                                    Classes="PanelTitlebar Close" />
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </Border>
 
-                <Button Grid.Column="3" x:Name="ScrollRightButton" Margin="10 12 12 12">
-                    <Button.Template>
-                        <ControlTemplate>
-                            <Border Background="Transparent">
-                                <icons:Icon Classes="ChevronRight" Width="24" Height="24" />
-                            </Border>
-                        </ControlTemplate>
-                    </Button.Template>
-                </Button>
-            </Grid>
+            <ItemsControl Grid.Row="1" x:Name="TabContents">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Grid RowDefinitions="*" ColumnDefinitions="*" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
 
-            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12" Margin="12, 12, 12, 12">
-                <Button x:Name="PopOutPanelButton">
-                    <Button.Template>
-                        <ControlTemplate>
-                            <Border Background="Transparent">
-                                <icons:Icon Classes="OpenInNew" Width="24" Height="24" />
-                            </Border>
-                        </ControlTemplate>
-                    </Button.Template>
-                </Button>
-
-                <Button x:Name="ClosePanelButton">
-                    <Button.Template>
-                        <ControlTemplate>
-                            <Border Background="Transparent">
-                                <icons:Icon Classes="Close" Width="24" Height="24" />
-                            </Border>
-                        </ControlTemplate>
-                    </Button.Template>
-                </Button>
-            </StackPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type workspace:IPanelTabViewModel}">
+                        <reactive:ViewModelViewHost x:Name="ViewModelViewHost"
+                                                    IsVisible="{CompiledBinding IsVisible, Mode=OneWay}"
+                                                    ViewModel="{CompiledBinding Contents.ViewModel, Mode=OneWay}" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
         </Grid>
-
-        <ItemsControl Grid.Row="1" x:Name="TabContents">
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <Grid RowDefinitions="*" ColumnDefinitions="*" />
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-
-            <ItemsControl.ItemTemplate>
-                <DataTemplate DataType="{x:Type workspace:IPanelTabViewModel}">
-                    <reactive:ViewModelViewHost x:Name="ViewModelViewHost" IsVisible="{CompiledBinding IsVisible, Mode=OneWay}"
-                                                ViewModel="{CompiledBinding Contents.ViewModel, Mode=OneWay}" />
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
-    </Grid>
+    </Border>
 
 </reactive:ReactiveUserControl>

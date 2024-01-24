@@ -28,7 +28,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
 
     public IIconButtonViewModel Add { get; }
 
-    public IDownloadButtonViewModel Downloads { get; }
+    public ISpineDownloadButtonViewModel Downloads { get; }
 
     private ReadOnlyObservableCollection<IImageButtonViewModel> _games =
         Initializers.ReadOnlyObservableCollection<IImageButtonViewModel>();
@@ -52,7 +52,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         IDataStore dataStore,
         IIconButtonViewModel addButtonViewModel,
         IIconButtonViewModel homeButtonViewModel,
-        IDownloadButtonViewModel downloadsButtonViewModel,
+        ISpineDownloadButtonViewModel spineDownloadsButtonViewModel,
         IDownloadsViewModel downloadsViewModel,
         IHomeLeftMenuViewModel homeLeftMenuViewModel,
         IGameLeftMenuViewModel gameLeftMenuViewModel,
@@ -63,7 +63,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
 
         Home = homeButtonViewModel;
         Add = addButtonViewModel;
-        Downloads = downloadsButtonViewModel;
+        Downloads = spineDownloadsButtonViewModel;
 
         _homeLeftMenuViewModel = homeLeftMenuViewModel;
         _downloadsViewModel = downloadsViewModel;

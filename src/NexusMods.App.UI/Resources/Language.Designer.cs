@@ -87,7 +87,16 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} download will be cancelled and the files will be deleted..
+        ///   Looks up a localized string similar to download.
+        /// </summary>
+        public static string CancelDownloadOverlayView_Description__Download {
+            get {
+                return ResourceManager.GetString("CancelDownloadOverlayView_Description__Download", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} will be cancelled and the files will be deleted..
         /// </summary>
         public static string CancelDownloadOverlayView_Description_download_will_be_cancelled {
             get {
@@ -96,7 +105,16 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cancel and delete download?.
+        ///   Looks up a localized string similar to downloads.
+        /// </summary>
+        public static string CancelDownloadOverlayView_Description_downloads {
+            get {
+                return ResourceManager.GetString("CancelDownloadOverlayView_Description_downloads", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancel and delete downloads?.
         /// </summary>
         public static string CancelDownloadOverlayView_Title {
             get {
@@ -164,6 +182,24 @@ namespace NexusMods.App.UI.Resources {
         public static string DownloadInProgressView__Pause_All {
             get {
                 return ResourceManager.GetString("DownloadInProgressView__Pause_All", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Resume.
+        /// </summary>
+        public static string DownloadInProgressView__Resume {
+            get {
+                return ResourceManager.GetString("DownloadInProgressView__Resume", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Resume All.
+        /// </summary>
+        public static string DownloadInProgressView__Resume_All {
+            get {
+                return ResourceManager.GetString("DownloadInProgressView__Resume_All", resourceCulture);
             }
         }
         
@@ -402,7 +438,16 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to In progress (0).
+        ///   Looks up a localized string similar to No Downloads.
+        /// </summary>
+        public static string InProgress_NoDownloadsTextBlock {
+            get {
+                return ResourceManager.GetString("InProgress_NoDownloadsTextBlock", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to In progress.
         /// </summary>
         public static string InProgressTitleTextBlock {
             get {
@@ -658,7 +703,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to In progress ({0}).
+        ///   Looks up a localized string similar to  ({0}).
         /// </summary>
         public static string StringFormatters__In_progress__numDownloads {
             get {

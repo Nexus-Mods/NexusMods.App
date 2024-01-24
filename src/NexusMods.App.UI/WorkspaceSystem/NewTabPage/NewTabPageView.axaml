@@ -13,16 +13,16 @@
         <workspace:NewTabPageDesignViewModel />
     </Design.DataContext>
 
-    <ItemsControl x:Name="Sections">
+    <ItemsControl x:Name="Sections" Padding="24">
         <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
-                <WrapPanel />
+                <WrapPanel/>
             </ItemsPanelTemplate>
         </ItemsControl.ItemsPanel>
 
         <ItemsControl.ItemTemplate>
             <DataTemplate DataType="{x:Type workspace:INewTabPageSectionViewModel}">
-                <StackPanel Spacing="12" Width="375" Margin="12 0">
+                <StackPanel Spacing="12" Width="375" Margin="0 0 12 0">
                     <TextBlock x:Name="SectionNameTextBlock" Text="{CompiledBinding SectionName}"
                                Classes="HeadingSMSemi" />
 
@@ -36,13 +36,20 @@
                         <ItemsControl.ItemTemplate>
                             <DataTemplate DataType="{x:Type workspace:INewTabPageSectionItemViewModel}">
 
-                                <Border CornerRadius="4" Background="{StaticResource BackgroundTertiaryColor}">
-                                    <Button Width="375" Height="56" Padding="0" Command="{CompiledBinding SelectItemCommand}">
-                                        <StackPanel Margin="16" Orientation="Horizontal">
-                                            <icons:Icon Classes="ProgressDownload" Width="24" Height="24"
-                                                        Foreground="{StaticResource BrandWhite}" />
+                                <Border Classes="Mid" CornerRadius="4">
+                                    <Button Width="375"
+                                            Height="56"
+                                            Padding="0"
+                                            Command="{CompiledBinding SelectItemCommand}">
 
-                                            <TextBlock x:Name="NameTextBlock" Text="{CompiledBinding Name}"
+                                        <StackPanel Margin="16" Orientation="Horizontal" Spacing="4">
+                                            <icons:Icon Classes="ProgressDownload"
+                                                        Width="24"
+                                                        Height="24"
+                                                        FontSize="24"/>
+
+                                            <TextBlock x:Name="NameTextBlock"
+                                                       Text="{CompiledBinding Name}"
                                                        Classes="BodyLGBold" />
                                         </StackPanel>
                                     </Button>

@@ -1,4 +1,6 @@
 using DynamicData;
+using DynamicData.Kernel;
+using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.Games.Downloads;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Paths;
@@ -99,6 +101,12 @@ public interface IDownloadService : IDisposable
     /// Gets the total throughput of all download operations in bytes per second.
     /// </summary>
     Size GetThroughput();
+
+    /// <summary>
+    /// Gets total progress percentage of all in progress download operations.
+    /// Returns null if no downloads are in progress.
+    /// </summary>
+    Optional<Percent> GetTotalProgress();
 
     /// <summary>
     /// Updates the state of the task that's persisted behind the scenes.

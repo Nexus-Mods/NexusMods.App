@@ -17,7 +17,7 @@
         <StackPanel Grid.Row="0">
             <reactiveUi:ViewModelViewHost ViewContract="Home" x:Name="Home" />
             <Border
-                BorderBrush="{DynamicResource StructuralBorderBrush}"
+                Classes="OutlineWeak"
                 BorderThickness="0,2,0,0"
                 Margin="0,16"
                 Width="48" />

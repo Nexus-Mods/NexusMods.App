@@ -8,22 +8,22 @@
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:metricsOptIn="clr-namespace:NexusMods.App.UI.Overlays.MetricsOptIn"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
-    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    mc:Ignorable="d" d:DesignWidth="800"
     x:Class="NexusMods.App.UI.Overlays.MetricsOptIn.MetricsOptInView">
     <base:MessageBoxBackground MinWidth="576" MaxWidth="576">
         <base:MessageBoxBackground.TopContent>
             <StackPanel Orientation="Vertical" Margin="16, 24, 24, 24" Spacing="16">
 
-                <TextBlock Classes="H6MontserratSemi"
+                <TextBlock Classes="HeadingXSSemi"
                            Text="{x:Static resources:Language.MetricsOptIn_OverlayTitle}" />
 
                 <!-- Message -->
                 <StackPanel Spacing="8">
                     <TextBlock TextWrapping="WrapWithOverflow"
                                Text="{x:Static resources:Language.MetricsOptIn_MainMessage}"
-                               Classes="BodyMDNormal UsesBrandWhiteColor" />
+                               Classes="BodyMDNormal" />
 
-                    <Button Classes="Hyperlink">
+                    <Button Classes="Hyperlink Primary">
                         <TextBlock Classes="BodyMDNormal"
                                    Text="{x:Static resources:Language.MetricsOptIn_MoreInfoAboutTheDataWeTrack}">
                         </TextBlock>
@@ -37,10 +37,10 @@
 
             <!-- Buttons -->
             <StackPanel Orientation="Horizontal" Margin="24" HorizontalAlignment="Right" Spacing="8">
-                <Button x:Name="DenyButton" Classes="Button Secondary" HorizontalAlignment="Stretch">
+                <Button x:Name="DenyButton" Classes="Standard Tertiary" HorizontalAlignment="Stretch">
                     <TextBlock Text="{x:Static resources:Language.MetricsOptIn_DENY}" />
                 </Button>
-                <Button x:Name="AllowButton" Classes="Button Primary" HorizontalAlignment="Stretch">
+                <Button x:Name="AllowButton" Classes="Standard Primary" HorizontalAlignment="Stretch">
                     <TextBlock Text="{x:Static resources:Language.MetricsOptIn_ALLOW}" />
                 </Button>
             </StackPanel>

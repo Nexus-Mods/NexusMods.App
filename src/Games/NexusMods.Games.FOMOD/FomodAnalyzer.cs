@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using FomodInstaller.Scripting.XmlScript;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Installers.Trees;

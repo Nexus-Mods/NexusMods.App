@@ -15,29 +15,28 @@
     <Design.DataContext>
         <ui:FooterStepperDesignViewModel />
     </Design.DataContext>
+    <Border Classes="Mid RoundedBottom">
+        <Grid Height="84" ColumnDefinitions="Auto, *, Auto">
 
-    <Grid Height="84" ColumnDefinitions="Auto, *, Auto" Background="{DynamicResource StructuralBorderColor}">
-        <Grid.Styles>
-            <Style Selector="avalonia|Icon">
-                <Setter Property="Foreground" Value="White" />
-            </Style>
-        </Grid.Styles>
+            <Button Classes="Standard PrimaryOutlined" HorizontalAlignment="Left" Margin="24, 0" Grid.Column="0"
+                    x:Name="GoToPrevButton">
+                <StackPanel>
+                    <avalonia:Icon Classes="ArrowLeft" />
+                    <TextBlock Text="{x:Static resources:Language.FooterStepperView_FooterStepperView_Previous}" />
+                </StackPanel>
+            </Button>
 
-        <Button Classes="Standard PrimaryOutlined" HorizontalAlignment="Left" Margin="24, 0" Grid.Column="0" x:Name="GoToPrevButton">
-            <StackPanel>
-                <avalonia:Icon Classes="ArrowLeft" />
-                <TextBlock Text="{x:Static resources:Language.FooterStepperView_FooterStepperView_Previous}" />
-            </StackPanel>
-        </Button>
+            <ProgressBar Classes="Stepper" Minimum="0" Maximum="1" Grid.Column="1" x:Name="ProgressBar"/>
 
-        <ProgressBar Classes="Stepper" Minimum="0" Maximum="1" Grid.Column="1" x:Name="ProgressBar"></ProgressBar>
-
-        <Button Classes="Standard PrimaryOutlined" HorizontalAlignment="Right" Margin="24, 0" Grid.Column="2" x:Name="GoToNextButton">
-            <StackPanel>
-                <TextBlock x:Name="GoToNextButtonTextBlock" Text="{x:Static resources:Language.FooterStepperView_FooterStepperView_Next}" />
-                <avalonia:Icon Classes="ArrowRight" x:Name="IconArrowRight" />
-            </StackPanel>
-        </Button>
-    </Grid>
+            <Button Classes="Standard Primary" HorizontalAlignment="Right" Margin="24, 0" Grid.Column="2"
+                    x:Name="GoToNextButton">
+                <StackPanel>
+                    <TextBlock x:Name="GoToNextButtonTextBlock"
+                               Text="{x:Static resources:Language.FooterStepperView_FooterStepperView_Next}" />
+                    <avalonia:Icon Classes="ArrowRight" x:Name="IconArrowRight" />
+                </StackPanel>
+            </Button>
+        </Grid>
+    </Border>
 
 </reactiveUi:ReactiveUserControl>

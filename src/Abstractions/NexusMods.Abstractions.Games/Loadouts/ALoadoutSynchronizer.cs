@@ -17,7 +17,6 @@ using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.BCL.Extensions;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
-using NexusMods.Paths.Trees.Traits;
 using LocationId = NexusMods.Abstractions.Installers.DTO.LocationId;
 
 namespace NexusMods.Abstractions.Games.Loadouts;

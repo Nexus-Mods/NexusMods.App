@@ -111,7 +111,6 @@ public readonly partial struct WorkspaceGridState :
 
     public (int columnCount, int maxRowCount) CountColumns()
     {
-        // TODO: return maxRowCount as well
         var columnCount = 0;
         var maxRowCount = 0;
 

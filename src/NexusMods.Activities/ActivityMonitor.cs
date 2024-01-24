@@ -17,7 +17,7 @@ internal class ActivityMonitor : IActivityFactory, IActivityMonitor
     public ActivityMonitor()
     {
         _activities.Connect()
-            .Transform(x => (IReadOnlyActivity) x)
+            .Transform(x => (IReadOnlyActivity)x)
             .Bind(out _activitiesCasted);
     }
 
@@ -32,7 +32,8 @@ internal class ActivityMonitor : IActivityFactory, IActivityMonitor
 
 
     /// <inheritdoc />
-    public IActivitySource CreateWithPayload(ActivityGroup group, object payload, string template, params object[] arguments)
+    public IActivitySource CreateWithPayload(ActivityGroup group, object payload, string template,
+        params object[] arguments)
     {
         var activity = new Activity(this, group, payload);
         activity.SetStatusMessage(template, arguments);
@@ -43,7 +44,8 @@ internal class ActivityMonitor : IActivityFactory, IActivityMonitor
 
     /// <inheritdoc />
     public IActivitySource<T> Create<T>(ActivityGroup group, string template, params object[] arguments)
-        where T : struct, IDivisionOperators<T, T, double>, IAdditionOperators<T, T, T>, IDivisionOperators<T, double, T>
+        where T : struct, IDivisionOperators<T, T, double>, IAdditionOperators<T, T, T>,
+        IDivisionOperators<T, double, T>, ISubtractionOperators<T, T, T>
     {
         var activity = new Activity<T>(this, group, null);
         activity.SetStatusMessage(template, arguments);

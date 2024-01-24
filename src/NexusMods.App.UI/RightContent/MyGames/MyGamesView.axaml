@@ -1,5 +1,5 @@
 ﻿<reactiveUi:ReactiveUserControl
-    d:DesignHeight="450"
+    d:DesignHeight="400"
     d:DesignWidth="800"
     mc:Ignorable="d"
     x:Class="NexusMods.App.UI.RightContent.MyGames.MyGamesView"
@@ -14,15 +14,16 @@
     <Design.DataContext>
         <myGames:MyGamesDesignViewModel />
     </Design.DataContext>
-    <StackPanel Margin="24" Orientation="Vertical">
-        <TextBlock Classes="H5MontserratSemi" Text="{x:Static resources:Language.MyGamesView__Ready_to_mod}" />
-        <reactiveUi:ViewModelViewHost Margin="0,12,0,0" x:Name="FoundGamesViewHost" />
+    <ScrollViewer>
+        <StackPanel Margin="24" Orientation="Vertical">
+            <TextBlock Classes="HeadingSMSemi" Text="{x:Static resources:Language.MyGamesView__Ready_to_mod}" />
+            <reactiveUi:ViewModelViewHost Margin="0,12,0,0" x:Name="FoundGamesViewHost" />
 
-        <TextBlock
-            Classes="H5MontserratSemi"
-            Margin="0,24,0,0"
-            Text="{x:Static resources:Language.MyGamesView__Detected_games}" />
-        <reactiveUi:ViewModelViewHost Margin="0,12,0,0" x:Name="AllGamesViewHost" />
-    </StackPanel>
+            <TextBlock
+                Classes="HeadingSMSemi"
+                Margin="0,24,0,0"
+                Text="{x:Static resources:Language.MyGamesView__Detected_games}" />
+            <reactiveUi:ViewModelViewHost Margin="0,12,0,0" x:Name="AllGamesViewHost" />
+        </StackPanel>
+    </ScrollViewer>
 </reactiveUi:ReactiveUserControl>
-

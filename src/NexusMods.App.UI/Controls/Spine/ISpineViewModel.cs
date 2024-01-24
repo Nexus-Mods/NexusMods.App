@@ -22,7 +22,7 @@ public interface ISpineViewModel : IViewModelInterface
     /// <summary>
     /// Download Button
     /// </summary>
-    public IDownloadButtonViewModel Downloads { get; }
+    public ISpineDownloadButtonViewModel Downloads { get; }
 
     /// <summary>
     /// Game Buttons
