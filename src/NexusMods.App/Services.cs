@@ -1,9 +1,14 @@
 using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.DataModel.Entities;
 using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Serialization;
+using NexusMods.Activities;
 using NexusMods.App.Listeners;
 using NexusMods.App.UI;
 using NexusMods.CLI;
+using NexusMods.CrossPlatform;
 using NexusMods.DataModel;
 using NexusMods.DataModel.GlobalSettings;
 using NexusMods.FileExtractor;
@@ -65,7 +70,12 @@ public static class Services
                 .AddAdvancedInstallerUi()
                 .AddFileExtractors(config.FileExtractorSettings)
                 .AddDataModel(config.DataModelSettings)
+                .AddDataModelBaseEntities()
+                .AddDataModelEntities()
+                .AddInstallerTypes()
                 .AddGames()
+                .AddActivityMonitor()
+                .AddCrossPlatform()
                 .AddBethesdaGameStudios()
                 .AddRedEngineGames()
                 .AddGenericGameSupport()
