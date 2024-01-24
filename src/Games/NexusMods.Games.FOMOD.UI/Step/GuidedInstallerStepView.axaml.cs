@@ -35,12 +35,12 @@ public partial class GuidedInstallerStepView : ReactiveUserControl<IGuidedInstal
             this.WhenAnyValue(view => view.ViewModel!.HighlightedOptionViewModel)
                 .SubscribeWithErrorLogging(optionVM =>
                 {
-                    HighlightedOptionImage.IsVisible = false;
                     HighlightedOptionDescription.Text = optionVM?.Option.Description ?? Language.GuidedInstallerStepView_GuidedInstallerStepView_No_additional_details_available;
 
                     PreviewTitleTextBox.Text = optionVM?.Option.Name;
                     PreviewHeaderDescriptionIcon.IsVisible = optionVM?.Option.Description is not null;
                     PreviewHeaderImageIcon.IsVisible = optionVM?.Option.Image is not null;
+                    HighlightedOptionImage.IsVisible = optionVM?.Option.Image is not null;
                 })
                 .DisposeWith(disposables);
 
