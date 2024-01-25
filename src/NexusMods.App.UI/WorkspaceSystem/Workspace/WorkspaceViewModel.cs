@@ -268,7 +268,15 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         });
     }
 
-    public void AddPanelWithDefaultTab(WorkspaceGridState newWorkspaceState)
+    public void AddPanel(WorkspaceGridState newWorkspaceState, AddPanelBehavior behavior)
+    {
+        behavior.Switch(
+            f0: _ => AddPanelWithDefaultTab(newWorkspaceState),
+            f1: withCustomTab => AddPanelWithCustomTab(newWorkspaceState, withCustomTab.PageData)
+        );
+    }
+
+    private void AddPanelWithDefaultTab(WorkspaceGridState newWorkspaceState)
     {
         var allDetails = _factoryController.GetAllDetails().ToArray();
         var pageData = new PageData
@@ -283,7 +291,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         AddPanelWithCustomTab(newWorkspaceState, pageData);
     }
 
-    public void AddPanelWithCustomTab(WorkspaceGridState newWorkspaceState, PageData pageData)
+    private void AddPanelWithCustomTab(WorkspaceGridState newWorkspaceState, PageData pageData)
     {
         _panelSource.Edit(updater =>
         {
