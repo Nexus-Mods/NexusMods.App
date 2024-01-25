@@ -114,7 +114,7 @@ public class GuidedInstallerGroupViewModel : AViewModel<IGuidedInstallerGroupVie
             // Highlight option when it is checked
             _optionsCache
                 .Connect()
-                .WhenPropertyChanged(optionVM => optionVM.IsChecked)
+                .WhenPropertyChanged(optionVM => optionVM.IsChecked, false)
                 .SubscribeWithErrorLogging(option =>
                 {
                     HighlightedOption = option.Sender;
