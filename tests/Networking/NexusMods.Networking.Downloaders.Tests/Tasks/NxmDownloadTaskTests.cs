@@ -12,13 +12,13 @@ public class NxmDownloadTaskTests
 {
     private readonly IHttpDownloader _httpDownloader;
     private readonly TemporaryFileManager _temporaryFileManager;
-    private readonly Client _nexusClient;
+    private readonly NexusApiClient _nexusNexusApiClient;
 
-    public NxmDownloadTaskTests(IServiceProvider serviceProvider, IHttpDownloader httpDownloader, TemporaryFileManager temporaryFileManager, Client nexusClient)
+    public NxmDownloadTaskTests(IServiceProvider serviceProvider, IHttpDownloader httpDownloader, TemporaryFileManager temporaryFileManager, NexusApiClient nexusNexusApiClient)
     {
         _httpDownloader = httpDownloader;
         _temporaryFileManager = temporaryFileManager;
-        _nexusClient = nexusClient;
+        _nexusNexusApiClient = nexusNexusApiClient;
     }
 
     [Theory]
@@ -30,7 +30,7 @@ public class NxmDownloadTaskTests
         // This test fails if mock throws.
         // DownloadTasks report their results to IDownloadService, so we intercept them from there.
         var downloadService = DownloadTasksCommon.CreateMockWithConfirmFileReceive();
-        var task = new NxmDownloadTask(_temporaryFileManager, _nexusClient, _httpDownloader, downloadService);
+        var task = new NxmDownloadTask(_temporaryFileManager, _nexusNexusApiClient, _httpDownloader, downloadService);
 
         var uri = $"nxm://{gameDomain}/mods/{modId}/files/{fileId}";
         task.Init(NXMUrl.Parse(uri));
@@ -46,7 +46,7 @@ public class NxmDownloadTaskTests
         // This test fails if mock throws.
         // DownloadTasks report their results to IDownloadService, so we intercept them from there.
         var downloadService = DownloadTasksCommon.CreateMockWithConfirmFileReceive();
-        var task = new NxmDownloadTask(_temporaryFileManager, _nexusClient, _httpDownloader, downloadService);
+        var task = new NxmDownloadTask(_temporaryFileManager, _nexusNexusApiClient, _httpDownloader, downloadService);
 
         var uri = $"nxm://{gameDomain}/mods/{modId}/files/{fileId}";
         task.Init(NXMUrl.Parse(uri));
@@ -69,7 +69,7 @@ public class NxmDownloadTaskTests
         // This test fails if mock throws.
         // DownloadTasks report their results to IDownloadService, so we intercept them from there.
         var downloadService = DownloadTasksCommon.CreateMockWithConfirmFileReceive();
-        var task = new NxmDownloadTask(_temporaryFileManager, _nexusClient, _httpDownloader, downloadService);
+        var task = new NxmDownloadTask(_temporaryFileManager, _nexusNexusApiClient, _httpDownloader, downloadService);
 
         var uri = $"nxm://{gameDomain}/mods/{modId}/files/{fileId}";
         task.Init(NXMUrl.Parse(uri));
@@ -94,14 +94,14 @@ public class NxmDownloadTaskTests
         // This test fails if mock throws.
         // DownloadTasks report their results to IDownloadService, so we intercept them from there.
         var downloadService = DownloadTasksCommon.CreateMockWithConfirmFileReceive();
-        var task = new NxmDownloadTask(_temporaryFileManager, _nexusClient, _httpDownloader, downloadService);
+        var task = new NxmDownloadTask(_temporaryFileManager, _nexusNexusApiClient, _httpDownloader, downloadService);
 
         var uri = $"nxm://{gameDomain}/mods/{modId}/files/{fileId}";
         task.Init(NXMUrl.Parse(uri));
         await task.StartSuspended();
 
         // Oops our app rebooted!
-        var newTask = new NxmDownloadTask(_temporaryFileManager, _nexusClient, _httpDownloader, downloadService);
+        var newTask = new NxmDownloadTask(_temporaryFileManager, _nexusNexusApiClient, _httpDownloader, downloadService);
         newTask.RestoreFromSuspend(task.ExportState());
         await newTask.Resume();
     }

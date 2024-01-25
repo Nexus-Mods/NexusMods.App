@@ -1,6 +1,6 @@
 using NexusMods.Abstractions.Messaging;
+using NexusMods.Abstractions.NexusWebApi.DTOs;
 using NexusMods.Abstractions.NexusWebApi.Types;
-using NexusMods.Networking.NexusWebApi.NMA.Messages;
 
 namespace NexusMods.CLI.Types.IpcHandlers;
 

@@ -6,7 +6,6 @@ using NexusMods.CrossPlatform.Process;
 using NexusMods.DataModel;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.HttpDownloader.Tests;
-using NexusMods.Networking.NexusWebApi.NMA;
 using NexusMods.Paths;
 
 namespace NexusMods.Networking.NexusWebApi.Tests;
@@ -23,8 +22,7 @@ public class Startup
             .AddSingleton<TemporaryFileManager>()
             .AddSingleton<IProcessFactory, ProcessFactory>()
             .AddSingleton<LocalHttpServer>()
-            .AddNexusWebApi()
-            .AddNexusWebApiNmaIntegration(true)
+            .AddNexusWebApi(true)
             .AddActivityMonitor()
             .AddDataModel() // this is required because we're also using NMA integration
             .AddLogging(builder => builder.AddXUnit())

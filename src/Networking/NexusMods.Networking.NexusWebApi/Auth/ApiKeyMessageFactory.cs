@@ -1,10 +1,11 @@
 using System.Text;
+using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.Abstractions.Serialization.DataModel.Ids;
 
-namespace NexusMods.Networking.NexusWebApi.NMA;
+namespace NexusMods.Networking.NexusWebApi.Auth;
 
 /// <summary>
 /// Injects Nexus API keys into HTTP messages.
@@ -69,9 +70,9 @@ public class ApiKeyMessageFactory : IAuthenticatingMessageFactory
     }
 
     /// <inheritdoc/>
-    public async ValueTask<UserInfo?> Verify(Client client, CancellationToken token)
+    public async ValueTask<UserInfo?> Verify(INexusApiClient nexusApiNexusApiClient, CancellationToken token)
     {
-        var result = await client.Validate(token);
+        var result = await nexusApiNexusApiClient.Validate(token);
         return new UserInfo
         {
             Name = result.Data.Name,
@@ -84,5 +85,10 @@ public class ApiKeyMessageFactory : IAuthenticatingMessageFactory
     public ValueTask<HttpRequestMessage?> HandleError(HttpRequestMessage original, HttpRequestException ex, CancellationToken token)
     {
         return new ValueTask<HttpRequestMessage?>();
+    }
+
+    public ValueTask<UserInfo?> Verify(NexusApiClient nexusApiClient, CancellationToken token)
+    {
+        throw new NotImplementedException();
     }
 }

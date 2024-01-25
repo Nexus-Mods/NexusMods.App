@@ -2,9 +2,9 @@ using System.Reactive.Linq;
 using System.Threading.Tasks.Dataflow;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Messaging;
+using NexusMods.Abstractions.NexusWebApi.DTOs;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Networking.Downloaders;
-using NexusMods.Networking.NexusWebApi.NMA.Messages;
 
 namespace NexusMods.App.Listeners;
 

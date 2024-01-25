@@ -6,7 +6,18 @@
     <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
 
     <ItemGroup>
+        <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Cli\NexusMods.Abstractions.Cli.csproj" />
+        <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Games\NexusMods.Abstractions.Games.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.HttpDownloader\NexusMods.Abstractions.HttpDownloader.csproj" />
-        <ProjectReference Include="..\Networking\NexusMods.Networking.NexusWebApi.NMA\NexusMods.Networking.NexusWebApi.NMA.csproj" />
+        <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Messaging\NexusMods.Abstractions.Messaging.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="NexusMods.Paths">
+        <HintPath>..\..\..\..\..\..\home\sewer\.nuget\packages\nexusmods.paths\0.5.0\lib\net7.0\NexusMods.Paths.dll</HintPath>
+      </Reference>
+      <Reference Include="NexusMods.ProxyConsole.Abstractions">
+        <HintPath>..\..\..\..\..\..\home\sewer\.nuget\packages\nexusmods.proxyconsole.abstractions\0.6.0\lib\net8.0\NexusMods.ProxyConsole.Abstractions.dll</HintPath>
+      </Reference>
     </ItemGroup>
 </Project>

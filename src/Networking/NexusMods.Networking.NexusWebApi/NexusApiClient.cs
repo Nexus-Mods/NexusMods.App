@@ -1,6 +1,7 @@
 using System.Net.Http.Json;
 using System.Text.Json.Serialization.Metadata;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.DTOs;
 using NexusMods.Abstractions.NexusWebApi.DTOs.Interfaces;
 using NexusMods.Abstractions.NexusWebApi.DTOs.OAuth;
@@ -11,14 +12,14 @@ namespace NexusMods.Networking.NexusWebApi;
 /// <summary>
 /// Provides an easy to use access point for the Nexus API; start your journey here.
 /// </summary>
-public class Client
+public class NexusApiClient : INexusApiClient
 {
-    private readonly ILogger<Client> _logger;
+    private readonly ILogger<NexusApiClient> _logger;
     private readonly IHttpMessageFactory _factory;
     private readonly HttpClient _httpClient;
 
     /// <summary>
-    /// Creates a <see cref="Client"/> responsible for providing easy access to the Nexus API.
+    /// Creates a <see cref="NexusApiClient"/> responsible for providing easy access to the Nexus API.
     /// </summary>
     /// <param name="logger">Logs actions performed by the client.</param>
     /// <param name="factory">Injects API key into the messages.</param>
@@ -26,7 +27,7 @@ public class Client
     /// <remarks>
     ///    This class is usually instantiated using the Microsoft DI Container.
     /// </remarks>
-    public Client(ILogger<Client> logger, IHttpMessageFactory factory, HttpClient httpClient)
+    public NexusApiClient(ILogger<NexusApiClient> logger, IHttpMessageFactory factory, HttpClient httpClient)
     {
         _logger = logger;
         _factory = factory;
@@ -211,26 +212,5 @@ public class Client
             metaData.Runtime, Math.Max(metaData.DailyRemaining, metaData.HourlyRemaining));
 
         return metaData;
-    }
-
-    /// <summary>
-    /// Specifies the time period used to search for items.
-    /// </summary>
-    public enum PastTime
-    {
-        /// <summary>
-        /// Searches the past 24 hours.
-        /// </summary>
-        Day,
-
-        /// <summary>
-        /// Searches the past 7 days.
-        /// </summary>
-        Week,
-
-        /// <summary>
-        /// Searches the past month.
-        /// </summary>
-        Month,
     }
 }

@@ -1,10 +1,11 @@
 using System.Reactive.Linq;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.DTOs.OAuth;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.Serialization;
 
-namespace NexusMods.Networking.NexusWebApi.NMA;
+namespace NexusMods.Networking.NexusWebApi.Auth;
 
 /// <summary>
 /// OAuth2 based authentication
@@ -77,12 +78,12 @@ public class OAuth2MessageFactory : IAuthenticatingMessageFactory
     }
 
     /// <inheritdoc/>
-    public async ValueTask<UserInfo?> Verify(Client client, CancellationToken cancel)
+    public async ValueTask<UserInfo?> Verify(INexusApiClient nexusApiNexusApiClient, CancellationToken cancel)
     {
         OAuthUserInfo oAuthUserInfo;
         try
         {
-            var res = await client.GetOAuthUserInfo(cancellationToken: cancel);
+            var res = await nexusApiNexusApiClient.GetOAuthUserInfo(cancellationToken: cancel);
             oAuthUserInfo = res.Data;
         }
         catch (Exception e)

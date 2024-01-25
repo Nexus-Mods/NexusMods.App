@@ -1,4 +1,4 @@
-namespace NexusMods.Networking.NexusWebApi.NMA;
+namespace NexusMods.Networking.NexusWebApi.Auth;
 
 /// <summary>
 /// Concrete implementation for id generator using standard libraries as far as possible

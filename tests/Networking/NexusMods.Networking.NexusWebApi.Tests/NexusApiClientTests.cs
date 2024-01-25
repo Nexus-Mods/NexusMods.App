@@ -4,19 +4,19 @@ using FluentAssertions;
 namespace NexusMods.Networking.NexusWebApi.Tests;
 
 [Trait("RequiresNetworking", "True")]
-public class ClientTests
+public class NexusApiClientTests
 {
-    private readonly Client _client;
+    private readonly NexusApiClient _nexusApiClient;
 
-    public ClientTests(Client client)
+    public NexusApiClientTests(NexusApiClient nexusApiClient)
     {
-        _client = client;
+        _nexusApiClient = nexusApiClient;
     }
 
     [Fact]
     public async Task CanGetGames()
     {
-        var games = await _client.Games();
+        var games = await _nexusApiClient.Games();
 
         games.StatusCode.Should().Be(HttpStatusCode.OK);
         games.Data.Should().NotBeEmpty();

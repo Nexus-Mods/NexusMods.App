@@ -29,7 +29,6 @@ using NexusMods.Games.TestHarness;
 using NexusMods.Networking.Downloaders;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
-using NexusMods.Networking.NexusWebApi.NMA;
 using NexusMods.Paths;
 using NexusMods.ProxyConsole;
 using NexusMods.SingleProcess;
@@ -87,7 +86,6 @@ public static class Services
                 .AddStardewValley()
                 .AddMountAndBladeBannerlord()
                 .AddNexusWebApi()
-                .AddNexusWebApiNmaIntegration()
                 .AddAdvancedHttpDownloader(config.HttpDownloaderSettings)
                 .AddTestHarness()
                 .AddSingleton<HttpClient>()

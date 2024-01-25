@@ -3,7 +3,7 @@ using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.Abstractions.Serialization.DataModel.Ids;
 
-namespace NexusMods.Networking.NexusWebApi.NMA;
+namespace NexusMods.Networking.NexusWebApi.Auth;
 
 /// <summary>
 /// Represents a JWT Token in our DataStore.

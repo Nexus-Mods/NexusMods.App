@@ -1,6 +1,7 @@
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
+using NexusMods.Networking.NexusWebApi.Auth;
 
-namespace NexusMods.Networking.NexusWebApi.NMA;
+namespace NexusMods.Networking.NexusWebApi;
 
 /// <summary>
 /// find types for use in the data store

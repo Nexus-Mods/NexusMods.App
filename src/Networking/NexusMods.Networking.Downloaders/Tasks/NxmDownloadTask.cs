@@ -1,12 +1,12 @@
 using DynamicData.Kernel;
 using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.HttpDownloader;
+using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.DTOs;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Networking.Downloaders.Interfaces.Traits;
 using NexusMods.Networking.Downloaders.Tasks.State;
-using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
 
 namespace NexusMods.Networking.Downloaders.Tasks;
@@ -21,7 +21,7 @@ public class NxmDownloadTask : IDownloadTask, IHaveDownloadVersion, IHaveFileSiz
 {
     private NXMUrl _url = null!;
     private readonly TemporaryFileManager _temp;
-    private readonly Client _client;
+    private readonly INexusApiClient _nexusApiClient;
     private readonly IHttpDownloader _downloader;
     private readonly HttpDownloaderState _state;
 
@@ -78,10 +78,10 @@ public class NxmDownloadTask : IDownloadTask, IHaveDownloadVersion, IHaveFileSiz
     ///     This constructor is intended to be called from Dependency Injector.
     ///     After running this constructor, you will need to run
     /// </remarks>
-    public NxmDownloadTask(TemporaryFileManager temp, Client client, IHttpDownloader downloader, IDownloadService owner)
+    public NxmDownloadTask(TemporaryFileManager temp, INexusApiClient nexusApiClient, IHttpDownloader downloader, IDownloadService owner)
     {
         _temp = temp;
-        _client = client;
+        _nexusApiClient = nexusApiClient;
         _downloader = downloader;
         _tokenSource = new CancellationTokenSource();
         _state = new HttpDownloaderState();
@@ -162,9 +162,9 @@ public class NxmDownloadTask : IDownloadTask, IHaveDownloadVersion, IHaveFileSiz
     {
         Response<DownloadLink[]> links;
         if (_url.Key == null)
-            links = await _client.DownloadLinksAsync(_url.Mod.Game, _url.Mod.ModId, _url.Mod.FileId, token);
+            links = await _nexusApiClient.DownloadLinksAsync(_url.Mod.Game, _url.Mod.ModId, _url.Mod.FileId, token);
         else
-            links = await _client.DownloadLinksAsync(_url.Mod.Game, _url.Mod.ModId, _url.Mod.FileId, _url.Key.Value,
+            links = await _nexusApiClient.DownloadLinksAsync(_url.Mod.Game, _url.Mod.ModId, _url.Mod.FileId, _url.Key.Value,
                 _url.ExpireTime!.Value, token);
 
         return links.Data.Select(u => new HttpRequestMessage(HttpMethod.Get, u.Uri)).ToArray();
@@ -172,7 +172,7 @@ public class NxmDownloadTask : IDownloadTask, IHaveDownloadVersion, IHaveFileSiz
 
     private async Task<ModFile> GetFileInfo()
     {
-        var modFiles = (await _client.ModFilesAsync(_url.Mod.Game, _url.Mod.ModId)).Data;
+        var modFiles = (await _nexusApiClient.ModFilesAsync(_url.Mod.Game, _url.Mod.ModId)).Data;
         var file = modFiles.Files.First(x => x.FileId == _url.Mod.FileId);
         return file;
     }

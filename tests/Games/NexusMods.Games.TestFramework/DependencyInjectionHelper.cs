@@ -8,7 +8,6 @@ using NexusMods.FileExtractor;
 using NexusMods.FileExtractor.Extractors;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
-using NexusMods.Networking.NexusWebApi.NMA;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.TestFramework;
@@ -49,8 +48,7 @@ public static class DependencyInjectionHelper
             .AddSingleton<TemporaryFileManager>(_ => new TemporaryFileManager(FileSystem.Shared, prefix))
             .AddSingleton<HttpClient>()
             .AddSingleton<TestModDownloader>()
-            .AddNexusWebApi()
-            .AddNexusWebApiNmaIntegration(true)
+            .AddNexusWebApi(true)
             .AddHttpDownloader()
             .AddDataModel(new DataModelSettings
             {

@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Cli;
+using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.ProxyConsole.Abstractions;
 using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
@@ -16,11 +17,11 @@ internal static class NexusApiVerbs
 
     [Verb("nexus-api-verify", "Verifies the logged in account via the Nexus API")]
     private static async Task<int> NexusApiVerify([Injected] IRenderer renderer,
-        [Injected] Client client,
+        [Injected] NexusApiClient nexusApiClient,
         [Injected] IAuthenticatingMessageFactory messageFactory,
         [Injected] CancellationToken token)
     {
-        var userInfo = await messageFactory.Verify(client, token);
+        var userInfo = await messageFactory.Verify(nexusApiClient, token);
         await renderer.Table(new[] { "Name", "Premium" },
             new[]
             {
@@ -39,10 +40,10 @@ internal static class NexusApiVerbs
         [Option("g", "gameDomain", "Game domain")] string gameDomain,
         [Option("m", "modId", "Mod ID")] ModId modId,
         [Option("f", "fileId", "File ID")] FileId fileId,
-        [Injected] Client client,
+        [Injected] NexusApiClient nexusApiClient,
         [Injected] CancellationToken token)
     {
-        var links = await client.DownloadLinksAsync(gameDomain, modId, fileId, token);
+        var links = await nexusApiClient.DownloadLinksAsync(gameDomain, modId, fileId, token);
 
         await renderer.Table(new[] { "Source", "Link" },
             links.Data.Select(x => new object[] { x.ShortName, x.Uri }));
@@ -51,10 +52,10 @@ internal static class NexusApiVerbs
 
     [Verb("nexus-games", "Lists all games available on Nexus Mods")]
     private static async Task<int> NexusGames([Injected] IRenderer renderer,
-        [Injected] Client client,
+        [Injected] NexusApiClient nexusApiClient,
         [Injected] CancellationToken token)
     {
-        var results = await client.Games(token);
+        var results = await nexusApiClient.Games(token);
 
         await renderer.Table(new[] { "Name", "Domain", "Downloads", "Files" },
             results.Data

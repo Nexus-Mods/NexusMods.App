@@ -2,24 +2,26 @@ using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.BCL.Extensions;
 using NexusMods.CrossPlatform.ProtocolRegistration;
+using NexusMods.Networking.NexusWebApi.Auth;
 
-namespace NexusMods.Networking.NexusWebApi.NMA;
+namespace NexusMods.Networking.NexusWebApi;
 
 /// <summary>
 /// Component for handling login and logout from the Nexus Mods
 /// </summary>
 [PublicAPI]
-public sealed class LoginManager : IDisposable
+public sealed class LoginManager : IDisposable, ILoginManager
 {
     private readonly ILogger<LoginManager> _logger;
     private readonly OAuth _oauth;
     private readonly IDataStore _dataStore;
     private readonly IProtocolRegistration _protocolRegistration;
-    private readonly Client _client;
+    private readonly NexusApiClient _nexusApiClient;
     private readonly IAuthenticatingMessageFactory _msgFactory;
 
     /// <summary>
@@ -46,7 +48,7 @@ public sealed class LoginManager : IDisposable
     /// Constructor.
     /// </summary>
     public LoginManager(
-        Client client,
+        NexusApiClient nexusApiClient,
         IAuthenticatingMessageFactory msgFactory,
         OAuth oauth,
         IDataStore dataStore,
@@ -55,7 +57,7 @@ public sealed class LoginManager : IDisposable
     {
         _oauth = oauth;
         _msgFactory = msgFactory;
-        _client = client;
+        _nexusApiClient = nexusApiClient;
         _dataStore = dataStore;
         _protocolRegistration = protocolRegistration;
         _logger = logger;
@@ -85,7 +87,7 @@ public sealed class LoginManager : IDisposable
         var isAuthenticated = await _msgFactory.IsAuthenticated();
         if (!isAuthenticated) return null;
 
-        var userInfo = await _msgFactory.Verify(_client, cancellationToken);
+        var userInfo = await _msgFactory.Verify(_nexusApiClient, cancellationToken);
         _cachedUserInfo.Store(userInfo);
 
         return userInfo;

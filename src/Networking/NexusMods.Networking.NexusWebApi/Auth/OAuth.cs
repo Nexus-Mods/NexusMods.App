@@ -6,13 +6,14 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.Messaging;
+using NexusMods.Abstractions.NexusWebApi;
+using NexusMods.Abstractions.NexusWebApi.DTOs;
 using NexusMods.Abstractions.NexusWebApi.DTOs.OAuth;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.BCL.Extensions;
 using NexusMods.CrossPlatform.Process;
-using NexusMods.Networking.NexusWebApi.NMA.Messages;
 
-namespace NexusMods.Networking.NexusWebApi.NMA;
+namespace NexusMods.Networking.NexusWebApi.Auth;
 
 /// <summary>
 /// helper class to deal with OAuth2 authentication messages
@@ -22,7 +23,7 @@ public class OAuth
     /// <summary>
     /// The activity group for all activities related to OAuth.
     /// </summary>
-    public static readonly ActivityGroup Group = ActivityGroup.From("OAuth");
+    public static readonly ActivityGroup Group = ActivityGroup.From(Constants.OAuthActivityGroupName);
 
     private const string OAuthUrl = "https://users.nexusmods.com/oauth";
     // NOTE(erri120): The backend has a list of valid redirect URLs and client IDs.

@@ -19,7 +19,7 @@ using NexusMods.DataModel.Loadouts;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
-using NexusMods.Networking.NexusWebApi.NMA.Extensions;
+using NexusMods.Networking.NexusWebApi.Extensions;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators.TestHelpers;
 using IGame = GameFinder.Common.IGame;
@@ -42,7 +42,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
     protected readonly LoadoutRegistry LoadoutRegistry;
     protected readonly IDataStore DataStore;
 
-    protected readonly Client NexusClient;
+    protected readonly NexusApiClient NexusNexusApiClient;
     protected readonly IHttpDownloader HttpDownloader;
     private readonly ILogger<AGameTest<TGame>> _logger;
 
@@ -70,7 +70,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
         LoadoutRegistry = serviceProvider.GetRequiredService<LoadoutRegistry>();
         DataStore = serviceProvider.GetRequiredService<IDataStore>();
 
-        NexusClient = serviceProvider.GetRequiredService<Client>();
+        NexusNexusApiClient = serviceProvider.GetRequiredService<NexusApiClient>();
         HttpDownloader = serviceProvider.GetRequiredService<IHttpDownloader>();
 
         _logger = serviceProvider.GetRequiredService<ILogger<AGameTest<TGame>>>();
@@ -119,7 +119,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
     /// <returns></returns>
     protected async Task<DownloadId> DownloadMod(GameDomain gameDomain, ModId modId, FileId fileId)
     {
-        var links = await NexusClient.DownloadLinksAsync(gameDomain, modId, fileId);
+        var links = await NexusNexusApiClient.DownloadLinksAsync(gameDomain, modId, fileId);
         var file = TemporaryFileManager.CreateFile();
 
         var downloadHash = await HttpDownloader.DownloadAsync(

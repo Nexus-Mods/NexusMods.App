@@ -1,4 +1,4 @@
-namespace NexusMods.Networking.NexusWebApi;
+namespace NexusMods.Abstractions.NexusWebApi;
 
 /// <summary>
 /// Generic interface for creating <see cref="HttpRequestMessage"/>s for Nexus requests, will append

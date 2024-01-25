@@ -5,10 +5,11 @@ using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.GuidedInstallers;
 using NexusMods.Abstractions.HttpDownloader;
 using NexusMods.Abstractions.Installers.DTO;
+using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.DTOs;
+using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Hashing.xxHash64;
-using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
 using NexusMods.ProxyConsole.Abstractions;
 using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
@@ -26,7 +27,7 @@ public class StressTest
         [Injected] IRenderer renderer,
         [Option("g", "game", "The game to test")] IGame game,
         [Option("o", "output", "Output path for the resulting report")] AbsolutePath output,
-        [Injected] Client client,
+        [Injected] INexusApiClient nexusApiClient,
         [Injected] TemporaryFileManager temporaryFileManager,
         [Injected] ILoadoutRegistry loadoutRegistry,
         [Injected] IHttpDownloader downloader,
@@ -38,7 +39,7 @@ public class StressTest
     {
         var manualLocator = gameLocators.OfType<ManuallyAddedLocator>().First();
 
-        var mods = await client.ModUpdatesAsync(game.Domain.Value, Client.PastTime.Day, token);
+        var mods = await nexusApiClient.ModUpdatesAsync(game.Domain.Value, PastTime.Day, token);
         var results = new List<(string FileName, ModId ModId, Abstractions.NexusWebApi.Types.FileId FileId, Hash Hash, bool Passed, Exception? exception)>();
 
         await using var gameFolder = temporaryFileManager.CreateFolder();
@@ -55,7 +56,7 @@ public class StressTest
                 Response<ModFiles> files;
                 try
                 {
-                    files = await client.ModFilesAsync(game.Domain.Value, mod.ModId, token);
+                    files = await nexusApiClient.ModFilesAsync(game.Domain.Value, mod.ModId, token);
                 }
                 catch (HttpRequestException ex)
                 {
@@ -74,7 +75,7 @@ public class StressTest
                             file.FileName,
                             Size.FromLong(file.SizeInBytes ?? 0));
 
-                        var urls = await client.DownloadLinksAsync(game.Domain.Value, mod.ModId, file.FileId, token);
+                        var urls = await nexusApiClient.DownloadLinksAsync(game.Domain.Value, mod.ModId, file.FileId, token);
                         await using var tmpPath = temporaryFileManager.CreateFile();
 
                         var cts = new CancellationTokenSource();

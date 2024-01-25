@@ -1,4 +1,4 @@
-namespace NexusMods.Networking.NexusWebApi.NMA;
+namespace NexusMods.Networking.NexusWebApi.Auth;
 
 /// <summary>
 /// abstraction for functions generating unique ids

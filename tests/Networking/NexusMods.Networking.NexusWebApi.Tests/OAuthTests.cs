@@ -4,11 +4,11 @@ using System.Text.Json;
 using FluentAssertions;
 using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.Messaging;
+using NexusMods.Abstractions.NexusWebApi.DTOs;
 using NexusMods.Abstractions.NexusWebApi.DTOs.OAuth;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.CrossPlatform.Process;
-using NexusMods.Networking.NexusWebApi.NMA;
-using NexusMods.Networking.NexusWebApi.NMA.Messages;
+using NexusMods.Networking.NexusWebApi.Auth;
 using NSubstitute;
 
 namespace NexusMods.Networking.NexusWebApi.Tests;

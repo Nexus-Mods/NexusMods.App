@@ -1,6 +1,6 @@
 using NexusMods.Abstractions.NexusWebApi.Types;
 
-namespace NexusMods.Networking.NexusWebApi.NMA.Messages;
+namespace NexusMods.Abstractions.NexusWebApi.DTOs;
 
 /// <summary>
 /// nxm url message used in IPC. The oauth callback will spawn a new instance of NMA

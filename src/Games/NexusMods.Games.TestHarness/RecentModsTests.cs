@@ -1,11 +1,11 @@
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.HttpDownloader;
+using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.DTOs;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Hashing.xxHash64;
-using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.TestHarness;
@@ -14,7 +14,7 @@ namespace NexusMods.Games.TestHarness;
 
 public class RecentModsTest
 {
-    private readonly Client _client;
+    private readonly INexusApiClient _nexusApiClient;
     private readonly ILogger _logger;
     private readonly IDataStore _store;
     private readonly IGame _game;
@@ -27,11 +27,11 @@ public class RecentModsTest
 
     private List<NexusModFile> _gameRecords = new();
 
-    protected RecentModsTest(ILogger logger, Client client, IDataStore store, IGame game, IHttpDownloader downloader, IFileSystem fileSystem)
+    protected RecentModsTest(ILogger logger, INexusApiClient nexusApiClient, IDataStore store, IGame game, IHttpDownloader downloader, IFileSystem fileSystem)
     {
         _store = store;
         _logger = logger;
-        _client = client;
+        _nexusApiClient = nexusApiClient;
         _game = game;
         _downloader = downloader;
         _downloadedFilesLocation = fileSystem.GetKnownPath(KnownPath.EntryDirectory)
@@ -50,14 +50,14 @@ public class RecentModsTest
             return;
         }
 
-        var updates = await _client.ModUpdatesAsync(_game.Domain.Value, Client.PastTime.Day);
+        var updates = await _nexusApiClient.ModUpdatesAsync(_game.Domain.Value, PastTime.Day);
         _logger.LogInformation("Found {Count} updates", updates.Data.Length);
         var files = new List<(ModId ModId, ModFile File)>();
         foreach (var mod in updates.Data)
         {
             try
             {
-                var modFiles = await _client.ModFilesAsync(_game.Domain.Value, mod.ModId);
+                var modFiles = await _nexusApiClient.ModFilesAsync(_game.Domain.Value, mod.ModId);
                 files.AddRange(modFiles.Data.Files.Where(f => f.CategoryId == 1).Select(f => (mod.ModId, f)));
             }
             catch (HttpRequestException) { }
@@ -79,7 +79,7 @@ public class RecentModsTest
             _logger.LogInformation("Downloading {FileName}", record.FileName);
             var fileLocation = _downloadedFilesLocation.Combine($"{_game.Domain}_{record.ModId}_{record.FileId}");
             var tempFileLocation = _downloadedFilesLocation.Combine($"{_game.Domain}_{record.ModId}_{record.FileId}.temp");
-            var urls = await _client.DownloadLinksAsync(_game.Domain.Value, record.ModId, record.FileId);
+            var urls = await _nexusApiClient.DownloadLinksAsync(_game.Domain.Value, record.ModId, record.FileId);
             var hash = await _downloader.DownloadAsync(urls.Data.Select(u => new HttpRequestMessage(HttpMethod.Get, u.Uri)).ToList(),
                 tempFileLocation);
 

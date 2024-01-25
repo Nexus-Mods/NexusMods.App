@@ -11,7 +11,6 @@ using NexusMods.FileExtractor;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.HttpDownloader.Tests;
 using NexusMods.Networking.NexusWebApi;
-using NexusMods.Networking.NexusWebApi.NMA;
 using NexusMods.Paths;
 using NexusMods.SingleProcess;
 using NexusMods.StandardGameLocators;
@@ -35,8 +34,7 @@ public class Startup
                 .AddCLI()
                 .AddSingleton<HttpClient>()
                 .AddHttpDownloader()
-                .AddNexusWebApi()
-                .AddNexusWebApiNmaIntegration(true)
+                .AddNexusWebApi(true)
                 .AddActivityMonitor()
                 .AddDataModelBaseEntities()
                 .AddGames()
