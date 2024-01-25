@@ -5,6 +5,7 @@ using System.Reactive.Linq;
 using Avalonia;
 using DynamicData;
 using DynamicData.Aggregation;
+using DynamicData.Kernel;
 using NexusMods.App.UI.Extensions;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -274,6 +275,64 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
             f0: _ => AddPanelWithDefaultTab(newWorkspaceState),
             f1: withCustomTab => AddPanelWithCustomTab(newWorkspaceState, withCustomTab.PageData)
         );
+    }
+
+    public void OpenPage(PageData pageData, OpenPageBehavior behavior)
+    {
+        behavior.Switch(
+            f0: replaceTab => OpenPageReplaceTab(pageData, replaceTab),
+            f1: newTab => OpenPageInNewTab(pageData, newTab),
+            f2: newPanel => OpenPageInNewPanel(pageData, newPanel)
+        );
+    }
+
+    private void OpenPageReplaceTab(PageData pageData, OpenPageBehavior.ReplaceTab replaceTab)
+    {
+        var panel = OptionalPanelOrFirst(replaceTab.PanelId);
+        var tab = OptionalTabOrFirst(panel, replaceTab.TabId);
+
+        var newTabPage = _factoryController.Create(pageData);
+        tab.Contents = newTabPage;
+    }
+
+    private void OpenPageInNewTab(PageData pageData, OpenPageBehavior.NewTab newTab)
+    {
+        var panel = OptionalPanelOrFirst(newTab.PanelId);
+        panel.AddCustomTab(pageData);
+    }
+
+    private static IPanelTabViewModel OptionalTabOrFirst(IPanelViewModel panel, Optional<PanelTabId> optionalTabId)
+    {
+        if (optionalTabId.HasValue)
+        {
+            var optionalTab = panel.Tabs.FirstOrOptional(x => x.Id == optionalTabId.Value);
+            if (optionalTab.HasValue) return optionalTab.Value;
+        }
+
+        return panel.Tabs.First();
+    }
+
+    private IPanelViewModel OptionalPanelOrFirst(Optional<PanelId> optionalPanelId)
+    {
+        if (optionalPanelId.HasValue)
+        {
+            if (_panelSource.Lookup(optionalPanelId.Value).TryGet(out var panel)) return panel;
+        }
+
+        return _panels.First();
+    }
+
+    private void OpenPageInNewPanel(PageData pageData, OpenPageBehavior.NewPanel newPanel)
+    {
+        var optionalNewWorkspaceState = newPanel.NewWorkspaceState;
+        var newWorkspaceState = optionalNewWorkspaceState.ValueOr(() =>
+        {
+            var currentState = WorkspaceGridState.From(_panels, IsHorizontal);
+            var newStates = GridUtils.GetPossibleStates(currentState, MaxColumns, MaxRows);
+            return newStates.First();
+        });
+
+        AddPanelWithCustomTab(newWorkspaceState, pageData);
     }
 
     private void AddPanelWithDefaultTab(WorkspaceGridState newWorkspaceState)

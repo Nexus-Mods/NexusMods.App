@@ -11,6 +11,11 @@ public interface IWorkspaceController
     public void AddPanel(WorkspaceGridState newWorkspaceState, AddPanelBehavior behavior);
 
     /// <summary>
+    /// Opens a new page in the workspace.
+    /// </summary>
+    public void OpenPage(PageData pageData, OpenPageBehavior behavior);
+
+    /// <summary>
     /// Swaps the positions of two panels.
     /// </summary>
     public void SwapPanels(PanelId firstPanelId, PanelId secondPanelId);
