@@ -9,7 +9,7 @@
     x:Class="NexusMods.Games.FOMOD.UI.GuidedInstallerWindow"
     x:TypeArguments="ui:IGuidedInstallerWindowViewModel"
     Title="GuidedInstallerWindow"
-    MinHeight="672" MinWidth="1232" MaxHeight="818" MaxWidth="1500">
+    MinHeight="672" MinWidth="1232">
 
     <Design.DataContext>
         <ui:GuidedInstallerWindowDesignViewModel />
