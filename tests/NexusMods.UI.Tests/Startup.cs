@@ -31,11 +31,6 @@ public class Startup
         services.AddUniversalGameLocator<Cyberpunk2077>(new Version("1.61"))
                 .AddApp(config: config)
                 .AddStubbedGameLocators()
-                .AddCrossPlatform()
-                .AddActivityMonitor()
-                .AddDataModelBaseEntities()
-                .AddDataModelEntities()
-                .AddInstallerTypes()
                 .AddSingleton<AvaloniaApp>()
                 .AddLogging(builder => builder.AddXUnit())
                 .Validate();

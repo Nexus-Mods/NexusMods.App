@@ -4,6 +4,6 @@
     <ProjectReference Include="..\..\..\src\NexusMods.Activities\NexusMods.Activities.csproj" />
     <ProjectReference Include="..\..\..\src\NexusMods.DataModel\NexusMods.DataModel.csproj" />
     <ProjectReference Include="..\..\NexusMods.DataModel.Tests\NexusMods.DataModel.Tests.csproj" />
-
+    <ProjectReference Include="..\..\NexusMods.StandardGameLocators.TestHelpers\NexusMods.StandardGameLocators.TestHelpers.csproj" />
   </ItemGroup>
 </Project>
