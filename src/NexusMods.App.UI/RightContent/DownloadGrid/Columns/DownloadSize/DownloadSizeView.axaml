@@ -11,7 +11,6 @@
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:modName="clr-namespace:NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModName"
-    xmlns:downloadSize="clr-namespace:NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadSize"
     xmlns:downloadSize1="clr-namespace:NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadSize">
     <Design.DataContext>
         <downloadSize1:DownloadSizeDesignViewModel />
