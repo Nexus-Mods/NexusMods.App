@@ -2,6 +2,7 @@ using Castle.Core.Resource;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.HttpDownloader;
 using NexusMods.DataModel;
 using NexusMods.FileExtractor;
 using NexusMods.FileExtractor.Extractors;

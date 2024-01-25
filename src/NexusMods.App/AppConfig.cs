@@ -1,6 +1,7 @@
 using System.Text.Json;
 using NexusMods.Abstractions.App.Settings;
 using NexusMods.Abstractions.FileExtractor;
+using NexusMods.Abstractions.HttpDownloader;
 using NexusMods.App.UI;
 using NexusMods.DataModel;
 using NexusMods.Networking.HttpDownloader;

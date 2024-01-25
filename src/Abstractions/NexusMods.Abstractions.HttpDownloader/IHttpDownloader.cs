@@ -1,10 +1,9 @@
-using System.Drawing;
 using NexusMods.Abstractions.Activities;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using Size = NexusMods.Paths.Size;
 
-namespace NexusMods.Networking.HttpDownloader;
+namespace NexusMods.Abstractions.HttpDownloader;
 
 /// <summary>
 /// Represents a HTTP downloader implementation.

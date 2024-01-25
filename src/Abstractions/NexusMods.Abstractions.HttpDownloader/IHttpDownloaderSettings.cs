@@ -1,6 +1,6 @@
 ﻿using JetBrains.Annotations;
 
-namespace NexusMods.Networking.HttpDownloader;
+namespace NexusMods.Abstractions.HttpDownloader;
 
 /// <summary>
 /// Settings for the HTTP downloader.

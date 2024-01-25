@@ -1,7 +1,7 @@
 using NexusMods.Abstractions.Activities;
 using NexusMods.Paths;
 
-namespace NexusMods.Networking.HttpDownloader;
+namespace NexusMods.Abstractions.HttpDownloader;
 
 /// <summary>
 /// Utility for reporting the live state of the HTTP downloader.
