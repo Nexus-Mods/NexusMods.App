@@ -1,6 +1,6 @@
 using JetBrains.Annotations;
 
-namespace NexusMods.Common;
+namespace NexusMods.App.BuildInfo;
 
 /// <summary>
 /// Constants supplied during compile time.

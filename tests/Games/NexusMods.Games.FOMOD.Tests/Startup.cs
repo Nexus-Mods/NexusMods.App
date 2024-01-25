@@ -6,7 +6,7 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Activities;
-using NexusMods.Common;
+using NexusMods.App.BuildInfo;
 using NexusMods.Games.BethesdaGameStudios;
 using NexusMods.Games.BethesdaGameStudios.SkyrimSpecialEdition;
 using NexusMods.Games.Generic;

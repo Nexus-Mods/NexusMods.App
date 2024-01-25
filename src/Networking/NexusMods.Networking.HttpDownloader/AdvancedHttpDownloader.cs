@@ -1,5 +1,6 @@
 using System.Buffers;
 using System.Diagnostics;
+using System.Drawing;
 using System.Net.Http.Headers;
 using System.Net.Sockets;
 using System.Text.Json;
@@ -10,6 +11,7 @@ using NexusMods.Extensions.Hashing;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Networking.HttpDownloader.DTOs;
 using NexusMods.Paths;
+using Size = NexusMods.Paths.Size;
 
 namespace NexusMods.Networking.HttpDownloader
 {

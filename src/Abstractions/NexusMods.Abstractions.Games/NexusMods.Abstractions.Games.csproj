@@ -3,15 +3,10 @@
     <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
 
     <ItemGroup>
-        <!-- TODO: This library needs stabilized -->
-        <PackageReference Include="NexusMods.Paths" />
         <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
 
-        <!-- TODO: This doesn't belong in an 'abstractions' package, but that would require rewiring some code, or PR'ing an 'abstractions' package for DynamicData -->
-        <PackageReference Include="DynamicData" />
-
-        <!-- 
+        <!--
             TODO: Currently required for 'custom loadout synchronizer'.
             We need to move default implementation(s) of methods to separate package.
         -->
@@ -28,11 +23,6 @@
         <ProjectReference Include="..\..\NexusMods.CrossPlatform\NexusMods.CrossPlatform.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.Activities\NexusMods.Abstractions.Activities.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.Installers\NexusMods.Abstractions.Installers.csproj" />
-
-        <!-- 
-            This is necessary for feature 'custom loadout synchronizer' and 'sort rules'.
-        -->
-        <ProjectReference Include="..\NexusMods.Abstractions.DataModel.Entities\NexusMods.Abstractions.DataModel.Entities.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.NexusWebApi\NexusMods.Abstractions.NexusWebApi.csproj" />
     </ItemGroup>
 

@@ -5,7 +5,7 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Activities;
-using NexusMods.Common;
+using NexusMods.App.BuildInfo;
 using NexusMods.CrossPlatform;
 using NexusMods.Games.TestFramework;
 using NexusMods.Paths;

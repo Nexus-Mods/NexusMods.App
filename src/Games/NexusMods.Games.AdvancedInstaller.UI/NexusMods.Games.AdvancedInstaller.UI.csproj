@@ -3,7 +3,6 @@
         <ProjectReference Include="..\..\NexusMods.App.UI\NexusMods.App.UI.csproj"/>
         <InternalsVisibleTo Include="NexusMods.Games.AdvancedInstaller.UI.Tests"/>
         <ProjectReference Include="..\NexusMods.Games.AdvancedInstaller\NexusMods.Games.AdvancedInstaller.csproj"/>
-        <ProjectReference Include="..\NexusMods.Games.FOMOD.UI\NexusMods.Games.FOMOD.UI.csproj"/>
     </ItemGroup>
 
     <ItemGroup>

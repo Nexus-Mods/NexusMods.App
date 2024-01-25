@@ -1,24 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <!-- NuGet Package Shared Details -->
-    <PropertyGroup>
-      <RootNamespace>NexusMods.Common</RootNamespace>
-    </PropertyGroup>
     <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
 
     <ItemGroup>
-        <PackageReference Include="NexusMods.Hashing.xxHash64" />
-        <PackageReference Include="CliWrap" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
-        <PackageReference Include="OneOf" />
-        <PackageReference Include="NexusMods.Paths" />
-        <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <InternalsVisibleTo Include="NexusMods.Common.Tests" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Activities\NexusMods.Abstractions.Activities.csproj" />
     </ItemGroup>
 </Project>

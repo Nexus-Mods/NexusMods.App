@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace NexusMods.Common;
+namespace NexusMods.App.BuildInfo;
 
 /// <summary>
 /// Constants supplied during runtime.

@@ -1,5 +1,4 @@
 using NexusMods.Abstractions.Games.Loadouts;
-using NexusMods.DataModel.Loadouts;
 using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
 
 namespace NexusMods.CLI.OptionParsers;
@@ -9,13 +8,13 @@ namespace NexusMods.CLI.OptionParsers;
 /// </summary>
 internal class LoadoutMarkerParser : IOptionParser<LoadoutMarker>
 {
-    private readonly LoadoutRegistry _registry;
+    private readonly ILoadoutRegistry _registry;
 
     /// <summary>
     /// DI constructor
     /// </summary>
     /// <param name="manager"></param>
-    public LoadoutMarkerParser(LoadoutRegistry manager) => _registry = manager;
+    public LoadoutMarkerParser(ILoadoutRegistry manager) => _registry = manager;
 
     public bool TryParse(string input, out LoadoutMarker value, out string error)
     {

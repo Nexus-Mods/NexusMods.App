@@ -1,5 +1,7 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Drawing;
+using System.Text.Json.Serialization;
 using NexusMods.Paths;
+using Size = NexusMods.Paths.Size;
 
 namespace NexusMods.Networking.HttpDownloader.DTOs;
 

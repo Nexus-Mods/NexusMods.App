@@ -1,10 +1,7 @@
+using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 
-#if DEBUG
-using System.Text;
-#endif
-
-namespace NexusMods.Common;
+namespace NexusMods.App.BuildInfo;
 
 /// <summary>
 /// Utility class for registering services.

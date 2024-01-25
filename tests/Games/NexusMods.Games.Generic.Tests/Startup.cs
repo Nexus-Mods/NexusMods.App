@@ -4,7 +4,7 @@ using NexusMods.Abstractions.DataModel.Entities;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Serialization;
-using NexusMods.Common;
+using NexusMods.App.BuildInfo;
 using NexusMods.Games.TestFramework;
 
 namespace NexusMods.Games.Generic.Tests;

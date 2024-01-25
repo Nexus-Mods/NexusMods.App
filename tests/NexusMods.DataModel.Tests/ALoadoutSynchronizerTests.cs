@@ -8,6 +8,7 @@ using NexusMods.Abstractions.Installers.DTO;
 using NexusMods.Abstractions.Installers.DTO.Files;
 using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.Abstractions.Serialization.DataModel;
+using NexusMods.BCL.Extensions;
 using NexusMods.DataModel.Tests.Harness;
 using NexusMods.Extensions.Hashing;
 using NexusMods.Hashing.xxHash64;

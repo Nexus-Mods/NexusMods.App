@@ -4,7 +4,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Windows.Input;
 using Microsoft.Extensions.Logging;
-using NexusMods.Common;
+using NexusMods.App.BuildInfo;
 using NexusMods.CrossPlatform.Process;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;

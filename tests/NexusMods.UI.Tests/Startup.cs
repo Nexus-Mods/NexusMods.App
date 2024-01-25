@@ -5,7 +5,7 @@ using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Activities;
 using NexusMods.App;
-using NexusMods.Common;
+using NexusMods.App.BuildInfo;
 using NexusMods.CrossPlatform;
 using NexusMods.Games.RedEngine;
 using NexusMods.Paths;

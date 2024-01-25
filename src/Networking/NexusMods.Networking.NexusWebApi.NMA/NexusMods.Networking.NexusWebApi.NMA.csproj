@@ -5,14 +5,16 @@
 
     <ItemGroup>
         <PackageReference Include="System.Linq.Async" />
-        <PackageReference Include="System.IdentityModel.Tokens.Jwt" />
         <PackageReference Include="Microsoft.AspNetCore.WebUtilities" />
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.Activities\NexusMods.Abstractions.Activities.csproj" />
+        <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.Games\NexusMods.Abstractions.Games.csproj" />
+        <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.Messaging\NexusMods.Abstractions.Messaging.csproj" />
+        <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.Serialization\NexusMods.Abstractions.Serialization.csproj" />
         <ProjectReference Include="..\..\Extensions\NexusMods.Extensions.BCL\NexusMods.Extensions.BCL.csproj" />
-        <ProjectReference Include="..\..\NexusMods.App.BuildInfo\NexusMods.App.BuildInfo.csproj" />
-        <ProjectReference Include="..\..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
+        <ProjectReference Include="..\..\Extensions\NexusMods.Extensions.DependencyInjection\NexusMods.Extensions.DependencyInjection.csproj" />
         <ProjectReference Include="..\NexusMods.Networking.NexusWebApi\NexusMods.Networking.NexusWebApi.csproj" />
     </ItemGroup>
 

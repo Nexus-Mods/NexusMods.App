@@ -1,5 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
-    
+
     <ItemGroup>
         <None Remove="Resources\DarkestDungeon\game_image.jpg" />
         <EmbeddedResource Include="Resources\DarkestDungeon\game_image.jpg" />
@@ -10,7 +10,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.Games\NexusMods.Abstractions.Games.csproj" />
-      <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.Installers\NexusMods.Abstractions.Installers.csproj" />
       <ProjectReference Include="..\..\Extensions\NexusMods.Extensions.BCL\NexusMods.Extensions.BCL.csproj" />
     </ItemGroup>
 

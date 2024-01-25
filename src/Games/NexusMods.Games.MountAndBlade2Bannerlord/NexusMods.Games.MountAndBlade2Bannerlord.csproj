@@ -7,7 +7,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.Games.Diagnostics\NexusMods.Abstractions.Games.Diagnostics.csproj" />
-    <ProjectReference Include="..\..\Extensions\NexusMods.Extensions.DependencyInjection\NexusMods.Extensions.DependencyInjection.csproj" />
   </ItemGroup>
 
   <ItemGroup>

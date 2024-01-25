@@ -7,8 +7,4 @@
         <PackageReference Include="NexusMods.Paths" />
         <PackageReference Include="NexusMods.Hashing.xxHash64" />
     </ItemGroup>
-
-    <ItemGroup>
-        <InternalsVisibleTo Include="NexusMods.DataModel.Tests" />
-    </ItemGroup>
 </Project>

@@ -1,12 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <ItemGroup>
-      <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.Activities\NexusMods.Abstractions.Activities.csproj" />
       <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.GuidedInstallers\NexusMods.Abstractions.GuidedInstallers.csproj" />
       <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.Installers\NexusMods.Abstractions.Installers.csproj" />
       <ProjectReference Include="..\..\Extensions\NexusMods.Extensions.BCL\NexusMods.Extensions.BCL.csproj" />
-      <ProjectReference Include="..\..\Extensions\NexusMods.Extensions.DependencyInjection\NexusMods.Extensions.DependencyInjection.csproj" />
-      <ProjectReference Include="..\..\NexusMods.App.BuildInfo\NexusMods.App.BuildInfo.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -31,7 +28,7 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions"/>
     </ItemGroup>
-    
+
     <ItemGroup>
     </ItemGroup>
 

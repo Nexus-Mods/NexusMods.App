@@ -6,17 +6,11 @@
     <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
 
     <ItemGroup>
-        <PackageReference Include="NetEscapades.EnumGenerators" />
         <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\NexusMods.Abstractions.FileExtractor\NexusMods.Abstractions.FileExtractor.csproj" />
       <ProjectReference Include="..\NexusMods.Abstractions.Games\NexusMods.Abstractions.Games.csproj" />
-      <ProjectReference Include="..\NexusMods.Abstractions.Serialization\NexusMods.Abstractions.Serialization.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\NexusMods.Abstractions.DataModel.Entities\NexusMods.Abstractions.DataModel.Entities.csproj" />
     </ItemGroup>
 </Project>

@@ -8,7 +8,7 @@ using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.Activities;
-using NexusMods.Common;
+using NexusMods.App.BuildInfo;
 using NexusMods.DataModel.Tests.Diagnostics;
 using NexusMods.FileExtractor;
 using NexusMods.Paths;

@@ -4,19 +4,13 @@
 
     <ItemGroup>
         <!-- TODO: This library needs stabilized -->
-        <PackageReference Include="NexusMods.Paths" />
-        <PackageReference Include="NexusMods.Hashing.xxHash64" />
         <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
 
     <ItemGroup>
-        <InternalsVisibleTo Include="NexusMods.DataModel.Tests" />
-    </ItemGroup>
-
-    <ItemGroup>
+      <ProjectReference Include="..\..\Extensions\NexusMods.Extensions.DependencyInjection\NexusMods.Extensions.DependencyInjection.csproj" />
       <ProjectReference Include="..\NexusMods.Abstractions.DataModel.Entities\NexusMods.Abstractions.DataModel.Entities.csproj" />
       <ProjectReference Include="..\NexusMods.Abstractions.IO\NexusMods.Abstractions.IO.csproj" />
-      <ProjectReference Include="..\NexusMods.Abstractions.Serialization\NexusMods.Abstractions.Serialization.csproj" />
     </ItemGroup>
 
 </Project>

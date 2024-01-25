@@ -1,17 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <ItemGroup>
-        <PackageReference Include="xunit.extensibility.core" />
         <PackageReference Include="NexusMods.Paths" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.Games\NexusMods.Abstractions.Games.csproj" />
-      <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.GuidedInstallers\NexusMods.Abstractions.GuidedInstallers.csproj" />
-      <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.Serialization\NexusMods.Abstractions.Serialization.csproj" />
-      <ProjectReference Include="..\..\Networking\NexusMods.Networking.HttpDownloader\NexusMods.Networking.HttpDownloader.csproj" />
-      <ProjectReference Include="..\..\Networking\NexusMods.Networking.NexusWebApi\NexusMods.Networking.NexusWebApi.csproj" />
-      <ProjectReference Include="..\..\NexusMods.StandardGameLocators\NexusMods.StandardGameLocators.csproj" />
+        <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.GuidedInstallers\NexusMods.Abstractions.GuidedInstallers.csproj" />
+        <ProjectReference Include="..\..\Networking\NexusMods.Networking.HttpDownloader\NexusMods.Networking.HttpDownloader.csproj" />
+        <ProjectReference Include="..\..\Networking\NexusMods.Networking.NexusWebApi\NexusMods.Networking.NexusWebApi.csproj" />
+        <ProjectReference Include="..\..\NexusMods.StandardGameLocators\NexusMods.StandardGameLocators.csproj" />
     </ItemGroup>
+
 
 </Project>

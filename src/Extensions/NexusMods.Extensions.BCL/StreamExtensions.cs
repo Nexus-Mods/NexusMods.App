@@ -1,8 +1,6 @@
-namespace NexusMods.DataModel;
+namespace NexusMods.BCL.Extensions;
 
-/// <summary>
-///
-/// </summary>
+/// <summary/>
 public static class StreamExtensions
 {
     /// <summary>
