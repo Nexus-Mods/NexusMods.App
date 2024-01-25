@@ -11,13 +11,9 @@
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.HttpDownloader\NexusMods.Abstractions.HttpDownloader.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Messaging\NexusMods.Abstractions.Messaging.csproj" />
     </ItemGroup>
-
     <ItemGroup>
-      <Reference Include="NexusMods.Paths">
-        <HintPath>..\..\..\..\..\..\home\sewer\.nuget\packages\nexusmods.paths\0.5.0\lib\net7.0\NexusMods.Paths.dll</HintPath>
-      </Reference>
-      <Reference Include="NexusMods.ProxyConsole.Abstractions">
-        <HintPath>..\..\..\..\..\..\home\sewer\.nuget\packages\nexusmods.proxyconsole.abstractions\0.6.0\lib\net8.0\NexusMods.ProxyConsole.Abstractions.dll</HintPath>
-      </Reference>
+        <PackageReference Include="NexusMods.Paths" />
+        <PackageReference Include="NexusMods.ProxyConsole.Abstractions" />
     </ItemGroup>
+
 </Project>
