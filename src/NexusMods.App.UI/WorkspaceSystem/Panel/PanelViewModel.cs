@@ -43,10 +43,7 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
         PopoutCommand = ReactiveCommand.Create(() => { }, canExecute);
         CloseCommand = ReactiveCommand.Create(() => Id, canExecute);
 
-        AddTabCommand = ReactiveCommand.Create(() =>
-        {
-            AddTab();
-        });
+        AddTabCommand = ReactiveCommand.Create(AddDefaultTab);
 
         _tabsList
             .Connect()
@@ -163,18 +160,24 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
         UpdateActualBounds();
     }
 
-    public IPanelTabViewModel AddTab()
+    public void AddDefaultTab()
     {
         var allDetails = _factoryController.GetAllDetails().ToArray();
-        var newTabPage = _factoryController.Create(new PageData
+        var pageData = new PageData
         {
             FactoryId = NewTabPageFactory.StaticId,
             Context = new NewTabPageContext
             {
                 DiscoveryDetails = allDetails
             }
-        });
+        };
 
+        AddCustomTab(pageData);
+    }
+
+    public void AddCustomTab(PageData pageData)
+    {
+        var newTabPage = _factoryController.Create(pageData);
         var tab = new PanelTabViewModel
         {
             Contents = newTabPage
@@ -182,7 +185,6 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
 
         _tabsList.Edit(updater => updater.Add(tab));
         SelectedTabId = tab.Id;
-        return tab;
     }
 
     public void CloseTab(PanelTabId id)

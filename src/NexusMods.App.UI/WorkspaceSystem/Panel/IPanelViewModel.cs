@@ -57,15 +57,11 @@ public interface IPanelViewModel : IViewModelInterface
     /// </summary>
     public void Arrange(Size workspaceSize);
 
-    /// <summary>
-    /// Adds a new tab to the panel.
-    /// </summary>
-    public IPanelTabViewModel AddTab();
-
-    /// <summary>
-    /// Gets the command version of <see cref="AddTab"/>.
-    /// </summary>
     public ReactiveCommand<Unit, Unit> AddTabCommand { get; }
+
+    public void AddDefaultTab();
+
+    public void AddCustomTab(PageData pageData);
 
     /// <summary>
     /// Closes a tab.

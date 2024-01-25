@@ -65,7 +65,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
             _addPanelButtonViewModelSource
                 .Connect()
                 .MergeMany(item => item.AddPanelCommand)
-                .SubscribeWithErrorLogging(nextState => AddPanel(nextState))
+                .SubscribeWithErrorLogging(AddPanelWithDefaultTab)
                 .DisposeWith(disposables);
 
             // Closing a panel
@@ -268,23 +268,36 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         });
     }
 
-    /// <inheritdoc/>
-    public IPanelViewModel AddPanel(WorkspaceGridState state)
+    public void AddPanelWithDefaultTab(WorkspaceGridState newWorkspaceState)
     {
-        IPanelViewModel panelViewModel = null!;
+        var allDetails = _factoryController.GetAllDetails().ToArray();
+        var pageData = new PageData
+        {
+            FactoryId = NewTabPageFactory.StaticId,
+            Context = new NewTabPageContext
+            {
+                DiscoveryDetails = allDetails
+            }
+        };
+
+        AddPanelWithCustomTab(newWorkspaceState, pageData);
+    }
+
+    public void AddPanelWithCustomTab(WorkspaceGridState newWorkspaceState, PageData pageData)
+    {
         _panelSource.Edit(updater =>
         {
-            foreach (var panel in state)
+            foreach (var panel in newWorkspaceState)
             {
                 var (panelId, logicalBounds) = panel;
                 if (panelId == PanelId.DefaultValue)
                 {
-                    panelViewModel = new PanelViewModel(_factoryController)
+                    var panelViewModel = new PanelViewModel(_factoryController)
                     {
                         LogicalBounds = logicalBounds,
                     };
 
-                    panelViewModel.AddTab();
+                    panelViewModel.AddCustomTab(pageData);
                     panelViewModel.Arrange(_lastWorkspaceSize);
                     updater.AddOrUpdate(panelViewModel);
                 }
@@ -298,9 +311,6 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                 }
             }
         });
-
-        Debug.Assert(panelViewModel is not null);
-        return panelViewModel;
     }
 
     public void ClosePanel(PanelId panelToClose)

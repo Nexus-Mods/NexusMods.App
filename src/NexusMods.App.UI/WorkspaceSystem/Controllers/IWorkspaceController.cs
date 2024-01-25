@@ -6,6 +6,18 @@ namespace NexusMods.App.UI.WorkspaceSystem;
 public interface IWorkspaceController
 {
     /// <summary>
+    /// Adds a new panel to the workspace and adds the default tab to the panel.
+    /// </summary>
+    /// <seealso cref="AddPanelWithCustomTab"/>
+    public void AddPanelWithDefaultTab(WorkspaceGridState newWorkspaceState);
+
+    /// <summary>
+    /// Adds a new panel to the workspace and adds a custom tab to the panel.
+    /// </summary>
+    /// <seealso cref="AddPanelWithDefaultTab"/>
+    public void AddPanelWithCustomTab(WorkspaceGridState newWorkspaceState, PageData pageData);
+
+    /// <summary>
     /// Swaps the positions of two panels.
     /// </summary>
     public void SwapPanels(PanelId firstPanelId, PanelId secondPanelId);

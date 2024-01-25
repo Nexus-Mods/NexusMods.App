@@ -59,7 +59,7 @@ public class WorkspacePlaygroundViewModel : AViewModel<IWorkspacePlaygroundViewM
 
         this.WhenActivated(disposables =>
         {
-            WorkspaceViewModel.AddPanel(WorkspaceGridState.From(new[]
+            WorkspaceViewModel.AddPanelWithDefaultTab(WorkspaceGridState.From(new[]
             {
                 new PanelGridState(PanelId.DefaultValue, MathUtils.One)
             }, isHorizontal: WorkspaceViewModel.IsHorizontal));

@@ -17,10 +17,4 @@ public interface IWorkspaceViewModel : IViewModelInterface, IWorkspaceController
     /// Called by the View to notify the VM about the new size of the control.
     /// </summary>
     public void Arrange(Size workspaceSize);
-
-    /// <summary>
-    /// Add a new panel to the workspace.
-    /// </summary>
-    /// <returns>The newly created <see cref="IPanelViewModel"/>.</returns>
-    public IPanelViewModel AddPanel(WorkspaceGridState state);
 }
