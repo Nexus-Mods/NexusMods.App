@@ -3,7 +3,7 @@ using System.Reflection;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.UI;
-using NexusMods.Networking.NexusWebApi.NMA;
+using NexusMods.Networking.NexusWebApi;
 using NexusMods.Telemetry;
 using NexusMods.Telemetry.Metrics;
 

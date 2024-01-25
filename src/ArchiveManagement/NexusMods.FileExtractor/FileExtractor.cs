@@ -1,16 +1,16 @@
 using Microsoft.Extensions.Logging;
-using NexusMods.Common;
+using NexusMods.Abstractions.IO;
+using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.FileExtractor.Extractors;
 using NexusMods.FileExtractor.FileSignatures;
-using NexusMods.FileExtractor.StreamFactories;
 using NexusMods.Paths;
 
 namespace NexusMods.FileExtractor;
 
 /// <summary>
-/// Utility used for extracting files.  
-/// This utility is usually created via DI container.  
-/// See <see cref="Services.AddFileExtractors"/>; and then ask the DI container nicely to give you an instance of this :)  
+/// Utility used for extracting files.
+/// This utility is usually created via DI container.
+/// See <see cref="Services.AddFileExtractors"/>; and then ask the DI container nicely to give you an instance of this :)
 /// </summary>
 public class FileExtractor
 {
@@ -24,7 +24,7 @@ public class FileExtractor
     private readonly IEnumerable<IExtractor> _extractors;
 
     /// <summary>
-    /// Creates a new instance of a File Extractor 
+    /// Creates a new instance of a File Extractor
     /// </summary>
     /// <param name="logger">Logger used to report back.</param>
     /// <param name="extractors">Extractors used to unpack files to disk.</param>
@@ -85,8 +85,8 @@ public class FileExtractor
     /// <typeparam name="T">Return type</typeparam>
     /// <returns>A Dictionary of RelativePath -> Return value from `func`</returns>
     /// <remarks>
-    ///     Does not extract files to disk. If you need to save the data; copy it elsewhere.  
-    ///     The source data passed to func can be in-memory.  
+    ///     Does not extract files to disk. If you need to save the data; copy it elsewhere.
+    ///     The source data passed to func can be in-memory.
     /// </remarks>
     public async Task<IDictionary<RelativePath, T>> ForEachEntry<T>(IStreamFactory source,
         Func<RelativePath, IStreamFactory, ValueTask<T>> func, CancellationToken token = default)
@@ -116,8 +116,8 @@ public class FileExtractor
     /// <typeparam name="T">Return type</typeparam>
     /// <returns>A Dictionary of RelativePath -> Return value from `func`</returns>
     /// <remarks>
-    ///     Does not extract files to disk. If you need to save the data; copy it elsewhere.  
-    ///     The source data passed to func can be in-memory.  
+    ///     Does not extract files to disk. If you need to save the data; copy it elsewhere.
+    ///     The source data passed to func can be in-memory.
     /// </remarks>
     public async Task<IDictionary<RelativePath, T>> ForEachEntry<T>(AbsolutePath file,
         Func<RelativePath, IStreamFactory, ValueTask<T>> func, CancellationToken token = default)

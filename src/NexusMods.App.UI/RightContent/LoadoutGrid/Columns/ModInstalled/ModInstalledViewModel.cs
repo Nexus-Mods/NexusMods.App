@@ -1,9 +1,9 @@
 ﻿using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.App.UI.Controls.DataGrid;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.Loadouts.Cursors;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -11,7 +11,7 @@ namespace NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModInstalled;
 
 public class ModInstalledViewModel : AViewModel<IModInstalledViewModel>, IModInstalledViewModel, IComparableColumn<ModCursor>
 {
-    private readonly LoadoutRegistry _loadoutRegistry;
+    private readonly ILoadoutRegistry _loadoutRegistry;
 
     [Reactive]
     public ModCursor Row { get; set; }
@@ -22,7 +22,7 @@ public class ModInstalledViewModel : AViewModel<IModInstalledViewModel>, IModIns
     [Reactive]
     public ModStatus Status { get; set; }
 
-    public ModInstalledViewModel(LoadoutRegistry loadoutRegistry, IDataStore store)
+    public ModInstalledViewModel(ILoadoutRegistry loadoutRegistry)
     {
         _loadoutRegistry = loadoutRegistry;
         this.WhenActivated(d =>

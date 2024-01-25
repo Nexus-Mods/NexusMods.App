@@ -1,12 +1,11 @@
 using System.Text.Json;
-using NexusMods.Common;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.Diagnostics;
-using NexusMods.DataModel.Diagnostics.Emitters;
-using NexusMods.DataModel.Games;
-using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.Loadouts.ModFiles;
-using NexusMods.DataModel.Loadouts.Mods;
+using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.Diagnostics;
+using NexusMods.Abstractions.Diagnostics.Emitters;
+using NexusMods.Abstractions.Games.Loadouts;
+using NexusMods.Abstractions.Installers.DTO.Files;
+using NexusMods.Abstractions.IO;
+using NexusMods.Extensions.BCL;
 using NexusMods.Games.StardewValley.Models;
 
 namespace NexusMods.Games.StardewValley.Emitters;

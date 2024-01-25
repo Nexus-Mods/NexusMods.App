@@ -5,7 +5,7 @@ using NexusMods.Games.Generic.FileAnalyzers;
 using NexusMods.Paths;
 using Xunit;
 
-namespace NexusMods.Games.FOMOD.Tests;
+namespace NexusMods.Games.Generic.Tests;
 
 public class IniParsingTests
 {

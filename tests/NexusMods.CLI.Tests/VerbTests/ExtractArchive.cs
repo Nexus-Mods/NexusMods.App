@@ -1,5 +1,4 @@
 using FluentAssertions;
-using NexusMods.Paths;
 
 namespace NexusMods.CLI.Tests.VerbTests;
 

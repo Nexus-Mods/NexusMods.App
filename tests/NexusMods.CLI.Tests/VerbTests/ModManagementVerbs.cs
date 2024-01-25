@@ -1,5 +1,4 @@
 using FluentAssertions;
-using NexusMods.Paths;
 using NexusMods.ProxyConsole.Abstractions.Implementations;
 using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 

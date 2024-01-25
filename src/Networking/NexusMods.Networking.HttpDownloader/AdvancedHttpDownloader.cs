@@ -1,16 +1,18 @@
 using System.Buffers;
 using System.Diagnostics;
+using System.Drawing;
 using System.Net.Http.Headers;
 using System.Net.Sockets;
 using System.Text.Json;
 using System.Threading.Channels;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Activities;
-using NexusMods.Common;
-using NexusMods.DataModel.Activities;
+using NexusMods.Abstractions.HttpDownloader;
+using NexusMods.Extensions.Hashing;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Networking.HttpDownloader.DTOs;
 using NexusMods.Paths;
+using Size = NexusMods.Paths.Size;
 
 namespace NexusMods.Networking.HttpDownloader
 {

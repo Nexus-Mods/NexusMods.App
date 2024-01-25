@@ -1,8 +1,10 @@
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
-using NexusMods.DataModel.Games;
+using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Installers.DTO;
 using NexusMods.Games.MountAndBlade2Bannerlord.Utils;
-using NexusMods.Paths;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord.Services;
 
@@ -14,6 +16,13 @@ public sealed class LauncherManagerFactory
     public LauncherManagerFactory(ILoggerFactory loggerFactory)
     {
         _loggerFactory = loggerFactory;
+    }
+
+    public LauncherManagerNexusMods Get(ModInstallerInfo info)
+    {
+        var store = Converter.ToGameStoreTW(info.Store);
+        return _instances.GetOrAdd(info.Locations[LocationId.Game].ToString(),
+            static (installationPath, tuple) => ValueFactory(tuple._loggerFactory, installationPath, tuple.store), (_loggerFactory, store));
     }
 
     public LauncherManagerNexusMods Get(GameInstallation installation)

@@ -4,8 +4,11 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\..\..\src\Extensions\NexusMods.Extensions.Hashing\NexusMods.Extensions.Hashing.csproj" />
+        <ProjectReference Include="..\..\..\src\Games\NexusMods.Games.BethesdaGameStudios\NexusMods.Games.BethesdaGameStudios.csproj" />
         <ProjectReference Include="..\..\..\src\Games\NexusMods.Games.FOMOD\NexusMods.Games.FOMOD.csproj" />
-        <ProjectReference Include="..\..\..\src\NexusMods.App\NexusMods.App.csproj" />
+        <ProjectReference Include="..\..\..\src\NexusMods.Activities\NexusMods.Activities.csproj" />
+        <ProjectReference Include="..\..\..\src\NexusMods.App.BuildInfo\NexusMods.App.BuildInfo.csproj" />
         <ProjectReference Include="..\NexusMods.Games.TestFramework\NexusMods.Games.TestFramework.csproj" />
     </ItemGroup>
 

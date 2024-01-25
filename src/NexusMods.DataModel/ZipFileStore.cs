@@ -1,13 +1,14 @@
 ﻿using System.Buffers;
 using System.Buffers.Binary;
 using System.IO.Compression;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.Abstractions.Ids;
+using NexusMods.Abstractions.IO;
+using NexusMods.Abstractions.Serialization;
+using NexusMods.Abstractions.Serialization.DataModel;
+using NexusMods.Abstractions.Serialization.DataModel.Ids;
 using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.ChunkedStreams;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
-using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Utilities;
 using Reloaded.Memory.Extensions;
 

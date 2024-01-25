@@ -1,5 +1,5 @@
 using Microsoft.Extensions.Logging;
-using NexusMods.DataModel.Abstractions.Ids;
+using NexusMods.Abstractions.Serialization.DataModel.Ids;
 using NexusMods.Paths;
 
 namespace NexusMods.DataModel;

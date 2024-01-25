@@ -1,7 +1,7 @@
 using Bannerlord.ModuleManager;
 using FluentAssertions;
-using NexusMods.DataModel.Diagnostics;
-using NexusMods.DataModel.Diagnostics.References;
+using NexusMods.Abstractions.Diagnostics;
+using NexusMods.Abstractions.Diagnostics.References;
 using NexusMods.Games.MountAndBlade2Bannerlord.Emitters;
 using NexusMods.Games.MountAndBlade2Bannerlord.Tests.Shared;
 using NexusMods.Games.TestFramework;

@@ -4,13 +4,13 @@ using System.Reactive.Linq;
 using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Icons;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.RightContent;
 using NexusMods.App.UI.RightContent.LoadoutGrid;
-using NexusMods.DataModel.Games;
-using NexusMods.DataModel.Loadouts;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -33,7 +33,7 @@ public class GameLeftMenuViewModel : AViewModel<IGameLeftMenuViewModel>, IGameLe
     [Reactive]
     public IRightContentViewModel RightContent { get; set; } = Initializers.IRightContent;
 
-    public GameLeftMenuViewModel(ILogger<GameLeftMenuViewModel> logger, LoadoutRegistry loadoutRegistry, ILaunchButtonViewModel launchButton,
+    public GameLeftMenuViewModel(ILogger<GameLeftMenuViewModel> logger, ILoadoutRegistry loadoutRegistry, ILaunchButtonViewModel launchButton,
         ILoadoutGridViewModel loadoutGridViewModel,
         IServiceProvider provider)
     {

@@ -1,10 +1,10 @@
 using System.Text;
 using FluentAssertions;
-using NexusMods.DataModel.Loadouts.ModFiles;
+using NexusMods.Abstractions.Installers.DTO.Files;
+using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Games.MountAndBlade2Bannerlord.Installers;
 using NexusMods.Games.MountAndBlade2Bannerlord.Tests.Shared;
 using NexusMods.Games.TestFramework;
-using NexusMods.Networking.NexusWebApi.Types;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord.Tests.Installers;

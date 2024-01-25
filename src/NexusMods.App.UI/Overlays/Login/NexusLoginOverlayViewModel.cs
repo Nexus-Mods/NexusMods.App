@@ -3,7 +3,7 @@ using System.Reactive.Linq;
 using System.Windows.Input;
 using DynamicData;
 using NexusMods.Abstractions.Activities;
-using NexusMods.Networking.NexusWebApi.NMA;
+using NexusMods.Abstractions.NexusWebApi;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -19,7 +19,7 @@ public class NexusLoginOverlayViewModel : AViewModel<INexusLoginOverlayViewModel
 
         var currentJob = activityMonitor.Activities
             .AsObservableChangeSet(x => x.Id)
-            .QueryWhenChanged(q => q.Items.FirstOrDefault(activity => activity.Group == OAuth.Group))
+            .QueryWhenChanged(q => q.Items.FirstOrDefault(activity => activity.Group.Value == Constants.OAuthActivityGroupName))
             .OnUI();
 
         currentJob.WhereNotNull()

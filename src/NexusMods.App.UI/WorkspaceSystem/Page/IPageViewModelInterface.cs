@@ -1,4 +1,3 @@
-using System.Reactive;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.WorkspaceSystem;

@@ -1,7 +1,7 @@
 ﻿using Avalonia.Controls;
 using FluentAssertions;
+using NexusMods.App.BuildInfo;
 using NexusMods.App.UI.Overlays.Updater;
-using NexusMods.Common;
 
 namespace NexusMods.UI.Tests.Overlays;
 

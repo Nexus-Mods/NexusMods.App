@@ -1,4 +1,4 @@
-﻿using NexusMods.Paths;
+﻿using NexusMods.Abstractions.Installers.DTO;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Preview;
 

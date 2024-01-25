@@ -1,5 +1,7 @@
 ﻿using System.Buffers;
+using System.Drawing;
 using NexusMods.Paths;
+using Size = NexusMods.Paths.Size;
 
 namespace NexusMods.Networking.HttpDownloader.DTOs;
 

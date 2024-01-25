@@ -1,8 +1,10 @@
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.Games.BethesdaGameStudios;
+using NexusMods.Abstractions.HttpDownloader;
+using NexusMods.Abstractions.Serialization;
+using NexusMods.Abstractions.Serialization.DataModel;
+using NexusMods.Games.BethesdaGameStudios.SkyrimSpecialEdition;
 using NexusMods.Games.TestFramework;
 using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Networking.Downloaders.Tasks;

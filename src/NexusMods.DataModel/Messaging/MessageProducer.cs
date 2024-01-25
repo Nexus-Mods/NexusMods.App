@@ -1,4 +1,5 @@
 using System.Reactive.Subjects;
+using NexusMods.Abstractions.Messaging;
 
 namespace NexusMods.DataModel.Messaging;
 

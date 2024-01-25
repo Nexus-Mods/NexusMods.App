@@ -1,4 +1,5 @@
 ﻿using System.Reactive;
+using NexusMods.Abstractions.Installers.DTO;
 using NexusMods.Paths;
 using ReactiveUI;
 

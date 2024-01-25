@@ -3,14 +3,18 @@ using DynamicData;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using NexusMods.Common;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.Abstractions.Ids;
-using NexusMods.DataModel.Diagnostics.Emitters;
-using NexusMods.DataModel.Diagnostics.References;
-using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.Loadouts.Cursors;
-using NexusMods.DataModel.Loadouts.Mods;
+using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.Diagnostics;
+using NexusMods.Abstractions.Diagnostics.Emitters;
+using NexusMods.Abstractions.Diagnostics.References;
+using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.Games.Loadouts;
+using NexusMods.Abstractions.Serialization;
+using NexusMods.Abstractions.Serialization.DataModel;
+using NexusMods.Abstractions.Serialization.DataModel.Ids;
+using NexusMods.DataModel.Extensions;
+using NexusMods.Extensions.BCL;
+using NexusMods.Extensions.DynamicData;
 
 namespace NexusMods.DataModel.Diagnostics;
 

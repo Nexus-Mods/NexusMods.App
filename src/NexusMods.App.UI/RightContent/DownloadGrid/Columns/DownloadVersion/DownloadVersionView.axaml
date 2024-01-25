@@ -3,7 +3,7 @@
     d:DesignHeight="21"
     Width="80"
     mc:Ignorable="d"
-    x:Class="NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadVersion.DownloadVersionView"
+    x:Class="NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadVersion.DownloadVersionView"
     x:TypeArguments="modName:IModNameViewModel"
     xmlns="https://github.com/avaloniaui"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -11,9 +11,9 @@
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:modName="clr-namespace:NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModName"
-    xmlns:downloadVersion="clr-namespace:NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadVersion">
+    xmlns:downloadVersion1="clr-namespace:NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadVersion">
     <Design.DataContext>
-        <downloadVersion:DownloadVersionDesignViewModel />
+        <downloadVersion1:DownloadVersionDesignViewModel />
     </Design.DataContext>
     <TextBlock
         VerticalAlignment="Center"

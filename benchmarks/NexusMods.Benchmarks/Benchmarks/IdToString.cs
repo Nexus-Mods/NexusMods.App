@@ -1,7 +1,7 @@
 using BenchmarkDotNet.Attributes;
+using NexusMods.Abstractions.Serialization.DataModel;
+using NexusMods.Abstractions.Serialization.DataModel.Ids;
 using NexusMods.Benchmarks.Interfaces;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.Abstractions.Ids;
 
 namespace NexusMods.Benchmarks.Benchmarks;
 

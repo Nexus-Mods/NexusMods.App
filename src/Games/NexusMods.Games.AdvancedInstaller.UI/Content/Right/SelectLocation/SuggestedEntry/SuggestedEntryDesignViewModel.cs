@@ -1,4 +1,5 @@
-﻿using NexusMods.Paths;
+﻿using NexusMods.Abstractions.Installers.DTO;
+using NexusMods.Paths;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.SelectLocation;
 

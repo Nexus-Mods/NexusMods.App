@@ -1,7 +1,7 @@
 using GameFinder.Common;
 using GameFinder.RegistryUtils;
 using GameFinder.Wine;
-using NexusMods.DataModel.Games;
+using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Paths;
 using OneOf;
 using IGame = GameFinder.Common.IGame;
@@ -23,7 +23,7 @@ public class WineStoreHandlerWrapper
     /// <summary>
     /// Delegate for trying to match the requested game with a found game.
     /// </summary>
-    public delegate GameLocatorResult? Matches(IGame foundGame, DataModel.Games.IGame requestedGame);
+    public delegate GameLocatorResult? Matches(IGame foundGame, Abstractions.Games.IGame requestedGame);
 
     private readonly IFileSystem _fileSystem;
     private readonly CreateHandler[] _factories;
@@ -51,7 +51,7 @@ public class WineStoreHandlerWrapper
     /// <param name="foundGames"></param>
     /// <param name="requestedGame"></param>
     /// <returns></returns>
-    public GameLocatorResult? FindMatchingGame(IEnumerable<IGame> foundGames, DataModel.Games.IGame requestedGame)
+    public GameLocatorResult? FindMatchingGame(IEnumerable<IGame> foundGames, Abstractions.Games.IGame requestedGame)
     {
         foreach (var foundGame in foundGames)
         {

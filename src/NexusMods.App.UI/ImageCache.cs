@@ -2,8 +2,8 @@ using System.Diagnostics;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Microsoft.Extensions.Logging;
-using NexusMods.Common.GuidedInstaller;
-using NexusMods.DataModel.Abstractions;
+using NexusMods.Abstractions.GuidedInstallers;
+using NexusMods.Abstractions.IO;
 using NexusMods.Hashing.xxHash64;
 
 namespace NexusMods.App.UI;

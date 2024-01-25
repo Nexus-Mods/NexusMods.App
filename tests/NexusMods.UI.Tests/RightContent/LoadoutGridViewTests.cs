@@ -3,11 +3,11 @@ using System.Collections.Specialized;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using FluentAssertions;
+using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.Games.DTO;
 using NexusMods.App.UI.RightContent.LoadoutGrid;
-using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.Loadouts.Cursors;
 
-namespace NexusMods.UI.Tests;
+namespace NexusMods.UI.Tests.RightContent;
 
 public class LoadoutGridViewTests : AViewTest<LoadoutGridView, LoadoutGridDesignViewModel, ILoadoutGridViewModel>
 {

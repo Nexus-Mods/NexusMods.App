@@ -1,6 +1,6 @@
 ﻿using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using NexusMods.DataModel.Loadouts.Cursors;
+using NexusMods.Abstractions.Games.DTO;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 

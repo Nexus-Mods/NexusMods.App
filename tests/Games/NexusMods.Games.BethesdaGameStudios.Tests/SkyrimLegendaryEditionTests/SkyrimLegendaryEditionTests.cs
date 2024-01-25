@@ -3,11 +3,10 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.CLI.Tests.VerbTests;
 using NexusMods.Games.TestFramework;
 using NexusMods.Paths;
-using NexusMods.ProxyConsole.Abstractions.Implementations;
 
 namespace NexusMods.Games.BethesdaGameStudios.Tests.SkyrimLegendaryEditionTests;
 
-public class SkyrimLegendaryEditionTests(IServiceProvider serviceProvider) : AGameTest<SkyrimLegendaryEdition>(serviceProvider)
+public class SkyrimLegendaryEditionTests(IServiceProvider serviceProvider) : AGameTest<SkyrimLegendaryEdition.SkyrimLegendaryEdition>(serviceProvider)
 {
     private readonly TestModDownloader _downloader = serviceProvider.GetRequiredService<TestModDownloader>();
     private readonly AVerbTest _verbTester = new AVerbTest(serviceProvider);
@@ -35,7 +34,6 @@ public class SkyrimLegendaryEditionTests(IServiceProvider serviceProvider) : AGa
         // and other tests might pollute the game folder in the meantime.
         var loadout = await CreateLoadout(indexGameFiles: false);
         var loadoutName = loadout.Value.Name;
-
 
         var log = await _verbTester.Run("list-loadouts");
 

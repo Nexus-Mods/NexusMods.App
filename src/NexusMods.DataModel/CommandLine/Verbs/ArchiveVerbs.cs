@@ -1,11 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.CLI;
-using NexusMods.Common;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.ArchiveMetaData;
+using NexusMods.Abstractions.Cli;
+using NexusMods.Abstractions.Games.ArchiveMetadata;
+using NexusMods.Abstractions.Games.Loadouts;
+using NexusMods.Abstractions.Serialization;
 using NexusMods.Paths;
 using NexusMods.ProxyConsole.Abstractions;
-using NexusMods.ProxyConsole.Abstractions.Implementations;
 using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
 
 namespace NexusMods.DataModel.CommandLine.Verbs;

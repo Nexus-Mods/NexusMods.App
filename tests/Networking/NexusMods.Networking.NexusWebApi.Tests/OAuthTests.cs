@@ -1,27 +1,38 @@
 using Microsoft.Extensions.Logging;
-using NexusMods.Common;
 using System.Net;
-using NexusMods.Networking.NexusWebApi.Types;
 using System.Text.Json;
 using FluentAssertions;
 using NexusMods.Abstractions.Activities;
-using NexusMods.Common.OSInterop;
-using NexusMods.DataModel.Activities;
-using NexusMods.DataModel.Messaging;
-using NexusMods.Networking.NexusWebApi.DTOs.OAuth;
-using NexusMods.Networking.NexusWebApi.NMA;
-using NexusMods.Networking.NexusWebApi.NMA.Messages;
+using NexusMods.Abstractions.Messaging;
+using NexusMods.Abstractions.NexusWebApi.DTOs;
+using NexusMods.Abstractions.NexusWebApi.DTOs.OAuth;
+using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.CrossPlatform.Process;
+using NexusMods.Networking.NexusWebApi.Auth;
 using NSubstitute;
 
 namespace NexusMods.Networking.NexusWebApi.Tests;
 
-public class OAuthTests(
-    ILogger<OAuth> logger,
-    IMessageProducer<NXMUrlMessage> producer,
-    IMessageConsumer<NXMUrlMessage> consumer,
-    IActivityFactory activityFactory)
+public class OAuthTests
 {
+    // ReSharper disable once InconsistentNaming
+    private readonly Uri ExpectedAuthURL = new("https://users.nexusmods.com/oauth/authorize?response_type=code&scope=openid profile email&code_challenge_method=S256&client_id=nma&redirect_uri=nxm%3A%2F%2Foauth%2Fcallback&code_challenge=QMZ4D7BLeehAXINE9NZ8dho2i5AYVTbfqJ8PhQ4eUrE&state=00000000-0000-0000-0000-000000000000");
+    private readonly ILogger<OAuth> _logger;
+    private readonly IMessageProducer<NXMUrlMessage> _producer;
+    private readonly IMessageConsumer<NXMUrlMessage> _consumer;
+    private readonly IActivityFactory _activityFactory;
+
     // ReSharper disable once ContextualLoggerProblem
+    public OAuthTests(ILogger<OAuth> logger,
+        IMessageProducer<NXMUrlMessage> producer,
+        IMessageConsumer<NXMUrlMessage> consumer,
+        IActivityFactory activityFactory)
+    {
+        _logger = logger;
+        _producer = producer;
+        _consumer = consumer;
+        _activityFactory = activityFactory;
+    }
 
     [Fact]
     public async void AuthorizeRequestTest()
@@ -47,10 +58,10 @@ public class OAuthTests(
         #endregion
 
         #region Execution
-        var oauth = new OAuth(logger, httpClient, idGen, os, consumer, activityFactory);
+        var oauth = new OAuth(_logger, httpClient, idGen, os, _consumer, _activityFactory);
         var tokenTask = oauth.AuthorizeRequest(CancellationToken.None);
 
-        await producer.Write(new NXMUrlMessage { Value = NXMUrl.Parse($"nxm://oauth/callback?state={stateId}&code=code") }, CancellationToken.None);
+        await _producer.Write(new NXMUrlMessage { Value = NXMUrl.Parse($"nxm://oauth/callback?state={stateId}&code=code") }, CancellationToken.None);
         var result = await tokenTask;
         #endregion
 
@@ -86,7 +97,7 @@ public class OAuthTests(
         #endregion
 
         #region Execution
-        var oauth = new OAuth(logger, httpClient, idGen, os, consumer, activityFactory);
+        var oauth = new OAuth(_logger, httpClient, idGen, os, _consumer, _activityFactory);
         var token = await oauth.RefreshToken("refresh_token", CancellationToken.None);
         #endregion
 
@@ -123,11 +134,11 @@ public class OAuthTests(
         #endregion
 
         #region Execution
-        var oauth = new OAuth(logger, httpClient, idGen, os, consumer, activityFactory);
+        var oauth = new OAuth(_logger, httpClient, idGen, os, _consumer, _activityFactory);
         Func<Task> call = () => oauth.AuthorizeRequest(CancellationToken.None);
         var tokenTask = call.Should().ThrowAsync<JsonException>();
 
-        await producer.Write(new NXMUrlMessage { Value = NXMUrl.Parse($"nxm://oauth/callback?state={stateId}&code=code") }, CancellationToken.None);
+        await _producer.Write(new NXMUrlMessage { Value = NXMUrl.Parse($"nxm://oauth/callback?state={stateId}&code=code") }, CancellationToken.None);
         await tokenTask;
         #endregion
     }
@@ -149,7 +160,7 @@ public class OAuthTests(
         #endregion
 
         #region Execution
-        var oauth = new OAuth(logger, httpClient, idGen, os, consumer, activityFactory);
+        var oauth = new OAuth(_logger, httpClient, idGen, os, _consumer, _activityFactory);
         Func<Task> call = () => oauth.AuthorizeRequest(cts.Token);
         var task = call.Should().ThrowAsync<OperationCanceledException>();
         cts.Cancel();
@@ -167,9 +178,6 @@ public class OAuthTests(
             CreatedAt = 1677143380,
             ExpiresIn = 21600,
         };
-
-    // ReSharper disable once InconsistentNaming
-    private readonly Uri ExpectedAuthURL = new("https://users.nexusmods.com/oauth/authorize?response_type=code&scope=openid profile email&code_challenge_method=S256&client_id=nma&redirect_uri=nxm%3A%2F%2Foauth%2Fcallback&code_challenge=QMZ4D7BLeehAXINE9NZ8dho2i5AYVTbfqJ8PhQ4eUrE&state=00000000-0000-0000-0000-000000000000");
 
     [Fact]
     public void Test_GenerateAuthorizeUrl()

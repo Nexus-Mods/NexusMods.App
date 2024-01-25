@@ -1,7 +1,8 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using NexusMods.Paths;
+using NexusMods.Abstractions.Installers.DTO;
 using NexusMods.Paths.Extensions;
+using LocationId = NexusMods.Abstractions.Installers.DTO.LocationId;
 
 namespace NexusMods.DataModel.JsonConverters;
 

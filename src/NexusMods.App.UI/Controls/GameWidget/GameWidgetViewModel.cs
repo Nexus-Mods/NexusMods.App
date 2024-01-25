@@ -3,7 +3,7 @@ using System.Reactive.Linq;
 using System.Windows.Input;
 using Avalonia.Media.Imaging;
 using Microsoft.Extensions.Logging;
-using NexusMods.DataModel.Games;
+using NexusMods.Abstractions.Games;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 

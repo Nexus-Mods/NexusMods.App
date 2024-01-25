@@ -1,4 +1,5 @@
-﻿using NexusMods.DataModel.Abstractions;
+﻿using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Paths;
 
 namespace NexusMods.DataModel;
@@ -8,13 +9,13 @@ namespace NexusMods.DataModel;
 /// </summary>
 public class DirectoryIndexer : IDirectoryIndexer
 {
-    private readonly FileHashCache _hashCache;
+    private readonly IFileHashCache _hashCache;
 
     /// <summary>
     /// DI Constructor
     /// </summary>
     /// <param name="hashCache"></param>
-    public DirectoryIndexer(FileHashCache hashCache)
+    public DirectoryIndexer(IFileHashCache hashCache)
     {
         _hashCache = hashCache;
     }

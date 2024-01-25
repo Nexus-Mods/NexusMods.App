@@ -1,7 +1,6 @@
-using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.Loadouts.Mods;
-using NexusMods.DataModel.LoadoutSynchronizer;
-using NexusMods.DataModel.Sorting.Rules;
+using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.DataModel.Entities.Sorting;
+using NexusMods.Abstractions.Games.Loadouts;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord;
 

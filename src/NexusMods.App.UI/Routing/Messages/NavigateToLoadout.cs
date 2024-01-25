@@ -1,5 +1,5 @@
-﻿using NexusMods.DataModel.Games;
-using NexusMods.DataModel.Loadouts;
+﻿using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Games.Loadouts;
 
 namespace NexusMods.App.UI.Routing.Messages;
 

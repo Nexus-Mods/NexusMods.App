@@ -1,10 +1,11 @@
 using System.Collections.Immutable;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.Diagnostics;
+using NexusMods.Abstractions.Diagnostics.References;
+using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.DataModel.Diagnostics;
-using NexusMods.DataModel.Diagnostics.References;
-using NexusMods.DataModel.Loadouts.Markers;
-using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.Tests.Harness;
 
 namespace NexusMods.DataModel.Tests.Diagnostics;

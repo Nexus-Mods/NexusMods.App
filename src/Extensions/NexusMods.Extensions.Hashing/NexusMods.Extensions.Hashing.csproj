@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <!-- NuGet Package Shared Details -->
+    <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+
+    <ItemGroup>
+        <PackageReference Include="NexusMods.Hashing.xxHash64" />
+        <PackageReference Include="NexusMods.Paths" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.Activities\NexusMods.Abstractions.Activities.csproj" />
+    </ItemGroup>
+</Project>

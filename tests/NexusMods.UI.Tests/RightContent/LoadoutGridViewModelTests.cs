@@ -1,11 +1,10 @@
 ﻿using FluentAssertions;
+using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.App.UI.RightContent.LoadoutGrid;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.Loadouts.Cursors;
-using NexusMods.DataModel.Loadouts.Mods;
 
-namespace NexusMods.UI.Tests;
+namespace NexusMods.UI.Tests.RightContent;
 
 public class LoadoutGridViewModelTests : AVmTest<ILoadoutGridViewModel>
 {
@@ -40,7 +39,6 @@ public class LoadoutGridViewModelTests : AVmTest<ILoadoutGridViewModel>
         var toDeleteIds = ids.Take(toDelete).ToList();
 
         await Vm.DeleteMods(toDeleteIds, "Delete mods");
-
 
         await Eventually(() =>
         {

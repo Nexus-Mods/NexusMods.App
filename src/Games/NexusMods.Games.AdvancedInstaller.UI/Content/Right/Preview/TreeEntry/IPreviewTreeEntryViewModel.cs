@@ -1,8 +1,8 @@
 ﻿using System.Collections.ObjectModel;
 using System.Reactive;
 using DynamicData.Kernel;
+using NexusMods.Abstractions.Installers.DTO;
 using NexusMods.Games.AdvancedInstaller.UI.ModContent;
-using NexusMods.Paths;
 using ReactiveUI;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Preview;

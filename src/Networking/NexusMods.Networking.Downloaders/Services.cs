@@ -1,8 +1,8 @@
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Common;
-using NexusMods.DataModel.JsonConverters;
-using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
+using NexusMods.Abstractions.Serialization.ExpressionGenerator;
+using NexusMods.Abstractions.Serialization.Json;
+using NexusMods.Extensions.DependencyInjection;
 using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Networking.Downloaders.Tasks;
 using NexusMods.Networking.Downloaders.Tasks.State;

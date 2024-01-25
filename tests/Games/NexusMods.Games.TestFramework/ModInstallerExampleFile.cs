@@ -1,7 +1,4 @@
-﻿using NexusMods.DataModel.Abstractions;
-using NexusMods.FileExtractor.FileSignatures;
-
-namespace NexusMods.Games.TestFramework;
+﻿namespace NexusMods.Games.TestFramework;
 
 public record ModInstallerExampleFile
 {

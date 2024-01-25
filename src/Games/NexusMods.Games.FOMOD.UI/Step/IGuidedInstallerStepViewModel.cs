@@ -1,8 +1,8 @@
 using System.Collections.ObjectModel;
 using Avalonia.Media;
-using NexusMods.Abstractions.Values;
+using NexusMods.Abstractions.Activities;
+using NexusMods.Abstractions.GuidedInstallers;
 using NexusMods.App.UI;
-using NexusMods.Common.GuidedInstaller;
 
 namespace NexusMods.Games.FOMOD.UI;
 

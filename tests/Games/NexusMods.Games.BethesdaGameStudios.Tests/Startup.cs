@@ -1,10 +1,12 @@
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.CLI;
+using NexusMods.Abstractions.DataModel.Entities;
+using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.GuidedInstallers;
+using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Serialization;
+using NexusMods.Activities;
+using NexusMods.App.BuildInfo;
 using NexusMods.CLI;
-using NexusMods.CLI.Tests;
-using NexusMods.Common;
-using NexusMods.Common.GuidedInstaller;
 using NexusMods.Games.FOMOD;
 using NexusMods.Games.Generic;
 using NexusMods.Games.TestFramework;
@@ -20,10 +22,15 @@ public class Startup
     {
         services
             .AddDefaultServicesForTesting()
-            .AddUniversalGameLocator<SkyrimSpecialEdition>(new Version("1.6.659.0"))
-            .AddUniversalGameLocator<SkyrimLegendaryEdition>(new Version("1.9.32.0"))
+            .AddUniversalGameLocator<SkyrimSpecialEdition.SkyrimSpecialEdition>(new Version("1.6.659.0"))
+            .AddUniversalGameLocator<SkyrimLegendaryEdition.SkyrimLegendaryEdition>(new Version("1.9.32.0"))
             .AddSingleton<CommandLineConfigurator>()
             .AddBethesdaGameStudios()
+            .AddGames()
+            .AddActivityMonitor()
+            .AddDataModelEntities()
+            .AddDataModelBaseEntities()
+            .AddInstallerTypes()
             .AddGenericGameSupport()
             .AddFomod()
             .AddCLI()

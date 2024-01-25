@@ -1,4 +1,4 @@
-using NexusMods.Common.GuidedInstaller;
+using NexusMods.Abstractions.GuidedInstallers;
 
 namespace NexusMods.Games.FOMOD.UI;
 

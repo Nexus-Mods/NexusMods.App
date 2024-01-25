@@ -1,6 +1,6 @@
 using JetBrains.Annotations;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.JsonConverters;
+using NexusMods.Abstractions.Serialization.Attributes;
+using NexusMods.Abstractions.Serialization.DataModel;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 

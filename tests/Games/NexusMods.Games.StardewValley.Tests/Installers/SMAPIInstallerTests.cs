@@ -1,11 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
-using FluentAssertions;
-using NexusMods.Common;
-using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.Games.StardewValley.Installers;
 using NexusMods.Games.TestFramework;
-using NexusMods.Hashing.xxHash64;
-using NexusMods.Networking.NexusWebApi.Types;
 
 namespace NexusMods.Games.StardewValley.Tests.Installers;
 

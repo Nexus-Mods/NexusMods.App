@@ -1,15 +1,18 @@
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.Values;
-using NexusMods.Common;
-using NexusMods.Common.GuidedInstaller;
-using NexusMods.Common.GuidedInstaller.ValueObjects;
-using NexusMods.DataModel.ModInstallers;
-using NexusMods.DataModel.Trees;
+using NexusMods.Abstractions.Activities;
+using NexusMods.Abstractions.Installers.Trees;
+using NexusMods.Abstractions.GuidedInstallers;
+using NexusMods.Abstractions.GuidedInstallers.ValueObjects;
+using NexusMods.Extensions.BCL;
 using NexusMods.Paths;
-using NexusMods.Paths.FileTree;
 using NexusMods.Paths.Trees;
 using NexusMods.Paths.Trees.Traits;
+using GroupId = NexusMods.Abstractions.GuidedInstallers.ValueObjects.GroupId;
+using Option = NexusMods.Abstractions.GuidedInstallers.Option;
+using OptionGroup = NexusMods.Abstractions.GuidedInstallers.OptionGroup;
+using OptionGroupType = NexusMods.Abstractions.GuidedInstallers.OptionGroupType;
+using OptionType = NexusMods.Abstractions.GuidedInstallers.OptionType;
 
 namespace NexusMods.Games.FOMOD.CoreDelegates;
 
@@ -120,7 +123,7 @@ public sealed class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates, IDis
         // A semaphore is required because the library can spawn multiple tasks on different threads
         // that will call this method multiple times. This can lead to double-state and it's
         // just a complete mess. This is what you get when you write a .NET library for JavaScript...
-        using var waiter = _semaphoreSlim.CustomWait(TimeSpan.Zero);
+        using var waiter = _semaphoreSlim.WaitDisposable(TimeSpan.Zero);
         if (!waiter.HasEntered) return;
 
         var groupIdMappings = new List<KeyValuePair<int, GroupId>>();

@@ -2,7 +2,6 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.ReactiveUI;
-using DynamicData.Binding;
 using NexusMods.Games.AdvancedInstaller.UI.Resources;
 using ReactiveUI;
 

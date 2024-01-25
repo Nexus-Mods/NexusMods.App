@@ -1,11 +1,16 @@
 using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.App.Settings;
+using NexusMods.Abstractions.DataModel.Entities;
+using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Serialization;
+using NexusMods.Activities;
 using NexusMods.App.Listeners;
 using NexusMods.App.UI;
 using NexusMods.CLI;
-using NexusMods.Common;
+using NexusMods.CrossPlatform;
 using NexusMods.DataModel;
-using NexusMods.DataModel.GlobalSettings;
 using NexusMods.FileExtractor;
 using NexusMods.Games.AdvancedInstaller;
 using NexusMods.Games.AdvancedInstaller.UI;
@@ -24,7 +29,6 @@ using NexusMods.Games.TestHarness;
 using NexusMods.Networking.Downloaders;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
-using NexusMods.Networking.NexusWebApi.NMA;
 using NexusMods.Paths;
 using NexusMods.ProxyConsole;
 using NexusMods.SingleProcess;
@@ -65,6 +69,12 @@ public static class Services
                 .AddAdvancedInstallerUi()
                 .AddFileExtractors(config.FileExtractorSettings)
                 .AddDataModel(config.DataModelSettings)
+                .AddDataModelBaseEntities()
+                .AddDataModelEntities()
+                .AddInstallerTypes()
+                .AddGames()
+                .AddActivityMonitor()
+                .AddCrossPlatform()
                 .AddBethesdaGameStudios()
                 .AddRedEngineGames()
                 .AddGenericGameSupport()
@@ -76,12 +86,10 @@ public static class Services
                 .AddStardewValley()
                 .AddMountAndBladeBannerlord()
                 .AddNexusWebApi()
-                .AddNexusWebApiNmaIntegration()
                 .AddAdvancedHttpDownloader(config.HttpDownloaderSettings)
                 .AddTestHarness()
                 .AddSingleton<HttpClient>()
                 .AddListeners()
-                .AddCommon()
                 .AddDownloaders();
 
             services = OpenTelemetryRegistration.AddTelemetry(services, new OpenTelemetrySettings

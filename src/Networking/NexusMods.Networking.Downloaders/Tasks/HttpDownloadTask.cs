@@ -1,9 +1,9 @@
 using Microsoft.Extensions.Logging;
-using NexusMods.DataModel.Activities;
+using NexusMods.Abstractions.Activities;
+using NexusMods.Abstractions.HttpDownloader;
 using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Networking.Downloaders.Interfaces.Traits;
 using NexusMods.Networking.Downloaders.Tasks.State;
-using NexusMods.Networking.HttpDownloader;
 using NexusMods.Paths;
 
 namespace NexusMods.Networking.Downloaders.Tasks;

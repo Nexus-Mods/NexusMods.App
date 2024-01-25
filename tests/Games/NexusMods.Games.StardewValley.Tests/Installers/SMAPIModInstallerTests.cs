@@ -1,12 +1,12 @@
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
+using NexusMods.Abstractions.Installers.DTO.Files;
+using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.Games.StardewValley.Installers;
 using NexusMods.Games.TestFramework;
-using NexusMods.Networking.NexusWebApi.Types;
 using NexusMods.Paths;
-using ModId = NexusMods.Networking.NexusWebApi.Types.ModId;
+using ModId = NexusMods.Abstractions.NexusWebApi.Types.ModId;
 
 namespace NexusMods.Games.StardewValley.Tests.Installers;
 

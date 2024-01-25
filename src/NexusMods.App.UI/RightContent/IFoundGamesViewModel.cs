@@ -1,6 +1,6 @@
 using System.Collections.ObjectModel;
+using NexusMods.Abstractions.Games;
 using NexusMods.App.UI.Controls.GameWidget;
-using NexusMods.DataModel.Games;
 
 namespace NexusMods.App.UI.RightContent;
 

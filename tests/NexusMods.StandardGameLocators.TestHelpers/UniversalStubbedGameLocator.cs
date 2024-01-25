@@ -1,4 +1,7 @@
-using NexusMods.DataModel.Games;
+using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.Games.Stores.Unknown;
+using NexusMods.Abstractions.Installers.DTO;
 using NexusMods.Paths;
 
 namespace NexusMods.StandardGameLocators.TestHelpers;

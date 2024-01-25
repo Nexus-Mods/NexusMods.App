@@ -1,4 +1,4 @@
-﻿using NexusMods.DataModel.Abstractions;
+﻿using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.Hashing.xxHash64;
 
 namespace NexusMods.DataModel.TriggerFilter;

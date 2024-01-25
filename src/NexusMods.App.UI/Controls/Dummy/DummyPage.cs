@@ -1,7 +1,7 @@
 using Avalonia.Media;
 using JetBrains.Annotations;
+using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.App.UI.WorkspaceSystem;
-using NexusMods.DataModel.JsonConverters;
 
 namespace NexusMods.App.UI.Controls;
 

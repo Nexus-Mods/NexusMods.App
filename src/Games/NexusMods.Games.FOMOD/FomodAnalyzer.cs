@@ -1,11 +1,9 @@
-﻿using System.Text;
+using System.Text;
 using FomodInstaller.Scripting.XmlScript;
 using JetBrains.Annotations;
-using NexusMods.Common;
-using NexusMods.DataModel.ModInstallers;
-using NexusMods.DataModel.Trees;
+using NexusMods.Abstractions.Installers.Trees;
+using NexusMods.Extensions.BCL;
 using NexusMods.Paths;
-using NexusMods.Paths.FileTree;
 using NexusMods.Paths.Trees;
 using NexusMods.Paths.Trees.Traits;
 
@@ -16,7 +14,6 @@ public class FomodAnalyzer
     public static async ValueTask<FomodAnalyzerInfo?> AnalyzeAsync(KeyedBox<RelativePath, ModFileTree> allFiles, IFileSystem fileSystem,
         CancellationToken ct = default)
     {
-
         if (!allFiles.GetFiles().TryGetFirst(x => x.Path().EndsWith(FomodConstants.XmlConfigRelativePath), out var xmlNode))
             return null;
 
@@ -46,7 +43,7 @@ public class FomodAnalyzer
                 try
                 {
                     var node = allFiles.FindByPathFromRoot(imagePath);
-                    await using var imageStream = await node!.Item!.OpenAsync();
+                    await using var imageStream = await node!.Item.OpenAsync();
                     using var ms = new MemoryStream();
                     await imageStream.CopyToAsync(ms, ct);
                     bytes = ms.ToArray();
@@ -56,7 +53,7 @@ public class FomodAnalyzer
                     bytes = await GetPlaceholderImage(fileSystem, ct);
                 }
 
-                images!.Add(new FomodAnalyzerInfo.FomodAnalyzerImage(imagePath, bytes));
+                images.Add(new FomodAnalyzerInfo.FomodAnalyzerImage(imagePath, bytes));
             }
 
             await AddImageIfValid(script.HeaderInfo.ImagePath);
@@ -74,7 +71,7 @@ public class FomodAnalyzer
         // Add all images to analysis output.
         return new FomodAnalyzerInfo
         {
-            XmlScript = data!,
+            XmlScript = data,
             Images = images,
             PathPrefix = pathPrefix.Path()
         };

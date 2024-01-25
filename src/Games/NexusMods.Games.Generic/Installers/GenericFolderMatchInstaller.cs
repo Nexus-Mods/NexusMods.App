@@ -1,14 +1,11 @@
-﻿using Cathei.LinqGen;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.DataModel.Games;
-using NexusMods.DataModel.Games.GameCapabilities.FolderMatchInstallerCapability;
-using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.Loadouts.ModFiles;
-using NexusMods.DataModel.ModInstallers;
-using NexusMods.DataModel.Trees;
+using NexusMods.Abstractions.Games.GameCapabilities;
+using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Installers.DTO;
+using NexusMods.Abstractions.Installers.DTO.Files;
+using NexusMods.Abstractions.Installers.Trees;
 using NexusMods.Paths;
-using NexusMods.Paths.FileTree;
 using NexusMods.Paths.Trees;
 using NexusMods.Paths.Trees.Traits;
 
@@ -48,10 +45,7 @@ public class GenericFolderMatchInstaller : AModInstaller
     #region IModInstaller
 
     public override ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
-        GameInstallation gameInstallation,
-        LoadoutId loadoutId,
-        ModId baseModId,
-        KeyedBox<RelativePath, ModFileTree> archiveFiles,
+        ModInstallerInfo info,
         CancellationToken cancellationToken = default)
     {
         List<RelativePath> missedFiles = new();
@@ -59,7 +53,7 @@ public class GenericFolderMatchInstaller : AModInstaller
 
         foreach (var target in _installFolderTargets)
         {
-            modFiles.AddRange(GetModFilesForTarget(archiveFiles, target, missedFiles));
+            modFiles.AddRange(GetModFilesForTarget(info.ArchiveFiles, target, missedFiles));
             if (modFiles.Any())
             {
                 // If any file matched target, ignore other targets.
@@ -79,7 +73,7 @@ public class GenericFolderMatchInstaller : AModInstaller
         {
             new ModInstallerResult
             {
-                Id = baseModId,
+                Id = info.BaseModId,
                 Files = modFiles
             }
         });
@@ -227,8 +221,7 @@ public class GenericFolderMatchInstaller : AModInstaller
     /// <exception cref="InvalidOperationException"></exception>
     private int GetNumParentsToDrop(RelativePath path, InstallFolderTarget target)
     {
-        var depth = 0;
-
+        int depth;
         if ((depth = PathContainsAny(path, target.KnownSourceFolderNames)) > -1)
         {
             // the match indicates an alias for the target, so we need the alias as well

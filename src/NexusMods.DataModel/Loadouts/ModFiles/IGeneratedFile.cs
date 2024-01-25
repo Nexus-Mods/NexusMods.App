@@ -1,5 +1,6 @@
-﻿using NexusMods.DataModel.Loadouts.LoadoutSynchronizerDTOs;
-using NexusMods.DataModel.TriggerFilter;
+﻿using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.Games.Triggers;
+using NexusMods.DataModel.Loadouts.LoadoutSynchronizerDTOs;
 using NexusMods.Hashing.xxHash64;
 
 namespace NexusMods.DataModel.Loadouts.ModFiles;

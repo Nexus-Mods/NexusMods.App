@@ -11,7 +11,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:login="clr-namespace:NexusMods.App.UI.Overlays.Login"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
-    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls">
+    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
+    xmlns:progressRing="clr-namespace:NexusMods.App.UI.Controls.ProgressRing">
     <Design.DataContext>
         <login:NexusLoginOverlayDesignerViewModel />
     </Design.DataContext>
@@ -38,7 +39,7 @@
             <StackPanel Orientation="Horizontal"
                         HorizontalAlignment="Center"
                         Spacing="8">
-                <controls:ProgressRing/>
+                <progressRing:ProgressRing/>
                 <TextBlock
                     x:Name="TitleTextBlock"
                     HorizontalAlignment="Center"

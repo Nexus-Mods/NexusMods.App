@@ -1,26 +1,21 @@
-using System.Collections.Immutable;
-using Cathei.LinqGen;
 using FluentAssertions;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Common;
-using NexusMods.DataModel;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.ArchiveContents;
-using NexusMods.DataModel.ArchiveMetaData;
+using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Games.ArchiveMetadata;
+using NexusMods.Abstractions.Games.Downloads;
+using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Installers.DTO;
+using NexusMods.Abstractions.Installers.DTO.Files;
+using NexusMods.Abstractions.Installers.Trees;
+using NexusMods.Abstractions.IO;
+using NexusMods.Abstractions.IO.StreamFactories;
+using NexusMods.Abstractions.Serialization;
+using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.DataModel.Extensions;
-using NexusMods.DataModel.Games;
-using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.Loadouts.ModFiles;
-using NexusMods.DataModel.Loadouts.Mods;
-using NexusMods.DataModel.ModInstallers;
-using NexusMods.DataModel.Trees;
-using NexusMods.FileExtractor.FileSignatures;
-using NexusMods.FileExtractor.StreamFactories;
-using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
-using NexusMods.Paths.FileTree;
 
 namespace NexusMods.Games.TestFramework;
 
@@ -85,14 +80,21 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
         }, cancellationToken);
 
         var contents = await FileOriginRegistry.Get(downloadId);
-        var tree = ModFileTree.Create(contents.Contents, FileStore);
-        var results = await ModInstaller.GetModsAsync(
-            GameInstallation,
-            LoadoutId.DefaultValue,
-            ModId.NewId(),
-            tree,
-            cancellationToken);
+        var tree = TreeCreator.Create(contents.Contents, FileStore);
 
+        var install = GameInstallation;
+        var info = new ModInstallerInfo()
+        {
+            ArchiveFiles = tree,
+            BaseModId = ModId.NewId(), // unused
+            Locations = install.LocationsRegister,
+            GameName = install.Game.Name,
+            Store = install.Store,
+            Version = install.Version,
+            ModName = "" // unused
+        };
+
+        var results = await ModInstaller.GetModsAsync(info, cancellationToken);
         var mods = results.Select(result => new Mod
         {
             Id = result.Id,
@@ -232,12 +234,19 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
             .ToArray();
 
         var tree = ModFileTree.Create(sources);
-        mods = (await ModInstaller.GetModsAsync(
-            GameInstallation,
-            LoadoutId.DefaultValue,
-            ModId.NewId(),
-            tree)).ToArray();
+        var install = GameInstallation;
+        var info = new ModInstallerInfo()
+        {
+            ArchiveFiles = tree,
+            BaseModId = ModId.NewId(), // unused
+            Locations = install.LocationsRegister,
+            GameName = install.Game.Name,
+            Store = install.Store,
+            Version = install.Version,
+            ModName = "" // unused
+        };
 
+        mods = (await ModInstaller.GetModsAsync(info)).ToArray();
         if (mods.Length == 0)
             return Array.Empty<(ulong Hash, LocationId LocationId, string Path)>();
 

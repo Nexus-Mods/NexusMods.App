@@ -4,19 +4,20 @@ using DynamicData;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.Values;
-using NexusMods.Common;
-using NexusMods.DataModel;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.Abstractions.Ids;
-using NexusMods.DataModel.ArchiveMetaData;
+using NexusMods.Abstractions.Activities;
+using NexusMods.Abstractions.Games.ArchiveMetadata;
+using NexusMods.Abstractions.Games.Downloads;
+using NexusMods.Abstractions.Games.Loadouts;
+using NexusMods.Abstractions.HttpDownloader;
+using NexusMods.Abstractions.NexusWebApi;
+using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.Abstractions.Serialization;
+using NexusMods.Abstractions.Serialization.DataModel;
+using NexusMods.Abstractions.Serialization.DataModel.Ids;
 using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Networking.Downloaders.Interfaces.Traits;
 using NexusMods.Networking.Downloaders.Tasks;
 using NexusMods.Networking.Downloaders.Tasks.State;
-using NexusMods.Networking.HttpDownloader;
-using NexusMods.Networking.NexusWebApi;
-using NexusMods.Networking.NexusWebApi.Types;
 using NexusMods.Paths;
 
 namespace NexusMods.Networking.Downloaders;
@@ -80,7 +81,7 @@ public class DownloadService : IDownloadService
             }
             case NxmDownloadState:
             {
-                var task = new NxmDownloadTask(_provider.GetRequiredService<TemporaryFileManager>(), _provider.GetRequiredService<Client>(), _provider.GetRequiredService<IHttpDownloader>(), this);
+                var task = new NxmDownloadTask(_provider.GetRequiredService<TemporaryFileManager>(), _provider.GetRequiredService<INexusApiClient>(), _provider.GetRequiredService<IHttpDownloader>(), this);
                 task.RestoreFromSuspend(state);
                 return task;
             }

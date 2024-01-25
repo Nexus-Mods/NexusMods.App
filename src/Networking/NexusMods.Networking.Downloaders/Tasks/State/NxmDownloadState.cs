@@ -1,5 +1,5 @@
-using NexusMods.DataModel.JsonConverters;
-using NexusMods.Networking.NexusWebApi.Types;
+using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.Abstractions.Serialization.Attributes;
 
 namespace NexusMods.Networking.Downloaders.Tasks.State;
 

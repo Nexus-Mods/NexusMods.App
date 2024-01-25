@@ -1,7 +1,7 @@
 using FluentAssertions;
-using NexusMods.DataModel.Abstractions;
+using NexusMods.Abstractions.DataModel.Entities;
+using NexusMods.Abstractions.DataModel.Entities.Sorting;
 using NexusMods.DataModel.Sorting;
-using NexusMods.DataModel.Sorting.Rules;
 
 namespace NexusMods.DataModel.Tests;
 
@@ -13,14 +13,15 @@ public class SortTests
     {
         var data = new List<Item>
         {
-            new Item {Id = "B", Rules = new()},
-            new Item {Id = "A", Rules = new()
+            new() {Id = "B", Rules = new()},
+            new()
+            {Id = "A", Rules = new()
             {
                 new First<Item, string>()
             }},
         };
 
-        Sorter.Sort<Item, string>(data, x => x.Id, x => x.Rules)
+        new Sorter().Sort<Item, string>(data, x => x.Id, x => x.Rules)
             .Select(i => i.Id)
             .Should().BeEquivalentTo("A", "B");
     }
@@ -30,18 +31,20 @@ public class SortTests
     {
         var data = new List<Item>
         {
-            new Item {Id = "B", Rules = new()},
-            new Item {Id = "A", Rules = new()
+            new() {Id = "B", Rules = new()},
+            new()
+            {Id = "A", Rules = new()
             {
                 new Before<Item, string> { Other = "B" }
             }},
-            new Item {Id = "C", Rules = new()
+            new()
+            {Id = "C", Rules = new()
             {
                 new After<Item, string> { Other = "B" }
             }}
         };
 
-        Sorter.Sort<Item, string>(data, x => x.Id, x => x.Rules)
+        new Sorter().Sort<Item, string>(data, x => x.Id, x => x.Rules)
             .Select(i => i.Id)
             .Should().BeEquivalentTo("A", "B", "C");
     }
@@ -92,7 +95,7 @@ public class SortTests
 
         rules = Shuffle(rules).ToList();
 
-        Sorter.Sort<Item, string>(rules, x => x.Id, x => x.Rules)
+        new Sorter().Sort<Item, string>(rules, x => x.Id, x => x.Rules)
             .Select(i => i.Id)
             .Should().BeEquivalentTo(letters.Concat(numbers));
     }

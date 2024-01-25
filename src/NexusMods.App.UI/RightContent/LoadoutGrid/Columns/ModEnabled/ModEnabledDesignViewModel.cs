@@ -1,7 +1,7 @@
 ﻿using System.Reactive;
 using System.Windows.Input;
-using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.Loadouts.Cursors;
+using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.Games.DTO;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 

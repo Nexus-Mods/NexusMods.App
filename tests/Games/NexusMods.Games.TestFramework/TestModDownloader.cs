@@ -1,10 +1,9 @@
 ﻿using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
-using NexusMods.DataModel.Games;
+using NexusMods.Abstractions.HttpDownloader;
 using NexusMods.Games.TestFramework.Downloader;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
-using NexusMods.Networking.NexusWebApi.NMA.Extensions;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.TestFramework;
@@ -17,15 +16,15 @@ public class TestModDownloader
 {
     private readonly ILogger<TestModDownloader> _logger;
     private readonly IHttpDownloader _httpDownloader;
-    private readonly Client _nexusClient;
+    private readonly NexusApiClient _nexusNexusApiClient;
     private readonly TemporaryFileManager _manager;
 
-    public TestModDownloader(IHttpDownloader httpDownloader, ILogger<TestModDownloader> logger, Client nexusClient, TemporaryFileManager manager)
+    public TestModDownloader(IHttpDownloader httpDownloader, ILogger<TestModDownloader> logger, NexusApiClient nexusNexusApiClient, TemporaryFileManager manager)
     {
         _manager = manager;
         _httpDownloader = httpDownloader;
         _logger = logger;
-        _nexusClient = nexusClient;
+        _nexusNexusApiClient = nexusNexusApiClient;
     }
 
     /// <summary>
@@ -90,7 +89,7 @@ public class TestModDownloader
     {
         // TODO: Nexus Web API needs To Support IFileSystem at some point.
         _logger.LogInformation("Downloading {ModId} {FileId} {Hash}", nexusMod.ModId, nexusMod.FileId, nexusMod.Hash);
-        var uris = await _nexusClient.DownloadLinksAsync(GameDomain.From("Cyberpunk2077"), nexusMod.ModId, nexusMod.FileId, token);
+        var uris = await _nexusNexusApiClient.DownloadLinksAsync("Cyberpunk2077", nexusMod.ModId, nexusMod.FileId, token);
         var downloadUris = uris.Data.Select(u => new HttpRequestMessage(HttpMethod.Get, u.Uri)).ToArray();
         var downloadHash = await _httpDownloader.DownloadAsync(downloadUris, folderPath, token: token);
         if (downloadHash != nexusMod.Hash)

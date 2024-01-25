@@ -1,6 +1,6 @@
-﻿using System.Windows.Input;
+using System.Windows.Input;
 using DynamicData.Kernel;
-using NexusMods.Abstractions.Values;
+using NexusMods.Abstractions.Activities;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 

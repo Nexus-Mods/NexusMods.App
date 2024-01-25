@@ -1,4 +1,3 @@
-using NexusMods.Abstractions.CLI;
 using NexusMods.ProxyConsole.Abstractions;
 using NexusMods.ProxyConsole.Abstractions.Implementations;
 

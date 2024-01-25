@@ -1,6 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using NexusMods.Paths;
-using NexusMods.Paths.FileTree;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.ModContent;
 

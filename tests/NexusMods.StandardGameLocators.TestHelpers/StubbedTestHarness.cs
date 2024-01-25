@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.DataModel.Games;
+using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Games.Stores.Steam;
 using NexusMods.Paths;
 
 namespace NexusMods.StandardGameLocators.TestHelpers;

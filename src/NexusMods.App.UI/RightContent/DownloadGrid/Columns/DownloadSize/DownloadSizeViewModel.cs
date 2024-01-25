@@ -1,4 +1,4 @@
-namespace NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadSize;
+namespace NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadSize;
 
 public class DownloadSizeViewModel : DownloadSizeDesignViewModel { }
 

@@ -1,4 +1,5 @@
-﻿using NexusMods.DataModel.LoadoutSynchronizer;
+﻿using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.Games.Loadouts;
 
 namespace NexusMods.DataModel.Loadouts.Extensions;
 

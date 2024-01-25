@@ -1,5 +1,5 @@
-using NexusMods.Common.GuidedInstaller;
-using NexusMods.Common.GuidedInstaller.ValueObjects;
+using NexusMods.Abstractions.GuidedInstallers;
+using NexusMods.Abstractions.GuidedInstallers.ValueObjects;
 
 namespace NexusMods.Games.FOMOD.UI;
 

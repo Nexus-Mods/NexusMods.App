@@ -1,3 +1,5 @@
+using NexusMods.Abstractions.Messaging;
+
 namespace NexusMods.DataModel.Messaging;
 
 

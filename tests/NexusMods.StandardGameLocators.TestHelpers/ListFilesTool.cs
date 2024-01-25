@@ -1,7 +1,7 @@
-using NexusMods.DataModel.Games;
-using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.Loadouts.LoadoutSynchronizerDTOs;
-using NexusMods.Paths;
+using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.Games.Loadouts;
+using NexusMods.Abstractions.Installers.DTO;
 
 namespace NexusMods.StandardGameLocators.TestHelpers;
 

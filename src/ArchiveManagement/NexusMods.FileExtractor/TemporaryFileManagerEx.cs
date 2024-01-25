@@ -1,4 +1,5 @@
-﻿using NexusMods.Paths;
+﻿using NexusMods.Abstractions.FileExtractor;
+using NexusMods.Paths;
 
 namespace NexusMods.FileExtractor;
 

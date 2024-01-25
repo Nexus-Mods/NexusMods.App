@@ -1,15 +1,24 @@
 using Microsoft.Extensions.Logging;
-using NexusMods.Common;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.Games;
-using NexusMods.DataModel.Games.GameCapabilities.FolderMatchInstallerCapability;
-using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.LoadoutSynchronizer;
-using NexusMods.DataModel.ModInstallers;
-using NexusMods.FileExtractor.StreamFactories;
+using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.Games.GameCapabilities;
+using NexusMods.Abstractions.Games.Loadouts;
+using NexusMods.Abstractions.Games.Stores.EADesktop;
+using NexusMods.Abstractions.Games.Stores.EGS;
+using NexusMods.Abstractions.Games.Stores.GOG;
+using NexusMods.Abstractions.Games.Stores.Origin;
+using NexusMods.Abstractions.Games.Stores.Steam;
+using NexusMods.Abstractions.Games.Stores.Xbox;
+using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Installers.DTO;
+using NexusMods.Abstractions.IO;
+using NexusMods.Abstractions.IO.StreamFactories;
+using NexusMods.Abstractions.Serialization;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
+
 // ReSharper disable InconsistentNaming
 
 namespace NexusMods.StandardGameLocators.TestHelpers.StubbedGames;

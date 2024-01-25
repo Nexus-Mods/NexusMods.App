@@ -58,12 +58,12 @@ public struct SetOverlayItem
 
     public SetOverlayItem(IOverlayViewModel vm)
     {
-        this.VM = vm;
+        VM = vm;
     }
 
     public SetOverlayItem(IOverlayViewModel vm, object? viewItem)
     {
-        this.VM = vm;
-        this.ViewItem = viewItem;
+        VM = vm;
+        ViewItem = viewItem;
     }
 }

@@ -2,6 +2,9 @@
 using System.Reactive.Disposables;
 using Avalonia.Controls;
 using DynamicData;
+using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModCategory;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModEnabled;
@@ -9,8 +12,6 @@ using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModInstalled;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModName;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModVersion;
 using NexusMods.App.UI.WorkspaceSystem;
-using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.Loadouts.Cursors;
 using ReactiveUI;
 using ModCategoryView = NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModCategory.ModCategoryView;
 using ModEnabledView = NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModEnabled.ModEnabledView;

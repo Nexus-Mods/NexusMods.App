@@ -1,6 +1,6 @@
+using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.RightContent.LoadoutGrid;
-using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
 
 namespace NexusMods.App.UI;
 

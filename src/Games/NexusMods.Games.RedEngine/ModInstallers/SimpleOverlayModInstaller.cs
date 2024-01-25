@@ -1,11 +1,10 @@
-using NexusMods.DataModel.Games;
-using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.Loadouts.ModFiles;
-using NexusMods.DataModel.ModInstallers;
-using NexusMods.DataModel.Trees;
+using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Installers.DTO;
+using NexusMods.Abstractions.Installers.DTO.Files;
+using NexusMods.Abstractions.Installers.Trees;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
-using NexusMods.Paths.Trees;
 using NexusMods.Paths.Trees.Traits;
 
 namespace NexusMods.Games.RedEngine.ModInstallers;
@@ -24,17 +23,14 @@ public class SimpleOverlayModInstaller : IModInstaller
         .ToArray();
 
     public async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
-        GameInstallation gameInstallation,
-        LoadoutId loadoutId,
-        ModId baseModId,
-        KeyedBox<RelativePath, ModFileTree> archiveFiles,
+        ModInstallerInfo info,
         CancellationToken cancellationToken = default)
     {
         // Note: Expected search space here is small, highest expected overhead is in FindSubPathRootsByKeyUpward.
         // Find all paths which match a known base/root directory.
         var roots = RootPaths
-            .SelectMany(x => archiveFiles.FindSubPathRootsByKeyUpward(x.Parts.ToArray()))
-            .OrderBy(node => node!.Depth())
+            .SelectMany(x => info.ArchiveFiles.FindSubPathRootsByKeyUpward(x.Parts.ToArray()))
+            .OrderBy(node => node.Depth())
             .ToArray();
 
         if (roots.Length == 0)
@@ -44,7 +40,7 @@ public class SimpleOverlayModInstaller : IModInstaller
         var newFiles = new List<StoredFile>();
 
         // Enumerate over all directories with the same depth as the most rooted item.
-        foreach (var node in roots.Where(root => root!.Depth() == highestRoot!.Depth()))
+        foreach (var node in roots.Where(root => root.Depth() == highestRoot.Depth()))
         foreach (var file in node.Item.GetFiles<ModFileTree, RelativePath>())
         {
             // TODO: This can probably be optimised away.
@@ -56,8 +52,8 @@ public class SimpleOverlayModInstaller : IModInstaller
             newFiles.Add(new StoredFile()
             {
                 Id = ModFileId.NewId(),
-                Hash = file!.Item.Hash,
-                Size = file!.Item.Size,
+                Hash = file.Item.Hash,
+                Size = file.Item.Size,
                 To = new GamePath(LocationId.Game, relativePath)
             });
         }
@@ -67,7 +63,7 @@ public class SimpleOverlayModInstaller : IModInstaller
 
         return new ModInstallerResult[]{ new()
         {
-            Id = baseModId,
+            Id = info.BaseModId,
             Files = newFiles
         }};
     }

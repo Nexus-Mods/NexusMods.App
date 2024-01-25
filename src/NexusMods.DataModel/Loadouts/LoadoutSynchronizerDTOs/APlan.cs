@@ -1,5 +1,7 @@
-﻿using NexusMods.DataModel.Loadouts.Mods;
-using NexusMods.Paths;
+﻿using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.Games.Loadouts;
+using NexusMods.Abstractions.Installers.DTO;
 
 namespace NexusMods.DataModel.Loadouts.LoadoutSynchronizerDTOs;
 

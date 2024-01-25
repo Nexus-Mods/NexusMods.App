@@ -1,5 +1,5 @@
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.JsonConverters;
+using NexusMods.Abstractions.Serialization.Attributes;
+using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Networking.Downloaders.Interfaces.Traits;
 using NexusMods.Paths;

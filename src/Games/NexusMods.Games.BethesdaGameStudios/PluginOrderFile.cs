@@ -1,17 +1,17 @@
-using NexusMods.DataModel;
-using NexusMods.DataModel.JsonConverters;
-using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.Loadouts.ModFiles;
-using NexusMods.DataModel.LoadoutSynchronizer;
+using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.Games.Loadouts;
+using NexusMods.Abstractions.Installers.DTO;
+using NexusMods.Abstractions.Installers.DTO.Files;
+using NexusMods.Abstractions.Serialization.Attributes;
+using NexusMods.Extensions.BCL;
 using NexusMods.Hashing.xxHash64;
-using NexusMods.Paths;
-using IGeneratedFile = NexusMods.DataModel.LoadoutSynchronizer.IGeneratedFile;
 
 // ReSharper disable AccessToDisposedClosure
 
 namespace NexusMods.Games.BethesdaGameStudios;
 
-[JsonName("BethesdaGameStudios.PluginOrderFile")]
+[JsonName("NexusMods.Games.BethesdaGameStudios.PluginOrderFile")]
 public record PluginOrderFile : AModFile, IGeneratedFile, IToFile
 {
     public static GamePath Path = new(LocationId.AppData, "plugins.txt");

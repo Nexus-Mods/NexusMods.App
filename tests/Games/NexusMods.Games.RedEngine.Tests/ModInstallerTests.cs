@@ -1,10 +1,10 @@
 using FluentAssertions;
-using NexusMods.DataModel.Loadouts.ModFiles;
+using NexusMods.Abstractions.Installers.DTO;
+using NexusMods.Abstractions.Installers.DTO.Files;
+using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Games.TestFramework;
 using NexusMods.Hashing.xxHash64;
-using NexusMods.Networking.NexusWebApi.Types;
-using NexusMods.Paths;
-using ModId = NexusMods.Networking.NexusWebApi.Types.ModId;
+using ModId = NexusMods.Abstractions.NexusWebApi.Types.ModId;
 // ReSharper disable StringLiteralTypo
 
 namespace NexusMods.Games.RedEngine.Tests;

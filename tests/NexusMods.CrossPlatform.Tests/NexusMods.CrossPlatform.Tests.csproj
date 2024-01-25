@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <ItemGroup>
+        <ProjectReference Include="..\..\src\NexusMods.CrossPlatform\NexusMods.CrossPlatform.csproj" />
+    </ItemGroup>
+</Project>

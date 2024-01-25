@@ -1,5 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Common;
+using NexusMods.Abstractions.HttpDownloader;
 
 namespace NexusMods.Networking.HttpDownloader;
 
