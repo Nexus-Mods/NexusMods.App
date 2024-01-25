@@ -22,7 +22,7 @@
         <value>Installation complete</value>
     </data>
     <data name="FooterStepperView_FooterStepperView_Finish" xml:space="preserve">
-        <value>Finish</value>
+        <value>FINISH</value>
     </data>
     <data name="FooterStepperView_FooterStepperView_Next" xml:space="preserve">
         <value>NEXT</value>

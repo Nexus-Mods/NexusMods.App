@@ -60,7 +60,7 @@ namespace NexusMods.Games.FOMOD.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Finish.
+        ///   Looks up a localized string similar to FINISH.
         /// </summary>
         public static string FooterStepperView_FooterStepperView_Finish {
             get {
