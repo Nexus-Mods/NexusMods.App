@@ -1,4 +1,5 @@
-﻿using DynamicData.Kernel;
+﻿using System.Diagnostics.CodeAnalysis;
+using DynamicData.Kernel;
 using JetBrains.Annotations;
 
 namespace NexusMods.App.UI.Extensions;
@@ -24,5 +25,20 @@ public static class OptionalExtensions
     public static T ValueOr<T>(this Optional<T> optional, Func<T> alternativeValueFunc) where T : class
     {
         return optional.HasValue ? optional.Value : alternativeValueFunc();
+    }
+
+    /// <summary>
+    /// Tries to get the value out of the <see cref="Optional{T}"/>.
+    /// </summary>
+    public static bool TryGet<T>(this Optional<T> optional, [NotNullWhen(true)] out T? value) where T : notnull
+    {
+        if (optional.HasValue)
+        {
+            value = optional.Value;
+            return true;
+        }
+
+        value = default;
+        return false;
     }
 }

@@ -5,6 +5,7 @@ using System.Reactive.Linq;
 using Avalonia;
 using DynamicData;
 using DynamicData.Aggregation;
+using NexusMods.App.UI.Extensions;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -220,11 +221,15 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         }
     }
 
-    public void SwapPanels(IPanelViewModel first, IPanelViewModel second)
+    public void SwapPanels(PanelId firstPanelId, PanelId secondPanelId)
     {
-        (second.LogicalBounds, first.LogicalBounds) = (first.LogicalBounds, second.LogicalBounds);
+        if (!_panelSource.Lookup(firstPanelId).TryGet(out var firstPanel)) return;
+        if (!_panelSource.Lookup(secondPanelId).TryGet(out var secondPanel)) return;
+
+        (secondPanel.LogicalBounds, firstPanel.LogicalBounds) = (firstPanel.LogicalBounds, secondPanel.LogicalBounds);
         Arrange(_lastWorkspaceSize);
         UpdateStates();
+        UpdateResizers();
     }
 
     private void UpdateStates()

@@ -3,7 +3,7 @@ using Avalonia;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
-public interface IWorkspaceViewModel : IViewModelInterface
+public interface IWorkspaceViewModel : IViewModelInterface, IWorkspaceController
 {
     public ReadOnlyObservableCollection<IPanelViewModel> Panels { get; }
 
@@ -23,14 +23,4 @@ public interface IWorkspaceViewModel : IViewModelInterface
     /// </summary>
     /// <returns>The newly created <see cref="IPanelViewModel"/>.</returns>
     public IPanelViewModel AddPanel(WorkspaceGridState state);
-
-    /// <summary>
-    /// Transforms the current state of the workspace into a serializable data format.
-    /// </summary>
-    public WorkspaceData ToData();
-
-    /// <summary>
-    /// Applies <paramref name="data"/> to the workspace.
-    /// </summary>
-    public void FromData(WorkspaceData data);
 }
