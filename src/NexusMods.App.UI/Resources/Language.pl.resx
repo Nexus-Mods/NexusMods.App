@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <root>
-    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-        <xsd:element name="root" msdata:IsDataSet="true">
-
-        </xsd:element>
-    </xsd:schema				 
 	<resheader name="resmimetype">
 		<value>text/microsoft-resx</value>
 	</resheader>
@@ -246,19 +240,19 @@
 	<data name="PanelTabHeaderViewModel_Title_New_Tab" xml:space="preserve">
 		<value>Nowa karta</value>
 	</data>
-	    <data name="DownloadInProgressView__Resume" xml:space="preserve">
-        <value>Wznów</value>
-    </data>
-    <data name="DownloadInProgressView__Resume_All" xml:space="preserve">
-        <value>Wznów Wszystko</value>
-    </data>
-    <data name="CancelDownloadOverlayView_Description__Download" xml:space="preserve">
-        <value>pobieranie</value>
-    </data>
-    <data name="CancelDownloadOverlayView_Description_downloads" xml:space="preserve">
-        <value>pobierania</value>
-    </data>
-    <data name="InProgress_NoDownloadsTextBlock" xml:space="preserve">
-        <value>Brak Pobierań</value>
-    </data>
+	<data name="DownloadInProgressView__Resume" xml:space="preserve">
+		<value>Wznów</value>
+	</data>
+	<data name="DownloadInProgressView__Resume_All" xml:space="preserve">
+		<value>Wznów Wszystko</value>
+	</data>
+	<data name="CancelDownloadOverlayView_Description__Download" xml:space="preserve">
+		<value>pobieranie</value>
+	</data>
+	<data name="CancelDownloadOverlayView_Description_downloads" xml:space="preserve">
+		<value>pobierania</value>
+	</data>
+	<data name="InProgress_NoDownloadsTextBlock" xml:space="preserve">
+		<value>Brak Pobierań</value>
+	</data>
 </root>
