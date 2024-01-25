@@ -1,6 +1,6 @@
 using JetBrains.Annotations;
 
-namespace NexusMods.BCL.Extensions;
+namespace NexusMods.Extensions.BCL;
 
 /// <summary>
 /// Wrapper around <see cref="SemaphoreSlim"/> that releases it afterwards.

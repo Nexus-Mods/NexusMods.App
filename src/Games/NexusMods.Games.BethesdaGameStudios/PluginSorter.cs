@@ -4,7 +4,7 @@ using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Games.Loadouts.Sorting;
 using NexusMods.Abstractions.Installers.DTO.Files;
 using NexusMods.Abstractions.IO;
-using NexusMods.BCL.Extensions;
+using NexusMods.Extensions.BCL;
 using NexusMods.Games.BethesdaGameStudios.Exceptions;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;

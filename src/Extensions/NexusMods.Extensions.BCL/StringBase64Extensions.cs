@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using JetBrains.Annotations;
 
-namespace NexusMods.BCL.Extensions;
+namespace NexusMods.Extensions.BCL;
 
 /// <summary>
 /// String encoding routines

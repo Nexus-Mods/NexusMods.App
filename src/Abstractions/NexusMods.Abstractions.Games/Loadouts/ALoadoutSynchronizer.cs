@@ -14,7 +14,7 @@ using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Serialization.DataModel;
-using NexusMods.BCL.Extensions;
+using NexusMods.Extensions.BCL;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using LocationId = NexusMods.Abstractions.Installers.DTO.LocationId;

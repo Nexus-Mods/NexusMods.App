@@ -1,4 +1,5 @@
 using FluentAssertions;
+using NexusMods.Extensions.BCL;
 using Xunit;
 
 namespace NexusMods.BCL.Extensions.Tests;

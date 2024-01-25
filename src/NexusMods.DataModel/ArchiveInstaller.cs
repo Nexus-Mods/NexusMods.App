@@ -11,9 +11,9 @@ using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Serialization.DataModel;
-using NexusMods.BCL.Extensions;
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.Extensions.BCL;
 
 namespace NexusMods.DataModel;
 

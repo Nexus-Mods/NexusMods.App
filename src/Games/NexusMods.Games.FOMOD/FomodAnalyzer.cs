@@ -2,7 +2,7 @@ using System.Text;
 using FomodInstaller.Scripting.XmlScript;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Installers.Trees;
-using NexusMods.BCL.Extensions;
+using NexusMods.Extensions.BCL;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees;
 using NexusMods.Paths.Trees.Traits;

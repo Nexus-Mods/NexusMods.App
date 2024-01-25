@@ -4,7 +4,7 @@ using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Installers.DTO;
 using NexusMods.Abstractions.Installers.DTO.Files;
 using NexusMods.Abstractions.Serialization.Attributes;
-using NexusMods.BCL.Extensions;
+using NexusMods.Extensions.BCL;
 using NexusMods.Hashing.xxHash64;
 
 // ReSharper disable AccessToDisposedClosure

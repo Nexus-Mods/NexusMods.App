@@ -6,7 +6,7 @@ using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.Abstractions.Serialization.DataModel.Ids;
-using NexusMods.BCL.Extensions;
+using NexusMods.Extensions.BCL;
 using NexusMods.Extensions.Hashing;
 using NexusMods.Paths;
 

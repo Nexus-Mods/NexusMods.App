@@ -1,4 +1,4 @@
-namespace NexusMods.BCL.Extensions;
+namespace NexusMods.Extensions.BCL;
 
 /// <summary/>
 public static class StreamExtensions

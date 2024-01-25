@@ -5,8 +5,8 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.Serialization;
-using NexusMods.BCL.Extensions;
 using NexusMods.CrossPlatform.ProtocolRegistration;
+using NexusMods.Extensions.BCL;
 using NexusMods.Networking.NexusWebApi.Auth;
 
 namespace NexusMods.Networking.NexusWebApi;

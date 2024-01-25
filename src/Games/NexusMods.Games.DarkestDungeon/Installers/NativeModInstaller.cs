@@ -6,7 +6,7 @@ using NexusMods.Abstractions.DataModel.Entities.Mods;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Installers.DTO;
 using NexusMods.Abstractions.Installers.Trees;
-using NexusMods.BCL.Extensions;
+using NexusMods.Extensions.BCL;
 using NexusMods.Games.DarkestDungeon.Models;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;

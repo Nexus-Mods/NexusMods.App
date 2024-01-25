@@ -12,8 +12,8 @@ using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.Abstractions.Serialization.DataModel.Ids;
-using NexusMods.BCL.Extensions;
 using NexusMods.DataModel.Extensions;
+using NexusMods.Extensions.BCL;
 using NexusMods.Extensions.DynamicData;
 
 namespace NexusMods.DataModel.Diagnostics;

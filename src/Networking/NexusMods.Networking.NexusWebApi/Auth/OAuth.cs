@@ -10,8 +10,8 @@ using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.DTOs;
 using NexusMods.Abstractions.NexusWebApi.DTOs.OAuth;
 using NexusMods.Abstractions.NexusWebApi.Types;
-using NexusMods.BCL.Extensions;
 using NexusMods.CrossPlatform.Process;
+using NexusMods.Extensions.BCL;
 
 namespace NexusMods.Networking.NexusWebApi.Auth;
 

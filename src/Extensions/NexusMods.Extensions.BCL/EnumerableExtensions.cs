@@ -1,6 +1,6 @@
 using System.Collections.Concurrent;
 
-namespace NexusMods.BCL.Extensions;
+namespace NexusMods.Extensions.BCL;
 
 /// <summary>
 /// Extensions for collections implementing the enumerable interface.

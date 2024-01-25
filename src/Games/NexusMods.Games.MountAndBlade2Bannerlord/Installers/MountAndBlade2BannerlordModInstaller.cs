@@ -7,7 +7,7 @@ using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Installers.DTO;
 using NexusMods.Abstractions.Installers.Trees;
 using NexusMods.Abstractions.Serialization;
-using NexusMods.BCL.Extensions;
+using NexusMods.Extensions.BCL;
 using NexusMods.Games.MountAndBlade2Bannerlord.Models;
 using NexusMods.Games.MountAndBlade2Bannerlord.Services;
 using NexusMods.Games.MountAndBlade2Bannerlord.Sorters;

@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
-using NexusMods.BCL.Extensions;
+using NexusMods.Extensions.BCL;
 using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;

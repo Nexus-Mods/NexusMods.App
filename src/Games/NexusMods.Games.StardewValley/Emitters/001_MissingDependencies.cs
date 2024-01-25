@@ -5,7 +5,7 @@ using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Installers.DTO.Files;
 using NexusMods.Abstractions.IO;
-using NexusMods.BCL.Extensions;
+using NexusMods.Extensions.BCL;
 using NexusMods.Games.StardewValley.Models;
 
 namespace NexusMods.Games.StardewValley.Emitters;
