@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.App.Settings;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.Loadouts;
@@ -51,7 +52,7 @@ public static class Services
 
         coll.AddSingleton(typeof(IFingerprintCache<,>), typeof(DataStoreFingerprintCache<,>));
 
-        coll.AddSingleton<GlobalSettingsManager>();
+        coll.AddDataModelSettings();
         coll.AddAllSingleton<ILoadoutRegistry, LoadoutRegistry>();
         coll.AddAllSingleton<IDirectoryIndexer, DirectoryIndexer>();
         coll.AddAllSingleton<IFileOriginRegistry, FileOriginRegistry>();

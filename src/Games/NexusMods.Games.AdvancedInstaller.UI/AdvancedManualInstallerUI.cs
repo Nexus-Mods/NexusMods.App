@@ -3,8 +3,8 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.ReactiveUI;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Installers;
-using NexusMods.DataModel.Loadouts;
 using NexusMods.Games.AdvancedInstaller.UI.Resources;
 
 namespace NexusMods.Games.AdvancedInstaller.UI;
@@ -15,7 +15,7 @@ namespace NexusMods.Games.AdvancedInstaller.UI;
 // ReSharper disable once InconsistentNaming
 public class AdvancedManualInstallerUI : IAdvancedInstallerHandler
 {
-    private readonly Lazy<LoadoutRegistry> _loadoutRegistry;
+    private readonly Lazy<ILoadoutRegistry> _loadoutRegistry;
 
     /// <summary>
     /// Construct the UI handler for the Advanced Manual Installer.
@@ -24,7 +24,7 @@ public class AdvancedManualInstallerUI : IAdvancedInstallerHandler
     public AdvancedManualInstallerUI(IServiceProvider provider)
     {
         // Delay to avoid circular dependency.
-        _loadoutRegistry = new Lazy<LoadoutRegistry>(provider.GetRequiredService<LoadoutRegistry>);
+        _loadoutRegistry = new Lazy<ILoadoutRegistry>(provider.GetRequiredService<ILoadoutRegistry>);
     }
 
     /// <InheritDoc/>

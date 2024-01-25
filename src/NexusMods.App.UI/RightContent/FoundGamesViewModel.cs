@@ -1,11 +1,11 @@
 using System.Collections.ObjectModel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.App.UI.Controls.GameWidget;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Routing;
 using NexusMods.App.UI.Routing.Messages;
-using NexusMods.DataModel.Loadouts;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -13,11 +13,11 @@ namespace NexusMods.App.UI.RightContent;
 
 public class FoundGamesViewModel : AViewModel<IFoundGamesViewModel>, IFoundGamesViewModel
 {
-    private readonly LoadoutRegistry _loadoutRegistry;
+    private readonly ILoadoutRegistry _loadoutRegistry;
     private readonly IServiceProvider _provider;
     private readonly IRouter _router;
 
-    public FoundGamesViewModel(IServiceProvider provider, LoadoutRegistry loadoutManager, IRouter router)
+    public FoundGamesViewModel(IServiceProvider provider, ILoadoutRegistry loadoutManager, IRouter router)
     {
         _router = router;
         _loadoutRegistry = loadoutManager;

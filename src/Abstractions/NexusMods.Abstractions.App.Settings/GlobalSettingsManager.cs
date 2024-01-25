@@ -1,28 +1,19 @@
 ﻿using JetBrains.Annotations;
-using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.Serialization;
 
-namespace NexusMods.DataModel.GlobalSettings;
+namespace NexusMods.Abstractions.App.Settings;
 
 /// <summary>
 /// A manager for global settings that affect the application as a whole.
 /// </summary>
 public class GlobalSettingsManager
 {
-    private readonly ILogger<GlobalSettingsManager> _logger;
-    private readonly IDataStore _dataStore;
     private readonly IAppConfigManager _appConfigManager;
 
     /// <summary>
     /// DI Constructor
     /// </summary>
-    public GlobalSettingsManager(
-        ILogger<GlobalSettingsManager> logger,
-        IDataStore dataStore,
-        IAppConfigManager appConfigManager)
+    public GlobalSettingsManager(IAppConfigManager appConfigManager)
     {
-        _logger = logger;
-        _dataStore = dataStore;
         _appConfigManager = appConfigManager;
     }
 

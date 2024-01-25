@@ -18,8 +18,7 @@ using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModInstalled;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModName;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModVersion;
 using NexusMods.App.UI.WorkspaceSystem;
-using NexusMods.DataModel.Extensions;
-using NexusMods.DataModel.Loadouts;
+using NexusMods.Extensions.DynamicData;
 using NexusMods.Paths;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -39,7 +38,7 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
     private ReadOnlyObservableCollection<IDataGridColumnFactory<LoadoutColumn>> _filteredColumns = new(new ObservableCollection<IDataGridColumnFactory<LoadoutColumn>>());
     private readonly IFileSystem _fileSystem;
     private readonly ILogger<LoadoutGridViewModel> _logger;
-    private readonly LoadoutRegistry _loadoutRegistry;
+    private readonly ILoadoutRegistry _loadoutRegistry;
     private readonly IArchiveInstaller _archiveInstaller;
     private readonly IFileOriginRegistry _fileOriginRegistry;
     private readonly IServiceProvider _provider;
@@ -52,7 +51,7 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
     public LoadoutGridViewModel(
         ILogger<LoadoutGridViewModel> logger,
         IServiceProvider provider,
-        LoadoutRegistry loadoutRegistry,
+        ILoadoutRegistry loadoutRegistry,
         IFileSystem fileSystem,
         IArchiveInstaller archiveInstaller,
         IFileOriginRegistry fileOriginRegistry)

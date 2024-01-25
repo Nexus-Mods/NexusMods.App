@@ -4,8 +4,8 @@ using System.Reactive.Linq;
 using System.Windows.Input;
 using NexusMods.Abstractions.DataModel.Entities.Mods;
 using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.App.UI.Controls.DataGrid;
-using NexusMods.DataModel.Loadouts;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -13,7 +13,7 @@ namespace NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModEnabled;
 
 public class ModEnabledViewModel : AViewModel<IModEnabledViewModel>, IModEnabledViewModel, IComparableColumn<ModCursor>
 {
-    private readonly LoadoutRegistry _loadoutRegistry;
+    private readonly ILoadoutRegistry _loadoutRegistry;
 
     [Reactive]
     public ModCursor Row { get; set; } = Initializers.ModCursor;
@@ -30,7 +30,7 @@ public class ModEnabledViewModel : AViewModel<IModEnabledViewModel>, IModEnabled
     [Reactive]
     public ICommand DeleteModCommand { get; set; }
 
-    public ModEnabledViewModel(LoadoutRegistry loadoutRegistry)
+    public ModEnabledViewModel(ILoadoutRegistry loadoutRegistry)
     {
         _loadoutRegistry = loadoutRegistry;
 

@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.App.Settings;
 using NexusMods.Abstractions.DataModel.Entities;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Installers;
@@ -10,7 +11,6 @@ using NexusMods.App.UI;
 using NexusMods.CLI;
 using NexusMods.CrossPlatform;
 using NexusMods.DataModel;
-using NexusMods.DataModel.GlobalSettings;
 using NexusMods.FileExtractor;
 using NexusMods.Games.AdvancedInstaller;
 using NexusMods.Games.AdvancedInstaller.UI;

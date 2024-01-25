@@ -2,9 +2,9 @@
 using System.Reactive.Linq;
 using NexusMods.Abstractions.DataModel.Entities.Mods;
 using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.App.UI.Controls.DataGrid;
-using NexusMods.DataModel.Loadouts;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -12,12 +12,12 @@ namespace NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModCategory;
 
 public class ModCategoryViewModel : AViewModel<IModCategoryViewModel>, IModCategoryViewModel, IComparableColumn<ModCursor>
 {
-    private readonly LoadoutRegistry _loadoutRegistry;
+    private readonly ILoadoutRegistry _loadoutRegistry;
     [Reactive] public ModCursor Row { get; set; } = Initializers.ModCursor;
 
     [Reactive] public string Category { get; set; } = "";
 
-    public ModCategoryViewModel(LoadoutRegistry loadoutRegistry, IDataStore store)
+    public ModCategoryViewModel(ILoadoutRegistry loadoutRegistry, IDataStore store)
     {
         _loadoutRegistry = loadoutRegistry;
 
