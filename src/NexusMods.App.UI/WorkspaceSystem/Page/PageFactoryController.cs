@@ -25,12 +25,17 @@ public class PageFactoryController
         }
     }
 
-    public Page Create(PageData pageData)
+    public Page Create(PageData pageData, IWorkspaceController workspaceController, PanelId panelId, PanelTabId tabId)
     {
         if (!_factories.TryGetValue(pageData.FactoryId, out var factory))
             throw new KeyNotFoundException($"Unable to find registered factory with ID {pageData.FactoryId}");
 
-        return factory.Create(pageData.Context);
+        var page = factory.Create(pageData.Context);
+        page.ViewModel.WorkspaceController = workspaceController;
+        page.ViewModel.PanelId = panelId;
+        page.ViewModel.TabId = tabId;
+
+        return page;
     }
 
     public IEnumerable<PageDiscoveryDetails> GetAllDetails()

@@ -291,7 +291,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         var panel = OptionalPanelOrFirst(replaceTab.PanelId);
         var tab = OptionalTabOrFirst(panel, replaceTab.TabId);
 
-        var newTabPage = _factoryController.Create(pageData);
+        var newTabPage = _factoryController.Create(pageData, this, panel.Id, tab.Id);
         tab.Contents = newTabPage;
     }
 
@@ -359,7 +359,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                 var (panelId, logicalBounds) = panel;
                 if (panelId == PanelId.DefaultValue)
                 {
-                    var panelViewModel = new PanelViewModel(_factoryController)
+                    var panelViewModel = new PanelViewModel(this, _factoryController)
                     {
                         LogicalBounds = logicalBounds,
                     };
@@ -421,7 +421,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         {
             foreach (var panel in data.Panels)
             {
-                var vm = new PanelViewModel(_factoryController);
+                var vm = new PanelViewModel(this, _factoryController);
                 vm.FromData(panel);
 
                 updater.AddOrUpdate(vm);

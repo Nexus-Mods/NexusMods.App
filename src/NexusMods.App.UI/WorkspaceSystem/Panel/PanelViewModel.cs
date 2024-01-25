@@ -34,9 +34,12 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
 
     [Reactive] private PanelTabId SelectedTabId { get; set; }
 
+    private readonly IWorkspaceController _workspaceController;
     private readonly PageFactoryController _factoryController;
-    public PanelViewModel(PageFactoryController factoryController)
+
+    public PanelViewModel(IWorkspaceController workspaceController, PageFactoryController factoryController)
     {
+        _workspaceController = workspaceController;
         _factoryController = factoryController;
 
         var canExecute = this.WhenAnyValue(vm => vm.IsNotAlone);
@@ -132,18 +135,6 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
                 })
                 .Subscribe()
                 .DisposeWith(disposables);
-
-            // react to the change page command
-            _tabsList
-                .Connect()
-                .MergeManyWithSource(item => item.Contents.ViewModel!.ChangePageCommand)
-                .SubscribeWithErrorLogging(tuple =>
-                {
-                    var (item, pageData) = tuple;
-                    var newPage = _factoryController.Create(pageData);
-                    item.Contents = newPage;
-                })
-                .DisposeWith(disposables);
         });
     }
 
@@ -177,11 +168,13 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
 
     public void AddCustomTab(PageData pageData)
     {
-        var newTabPage = _factoryController.Create(pageData);
+        var newTabPage = _factoryController.Create(pageData, _workspaceController, Id, PanelTabId.DefaultValue);
         var tab = new PanelTabViewModel
         {
             Contents = newTabPage
         };
+
+        newTabPage.ViewModel.TabId = tab.Id;
 
         _tabsList.Edit(updater => updater.Add(tab));
         SelectedTabId = tab.Id;
@@ -216,11 +209,14 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
             for (uint i = 0; i < data.Tabs.Length; i++)
             {
                 var tab = data.Tabs[i];
+                var newTabPage = _factoryController.Create(tab.PageData, _workspaceController, Id, PanelTabId.DefaultValue);
+
                 var vm = new PanelTabViewModel
                 {
-                    Contents = _factoryController.Create(tab.PageData)
+                    Contents = newTabPage
                 };
 
+                newTabPage.ViewModel.TabId = vm.Id;
                 updater.Add(vm);
             }
         });
