@@ -1,3 +1,7 @@
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
+using Avalonia.Media;
+using NexusMods.App.UI.Resources;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -29,5 +33,15 @@ public class PanelTabViewModel : AViewModel<IPanelTabViewModel>, IPanelTabViewMo
             Id = Id,
             PageData = Contents.PageData
         };
+    }
+
+    public void SetTitle(string title)
+    {
+        Header.Title = title;
+    }
+
+    public void SetIcon(IImage? icon)
+    {
+        Header.Icon = icon;
     }
 }

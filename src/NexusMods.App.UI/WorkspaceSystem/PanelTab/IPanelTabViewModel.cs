@@ -1,6 +1,6 @@
 namespace NexusMods.App.UI.WorkspaceSystem;
 
-public interface IPanelTabViewModel : IViewModelInterface
+public interface IPanelTabViewModel : IViewModelInterface, ITabController
 {
     /// <summary>
     /// Gets the unique identifier of the tab.

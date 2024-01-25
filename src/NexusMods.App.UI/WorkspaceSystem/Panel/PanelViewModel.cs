@@ -168,13 +168,14 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
 
     public void AddCustomTab(PageData pageData)
     {
-        var newTabPage = _factoryController.Create(pageData, _workspaceController, Id, PanelTabId.DefaultValue);
+        var newTabPage = _factoryController.Create(pageData, _workspaceController, Id, tab: null);
         var tab = new PanelTabViewModel
         {
             Contents = newTabPage
         };
 
         newTabPage.ViewModel.TabId = tab.Id;
+        newTabPage.ViewModel.TabController = tab;
 
         _tabsList.Edit(updater => updater.Add(tab));
         SelectedTabId = tab.Id;
@@ -209,7 +210,7 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
             for (uint i = 0; i < data.Tabs.Length; i++)
             {
                 var tab = data.Tabs[i];
-                var newTabPage = _factoryController.Create(tab.PageData, _workspaceController, Id, PanelTabId.DefaultValue);
+                var newTabPage = _factoryController.Create(tab.PageData, _workspaceController, Id, tab: null);
 
                 var vm = new PanelTabViewModel
                 {
@@ -217,6 +218,8 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
                 };
 
                 newTabPage.ViewModel.TabId = vm.Id;
+                newTabPage.ViewModel.TabController = vm;
+
                 updater.Add(vm);
             }
         });

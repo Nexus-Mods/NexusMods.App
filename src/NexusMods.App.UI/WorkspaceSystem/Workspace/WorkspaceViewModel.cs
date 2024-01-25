@@ -291,7 +291,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         var panel = OptionalPanelOrFirst(replaceTab.PanelId);
         var tab = OptionalTabOrFirst(panel, replaceTab.TabId);
 
-        var newTabPage = _factoryController.Create(pageData, this, panel.Id, tab.Id);
+        var newTabPage = _factoryController.Create(pageData, this, panel.Id, tab);
         tab.Contents = newTabPage;
     }
 
