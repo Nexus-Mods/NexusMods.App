@@ -25,7 +25,8 @@ public static class Services
             ref services,
 #pragma warning disable CA1416 // macOS
             onWindows: (ref IServiceCollection value) => value.AddSingleton<IProtocolRegistration, ProtocolRegistrationWindows>(),
-            onLinux: (ref IServiceCollection value) => value.AddSingleton<IProtocolRegistration, ProtocolRegistrationLinux>()
+            onLinux: (ref IServiceCollection value) => value.AddSingleton<IProtocolRegistration, ProtocolRegistrationLinux>(),
+            onOSX: (ref IServiceCollection value) => value.AddSingleton<IProtocolRegistration, ProtocolRegistrationOSX>()
 #pragma warning restore CA1416
         );
 

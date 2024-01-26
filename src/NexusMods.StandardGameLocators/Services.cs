@@ -116,6 +116,13 @@ public static class Services
                         ),
                     }
                 ));
+            },
+        onOSX: () =>
+            {
+    #pragma warning disable CA1416
+                services.AddSingleton<IHardwareInfoProvider, HardwareInfoProvider>();
+    #pragma warning restore CA1416
+                services.AddSingleton<AHandler<SteamGame, AppId>>(provider => new SteamHandler(provider.GetRequiredService<IFileSystem>(), registry: null));
             });
 
         return services;
