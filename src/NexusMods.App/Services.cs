@@ -123,7 +123,7 @@ public static class Services
                 var directory = fs.OS.MatchPlatform(
                     () => fs.GetKnownPath(KnownPath.TempDirectory),
                     () => fs.GetKnownPath(KnownPath.XDG_RUNTIME_DIR),
-                    () => throw new PlatformNotSupportedException()
+                    () => fs.GetKnownPath(KnownPath.ApplicationDataDirectory).Combine("NexusMods_App")
                 );
 
                 return new SingleProcessSettings
