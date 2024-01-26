@@ -63,6 +63,10 @@ public static class Services
 
                 services.AddSingleton<IGameLocator, DefaultWineGameLocator>();
                 services.AddSingleton<IGameLocator, BottlesWineGameLocator>();
+            },
+            onOSX: () =>
+            {
+                services.AddSingleton<IGameLocator, SteamLocator>();
             });
 
         if (!registerConcreteLocators) return services;

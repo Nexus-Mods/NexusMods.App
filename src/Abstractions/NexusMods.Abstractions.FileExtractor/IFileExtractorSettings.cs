@@ -46,8 +46,7 @@ public class FileExtractorSettings : IFileExtractorSettings
         return fs.OS.MatchPlatform(
             () => fs.GetKnownPath(KnownPath.TempDirectory).Combine("NexusMods.App/Temp"),
             () => fs.GetKnownPath(KnownPath.XDG_STATE_HOME).Combine("NexusMods.App/Temp"),
-            () => throw new PlatformNotSupportedException(
-                "(Note: Sewer) Paths needs PR for macOS. I don't have a non-painful way to access a Mac."));
+            () => fs.GetKnownPath(KnownPath.TempDirectory).Combine("NexusMods.App/Temp"));
     }
 
     /// <summary>

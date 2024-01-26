@@ -56,6 +56,10 @@ public class SqliteDataStore : IDataStore, IDisposable
         }
         else
         {
+            var path = settings.DataStoreFilePath.ToAbsolutePath();
+            if (!path.Parent.DirectoryExists())
+                path.Parent.CreateDirectory();
+
             connectionString = string.Intern($"Data Source={settings.DataStoreFilePath}");
         }
 

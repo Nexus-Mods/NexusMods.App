@@ -119,6 +119,7 @@ public class DataModelSettings : IDataModelSettings
 
         // Set default locations if none are provided.
         var baseDir = GetDefaultBaseDirectory(fs);
+
         if (ArchiveLocations.Length == 0)
             ArchiveLocations = GetDefaultArchiveLocations(baseDir);
 
@@ -141,8 +142,8 @@ public class DataModelSettings : IDataModelSettings
         return fs.OS.MatchPlatform(
             () => fs.GetKnownPath(KnownPath.LocalApplicationDataDirectory).Combine("NexusMods.App/DataModel"),
             () => fs.GetKnownPath(KnownPath.XDG_DATA_HOME).Combine("NexusMods.App/DataModel"),
-            () => throw new PlatformNotSupportedException(
-                "(Note: Sewer) Paths needs PR for macOS. I don't have a non-painful way to access a Mac."));
+            // Use _ on Mac so it doesn't think the folder is an OSX ".App"
+            () => fs.GetKnownPath(KnownPath.LocalApplicationDataDirectory).Combine("NexusMods_App/DataModel"));
     }
 
     private static ConfigurationPath GetDefaultDataStoreFilePath(AbsolutePath baseDirectory) =>
