@@ -9,5 +9,8 @@
     <ItemGroup>
         <None Remove="Resources\question_mark_game.png" />
         <EmbeddedResource Include="Resources\question_mark_game.png" />
+        <None Update="xunit.runner.json">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 </Project>
