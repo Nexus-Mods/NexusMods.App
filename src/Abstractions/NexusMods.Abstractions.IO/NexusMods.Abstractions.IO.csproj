@@ -1,0 +1,10 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <!-- NuGet Package Shared Details -->
+    <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+
+    <ItemGroup>
+        <!-- TODO: This library needs stabilized -->
+        <PackageReference Include="NexusMods.Paths" />
+        <PackageReference Include="NexusMods.Hashing.xxHash64" />
+    </ItemGroup>
+</Project>

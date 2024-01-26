@@ -1,5 +1,7 @@
-﻿using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.Abstractions.Ids;
+﻿using NexusMods.Abstractions.Games.Loadouts;
+using NexusMods.Abstractions.Serialization;
+using NexusMods.Abstractions.Serialization.DataModel;
+using NexusMods.Abstractions.Serialization.DataModel.Ids;
 using NexusMods.Hashing.xxHash64;
 
 namespace NexusMods.DataModel.TriggerFilter;

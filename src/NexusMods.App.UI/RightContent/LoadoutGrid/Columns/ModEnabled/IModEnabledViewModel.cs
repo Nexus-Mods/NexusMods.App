@@ -1,7 +1,7 @@
 ﻿using System.Windows.Input;
+using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.Games.DTO;
 using NexusMods.App.UI.Controls.DataGrid;
-using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.Loadouts.Cursors;
 
 namespace NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModEnabled;
 

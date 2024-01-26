@@ -10,12 +10,11 @@ using GameFinder.StoreHandlers.Xbox;
 using GameFinder.Wine;
 using GameFinder.Wine.Bottles;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Common;
-using NexusMods.DataModel.Games;
-using NexusMods.DataModel.ModInstallers;
+using NexusMods.Abstractions.Games;
+using NexusMods.Extensions.DependencyInjection;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
-using IGame = NexusMods.DataModel.Games.IGame;
+using IGame = NexusMods.Abstractions.Games.IGame;
 
 namespace NexusMods.StandardGameLocators.TestHelpers;
 

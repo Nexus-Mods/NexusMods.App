@@ -1,9 +1,8 @@
 using FluentAssertions;
-using NexusMods.DataModel.Abstractions.DTOs;
-using NexusMods.DataModel.Trees;
+using NexusMods.Abstractions.Games.Downloads;
+using NexusMods.Abstractions.Installers.DTO;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
-using NexusMods.Paths.FileTree;
 using NexusMods.Paths.Trees.Traits;
 
 namespace NexusMods.Games.AdvancedInstaller.Tests;
@@ -17,7 +16,7 @@ public partial class DeploymentDataTests
         var data = new DeploymentData();
 
         // Create a File Tree
-        var folderNode = ModFileTree.Create(CreateExtensionTestFileTree());
+        var folderNode = TreeCreator.Create(CreateExtensionTestFileTree());
 
         // Act
         data.AddFolderMapping(folderNode, MakeGamePath("Data"));
@@ -35,7 +34,7 @@ public partial class DeploymentDataTests
         var data = new DeploymentData();
 
         // Create a File Tree
-        var folderNode = ModFileTree.Create(CreateExtensionTestFileTree()).FindByPathFromChild("folder")!;
+        var folderNode = TreeCreator.Create(CreateExtensionTestFileTree()).FindByPathFromChild("folder")!;
 
         // Act
         data.AddFolderMapping(folderNode, MakeGamePath("Data"));

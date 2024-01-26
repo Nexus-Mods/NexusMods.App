@@ -1,10 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
-using NexusMods.Common;
-using NexusMods.Common.OSInterop;
-using NexusMods.DataModel.Games;
-using NexusMods.Paths;
+using NexusMods.Abstractions.Games.Tools;
+using NexusMods.Abstractions.Installers.DTO;
+using NexusMods.CrossPlatform.Process;
 
-namespace NexusMods.Games.BethesdaGameStudios;
+namespace NexusMods.Games.BethesdaGameStudios.SkyrimLegendaryEdition;
 
 public class SkyrimLegendaryEditionGameTool : RunGameWithScriptExtender<SkyrimLegendaryEdition>
 {

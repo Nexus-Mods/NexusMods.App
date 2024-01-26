@@ -1,5 +1,4 @@
 ﻿using FluentAssertions;
-using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Games.TestFramework;
 using NexusMods.Networking.HttpDownloader.Tests;
 using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;

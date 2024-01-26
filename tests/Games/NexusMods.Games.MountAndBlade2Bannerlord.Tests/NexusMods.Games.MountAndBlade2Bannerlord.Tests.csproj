@@ -5,12 +5,17 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\..\src\Games\NexusMods.Games.MountAndBlade2Bannerlord\NexusMods.Games.MountAndBlade2Bannerlord.csproj" />
+        <ProjectReference Include="..\..\..\src\NexusMods.Activities\NexusMods.Activities.csproj" />
+        <ProjectReference Include="..\..\..\src\NexusMods.App.BuildInfo\NexusMods.App.BuildInfo.csproj" />
         <ProjectReference Include="..\NexusMods.Games.TestFramework\NexusMods.Games.TestFramework.csproj" />
     </ItemGroup>
 
     <ItemGroup>
         <None Update="Assets\**">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="xunit.runner.json">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
     </ItemGroup>
 </Project>

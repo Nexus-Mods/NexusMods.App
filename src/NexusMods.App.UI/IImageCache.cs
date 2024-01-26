@@ -1,5 +1,5 @@
 using Avalonia.Media;
-using NexusMods.Common.GuidedInstaller;
+using NexusMods.Abstractions.GuidedInstallers;
 
 namespace NexusMods.App.UI;
 

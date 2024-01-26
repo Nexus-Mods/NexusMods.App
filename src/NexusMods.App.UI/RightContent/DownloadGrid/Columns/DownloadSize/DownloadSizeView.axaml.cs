@@ -2,7 +2,7 @@
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 
-namespace NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadSize;
+namespace NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadSize;
 
 public partial class DownloadSizeView : ReactiveUserControl<IDownloadSizeViewModel>
 {

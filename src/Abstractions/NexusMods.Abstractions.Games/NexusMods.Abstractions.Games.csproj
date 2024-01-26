@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <!-- NuGet Package Shared Details -->
+    <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+
+    <ItemGroup>
+        <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+
+        <!--
+            TODO: Currently required for 'custom loadout synchronizer'.
+            We need to move default implementation(s) of methods to separate package.
+        -->
+        <PackageReference Include="System.Linq.Async" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="NexusMods.DataModel.Tests" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Extensions\NexusMods.Extensions.BCL\NexusMods.Extensions.BCL.csproj" />
+        <ProjectReference Include="..\..\Extensions\NexusMods.Extensions.DependencyInjection\NexusMods.Extensions.DependencyInjection.csproj" />
+        <ProjectReference Include="..\..\NexusMods.CrossPlatform\NexusMods.CrossPlatform.csproj" />
+        <ProjectReference Include="..\NexusMods.Abstractions.Activities\NexusMods.Abstractions.Activities.csproj" />
+        <ProjectReference Include="..\NexusMods.Abstractions.Installers\NexusMods.Abstractions.Installers.csproj" />
+        <ProjectReference Include="..\NexusMods.Abstractions.NexusWebApi\NexusMods.Abstractions.NexusWebApi.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Stores\" />
+    </ItemGroup>
+</Project>

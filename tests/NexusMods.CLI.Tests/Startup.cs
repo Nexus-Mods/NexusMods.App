@@ -1,12 +1,16 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Common;
+using NexusMods.Abstractions.DataModel.Entities;
+using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Serialization;
+using NexusMods.Activities;
+using NexusMods.App.BuildInfo;
 using NexusMods.DataModel;
 using NexusMods.FileExtractor;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.HttpDownloader.Tests;
 using NexusMods.Networking.NexusWebApi;
-using NexusMods.Networking.NexusWebApi.NMA;
 using NexusMods.Paths;
 using NexusMods.SingleProcess;
 using NexusMods.StandardGameLocators;
@@ -30,8 +34,12 @@ public class Startup
                 .AddCLI()
                 .AddSingleton<HttpClient>()
                 .AddHttpDownloader()
-                .AddNexusWebApi()
-                .AddNexusWebApiNmaIntegration(true)
+                .AddNexusWebApi(true)
+                .AddActivityMonitor()
+                .AddDataModelBaseEntities()
+                .AddGames()
+                .AddDataModelEntities()
+                .AddInstallerTypes()
                 .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace))
                 .AddSingleton<LocalHttpServer>()
                 .AddLogging(builder => builder.AddXUnit())

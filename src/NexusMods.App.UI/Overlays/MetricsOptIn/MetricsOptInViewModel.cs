@@ -1,5 +1,5 @@
 ﻿using System.Windows.Input;
-using NexusMods.DataModel.GlobalSettings;
+using NexusMods.Abstractions.App.Settings;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 

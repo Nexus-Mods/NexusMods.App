@@ -4,7 +4,7 @@ using System.Reactive.Linq;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Microsoft.Extensions.Logging;
-using NexusMods.Networking.NexusWebApi.NMA;
+using NexusMods.Abstractions.NexusWebApi;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -12,10 +12,10 @@ namespace NexusMods.App.UI.Controls.TopBar;
 
 public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
 {
-    private readonly LoginManager _loginManager;
+    private readonly ILoginManager _loginManager;
     private readonly ILogger<TopBarViewModel> _logger;
 
-    public TopBarViewModel(ILogger<TopBarViewModel> logger, LoginManager loginManager)
+    public TopBarViewModel(ILogger<TopBarViewModel> logger, ILoginManager loginManager)
     {
         _logger = logger;
         _loginManager = loginManager;

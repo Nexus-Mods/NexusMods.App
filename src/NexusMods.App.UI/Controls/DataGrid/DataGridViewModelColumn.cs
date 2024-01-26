@@ -43,7 +43,7 @@ public class DataGridViewModelColumn<TVm, TRow> : ADataGridViewModelColumn<TVm, 
         var vm = _provider.GetService<TVm>();
         if (vm == null)
             return new TextBlock { Text = $"No column VM found for {typeof(TVm)}" };
-        vm!.Row = (TRow)dataItem;
+        vm.Row = (TRow)dataItem;
 
         var view = _locator.ResolveView(vm);
         if (view == null)

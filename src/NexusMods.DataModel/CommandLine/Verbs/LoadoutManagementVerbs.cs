@@ -1,19 +1,17 @@
-using System.Runtime.InteropServices;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.CLI;
-using NexusMods.Common;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.ArchiveMetaData;
-using NexusMods.DataModel.Games;
+using NexusMods.Abstractions.Cli;
+using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Games.ArchiveMetadata;
+using NexusMods.Abstractions.Games.Loadouts;
+using NexusMods.Abstractions.Games.Trees;
+using NexusMods.Abstractions.Installers.DTO.Files;
+using NexusMods.Abstractions.Serialization;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Extensions;
-using NexusMods.DataModel.Loadouts.Markers;
-using NexusMods.DataModel.Loadouts.ModFiles;
-using NexusMods.DataModel.LoadoutSynchronizer;
 using NexusMods.Paths;
 using NexusMods.ProxyConsole.Abstractions;
 using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
-using IGeneratedFile = NexusMods.DataModel.LoadoutSynchronizer.IGeneratedFile;
+using IGeneratedFile = NexusMods.Abstractions.Games.Loadouts.IGeneratedFile;
 
 namespace NexusMods.DataModel.CommandLine.Verbs;
 
@@ -48,7 +46,7 @@ public static class LoadoutManagementVerbs
         var state = await loadout.Value.Apply();
 
         var summary = state.GetAllDescendentFiles()
-            .Aggregate((Count:0, Size:Size.Zero), (acc, file) => (acc.Item1 + 1, acc.Item2 + file.Value.Size));
+            .Aggregate((Count:0, Size:Size.Zero), (acc, file) => (acc.Item1 + 1, acc.Item2 + file.Item.Value.Size));
 
         await renderer.Text($"Applied {loadout} resulting state contains {summary.Count} files and {summary.Size} of data");
 
@@ -101,8 +99,8 @@ public static class LoadoutManagementVerbs
 
         var flattened = await synchronizer.LoadoutToFlattenedLoadout(loadout.Value);
 
-        foreach (var (path, pair) in flattened.GetAllDescendentFiles())
-            rows.Add(new object[] { pair!.Mod.Name, path });
+        foreach (var item in flattened.GetAllDescendentFiles())
+            rows.Add([item.Item.Value!.Mod.Name, item.GamePath()]);
 
         await renderer.Table(new[] { "Mod", "To" }, rows);
         return 0;

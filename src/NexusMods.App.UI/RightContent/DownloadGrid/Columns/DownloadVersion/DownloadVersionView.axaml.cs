@@ -2,7 +2,7 @@
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 
-namespace NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadVersion;
+namespace NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadVersion;
 
 public partial class DownloadVersionView : ReactiveUserControl<IDownloadVersionViewModel>
 {
@@ -13,7 +13,7 @@ public partial class DownloadVersionView : ReactiveUserControl<IDownloadVersionV
         this.WhenActivated(d =>
         {
             this.WhenAnyValue(vm => vm.ViewModel!.Version)
-                .BindToUi(this, view => view.VersionTextBox.Text)
+                .BindToUi<string, DownloadVersionView, string>(this, view => view.VersionTextBox.Text)
                 .DisposeWith(d);
 
             this.WhenAnyValue(view => view.DataContext)

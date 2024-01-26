@@ -3,7 +3,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Windows.Input;
 using DynamicData.Kernel;
-using NexusMods.Abstractions.Values;
+using NexusMods.Abstractions.Activities;
 using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Paths;
 using ReactiveUI;

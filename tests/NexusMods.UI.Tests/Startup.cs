@@ -1,7 +1,12 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.DataModel.Entities;
+using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Serialization;
+using NexusMods.Activities;
 using NexusMods.App;
-using NexusMods.Common;
+using NexusMods.App.BuildInfo;
+using NexusMods.CrossPlatform;
 using NexusMods.Games.RedEngine;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators.TestHelpers;

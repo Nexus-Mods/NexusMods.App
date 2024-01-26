@@ -1,7 +1,7 @@
 using FluentAssertions;
-using NexusMods.Common;
-using NexusMods.DataModel.Extensions;
-using NexusMods.FileExtractor.StreamFactories;
+using NexusMods.Abstractions.IO.StreamFactories;
+using NexusMods.Extensions.BCL;
+using NexusMods.Extensions.Hashing;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;

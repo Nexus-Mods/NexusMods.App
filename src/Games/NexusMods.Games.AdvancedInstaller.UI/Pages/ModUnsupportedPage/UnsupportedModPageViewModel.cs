@@ -1,6 +1,5 @@
 ﻿using System.Reactive;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.Games.AdvancedInstaller.UI;
 

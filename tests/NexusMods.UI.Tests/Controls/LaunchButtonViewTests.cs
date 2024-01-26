@@ -3,7 +3,7 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using Avalonia.Controls;
 using FluentAssertions;
-using NexusMods.Abstractions.Values;
+using NexusMods.Abstractions.Activities;
 using NexusMods.App.UI.LeftMenu.Items;
 using ReactiveUI;
 
@@ -30,7 +30,7 @@ public class LaunchButtonViewTests : AViewTest<LaunchButtonView, LaunchButtonDes
     public async Task ClickingTheButtonFiresTheCommand()
     {
         var source = new TaskCompletionSource<bool>();
-        
+
 
         ViewModel.Command = ReactiveCommand.Create<Unit, Unit>(_ =>
         {
@@ -70,7 +70,7 @@ public class LaunchButtonViewTests : AViewTest<LaunchButtonView, LaunchButtonDes
             _progressBar!.IsIndeterminate.Should().BeFalse();
             _progressBar!.Value.Should().Be(0.25);
         });
-        
+
 
         ViewModel.Progress = null;
 
@@ -110,7 +110,7 @@ public class LaunchButtonViewTests : AViewTest<LaunchButtonView, LaunchButtonDes
     [Fact]
     public async Task DisablingTheButtonShowsATheProgressBar()
     {
-        
+
         var subject = new Subject<bool>();
         ViewModel.Command = ReactiveCommand.Create(() => { }, subject.StartWith(false));
 

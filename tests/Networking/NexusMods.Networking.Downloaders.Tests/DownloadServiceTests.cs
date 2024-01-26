@@ -2,11 +2,10 @@ using System.Collections.ObjectModel;
 using DynamicData;
 using DynamicData.Kernel;
 using FluentAssertions;
-using NexusMods.Abstractions.Values;
+using NexusMods.Abstractions.Activities;
 using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Networking.Downloaders.Interfaces.Traits;
 using NexusMods.Networking.Downloaders.Tasks.State;
-using NexusMods.Paths;
 
 namespace NexusMods.Networking.Downloaders.Tests;
 

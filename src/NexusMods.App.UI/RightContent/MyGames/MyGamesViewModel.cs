@@ -1,4 +1,4 @@
-using NexusMods.DataModel.Games;
+using NexusMods.Abstractions.Games;
 using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.RightContent.MyGames;

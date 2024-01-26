@@ -1,6 +1,5 @@
-﻿
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.JsonConverters;
+﻿using NexusMods.Abstractions.Serialization.Attributes;
+using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 

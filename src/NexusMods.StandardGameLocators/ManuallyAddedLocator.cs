@@ -1,7 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.Abstractions.Ids;
-using NexusMods.DataModel.Games;
+using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.Installers.DTO;
+using NexusMods.Abstractions.Serialization;
+using NexusMods.Abstractions.Serialization.DataModel;
+using NexusMods.Abstractions.Serialization.DataModel.Ids;
 using NexusMods.Paths;
 
 namespace NexusMods.StandardGameLocators;

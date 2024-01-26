@@ -1,11 +1,7 @@
-using FluentAssertions;
-using NexusMods.DataModel.Abstractions.DTOs;
-using NexusMods.DataModel.ModInstallers;
-using NexusMods.DataModel.Trees;
-using NexusMods.Games.AdvancedInstaller.UI.ModContent;
+using NexusMods.Abstractions.Games.Downloads;
+using NexusMods.Abstractions.Installers.Trees;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
-using NexusMods.Paths.FileTree;
 using NexusMods.Paths.Trees;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Tests.Helpers;
@@ -32,6 +28,6 @@ internal static class AdvancedInstallerTestHelpers
             new() { Hash = Hash.From(12), Size = Size.From(12), Path = "Green Version/data/Textures/textureC.dds" }
         };
 
-        return ModFileTree.Create(fileEntries);
+        return TreeCreator.Create(fileEntries);
     }
 }

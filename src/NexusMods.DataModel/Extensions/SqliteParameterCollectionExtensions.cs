@@ -1,5 +1,5 @@
 ﻿using Microsoft.Data.Sqlite;
-using NexusMods.DataModel.Abstractions.Ids;
+using NexusMods.Abstractions.Serialization.DataModel.Ids;
 
 namespace NexusMods.DataModel.Extensions;
 

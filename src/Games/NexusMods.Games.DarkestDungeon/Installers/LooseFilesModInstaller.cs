@@ -1,12 +1,9 @@
-using Cathei.LinqGen;
-using NexusMods.DataModel.Games;
-using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.ModInstallers;
-using NexusMods.DataModel.Trees;
+using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Installers.DTO;
+using NexusMods.Abstractions.Installers.Trees;
 using NexusMods.Games.DarkestDungeon.Models;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
-using NexusMods.Paths.Trees;
 using NexusMods.Paths.Trees.Traits;
 
 namespace NexusMods.Games.DarkestDungeon.Installers;
@@ -19,13 +16,10 @@ public class LooseFilesModInstaller : IModInstaller
     private static readonly RelativePath ModsFolder = "mods".ToRelativePath();
 
     public async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
-        GameInstallation gameInstallation,
-        LoadoutId loadoutId,
-        ModId baseModId,
-        KeyedBox<RelativePath, ModFileTree> archiveFiles,
+        ModInstallerInfo info,
         CancellationToken cancellationToken = default)
     {
-        var files = archiveFiles
+        var files = info.ArchiveFiles
             .GetFiles()
             .Select(kv => kv.ToStoredFile(
                 new GamePath(LocationId.Game, ModsFolder.Join(kv.Path()))
@@ -36,12 +30,12 @@ public class LooseFilesModInstaller : IModInstaller
         // ReSharper disable once UnusedVariable
         var modProject = new ModProject
         {
-            Title = archiveFiles.Path().TopParent.ToString()
+            Title = info.ArchiveFiles.Path().TopParent.ToString()
         };
 
         return new [] { new ModInstallerResult
         {
-            Id = baseModId,
+            Id = info.BaseModId,
             Files = files.AsEnumerable(),
         }};
     }

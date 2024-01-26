@@ -1,7 +1,7 @@
 ﻿using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Windows.Input;
-using NexusMods.Common;
+using NexusMods.App.BuildInfo;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 

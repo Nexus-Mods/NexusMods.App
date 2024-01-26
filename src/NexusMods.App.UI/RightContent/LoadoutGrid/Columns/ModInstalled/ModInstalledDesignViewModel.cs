@@ -1,5 +1,5 @@
-﻿using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.Loadouts.Cursors;
+﻿using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.Games.DTO;
 using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModInstalled;

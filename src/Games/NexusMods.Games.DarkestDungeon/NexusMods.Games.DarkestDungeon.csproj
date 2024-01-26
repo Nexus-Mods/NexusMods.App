@@ -1,14 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <ItemGroup>
-        <ProjectReference Include="..\..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
         <None Remove="Resources\DarkestDungeon\game_image.jpg" />
         <EmbeddedResource Include="Resources\DarkestDungeon\game_image.jpg" />
         <None Remove="Resources\DarkestDungeon\icon.png" />
         <EmbeddedResource Include="Resources\DarkestDungeon\icon.png" />
+    </ItemGroup>
+
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.Games\NexusMods.Abstractions.Games.csproj" />
+      <ProjectReference Include="..\..\Extensions\NexusMods.Extensions.BCL\NexusMods.Extensions.BCL.csproj" />
     </ItemGroup>
 
 

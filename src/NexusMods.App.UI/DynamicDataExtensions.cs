@@ -1,5 +1,8 @@
 using System.Reactive.Linq;
 using DynamicData;
+using NexusMods.Abstractions.Serialization.DataModel;
+using NexusMods.Abstractions.Serialization.DataModel.Ids;
+using NexusMods.Extensions.DynamicData;
 
 namespace NexusMods.App.UI;
 
@@ -23,5 +26,28 @@ public static class DynamicDataExtensions
                 )
                 .Subscribe(_ => { }, observer.OnError);
         });
+    }
+
+    /// <summary>
+    /// Compares the current collection with the previous collection and returns the changes.
+    /// </summary>
+    /// <param name="colls"></param>
+    /// <typeparam name="TK"></typeparam>
+    /// <typeparam name="TV"></typeparam>
+    /// <returns></returns>
+    public static IObservable<IChangeSet<IId, TK>> ToDiffedChangeSet<TK, TV>(
+            this IObservable<EntityDictionary<TK, TV>> colls) where TK : notnull where TV : Entity
+    {
+        EntityDictionary<TK, TV>? old = null;
+
+        return Observable.Create<IChangeSet<IId, TK>>(observer =>
+        {
+            return colls.Subscribe(coll =>
+            {
+                observer.OnNext(coll.Diff(old ?? EntityDictionary<TK, TV>.Empty(coll.Store)));
+                old = coll;
+            });
+        });
+
     }
 }

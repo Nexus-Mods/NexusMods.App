@@ -3,12 +3,13 @@ using System.Reactive.Subjects;
 using System.Text.Json;
 using BitFaster.Caching.Lru;
 using Microsoft.Data.Sqlite;
-using NexusMods.DataModel.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.ObjectPool;
+using NexusMods.Abstractions.Serialization;
+using NexusMods.Abstractions.Serialization.DataModel;
+using NexusMods.Abstractions.Serialization.DataModel.Ids;
 using NexusMods.DataModel.Attributes;
-using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Extensions;
 using NexusMods.Hashing.xxHash64;
 

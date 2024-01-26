@@ -1,4 +1,4 @@
-using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
+using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.Games.MountAndBlade2Bannerlord.Models;
 using NexusMods.Games.MountAndBlade2Bannerlord.Sorters;
 

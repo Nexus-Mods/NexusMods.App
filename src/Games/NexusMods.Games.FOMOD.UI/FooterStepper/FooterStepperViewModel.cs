@@ -1,7 +1,7 @@
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using NexusMods.Abstractions.Values;
+using NexusMods.Abstractions.Activities;
 using NexusMods.App.UI;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;

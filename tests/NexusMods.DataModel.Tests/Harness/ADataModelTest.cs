@@ -2,16 +2,19 @@ using System.IO.Compression;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using NexusMods.Common;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.ArchiveMetaData;
-using NexusMods.DataModel.Games;
+using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Games.ArchiveMetadata;
+using NexusMods.Abstractions.Games.Loadouts;
+using NexusMods.Abstractions.IO;
+using NexusMods.Abstractions.Serialization;
 using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
+using DownloadId = NexusMods.Abstractions.Games.Downloads.DownloadId;
+using IGame = NexusMods.Abstractions.Games.IGame;
 
 // ReSharper disable StaticMemberInGenericType
 

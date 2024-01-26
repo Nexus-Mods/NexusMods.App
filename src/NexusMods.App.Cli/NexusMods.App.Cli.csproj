@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <!-- NuGet Package Shared Details -->
+    <PropertyGroup>
+      <RootNamespace>NexusMods.CLI</RootNamespace>
+    </PropertyGroup>
+    <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+
+    <ItemGroup>
+        <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Cli\NexusMods.Abstractions.Cli.csproj" />
+        <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Games\NexusMods.Abstractions.Games.csproj" />
+        <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.HttpDownloader\NexusMods.Abstractions.HttpDownloader.csproj" />
+        <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Messaging\NexusMods.Abstractions.Messaging.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="NexusMods.Paths" />
+        <PackageReference Include="NexusMods.ProxyConsole.Abstractions" />
+    </ItemGroup>
+
+</Project>

@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Activities;
-using NexusMods.Common;
-using NexusMods.DataModel.Activities;
+using NexusMods.Abstractions.HttpDownloader;
+using NexusMods.Extensions.Hashing;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 

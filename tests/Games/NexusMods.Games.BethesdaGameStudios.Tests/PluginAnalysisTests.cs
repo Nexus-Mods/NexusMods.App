@@ -1,5 +1,4 @@
 using FluentAssertions;
-using NexusMods.DataModel.Abstractions;
 using NexusMods.Games.TestFramework;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
@@ -7,7 +6,7 @@ using NexusMods.Paths.Extensions;
 namespace NexusMods.Games.BethesdaGameStudios.Tests;
 
 [Trait("RequiresGameInstalls", "True")] // Technically this doesn't require the game, but the DI system does for the other tests
-public class PluginAnalysisTests : AGameTest<SkyrimSpecialEdition>
+public class PluginAnalysisTests : AGameTest<SkyrimSpecialEdition.SkyrimSpecialEdition>
 {
     private readonly AbsolutePath _plugin1;
     private readonly AbsolutePath _plugin2;

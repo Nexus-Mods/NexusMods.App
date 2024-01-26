@@ -2,9 +2,10 @@
     <PropertyGroup>
         <XunitStartupAssembly>NexusMods.Networking.HttpDownloader.Tests</XunitStartupAssembly>
     </PropertyGroup>
-    
+
     <ItemGroup>
         <ProjectReference Include="..\..\..\src\Networking\NexusMods.Networking.HttpDownloader\NexusMods.Networking.HttpDownloader.csproj" />
-        <ProjectReference Include="..\..\..\src\NexusMods.DataModel\NexusMods.DataModel.csproj" />
+        <ProjectReference Include="..\..\..\src\NexusMods.Activities\NexusMods.Activities.csproj" />
+        <ProjectReference Include="..\..\..\src\NexusMods.App.BuildInfo\NexusMods.App.BuildInfo.csproj" />
     </ItemGroup>
 </Project>

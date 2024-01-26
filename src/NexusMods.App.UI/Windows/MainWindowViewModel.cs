@@ -1,6 +1,8 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.Games.Downloads;
+using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.App.UI.Controls.DevelopmentBuildBanner;
 using NexusMods.App.UI.Controls.Spine;
 using NexusMods.App.UI.Controls.TopBar;
@@ -8,9 +10,6 @@ using NexusMods.App.UI.LeftMenu;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Overlays.MetricsOptIn;
 using NexusMods.App.UI.Overlays.Updater;
-using NexusMods.DataModel;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.Loadouts;
 using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Networking.Downloaders.Interfaces.Traits;
 using NexusMods.Paths;
@@ -23,7 +22,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
 {
     private readonly IOverlayController _overlayController;
     private readonly IArchiveInstaller _archiveInstaller;
-    private LoadoutRegistry _registry;
+    private ILoadoutRegistry _registry;
 
     public MainWindowViewModel(
         ILogger<MainWindowViewModel> logger,
@@ -36,7 +35,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
         IArchiveInstaller archiveInstaller,
         IMetricsOptInViewModel metricsOptInViewModel,
         IUpdaterViewModel updaterViewModel,
-        LoadoutRegistry registry)
+        ILoadoutRegistry registry)
     {
         TopBar = topBarViewModel;
         Spine = spineViewModel;

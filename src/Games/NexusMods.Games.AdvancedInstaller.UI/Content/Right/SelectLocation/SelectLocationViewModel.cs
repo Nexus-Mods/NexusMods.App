@@ -2,9 +2,10 @@
 using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Controls.Templates;
 using DynamicData;
+using NexusMods.Abstractions.Games.Loadouts;
+using NexusMods.Abstractions.Installers.DTO;
+using NexusMods.Abstractions.Installers.Info;
 using NexusMods.App.UI.Extensions;
-using NexusMods.DataModel.Games;
-using NexusMods.DataModel.Loadouts;
 using NexusMods.Games.AdvancedInstaller.UI.Resources;
 using NexusMods.Paths;
 
@@ -30,7 +31,7 @@ public class SelectLocationViewModel : AViewModel<ISelectLocationViewModel>,
     /// <param name="register">The game locations register to obtain the locations.</param>
     /// <param name="loadout">The loadout, to obtain the loadout folder structure. Can be null.</param>
     /// <param name="gameName">The name of the Game, to show in the ui.</param>
-    public SelectLocationViewModel(GameLocationsRegister register, Loadout? loadout, string gameName)
+    public SelectLocationViewModel(IGameLocationsRegister register, Loadout? loadout, string gameName)
     {
         SuggestedAreaSubtitle = string.Format(Language.SelectLocationViewModel_SuggestedLocationsSubtitle, gameName);
 
@@ -86,7 +87,7 @@ public class SelectLocationViewModel : AViewModel<ISelectLocationViewModel>,
     /// </summary>
     /// <param name="register"></param>
     /// <returns></returns>
-    private static IEnumerable<ISuggestedEntryViewModel> CreateSuggestedEntries(GameLocationsRegister register)
+    private static IEnumerable<ISuggestedEntryViewModel> CreateSuggestedEntries(IGameLocationsRegister register)
     {
         List<ISuggestedEntryViewModel> suggestedEntries = new();
 
@@ -121,7 +122,7 @@ public class SelectLocationViewModel : AViewModel<ISelectLocationViewModel>,
     /// <param name="register">The game locations register</param>
     /// <param name="loadout">The loadout, can be null.</param>
     /// <returns>The list of created tree entries that need to be added to the cache.</returns>
-    private static List<ISelectableTreeEntryViewModel> CreateTreeEntries(GameLocationsRegister register,
+    private static List<ISelectableTreeEntryViewModel> CreateTreeEntries(IGameLocationsRegister register,
         Loadout? loadout)
     {
         // Initial population of the tree based on LocationIds

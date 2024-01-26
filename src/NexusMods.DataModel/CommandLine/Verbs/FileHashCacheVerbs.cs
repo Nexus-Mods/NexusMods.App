@@ -1,6 +1,6 @@
 using System.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.CLI;
+using NexusMods.Abstractions.Cli;
 using NexusMods.Paths;
 using NexusMods.ProxyConsole.Abstractions;
 using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;

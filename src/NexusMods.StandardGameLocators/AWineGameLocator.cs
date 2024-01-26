@@ -1,8 +1,9 @@
 using GameFinder.Wine;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.DataModel.Games;
-using IGame = NexusMods.DataModel.Games.IGame;
+using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Games.DTO;
+using IGame = NexusMods.Abstractions.Games.IGame;
 
 namespace NexusMods.StandardGameLocators;
 

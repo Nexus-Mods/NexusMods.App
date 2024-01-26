@@ -4,7 +4,7 @@ using NexusMods.App.UI.RightContent.Downloads.ViewModels;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
-namespace NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadName;
+namespace NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadName;
 
 public class DownloadNameDesignViewModel : AViewModel<IDownloadNameViewModel>, IDownloadNameViewModel, IComparableColumn<IDownloadTaskViewModel>
 {

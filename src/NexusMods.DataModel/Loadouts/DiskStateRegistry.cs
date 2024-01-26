@@ -1,8 +1,10 @@
-﻿using System.IO.Compression;
+using System.IO.Compression;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.LoadoutSynchronizer;
+using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.Games.Loadouts;
+using NexusMods.Abstractions.Serialization;
+using NexusMods.Abstractions.Serialization.DataModel;
 using Reloaded.Memory.Extensions;
 
 namespace NexusMods.DataModel.Loadouts;
@@ -10,7 +12,7 @@ namespace NexusMods.DataModel.Loadouts;
 /// <summary>
 /// A registry for managing disk states created by ingesting/applying loadouts
 /// </summary>
-public class DiskStateRegistry
+public class DiskStateRegistry : IDiskStateRegistry
 {
     private readonly ILogger<DiskStateRegistry> _logger;
     private readonly IDataStore _dataStore;

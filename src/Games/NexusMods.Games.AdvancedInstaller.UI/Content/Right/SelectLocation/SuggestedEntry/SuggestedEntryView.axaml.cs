@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using System.Reactive;
 using System.Reactive.Disposables;
 using Avalonia.ReactiveUI;
 using ReactiveUI;

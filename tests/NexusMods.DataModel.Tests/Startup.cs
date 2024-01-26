@@ -1,12 +1,16 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Common;
-using NexusMods.Common.GuidedInstaller;
-using NexusMods.DataModel.Diagnostics.Emitters;
-using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
+using NexusMods.Abstractions.DataModel.Entities;
+using NexusMods.Abstractions.Diagnostics.Emitters;
+using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.GuidedInstallers;
+using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Serialization;
+using NexusMods.Abstractions.Serialization.ExpressionGenerator;
+using NexusMods.Activities;
+using NexusMods.App.BuildInfo;
 using NexusMods.DataModel.Tests.Diagnostics;
 using NexusMods.FileExtractor;
-using NexusMods.FileExtractor.Extractors;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators;
 using NexusMods.StandardGameLocators.TestHelpers;
@@ -28,9 +32,14 @@ public class Startup
             .AddFileSystem()
             .AddSingleton(new TemporaryFileManager(FileSystem.Shared, prefix))
             .AddDataModel(new DataModelSettings(prefix))
+            .AddGames()
             .AddStandardGameLocators(false)
             .AddFileExtractors()
             .AddStubbedGameLocators()
+            .AddDataModelEntities()
+            .AddDataModelBaseEntities()
+            .AddActivityMonitor()
+            .AddInstallerTypes()
             .AddSingleton<ITypeFinder>(_ => new AssemblyTypeFinder(typeof(Startup).Assembly))
 
             // Diagnostics

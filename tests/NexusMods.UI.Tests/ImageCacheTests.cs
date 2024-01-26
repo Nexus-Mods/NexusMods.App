@@ -1,9 +1,9 @@
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.GuidedInstallers;
+using NexusMods.Abstractions.IO;
+using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.App.UI;
-using NexusMods.Common.GuidedInstaller;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.FileExtractor.StreamFactories;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;

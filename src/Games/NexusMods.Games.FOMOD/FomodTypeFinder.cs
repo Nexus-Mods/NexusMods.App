@@ -1,5 +1,5 @@
 ﻿using JetBrains.Annotations;
-using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
+using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 
 namespace NexusMods.Games.FOMOD;
 

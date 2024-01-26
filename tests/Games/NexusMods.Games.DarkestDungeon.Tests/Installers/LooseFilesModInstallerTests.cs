@@ -1,10 +1,8 @@
 using FluentAssertions;
-using NexusMods.Common;
-using NexusMods.DataModel.Loadouts.ModFiles;
+using NexusMods.Abstractions.Installers.DTO.Files;
+using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Games.DarkestDungeon.Installers;
 using NexusMods.Games.TestFramework;
-using NexusMods.Hashing.xxHash64;
-using NexusMods.Networking.NexusWebApi.Types;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.DarkestDungeon.Tests.Installers;

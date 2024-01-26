@@ -1,10 +1,9 @@
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.JsonConverters;
+using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.BethesdaGameStudios;
 
-[JsonName("BethesdaGameStudios.FileAnalysisData")]
+[JsonName("NexusMods.Games.BethesdaGameStudios.FileAnalysisData")]
 public class PluginAnalysisData
 {
     /// <summary>

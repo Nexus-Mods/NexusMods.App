@@ -1,7 +1,7 @@
 using AutoFixture.Xunit2;
 using FluentAssertions;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.JsonConverters;
+using NexusMods.Abstractions.Serialization;
+using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Networking.Downloaders.Interfaces.Traits;
 using NexusMods.Networking.Downloaders.Tasks.State;

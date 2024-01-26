@@ -12,10 +12,15 @@ using GameFinder.StoreHandlers.Xbox;
 using GameFinder.Wine;
 using GameFinder.Wine.Bottles;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.DataModel.CommandLine.Verbs;
-using NexusMods.DataModel.Games;
-using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
+using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.Games.Stores.EGS;
+using NexusMods.Abstractions.Games.Stores.GOG;
+using NexusMods.Abstractions.Games.Stores.Origin;
+using NexusMods.Abstractions.Installers.DTO;
+using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.Paths;
+using IGame = NexusMods.Abstractions.Games.IGame;
 
 namespace NexusMods.StandardGameLocators;
 
@@ -116,7 +121,7 @@ public static class Services
         Func<TFoundGame, TRequestedGame, bool> matches,
         Func<TFoundGame, GameLocatorResult> createResult)
         where TFoundGame : GameFinder.Common.IGame
-        where TRequestedGame : DataModel.Games.IGame
+        where TRequestedGame : IGame
     {
         return (foundGame, requestedGame) =>
         {

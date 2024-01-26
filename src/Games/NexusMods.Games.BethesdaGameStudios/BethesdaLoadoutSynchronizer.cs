@@ -1,9 +1,7 @@
-
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.Games;
-using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.Loadouts.Mods;
-using NexusMods.DataModel.LoadoutSynchronizer;
+using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Games.Loadouts;
+using NexusMods.Abstractions.Serialization.DataModel;
 
 namespace NexusMods.Games.BethesdaGameStudios;
 

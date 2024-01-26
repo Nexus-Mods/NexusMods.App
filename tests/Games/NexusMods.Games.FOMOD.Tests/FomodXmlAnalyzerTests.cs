@@ -1,11 +1,6 @@
-﻿using System.Runtime.CompilerServices;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.ModInstallers;
 using NexusMods.Paths;
-using NexusMods.Paths.FileTree;
 using Xunit;
 
 namespace NexusMods.Games.FOMOD.Tests;

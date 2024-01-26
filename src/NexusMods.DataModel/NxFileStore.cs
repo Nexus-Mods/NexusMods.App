@@ -2,6 +2,10 @@
 using System.Buffers.Binary;
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.IO;
+using NexusMods.Abstractions.Serialization;
+using NexusMods.Abstractions.Serialization.DataModel;
+using NexusMods.Abstractions.Serialization.DataModel.Ids;
 using NexusMods.Archives.Nx.FileProviders;
 using NexusMods.Archives.Nx.Headers;
 using NexusMods.Archives.Nx.Headers.Managed;
@@ -10,13 +14,10 @@ using NexusMods.Archives.Nx.Interfaces;
 using NexusMods.Archives.Nx.Packing;
 using NexusMods.Archives.Nx.Structs;
 using NexusMods.Archives.Nx.Utilities;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.ChunkedStreams;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
-using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Utilities;
 using Reloaded.Memory.Extensions;
 

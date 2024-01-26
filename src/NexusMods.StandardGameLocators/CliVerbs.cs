@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.CLI;
-using NexusMods.DataModel.Games;
+using NexusMods.Abstractions.Cli;
+using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Installers.DTO;
 using NexusMods.Paths;
 using NexusMods.ProxyConsole.Abstractions;
 using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;

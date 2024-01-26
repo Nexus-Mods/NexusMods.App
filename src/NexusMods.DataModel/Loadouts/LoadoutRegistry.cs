@@ -3,20 +3,22 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using DynamicData;
 using Microsoft.Extensions.Logging;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.Abstractions.Ids;
+using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.Games.Loadouts;
+using NexusMods.Abstractions.Games.Loadouts.Visitors;
+using NexusMods.Abstractions.Serialization;
+using NexusMods.Abstractions.Serialization.DataModel;
+using NexusMods.Abstractions.Serialization.DataModel.Ids;
 using NexusMods.DataModel.Extensions;
-using NexusMods.DataModel.Games;
-using NexusMods.DataModel.Loadouts.Cursors;
-using NexusMods.DataModel.Loadouts.Markers;
-using NexusMods.DataModel.Loadouts.Mods;
 
 namespace NexusMods.DataModel.Loadouts;
 
 /// <summary>
 /// Provides the main entry point for listing, modifying and updating loadouts.
 /// </summary>
-public class LoadoutRegistry : IDisposable
+public class LoadoutRegistry : IDisposable, ILoadoutRegistry
 {
     private bool _isDisposed;
 

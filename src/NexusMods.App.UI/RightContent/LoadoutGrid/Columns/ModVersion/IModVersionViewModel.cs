@@ -1,5 +1,5 @@
-﻿using NexusMods.App.UI.Controls.DataGrid;
-using NexusMods.DataModel.Loadouts.Cursors;
+﻿using NexusMods.Abstractions.Games.DTO;
+using NexusMods.App.UI.Controls.DataGrid;
 
 namespace NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModVersion;
 

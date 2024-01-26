@@ -1,7 +1,6 @@
 ﻿using Avalonia.Controls;
 using FluentAssertions;
 using NexusMods.App.UI.Overlays.MetricsOptIn;
-using ReactiveUI;
 
 namespace NexusMods.UI.Tests.Overlays;
 

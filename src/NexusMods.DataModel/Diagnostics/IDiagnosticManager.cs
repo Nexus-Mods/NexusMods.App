@@ -1,7 +1,8 @@
 using DynamicData;
 using JetBrains.Annotations;
-using NexusMods.DataModel.Abstractions.Ids;
-using NexusMods.DataModel.Loadouts;
+using NexusMods.Abstractions.Diagnostics;
+using NexusMods.Abstractions.Games.Loadouts;
+using NexusMods.Abstractions.Serialization.DataModel.Ids;
 
 namespace NexusMods.DataModel.Diagnostics;
 

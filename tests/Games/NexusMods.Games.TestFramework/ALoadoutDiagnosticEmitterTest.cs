@@ -1,9 +1,8 @@
 using FluentAssertions;
-using NexusMods.DataModel.Diagnostics;
-using NexusMods.DataModel.Diagnostics.Emitters;
-using NexusMods.DataModel.Extensions;
-using NexusMods.DataModel.Games;
-using NexusMods.DataModel.Loadouts;
+using NexusMods.Abstractions.Diagnostics;
+using NexusMods.Abstractions.Diagnostics.Emitters;
+using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Games.Loadouts;
 
 namespace NexusMods.Games.TestFramework;
 

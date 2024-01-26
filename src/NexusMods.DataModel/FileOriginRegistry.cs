@@ -1,11 +1,13 @@
-﻿using DynamicData;
-using Microsoft.Extensions.Logging;
-using NexusMods.Common;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.Abstractions.DTOs;
-using NexusMods.DataModel.Abstractions.Ids;
-using NexusMods.DataModel.ArchiveMetaData;
-using NexusMods.FileExtractor.StreamFactories;
+﻿using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.Games.ArchiveMetadata;
+using NexusMods.Abstractions.Games.Downloads;
+using NexusMods.Abstractions.Games.Loadouts;
+using NexusMods.Abstractions.IO;
+using NexusMods.Abstractions.IO.StreamFactories;
+using NexusMods.Abstractions.Serialization;
+using NexusMods.Abstractions.Serialization.DataModel;
+using NexusMods.Abstractions.Serialization.DataModel.Ids;
+using NexusMods.Extensions.Hashing;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 

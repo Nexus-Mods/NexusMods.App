@@ -1,12 +1,13 @@
 using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using Avalonia.Media.Imaging;
-using Avalonia.Platform;
 using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Games.Loadouts;
+using NexusMods.Abstractions.Serialization;
 using NexusMods.App.UI.Controls.Spine.Buttons.Download;
 using NexusMods.App.UI.Controls.Spine.Buttons.Icon;
 using NexusMods.App.UI.Controls.Spine.Buttons.Image;
@@ -16,9 +17,6 @@ using NexusMods.App.UI.LeftMenu.Game;
 using NexusMods.App.UI.LeftMenu.Home;
 using NexusMods.App.UI.Routing;
 using NexusMods.App.UI.Routing.Messages;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.Games;
-using NexusMods.DataModel.Loadouts;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -50,7 +48,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
     public IObservable<SpineButtonAction> Actions => _actions;
 
     public SpineViewModel(ILogger<SpineViewModel> logger,
-        LoadoutRegistry loadoutRegistry,
+        ILoadoutRegistry loadoutRegistry,
         IDataStore dataStore,
         IIconButtonViewModel addButtonViewModel,
         IIconButtonViewModel homeButtonViewModel,

@@ -1,24 +1,16 @@
 using System.Collections.Concurrent;
-using NexusMods.DataModel.Sorting.Rules;
+using NexusMods.Abstractions.DataModel.Entities.Sorting;
+using NexusMods.Abstractions.Games.Loadouts.Sorting;
 
 namespace NexusMods.DataModel.Sorting;
 
 /// <summary>
 /// Utility class for sorting mods according to a set of defined rules.
 /// </summary>
-public class Sorter
+public class Sorter : ISorter
 {
-    /// <summary>
-    /// Sorts a collection of user items.
-    /// </summary>
-    /// <param name="items">The items to process.</param>
-    /// <param name="idSelector">Function that extracts an individual id from an item.</param>
-    /// <param name="ruleFn">Function that pulls a list of rules for a specific item.</param>
-    /// <param name="comparer">[Optional] Comparer for items.</param>
-    /// <typeparam name="TItem">The type of item used.</typeparam>
-    /// <typeparam name="TId">The type of ID used for the item.</typeparam>
-    /// <returns>Sorted collection of items.</returns>
-    public static IEnumerable<TItem> SortWithEnumerable<TItem, TId>(IEnumerable<TItem> items,
+    /// <inheritdoc/>
+    public IEnumerable<TItem> SortWithEnumerable<TItem, TId>(IEnumerable<TItem> items,
         Func<TItem, TId> idSelector,
         Func<TItem, IReadOnlyList<ISortRule<TItem, TId>>> ruleFn,
         IComparer<TId>? comparer = null)
@@ -38,17 +30,8 @@ public class Sorter
         return Sort(items.ToArray(), idSelector, ruleFn, comparer);
     }
 
-    /// <summary>
-    /// Sorts a collection of user items.
-    /// </summary>
-    /// <param name="items">The items to process.</param>
-    /// <param name="idSelector">Function that extracts an individual id from an item.</param>
-    /// <param name="ruleFn">Function that pulls a list of rules for a specific item.</param>
-    /// <param name="comparer">[Optional] Comparer for items.</param>
-    /// <typeparam name="TItem">The type of item used.</typeparam>
-    /// <typeparam name="TId">The type of ID used for the item.</typeparam>
-    /// <returns>Sorted collection of items.</returns>
-    public static IEnumerable<TItem> Sort<TItem, TId>(List<TItem> items,
+    /// <inheritdoc/>
+    public IEnumerable<TItem> Sort<TItem, TId>(List<TItem> items,
         Func<TItem, TId> idSelector,
         Func<TItem, IReadOnlyList<ISortRule<TItem, TId>>> ruleFn,
         IComparer<TId>? comparer = null)
@@ -57,18 +40,8 @@ public class Sorter
         return Sort<TItem, TId, List<TItem>>(items, idSelector, ruleFn, comparer);
     }
 
-    /// <summary>
-    /// Sorts a collection of user items.
-    /// </summary>
-    /// <param name="items">The items to process.</param>
-    /// <param name="idSelector">Function that extracts an individual id from an item.</param>
-    /// <param name="ruleFn">Function that pulls a list of rules for a specific item.</param>
-    /// <param name="comparer">[Optional] Comparer for items.</param>
-    /// <typeparam name="TItem">The type of item used.</typeparam>
-    /// <typeparam name="TId">The type of ID used for the item.</typeparam>
-    /// <typeparam name="TCollection">Type of collection used.</typeparam>
-    /// <returns>Sorted collection of items.</returns>
-    public static IEnumerable<TItem> Sort<TItem, TId, TCollection>(TCollection items,
+    /// <inheritdoc/>
+    public IEnumerable<TItem> Sort<TItem, TId, TCollection>(TCollection items,
         Func<TItem, TId> idSelector,
         Func<TItem, IReadOnlyList<ISortRule<TItem, TId>>> ruleFn,
         IComparer<TId>? comparer = null)

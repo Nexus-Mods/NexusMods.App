@@ -1,7 +1,7 @@
 ﻿using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.RightContent.Downloads.ViewModels;
 
-namespace NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadVersion;
+namespace NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadVersion;
 
 /// <summary>
 /// Displays the version of a mod.

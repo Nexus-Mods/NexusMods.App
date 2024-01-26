@@ -1,17 +1,11 @@
-﻿using System.Reactive.Concurrency;
+using System.Reactive.Concurrency;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.ReactiveUI;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.DataModel.Games;
-using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.Loadouts.Mods;
-using NexusMods.DataModel.ModInstallers;
-using NexusMods.DataModel.Trees;
+using NexusMods.Abstractions.Games.Loadouts;
+using NexusMods.Abstractions.Installers;
 using NexusMods.Games.AdvancedInstaller.UI.Resources;
-using NexusMods.Paths;
-using NexusMods.Paths.FileTree;
-using NexusMods.Paths.Trees;
 
 namespace NexusMods.Games.AdvancedInstaller.UI;
 
@@ -21,7 +15,7 @@ namespace NexusMods.Games.AdvancedInstaller.UI;
 // ReSharper disable once InconsistentNaming
 public class AdvancedManualInstallerUI : IAdvancedInstallerHandler
 {
-    private readonly Lazy<LoadoutRegistry> _loadoutRegistry;
+    private readonly Lazy<ILoadoutRegistry> _loadoutRegistry;
 
     /// <summary>
     /// Construct the UI handler for the Advanced Manual Installer.
@@ -30,30 +24,19 @@ public class AdvancedManualInstallerUI : IAdvancedInstallerHandler
     public AdvancedManualInstallerUI(IServiceProvider provider)
     {
         // Delay to avoid circular dependency.
-        _loadoutRegistry = new Lazy<LoadoutRegistry>(provider.GetRequiredService<LoadoutRegistry>);
+        _loadoutRegistry = new Lazy<ILoadoutRegistry>(provider.GetRequiredService<ILoadoutRegistry>);
     }
 
     /// <InheritDoc/>
     public async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
-        GameInstallation gameInstallation,
-        LoadoutId loadoutId,
-        ModId baseModId,
-        KeyedBox<RelativePath, ModFileTree> archiveFiles,
+        ModInstallerInfo info,
         CancellationToken cancellationToken = default)
     {
         // Get default name of the mod for UI purposes.
-        Mod? mod = null;
-        if (loadoutId != LoadoutId.DefaultValue)
-        {
-            var loadout = _loadoutRegistry.Value.Get(loadoutId);
-            loadout?.Mods.TryGetValue(baseModId, out mod);
-        }
-
-        var modName = mod?.Name ?? Language.AdvancedInstaller_Manual_Mod;
-
+        var modName = info.ModName ?? Language.AdvancedInstaller_Manual_Mod;
 
         // Note: This code is effectively a stub.
-        var (shouldInstall, deploymentData) = await GetDeploymentDataAsync(gameInstallation, modName, archiveFiles);
+        var (shouldInstall, deploymentData) = await GetDeploymentDataAsync(info, modName);
 
         if (!shouldInstall)
             return Array.Empty<ModInstallerResult>();
@@ -62,21 +45,17 @@ public class AdvancedManualInstallerUI : IAdvancedInstallerHandler
         {
             new ModInstallerResult
             {
-                Id = baseModId,
-                Files = deploymentData.EmitOperations(archiveFiles)
+                Id = info.BaseModId,
+                Files = deploymentData.EmitOperations(info.ArchiveFiles)
             }
         };
     }
 
 
     private async Task<(bool shouldInstall, DeploymentData data)> GetDeploymentDataAsync(
-        GameInstallation gameInstallation, string modName,
-        KeyedBox<RelativePath, ModFileTree> archiveFiles)
+        ModInstallerInfo info, string modName)
     {
-        var installerViewModel =
-            new AdvancedInstallerWindowViewModel(modName, archiveFiles, gameInstallation.LocationsRegister,
-                gameInstallation.Game.Name);
-
+        var installerViewModel = new AdvancedInstallerWindowViewModel(modName, info.ArchiveFiles, info.Locations, info.GameName);
         await ShowAdvancedInstallerDialog(installerViewModel);
 
         return (installerViewModel.AdvancedInstallerVM.ShouldInstall,

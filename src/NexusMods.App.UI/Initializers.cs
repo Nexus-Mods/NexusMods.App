@@ -7,11 +7,12 @@ using Avalonia;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.App.UI.LeftMenu;
 using NexusMods.App.UI.LeftMenu.Home;
 using NexusMods.App.UI.RightContent;
-using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.Loadouts.Cursors;
 using ReactiveUI;
 // ReSharper disable InconsistentNaming
 

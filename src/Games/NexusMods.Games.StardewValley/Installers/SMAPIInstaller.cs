@@ -1,26 +1,17 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Cathei.LinqGen;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Common;
-using NexusMods.DataModel;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.ArchiveContents;
-using NexusMods.DataModel.ArchiveMetaData;
-using NexusMods.DataModel.Games;
-using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.Loadouts.ModFiles;
-using NexusMods.DataModel.ModInstallers;
-using NexusMods.DataModel.Trees;
-using NexusMods.FileExtractor.FileSignatures;
-using NexusMods.Hashing.xxHash64;
+using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Games.ArchiveMetadata;
+using NexusMods.Abstractions.Games.Downloads;
+using NexusMods.Abstractions.Games.Loadouts;
+using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Installers.DTO;
+using NexusMods.Abstractions.Installers.DTO.Files;
+using NexusMods.Abstractions.Installers.Trees;
+using NexusMods.Abstractions.Serialization;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
-using NexusMods.Paths.FileTree;
 using NexusMods.Paths.Trees;
 using NexusMods.Paths.Trees.Traits;
 
@@ -41,10 +32,10 @@ public class SMAPIInstaller : AModInstaller
     private static readonly RelativePath MacOSFolder = "macOS".ToRelativePath();
 
     private readonly IOSInformation _osInformation;
-    private readonly FileHashCache _fileHashCache;
+    private readonly IFileHashCache _fileHashCache;
     private readonly IFileOriginRegistry _fileOriginRegistry;
 
-    private SMAPIInstaller(IOSInformation osInformation, FileHashCache fileHashCache, IFileOriginRegistry fileOriginRegistry, IServiceProvider serviceProvider)
+    private SMAPIInstaller(IOSInformation osInformation, IFileHashCache fileHashCache, IFileOriginRegistry fileOriginRegistry, IServiceProvider serviceProvider)
         : base(serviceProvider)
     {
         _osInformation = osInformation;
@@ -72,15 +63,12 @@ public class SMAPIInstaller : AModInstaller
     }
 
     public override async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
-        GameInstallation gameInstallation,
-        LoadoutId loadoutId,
-        ModId baseModId,
-        KeyedBox<RelativePath, ModFileTree> archiveFiles,
+        ModInstallerInfo info,
         CancellationToken cancellationToken = default)
     {
         var modFiles = new List<AModFile>();
 
-        var installDataFiles = GetInstallDataFiles(archiveFiles);
+        var installDataFiles = GetInstallDataFiles(info.ArchiveFiles);
         if (installDataFiles.Length != 3)
             return NoResults;
 
@@ -91,7 +79,7 @@ public class SMAPIInstaller : AModInstaller
             onOSX: (ref KeyedBox<RelativePath, ModFileTree>[] dataFiles) => dataFiles.First(kv => kv.Path().Parent.FileName.Equals("macOS"))
         );
 
-        var found = _fileOriginRegistry.GetByHash(installDataFile.Item!.Hash).ToArray();
+        var found = _fileOriginRegistry.GetByHash(installDataFile.Item.Hash).ToArray();
         DownloadId downloadId;
         if (!found.Any())
             downloadId = await RegisterDataFile(installDataFile, cancellationToken);
@@ -100,12 +88,13 @@ public class SMAPIInstaller : AModInstaller
             downloadId = found.First();
         }
 
-        var gameFolderPath = gameInstallation.LocationsRegister[LocationId.Game];
+        var gameFolderPath = info.Locations[LocationId.Game];
         var archiveContents = (await _fileOriginRegistry.Get(downloadId)).GetFileTree();
 
         // TODO: install.dat is an archive inside an archive see https://github.com/Nexus-Mods/NexusMods.App/issues/244
         // the basicFiles have to be extracted from the nested archive and put inside the game folder
         // https://github.com/Pathoschild/SMAPI/blob/9763bc7484e29cbc9e7f37c61121d794e6720e75/src/SMAPI.Installer/InteractiveInstaller.cs#L380-L384
+        /*
         var basicFiles = archiveContents.EnumerateChildrenBfs()
             .Where(kv => !kv.Value.Item.Path.Equals("unix-launcher.sh")).ToArray();
 
@@ -118,7 +107,7 @@ public class SMAPIInstaller : AModInstaller
 
             var gameLauncherScriptFilePath = gameFolderPath.Combine("StardewValley");
         }
-
+        */
         // TODO: for Xbox Game Pass: replace "Stardew Valley.exe" with "StardewModdingAPI.exe"
 
         // copy "Stardew Valley.deps.json" to "StardewModdingAPI.deps.json"
@@ -132,14 +121,13 @@ public class SMAPIInstaller : AModInstaller
             Hash = gameDepsFileCache.Hash,
             Size = gameDepsFileCache.Size,
             Id = ModFileId.NewId(),
-            Installation = gameInstallation,
             To = new GamePath(LocationId.Game, "StardewModdingAPI.deps.json")
         });
 
         // TODO: consider adding Name and Version
         return new [] { new ModInstallerResult
         {
-            Id = baseModId,
+            Id = info.BaseModId,
             Files = modFiles
         }};
     }
@@ -153,7 +141,7 @@ public class SMAPIInstaller : AModInstaller
     {
         return new SMAPIInstaller(
             serviceProvider.GetRequiredService<IOSInformation>(),
-            serviceProvider.GetRequiredService<FileHashCache>(),
+            serviceProvider.GetRequiredService<IFileHashCache>(),
             serviceProvider.GetRequiredService<IFileOriginRegistry>(),
             serviceProvider
         );

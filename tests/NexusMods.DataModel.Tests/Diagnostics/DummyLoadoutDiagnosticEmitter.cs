@@ -1,7 +1,7 @@
-using NexusMods.DataModel.Diagnostics;
-using NexusMods.DataModel.Diagnostics.Emitters;
-using NexusMods.DataModel.Diagnostics.References;
-using NexusMods.DataModel.Loadouts;
+using NexusMods.Abstractions.Diagnostics;
+using NexusMods.Abstractions.Diagnostics.Emitters;
+using NexusMods.Abstractions.Diagnostics.References;
+using NexusMods.Abstractions.Games.Loadouts;
 
 namespace NexusMods.DataModel.Tests.Diagnostics;
 

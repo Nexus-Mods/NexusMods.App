@@ -1,6 +1,6 @@
 ﻿using Microsoft.Data.Sqlite;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.Abstractions.Ids;
+using NexusMods.Abstractions.Serialization.DataModel;
+using NexusMods.Abstractions.Serialization.DataModel.Ids;
 using SQLitePCL;
 
 namespace NexusMods.DataModel.Extensions;

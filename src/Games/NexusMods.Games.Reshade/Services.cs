@@ -1,5 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.DataModel.ModInstallers;
+using NexusMods.Abstractions.Installers;
 
 namespace NexusMods.Games.Reshade;
 

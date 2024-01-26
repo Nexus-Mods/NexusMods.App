@@ -1,9 +1,11 @@
-﻿using NexusMods.Common;
-using NexusMods.DataModel.Games;
-using NexusMods.FileExtractor.StreamFactories;
+﻿using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.Games.Stores.Steam;
+using NexusMods.Abstractions.Installers.DTO;
+using NexusMods.Abstractions.IO;
+using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Paths;
 
-namespace NexusMods.Games.BethesdaGameStudios;
+namespace NexusMods.Games.BethesdaGameStudios.SkyrimLegendaryEdition;
 
 public class SkyrimLegendaryEdition : ABethesdaGame, ISteamGame
 {

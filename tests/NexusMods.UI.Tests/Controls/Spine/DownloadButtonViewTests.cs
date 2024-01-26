@@ -2,7 +2,7 @@
 using Avalonia.Controls.Shapes;
 using DynamicData.Kernel;
 using FluentAssertions;
-using NexusMods.Abstractions.Values;
+using NexusMods.Abstractions.Activities;
 using NexusMods.App.UI.Controls.Spine.Buttons.Download;
 
 namespace NexusMods.UI.Tests.Controls.Spine;

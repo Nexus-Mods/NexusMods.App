@@ -1,11 +1,11 @@
 ﻿using Bannerlord.LauncherManager;
 using Bannerlord.LauncherManager.Localization;
 using Bannerlord.ModuleManager;
-using NexusMods.DataModel.Diagnostics;
-using NexusMods.DataModel.Diagnostics.Emitters;
-using NexusMods.DataModel.Diagnostics.References;
-using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.Loadouts.Mods;
+using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.Diagnostics;
+using NexusMods.Abstractions.Diagnostics.Emitters;
+using NexusMods.Abstractions.Diagnostics.References;
+using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Games.MountAndBlade2Bannerlord.Extensions;
 using NexusMods.Games.MountAndBlade2Bannerlord.Utils;
 

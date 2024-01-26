@@ -1,19 +1,19 @@
-﻿using System.Collections.Immutable;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Activities;
-using NexusMods.Abstractions.Values;
-using NexusMods.Common;
-using NexusMods.DataModel.Abstractions;
+using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.DataModel.Entities.Sorting;
+using NexusMods.Abstractions.Games.Downloads;
+using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.Games.Loadouts;
+using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.IO;
+using NexusMods.Abstractions.Serialization;
+using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.Loadouts.Cursors;
-using NexusMods.DataModel.Loadouts.Mods;
-using NexusMods.DataModel.ModInstallers;
-using NexusMods.DataModel.Sorting.Rules;
-using NexusMods.DataModel.Trees;
-using NexusMods.Paths;
-using NexusMods.Paths.FileTree;
+using NexusMods.Extensions.BCL;
 
 namespace NexusMods.DataModel;
 
@@ -78,7 +78,7 @@ public class ArchiveInstaller : IArchiveInstaller
             using var job = _activityFactory.Create(IArchiveInstaller.Group, "Adding mod files to {Name}", baseMod.Name);
 
             // Create a tree so installers can find the file easily.
-            var tree = ModFileTree.Create(download.Contents, _fileStore);
+            var tree = TreeCreator.Create(download.Contents, _fileStore);
 
             // Step 3: Run the archive through the installers.
             var installers = loadout.Value.Installation.Game.Installers;
@@ -92,12 +92,19 @@ public class ArchiveInstaller : IArchiveInstaller
                 {
                     try
                     {
-                        var modResults = (await modInstaller.GetModsAsync(
-                            loadout.Value.Installation,
-                            loadoutId,
-                            baseMod.Id,
-                            tree,
-                            token)).ToArray();
+                        var install = loadout.Value.Installation;
+                        var info = new ModInstallerInfo()
+                        {
+                            ArchiveFiles = tree,
+                            BaseModId = baseMod.Id,
+                            Locations = install.LocationsRegister,
+                            GameName = install.Game.Name,
+                            Store = install.Store,
+                            Version = install.Version,
+                            ModName = baseMod.Name
+                        };
+
+                        var modResults = (await modInstaller.GetModsAsync(info, token)).ToArray();
                         return (modResults, modInstaller);
                     }
                     catch (Exception ex)

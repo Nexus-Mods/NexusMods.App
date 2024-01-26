@@ -1,5 +1,5 @@
 using JetBrains.Annotations;
-using NexusMods.DataModel.JsonConverters;
+using NexusMods.Abstractions.Serialization.Attributes;
 
 namespace NexusMods.Games.StardewValley.Models;
 
@@ -10,7 +10,7 @@ namespace NexusMods.Games.StardewValley.Models;
 /// https://github.com/Pathoschild/SMAPI/blob/9763bc7484e29cbc9e7f37c61121d794e6720e75/src/SMAPI.Toolkit/Serialization/Models/ManifestDependency.cs
 /// </summary>
 [PublicAPI]
-[JsonName("NexusMods.Games.StardewValley.SMAPIManifestDependency")]
+[JsonName("NexusMods.Games.StardewValley.Models.SMAPIManifestDependency")]
 public record SMAPIManifestDependency
 {
     /// <summary>

@@ -1,8 +1,8 @@
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Games.Loadouts;
+using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.App.UI.WorkspaceSystem;
-using NexusMods.DataModel.JsonConverters;
-using NexusMods.DataModel.Loadouts;
 
 namespace NexusMods.App.UI.RightContent.LoadoutGrid;
 
@@ -16,10 +16,10 @@ public record LoadoutGridContext : IPageFactoryContext
 [UsedImplicitly]
 public class LoadoutGridPageFactory : APageFactory<ILoadoutGridViewModel, LoadoutGridContext>
 {
-    private readonly LoadoutRegistry _loadoutRegistry;
+    private readonly ILoadoutRegistry _loadoutRegistry;
     public LoadoutGridPageFactory(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        _loadoutRegistry = serviceProvider.GetRequiredService<LoadoutRegistry>();
+        _loadoutRegistry = serviceProvider.GetRequiredService<ILoadoutRegistry>();
     }
 
     public override PageFactoryId Id => PageFactoryId.From(Guid.Parse("c6221ce6-cf12-49bf-b32c-8138ef701cc5"));

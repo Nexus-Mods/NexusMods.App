@@ -1,5 +1,4 @@
 ﻿using System.Buffers;
-using NexusMods.Paths.Extensions;
 using Reloaded.Memory.Extensions;
 
 namespace NexusMods.DataModel.ChunkedStreams;

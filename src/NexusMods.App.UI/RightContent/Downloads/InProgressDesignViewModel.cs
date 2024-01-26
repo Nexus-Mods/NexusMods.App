@@ -1,10 +1,6 @@
-﻿using System.Reactive.Disposables;
-using DynamicData;
-using NexusMods.App.UI.Overlays;
+﻿using DynamicData;
 using NexusMods.App.UI.RightContent.Downloads.ViewModels;
-using NexusMods.Networking.Downloaders;
 using NexusMods.Networking.Downloaders.Interfaces;
-using ReactiveUI;
 
 namespace NexusMods.App.UI.RightContent.Downloads;
 

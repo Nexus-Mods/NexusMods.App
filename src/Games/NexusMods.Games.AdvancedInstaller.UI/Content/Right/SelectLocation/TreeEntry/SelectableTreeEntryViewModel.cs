@@ -2,6 +2,7 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Text.RegularExpressions;
+using NexusMods.Abstractions.Installers.DTO;
 using NexusMods.Paths;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -67,7 +68,7 @@ public class SelectableTreeEntryViewModel : AViewModel<ISelectableTreeEntryViewM
     /// Pattern to match invalid characters in folder names.
     /// </summary>
     private static readonly string InvalidFolderCharsPattern =
-        "[" + String.Concat(System.IO.Path.GetInvalidFileNameChars().Concat(new[] { '\\', '/' })) + "]";
+        "[" + String.Concat(Path.GetInvalidFileNameChars().Concat(new[] { '\\', '/' })) + "]";
 
     /// <summary>
     /// Compiled Regex to match invalid characters in folder names.

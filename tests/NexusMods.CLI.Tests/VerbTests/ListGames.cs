@@ -1,6 +1,4 @@
 using FluentAssertions;
-using NexusMods.DataModel.Games;
-using NexusMods.ProxyConsole.Abstractions.Implementations;
 
 namespace NexusMods.CLI.Tests.VerbTests;
 
