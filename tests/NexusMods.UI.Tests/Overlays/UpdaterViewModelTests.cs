@@ -12,6 +12,10 @@ public class UpdaterViewModelTests : AVmTest<UpdaterViewModel, IUpdaterViewModel
     [Fact]
     public async Task CanCheckForArchiveReleases()
     {
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            // Can't test this until we actually have a release
+            return;
+
         ConcreteVm.Method = InstallationMethod.Archive;
         ConcreteVm.OldVersion = Version.Parse("0.0.0.0");
         (await ConcreteVm.ShouldShow()).Should().BeTrue();
