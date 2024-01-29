@@ -30,7 +30,7 @@
                 <Border Grid.Row="1" x:Name="BodyBorder">
                     <Grid x:Name="BodyStackPanel" RowDefinitions="Auto, *">
                         <Border Grid.Row="0" x:Name="HeadingAndSubHeadingBorder">
-                            <StackPanel x:Name="HeadingAndSubHeadingStackPanel">
+                            <StackPanel x:Name="HeadingAndSubHeadingStackPanel" Spacing="4">
 
                                 <TextBlock Classes="HeadingXSSemi" x:Name="ModName" />
                                 <TextBlock Classes="HeadingMDSemi" x:Name="StepName" />
@@ -57,10 +57,12 @@
                             </Border>
 
                             <Grid Grid.Column="1" x:Name="PreviewStackPanel" RowDefinitions="Auto,*">
-                                <Border Grid.Row="0" x:Name="PreviewTitleBorder" Classes="Rounded OutlineStrong">
+                                <Border Grid.Row="0" x:Name="PreviewTitleBorder"
+                                        Classes="RoundedTop OutlineStrong">
                                     <Grid ColumnDefinitions="*, Auto, Auto">
 
-                                        <TextBlock Grid.Column="0" x:Name="PreviewTitleTextBox" Classes="BodyXLBold" />
+                                        <TextBlock Grid.Column="0" x:Name="PreviewTitleTextBox" Classes="BodyXLBold"
+                                                   VerticalAlignment="Center"/>
                                         <icons:Icon Grid.Column="2" x:Name="PreviewHeaderDescriptionIcon"
                                                     Classes="Description PreviewIcon" VerticalAlignment="Center" />
                                         <icons:Icon Grid.Column="1" x:Name="PreviewHeaderImageIcon"
@@ -69,15 +71,17 @@
                                     </Grid>
                                 </Border>
 
-                                <Border Grid.Row="1" x:Name="PreviewContentBorder" Classes="Rounded OutlineStrong">
+                                <Border Grid.Row="1" x:Name="PreviewContentBorder"
+                                        Classes="RoundedBottom OutlineStrong"
+                                        BorderThickness="1,0,1,1">
                                     <ScrollViewer x:Name="PreviewScrollViewer">
-                                        <StackPanel x:Name="PreviewContentsStackPanel" Orientation="Vertical"
+                                        <StackPanel x:Name="PreviewContentsStackPanel" Orientation="Vertical" Spacing="8"
                                                     VerticalAlignment="Stretch">
-
-                                            <Image Stretch="Uniform" IsVisible="False" x:Name="HighlightedOptionImage" />
                                             <TextBlock Classes="BodyMDNormal" x:Name="HighlightedOptionDescription"
                                                        TextWrapping="Wrap"
                                                        Text="{x:Static resources:Language.HighlightedOptionDescription_No_Extra_Details}" />
+                                            <Image Stretch="Uniform" IsVisible="False" x:Name="HighlightedOptionImage" />
+
 
                                         </StackPanel>
                                     </ScrollViewer>

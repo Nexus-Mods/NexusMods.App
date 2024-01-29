@@ -30,7 +30,7 @@
             <Style Selector="^ Border#GroupsBorder">
                 <Setter Property="Background" Value="{StaticResource ElementBackgroundNeutralMidBrush}" />
                 <Setter Property="CornerRadius" Value="8,8, 8,8" />
-                <Setter Property="Padding" Value="8,8,8,8" />
+                <Setter Property="Padding" Value="16" />
                 <Setter Property="Margin" Value="0,0,16,0" />
             </Style>
 
@@ -47,7 +47,7 @@
                 <Setter Property="CornerRadius" Value="0,0,8,8" />
             </Style>
             <Style Selector="^ TextBlock#HighlightedOptionDescription">
-                <Setter Property="Margin" Value="0,16,0,0" />
+                <Setter Property="Margin" Value="0,0,0,0" />
             </Style>
             <Style Selector="^ StackPanel#PreviewContentsStackPanel">
                 <Setter Property="Margin" Value="0,0,12,0" />

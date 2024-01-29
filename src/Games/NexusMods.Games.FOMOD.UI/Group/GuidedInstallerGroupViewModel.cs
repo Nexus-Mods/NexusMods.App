@@ -43,7 +43,8 @@ public class GuidedInstallerGroupViewModel : AViewModel<IGuidedInstallerGroupVie
                     Name = Language.GuidedInstallerGroupViewModel_GuidedInstallerGroupViewModel_None,
                     Type = OptionType.Available,
                     Description = Language.GuidedInstallerGroupViewModel_GuidedInstallerGroupViewModel_Select_nothing,
-                    HoverText = Language.GuidedInstallerGroupViewModel_GuidedInstallerGroupViewModel_Use_this_option_to_select_nothing
+                    HoverText = Language
+                        .GuidedInstallerGroupViewModel_GuidedInstallerGroupViewModel_Use_this_option_to_select_nothing
                 }, group));
             }
 
@@ -107,6 +108,16 @@ public class GuidedInstallerGroupViewModel : AViewModel<IGuidedInstallerGroupVie
                     {
                         optionVM.IsValid = isValid;
                     }
+                })
+                .DisposeWith(disposable);
+
+            // Highlight option when it is checked
+            _optionsCache
+                .Connect()
+                .WhenPropertyChanged(optionVM => optionVM.IsChecked, false)
+                .SubscribeWithErrorLogging(option =>
+                {
+                    HighlightedOption = option.Sender;
                 })
                 .DisposeWith(disposable);
         });

@@ -114,7 +114,7 @@ public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewM
             // group highlighting
             _groupsSource
                 .Connect()
-                .WhenPropertyChanged(groupVM => groupVM.HighlightedOption)
+                .WhenPropertyChanged(groupVM => groupVM.HighlightedOption, false)
                 .Where(propertyValue => propertyValue.Value is not null)
                 .Do(propertyValue =>
                 {
@@ -151,7 +151,9 @@ public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewM
                     vm => vm.TaskCompletionSource,
                     vm => vm.InstallationStep,
                     vm => vm.ShowInstallationCompleteScreen,
-                    (tcs, step, showInstallationCompleteScreen) => showInstallationCompleteScreen || (tcs is not null && step is not null && step.HasPreviousStep))
+                    (tcs, step, showInstallationCompleteScreen) => showInstallationCompleteScreen ||
+                                                                   (tcs is not null && step is not null &&
+                                                                    step.HasPreviousStep))
                 .BindToVM(this, vm => vm.FooterStepperViewModel.CanGoPrev)
                 .DisposeWith(disposables);
 
