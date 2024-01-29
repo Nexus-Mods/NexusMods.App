@@ -45,7 +45,7 @@ New-Item -Path $tmpDir -Type Directory
 $inputFile = $executableToSign
 $outputFile = Join-Path $tmpDir $(Get-Item $inputFile).Name
 
-& $codeSignToolPath sign -input_file_pathh="$inputFile" -output_dir_path="$tmpDir" -username="$env:ES_USERNAME" -password="$env:ES_PASSWORD" -credential_id="$env:ES_CREDENTIAL_ID" -totp_secret="$env:ES_TOTP_SECRET"
+& $codeSignToolPath sign -input_file_path="$inputFile" -output_dir_path="$tmpDir" -username="$env:ES_USERNAME" -password="$env:ES_PASSWORD" -credential_id="$env:ES_CREDENTIAL_ID" -totp_secret="$env:ES_TOTP_SECRET"
 $exitCode = $LASTEXITCODE
 
 if ($exitCode -eq 0) {
