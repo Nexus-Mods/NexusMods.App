@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using NexusMods.Abstractions.DataModel.Entities.Mods;
 using NexusMods.Abstractions.DataModel.Entities.Sorting;
+using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Games.MountAndBlade2Bannerlord.Tests.Shared;
 using NexusMods.Games.TestFramework;
 

@@ -1,12 +1,10 @@
 ﻿using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.DTO;
-using NexusMods.Abstractions.Games.Loadouts.Visitors;
-using NexusMods.Abstractions.Games.Trees;
-using NexusMods.Abstractions.Installers.DTO;
-using NexusMods.Abstractions.Installers.DTO.Files;
-using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Mods;
+using NexusMods.Abstractions.Loadouts.Visitors;
 
-namespace NexusMods.Abstractions.Games.Loadouts.Transformer;
+namespace NexusMods.Abstractions.Loadouts.Synchronizers.Transformer;
 
 /// <summary>
 /// A transformer that creates a new loadout from a flattened loadout.

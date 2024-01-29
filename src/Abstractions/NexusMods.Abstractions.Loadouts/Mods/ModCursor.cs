@@ -1,7 +1,4 @@
-using NexusMods.Abstractions.DataModel.Entities.Mods;
-using NexusMods.Abstractions.Games.Loadouts;
-
-namespace NexusMods.Abstractions.Games.DTO;
+namespace NexusMods.Abstractions.Loadouts.Mods;
 
 /// <summary>
 /// Groups a <see cref="LoadoutId"/> and a <see cref="ModId"/> together, for

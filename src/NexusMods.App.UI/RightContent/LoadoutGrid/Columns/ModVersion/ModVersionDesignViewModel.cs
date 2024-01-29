@@ -1,4 +1,5 @@
 ﻿using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.Loadouts.Mods;
 
 namespace NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModVersion;
 

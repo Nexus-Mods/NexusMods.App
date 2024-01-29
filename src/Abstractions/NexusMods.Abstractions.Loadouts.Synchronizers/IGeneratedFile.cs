@@ -1,9 +1,7 @@
-﻿using NexusMods.Abstractions.DataModel.Entities.Mods;
-using NexusMods.Abstractions.Games.DTO;
-using NexusMods.Abstractions.Loadouts;
+﻿using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Hashing.xxHash64;
 
-namespace NexusMods.Abstractions.Games.Loadouts;
+namespace NexusMods.Abstractions.Loadouts;
 
 /// <summary>
 /// Interface for a file that is generated at apply time, not stored in the file store

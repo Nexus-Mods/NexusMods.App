@@ -5,6 +5,7 @@ using Avalonia.Controls.Primitives;
 using FluentAssertions;
 using NexusMods.Abstractions.DataModel.Entities.Mods;
 using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.App.UI.RightContent.LoadoutGrid;
 
 namespace NexusMods.UI.Tests.RightContent;

@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Games.Tools;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Resources;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;

@@ -1,10 +1,6 @@
-﻿using NexusMods.Abstractions.DataModel.Entities.Mods;
-using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.GameLocators.Trees;
-using NexusMods.Abstractions.Games.Trees;
-using NexusMods.Abstractions.Installers.DTO;
+﻿using NexusMods.Abstractions.GameLocators.Trees;
 
-namespace NexusMods.Abstractions.Games.DTO;
+namespace NexusMods.Abstractions.GameLocators;
 
 /// <summary>
 /// A file tree is a tree that contains all files from a loadout, flattened into a single tree.

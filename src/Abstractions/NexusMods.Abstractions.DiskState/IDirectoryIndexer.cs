@@ -1,6 +1,6 @@
 ﻿using NexusMods.Paths;
 
-namespace NexusMods.Abstractions.Games.Loadouts;
+namespace NexusMods.Abstractions.Loadouts;
 
 /// <summary>
 /// Component that indexes a directory and returns the files and folders as <see cref="HashedEntry"/>s.

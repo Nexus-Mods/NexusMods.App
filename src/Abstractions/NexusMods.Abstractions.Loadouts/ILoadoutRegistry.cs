@@ -1,11 +1,12 @@
 using DynamicData;
 using NexusMods.Abstractions.DataModel.Entities.Mods;
-using NexusMods.Abstractions.Games.DTO;
-using NexusMods.Abstractions.Games.Loadouts.Visitors;
-using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Games.Loadouts;
+using NexusMods.Abstractions.Loadouts.Mods;
+using NexusMods.Abstractions.Loadouts.Visitors;
 using NexusMods.Abstractions.Serialization.DataModel.Ids;
 
-namespace NexusMods.Abstractions.Games.Loadouts;
+namespace NexusMods.Abstractions.Loadouts;
 
 /// <summary>
 /// Provides the main entry point for listing, modifying and updating loadouts.
@@ -25,7 +26,7 @@ public interface ILoadoutRegistry
     /// <summary>
     /// All games that have loadouts
     /// </summary>
-    IObservable<IDistinctChangeSet<IGame>> Games { get; }
+    IObservable<IDistinctChangeSet<ILocatableGame>> Games { get; }
 
     /// <summary>
     /// Alters the loadout with the given id. If the loadout does not exist, it is created.

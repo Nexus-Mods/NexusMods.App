@@ -1,7 +1,7 @@
 ﻿using NexusMods.Abstractions.DataModel.Entities.Mods;
-using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Mods;
 
-namespace NexusMods.Abstractions.Games.Loadouts.Visitors;
+namespace NexusMods.Abstractions.Loadouts.Visitors;
 
 /// <summary>
 /// A helper class for modifying specific parts of a loadout.

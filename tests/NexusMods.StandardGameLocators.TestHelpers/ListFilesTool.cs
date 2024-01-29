@@ -2,6 +2,7 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Installers.DTO;
+using NexusMods.Abstractions.Loadouts;
 
 namespace NexusMods.StandardGameLocators.TestHelpers;
 

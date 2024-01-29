@@ -1,4 +1,5 @@
 using NexusMods.Abstractions.Games.Loadouts;
+using NexusMods.Abstractions.Loadouts;
 
 namespace NexusMods.CLI.Types;
 

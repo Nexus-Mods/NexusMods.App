@@ -1,8 +1,8 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using TransparentValueObjects;
+using Vogen;
 
-namespace NexusMods.Abstractions.DataModel.Entities.Mods;
+namespace NexusMods.Abstractions.Loadouts.Mods;
 
 /// <summary>
 /// A unique identifier for a file which belongs to a mod in the data store/database.

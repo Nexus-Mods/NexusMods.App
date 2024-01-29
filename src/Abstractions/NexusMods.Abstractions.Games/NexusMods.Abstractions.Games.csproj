@@ -28,4 +28,8 @@
         <ProjectReference Include="..\NexusMods.Abstractions.Loadouts\NexusMods.Abstractions.Loadouts.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.NexusWebApi\NexusMods.Abstractions.NexusWebApi.csproj" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="DTO\" />
+    </ItemGroup>
 </Project>

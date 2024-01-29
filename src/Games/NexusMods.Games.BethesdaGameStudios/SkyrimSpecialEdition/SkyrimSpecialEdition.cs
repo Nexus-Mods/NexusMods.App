@@ -7,6 +7,7 @@ using NexusMods.Abstractions.Games.Stores.Xbox;
 using NexusMods.Abstractions.Installers.DTO;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
+using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Paths;
 

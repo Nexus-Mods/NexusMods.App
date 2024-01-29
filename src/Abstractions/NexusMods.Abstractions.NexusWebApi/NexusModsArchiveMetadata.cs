@@ -1,7 +1,9 @@
-﻿using NexusMods.Abstractions.Games.DTO;
+﻿using NexusMods.Abstractions.FileStore.ArchiveMetadata;
+using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.Serialization.Attributes;
 
-namespace NexusMods.Abstractions.FileStore.ArchiveMetadata;
+namespace NexusMods.Abstractions.NexusWebApi;
 
 /// <summary>
 /// Archive metadata for a download that was installed from a NexusMods mod.

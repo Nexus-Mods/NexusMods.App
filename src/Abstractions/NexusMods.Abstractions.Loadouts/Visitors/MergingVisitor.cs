@@ -1,7 +1,8 @@
 ﻿using NexusMods.Abstractions.DataModel.Entities.Mods;
-using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Games.Loadouts.Visitors;
+using NexusMods.Abstractions.Loadouts.Mods;
 
-namespace NexusMods.Abstractions.Games.Loadouts.Visitors;
+namespace NexusMods.Abstractions.Loadouts.Visitors;
 
 /// <summary>
 /// A visitor that merges two loadouts together, at each level of the tree the merge method is called,

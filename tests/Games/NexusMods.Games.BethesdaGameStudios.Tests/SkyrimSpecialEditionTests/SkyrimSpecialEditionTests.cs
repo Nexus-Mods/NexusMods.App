@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Installers.DTO.Files;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.CLI.Tests.VerbTests;
 using NexusMods.DataModel.Loadouts.Extensions;
 using NexusMods.DataModel.LoadoutSynchronizer.Extensions;

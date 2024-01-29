@@ -4,6 +4,7 @@ using NexusMods.Abstractions.Games.GameCapabilities;
 using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Installers.DTO;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Paths;
 using NexusMods.Games.FOMOD;
 using NexusMods.Games.Generic.Installers;

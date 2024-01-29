@@ -9,6 +9,7 @@ using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Installers.DTO;
 using NexusMods.Abstractions.Installers.DTO.Files;
 using NexusMods.Abstractions.Installers.Trees;
+using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;

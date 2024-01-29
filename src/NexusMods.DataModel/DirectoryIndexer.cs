@@ -1,5 +1,7 @@
-﻿using NexusMods.Abstractions.Games;
+﻿using NexusMods.Abstractions.DiskState;
+using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.Loadouts;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Paths;
 
 namespace NexusMods.DataModel;

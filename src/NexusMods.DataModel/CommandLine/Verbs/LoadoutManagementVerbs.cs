@@ -4,14 +4,17 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.ArchiveMetadata;
 using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Games.Trees;
+using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Installers.DTO.Files;
+using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Extensions;
 using NexusMods.Paths;
 using NexusMods.ProxyConsole.Abstractions;
 using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
-using IGeneratedFile = NexusMods.Abstractions.Games.Loadouts.IGeneratedFile;
+using IGeneratedFile = NexusMods.Abstractions.Loadouts.IGeneratedFile;
 
 namespace NexusMods.DataModel.CommandLine.Verbs;
 

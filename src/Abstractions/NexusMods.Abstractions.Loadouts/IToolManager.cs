@@ -1,7 +1,6 @@
-﻿using NexusMods.Abstractions.DataModel.Entities.Mods;
-using NexusMods.Abstractions.Loadouts;
+﻿using NexusMods.Abstractions.Loadouts.Mods;
 
-namespace NexusMods.Abstractions.Games.Loadouts;
+namespace NexusMods.Abstractions.Loadouts;
 
 /// <summary>
 /// A service that can list tools for games and run them

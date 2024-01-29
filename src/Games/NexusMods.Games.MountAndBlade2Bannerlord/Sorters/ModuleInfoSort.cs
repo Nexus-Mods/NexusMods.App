@@ -6,6 +6,7 @@ using NexusMods.Abstractions.DataModel.Entities.Sorting;
 using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Games.Loadouts.Sorting;
 using NexusMods.Abstractions.Games.Triggers;
+using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.Games.MountAndBlade2Bannerlord.Extensions;
 using NexusMods.Hashing.xxHash64;

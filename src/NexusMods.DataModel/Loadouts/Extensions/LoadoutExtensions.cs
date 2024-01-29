@@ -1,5 +1,6 @@
 ﻿using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Games.Loadouts;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 
 namespace NexusMods.DataModel.Loadouts.Extensions;
 

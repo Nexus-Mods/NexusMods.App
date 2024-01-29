@@ -1,8 +1,9 @@
 using System.Collections.Immutable;
+using NexusMods.Abstractions.DataModel.Entities.Mods;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Serialization.DataModel;
 
-namespace NexusMods.Abstractions.DataModel.Entities.Mods;
+namespace NexusMods.Abstractions.Loadouts.Mods;
 
 /// <summary>
 /// Represents an individual file which belongs to a <see cref="Mod"/>.

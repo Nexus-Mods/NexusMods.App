@@ -3,6 +3,8 @@ using NexusMods.Abstractions.Cli;
 using NexusMods.Abstractions.Games.ArchiveMetadata;
 using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.HttpDownloader;
+using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.CLI.Types;
 using NexusMods.CrossPlatform.ProtocolRegistration;

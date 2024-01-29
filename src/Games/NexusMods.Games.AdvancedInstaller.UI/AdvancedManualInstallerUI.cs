@@ -5,6 +5,7 @@ using Avalonia.ReactiveUI;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.AdvancedInstaller.UI.Resources;
 
 namespace NexusMods.Games.AdvancedInstaller.UI;

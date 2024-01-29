@@ -6,7 +6,7 @@ using NexusMods.Abstractions.Serialization.DataModel.Ids;
 using NexusMods.Hashing.xxHash64;
 using TransparentValueObjects;
 
-namespace NexusMods.Abstractions.Games.Loadouts;
+namespace NexusMods.Abstractions.Loadouts;
 
 /// <summary>
 /// A Id that uniquely identifies a specific list. Names can collide and are often

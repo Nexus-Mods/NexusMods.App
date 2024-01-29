@@ -1,8 +1,6 @@
 using NexusMods.Abstractions.Games.DTO;
-using NexusMods.Abstractions.Games.Loadouts;
-using NexusMods.Abstractions.Loadouts;
 
-namespace NexusMods.Abstractions.Games;
+namespace NexusMods.Abstractions.Loadouts;
 
 /// <summary>
 /// Specifies a tool that is run outside of the app. Could be the game itself,

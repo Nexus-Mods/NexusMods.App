@@ -1,5 +1,6 @@
 ﻿using NexusMods.Abstractions.DataModel.Entities.Mods;
 using NexusMods.Abstractions.Games.Loadouts;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord.Tests.Shared;

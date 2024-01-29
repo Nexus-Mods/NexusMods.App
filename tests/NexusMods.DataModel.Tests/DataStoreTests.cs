@@ -3,12 +3,13 @@ using FluentAssertions;
 using NexusMods.Abstractions.DataModel.Entities.Mods;
 using NexusMods.Abstractions.Installers.DTO;
 using NexusMods.Abstractions.Installers.DTO.Files;
+using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.Abstractions.Serialization.DataModel.Ids;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
-using ModFileId = NexusMods.Abstractions.DataModel.Entities.Mods.ModFileId;
+using ModFileId = NexusMods.Abstractions.Loadouts.Mods.ModFileId;
 
 namespace NexusMods.DataModel.Tests;
 

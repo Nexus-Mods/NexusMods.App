@@ -1,7 +1,8 @@
-﻿using NexusMods.Abstractions.Games.DTO;
-using NexusMods.Abstractions.Loadouts;
+﻿using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.Games.Loadouts;
 
-namespace NexusMods.Abstractions.Games.Loadouts;
+namespace NexusMods.Abstractions.Loadouts.Synchronizers;
 
 
 /// <summary>

@@ -1,7 +1,4 @@
-﻿using NexusMods.Abstractions.Games.DTO;
-using NexusMods.Abstractions.Loadouts;
-
-namespace NexusMods.Abstractions.Games.Loadouts;
+﻿namespace NexusMods.Abstractions.Loadouts.Synchronizers;
 
 /// <summary>
 /// A Loadout Synchronizer is responsible for synchronizing loadouts between to and from the game folder.
