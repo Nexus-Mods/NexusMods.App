@@ -25,13 +25,13 @@ public class PageFactoryController
         }
     }
 
-    public Page Create(PageData pageData, IWorkspaceController workspaceController, PanelId panelId, IPanelTabViewModel? tab)
+    public Page Create(PageData pageData, WorkspaceId workspaceId, PanelId panelId, IPanelTabViewModel? tab)
     {
         if (!_factories.TryGetValue(pageData.FactoryId, out var factory))
             throw new KeyNotFoundException($"Unable to find registered factory with ID {pageData.FactoryId}");
 
         var page = factory.Create(pageData.Context);
-        page.ViewModel.WorkspaceController = workspaceController;
+        page.ViewModel.WorkspaceId = workspaceId;
         page.ViewModel.PanelId = panelId;
 
         if (tab is not null)

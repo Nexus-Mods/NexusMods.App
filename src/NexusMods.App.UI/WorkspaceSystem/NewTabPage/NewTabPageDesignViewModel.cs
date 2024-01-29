@@ -4,7 +4,7 @@ namespace NexusMods.App.UI.WorkspaceSystem;
 
 public class NewTabPageDesignViewModel : NewTabPageViewModel
 {
-    public NewTabPageDesignViewModel() : base(CreateDesignData()) { }
+    public NewTabPageDesignViewModel() : base(DesignWorkspaceController.Instance, CreateDesignData()) { }
 
     private static PageDiscoveryDetails[] CreateDesignData()
     {

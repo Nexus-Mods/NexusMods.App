@@ -18,6 +18,8 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
     private const int MaxRows = 2;
     private const int MaxPanelCount = MaxColumns * MaxRows;
 
+    public WorkspaceId Id { get; } = WorkspaceId.NewId();
+
     private readonly SourceCache<IPanelViewModel, PanelId> _panelSource = new(x => x.Id);
     private readonly ReadOnlyObservableCollection<IPanelViewModel> _panels;
     public ReadOnlyObservableCollection<IPanelViewModel> Panels => _panels;
@@ -30,10 +32,15 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
     private readonly ReadOnlyObservableCollection<IPanelResizerViewModel> _resizers;
     public ReadOnlyObservableCollection<IPanelResizerViewModel> Resizers => _resizers;
 
+    private readonly IWorkspaceController _workspaceController;
     private readonly PageFactoryController _factoryController;
-    public WorkspaceViewModel(PageFactoryController factoryController)
+
+    public WorkspaceViewModel(IWorkspaceController workspaceController, PageFactoryController factoryController)
     {
+        _workspaceController = workspaceController;
         _factoryController = factoryController;
+
+        (_workspaceController as WorkspaceController)?.RegisterWorkspace(this);
 
         _addPanelButtonViewModelSource
             .Connect()
@@ -191,6 +198,13 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                 })
                 .SubscribeWithErrorLogging()
                 .DisposeWith(disposables);
+
+            Disposable
+                .Create(this, vm =>
+                {
+                    (vm._workspaceController as WorkspaceController)?.UnregisterWorkspace(vm);
+                })
+                .DisposeWith(disposables);
         });
     }
 
@@ -222,7 +236,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         }
     }
 
-    public void SwapPanels(PanelId firstPanelId, PanelId secondPanelId)
+    internal void SwapPanels(PanelId firstPanelId, PanelId secondPanelId)
     {
         if (!_panelSource.Lookup(firstPanelId).TryGet(out var firstPanel)) return;
         if (!_panelSource.Lookup(secondPanelId).TryGet(out var secondPanel)) return;
@@ -269,7 +283,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         });
     }
 
-    public void AddPanel(WorkspaceGridState newWorkspaceState, AddPanelBehavior behavior)
+    internal void AddPanel(WorkspaceGridState newWorkspaceState, AddPanelBehavior behavior)
     {
         behavior.Switch(
             f0: _ => AddPanelWithDefaultTab(newWorkspaceState),
@@ -277,7 +291,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         );
     }
 
-    public void OpenPage(PageData pageData, OpenPageBehavior behavior)
+    internal void OpenPage(PageData pageData, OpenPageBehavior behavior)
     {
         behavior.Switch(
             f0: replaceTab => OpenPageReplaceTab(pageData, replaceTab),
@@ -291,7 +305,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         var panel = OptionalPanelOrFirst(replaceTab.PanelId);
         var tab = OptionalTabOrFirst(panel, replaceTab.TabId);
 
-        var newTabPage = _factoryController.Create(pageData, this, panel.Id, tab);
+        var newTabPage = _factoryController.Create(pageData, Id, panel.Id, tab);
         tab.Contents = newTabPage;
     }
 
@@ -359,8 +373,9 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                 var (panelId, logicalBounds) = panel;
                 if (panelId == PanelId.DefaultValue)
                 {
-                    var panelViewModel = new PanelViewModel(this, _factoryController)
+                    var panelViewModel = new PanelViewModel(_workspaceController, _factoryController)
                     {
+                        WorkspaceId = Id,
                         LogicalBounds = logicalBounds,
                     };
 
@@ -380,7 +395,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         });
     }
 
-    public void ClosePanel(PanelId panelToClose)
+    internal void ClosePanel(PanelId panelToClose)
     {
         var currentState = WorkspaceGridState.From(_panels, IsHorizontal);
         var newState = GridUtils.GetStateWithoutPanel(currentState, panelToClose);
@@ -421,9 +436,12 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         {
             foreach (var panel in data.Panels)
             {
-                var vm = new PanelViewModel(this, _factoryController);
-                vm.FromData(panel);
+                var vm = new PanelViewModel(_workspaceController, _factoryController)
+                {
+                    WorkspaceId = Id
+                };
 
+                vm.FromData(panel);
                 updater.AddOrUpdate(vm);
             }
         });

@@ -13,6 +13,11 @@ public interface IPanelViewModel : IViewModelInterface
     public PanelId Id { get; }
 
     /// <summary>
+    /// Gets or sets the ID of the workspace the panel is in.
+    /// </summary>
+    public WorkspaceId WorkspaceId { get; set; }
+
+    /// <summary>
     /// Gets the read-only observable collection of all tabs of the panel.
     /// </summary>
     public ReadOnlyObservableCollection<IPanelTabViewModel> Tabs { get; }

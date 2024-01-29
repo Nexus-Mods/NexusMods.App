@@ -79,7 +79,7 @@ public class LoadoutGridDesignViewModel : APageViewModel<ILoadoutGridViewModel>,
         return Task.CompletedTask;
     }
 
-    public LoadoutGridDesignViewModel()
+    public LoadoutGridDesignViewModel() : base(DesignWorkspaceController.Instance)
     {
         _mods = new SourceCache<ModCursor, ModId>(x => x.ModId);
         _mods.Edit(x =>

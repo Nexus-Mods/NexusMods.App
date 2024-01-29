@@ -10,7 +10,7 @@ public class DummyViewModel : APageViewModel<IDummyViewModel>, IDummyViewModel
 {
     [Reactive] public Color Color { get; set; } = Colors.Aqua;
 
-    public DummyViewModel()
+    public DummyViewModel(IWorkspaceController workspaceController) : base(workspaceController)
     {
         this.WhenActivated(disposables =>
         {

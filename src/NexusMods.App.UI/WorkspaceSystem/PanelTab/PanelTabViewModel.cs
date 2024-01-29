@@ -1,8 +1,4 @@
-using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using Avalonia.Media;
-using NexusMods.App.UI.Resources;
-using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.WorkspaceSystem;

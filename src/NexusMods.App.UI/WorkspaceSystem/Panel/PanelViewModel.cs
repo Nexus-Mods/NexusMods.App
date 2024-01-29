@@ -13,7 +13,11 @@ namespace NexusMods.App.UI.WorkspaceSystem;
 
 public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
 {
+    /// <inheritdoc/>
     public PanelId Id { get; } = PanelId.NewId();
+
+    /// <inheritdoc/>
+    public WorkspaceId WorkspaceId { get; set; }
 
     private readonly SourceList<IPanelTabViewModel> _tabsList = new();
     private readonly ReadOnlyObservableCollection<IPanelTabViewModel> _tabs;
@@ -168,7 +172,7 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
 
     public void AddCustomTab(PageData pageData)
     {
-        var newTabPage = _factoryController.Create(pageData, _workspaceController, Id, tab: null);
+        var newTabPage = _factoryController.Create(pageData, WorkspaceId, Id, tab: null);
         var tab = new PanelTabViewModel
         {
             Contents = newTabPage
@@ -210,7 +214,7 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
             for (uint i = 0; i < data.Tabs.Length; i++)
             {
                 var tab = data.Tabs[i];
-                var newTabPage = _factoryController.Create(tab.PageData, _workspaceController, Id, tab: null);
+                var newTabPage = _factoryController.Create(tab.PageData, WorkspaceId, Id, tab: null);
 
                 var vm = new PanelTabViewModel
                 {

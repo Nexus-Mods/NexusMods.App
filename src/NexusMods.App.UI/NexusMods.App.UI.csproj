@@ -339,6 +339,9 @@
           <DependentUpon>ProgressRing.axaml</DependentUpon>
           <SubType>Code</SubType>
         </Compile>
+        <Compile Update="WorkspaceSystem\Controllers\WorkspaceController.cs">
+          <DependentUpon>IWorkspaceController.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>

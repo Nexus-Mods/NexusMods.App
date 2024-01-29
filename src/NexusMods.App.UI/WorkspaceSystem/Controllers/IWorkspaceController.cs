@@ -8,30 +8,20 @@ public interface IWorkspaceController
     /// <summary>
     /// Adds a new panel to the workspace.
     /// </summary>
-    public void AddPanel(WorkspaceGridState newWorkspaceState, AddPanelBehavior behavior);
+    public void AddPanel(WorkspaceId workspaceId, WorkspaceGridState newWorkspaceState, AddPanelBehavior behavior);
 
     /// <summary>
     /// Opens a new page in the workspace.
     /// </summary>
-    public void OpenPage(PageData pageData, OpenPageBehavior behavior);
+    public void OpenPage(WorkspaceId workspaceId, PageData pageData, OpenPageBehavior behavior);
 
     /// <summary>
     /// Swaps the positions of two panels.
     /// </summary>
-    public void SwapPanels(PanelId firstPanelId, PanelId secondPanelId);
+    public void SwapPanels(WorkspaceId workspaceId, PanelId firstPanelId, PanelId secondPanelId);
 
     /// <summary>
     /// Closes the panel with the given ID.
     /// </summary>
-    public void ClosePanel(PanelId panelToClose);
-
-    /// <summary>
-    /// Transforms the current state of the workspace into a serializable data format.
-    /// </summary>
-    public WorkspaceData ToData();
-
-    /// <summary>
-    /// Applies <paramref name="data"/> to the workspace.
-    /// </summary>
-    public void FromData(WorkspaceData data);
+    public void ClosePanel(WorkspaceId workspaceId, PanelId panelToClose);
 }
