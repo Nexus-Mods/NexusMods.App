@@ -11,9 +11,6 @@ public abstract class APageViewModel<TInterface> : AViewModel<TInterface>, IPage
     }
 
     /// <inheritdoc/>
-    public ITabController TabController { get; set; } = null!;
-
-    /// <inheritdoc/>
     public WorkspaceId WorkspaceId { get; set; }
 
     /// <inheritdoc/>

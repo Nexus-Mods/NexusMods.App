@@ -179,7 +179,6 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
         };
 
         newTabPage.ViewModel.TabId = tab.Id;
-        newTabPage.ViewModel.TabController = tab;
 
         _tabsList.Edit(updater => updater.Add(tab));
         SelectedTabId = tab.Id;
@@ -222,7 +221,6 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
                 };
 
                 newTabPage.ViewModel.TabId = vm.Id;
-                newTabPage.ViewModel.TabController = vm;
 
                 updater.Add(vm);
             }

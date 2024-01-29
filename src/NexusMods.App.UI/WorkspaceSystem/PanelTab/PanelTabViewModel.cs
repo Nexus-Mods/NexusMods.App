@@ -30,14 +30,4 @@ public class PanelTabViewModel : AViewModel<IPanelTabViewModel>, IPanelTabViewMo
             PageData = Contents.PageData
         };
     }
-
-    public void SetTitle(string title)
-    {
-        Header.Title = title;
-    }
-
-    public void SetIcon(IImage? icon)
-    {
-        Header.Icon = icon;
-    }
 }

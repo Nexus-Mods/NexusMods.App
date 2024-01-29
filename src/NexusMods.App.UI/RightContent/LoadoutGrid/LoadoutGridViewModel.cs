@@ -109,6 +109,10 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
             this.WhenAnyValue(vm => vm.LoadoutId)
                 .SelectMany(loadoutRegistry.RevisionsAsLoadouts)
                 .Select(loadout => loadout.Name)
+                .Do(loadoutName =>
+                {
+                    WorkspaceController.SetTabTitle(loadoutName, WorkspaceId, PanelId, TabId);
+                })
                 .BindTo(this, vm => vm.LoadoutName);
 
             _columns.Connect()

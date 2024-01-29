@@ -37,7 +37,6 @@ public class PageFactoryController
         if (tab is not null)
         {
             page.ViewModel.TabId = tab.Id;
-            page.ViewModel.TabController = tab;
         }
 
         return page;

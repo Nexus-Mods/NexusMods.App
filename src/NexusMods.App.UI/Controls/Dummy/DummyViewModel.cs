@@ -14,7 +14,7 @@ public class DummyViewModel : APageViewModel<IDummyViewModel>, IDummyViewModel
     {
         this.WhenActivated(disposables =>
         {
-            TabController.SetTitle("Dummy");
+            WorkspaceController.SetTabTitle("Dummy", WorkspaceId, PanelId, TabId);
             Disposable.Create(() => { }).DisposeWith(disposables);
         });
     }

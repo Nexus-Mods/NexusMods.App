@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using Avalonia.Media;
 using Microsoft.Extensions.Logging;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
@@ -41,6 +42,30 @@ internal class WorkspaceController : IWorkspaceController
         return true;
     }
 
+    private bool TryGetPanel(IWorkspaceViewModel workspaceViewModel, PanelId panelId, [NotNullWhen(true)] out IPanelViewModel? panelViewModel)
+    {
+        panelViewModel = workspaceViewModel.Panels.FirstOrDefault(panel => panel.Id == panelId);
+        if (panelViewModel is null)
+        {
+            _logger.LogError("Failed to find Panel with ID {PanelID} in Workspace with ID {WorkspaceID}", panelId, workspaceViewModel.Id);
+            return false;
+        }
+
+        return true;
+    }
+
+    private bool TryGetTab(IPanelViewModel panelViewModel, PanelTabId tabId, [NotNullWhen(true)] out IPanelTabViewModel? tabViewModel)
+    {
+        tabViewModel = panelViewModel.Tabs.FirstOrDefault(tab => tab.Id == tabId);
+        if (tabViewModel is null)
+        {
+            _logger.LogError("Failed to find Tab with ID {TabID} in Panel with ID {PanelID} in Workspace with ID {WorkspaceID}", tabId, panelViewModel.Id, panelViewModel.WorkspaceId);
+            return false;
+        }
+
+        return true;
+    }
+
     public void AddPanel(WorkspaceId workspaceId, WorkspaceGridState newWorkspaceState, AddPanelBehavior behavior)
     {
         if (!TryGetWorkspace(workspaceId, out var workspaceViewModel)) return;
@@ -63,5 +88,23 @@ internal class WorkspaceController : IWorkspaceController
     {
         if (!TryGetWorkspace(workspaceId, out var workspaceViewModel)) return;
         workspaceViewModel.ClosePanel(panelToClose);
+    }
+
+    public void SetTabTitle(string title, WorkspaceId workspaceId, PanelId panelId, PanelTabId tabId)
+    {
+        if (!TryGetWorkspace(workspaceId, out var workspaceViewModel)) return;
+        if (!TryGetPanel(workspaceViewModel, panelId, out var panelViewModel)) return;
+        if (!TryGetTab(panelViewModel, tabId, out var tabViewModel)) return;
+
+        tabViewModel.Header.Title = title;
+    }
+
+    public void SetIcon(IImage? icon, WorkspaceId workspaceId, PanelId panelId, PanelTabId tabId)
+    {
+        if (!TryGetWorkspace(workspaceId, out var workspaceViewModel)) return;
+        if (!TryGetPanel(workspaceViewModel, panelId, out var panelViewModel)) return;
+        if (!TryGetTab(panelViewModel, tabId, out var tabViewModel)) return;
+
+        tabViewModel.Header.Icon = icon;
     }
 }
