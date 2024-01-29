@@ -3,6 +3,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Controls;
 using DynamicData;
+using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.DataModel.Entities.Mods;
@@ -25,6 +26,7 @@ using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.RightContent.LoadoutGrid;
 
+[UsedImplicitly]
 public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoadoutGridViewModel
 {
     [Reactive]
@@ -47,14 +49,14 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
     public string LoadoutName { get; set; } = "";
     public ReadOnlyObservableCollection<IDataGridColumnFactory<LoadoutColumn>> Columns => _filteredColumns;
 
-
     public LoadoutGridViewModel(
         ILogger<LoadoutGridViewModel> logger,
         IServiceProvider provider,
         ILoadoutRegistry loadoutRegistry,
         IFileSystem fileSystem,
         IArchiveInstaller archiveInstaller,
-        IFileOriginRegistry fileOriginRegistry)
+        IFileOriginRegistry fileOriginRegistry,
+        IWorkspaceController workspaceController) : base(workspaceController)
     {
         _logger = logger;
         _fileSystem = fileSystem;
@@ -107,6 +109,10 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
             this.WhenAnyValue(vm => vm.LoadoutId)
                 .SelectMany(loadoutRegistry.RevisionsAsLoadouts)
                 .Select(loadout => loadout.Name)
+                .Do(loadoutName =>
+                {
+                    WorkspaceController.SetTabTitle(loadoutName, WorkspaceId, PanelId, TabId);
+                })
                 .BindTo(this, vm => vm.LoadoutName);
 
             _columns.Connect()

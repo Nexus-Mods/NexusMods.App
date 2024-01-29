@@ -5,6 +5,8 @@ namespace NexusMods.App.UI.WorkspaceSystem;
 
 public interface IWorkspaceViewModel : IViewModelInterface
 {
+    public WorkspaceId Id { get; }
+
     public ReadOnlyObservableCollection<IPanelViewModel> Panels { get; }
 
     public ReadOnlyObservableCollection<IPanelResizerViewModel> Resizers { get; }
@@ -17,12 +19,6 @@ public interface IWorkspaceViewModel : IViewModelInterface
     /// Called by the View to notify the VM about the new size of the control.
     /// </summary>
     public void Arrange(Size workspaceSize);
-
-    /// <summary>
-    /// Add a new panel to the workspace.
-    /// </summary>
-    /// <returns>The newly created <see cref="IPanelViewModel"/>.</returns>
-    public IPanelViewModel AddPanel(WorkspaceGridState state);
 
     /// <summary>
     /// Transforms the current state of the workspace into a serializable data format.

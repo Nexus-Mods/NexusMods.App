@@ -1,9 +1,21 @@
-using ReactiveUI;
-
 namespace NexusMods.App.UI.WorkspaceSystem;
 
-public abstract class APageViewModel<TInterface> : AViewModel<TInterface>
+public abstract class APageViewModel<TInterface> : AViewModel<TInterface>, IPageViewModelInterface
     where TInterface : class, IPageViewModelInterface
 {
-    public ReactiveCommand<PageData, PageData> ChangePageCommand { get; } = ReactiveCommand.Create<PageData, PageData>(pageData => pageData);
+    protected readonly IWorkspaceController WorkspaceController;
+
+    protected APageViewModel(IWorkspaceController workspaceController)
+    {
+        WorkspaceController = workspaceController;
+    }
+
+    /// <inheritdoc/>
+    public WorkspaceId WorkspaceId { get; set; }
+
+    /// <inheritdoc/>
+    public PanelId PanelId { get; set; }
+
+    /// <inheritdoc/>
+    public PanelTabId TabId { get; set; }
 }

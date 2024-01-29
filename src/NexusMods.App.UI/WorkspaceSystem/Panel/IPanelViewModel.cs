@@ -13,6 +13,11 @@ public interface IPanelViewModel : IViewModelInterface
     public PanelId Id { get; }
 
     /// <summary>
+    /// Gets or sets the ID of the workspace the panel is in.
+    /// </summary>
+    public WorkspaceId WorkspaceId { get; set; }
+
+    /// <summary>
     /// Gets the read-only observable collection of all tabs of the panel.
     /// </summary>
     public ReadOnlyObservableCollection<IPanelTabViewModel> Tabs { get; }
@@ -57,15 +62,11 @@ public interface IPanelViewModel : IViewModelInterface
     /// </summary>
     public void Arrange(Size workspaceSize);
 
-    /// <summary>
-    /// Adds a new tab to the panel.
-    /// </summary>
-    public IPanelTabViewModel AddTab();
-
-    /// <summary>
-    /// Gets the command version of <see cref="AddTab"/>.
-    /// </summary>
     public ReactiveCommand<Unit, Unit> AddTabCommand { get; }
+
+    public void AddDefaultTab();
+
+    public void AddCustomTab(PageData pageData);
 
     /// <summary>
     /// Closes a tab.

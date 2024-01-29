@@ -28,7 +28,7 @@ public class DummyPageFactory : APageFactory<DummyViewModel, DummyPageContext>
 
     public override DummyViewModel CreateViewModel(DummyPageContext context)
     {
-        return new DummyViewModel
+        return new DummyViewModel(WorkspaceController)
         {
             Color = context.Color
         };

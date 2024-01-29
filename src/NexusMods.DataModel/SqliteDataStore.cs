@@ -53,10 +53,12 @@ public class SqliteDataStore : IDataStore, IDisposable
         {
             var id = Guid.NewGuid().ToString();
             connectionString = string.Intern($"Data Source={id};Mode=Memory;Cache=Shared");
+            _logger.LogDebug("Using in-memory sqlite data store");
         }
         else
         {
             connectionString = string.Intern($"Data Source={settings.DataStoreFilePath}");
+            _logger.LogDebug("Using sqlite data store at {DataSource}", settings.DataStoreFilePath);
         }
 
         connectionString = string.Intern(connectionString);

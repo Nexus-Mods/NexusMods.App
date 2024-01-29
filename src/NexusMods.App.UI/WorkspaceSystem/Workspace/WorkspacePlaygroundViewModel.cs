@@ -8,7 +8,7 @@ using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
-public interface IWorkspacePlaygroundViewModel : IViewModelInterface { }
+public interface IWorkspacePlaygroundViewModel : IViewModelInterface;
 
 public class WorkspacePlaygroundViewModel : AViewModel<IWorkspacePlaygroundViewModel>, IWorkspacePlaygroundViewModel
 {
@@ -23,10 +23,11 @@ public class WorkspacePlaygroundViewModel : AViewModel<IWorkspacePlaygroundViewM
     {
         var serviceProvider = DesignerUtils.GetServiceProvider();
 
+        var workspaceController = serviceProvider.GetRequiredService<IWorkspaceController>();
         var factoryController = serviceProvider.GetRequiredService<PageFactoryController>();
         var jsonSerializerOptions = serviceProvider.GetRequiredService<JsonSerializerOptions>();
 
-        WorkspaceViewModel = new WorkspaceViewModel(factoryController);
+        WorkspaceViewModel = new WorkspaceViewModel(workspaceController, factoryController);
         SaveWorkspaceCommand = ReactiveCommand.Create(() =>
         {
             var workspaceData = WorkspaceViewModel.ToData();
@@ -59,10 +60,14 @@ public class WorkspacePlaygroundViewModel : AViewModel<IWorkspacePlaygroundViewM
 
         this.WhenActivated(disposables =>
         {
-            WorkspaceViewModel.AddPanel(WorkspaceGridState.From(new[]
-            {
-                new PanelGridState(PanelId.DefaultValue, MathUtils.One)
-            }, isHorizontal: WorkspaceViewModel.IsHorizontal));
+            workspaceController.AddPanel(
+                WorkspaceViewModel.Id,
+                WorkspaceGridState.From(new[]
+                {
+                    new PanelGridState(PanelId.DefaultValue, MathUtils.One)
+                }, isHorizontal: WorkspaceViewModel.IsHorizontal),
+                new AddPanelBehavior(new AddPanelBehavior.WithDefaultTab())
+            );
 
             Disposable.Create(() => { }).DisposeWith(disposables);
         });

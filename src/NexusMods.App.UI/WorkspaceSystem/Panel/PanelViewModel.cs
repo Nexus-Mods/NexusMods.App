@@ -5,6 +5,7 @@ using System.Reactive.Linq;
 using Avalonia;
 using DynamicData;
 using DynamicData.Aggregation;
+using DynamicData.Kernel;
 using NexusMods.Extensions.BCL;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -13,7 +14,11 @@ namespace NexusMods.App.UI.WorkspaceSystem;
 
 public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
 {
+    /// <inheritdoc/>
     public PanelId Id { get; } = PanelId.NewId();
+
+    /// <inheritdoc/>
+    public required WorkspaceId WorkspaceId { get; set; }
 
     private readonly SourceList<IPanelTabViewModel> _tabsList = new();
     private readonly ReadOnlyObservableCollection<IPanelTabViewModel> _tabs;
@@ -35,6 +40,7 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
     [Reactive] private PanelTabId SelectedTabId { get; set; }
 
     private readonly PageFactoryController _factoryController;
+
     public PanelViewModel(PageFactoryController factoryController)
     {
         _factoryController = factoryController;
@@ -43,10 +49,7 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
         PopoutCommand = ReactiveCommand.Create(() => { }, canExecute);
         CloseCommand = ReactiveCommand.Create(() => Id, canExecute);
 
-        AddTabCommand = ReactiveCommand.Create(() =>
-        {
-            AddTab();
-        });
+        AddTabCommand = ReactiveCommand.Create(AddDefaultTab);
 
         _tabsList
             .Connect()
@@ -135,18 +138,6 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
                 })
                 .Subscribe()
                 .DisposeWith(disposables);
-
-            // react to the change page command
-            _tabsList
-                .Connect()
-                .MergeManyWithSource(item => item.Contents.ViewModel!.ChangePageCommand)
-                .SubscribeWithErrorLogging(tuple =>
-                {
-                    var (item, pageData) = tuple;
-                    var newPage = _factoryController.Create(pageData);
-                    item.Contents = newPage;
-                })
-                .DisposeWith(disposables);
         });
     }
 
@@ -163,26 +154,33 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
         UpdateActualBounds();
     }
 
-    public IPanelTabViewModel AddTab()
+    public void AddDefaultTab()
     {
         var allDetails = _factoryController.GetAllDetails().ToArray();
-        var newTabPage = _factoryController.Create(new PageData
+        var pageData = new PageData
         {
             FactoryId = NewTabPageFactory.StaticId,
             Context = new NewTabPageContext
             {
                 DiscoveryDetails = allDetails
             }
-        });
+        };
 
+        AddCustomTab(pageData);
+    }
+
+    public void AddCustomTab(PageData pageData)
+    {
+        var newTabPage = _factoryController.Create(pageData, WorkspaceId, Id, tabId: Optional<PanelTabId>.None);
         var tab = new PanelTabViewModel
         {
             Contents = newTabPage
         };
 
+        newTabPage.ViewModel.TabId = tab.Id;
+
         _tabsList.Edit(updater => updater.Add(tab));
         SelectedTabId = tab.Id;
-        return tab;
     }
 
     public void CloseTab(PanelTabId id)
@@ -214,10 +212,14 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
             for (uint i = 0; i < data.Tabs.Length; i++)
             {
                 var tab = data.Tabs[i];
+                var newTabPage = _factoryController.Create(tab.PageData, WorkspaceId, Id, tabId: Optional<PanelTabId>.None);
+
                 var vm = new PanelTabViewModel
                 {
-                    Contents = _factoryController.Create(tab.PageData)
+                    Contents = newTabPage
                 };
+
+                newTabPage.ViewModel.TabId = vm.Id;
 
                 updater.Add(vm);
             }

@@ -12,7 +12,7 @@ public class NewTabPageViewModel : APageViewModel<INewTabPageViewModel>, INewTab
     private readonly ReadOnlyObservableCollection<INewTabPageSectionViewModel> _sections;
     public ReadOnlyObservableCollection<INewTabPageSectionViewModel> Sections => _sections;
 
-    public NewTabPageViewModel(PageDiscoveryDetails[] discoveryDetails)
+    public NewTabPageViewModel(IWorkspaceController workspaceController, PageDiscoveryDetails[] discoveryDetails) : base(workspaceController)
     {
         _itemSource.Edit(list =>
         {
@@ -34,7 +34,10 @@ public class NewTabPageViewModel : APageViewModel<INewTabPageViewModel>, INewTab
             _itemSource
                 .Connect()
                 .MergeMany(item => item.SelectItemCommand)
-                .InvokeCommand(ChangePageCommand)
+                .SubscribeWithErrorLogging(pageData =>
+                {
+                    WorkspaceController.OpenPage(WorkspaceId, pageData, new OpenPageBehavior(new OpenPageBehavior.ReplaceTab(PanelId, TabId)));
+                })
                 .DisposeWith(disposables);
         });
     }

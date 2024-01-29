@@ -67,6 +67,7 @@
         <PackageReference Include="DynamicData" />
         <PackageReference Include="Humanizer" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+        <PackageReference Include="OneOf" />
         <PackageReference Include="Projektanker.Icons.Avalonia.MaterialDesign" />
         <PackageReference Include="ReactiveUI.Fody" />
         <PackageReference Include="Splat.Microsoft.Extensions.Logging" />
@@ -337,6 +338,12 @@
         <Compile Update="Controls\ProgressRing\ProgressRing.axaml.cs">
           <DependentUpon>ProgressRing.axaml</DependentUpon>
           <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="WorkspaceSystem\Controllers\WorkspaceController.cs">
+          <DependentUpon>IWorkspaceController.cs</DependentUpon>
+        </Compile>
+        <Compile Update="WorkspaceSystem\Controllers\DesignWorkspaceController.cs">
+          <DependentUpon>IWorkspaceController.cs</DependentUpon>
         </Compile>
     </ItemGroup>
 
