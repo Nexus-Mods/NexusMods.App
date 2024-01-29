@@ -4,11 +4,11 @@
 
     <ItemGroup>
       <ProjectReference Include="..\NexusMods.Abstractions.GameLocators\NexusMods.Abstractions.GameLocators.csproj" />
-      <ProjectReference Include="..\NexusMods.Abstractions.Games\NexusMods.Abstractions.Games.csproj" />
       <ProjectReference Include="..\NexusMods.Abstractions.Loadouts\NexusMods.Abstractions.Loadouts.csproj" />
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="NexusMods.Hashing.xxHash64" />
       <PackageReference Include="System.Text.Json" />
     </ItemGroup>
 

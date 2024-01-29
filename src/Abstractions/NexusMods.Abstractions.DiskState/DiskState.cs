@@ -2,7 +2,6 @@
 using System.Text.Json.Serialization;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.Trees;
-using NexusMods.Abstractions.Games.Trees;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees.Traits;
@@ -13,19 +12,19 @@ namespace NexusMods.Abstractions.DiskState;
 /// A tree representing the current state of files on disk.
 /// </summary>
 [JsonConverter(typeof(DiskStateConverter))]
-public class DiskState : AGamePathNodeTree<DiskStateEntry>
+public class DiskStateTree : AGamePathNodeTree<DiskStateEntry>
 {
-    private DiskState(IEnumerable<KeyValuePair<GamePath, DiskStateEntry>> tree) : base(tree) { }
+    private DiskStateTree(IEnumerable<KeyValuePair<GamePath, DiskStateEntry>> tree) : base(tree) { }
 
     /// <summary>
     ///     Creates a disk state from a list of files.
     /// </summary>
-    public static DiskState Create(IEnumerable<KeyValuePair<GamePath, DiskStateEntry>> items) => new(items);
+    public static DiskStateTree Create(IEnumerable<KeyValuePair<GamePath, DiskStateEntry>> items) => new(items);
 }
 
-class DiskStateConverter : JsonConverter<DiskState>
+class DiskStateConverter : JsonConverter<DiskStateTree>
 {
-    public override DiskState Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override DiskStateTree Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         if (reader.TokenType != JsonTokenType.StartArray)
             throw new JsonException();
@@ -34,7 +33,7 @@ class DiskStateConverter : JsonConverter<DiskState>
         while (reader.Read())
         {
             if (reader.TokenType == JsonTokenType.EndArray)
-                return DiskState.Create(itms);
+                return DiskStateTree.Create(itms);
 
             if (reader.TokenType != JsonTokenType.StartArray)
                 throw new JsonException();
@@ -62,10 +61,10 @@ class DiskStateConverter : JsonConverter<DiskState>
             }));
         }
 
-        return DiskState.Create(itms);
+        return DiskStateTree.Create(itms);
     }
 
-    public override void Write(Utf8JsonWriter writer, DiskState value, JsonSerializerOptions options)
+    public override void Write(Utf8JsonWriter writer, DiskStateTree value, JsonSerializerOptions options)
     {
         writer.WriteStartArray();
         foreach (var boxed in value.GetAllDescendentFiles())

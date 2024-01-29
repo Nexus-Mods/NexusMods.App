@@ -1,14 +1,14 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.DiskState;
+using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.GameLocators.GameCapabilities;
 using NexusMods.Abstractions.Games.DTO;
-using NexusMods.Abstractions.Games.GameCapabilities;
 using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Installers;
-using NexusMods.Abstractions.Installers.DTO;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Paths;
-using LocationId = NexusMods.Abstractions.Installers.DTO.LocationId;
 
 namespace NexusMods.Abstractions.Games;
 
@@ -100,7 +100,7 @@ public abstract class AGame : IGame
     /// </summary>
     /// <param name="installation"></param>
     /// <returns></returns>
-    public virtual ValueTask<DiskState> GetInitialDiskState(GameInstallation installation)
+    public virtual ValueTask<DiskStateTree> GetInitialDiskState(GameInstallation installation)
     {
         var cache = _provider.GetRequiredService<IFileHashCache>();
         return cache.IndexDiskState(installation);

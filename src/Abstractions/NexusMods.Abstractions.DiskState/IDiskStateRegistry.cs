@@ -13,12 +13,12 @@ public interface IDiskStateRegistry
     /// <param name="loadoutId"></param>
     /// <param name="diskState"></param>
     /// <returns></returns>
-    void SaveState(LoadoutId loadoutId, DiskState diskState);
+    void SaveState(LoadoutId loadoutId, DiskStateTree diskState);
 
     /// <summary>
     /// Gets the disk state associated with a specific version of a loadout (if any)
     /// </summary>
     /// <param name="loadoutId"></param>
     /// <returns></returns>
-    DiskState? GetState(LoadoutId loadoutId);
+    DiskStateTree? GetState(LoadoutId loadoutId);
 }

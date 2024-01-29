@@ -1,4 +1,5 @@
 using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Installers;
@@ -11,13 +12,8 @@ namespace NexusMods.Abstractions.Games;
 /// Interface for a specific game recognized by the app. A single game can have
 /// multiple installations.
 /// </summary>
-public interface IGame
+public interface IGame : ILocatableGame
 {
-    /// <summary>
-    /// Human friendly name for the game
-    /// </summary>
-    public string Name { get; }
-
     /// <summary>
     /// Machine friendly name for the game, should be devoid of special characters
     /// that may conflict with URLs or file paths.
@@ -67,7 +63,7 @@ public interface IGame
     /// as they exist in a fresh install of the game.
     /// </summary>
     /// <returns></returns>
-    public ValueTask<DiskState> GetInitialDiskState(GameInstallation installation);
+    public ValueTask<DiskState.DiskStateTree> GetInitialDiskState(GameInstallation installation);
 
     /// <summary>
     /// Returns a <see cref="ILoadoutSynchronizer"/> for this game.

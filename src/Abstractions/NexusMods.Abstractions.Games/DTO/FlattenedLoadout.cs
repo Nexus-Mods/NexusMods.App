@@ -1,5 +1,5 @@
-using NexusMods.Abstractions.Games.Trees;
-using NexusMods.Abstractions.Installers.DTO;
+using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.GameLocators.Trees;
 
 namespace NexusMods.Abstractions.Games.DTO;
 

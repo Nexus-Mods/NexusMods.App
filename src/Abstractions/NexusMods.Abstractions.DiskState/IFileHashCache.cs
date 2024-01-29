@@ -67,7 +67,7 @@ public interface IFileHashCache
     /// </summary>
     /// <param name="installation"></param>
     /// <returns></returns>
-    ValueTask<DiskState> IndexDiskState(GameInstallation installation);
+    ValueTask<DiskStateTree> IndexDiskState(GameInstallation installation);
 }
 
 /// <summary>

@@ -1,7 +1,6 @@
-using NexusMods.Abstractions.Installers.DTO;
 using NexusMods.Paths;
 
-namespace NexusMods.Abstractions.Games;
+namespace NexusMods.Abstractions.GameLocators;
 
 /// <summary>
 /// Extensions related to the <see cref="GamePath"/> class that cannot be stored inside
