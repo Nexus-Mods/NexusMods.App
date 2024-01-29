@@ -29,7 +29,7 @@ if (Test-Path $codeSignToolDir -PathType Container) {
     exit 1;
 }
 
-$codeSignToolPath = Join-Path $codeSignToolDir "CodeSignTool"
+$codeSignToolPath = Join-Path $codeSignToolDir "CodeSignTool.bat"
 
 # CodeSignTool requires user interaction to confirm an overwrite of the original file.
 # We circumvent this by setting the output directory to some temp directory and replacing
