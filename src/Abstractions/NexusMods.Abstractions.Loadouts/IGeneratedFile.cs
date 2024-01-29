@@ -1,5 +1,6 @@
 ﻿using NexusMods.Abstractions.DataModel.Entities.Mods;
 using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Hashing.xxHash64;
 
 namespace NexusMods.Abstractions.Games.Loadouts;

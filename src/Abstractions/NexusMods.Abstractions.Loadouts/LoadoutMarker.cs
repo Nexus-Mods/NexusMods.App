@@ -1,4 +1,5 @@
 using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization.DataModel.Ids;
 
 namespace NexusMods.Abstractions.Games.Loadouts;

@@ -1,9 +1,9 @@
 using System.Buffers.Binary;
-using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.Games;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 
-namespace NexusMods.Abstractions.Games;
+namespace NexusMods.Abstractions.DiskState;
 
 /// <summary>
 ///     Provides access to a cache where all datamodel recognised data lives.

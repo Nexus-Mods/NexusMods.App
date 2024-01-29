@@ -1,4 +1,5 @@
 ﻿using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.Loadouts;
 
 namespace NexusMods.Abstractions.Games.Loadouts;
 

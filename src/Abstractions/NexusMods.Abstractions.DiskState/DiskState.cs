@@ -1,13 +1,13 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
+using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Games.Trees;
 using NexusMods.Abstractions.Installers.DTO;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees.Traits;
-using LocationId = NexusMods.Abstractions.Installers.DTO.LocationId;
 
-namespace NexusMods.Abstractions.Games.DTO;
+namespace NexusMods.Abstractions.DiskState;
 
 /// <summary>
 /// A tree representing the current state of files on disk.

@@ -28,5 +28,6 @@
 
     <ItemGroup>
       <Folder Include="Stores\" />
+      <Folder Include="Triggers\" />
     </ItemGroup>
 </Project>

@@ -4,6 +4,7 @@ using NexusMods.Abstractions.Games.Loadouts.Visitors;
 using NexusMods.Abstractions.Games.Trees;
 using NexusMods.Abstractions.Installers.DTO;
 using NexusMods.Abstractions.Installers.DTO.Files;
+using NexusMods.Abstractions.Loadouts;
 
 namespace NexusMods.Abstractions.Games.Loadouts.Transformer;
 

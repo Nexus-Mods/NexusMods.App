@@ -1,9 +1,9 @@
-using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.Abstractions.Serialization.DataModel;
 
-namespace NexusMods.Abstractions.Games.Loadouts;
+namespace NexusMods.Abstractions.Loadouts;
 
 /// <summary>
 /// A loadout can be thought of as a mod list that is specific to a certain

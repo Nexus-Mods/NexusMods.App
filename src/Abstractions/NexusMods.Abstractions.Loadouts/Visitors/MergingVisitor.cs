@@ -1,4 +1,5 @@
 ﻿using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.Loadouts;
 
 namespace NexusMods.Abstractions.Games.Loadouts.Visitors;
 
