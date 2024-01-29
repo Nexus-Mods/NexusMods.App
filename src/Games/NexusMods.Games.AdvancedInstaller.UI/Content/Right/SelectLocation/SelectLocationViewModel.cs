@@ -2,9 +2,8 @@
 using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Controls.Templates;
 using DynamicData;
-using NexusMods.Abstractions.Games.Loadouts;
-using NexusMods.Abstractions.Installers.DTO;
-using NexusMods.Abstractions.Installers.Info;
+using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Extensions;
 using NexusMods.Games.AdvancedInstaller.UI.Resources;
 using NexusMods.Paths;

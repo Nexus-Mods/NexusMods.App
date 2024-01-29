@@ -6,7 +6,6 @@ using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.App.UI.Controls.Spine.Buttons.Download;

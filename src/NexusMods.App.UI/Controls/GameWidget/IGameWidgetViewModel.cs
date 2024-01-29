@@ -1,6 +1,6 @@
 using System.Windows.Input;
 using Avalonia.Media.Imaging;
-using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.GameLocators;
 
 namespace NexusMods.App.UI.Controls.GameWidget;
 

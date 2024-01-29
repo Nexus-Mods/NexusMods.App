@@ -1,6 +1,5 @@
 using NexusMods.Abstractions.FileStore.Trees;
-using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Installers.DTO;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees;
 
