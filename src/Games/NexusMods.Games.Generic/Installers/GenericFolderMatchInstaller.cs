@@ -1,9 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.FileStore.Trees;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.GameCapabilities;
 using NexusMods.Abstractions.Installers;
-using NexusMods.Abstractions.Installers.DTO;
 using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees;

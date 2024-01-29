@@ -1,9 +1,7 @@
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Installers;
-using NexusMods.Abstractions.Installers.DTO;
 using NexusMods.Games.MountAndBlade2Bannerlord.Utils;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord.Services;

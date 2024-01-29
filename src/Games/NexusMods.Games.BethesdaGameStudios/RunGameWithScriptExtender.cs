@@ -22,7 +22,7 @@ public abstract class RunGameWithScriptExtender<T> : RunGameTool<T> where T : AG
     protected override async ValueTask<AbsolutePath> GetGamePath(Loadout loadout)
     {
         var flattened =
-            await ((IStandardizedLoadoutSynchronizer)loadout.Installation.Game.Synchronizer)
+            await ((IStandardizedLoadoutSynchronizer)loadout.Installation.Game().Synchronizer)
             .LoadoutToFlattenedLoadout(loadout);
         return flattened.ContainsKey(ScriptLoaderPath) ?
             ScriptLoaderPath.CombineChecked(loadout.Installation) :

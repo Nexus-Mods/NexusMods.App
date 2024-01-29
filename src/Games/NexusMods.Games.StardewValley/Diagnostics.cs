@@ -1,7 +1,7 @@
 using NexusMods.Abstractions.DataModel.Entities.Mods;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.References;
-using NexusMods.Abstractions.Games.Loadouts;
+using NexusMods.Abstractions.Loadouts;
 
 namespace NexusMods.Games.StardewValley;
 

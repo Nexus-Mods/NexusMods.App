@@ -1,8 +1,7 @@
 using System.Text.Json;
-using NexusMods.Abstractions.DataModel.Entities.Mods;
 using NexusMods.Abstractions.FileStore.Trees;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Installers;
-using NexusMods.Abstractions.Installers.DTO;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Games.StardewValley.Models;
 using NexusMods.Paths;

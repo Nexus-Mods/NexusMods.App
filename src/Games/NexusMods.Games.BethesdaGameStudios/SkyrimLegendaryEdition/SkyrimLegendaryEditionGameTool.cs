@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Games;
 using NexusMods.CrossPlatform.Process;
 
 namespace NexusMods.Games.BethesdaGameStudios.SkyrimLegendaryEdition;

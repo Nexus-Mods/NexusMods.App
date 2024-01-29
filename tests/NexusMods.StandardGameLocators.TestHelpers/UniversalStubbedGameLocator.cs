@@ -1,13 +1,12 @@
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Games.Stores.Unknown;
-using NexusMods.Abstractions.Installers.DTO;
 using NexusMods.Paths;
 
 namespace NexusMods.StandardGameLocators.TestHelpers;
 
 public class UniversalStubbedGameLocator<TGame> : IGameLocator, IDisposable
-    where TGame : IGame
+    where TGame : ILocatableGame
 {
     private readonly TemporaryPath _path;
     private readonly Version? _version;
@@ -30,7 +29,7 @@ public class UniversalStubbedGameLocator<TGame> : IGameLocator, IDisposable
         }
     }
 
-    public IEnumerable<GameLocatorResult> Find(IGame game)
+    public IEnumerable<GameLocatorResult> Find(ILocatableGame game)
     {
         if (game is not TGame)
             yield break;

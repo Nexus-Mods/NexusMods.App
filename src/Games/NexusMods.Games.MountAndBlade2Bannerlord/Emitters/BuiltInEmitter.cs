@@ -5,7 +5,7 @@ using NexusMods.Abstractions.DataModel.Entities.Mods;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Diagnostics.References;
-using NexusMods.Abstractions.Games.Loadouts;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.MountAndBlade2Bannerlord.Extensions;
 using NexusMods.Games.MountAndBlade2Bannerlord.Utils;
 

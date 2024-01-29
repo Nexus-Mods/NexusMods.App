@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Games.Tools;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Extensions.DependencyInjection;
