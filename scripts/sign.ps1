@@ -42,8 +42,12 @@ if (Test-Path $tmpDir -PathType Container) {
 
 New-Item -Path $tmpDir -Type Directory
 
-$inputFile = $executableToSign
+$inputFile = "$executableToSign"
 $outputFile = Join-Path $tmpDir $(Get-Item $inputFile).Name
+
+Write-Host "inputFile: $inputFile"
+Write-Host "outputFile: $outputFile"
+Write-Host "outputDir: $tmpDir"
 
 & $codeSignToolPath sign -input_file_path="$inputFile" -output_dir_path="$tmpDir" -username="$env:ES_USERNAME" -password="$env:ES_PASSWORD" -credential_id="$env:ES_CREDENTIAL_ID" -totp_secret="$env:ES_TOTP_SECRET"
 $exitCode = $LASTEXITCODE
