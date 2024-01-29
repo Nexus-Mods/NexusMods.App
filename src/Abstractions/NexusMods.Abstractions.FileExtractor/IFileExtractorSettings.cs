@@ -46,7 +46,8 @@ public class FileExtractorSettings : IFileExtractorSettings
         return fs.OS.MatchPlatform(
             () => fs.GetKnownPath(KnownPath.TempDirectory).Combine("NexusMods.App/Temp"),
             () => fs.GetKnownPath(KnownPath.XDG_STATE_HOME).Combine("NexusMods.App/Temp"),
-            () => fs.GetKnownPath(KnownPath.TempDirectory).Combine("NexusMods.App/Temp"));
+            // Use _App vs .App so as not to confuse OSX into thinking this is
+            () => fs.GetKnownPath(KnownPath.TempDirectory).Combine("NexusMods_App/Temp"));
     }
 
     /// <summary>
