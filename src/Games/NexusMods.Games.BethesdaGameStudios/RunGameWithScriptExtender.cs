@@ -1,8 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Games.Loadouts;
-using NexusMods.Abstractions.Games.Tools;
-using NexusMods.Abstractions.Installers.DTO;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.Paths;

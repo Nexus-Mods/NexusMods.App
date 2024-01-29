@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 using FluentAssertions;
-using NexusMods.Abstractions.Installers.DTO;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Paths;
 
 namespace NexusMods.Abstractions.Games.Tests;

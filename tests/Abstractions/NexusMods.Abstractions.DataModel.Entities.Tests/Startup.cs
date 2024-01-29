@@ -25,7 +25,6 @@ public class Startup
             .AddStandardGameLocators(false)
             .AddStubbedGameLocators()
             .AddDataModelBaseEntities()
-            .AddDataModelEntities()
             .AddInstallerTypes()
             .AddLogging(builder => builder.AddXUnit());
     }
