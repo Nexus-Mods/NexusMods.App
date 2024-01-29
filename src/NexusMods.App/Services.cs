@@ -1,7 +1,6 @@
 using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.App.Settings;
-using NexusMods.Abstractions.DataModel.Entities;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Serialization;
@@ -70,7 +69,6 @@ public static class Services
                 .AddFileExtractors(config.FileExtractorSettings)
                 .AddDataModel(config.DataModelSettings)
                 .AddDataModelBaseEntities()
-                .AddDataModelEntities()
                 .AddInstallerTypes()
                 .AddGames()
                 .AddActivityMonitor()
