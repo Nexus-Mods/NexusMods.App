@@ -1,8 +1,8 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
-using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.GameLocators.Trees;
 using NexusMods.Abstractions.Games.Trees;
-using NexusMods.Abstractions.Installers.DTO;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees.Traits;

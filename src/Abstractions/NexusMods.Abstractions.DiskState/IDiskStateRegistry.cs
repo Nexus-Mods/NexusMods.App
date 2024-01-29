@@ -1,6 +1,6 @@
-using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.Games.Loadouts;
 
-namespace NexusMods.Abstractions.Games.Loadouts;
+namespace NexusMods.Abstractions.DiskState;
 
 /// <summary>
 /// A registry for managing disk states created by ingesting/applying loadouts

@@ -1,10 +1,10 @@
 using System.Diagnostics.CodeAnalysis;
-using NexusMods.Abstractions.Installers.DTO;
+using NexusMods.Abstractions.Games.Trees;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees;
 using NexusMods.Paths.Trees.Traits;
 
-namespace NexusMods.Abstractions.Games.Trees;
+namespace NexusMods.Abstractions.GameLocators.Trees;
 
 /// <summary>
 ///     The base class for a tree which stores items using <see cref="GamePath"/>(s)

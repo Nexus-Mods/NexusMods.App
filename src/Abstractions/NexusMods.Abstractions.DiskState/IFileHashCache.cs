@@ -1,5 +1,5 @@
 using System.Buffers.Binary;
-using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 

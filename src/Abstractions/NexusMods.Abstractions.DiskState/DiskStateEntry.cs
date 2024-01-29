@@ -1,8 +1,7 @@
-﻿using NexusMods.Abstractions.Installers.DTO.Files;
-using NexusMods.Hashing.xxHash64;
+﻿using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 
-namespace NexusMods.Abstractions.Games.DTO;
+namespace NexusMods.Abstractions.DiskState;
 
 /// <summary>
 /// Metadata about a file on disk.
@@ -36,21 +35,6 @@ public readonly struct DiskStateEntry
             Hash = hashedEntry.Hash,
             Size = hashedEntry.Size,
             LastModified = hashedEntry.LastModified
-        };
-    }
-
-    /// <summary>
-    /// Converts a <see cref="StoredFile"/> to a <see cref="DiskStateEntry"/>.
-    /// </summary>
-    /// <param name="hashedEntry"></param>
-    /// <returns></returns>
-    public static DiskStateEntry From(StoredFile hashedEntry)
-    {
-        return new()
-        {
-            Hash = hashedEntry.Hash,
-            Size = hashedEntry.Size,
-            LastModified = DateTime.Now
         };
     }
 
