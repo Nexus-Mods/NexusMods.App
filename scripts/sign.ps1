@@ -30,6 +30,12 @@ if (Test-Path $codeSignToolDir -PathType Container) {
 }
 
 $codeSignToolPath = Join-Path $codeSignToolDir "CodeSignTool.bat"
+if (Test-Path $codeSignToolPath -PathType Leaf) {
+    Write-Host "CodeSignTool executable $codeSignToolPath";
+} else {
+    Write-Error "CodeSignTool executable $codeSignToolPath doesn't exist!";
+    exit 1;
+}
 
 # CodeSignTool requires user interaction to confirm an overwrite of the original file.
 # We circumvent this by setting the output directory to some temp directory and replacing
