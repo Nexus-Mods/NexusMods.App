@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using FomodInstaller.Scripting.XmlScript;
 using JetBrains.Annotations;
-using NexusMods.Abstractions.Installers.Trees;
+using NexusMods.Abstractions.FileStore.Trees;
 using NexusMods.Extensions.BCL;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees;

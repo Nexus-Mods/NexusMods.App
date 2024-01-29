@@ -1,12 +1,10 @@
-using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Installers.DTO.Files;
 using NexusMods.Abstractions.IO;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees;
 using NexusMods.Paths.Trees.Traits;
-using ModFileTreeNode = NexusMods.Paths.Trees.KeyedBox<NexusMods.Paths.RelativePath, NexusMods.Abstractions.Installers.Trees.ModFileTree>;
-namespace NexusMods.Abstractions.Installers.Trees;
+using ModFileTreeNode = NexusMods.Paths.Trees.KeyedBox<NexusMods.Paths.RelativePath, NexusMods.Abstractions.FileStore.Trees.ModFileTree>;
+namespace NexusMods.Abstractions.FileStore.Trees;
 
 /// <summary>
 ///     Represents a tree of files sourced from a downloaded mod.

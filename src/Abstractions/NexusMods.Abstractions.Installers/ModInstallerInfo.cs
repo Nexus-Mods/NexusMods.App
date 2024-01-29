@@ -2,7 +2,7 @@ using NexusMods.Abstractions.DataModel.Entities.Mods;
 using NexusMods.Abstractions.Installers.DTO;
 using NexusMods.Abstractions.Installers.Info;
 using ModFileTreeNode =
-    NexusMods.Paths.Trees.KeyedBox<NexusMods.Paths.RelativePath, NexusMods.Abstractions.Installers.Trees.ModFileTree>;
+    NexusMods.Paths.Trees.KeyedBox<NexusMods.Paths.RelativePath, NexusMods.Abstractions.FileStore.Trees.ModFileTree>;
 
 namespace NexusMods.Abstractions.Installers;
 

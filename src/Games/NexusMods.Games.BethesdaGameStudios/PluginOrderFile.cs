@@ -6,6 +6,7 @@ using NexusMods.Abstractions.Installers.DTO;
 using NexusMods.Abstractions.Installers.DTO.Files;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Mods;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.Extensions.BCL;
 using NexusMods.Hashing.xxHash64;

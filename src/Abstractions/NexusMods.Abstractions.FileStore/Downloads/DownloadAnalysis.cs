@@ -1,5 +1,5 @@
 ﻿using NexusMods.Abstractions.FileStore.ArchiveMetadata;
-using NexusMods.Abstractions.Installers.Trees;
+using NexusMods.Abstractions.FileStore.Trees;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Serialization.Attributes;
@@ -8,7 +8,7 @@ using NexusMods.Abstractions.Serialization.DataModel.Ids;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees;
-using ModFileTreeNode = NexusMods.Paths.Trees.KeyedBox<NexusMods.Paths.RelativePath, NexusMods.Abstractions.Installers.Trees.ModFileTree>;
+using ModFileTreeNode = NexusMods.Paths.Trees.KeyedBox<NexusMods.Paths.RelativePath, NexusMods.Abstractions.FileStore.Trees.ModFileTree>;
 
 namespace NexusMods.Abstractions.Games.Downloads;
 

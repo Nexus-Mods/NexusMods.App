@@ -1,6 +1,6 @@
+using NexusMods.Abstractions.FileStore.Trees;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Installers.DTO;
-using NexusMods.Abstractions.Installers.Trees;
 using NexusMods.Games.DarkestDungeon.Models;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;

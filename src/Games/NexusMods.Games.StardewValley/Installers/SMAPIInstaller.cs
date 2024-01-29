@@ -1,6 +1,7 @@
 using Cathei.LinqGen;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.FileStore.Trees;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.ArchiveMetadata;
 using NexusMods.Abstractions.Games.Downloads;
@@ -8,7 +9,6 @@ using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Installers.DTO;
 using NexusMods.Abstractions.Installers.DTO.Files;
-using NexusMods.Abstractions.Installers.Trees;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Paths;

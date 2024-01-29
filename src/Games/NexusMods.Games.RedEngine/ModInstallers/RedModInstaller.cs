@@ -1,9 +1,9 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.FileStore.Trees;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Installers.DTO;
-using NexusMods.Abstractions.Installers.Trees;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;

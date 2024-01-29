@@ -1,7 +1,7 @@
 using NexusMods.Abstractions.IO;
 using NexusMods.Paths;
 
-namespace NexusMods.Abstractions.Installers.Trees;
+namespace NexusMods.Abstractions.FileStore.Trees;
 
 /// <summary>
 ///     Represents a source file used to create the <see cref="ModFileTree"/>.
