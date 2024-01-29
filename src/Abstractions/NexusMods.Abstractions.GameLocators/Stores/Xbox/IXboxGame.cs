@@ -2,7 +2,7 @@ namespace NexusMods.Abstractions.GameLocators.Stores.Xbox;
 
 /// <summary>
 /// When implemented, enables support for detecting installations of your
-/// <see cref="AGame"/> managed by Xbox Game Pass.
+/// games managed by Xbox Game Pass.
 /// </summary>
 /// <remarks>
 /// Game detection is automatic provided the correct <see cref="XboxIds"/>

@@ -2,7 +2,7 @@ namespace NexusMods.Abstractions.GameLocators.Stores.EGS;
 
 /// <summary>
 /// When implemented, enables support for detecting installations of your
-/// <see cref="AGame"/> managed by Epic.
+/// games managed by Epic.
 /// </summary>
 /// <remarks>
 /// Game detection is automatic provided the correct <see cref="EpicCatalogItemId"/>

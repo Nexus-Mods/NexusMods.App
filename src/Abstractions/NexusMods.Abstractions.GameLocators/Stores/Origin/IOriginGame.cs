@@ -2,7 +2,7 @@ namespace NexusMods.Abstractions.GameLocators.Stores.Origin;
 
 /// <summary>
 /// When implemented, enables support for detecting installations of your
-/// <see cref="AGame"/> managed by Origin.
+/// games managed by Origin.
 /// </summary>
 /// <remarks>
 /// Game detection is automatic provided the correct <see cref="OriginGameIds"/>

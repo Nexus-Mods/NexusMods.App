@@ -2,7 +2,7 @@ namespace NexusMods.Abstractions.GameLocators.Stores.EADesktop;
 
 /// <summary>
 /// When implemented, enables support for detecting installations of your
-/// <see cref="AGame"/> managed by EA Desktop (Origin Successor) launcher.
+/// games managed by EA Desktop (Origin Successor) launcher.
 /// </summary>
 /// <remarks>
 /// Game detection is automatic provided the correct <see cref="EADesktopSoftwareIDs"/>

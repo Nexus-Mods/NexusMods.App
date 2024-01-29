@@ -2,7 +2,7 @@ namespace NexusMods.Abstractions.GameLocators.Stores.GOG;
 
 /// <summary>
 /// When implemented, enables support for detecting installations of your
-/// <see cref="AGame"/> managed by GOG (Galaxy) launcher.
+/// games managed by GOG (Galaxy) launcher.
 /// </summary>
 /// <remarks>
 /// Game detection is automatic provided the correct <see cref="GogIds"/>

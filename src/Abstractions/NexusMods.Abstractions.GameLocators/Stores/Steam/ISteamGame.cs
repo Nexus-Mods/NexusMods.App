@@ -2,7 +2,7 @@ namespace NexusMods.Abstractions.GameLocators.Stores.Steam;
 
 /// <summary>
 /// When implemented, enables support for detecting installations of your
-/// <see cref="AGame"/> managed by Steam.
+/// games managed by Steam.
 /// </summary>
 /// <remarks>
 /// Game detection is automatic provided the correct <see cref="SteamIds"/>
