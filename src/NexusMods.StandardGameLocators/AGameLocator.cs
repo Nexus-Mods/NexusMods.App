@@ -2,10 +2,9 @@ using GameFinder.Common;
 using GameFinder.StoreHandlers.Steam;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.GameLocators.Stores.Steam;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Games.DTO;
-using NexusMods.Abstractions.Games.Stores.Steam;
-using NexusMods.Abstractions.Installers.DTO;
 using NexusMods.Paths;
 using IGame = NexusMods.Abstractions.Games.IGame;
 
@@ -19,7 +18,7 @@ namespace NexusMods.StandardGameLocators;
 /// <typeparam name="TGame">Implementation of <see cref="IGame"/> such as <see cref="ISteamGame"/> that allows us to retrieve info about the game.</typeparam>
 /// <typeparam name="TParent"></typeparam>
 public abstract class AGameLocator<TGameType, TId, TGame, TParent> : IGameLocator
-    where TGame : IGame
+    where TGame : ILocatableGame
     where TParent : AGameLocator<TGameType, TId, TGame, TParent>
     where TGameType : class, GameFinder.Common.IGame
     where TId : notnull
@@ -47,7 +46,7 @@ public abstract class AGameLocator<TGameType, TId, TGame, TParent> : IGameLocato
     ///     We use the unique store identifiers from this game to locate results.
     /// </param>
     /// <returns>List of found game installations.</returns>
-    public IEnumerable<GameLocatorResult> Find(IGame game)
+    public IEnumerable<GameLocatorResult> Find(ILocatableGame game)
     {
         if (game is not TGame tg) yield break;
 

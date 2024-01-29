@@ -17,15 +17,6 @@ namespace NexusMods.Abstractions.Games;
 public interface IGame : ILocatableGame
 {
     /// <summary>
-    /// Machine friendly name for the game, should be devoid of special characters
-    /// that may conflict with URLs or file paths.
-    /// </summary>
-    /// <remarks>
-    ///    Usually we match these with NexusMods' URLs.
-    /// </remarks>
-    public GameDomain Domain { get; }
-
-    /// <summary>
     /// IEnumerable of all valid installations of this game on this machine
     /// </summary>
     public IEnumerable<GameInstallation> Installations { get; }
@@ -59,13 +50,6 @@ public interface IGame : ILocatableGame
     /// will be tested against a mod's files in the order they are returned by this property.
     /// </summary>
     public IEnumerable<IModInstaller> Installers { get; }
-
-    /// <summary>
-    /// Gets the initial game state for a given installation. This is often a pre-determined list of files, and hashes
-    /// as they exist in a fresh install of the game.
-    /// </summary>
-    /// <returns></returns>
-    public ValueTask<DiskState.DiskStateTree> GetInitialDiskState(GameInstallation installation);
 
     /// <summary>
     /// Returns a <see cref="ILoadoutSynchronizer"/> for this game.

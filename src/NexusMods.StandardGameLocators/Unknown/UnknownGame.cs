@@ -1,7 +1,6 @@
-using NexusMods.Abstractions.DataModel.Entities.Mods;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.DTO;
-using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts.Mods;
@@ -10,7 +9,7 @@ using NexusMods.Abstractions.Serialization;
 using NexusMods.Paths;
 using LocationId = NexusMods.Abstractions.GameLocators.LocationId;
 
-namespace NexusMods.Abstractions.Games.Stores.Unknown;
+namespace NexusMods.StandardGameLocators.Unknown;
 
 /// <summary>
 /// Used as return values for games which are
@@ -58,13 +57,7 @@ public class UnknownGame : IGame
 
     /// <inheritdoc />
     public IEnumerable<IModInstaller> Installers => Array.Empty<IModInstaller>();
-
-    /// <inheritdoc />
-    public ValueTask<DiskState> GetInitialDiskState(GameInstallation installation)
-    {
-        throw new NotImplementedException();
-    }
-
+    
     /// <inheritdoc />
     public ILoadoutSynchronizer Synchronizer => throw new NotImplementedException();
 
