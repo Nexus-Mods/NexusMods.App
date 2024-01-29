@@ -5,6 +5,7 @@ using System.Reactive.Linq;
 using Avalonia;
 using DynamicData;
 using DynamicData.Aggregation;
+using DynamicData.Kernel;
 using NexusMods.Extensions.BCL;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -17,7 +18,7 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
     public PanelId Id { get; } = PanelId.NewId();
 
     /// <inheritdoc/>
-    public WorkspaceId WorkspaceId { get; set; }
+    public required WorkspaceId WorkspaceId { get; set; }
 
     private readonly SourceList<IPanelTabViewModel> _tabsList = new();
     private readonly ReadOnlyObservableCollection<IPanelTabViewModel> _tabs;
@@ -38,12 +39,10 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
 
     [Reactive] private PanelTabId SelectedTabId { get; set; }
 
-    private readonly IWorkspaceController _workspaceController;
     private readonly PageFactoryController _factoryController;
 
-    public PanelViewModel(IWorkspaceController workspaceController, PageFactoryController factoryController)
+    public PanelViewModel(PageFactoryController factoryController)
     {
-        _workspaceController = workspaceController;
         _factoryController = factoryController;
 
         var canExecute = this.WhenAnyValue(vm => vm.IsNotAlone);
@@ -172,7 +171,7 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
 
     public void AddCustomTab(PageData pageData)
     {
-        var newTabPage = _factoryController.Create(pageData, WorkspaceId, Id, tab: null);
+        var newTabPage = _factoryController.Create(pageData, WorkspaceId, Id, tabId: Optional<PanelTabId>.None);
         var tab = new PanelTabViewModel
         {
             Contents = newTabPage
@@ -213,7 +212,7 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
             for (uint i = 0; i < data.Tabs.Length; i++)
             {
                 var tab = data.Tabs[i];
-                var newTabPage = _factoryController.Create(tab.PageData, WorkspaceId, Id, tab: null);
+                var newTabPage = _factoryController.Create(tab.PageData, WorkspaceId, Id, tabId: Optional<PanelTabId>.None);
 
                 var vm = new PanelTabViewModel
                 {
