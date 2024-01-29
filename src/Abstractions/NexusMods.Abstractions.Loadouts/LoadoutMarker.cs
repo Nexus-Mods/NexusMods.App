@@ -98,15 +98,4 @@ public class LoadoutMarker
     {
         _registry.Alter(Id, changeMessage, func);
     }
-
-    /// <summary>
-    /// Merge the given loadout into the current loadout.
-    /// </summary>
-    /// <param name="newLoadout"></param>
-    public void Merge(Loadout newLoadout)
-    {
-        _registry.Alter(Id, $"Merge loadout: {newLoadout.Name}",
-            l => l.Installation.Game.Synchronizer.MergeLoadouts(l, newLoadout));
-    }
-
 }

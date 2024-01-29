@@ -10,7 +10,6 @@ namespace NexusMods.Abstractions.Loadouts.Mods;
 /// discovery step.
 /// </summary>
 [ValueObject<Guid>]
-[JsonConverter(typeof(ModFileIdConverter))]
 public readonly partial struct ModFileId { }
 
 /// <inheritdoc />

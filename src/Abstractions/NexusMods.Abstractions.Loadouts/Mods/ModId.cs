@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using TransparentValueObjects;
 
 namespace NexusMods.Abstractions.Loadouts.Mods;
 
