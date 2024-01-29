@@ -1,5 +1,4 @@
-using NexusMods.Abstractions.DataModel.Entities.Mods;
-using NexusMods.Abstractions.Installers.DTO;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Installers.DTO.Files;
 using NexusMods.Abstractions.IO;
 using NexusMods.Hashing.xxHash64;
@@ -72,21 +71,6 @@ public struct ModFileTree :
     public ValueTask<Stream> OpenAsync()
     {
         return StreamFactory!.GetStreamAsync();
-    }
-
-    /// <summary>
-    ///     Maps the current node to a <see cref="StoredFile" /> mod file
-    /// </summary>
-    /// <param name="to">Destination path of the mod file.</param>
-    public StoredFile ToStoredFile(GamePath to)
-    {
-        return new StoredFile
-        {
-            Id = ModFileId.NewId(),
-            To = to,
-            Hash = Hash,
-            Size = Size
-        };
     }
 
     // Utility Methods/Properties
@@ -176,14 +160,6 @@ public struct ModFileTree :
 /// </summary>
 public static class ModFileTreeExtensions
 {
-    /// <summary>
-    ///     Maps the ModFileTree item within the KeyedBox to a <see cref="StoredFile"/>.
-    /// </summary>
-    /// <param name="keyedBox">The KeyedBox containing a ModFileTree instance.</param>
-    /// <param name="to">Destination path of the mod file.</param>
-    /// <returns>A new StoredFile instance.</returns>
-    public static StoredFile ToStoredFile(this ModFileTreeNode keyedBox, GamePath to) => keyedBox.Item.ToStoredFile(to);
-
     /// <summary>
     ///     Gets the file extension of the ModFileTree item within the KeyedBox.
     /// </summary>

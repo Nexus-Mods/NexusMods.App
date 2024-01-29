@@ -1,4 +1,4 @@
-﻿using NexusMods.Abstractions.Games.ArchiveMetadata;
+﻿using NexusMods.Abstractions.FileStore.ArchiveMetadata;
 using NexusMods.Abstractions.Games.Downloads;
 using NexusMods.Abstractions.IO;
 using NexusMods.Hashing.xxHash64;

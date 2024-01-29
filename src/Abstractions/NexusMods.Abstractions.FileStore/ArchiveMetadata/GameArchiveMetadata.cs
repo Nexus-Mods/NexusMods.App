@@ -1,6 +1,7 @@
-﻿using NexusMods.Abstractions.Serialization.Attributes;
+﻿using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Serialization.Attributes;
 
-namespace NexusMods.Abstractions.Games.ArchiveMetadata;
+namespace NexusMods.Abstractions.FileStore.ArchiveMetadata;
 
 
 /// <summary>

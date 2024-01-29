@@ -1,4 +1,4 @@
-﻿namespace NexusMods.Abstractions.Serialization;
+﻿namespace NexusMods.Abstractions.FileStore;
 
 /// <summary>
 /// Used to indicate the quality of some information. Higher quality data should be used as

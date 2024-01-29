@@ -9,6 +9,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\Extensions\NexusMods.Extensions.DependencyInjection\NexusMods.Extensions.DependencyInjection.csproj" />
+      <ProjectReference Include="..\NexusMods.Abstractions.GameLocators\NexusMods.Abstractions.GameLocators.csproj" />
       <ProjectReference Include="..\NexusMods.Abstractions.IO\NexusMods.Abstractions.IO.csproj" />
     </ItemGroup>
 

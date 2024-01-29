@@ -1,7 +1,7 @@
 ﻿using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.Paths;
 
-namespace NexusMods.Abstractions.Games.ArchiveMetadata;
+namespace NexusMods.Abstractions.FileStore.ArchiveMetadata;
 
 /// <summary>
 /// Archive metadata for a download that was installed from a file path.

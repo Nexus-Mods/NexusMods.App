@@ -1,7 +1,6 @@
-﻿using NexusMods.Abstractions.Serialization;
-using NexusMods.Abstractions.Serialization.Attributes;
+﻿using NexusMods.Abstractions.Serialization.Attributes;
 
-namespace NexusMods.Abstractions.Games.ArchiveMetadata;
+namespace NexusMods.Abstractions.FileStore.ArchiveMetadata;
 
 /// <summary>
 /// Info for a mod archive describing where it came from and the suggested name of the file

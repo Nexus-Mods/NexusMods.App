@@ -1,6 +1,6 @@
 ﻿using NexusMods.Hashing.xxHash64;
 
-namespace NexusMods.Abstractions.Games.Triggers;
+namespace NexusMods.Abstractions.Triggers;
 
 /// <summary>
 /// A filter for limiting when a trigger is executed. Triggers are added to files to signify to the application that

@@ -1,4 +1,4 @@
-﻿using NexusMods.Abstractions.Games.ArchiveMetadata;
+﻿using NexusMods.Abstractions.FileStore.ArchiveMetadata;
 using NexusMods.Abstractions.Installers.Trees;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Serialization;
