@@ -1,4 +1,6 @@
-﻿namespace NexusMods.Abstractions.Installers.DTO.Files;
+﻿using NexusMods.Abstractions.GameLocators;
+
+namespace NexusMods.Abstractions.Installers.DTO.Files;
 
 /// <summary>
 /// A mod file that will be installed to the game folders in the <see cref="To"/> path.

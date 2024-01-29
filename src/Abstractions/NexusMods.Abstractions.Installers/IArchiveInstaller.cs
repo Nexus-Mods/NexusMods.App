@@ -1,9 +1,9 @@
 ﻿using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.Games.Downloads;
-using NexusMods.Abstractions.Games.Loadouts;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Mods;
 
-namespace NexusMods.Abstractions.Loadouts;
+namespace NexusMods.Abstractions.Installers;
 
 /// <summary>
 /// A component that can index and install archives.
