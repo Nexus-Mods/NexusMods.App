@@ -1,11 +1,10 @@
-using NexusMods.Abstractions.DataModel.Entities.Mods;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 
-namespace NexusMods.Abstractions.Installers.DTO.Files;
+namespace NexusMods.Abstractions.Loadouts.Files;
 
 /// <summary>
 /// A mod file that is stored in the IFileStore. In other words,

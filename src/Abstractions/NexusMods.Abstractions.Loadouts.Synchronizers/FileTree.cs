@@ -1,4 +1,5 @@
 ﻿using NexusMods.Abstractions.GameLocators.Trees;
+using NexusMods.Abstractions.Loadouts.Mods;
 
 namespace NexusMods.Abstractions.GameLocators;
 

@@ -2,7 +2,7 @@
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Installers.DTO;
-using NexusMods.Abstractions.Installers.DTO.Files;
+using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Games.AdvancedInstaller.UI.ModContent;
 using NexusMods.Games.AdvancedInstaller.UI.SelectLocation;
 using NexusMods.Games.AdvancedInstaller.UI.Tests.Helpers;

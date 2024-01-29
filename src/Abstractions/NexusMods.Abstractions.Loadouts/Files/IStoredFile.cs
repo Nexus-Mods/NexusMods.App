@@ -1,7 +1,7 @@
 ﻿using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 
-namespace NexusMods.Abstractions.Installers.DTO.Files;
+namespace NexusMods.Abstractions.Loadouts.Files;
 
 /// <summary>
 /// Used to indicate that a mod file will be installed from an archive.

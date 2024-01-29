@@ -1,7 +1,7 @@
 using NexusMods.Abstractions.DataModel.Entities.Mods;
 using NexusMods.Abstractions.FileStore.Trees;
 using NexusMods.Abstractions.Installers.DTO;
-using NexusMods.Abstractions.Installers.DTO.Files;
+using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Games.AdvancedInstaller.Exceptions;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees;

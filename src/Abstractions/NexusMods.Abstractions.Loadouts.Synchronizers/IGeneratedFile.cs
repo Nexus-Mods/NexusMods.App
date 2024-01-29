@@ -1,7 +1,10 @@
-﻿using NexusMods.Abstractions.Loadouts.Mods;
+﻿using NexusMods.Abstractions.DiskState;
+using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Hashing.xxHash64;
 
-namespace NexusMods.Abstractions.Loadouts;
+namespace NexusMods.Abstractions.Loadouts.Synchronizers;
 
 /// <summary>
 /// Interface for a file that is generated at apply time, not stored in the file store

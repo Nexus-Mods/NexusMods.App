@@ -14,6 +14,7 @@
     <!-- Bannerlord -->
     <PackageVersion Include="Bannerlord.LauncherManager" Version="1.0.76" />
     <PackageVersion Include="FetchBannerlordVersion" Version="1.0.6.39" />
+    <PackageVersion Include="System.Linq" Version="4.3.0" />
     <PackageVersion Include="System.Text.Json" Version="8.0.1" />
   </ItemGroup>
   <ItemGroup>

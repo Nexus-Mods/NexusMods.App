@@ -3,18 +3,17 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.DataModel.Entities.Mods;
 using NexusMods.Abstractions.DataModel.Entities.Sorting;
+using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Games.Loadouts.Sorting;
-using NexusMods.Abstractions.Games.Loadouts.Visitors;
 using NexusMods.Abstractions.Games.Trees;
-using NexusMods.Abstractions.Installers.DTO;
-using NexusMods.Abstractions.Installers.DTO.Files;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
-using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.Loadouts.Mods;
-using NexusMods.Abstractions.Loadouts.Synchronizers;
+using NexusMods.Abstractions.Loadouts.Sorting;
 using NexusMods.Abstractions.Loadouts.Synchronizers.Transformer;
 using NexusMods.Abstractions.Loadouts.Visitors;
 using NexusMods.Abstractions.Serialization;
@@ -22,9 +21,8 @@ using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.Extensions.BCL;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
-using LocationId = NexusMods.Abstractions.Installers.DTO.LocationId;
 
-namespace NexusMods.Abstractions.Games.Loadouts;
+namespace NexusMods.Abstractions.Loadouts.Synchronizers;
 
 /// <summary>
 /// Base class for loadout synchronizers, provides some common functionality. Does not have to be user,
@@ -119,7 +117,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
 
 
     /// <inheritdoc />
-    public async Task<DiskState> FileTreeToDisk(FileTree fileTree, Loadout loadout, FlattenedLoadout flattenedLoadout, DiskState prevState, GameInstallation installation)
+    public async Task<DiskStateTree> FileTreeToDisk(FileTree fileTree, Loadout loadout, FlattenedLoadout flattenedLoadout, DiskStateTree prevState, GameInstallation installation)
     {
         List<KeyValuePair<GamePath, HashedEntry>> toDelete = new();
         List<KeyValuePair<AbsolutePath, IGeneratedFile>> toWrite = new();
@@ -254,11 +252,11 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         }
 
         // Return the new tree
-        return DiskState.Create(resultingItems);
+        return DiskStateTree.Create(resultingItems);
     }
 
     /// <inheritdoc />
-    public virtual async Task<DiskState> GetDiskState(GameInstallation installation)
+    public virtual async Task<DiskStateTree> GetDiskState(GameInstallation installation)
     {
         return await _hashCache.IndexDiskState(installation);
     }
@@ -273,7 +271,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     }
 
     /// <inheritdoc />
-    public async ValueTask<FileTree> DiskToFileTree(DiskState diskState, Loadout prevLoadout, FileTree prevFileTree, DiskState prevDiskState)
+    public async ValueTask<FileTree> DiskToFileTree(DiskStateTree diskState, Loadout prevLoadout, FileTree prevFileTree, DiskStateTree prevDiskState)
     {
         List<KeyValuePair<GamePath, AModFile>> results = new();
         foreach (var item in diskState.GetAllDescendentFiles())
@@ -474,7 +472,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// </summary>
     /// <param name="loadout"></param>
     /// <returns></returns>
-    public virtual async Task<DiskState> Apply(Loadout loadout)
+    public virtual async Task<DiskStateTree> Apply(Loadout loadout)
     {
         var flattened = await LoadoutToFlattenedLoadout(loadout);
         var fileTree = await FlattenedLoadoutToFileTree(flattened, loadout);
@@ -549,7 +547,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// <inheritdoc />
     public virtual async Task<Loadout> Manage(GameInstallation installation)
     {
-        var initialState = await installation.Game.GetInitialDiskState(installation);
+        var initialState = await GetInitialDiskState(installation);
 
         var loadoutId = LoadoutId.Create();
 
@@ -626,5 +624,22 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         var sorted = _sorter.Sort(mods, m => m.Id, m => modRules[m.Id]);
         return sorted;
     }
+    #endregion
+
+
+    #region Misc Helper Functions
+
+    /// <summary>
+    /// Gets the initial game state of a game, by default this is just the current state of the game folders, so this should
+    /// be overridden by games that want to provide a better user experience.
+    /// </summary>
+    /// <param name="installation"></param>
+    /// <returns></returns>
+    public virtual ValueTask<DiskStateTree> GetInitialDiskState(GameInstallation installation)
+    {
+        return _hashCache.IndexDiskState(installation);
+    }
+
+
     #endregion
 }

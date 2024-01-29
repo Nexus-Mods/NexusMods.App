@@ -1,6 +1,6 @@
 using FluentAssertions;
 using NexusMods.Abstractions.Installers.DTO;
-using NexusMods.Abstractions.Installers.DTO.Files;
+using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Games.TestFramework;
 using NexusMods.Hashing.xxHash64;

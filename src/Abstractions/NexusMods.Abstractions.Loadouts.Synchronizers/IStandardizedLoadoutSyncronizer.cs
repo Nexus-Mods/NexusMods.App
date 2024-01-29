@@ -1,4 +1,5 @@
-﻿using NexusMods.Abstractions.GameLocators;
+﻿using NexusMods.Abstractions.DiskState;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Games.Loadouts;
 
@@ -35,8 +36,8 @@ public interface IStandardizedLoadoutSynchronizer : ILoadoutSynchronizer
     /// <param name="flattenedLoadout"></param>
     /// <param name="prevState"></param>
     /// <param name="installation"></param>
-    Task<DiskState> FileTreeToDisk(FileTree fileTree, Loadout loadout, FlattenedLoadout flattenedLoadout,
-        DiskState prevState, GameInstallation installation);
+    Task<DiskStateTree> FileTreeToDisk(FileTree fileTree, Loadout loadout, FlattenedLoadout flattenedLoadout,
+        DiskStateTree prevState, GameInstallation installation);
 
     #endregion
 
@@ -47,7 +48,7 @@ public interface IStandardizedLoadoutSynchronizer : ILoadoutSynchronizer
     /// </summary>
     /// <param name="installation"></param>
     /// <returns></returns>
-    Task<DiskState> GetDiskState(GameInstallation installation);
+    Task<DiskStateTree> GetDiskState(GameInstallation installation);
 
     /// <summary>
     /// Creates a new file tree from the current disk state and the previous file tree.
@@ -57,7 +58,7 @@ public interface IStandardizedLoadoutSynchronizer : ILoadoutSynchronizer
     /// <param name="prevFileTree"></param>
     /// <param name="prevDiskState"></param>
     /// <returns></returns>
-    ValueTask<FileTree> DiskToFileTree(DiskState diskState, Loadout prevLoadout, FileTree prevFileTree, DiskState prevDiskState);
+    ValueTask<FileTree> DiskToFileTree(DiskStateTree diskState, Loadout prevLoadout, FileTree prevFileTree, DiskStateTree prevDiskState);
 
     /// <summary>
     /// Creates a new flattened loadout from the current file tree and the previous flattened loadout.

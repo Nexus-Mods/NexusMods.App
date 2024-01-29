@@ -1,10 +1,9 @@
 ﻿using NexusMods.Abstractions.DataModel.Entities.Mods;
 using NexusMods.Abstractions.DataModel.Entities.Sorting;
-using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Triggers;
 
-namespace NexusMods.Abstractions.Games.Loadouts.Sorting;
+namespace NexusMods.Abstractions.Loadouts.Sorting;
 
 /// <summary>
 /// A sort rule that is generated whenever the mods in the loadout change.

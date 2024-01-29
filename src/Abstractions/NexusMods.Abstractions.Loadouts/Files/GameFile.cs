@@ -4,7 +4,7 @@ using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 
-namespace NexusMods.Abstractions.Installers.DTO.Files;
+namespace NexusMods.Abstractions.Loadouts.Files;
 
 /// <summary>
 /// This record is used for denoting files which belong to the game itself,

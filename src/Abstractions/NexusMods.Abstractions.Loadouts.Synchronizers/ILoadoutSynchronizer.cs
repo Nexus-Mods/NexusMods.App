@@ -1,4 +1,7 @@
-﻿namespace NexusMods.Abstractions.Loadouts.Synchronizers;
+﻿using NexusMods.Abstractions.DiskState;
+using NexusMods.Abstractions.GameLocators;
+
+namespace NexusMods.Abstractions.Loadouts.Synchronizers;
 
 /// <summary>
 /// A Loadout Synchronizer is responsible for synchronizing loadouts between to and from the game folder.
@@ -23,7 +26,7 @@ public interface ILoadoutSynchronizer
     /// </summary>
     /// <param name="loadout"></param>
     /// <returns>The new DiskState after the files were applied</returns>
-    Task<DiskState> Apply(Loadout loadout);
+    Task<DiskStateTree> Apply(Loadout loadout);
 
     /// <summary>
     /// Ingests changes from the game folder into the loadout.

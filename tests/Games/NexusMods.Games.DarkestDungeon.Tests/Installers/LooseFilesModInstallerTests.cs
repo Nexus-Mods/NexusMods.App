@@ -1,5 +1,5 @@
 using FluentAssertions;
-using NexusMods.Abstractions.Installers.DTO.Files;
+using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Games.DarkestDungeon.Installers;
 using NexusMods.Games.TestFramework;

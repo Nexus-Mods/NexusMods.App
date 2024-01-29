@@ -15,8 +15,4 @@
       <ProjectReference Include="..\NexusMods.Abstractions.Loadouts\NexusMods.Abstractions.Loadouts.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Info\" />
-    </ItemGroup>
-
 </Project>
