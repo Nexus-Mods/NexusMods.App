@@ -1,4 +1,6 @@
-﻿namespace NexusMods.Abstractions.Games.Loadouts;
+﻿using NexusMods.Abstractions.Loadouts.Synchronizers;
+
+namespace NexusMods.Abstractions.Games.Loadouts;
 
 /// <summary>
 /// A simple loadout synchronizer that simply calls out to ALoadoutSynchronizer.
