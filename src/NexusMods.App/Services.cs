@@ -1,8 +1,10 @@
 using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.App.Settings;
+using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Activities;
 using NexusMods.App.Listeners;
@@ -76,6 +78,8 @@ public static class Services
                 .AddBethesdaGameStudios()
                 .AddRedEngineGames()
                 .AddGenericGameSupport()
+                .AddFileStoreAbstractions()
+                .AddLoadoutAbstractions()
                 .AddReshade()
                 .AddFomod()
                 .AddDarkestDungeon()
