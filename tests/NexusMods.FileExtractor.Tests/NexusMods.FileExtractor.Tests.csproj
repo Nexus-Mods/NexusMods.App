@@ -10,6 +10,12 @@
       <ProjectReference Include="..\..\src\Extensions\NexusMods.Extensions.Hashing\NexusMods.Extensions.Hashing.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="xunit.runner.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
     <Target Name="CopyResources" AfterTargets="PostBuildEvent">
         <ItemGroup>
             <_Resources Include="Resources\**" />
