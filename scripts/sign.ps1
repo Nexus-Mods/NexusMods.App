@@ -4,6 +4,32 @@ if ($env:SignExecutable -ne "true") {
     exit 0
 }
 
+function TestFile {
+    param (
+        [string]$Path
+    )
+
+    if (Test-Path $Path -PathType Leaf) {
+        Write-Host "File exists: $Path";
+    } else {
+        Write-Error "File doesn't exist: $codeSignToolDir";
+        exit 1;
+    }
+}
+
+function TestDirectory {
+    param (
+        [string]$Path
+    )
+
+    if (Test-Path $Path -PathType Container) {
+        Write-Host "Directory exists: $Path";
+    } else {
+        Write-Error "Directory doesn't exist: $codeSignToolDir";
+        exit 1;
+    }
+}
+
 $searchDirectory = $args[0];
 if ($searchDirectory) {
     Write-Host "Using search directory $searchDirectory"
@@ -12,30 +38,16 @@ if ($searchDirectory) {
     $executableToSign = [System.IO.Path]::Combine($env:BUILD_APP_BIN, $env:APP_BASE_NAME + ".exe")
 }
 
-Write-Host $executableToSign
-
-if (Test-Path $executableToSign -PathType Leaf) {
-    Write-Host "Signing $executableToSign";
-} else {
-    Write-Error "File $executableToSign doesn't exist!";
-    exit 1;
-}
+TestFile($executableToSign)
 
 $codeSignToolDir = $env:CodeSignToolDir
-if (Test-Path $codeSignToolDir -PathType Container) {
-    Write-Host "CodeSignTool directory $codeSignToolDir";
-} else {
-    Write-Error "CodeSignTool directory $codeSignToolDir doesn't exist!";
-    exit 1;
-}
+TestDirectory($codeSignToolDir)
 
-$codeSignToolPath = Join-Path $codeSignToolDir "CodeSignTool.bat"
-if (Test-Path $codeSignToolPath -PathType Leaf) {
-    Write-Host "CodeSignTool executable $codeSignToolPath";
-} else {
-    Write-Error "CodeSignTool executable $codeSignToolPath doesn't exist!";
-    exit 1;
-}
+$javaPath = Join-Path $codeSignToolDir "jdk-11.0.2\bin\java"
+TestFile($javaPath)
+
+$jarPath = Join-Path $codeSignToolDir "jar\code_sign_tool-1.3.0.jar"
+TestFile($jarPath)
 
 # CodeSignTool requires user interaction to confirm an overwrite of the original file.
 # We circumvent this by setting the output directory to some temp directory and replacing
@@ -55,7 +67,10 @@ Write-Host "inputFile: $inputFile"
 Write-Host "outputFile: $outputFile"
 Write-Host "outputDir: $tmpDir"
 
-& $codeSignToolPath sign -input_file_path="$inputFile" -output_dir_path="$tmpDir" -username="$env:ES_USERNAME" -password="$env:ES_PASSWORD" -credential_id="$env:ES_CREDENTIAL_ID" -totp_secret="$env:ES_TOTP_SECRET"
+TestFile($inputFile)
+TestDirectory($tmpDir)
+
+& $javaPath -jar $jarPath sign -input_file_path="$inputFile" -output_dir_path="$tmpDir" -username="$env:ES_USERNAME" -password="$env:ES_PASSWORD" -credential_id="$env:ES_CREDENTIAL_ID" -totp_secret="$env:ES_TOTP_SECRET"
 $exitCode = $LASTEXITCODE
 
 if ($exitCode -eq 0) {
@@ -64,6 +79,8 @@ if ($exitCode -eq 0) {
     Write-Error "Signing failed with code $exitCode"
     exit $exitCode
 }
+
+TestFile($outputFile)
 
 Write-Host "Moving $outputFile to $inputFile"
 Move-File -Path $outputFile -Destination $inputFile -Force
