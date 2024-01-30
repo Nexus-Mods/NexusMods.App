@@ -1,14 +1,12 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Cli;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Games.ArchiveMetadata;
 using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Games.Trees;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
-using NexusMods.Abstractions.Serialization;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Extensions;
 using NexusMods.Paths;

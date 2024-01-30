@@ -1,5 +1,5 @@
 ﻿using NexusMods.Abstractions.Games.DTO;
-using NexusMods.Abstractions.Games.Triggers;
+using NexusMods.Abstractions.Triggers;
 using NexusMods.DataModel.Loadouts.LoadoutSynchronizerDTOs;
 using NexusMods.Hashing.xxHash64;
 
@@ -14,7 +14,7 @@ public interface IGeneratedFile
     /// The trigger filter that determines if this file should be re-generated.
     /// </summary>
     public ITriggerFilter<ModFilePair, Plan> TriggerFilter { get; }
-    
+
     /// <summary>
     /// Generates the contents of the file
     /// </summary>

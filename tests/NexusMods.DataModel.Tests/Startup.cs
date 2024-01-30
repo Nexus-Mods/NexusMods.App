@@ -36,7 +36,6 @@ public class Startup
             .AddStandardGameLocators(false)
             .AddFileExtractors()
             .AddStubbedGameLocators()
-            .AddDataModelEntities()
             .AddDataModelBaseEntities()
             .AddActivityMonitor()
             .AddInstallerTypes()

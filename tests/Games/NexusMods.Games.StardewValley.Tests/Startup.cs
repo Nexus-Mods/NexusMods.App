@@ -29,7 +29,6 @@ public class Startup
             .AddLogging(builder => builder.AddXUnit())
             .AddGames()
             .AddActivityMonitor()
-            .AddDataModelEntities()
             .AddDataModelBaseEntities()
             .AddInstallerTypes()
             .AddCrossPlatform()

@@ -18,7 +18,6 @@ public class Startup
             .AddGenericGameSupport()
             .AddLogging(builder => builder.AddXUnit())
             .AddGames()
-            .AddDataModelEntities()
             .AddDataModelBaseEntities()
             .AddInstallerTypes()
             .Validate();

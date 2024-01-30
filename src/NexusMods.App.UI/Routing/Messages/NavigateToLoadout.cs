@@ -11,7 +11,7 @@ namespace NexusMods.App.UI.Routing.Messages;
 /// <param name="Loadout"></param>
 public record NavigateToLoadout(Loadout Loadout) : IRoutingMessage
 {
-    public IGame Game => Loadout.Installation.Game;
+    public IGame Game => (IGame)Loadout.Installation.Game;
     public LoadoutId LoadoutIdId => Loadout.LoadoutId;
     public GameInstallation GameInstallation => Loadout.Installation;
 }

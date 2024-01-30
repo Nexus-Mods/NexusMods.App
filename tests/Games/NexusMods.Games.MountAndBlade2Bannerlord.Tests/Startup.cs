@@ -22,7 +22,6 @@ public class Startup
             .AddLogging(builder => builder.AddXunitOutput())
             .AddGames()
             .AddActivityMonitor()
-            .AddDataModelEntities()
             .AddDataModelBaseEntities()
             .AddInstallerTypes()
             .Validate();

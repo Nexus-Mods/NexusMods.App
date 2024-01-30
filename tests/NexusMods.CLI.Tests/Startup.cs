@@ -38,7 +38,6 @@ public class Startup
                 .AddActivityMonitor()
                 .AddDataModelBaseEntities()
                 .AddGames()
-                .AddDataModelEntities()
                 .AddInstallerTypes()
                 .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace))
                 .AddSingleton<LocalHttpServer>()

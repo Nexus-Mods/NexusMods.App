@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.Games.ArchiveMetadata;
+using NexusMods.Abstractions.FileStore.ArchiveMetadata;
 using NexusMods.Abstractions.Games.Downloads;
 using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.IO;

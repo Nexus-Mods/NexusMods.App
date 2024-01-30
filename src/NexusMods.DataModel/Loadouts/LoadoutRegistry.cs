@@ -42,7 +42,7 @@ public class LoadoutRegistry : IDisposable, ILoadoutRegistry
     /// <summary>
     /// All games that have loadouts
     /// </summary>
-    public IObservable<IDistinctChangeSet<IGame>> Games =>
+    public IObservable<IDistinctChangeSet<ILocatableGame>> Games =>
         Loadouts
             .DistinctValues(d => d.Installation.Game);
 
