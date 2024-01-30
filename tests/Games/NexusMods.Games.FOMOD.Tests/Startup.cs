@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.DataModel.Entities;
+using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Serialization;
@@ -24,6 +25,7 @@ public class Startup
             .AddBethesdaGameStudios()
             .AddUniversalGameLocator<SkyrimSpecialEdition>(new Version("1.6.659.0"))
             .AddGenericGameSupport()
+            .AddFileStoreAbstractions()
             .AddFomod()
             .AddSingleton<ICoreDelegates, MockDelegates>()
             .AddLogging(builder => builder.AddXUnit())
