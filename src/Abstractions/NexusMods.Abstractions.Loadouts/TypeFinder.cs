@@ -1,3 +1,4 @@
+using NexusMods.Abstractions.DataModel.Entities.Sorting;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 
@@ -17,6 +18,10 @@ public class TypeFinder : ITypeFinder
     private static IEnumerable<Type> AllTypes => new[]
     {
         typeof(Loadout),
-        typeof(Mod)
+        typeof(Mod),
+        typeof(After<Mod,ModId>),
+        typeof(Before<Mod,ModId>),
+        typeof(First<Mod,ModId>),
+        typeof(ISortRule<Mod,ModId>),
     };
 }
