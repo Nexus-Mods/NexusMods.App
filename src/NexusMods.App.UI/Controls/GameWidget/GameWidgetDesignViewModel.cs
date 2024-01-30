@@ -1,6 +1,7 @@
 using System.Windows.Input;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;

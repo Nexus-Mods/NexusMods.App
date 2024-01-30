@@ -78,6 +78,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                 .DisposeWith(disposables);
 
             loadoutRegistry.Games
+                .Transform(g => (IGame)g)
                 .Transform(game =>
                 {
                     using var iconStream = game.Icon.GetStreamAsync().Result;

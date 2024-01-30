@@ -1,17 +1,17 @@
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.DiskState;
+using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.GameLocators.GameCapabilities;
+using NexusMods.Abstractions.GameLocators.Stores.EADesktop;
+using NexusMods.Abstractions.GameLocators.Stores.EGS;
+using NexusMods.Abstractions.GameLocators.Stores.GOG;
+using NexusMods.Abstractions.GameLocators.Stores.Origin;
+using NexusMods.Abstractions.GameLocators.Stores.Steam;
+using NexusMods.Abstractions.GameLocators.Stores.Xbox;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.DTO;
-using NexusMods.Abstractions.Games.GameCapabilities;
 using NexusMods.Abstractions.Games.Loadouts;
-using NexusMods.Abstractions.Games.Stores.EADesktop;
-using NexusMods.Abstractions.Games.Stores.EGS;
-using NexusMods.Abstractions.Games.Stores.GOG;
-using NexusMods.Abstractions.Games.Stores.Origin;
-using NexusMods.Abstractions.Games.Stores.Steam;
-using NexusMods.Abstractions.Games.Stores.Xbox;
 using NexusMods.Abstractions.Installers;
-using NexusMods.Abstractions.Installers.DTO;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Loadouts.Mods;
@@ -109,7 +109,7 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
         return Array.Empty<AModFile>();
     }
 
-    public override ValueTask<DiskState> GetInitialDiskState(GameInstallation installation)
+    public override ValueTask<DiskStateTree> GetInitialDiskState(GameInstallation installation)
     {
         var results = DATA_NAMES.Select(name =>
         {
@@ -123,7 +123,7 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
                     LastModified = _modifiedTimes[installation.LocationsRegister.GetResolvedPath(gamePath)]
                 });
         });
-        return ValueTask.FromResult(DiskState.Create(results));
+        return ValueTask.FromResult(DiskStateTree.Create(results));
     }
 
 
