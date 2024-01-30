@@ -1,0 +1,105 @@
+site_name: Nexus Mods App
+site_url: https://github.com/Nexus-Mods/NexusMods.App
+
+repo_name: Nexus-Mods/NexusMods.App
+repo_url: https://github.com/Nexus-Mods/NexusMods.App
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/Nexus-Mods
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/NexusSites
+
+extra_css:
+  - Nexus/Stylesheets/extra.css
+
+markdown_extensions:
+  - admonition
+  - tables
+  - pymdownx.details
+  - pymdownx.highlight
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tasklist
+  - def_list
+  - meta
+  - md_in_html
+  - attr_list
+  - footnotes
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+
+theme:
+  name: material
+  palette:
+    scheme: nexus-slate
+  features:
+    - navigation.instant
+
+plugins:
+  - search
+
+nav:
+  - Home: index.md
+  - Getting Started: GettingStarted.md
+  - Development Guidelines:
+      - Dependency Injection: development-guidelines/DependencyInjection.md
+      - Adding a Game: development-guidelines/AddingAGame.md
+      - Localization and Translation: development-guidelines/LocalizationAndTranslation.md
+      - UI Coding Conventions: development-guidelines/UICodingConventions.md
+      - UI Styling Guidelines: development-guidelines/UIStylingGuidelines.md
+      - Interacting with FileSystem: development-guidelines/UsingIFileSystem.md
+
+
+  - Decisions:
+      - Backend:
+          - '00: Use xxhash64': decisions/backend/0000-use-xxhash64.md
+          - '01: Use SQLite': decisions/backend/0001-use-sqlite.md
+          - '03: File Paths': decisions/backend/0003-paths.md
+          - '04: File System Abstraction': decisions/backend/0004-file-system-abstraction.md
+          - '06: File System on Absolute Paths': decisions/backend/0006-file-system-on-absolute-paths.md
+          - '07: Localization and Internationalisation': decisions/backend/0007-localization-and-internationalisation.md
+          - '08: Localization Live Update Support': decisions/backend/0008-localization-live-update-support.md
+          - '09: Advanced Installer Design': decisions/backend/0009-advanced-installer-design.md
+          - '0A: Basic & Advanced Installer Suggestions': decisions/backend/0010-basic-advanced-installer-suggestions.md
+          - '0B: Undo Via Event Sourcing': decisions/backend/0011-undo-via-event-sourcing.md
+          - '0C: Single Process Application': decisions/backend/0012-single-process-application.md
+          - '0D: Default Datastore Locations': decisions/backend/0013-default-datastore-locations.md
+      - Frontend:
+          - '01: UI Panel Layout': decisions/frontend/0001-UI-Panel-Layout.md
+          - '02: Workspaces': decisions/frontend/0002-Workspaces.md
+          - '03: UI Styling Approach': decisions/frontend/0003-UI-Styling-Approach.md
+      - Meeting Notes:
+          - '00: Datastore Locations': decisions/meeting-notes/0000-datastore-locations.md
+      - Project:
+          - '00: Use Decision Records': decisions/project/0000-use-decision-records.md
+          - '01: Use C# and .NET': decisions/project/0001-use-csharp-and-dot-net.md
+          - '02: Use Microsoft Dependency Injection': decisions/project/0002-use-microsoft-dependency-injection.md
+          - '03: Use xUnit Testing Framework': decisions/project/0003-use-xunit-testing-framework.md
+          - '04: Use Nominal Typing': decisions/project/0004-use-nominal-typing.md
+      - Templates:
+          - '00: ADR Template': decisions/templates/adr-template.md
+  - Concepts:
+      - '00: Immutable Modlists': concepts/0000-immutable-modlists.md
+      - '01: DAG Sorting': concepts/0001-dag-sorting.md
+      - '02: Data Model Triggers': concepts/0002-datamodel-triggers.md
+  - Games:
+      - '00: Template': games/0000-Template.md
+      - '01: Skyrim SE': games/0001-SkyrimSE.md
+      - '02: Stardew Valley': games/0002-StardewValley.md
+      - '03: Sifu': games/0003-Sifu.md
+      - '04: Darkest Dungeon': games/0004-DarkestDungeon.md
+      - '05: Skyrim LE': games/0005-SkyrimLE.md
+      - '06: Blade And Sorcery': games/0006-BladeAndSorcery.md
+      - '07: Bannerlord': games/0007-Bannerlord.md
+  - Misc:
+      - About Fomod: misc/AboutFomod.md
+      - Comparison of File Management Systems: misc/ComparisonOfFileManagementSystems.md
+  - Contributing to Docs: Nexus/Pages/contributing.md

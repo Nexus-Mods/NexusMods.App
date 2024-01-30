@@ -1,10 +1,8 @@
-﻿# Analysis of Model Hooks
+﻿# DataModel Triggers
 
 ## Introduction
 There are several places where games and tools would like to hook into the model framework
 this document describes the various use cases in an attempt to find a common solution.
-
-
 
 ## Use Cases
 

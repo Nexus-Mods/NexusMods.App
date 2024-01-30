@@ -23,6 +23,7 @@ public static class Services
             coll.AddSingleton<IFileExtractorSettings, FileExtractorSettings>();
         else
             coll.AddSingleton(settings);
+
         coll.AddFileExtractorVerbs();
         coll.AddSingleton<FileExtractor>();
         coll.AddSingleton<IExtractor, SevenZipExtractor>();

@@ -65,6 +65,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".solutionItems", ".solution
 		README.md = README.md
 		Directory.Packages.props = Directory.Packages.props
 		.gitignore = .gitignore
+		mkdocs.yml = mkdocs.yml
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Games.FOMOD", "src\Games\NexusMods.Games.FOMOD\NexusMods.Games.FOMOD.csproj", "{B43A31B2-1F08-4D8E-9C45-48015FBA983E}"
