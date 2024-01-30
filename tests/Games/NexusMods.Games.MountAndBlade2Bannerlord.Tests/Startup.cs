@@ -1,7 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.DataModel.Entities;
+using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Activities;
 using NexusMods.App.BuildInfo;
@@ -23,6 +25,8 @@ public class Startup
             .AddGames()
             .AddActivityMonitor()
             .AddSerializationAbstractions()
+            .AddFileStoreAbstractions()
+            .AddLoadoutAbstractions()
             .AddInstallerTypes()
             .Validate();
     }
