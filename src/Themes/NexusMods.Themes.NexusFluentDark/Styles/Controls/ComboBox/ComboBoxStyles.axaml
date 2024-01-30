@@ -1,0 +1,44 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.PreviewWith>
+        <Border Padding="20" Height="300">
+            <ComboBox SelectedIndex="0" Classes="AddPanelDropDown">
+                <ComboBoxItem Content="Item 1" />
+                <ComboBoxItem Content="Item 2" />
+            </ComboBox>
+        </Border>
+    </Design.PreviewWith>
+
+    <!-- Add Styles Here -->
+    <Style Selector="ComboBox.AddPanelDropDown">
+        <Setter Property="Height" Value="40" />
+        <Setter Property="Width" Value="75" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="{StaticResource ElementStrokeTranslucentWeakBrush}" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Padding" Value="0" />
+
+        <Style Selector="^ /template/ Border#DropDownOverlay">
+            <Setter Property="IsVisible" Value="True" />
+            <Setter Property="Margin" Value="0,1,0,1" />
+            <Setter Property="CornerRadius" Value="0,8,8,0" />
+            <Setter Property="BorderThickness" Value="1,0,0,0" />
+            <Setter Property="BorderBrush" Value="{StaticResource ElementStrokeTranslucentWeakBrush}" />
+        </Style>
+
+        <Style Selector="^:pointerover /template/ Border#Background">
+            <Setter Property="BorderBrush" Value="{StaticResource ElementStrokeTranslucentSubduedBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+
+        <Style Selector="^:pointerover /template/ Border#DropDownOverlay">
+            <Setter Property="Margin" Value="0,0,0,0" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="{StaticResource ElementStrokeTranslucentModerateBrush}" />
+        </Style>
+
+
+    </Style>
+
+
+</Styles>
