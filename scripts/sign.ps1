@@ -12,7 +12,7 @@ function TestFile {
     if (Test-Path $Path -PathType Leaf) {
         Write-Host "File exists: $Path";
     } else {
-        Write-Error "File doesn't exist: $codeSignToolDir";
+        Write-Error "File doesn't exist: $Path";
         exit 1;
     }
 }
@@ -25,7 +25,7 @@ function TestDirectory {
     if (Test-Path $Path -PathType Container) {
         Write-Host "Directory exists: $Path";
     } else {
-        Write-Error "Directory doesn't exist: $codeSignToolDir";
+        Write-Error "Directory doesn't exist: $Path";
         exit 1;
     }
 }
@@ -43,10 +43,10 @@ TestFile($executableToSign)
 $codeSignToolDir = $env:CodeSignToolDir
 TestDirectory($codeSignToolDir)
 
-$javaPath = Join-Path $codeSignToolDir "jdk-11.0.2\bin\java"
+$javaPath = Join-Path $codeSignToolDir "jdk-11.0.2" "bin" "java.exe"
 TestFile($javaPath)
 
-$jarPath = Join-Path $codeSignToolDir "jar\code_sign_tool-1.3.0.jar"
+$jarPath = Join-Path $codeSignToolDir "jar" "code_sign_tool-1.3.0.jar"
 TestFile($jarPath)
 
 # CodeSignTool requires user interaction to confirm an overwrite of the original file.
@@ -69,6 +69,8 @@ Write-Host "outputDir: $tmpDir"
 
 TestFile($inputFile)
 TestDirectory($tmpDir)
+
+Set-Location $codeSignToolDir
 
 & $javaPath -jar $jarPath sign -input_file_path="$inputFile" -output_dir_path="$tmpDir" -username="$env:ES_USERNAME" -password="$env:ES_PASSWORD" -credential_id="$env:ES_CREDENTIAL_ID" -totp_secret="$env:ES_TOTP_SECRET"
 $exitCode = $LASTEXITCODE
