@@ -10,7 +10,7 @@
         </Border>
     </Design.PreviewWith>
 
-    <!-- Add Styles Here -->
+    <!-- Add Panel DropDown styling -->
     <Style Selector="ComboBox.AddPanelDropDown">
         <Setter Property="Height" Value="40" />
         <Setter Property="Width" Value="75" />
@@ -19,6 +19,7 @@
         <Setter Property="CornerRadius" Value="8" />
         <Setter Property="Padding" Value="0" />
 
+        <!-- Add divider between the current selected item and the dropdown glyph -->
         <Style Selector="^ /template/ Border#DropDownOverlay">
             <Setter Property="IsVisible" Value="True" />
             <Setter Property="Margin" Value="0,1,0,1" />
@@ -38,6 +39,7 @@
             <Setter Property="BorderBrush" Value="{StaticResource ElementStrokeTranslucentModerateBrush}" />
         </Style>
 
+        <!-- Change expander icon -->
         <Style Selector="^ PathIcon#DropDownGlyph">
             <Setter Property="Data" Value="{StaticResource MenuDownGeometry}" />
             <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralSubduedBrush}" />
@@ -47,6 +49,7 @@
             <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralModerateBrush}" />
         </Style>
 
+        <!-- Style the popup list of items -->
         <Style Selector="^ ComboBoxItem">
             <Setter Property="Margin" Value="0" />
             <Setter Property="Padding" Value="0" />
@@ -57,9 +60,7 @@
             <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
                 <Setter Property="Background" Value="Transparent" />
             </Style>
-
         </Style>
-
 
         <Style Selector="^ Popup#PART_Popup">
 
@@ -79,9 +80,6 @@
                 <Setter Property="CornerRadius" Value="0"/>
             </Style>
         </Style>
-
-
     </Style>
-
 
 </Styles>
