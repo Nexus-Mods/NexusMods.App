@@ -29,7 +29,7 @@ public class Startup
             .AddLoadoutAbstractions()
             .AddFileStoreAbstractions()
             .AddStubbedGameLocators()
-            .AddDataModelBaseEntities()
+            .AddSerializationAbstractions()
             .AddInstallerTypes()
             .AddLogging(builder => builder.AddXUnit());
     }

@@ -1,5 +1,4 @@
 using DynamicData;
-using NexusMods.Abstractions.DataModel.Entities.Mods;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Loadouts.Mods;

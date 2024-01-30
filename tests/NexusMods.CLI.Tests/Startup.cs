@@ -36,7 +36,7 @@ public class Startup
                 .AddHttpDownloader()
                 .AddNexusWebApi(true)
                 .AddActivityMonitor()
-                .AddDataModelBaseEntities()
+                .AddSerializationAbstractions()
                 .AddGames()
                 .AddInstallerTypes()
                 .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace))

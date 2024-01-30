@@ -11,8 +11,8 @@ namespace NexusMods.Games.BethesdaGameStudios;
 public static class Services
 {
     public static IServiceCollection AddBethesdaGameStudios(this IServiceCollection services) =>
-        services.AddAllSingleton<IGame, SkyrimSpecialEdition.SkyrimSpecialEdition>()
-            .AddAllSingleton<IGame, SkyrimLegendaryEdition.SkyrimLegendaryEdition>()
+        services.AddGame<SkyrimSpecialEdition.SkyrimSpecialEdition>()
+            .AddGame<SkyrimLegendaryEdition.SkyrimLegendaryEdition>()
             .AddSingleton<ITool, SkyrimLegendaryEditionGameTool>()
             .AddSingleton<ITool, SkyrimSpecialEditionGameTool>()
             .AddSingleton<PluginAnalyzer>()

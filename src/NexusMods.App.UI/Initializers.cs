@@ -7,7 +7,6 @@ using Avalonia;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
-using NexusMods.Abstractions.DataModel.Entities.Mods;
 using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Loadouts;

@@ -1,7 +1,6 @@
 using DynamicData;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
-using NexusMods.Abstractions.DataModel.Entities.Mods;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Serialization.DataModel;

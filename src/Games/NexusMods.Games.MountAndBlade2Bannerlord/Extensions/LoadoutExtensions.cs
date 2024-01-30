@@ -1,10 +1,10 @@
 using Bannerlord.LauncherManager;
 using Bannerlord.LauncherManager.Models;
-using NexusMods.Abstractions.DataModel.Entities.Mods;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Files;
+using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Games.MountAndBlade2Bannerlord.Models;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord.Extensions;

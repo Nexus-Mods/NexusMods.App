@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.DataModel.Entities.Mods;
 using NexusMods.Abstractions.DataModel.Entities.Sorting;
 using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.GameLocators;

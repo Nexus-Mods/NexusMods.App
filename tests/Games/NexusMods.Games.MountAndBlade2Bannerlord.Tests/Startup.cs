@@ -22,7 +22,7 @@ public class Startup
             .AddLogging(builder => builder.AddXunitOutput())
             .AddGames()
             .AddActivityMonitor()
-            .AddDataModelBaseEntities()
+            .AddSerializationAbstractions()
             .AddInstallerTypes()
             .Validate();
     }

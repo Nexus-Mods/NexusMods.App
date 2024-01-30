@@ -28,7 +28,7 @@ public class Startup
             .AddBethesdaGameStudios()
             .AddGames()
             .AddActivityMonitor()
-            .AddDataModelBaseEntities()
+            .AddSerializationAbstractions()
             .AddInstallerTypes()
             .AddGenericGameSupport()
             .AddFomod()

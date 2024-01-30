@@ -1,7 +1,4 @@
-﻿using NexusMods.Abstractions.DataModel.Entities.Mods;
-using NexusMods.Abstractions.Loadouts.Mods;
-
-namespace NexusMods.Abstractions.Games.DTO;
+﻿namespace NexusMods.Abstractions.Loadouts.Mods;
 
 /// <summary>
 /// A pairing of a mod file and the mod it belongs to.

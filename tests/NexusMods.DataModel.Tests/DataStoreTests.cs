@@ -1,6 +1,5 @@
 using System.Buffers.Binary;
 using FluentAssertions;
-using NexusMods.Abstractions.DataModel.Entities.Mods;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.Loadouts.Mods;

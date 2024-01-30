@@ -11,7 +11,7 @@ namespace NexusMods.Games.BladeAndSorcery;
 public static class Services
 {
     public static IServiceCollection AddBladeAndSorcery(this IServiceCollection services) =>
-        services.AddAllSingleton<IGame, BladeAndSorcery>()
+        services.AddGame<BladeAndSorcery>()
             .AddAllSingleton<IModInstaller, BladeAndSorceryModInstaller>()
             .AddSingleton<ITool, RunGameTool<BladeAndSorcery>>()
             .AddSingleton<ITypeFinder, TypeFinder>();

@@ -11,7 +11,7 @@ public static class Services
 {
     public static IServiceCollection AddDarkestDungeon(this IServiceCollection serviceCollection)
     {
-        serviceCollection.AddAllSingleton<IGame, DarkestDungeon>();
+        serviceCollection.AddGame<DarkestDungeon>();
         serviceCollection.AddSingleton<IModInstaller, NativeModInstaller>();
         serviceCollection.AddSingleton<IModInstaller, LooseFilesModInstaller>();
         serviceCollection.AddSingleton<ITypeFinder, TypeFinder>();

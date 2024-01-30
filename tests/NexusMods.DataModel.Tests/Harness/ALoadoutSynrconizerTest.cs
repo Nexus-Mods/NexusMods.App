@@ -1,6 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
 using FluentAssertions;
-using NexusMods.Abstractions.DataModel.Entities.Mods;
 using NexusMods.Abstractions.DataModel.Entities.Sorting;
 using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.GameLocators;

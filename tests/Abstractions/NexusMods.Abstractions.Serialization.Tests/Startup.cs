@@ -11,7 +11,7 @@ public class Startup
     {
         container
             .AddSkippableFactSupport()
-            .AddDataModelBaseEntities()
+            .AddSerializationAbstractions()
             .AddSingleton<ITypeFinder>(_ => new AssemblyTypeFinder(typeof(Startup).Assembly))
             .AddLogging(builder => builder.AddXUnit());
     }

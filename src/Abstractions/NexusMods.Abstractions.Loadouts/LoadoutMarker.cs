@@ -1,4 +1,4 @@
-using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Serialization.DataModel.Ids;
 
 namespace NexusMods.Abstractions.Loadouts;

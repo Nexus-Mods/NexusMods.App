@@ -68,7 +68,7 @@ public static class Services
                 .AddAdvancedInstallerUi()
                 .AddFileExtractors(config.FileExtractorSettings)
                 .AddDataModel(config.DataModelSettings)
-                .AddDataModelBaseEntities()
+                .AddSerializationAbstractions()
                 .AddInstallerTypes()
                 .AddGames()
                 .AddActivityMonitor()

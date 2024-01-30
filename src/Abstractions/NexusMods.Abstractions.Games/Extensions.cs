@@ -1,4 +1,6 @@
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Extensions.DependencyInjection;
 
 namespace NexusMods.Abstractions.Games;
 
@@ -13,4 +15,17 @@ public static class Extensions
     /// <param name="gameInstallation"></param>
     /// <returns></returns>
     public static IGame GetGame(this GameInstallation gameInstallation) => (IGame)gameInstallation.Game;
+
+
+    /// <summary>
+    /// Adds the given game to the DI system
+    /// </summary>
+    /// <param name="collection"></param>
+    /// <typeparam name="TGame"></typeparam>
+    /// <returns></returns>
+    public static IServiceCollection AddGame<TGame>(this IServiceCollection collection) where TGame : class, IGame
+    {
+        collection.AddAllSingleton<ILocatableGame, IGame, TGame>();
+        return collection;
+    }
 }

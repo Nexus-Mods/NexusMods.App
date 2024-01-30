@@ -1,10 +1,10 @@
 using System.Collections.Immutable;
+using NexusMods.Abstractions.DataModel.Entities;
 using NexusMods.Abstractions.DataModel.Entities.Sorting;
-using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.Abstractions.Serialization.DataModel;
 
-namespace NexusMods.Abstractions.DataModel.Entities.Mods;
+namespace NexusMods.Abstractions.Loadouts.Mods;
 
 /// <summary>
 /// Represents an individual mod recognised by NMA.

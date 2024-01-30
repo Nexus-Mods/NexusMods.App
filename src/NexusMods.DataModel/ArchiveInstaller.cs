@@ -2,7 +2,6 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Activities;
-using NexusMods.Abstractions.DataModel.Entities.Mods;
 using NexusMods.Abstractions.DataModel.Entities.Sorting;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.Downloads;

@@ -15,7 +15,7 @@ public static class ServicesExtensions
     {
         services.AddSingleton<LauncherManagerFactory>();
 
-        services.AddAllSingleton<IGame, MountAndBlade2Bannerlord>()
+        services.AddGame<MountAndBlade2Bannerlord>()
             .AddSingleton<ILoadoutDiagnosticEmitter, BuiltInEmitter>()
             .AddSingleton<ITool, RunStandaloneTool>()
             .AddSingleton<ITool, RunLauncherTool>()

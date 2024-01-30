@@ -11,7 +11,7 @@ public static class Services
 {
     public static IServiceCollection AddRedEngineGames(this IServiceCollection services)
     {
-        services.AddAllSingleton<IGame, Cyberpunk2077>();
+        services.AddGame<Cyberpunk2077>();
         services.AddSingleton<IModInstaller, SimpleOverlayModInstaller>();
         services.AddSingleton<IModInstaller, FolderlessModInstaller>();
         services.AddSingleton<IModInstaller, AppearancePreset>();

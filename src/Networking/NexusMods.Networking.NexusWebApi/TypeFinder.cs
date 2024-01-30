@@ -1,3 +1,4 @@
+using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.Networking.NexusWebApi.Auth;
 
@@ -16,6 +17,7 @@ public class TypeFinder : ITypeFinder
 
     private IEnumerable<Type> AllTypes => new[]
     {
-        typeof(JWTTokenEntity)
+        typeof(JWTTokenEntity),
+        typeof(NexusModsArchiveMetadata)
     };
 }

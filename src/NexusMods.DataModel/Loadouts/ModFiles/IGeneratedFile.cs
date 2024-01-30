@@ -1,4 +1,5 @@
 ﻿using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Triggers;
 using NexusMods.DataModel.Loadouts.LoadoutSynchronizerDTOs;
 using NexusMods.Hashing.xxHash64;

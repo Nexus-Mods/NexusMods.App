@@ -36,7 +36,7 @@ public class Startup
             .AddStandardGameLocators(false)
             .AddFileExtractors()
             .AddStubbedGameLocators()
-            .AddDataModelBaseEntities()
+            .AddSerializationAbstractions()
             .AddActivityMonitor()
             .AddInstallerTypes()
             .AddSingleton<ITypeFinder>(_ => new AssemblyTypeFinder(typeof(Startup).Assembly))

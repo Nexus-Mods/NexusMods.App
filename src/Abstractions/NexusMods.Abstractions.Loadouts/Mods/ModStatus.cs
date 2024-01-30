@@ -1,4 +1,4 @@
-﻿namespace NexusMods.Abstractions.DataModel.Entities.Mods;
+﻿namespace NexusMods.Abstractions.Loadouts.Mods;
 
 /// <summary>
 /// Status of a given Mod

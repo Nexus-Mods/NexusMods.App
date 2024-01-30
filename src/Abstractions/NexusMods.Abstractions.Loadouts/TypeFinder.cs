@@ -1,4 +1,4 @@
-using NexusMods.Abstractions.Loadouts.Files;
+using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 
 namespace NexusMods.Abstractions.Loadouts;
@@ -17,5 +17,6 @@ public class TypeFinder : ITypeFinder
     private static IEnumerable<Type> AllTypes => new[]
     {
         typeof(Loadout),
+        typeof(Mod)
     };
 }

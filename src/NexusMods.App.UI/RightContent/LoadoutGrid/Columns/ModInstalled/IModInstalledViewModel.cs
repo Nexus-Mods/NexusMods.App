@@ -1,5 +1,4 @@
-﻿using NexusMods.Abstractions.DataModel.Entities.Mods;
-using NexusMods.Abstractions.Games.DTO;
+﻿using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.App.UI.Controls.DataGrid;
 

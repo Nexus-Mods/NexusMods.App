@@ -1,8 +1,8 @@
 ﻿using System.Xml;
 using Bannerlord.ModuleManager;
-using NexusMods.Abstractions.DataModel.Entities.Mods;
 using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Mods;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord.Tests.Shared;
 

@@ -1,5 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.DataModel.Entities.Mods;
 using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.GameCapabilities;

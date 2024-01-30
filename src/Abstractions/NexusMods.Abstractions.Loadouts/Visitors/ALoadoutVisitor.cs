@@ -1,5 +1,4 @@
-﻿using NexusMods.Abstractions.DataModel.Entities.Mods;
-using NexusMods.Abstractions.Loadouts.Mods;
+﻿using NexusMods.Abstractions.Loadouts.Mods;
 
 namespace NexusMods.Abstractions.Loadouts.Visitors;
 
