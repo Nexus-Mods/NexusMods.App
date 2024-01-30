@@ -1,9 +1,35 @@
 # Adding a Game
 
+!!! info "Describes how to add a game to the Nexus App."
+
+??? "Example Game (Click to Expand)"
+
+    ```csharp
+    /// <summary>
+    /// Adds file extraction related services to the provided DI container.
+    /// </summary>
+    /// <param name="coll">Service collection to register.</param>
+    /// <param name="settings">Settings for the extractor.</param>
+    /// <returns>Service collection passed as parameter.</returns>
+    public static IServiceCollection AddFileExtractors(this IServiceCollection coll, IFileExtractorSettings? settings = null)
+    {
+        if (settings == null)
+            coll.AddSingleton<IFileExtractorSettings, FileExtractorSettings>();
+        else
+            coll.AddSingleton(settings);
+
+        coll.AddSingleton<IFileExtractor, FileExtractor>();
+        coll.AddSingleton<IExtractor, SevenZipExtractor>();
+        coll.TryAddSingleton<TemporaryFileManager, TemporaryFileManagerEx>();
+        return coll;
+    }
+    ```
+
 ### `IGame` Interface
+
 The primary entrance point for adding a game to the app is the IGame interface. If the game being added is part
 of a family of games based on the same engine or developed by the same developer, consider adding the code to an existing
-library. Otherwise, create a new .dll project in the Games folder. 
+library. Otherwise, create a new .dll project in the Games folder.
 
 Although the IGame interface is the most abstract interface for adding games, there are a lot of common
 facilities in `AGame` that maybe useful in your implementation. So start by sublcassing `AGame` and adding interfaces
@@ -18,23 +44,6 @@ A few things to keep in mind:
 
 Next add your copy of IGame to the DI system by registering it in the `Services.cs` file in your project. If you have added
 a project from scratch you will also need to reference it in `NexusMods.App.csproj` and add a call to `Services.AddYourGame()` to the top level DI registration system.
-
-
-## Mod Installation
-Mod installation in the app happens in several phases
-1. The user selects a mod to install
-2. The app extracts the archive
-3. Each file in the archive is analyzed by the `IFileAnalyzer` implementations
-4. The app feeds the files (and metadata from analysis) to the `IModInstaller` implementation with the winning priority.
-5. The `IModInstaller` returns a list of `AModFile` objects that determine how to install the mod into the various `GamePath` folders.
-
-All analysis data is cached in the internal KV store so that the app doesn't have to re-analyze files every time it installs a mod.
-
-### `IModInstaller` Interface
-Now that you have your game registered with the DI system you may want to install a mod. The `IModInstaller` interface is used
-as a way to register handlers for specific types of mods. The logic here is game specific, some games may support automatic installation via
-detecting the file types and names. For example, Cyberpunk may know that `.archive` files are mods and can be installed by copying them to the mods folder. Or Skyrim installers
-may know that `plugins/*.dll` files are skse plugins and should be copied to the skse plugins folder.
 
 ### `IFileAnalyzer` Interface
 This interface can be used to generate new file metadata to be saved for when the app performs analysis of a mod file. When an archive

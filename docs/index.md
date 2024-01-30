@@ -87,23 +87,9 @@ Instead, users can focus on creating a perfect modding setup that works for them
 
 Further Reading: [Comparison of File Management Systems][comparison-fms]
 
-#### A Drawback
+#### Drawback
 
-!!! warning "The Nexus App approach requires more book-keeping than traditional approaches"
-
-- Keeping backup of original game files.
-- Watching for changes in game folder. (Backup user/game generated files)
-
-This takes considerable CPU and Disk resources. To support undo, any game files managed by the app are effectively cloned,
-doubling disk usage. The user may also need to wait a few minutes before being able to launch big games.
-
-However, with sufficient optimization and planning, we hope these processes become 'transparent' to end users,
-so they don't really notice a difference.
-
-For example, with certain game stores it may be possible to fetch the original
-files from the store rather than backing them up on the user's machine.
-
-!!! info "The Nexus Mods App is built in mind with the hardware of today. Taking advantage of fast CPUs and SSDs."
+!!! note "No approach is without drawbacks, so it's [only right for us to acknowledge ours][flaws]."
 
 ## The Development Team
 
@@ -136,6 +122,7 @@ If you enjoy using the App, consider subscribing, thanks!
 [cognitive-overhead]: https://techcrunch.com/2013/04/20/cognitive-overhead/
 [comparison-fms]: misc/ComparisonOfFileManagementSystems.md
 [erri120]: https://github.com/erri120
+[flaws]: misc/DrawbacksOfNexusApproach.md
 [gamefinder]: https://github.com/erri120/GameFinder
 [halgari]: https://github.com/halgari
 [immutable-mod-lists]: concepts/0000-immutable-modlists.md

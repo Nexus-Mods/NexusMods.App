@@ -57,7 +57,6 @@ nav:
       - UI Styling Guidelines: development-guidelines/UIStylingGuidelines.md
       - Interacting with FileSystem: development-guidelines/UsingIFileSystem.md
 
-
   - Decisions:
       - Backend:
           - '00: Use xxhash64': decisions/backend/0000-use-xxhash64.md
@@ -102,4 +101,5 @@ nav:
   - Misc:
       - About Fomod: misc/AboutFomod.md
       - Comparison of File Management Systems: misc/ComparisonOfFileManagementSystems.md
+      - Drawbacks of Nexus App Approach: misc/DrawbacksOfNexusApproach.md
   - Contributing to Docs: Nexus/Pages/contributing.md

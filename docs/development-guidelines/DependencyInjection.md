@@ -143,7 +143,7 @@ Example:
 
 !!! info "Obtaining Multiple Instances of a Registration"
 
-In DI, it's possible to retrieve all implementations registered for a particular interface.
+It's possible to retrieve all implementations registered for a particular interface.
 
 This is useful when you have multiple classes that fulfill the same role but in different ways.
 
