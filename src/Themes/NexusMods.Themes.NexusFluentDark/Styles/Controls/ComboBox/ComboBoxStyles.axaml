@@ -1,5 +1,6 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:workspaceSystem="clr-namespace:NexusMods.App.UI.WorkspaceSystem;assembly=NexusMods.App.UI">
     <Design.PreviewWith>
         <Border Padding="20" Height="300">
             <ComboBox SelectedIndex="0" Classes="AddPanelDropDown">
@@ -35,6 +36,48 @@
             <Setter Property="Margin" Value="0,0,0,0" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="BorderBrush" Value="{StaticResource ElementStrokeTranslucentModerateBrush}" />
+        </Style>
+
+        <Style Selector="^ PathIcon#DropDownGlyph">
+            <Setter Property="Data" Value="{StaticResource MenuDownGeometry}" />
+            <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralSubduedBrush}" />
+        </Style>
+
+        <Style Selector="^:pointerover PathIcon#DropDownGlyph">
+            <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralModerateBrush}" />
+        </Style>
+
+        <Style Selector="^ ComboBoxItem">
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="Padding" Value="0" />
+
+            <Style Selector="^:selected /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Background" Value="Transparent" />
+            </Style>
+            <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Background" Value="Transparent" />
+            </Style>
+
+        </Style>
+
+
+        <Style Selector="^ Popup#PART_Popup">
+
+            <Style Selector="^ Border#PopupBorder">
+                <Setter Property="HorizontalAlignment" Value="Left" />
+                <Setter Property="MinWidth" Value="48" />
+                <Setter Property="MaxWidth" Value="48" />
+                <Setter Property="Width" Value="48" />
+                <Setter Property="Padding" Value="0" />
+                <Setter Property="Margin" Value="0" />
+                <Style Selector="^ ItemsPresenter#PART_ItemsPresenter">
+                    <Setter Property="Margin" Value="0" />
+                </Style>
+            </Style>
+
+            <Style Selector="^ ComboBoxItem workspaceSystem|AddPanelButtonView Button">
+                <Setter Property="CornerRadius" Value="0"/>
+            </Style>
         </Style>
 
 

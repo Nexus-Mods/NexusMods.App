@@ -6,5 +6,5 @@ public interface IAddPanelDropDownViewModel
 {
     public ReadOnlyObservableCollection<IAddPanelButtonViewModel> AddPanelIconViewModels { get; }
 
-    public IAddPanelButtonViewModel SelectedAddPanelButtonViewModel { get; set; }
+    public int SelectedIndex { get; set; }
 }

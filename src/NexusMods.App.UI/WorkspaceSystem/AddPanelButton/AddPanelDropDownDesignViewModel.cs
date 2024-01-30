@@ -11,5 +11,5 @@ public class AddPanelDropDownDesignViewModel : IAddPanelDropDownViewModel
         new AddPanelButtonDesignViewModel()
     ]);
 
-    public IAddPanelButtonViewModel SelectedAddPanelButtonViewModel { get; set; } = new AddPanelButtonDesignViewModel();
+    public int SelectedIndex { get; set; } = 0;
 }
