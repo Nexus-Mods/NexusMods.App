@@ -1,8 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.DataModel.Entities;
+using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.GuidedInstallers;
 using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Activities;
 using NexusMods.App.BuildInfo;
@@ -31,6 +33,8 @@ public class Startup
             .AddSerializationAbstractions()
             .AddInstallerTypes()
             .AddGenericGameSupport()
+            .AddLoadoutAbstractions()
+            .AddFileStoreAbstractions()
             .AddFomod()
             .AddCLI()
             .AddSingleton<IGuidedInstaller, NullGuidedInstaller>()
