@@ -28,7 +28,6 @@ public class Startup
             .AddBethesdaGameStudios()
             .AddGames()
             .AddActivityMonitor()
-            .AddDataModelEntities()
             .AddDataModelBaseEntities()
             .AddInstallerTypes()
             .AddGenericGameSupport()

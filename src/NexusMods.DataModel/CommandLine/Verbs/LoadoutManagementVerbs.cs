@@ -1,5 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Cli;
+using NexusMods.Abstractions.FileStore;
+using NexusMods.Abstractions.FileStore.ArchiveMetadata;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Games.Trees;
@@ -91,7 +93,7 @@ public static class LoadoutManagementVerbs
         [Injected] CancellationToken token)
     {
         var rows = new List<object[]>();
-        var synchronizer = loadout.Value.Installation.Game.Synchronizer as IStandardizedLoadoutSynchronizer;
+        var synchronizer = loadout.Value.Installation.GetGame().Synchronizer as IStandardizedLoadoutSynchronizer;
         if (synchronizer == null)
         {
             await renderer.Text($"{loadout.Value.Installation.Game.Name} does not support flattening loadouts");

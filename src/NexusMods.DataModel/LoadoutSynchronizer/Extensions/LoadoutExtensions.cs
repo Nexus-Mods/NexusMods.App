@@ -1,4 +1,5 @@
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Loadouts;
@@ -16,7 +17,7 @@ public static class LoadoutExtensions
     /// <returns></returns>
     public static ValueTask<FlattenedLoadout> ToFlattenedLoadout(this Loadout loadout)
     {
-        return ((IStandardizedLoadoutSynchronizer)loadout.Installation.Game.Synchronizer).LoadoutToFlattenedLoadout(loadout);
+        return ((IStandardizedLoadoutSynchronizer)loadout.Installation.GetGame().Synchronizer).LoadoutToFlattenedLoadout(loadout);
     }
 
     /// <summary>
@@ -27,7 +28,7 @@ public static class LoadoutExtensions
     public static async ValueTask<FileTree> ToFileTree(this Loadout loadout)
     {
         var fileTree = await loadout.ToFlattenedLoadout();
-        return await ((IStandardizedLoadoutSynchronizer)loadout.Installation.Game.Synchronizer)
+        return await ((IStandardizedLoadoutSynchronizer)loadout.Installation.GetGame().Synchronizer)
             .FlattenedLoadoutToFileTree(fileTree, loadout);
     }
 

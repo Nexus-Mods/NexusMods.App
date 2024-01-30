@@ -57,7 +57,6 @@ public static class Services
 
         coll.AddDataModelSettings();
         coll.AddAllSingleton<ILoadoutRegistry, LoadoutRegistry>();
-        coll.AddAllSingleton<IDirectoryIndexer, DirectoryIndexer>();
         coll.AddAllSingleton<IFileOriginRegistry, FileOriginRegistry>();
         coll.AddAllSingleton<IFileHashCache, FileHashCache>();
         coll.AddAllSingleton<IArchiveInstaller, ArchiveInstaller>();

@@ -12,5 +12,5 @@ public static class Extensions
     /// </summary>
     /// <param name="gameInstallation"></param>
     /// <returns></returns>
-    public static IGame Game(this GameInstallation gameInstallation) => (IGame)gameInstallation.Game;
+    public static IGame GetGame(this GameInstallation gameInstallation) => (IGame)gameInstallation.Game;
 }

@@ -1,7 +1,9 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.DTO;
+using NexusMods.StandardGameLocators.Unknown;
 
 namespace NexusMods.DataModel.JsonConverters;
 
@@ -34,7 +36,7 @@ public class GameInstallationConverter : JsonConverter<GameInstallation>
         reader.Read();
 
         var foundGame = _games[slug]
-            .SelectMany(g => g.Installations)
+            .SelectMany(g => ((IGame)g).Installations)
             .FirstOrDefault(install => install.Version == version && install.Store == store);
 
         return foundGame ?? new UnknownGame(slug, version).Installations.First();
@@ -45,7 +47,7 @@ public class GameInstallationConverter : JsonConverter<GameInstallation>
     {
         writer.WriteStartArray();
         writer.WriteStringValue(value.Game.Domain.Value);
-        JsonSerializer.Serialize((object?)writer, (Type)value.Version, options);
+        JsonSerializer.Serialize(writer, value.Version, options);
         writer.WriteStringValue(value.Store.Value);
         writer.WriteEndArray();
     }

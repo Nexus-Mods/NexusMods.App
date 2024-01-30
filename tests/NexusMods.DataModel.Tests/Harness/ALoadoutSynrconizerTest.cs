@@ -28,7 +28,6 @@ namespace NexusMods.DataModel.Tests.Harness;
 
 public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
 {
-    protected readonly TestDirectoryIndexer TestIndexer;
     protected readonly TestFileStore TestFileStoreInstance;
     protected readonly TestFingerprintCache<Mod, CachedModSortRules> TestFingerprintCacheInstance;
 
@@ -36,7 +35,6 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
     {
         AssertionOptions.AssertEquivalencyUsing(opt => opt.ComparingRecordsByValue());
 
-        TestIndexer = new TestDirectoryIndexer();
         TestFileStoreInstance = new TestFileStore();
         TestFingerprintCacheInstance = new TestFingerprintCache<Mod, CachedModSortRules>();
     }
@@ -89,21 +87,6 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
         }
     }
 
-    protected class TestDirectoryIndexer : IDirectoryIndexer
-    {
-        public List<HashedEntry> Entries = new();
-
-#pragma warning disable CS1998
-        public async IAsyncEnumerable<HashedEntry> IndexFolders(IEnumerable<AbsolutePath> paths,
-#pragma warning restore CS1998
-            [EnumeratorCancellation] CancellationToken token = default)
-        {
-            foreach (var entry in Entries)
-            {
-                yield return entry;
-            }
-        }
-    }
 
     public class TestFingerprintCache<TSrc, TValue> : IFingerprintCache<TSrc, TValue> where TValue : Entity
     {

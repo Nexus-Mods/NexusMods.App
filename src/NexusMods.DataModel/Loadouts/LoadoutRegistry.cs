@@ -428,13 +428,13 @@ public class LoadoutRegistry : IDisposable, ILoadoutRegistry
         if (string.IsNullOrWhiteSpace(name))
             name = SuggestName(installation);
 
-        var result = await installation.Game.Synchronizer.Manage(installation);
+        var result = await installation.GetGame().Synchronizer.Manage(installation);
         result = Alter(result.LoadoutId, $"Manage new instance of {installation.Game.Name} as {name}",
             _ => result with
         {
             Name = name
         });
-        var withExtraFiles = await installation.Game.Synchronizer.Ingest(result);
+        var withExtraFiles = await installation.GetGame().Synchronizer.Ingest(result);
         Alter(result.LoadoutId, $"Adding extra files found in game folder", _ => withExtraFiles);
         return GetMarker(result.LoadoutId);
     }

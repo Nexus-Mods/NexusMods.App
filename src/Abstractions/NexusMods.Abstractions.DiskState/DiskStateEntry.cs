@@ -38,4 +38,14 @@ public readonly struct DiskStateEntry
         };
     }
 
+    /// <summary>
+    /// Converts a <see cref="DiskStateEntry"/> to a <see cref="HashedEntry"/>.
+    /// </summary>
+    /// <param name="path"></param>
+    /// <returns></returns>
+    public HashedEntry ToHashedEntry(AbsolutePath path)
+    {
+        return new(path, Hash, LastModified, Size);
+    }
+
 }
