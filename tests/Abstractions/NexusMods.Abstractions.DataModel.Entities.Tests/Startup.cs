@@ -1,7 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.DiskState;
+using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Activities;
 using NexusMods.DataModel;
@@ -23,6 +26,8 @@ public class Startup
             .AddFileSystem()
             .AddGames()
             .AddStandardGameLocators(false)
+            .AddLoadoutAbstractions()
+            .AddFileStoreAbstractions()
             .AddStubbedGameLocators()
             .AddDataModelBaseEntities()
             .AddInstallerTypes()
