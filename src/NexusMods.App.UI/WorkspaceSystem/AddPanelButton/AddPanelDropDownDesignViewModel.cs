@@ -3,7 +3,7 @@ using Avalonia;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
-public class AddPanelDropDownDesignViewModel : IAddPanelDropDownViewModel
+public class AddPanelDropDownDesignViewModel :  AViewModel<IAddPanelDropDownViewModel>, IAddPanelDropDownViewModel
 {
     public ReadOnlyObservableCollection<IAddPanelButtonViewModel> AddPanelIconViewModels { get; } = new(
     [

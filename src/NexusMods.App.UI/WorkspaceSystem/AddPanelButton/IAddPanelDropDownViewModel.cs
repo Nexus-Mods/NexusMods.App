@@ -2,7 +2,7 @@
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
-public interface IAddPanelDropDownViewModel
+public interface IAddPanelDropDownViewModel : IViewModelInterface
 {
     public ReadOnlyObservableCollection<IAddPanelButtonViewModel> AddPanelIconViewModels { get; }
 
