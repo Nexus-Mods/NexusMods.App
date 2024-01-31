@@ -112,20 +112,8 @@
         <Compile Update="RightContent\LoadoutGrid\LoadoutGridViewModel.cs">
             <DependentUpon>ILoadoutGridViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="RightContent\Downloads\CompletedDesignViewModel.cs">
-            <DependentUpon>ICompletedViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="RightContent\Downloads\HistoryDesignViewModel.cs">
-            <DependentUpon>IHistoryViewModel.cs</DependentUpon>
-        </Compile>
         <Compile Update="RightContent\Downloads\InProgressDesignViewModel.cs">
             <DependentUpon>IInProgressViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="RightContent\Downloads\CompletedViewModel.cs">
-            <DependentUpon>ICompletedViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="RightContent\Downloads\HistoryViewModel.cs">
-            <DependentUpon>IHistoryViewModel.cs</DependentUpon>
         </Compile>
         <Compile Update="RightContent\Downloads\InProgressViewModel.cs">
             <DependentUpon>IInProgressViewModel.cs</DependentUpon>
@@ -135,15 +123,6 @@
         </Compile>
         <Compile Update="LeftMenu\Downloads\DownloadsViewModel.cs">
             <DependentUpon>IDownloadsViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="ViewModels\Helpers\ViewModelSelector\ViewModelDesignSelector.cs">
-            <DependentUpon>IViewModelSelector.cs</DependentUpon>
-        </Compile>
-        <Compile Update="ViewModels\Helpers\ViewModelSelector\ViewModelSelector.cs">
-            <DependentUpon>IViewModelSelector.cs</DependentUpon>
-        </Compile>
-        <Compile Update="ViewModels\Helpers\ViewModelSelector\AViewModelSelector.cs">
-            <DependentUpon>IViewModelSelector.cs</DependentUpon>
         </Compile>
         <Compile Update="Controls\Spine\Buttons\Icon\IconButtonViewModel.cs">
           <DependentUpon>IIconButtonViewModel.cs</DependentUpon>

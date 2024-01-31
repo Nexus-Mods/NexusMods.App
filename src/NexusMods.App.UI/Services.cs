@@ -88,13 +88,11 @@ public static class Services
             .AddTransient(typeof(DataGridColumnFactory<,,>))
             .AddSingleton<IViewLocator, InjectedViewLocator>()
 
-            .AddViewModel<CompletedViewModel, ICompletedViewModel>()
             .AddViewModel<DevelopmentBuildBannerViewModel, IDevelopmentBuildBannerViewModel>()
             .AddViewModel<DownloadsViewModel, IDownloadsViewModel>()
             .AddViewModel<FoundGamesViewModel, IFoundGamesViewModel>()
             .AddViewModel<GameLeftMenuViewModel, IGameLeftMenuViewModel>()
             .AddViewModel<GameWidgetViewModel, IGameWidgetViewModel>()
-            .AddViewModel<HistoryViewModel, IHistoryViewModel>()
             .AddViewModel<HomeLeftMenuViewModel, IHomeLeftMenuViewModel>()
             .AddViewModel<IconButtonViewModel, IIconButtonViewModel>()
             .AddViewModel<IconViewModel, IIconViewModel>()
@@ -124,13 +122,11 @@ public static class Services
             .AddViewModel<UpdaterViewModel, IUpdaterViewModel>()
 
             // Views
-            .AddView<CompletedView, ICompletedViewModel>()
             .AddView<DevelopmentBuildBannerView, IDevelopmentBuildBannerViewModel>()
             .AddView<DownloadsView, IDownloadsViewModel>()
             .AddView<FoundGamesView, IFoundGamesViewModel>()
             .AddView<GameLeftMenuView, IGameLeftMenuViewModel>()
             .AddView<GameWidget, IGameWidgetViewModel>()
-            .AddView<HistoryView, IHistoryViewModel>()
             .AddView<HomeLeftMenuView, IHomeLeftMenuViewModel>()
             .AddView<IconButton, IIconButtonViewModel>()
             .AddView<IconView, IIconViewModel>()
