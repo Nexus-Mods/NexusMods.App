@@ -34,7 +34,7 @@ internal sealed class WindowManager : ReactiveObject, IWindowManager
     {
         window = null;
 
-        if (!_windows.TryGetValue(ActiveWindowId, out var weakReference))
+        if (!_windows.TryGetValue(windowId, out var weakReference))
         {
             _logger.LogError("Failed to find Window with ID {WindowId}", windowId);
             return false;
