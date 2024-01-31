@@ -85,6 +85,6 @@ if ($exitCode -eq 0) {
 TestFile($outputFile)
 
 Write-Host "Moving $outputFile to $inputFile"
-Move-File -Path $outputFile -Destination $inputFile -Force
+Move-Item -Path $outputFile -Destination $inputFile -Force
 
 Remove-Item -Path $tmpDir -Recurse -Force
