@@ -43,17 +43,17 @@ TestFile($executableToSign)
 $codeSignToolDir = $env:CodeSignToolDir
 TestDirectory($codeSignToolDir)
 
-$javaPath = Join-Path $codeSignToolDir "jdk-11.0.2" "bin" "java.exe"
+$javaPath = Join-Path -Path $codeSignToolDir -ChildPath "jdk-11.0.2" | Join-Path -ChildPath "bin" | Join-Path -ChildPath "java.exe"
 TestFile($javaPath)
 
-$jarPath = Join-Path $codeSignToolDir "jar" "code_sign_tool-1.3.0.jar"
+$jarPath = Join-Path -Path $codeSignToolDir -ChildPath "jar" | Join-Path -ChildPath "code_sign_tool-1.3.0.jar"
 TestFile($jarPath)
 
 # CodeSignTool requires user interaction to confirm an overwrite of the original file.
 # We circumvent this by setting the output directory to some temp directory and replacing
 # the original file with the newly signed file.
 
-$tmpDir = Join-Path $(Resolve-Path .) "tmp"
+$tmpDir = Join-Path -Path $(Resolve-Path .) -ChildPath "tmp"
 if (Test-Path $tmpDir -PathType Container) {
     Remove-Item -Path $tmpDir -Recurse -Force
 }
@@ -61,7 +61,7 @@ if (Test-Path $tmpDir -PathType Container) {
 New-Item -Path $tmpDir -Type Directory
 
 $inputFile = "$executableToSign"
-$outputFile = Join-Path $tmpDir $(Get-Item $inputFile).Name
+$outputFile = Join-Path -Path $tmpDir -ChildPath $(Get-Item $inputFile).Name
 
 Write-Host "inputFile: $inputFile"
 Write-Host "outputFile: $outputFile"
