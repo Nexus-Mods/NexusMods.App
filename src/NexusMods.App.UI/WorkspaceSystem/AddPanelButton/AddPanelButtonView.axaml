@@ -7,16 +7,16 @@
     xmlns:reactive="http://reactiveui.net"
     xmlns:workspace="clr-namespace:NexusMods.App.UI.WorkspaceSystem"
     xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
-    mc:Ignorable="d" d:DesignWidth="60" d:DesignHeight="40"
+    mc:Ignorable="d" d:DesignWidth="80" d:DesignHeight="60"
     x:Class="NexusMods.App.UI.WorkspaceSystem.AddPanelButtonView">
 
     <Design.DataContext>
         <workspace:AddPanelButtonDesignViewModel/>
     </Design.DataContext>
 
-    <Border>
-        <Button x:Name="AddPanelButton" Height="40">
-            <StackPanel Orientation="Horizontal" Spacing="4">
+    <Border x:Name="BackgroundBorder">
+        <Button x:Name="AddPanelButton">
+            <StackPanel Orientation="Horizontal">
                 <Image x:Name="ButtonImage"/>
                 <icons:Icon Classes="Plus"/>
             </StackPanel>
