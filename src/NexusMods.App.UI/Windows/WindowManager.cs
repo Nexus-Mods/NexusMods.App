@@ -1,20 +1,29 @@
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
+using DynamicData;
 using Microsoft.Extensions.Logging;
 using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Windows;
 
-internal class WindowManager : IWindowManager
+internal sealed class WindowManager : IWindowManager, INotifyPropertyChanged
 {
     private readonly ILogger<WindowManager> _logger;
     private readonly Dictionary<WindowId, WeakReference<IWorkspaceWindow>> _windows = new();
+    private readonly SourceList<WindowId> _allWindowIdSource = new();
 
     public WindowManager(ILogger<WindowManager> logger)
     {
         _logger = logger;
+
+        _allWindowIdSource.Connect().Bind(out _allWindowIds);
     }
 
     [Reactive] public WindowId ActiveWindowId { get; set; } = WindowId.DefaultValue;
+
+    private readonly ReadOnlyObservableCollection<WindowId> _allWindowIds;
+    public ReadOnlyObservableCollection<WindowId> AllWindowIds => _allWindowIds;
 
     public bool TryGetActiveWindow([NotNullWhen(true )] out IWorkspaceWindow? window)
     {
@@ -45,7 +54,10 @@ internal class WindowManager : IWindowManager
         if (!_windows.TryAdd(window.WindowId, new WeakReference<IWorkspaceWindow>(window)))
         {
             _logger.LogError("Unable to register Window with ID {WindowId}", window.WindowId);
+            return;
         }
+
+        _allWindowIdSource.Edit(list => list.Add(window.WindowId));
     }
 
     public void UnregisterWindow(IWorkspaceWindow window)
@@ -54,5 +66,13 @@ internal class WindowManager : IWindowManager
         {
             _logger.LogError("Unable to unregister Window with ID {WindowId}", window.WindowId);
         }
+
+        _allWindowIdSource.Edit(list => list.Remove(window.WindowId));
     }
+
+    #region INotifyPropertyChanged
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    #endregion
 }
