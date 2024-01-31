@@ -1,16 +1,28 @@
 ﻿# UI Coding Conventions and Guidelines
 
-## Introduction
+!!! info "The Nexus App uses [Avalonia] combined with [ReactiveUI] and [Dynamic Data] for the user interface."
 
-The NexusMods App uses [Avalonia] combined with [ReactiveUI] and [Dynamic Data]. This document contains conventions, guidelines, tips and tutorials on how to use these tools in the project. We'll also be going over some technical details on how these tools work and how they interact with the project.
+    This document contains conventions, guidelines, tips and tutorials on how to use these tools in the project.
+
+    We'll also be going over some technical details on how these tools work and how they interact with the project.
 
 ## Avalonia
 
-[Avalonia] is a multi-platform UI framework for creating native .NET applications. It takes inspiration from [WPF] and [WinUI] but is distinctly different to ensure it works on all platforms. The framework also uses [Skia] for rendering to ensure cross-platform compatability.
+!!! info "[Avalonia] is a multi-platform UI framework for creating native .NET applications."
 
-## Understanding XAML Bindings and Reactivity
+It takes inspiration from [WPF] and [WinUI] but is distinctly different to ensure it works on all platforms.
+The framework also uses [Skia] for rendering to ensure cross-platform compatibility.
 
-[Avalonia] uses AXAML, which has some minor differences compared to the standard XAML that was popularized by [WPF]. Creating a new view called `MyView.axaml` will also create a **code behind** file called `MyView.axaml.cs` that, by default, only has a `InitializeComponent();` call inside it's constructor:
+## Understanding XAML Bindings
+
+!!! tip "Describes how data from the code makes its way to the UI."
+
+!!! note "[Avalonia] uses AXAML, which has some minor differences compared to the standard XAML that was popularized by [WPF]."
+
+### Simple Introduction
+
+Creating a new view called `MyView.axaml` will also create a **code behind** file called `MyView.axaml.cs` that,
+by default, only has a `InitializeComponent();` call inside it's constructor:
 
 ```csharp
 public partial class MyView : UserControl
@@ -34,8 +46,7 @@ public partial class MyView : UserControl
 {
     public MyView()
     {
-        DataContext = new MyData();
-
+        DataContext = new MyData(); // 👈
         InitializeComponent();
     }
 }
@@ -49,11 +60,17 @@ Inside the AXAML file of the view, you can now add a `TextBlock` and **bind** th
 </StackPanel>
 ```
 
-This kind of binding is called **XAML Binding** because the binding is created inside the UI markup file. The default **binding mode** for most properties is **one way** meaning that binding is from the source, aka the data context, to the target, aka the view.
+This kind of binding is called **XAML Binding** because the binding is created inside the UI markup file.
 
-Another common binding mode is **two way** binding which is required for properties on input controls, like `TextBox.Text` and `Checkbox.IsChecked`.
+The default **binding mode** for *most* properties is **one way** meaning that binding is from the source, aka
+the data context, to the target (the view).
 
-Note: when using XAML bindings, it's recommended to set the design data context. This provides a hint to the IDE auto-completion service and allows you to use the previewer:
+Another common binding mode is **two way** binding which is required for properties on input controls, like
+`TextBox.Text` and `Checkbox.IsChecked`.
+
+### Working with Avalonia Previewer
+
+!!! note "When using XAML bindings, it's recommended to set the design data context. This provides a hint to the IDE auto-completion service and allows you to use the previewer."
 
 ```xml
 <Design.DataContext>
@@ -61,7 +78,10 @@ Note: when using XAML bindings, it's recommended to set the design data context.
 </Design.DataContext>
 ```
 
-Currently, the `MyData.Greeting` property is a get-only property, meaning it doesn't have a setter and the underlying field can't be changed. Let's change the `MyData.Getting` property to have a public setter:
+### Updating the Displayed Content
+
+Currently, the `MyData.Greeting` property is a get-only property, meaning it doesn't have a setter and the
+underlying field can't be changed. Let's change the `MyData.Getting` property to have a public setter:
 
 ```csharp
 public class MyData
@@ -79,7 +99,8 @@ To update the text, we can add a simple button to the view that, when triggered,
 </StackPanel>
 ```
 
-The `Button` control has a `Click` event that we can use to register an event handler called `OnClick`. This event handler will be called whenever the button is clicked:
+The `Button` control has a `Click` event that we can use to register an event handler called `OnClick`.
+This event handler will be called whenever the button is clicked:
 
 ```csharp
 public partial class MyView : UserControl
@@ -87,7 +108,6 @@ public partial class MyView : UserControl
     public MyView()
     {
         DataContext = new MyData();
-
         InitializeComponent();
     }
 
@@ -98,7 +118,11 @@ public partial class MyView : UserControl
 }
 ```
 
-If you were to build and run this project, you'll find that clicking the button does nothing. This is because the data context doesn't **notify** the view that the property has changed. To add this functionality, the data context needs to implement the [`INotifyPropertyChanged`](https://learn.microsoft.com/en-us/dotnet/api/system.componentmodel.inotifypropertychanged) interface:
+!!! warning "If you were to build and run this project, you'll find that clicking the button does nothing."
+
+This is because the data context doesn't **notify** the view that the property has changed.
+
+To add this functionality, the data context needs to implement the [`INotifyPropertyChanged`](https://learn.microsoft.com/en-us/dotnet/api/system.componentmodel.inotifypropertychanged) interface:
 
 ```csharp
 public class MyData : INotifyPropertyChanged
@@ -123,19 +147,35 @@ public class MyData : INotifyPropertyChanged
 }
 ```
 
-This is a lot of boilerplate code that various frameworks and tools can abstract away but you should be aware of what's going on behind the scenes. In this code snippet, we explicitly implement the property setter to invoke the [`PropertyChanged`](https://learn.microsoft.com/en-us/dotnet/api/system.componentmodel.inotifypropertychanged.propertychanged) event.
+This is a lot of boilerplate code that various frameworks and tools can abstract away but you should be aware of
+what's going on behind the scenes. In this code snippet, we explicitly implement the property setter to invoke
+the [`PropertyChanged`](https://learn.microsoft.com/en-us/dotnet/api/system.componentmodel.inotifypropertychanged.propertychanged) event.
 
-If the view has any bindings and the data context implements this interface, the view will register an event handler at runtime to listen for property changes of properties that the view binds to. This allows the framework to re-render only a specific part of the UI since it knows which parts of the UI have bindings and which property changes it needs to listen to.
+If the view has any bindings and the data context implements this interface, the view will register an event handler
+at runtime to listen for property changes of properties that the view binds to. This allows the framework to re-render
+only a specific part of the UI since it knows which parts of the UI have bindings and which property changes it needs
+to listen to.
 
-## Understanding ReactiveUI
+!!! warning "Changes to the displayed content must be done on the UI Thread."
 
-The XAML bindings from the previous example work great for very simple applications. However, once you start adding more and more functionality to it, developing with XAML bindings can have some massive disadvantages.
+## How Nexus App Does Bindings (a.k.a. ReactiveUI)
 
-The main disadvantage comes from using events. By design, events require you to register an event handler that will receive the sender object and some event arguments. Since the event handler is often just a member function, it's tied to the class and it can be hard to reason about what actually happens when a property changes.
+!!! note "The XAML bindings from the previous example work great for very simple applications."
 
-An alternative to events are **observables**. The [observable design pattern](https://learn.microsoft.com/en-us/dotnet/standard/events/observer-design-pattern) is suitable for any scenario that requires push-based notification. The pattern defines an **observable** as a provider for push-based notifications and an **observer** as a mechanism for receiving push-based notifications.
+However... once you start adding more and more functionality to it, developing with XAML bindings can
+have some massive disadvantages.
 
-.NET provides an [`IObservable<T>`](https://learn.microsoft.com/en-us/dotnet/api/system.iobservable-1) and an [`IObserver<T>`](https://learn.microsoft.com/en-us/dotnet/api/system.iobserver-1) interface to facilitate this pattern. The great thing about this pattern and how it's implemented in C#, is that it doesn't require any special syntax or keywords like the `event` keyword. Conceptually, these are just interfaces that have methods that return values.
+The main disadvantage comes from using events. By design, events require you to register an event handler
+that will receive the sender object and some event arguments. Since the event handler is often just a
+member function, it's tied to the class and it can be hard to reason about what actually happens when a property changes.
+
+An alternative to events are **observables**. The [observable design pattern](https://learn.microsoft.com/en-us/dotnet/standard/events/observer-design-pattern) is suitable for any scenario
+that requires push-based notification. The pattern defines an **observable** as a provider for push-based
+notifications and an **observer** as a mechanism for receiving push-based notifications.
+
+.NET provides an [`IObservable<T>`](https://learn.microsoft.com/en-us/dotnet/api/system.iobservable-1) and an [`IObserver<T>`](https://learn.microsoft.com/en-us/dotnet/api/system.iobserver-1) interface to facilitate this pattern.
+The great thing about this pattern and how it's implemented in C#, is that it doesn't require any special syntax
+or keywords like the `event` keyword. Conceptually, these are just interfaces that have methods that return values.
 
 The result of having this property is the ability to use other language constructs like LINQ on the pattern:
 

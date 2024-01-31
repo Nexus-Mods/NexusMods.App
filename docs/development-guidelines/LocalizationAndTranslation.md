@@ -121,11 +121,10 @@ We run this code at startup.
 var text = Language.MyGames
 ```
 
-
 !!! warning "In some cases your language may default to English."
 
 This can happen if the code is ran before the [locale is set at startup](#switching-a-language);
-this should not however be a common occurrence. 
+this should not however be a common occurrence.
 
 #### Formatted Text
 

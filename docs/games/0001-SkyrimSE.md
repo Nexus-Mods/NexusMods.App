@@ -37,15 +37,15 @@ For our purposes; no special functionality/integration is required here we can s
 Uploaded Skyrim SE mods can appear in the following form:
 
 - Files Targeting Data Subfolder
-  - [SkyUI](https://www.nexusmods.com/skyrimspecialedition/mods/12604?tab=files)
-  - Root of archive maps to data.
-  - e.g. `/SkyUI_SE.bsa` maps to `Data/SkyUI_SE.bsa`.
+    - [SkyUI](https://www.nexusmods.com/skyrimspecialedition/mods/12604?tab=files)
+    - Root of archive maps to data.
+    - e.g. `/SkyUI_SE.bsa` maps to `Data/SkyUI_SE.bsa`.
 
 - Loose Files Targeting `Data` Subdirectory
-  - [Skyrim 202X 9.0 to 9.4](https://www.nexusmods.com/skyrimspecialedition/mods/2347?tab=files)
+    - [Skyrim 202X 9.0 to 9.4](https://www.nexusmods.com/skyrimspecialedition/mods/2347?tab=files)
 
 - Files Targeting Game Root Directory
-  - [Skyrim 202X 9.0](https://www.nexusmods.com/skyrimspecialedition/mods/2347?tab=files)
+    - [Skyrim 202X 9.0](https://www.nexusmods.com/skyrimspecialedition/mods/2347?tab=files)
 
 Mods can ship as 'loose files' or '.esp+.bsa' pairs
 
