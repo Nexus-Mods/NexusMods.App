@@ -20,14 +20,16 @@ using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Windows;
 
-public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
+public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IWorkspaceWindow
 {
     private readonly IArchiveInstaller _archiveInstaller;
     private readonly ILoadoutRegistry _registry;
+    private readonly IWindowManager _windowManager;
 
     public MainWindowViewModel(
         ILogger<MainWindowViewModel> logger,
         IOSInformation osInformation,
+        IWindowManager windowManager,
         IWorkspaceController workspaceController,
         IWorkspaceViewModel workspaceViewModel,
         ISpineViewModel spineViewModel,
@@ -40,6 +42,9 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
         IUpdaterViewModel updaterViewModel,
         ILoadoutRegistry registry)
     {
+        _windowManager = windowManager;
+        _windowManager.RegisterWindow(this);
+
         TopBar = topBarViewModel;
         Spine = spineViewModel;
         DevelopmentBuildBanner = developmentBuildBannerViewModel;
@@ -112,9 +117,16 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
             // Only show the updater if the metrics opt-in has been shown before, so we don't spam the user.
             if (!metricsOptInViewModel.MaybeShow())
                 updaterViewModel.MaybeShow();
+
+            this.WhenAnyValue(vm => vm.IsActive)
+                .Where(isActive => isActive)
+                .Select(_ => WindowId)
+                .BindTo(_windowManager, manager => manager.ActiveWindowId)
+                .DisposeWith(d);
+
+            Disposable.Create(this, vm => vm._windowManager.UnregisterWindow(vm)).DisposeWith(d);
         });
     }
-
 
     private async Task HandleDownloadedAnalyzedArchive(IDownloadTask task, DownloadId downloadId, string modName)
     {
@@ -140,6 +152,11 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
     {
         Spine.Activations.OnNext(action);
     }
+
+    public WindowId WindowId { get; } = WindowId.NewId();
+
+    [Reactive]
+    public bool IsActive { get; set; }
 
     [Reactive]
     public ISpineViewModel Spine { get; set; }

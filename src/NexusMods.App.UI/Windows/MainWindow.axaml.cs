@@ -61,6 +61,10 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
                 .Select(content => content != null)
                 .BindTo(this, view => view.OverlayBorder.IsVisible)
                 .DisposeWith(disposables);
+
+            this.WhenAnyValue(view => view.IsActive)
+                .BindTo(this, view => view.ViewModel!.IsActive)
+                .DisposeWith(disposables);
         });
     }
 }

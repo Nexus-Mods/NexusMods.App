@@ -165,6 +165,7 @@ public static class Services
 
             // workspace system
             .AddSingleton<IWorkspaceController, WorkspaceController>()
+            .AddSingleton<IWindowManager, WindowManager>()
             .AddViewModel<WorkspaceViewModel, IWorkspaceViewModel>()
             .AddViewModel<PanelViewModel, IPanelViewModel>()
             .AddViewModel<AddPanelButtonViewModel, IAddPanelButtonViewModel>()

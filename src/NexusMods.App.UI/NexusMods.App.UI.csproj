@@ -354,6 +354,9 @@
         <Compile Update="Windows\MainWindowViewModel.cs">
           <DependentUpon>IMainWindowViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Windows\WindowManager.cs">
+          <DependentUpon>IWindowManager.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
