@@ -29,7 +29,6 @@ public class ReshadePresetInstaller : AModInstaller
         ModInstallerInfo info,
         CancellationToken cancellationToken = default)
     {
-
         var filtered = info.ArchiveFiles.GetFiles()
             .Gen()
             .Where(f => !IgnoreFiles.Contains(f.Path().FileName))

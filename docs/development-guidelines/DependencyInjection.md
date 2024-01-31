@@ -139,6 +139,28 @@ Example:
    // A new instance of MyService is created each time it's requested
    services.AddTransient<IFoo, Foo>();
    ```
+
+### Adding Dependency Injection to your New Project
+
+!!! tip "If you are creating a new project, you'll need to manually add dependency injection."
+
+To do this, add a `Services.cs` file to your project, which should look something like this:
+
+```csharp
+public static class Services
+{
+    public static IServiceCollection AddYourThing(this IServiceCollection services)
+    {
+        // example
+        // services.AddAllSingleton<ITypeFinder, TypeFinder>();
+        return services;
+    }
+}
+```
+
+And add the NuGet package `Microsoft.Extensions.DependencyInjection.Abstractions` to your project. You can usually do it
+by right clicking and hitting `Manage NuGet Packages` in your IDE of choice.
+
 ## Tips and Tricks
 
 !!! info "Obtaining Multiple Instances of a Registration"

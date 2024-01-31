@@ -40,5 +40,4 @@ public class SifuModInstaller : AModInstaller
             Name = pakPath!.FileName()
         }};
     }
-
 }
