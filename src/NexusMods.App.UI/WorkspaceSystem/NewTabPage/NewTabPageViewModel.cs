@@ -36,7 +36,7 @@ public class NewTabPageViewModel : APageViewModel<INewTabPageViewModel>, INewTab
                 .MergeMany(item => item.SelectItemCommand)
                 .SubscribeWithErrorLogging(pageData =>
                 {
-                    WorkspaceController.OpenPage(WorkspaceId, pageData, new OpenPageBehavior(new OpenPageBehavior.ReplaceTab(PanelId, TabId)));
+                    GetWorkspaceController().OpenPage(WorkspaceId, pageData, new OpenPageBehavior(new OpenPageBehavior.ReplaceTab(PanelId, TabId)));
                 })
                 .DisposeWith(disposables);
         });
