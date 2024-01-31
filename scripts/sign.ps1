@@ -61,7 +61,7 @@ if (Test-Path $tmpDir -PathType Container) {
 New-Item -Path $tmpDir -Type Directory
 
 $inputFile = "$executableToSign"
-$outputFile = Join-Path $tmpDir $(Get-Item $inputFile).Name
+$outputFile = Join-Path -Path $tmpDir -ChildPath $(Get-Item $inputFile).Name
 
 Write-Host "inputFile: $inputFile"
 Write-Host "outputFile: $outputFile"
