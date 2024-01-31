@@ -357,6 +357,12 @@
         <Compile Update="Windows\DesignWindowManager.cs">
           <DependentUpon>IWindowManager.cs</DependentUpon>
         </Compile>
+        <Compile Update="LeftMenu\Home\HomeLeftMenuViewModel.cs">
+          <DependentUpon>IHomeLeftMenuViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="LeftMenu\Home\HomeLeftMenuDesignViewModel.cs">
+          <DependentUpon>IHomeLeftMenuViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
