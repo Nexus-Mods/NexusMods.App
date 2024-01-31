@@ -371,6 +371,7 @@
       <UpToDateCheckInput Remove="Controls\DownloadProgressBar\DownloadProgressBar.axaml" />
       <UpToDateCheckInput Remove="Controls\Buttons\RoundedButton\RoundedButton.axaml" />
       <UpToDateCheckInput Remove="Controls\Buttons\StandardButtonTheme.axaml" />
+      <UpToDateCheckInput Remove="RightContent\Home\HomeView.axaml" />
     </ItemGroup>
 
     <ItemGroup>

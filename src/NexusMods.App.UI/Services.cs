@@ -29,7 +29,6 @@ using NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadSize;
 using NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadStatus;
 using NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadVersion;
 using NexusMods.App.UI.RightContent.Downloads;
-using NexusMods.App.UI.RightContent.Home;
 using NexusMods.App.UI.RightContent.LoadoutGrid;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModCategory;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModEnabled;
@@ -97,7 +96,6 @@ public static class Services
             .AddViewModel<GameWidgetViewModel, IGameWidgetViewModel>()
             .AddViewModel<HistoryViewModel, IHistoryViewModel>()
             .AddViewModel<HomeLeftMenuViewModel, IHomeLeftMenuViewModel>()
-            .AddViewModel<HomeViewDesignerViewModel, IHomeViewModel>()
             .AddViewModel<IconButtonViewModel, IIconButtonViewModel>()
             .AddViewModel<IconViewModel, IIconViewModel>()
             .AddViewModel<ImageButtonViewModel, IImageButtonViewModel>()
@@ -134,7 +132,6 @@ public static class Services
             .AddView<GameWidget, IGameWidgetViewModel>()
             .AddView<HistoryView, IHistoryViewModel>()
             .AddView<HomeLeftMenuView, IHomeLeftMenuViewModel>()
-            .AddView<HomeView, IHomeViewModel>()
             .AddView<IconButton, IIconButtonViewModel>()
             .AddView<IconView, IIconViewModel>()
             .AddView<ImageButton, IImageButtonViewModel>()
