@@ -158,41 +158,108 @@ to listen to.
 
 !!! warning "Changes to the displayed content must be done on the UI Thread."
 
-## How Nexus App Does Bindings (a.k.a. ReactiveUI)
+## How Nexus App Does UI (ReactiveUI)
+
+### Events & Bindings
 
 !!! note "The XAML bindings from the previous example work great for very simple applications."
 
 However... once you start adding more and more functionality to it, developing with XAML bindings can
 have some massive disadvantages.
 
-The main disadvantage comes from using events. By design, events require you to register an event handler
-that will receive the sender object and some event arguments. Since the event handler is often just a
-member function, it's tied to the class and it can be hard to reason about what actually happens when a property changes.
+The main disadvantage comes from using events. With events you register an event handler, either from the AXAML
+(providing very little control), or from the code behind, creating a mess and potentially leading to [Event Handler Leaks].
 
-An alternative to events are **observables**. The [observable design pattern](https://learn.microsoft.com/en-us/dotnet/standard/events/observer-design-pattern) is suitable for any scenario
-that requires push-based notification. The pattern defines an **observable** as a provider for push-based
-notifications and an **observer** as a mechanism for receiving push-based notifications.
+!!! example "Example with Events (from Code Behind)"
 
-.NET provides an [`IObservable<T>`](https://learn.microsoft.com/en-us/dotnet/api/system.iobservable-1) and an [`IObserver<T>`](https://learn.microsoft.com/en-us/dotnet/api/system.iobserver-1) interface to facilitate this pattern.
+    ```csharp
+    public YourView()
+    {
+        // Note: This isn't strictly needed for this specific example, as both the event
+        //       receiver and publisher are the same view, however not doing this with long
+        //       lived objects outside of this view risks event leaks.
+        this.Activated += WindowActivated;
+        this.Deactivated += WindowDeactivated;
+    }
+
+    private void WindowActivated(object sender, EventArgs e)
+    {
+        this.PropertyChanged += TextPropertyChanged;
+    }
+
+    private void WindowDeactivated(object sender, EventArgs e)
+    {
+        this.PropertyChanged -= TextPropertyChanged;
+    }
+
+    private void TextPropertyChanged(object sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(Text))
+        {
+            if (Text.Length > 10)
+            {
+                // Do Stuff
+            }
+        }
+    }
+    ```
+
+An alternative to events for such notifications are **observables** ([observable design pattern]).
+The pattern defines an **observable** ([`IObservable<T>`](https://learn.microsoft.com/en-us/dotnet/api/system.iobservable-1))
+as a provider for push-based notifications and an **observer** ([`IObserver<T>`](https://learn.microsoft.com/en-us/dotnet/api/system.iobserver-1))
+as a mechanism for receiving push-based notifications.
+
 The great thing about this pattern and how it's implemented in C#, is that it doesn't require any special syntax
-or keywords like the `event` keyword. Conceptually, these are just interfaces that have methods that return values.
+or keywords like the `event` keyword. Conceptually, these are just interfaces that have [Extension Methods] that return values.
 
-The result of having this property is the ability to use other language constructs like LINQ on the pattern:
+The result is you can adapt other language constructs like LINQ on the pattern:
 
-```csharp
-this.WhenAnyValue(x => x.Text)
-    .Select(text => text.Length > 10)
-    .Subscribe(hasMinLength => { })
-    .DisposeWith(disposables);
-```
+!!! example "Example with Observables"
 
-All of your favorite LINQ methods like `Select`, `Where`, `First`, `All` and more can be used together with `IObservable<T>`. This makes the pattern inherently **composable** and is one of the major reasons why ReactiveUI is commonly used in UI development.
+    ```csharp
+    public YourView()
+    {
+        this.WhenActivated(disposables =>
+        {
+            // Observables
+            this.WhenAnyValue(x => x.Text)
+                .Select(text => text.Length > 10)
+                .Subscribe(hasMinLength => { })
+                .DisposeWith(disposables);
+        }
+    }
+    ```
 
-Sadly, ReactiveUI requires a lot of boilerplate code to get started, as well as a base level understanding of various software development concepts like the observable pattern. Another important pattern is the **Model-View-ViewModel** pattern, or **MVVM**. At it's core, the MVVM pattern allows us to separate our various components. The View is what appears on the screen of the user, in the previous example that's `MyView`. The View Model was `MyData`, it provides public properties and commands that the View can bind to. It also facilitates the communication between the View and the "Model" where the model is often a stateful object or some data store.
+This makes the pattern inherently ***composable*** and is one of the major reasons why ReactiveUI
+is commonly used in UI development.
 
-The MVVM pattern and it's separation of concerns makes developing the views and view models straightforward: the View should only bind to the View Model, the View Model should only contain the functionality required to drive the View and display the data. ReactiveUI makes this pattern much easier to implement.
+!!! note "Sadly, ReactiveUI requires a lot of boilerplate code to get started, as well as a base level understanding of various software development concepts like the observable pattern."
 
-Let's re-create the previous example and change it to use ReactiveUI and the observable pattern instead of being event-driven with XAML bindings:
+### Binding Patterns ('Model-View-ViewModel' a.k.a. MVVM)
+
+!!! info "Most .NET UI Projects, including ours use an architectural pattern called 'MVVM' for managing complex apps."
+
+Another important pattern is the **Model-View-ViewModel** pattern,
+or **MVVM**.
+
+At it's core, the MVVM pattern allows us to separate our various components.
+
+- The ***View*** is what appears on the screen of the user, in the previous example that's `MyView`.
+- The ***View Model*** was `MyData`, it provides public properties and commands that the View can bind to.
+    - It also facilitates the communication between the View and the ***Model*** where the
+      model represents and data and business logic of the application.
+
+MVVM and it's separation of concerns makes developing the views and view models straightforward:
+
+- The View should only bind to the View Model.
+- The View Model should only contain the functionality required to drive the View and display the data.
+
+ReactiveUI makes this pattern much easier to implement.
+
+#### An Example
+
+Let's re-create the [previous example](#simple-introduction) and change it to use MVVM, ReactiveUI and the
+observable pattern instead of being event-driven with XAML bindings:
 
 We can start with `MyViewModel` and a simple `Greeting` property:
 
@@ -240,7 +307,11 @@ public partial class MyView : ReactiveUserControl<MyViewModel>
 }
 ```
 
-`ReactiveUserControl<TViewModel>` inherits from the Avalonia `UserControl` class but also implements the ReactiveUI interface `IViewFor<TViewModel>`. This interface extends `IActivatableView`, which is a marker interface for telling ReactiveUI that the current view can be activated. The activation method is an implementation detail of the UI framework itself, ReactiveUI supports more than Avalonia, so this needs to be kept vague. In the context of Avalonia, activation occurs when the view gets loaded: https://github.com/AvaloniaUI/Avalonia/blob/2a85f7cafed6c90d4a8cd11dee36a9dd15ebcc1e/src/Avalonia.ReactiveUI/AvaloniaActivationForViewFetcher.cs#L37-L52
+`ReactiveUserControl<TViewModel>` inherits from the Avalonia `UserControl` class but also implements the ReactiveUI
+interface `IViewFor<TViewModel>`. This interface extends `IActivatableView`, which is a marker interface for telling
+ReactiveUI that the current view can be activated. The activation method is an implementation detail of the UI framework 
+itself, ReactiveUI supports more than Avalonia, so this needs to be kept vague. In the context of Avalonia, activation
+[occurs when the view gets loaded](https://github.com/AvaloniaUI/Avalonia/blob/2a85f7cafed6c90d4a8cd11dee36a9dd15ebcc1e/src/Avalonia.ReactiveUI/AvaloniaActivationForViewFetcher.cs#L37-L52)
 
 The `Loaded` and `Unloaded` events of an Avalonia `Control` determine whether a view is activated or not. The code snippet above also showcases that you can construct observables from events and thus convert from event-driven programming to the observable pattern.
 
@@ -1623,3 +1694,6 @@ public ParentViewModel()
 [WPF]: https://learn.microsoft.com/en-us/dotnet/desktop/wpf/overview/
 [WinUI]: https://learn.microsoft.com/en-us/windows/apps/winui/
 [Skia]: https://skia.org/
+[Event Handler Leaks]: https://stackoverflow.com/a/4526840
+[Extension Methods]: https://learn.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/extension-methods#orderby-example
+[observable design pattern]: https://learn.microsoft.com/en-us/dotnet/standard/events/observer-design-pattern
