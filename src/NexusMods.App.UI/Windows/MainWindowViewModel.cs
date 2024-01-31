@@ -45,13 +45,14 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IWorkspaceW
         _windowManager = windowManager;
         _windowManager.RegisterWindow(this);
 
+        Workspace = workspaceViewModel;
+        Workspace.WindowId = WindowId;
+
         TopBar = topBarViewModel;
         Spine = spineViewModel;
         DevelopmentBuildBanner = developmentBuildBannerViewModel;
         _archiveInstaller = archiveInstaller;
         _registry = registry;
-
-        Workspace = workspaceViewModel;
 
         // Only show controls in Windows since we can remove the chrome on that platform
         TopBar.ShowWindowControls = osInformation.IsWindows;

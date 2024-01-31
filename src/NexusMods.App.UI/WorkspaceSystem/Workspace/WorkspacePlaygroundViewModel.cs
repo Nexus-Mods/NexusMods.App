@@ -3,6 +3,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.App.UI.Windows;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -28,6 +29,7 @@ public class WorkspacePlaygroundViewModel : AViewModel<IWorkspacePlaygroundViewM
         var jsonSerializerOptions = serviceProvider.GetRequiredService<JsonSerializerOptions>();
 
         WorkspaceViewModel = new WorkspaceViewModel(workspaceController, factoryController);
+
         SaveWorkspaceCommand = ReactiveCommand.Create(() =>
         {
             var workspaceData = WorkspaceViewModel.ToData();

@@ -7,6 +7,7 @@ using DynamicData;
 using DynamicData.Aggregation;
 using DynamicData.Kernel;
 using NexusMods.App.UI.Extensions;
+using NexusMods.App.UI.Windows;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -17,6 +18,9 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
     private const int MaxColumns = 2;
     private const int MaxRows = 2;
     private const int MaxPanelCount = MaxColumns * MaxRows;
+
+    /// <inheritdoc/>
+    public WindowId WindowId { get; set; }
 
     public WorkspaceId Id { get; } = WorkspaceId.NewId();
 
@@ -305,7 +309,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         var panel = OptionalPanelOrFirst(replaceTab.PanelId);
         var tab = OptionalTabOrFirst(panel, replaceTab.TabId);
 
-        var newTabPage = _factoryController.Create(pageData, Id, panel.Id, tab.Id);
+        var newTabPage = _factoryController.Create(pageData, WindowId, Id, panel.Id, tab.Id);
         tab.Contents = newTabPage;
     }
 
@@ -375,6 +379,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                 {
                     var panelViewModel = new PanelViewModel(_factoryController)
                     {
+                        WindowId = WindowId,
                         WorkspaceId = Id,
                         LogicalBounds = logicalBounds,
                     };
@@ -438,6 +443,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
             {
                 var vm = new PanelViewModel(_factoryController)
                 {
+                    WindowId = WindowId,
                     WorkspaceId = Id
                 };
 

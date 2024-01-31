@@ -1,11 +1,17 @@
 using System.Collections.ObjectModel;
 using Avalonia;
+using NexusMods.App.UI.Windows;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
 public interface IWorkspaceViewModel : IViewModelInterface
 {
     public WorkspaceId Id { get; }
+
+    /// <summary>
+    /// Gets or sets the ID of the window this workspace is in.
+    /// </summary>
+    public WindowId WindowId { get; set; }
 
     public ReadOnlyObservableCollection<IPanelViewModel> Panels { get; }
 

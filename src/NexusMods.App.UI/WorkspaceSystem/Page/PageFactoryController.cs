@@ -2,6 +2,7 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using DynamicData.Kernel;
+using NexusMods.App.UI.Windows;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
@@ -26,12 +27,13 @@ public class PageFactoryController
         }
     }
 
-    public Page Create(PageData pageData, WorkspaceId workspaceId, PanelId panelId, Optional<PanelTabId> tabId)
+    public Page Create(PageData pageData, WindowId windowId, WorkspaceId workspaceId, PanelId panelId, Optional<PanelTabId> tabId)
     {
         if (!_factories.TryGetValue(pageData.FactoryId, out var factory))
             throw new KeyNotFoundException($"Unable to find registered factory with ID {pageData.FactoryId}");
 
         var page = factory.Create(pageData.Context);
+        page.ViewModel.WindowId = windowId;
         page.ViewModel.WorkspaceId = workspaceId;
         page.ViewModel.PanelId = panelId;
 

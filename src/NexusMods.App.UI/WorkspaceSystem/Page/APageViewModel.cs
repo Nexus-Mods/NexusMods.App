@@ -1,3 +1,5 @@
+using NexusMods.App.UI.Windows;
+
 namespace NexusMods.App.UI.WorkspaceSystem;
 
 public abstract class APageViewModel<TInterface> : AViewModel<TInterface>, IPageViewModelInterface
@@ -9,6 +11,9 @@ public abstract class APageViewModel<TInterface> : AViewModel<TInterface>, IPage
     {
         WorkspaceController = workspaceController;
     }
+
+    /// <inheritdoc/>
+    public WindowId WindowId { get; set; }
 
     /// <inheritdoc/>
     public WorkspaceId WorkspaceId { get; set; }
