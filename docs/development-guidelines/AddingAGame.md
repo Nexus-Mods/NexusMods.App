@@ -59,6 +59,8 @@ To add automatic detection for a given game, make your `AGame` implement the fol
 | Steam      | ISteamGame     | Extract 'AppId' from SteamDB ([Example][steamdb-example]).<br/> Or your `appmanifest_{AppId}.acf` files in `SteamApps` folder.                 |
 | Xbox       | IXboxGame      | Find inside `appxmanifest.xml` in game folder. Extract from `Name` field under `Identity`.                                                     |
 
+### Quickly Finding the 'App IDs'
+
 !!! tip "Builds of the Nexus App in `Debug` configuration will print all found games."
 
 ```
@@ -104,7 +106,7 @@ The function `GetPrimaryFile` is the game's main executable (not a launcher).
 
 ## Linking your Game with NexusMods
 
-!!! info "How to tell your game to fetch mods from a specific Nexus page"
+!!! tip "To link your game with a Nexus page, you need to set the 'Domain' field."
 
 Each `AGame` instance has a field named, `Domain`. This `Domain` corresponds to the URL used on the Nexus for the game.
 
@@ -119,6 +121,15 @@ public override GameDomain Domain => GameDomain.From("sifu");
 !!! info "For the App to recognise your game, you'll need to add it to the [Dependency Injection][dependency-injection] container."
 
 More specifically, you will need to register your `IGame` in your project's `Services.cs` file (create it if it doesn't exist).
+
+```csharp
+public static IServiceCollection AddSifu(this IServiceCollection serviceCollection)
+{
+    serviceCollection.AddAllSingleton<IGame, Sifu>();
+    serviceCollection.AddAllSingleton<IModInstaller, SifuModInstaller>();
+    return serviceCollection;
+}
+```
 
 After that, you may also need to add it to [AddApp][add-app] and call `services.AddYourGame()`.
 
