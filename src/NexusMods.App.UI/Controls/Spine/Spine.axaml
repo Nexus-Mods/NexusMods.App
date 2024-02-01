@@ -25,7 +25,7 @@
             <ItemsControl
                 Margin="0"
                 Padding="0"
-                x:Name="Games">
+                x:Name="Loadouts">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel />

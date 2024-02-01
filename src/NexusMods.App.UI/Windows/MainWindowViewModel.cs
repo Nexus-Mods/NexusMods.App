@@ -71,10 +71,6 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
                 new AddPanelBehavior(new AddPanelBehavior.WithDefaultTab())
             );
 
-            Spine.Actions
-                .SubscribeWithErrorLogging(logger, HandleSpineAction)
-                .DisposeWith(d);
-
             // When the user closes the window, we should persist all download state such that it shows
             // accurate values after a reboot.
             // If we ever plan to remove and re-add main window (unlikely), this might need changing to not dispose but only save.
@@ -109,15 +105,6 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
                 })
                 .DisposeWith(d);
 
-            this.WhenAnyValue(vm => vm.Spine.LeftMenu)
-                .Select(left =>
-                {
-                    logger.LogDebug("Spine changed left menu to {LeftMenu}", left);
-                    return left;
-                })
-                .BindTo(this, vm => vm.LeftMenu)
-                .DisposeWith(d);
-
             // Only show the updater if the metrics opt-in has been shown before, so we don't spam the user.
             if (!metricsOptInViewModel.MaybeShow())
                 updaterViewModel.MaybeShow();
@@ -150,11 +137,6 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
             else
                 await _archiveInstaller.AddMods(_registry.AllLoadouts().First().LoadoutId, downloadId, modName);
         });
-    }
-
-    private void HandleSpineAction(SpineButtonAction action)
-    {
-        Spine.Activations.OnNext(action);
     }
 
     public WindowId WindowId { get; } = WindowId.NewId();

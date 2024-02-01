@@ -14,9 +14,7 @@ public partial class Spine : ReactiveUserControl<ISpineViewModel>
         {
             this.OneWayBind(ViewModel, vm => vm.Home, v => v.Home.ViewModel)
                 .DisposeWith(disposables);
-            this.OneWayBind(ViewModel, vm => vm.Games, v => v.Games.ItemsSource)
-                .DisposeWith(disposables);
-            this.OneWayBind(ViewModel, vm => vm.Add, v => v.Add.ViewModel)
+            this.OneWayBind(ViewModel, vm => vm.Loadouts, v => v.Loadouts.ItemsSource)
                 .DisposeWith(disposables);
             this.OneWayBind(ViewModel, vm => vm.Downloads, v => v.Download.ViewModel)
                 .DisposeWith(disposables);

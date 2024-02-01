@@ -354,6 +354,18 @@
         <Compile Update="LeftMenu\Game\GameLeftMenuDesignViewModel.cs">
           <DependentUpon>IGameLeftMenuViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Controls\Spine\SpineDesignViewModel.cs">
+          <DependentUpon>ISpineViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\Spine\SpineViewModel.cs">
+          <DependentUpon>ISpineViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\Spine\Buttons\Image\ImageButtonDesignViewModel.cs">
+          <DependentUpon>IImageButtonViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\Spine\Buttons\Image\ImageButtonViewModel.cs">
+          <DependentUpon>IImageButtonViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
