@@ -120,9 +120,12 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                 }
             };
 
-            var newWorkspace = workspaceController.CreateWorkspace(pageData);
-            existingWorkspaceId = newWorkspace.Id;
+            var newWorkspace = workspaceController.CreateWorkspace(
+                new LoadoutContext(loadoutId),
+                pageData
+            );
 
+            existingWorkspaceId = newWorkspace.Id;
             _loadoutWorkspaces.Add(loadoutId, existingWorkspaceId);
         }
 

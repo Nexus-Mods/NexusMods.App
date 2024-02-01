@@ -25,8 +25,9 @@ public interface IWorkspaceController
     /// <summary>
     /// Creates a new workspace with one panel and a tab.
     /// </summary>
+    /// <param name="context">Optional <see cref="IWorkspaceContext"/> for the workspace. If this is <see cref="Optional{T}.None"/> the <see cref="EmptyContext"/> will be used.</param>
     /// <param name="pageData">Optional <see cref="PageData"/> for the first tab. If this is <see cref="Optional{T}.None"/> the default tab will be shown.</param>
-    public IWorkspaceViewModel CreateWorkspace(Optional<PageData> pageData);
+    public IWorkspaceViewModel CreateWorkspace(Optional<IWorkspaceContext> context, Optional<PageData> pageData);
 
     /// <summary>
     /// Changes the active workspace of the window.

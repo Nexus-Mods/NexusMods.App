@@ -37,13 +37,16 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
             .Subscribe();
     }
 
-    public IWorkspaceViewModel CreateWorkspace(Optional<PageData> pageData)
+    public IWorkspaceViewModel CreateWorkspace(Optional<IWorkspaceContext> context, Optional<PageData> pageData)
     {
         var vm = new WorkspaceViewModel(
             workspaceController: this,
             factoryController: _serviceProvider.GetRequiredService<PageFactoryController>(),
             unregisterFunc: UnregisterWorkspace
-        );
+        )
+        {
+            Context = context.HasValue ? context.Value : EmptyContext.Instance
+        };
 
         _workspaces.AddOrUpdate(vm);
 

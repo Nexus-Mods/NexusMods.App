@@ -20,9 +20,13 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
     private const int MaxPanelCount = MaxColumns * MaxRows;
 
     /// <inheritdoc/>
+    public WorkspaceId Id { get; } = WorkspaceId.NewId();
+
+    /// <inheritdoc/>
     public WindowId WindowId => _workspaceController.WindowId;
 
-    public WorkspaceId Id { get; } = WorkspaceId.NewId();
+    /// <inheritdoc/>
+    public IWorkspaceContext Context { get; set; } = EmptyContext.Instance;
 
     [Reactive] public bool IsActive { get; set; }
 
