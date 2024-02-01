@@ -1,10 +1,13 @@
 # Using `IFileSysten`
 
-As part of [`0004-file-system-abstraction`](./decisions/backend/0004-file-system-abstraction.md), `NexusMods.Paths` now contains a file system abstraction: `IFileSystem`. New code should make use of this abstraction, as it is required for Wine support.
+As part of [`0004-file-system-abstraction`](./decisions/backend/0004-file-system-abstraction.md), `NexusMods.Paths` now contains a file system abstraction:
+`IFileSystem`.
+
+New code should make use of this abstraction, as it is required for `Wine` (Windows on Linux) support.
 
 ## Getting Started
 
-Using dependency-injection, simply add `IFileSystem` as a parameter to the constructor of your serivce:
+Using dependency-injection, simply add `IFileSystem` as a parameter to the constructor of your service:
 
 ```csharp
 public class MyService
@@ -24,7 +27,9 @@ public class MyService
 }
 ```
 
-When writing unit tests, make sure to import `NexusMods.Paths.TestingHelpers` in your test project, and utilize `AutoFileSystem` from [AutoFixture](https://github.com/AutoFixture/AutoFixture):
+!!! tip "When writing unit tests, make sure to import `NexusMods.Paths.TestingHelpers` in your test project."
+
+And utilize `AutoFileSystem` from [AutoFixture](https://github.com/AutoFixture/AutoFixture):
 
 ```csharp
 public class MyServiceTests
@@ -42,14 +47,33 @@ public class MyServiceTests
 }
 ```
 
-## Correctly accessing special folders
+## Accessing Special Folders
 
-Everything file system and path related should be done using `IFileSystem`. This includes getting the path to "special" folders. Instead of using `Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)`, use `IFileSystem.GetKnownPath(KnownPath.ApplicationDataDirectory)`. If `KnownPath` doesn't contain the path you need, open an issue or a PR to add this path.
+!!! warning "Everything file system and path related should be done using `IFileSystem`."
+
+This includes getting the path to "special" folders.
+
+Instead of using `Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)`, use `IFileSystem.GetKnownPath(KnownPath.ApplicationDataDirectory)`.
 
 You should **never** use `Environment.GetFolderPath` together with `IFileSystem` because this will likely break path mappings.
 
-## Path re-mappings
+!!! note "If `KnownPath` doesn't contain the path you need, open an issue or a PR to add this path."
 
-Path mappings are designed to be invisible to the API consumer **and** the `IFileSystem` implementation, they are completely isolated to `BaseFileSystem`. This design enables us to properly support virtual file systems, like Wine prefixes. If a tool requests the user's documents directory using `IFileSystem.GetKnownPath`, the implementation might return `C:\\Users\\{User}\\Documents`, `/home/{User}/Documents` or `/opt/wine/prefixes/my-cool-prefix/drive_c/Users/not-the-actual-user/Documents`. The tool doesn't know, or care, what the actual concrete path is, the only thing it cares about, is the fact that this is a path to the documents folder.
+### Path Re-mappings
 
-These mappings have to be manually created using `IFileSystem.CreateOverlayFileSystem`.
+Path mappings are designed to be invisible to the API consumer **and** the `IFileSystem` implementation,
+they are completely isolated to `BaseFileSystem`.
+
+This design enables us to properly support virtual file systems, like Wine prefixes.
+
+If a tool requests the user's documents directory using `IFileSystem.GetKnownPath`, the implementation might
+return:
+
+- `C:\\Users\\{User}\\Documents`
+- `/home/{User}/Documents`
+- `/opt/wine/prefixes/my-cool-prefix/drive_c/Users/not-the-actual-user/Documents`.
+
+The tool doesn't know, or care, what the actual concrete path is, the only thing it cares about,
+is the fact that this is a path to the 'documents' folder.
+
+!!! info "These mappings have to be manually created using `IFileSystem.CreateOverlayFileSystem`"
