@@ -1,17 +1,20 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Cli;
+using NexusMods.Abstractions.FileStore;
+using NexusMods.Abstractions.FileStore.ArchiveMetadata;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Games.ArchiveMetadata;
 using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Games.Trees;
-using NexusMods.Abstractions.Installers.DTO.Files;
-using NexusMods.Abstractions.Serialization;
+using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Files;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Extensions;
 using NexusMods.Paths;
 using NexusMods.ProxyConsole.Abstractions;
 using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
-using IGeneratedFile = NexusMods.Abstractions.Games.Loadouts.IGeneratedFile;
+using IGeneratedFile = NexusMods.Abstractions.Loadouts.Synchronizers.IGeneratedFile;
 
 namespace NexusMods.DataModel.CommandLine.Verbs;
 
@@ -90,7 +93,7 @@ public static class LoadoutManagementVerbs
         [Injected] CancellationToken token)
     {
         var rows = new List<object[]>();
-        var synchronizer = loadout.Value.Installation.Game.Synchronizer as IStandardizedLoadoutSynchronizer;
+        var synchronizer = loadout.Value.Installation.GetGame().Synchronizer as IStandardizedLoadoutSynchronizer;
         if (synchronizer == null)
         {
             await renderer.Text($"{loadout.Value.Installation.Game.Name} does not support flattening loadouts");

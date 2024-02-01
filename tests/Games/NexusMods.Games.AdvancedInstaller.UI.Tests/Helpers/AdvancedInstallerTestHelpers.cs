@@ -1,5 +1,5 @@
+using NexusMods.Abstractions.FileStore.Trees;
 using NexusMods.Abstractions.Games.Downloads;
-using NexusMods.Abstractions.Installers.Trees;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees;

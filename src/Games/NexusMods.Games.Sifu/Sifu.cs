@@ -1,10 +1,10 @@
+using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.GameLocators.GameCapabilities;
+using NexusMods.Abstractions.GameLocators.Stores.EGS;
+using NexusMods.Abstractions.GameLocators.Stores.Steam;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.DTO;
-using NexusMods.Abstractions.Games.GameCapabilities;
-using NexusMods.Abstractions.Games.Stores.EGS;
-using NexusMods.Abstractions.Games.Stores.Steam;
 using NexusMods.Abstractions.Installers;
-using NexusMods.Abstractions.Installers.DTO;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.Sifu;

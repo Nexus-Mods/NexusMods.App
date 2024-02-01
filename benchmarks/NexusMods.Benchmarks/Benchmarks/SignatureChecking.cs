@@ -1,4 +1,5 @@
 using BenchmarkDotNet.Attributes;
+using NexusMods.Abstractions.FileExtractor;
 using NexusMods.Benchmarks.Interfaces;
 using NexusMods.FileExtractor.FileSignatures;
 
@@ -11,7 +12,7 @@ public class SignatureChecking : IBenchmark
     private MemoryStream _data7Z = null!;
     private MemoryStream _dataZip = null!;
     private MemoryStream _notFound = null!;
-    private SignatureChecker _signatureChecker = null!;
+    private ISignatureChecker _signatureChecker = null!;
 
     [GlobalSetup]
     public void Setup()

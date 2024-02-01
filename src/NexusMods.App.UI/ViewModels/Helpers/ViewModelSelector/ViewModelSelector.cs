@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
-
 namespace NexusMods.App.UI.ViewModels.Helpers.ViewModelSelector;
 
 /// <summary>

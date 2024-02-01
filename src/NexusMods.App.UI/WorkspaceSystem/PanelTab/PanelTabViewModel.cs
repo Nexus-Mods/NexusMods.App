@@ -1,4 +1,3 @@
-using Avalonia.Media;
 using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.WorkspaceSystem;

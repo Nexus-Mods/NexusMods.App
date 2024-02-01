@@ -2,11 +2,15 @@ using System.IO.Compression;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.FileStore;
+using NexusMods.Abstractions.FileStore.ArchiveMetadata;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Games.ArchiveMetadata;
 using NexusMods.Abstractions.Games.Loadouts;
+using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
+using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.Hashing.xxHash64;
@@ -87,7 +91,7 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
     public virtual async Task InitializeAsync()
     {
         ((StubbedGame)Game).ResetGameFolders();
-        BaseList = LoadoutRegistry.GetMarker((await Install.Game.Synchronizer.Manage(Install)).LoadoutId);
+        BaseList = LoadoutRegistry.GetMarker((await Install.GetGame().Synchronizer.Manage(Install)).LoadoutId);
     }
 
     protected async Task<ModId[]> AddMods(LoadoutMarker mainList, AbsolutePath path, string? name = null)

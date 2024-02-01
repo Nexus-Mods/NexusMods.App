@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Games.DTO;
-using NexusMods.Abstractions.Installers.DTO;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.Abstractions.Serialization.DataModel.Ids;
@@ -51,12 +50,12 @@ public class ManuallyAddedLocator : IGameLocator
     {
         if (id.Category != EntityCategory.ManuallyAddedGame)
             throw new ArgumentOutOfRangeException(nameof(id), "The id must be a valid 'ManuallyAddedGame'");
-        
+
         _store.Value.Delete(id);
     }
-    
+
     /// <inheritdoc />
-    public IEnumerable<GameLocatorResult> Find(IGame game)
+    public IEnumerable<GameLocatorResult> Find(ILocatableGame game)
     {
         var allGames = _store.Value.GetByPrefix<ManuallyAddedGame>(new IdVariableLength(EntityCategory.ManuallyAddedGame, Array.Empty<byte>()));
         var games = allGames.Where(g => g.GameDomain == game.Domain);

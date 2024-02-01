@@ -1,4 +1,5 @@
 using FluentAssertions;
+using NexusMods.Abstractions.FileExtractor;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Extensions.BCL;
 using NexusMods.Extensions.Hashing;
@@ -12,10 +13,10 @@ namespace NexusMods.FileExtractor.Tests;
 
 public class GenericExtractionTests
 {
-    private readonly FileExtractor _extractor;
+    private readonly IFileExtractor _extractor;
     private readonly TemporaryFileManager _temporaryFileManager;
 
-    public GenericExtractionTests(FileExtractor extractor, TemporaryFileManager temporaryFileManager)
+    public GenericExtractionTests(IFileExtractor extractor, TemporaryFileManager temporaryFileManager)
     {
         _extractor = extractor;
         _temporaryFileManager = temporaryFileManager;
@@ -59,13 +60,6 @@ public class GenericExtractionTests
                 ("folder1/folder1file.txt".ToRelativePath(), (Hash)0xC9E47B1523162066),
                 ("rootFile.txt".ToRelativePath(), (Hash)0x33DDBF7930BA002A),
             });
-    }
-
-    [Theory]
-    [MemberData(nameof(Archives))]
-    public async Task CanTestForExtractionSupport(AbsolutePath path)
-    {
-        (await _extractor.CanExtract(path)).Should().BeTrue();
     }
 
     public static IEnumerable<object[]> Archives => FileSystem.Shared.GetKnownPath(KnownPath.CurrentDirectory).Combine("Resources").EnumerateFiles()

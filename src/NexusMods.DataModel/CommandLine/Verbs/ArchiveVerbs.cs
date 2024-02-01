@@ -1,8 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Cli;
-using NexusMods.Abstractions.Games.ArchiveMetadata;
+using NexusMods.Abstractions.FileStore;
+using NexusMods.Abstractions.FileStore.ArchiveMetadata;
 using NexusMods.Abstractions.Games.Loadouts;
-using NexusMods.Abstractions.Serialization;
 using NexusMods.Paths;
 using NexusMods.ProxyConsole.Abstractions;
 using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;

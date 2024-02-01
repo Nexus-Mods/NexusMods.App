@@ -1,5 +1,5 @@
-using NexusMods.Abstractions.DataModel.Entities.Mods;
 using NexusMods.Abstractions.DataModel.Entities.Sorting;
+using NexusMods.Abstractions.Loadouts.Mods;
 
 namespace NexusMods.Abstractions.Installers;
 

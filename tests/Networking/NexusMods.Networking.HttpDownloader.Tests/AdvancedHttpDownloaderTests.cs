@@ -1,8 +1,8 @@
 using FluentAssertions;
 using NexusMods.Abstractions.HttpDownloader;
 using NexusMods.Hashing.xxHash64;
-using NexusMods.Paths;
 using NexusMods.Networking.HttpDownloader.DTOs;
+using NexusMods.Paths;
 
 namespace NexusMods.Networking.HttpDownloader.Tests;
 

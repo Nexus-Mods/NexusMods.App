@@ -1,6 +1,6 @@
 using FluentAssertions;
 using Newtonsoft.Json;
-using NexusMods.Abstractions.Installers.DTO.Files;
+using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Games.BladeAndSorcery.Installers;
 using NexusMods.Games.BladeAndSorcery.Models;

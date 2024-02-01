@@ -1,9 +1,9 @@
 using IniParser;
 using IniParser.Model.Configuration;
 using IniParser.Parser;
+using NexusMods.Abstractions.FileExtractor;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Serialization.DataModel.Ids;
-using NexusMods.FileExtractor.FileSignatures;
 
 namespace NexusMods.Games.Generic.FileAnalyzers;
 

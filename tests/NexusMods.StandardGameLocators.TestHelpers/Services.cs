@@ -11,10 +11,10 @@ using GameFinder.Wine;
 using GameFinder.Wine.Bottles;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Extensions.DependencyInjection;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
-using IGame = NexusMods.Abstractions.Games.IGame;
 
 namespace NexusMods.StandardGameLocators.TestHelpers;
 
@@ -22,7 +22,7 @@ public static class Services
 {
     public static IServiceCollection AddStubbedGameLocators(this IServiceCollection coll)
     {
-        coll.AddAllSingleton<IGame, StubbedGame>();
+        coll.AddGame<StubbedGame>();
         coll.AddAllSingleton<ITool, ListFilesTool>();
         coll.AddSingleton<AHandler<EADesktopGame, EADesktopGameId>>(s =>
             new StubbedGameLocator<EADesktopGame, EADesktopGameId>(s.GetRequiredService<TemporaryFileManager>(),

@@ -4,20 +4,23 @@ using FluentAssertions;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.FileStore;
+using NexusMods.Abstractions.FileStore.ArchiveMetadata;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Games.ArchiveMetadata;
 using NexusMods.Abstractions.Games.Downloads;
 using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.HttpDownloader;
-using NexusMods.Abstractions.Installers.DTO;
+using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
+using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Mods;
+using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.Hashing.xxHash64;
-using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.Extensions;
 using NexusMods.Paths;
@@ -104,7 +107,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
     protected async Task<LoadoutMarker> CreateLoadout(bool indexGameFiles = true)
     {
         var name = Guid.NewGuid().ToString();
-        var loadout = await GameInstallation.Game.Synchronizer.Manage(GameInstallation);
+        var loadout = await GameInstallation.GetGame().Synchronizer.Manage(GameInstallation);
         loadout = loadout with { Name = name };
         LoadoutRegistry.Alter(loadout.LoadoutId, "Manage new Game", _ => loadout);
         return LoadoutRegistry.GetMarker(loadout.LoadoutId);

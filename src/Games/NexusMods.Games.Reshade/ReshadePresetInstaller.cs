@@ -1,7 +1,7 @@
 using Cathei.LinqGen;
+using NexusMods.Abstractions.FileStore.Trees;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Installers;
-using NexusMods.Abstractions.Installers.DTO;
-using NexusMods.Abstractions.Installers.Trees;
 using NexusMods.Extensions.BCL;
 using NexusMods.Games.Generic.FileAnalyzers;
 using NexusMods.Paths;

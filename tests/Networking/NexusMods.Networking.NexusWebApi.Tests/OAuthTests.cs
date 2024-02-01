@@ -1,7 +1,7 @@
-using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Text.Json;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.Messaging;
 using NexusMods.Abstractions.NexusWebApi.DTOs;

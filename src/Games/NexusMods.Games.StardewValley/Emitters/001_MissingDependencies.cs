@@ -1,10 +1,10 @@
 using System.Text.Json;
-using NexusMods.Abstractions.DataModel.Entities.Mods;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
-using NexusMods.Abstractions.Games.Loadouts;
-using NexusMods.Abstractions.Installers.DTO.Files;
 using NexusMods.Abstractions.IO;
+using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Files;
+using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Extensions.BCL;
 using NexusMods.Games.StardewValley.Models;
 

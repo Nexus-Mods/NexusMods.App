@@ -3,7 +3,7 @@ using System.Windows.Input;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.ReactiveUI;
-using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.Loadouts.Mods;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModEnabled;

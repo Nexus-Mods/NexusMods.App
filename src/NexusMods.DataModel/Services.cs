@@ -2,16 +2,17 @@ using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.App.Settings;
 using NexusMods.Abstractions.Diagnostics;
-using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Games.Loadouts.Sorting;
+using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Messaging;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.DataModel.CommandLine.Verbs;
 using NexusMods.DataModel.Diagnostics;
-using NexusMods.DataModel.GlobalSettings;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Messaging;
@@ -54,7 +55,6 @@ public static class Services
 
         coll.AddDataModelSettings();
         coll.AddAllSingleton<ILoadoutRegistry, LoadoutRegistry>();
-        coll.AddAllSingleton<IDirectoryIndexer, DirectoryIndexer>();
         coll.AddAllSingleton<IFileOriginRegistry, FileOriginRegistry>();
         coll.AddAllSingleton<IFileHashCache, FileHashCache>();
         coll.AddAllSingleton<IArchiveInstaller, ArchiveInstaller>();

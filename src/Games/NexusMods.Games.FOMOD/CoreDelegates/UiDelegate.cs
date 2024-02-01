@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Activities;
-using NexusMods.Abstractions.Installers.Trees;
+using NexusMods.Abstractions.FileStore.Trees;
 using NexusMods.Abstractions.GuidedInstallers;
 using NexusMods.Abstractions.GuidedInstallers.ValueObjects;
 using NexusMods.Extensions.BCL;

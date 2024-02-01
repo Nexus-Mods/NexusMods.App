@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.Games.Tools;
-using NexusMods.Abstractions.Installers.DTO;
+using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Games;
 using NexusMods.CrossPlatform.Process;
 
 namespace NexusMods.Games.BethesdaGameStudios.SkyrimSpecialEdition;

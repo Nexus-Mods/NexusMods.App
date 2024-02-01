@@ -1,5 +1,5 @@
-﻿using NexusMods.Abstractions.DataModel.Entities.Mods;
-using NexusMods.Abstractions.Installers.DTO;
+﻿using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Loadouts.Mods;
 
 namespace NexusMods.Games.FOMOD;
 
