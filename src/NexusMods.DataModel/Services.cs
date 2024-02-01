@@ -41,7 +41,6 @@ public static class Services
         coll.AddSingleton(typeof(IMessageConsumer<>), typeof(MessageConsumer<>));
         coll.AddSingleton(typeof(IMessageProducer<>), typeof(MessageProducer<>));
 
-        coll.AddSingleton<JsonConverter, GameInstallationConverter>();
         coll.AddSingleton<JsonConverter, AbsolutePathConverter>();
         coll.AddSingleton<JsonConverter, RelativePathConverter>();
         coll.AddSingleton<JsonConverter, GamePathConverter>();

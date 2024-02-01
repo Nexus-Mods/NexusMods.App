@@ -1,7 +1,7 @@
 using JetBrains.Annotations;
+using NexusMods.Abstractions.FileExtractor;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Mods;
-using NexusMods.FileExtractor.FileSignatures;
 
 namespace NexusMods.Abstractions.Diagnostics.Emitters;
 

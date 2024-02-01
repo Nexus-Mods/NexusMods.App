@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.FileExtractor;
 using NexusMods.Abstractions.FileStore.ArchiveMetadata;
 using NexusMods.Abstractions.Games.Downloads;
 using NexusMods.Abstractions.Games.Loadouts;
@@ -19,7 +20,7 @@ namespace NexusMods.DataModel;
 public class FileOriginRegistry : IFileOriginRegistry
 {
     private readonly ILogger<FileOriginRegistry> _logger;
-    private readonly FileExtractor.FileExtractor _extractor;
+    private readonly IFileExtractor _extractor;
     private readonly IFileStore _fileStore;
     private readonly TemporaryFileManager _temporaryFileManager;
     private readonly IDataStore _dataStore;
@@ -30,7 +31,7 @@ public class FileOriginRegistry : IFileOriginRegistry
     /// <param name="logger"></param>
     /// <param name="extractor"></param>
     /// <param name="fileStore"></param>
-    public FileOriginRegistry(ILogger<FileOriginRegistry> logger, FileExtractor.FileExtractor extractor,
+    public FileOriginRegistry(ILogger<FileOriginRegistry> logger, IFileExtractor extractor,
         IFileStore fileStore, TemporaryFileManager temporaryFileManager, IDataStore store)
     {
         _logger = logger;

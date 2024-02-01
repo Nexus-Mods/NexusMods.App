@@ -5,7 +5,7 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.DTO;
 using NexusMods.StandardGameLocators.Unknown;
 
-namespace NexusMods.DataModel.JsonConverters;
+namespace NexusMods.StandardGameLocators;
 
 /// <inheritdoc />
 public class GameInstallationConverter : JsonConverter<GameInstallation>

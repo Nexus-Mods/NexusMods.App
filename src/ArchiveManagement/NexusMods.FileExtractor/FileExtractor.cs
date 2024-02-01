@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.FileExtractor;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.FileExtractor.Extractors;
@@ -12,7 +13,7 @@ namespace NexusMods.FileExtractor;
 /// This utility is usually created via DI container.
 /// See <see cref="Services.AddFileExtractors"/>; and then ask the DI container nicely to give you an instance of this :)
 /// </summary>
-public class FileExtractor
+public class FileExtractor : IFileExtractor
 {
     /// <summary>
     /// Used to check for file types by scanning file header signatures.

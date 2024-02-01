@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using GameFinder.Common;
 using GameFinder.RegistryUtils;
 using GameFinder.StoreHandlers.EADesktop;
@@ -61,6 +62,9 @@ public static class Services
                 services.AddSingleton<IGameLocator, DefaultWineGameLocator>();
                 services.AddSingleton<IGameLocator, BottlesWineGameLocator>();
             });
+
+
+        services.AddSingleton<JsonConverter, GameInstallationConverter>();
 
         if (!registerConcreteLocators) return services;
 
