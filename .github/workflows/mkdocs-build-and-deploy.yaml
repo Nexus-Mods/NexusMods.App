@@ -19,4 +19,4 @@ jobs:
       contents: read
       pages: write
       id-token: write
-    uses: Nexus-Mods/NexusMods.App.Meta/.github/workflows/mkdocs-build-and-deploy.yaml@07124bc3ce9131c5d42561c57355eef02f5c51b1
+    uses: Nexus-Mods/NexusMods.App.Meta/.github/workflows/mkdocs-build-and-deploy.yaml@c8f35d7f1c684b64af1e2ac65c008e3141deea18
