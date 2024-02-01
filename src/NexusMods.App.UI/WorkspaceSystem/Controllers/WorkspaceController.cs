@@ -85,7 +85,6 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
 
     public void ChangeActiveWorkspace(WorkspaceId workspaceId)
     {
-
     }
 
     public void AddPanel(WorkspaceId workspaceId, WorkspaceGridState newWorkspaceState, AddPanelBehavior behavior)

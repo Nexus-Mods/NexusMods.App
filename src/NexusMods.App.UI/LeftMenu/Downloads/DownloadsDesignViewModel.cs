@@ -2,17 +2,12 @@
 using NexusMods.App.UI.Icons;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.Resources;
-using NexusMods.App.UI.RightContent;
-using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.LeftMenu.Downloads;
 
 public class DownloadsDesignViewModel : AViewModel<IDownloadsViewModel>, IDownloadsViewModel
 {
     public ReadOnlyObservableCollection<ILeftMenuItemViewModel> Items { get; }
-
-    [Reactive]
-    public IRightContentViewModel RightContent { get; set; } = Initializers.IRightContent;
 
     public DownloadsDesignViewModel()
     {

@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using DynamicData;
+using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
@@ -17,6 +18,7 @@ using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.LeftMenu.Game;
 
+[UsedImplicitly]
 public class GameLeftMenuViewModel : AViewModel<IGameLeftMenuViewModel>, IGameLeftMenuViewModel
 {
     private ReadOnlyObservableCollection<ILeftMenuItemViewModel> _items =
@@ -30,9 +32,6 @@ public class GameLeftMenuViewModel : AViewModel<IGameLeftMenuViewModel>, IGameLe
     [Reactive]
     public ILaunchButtonViewModel LaunchButton { get; set; }
     [Reactive] public IGame Game { get; set; } = (IGame)GameInstallation.Empty.Game;
-
-    [Reactive]
-    public IRightContentViewModel RightContent { get; set; } = Initializers.IRightContent;
 
     public GameLeftMenuViewModel(ILogger<GameLeftMenuViewModel> logger, ILoadoutRegistry loadoutRegistry, ILaunchButtonViewModel launchButton,
         ILoadoutGridViewModel loadoutGridViewModel,
@@ -87,7 +86,9 @@ public class GameLeftMenuViewModel : AViewModel<IGameLeftMenuViewModel>, IGameLe
     {
         _logger.LogDebug("Loadout {LoadoutId} selected", loadout.LoadoutId);
         _loadoutGridViewModel.LoadoutId = loadout.LoadoutId;
-        RightContent = _loadoutGridViewModel;
+
+        throw new NotImplementedException("Navigate to workspace");
+
         LaunchButton.LoadoutId = loadout.LoadoutId;
     }
 }

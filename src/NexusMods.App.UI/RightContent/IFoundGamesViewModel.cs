@@ -4,7 +4,7 @@ using NexusMods.App.UI.Controls.GameWidget;
 
 namespace NexusMods.App.UI.RightContent;
 
-public interface IFoundGamesViewModel : IRightContentViewModel
+public interface IFoundGamesViewModel : IViewModelInterface
 {
     /// <summary>
     /// All the games in this list.

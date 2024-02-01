@@ -7,7 +7,7 @@ using NexusMods.App.UI.RightContent.Downloads.ViewModels;
 
 namespace NexusMods.App.UI.RightContent.Downloads;
 
-public interface IInProgressViewModel : IRightContentViewModel
+public interface IInProgressViewModel : IViewModelInterface
 {
     /// <summary>
     /// These tasks contain only current in-progress tasks; completed tasks are removed from this list.

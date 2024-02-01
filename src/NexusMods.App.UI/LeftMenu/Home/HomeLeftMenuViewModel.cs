@@ -3,10 +3,8 @@ using JetBrains.Annotations;
 using NexusMods.App.UI.Icons;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.Resources;
-using NexusMods.App.UI.RightContent;
 using NexusMods.App.UI.RightContent.MyGames;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.LeftMenu.Home;
 
@@ -15,8 +13,6 @@ public class HomeLeftMenuViewModel : AViewModel<IHomeLeftMenuViewModel>, IHomeLe
 {
     public ReadOnlyObservableCollection<ILeftMenuItemViewModel> Items { get; }
 
-    [Reactive] public IRightContentViewModel RightContent { get; set; } = Initializers.IRightContent;
-
     public HomeLeftMenuViewModel(IMyGamesViewModel myGamesViewModel)
     {
         var items = new ILeftMenuItemViewModel[]
@@ -24,7 +20,7 @@ public class HomeLeftMenuViewModel : AViewModel<IHomeLeftMenuViewModel>, IHomeLe
             new IconViewModel
             {
                 Name = Language.MyGames, Icon = IconType.Bookmark, Activate = ReactiveCommand.Create(
-                    () => { RightContent = myGamesViewModel; })
+                    () => throw new NotImplementedException("Navigate to workspace"))
             }
         };
         Items = new ReadOnlyObservableCollection<ILeftMenuItemViewModel>(new ObservableCollection<ILeftMenuItemViewModel>(items));

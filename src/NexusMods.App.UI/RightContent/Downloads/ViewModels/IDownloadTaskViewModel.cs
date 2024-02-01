@@ -5,7 +5,7 @@ namespace NexusMods.App.UI.RightContent.Downloads.ViewModels;
 /// <summary>
 /// ViewModel for an individual download task displayed in the UI.
 /// </summary>
-public interface IDownloadTaskViewModel : IRightContentViewModel
+public interface IDownloadTaskViewModel : IViewModelInterface
 {
     /// <summary>
     /// The underlying task.

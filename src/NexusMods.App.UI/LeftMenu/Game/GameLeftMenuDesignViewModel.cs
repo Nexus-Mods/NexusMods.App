@@ -17,8 +17,6 @@ public class GameLeftMenuDesignViewModel : AViewModel<IGameLeftMenuViewModel>, I
 
     [Reactive] public IGame Game { get; set; } = (IGame)GameInstallation.Empty.Game;
 
-    [Reactive] public IRightContentViewModel RightContent { get; set; } = Initializers.IRightContent;
-
     public GameLeftMenuDesignViewModel()
     {
         LaunchButton = new LaunchButtonDesignViewModel();
