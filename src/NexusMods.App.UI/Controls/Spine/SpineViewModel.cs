@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
 using Avalonia.Media.Imaging;
 using DynamicData;
+using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -15,6 +16,9 @@ using NexusMods.App.UI.Controls.Spine.Buttons.Image;
 using NexusMods.App.UI.LeftMenu.Downloads;
 using NexusMods.App.UI.LeftMenu.Game;
 using NexusMods.App.UI.LeftMenu.Home;
+using NexusMods.App.UI.RightContent.LoadoutGrid;
+using NexusMods.App.UI.Windows;
+using NexusMods.App.UI.WorkspaceSystem;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Controls.Spine;
@@ -22,6 +26,9 @@ namespace NexusMods.App.UI.Controls.Spine;
 [UsedImplicitly]
 public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
 {
+    private readonly ILogger<SpineViewModel> _logger;
+    private readonly IWindowManager _windowManager;
+
     public IIconButtonViewModel Home { get; }
 
     public ISpineDownloadButtonViewModel Downloads { get; }
@@ -29,19 +36,20 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
     private ReadOnlyObservableCollection<IImageButtonViewModel> _loadouts = Initializers.ReadOnlyObservableCollection<IImageButtonViewModel>();
     public ReadOnlyObservableCollection<IImageButtonViewModel> Loadouts => _loadouts;
 
-    private readonly ILogger<SpineViewModel> _logger;
-
-    public SpineViewModel(ILogger<SpineViewModel> logger,
+    public SpineViewModel(
+        IServiceProvider serviceProvider,
+        ILogger<SpineViewModel> logger,
         ILoadoutRegistry loadoutRegistry,
+        IWindowManager windowManager,
         IIconButtonViewModel addButtonViewModel,
         IIconButtonViewModel homeButtonViewModel,
         ISpineDownloadButtonViewModel spineDownloadsButtonViewModel,
         IDownloadsViewModel downloadsViewModel,
         IHomeLeftMenuViewModel homeLeftMenuViewModel,
-        IGameLeftMenuViewModel gameLeftMenuViewModel,
-        IServiceProvider provider)
+        IGameLeftMenuViewModel gameLeftMenuViewModel)
     {
         _logger = logger;
+        _windowManager = windowManager;
 
         Home = homeButtonViewModel;
         Downloads = spineDownloadsButtonViewModel;
@@ -53,11 +61,11 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                 {
                     await using var iconStream = await loadout.Installation.Game.Icon.GetStreamAsync();
 
-                    var vm = provider.GetRequiredService<IImageButtonViewModel>();
+                    var vm = serviceProvider.GetRequiredService<IImageButtonViewModel>();
                     vm.Name = loadout.Name;
                     vm.Image = LoadImageFromStream(iconStream);
                     vm.IsActive = false;
-                    vm.Click = ReactiveCommand.Create(() => throw new NotImplementedException());
+                    vm.Click = ReactiveCommand.Create(() => ChangeToLoadoutWorkspace(loadout.LoadoutId));
                     return vm;
                 })
                 .OnUI()
@@ -91,18 +99,39 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
     private void NavigateToHome()
     {
         _logger.LogTrace("Home selected");
-        throw new NotImplementedException();
+        // TODO:
     }
 
-    private void NavigateToGame(IGame game)
+    private readonly Dictionary<LoadoutId, WorkspaceId> _loadoutWorkspaces = new();
+
+    private void ChangeToLoadoutWorkspace(LoadoutId loadoutId)
     {
-        _logger.LogTrace("Game {Game} selected", game);
-        throw new NotImplementedException();
+        if (!_windowManager.TryGetActiveWindow(out var window)) return;
+        var workspaceController = window.WorkspaceController;
+
+        if (!_loadoutWorkspaces.TryGetValue(loadoutId, out var existingWorkspaceId))
+        {
+            var pageData = new PageData
+            {
+                FactoryId = LoadoutGridPageFactory.StaticId,
+                Context = new LoadoutGridContext
+                {
+                    LoadoutId = loadoutId
+                }
+            };
+
+            var newWorkspace = workspaceController.CreateWorkspace(pageData);
+            existingWorkspaceId = newWorkspace.Id;
+
+            _loadoutWorkspaces.Add(loadoutId, existingWorkspaceId);
+        }
+
+        workspaceController.ChangeActiveWorkspace(existingWorkspaceId);
     }
 
     private void NavigateToDownloads()
     {
         _logger.LogTrace("Downloads selected");
-        throw new NotImplementedException();
+        // TODO:
     }
 }

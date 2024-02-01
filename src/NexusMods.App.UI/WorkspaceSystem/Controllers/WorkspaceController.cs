@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using Avalonia.Media;
+using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.App.UI.Windows;
@@ -24,7 +25,7 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
         _logger = serviceProvider.GetRequiredService<ILogger<WorkspaceController>>();
     }
 
-    public IWorkspaceViewModel CreateWorkspace()
+    public IWorkspaceViewModel CreateWorkspace(Optional<PageData> pageData)
     {
         var vm = new WorkspaceViewModel(
             workspaceController: this,
@@ -33,6 +34,19 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
         );
 
         _workspaces.TryAdd(vm.Id, new WeakReference<WorkspaceViewModel>(vm));
+
+        var addPanelBehavior = pageData.HasValue
+            ? new AddPanelBehavior(new AddPanelBehavior.WithCustomTab(pageData.Value))
+            : new AddPanelBehavior(new AddPanelBehavior.WithDefaultTab());
+
+        vm.AddPanel(
+            WorkspaceGridState.From(new[]
+            {
+                new PanelGridState(PanelId.DefaultValue, MathUtils.One)
+            }, isHorizontal: vm.IsHorizontal),
+            addPanelBehavior
+        );
+
         return vm;
     }
 
@@ -85,6 +99,8 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
 
     public void ChangeActiveWorkspace(WorkspaceId workspaceId)
     {
+        if (!TryGetWorkspace(workspaceId, out var workspaceViewModel)) return;
+        _window.Workspace = workspaceViewModel;
     }
 
     public void AddPanel(WorkspaceId workspaceId, WorkspaceGridState newWorkspaceState, AddPanelBehavior behavior)

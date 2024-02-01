@@ -1,4 +1,5 @@
 using Avalonia.Media;
+using DynamicData.Kernel;
 using JetBrains.Annotations;
 using NexusMods.App.UI.Windows;
 
@@ -16,9 +17,10 @@ public interface IWorkspaceController
     public WindowId WindowId { get; }
 
     /// <summary>
-    /// Creates a new workspace.
+    /// Creates a new workspace with one panel and a tab.
     /// </summary>
-    public IWorkspaceViewModel CreateWorkspace();
+    /// <param name="pageData">Optional <see cref="PageData"/> for the first tab. If this is <see cref="Optional{T}.None"/> the default tab will be shown.</param>
+    public IWorkspaceViewModel CreateWorkspace(Optional<PageData> pageData);
 
     /// <summary>
     /// Changes the active workspace of the window.

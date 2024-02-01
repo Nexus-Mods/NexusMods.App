@@ -1,5 +1,6 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using DynamicData.Kernel;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Games.Downloads;
 using NexusMods.Abstractions.Installers;
@@ -49,7 +50,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
             serviceProvider: serviceProvider
         );
 
-        Workspace = WorkspaceController.CreateWorkspace();
+        Workspace = WorkspaceController.CreateWorkspace(Optional<PageData>.None);
 
         TopBar = topBarViewModel;
         Spine = spineViewModel;
@@ -62,15 +63,6 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
 
         this.WhenActivated(d =>
         {
-            WorkspaceController.AddPanel(
-                Workspace.Id,
-                WorkspaceGridState.From(new[]
-                {
-                    new PanelGridState(PanelId.DefaultValue, MathUtils.One)
-                }, isHorizontal: Workspace.IsHorizontal),
-                new AddPanelBehavior(new AddPanelBehavior.WithDefaultTab())
-            );
-
             // When the user closes the window, we should persist all download state such that it shows
             // accurate values after a reboot.
             // If we ever plan to remove and re-add main window (unlikely), this might need changing to not dispose but only save.
