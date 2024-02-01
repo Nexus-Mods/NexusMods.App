@@ -1,8 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Games.Tools;
 using NexusMods.Abstractions.Installers;
-using NexusMods.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.RedEngine.ModInstallers;
 
 namespace NexusMods.Games.RedEngine;
@@ -11,7 +10,7 @@ public static class Services
 {
     public static IServiceCollection AddRedEngineGames(this IServiceCollection services)
     {
-        services.AddAllSingleton<IGame, Cyberpunk2077>();
+        services.AddGame<Cyberpunk2077>();
         services.AddSingleton<IModInstaller, SimpleOverlayModInstaller>();
         services.AddSingleton<IModInstaller, FolderlessModInstaller>();
         services.AddSingleton<IModInstaller, AppearancePreset>();

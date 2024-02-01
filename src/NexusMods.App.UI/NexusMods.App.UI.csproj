@@ -345,6 +345,12 @@
         <Compile Update="WorkspaceSystem\Controllers\DesignWorkspaceController.cs">
           <DependentUpon>IWorkspaceController.cs</DependentUpon>
         </Compile>
+        <Compile Update="WorkspaceSystem\AddPanelButton\AddPanelDropDownDesignViewModel.cs">
+          <DependentUpon>IAddPanelDropDownViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="WorkspaceSystem\AddPanelButton\AddPanelDropDownViewModel.cs">
+          <DependentUpon>IAddPanelDropDownViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>

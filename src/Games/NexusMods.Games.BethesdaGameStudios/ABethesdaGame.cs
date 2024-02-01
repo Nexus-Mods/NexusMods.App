@@ -1,12 +1,12 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.GameLocators.GameCapabilities;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Games.GameCapabilities;
-using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Installers;
-using NexusMods.Abstractions.Installers.DTO;
-using NexusMods.Paths;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Games.FOMOD;
 using NexusMods.Games.Generic.Installers;
+using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 
 namespace NexusMods.Games.BethesdaGameStudios;

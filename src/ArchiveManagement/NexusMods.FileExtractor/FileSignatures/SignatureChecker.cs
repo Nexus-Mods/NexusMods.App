@@ -1,3 +1,4 @@
+using NexusMods.Abstractions.FileExtractor;
 using NexusMods.Paths;
 
 namespace NexusMods.FileExtractor.FileSignatures;
@@ -5,7 +6,7 @@ namespace NexusMods.FileExtractor.FileSignatures;
 /// <summary>
 /// Utility for checking the file types of specific files by matching the magic signatures on their headers.
 /// </summary>
-public class SignatureChecker
+public class SignatureChecker : ISignatureChecker
 {
     private readonly (FileType, byte[])[] _signatures;
     private readonly byte[] _buffer;

@@ -1,19 +1,20 @@
 ﻿using FluentAssertions;
-using NexusMods.Abstractions.DataModel.Entities.Mods;
 using NexusMods.Abstractions.DataModel.Entities.Sorting;
+using NexusMods.Abstractions.DiskState;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.DTO;
-using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Games.Trees;
-using NexusMods.Abstractions.Installers.DTO;
-using NexusMods.Abstractions.Installers.DTO.Files;
+using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Files;
+using NexusMods.Abstractions.Loadouts.Mods;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.DataModel.Tests.Harness;
 using NexusMods.Extensions.BCL;
 using NexusMods.Extensions.Hashing;
 using NexusMods.Hashing.xxHash64;
-using Loadouts_IGeneratedFile = NexusMods.Abstractions.Games.Loadouts.IGeneratedFile;
-using ModFileId = NexusMods.Abstractions.DataModel.Entities.Mods.ModFileId;
+using ModFileId = NexusMods.Abstractions.Loadouts.Mods.ModFileId;
 
 namespace NexusMods.DataModel.Tests;
 
@@ -542,7 +543,7 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
 
 
     [JsonName("GeneratedTestFile")]
-    record GeneratedTestFile : AModFile, Loadouts_IGeneratedFile, IToFile
+    record GeneratedTestFile : AModFile, IGeneratedFile, IToFile
     {
         public GamePath To => new(LocationId.Game, "generated.txt");
 

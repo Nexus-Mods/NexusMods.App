@@ -1,6 +1,7 @@
 using FluentAssertions;
+using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.GameLocators.GameCapabilities;
 using NexusMods.Abstractions.Games.GameCapabilities;
-using NexusMods.Abstractions.Installers.DTO;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.AdvancedInstaller.Tests;

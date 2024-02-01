@@ -1,5 +1,5 @@
-﻿using NexusMods.Abstractions.Games.GameCapabilities;
-using NexusMods.Abstractions.Installers.DTO;
+﻿using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Games.GameCapabilities;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.BethesdaGameStudios;

@@ -1,19 +1,21 @@
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.DiskState;
+using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.GameLocators.GameCapabilities;
+using NexusMods.Abstractions.GameLocators.Stores.EADesktop;
+using NexusMods.Abstractions.GameLocators.Stores.EGS;
+using NexusMods.Abstractions.GameLocators.Stores.GOG;
+using NexusMods.Abstractions.GameLocators.Stores.Origin;
+using NexusMods.Abstractions.GameLocators.Stores.Steam;
+using NexusMods.Abstractions.GameLocators.Stores.Xbox;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.DTO;
-using NexusMods.Abstractions.Games.GameCapabilities;
 using NexusMods.Abstractions.Games.Loadouts;
-using NexusMods.Abstractions.Games.Stores.EADesktop;
-using NexusMods.Abstractions.Games.Stores.EGS;
-using NexusMods.Abstractions.Games.Stores.GOG;
-using NexusMods.Abstractions.Games.Stores.Origin;
-using NexusMods.Abstractions.Games.Stores.Steam;
-using NexusMods.Abstractions.Games.Stores.Xbox;
 using NexusMods.Abstractions.Installers;
-using NexusMods.Abstractions.Installers.DTO;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
+using NexusMods.Abstractions.Loadouts.Mods;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
@@ -107,28 +109,28 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
         return Array.Empty<AModFile>();
     }
 
-    public override ValueTask<DiskState> GetInitialDiskState(GameInstallation installation)
-    {
-        var results = DATA_NAMES.Select(name =>
-        {
-            var gamePath = new GamePath(LocationId.Game, name);
-            return KeyValuePair.Create(gamePath,
-                new DiskStateEntry
-                {
-                    // This is coded to match what we write in `EnsureFile`
-                    Size = Size.From((ulong)name.FileName.Path.Length),
-                    Hash = name.FileName.Path.XxHash64AsUtf8(),
-                    LastModified = _modifiedTimes[installation.LocationsRegister.GetResolvedPath(gamePath)]
-                });
-        });
-        return ValueTask.FromResult(DiskState.Create(results));
-    }
-
-
-    public override ILoadoutSynchronizer Synchronizer
-    {
+    public override ILoadoutSynchronizer Synchronizer =>
         // Lazy initialization to avoid circular dependencies
-        get { return new DefaultSynchronizer(_serviceProvider); }
+        new StubbedGameSyncronizer(_serviceProvider, this);
+
+    private class StubbedGameSyncronizer(IServiceProvider provider, StubbedGame thisGame) : DefaultSynchronizer(provider)
+    {
+        public override ValueTask<DiskStateTree> GetInitialDiskState(GameInstallation installation)
+        {
+            var results = DATA_NAMES.Select(name =>
+            {
+                var gamePath = new GamePath(LocationId.Game, name);
+                return KeyValuePair.Create(gamePath,
+                    new DiskStateEntry
+                    {
+                        // This is coded to match what we write in `EnsureFile`
+                        Size = Size.From((ulong)name.FileName.Path.Length),
+                        Hash = name.FileName.Path.XxHash64AsUtf8(),
+                        LastModified = thisGame._modifiedTimes[installation.LocationsRegister.GetResolvedPath(gamePath)]
+                    });
+            });
+            return ValueTask.FromResult(DiskStateTree.Create(results));
+        }
     }
 
     public override IStreamFactory Icon =>

@@ -2,8 +2,7 @@
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using Avalonia.ReactiveUI;
-using NexusMods.Abstractions.DataModel.Entities.Mods;
-using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.App.UI.Resources;
 using ReactiveUI;
 using static NexusMods.App.UI.Controls.DataGrid.Helpers;

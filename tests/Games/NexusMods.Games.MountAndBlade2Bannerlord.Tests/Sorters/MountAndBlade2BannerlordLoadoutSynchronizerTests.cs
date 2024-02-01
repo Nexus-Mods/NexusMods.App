@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
-using NexusMods.Abstractions.DataModel.Entities.Mods;
 using NexusMods.Abstractions.DataModel.Entities.Sorting;
+using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Games.MountAndBlade2Bannerlord.Tests.Shared;
 using NexusMods.Games.TestFramework;
 
@@ -14,7 +15,7 @@ public class MountAndBlade2BannerlordLoadoutSynchronizerTests : AGameTest<MountA
     public async Task GeneratedSortRulesAreFetched()
     {
         var loadoutMarker = await CreateLoadout();
-        var loadoutSynchronizer = (loadoutMarker.Value.Installation.Game.Synchronizer as MountAndBlade2BannerlordLoadoutSynchronizer)!;
+        var loadoutSynchronizer = (loadoutMarker.Value.Installation.GetGame().Synchronizer as MountAndBlade2BannerlordLoadoutSynchronizer)!;
 
         var context = AGameTestContext.Create(CreateTestArchive, InstallModStoredFileIntoLoadout);
 

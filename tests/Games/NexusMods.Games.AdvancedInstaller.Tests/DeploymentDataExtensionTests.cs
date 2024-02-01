@@ -1,6 +1,6 @@
 using FluentAssertions;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.Downloads;
-using NexusMods.Abstractions.Installers.DTO;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees.Traits;

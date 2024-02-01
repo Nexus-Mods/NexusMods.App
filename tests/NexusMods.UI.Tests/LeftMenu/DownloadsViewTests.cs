@@ -1,7 +1,7 @@
-﻿using Avalonia.Controls;
-using FluentAssertions;
+﻿using FluentAssertions;
 using NexusMods.App.UI.LeftMenu.Downloads;
 using NexusMods.App.UI.RightContent.Downloads;
+using Button = Avalonia.Controls.Button;
 
 namespace NexusMods.UI.Tests.LeftMenu;
 

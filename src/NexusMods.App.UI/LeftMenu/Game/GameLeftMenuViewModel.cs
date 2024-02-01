@@ -4,8 +4,9 @@ using System.Reactive.Linq;
 using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Games.Loadouts;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Icons;
 using NexusMods.App.UI.LeftMenu.Items;
@@ -28,7 +29,7 @@ public class GameLeftMenuViewModel : AViewModel<IGameLeftMenuViewModel>, IGameLe
 
     [Reactive]
     public ILaunchButtonViewModel LaunchButton { get; set; }
-    [Reactive] public IGame Game { get; set; } = GameInstallation.Empty.Game;
+    [Reactive] public IGame Game { get; set; } = (IGame)GameInstallation.Empty.Game;
 
     [Reactive]
     public IRightContentViewModel RightContent { get; set; } = Initializers.IRightContent;

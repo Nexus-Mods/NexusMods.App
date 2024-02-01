@@ -1,8 +1,15 @@
+using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.DTO;
-using NexusMods.Abstractions.Games.Loadouts;
+using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
+using NexusMods.DataModel.Loadouts;
 
 namespace NexusMods.DataModel.LoadoutSynchronizer.Extensions;
 
+/// <summary>
+/// Various extension methods for Loadouts and the loadout registry
+/// </summary>
 public static class LoadoutExtensions
 {
 
@@ -13,7 +20,7 @@ public static class LoadoutExtensions
     /// <returns></returns>
     public static ValueTask<FlattenedLoadout> ToFlattenedLoadout(this Loadout loadout)
     {
-        return ((IStandardizedLoadoutSynchronizer)loadout.Installation.Game.Synchronizer).LoadoutToFlattenedLoadout(loadout);
+        return ((IStandardizedLoadoutSynchronizer)loadout.Installation.GetGame().Synchronizer).LoadoutToFlattenedLoadout(loadout);
     }
 
     /// <summary>
@@ -24,8 +31,21 @@ public static class LoadoutExtensions
     public static async ValueTask<FileTree> ToFileTree(this Loadout loadout)
     {
         var fileTree = await loadout.ToFlattenedLoadout();
-        return await ((IStandardizedLoadoutSynchronizer)loadout.Installation.Game.Synchronizer)
+        return await ((IStandardizedLoadoutSynchronizer)loadout.Installation.GetGame().Synchronizer)
             .FlattenedLoadoutToFileTree(fileTree, loadout);
+    }
+
+
+    /// <summary>
+    /// Merge the new loadout into the old loadout using the game's ILoadoutSynchronizer.
+    /// </summary>
+    /// <param name="registry"></param>
+    /// <param name="oldLoadout"></param>
+    /// <param name="newLoadout"></param>
+    public static void Merge(this LoadoutRegistry registry, Loadout oldLoadout, Loadout newLoadout)
+    {
+        registry.Alter(oldLoadout.LoadoutId, $"Merge loadout: {newLoadout.Name}",
+            l => l.Installation.GetGame().Synchronizer.MergeLoadouts(l, newLoadout));
     }
 
 }

@@ -1,5 +1,3 @@
-
-
 using System.Collections.ObjectModel;
 using System.Numerics;
 using DynamicData;

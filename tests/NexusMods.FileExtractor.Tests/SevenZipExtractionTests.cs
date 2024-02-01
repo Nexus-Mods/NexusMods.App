@@ -1,4 +1,5 @@
 using FluentAssertions;
+using NexusMods.Abstractions.FileExtractor;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Extensions.BCL;
 using NexusMods.Extensions.Hashing;
@@ -10,13 +11,13 @@ namespace NexusMods.FileExtractor.Tests;
 
 public class SevenZipExtractionTests
 {
-    private readonly FileExtractor _extractor;
+    private readonly IFileExtractor _extractor;
 
     private readonly TemporaryFileManager _temporaryFileManager;
 
     private readonly IFileSystem _fileSystem;
 
-    public SevenZipExtractionTests(FileExtractor extractor, TemporaryFileManager temporaryFileManager,
+    public SevenZipExtractionTests(IFileExtractor extractor, TemporaryFileManager temporaryFileManager,
         IFileSystem fileSystem)
     {
         _extractor = extractor;

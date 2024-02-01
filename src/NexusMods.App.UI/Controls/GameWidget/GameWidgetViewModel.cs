@@ -3,6 +3,7 @@ using System.Reactive.Linq;
 using System.Windows.Input;
 using Avalonia.Media.Imaging;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -44,7 +45,7 @@ public class GameWidgetViewModel : AViewModel<IGameWidgetViewModel>, IGameWidget
     {
         try
         {
-            var stream = await source.Game.GameImage.GetStreamAsync();
+            var stream = await ((IGame)source.Game).GameImage.GetStreamAsync();
             return new Bitmap(stream);
         }
         catch (Exception ex)

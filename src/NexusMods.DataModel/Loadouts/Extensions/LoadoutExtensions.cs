@@ -1,5 +1,7 @@
-﻿using NexusMods.Abstractions.Games.DTO;
-using NexusMods.Abstractions.Games.Loadouts;
+﻿using NexusMods.Abstractions.DiskState;
+using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 
 namespace NexusMods.DataModel.Loadouts.Extensions;
 
@@ -11,9 +13,9 @@ public static class LoadoutExtensions
     /// </summary>
     /// <param name="loadout"></param>
     /// <returns></returns>
-    public static Task<DiskState> Apply(this Loadout loadout)
+    public static Task<DiskStateTree> Apply(this Loadout loadout)
     {
-        return loadout.Installation.Game.Synchronizer.Apply(loadout);
+        return loadout.Installation.GetGame().Synchronizer.Apply(loadout);
     }
 
     /// <summary>
@@ -23,7 +25,7 @@ public static class LoadoutExtensions
     /// <returns></returns>
     public static Task<Loadout> Ingest(this Loadout loadout)
     {
-        return loadout.Installation.Game.Synchronizer.Ingest(loadout);
+        return loadout.Installation.GetGame().Synchronizer.Ingest(loadout);
     }
 
 }

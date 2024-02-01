@@ -1,5 +1,6 @@
-﻿using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Games.Loadouts;
+﻿using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Loadouts;
 
 namespace NexusMods.App.UI.Routing.Messages;
 
@@ -9,7 +10,7 @@ namespace NexusMods.App.UI.Routing.Messages;
 /// <param name="Loadout"></param>
 public record NavigateToLoadout(Loadout Loadout) : IRoutingMessage
 {
-    public IGame Game => Loadout.Installation.Game;
+    public IGame Game => (IGame)Loadout.Installation.Game;
     public LoadoutId LoadoutIdId => Loadout.LoadoutId;
     public GameInstallation GameInstallation => Loadout.Installation;
 }

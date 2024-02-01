@@ -1,8 +1,8 @@
 using System.Runtime.CompilerServices;
 using System.Text;
 using NexusMods.Abstractions.Activities;
-using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.DiskState;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.Abstractions.Serialization.DataModel.Ids;
@@ -122,12 +122,12 @@ public class FileHashCache : IFileHashCache
     }
 
     /// <inheritdoc/>
-    public async ValueTask<DiskState> IndexDiskState(GameInstallation installation)
+    public async ValueTask<DiskStateTree> IndexDiskState(GameInstallation installation)
     {
         var hashed =
             await IndexFoldersAsync(installation.LocationsRegister.GetTopLevelLocations().Select(f => f.Value))
                 .ToListAsync();
-        return DiskState.Create(hashed.Select(h => KeyValuePair.Create(installation.LocationsRegister.ToGamePath(h.Path),
+        return DiskStateTree.Create(hashed.Select(h => KeyValuePair.Create(installation.LocationsRegister.ToGamePath(h.Path),
             DiskStateEntry.From(h))));
     }
 

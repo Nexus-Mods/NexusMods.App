@@ -2,7 +2,7 @@
 using System.Reactive.Linq;
 using Avalonia.ReactiveUI;
 using Humanizer;
-using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.Loadouts.Mods;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModInstalled;
