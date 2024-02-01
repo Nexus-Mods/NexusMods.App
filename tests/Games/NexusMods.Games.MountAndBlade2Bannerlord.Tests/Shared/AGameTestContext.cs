@@ -1,5 +1,4 @@
-﻿using NexusMods.Abstractions.Games.Loadouts;
-using NexusMods.Abstractions.Loadouts;
+﻿using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Paths;
 

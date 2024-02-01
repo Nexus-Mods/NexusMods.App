@@ -13,7 +13,6 @@ using NexusMods.DataModel.Attributes;
 using NexusMods.DataModel.Extensions;
 using NexusMods.Hashing.xxHash64;
 
-
 namespace NexusMods.DataModel;
 
 /// <summary>

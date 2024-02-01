@@ -1,5 +1,4 @@
-﻿using NexusMods.Abstractions.Games.DTO;
-using NexusMods.Abstractions.Loadouts.Mods;
+﻿using NexusMods.Abstractions.Loadouts.Mods;
 using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModInstalled;

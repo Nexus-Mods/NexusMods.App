@@ -7,7 +7,6 @@ using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.Abstractions.Serialization.DataModel.Ids;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
-using NexusMods.Paths.Trees;
 using ModFileTreeNode = NexusMods.Paths.Trees.KeyedBox<NexusMods.Paths.RelativePath, NexusMods.Abstractions.FileStore.Trees.ModFileTree>;
 
 namespace NexusMods.Abstractions.Games.Downloads;
@@ -41,7 +40,7 @@ public record DownloadAnalysis : Entity
     /// <summary>
     /// Returns a file tree of the contents of the download
     /// </summary>
-    public KeyedBox<RelativePath, ModFileTree> GetFileTree() => TreeCreator.Create(Contents);
+    public ModFileTreeNode GetFileTree() => TreeCreator.Create(Contents);
 
     /// <summary>
     /// Meta data for the download

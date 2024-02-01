@@ -2,7 +2,6 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
-using NexusMods.Extensions.DependencyInjection;
 using NexusMods.Games.DarkestDungeon.Installers;
 
 namespace NexusMods.Games.DarkestDungeon;

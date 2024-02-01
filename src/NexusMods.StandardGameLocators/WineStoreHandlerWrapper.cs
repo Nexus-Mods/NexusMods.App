@@ -2,7 +2,6 @@ using GameFinder.Common;
 using GameFinder.RegistryUtils;
 using GameFinder.Wine;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Paths;
 using OneOf;
 using IGame = GameFinder.Common.IGame;

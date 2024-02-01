@@ -1,6 +1,5 @@
 ﻿using System.Reactive;
 using System.Windows.Input;
-using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Loadouts.Mods;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;

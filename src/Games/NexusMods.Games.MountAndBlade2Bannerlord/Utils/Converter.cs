@@ -1,4 +1,3 @@
-using Bannerlord.LauncherManager.Models;
 using GameStore = NexusMods.Abstractions.GameLocators.GameStore;
 using GameStoreTW = Bannerlord.LauncherManager.Models.GameStore;
 

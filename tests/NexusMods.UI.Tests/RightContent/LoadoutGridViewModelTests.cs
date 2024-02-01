@@ -1,5 +1,4 @@
 ﻿using FluentAssertions;
-using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.App.UI.RightContent.LoadoutGrid;

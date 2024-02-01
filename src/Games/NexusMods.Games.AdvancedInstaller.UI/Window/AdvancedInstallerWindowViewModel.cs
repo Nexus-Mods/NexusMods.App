@@ -6,7 +6,6 @@ using NexusMods.Paths.Trees;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
-
 namespace NexusMods.Games.AdvancedInstaller.UI;
 
 public class AdvancedInstallerWindowViewModel : AViewModel<IAdvancedInstallerWindowViewModel>,

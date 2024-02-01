@@ -2,7 +2,6 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
-using NexusMods.Extensions.DependencyInjection;
 using NexusMods.Games.StardewValley.Emitters;
 
 namespace NexusMods.Games.StardewValley;

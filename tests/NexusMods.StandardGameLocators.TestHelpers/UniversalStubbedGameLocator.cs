@@ -1,5 +1,4 @@
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.Stores.Unknown;
 using NexusMods.Paths;
 

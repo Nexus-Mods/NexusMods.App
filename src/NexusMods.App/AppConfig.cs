@@ -4,7 +4,6 @@ using NexusMods.Abstractions.FileExtractor;
 using NexusMods.Abstractions.HttpDownloader;
 using NexusMods.App.UI;
 using NexusMods.DataModel;
-using NexusMods.Networking.HttpDownloader;
 using NexusMods.Paths;
 
 namespace NexusMods.App;

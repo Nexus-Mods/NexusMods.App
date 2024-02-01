@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using NexusMods.Paths;
-using LocationId = NexusMods.Abstractions.GameLocators.LocationId;
 
 namespace NexusMods.Abstractions.GameLocators;
 

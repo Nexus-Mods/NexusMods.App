@@ -5,7 +5,6 @@ using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.MountAndBlade2Bannerlord.Extensions;
 using NexusMods.Games.MountAndBlade2Bannerlord.Services;
-
 using static NexusMods.Games.MountAndBlade2Bannerlord.Utils.GamePathProvier;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord;

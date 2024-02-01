@@ -15,7 +15,6 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Extensions.DependencyInjection;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
-using IGame = NexusMods.Abstractions.Games.IGame;
 
 namespace NexusMods.StandardGameLocators.TestHelpers;
 

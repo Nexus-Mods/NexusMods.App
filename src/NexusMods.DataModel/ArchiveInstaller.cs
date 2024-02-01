@@ -5,7 +5,6 @@ using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.DataModel.Entities.Sorting;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.Downloads;
-using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;

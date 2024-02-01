@@ -1,8 +1,4 @@
-﻿using System.Reactive.Disposables;
-using System.Reactive.Linq;
-using DynamicData;
-using NexusMods.Abstractions.Serialization.DataModel;
-using NexusMods.Abstractions.Serialization.DataModel.Ids;
+﻿using System.Reactive.Linq;
 
 namespace NexusMods.DataModel.Extensions;
 

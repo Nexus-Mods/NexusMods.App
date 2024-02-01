@@ -1,6 +1,5 @@
 ﻿using System.Xml;
 using Bannerlord.ModuleManager;
-using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Mods;
 

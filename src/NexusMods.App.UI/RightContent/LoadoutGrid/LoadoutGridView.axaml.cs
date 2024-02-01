@@ -2,7 +2,6 @@
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using Avalonia.ReactiveUI;
-using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.App.UI.Resources;
 using ReactiveUI;

@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.DataModel.Entities;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.Games;
