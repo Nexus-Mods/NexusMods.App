@@ -55,7 +55,7 @@
 		<value>Zobacz dziennik zmian na GitHub</value>
 	</data>
 	<data name="LoadoutGridView_AddMod_FilePicker_Title" xml:space="preserve">
-		<value>Proszę wybrać plik modyfikacji do zainstalowania.</value>
+		<value>Proszę wybrać plik modyfikacji do zainstalowania</value>
 	</data>
 	<data name="LoadoutGridView_AddMod_FileType_Archive" xml:space="preserve">
 		<value>Archiwum</value>
@@ -211,7 +211,7 @@
 		<value>Gotowe do modowania</value>
 	</data>
 	<data name="MyGamesView__Detected_games" xml:space="preserve">
-		<value>Wykryj gry</value>
+		<value>Wykryte gry</value>
 	</data>
 	<data name="Button_Manage" xml:space="preserve">
 		<value>Zarządzaj</value>
@@ -239,5 +239,20 @@
 	</data>
 	<data name="PanelTabHeaderViewModel_Title_New_Tab" xml:space="preserve">
 		<value>Nowa karta</value>
+	</data>
+	<data name="DownloadInProgressView__Resume" xml:space="preserve">
+		<value>Wznów</value>
+	</data>
+	<data name="DownloadInProgressView__Resume_All" xml:space="preserve">
+		<value>Wznów Wszystko</value>
+	</data>
+	<data name="CancelDownloadOverlayView_Description__Download" xml:space="preserve">
+		<value>pobieranie</value>
+	</data>
+	<data name="CancelDownloadOverlayView_Description_downloads" xml:space="preserve">
+		<value>pobierania</value>
+	</data>
+	<data name="InProgress_NoDownloadsTextBlock" xml:space="preserve">
+		<value>Brak Pobierań</value>
 	</data>
 </root>
