@@ -32,7 +32,7 @@ For our purposes; no special functionality/integration is required here we can s
 
 ## Uploaded Files Structure
 
-[Using popular mods as examples.]
+!!! info "Using popular mods as examples."
 
 Uploaded Skyrim SE mods can appear in the following form:
 
@@ -53,7 +53,7 @@ Mods can ship as 'loose files' or '.esp+.bsa' pairs
 
 ### Plugins.txt
 
-Found in: `%LOCALAPPDATA%\Skyrim Special Edition`.
+!!! info "Found in: `%LOCALAPPDATA%\Skyrim Special Edition`."
 
 The `plugins.txt` file in Skyrim lists plugin files with the ".esp" and ".esm" extensions that are loaded after the game's own.
 
@@ -76,11 +76,13 @@ This makes the presence of loadorder.txt superfluous, but could still be used to
 
 
 Each `.esp`/`.esm` has a 'Mod Index':
+
 - Using naming convention `xxYYYYYY`, where `xx` is plugin slot.
 - Therefore there is a 255 implicit item limit.
 - However... slot `0xFE` is reserved for `.esl` files.
 
 The newer `.esl` files have a limit of 4096 items; and have their own limit.
+
 - They have naming convention `FExxxYYY` where `xxx` is plugin slot.
 - Therefore there is a 4096 limit.
 - i.e. They use the 0xFE slot previously reserved for `.esp` & `.esm`.
@@ -181,6 +183,7 @@ Ideally we should detect FNIS-supported mods and prompt the user if they want to
 ## Deployment Strategy
 
 Standard deployment: Push files out to game folder.
+
 Not suitable for VFS; tools work on game folder directly, and thus having VFS would affect user experience; this is a no-go.
 
 ## Work To Do

@@ -1,6 +1,6 @@
 # Using `IFileSysten`
 
-As part of [`0004-file-system-abstraction`](./decisions/backend/0004-file-system-abstraction.md), `NexusMods.Paths` now contains a file system abstraction:
+As part of [`0004-file-system-abstraction`](../decisions/backend/0004-file-system-abstraction.md), `NexusMods.Paths` now contains a file system abstraction:
 `IFileSystem`.
 
 New code should make use of this abstraction, as it is required for `Wine` (Windows on Linux) support.

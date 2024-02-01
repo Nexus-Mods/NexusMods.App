@@ -286,7 +286,7 @@ explicitly unless they change from the default.
 
 ### Styles in Nexus Theme
 
-!!! info "The Theme uses mainly Avalonia `Styles` rather than `ControlThemes`, for reasons detailed in [Stylying Approach ADR](decisions/frontend/0003-UI-Styling-Approach.md)."
+!!! info "The Theme uses mainly Avalonia `Styles` rather than `ControlThemes`, for reasons detailed in [Styling Approach ADR](../decisions/frontend/0003-UI-Styling-Approach.md)."
 
 Styles should be organized into separate files for each control type, e.g. `TextBlockStyles.axaml`, `ButtonStyles.axaml`, `TextBoxStyles.axaml`, etc.
 Some control types may have multiple files, e.g. `StandardButtonStyles.axaml` and `RoundedButtontyles.axaml`.

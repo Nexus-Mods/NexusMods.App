@@ -25,14 +25,14 @@ In the presence of these scenarios, the mod manager must still have a way to ins
 ## Decision Drivers & Requirements
 
 - Certain mods may not come with a recognizable file structure.
-  - The Nexus Mods App might not know how to install them automatically.
+    - The Nexus Mods App might not know how to install them automatically.
 
 - Interoperability: The Nexus App must be able to somehow deploy ANY mod, regardless of its packaging format.
-  - Otherwise, if users end up having to deploy files manually, they may be discouraged from using the mod manager.
+    - Otherwise, if users end up having to deploy files manually, they may be discouraged from using the mod manager.
 
 - The Manual Installer must work with minimal game implementation code.
-  - It is considered the last line of defense; last resort.
-  - In other words, must not refuse to work in absence of support code for 'suggestions' etc.
+    - It is considered the last line of defense; last resort.
+      - In other words, must not refuse to work in absence of support code for 'suggestions' etc.
 
 - UX: Must be Easy to Use
 

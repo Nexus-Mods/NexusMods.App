@@ -1479,9 +1479,9 @@ this.WhenActivated(disposables =>
 
 This section will be completely about the specifics of the project and the differences to a "normal" Avalonia UI project.
 
-The project [`NexusMods.App.UI`](../src/NexusMods.App.UI) was built with dependency injection in mind. We have a custom View locator
-that using the DI system called [`InjectedViewLocator`](../src/NexusMods.App.UI/InjectedViewLocator.cs). As mentioned previously, ReactiveUI can construct a View
-from a ViewModel.
+The project `NexusMods.App.UI` was built with dependency injection in mind. We have a custom View locator
+that using the DI system called [`InjectedViewLocator`](https://github.com/Nexus-Mods/NexusMods.App/blob/main/src/NexusMods.App.UI/InjectedViewLocator.cs#L9).
+As mentioned previously, ReactiveUI can construct a View from a ViewModel.
 
 ### Adding Views
 
@@ -1490,7 +1490,7 @@ to the `TViewModel` type. When we request a View for `TViewModel`, the framework
 and tries to construct it using the default constructor.
 
 In this project, however, the Views are created using DI, meaning that you have to register the Views and ViewModel
-beforehand in the [`Services`](../src/NexusMods.App.UI/Services.cs) file:
+beforehand in the [`Services`](https://github.com/Nexus-Mods/NexusMods.App/blob/main/src/NexusMods.App.UI/Services.cs#L60) file:
 
 ```csharp
 .AddView<MyView, IMyViewModel>()
