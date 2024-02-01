@@ -51,8 +51,6 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
             serviceProvider: serviceProvider
         );
 
-        WorkspaceController.CreateWorkspace(Optional<PageData>.None);
-
         TopBar = topBarViewModel;
         Spine = spineViewModel;
         DevelopmentBuildBanner = developmentBuildBannerViewModel;

@@ -68,8 +68,6 @@
                 x:Name="LeftMenuViewModelHost" />
         </Border>
 
-        <!-- <reactiveUi:ViewModelViewHost Grid.Column="2" Grid.Row="1" x:Name="WorkspaceViewModelViewHost" /> -->
-
         <ItemsControl Grid.Column="2" Grid.Row="1" x:Name="Workspaces">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -80,6 +78,7 @@
             <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="{x:Type workspace:IWorkspaceViewModel}">
                     <reactiveUi:ViewModelViewHost
+                        x:Name="ViewModelViewHost"
                         IsVisible="{CompiledBinding IsActive, Mode=OneWay}"
                         ViewModel="{CompiledBinding Mode=OneWay}" />
                 </DataTemplate>
