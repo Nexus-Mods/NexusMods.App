@@ -11,6 +11,7 @@ using NexusMods.App.UI.LeftMenu;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Overlays.MetricsOptIn;
 using NexusMods.App.UI.Overlays.Updater;
+using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Networking.Downloaders.Interfaces.Traits;
 using NexusMods.Paths;
@@ -21,13 +22,14 @@ namespace NexusMods.App.UI.Windows;
 
 public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
 {
-    private readonly IOverlayController _overlayController;
     private readonly IArchiveInstaller _archiveInstaller;
-    private ILoadoutRegistry _registry;
+    private readonly ILoadoutRegistry _registry;
 
     public MainWindowViewModel(
         ILogger<MainWindowViewModel> logger,
         IOSInformation osInformation,
+        IWorkspaceController workspaceController,
+        IWorkspaceViewModel workspaceViewModel,
         ISpineViewModel spineViewModel,
         ITopBarViewModel topBarViewModel,
         IDevelopmentBuildBannerViewModel developmentBuildBannerViewModel,
@@ -41,15 +43,25 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
         TopBar = topBarViewModel;
         Spine = spineViewModel;
         DevelopmentBuildBanner = developmentBuildBannerViewModel;
-        _overlayController = controller;
         _archiveInstaller = archiveInstaller;
         _registry = registry;
+
+        Workspace = workspaceViewModel;
 
         // Only show controls in Windows since we can remove the chrome on that platform
         TopBar.ShowWindowControls = osInformation.IsWindows;
 
         this.WhenActivated(d =>
         {
+            workspaceController.AddPanel(
+                Workspace.Id,
+                WorkspaceGridState.From(new[]
+                {
+                    new PanelGridState(PanelId.DefaultValue, MathUtils.One)
+                }, isHorizontal: Workspace.IsHorizontal),
+                new AddPanelBehavior(new AddPanelBehavior.WithDefaultTab())
+            );
+
             Spine.Actions
                 .SubscribeWithErrorLogging(logger, HandleSpineAction)
                 .DisposeWith(d);
@@ -69,7 +81,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
                 });
             }).DisposeWith(d);
 
-            _overlayController.ApplyNextOverlay.Subscribe(item =>
+            controller.ApplyNextOverlay.Subscribe(item =>
                 {
                     if (item == null)
                     {
@@ -97,19 +109,9 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
                 .BindTo(this, vm => vm.LeftMenu)
                 .DisposeWith(d);
 
-            this.WhenAnyValue(vm => vm.LeftMenu.RightContent)
-                .Select(right =>
-                {
-                    logger.LogDebug(
-                        "Left menu changed right content to {RightContent}",
-                        right);
-                    return right;
-                }).BindTo(this, vm => vm.RightContent);
-
             // Only show the updater if the metrics opt-in has been shown before, so we don't spam the user.
             if (!metricsOptInViewModel.MaybeShow())
                 updaterViewModel.MaybeShow();
-
         });
     }
 
@@ -143,12 +145,10 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
     public ISpineViewModel Spine { get; set; }
 
     [Reactive]
-    public IViewModelInterface RightContent { get; set; } =
-        Initializers.IRightContent;
+    public IWorkspaceViewModel Workspace { get; set; }
 
     [Reactive]
-    public ILeftMenuViewModel LeftMenu { get; set; } =
-        Initializers.ILeftMenuViewModel;
+    public ILeftMenuViewModel LeftMenu { get; set; } = Initializers.ILeftMenuViewModel;
 
     [Reactive]
     public ITopBarViewModel TopBar { get; set; }

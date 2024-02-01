@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
         <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -350,6 +350,9 @@
         </Compile>
         <Compile Update="WorkspaceSystem\AddPanelButton\AddPanelDropDownViewModel.cs">
           <DependentUpon>IAddPanelDropDownViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Windows\MainWindowViewModel.cs">
+          <DependentUpon>IMainWindowViewModel.cs</DependentUpon>
         </Compile>
     </ItemGroup>
 

@@ -67,7 +67,7 @@
                 x:Name="LeftMenuViewModelHost" />
         </Border>
 
-        <reactiveUi:ViewModelViewHost Grid.Column="2" Grid.Row="1" x:Name="RightContent" />
+        <reactiveUi:ViewModelViewHost Grid.Column="2" Grid.Row="1" x:Name="WorkspaceViewModelViewHost" />
 
         <reactiveUi:ViewModelViewHost
             Grid.Column="0"
