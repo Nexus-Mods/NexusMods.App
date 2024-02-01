@@ -36,7 +36,6 @@ using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModInstalled;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModName;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModVersion;
 using NexusMods.App.UI.RightContent.MyGames;
-using NexusMods.App.UI.Routing;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Paths;
@@ -78,7 +77,6 @@ public static class Services
             .AddTransient<MainWindow>()
 
             // Services
-            .AddSingleton<IRouter, ReactiveMessageRouter>()
             .AddSingleton<IOverlayController, OverlayController>()
             .AddTransient<IImageCache, ImageCache>()
 

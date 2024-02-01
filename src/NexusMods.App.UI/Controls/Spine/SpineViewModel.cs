@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization;
+using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.App.UI.Controls.Spine.Buttons.Download;
 using NexusMods.App.UI.Controls.Spine.Buttons.Icon;
 using NexusMods.App.UI.Controls.Spine.Buttons.Image;
@@ -15,8 +16,6 @@ using NexusMods.App.UI.LeftMenu;
 using NexusMods.App.UI.LeftMenu.Downloads;
 using NexusMods.App.UI.LeftMenu.Game;
 using NexusMods.App.UI.LeftMenu.Home;
-using NexusMods.App.UI.Routing;
-using NexusMods.App.UI.Routing.Messages;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -49,14 +48,12 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
 
     public SpineViewModel(ILogger<SpineViewModel> logger,
         ILoadoutRegistry loadoutRegistry,
-        IDataStore dataStore,
         IIconButtonViewModel addButtonViewModel,
         IIconButtonViewModel homeButtonViewModel,
         ISpineDownloadButtonViewModel spineDownloadsButtonViewModel,
         IDownloadsViewModel downloadsViewModel,
         IHomeLeftMenuViewModel homeLeftMenuViewModel,
         IGameLeftMenuViewModel gameLeftMenuViewModel,
-        IRouter router,
         IServiceProvider provider)
     {
         _logger = logger;
@@ -69,14 +66,8 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         _downloadsViewModel = downloadsViewModel;
         _gameLeftMenuViewModel = gameLeftMenuViewModel;
 
-
         this.WhenActivated(disposables =>
         {
-            router.Messages
-                .OnUI()
-                .SubscribeWithErrorLogging(logger, HandleMessage)
-                .DisposeWith(disposables);
-
             loadoutRegistry.Games
                 .Transform(g => (IGame)g)
                 .Transform(game =>
@@ -149,19 +140,6 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         _logger.LogTrace("Downloads selected");
         _actions.OnNext(new SpineButtonAction(Type.Download));
         LeftMenu = _downloadsViewModel;
-    }
-
-    private void HandleMessage(IRoutingMessage message)
-    {
-        switch (message)
-        {
-            case NavigateToLoadout navigateToLoadout:
-                NavigateToGame(navigateToLoadout.Game);
-                break;
-            case NavigateToDownloads _:
-                NavigateToDownloads();
-                break;
-        }
     }
 
     private void HandleActivation(SpineButtonAction action)
