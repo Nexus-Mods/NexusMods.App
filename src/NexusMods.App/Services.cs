@@ -42,7 +42,6 @@ namespace NexusMods.App;
 
 public static class Services
 {
-
     public static IServiceCollection AddListeners(this IServiceCollection services)
     {
         services.AddSingleton<NxmRpcListener>();

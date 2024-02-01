@@ -38,6 +38,7 @@ public class FomodAnalyzer
             {
                 if (string.IsNullOrEmpty(imagePathFragment))
                     return;
+
                 var imagePath = pathPrefix.Path().Join(RelativePath.FromUnsanitizedInput(imagePathFragment));
                 byte[] bytes;
                 try
