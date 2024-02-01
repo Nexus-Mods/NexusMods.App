@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using DynamicData.Kernel;
@@ -50,7 +51,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
             serviceProvider: serviceProvider
         );
 
-        Workspace = WorkspaceController.CreateWorkspace(Optional<PageData>.None);
+        WorkspaceController.CreateWorkspace(Optional<PageData>.None);
 
         TopBar = topBarViewModel;
         Spine = spineViewModel;
@@ -135,9 +136,6 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
 
     /// <inheritdoc/>
     [Reactive] public bool IsActive { get; set; }
-
-    /// <inheritdoc/>
-    [Reactive] public IWorkspaceViewModel Workspace { get; set; }
 
     /// <inheritdoc/>
     public IWorkspaceController WorkspaceController { get; }

@@ -1,8 +1,11 @@
+using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using Avalonia.Media;
+using DynamicData;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Windows;
 using ReactiveUI;
 
@@ -13,9 +16,12 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
     private readonly IWorkspaceWindow _window;
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<WorkspaceController> _logger;
-    private readonly Dictionary<WorkspaceId, WeakReference<WorkspaceViewModel>> _workspaces = new();
 
     public WindowId WindowId => _window.WindowId;
+
+    private readonly SourceCache<WorkspaceViewModel, WorkspaceId> _workspaces = new(x => x.Id);
+    private readonly ReadOnlyObservableCollection<IWorkspaceViewModel> _allWorkspaces;
+    public ReadOnlyObservableCollection<IWorkspaceViewModel> AllWorkspaces => _allWorkspaces;
 
     public WorkspaceController(IWorkspaceWindow window, IServiceProvider serviceProvider)
     {
@@ -23,6 +29,12 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
 
         _serviceProvider = serviceProvider;
         _logger = serviceProvider.GetRequiredService<ILogger<WorkspaceController>>();
+
+        _workspaces
+            .Connect()
+            .Transform(x => (IWorkspaceViewModel)x)
+            .Bind(out _allWorkspaces)
+            .Subscribe();
     }
 
     public IWorkspaceViewModel CreateWorkspace(Optional<PageData> pageData)
@@ -33,7 +45,7 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
             unregisterFunc: UnregisterWorkspace
         );
 
-        _workspaces.TryAdd(vm.Id, new WeakReference<WorkspaceViewModel>(vm));
+        _workspaces.AddOrUpdate(vm);
 
         var addPanelBehavior = pageData.HasValue
             ? new AddPanelBehavior(new AddPanelBehavior.WithCustomTab(pageData.Value))
@@ -57,14 +69,7 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
 
     private bool TryGetWorkspace(WorkspaceId workspaceId, [NotNullWhen(true)] out WorkspaceViewModel? workspaceViewModel)
     {
-        workspaceViewModel = null;
-        if (!_workspaces.TryGetValue(workspaceId, out var weakReference))
-        {
-            _logger.LogError("Failed to find Workspace with ID {WorkspaceID}", workspaceId);
-            return false;
-        }
-
-        if (!weakReference.TryGetTarget(out workspaceViewModel))
+        if (!_workspaces.Lookup(workspaceId).TryGet(out workspaceViewModel))
         {
             _logger.LogError("Failed to retrieve the Workspace View Model with the ID {WorkspaceID} referenced by the WeakReference", workspaceId);
             return false;
@@ -99,8 +104,10 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
 
     public void ChangeActiveWorkspace(WorkspaceId workspaceId)
     {
-        if (!TryGetWorkspace(workspaceId, out var workspaceViewModel)) return;
-        _window.Workspace = workspaceViewModel;
+        foreach (var workspace in AllWorkspaces)
+        {
+            workspace.IsActive = workspace.Id == workspaceId;
+        }
     }
 
     public void AddPanel(WorkspaceId workspaceId, WorkspaceGridState newWorkspaceState, AddPanelBehavior behavior)

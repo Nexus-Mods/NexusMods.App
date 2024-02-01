@@ -24,6 +24,8 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
 
     public WorkspaceId Id { get; } = WorkspaceId.NewId();
 
+    [Reactive] public bool IsActive { get; set; }
+
     private readonly SourceCache<IPanelViewModel, PanelId> _panelSource = new(x => x.Id);
     private readonly ReadOnlyObservableCollection<IPanelViewModel> _panels;
     public ReadOnlyObservableCollection<IPanelViewModel> Panels => _panels;

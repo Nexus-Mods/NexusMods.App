@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using Avalonia.Media;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
@@ -15,6 +16,11 @@ public interface IWorkspaceController
     /// Gets the ID of the window that is associated with this controller.
     /// </summary>
     public WindowId WindowId { get; }
+
+    /// <summary>
+    /// Gets a read-only observable collection of all workspaces.
+    /// </summary>
+    public ReadOnlyObservableCollection<IWorkspaceViewModel> AllWorkspaces { get; }
 
     /// <summary>
     /// Creates a new workspace with one panel and a tab.

@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using NexusMods.App.UI.WorkspaceSystem;
 
 namespace NexusMods.App.UI.Windows;
@@ -21,9 +22,4 @@ public interface IWorkspaceWindow
     /// Gets the workspace controller of the window.
     /// </summary>
     public IWorkspaceController WorkspaceController { get; }
-
-    /// <summary>
-    /// Gets or sets the currently active workspace.
-    /// </summary>
-    public IWorkspaceViewModel Workspace { get; set; }
 }

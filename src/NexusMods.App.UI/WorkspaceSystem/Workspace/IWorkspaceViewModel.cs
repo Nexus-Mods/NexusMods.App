@@ -16,6 +16,11 @@ public interface IWorkspaceViewModel : IViewModelInterface
     /// </summary>
     public WindowId WindowId { get; }
 
+    /// <summary>
+    /// Gets or sets whether this is the currently visible workspace in the window.
+    /// </summary>
+    public bool IsActive { get; set; }
+
     public ReadOnlyObservableCollection<IPanelViewModel> Panels { get; }
 
     public ReadOnlyObservableCollection<IPanelResizerViewModel> Resizers { get; }
