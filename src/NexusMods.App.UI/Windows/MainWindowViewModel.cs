@@ -20,18 +20,17 @@ using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Windows;
 
-public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IWorkspaceWindow
+public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindowViewModel
 {
     private readonly IArchiveInstaller _archiveInstaller;
     private readonly ILoadoutRegistry _registry;
     private readonly IWindowManager _windowManager;
 
     public MainWindowViewModel(
+        IServiceProvider serviceProvider,
         ILogger<MainWindowViewModel> logger,
         IOSInformation osInformation,
         IWindowManager windowManager,
-        IWorkspaceController workspaceController,
-        IWorkspaceViewModel workspaceViewModel,
         ISpineViewModel spineViewModel,
         ITopBarViewModel topBarViewModel,
         IDevelopmentBuildBannerViewModel developmentBuildBannerViewModel,
@@ -45,8 +44,12 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IWorkspaceW
         _windowManager = windowManager;
         _windowManager.RegisterWindow(this);
 
-        Workspace = workspaceViewModel;
-        Workspace.WindowId = WindowId;
+        WorkspaceController = new WorkspaceController(
+            window: this,
+            serviceProvider: serviceProvider
+        );
+
+        Workspace = WorkspaceController.CreateWorkspace();
 
         TopBar = topBarViewModel;
         Spine = spineViewModel;
@@ -59,7 +62,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IWorkspaceW
 
         this.WhenActivated(d =>
         {
-            workspaceController.AddPanel(
+            WorkspaceController.AddPanel(
                 Workspace.Id,
                 WorkspaceGridState.From(new[]
                 {
@@ -156,14 +159,16 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IWorkspaceW
 
     public WindowId WindowId { get; } = WindowId.NewId();
 
-    [Reactive]
-    public bool IsActive { get; set; }
+    /// <inheritdoc/>
+    [Reactive] public bool IsActive { get; set; }
 
-    [Reactive]
-    public ISpineViewModel Spine { get; set; }
+    /// <inheritdoc/>
+    [Reactive] public IWorkspaceViewModel Workspace { get; set; }
 
-    [Reactive]
-    public IWorkspaceViewModel Workspace { get; set; }
+    /// <inheritdoc/>
+    public IWorkspaceController WorkspaceController { get; }
+
+    [Reactive] public ISpineViewModel Spine { get; set; }
 
     [Reactive]
     public ILeftMenuViewModel LeftMenu { get; set; } = Initializers.ILeftMenuViewModel;

@@ -20,7 +20,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
     private const int MaxPanelCount = MaxColumns * MaxRows;
 
     /// <inheritdoc/>
-    public WindowId WindowId { get; set; }
+    public WindowId WindowId => _workspaceController.WindowId;
 
     public WorkspaceId Id { get; } = WorkspaceId.NewId();
 
@@ -39,12 +39,13 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
     private readonly IWorkspaceController _workspaceController;
     private readonly PageFactoryController _factoryController;
 
-    public WorkspaceViewModel(IWorkspaceController workspaceController, PageFactoryController factoryController)
+    public WorkspaceViewModel(
+        IWorkspaceController workspaceController,
+        PageFactoryController factoryController,
+        Action<WorkspaceViewModel> unregisterFunc)
     {
         _workspaceController = workspaceController;
         _factoryController = factoryController;
-
-        (_workspaceController as WorkspaceController)?.RegisterWorkspace(this);
 
         _addPanelButtonViewModelSource
             .Connect()
@@ -204,10 +205,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                 .DisposeWith(disposables);
 
             Disposable
-                .Create(this, vm =>
-                {
-                    (vm._workspaceController as WorkspaceController)?.UnregisterWorkspace(vm);
-                })
+                .Create(this, unregisterFunc.Invoke)
                 .DisposeWith(disposables);
         });
     }

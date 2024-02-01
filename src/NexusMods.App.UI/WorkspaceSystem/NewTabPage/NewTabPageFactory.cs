@@ -18,6 +18,6 @@ public class NewTabPageFactory : APageFactory<INewTabPageViewModel, NewTabPageCo
 
     public override INewTabPageViewModel CreateViewModel(NewTabPageContext context)
     {
-        return new NewTabPageViewModel(WorkspaceController, context.DiscoveryDetails);
+        return new NewTabPageViewModel(WindowManager, context.DiscoveryDetails);
     }
 }

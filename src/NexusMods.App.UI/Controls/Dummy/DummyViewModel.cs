@@ -1,5 +1,6 @@
 using System.Reactive.Disposables;
 using Avalonia.Media;
+using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -10,7 +11,7 @@ public class DummyViewModel : APageViewModel<IDummyViewModel>, IDummyViewModel
 {
     [Reactive] public Color Color { get; set; } = Colors.Aqua;
 
-    public DummyViewModel(IWorkspaceController workspaceController) : base(workspaceController)
+    public DummyViewModel(IWindowManager windowManager) : base(windowManager)
     {
         this.WhenActivated(disposables =>
         {

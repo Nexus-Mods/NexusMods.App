@@ -1,25 +1,42 @@
 using System.Diagnostics.CodeAnalysis;
 using Avalonia.Media;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.App.UI.Windows;
+using ReactiveUI;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
-internal class WorkspaceController : IWorkspaceController
+internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
 {
+    private readonly IWorkspaceWindow _window;
+    private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<WorkspaceController> _logger;
     private readonly Dictionary<WorkspaceId, WeakReference<WorkspaceViewModel>> _workspaces = new();
 
-    public WorkspaceController(ILogger<WorkspaceController> logger)
+    public WindowId WindowId => _window.WindowId;
+
+    public WorkspaceController(IWorkspaceWindow window, IServiceProvider serviceProvider)
     {
-        _logger = logger;
+        _window = window;
+
+        _serviceProvider = serviceProvider;
+        _logger = serviceProvider.GetRequiredService<ILogger<WorkspaceController>>();
     }
 
-    internal void RegisterWorkspace(WorkspaceViewModel workspaceViewModel)
+    public IWorkspaceViewModel CreateWorkspace()
     {
-        _workspaces.TryAdd(workspaceViewModel.Id, new WeakReference<WorkspaceViewModel>(workspaceViewModel));
+        var vm = new WorkspaceViewModel(
+            workspaceController: this,
+            factoryController: _serviceProvider.GetRequiredService<PageFactoryController>(),
+            unregisterFunc: UnregisterWorkspace
+        );
+
+        _workspaces.TryAdd(vm.Id, new WeakReference<WorkspaceViewModel>(vm));
+        return vm;
     }
 
-    internal void UnregisterWorkspace(WorkspaceViewModel workspaceViewModel)
+    private void UnregisterWorkspace(WorkspaceViewModel workspaceViewModel)
     {
         _workspaces.Remove(workspaceViewModel.Id);
     }
@@ -64,6 +81,11 @@ internal class WorkspaceController : IWorkspaceController
         }
 
         return true;
+    }
+
+    public void ChangeActiveWorkspace(WorkspaceId workspaceId)
+    {
+
     }
 
     public void AddPanel(WorkspaceId workspaceId, WorkspaceGridState newWorkspaceState, AddPanelBehavior behavior)

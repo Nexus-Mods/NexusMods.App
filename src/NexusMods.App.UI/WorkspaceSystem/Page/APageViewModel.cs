@@ -5,16 +5,21 @@ namespace NexusMods.App.UI.WorkspaceSystem;
 public abstract class APageViewModel<TInterface> : AViewModel<TInterface>, IPageViewModelInterface
     where TInterface : class, IPageViewModelInterface
 {
-    private readonly IWorkspaceController _workspaceController;
+    protected readonly IWindowManager WindowManager;
 
-    protected APageViewModel(IWorkspaceController workspaceController)
+    protected APageViewModel(IWindowManager windowManager)
     {
-        _workspaceController = workspaceController;
+        WindowManager = windowManager;
     }
 
     protected IWorkspaceController GetWorkspaceController()
     {
-        return _workspaceController;
+        if (!WindowManager.TryGetWindow(WindowId, out var window))
+        {
+            throw new NotImplementedException();
+        }
+
+        return window.WorkspaceController;
     }
 
     /// <inheritdoc/>

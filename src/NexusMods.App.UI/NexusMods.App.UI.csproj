@@ -290,9 +290,6 @@
         <Compile Update="WorkspaceSystem\Panel\PanelViewModel.cs">
           <DependentUpon>IPanelViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="WorkspaceSystem\Workspace\WorkspacePlaygroundViewModel.cs">
-          <DependentUpon>WorkspacePlaygroundView.axaml</DependentUpon>
-        </Compile>
         <Compile Update="WorkspaceSystem\AddPanelButton\AddPanelButtonViewModel.cs">
           <DependentUpon>IAddPanelButtonViewModel.cs</DependentUpon>
         </Compile>
@@ -355,6 +352,9 @@
           <DependentUpon>IMainWindowViewModel.cs</DependentUpon>
         </Compile>
         <Compile Update="Windows\WindowManager.cs">
+          <DependentUpon>IWindowManager.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Windows\DesignWindowManager.cs">
           <DependentUpon>IWindowManager.cs</DependentUpon>
         </Compile>
     </ItemGroup>

@@ -164,7 +164,6 @@ public static class Services
             .AddView<UpdaterView, IUpdaterViewModel>()
 
             // workspace system
-            .AddSingleton<IWorkspaceController, WorkspaceController>()
             .AddSingleton<IWindowManager, WindowManager>()
             .AddViewModel<WorkspaceViewModel, IWorkspaceViewModel>()
             .AddViewModel<PanelViewModel, IPanelViewModel>()

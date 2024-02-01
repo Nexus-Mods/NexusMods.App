@@ -1,5 +1,6 @@
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.App.UI.Windows;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
@@ -65,12 +66,12 @@ public abstract class APageFactory<TViewModel, TContext> : IPageFactory<TViewMod
     public abstract PageFactoryId Id { get; }
 
     protected readonly IServiceProvider ServiceProvider;
-    protected readonly IWorkspaceController WorkspaceController;
+    protected readonly IWindowManager WindowManager;
 
     protected APageFactory(IServiceProvider serviceProvider)
     {
         ServiceProvider = serviceProvider;
-        WorkspaceController = serviceProvider.GetRequiredService<IWorkspaceController>();
+        WindowManager = serviceProvider.GetRequiredService<IWindowManager>();
     }
 
     /// <inheritdoc/>

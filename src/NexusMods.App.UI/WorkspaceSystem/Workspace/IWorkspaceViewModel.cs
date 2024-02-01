@@ -6,12 +6,15 @@ namespace NexusMods.App.UI.WorkspaceSystem;
 
 public interface IWorkspaceViewModel : IViewModelInterface
 {
+    /// <summary>
+    /// Gets the ID of the workspace.
+    /// </summary>
     public WorkspaceId Id { get; }
 
     /// <summary>
-    /// Gets or sets the ID of the window this workspace is in.
+    /// Gets the ID of the window this workspace is in.
     /// </summary>
-    public WindowId WindowId { get; set; }
+    public WindowId WindowId { get; }
 
     public ReadOnlyObservableCollection<IPanelViewModel> Panels { get; }
 

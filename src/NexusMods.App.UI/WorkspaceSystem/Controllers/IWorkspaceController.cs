@@ -1,11 +1,30 @@
 using Avalonia.Media;
 using JetBrains.Annotations;
+using NexusMods.App.UI.Windows;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
+/// <summary>
+/// Represents a controller for all workspaces inside a window.
+/// </summary>
 [PublicAPI]
 public interface IWorkspaceController
 {
+    /// <summary>
+    /// Gets the ID of the window that is associated with this controller.
+    /// </summary>
+    public WindowId WindowId { get; }
+
+    /// <summary>
+    /// Creates a new workspace.
+    /// </summary>
+    public IWorkspaceViewModel CreateWorkspace();
+
+    /// <summary>
+    /// Changes the active workspace of the window.
+    /// </summary>
+    public void ChangeActiveWorkspace(WorkspaceId workspaceId);
+
     /// <summary>
     /// Adds a new panel to a workspace.
     /// </summary>

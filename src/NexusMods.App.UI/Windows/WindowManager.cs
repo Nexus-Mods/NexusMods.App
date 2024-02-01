@@ -1,13 +1,13 @@
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using DynamicData;
 using Microsoft.Extensions.Logging;
+using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Windows;
 
-internal sealed class WindowManager : IWindowManager, INotifyPropertyChanged
+internal sealed class WindowManager : ReactiveObject, IWindowManager
 {
     private readonly ILogger<WindowManager> _logger;
     private readonly Dictionary<WindowId, WeakReference<IWorkspaceWindow>> _windows = new();
@@ -69,10 +69,4 @@ internal sealed class WindowManager : IWindowManager, INotifyPropertyChanged
 
         _allWindowIdSource.Edit(list => list.Remove(window.WindowId));
     }
-
-    #region INotifyPropertyChanged
-
-    public event PropertyChangedEventHandler? PropertyChanged;
-
-    #endregion
 }
