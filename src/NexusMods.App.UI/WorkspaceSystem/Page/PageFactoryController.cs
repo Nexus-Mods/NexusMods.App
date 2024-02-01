@@ -45,12 +45,12 @@ public class PageFactoryController
         return page;
     }
 
-    public IEnumerable<PageDiscoveryDetails> GetAllDetails()
+    public IEnumerable<PageDiscoveryDetails> GetAllDetails(IWorkspaceContext workspaceContext)
     {
         foreach (var kv in _factories)
         {
             var (factoryId, factory) = kv;
-            var details = factory.GetDiscoveryDetails();
+            var details = factory.GetDiscoveryDetails(workspaceContext);
 
             foreach (var detail in details)
             {

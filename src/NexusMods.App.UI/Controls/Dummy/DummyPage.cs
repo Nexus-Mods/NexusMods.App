@@ -35,7 +35,7 @@ public class DummyPageFactory : APageFactory<DummyViewModel, DummyPageContext>
     }
 
 #if DEBUG
-    public override IEnumerable<PageDiscoveryDetails?> GetDiscoveryDetails()
+    public override IEnumerable<PageDiscoveryDetails?> GetDiscoveryDetails(IWorkspaceContext workspaceContext)
     {
         yield return new PageDiscoveryDetails
         {

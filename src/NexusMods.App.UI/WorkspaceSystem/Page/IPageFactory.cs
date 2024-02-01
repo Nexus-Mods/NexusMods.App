@@ -19,7 +19,7 @@ public interface IPageFactory
     /// </summary>
     public Page Create(IPageFactoryContext context);
 
-    public IEnumerable<PageDiscoveryDetails?> GetDiscoveryDetails();
+    public IEnumerable<PageDiscoveryDetails?> GetDiscoveryDetails(IWorkspaceContext workspaceContext);
 }
 
 /// <summary>
@@ -78,5 +78,5 @@ public abstract class APageFactory<TViewModel, TContext> : IPageFactory<TViewMod
     public abstract TViewModel CreateViewModel(TContext parameter);
 
     /// <inheritdoc/>
-    public virtual IEnumerable<PageDiscoveryDetails?> GetDiscoveryDetails() => Array.Empty<PageDiscoveryDetails?>();
+    public virtual IEnumerable<PageDiscoveryDetails?> GetDiscoveryDetails(IWorkspaceContext workspaceContext) => Array.Empty<PageDiscoveryDetails?>();
 }

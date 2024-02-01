@@ -43,10 +43,12 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
 
     [Reactive] private PanelTabId SelectedTabId { get; set; }
 
+    private readonly IWorkspaceController _workspaceController;
     private readonly PageFactoryController _factoryController;
 
-    public PanelViewModel(PageFactoryController factoryController)
+    public PanelViewModel(IWorkspaceController workspaceController, PageFactoryController factoryController)
     {
+        _workspaceController = workspaceController;
         _factoryController = factoryController;
 
         var canExecute = this.WhenAnyValue(vm => vm.IsNotAlone);
@@ -160,7 +162,11 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
 
     public void AddDefaultTab()
     {
-        var allDetails = _factoryController.GetAllDetails().ToArray();
+        // TODO: cleanup
+        var context = _workspaceController.AllWorkspaces.First(x => x.Id == WorkspaceId).Context;
+
+        // TODO: move this into IWorkspaceController, have some OpenPage overload with the default page
+        var allDetails = _factoryController.GetAllDetails(context).ToArray();
         var pageData = new PageData
         {
             FactoryId = NewTabPageFactory.StaticId,

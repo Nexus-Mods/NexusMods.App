@@ -32,23 +32,26 @@ public class LoadoutGridPageFactory : APageFactory<ILoadoutGridViewModel, Loadou
         return vm;
     }
 
-    public override IEnumerable<PageDiscoveryDetails?> GetDiscoveryDetails()
+    public override IEnumerable<PageDiscoveryDetails?> GetDiscoveryDetails(IWorkspaceContext workspaceContext)
     {
-        return _loadoutRegistry
-            .AllLoadouts()
-            .Select(loadout => new PageDiscoveryDetails
+        if (workspaceContext is not LoadoutContext loadoutContext) yield break;
+
+        var loadout = _loadoutRegistry.Get(loadoutContext.LoadoutId);
+        if (loadout is null) yield break;
+
+        yield return new PageDiscoveryDetails
+        {
+            // TODO: translations?
+            SectionName = "Loadouts",
+            ItemName = loadout.Name,
+            PageData = new PageData
             {
-                // TODO: translations?
-                SectionName = "Collections",
-                ItemName = loadout.Name,
-                PageData = new PageData
+                FactoryId = Id,
+                Context = new LoadoutGridContext
                 {
-                    FactoryId = Id,
-                    Context = new LoadoutGridContext
-                    {
-                        LoadoutId = loadout.LoadoutId
-                    }
+                    LoadoutId = loadout.LoadoutId
                 }
-            });
+            }
+        };
     }
 }

@@ -359,7 +359,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
 
     private void AddPanelWithDefaultTab(WorkspaceGridState newWorkspaceState)
     {
-        var allDetails = _factoryController.GetAllDetails().ToArray();
+        var allDetails = _factoryController.GetAllDetails(Context).ToArray();
         var pageData = new PageData
         {
             FactoryId = NewTabPageFactory.StaticId,
@@ -381,7 +381,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                 var (panelId, logicalBounds) = panel;
                 if (panelId == PanelId.DefaultValue)
                 {
-                    var panelViewModel = new PanelViewModel(_factoryController)
+                    var panelViewModel = new PanelViewModel(_workspaceController, _factoryController)
                     {
                         WindowId = WindowId,
                         WorkspaceId = Id,
@@ -445,7 +445,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         {
             foreach (var panel in data.Panels)
             {
-                var vm = new PanelViewModel(_factoryController)
+                var vm = new PanelViewModel(_workspaceController, _factoryController)
                 {
                     WindowId = WindowId,
                     WorkspaceId = Id
