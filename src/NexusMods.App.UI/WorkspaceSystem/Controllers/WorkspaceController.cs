@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Windows;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
@@ -22,6 +23,8 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
     private readonly SourceCache<WorkspaceViewModel, WorkspaceId> _workspaces = new(x => x.Id);
     private readonly ReadOnlyObservableCollection<IWorkspaceViewModel> _allWorkspaces;
     public ReadOnlyObservableCollection<IWorkspaceViewModel> AllWorkspaces => _allWorkspaces;
+
+    [Reactive] public IWorkspaceViewModel ActiveWorkspace { get; private set; } = null!;
 
     public WorkspaceController(IWorkspaceWindow window, IServiceProvider serviceProvider)
     {
@@ -68,6 +71,11 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
     private void UnregisterWorkspace(WorkspaceViewModel workspaceViewModel)
     {
         _workspaces.Remove(workspaceViewModel.Id);
+
+        if (ReferenceEquals(ActiveWorkspace, workspaceViewModel))
+        {
+            ChangeActiveWorkspace(AllWorkspaces.First().Id);
+        }
     }
 
     private bool TryGetWorkspace(WorkspaceId workspaceId, [NotNullWhen(true)] out WorkspaceViewModel? workspaceViewModel)
@@ -109,7 +117,15 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
     {
         foreach (var workspace in AllWorkspaces)
         {
-            workspace.IsActive = workspace.Id == workspaceId;
+            if (workspace.Id == workspaceId)
+            {
+                workspace.IsActive = true;
+                ActiveWorkspace = workspace;
+            }
+            else
+            {
+                workspace.IsActive = false;
+            }
         }
     }
 
