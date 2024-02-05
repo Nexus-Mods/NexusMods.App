@@ -299,8 +299,25 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         );
     }
 
-    internal void OpenPage(PageData pageData, OpenPageBehavior behavior)
+    private PageData GetDefaultPageData()
     {
+        var allDetails = _factoryController.GetAllDetails(Context).ToArray();
+        var pageData = new PageData
+        {
+            FactoryId = NewTabPageFactory.StaticId,
+            Context = new NewTabPageContext
+            {
+                DiscoveryDetails = allDetails
+            }
+        };
+
+        return pageData;
+    }
+
+    internal void OpenPage(Optional<PageData> optionalPageData, OpenPageBehavior behavior)
+    {
+        var pageData = optionalPageData.ValueOr(GetDefaultPageData);
+
         behavior.Switch(
             f0: replaceTab => OpenPageReplaceTab(pageData, replaceTab),
             f1: newTab => OpenPageInNewTab(pageData, newTab),
@@ -359,17 +376,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
 
     private void AddPanelWithDefaultTab(WorkspaceGridState newWorkspaceState)
     {
-        var allDetails = _factoryController.GetAllDetails(Context).ToArray();
-        var pageData = new PageData
-        {
-            FactoryId = NewTabPageFactory.StaticId,
-            Context = new NewTabPageContext
-            {
-                DiscoveryDetails = allDetails
-            }
-        };
-
-        AddPanelWithCustomTab(newWorkspaceState, pageData);
+        AddPanelWithCustomTab(newWorkspaceState, GetDefaultPageData());
     }
 
     private void AddPanelWithCustomTab(WorkspaceGridState newWorkspaceState, PageData pageData)

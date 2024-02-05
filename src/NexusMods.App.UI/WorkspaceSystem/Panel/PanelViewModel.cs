@@ -162,21 +162,7 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
 
     public void AddDefaultTab()
     {
-        // TODO: cleanup
-        var context = _workspaceController.AllWorkspaces.First(x => x.Id == WorkspaceId).Context;
-
-        // TODO: move this into IWorkspaceController, have some OpenPage overload with the default page
-        var allDetails = _factoryController.GetAllDetails(context).ToArray();
-        var pageData = new PageData
-        {
-            FactoryId = NewTabPageFactory.StaticId,
-            Context = new NewTabPageContext
-            {
-                DiscoveryDetails = allDetails
-            }
-        };
-
-        AddCustomTab(pageData);
+        _workspaceController.OpenPage(WorkspaceId, Optional<PageData>.None, new OpenPageBehavior(new OpenPageBehavior.NewTab(Id)));
     }
 
     public void AddCustomTab(PageData pageData)

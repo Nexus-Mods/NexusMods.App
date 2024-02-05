@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using Avalonia.Media;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
@@ -28,6 +29,11 @@ public interface IWorkspaceController
     public ReadOnlyObservableCollection<IWorkspaceViewModel> AllWorkspaces { get; }
 
     /// <summary>
+    /// Tries to get a workspace.
+    /// </summary>
+    public bool TryGetWorkspace(WorkspaceId workspaceId, [NotNullWhen(true)] out IWorkspaceViewModel? workspace);
+
+    /// <summary>
     /// Creates a new workspace with one panel and a tab.
     /// </summary>
     /// <param name="context">Optional <see cref="IWorkspaceContext"/> for the workspace. If this is <see cref="Optional{T}.None"/> the <see cref="EmptyContext"/> will be used.</param>
@@ -47,7 +53,10 @@ public interface IWorkspaceController
     /// <summary>
     /// Opens a new page in a workspace.
     /// </summary>
-    public void OpenPage(WorkspaceId workspaceId, PageData pageData, OpenPageBehavior behavior);
+    /// <param name="workspaceId"></param>
+    /// <param name="pageData">Optional <see cref="PageData"/> for the first tab. If this is <see cref="Optional{T}.None"/> the default tab will be shown.</param>
+    /// <param name="behavior"></param>
+    public void OpenPage(WorkspaceId workspaceId, Optional<PageData> pageData, OpenPageBehavior behavior);
 
     /// <summary>
     /// Swaps the positions of two panels.

@@ -1,11 +1,13 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
+using JetBrains.Annotations;
 
 namespace NexusMods.App.UI.Windows;
 
 /// <summary>
 /// Represents a manager of all existing windows.
 /// </summary>
+[PublicAPI]
 public interface IWindowManager
 {
     /// <summary>

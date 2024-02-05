@@ -89,6 +89,14 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
         return true;
     }
 
+    /// <inheritdoc/>
+    public bool TryGetWorkspace(WorkspaceId workspaceId, [NotNullWhen(true)] out IWorkspaceViewModel? workspace)
+    {
+        var res = TryGetWorkspace(workspaceId, out WorkspaceViewModel? tmp);
+        workspace = tmp;
+        return res;
+    }
+
     private bool TryGetPanel(IWorkspaceViewModel workspaceViewModel, PanelId panelId, [NotNullWhen(true)] out IPanelViewModel? panelViewModel)
     {
         panelViewModel = workspaceViewModel.Panels.FirstOrDefault(panel => panel.Id == panelId);
@@ -131,31 +139,31 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
 
     public void AddPanel(WorkspaceId workspaceId, WorkspaceGridState newWorkspaceState, AddPanelBehavior behavior)
     {
-        if (!TryGetWorkspace(workspaceId, out var workspaceViewModel)) return;
+        if (!TryGetWorkspace(workspaceId, out WorkspaceViewModel? workspaceViewModel)) return;
         workspaceViewModel.AddPanel(newWorkspaceState, behavior);
     }
 
-    public void OpenPage(WorkspaceId workspaceId, PageData pageData, OpenPageBehavior behavior)
+    public void OpenPage(WorkspaceId workspaceId, Optional<PageData> pageData, OpenPageBehavior behavior)
     {
-        if (!TryGetWorkspace(workspaceId, out var workspaceViewModel)) return;
+        if (!TryGetWorkspace(workspaceId, out WorkspaceViewModel? workspaceViewModel)) return;
         workspaceViewModel.OpenPage(pageData, behavior);
     }
 
     public void SwapPanels(WorkspaceId workspaceId, PanelId firstPanelId, PanelId secondPanelId)
     {
-        if (!TryGetWorkspace(workspaceId, out var workspaceViewModel)) return;
+        if (!TryGetWorkspace(workspaceId, out WorkspaceViewModel? workspaceViewModel)) return;
         workspaceViewModel.SwapPanels(firstPanelId, secondPanelId);
     }
 
     public void ClosePanel(WorkspaceId workspaceId, PanelId panelToClose)
     {
-        if (!TryGetWorkspace(workspaceId, out var workspaceViewModel)) return;
+        if (!TryGetWorkspace(workspaceId, out WorkspaceViewModel? workspaceViewModel)) return;
         workspaceViewModel.ClosePanel(panelToClose);
     }
 
     public void SetTabTitle(string title, WorkspaceId workspaceId, PanelId panelId, PanelTabId tabId)
     {
-        if (!TryGetWorkspace(workspaceId, out var workspaceViewModel)) return;
+        if (!TryGetWorkspace(workspaceId, out WorkspaceViewModel? workspaceViewModel)) return;
         if (!TryGetPanel(workspaceViewModel, panelId, out var panelViewModel)) return;
         if (!TryGetTab(panelViewModel, tabId, out var tabViewModel)) return;
 
@@ -164,7 +172,7 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
 
     public void SetIcon(IImage? icon, WorkspaceId workspaceId, PanelId panelId, PanelTabId tabId)
     {
-        if (!TryGetWorkspace(workspaceId, out var workspaceViewModel)) return;
+        if (!TryGetWorkspace(workspaceId, out WorkspaceViewModel? workspaceViewModel)) return;
         if (!TryGetPanel(workspaceViewModel, panelId, out var panelViewModel)) return;
         if (!TryGetTab(panelViewModel, tabId, out var tabViewModel)) return;
 
