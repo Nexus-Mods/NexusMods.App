@@ -1,7 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using Avalonia.Controls;
+using NexusMods.App.UI.Controls.DownloadGrid;
 using NexusMods.App.UI.Resources;
-using NexusMods.App.UI.RightContent.DownloadGrid;
 using NexusMods.App.UI.RightContent.LoadoutGrid;
 
 namespace NexusMods.App.UI.Controls.DataGrid;

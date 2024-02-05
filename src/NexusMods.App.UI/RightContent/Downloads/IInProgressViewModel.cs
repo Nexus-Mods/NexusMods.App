@@ -2,7 +2,7 @@
 using System.Windows.Input;
 using DynamicData;
 using NexusMods.App.UI.Controls.DataGrid;
-using NexusMods.App.UI.RightContent.DownloadGrid;
+using NexusMods.App.UI.Controls.DownloadGrid;
 using NexusMods.App.UI.RightContent.Downloads.ViewModels;
 
 namespace NexusMods.App.UI.RightContent.Downloads;

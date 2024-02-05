@@ -384,16 +384,11 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="RightContent\DownloadGrid\Columns\" />
+      <Folder Include="Pages\" />
     </ItemGroup>
 
     <ItemGroup>
       <AdditionalFiles Include="Controls\DevelopmentBuildBanner\DevelopmentBuildBannerView.axaml" />
-      <AdditionalFiles Include="RightContent\DownloadGrid\Columns\DownloadGameName\DownloadGameNameView.axaml" />
-      <AdditionalFiles Include="RightContent\DownloadGrid\Columns\DownloadName\DownloadNameView.axaml" />
-      <AdditionalFiles Include="RightContent\DownloadGrid\Columns\DownloadSize\DownloadSizeView.axaml" />
-      <AdditionalFiles Include="RightContent\DownloadGrid\Columns\DownloadStatus\DownloadStatusView.axaml" />
-      <AdditionalFiles Include="RightContent\DownloadGrid\Columns\DownloadVersion\DownloadVersionView.axaml" />
     </ItemGroup>
 
     <ItemGroup>
