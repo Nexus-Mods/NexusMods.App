@@ -2,7 +2,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.Helpers;
-using NexusMods.App.UI.RightContent.Downloads.ViewModels;
+using NexusMods.App.UI.Pages.Downloads.ViewModels;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 

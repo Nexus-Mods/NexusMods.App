@@ -6,7 +6,6 @@ using NexusMods.App.UI.WorkspaceSystem;
 
 namespace NexusMods.App.UI.RightContent.LoadoutGrid;
 
-[UsedImplicitly]
 [JsonName("NexusMods.App.UI.RightContent.LoadoutGridParameter")]
 public record LoadoutGridContext : IPageFactoryContext
 {

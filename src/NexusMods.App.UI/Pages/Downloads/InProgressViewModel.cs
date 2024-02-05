@@ -15,14 +15,16 @@ using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadSize;
 using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadStatus;
 using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadVersion;
 using NexusMods.App.UI.Overlays;
-using NexusMods.App.UI.RightContent.Downloads.ViewModels;
+using NexusMods.App.UI.Pages.Downloads.ViewModels;
+using NexusMods.App.UI.Windows;
+using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Networking.Downloaders.Interfaces;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
-namespace NexusMods.App.UI.RightContent.Downloads;
+namespace NexusMods.App.UI.Pages.Downloads;
 
-public class InProgressViewModel : AViewModel<IInProgressViewModel>, IInProgressViewModel
+public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProgressViewModel
 {
     internal const int PollTimeMilliseconds = 1000;
 
@@ -72,13 +74,11 @@ public class InProgressViewModel : AViewModel<IInProgressViewModel>, IInProgress
     [Reactive]
     public ICommand ShowSettings { get; private set; } = ReactiveCommand.Create(() => { }, Observable.Return(false));
 
-    /// <summary>
-    /// Main constructor
-    /// </summary>
-    /// <param name="downloadService"></param>
-    /// <param name="overlayController"></param>
     [UsedImplicitly]
-    public InProgressViewModel(IDownloadService downloadService, IOverlayController overlayController)
+    public InProgressViewModel(
+        IWindowManager windowManager,
+        IDownloadService downloadService,
+        IOverlayController overlayController) : base(windowManager)
     {
         TaskSourceChangeSet = downloadService.Downloads
             .Filter(x => x.Status != DownloadTaskStatus.Completed)
@@ -107,7 +107,7 @@ public class InProgressViewModel : AViewModel<IInProgressViewModel>, IInProgress
     /// <summary>
     /// For designTime and Testing purposes.
     /// </summary>
-    protected InProgressViewModel()
+    protected InProgressViewModel() : base(new DesignWindowManager())
     {
         TaskSourceChangeSet = DesignTimeDownloadTasks.Connect().OnUI();
         Init();

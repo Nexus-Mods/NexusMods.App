@@ -54,7 +54,7 @@ public interface IPageFactory<out TViewModel, in TContext> : IPageFactory
     /// <summary>
     /// Creates a new view model using the provided context.
     /// </summary>
-    public TViewModel CreateViewModel(TContext parameter);
+    public TViewModel CreateViewModel(TContext context);
 }
 
 /// <summary>

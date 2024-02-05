@@ -1,6 +1,6 @@
 using NexusMods.Networking.Downloaders.Interfaces;
 
-namespace NexusMods.App.UI.RightContent.Downloads.ViewModels;
+namespace NexusMods.App.UI.Pages.Downloads.ViewModels;
 
 public class DownloadTaskDesignViewModel : AViewModel<IDownloadTaskViewModel>, IDownloadTaskViewModel
 {

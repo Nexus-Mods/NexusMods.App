@@ -3,7 +3,7 @@ using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Networking.Downloaders.Interfaces.Traits;
 using ReactiveUI;
 
-namespace NexusMods.App.UI.RightContent.Downloads.ViewModels;
+namespace NexusMods.App.UI.Pages.Downloads.ViewModels;
 
 public class DownloadTaskViewModel : AViewModel<IDownloadTaskViewModel>, IDownloadTaskViewModel
 {

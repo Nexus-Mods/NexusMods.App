@@ -1,8 +1,8 @@
 ﻿using DynamicData;
-using NexusMods.App.UI.RightContent.Downloads.ViewModels;
+using NexusMods.App.UI.Pages.Downloads.ViewModels;
 using NexusMods.Networking.Downloaders.Interfaces;
 
-namespace NexusMods.App.UI.RightContent.Downloads;
+namespace NexusMods.App.UI.Pages.Downloads;
 
 public class InProgressDesignViewModel : InProgressViewModel
 {

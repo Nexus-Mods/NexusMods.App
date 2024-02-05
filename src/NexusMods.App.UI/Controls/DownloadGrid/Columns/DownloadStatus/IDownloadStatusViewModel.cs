@@ -1,6 +1,6 @@
 using System.Windows.Input;
 using NexusMods.App.UI.Controls.DataGrid;
-using NexusMods.App.UI.RightContent.Downloads.ViewModels;
+using NexusMods.App.UI.Pages.Downloads.ViewModels;
 
 namespace NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadStatus;
 

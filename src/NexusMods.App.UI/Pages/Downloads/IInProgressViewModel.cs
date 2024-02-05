@@ -3,11 +3,12 @@ using System.Windows.Input;
 using DynamicData;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.Controls.DownloadGrid;
-using NexusMods.App.UI.RightContent.Downloads.ViewModels;
+using NexusMods.App.UI.Pages.Downloads.ViewModels;
+using NexusMods.App.UI.WorkspaceSystem;
 
-namespace NexusMods.App.UI.RightContent.Downloads;
+namespace NexusMods.App.UI.Pages.Downloads;
 
-public interface IInProgressViewModel : IViewModelInterface
+public interface IInProgressViewModel : IPageViewModelInterface
 {
     /// <summary>
     /// These tasks contain only current in-progress tasks; completed tasks are removed from this list.

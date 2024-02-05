@@ -5,11 +5,11 @@ using Avalonia.ReactiveUI;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Helpers;
+using NexusMods.App.UI.Pages.Downloads.ViewModels;
 using NexusMods.App.UI.Resources;
-using NexusMods.App.UI.RightContent.Downloads.ViewModels;
 using ReactiveUI;
 
-namespace NexusMods.App.UI.RightContent.Downloads;
+namespace NexusMods.App.UI.Pages.Downloads;
 
 public partial class InProgressView : ReactiveUserControl<IInProgressViewModel>
 {

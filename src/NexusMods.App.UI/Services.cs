@@ -27,8 +27,8 @@ using NexusMods.App.UI.Overlays.Generic.MessageBox.OkCancel;
 using NexusMods.App.UI.Overlays.Login;
 using NexusMods.App.UI.Overlays.MetricsOptIn;
 using NexusMods.App.UI.Overlays.Updater;
+using NexusMods.App.UI.Pages.Downloads;
 using NexusMods.App.UI.RightContent;
-using NexusMods.App.UI.RightContent.Downloads;
 using NexusMods.App.UI.RightContent.LoadoutGrid;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModCategory;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModEnabled;
@@ -171,8 +171,9 @@ public static class Services
             // page factories
             .AddSingleton<PageFactoryController>()
             .AddSingleton<IPageFactory, DummyPageFactory>()
-            .AddSingleton<IPageFactory, LoadoutGridPageFactory>()
             .AddSingleton<IPageFactory, NewTabPageFactory>()
+            .AddSingleton<IPageFactory, LoadoutGridPageFactory>()
+            .AddSingleton<IPageFactory, InProgressPageFactory>()
 
             // Other
             .AddViewModel<DummyViewModel, IDummyViewModel>()

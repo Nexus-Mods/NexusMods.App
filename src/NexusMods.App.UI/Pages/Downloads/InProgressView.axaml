@@ -5,11 +5,11 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
-    xmlns:downloads="clr-namespace:NexusMods.App.UI.RightContent.Downloads"
     xmlns:avalonia="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
+    xmlns:downloads="clr-namespace:NexusMods.App.UI.Pages.Downloads"
     mc:Ignorable="d" d:DesignWidth="920" d:DesignHeight="664"
-    x:Class="NexusMods.App.UI.RightContent.Downloads.InProgressView">
+    x:Class="NexusMods.App.UI.Pages.Downloads.InProgressView">
     <Design.DataContext>
         <downloads:InProgressDesignViewModel />
     </Design.DataContext>
