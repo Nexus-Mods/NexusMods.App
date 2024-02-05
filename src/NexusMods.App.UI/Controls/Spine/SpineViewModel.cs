@@ -13,6 +13,7 @@ using NexusMods.App.UI.Controls.Spine.Buttons.Image;
 using NexusMods.App.UI.LeftMenu.Downloads;
 using NexusMods.App.UI.LeftMenu.Game;
 using NexusMods.App.UI.LeftMenu.Home;
+using NexusMods.App.UI.Pages.Downloads;
 using NexusMods.App.UI.RightContent.LoadoutGrid;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -131,7 +132,25 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
 
     private void NavigateToDownloads()
     {
-        _logger.LogTrace("Downloads selected");
-        // TODO:
+        if (!_windowManager.TryGetActiveWindow(out var window)) return;
+        var workspaceController = window.WorkspaceController;
+
+        if (!workspaceController.TryGetWorkspaceByContext<DownloadsContext>(out var existingWorkspace))
+        {
+            var pageData = new PageData
+            {
+                FactoryId = InProgressPageFactory.StaticId,
+                Context = new InProgressPageContext()
+            };
+
+            var newWorkspace = workspaceController.CreateWorkspace(
+                new DownloadsContext(),
+                pageData
+            );
+
+            existingWorkspace = newWorkspace;
+        }
+
+        workspaceController.ChangeActiveWorkspace(existingWorkspace.Id);
     }
 }
