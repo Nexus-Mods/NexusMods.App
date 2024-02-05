@@ -3,10 +3,7 @@ name: MkDocs build and deploy
 on:
   workflow_dispatch:
   push:
-    branches: [ main ]
-    paths:
-      - "mkdocs.yml"
-      - "docs/**"
+    branches: [ main, experiment-with-mkdocs ]
   pull_request:
     branches: [ main ]
     paths:
@@ -19,4 +16,4 @@ jobs:
       contents: read
       pages: write
       id-token: write
-    uses: Nexus-Mods/NexusMods.App.Meta/.github/workflows/mkdocs-build-and-deploy.yaml@main
+    uses: Nexus-Mods/NexusMods.App.Meta/.github/workflows/mkdocs-build-and-deploy.yaml@test-mkdocs
