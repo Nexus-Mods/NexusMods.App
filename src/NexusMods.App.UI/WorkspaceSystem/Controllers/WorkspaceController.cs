@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Windows;
+using NexusMods.Extensions.BCL;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -95,6 +96,22 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
         var res = TryGetWorkspace(workspaceId, out WorkspaceViewModel? tmp);
         workspace = tmp;
         return res;
+    }
+
+    public IEnumerable<ValueTuple<IWorkspaceViewModel, TContext>> FindWorkspacesByContext<TContext>() where TContext : IWorkspaceContext
+    {
+        foreach (var workspace in _allWorkspaces)
+        {
+            var context = workspace.Context;
+            if (context is not TContext actualContext) continue;
+
+            yield return (workspace, actualContext);
+        }
+    }
+
+    public bool TryGetWorkspaceByContext<TContext>([NotNullWhen(true)] out IWorkspaceViewModel? workspace) where TContext : IWorkspaceContext
+    {
+        return _allWorkspaces.TryGetFirst(workspace => workspace.Context is TContext, out workspace);
     }
 
     private bool TryGetPanel(IWorkspaceViewModel workspaceViewModel, PanelId panelId, [NotNullWhen(true)] out IPanelViewModel? panelViewModel)

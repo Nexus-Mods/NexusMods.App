@@ -34,6 +34,18 @@ public interface IWorkspaceController
     public bool TryGetWorkspace(WorkspaceId workspaceId, [NotNullWhen(true)] out IWorkspaceViewModel? workspace);
 
     /// <summary>
+    /// Returns all workspaces where <see cref="IWorkspaceViewModel.Context"/> is <see cref="TContext"/>.
+    /// </summary>
+    /// <seealso cref="TryGetWorkspaceByContext{TContext}"/>
+    public IEnumerable<ValueTuple<IWorkspaceViewModel, TContext>> FindWorkspacesByContext<TContext>() where TContext : IWorkspaceContext;
+
+    /// <summary>
+    /// Tries to get a workspace by context.
+    /// </summary>
+    /// <seealso cref="FindWorkspacesByContext{TContext}"/>
+    public bool TryGetWorkspaceByContext<TContext>([NotNullWhen(true)] out IWorkspaceViewModel? workspace) where TContext : IWorkspaceContext;
+
+    /// <summary>
     /// Creates a new workspace with one panel and a tab.
     /// </summary>
     /// <param name="context">Optional <see cref="IWorkspaceContext"/> for the workspace. If this is <see cref="Optional{T}.None"/> the <see cref="EmptyContext"/> will be used.</param>
