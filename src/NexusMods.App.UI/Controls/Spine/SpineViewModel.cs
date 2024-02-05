@@ -14,7 +14,7 @@ using NexusMods.App.UI.LeftMenu.Downloads;
 using NexusMods.App.UI.LeftMenu.Game;
 using NexusMods.App.UI.LeftMenu.Home;
 using NexusMods.App.UI.Pages.Downloads;
-using NexusMods.App.UI.RightContent.LoadoutGrid;
+using NexusMods.App.UI.Pages.LoadoutGrid;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using ReactiveUI;

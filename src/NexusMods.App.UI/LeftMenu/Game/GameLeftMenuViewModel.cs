@@ -11,7 +11,7 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Icons;
 using NexusMods.App.UI.LeftMenu.Items;
-using NexusMods.App.UI.RightContent.LoadoutGrid;
+using NexusMods.App.UI.Pages.LoadoutGrid;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
