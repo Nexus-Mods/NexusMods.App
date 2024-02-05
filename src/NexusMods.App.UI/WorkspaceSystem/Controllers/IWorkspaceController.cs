@@ -58,6 +58,11 @@ public interface IWorkspaceController
     public void ChangeActiveWorkspace(WorkspaceId workspaceId);
 
     /// <summary>
+    /// Changes to an existing workspace, or creates a new workspace. The workspace is identified by a unique context.
+    /// </summary>
+    public IWorkspaceViewModel ChangeOrCreateWorkspaceByUniqueContext<TContext>(Func<Optional<PageData>> getPageData) where TContext : IWorkspaceContext, new();
+
+    /// <summary>
     /// Adds a new panel to a workspace.
     /// </summary>
     public void AddPanel(WorkspaceId workspaceId, WorkspaceGridState newWorkspaceState, AddPanelBehavior behavior);

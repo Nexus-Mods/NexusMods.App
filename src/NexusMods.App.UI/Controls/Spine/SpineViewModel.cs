@@ -101,23 +101,11 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         if (!_windowManager.TryGetActiveWindow(out var window)) return;
         var workspaceController = window.WorkspaceController;
 
-        if (!workspaceController.TryGetWorkspaceByContext<HomeContext>(out var existingWorkspace))
+        workspaceController.ChangeOrCreateWorkspaceByUniqueContext<HomeContext>(() => new PageData
         {
-            var pageData = new PageData
-            {
-                FactoryId = MyGamesPageFactory.StaticId,
-                Context = new MyGamesPageContext()
-            };
-
-            var newWorkspace = workspaceController.CreateWorkspace(
-                new HomeContext(),
-                pageData
-            );
-
-            existingWorkspace = newWorkspace;
-        }
-
-        workspaceController.ChangeActiveWorkspace(existingWorkspace.Id);
+            FactoryId = MyGamesPageFactory.StaticId,
+            Context = new MyGamesPageContext()
+        });
     }
 
     private void ChangeToLoadoutWorkspace(LoadoutId loadoutId)
@@ -157,22 +145,10 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         if (!_windowManager.TryGetActiveWindow(out var window)) return;
         var workspaceController = window.WorkspaceController;
 
-        if (!workspaceController.TryGetWorkspaceByContext<DownloadsContext>(out var existingWorkspace))
+        workspaceController.ChangeOrCreateWorkspaceByUniqueContext<DownloadsContext>(() => new PageData
         {
-            var pageData = new PageData
-            {
-                FactoryId = InProgressPageFactory.StaticId,
-                Context = new InProgressPageContext()
-            };
-
-            var newWorkspace = workspaceController.CreateWorkspace(
-                new DownloadsContext(),
-                pageData
-            );
-
-            existingWorkspace = newWorkspace;
-        }
-
-        workspaceController.ChangeActiveWorkspace(existingWorkspace.Id);
+            FactoryId = InProgressPageFactory.StaticId,
+            Context = new InProgressPageContext()
+        });
     }
 }

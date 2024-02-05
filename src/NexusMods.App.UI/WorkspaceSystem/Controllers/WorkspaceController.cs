@@ -154,6 +154,25 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
         }
     }
 
+    /// <inheritdoc/>
+    public IWorkspaceViewModel ChangeOrCreateWorkspaceByUniqueContext<TContext>(Func<Optional<PageData>> getPageData) where TContext : IWorkspaceContext, new()
+    {
+        if (!TryGetWorkspaceByContext<TContext>(out var existingWorkspace))
+        {
+            var pageData = getPageData();
+
+            var newWorkspace = CreateWorkspace(
+                new TContext(),
+                pageData
+            );
+
+            existingWorkspace = newWorkspace;
+        }
+
+        ChangeActiveWorkspace(existingWorkspace.Id);
+        return existingWorkspace;
+    }
+
     public void AddPanel(WorkspaceId workspaceId, WorkspaceGridState newWorkspaceState, AddPanelBehavior behavior)
     {
         if (!TryGetWorkspace(workspaceId, out WorkspaceViewModel? workspaceViewModel)) return;
