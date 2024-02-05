@@ -22,15 +22,15 @@ public class FoundGamesViewModel : AViewModel<IFoundGamesViewModel>, IFoundGames
         _loadoutRegistry = loadoutManager;
         _provider = provider;
 
-        Games = Array.Empty<IGameWidgetViewModel>()
-            .ToReadOnlyObservableCollection();
-
+        Games = Array.Empty<IGameWidgetViewModel>().ToReadOnlyObservableCollection();
     }
 
     private async Task ManageGame(GameInstallation installation)
     {
         var name = _loadoutRegistry.SuggestName(installation);
         var marker = await _loadoutRegistry.Manage(installation, name);
+
+        var loadoutId = marker.Id;
     }
 
     [Reactive]

@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
 using Avalonia.Media.Imaging;
 using DynamicData;
+using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -119,14 +120,15 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         workspaceController.ChangeActiveWorkspace(existingWorkspace.Id);
     }
 
-    private readonly Dictionary<LoadoutId, WorkspaceId> _loadoutWorkspaces = new();
-
     private void ChangeToLoadoutWorkspace(LoadoutId loadoutId)
     {
         if (!_windowManager.TryGetActiveWindow(out var window)) return;
         var workspaceController = window.WorkspaceController;
 
-        if (!_loadoutWorkspaces.TryGetValue(loadoutId, out var existingWorkspaceId))
+        var loadoutWorkspaces = workspaceController.FindWorkspacesByContext<LoadoutContext>();
+        var existingWorkspace = loadoutWorkspaces.FirstOrOptional(tuple => tuple.Item2.LoadoutId == loadoutId);
+
+        if (!existingWorkspace.HasValue)
         {
             var pageData = new PageData
             {
@@ -142,11 +144,12 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                 pageData
             );
 
-            existingWorkspaceId = newWorkspace.Id;
-            _loadoutWorkspaces.Add(loadoutId, existingWorkspaceId);
+            workspaceController.ChangeActiveWorkspace(newWorkspace.Id);
         }
-
-        workspaceController.ChangeActiveWorkspace(existingWorkspaceId);
+        else
+        {
+            workspaceController.ChangeActiveWorkspace(existingWorkspace.Value.Item1.Id);
+        }
     }
 
     private void NavigateToDownloads()

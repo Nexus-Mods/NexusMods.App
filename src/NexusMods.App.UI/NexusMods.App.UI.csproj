@@ -84,10 +84,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Compile Update="RightContent\FoundGamesView.axaml.cs">
-            <DependentUpon>FoundGamesView.axaml</DependentUpon>
-            <SubType>Code</SubType>
-        </Compile>
         <Compile Update="Controls\Spine\Buttons\Image\ImageButton.axaml.cs">
             <DependentUpon>Game.axaml</DependentUpon>
             <SubType>Code</SubType>
@@ -99,12 +95,6 @@
         <Compile Update="Windows\MainWindow.axaml.cs">
             <DependentUpon>MainWindow.axaml</DependentUpon>
             <SubType>Code</SubType>
-        </Compile>
-        <Compile Update="RightContent\FoundGamesViewModel.cs">
-            <DependentUpon>IFoundGamesViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="RightContent\FoundGamesDesignViewModel.cs">
-            <DependentUpon>IFoundGamesViewModel.cs</DependentUpon>
         </Compile>
         <Compile Update="RightContent\LoadoutGrid\LoadoutGridDesignViewModel.cs">
             <DependentUpon>ILoadoutGridViewModel.cs</DependentUpon>
@@ -359,6 +349,16 @@
         </Compile>
         <Compile Update="Controls\Spine\Buttons\Image\ImageButtonViewModel.cs">
           <DependentUpon>IImageButtonViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\FoundGames\FoundGamesView.axaml.cs">
+          <DependentUpon>FoundGamesView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Controls\FoundGames\FoundGamesViewModel.cs">
+          <DependentUpon>IFoundGamesViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\FoundGames\FoundGamesDesignViewModel.cs">
+          <DependentUpon>IFoundGamesViewModel.cs</DependentUpon>
         </Compile>
     </ItemGroup>
 
