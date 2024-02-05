@@ -2,7 +2,7 @@ using System.Collections.ObjectModel;
 using NexusMods.Abstractions.Games;
 using NexusMods.App.UI.Controls.GameWidget;
 
-namespace NexusMods.App.UI.RightContent;
+namespace NexusMods.App.UI.Controls.FoundGames;
 
 public class FoundGamesDesignViewModel : AViewModel<IFoundGamesViewModel>, IFoundGamesViewModel
 {

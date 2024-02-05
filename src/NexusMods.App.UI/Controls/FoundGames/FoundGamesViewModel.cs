@@ -6,21 +6,26 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Controls.GameWidget;
 using NexusMods.App.UI.Extensions;
+using NexusMods.App.UI.Pages.LoadoutGrid;
+using NexusMods.App.UI.Windows;
+using NexusMods.App.UI.WorkspaceSystem;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
-namespace NexusMods.App.UI.RightContent;
+namespace NexusMods.App.UI.Controls.FoundGames;
 
 [UsedImplicitly]
 public class FoundGamesViewModel : AViewModel<IFoundGamesViewModel>, IFoundGamesViewModel
 {
     private readonly ILoadoutRegistry _loadoutRegistry;
     private readonly IServiceProvider _provider;
+    private readonly IWindowManager _windowManager;
 
-    public FoundGamesViewModel(IServiceProvider provider, ILoadoutRegistry loadoutManager)
+    public FoundGamesViewModel(IServiceProvider provider, IWindowManager windowManager, ILoadoutRegistry loadoutManager)
     {
         _loadoutRegistry = loadoutManager;
         _provider = provider;
+        _windowManager = windowManager;
 
         Games = Array.Empty<IGameWidgetViewModel>().ToReadOnlyObservableCollection();
     }
@@ -31,6 +36,22 @@ public class FoundGamesViewModel : AViewModel<IFoundGamesViewModel>, IFoundGames
         var marker = await _loadoutRegistry.Manage(installation, name);
 
         var loadoutId = marker.Id;
+
+        if (!_windowManager.TryGetActiveWindow(out var window)) return;
+        var workspaceController = window.WorkspaceController;
+
+        workspaceController.ChangeOrCreateWorkspaceByContext(
+            context => context.LoadoutId == loadoutId,
+            () => new PageData
+            {
+                FactoryId = LoadoutGridPageFactory.StaticId,
+                Context = new LoadoutGridContext
+                {
+                    LoadoutId = loadoutId
+                }
+            },
+            () => new LoadoutContext(loadoutId)
+        );
     }
 
     [Reactive]

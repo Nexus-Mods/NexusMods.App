@@ -1,4 +1,4 @@
-using NexusMods.App.UI.RightContent;
+using NexusMods.App.UI.Controls.FoundGames;
 using NexusMods.App.UI.WorkspaceSystem;
 
 namespace NexusMods.App.UI.Pages.MyGames;

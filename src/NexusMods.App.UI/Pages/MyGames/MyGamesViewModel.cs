@@ -1,6 +1,6 @@
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Games;
-using NexusMods.App.UI.RightContent;
+using NexusMods.App.UI.Controls.FoundGames;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using ReactiveUI.Fody.Helpers;
