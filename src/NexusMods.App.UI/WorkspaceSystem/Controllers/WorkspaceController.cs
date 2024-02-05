@@ -24,7 +24,7 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
     private readonly ReadOnlyObservableCollection<IWorkspaceViewModel> _allWorkspaces;
     public ReadOnlyObservableCollection<IWorkspaceViewModel> AllWorkspaces => _allWorkspaces;
 
-    [Reactive] public IWorkspaceViewModel ActiveWorkspace { get; private set; } = null!;
+    [Reactive] public IWorkspaceViewModel? ActiveWorkspace { get; private set; }
 
     public WorkspaceController(IWorkspaceWindow window, IServiceProvider serviceProvider)
     {
@@ -72,7 +72,7 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
     {
         _workspaces.Remove(workspaceViewModel.Id);
 
-        if (ReferenceEquals(ActiveWorkspace, workspaceViewModel))
+        if (ReferenceEquals(ActiveWorkspace, workspaceViewModel) && AllWorkspaces.Count > 0)
         {
             ChangeActiveWorkspace(AllWorkspaces.First().Id);
         }

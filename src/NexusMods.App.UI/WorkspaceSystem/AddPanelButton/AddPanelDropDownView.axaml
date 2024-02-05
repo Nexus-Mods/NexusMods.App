@@ -11,7 +11,5 @@
         <workspaceSystem:AddPanelDropDownDesignViewModel />
     </Design.DataContext>
 
-    <ComboBox x:Name="CreatePanelComboBox"
-              Classes="AddPanelDropDown">
-    </ComboBox>
+    <ComboBox x:Name="CreatePanelComboBox" Classes="AddPanelDropDown"/>
 </reactiveUi:ReactiveUserControl>

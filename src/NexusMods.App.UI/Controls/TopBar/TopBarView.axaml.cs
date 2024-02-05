@@ -24,6 +24,9 @@ public partial class TopBarView : ReactiveUserControl<ITopBarViewModel>
             this.OneWayBind(ViewModel, vm => vm.IsLoggedIn, view => view.UserPanel.IsVisible)
                 .DisposeWith(d);
 
+            this.OneWayBind(ViewModel, vm => vm.AddPanelDropDownViewModel, view => view.AddPanelViewModelViewHost.ViewModel)
+                .DisposeWith(d);
+
             this.WhenAnyValue(
                     x => x.ViewModel!.IsLoggedIn,
                     x => x.ViewModel!.IsPremium,

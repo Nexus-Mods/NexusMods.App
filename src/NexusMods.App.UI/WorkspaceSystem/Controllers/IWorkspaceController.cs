@@ -20,7 +20,7 @@ public interface IWorkspaceController
     /// <summary>
     /// Gets the currently active Workspace.
     /// </summary>
-    public IWorkspaceViewModel ActiveWorkspace { get; }
+    public IWorkspaceViewModel? ActiveWorkspace { get; }
 
     /// <summary>
     /// Gets a read-only observable collection of all workspaces.

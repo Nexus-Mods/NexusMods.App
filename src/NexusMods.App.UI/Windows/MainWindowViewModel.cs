@@ -51,7 +51,9 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
             serviceProvider: serviceProvider
         );
 
+        topBarViewModel.AddPanelDropDownViewModel = new AddPanelDropDownViewModel(WorkspaceController);
         TopBar = topBarViewModel;
+
         Spine = spineViewModel;
         DevelopmentBuildBanner = developmentBuildBannerViewModel;
         _archiveInstaller = archiveInstaller;

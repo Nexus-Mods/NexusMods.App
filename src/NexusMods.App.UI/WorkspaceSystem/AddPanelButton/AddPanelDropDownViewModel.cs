@@ -1,68 +1,49 @@
-﻿using System.Collections.ObjectModel;
-using System.Reactive.Disposables;
-using System.Reactive.Linq;
-using Avalonia;
+﻿using System.Reactive.Disposables;
 using DynamicData;
-using NexusMods.App.UI.Windows;
+using DynamicData.Binding;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
 public class AddPanelDropDownViewModel : AViewModel<IAddPanelDropDownViewModel>, IAddPanelDropDownViewModel
 {
-    public ReadOnlyObservableCollection<IAddPanelButtonViewModel> AddPanelIconViewModels => _addPanelButtonViewModels;
+    private ObservableCollectionExtended<IAddPanelButtonViewModel> _addPanelButtonViewModel = new();
+    public IReadOnlyList<IAddPanelButtonViewModel> AddPanelButtonViewModel => _addPanelButtonViewModel;
 
-    private readonly ReadOnlyObservableCollection<IAddPanelButtonViewModel> _addPanelButtonViewModels;
+    [Reactive] public IAddPanelButtonViewModel? SelectedItem { get; set; }
 
-    private readonly SourceList<IAddPanelButtonViewModel> _addPanelIconViewModels = new();
-    public int SelectedIndex { get; set; }
+    [Reactive] public int SelectedIndex { get; set; } = -1;
 
     public AddPanelDropDownViewModel(IWorkspaceController workspaceController)
     {
-        _addPanelIconViewModels
-            .Connect()
-            .Bind(out _addPanelButtonViewModels)
-            .Subscribe();
-
         this.WhenActivated(disposables =>
         {
+            var serialDisposable = new SerialDisposable();
+            serialDisposable.DisposeWith(disposables);
+
             workspaceController
                 .WhenAnyValue(controller => controller.ActiveWorkspace)
-                .SubscribeWithErrorLogging(workspace =>
+                .SubscribeWithErrorLogging(activeWorkspace =>
                 {
-                    // TODO: move this into the Workspace
-                    var currentState = WorkspaceGridState.From(workspace.Panels, workspace.IsHorizontal);
-                    UpdateDropDownContents(currentState, 2, 2);
-                }).DisposeWith(disposables);
+                    _addPanelButtonViewModel.Clear();
 
-            _addPanelIconViewModels.Connect()
-                .MergeMany(buttonVm => buttonVm.AddPanelCommand)
-                .Subscribe(nextGridState =>
-                {
-                    workspaceController.AddPanel(
-                        workspaceController.ActiveWorkspace.Id,
-                        nextGridState,
-                        new AddPanelBehavior(new AddPanelBehavior.WithDefaultTab())
-                    );
+                    if (activeWorkspace is null)
+                    {
+                        serialDisposable.Disposable = null;
+                        SelectedIndex = -1;
+                        return;
+                    }
+
+                    serialDisposable.Disposable = activeWorkspace.AddPanelButtonViewModels
+                        .ToObservableChangeSet()
+                        .Adapt(new ObservableCollectionAdaptor<IAddPanelButtonViewModel>(_addPanelButtonViewModel))
+                        .SubscribeWithErrorLogging(_ =>
+                        {
+                            SelectedIndex = _addPanelButtonViewModel.Count == 0 ? -1 : 0;
+                        });
                 })
                 .DisposeWith(disposables);
         });
-    }
-
-    private void UpdateDropDownContents(WorkspaceGridState currentState, int maxColumns, int maxRows)
-    {
-        _addPanelIconViewModels.Edit(updater =>
-        {
-            updater.Clear();
-
-            var newStates = GridUtils.GetPossibleStates(currentState, maxColumns, maxRows);
-
-            foreach (var state in newStates)
-            {
-                var image = IconUtils.StateToBitmap(state);
-                updater.Add(new AddPanelButtonViewModel(state, image));
-            }
-        });
-        SelectedIndex = 0;
     }
 }

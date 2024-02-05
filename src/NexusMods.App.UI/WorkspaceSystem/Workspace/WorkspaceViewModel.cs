@@ -265,11 +265,11 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
             var currentState = WorkspaceGridState.From(_panels, IsHorizontal);
             var newStates = GridUtils.GetPossibleStates(currentState, MaxColumns, MaxRows);
 
-            foreach (var state in newStates)
+            updater.AddRange(newStates.Select(state =>
             {
                 var image = IconUtils.StateToBitmap(state);
-                updater.Add(new AddPanelButtonViewModel(state, image));
-            }
+                return new AddPanelButtonViewModel(state, image);
+            }));
         });
     }
 
