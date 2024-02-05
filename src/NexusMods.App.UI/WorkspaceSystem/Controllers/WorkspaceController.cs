@@ -155,7 +155,7 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
     }
 
     /// <inheritdoc/>
-    public IWorkspaceViewModel ChangeOrCreateWorkspaceByUniqueContext<TContext>(Func<Optional<PageData>> getPageData) where TContext : IWorkspaceContext, new()
+    public IWorkspaceViewModel ChangeOrCreateWorkspaceByContext<TContext>(Func<Optional<PageData>> getPageData) where TContext : IWorkspaceContext, new()
     {
         if (!TryGetWorkspaceByContext<TContext>(out var existingWorkspace))
         {
@@ -171,6 +171,28 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
 
         ChangeActiveWorkspace(existingWorkspace.Id);
         return existingWorkspace;
+    }
+
+    /// <inheritdoc/>
+    public IWorkspaceViewModel ChangeOrCreateWorkspaceByContext<TContext>(Func<TContext, bool> predicate, Func<Optional<PageData>> getPageData,
+        Func<TContext> getWorkspaceContext) where TContext : IWorkspaceContext
+    {
+        var workspaces = FindWorkspacesByContext<TContext>();
+        var existingWorkspace = workspaces.FirstOrOptional(tuple => predicate(tuple.Item2));
+
+        if (!existingWorkspace.HasValue)
+        {
+            var newWorkspace = CreateWorkspace(
+                getWorkspaceContext(),
+                getPageData()
+            );
+
+            ChangeActiveWorkspace(newWorkspace.Id);
+            return newWorkspace;
+        }
+
+        ChangeActiveWorkspace(existingWorkspace.Value.Item1.Id);
+        return existingWorkspace.Value.Item1;
     }
 
     public void AddPanel(WorkspaceId workspaceId, WorkspaceGridState newWorkspaceState, AddPanelBehavior behavior)

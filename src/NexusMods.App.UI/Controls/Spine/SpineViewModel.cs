@@ -2,7 +2,6 @@ using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
 using Avalonia.Media.Imaging;
 using DynamicData;
-using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -101,7 +100,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         if (!_windowManager.TryGetActiveWindow(out var window)) return;
         var workspaceController = window.WorkspaceController;
 
-        workspaceController.ChangeOrCreateWorkspaceByUniqueContext<HomeContext>(() => new PageData
+        workspaceController.ChangeOrCreateWorkspaceByContext<HomeContext>(() => new PageData
         {
             FactoryId = MyGamesPageFactory.StaticId,
             Context = new MyGamesPageContext()
@@ -113,31 +112,18 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         if (!_windowManager.TryGetActiveWindow(out var window)) return;
         var workspaceController = window.WorkspaceController;
 
-        var loadoutWorkspaces = workspaceController.FindWorkspacesByContext<LoadoutContext>();
-        var existingWorkspace = loadoutWorkspaces.FirstOrOptional(tuple => tuple.Item2.LoadoutId == loadoutId);
-
-        if (!existingWorkspace.HasValue)
-        {
-            var pageData = new PageData
+        workspaceController.ChangeOrCreateWorkspaceByContext(
+            context => context.LoadoutId == loadoutId,
+            () => new PageData
             {
                 FactoryId = LoadoutGridPageFactory.StaticId,
                 Context = new LoadoutGridContext
                 {
                     LoadoutId = loadoutId
                 }
-            };
-
-            var newWorkspace = workspaceController.CreateWorkspace(
-                new LoadoutContext(loadoutId),
-                pageData
-            );
-
-            workspaceController.ChangeActiveWorkspace(newWorkspace.Id);
-        }
-        else
-        {
-            workspaceController.ChangeActiveWorkspace(existingWorkspace.Value.Item1.Id);
-        }
+            },
+            () => new LoadoutContext(loadoutId)
+        );
     }
 
     private void NavigateToDownloads()
@@ -145,7 +131,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         if (!_windowManager.TryGetActiveWindow(out var window)) return;
         var workspaceController = window.WorkspaceController;
 
-        workspaceController.ChangeOrCreateWorkspaceByUniqueContext<DownloadsContext>(() => new PageData
+        workspaceController.ChangeOrCreateWorkspaceByContext<DownloadsContext>(() => new PageData
         {
             FactoryId = InProgressPageFactory.StaticId,
             Context = new InProgressPageContext()
