@@ -342,12 +342,6 @@
         <Compile Update="LeftMenu\Home\HomeLeftMenuDesignViewModel.cs">
           <DependentUpon>IHomeLeftMenuViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="RightContent\MyGames\MyGamesDesignViewModel.cs">
-          <DependentUpon>IMyGamesViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="RightContent\MyGames\MyGamesViewModel.cs">
-          <DependentUpon>IMyGamesViewModel.cs</DependentUpon>
-        </Compile>
         <Compile Update="LeftMenu\Game\GameLeftMenuViewModel.cs">
           <DependentUpon>IGameLeftMenuViewModel.cs</DependentUpon>
         </Compile>
@@ -397,6 +391,7 @@
       <AdditionalFiles Include="Pages\LoadoutGrid\Columns\ModName\ModNameView.axaml" />
       <AdditionalFiles Include="Pages\LoadoutGrid\Columns\ModVersion\ModVersionView.axaml" />
       <AdditionalFiles Include="Pages\LoadoutGrid\LoadoutGridView.axaml" />
+      <AdditionalFiles Include="Pages\MyGames\MyGamesView.axaml" />
     </ItemGroup>
 
     <ItemGroup>

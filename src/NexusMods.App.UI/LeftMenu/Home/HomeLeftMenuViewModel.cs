@@ -2,8 +2,8 @@ using System.Collections.ObjectModel;
 using JetBrains.Annotations;
 using NexusMods.App.UI.Icons;
 using NexusMods.App.UI.LeftMenu.Items;
+using NexusMods.App.UI.Pages.MyGames;
 using NexusMods.App.UI.Resources;
-using NexusMods.App.UI.RightContent.MyGames;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.LeftMenu.Home;

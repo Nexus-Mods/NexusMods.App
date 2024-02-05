@@ -15,6 +15,7 @@ using NexusMods.App.UI.LeftMenu.Game;
 using NexusMods.App.UI.LeftMenu.Home;
 using NexusMods.App.UI.Pages.Downloads;
 using NexusMods.App.UI.Pages.LoadoutGrid;
+using NexusMods.App.UI.Pages.MyGames;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using ReactiveUI;
@@ -96,8 +97,26 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
 
     private void NavigateToHome()
     {
-        _logger.LogTrace("Home selected");
-        // TODO:
+        if (!_windowManager.TryGetActiveWindow(out var window)) return;
+        var workspaceController = window.WorkspaceController;
+
+        if (!workspaceController.TryGetWorkspaceByContext<HomeContext>(out var existingWorkspace))
+        {
+            var pageData = new PageData
+            {
+                FactoryId = MyGamesPageFactory.StaticId,
+                Context = new MyGamesPageContext()
+            };
+
+            var newWorkspace = workspaceController.CreateWorkspace(
+                new HomeContext(),
+                pageData
+            );
+
+            existingWorkspace = newWorkspace;
+        }
+
+        workspaceController.ChangeActiveWorkspace(existingWorkspace.Id);
     }
 
     private readonly Dictionary<LoadoutId, WorkspaceId> _loadoutWorkspaces = new();

@@ -2,7 +2,7 @@ using System.Reactive.Disposables;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 
-namespace NexusMods.App.UI.RightContent.MyGames;
+namespace NexusMods.App.UI.Pages.MyGames;
 
 public partial class MyGamesView : ReactiveUserControl<IMyGamesViewModel>
 {
