@@ -1,6 +1,5 @@
 ﻿using System.Reactive.Disposables;
 using Avalonia.ReactiveUI;
-using NexusMods.App.UI.Extensions;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.LeftMenu.Downloads;

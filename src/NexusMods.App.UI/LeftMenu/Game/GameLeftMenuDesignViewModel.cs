@@ -4,7 +4,6 @@ using NexusMods.Abstractions.Games;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Icons;
 using NexusMods.App.UI.LeftMenu.Items;
-using NexusMods.App.UI.RightContent;
 using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.LeftMenu.Game;

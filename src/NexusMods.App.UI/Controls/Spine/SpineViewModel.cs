@@ -2,14 +2,11 @@ using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
 using Avalonia.Media.Imaging;
 using DynamicData;
-using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Serialization;
-using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.App.UI.Controls.Spine.Buttons.Download;
 using NexusMods.App.UI.Controls.Spine.Buttons.Icon;
 using NexusMods.App.UI.Controls.Spine.Buttons.Image;
@@ -59,7 +56,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
             loadoutRegistry.Loadouts
                 .TransformAsync(async loadout =>
                 {
-                    await using var iconStream = await loadout.Installation.Game.Icon.GetStreamAsync();
+                    await using var iconStream = await ((IGame)loadout.Installation.Game).Icon.GetStreamAsync();
 
                     var vm = serviceProvider.GetRequiredService<IImageButtonViewModel>();
                     vm.Name = loadout.Name;

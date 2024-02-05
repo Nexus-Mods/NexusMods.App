@@ -1,7 +1,5 @@
-using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using DynamicData.Kernel;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Games.Downloads;
 using NexusMods.Abstractions.Installers;
