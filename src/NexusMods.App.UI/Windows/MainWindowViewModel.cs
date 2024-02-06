@@ -39,6 +39,9 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
         IUpdaterViewModel updaterViewModel,
         ILoadoutRegistry registry)
     {
+        // NOTE(erri120): can't use DI for VMs that require an active Window because
+        // those VMs would be instantiated before this constructor gets called.
+        // Use GetRequiredService<TVM> instead.
         _windowManager = windowManager;
         _windowManager.RegisterWindow(this);
 
