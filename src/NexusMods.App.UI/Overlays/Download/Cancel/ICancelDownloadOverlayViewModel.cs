@@ -1,5 +1,5 @@
 using NexusMods.App.UI.Overlays.Generic.MessageBox.OkCancel;
-using NexusMods.App.UI.RightContent.Downloads.ViewModels;
+using NexusMods.App.UI.Pages.Downloads.ViewModels;
 
 namespace NexusMods.App.UI.Overlays.Download.Cancel;
 

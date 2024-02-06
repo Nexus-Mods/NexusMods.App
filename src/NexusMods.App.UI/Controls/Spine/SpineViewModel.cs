@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using Avalonia.Media.Imaging;
 using DynamicData;
 using JetBrains.Annotations;
@@ -10,21 +11,27 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Controls.Spine.Buttons.Download;
 using NexusMods.App.UI.Controls.Spine.Buttons.Icon;
 using NexusMods.App.UI.Controls.Spine.Buttons.Image;
-using NexusMods.App.UI.LeftMenu.Downloads;
-using NexusMods.App.UI.LeftMenu.Game;
-using NexusMods.App.UI.LeftMenu.Home;
-using NexusMods.App.UI.RightContent.LoadoutGrid;
+using NexusMods.App.UI.LeftMenu;
+using NexusMods.App.UI.LeftMenu.Loadout;
+using NexusMods.App.UI.Pages.Downloads;
+using NexusMods.App.UI.Pages.LoadoutGrid;
+using NexusMods.App.UI.Pages.MyGames;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Controls.Spine;
 
 [UsedImplicitly]
 public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
 {
+    private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<SpineViewModel> _logger;
     private readonly IWindowManager _windowManager;
+
+    [Reactive]
+    public ILeftMenuViewModel? LeftMenuViewModel { get; private set; }
 
     public IIconButtonViewModel Home { get; }
 
@@ -40,16 +47,17 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         IWindowManager windowManager,
         IIconButtonViewModel addButtonViewModel,
         IIconButtonViewModel homeButtonViewModel,
-        ISpineDownloadButtonViewModel spineDownloadsButtonViewModel,
-        IDownloadsViewModel downloadsViewModel,
-        IHomeLeftMenuViewModel homeLeftMenuViewModel,
-        IGameLeftMenuViewModel gameLeftMenuViewModel)
+        ISpineDownloadButtonViewModel spineDownloadsButtonViewModel)
     {
+        _serviceProvider = serviceProvider;
         _logger = logger;
         _windowManager = windowManager;
 
         Home = homeButtonViewModel;
         Downloads = spineDownloadsButtonViewModel;
+
+        if (!_windowManager.TryGetActiveWindow(out var currentWindow)) return;
+        var workspaceController = currentWindow.WorkspaceController;
 
         this.WhenActivated(disposables =>
         {
@@ -71,11 +79,26 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                 .DisposeWith(disposables);
 
             Home.Click = ReactiveCommand.Create(NavigateToHome);
-
             Downloads.Click = ReactiveCommand.Create(NavigateToDownloads);
 
-            // For now just select home on startup
-            NavigateToHome();
+            workspaceController
+                .WhenAnyValue(controller => controller.ActiveWorkspace)
+                .Select(workspace => workspace?.Context)
+                .Select(context =>
+                {
+                    if (context is LoadoutContext loadoutContext)
+                    {
+                        return new LoadoutLeftMenuViewModel(
+                            loadoutContext,
+                            workspaceController,
+                            serviceProvider
+                        );
+                    }
+
+                    return null;
+                })
+                .BindToVM(this, vm => vm.LeftMenuViewModel)
+                .DisposeWith(disposables);
         });
     }
 
@@ -95,43 +118,44 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
 
     private void NavigateToHome()
     {
-        _logger.LogTrace("Home selected");
-        // TODO:
-    }
+        if (!_windowManager.TryGetActiveWindow(out var window)) return;
+        var workspaceController = window.WorkspaceController;
 
-    private readonly Dictionary<LoadoutId, WorkspaceId> _loadoutWorkspaces = new();
+        workspaceController.ChangeOrCreateWorkspaceByContext<HomeContext>(() => new PageData
+        {
+            FactoryId = MyGamesPageFactory.StaticId,
+            Context = new MyGamesPageContext()
+        });
+    }
 
     private void ChangeToLoadoutWorkspace(LoadoutId loadoutId)
     {
         if (!_windowManager.TryGetActiveWindow(out var window)) return;
         var workspaceController = window.WorkspaceController;
 
-        if (!_loadoutWorkspaces.TryGetValue(loadoutId, out var existingWorkspaceId))
-        {
-            var pageData = new PageData
+        workspaceController.ChangeOrCreateWorkspaceByContext(
+            context => context.LoadoutId == loadoutId,
+            () => new PageData
             {
                 FactoryId = LoadoutGridPageFactory.StaticId,
                 Context = new LoadoutGridContext
                 {
                     LoadoutId = loadoutId
                 }
-            };
-
-            var newWorkspace = workspaceController.CreateWorkspace(
-                new LoadoutContext(loadoutId),
-                pageData
-            );
-
-            existingWorkspaceId = newWorkspace.Id;
-            _loadoutWorkspaces.Add(loadoutId, existingWorkspaceId);
-        }
-
-        workspaceController.ChangeActiveWorkspace(existingWorkspaceId);
+            },
+            () => new LoadoutContext(loadoutId)
+        );
     }
 
     private void NavigateToDownloads()
     {
-        _logger.LogTrace("Downloads selected");
-        // TODO:
+        if (!_windowManager.TryGetActiveWindow(out var window)) return;
+        var workspaceController = window.WorkspaceController;
+
+        workspaceController.ChangeOrCreateWorkspaceByContext<DownloadsContext>(() => new PageData
+        {
+            FactoryId = InProgressPageFactory.StaticId,
+            Context = new InProgressPageContext()
+        });
     }
 }

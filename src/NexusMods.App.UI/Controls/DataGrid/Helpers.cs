@@ -1,8 +1,9 @@
 ﻿using System.Collections.ObjectModel;
 using Avalonia.Controls;
+using NexusMods.App.UI.Controls.DownloadGrid;
+using NexusMods.App.UI.Pages.LoadoutGrid;
+using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModEnabled;
 using NexusMods.App.UI.Resources;
-using NexusMods.App.UI.RightContent.DownloadGrid;
-using NexusMods.App.UI.RightContent.LoadoutGrid;
 
 namespace NexusMods.App.UI.Controls.DataGrid;
 
@@ -40,7 +41,7 @@ public static class Helpers
                 LoadoutColumn.Version => new TextBlock { Text = Language.Helpers_GenerateHeader_VERSION },
                 LoadoutColumn.Category => new TextBlock { Text = Language.Helpers_GenerateHeader_CATEGORY },
                 LoadoutColumn.Installed => new TextBlock { Text = Language.Helpers_GenerateHeader_INSTALLED },
-                LoadoutColumn.Enabled => new RightContent.LoadoutGrid.Columns.ModEnabled.ModEnabledHeader()
+                LoadoutColumn.Enabled => new ModEnabledHeader()
             },
             DownloadColumn downloadColumn => downloadColumn switch
             {

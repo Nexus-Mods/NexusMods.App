@@ -84,10 +84,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Compile Update="RightContent\FoundGamesView.axaml.cs">
-            <DependentUpon>FoundGamesView.axaml</DependentUpon>
-            <SubType>Code</SubType>
-        </Compile>
         <Compile Update="Controls\Spine\Buttons\Image\ImageButton.axaml.cs">
             <DependentUpon>Game.axaml</DependentUpon>
             <SubType>Code</SubType>
@@ -99,12 +95,6 @@
         <Compile Update="Windows\MainWindow.axaml.cs">
             <DependentUpon>MainWindow.axaml</DependentUpon>
             <SubType>Code</SubType>
-        </Compile>
-        <Compile Update="RightContent\FoundGamesViewModel.cs">
-            <DependentUpon>IFoundGamesViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="RightContent\FoundGamesDesignViewModel.cs">
-            <DependentUpon>IFoundGamesViewModel.cs</DependentUpon>
         </Compile>
         <Compile Update="RightContent\LoadoutGrid\LoadoutGridDesignViewModel.cs">
             <DependentUpon>ILoadoutGridViewModel.cs</DependentUpon>
@@ -342,18 +332,6 @@
         <Compile Update="LeftMenu\Home\HomeLeftMenuDesignViewModel.cs">
           <DependentUpon>IHomeLeftMenuViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="RightContent\MyGames\MyGamesDesignViewModel.cs">
-          <DependentUpon>IMyGamesViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="RightContent\MyGames\MyGamesViewModel.cs">
-          <DependentUpon>IMyGamesViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="LeftMenu\Game\GameLeftMenuViewModel.cs">
-          <DependentUpon>IGameLeftMenuViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="LeftMenu\Game\GameLeftMenuDesignViewModel.cs">
-          <DependentUpon>IGameLeftMenuViewModel.cs</DependentUpon>
-        </Compile>
         <Compile Update="Controls\Spine\SpineDesignViewModel.cs">
           <DependentUpon>ISpineViewModel.cs</DependentUpon>
         </Compile>
@@ -365,6 +343,19 @@
         </Compile>
         <Compile Update="Controls\Spine\Buttons\Image\ImageButtonViewModel.cs">
           <DependentUpon>IImageButtonViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\FoundGames\FoundGamesView.axaml.cs">
+          <DependentUpon>FoundGamesView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Controls\FoundGames\FoundGamesViewModel.cs">
+          <DependentUpon>IFoundGamesViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\FoundGames\FoundGamesDesignViewModel.cs">
+          <DependentUpon>IFoundGamesViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="LeftMenu\Loadout\LoadoutLeftMenuViewModel.cs">
+          <DependentUpon>ILoadoutLeftMenuViewModel.cs</DependentUpon>
         </Compile>
     </ItemGroup>
 
@@ -384,16 +375,20 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="RightContent\DownloadGrid\Columns\" />
+      <Folder Include="Pages\" />
     </ItemGroup>
 
     <ItemGroup>
       <AdditionalFiles Include="Controls\DevelopmentBuildBanner\DevelopmentBuildBannerView.axaml" />
-      <AdditionalFiles Include="RightContent\DownloadGrid\Columns\DownloadGameName\DownloadGameNameView.axaml" />
-      <AdditionalFiles Include="RightContent\DownloadGrid\Columns\DownloadName\DownloadNameView.axaml" />
-      <AdditionalFiles Include="RightContent\DownloadGrid\Columns\DownloadSize\DownloadSizeView.axaml" />
-      <AdditionalFiles Include="RightContent\DownloadGrid\Columns\DownloadStatus\DownloadStatusView.axaml" />
-      <AdditionalFiles Include="RightContent\DownloadGrid\Columns\DownloadVersion\DownloadVersionView.axaml" />
+      <AdditionalFiles Include="Pages\Downloads\InProgressView.axaml" />
+      <AdditionalFiles Include="Pages\LoadoutGrid\Columns\ModCategory\ModCategoryView.axaml" />
+      <AdditionalFiles Include="Pages\LoadoutGrid\Columns\ModEnabled\ModEnabledHeader.axaml" />
+      <AdditionalFiles Include="Pages\LoadoutGrid\Columns\ModEnabled\ModEnabledView.axaml" />
+      <AdditionalFiles Include="Pages\LoadoutGrid\Columns\ModInstalled\ModInstalledView.axaml" />
+      <AdditionalFiles Include="Pages\LoadoutGrid\Columns\ModName\ModNameView.axaml" />
+      <AdditionalFiles Include="Pages\LoadoutGrid\Columns\ModVersion\ModVersionView.axaml" />
+      <AdditionalFiles Include="Pages\LoadoutGrid\LoadoutGridView.axaml" />
+      <AdditionalFiles Include="Pages\MyGames\MyGamesView.axaml" />
     </ItemGroup>
 
     <ItemGroup>

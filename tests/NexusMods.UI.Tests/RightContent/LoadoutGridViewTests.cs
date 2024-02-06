@@ -4,7 +4,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using FluentAssertions;
 using NexusMods.Abstractions.Loadouts.Mods;
-using NexusMods.App.UI.RightContent.LoadoutGrid;
+using NexusMods.App.UI.Pages.LoadoutGrid;
 
 namespace NexusMods.UI.Tests.RightContent;
 

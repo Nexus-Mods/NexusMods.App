@@ -1,6 +1,6 @@
 ﻿using System.Reactive.Subjects;
 using NexusMods.App.UI.Overlays.Download.Cancel;
-using NexusMods.App.UI.RightContent.Downloads.ViewModels;
+using NexusMods.App.UI.Pages.Downloads.ViewModels;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Overlays;

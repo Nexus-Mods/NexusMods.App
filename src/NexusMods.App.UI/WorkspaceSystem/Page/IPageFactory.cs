@@ -54,7 +54,7 @@ public interface IPageFactory<out TViewModel, in TContext> : IPageFactory
     /// <summary>
     /// Creates a new view model using the provided context.
     /// </summary>
-    public TViewModel CreateViewModel(TContext parameter);
+    public TViewModel CreateViewModel(TContext context);
 }
 
 /// <summary>
@@ -78,7 +78,7 @@ public abstract class APageFactory<TViewModel, TContext> : IPageFactory<TViewMod
     }
 
     /// <inheritdoc/>
-    public abstract TViewModel CreateViewModel(TContext parameter);
+    public abstract TViewModel CreateViewModel(TContext context);
 
     /// <inheritdoc/>
     public virtual IEnumerable<PageDiscoveryDetails?> GetDiscoveryDetails(IWorkspaceContext workspaceContext) => Array.Empty<PageDiscoveryDetails?>();

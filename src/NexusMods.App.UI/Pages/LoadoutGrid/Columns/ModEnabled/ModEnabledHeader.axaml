@@ -1,0 +1,26 @@
+﻿<UserControl
+    d:DesignHeight="24"
+    d:DesignWidth="24"
+    mc:Ignorable="d"
+    x:Class="NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModEnabled.ModEnabledHeader"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:avalonia="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid>
+        <avalonia:Icon
+            FontSize="18"
+            Height="24"
+            Margin="0,-10,0,0"
+            Classes="ToggleSwitch"
+            Width="24" />
+        <avalonia:Icon
+            FontSize="18"
+            Height="24"
+            Margin="0,10,0,0"
+            Classes="ToggleSwitchOff"
+            Width="24" />
+    </Grid>
+</UserControl>
+
