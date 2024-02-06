@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using Avalonia.Media;
+using Avalonia.Threading;
 using DynamicData;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
@@ -43,6 +44,8 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
 
     public IWorkspaceViewModel CreateWorkspace(Optional<IWorkspaceContext> context, Optional<PageData> pageData)
     {
+        Dispatcher.UIThread.VerifyAccess();
+
         var vm = new WorkspaceViewModel(
             workspaceController: this,
             factoryController: _serviceProvider.GetRequiredService<PageFactoryController>(),
@@ -71,6 +74,8 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
 
     private void UnregisterWorkspace(WorkspaceViewModel workspaceViewModel)
     {
+        Dispatcher.UIThread.VerifyAccess();
+
         _workspaces.Remove(workspaceViewModel.Id);
 
         if (ReferenceEquals(ActiveWorkspace, workspaceViewModel) && AllWorkspaces.Count > 0)
@@ -140,6 +145,8 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
 
     public void ChangeActiveWorkspace(WorkspaceId workspaceId)
     {
+        Dispatcher.UIThread.VerifyAccess();
+
         foreach (var workspace in AllWorkspaces)
         {
             if (workspace.Id == workspaceId)
@@ -157,6 +164,8 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
     /// <inheritdoc/>
     public IWorkspaceViewModel ChangeOrCreateWorkspaceByContext<TContext>(Func<Optional<PageData>> getPageData) where TContext : IWorkspaceContext, new()
     {
+        Dispatcher.UIThread.VerifyAccess();
+
         if (!TryGetWorkspaceByContext<TContext>(out var existingWorkspace))
         {
             var pageData = getPageData();
@@ -177,6 +186,8 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
     public IWorkspaceViewModel ChangeOrCreateWorkspaceByContext<TContext>(Func<TContext, bool> predicate, Func<Optional<PageData>> getPageData,
         Func<TContext> getWorkspaceContext) where TContext : IWorkspaceContext
     {
+        Dispatcher.UIThread.VerifyAccess();
+
         var workspaces = FindWorkspacesByContext<TContext>();
         var existingWorkspace = workspaces.FirstOrOptional(tuple => predicate(tuple.Item2));
 
@@ -197,30 +208,40 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
 
     public void AddPanel(WorkspaceId workspaceId, WorkspaceGridState newWorkspaceState, AddPanelBehavior behavior)
     {
+        Dispatcher.UIThread.VerifyAccess();
+
         if (!TryGetWorkspace(workspaceId, out WorkspaceViewModel? workspaceViewModel)) return;
         workspaceViewModel.AddPanel(newWorkspaceState, behavior);
     }
 
     public void OpenPage(WorkspaceId workspaceId, Optional<PageData> pageData, OpenPageBehavior behavior)
     {
+        Dispatcher.UIThread.VerifyAccess();
+
         if (!TryGetWorkspace(workspaceId, out WorkspaceViewModel? workspaceViewModel)) return;
         workspaceViewModel.OpenPage(pageData, behavior);
     }
 
     public void SwapPanels(WorkspaceId workspaceId, PanelId firstPanelId, PanelId secondPanelId)
     {
+        Dispatcher.UIThread.VerifyAccess();
+
         if (!TryGetWorkspace(workspaceId, out WorkspaceViewModel? workspaceViewModel)) return;
         workspaceViewModel.SwapPanels(firstPanelId, secondPanelId);
     }
 
     public void ClosePanel(WorkspaceId workspaceId, PanelId panelToClose)
     {
+        Dispatcher.UIThread.VerifyAccess();
+
         if (!TryGetWorkspace(workspaceId, out WorkspaceViewModel? workspaceViewModel)) return;
         workspaceViewModel.ClosePanel(panelToClose);
     }
 
     public void SetTabTitle(string title, WorkspaceId workspaceId, PanelId panelId, PanelTabId tabId)
     {
+        Dispatcher.UIThread.VerifyAccess();
+
         if (!TryGetWorkspace(workspaceId, out WorkspaceViewModel? workspaceViewModel)) return;
         if (!TryGetPanel(workspaceViewModel, panelId, out var panelViewModel)) return;
         if (!TryGetTab(panelViewModel, tabId, out var tabViewModel)) return;
@@ -230,6 +251,8 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
 
     public void SetIcon(IImage? icon, WorkspaceId workspaceId, PanelId panelId, PanelTabId tabId)
     {
+        Dispatcher.UIThread.VerifyAccess();
+
         if (!TryGetWorkspace(workspaceId, out WorkspaceViewModel? workspaceViewModel)) return;
         if (!TryGetPanel(workspaceViewModel, panelId, out var panelViewModel)) return;
         if (!TryGetTab(panelViewModel, tabId, out var tabViewModel)) return;
