@@ -27,6 +27,10 @@ public class PageFactoryController
         }
     }
 
+    /// <summary>
+    /// Uses the factory with ID <see cref="PageData.FactoryId"/> to create a new page.
+    /// </summary>
+    /// <exception cref="KeyNotFoundException">Thrown when there is no registered factory with ID <see cref="PageData.FactoryId"/></exception>
     public Page Create(PageData pageData, WindowId windowId, WorkspaceId workspaceId, PanelId panelId, Optional<PanelTabId> tabId)
     {
         if (!_factories.TryGetValue(pageData.FactoryId, out var factory))
@@ -45,6 +49,9 @@ public class PageFactoryController
         return page;
     }
 
+    /// <summary>
+    /// Returns all <see cref="PageDiscoveryDetails"/> of every factory given a <see cref="IWorkspaceContext"/>
+    /// </summary>
     public IEnumerable<PageDiscoveryDetails> GetAllDetails(IWorkspaceContext workspaceContext)
     {
         foreach (var kv in _factories)
