@@ -26,6 +26,8 @@ public class AddPanelDropDownViewModel : AViewModel<IAddPanelDropDownViewModel>,
                 .WhenAnyValue(controller => controller.ActiveWorkspace)
                 .SubscribeWithErrorLogging(activeWorkspace =>
                 {
+                    // clear the collection when changing workspaces to avoid having
+                    // buttons for different workspaces in the collection
                     _addPanelButtonViewModels.Clear();
 
                     if (activeWorkspace is null)
@@ -35,6 +37,8 @@ public class AddPanelDropDownViewModel : AViewModel<IAddPanelDropDownViewModel>,
                         return;
                     }
 
+                    // subscribes to changes to the observable collection and applies all
+                    // changes to the observable collection
                     serialDisposable.Disposable = activeWorkspace.AddPanelButtonViewModels
                         .ToObservableChangeSet()
                         .Adapt(new ObservableCollectionAdaptor<IAddPanelButtonViewModel>(_addPanelButtonViewModels))
