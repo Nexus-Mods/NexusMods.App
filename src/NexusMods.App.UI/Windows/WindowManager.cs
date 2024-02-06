@@ -17,7 +17,7 @@ internal sealed class WindowManager : ReactiveObject, IWindowManager
     {
         _logger = logger;
 
-        _allWindowIdSource.Connect().Bind(out _allWindowIds);
+        _allWindowIdSource.Connect().OnUI().Bind(out _allWindowIds);
     }
 
     [Reactive] public WindowId ActiveWindowId { get; set; } = WindowId.DefaultValue;
@@ -27,6 +27,11 @@ internal sealed class WindowManager : ReactiveObject, IWindowManager
 
     public bool TryGetActiveWindow([NotNullWhen(true )] out IWorkspaceWindow? window)
     {
+        if (ActiveWindowId == WindowId.DefaultValue && _allWindowIdSource.Count == 1)
+        {
+            return TryGetWindow(_allWindowIdSource.Items.First(), out window);
+        }
+
         return TryGetWindow(ActiveWindowId, out window);
     }
 

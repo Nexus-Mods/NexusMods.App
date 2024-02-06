@@ -1,5 +1,6 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Games.Downloads;
 using NexusMods.Abstractions.Installers;
@@ -31,9 +32,6 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
         ILogger<MainWindowViewModel> logger,
         IOSInformation osInformation,
         IWindowManager windowManager,
-        ISpineViewModel spineViewModel,
-        ITopBarViewModel topBarViewModel,
-        IDevelopmentBuildBannerViewModel developmentBuildBannerViewModel,
         IOverlayController controller,
         IDownloadService downloadService,
         IArchiveInstaller archiveInstaller,
@@ -49,11 +47,12 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
             serviceProvider: serviceProvider
         );
 
-        topBarViewModel.AddPanelDropDownViewModel = new AddPanelDropDownViewModel(WorkspaceController);
-        TopBar = topBarViewModel;
+        TopBar = serviceProvider.GetRequiredService<ITopBarViewModel>();
+        TopBar.AddPanelDropDownViewModel = new AddPanelDropDownViewModel(WorkspaceController);
 
-        Spine = spineViewModel;
-        DevelopmentBuildBanner = developmentBuildBannerViewModel;
+        Spine = serviceProvider.GetRequiredService<ISpineViewModel>();
+        DevelopmentBuildBanner = serviceProvider.GetRequiredService<IDevelopmentBuildBannerViewModel>();
+
         _archiveInstaller = archiveInstaller;
         _registry = registry;
 
@@ -100,6 +99,10 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
             if (!metricsOptInViewModel.MaybeShow())
                 updaterViewModel.MaybeShow();
 
+            this.WhenAnyValue(vm => vm.Spine.LeftMenuViewModel)
+                .BindToVM(this, vm => vm.LeftMenu)
+                .DisposeWith(d);
+
             this.WhenAnyValue(vm => vm.IsActive)
                 .Where(isActive => isActive)
                 .Select(_ => WindowId)
@@ -140,8 +143,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
 
     [Reactive] public ISpineViewModel Spine { get; set; }
 
-    [Reactive]
-    public ILeftMenuViewModel LeftMenu { get; set; } = Initializers.ILeftMenuViewModel;
+    [Reactive] public ILeftMenuViewModel? LeftMenu { get; set; }
 
     [Reactive]
     public ITopBarViewModel TopBar { get; set; }

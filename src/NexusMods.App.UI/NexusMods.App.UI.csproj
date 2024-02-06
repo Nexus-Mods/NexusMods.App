@@ -332,12 +332,6 @@
         <Compile Update="LeftMenu\Home\HomeLeftMenuDesignViewModel.cs">
           <DependentUpon>IHomeLeftMenuViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="LeftMenu\Game\GameLeftMenuViewModel.cs">
-          <DependentUpon>IGameLeftMenuViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="LeftMenu\Game\GameLeftMenuDesignViewModel.cs">
-          <DependentUpon>IGameLeftMenuViewModel.cs</DependentUpon>
-        </Compile>
         <Compile Update="Controls\Spine\SpineDesignViewModel.cs">
           <DependentUpon>ISpineViewModel.cs</DependentUpon>
         </Compile>
@@ -359,6 +353,9 @@
         </Compile>
         <Compile Update="Controls\FoundGames\FoundGamesDesignViewModel.cs">
           <DependentUpon>IFoundGamesViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="LeftMenu\Loadout\LoadoutLeftMenuViewModel.cs">
+          <DependentUpon>ILoadoutLeftMenuViewModel.cs</DependentUpon>
         </Compile>
     </ItemGroup>
 
