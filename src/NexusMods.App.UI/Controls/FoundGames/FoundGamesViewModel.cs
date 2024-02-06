@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using Avalonia.Threading;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
@@ -37,29 +38,28 @@ public class FoundGamesViewModel : AViewModel<IFoundGamesViewModel>, IFoundGames
 
         var loadoutId = marker.Id;
 
-        if (!_windowManager.TryGetActiveWindow(out var window)) return;
-        var workspaceController = window.WorkspaceController;
+        Dispatcher.UIThread.Invoke(() =>
+        {
+            if (!_windowManager.TryGetActiveWindow(out var window)) return;
+            var workspaceController = window.WorkspaceController;
 
-        workspaceController.ChangeOrCreateWorkspaceByContext(
-            context => context.LoadoutId == loadoutId,
-            () => new PageData
-            {
-                FactoryId = LoadoutGridPageFactory.StaticId,
-                Context = new LoadoutGridContext
+            workspaceController.ChangeOrCreateWorkspaceByContext(
+                context => context.LoadoutId == loadoutId,
+                () => new PageData
                 {
-                    LoadoutId = loadoutId
-                }
-            },
-            () => new LoadoutContext(loadoutId)
-        );
+                    FactoryId = LoadoutGridPageFactory.StaticId,
+                    Context = new LoadoutGridContext
+                    {
+                        LoadoutId = loadoutId
+                    }
+                },
+                () => new LoadoutContext(loadoutId)
+            );
+        });
     }
 
     [Reactive]
-    public ReadOnlyObservableCollection<IGameWidgetViewModel> Games
-    {
-        get;
-        set;
-    }
+    public ReadOnlyObservableCollection<IGameWidgetViewModel> Games { get; set; }
 
     public void InitializeFromFound(IEnumerable<IGame> games)
     {
