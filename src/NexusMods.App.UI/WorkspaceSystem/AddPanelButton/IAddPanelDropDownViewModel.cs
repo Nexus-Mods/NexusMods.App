@@ -2,7 +2,7 @@
 
 public interface IAddPanelDropDownViewModel : IViewModelInterface
 {
-    public IReadOnlyList<IAddPanelButtonViewModel> AddPanelButtonViewModel { get; }
+    public IReadOnlyList<IAddPanelButtonViewModel> AddPanelButtonViewModels { get; }
 
     public IAddPanelButtonViewModel? SelectedItem { get; set; }
 

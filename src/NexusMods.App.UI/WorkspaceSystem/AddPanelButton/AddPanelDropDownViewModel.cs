@@ -8,8 +8,8 @@ namespace NexusMods.App.UI.WorkspaceSystem;
 
 public class AddPanelDropDownViewModel : AViewModel<IAddPanelDropDownViewModel>, IAddPanelDropDownViewModel
 {
-    private ObservableCollectionExtended<IAddPanelButtonViewModel> _addPanelButtonViewModel = new();
-    public IReadOnlyList<IAddPanelButtonViewModel> AddPanelButtonViewModel => _addPanelButtonViewModel;
+    private readonly ObservableCollectionExtended<IAddPanelButtonViewModel> _addPanelButtonViewModels = new();
+    public IReadOnlyList<IAddPanelButtonViewModel> AddPanelButtonViewModels => _addPanelButtonViewModels;
 
     [Reactive] public IAddPanelButtonViewModel? SelectedItem { get; set; }
 
@@ -26,7 +26,7 @@ public class AddPanelDropDownViewModel : AViewModel<IAddPanelDropDownViewModel>,
                 .WhenAnyValue(controller => controller.ActiveWorkspace)
                 .SubscribeWithErrorLogging(activeWorkspace =>
                 {
-                    _addPanelButtonViewModel.Clear();
+                    _addPanelButtonViewModels.Clear();
 
                     if (activeWorkspace is null)
                     {
@@ -37,10 +37,10 @@ public class AddPanelDropDownViewModel : AViewModel<IAddPanelDropDownViewModel>,
 
                     serialDisposable.Disposable = activeWorkspace.AddPanelButtonViewModels
                         .ToObservableChangeSet()
-                        .Adapt(new ObservableCollectionAdaptor<IAddPanelButtonViewModel>(_addPanelButtonViewModel))
+                        .Adapt(new ObservableCollectionAdaptor<IAddPanelButtonViewModel>(_addPanelButtonViewModels))
                         .SubscribeWithErrorLogging(_ =>
                         {
-                            SelectedIndex = _addPanelButtonViewModel.Count == 0 ? -1 : 0;
+                            SelectedIndex = _addPanelButtonViewModels.Count == 0 ? -1 : 0;
                         });
                 })
                 .DisposeWith(disposables);

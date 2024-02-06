@@ -14,7 +14,7 @@ public partial class AddPanelDropDownView : ReactiveUserControl<IAddPanelDropDow
 
         this.WhenActivated(disposables =>
         {
-            this.OneWayBind(ViewModel, vm => vm.AddPanelButtonViewModel, view => view.CreatePanelComboBox.ItemsSource)
+            this.OneWayBind(ViewModel, vm => vm.AddPanelButtonViewModels, view => view.CreatePanelComboBox.ItemsSource)
                 .DisposeWith(disposables);
 
             this.Bind(ViewModel, vm => vm.SelectedItem, view => view.CreatePanelComboBox.SelectedItem)

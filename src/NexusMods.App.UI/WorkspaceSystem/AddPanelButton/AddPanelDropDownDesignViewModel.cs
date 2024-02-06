@@ -2,7 +2,7 @@
 
 public class AddPanelDropDownDesignViewModel :  AViewModel<IAddPanelDropDownViewModel>, IAddPanelDropDownViewModel
 {
-    public IReadOnlyList<IAddPanelButtonViewModel> AddPanelButtonViewModel { get; } = new List<IAddPanelButtonViewModel>(
+    public IReadOnlyList<IAddPanelButtonViewModel> AddPanelButtonViewModels { get; } = new List<IAddPanelButtonViewModel>(
     [
         new AddPanelButtonDesignViewModel(),
         new AddPanelButtonDesignViewModel()
