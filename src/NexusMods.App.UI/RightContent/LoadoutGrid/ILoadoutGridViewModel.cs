@@ -9,7 +9,7 @@ namespace NexusMods.App.UI.RightContent.LoadoutGrid;
 /// <summary>
 /// View model for the loadout grid.
 /// </summary>
-public interface ILoadoutGridViewModel : IPageViewModelInterface, IRightContentViewModel
+public interface ILoadoutGridViewModel : IPageViewModelInterface
 {
     public ReadOnlyObservableCollection<ModCursor> Mods { get; }
     public LoadoutId LoadoutId { get; set; }

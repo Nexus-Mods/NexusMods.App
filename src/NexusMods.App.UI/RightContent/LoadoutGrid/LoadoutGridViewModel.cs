@@ -18,6 +18,7 @@ using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModEnabled;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModInstalled;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModName;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModVersion;
+using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Extensions.DynamicData;
 using NexusMods.Paths;
@@ -56,7 +57,7 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
         IFileSystem fileSystem,
         IArchiveInstaller archiveInstaller,
         IFileOriginRegistry fileOriginRegistry,
-        IWorkspaceController workspaceController) : base(workspaceController)
+        IWindowManager windowManager) : base(windowManager)
     {
         _logger = logger;
         _fileSystem = fileSystem;
@@ -111,7 +112,7 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
                 .Select(loadout => loadout.Name)
                 .Do(loadoutName =>
                 {
-                    WorkspaceController.SetTabTitle(loadoutName, WorkspaceId, PanelId, TabId);
+                    GetWorkspaceController().SetTabTitle(loadoutName, WorkspaceId, PanelId, TabId);
                 })
                 .BindTo(this, vm => vm.LoadoutName);
 

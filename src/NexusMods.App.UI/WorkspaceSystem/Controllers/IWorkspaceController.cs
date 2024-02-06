@@ -1,11 +1,50 @@
+using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using Avalonia.Media;
+using DynamicData.Kernel;
 using JetBrains.Annotations;
+using NexusMods.App.UI.Windows;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
+/// <summary>
+/// Represents a controller for all workspaces inside a window.
+/// </summary>
 [PublicAPI]
 public interface IWorkspaceController
 {
+    /// <summary>
+    /// Gets the ID of the window that is associated with this controller.
+    /// </summary>
+    public WindowId WindowId { get; }
+
+    /// <summary>
+    /// Gets the currently active Workspace.
+    /// </summary>
+    public IWorkspaceViewModel? ActiveWorkspace { get; }
+
+    /// <summary>
+    /// Gets a read-only observable collection of all workspaces.
+    /// </summary>
+    public ReadOnlyObservableCollection<IWorkspaceViewModel> AllWorkspaces { get; }
+
+    /// <summary>
+    /// Tries to get a workspace.
+    /// </summary>
+    public bool TryGetWorkspace(WorkspaceId workspaceId, [NotNullWhen(true)] out IWorkspaceViewModel? workspace);
+
+    /// <summary>
+    /// Creates a new workspace with one panel and a tab.
+    /// </summary>
+    /// <param name="context">Optional <see cref="IWorkspaceContext"/> for the workspace. If this is <see cref="Optional{T}.None"/> the <see cref="EmptyContext"/> will be used.</param>
+    /// <param name="pageData">Optional <see cref="PageData"/> for the first tab. If this is <see cref="Optional{T}.None"/> the default tab will be shown.</param>
+    public IWorkspaceViewModel CreateWorkspace(Optional<IWorkspaceContext> context, Optional<PageData> pageData);
+
+    /// <summary>
+    /// Changes the active workspace of the window.
+    /// </summary>
+    public void ChangeActiveWorkspace(WorkspaceId workspaceId);
+
     /// <summary>
     /// Adds a new panel to a workspace.
     /// </summary>
@@ -14,7 +53,10 @@ public interface IWorkspaceController
     /// <summary>
     /// Opens a new page in a workspace.
     /// </summary>
-    public void OpenPage(WorkspaceId workspaceId, PageData pageData, OpenPageBehavior behavior);
+    /// <param name="workspaceId"></param>
+    /// <param name="pageData">Optional <see cref="PageData"/> for the first tab. If this is <see cref="Optional{T}.None"/> the default tab will be shown.</param>
+    /// <param name="behavior"></param>
+    public void OpenPage(WorkspaceId workspaceId, Optional<PageData> pageData, OpenPageBehavior behavior);
 
     /// <summary>
     /// Swaps the positions of two panels.

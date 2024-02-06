@@ -4,7 +4,6 @@ using NexusMods.Abstractions.Games;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Icons;
 using NexusMods.App.UI.LeftMenu.Items;
-using NexusMods.App.UI.RightContent;
 using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.LeftMenu.Game;
@@ -16,8 +15,6 @@ public class GameLeftMenuDesignViewModel : AViewModel<IGameLeftMenuViewModel>, I
     [Reactive] public ILaunchButtonViewModel LaunchButton { get; set; }
 
     [Reactive] public IGame Game { get; set; } = (IGame)GameInstallation.Empty.Game;
-
-    [Reactive] public IRightContentViewModel RightContent { get; set; } = Initializers.IRightContent;
 
     public GameLeftMenuDesignViewModel()
     {

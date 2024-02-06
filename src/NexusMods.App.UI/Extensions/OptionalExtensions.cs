@@ -19,15 +19,6 @@ public static class OptionalExtensions
     }
 
     /// <summary>
-    /// Returns the value if the optional has a value, otherwise calls <see cref="alternativeValueFunc"/> and returns
-    /// the return value.
-    /// </summary>
-    public static T ValueOr<T>(this Optional<T> optional, Func<T> alternativeValueFunc) where T : class
-    {
-        return optional.HasValue ? optional.Value : alternativeValueFunc();
-    }
-
-    /// <summary>
     /// Tries to get the value out of the <see cref="Optional{T}"/>.
     /// </summary>
     public static bool TryGet<T>(this Optional<T> optional, [NotNullWhen(true)] out T? value) where T : notnull

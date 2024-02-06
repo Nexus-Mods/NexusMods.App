@@ -1,26 +1,24 @@
 using System.Collections.ObjectModel;
+using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Controls.GameWidget;
 using NexusMods.App.UI.Extensions;
-using NexusMods.App.UI.Routing;
-using NexusMods.App.UI.Routing.Messages;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.RightContent;
 
+[UsedImplicitly]
 public class FoundGamesViewModel : AViewModel<IFoundGamesViewModel>, IFoundGamesViewModel
 {
     private readonly ILoadoutRegistry _loadoutRegistry;
     private readonly IServiceProvider _provider;
-    private readonly IRouter _router;
 
-    public FoundGamesViewModel(IServiceProvider provider, ILoadoutRegistry loadoutManager, IRouter router)
+    public FoundGamesViewModel(IServiceProvider provider, ILoadoutRegistry loadoutManager)
     {
-        _router = router;
         _loadoutRegistry = loadoutManager;
         _provider = provider;
 
@@ -33,7 +31,6 @@ public class FoundGamesViewModel : AViewModel<IFoundGamesViewModel>, IFoundGames
     {
         var name = _loadoutRegistry.SuggestName(installation);
         var marker = await _loadoutRegistry.Manage(installation, name);
-        _router.NavigateTo(new NavigateToLoadout(marker.Value));
     }
 
     [Reactive]

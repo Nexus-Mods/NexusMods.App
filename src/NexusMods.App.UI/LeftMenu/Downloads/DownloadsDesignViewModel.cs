@@ -1,32 +1,20 @@
 ﻿using System.Collections.ObjectModel;
-using System.Reactive.Disposables;
-using NexusMods.App.UI.RightContent;
-using NexusMods.App.UI.RightContent.Downloads;
-using NexusMods.App.UI.ViewModels.Helpers.ViewModelSelector;
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
+using NexusMods.App.UI.Icons;
+using NexusMods.App.UI.LeftMenu.Items;
+using NexusMods.App.UI.Resources;
 
 namespace NexusMods.App.UI.LeftMenu.Downloads;
 
-public class DownloadsDesignViewModel : ViewModelDesignSelector<Options, IRightContentViewModel, IDownloadsViewModel>, IDownloadsViewModel
+public class DownloadsDesignViewModel : AViewModel<IDownloadsViewModel>, IDownloadsViewModel
 {
-    public ReadOnlyObservableCollection<ILeftMenuItemViewModel> Items { get; } =
-        Initializers.ReadOnlyObservableCollection<ILeftMenuItemViewModel>();
-    
-    [Reactive]
-    public IRightContentViewModel RightContent { get; set; } = Initializers.IRightContent;
+    public ReadOnlyObservableCollection<ILeftMenuItemViewModel> Items { get; }
 
-    public DownloadsDesignViewModel() :
-        base(new InProgressDesignViewModel(),
-            new CompletedDesignViewModel(),
-            new HistoryDesignViewModel())
+    public DownloadsDesignViewModel()
     {
-        this.WhenActivated(d =>
+        var items = new ILeftMenuItemViewModel[]
         {
-            this.WhenAnyValue(vm => vm.CurrentViewModel)
-                .BindTo(this, vm => vm.RightContent)
-                .DisposeWith(d);
-        });
-
+            new IconViewModel { Name = Language.InProgressTitleTextBlock, Icon = IconType.None },
+        };
+        Items = new ReadOnlyObservableCollection<ILeftMenuItemViewModel>(new ObservableCollection<ILeftMenuItemViewModel>(items));
     }
 }

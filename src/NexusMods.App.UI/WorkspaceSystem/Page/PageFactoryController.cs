@@ -2,6 +2,7 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using DynamicData.Kernel;
+using NexusMods.App.UI.Windows;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
@@ -26,12 +27,17 @@ public class PageFactoryController
         }
     }
 
-    public Page Create(PageData pageData, WorkspaceId workspaceId, PanelId panelId, Optional<PanelTabId> tabId)
+    /// <summary>
+    /// Uses the factory with ID <see cref="PageData.FactoryId"/> to create a new page.
+    /// </summary>
+    /// <exception cref="KeyNotFoundException">Thrown when there is no registered factory with ID <see cref="PageData.FactoryId"/></exception>
+    public Page Create(PageData pageData, WindowId windowId, WorkspaceId workspaceId, PanelId panelId, Optional<PanelTabId> tabId)
     {
         if (!_factories.TryGetValue(pageData.FactoryId, out var factory))
             throw new KeyNotFoundException($"Unable to find registered factory with ID {pageData.FactoryId}");
 
         var page = factory.Create(pageData.Context);
+        page.ViewModel.WindowId = windowId;
         page.ViewModel.WorkspaceId = workspaceId;
         page.ViewModel.PanelId = panelId;
 
@@ -43,12 +49,19 @@ public class PageFactoryController
         return page;
     }
 
-    public IEnumerable<PageDiscoveryDetails> GetAllDetails()
+    /// <summary>
+    /// Returns all <see cref="PageDiscoveryDetails"/> of every factory given a <see cref="IWorkspaceContext"/>
+    /// </summary>
+    /// <remarks>
+    /// <see cref="PageDiscoveryDetails"/> are used to provide information about what pages the factories can
+    /// create in a given <see cref="IWorkspaceContext"/>.
+    /// </remarks>
+    public IEnumerable<PageDiscoveryDetails> GetAllDetails(IWorkspaceContext workspaceContext)
     {
         foreach (var kv in _factories)
         {
             var (factoryId, factory) = kv;
-            var details = factory.GetDiscoveryDetails();
+            var details = factory.GetDiscoveryDetails(workspaceContext);
 
             foreach (var detail in details)
             {

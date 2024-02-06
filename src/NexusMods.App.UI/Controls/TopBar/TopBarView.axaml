@@ -57,6 +57,9 @@
                     Orientation="Horizontal"
                     Spacing="16"
                     Margin="16,0">
+
+            <reactiveUi:ViewModelViewHost VerticalAlignment="Center" x:Name="AddPanelViewModelViewHost"/>
+
             <Button Classes="Action">
                 <avalonia:Icon Classes="Help" />
             </Button>

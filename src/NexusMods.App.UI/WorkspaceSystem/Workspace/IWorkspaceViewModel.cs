@@ -1,11 +1,32 @@
 using System.Collections.ObjectModel;
 using Avalonia;
+using JetBrains.Annotations;
+using NexusMods.App.UI.Windows;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
+[PublicAPI]
 public interface IWorkspaceViewModel : IViewModelInterface
 {
+    /// <summary>
+    /// Gets the ID of the workspace.
+    /// </summary>
     public WorkspaceId Id { get; }
+
+    /// <summary>
+    /// Gets the ID of the window this workspace is in.
+    /// </summary>
+    public WindowId WindowId { get; }
+
+    /// <summary>
+    /// Gets or sets the context of the workspace.
+    /// </summary>
+    public IWorkspaceContext Context { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether this is the currently visible workspace in the window.
+    /// </summary>
+    public bool IsActive { get; set; }
 
     public ReadOnlyObservableCollection<IPanelViewModel> Panels { get; }
 

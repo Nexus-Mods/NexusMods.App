@@ -1,45 +1,100 @@
+using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using Avalonia.Media;
+using DynamicData;
+using DynamicData.Kernel;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.App.UI.Extensions;
+using NexusMods.App.UI.Windows;
+using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
-internal class WorkspaceController : IWorkspaceController
+internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
 {
+    private readonly IWorkspaceWindow _window;
+    private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<WorkspaceController> _logger;
-    private readonly Dictionary<WorkspaceId, WeakReference<WorkspaceViewModel>> _workspaces = new();
 
-    public WorkspaceController(ILogger<WorkspaceController> logger)
+    public WindowId WindowId => _window.WindowId;
+
+    private readonly SourceCache<WorkspaceViewModel, WorkspaceId> _workspaces = new(x => x.Id);
+    private readonly ReadOnlyObservableCollection<IWorkspaceViewModel> _allWorkspaces;
+    public ReadOnlyObservableCollection<IWorkspaceViewModel> AllWorkspaces => _allWorkspaces;
+
+    [Reactive] public IWorkspaceViewModel? ActiveWorkspace { get; private set; }
+
+    public WorkspaceController(IWorkspaceWindow window, IServiceProvider serviceProvider)
     {
-        _logger = logger;
+        _window = window;
+
+        _serviceProvider = serviceProvider;
+        _logger = serviceProvider.GetRequiredService<ILogger<WorkspaceController>>();
+
+        _workspaces
+            .Connect()
+            .Transform(x => (IWorkspaceViewModel)x)
+            .Bind(out _allWorkspaces)
+            .Subscribe();
     }
 
-    internal void RegisterWorkspace(WorkspaceViewModel workspaceViewModel)
+    public IWorkspaceViewModel CreateWorkspace(Optional<IWorkspaceContext> context, Optional<PageData> pageData)
     {
-        _workspaces.TryAdd(workspaceViewModel.Id, new WeakReference<WorkspaceViewModel>(workspaceViewModel));
+        var vm = new WorkspaceViewModel(
+            workspaceController: this,
+            factoryController: _serviceProvider.GetRequiredService<PageFactoryController>(),
+            unregisterFunc: UnregisterWorkspace
+        )
+        {
+            Context = context.HasValue ? context.Value : EmptyContext.Instance
+        };
+
+        _workspaces.AddOrUpdate(vm);
+
+        var addPanelBehavior = pageData.HasValue
+            ? new AddPanelBehavior(new AddPanelBehavior.WithCustomTab(pageData.Value))
+            : new AddPanelBehavior(new AddPanelBehavior.WithDefaultTab());
+
+        vm.AddPanel(
+            WorkspaceGridState.From(new[]
+            {
+                new PanelGridState(PanelId.DefaultValue, MathUtils.One)
+            }, isHorizontal: vm.IsHorizontal),
+            addPanelBehavior
+        );
+
+        return vm;
     }
 
-    internal void UnregisterWorkspace(WorkspaceViewModel workspaceViewModel)
+    private void UnregisterWorkspace(WorkspaceViewModel workspaceViewModel)
     {
         _workspaces.Remove(workspaceViewModel.Id);
+
+        if (ReferenceEquals(ActiveWorkspace, workspaceViewModel) && AllWorkspaces.Count > 0)
+        {
+            ChangeActiveWorkspace(AllWorkspaces.First().Id);
+        }
     }
 
     private bool TryGetWorkspace(WorkspaceId workspaceId, [NotNullWhen(true)] out WorkspaceViewModel? workspaceViewModel)
     {
-        workspaceViewModel = null;
-        if (!_workspaces.TryGetValue(workspaceId, out var weakReference))
-        {
-            _logger.LogError("Failed to find Workspace with ID {WorkspaceID}", workspaceId);
-            return false;
-        }
-
-        if (!weakReference.TryGetTarget(out workspaceViewModel))
+        if (!_workspaces.Lookup(workspaceId).TryGet(out workspaceViewModel))
         {
             _logger.LogError("Failed to retrieve the Workspace View Model with the ID {WorkspaceID} referenced by the WeakReference", workspaceId);
             return false;
         }
 
         return true;
+    }
+
+    /// <inheritdoc/>
+    public bool TryGetWorkspace(WorkspaceId workspaceId, [NotNullWhen(true)] out IWorkspaceViewModel? workspace)
+    {
+        var res = TryGetWorkspace(workspaceId, out WorkspaceViewModel? tmp);
+        workspace = tmp;
+        return res;
     }
 
     private bool TryGetPanel(IWorkspaceViewModel workspaceViewModel, PanelId panelId, [NotNullWhen(true)] out IPanelViewModel? panelViewModel)
@@ -66,33 +121,49 @@ internal class WorkspaceController : IWorkspaceController
         return true;
     }
 
+    public void ChangeActiveWorkspace(WorkspaceId workspaceId)
+    {
+        foreach (var workspace in AllWorkspaces)
+        {
+            if (workspace.Id == workspaceId)
+            {
+                workspace.IsActive = true;
+                ActiveWorkspace = workspace;
+            }
+            else
+            {
+                workspace.IsActive = false;
+            }
+        }
+    }
+
     public void AddPanel(WorkspaceId workspaceId, WorkspaceGridState newWorkspaceState, AddPanelBehavior behavior)
     {
-        if (!TryGetWorkspace(workspaceId, out var workspaceViewModel)) return;
+        if (!TryGetWorkspace(workspaceId, out WorkspaceViewModel? workspaceViewModel)) return;
         workspaceViewModel.AddPanel(newWorkspaceState, behavior);
     }
 
-    public void OpenPage(WorkspaceId workspaceId, PageData pageData, OpenPageBehavior behavior)
+    public void OpenPage(WorkspaceId workspaceId, Optional<PageData> pageData, OpenPageBehavior behavior)
     {
-        if (!TryGetWorkspace(workspaceId, out var workspaceViewModel)) return;
+        if (!TryGetWorkspace(workspaceId, out WorkspaceViewModel? workspaceViewModel)) return;
         workspaceViewModel.OpenPage(pageData, behavior);
     }
 
     public void SwapPanels(WorkspaceId workspaceId, PanelId firstPanelId, PanelId secondPanelId)
     {
-        if (!TryGetWorkspace(workspaceId, out var workspaceViewModel)) return;
+        if (!TryGetWorkspace(workspaceId, out WorkspaceViewModel? workspaceViewModel)) return;
         workspaceViewModel.SwapPanels(firstPanelId, secondPanelId);
     }
 
     public void ClosePanel(WorkspaceId workspaceId, PanelId panelToClose)
     {
-        if (!TryGetWorkspace(workspaceId, out var workspaceViewModel)) return;
+        if (!TryGetWorkspace(workspaceId, out WorkspaceViewModel? workspaceViewModel)) return;
         workspaceViewModel.ClosePanel(panelToClose);
     }
 
     public void SetTabTitle(string title, WorkspaceId workspaceId, PanelId panelId, PanelTabId tabId)
     {
-        if (!TryGetWorkspace(workspaceId, out var workspaceViewModel)) return;
+        if (!TryGetWorkspace(workspaceId, out WorkspaceViewModel? workspaceViewModel)) return;
         if (!TryGetPanel(workspaceViewModel, panelId, out var panelViewModel)) return;
         if (!TryGetTab(panelViewModel, tabId, out var tabViewModel)) return;
 
@@ -101,7 +172,7 @@ internal class WorkspaceController : IWorkspaceController
 
     public void SetIcon(IImage? icon, WorkspaceId workspaceId, PanelId panelId, PanelTabId tabId)
     {
-        if (!TryGetWorkspace(workspaceId, out var workspaceViewModel)) return;
+        if (!TryGetWorkspace(workspaceId, out WorkspaceViewModel? workspaceViewModel)) return;
         if (!TryGetPanel(workspaceViewModel, panelId, out var panelViewModel)) return;
         if (!TryGetTab(panelViewModel, tabId, out var tabViewModel)) return;
 

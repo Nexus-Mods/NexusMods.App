@@ -1,15 +1,16 @@
 using System.Reactive.Disposables;
 using Avalonia.ReactiveUI;
+using JetBrains.Annotations;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.LeftMenu.Home;
 
+[UsedImplicitly]
 public partial class HomeLeftMenuView : ReactiveUserControl<IHomeLeftMenuViewModel>
 {
     public HomeLeftMenuView()
     {
         InitializeComponent();
-
 
         this.WhenActivated(d =>
         {

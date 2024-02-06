@@ -3,13 +3,16 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
+using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.NexusWebApi;
+using NexusMods.App.UI.WorkspaceSystem;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Controls.TopBar;
 
+[UsedImplicitly]
 public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
 {
     private readonly ILoginManager _loginManager;
@@ -85,6 +88,8 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
     public bool IsPremium { get; set; }
 
     [Reactive] public IImage Avatar { get; set; } = Initializers.IImage;
+
+    [Reactive] public IAddPanelDropDownViewModel AddPanelDropDownViewModel { get; set; } = null!;
 
     [Reactive] public ReactiveCommand<Unit, Unit> LoginCommand { get; set; } = Initializers.EnabledReactiveCommand;
 

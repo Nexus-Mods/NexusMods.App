@@ -5,13 +5,11 @@
                                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:workspaceSystem="clr-namespace:NexusMods.App.UI.WorkspaceSystem"
-                                mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+                                mc:Ignorable="d" d:DesignWidth="80" d:DesignHeight="450"
                                 x:Class="NexusMods.App.UI.WorkspaceSystem.AddPanelDropDownView">
     <Design.DataContext>
-        <workspaceSystem:AddPanelDropDownViewModel />
+        <workspaceSystem:AddPanelDropDownDesignViewModel />
     </Design.DataContext>
 
-    <ComboBox x:Name="CreatePanelComboBox"
-              Classes="AddPanelDropDown">
-    </ComboBox>
+    <ComboBox x:Name="CreatePanelComboBox" Classes="AddPanelDropDown"/>
 </reactiveUi:ReactiveUserControl>

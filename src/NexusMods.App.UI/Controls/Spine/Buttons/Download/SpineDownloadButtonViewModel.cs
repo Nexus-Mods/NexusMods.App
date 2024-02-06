@@ -3,6 +3,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Windows.Input;
 using DynamicData.Kernel;
+using JetBrains.Annotations;
 using NexusMods.Abstractions.Activities;
 using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Paths;
@@ -11,6 +12,7 @@ using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Controls.Spine.Buttons.Download;
 
+[UsedImplicitly]
 public class SpineDownloadButtonViewModel : AViewModel<ISpineDownloadButtonViewModel>, ISpineDownloadButtonViewModel
 {
     private const int PollTimeMilliseconds = 1000;

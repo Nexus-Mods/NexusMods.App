@@ -28,14 +28,14 @@ public class DummyPageFactory : APageFactory<DummyViewModel, DummyPageContext>
 
     public override DummyViewModel CreateViewModel(DummyPageContext context)
     {
-        return new DummyViewModel(WorkspaceController)
+        return new DummyViewModel(WindowManager)
         {
             Color = context.Color
         };
     }
 
 #if DEBUG
-    public override IEnumerable<PageDiscoveryDetails?> GetDiscoveryDetails()
+    public override IEnumerable<PageDiscoveryDetails?> GetDiscoveryDetails(IWorkspaceContext workspaceContext)
     {
         yield return new PageDiscoveryDetails
         {

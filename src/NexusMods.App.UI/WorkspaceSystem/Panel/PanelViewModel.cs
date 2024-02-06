@@ -6,6 +6,7 @@ using Avalonia;
 using DynamicData;
 using DynamicData.Aggregation;
 using DynamicData.Kernel;
+using NexusMods.App.UI.Windows;
 using NexusMods.Extensions.BCL;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -16,6 +17,9 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
 {
     /// <inheritdoc/>
     public PanelId Id { get; } = PanelId.NewId();
+
+    /// <inheritdoc/>
+    public required WindowId WindowId { get; set; }
 
     /// <inheritdoc/>
     public required WorkspaceId WorkspaceId { get; set; }
@@ -39,10 +43,12 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
 
     [Reactive] private PanelTabId SelectedTabId { get; set; }
 
+    private readonly IWorkspaceController _workspaceController;
     private readonly PageFactoryController _factoryController;
 
-    public PanelViewModel(PageFactoryController factoryController)
+    public PanelViewModel(IWorkspaceController workspaceController, PageFactoryController factoryController)
     {
+        _workspaceController = workspaceController;
         _factoryController = factoryController;
 
         var canExecute = this.WhenAnyValue(vm => vm.IsNotAlone);
@@ -156,22 +162,12 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
 
     public void AddDefaultTab()
     {
-        var allDetails = _factoryController.GetAllDetails().ToArray();
-        var pageData = new PageData
-        {
-            FactoryId = NewTabPageFactory.StaticId,
-            Context = new NewTabPageContext
-            {
-                DiscoveryDetails = allDetails
-            }
-        };
-
-        AddCustomTab(pageData);
+        _workspaceController.OpenPage(WorkspaceId, Optional<PageData>.None, new OpenPageBehavior(new OpenPageBehavior.NewTab(Id)));
     }
 
     public void AddCustomTab(PageData pageData)
     {
-        var newTabPage = _factoryController.Create(pageData, WorkspaceId, Id, tabId: Optional<PanelTabId>.None);
+        var newTabPage = _factoryController.Create(pageData, WindowId, WorkspaceId, Id, tabId: Optional<PanelTabId>.None);
         var tab = new PanelTabViewModel
         {
             Contents = newTabPage
@@ -212,7 +208,7 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
             for (uint i = 0; i < data.Tabs.Length; i++)
             {
                 var tab = data.Tabs[i];
-                var newTabPage = _factoryController.Create(tab.PageData, WorkspaceId, Id, tabId: Optional<PanelTabId>.None);
+                var newTabPage = _factoryController.Create(tab.PageData, WindowId, WorkspaceId, Id, tabId: Optional<PanelTabId>.None);
 
                 var vm = new PanelTabViewModel
                 {

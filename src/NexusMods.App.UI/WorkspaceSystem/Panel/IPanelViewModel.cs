@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Reactive;
 using Avalonia;
+using NexusMods.App.UI.Windows;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
@@ -13,7 +14,12 @@ public interface IPanelViewModel : IViewModelInterface
     public PanelId Id { get; }
 
     /// <summary>
-    /// Gets or sets the ID of the workspace the panel is in.
+    /// Gets or sets the ID of the window this panel is in.
+    /// </summary>
+    public WindowId WindowId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the ID of the workspace this panel is in.
     /// </summary>
     public WorkspaceId WorkspaceId { get; set; }
 

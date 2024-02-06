@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
 using DynamicData;
+using NexusMods.App.UI.Windows;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
@@ -12,7 +13,7 @@ public class NewTabPageViewModel : APageViewModel<INewTabPageViewModel>, INewTab
     private readonly ReadOnlyObservableCollection<INewTabPageSectionViewModel> _sections;
     public ReadOnlyObservableCollection<INewTabPageSectionViewModel> Sections => _sections;
 
-    public NewTabPageViewModel(IWorkspaceController workspaceController, PageDiscoveryDetails[] discoveryDetails) : base(workspaceController)
+    public NewTabPageViewModel(IWindowManager windowManager, PageDiscoveryDetails[] discoveryDetails) : base(windowManager)
     {
         _itemSource.Edit(list =>
         {
@@ -36,7 +37,7 @@ public class NewTabPageViewModel : APageViewModel<INewTabPageViewModel>, INewTab
                 .MergeMany(item => item.SelectItemCommand)
                 .SubscribeWithErrorLogging(pageData =>
                 {
-                    WorkspaceController.OpenPage(WorkspaceId, pageData, new OpenPageBehavior(new OpenPageBehavior.ReplaceTab(PanelId, TabId)));
+                    GetWorkspaceController().OpenPage(WorkspaceId, pageData, new OpenPageBehavior(new OpenPageBehavior.ReplaceTab(PanelId, TabId)));
                 })
                 .DisposeWith(disposables);
         });

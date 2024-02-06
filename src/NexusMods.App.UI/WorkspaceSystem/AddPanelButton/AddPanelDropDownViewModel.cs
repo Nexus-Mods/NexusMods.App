@@ -1,84 +1,53 @@
-﻿using System.Collections.ObjectModel;
-using System.Reactive.Disposables;
-using Avalonia;
+﻿using System.Reactive.Disposables;
 using DynamicData;
+using DynamicData.Binding;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
 public class AddPanelDropDownViewModel : AViewModel<IAddPanelDropDownViewModel>, IAddPanelDropDownViewModel
 {
-    public ReadOnlyObservableCollection<IAddPanelButtonViewModel> AddPanelIconViewModels => _addPanelButtonViewModels;
+    private readonly ObservableCollectionExtended<IAddPanelButtonViewModel> _addPanelButtonViewModels = new();
+    public IReadOnlyList<IAddPanelButtonViewModel> AddPanelButtonViewModels => _addPanelButtonViewModels;
 
-    private readonly ReadOnlyObservableCollection<IAddPanelButtonViewModel> _addPanelButtonViewModels;
+    [Reactive] public IAddPanelButtonViewModel? SelectedItem { get; set; }
 
-    private readonly SourceList<IAddPanelButtonViewModel> _addPanelIconViewModels = new();
-    public int SelectedIndex { get; set; }
+    [Reactive] public int SelectedIndex { get; set; } = -1;
 
-    public AddPanelDropDownViewModel()
+    public AddPanelDropDownViewModel(IWorkspaceController workspaceController)
     {
-        _addPanelIconViewModels
-            .Connect()
-            .Bind(out _addPanelButtonViewModels)
-            .Subscribe();
-
-        // TODO: Get the current WorkspaceGridState from the WorkspaceController.ActiveWorkspace
-        UpdateDropDownContents(DummyTwoVerticalPanels, 2, 2);
-
-        this.WhenActivated(d =>
+        this.WhenActivated(disposables =>
         {
-            _addPanelIconViewModels.Connect()
-                .MergeMany(buttonVm => buttonVm.AddPanelCommand)
-                .Subscribe(nextGridState =>
+            var serialDisposable = new SerialDisposable();
+            serialDisposable.DisposeWith(disposables);
+
+            workspaceController
+                .WhenAnyValue(controller => controller.ActiveWorkspace)
+                .SubscribeWithErrorLogging(activeWorkspace =>
                 {
-                    // TODO: Use the nextGridState to update the WorkspaceController.ActiveWorkspace to add a new panel
+                    // clear the collection when changing workspaces to avoid having
+                    // buttons for different workspaces in the collection
+                    _addPanelButtonViewModels.Clear();
+
+                    if (activeWorkspace is null)
+                    {
+                        serialDisposable.Disposable = null;
+                        SelectedIndex = -1;
+                        return;
+                    }
+
+                    // subscribes to changes to the observable collection and applies all
+                    // changes to the observable collection
+                    serialDisposable.Disposable = activeWorkspace.AddPanelButtonViewModels
+                        .ToObservableChangeSet()
+                        .Adapt(new ObservableCollectionAdaptor<IAddPanelButtonViewModel>(_addPanelButtonViewModels))
+                        .SubscribeWithErrorLogging(_ =>
+                        {
+                            SelectedIndex = _addPanelButtonViewModels.Count == 0 ? -1 : 0;
+                        });
                 })
-                .DisposeWith(d);
+                .DisposeWith(disposables);
         });
     }
-
-    private void UpdateDropDownContents(WorkspaceGridState currentState, int maxColumns, int maxRows)
-    {
-        _addPanelIconViewModels.Edit(updater =>
-        {
-            updater.Clear();
-
-            var newStates = GridUtils.GetPossibleStates(currentState, maxColumns, maxRows);
-
-            foreach (var state in newStates)
-            {
-                var image = IconUtils.StateToBitmap(state);
-                updater.Add(new AddPanelButtonViewModel(state, image));
-            }
-        });
-        SelectedIndex = 0;
-    }
-
-    //TODO: Remove this when the real implementation is done
-    private static readonly WorkspaceGridState DummySinglePanel = WorkspaceGridState.From(
-        isHorizontal: true,
-        new PanelGridState(PanelId.NewId(), new Rect(0, 0, 1, 1))
-    );
-
-    //TODO: Remove this when the real implementation is done
-    private static readonly WorkspaceGridState DummyTwoVerticalPanels = WorkspaceGridState.From(
-        isHorizontal: true,
-        new PanelGridState(PanelId.NewId(), new Rect(0, 0, 0.5, 1)),
-        new PanelGridState(PanelId.NewId(), new Rect(0.5, 0, 0.5, 1))
-    );
-
-    //TODO: Remove this when the real implementation is done
-    private static readonly WorkspaceGridState DummyTwoHorizontalPanels = WorkspaceGridState.From(
-        isHorizontal: true,
-        new PanelGridState(PanelId.NewId(), new Rect(0, 0, 1, 0.5)),
-        new PanelGridState(PanelId.NewId(), new Rect(0, 0.5, 1, 0.5))
-    );
-
-    //TODO: Remove this when the real implementation is done
-    private static readonly WorkspaceGridState DummyThreePanels = WorkspaceGridState.From(
-        isHorizontal: true,
-        new PanelGridState(PanelId.NewId(), new Rect(0, 0, 0.5, 1)),
-        new PanelGridState(PanelId.NewId(), new Rect(0.5, 0, 0.5, 0.5)),
-        new PanelGridState(PanelId.NewId(), new Rect(0.5, 0.5, 0.5, 0.5))
-    );
 }

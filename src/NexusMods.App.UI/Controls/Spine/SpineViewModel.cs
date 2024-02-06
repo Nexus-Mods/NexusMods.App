@@ -1,109 +1,78 @@
 using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
-using System.Reactive.Subjects;
 using Avalonia.Media.Imaging;
 using DynamicData;
+using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Serialization;
 using NexusMods.App.UI.Controls.Spine.Buttons.Download;
 using NexusMods.App.UI.Controls.Spine.Buttons.Icon;
 using NexusMods.App.UI.Controls.Spine.Buttons.Image;
-using NexusMods.App.UI.LeftMenu;
 using NexusMods.App.UI.LeftMenu.Downloads;
 using NexusMods.App.UI.LeftMenu.Game;
 using NexusMods.App.UI.LeftMenu.Home;
-using NexusMods.App.UI.Routing;
-using NexusMods.App.UI.Routing.Messages;
+using NexusMods.App.UI.RightContent.LoadoutGrid;
+using NexusMods.App.UI.Windows;
+using NexusMods.App.UI.WorkspaceSystem;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Controls.Spine;
 
+[UsedImplicitly]
 public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
 {
-    public IIconButtonViewModel Home { get; }
+    private readonly ILogger<SpineViewModel> _logger;
+    private readonly IWindowManager _windowManager;
 
-    public IIconButtonViewModel Add { get; }
+    public IIconButtonViewModel Home { get; }
 
     public ISpineDownloadButtonViewModel Downloads { get; }
 
-    private ReadOnlyObservableCollection<IImageButtonViewModel> _games =
-        Initializers.ReadOnlyObservableCollection<IImageButtonViewModel>();
-    public ReadOnlyObservableCollection<IImageButtonViewModel> Games => _games;
+    private ReadOnlyObservableCollection<IImageButtonViewModel> _loadouts = Initializers.ReadOnlyObservableCollection<IImageButtonViewModel>();
+    public ReadOnlyObservableCollection<IImageButtonViewModel> Loadouts => _loadouts;
 
-    public Subject<SpineButtonAction> Activations { get; } = new();
-
-    [Reactive]
-    public ILeftMenuViewModel LeftMenu { get; set; } =
-        Initializers.ILeftMenuViewModel;
-
-    private readonly Subject<SpineButtonAction> _actions = new();
-    private readonly ILogger<SpineViewModel> _logger;
-    private readonly IGameLeftMenuViewModel _gameLeftMenuViewModel;
-    private readonly IHomeLeftMenuViewModel _homeLeftMenuViewModel;
-    private readonly IDownloadsViewModel _downloadsViewModel;
-    public IObservable<SpineButtonAction> Actions => _actions;
-
-    public SpineViewModel(ILogger<SpineViewModel> logger,
+    public SpineViewModel(
+        IServiceProvider serviceProvider,
+        ILogger<SpineViewModel> logger,
         ILoadoutRegistry loadoutRegistry,
-        IDataStore dataStore,
+        IWindowManager windowManager,
         IIconButtonViewModel addButtonViewModel,
         IIconButtonViewModel homeButtonViewModel,
         ISpineDownloadButtonViewModel spineDownloadsButtonViewModel,
         IDownloadsViewModel downloadsViewModel,
         IHomeLeftMenuViewModel homeLeftMenuViewModel,
-        IGameLeftMenuViewModel gameLeftMenuViewModel,
-        IRouter router,
-        IServiceProvider provider)
+        IGameLeftMenuViewModel gameLeftMenuViewModel)
     {
         _logger = logger;
+        _windowManager = windowManager;
 
         Home = homeButtonViewModel;
-        Add = addButtonViewModel;
         Downloads = spineDownloadsButtonViewModel;
-
-        _homeLeftMenuViewModel = homeLeftMenuViewModel;
-        _downloadsViewModel = downloadsViewModel;
-        _gameLeftMenuViewModel = gameLeftMenuViewModel;
-
 
         this.WhenActivated(disposables =>
         {
-            router.Messages
-                .OnUI()
-                .SubscribeWithErrorLogging(logger, HandleMessage)
-                .DisposeWith(disposables);
-
-            loadoutRegistry.Games
-                .Transform(g => (IGame)g)
-                .Transform(game =>
+            loadoutRegistry.Loadouts
+                .TransformAsync(async loadout =>
                 {
-                    using var iconStream = game.Icon.GetStreamAsync().Result;
-                    var vm = provider.GetRequiredService<IImageButtonViewModel>();
-                    vm.Name = game.Name;
+                    await using var iconStream = await ((IGame)loadout.Installation.Game).Icon.GetStreamAsync();
+
+                    var vm = serviceProvider.GetRequiredService<IImageButtonViewModel>();
+                    vm.Name = loadout.Name;
                     vm.Image = LoadImageFromStream(iconStream);
                     vm.IsActive = false;
-                    vm.Tag = game;
-                    vm.Click = ReactiveCommand.Create(() => NavigateToGame(game));
+                    vm.Click = ReactiveCommand.Create(() => ChangeToLoadoutWorkspace(loadout.LoadoutId));
                     return vm;
                 })
                 .OnUI()
-                .Bind(out _games)
-                .SubscribeWithErrorLogging(logger)
+                .Bind(out _loadouts)
+                .SubscribeWithErrorLogging()
                 .DisposeWith(disposables);
 
             Home.Click = ReactiveCommand.Create(NavigateToHome);
 
-            Add.Click = ReactiveCommand.Create(NavigateToAdd);
-
             Downloads.Click = ReactiveCommand.Create(NavigateToDownloads);
-
-            Activations
-                .SubscribeWithErrorLogging(logger, HandleActivation)
-                .DisposeWith(disposables);
 
             // For now just select home on startup
             NavigateToHome();
@@ -127,85 +96,42 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
     private void NavigateToHome()
     {
         _logger.LogTrace("Home selected");
-        _actions.OnNext(new SpineButtonAction(Type.Home));
-        LeftMenu = _homeLeftMenuViewModel;
+        // TODO:
     }
 
-    private void NavigateToAdd()
+    private readonly Dictionary<LoadoutId, WorkspaceId> _loadoutWorkspaces = new();
+
+    private void ChangeToLoadoutWorkspace(LoadoutId loadoutId)
     {
-        _logger.LogTrace("Add selected");
-        _actions.OnNext(new SpineButtonAction(Type.Add));
-    }
-    private void NavigateToGame(IGame game)
-    {
-        _logger.LogTrace("Game {Game} selected", game);
-        _actions.OnNext(new SpineButtonAction(Type.Game, game));
-        _gameLeftMenuViewModel.Game = game;
-        LeftMenu = _gameLeftMenuViewModel;
+        if (!_windowManager.TryGetActiveWindow(out var window)) return;
+        var workspaceController = window.WorkspaceController;
+
+        if (!_loadoutWorkspaces.TryGetValue(loadoutId, out var existingWorkspaceId))
+        {
+            var pageData = new PageData
+            {
+                FactoryId = LoadoutGridPageFactory.StaticId,
+                Context = new LoadoutGridContext
+                {
+                    LoadoutId = loadoutId
+                }
+            };
+
+            var newWorkspace = workspaceController.CreateWorkspace(
+                new LoadoutContext(loadoutId),
+                pageData
+            );
+
+            existingWorkspaceId = newWorkspace.Id;
+            _loadoutWorkspaces.Add(loadoutId, existingWorkspaceId);
+        }
+
+        workspaceController.ChangeActiveWorkspace(existingWorkspaceId);
     }
 
     private void NavigateToDownloads()
     {
         _logger.LogTrace("Downloads selected");
-        _actions.OnNext(new SpineButtonAction(Type.Download));
-        LeftMenu = _downloadsViewModel;
-    }
-
-    private void HandleMessage(IRoutingMessage message)
-    {
-        switch (message)
-        {
-            case NavigateToLoadout navigateToLoadout:
-                NavigateToGame(navigateToLoadout.Game);
-                break;
-            case NavigateToDownloads _:
-                NavigateToDownloads();
-                break;
-        }
-    }
-
-    private void HandleActivation(SpineButtonAction action)
-    {
-        _logger.LogTrace("Activation {Action}", action);
-        switch (action.Type)
-        {
-            case Type.Game:
-            {
-                Home.IsActive = false;
-                Add.IsActive = false;
-                Downloads.IsActive = false;
-                foreach (var game in Games)
-                {
-                    game.IsActive = ReferenceEquals(game.Tag, action.Game);
-                }
-
-                break;
-            }
-            case Type.Download:
-            {
-                Home.IsActive = false;
-                Add.IsActive = false;
-                Downloads.IsActive = true;
-                foreach (var game in Games)
-                {
-                    game.IsActive = false;
-                }
-                break;
-            }
-            case Type.Home:
-            case Type.Add:
-            default:
-            {
-                Home.IsActive = action.Type == Type.Home;
-                Add.IsActive = action.Type == Type.Add;
-                Downloads.IsActive = false;
-                foreach (var game in Games)
-                {
-                    game.IsActive = false;
-                }
-
-                break;
-            }
-        }
+        // TODO:
     }
 }

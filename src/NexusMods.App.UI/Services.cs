@@ -29,7 +29,6 @@ using NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadSize;
 using NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadStatus;
 using NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadVersion;
 using NexusMods.App.UI.RightContent.Downloads;
-using NexusMods.App.UI.RightContent.Home;
 using NexusMods.App.UI.RightContent.LoadoutGrid;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModCategory;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModEnabled;
@@ -37,7 +36,6 @@ using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModInstalled;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModName;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModVersion;
 using NexusMods.App.UI.RightContent.MyGames;
-using NexusMods.App.UI.Routing;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Paths;
@@ -79,7 +77,6 @@ public static class Services
             .AddTransient<MainWindow>()
 
             // Services
-            .AddSingleton<IRouter, ReactiveMessageRouter>()
             .AddSingleton<IOverlayController, OverlayController>()
             .AddTransient<IImageCache, ImageCache>()
 
@@ -89,15 +86,12 @@ public static class Services
             .AddTransient(typeof(DataGridColumnFactory<,,>))
             .AddSingleton<IViewLocator, InjectedViewLocator>()
 
-            .AddViewModel<CompletedViewModel, ICompletedViewModel>()
             .AddViewModel<DevelopmentBuildBannerViewModel, IDevelopmentBuildBannerViewModel>()
             .AddViewModel<DownloadsViewModel, IDownloadsViewModel>()
             .AddViewModel<FoundGamesViewModel, IFoundGamesViewModel>()
             .AddViewModel<GameLeftMenuViewModel, IGameLeftMenuViewModel>()
             .AddViewModel<GameWidgetViewModel, IGameWidgetViewModel>()
-            .AddViewModel<HistoryViewModel, IHistoryViewModel>()
             .AddViewModel<HomeLeftMenuViewModel, IHomeLeftMenuViewModel>()
-            .AddViewModel<HomeViewDesignerViewModel, IHomeViewModel>()
             .AddViewModel<IconButtonViewModel, IIconButtonViewModel>()
             .AddViewModel<IconViewModel, IIconViewModel>()
             .AddViewModel<ImageButtonViewModel, IImageButtonViewModel>()
@@ -111,7 +105,6 @@ public static class Services
             .AddViewModel<ModVersionViewModel, IModVersionViewModel>()
             .AddViewModel<MyGamesViewModel, IMyGamesViewModel>()
             .AddViewModel<NexusLoginOverlayViewModel, INexusLoginOverlayViewModel>()
-            .AddViewModel<PlaceholderDesignViewModel, IPlaceholderViewModel>()
             .AddViewModel<SpineViewModel, ISpineViewModel>()
             .AddViewModel<TopBarViewModel, ITopBarViewModel>()
             .AddViewModel<SpineDownloadButtonViewModel, ISpineDownloadButtonViewModel>()
@@ -126,15 +119,12 @@ public static class Services
             .AddViewModel<UpdaterViewModel, IUpdaterViewModel>()
 
             // Views
-            .AddView<CompletedView, ICompletedViewModel>()
             .AddView<DevelopmentBuildBannerView, IDevelopmentBuildBannerViewModel>()
             .AddView<DownloadsView, IDownloadsViewModel>()
             .AddView<FoundGamesView, IFoundGamesViewModel>()
             .AddView<GameLeftMenuView, IGameLeftMenuViewModel>()
             .AddView<GameWidget, IGameWidgetViewModel>()
-            .AddView<HistoryView, IHistoryViewModel>()
             .AddView<HomeLeftMenuView, IHomeLeftMenuViewModel>()
-            .AddView<HomeView, IHomeViewModel>()
             .AddView<IconButton, IIconButtonViewModel>()
             .AddView<IconView, IIconViewModel>()
             .AddView<ImageButton, IImageButtonViewModel>()
@@ -150,7 +140,6 @@ public static class Services
             .AddView<ModVersionView, IModVersionViewModel>()
             .AddView<MyGamesView, IMyGamesViewModel>()
             .AddView<NexusLoginOverlayView, INexusLoginOverlayViewModel>()
-            .AddView<PlaceholderView, IPlaceholderViewModel>()
             .AddView<Spine, ISpineViewModel>()
             .AddView<TopBarView, ITopBarViewModel>()
             .AddView<SpineDownloadButtonView, ISpineDownloadButtonViewModel>()
@@ -164,16 +153,18 @@ public static class Services
             .AddView<UpdaterView, IUpdaterViewModel>()
 
             // workspace system
-            .AddSingleton<IWorkspaceController, WorkspaceController>()
+            .AddSingleton<IWindowManager, WindowManager>()
             .AddViewModel<WorkspaceViewModel, IWorkspaceViewModel>()
             .AddViewModel<PanelViewModel, IPanelViewModel>()
             .AddViewModel<AddPanelButtonViewModel, IAddPanelButtonViewModel>()
+            .AddViewModel<AddPanelDropDownViewModel, IAddPanelDropDownViewModel>()
             .AddViewModel<PanelTabHeaderViewModel, IPanelTabHeaderViewModel>()
             .AddViewModel<NewTabPageViewModel, INewTabPageViewModel>()
             .AddViewModel<NewTabPageSectionViewModel, INewTabPageSectionViewModel>()
             .AddView<WorkspaceView, IWorkspaceViewModel>()
             .AddView<PanelView, IPanelViewModel>()
             .AddView<AddPanelButtonView, IAddPanelButtonViewModel>()
+            .AddView<AddPanelDropDownView, IAddPanelDropDownViewModel>()
             .AddView<PanelTabHeaderView, IPanelTabHeaderViewModel>()
             .AddView<NewTabPageView, INewTabPageViewModel>()
 
