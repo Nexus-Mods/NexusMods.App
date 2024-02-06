@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
+using Avalonia.Threading;
 using DynamicData;
 using Microsoft.Extensions.Logging;
 using ReactiveUI;
@@ -27,11 +28,6 @@ internal sealed class WindowManager : ReactiveObject, IWindowManager
 
     public bool TryGetActiveWindow([NotNullWhen(true )] out IWorkspaceWindow? window)
     {
-        if (ActiveWindowId == WindowId.DefaultValue && _allWindowIdSource.Count == 1)
-        {
-            return TryGetWindow(_allWindowIdSource.Items.First(), out window);
-        }
-
         return TryGetWindow(ActiveWindowId, out window);
     }
 
@@ -56,6 +52,8 @@ internal sealed class WindowManager : ReactiveObject, IWindowManager
 
     public void RegisterWindow(IWorkspaceWindow window)
     {
+        Dispatcher.UIThread.VerifyAccess();
+
         if (!_windows.TryAdd(window.WindowId, new WeakReference<IWorkspaceWindow>(window)))
         {
             _logger.LogError("Unable to register Window with ID {WindowId}", window.WindowId);
@@ -63,6 +61,7 @@ internal sealed class WindowManager : ReactiveObject, IWindowManager
         }
 
         _allWindowIdSource.Edit(list => list.Add(window.WindowId));
+        ActiveWindowId = window.WindowId;
     }
 
     public void UnregisterWindow(IWorkspaceWindow window)
