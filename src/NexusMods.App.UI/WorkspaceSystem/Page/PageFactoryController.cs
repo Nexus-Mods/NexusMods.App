@@ -52,6 +52,10 @@ public class PageFactoryController
     /// <summary>
     /// Returns all <see cref="PageDiscoveryDetails"/> of every factory given a <see cref="IWorkspaceContext"/>
     /// </summary>
+    /// <remarks>
+    /// <see cref="PageDiscoveryDetails"/> are used to provide information about what pages the factories can
+    /// create in a given <see cref="IWorkspaceContext"/>.
+    /// </remarks>
     public IEnumerable<PageDiscoveryDetails> GetAllDetails(IWorkspaceContext workspaceContext)
     {
         foreach (var kv in _factories)

@@ -19,6 +19,9 @@ public interface IPageFactory
     /// </summary>
     public Page Create(IPageFactoryContext context);
 
+    /// <summary>
+    /// Returns details about every page that can be created with this factory in the given <see cref="IWorkspaceContext"/>.
+    /// </summary>
     public IEnumerable<PageDiscoveryDetails?> GetDiscoveryDetails(IWorkspaceContext workspaceContext);
 }
 
