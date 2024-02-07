@@ -16,7 +16,7 @@
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="BorderBrush" Value="{StaticResource ElementStrokeTranslucentWeak}"/>
 
-            <Style Selector="^ Border#AddTabButton1Container, ^ Border#TabHeaderAddAndScrollBorder, ^ Border#TabHeaderSideAreaBorder">
+            <Style Selector="^ Border#AddTabButton1Container, ^ Border#TabHeaderAddAndScrollBorder, ^ Border#TabHeaderSideAreaBorder, ^ Border#ScrollLeftButtonBorder">
                 <Setter Property="BorderThickness" Value="0 0 0 1"/>
                 <Setter Property="BorderBrush" Value="{StaticResource ElementStrokeTranslucentWeak}" />
             </Style>
