@@ -142,6 +142,59 @@ Regardless of platform, similarly to Bethesda Script Extenders, SMAPI comes with
 - Windows (Steam and GOG): `StardewModdingAPI.exe` can be launched directly. Alternatively, [Steam](https://stardewvalleywiki.com/Modding:Installing_SMAPI_on_Windows#Steam) and [GOG Galaxy](https://stardewvalleywiki.com/Modding:Installing_SMAPI_on_Windows#GOG_Galaxy) can be configured to launch `StardewModdingAPI.exe` instead of the original game executable `Stardew Valley.exe`. This is only needed if you want achievements and playtime tracking to work.
 - Windows ([Xbox Game Pass](https://stardewvalleywiki.com/Modding:Installing_SMAPI_on_Windows#Xbox_app)): the original game executable `Stardew Valley.exe` has to be replaced with `StardewModdingAPI.exe` for mods to work.
 
+## Mod Conflicts
+
+### File Conflicts
+
+Before SMAPI Content Packs and the Content Patcher were a thing, assets had to be changed by replacing the raw XNB files in the `Content` directory. Most XNB mods have been [migrated](https://forums.stardewvalley.net/threads/migrating-xnb-mods-to-content-patcher-packs.564/) to the Content Patcher format, but some older mods didn't receive an "official" update. The wiki contains a [list of unofficial updates](https://stardewvalleywiki.com/Modding:Using_XNB_mods#Alternatives_using_Content_Patcher).
+
+Two mods that replace the same XNB file are in conflict with each other and the order in which they are deployed determines the winner.
+
+### C# Mods
+
+C# Mods can target an incompatible version of SMAPI or of the game itself. Conflicts between SMAPI mods are logic/functionality based.
+
+### Content Packs
+
+SMAPI Content Packs on their own don't do anything. They require a [Content Pack Framework](https://stardewvalleywiki.com/Modding:Content_pack_frameworks) which is a SMAPI C# Mod that updates the assets based on rules defined in the Content Pack.
+
+Generally speaking, Content Packs are applied by the Content Pack Framework in the order that SMAPI loads them. This order is defined by the dependencies in the `manifest.json` file.
+
+As an example, let's say we have three mods: `Pathoschild.ContentPatcherr`, `Foo` and `Bar`.
+
+```json
+{
+  "UniqueID": "Pathoschild.ContentPatcher"
+}
+```
+
+```json
+{
+  "UniqueID": "Foo",
+  "ContentPackFor": {
+    "UniqueID": "Pathoschild.ContentPatcher"
+  }
+}
+```
+
+```json
+{
+  "UniqueID": "Bar",
+  "ContentPackFor": {
+    "UniqueID": "Pathoschild.ContentPatcher"
+  },
+  "Dependencies": [
+    {
+      "UniqueID": "Foo"
+    }
+  ]
+}
+```
+
+SMAPI will first load the C# mod `Pathoschild.ContentPatcher`. The Content Patcher mod will get a list of owned Content Packs from SMAPI. This list is already sorted for dependencies. In the example above, `Foo` will be applied _before_ `Bar` because `Bar` has a dependency on `Foo`. If both `Foo` and `Bar` edit the same asset, the edits of `Bar` will be applied last.
+
+Detecting if two Content Packs are in conflict with one another depends on the Content Pack Framework. Each framework has its own way of modifying existing, or adding new assets.
+
 ## Community
 
 - [Stardew Valley Discord](https://discord.gg/stardewvalley)
