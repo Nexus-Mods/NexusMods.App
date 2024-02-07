@@ -110,6 +110,7 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
             this.WhenAnyValue(vm => vm.LoadoutId)
                 .SelectMany(loadoutRegistry.RevisionsAsLoadouts)
                 .Select(loadout => loadout.Name)
+                .OnUI()
                 .Do(loadoutName =>
                 {
                     GetWorkspaceController().SetTabTitle(loadoutName, WorkspaceId, PanelId, TabId);
