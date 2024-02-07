@@ -32,6 +32,7 @@ public partial class PanelView : ReactiveUserControl<IPanelViewModel>
                 .Subscribe()
                 .DisposeWith(disposables);
 
+            // update scroll buttons and AddTab button (show left aligned or right aligned, depending on the scrollbar visibility)
             Observable.FromEventPattern<ScrollChangedEventArgs>(
                     addHandler => TabHeaderScrollViewer.ScrollChanged += addHandler,
                     removeHandler => TabHeaderScrollViewer.ScrollChanged -= removeHandler
@@ -43,16 +44,10 @@ public partial class PanelView : ReactiveUserControl<IPanelViewModel>
 
                     // the first button is inside the scroll area
                     AddTabButton1Container.IsVisible = !isScrollbarVisible;
+
                     // the second button is fixed on the right side
                     AddTabButton2.IsVisible = isScrollbarVisible;
-                })
-                .DisposeWith(disposables);
 
-            Observable.FromEventPattern<ScrollChangedEventArgs>(
-                    addHandler => TabHeaderScrollViewer.ScrollChanged += addHandler,
-                    removeHandler => TabHeaderScrollViewer.ScrollChanged -= removeHandler)
-                .SubscribeWithErrorLogging(_ =>
-                {
                     var scrollBarMaximum = TabHeaderScrollViewer.ScrollBarMaximum;
                     var offset = TabHeaderScrollViewer.Offset;
 
