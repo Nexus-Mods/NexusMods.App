@@ -1,4 +1,4 @@
-!!! note "The Nexus App is a Work in Progress"
+!!! note "The Nexus Mods App is a Work in Progress"
 
     This documentation currently only contains information for programmers, contributors, and curious people alike.
 
@@ -10,7 +10,7 @@
 	<br/> <br/>
     Mod With Confidence
     <br/>
-    The <i>future</i> of modding with <i>Nexus</i>.
+    The <i>future</i> of modding with <i>Nexus Mods</i>.
     <br/><br/>
     <a href="https://github.com/Nexus-Mods/NexusMods.App/actions/workflows/clean_environment_tests.yaml" target="_blank">
         <img src="https://github.com/Nexus-Mods/NexusMods.App/actions/workflows/clean_environment_tests.yaml/badge.svg" alt="CI Tests">
@@ -25,7 +25,7 @@ Nexus Mods App is a mod installer, creator and manager for all your popular game
 Easy to use, runs on your standard Windows PC and Linux alike. Don't waste time troubleshooting, play your games,
 fill those knees with arrows and most importantly, ***Have Fun***!
 
-!!! info "The Nexus App is about creating that Modding experience that *'Just Works'* for old and new games alike!"
+!!! info "The Nexus Mods App is about creating that Modding experience that *'Just Works'* for old and new games alike!"
 
 ### Mod with Confidence
 
@@ -70,7 +70,7 @@ Virtual FileSystems:
 * You have to run xEdit through [Mod Organizer 2][mod-organizer-2] for it to see your mod list (Bethesda Games)
 * Files end up in a different place from where the end user expects them.
 
-#### Nexus App Approach
+#### Nexus Mods App Approach
 
 !!! nexus "The Nexus Mods App aims to merge the mental simplicity of manual modding, with the hygiene of existing mod installers, and a promise of: "you can always go back to what last worked""
 
@@ -93,7 +93,7 @@ Further Reading: [Comparison of File Management Systems][comparison-fms]
 
 ## The Development Team
 
-!!! nexus "The Nexus App is developed by a very diverse, talented group of people."
+!!! nexus "The Nexus Mods App is developed by a very diverse, talented group of people."
 
 - Tim ([Halgari][halgari]): Team lead and author of [Wabbajack][wabbajack], 20 years building large computer systems, and most notably a big fan of [Clojure][clojure].
 
@@ -113,7 +113,7 @@ Former maintainers:
 
 - [Tannin][tannin]: Created [Vortex][vortex], and was the lead developer throughout most of its lifetime.
 
-!!! tip "Development of the Nexus App is funded through your subscriptions of [nexus-premium][nexus-premium]"
+!!! tip "Development of the Nexus Mods App is funded through your subscriptions of [nexus-premium][nexus-premium]"
 
 If you enjoy using the App, consider subscribing, thanks!
 
