@@ -38,7 +38,7 @@ Stardew Valley and SMAPI are written in C# with .NET 5. SMAPI exposes [APIs](htt
   "Version": "1.0.0",
   "Description": "One or two sentences about the mod.",
   "UniqueID": "YourName.YourProjectName",
-  "EntryDll": "YourDllFileName.dll", 
+  "EntryDll": "YourDllFileName.dll",
   "UpdateKeys": ["Nexus:1"],
   "MinimumApiVersion": "3.14.0",
   "Dependencies": [
@@ -98,7 +98,11 @@ This grouping is completely optional and has no functional difference to a flat 
 
 If a mod doesn't have any special uninstall instructions (likely game related), the mod folder can just be deleted. A folder can also be _disabled_ by adding a dot in front of the folder name: `.Mod A`. Folders starting with a dot are ignored by SMAPI.
 
-#### SMAPI itself
+#### Config Files
+
+If a SMAPI mod has settings can be tweaked by the user, then SMAPI will generate a `config.json` file inside the mod folder. Generation only happens after running the game. See [Pathoschild/SMAPI#928](https://github.com/Pathoschild/SMAPI/issues/928) for an issue to generate a `config.schema.json` file as well.
+
+### SMAPI itself
 
 SMAPI itself comes with a custom [installer](https://github.com/Pathoschild/SMAPI/tree/develop/src/SMAPI.Installer). The [downloaded archive](https://www.nexusmods.com/stardewvalley/mods/2400?tab=files) contains the following important files:
 
