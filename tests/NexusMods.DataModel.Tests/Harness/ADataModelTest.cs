@@ -27,6 +27,7 @@ namespace NexusMods.DataModel.Tests.Harness;
 public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
 {
     public AbsolutePath DataZipLzma => FileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine("Resources/data_zip_lzma.zip");
+    public AbsolutePath DataZipLzmaWithExtraFile => FileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine("Resources/data_zip_lzma_withextraFile.zip");
     public AbsolutePath Data7ZLzma2 => FileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine("Resources/data_7zip_lzma2.7z");
 
     public AbsolutePath DataTest =>
