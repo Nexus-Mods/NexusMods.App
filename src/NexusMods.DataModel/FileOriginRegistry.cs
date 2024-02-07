@@ -31,6 +31,8 @@ public class FileOriginRegistry : IFileOriginRegistry
     /// <param name="logger"></param>
     /// <param name="extractor"></param>
     /// <param name="fileStore"></param>
+    /// <param name="temporaryFileManager"></param>
+    /// <param name="store"></param>
     public FileOriginRegistry(ILogger<FileOriginRegistry> logger, IFileExtractor extractor,
         IFileStore fileStore, TemporaryFileManager temporaryFileManager, IDataStore store)
     {
@@ -60,26 +62,56 @@ public class FileOriginRegistry : IFileOriginRegistry
     /// <inheritdoc />
     public async ValueTask<DownloadId> RegisterFolder(AbsolutePath path, AArchiveMetaData metaData, CancellationToken token = default)
     {
+        List<ArchivedFileEntry> filesToBackup = new();
         List<ArchivedFileEntry> files = new();
         List<RelativePath> paths = new();
+
+        // Build a Hash Table of all currently known files. We do this to deduplicate files between downloads.
+        // TODO: This may need some benchmarking, it's unknown how well this scales across huge loadouts.
+        var existingDownloadIds = _dataStore.AllIds(EntityCategory.DownloadMetadata);
+        var knownHashes = new HashSet<ulong>();
+        foreach (var id in existingDownloadIds)
+        {
+            var ent = _dataStore.Get<DownloadAnalysis>(id);
+
+            // shouldn't be null but technically possible in case of concurrent modifications
+            if (ent == null)
+                continue;
+
+            foreach (var content in ent.Contents)
+                knownHashes.Add(content.Hash.Value);
+        }
 
         _logger.LogInformation("Analyzing archive: {Name}", path);
         foreach (var file in path.EnumerateFiles())
         {
             // TODO: report this as progress
             var hash = await file.XxHash64Async(token: token);
-
-            files.Add(new ArchivedFileEntry
+            var archivedEntry = new ArchivedFileEntry
             {
                 Hash = hash,
                 Size = file.FileInfo.Size,
                 StreamFactory = new NativeFileStreamFactory(file)
-            });
+            };
+
+            // If the hash isn't known, we should back it up.
             paths.Add(file.RelativeTo(path));
+            files.Add(archivedEntry);
+            if (!knownHashes.Contains(hash.Value))
+                filesToBackup.Add(archivedEntry);
         }
 
-        _logger.LogInformation("Archiving {Count} files and {Size} of data", files.Count, files.Sum(f => f.Size));
-        await _fileStore.BackupFiles(files, token);
+        // We don't want to risk creating an empty archive depending on underlying implementation if
+        // it's all duplicates.
+        if (filesToBackup.Count > 0)
+        {
+            _logger.LogInformation("Archiving {Count} files and {Size} of data", filesToBackup.Count, filesToBackup.Sum(f => f.Size));
+            await _fileStore.BackupFiles(filesToBackup, token);
+        }
+        else
+        {
+            _logger.LogInformation("All files are duplicates, there is nothing to backup");
+        }
 
         Hash finalHash;
         Size finalSize;
@@ -109,9 +141,10 @@ public class FileOriginRegistry : IFileOriginRegistry
                 }).ToList(),
             MetaData = metaData
         };
+
+        _dataStore.AllIds(EntityCategory.DownloadMetadata);
         analysis.EnsurePersisted(_dataStore);
         return analysis.DownloadId;
-
     }
 
     /// <inheritdoc />
