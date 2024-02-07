@@ -14,36 +14,40 @@
             <Border Grid.Row="0" x:Name="TabHeaderBorder">
                 <Grid ColumnDefinitions="*, Auto">
                     <Grid Grid.Column="0" ColumnDefinitions="Auto, *, Auto">
-                        <Button Grid.Column="0"
-                                x:Name="ScrollLeftButton"
-                                Margin="24 12 12 12"
-                                Classes="PanelTitlebar ScrollLeft" />
+                        <Border Grid.Column="0" x:Name="ScrollLeftButtonBorder">
+                            <Button x:Name="ScrollLeftButton"
+                                    Margin="24 12 12 12"
+                                    Classes="PanelTitlebar ScrollLeft" />
+                        </Border>
 
                         <ScrollViewer Grid.Column="1"
                                       x:Name="TabHeaderScrollViewer"
                                       VerticalScrollBarVisibility="Disabled"
                                       HorizontalScrollBarVisibility="Hidden">
-                            <StackPanel Orientation="Horizontal">
-                                <ItemsControl x:Name="TabHeaders" Height="52">
-                                    <ItemsControl.ItemsPanel>
-                                        <ItemsPanelTemplate>
-                                            <StackPanel Orientation="Horizontal" Spacing="0" />
-                                        </ItemsPanelTemplate>
-                                    </ItemsControl.ItemsPanel>
+                            <Grid ColumnDefinitions="Auto, *">
+                                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                                    <ItemsControl x:Name="TabHeaders" Height="52">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <StackPanel Orientation="Horizontal" Spacing="0" />
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
 
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate DataType="{x:Type workspace:IPanelTabViewModel}">
-                                            <reactive:ViewModelViewHost ViewModel="{CompiledBinding Header}" />
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
-
-                                <Border x:Name="AddTabButton1Container">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate DataType="{x:Type workspace:IPanelTabViewModel}">
+                                                <reactive:ViewModelViewHost ViewModel="{CompiledBinding Header}" />
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </StackPanel>
+                                <Border Grid.Column="1" x:Name="AddTabButton1Container"
+                                        HorizontalAlignment="Stretch">
                                     <Button x:Name="AddTabButton1"
                                             Margin="12 12 10 12"
                                             Classes="PanelTitlebar AddTab" />
                                 </Border>
-                            </StackPanel>
+                            </Grid>
+
                         </ScrollViewer>
 
                         <Border Grid.Column="2" x:Name="TabHeaderAddAndScrollBorder">

@@ -32,12 +32,11 @@ public partial class PanelView : ReactiveUserControl<IPanelViewModel>
                 .Subscribe()
                 .DisposeWith(disposables);
 
-            // toggle visibility of the scrollbar related elements
-            this.WhenAnyValue(
-                    view => view.ViewModel!.ActualBounds,
-                    view => view.TabHeaderScrollViewer.Extent,
-                    view => view.TabHeaderScrollViewer.Viewport,
-                    (_, extent, viewport) => extent.Width > viewport.Width)
+            // update scroll buttons and AddTab button (show left aligned or right aligned, depending on the scrollbar visibility)
+            Observable.FromEventPattern<ScrollChangedEventArgs>(
+                    addHandler => TabHeaderScrollViewer.ScrollChanged += addHandler,
+                    removeHandler => TabHeaderScrollViewer.ScrollChanged -= removeHandler
+                ).Select(_ => TabHeaderScrollViewer.Extent.Width > TabHeaderScrollViewer.Viewport.Width)
                 .SubscribeWithErrorLogging(isScrollbarVisible =>
                 {
                     ScrollLeftButton.IsVisible = isScrollbarVisible;
@@ -45,32 +44,13 @@ public partial class PanelView : ReactiveUserControl<IPanelViewModel>
 
                     // the first button is inside the scroll area
                     AddTabButton1Container.IsVisible = !isScrollbarVisible;
+
                     // the second button is fixed on the right side
                     AddTabButton2.IsVisible = isScrollbarVisible;
-                })
-                .DisposeWith(disposables);
 
-            this.WhenAnyValue(
-                    view => view.ViewModel!.ActualBounds,
-                    view => view.AddTabButton1Container.Bounds,
-                    (_, bounds) => bounds)
-                .SubscribeWithErrorLogging(bounds =>
-                {
-                    var viewport = TabHeaderScrollViewer.Viewport;
-                    var remaining = viewport.Width - bounds.X;
+                    var scrollBarMaximum = TabHeaderScrollViewer.ScrollBarMaximum;
+                    var offset = TabHeaderScrollViewer.Offset;
 
-                    AddTabButton1Container.Width = remaining;
-                })
-                .DisposeWith(disposables);
-
-            this.WhenAnyValue(
-                    view => view.ViewModel!.ActualBounds,
-                    view => view.TabHeaderScrollViewer.ScrollBarMaximum,
-                    view => view.TabHeaderScrollViewer.Offset,
-                    (_, a, b) => (a, b))
-                .SubscribeWithErrorLogging(tuple =>
-                {
-                    var (scrollBarMaximum, offset) = tuple;
                     ScrollLeftButton.IsEnabled = offset.X > 0;
                     ScrollRightButton.IsEnabled = !offset.X.IsCloseTo(scrollBarMaximum.X);
                 })
