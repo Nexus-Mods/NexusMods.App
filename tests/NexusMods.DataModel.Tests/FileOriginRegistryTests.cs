@@ -18,7 +18,10 @@ namespace NexusMods.DataModel.Tests;
 
 public class FileOriginRegistryTests : ADataModelTest<FileOriginRegistryTests>
 {
-    public FileOriginRegistryTests(IServiceProvider provider) : base(provider) { }
+    public FileOriginRegistryTests(IServiceProvider provider) : base(provider)
+    {
+
+    }
 
     [Fact]
     public async Task RegisterFolder_ShouldRegisterCorrectly()

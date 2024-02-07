@@ -12,6 +12,7 @@ using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Serialization;
+using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
@@ -83,6 +84,7 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
 
         Game = provider1.GetRequiredService<StubbedGame>();
         Install = Game.Installations.First();
+        ClearDataStore();
     }
 
     public void Dispose()
@@ -141,5 +143,19 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
     public Task DisposeAsync()
     {
         return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Clears data store of content from previous runs.
+    /// Only valid if tests are ran non-concurrently.
+    /// </summary>
+    private void ClearDataStore()
+    {
+        // TODO: Replace this with something more performant.
+        //       This is not being done now as we'll be switching from SQLite to RocksDB with EventSourcing
+        //       , therefore code will change there.
+        foreach (var category in Enum.GetValues<EntityCategory>())
+        foreach (var id in DataStore.AllIds(category))
+            DataStore.Delete(id);
     }
 }
