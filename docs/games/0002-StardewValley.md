@@ -154,6 +154,8 @@ Two mods that replace the same XNB file are in conflict with each other and the 
 
 C# Mods can target an incompatible version of SMAPI or of the game itself. Conflicts between SMAPI mods are logic/functionality based.
 
+SMAPI Mods can define a [minimum SMAPI version](https://stardewvalleywiki.com/Modding:Modder_Guide/APIs/Manifest#Minimum_SMAPI_version). Since SMAPI versions are tied to game versions, you indirectly specify what game versions the mod supports.
+
 ### Content Packs
 
 SMAPI Content Packs on their own don't do anything. They require a [Content Pack Framework](https://stardewvalleywiki.com/Modding:Content_pack_frameworks) which is a SMAPI C# Mod that updates the assets based on rules defined in the Content Pack.
