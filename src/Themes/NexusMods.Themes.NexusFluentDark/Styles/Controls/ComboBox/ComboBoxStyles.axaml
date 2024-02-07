@@ -3,10 +3,16 @@
         xmlns:workspaceSystem="clr-namespace:NexusMods.App.UI.WorkspaceSystem;assembly=NexusMods.App.UI">
     <Design.PreviewWith>
         <Border Padding="20" Height="300">
-            <ComboBox SelectedIndex="0" Classes="AddPanelDropDown">
-                <ComboBoxItem Content="Item 1" />
-                <ComboBoxItem Content="Item 2" />
-            </ComboBox>
+            <StackPanel Orientation="Vertical" Spacing="4">
+                <ComboBox SelectedIndex="0" Classes="AddPanelDropDown">
+                    <ComboBoxItem Content="Item 1" />
+                    <ComboBoxItem Content="Item 2" />
+                </ComboBox>
+                <ComboBox SelectedIndex="0" Classes="AddPanelDropDown" IsEnabled="False">
+                    <ComboBoxItem Content="Item 1" />
+                    <ComboBoxItem Content="Item 2" />
+                </ComboBox>
+            </StackPanel>
         </Border>
     </Design.PreviewWith>
 
@@ -77,8 +83,20 @@
             </Style>
 
             <Style Selector="^ ComboBoxItem workspaceSystem|AddPanelButtonView Button">
-                <Setter Property="CornerRadius" Value="0"/>
+                <Setter Property="CornerRadius" Value="0" />
             </Style>
+        </Style>
+
+        <Style Selector="^:disabled /template/ Border#Background">
+            <Setter Property="Background" Value="{StaticResource ElementBackgroundTransparentBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource ElementStrokeTranslucentWeakBrush}" />
+        </Style>
+
+        <Style Selector="^:disabled PathIcon#DropDownGlyph">
+            <Setter Property="Foreground">
+                <SolidColorBrush Color="{StaticResource ElementForegroundNeutralSubdued}"
+                                 Opacity="{StaticResource OpacityDisabledElement}" />
+            </Setter>
         </Style>
     </Style>
 
