@@ -1,4 +1,5 @@
 using JetBrains.Annotations;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.GameCapabilities;
 using NexusMods.Abstractions.GameLocators.Stores.GOG;
@@ -79,7 +80,7 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
 
     public override IEnumerable<IModInstaller> Installers => new IModInstaller[]
     {
-        SMAPIInstaller.Create(_serviceProvider),
+        _serviceProvider.GetRequiredService<SMAPIInstaller>(),
         SMAPIModInstaller.Create(_serviceProvider)
     };
 

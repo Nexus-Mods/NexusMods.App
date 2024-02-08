@@ -34,12 +34,13 @@ public class FomodXmlInstallerTests : AModInstallerTest<SkyrimSpecialEdition, Fo
         var info = new ModInstallerInfo()
         {
             ArchiveFiles = tree,
-            BaseModId = ModId.NewId(), // unused
+            BaseModId = ModId.NewId(),
             Locations = install.LocationsRegister,
             GameName = install.Game.Name,
             Store = install.Store,
             Version = install.Version,
-            ModName = "" // unused
+            ModName = "",
+            ArchiveMetaData = null
         };
         return await installer.GetModsAsync(info);
     }
