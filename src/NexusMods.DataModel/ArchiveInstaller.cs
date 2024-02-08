@@ -94,7 +94,7 @@ public class ArchiveInstaller : IArchiveInstaller
                     try
                     {
                         var install = loadout.Value.Installation;
-                        var info = new ModInstallerInfo()
+                        var info = new ModInstallerInfo
                         {
                             ArchiveFiles = tree,
                             BaseModId = baseMod.Id,
@@ -102,7 +102,8 @@ public class ArchiveInstaller : IArchiveInstaller
                             GameName = install.Game.Name,
                             Store = install.Store,
                             Version = install.Version,
-                            ModName = baseMod.Name
+                            ModName = baseMod.Name,
+                            ArchiveMetaData = download.MetaData
                         };
 
                         var modResults = (await modInstaller.GetModsAsync(info, token)).ToArray();

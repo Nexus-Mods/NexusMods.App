@@ -86,12 +86,13 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
         var info = new ModInstallerInfo()
         {
             ArchiveFiles = tree,
-            BaseModId = ModId.NewId(), // unused
+            BaseModId = ModId.NewId(),
             Locations = install.LocationsRegister,
             GameName = install.Game.Name,
             Store = install.Store,
             Version = install.Version,
-            ModName = "" // unused
+            ModName = "",
+            ArchiveMetaData = null,
         };
 
         var results = await ModInstaller.GetModsAsync(info, cancellationToken);
@@ -238,12 +239,13 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
         var info = new ModInstallerInfo()
         {
             ArchiveFiles = tree,
-            BaseModId = ModId.NewId(), // unused
+            BaseModId = ModId.NewId(),
             Locations = install.LocationsRegister,
             GameName = install.Game.Name,
             Store = install.Store,
             Version = install.Version,
-            ModName = "" // unused
+            ModName = "",
+            ArchiveMetaData = null
         };
 
         mods = (await ModInstaller.GetModsAsync(info)).ToArray();
