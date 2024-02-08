@@ -1,6 +1,6 @@
 !!! tip "Quick Primer to Dependency Injection"
 
-The Nexus App uses Dependency Injection (DI) for creating classes.
+The Nexus Mods App uses Dependency Injection (DI) for creating classes.
 
 Dependency Injection is like having a smart assistant who prepares all the tools
 (interfaces, a.k.a. abstract classes, traits) for a class you are trying to create.
@@ -9,7 +9,7 @@ This reduces a lot of boilerplate, helps with maintenance and makes our code cle
 
 ## A Quick Primer
 
-!!! nexus "In the Nexus App, we mostly use 'Constructor Injection'"
+!!! nexus "In the Nexus Mods App, we mostly use 'Constructor Injection'"
 
 When you create a new class, you specify what 'services' it needs right in the constructor, via interfaces.
 
@@ -122,7 +122,7 @@ Example:
    services.AddAllSingleton<IFoo, Foo>();
    ```
 
-!!! note "Although we mostly use `Singleton` in the Nexus App, services can have different `lifetimes`"
+!!! note "Although we mostly use `Singleton` in the Nexus Mods App, services can have different `lifetimes`"
 
 1. **Singleton**: Only one instance, instance is reused for every requested parameter. (like `static` field)
    ```csharp

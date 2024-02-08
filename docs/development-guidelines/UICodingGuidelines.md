@@ -1,6 +1,6 @@
 ﻿# UI Coding Conventions and Guidelines
 
-!!! info "The Nexus App uses [Avalonia] combined with [ReactiveUI] and [Dynamic Data] for the user interface."
+!!! info "The Nexus Mods App uses [Avalonia] combined with [ReactiveUI] and [Dynamic Data] for the user interface."
 
     This document contains conventions, guidelines, tips and tutorials on how to use these tools in the project.
 
@@ -158,7 +158,7 @@ only a specific part of the UI, since it now knows exactly which parts of the UI
 
 !!! warning "Changes to the displayed content must be done on the UI Thread."
 
-## How Nexus App Does UI (ReactiveUI)
+## How Nexus Mods App Does UI (ReactiveUI)
 
 ### Events & Bindings
 
