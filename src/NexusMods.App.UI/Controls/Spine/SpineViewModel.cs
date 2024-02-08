@@ -30,14 +30,15 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
     private readonly ILogger<SpineViewModel> _logger;
     private readonly IWindowManager _windowManager;
 
-    [Reactive]
-    public ILeftMenuViewModel? LeftMenuViewModel { get; private set; }
+    [Reactive] public ILeftMenuViewModel? LeftMenuViewModel { get; private set; }
 
     public IIconButtonViewModel Home { get; }
 
     public ISpineDownloadButtonViewModel Downloads { get; }
 
-    private ReadOnlyObservableCollection<IImageButtonViewModel> _loadouts = Initializers.ReadOnlyObservableCollection<IImageButtonViewModel>();
+    private ReadOnlyObservableCollection<IImageButtonViewModel> _loadouts =
+        Initializers.ReadOnlyObservableCollection<IImageButtonViewModel>();
+
     public ReadOnlyObservableCollection<IImageButtonViewModel> Loadouts => _loadouts;
 
     public SpineViewModel(
@@ -71,6 +72,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                     vm.Image = LoadImageFromStream(iconStream);
                     vm.IsActive = false;
                     vm.Click = ReactiveCommand.Create(() => ChangeToLoadoutWorkspace(loadout.LoadoutId));
+                    vm.Tag = loadout.LoadoutId;
                     return vm;
                 })
                 .OnUI()
@@ -99,6 +101,32 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                 })
                 .BindToVM(this, vm => vm.LeftMenuViewModel)
                 .DisposeWith(disposables);
+
+            workspaceController
+                .WhenAnyValue(controller => controller.ActiveWorkspace)
+                .Select(workspace => workspace?.Context)
+                .SubscribeWithErrorLogging(context =>
+                {
+                    switch (context)
+                    {
+                        case LoadoutContext loadoutContext:
+                            ClearActiveSpineButton();
+                            ActivateLoadoutSpineButton(loadoutContext.LoadoutId);
+                            break;
+                        case HomeContext:
+                            ClearActiveSpineButton();
+                            Home.IsActive = true;
+                            break;
+                        case DownloadsContext:
+                            ClearActiveSpineButton();
+                            Downloads.IsActive = true;
+                            break;
+                        case EmptyContext:
+                            ClearActiveSpineButton();
+                            break;
+                    }
+                }).DisposeWith(disposables);
+
         });
     }
 
@@ -157,5 +185,32 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
             FactoryId = InProgressPageFactory.StaticId,
             Context = new InProgressPageContext()
         });
+    }
+
+    private void ClearActiveSpineButton()
+    {
+        Home.IsActive = false;
+        Downloads.IsActive = false;
+        foreach (var loadout in Loadouts)
+        {
+            loadout.IsActive = false;
+        }
+    }
+
+    private void ActivateLoadoutSpineButton(LoadoutId loadoutId)
+    {
+        var loadoutButton = Loadouts.FirstOrDefault(button =>
+        {
+            if (button.Tag is LoadoutId id)
+            {
+                return id == loadoutId;
+            }
+
+            return false;
+        });
+        if (loadoutButton != null)
+        {
+            loadoutButton.IsActive = true;
+        }
     }
 }
