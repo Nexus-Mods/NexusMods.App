@@ -2,6 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.FileExtractor;
 using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.FileStore.ArchiveMetadata;
@@ -32,7 +33,8 @@ public class FileOriginRegistryTests : ADataModelTest<FileOriginRegistryTests>
             ServiceProvider.GetRequiredService<IFileExtractor>(),
             FileStore,
             TemporaryFileManager,
-            DataStore);
+            DataStore,
+            ServiceProvider.GetRequiredService<IFileHashCache>());
 
         var metaData = new MockArchiveMetadata
         {
@@ -66,7 +68,8 @@ public class FileOriginRegistryTests : ADataModelTest<FileOriginRegistryTests>
             ServiceProvider.GetRequiredService<IFileExtractor>(),
             fileStore,
             TemporaryFileManager,
-            DataStore);
+            DataStore,
+            ServiceProvider.GetRequiredService<IFileHashCache>());
 
         var metaData = new MockArchiveMetadata
         {
@@ -96,7 +99,8 @@ public class FileOriginRegistryTests : ADataModelTest<FileOriginRegistryTests>
             ServiceProvider.GetRequiredService<IFileExtractor>(),
             fileStore,
             TemporaryFileManager,
-            DataStore);
+            DataStore,
+            ServiceProvider.GetRequiredService<IFileHashCache>());
 
         // Act
         var metaData = new MockArchiveMetadata

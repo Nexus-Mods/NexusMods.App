@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.FileExtractor;
 using NexusMods.Abstractions.FileStore.ArchiveMetadata;
 using NexusMods.Abstractions.Games.Downloads;
@@ -24,6 +25,7 @@ public class FileOriginRegistry : IFileOriginRegistry
     private readonly IFileStore _fileStore;
     private readonly TemporaryFileManager _temporaryFileManager;
     private readonly IDataStore _dataStore;
+    private readonly IFileHashCache _fileHashCache;
 
     /// <summary>
     /// DI Constructor
@@ -34,18 +36,20 @@ public class FileOriginRegistry : IFileOriginRegistry
     /// <param name="temporaryFileManager"></param>
     /// <param name="store"></param>
     public FileOriginRegistry(ILogger<FileOriginRegistry> logger, IFileExtractor extractor,
-        IFileStore fileStore, TemporaryFileManager temporaryFileManager, IDataStore store)
+        IFileStore fileStore, TemporaryFileManager temporaryFileManager, IDataStore store, IFileHashCache fileHashCache)
     {
         _logger = logger;
         _extractor = extractor;
         _fileStore = fileStore;
         _temporaryFileManager = temporaryFileManager;
         _dataStore = store;
+        _fileHashCache = fileHashCache;
     }
 
     /// <inheritdoc />
     public async ValueTask<DownloadId> RegisterDownload(IStreamFactory factory, AArchiveMetaData metaData, CancellationToken token = default)
     {
+        // WARNING !! Cannot access hash cache.
         var hashes = MakeKnownHashes();
         var archiveSize = (ulong) factory.Size;
         var archiveHash = await (await factory.GetStreamAsync()).XxHash64Async(token: token);
@@ -64,7 +68,7 @@ public class FileOriginRegistry : IFileOriginRegistry
     {
         var hashes = MakeKnownHashes();
         var archiveSize = (ulong) path.FileInfo.Size;
-        var archiveHash = await path.XxHash64Async(token: token);
+        var archiveHash = (await _fileHashCache.IndexFileAsync(path, token)).Hash;
 
         // Note: Folders have a hash of 0, so in unlikely event an archive hashes to 0, we can't dedupe by archive.
         if (archiveHash != 0 && hashes.ArchiveHashes.TryGetValue(archiveHash.Value, out var downloadId))
