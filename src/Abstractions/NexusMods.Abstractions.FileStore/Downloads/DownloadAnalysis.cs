@@ -23,13 +23,19 @@ public record DownloadAnalysis : Entity
     public required DownloadId DownloadId { get; init; }
 
     /// <summary>
-    /// The hash of the download
+    /// The hash of the downloaded archive from which this download is sourced from.
     /// </summary>
+    /// <remarks>
+    ///     If installed directly from folder (for dev purposes etc.), this is 0.
+    /// </remarks>
     public required Hash Hash { get; init; }
 
     /// <summary>
-    /// Size of the download
+    /// Size of the downloaded archive from which this download is sourced from.
     /// </summary>
+    /// <remarks>
+    ///     If installed directly from folder (for dev purposes etc.), this is 0.
+    /// </remarks>
     public required Size Size { get; init; }
 
     /// <summary>

@@ -55,7 +55,7 @@ public class FileOriginRegistryTests : ADataModelTest<FileOriginRegistryTests>
     }
 
     [Fact]
-    public async Task RegisterFolder_WhenCalledTwice_ShouldNotArchiveDuplicateData()
+    public async Task RegisterFolder_WhenCalledTwice_ShouldBeDedupedOnSameArchive()
     {
         // Arrange
         var fileStore = Substitute.For<IFileStore>();
