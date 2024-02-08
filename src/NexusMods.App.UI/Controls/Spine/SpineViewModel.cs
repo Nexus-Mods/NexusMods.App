@@ -16,6 +16,8 @@ using NexusMods.App.UI.LeftMenu.Loadout;
 using NexusMods.App.UI.Pages.Downloads;
 using NexusMods.App.UI.Pages.LoadoutGrid;
 using NexusMods.App.UI.Pages.MyGames;
+using NexusMods.App.UI.Resources;
+using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using ReactiveUI;
@@ -55,6 +57,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         _windowManager = windowManager;
 
         Home = homeButtonViewModel;
+        Home.Name = Language.SpineHomeButton_ToolTip_Home;
         Downloads = spineDownloadsButtonViewModel;
 
         if (!_windowManager.TryGetActiveWindow(out var currentWindow)) return;

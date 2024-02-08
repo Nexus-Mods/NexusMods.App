@@ -51,6 +51,9 @@ public partial class IconButton : ReactiveUserControl<IIconButtonViewModel>, IVi
 
             this.BindCommand(ViewModel, vm => vm.Click, v => v.Button)
                 .DisposeWith(disposables);
+
+            this.OneWayBind(ViewModel, vm => vm.Name, v => v.ToolTipTextBlock.Text)
+                .DisposeWith(disposables);
         });
     }
 

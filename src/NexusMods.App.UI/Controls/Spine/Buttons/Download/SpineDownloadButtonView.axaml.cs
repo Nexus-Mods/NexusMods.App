@@ -43,7 +43,10 @@ public partial class SpineDownloadButtonView : ReactiveUserControl<ISpineDownloa
                 .Select(n => n.ToUpperInvariant())
                 .BindToUi(this, view => view.UnitsTextBlock.Text)
                 .DisposeWith(d);
+
+            this.OneWayBind(ViewModel, vm => vm.ToolTip,
+                    v => v.ToolTipTextBlock.Text)
+                .DisposeWith(d);
         });
     }
 }
-

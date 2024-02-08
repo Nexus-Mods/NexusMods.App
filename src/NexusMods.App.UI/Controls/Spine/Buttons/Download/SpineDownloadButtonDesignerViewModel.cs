@@ -1,6 +1,7 @@
 using System.Windows.Input;
 using DynamicData.Kernel;
 using NexusMods.Abstractions.Activities;
+using NexusMods.App.UI.Resources;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -22,6 +23,8 @@ public class SpineDownloadButtonDesignerViewModel : AViewModel<ISpineDownloadBut
 
     [Reactive]
     public bool IsActive { get; set; }
+
+    public string ToolTip { get; set; } = Language.SpineDownloadButton_ToolTip;
 
     public SpineDownloadButtonDesignerViewModel()
     {

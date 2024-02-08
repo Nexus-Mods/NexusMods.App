@@ -5,6 +5,7 @@ using System.Windows.Input;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Activities;
+using NexusMods.App.UI.Resources;
 using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Paths;
 using ReactiveUI;
@@ -43,4 +44,6 @@ public class SpineDownloadButtonViewModel : AViewModel<ISpineDownloadButtonViewM
     [Reactive] public ICommand Click { get; set; } = Initializers.ICommand;
 
     [Reactive] public bool IsActive { get; set; }
+
+    [Reactive] public string ToolTip { get; set; } = Language.SpineDownloadButton_ToolTip;
 }
