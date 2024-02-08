@@ -50,6 +50,11 @@ public interface IFileStore
     /// <param name="token"></param>
     /// <returns></returns>
     Task<Stream> GetFileStream(Hash hash, CancellationToken token = default);
+
+    /// <summary>
+    /// Retrieves hashes of all files associated with this FileStore.
+    /// </summary>
+    HashSet<ulong> GetFileHashes();
 }
 
 

@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Buffers.Binary;
+using System.Diagnostics.CodeAnalysis;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.FileExtractor;
 using NexusMods.Abstractions.FileStore.ArchiveMetadata;
@@ -9,6 +11,7 @@ using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.Abstractions.Serialization.DataModel.Ids;
+using NexusMods.DataModel.ArchiveContents;
 using NexusMods.Extensions.Hashing;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
@@ -50,39 +53,37 @@ public class FileOriginRegistry : IFileOriginRegistry
     public async ValueTask<DownloadId> RegisterDownload(IStreamFactory factory, AArchiveMetaData metaData, CancellationToken token = default)
     {
         // WARNING !! Cannot access hash cache.
-        var hashes = MakeKnownHashes();
         var archiveSize = (ulong) factory.Size;
         var archiveHash = await (await factory.GetStreamAsync()).XxHash64Async(token: token);
 
         // Note: Folders have a hash of 0, so in unlikely event an archive hashes to 0, we can't dedupe by archive.
-        if (archiveHash != 0 && hashes.ArchiveHashes.TryGetValue(archiveHash.Value, out var downloadId))
-            return downloadId;
+        if (archiveHash != 0 && TryGetDownloadIdForHash(archiveHash.Value, out var downloadId))
+            return downloadId.Value;
 
         await using var tmpFolder = _temporaryFileManager.CreateFolder();
         await _extractor.ExtractAllAsync(factory, tmpFolder.Path, token);
-        return await RegisterFolderInternal(tmpFolder.Path, metaData, hashes.FileHashes, archiveHash.Value, archiveSize, token);
+        return await RegisterFolderInternal(tmpFolder.Path, metaData, _fileStore.GetFileHashes(), archiveHash.Value, archiveSize, token);
     }
 
     /// <inheritdoc />
     public async ValueTask<DownloadId> RegisterDownload(AbsolutePath path, AArchiveMetaData metaData, CancellationToken token = default)
     {
-        var hashes = MakeKnownHashes();
         var archiveSize = (ulong) path.FileInfo.Size;
         var archiveHash = (await _fileHashCache.IndexFileAsync(path, token)).Hash;
 
         // Note: Folders have a hash of 0, so in unlikely event an archive hashes to 0, we can't dedupe by archive.
-        if (archiveHash != 0 && hashes.ArchiveHashes.TryGetValue(archiveHash.Value, out var downloadId))
-            return downloadId;
+        if (archiveHash != 0 && TryGetDownloadIdForHash(archiveHash.Value, out var downloadId))
+            return downloadId.Value;
 
         await using var tmpFolder = _temporaryFileManager.CreateFolder();
         await _extractor.ExtractAllAsync(path, tmpFolder.Path, token);
-        return await RegisterFolderInternal(tmpFolder.Path, metaData, hashes.FileHashes, archiveHash.Value, archiveSize, token);
+        return await RegisterFolderInternal(tmpFolder.Path, metaData, _fileStore.GetFileHashes(), archiveHash.Value, archiveSize, token);
     }
 
     /// <inheritdoc />
     public async ValueTask<DownloadId> RegisterFolder(AbsolutePath path, AArchiveMetaData metaData, CancellationToken token = default)
     {
-        return await RegisterFolderInternal(path, metaData, MakeKnownHashes().FileHashes, 0, 0, token);
+        return await RegisterFolderInternal(path, metaData, _fileStore.GetFileHashes(), 0, 0, token);
     }
 
     /// <inheritdoc />
@@ -164,32 +165,22 @@ public class FileOriginRegistry : IFileOriginRegistry
     }
 
     /// <summary>
-    ///     Build a Hash Table of all currently known files.
-    ///     We do this to deduplicate files between downloads.
+    ///     Gets hashes of all known archives.
     /// </summary>
-    private HashCollection MakeKnownHashes()
+    private bool TryGetDownloadIdForHash(ulong expectedHash, [NotNullWhen(true)] out DownloadId? analysis)
     {
         // Build a Hash Table of all currently known files. We do this to deduplicate files between downloads.
-        // TODO: This may need some benchmarking, it's unknown how well this scales across huge loadouts.
-        var archiveHashes = new Dictionary<ulong, DownloadId>();
-        var fileHashes = new HashSet<ulong>();
+        // Table not indexed by hash, so we need to query all.
         foreach (var ent in _dataStore.GetAll<DownloadAnalysis>(EntityCategory.DownloadMetadata)!)
         {
-            // Note: Mods added from raw folders have a hash of '0', this is fine, just means there's nothing to dedupe.
-            archiveHashes[ent.Hash.Value] = ent.DownloadId;
-            foreach (var content in ent.Contents)
-                fileHashes.Add(content.Hash.Value);
+            if (ent.Hash != expectedHash)
+                continue;
+
+            analysis = ent.DownloadId;
+            return true;
         }
 
-        return new HashCollection(fileHashes, archiveHashes);
-    }
-
-    /// <summary/>
-    /// <param name="fileHashes">Hashes of all of the files already stored.</param>
-    /// <param name="archiveHashes">Hashes of all of the archives already stored.</param>
-    private struct HashCollection(HashSet<ulong> fileHashes, Dictionary<ulong, DownloadId> archiveHashes)
-    {
-        public HashSet<ulong> FileHashes { get; } = fileHashes;
-        public Dictionary<ulong, DownloadId> ArchiveHashes { get; } = archiveHashes;
+        analysis = default;
+        return false;
     }
 }

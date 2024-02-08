@@ -63,6 +63,7 @@ public class FileOriginRegistryTests : ADataModelTest<FileOriginRegistryTests>
         var fileStore = Substitute.For<IFileStore>();
         fileStore.BackupFiles(Arg.Any<IEnumerable<ArchivedFileEntry>>(), Arg.Any<CancellationToken>())
             .Returns(Task.CompletedTask);
+        fileStore.GetFileHashes().Returns(new HashSet<ulong>()); // not needed here
         var sut = new FileOriginRegistry(
             ServiceProvider.GetRequiredService<ILogger<FileOriginRegistry>>(),
             ServiceProvider.GetRequiredService<IFileExtractor>(),
@@ -92,8 +93,7 @@ public class FileOriginRegistryTests : ADataModelTest<FileOriginRegistryTests>
     {
         // Arrange
         var fileStore = Substitute.For<IFileStore>();
-        fileStore.BackupFiles(Arg.Any<IEnumerable<ArchivedFileEntry>>(), Arg.Any<CancellationToken>())
-            .Returns(Task.CompletedTask);
+
         var sut = new FileOriginRegistry(
             ServiceProvider.GetRequiredService<ILogger<FileOriginRegistry>>(),
             ServiceProvider.GetRequiredService<IFileExtractor>(),
@@ -110,7 +110,17 @@ public class FileOriginRegistryTests : ADataModelTest<FileOriginRegistryTests>
         };
 
         var capturedCalls = new List<IEnumerable<ArchivedFileEntry>>();
-        await fileStore.BackupFiles(Arg.Do<IEnumerable<ArchivedFileEntry>>(entries => capturedCalls.Add(entries)),
+        var hashSet = new HashSet<ulong>(); // stores hashes of files we backed up 'so far'.
+
+        fileStore.GetFileHashes().Returns(hashSet);
+        await fileStore.BackupFiles(Arg.Do<IEnumerable<ArchivedFileEntry>>(entries =>
+            {
+                capturedCalls.Add(entries);
+
+                // We backed up a file, pretend we put it in DataStore.
+                foreach (var entry in entries)
+                    hashSet.Add(entry.Hash.Value);
+            }),
             Arg.Any<CancellationToken>());
 
         await sut.RegisterDownload(DataZipLzma, metaData, CancellationToken.None);

@@ -155,6 +155,9 @@ public class ZipFileStore : IFileStore
         return new ChunkedStream<ChunkedArchiveStream>(new ChunkedArchiveStream(archive, hash));
     }
 
+    /// <inheritdoc/>
+    public HashSet<ulong> GetFileHashes() => throw new NotImplementedException("Implement this if we ever decide to use this again. Been dead code for a while.");
+
     private class ChunkedArchiveStream : IChunkedStreamSource
     {
         private readonly ZipArchiveEntry[] _entries;
