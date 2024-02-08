@@ -42,7 +42,7 @@ public class SMAPIModInstaller : AModInstaller
 
             await using var stream = await kv.Item.OpenAsync();
             var manifest = await JsonSerializer.DeserializeAsync<SMAPIManifest>(stream);
-            if (manifest != null)
+            if (manifest is not null)
                 results.Add((kv, manifest));
         }
 

@@ -1,5 +1,4 @@
-using Cathei.LinqGen;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.FileStore.ArchiveMetadata;
@@ -10,6 +9,7 @@ using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.Loadouts.Mods;
+using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Trees;
@@ -31,13 +31,20 @@ public class SMAPIInstaller : AModInstaller
     private static readonly RelativePath WindowsFolder = "windows".ToRelativePath();
     private static readonly RelativePath MacOSFolder = "macOS".ToRelativePath();
 
+    private readonly ILogger<SMAPIInstaller> _logger;
     private readonly IOSInformation _osInformation;
     private readonly IFileHashCache _fileHashCache;
     private readonly IFileOriginRegistry _fileOriginRegistry;
 
-    private SMAPIInstaller(IOSInformation osInformation, IFileHashCache fileHashCache, IFileOriginRegistry fileOriginRegistry, IServiceProvider serviceProvider)
+    public SMAPIInstaller(
+        IServiceProvider serviceProvider,
+        ILogger<SMAPIInstaller> logger,
+        IOSInformation osInformation,
+        IFileHashCache fileHashCache,
+        IFileOriginRegistry fileOriginRegistry)
         : base(serviceProvider)
     {
+        _logger = logger;
         _osInformation = osInformation;
         _fileHashCache = fileHashCache;
         _fileOriginRegistry = fileOriginRegistry;
@@ -45,18 +52,18 @@ public class SMAPIInstaller : AModInstaller
 
     private static KeyedBox<RelativePath, ModFileTree>[] GetInstallDataFiles(KeyedBox<RelativePath, ModFileTree> files)
     {
-        var installDataFiles = files.GetFiles()
-            .Gen()
+        var installDataFiles = files
+            .GetFiles()
             .Where(kv =>
-        {
-            var fileName = kv.FileName();
-            var parent = kv.Parent()!.Item.FileName;
+            {
+                var fileName = kv.FileName();
+                var parent = kv.Parent()!.Item.FileName;
 
-            return fileName.Equals(InstallDatFile) &&
-                   (parent.Equals(LinuxFolder) ||
-                    parent.Equals(MacOSFolder) ||
-                    parent.Equals(WindowsFolder));
-        })
+                return fileName.Equals(InstallDatFile) &&
+                       (parent.Equals(LinuxFolder) ||
+                        parent.Equals(MacOSFolder) ||
+                        parent.Equals(WindowsFolder));
+            })
             .ToArray();
 
         return installDataFiles;
@@ -68,9 +75,24 @@ public class SMAPIInstaller : AModInstaller
     {
         var modFiles = new List<AModFile>();
 
+        var isSMAPI = false;
+        if (info.ArchiveMetaData is NexusModsArchiveMetadata nexusMetadata)
+        {
+            // https://www.nexusmods.com/stardewvalley/mods/2400
+            isSMAPI = nexusMetadata.GameDomain == StardewValley.GameDomain &&
+                      nexusMetadata.ModId == Abstractions.NexusWebApi.Types.ModId.From(2400);
+        }
+
         var installDataFiles = GetInstallDataFiles(info.ArchiveFiles);
         if (installDataFiles.Length != 3)
+        {
+            if (isSMAPI)
+            {
+                _logger.LogError("SMAPI doesn't contain three install.dat files, unable to install SMAPI. This might be a bug with the installer");
+            }
+
             return NoResults;
+        }
 
         var installDataFile = _osInformation.MatchPlatform(
             state: ref installDataFiles,
@@ -79,71 +101,78 @@ public class SMAPIInstaller : AModInstaller
             onOSX: (ref KeyedBox<RelativePath, ModFileTree>[] dataFiles) => dataFiles.First(kv => kv.Path().Parent.FileName.Equals("macOS"))
         );
 
+        // get the archive contents of the "install.dat" file which is an archive in an archive
         var found = _fileOriginRegistry.GetByHash(installDataFile.Item.Hash).ToArray();
+
         DownloadId downloadId;
-        if (!found.Any())
-            downloadId = await RegisterDataFile(installDataFile, cancellationToken);
+        if (found.Length == 0)
+        {
+            downloadId = await _fileOriginRegistry.RegisterDownload(
+                installDataFile.Item.StreamFactory!,
+                new FilePathMetadata { OriginalName = installDataFile.Item.FileName, Quality = Quality.Low },
+                cancellationToken
+            );
+        }
         else
         {
-            downloadId = found.First();
+            downloadId = found[0];
         }
 
         var gameFolderPath = info.Locations[LocationId.Game];
         var archiveContents = (await _fileOriginRegistry.Get(downloadId)).GetFileTree();
 
-        // TODO: install.dat is an archive inside an archive see https://github.com/Nexus-Mods/NexusMods.App/issues/244
-        // the basicFiles have to be extracted from the nested archive and put inside the game folder
-        // https://github.com/Pathoschild/SMAPI/blob/9763bc7484e29cbc9e7f37c61121d794e6720e75/src/SMAPI.Installer/InteractiveInstaller.cs#L380-L384
-        /*
-        var basicFiles = archiveContents.EnumerateChildrenBfs()
-            .Where(kv => !kv.Value.Item.Path.Equals("unix-launcher.sh")).ToArray();
+        // see original installer:
+        // https://github.com/Pathoschild/SMAPI/blob/5919337236650c6a0d7755863d35b2923a94775c/src/SMAPI.Installer/InteractiveInstaller.cs#L384
 
-        if (_osInformation.IsLinux || _osInformation.IsOSX)
+        var isUnix = _osInformation.IsUnix();
+        var isXboxGamePass = info.Store == GameStore.XboxGamePass;
+
+        // add all files from the archive
+        foreach (var kv in archiveContents.GetFiles())
         {
-            // TODO: Replace game launcher (StardewValley) with unix-launcher.sh by overwriting the game file
-            // https://github.com/Pathoschild/SMAPI/blob/9763bc7484e29cbc9e7f37c61121d794e6720e75/src/SMAPI.Installer/InteractiveInstaller.cs#L386-L417
-            var modLauncherScriptFile = archiveContents.EnumerateChildrenBfs()
-                .First(kv => kv.Value.Item.Segment.Equals("unix-launcher.sh"));
+            var to = new GamePath(LocationId.Game, kv.Path());
 
-            var gameLauncherScriptFilePath = gameFolderPath.Combine("StardewValley");
+            // For Linux & macOS: replace the game launcher executable "StardewValley" with "unix-launcher.sh"
+            // https://github.com/Pathoschild/SMAPI/blob/5919337236650c6a0d7755863d35b2923a94775c/src/SMAPI.Installer/InteractiveInstaller.cs#L395-L425
+            if (isUnix && kv.Item.FileName.Equals("unix-launcher.sh"))
+            {
+                to = new GamePath(LocationId.Game, "StardewValley");
+            }
+
+            // For Xbox Game Pass: replace "Stardew Valley.exe" with "StardewModdingAPI.exe"
+            // https://stardewvalleywiki.com/Modding:Installing_SMAPI_on_Windows#Xbox_app
+            if (isXboxGamePass && kv.Item.FileName.Equals("StardewModdingAPI.exe"))
+            {
+                to = new GamePath(LocationId.Game, "Stardew Valley.exe");
+            }
+
+            modFiles.Add(kv.ToStoredFile(to));
         }
-        */
-        // TODO: for Xbox Game Pass: replace "Stardew Valley.exe" with "StardewModdingAPI.exe"
 
-        // copy "Stardew Valley.deps.json" to "StardewModdingAPI.deps.json"
+        // copy the game file "Stardew Valley.deps.json" to "StardewModdingAPI.deps.json"
         // https://github.com/Pathoschild/SMAPI/blob/9763bc7484e29cbc9e7f37c61121d794e6720e75/src/SMAPI.Installer/InteractiveInstaller.cs#L419-L425
         var gameDepsFilePath = gameFolderPath.Combine("Stardew Valley.deps.json");
-        if (!_fileHashCache.TryGetCached(gameDepsFilePath, out var gameDepsFileCache))
-            throw new NotImplementedException($"Game file {gameFolderPath} was not found in cache!");
 
-        modFiles.Add(new GameFile
+        if (_fileHashCache.TryGetCached(gameDepsFilePath, out var gameDepsFileCache))
         {
-            Hash = gameDepsFileCache.Hash,
-            Size = gameDepsFileCache.Size,
-            Id = ModFileId.NewId(),
-            To = new GamePath(LocationId.Game, "StardewModdingAPI.deps.json")
-        });
+            modFiles.Add(new StoredFile
+            {
+                Hash = gameDepsFileCache.Hash,
+                Size = gameDepsFileCache.Size,
+                Id = ModFileId.NewId(),
+                To = new GamePath(LocationId.Game, "StardewModdingAPI.deps.json")
+            });
+        }
+        else
+        {
+            _logger.LogError("Unable to find {Path} in the game folder. Your installation might be broken!", gameDepsFilePath);
+        }
 
-        // TODO: consider adding Name and Version
         return new [] { new ModInstallerResult
         {
+            Name = "SMAPI",
             Id = info.BaseModId,
             Files = modFiles
         }};
-    }
-
-    private async ValueTask<DownloadId> RegisterDataFile(KeyedBox<RelativePath, ModFileTree> node, CancellationToken token)
-    {
-        return await _fileOriginRegistry.RegisterDownload(node.Item.StreamFactory!, new FilePathMetadata { OriginalName = node.Item.FileName, Quality = Quality.Low }, token);
-    }
-
-    public static SMAPIInstaller Create(IServiceProvider serviceProvider)
-    {
-        return new SMAPIInstaller(
-            serviceProvider.GetRequiredService<IOSInformation>(),
-            serviceProvider.GetRequiredService<IFileHashCache>(),
-            serviceProvider.GetRequiredService<IFileOriginRegistry>(),
-            serviceProvider
-        );
     }
 }
