@@ -19,6 +19,9 @@
         Height="64"
         Width="64"
         x:Name="Button">
+        <ToolTip.Tip>
+            <TextBlock x:Name="ToolTipTextBlock"/>
+        </ToolTip.Tip>
         <Button.Template>
             <ControlTemplate>
                 <Grid>

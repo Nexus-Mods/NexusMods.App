@@ -27,6 +27,9 @@ public partial class ImageButton : ReactiveUserControl<IImageButtonViewModel>
             _image = this.FindDescendantOfType<Avalonia.Controls.Image>();
             this.OneWayBind(ViewModel, vm => vm.Image, v => v._image!.Source)
                 .DisposeWith(d);
+
+            this.OneWayBind(ViewModel, vm => vm.Name, v => v.ToolTipTextBlock.Text)
+                .DisposeWith(d);
         });
     }
 
