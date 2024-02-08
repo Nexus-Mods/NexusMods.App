@@ -4,7 +4,7 @@
 	<br/> <br/>
     Mod With Confidence
     <br/>
-    The <i>future</i> of modding with <i>Nexus</i>.
+    The <i>future</i> of modding with <i>Nexus Mods</i>.
     <br/><br/>
     <a href="https://github.com/Nexus-Mods/NexusMods.App/actions/workflows/clean_environment_tests.yaml" target="_blank">
         <img src="https://github.com/Nexus-Mods/NexusMods.App/actions/workflows/clean_environment_tests.yaml/badge.svg" alt="CI Tests">
