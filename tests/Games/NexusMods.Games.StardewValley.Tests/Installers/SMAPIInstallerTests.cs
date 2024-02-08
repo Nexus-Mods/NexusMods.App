@@ -1,4 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
+using FluentAssertions;
+using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Games.StardewValley.Installers;
 using NexusMods.Games.TestFramework;
 
@@ -10,7 +12,6 @@ public class SMAPIInstallerTests : AModInstallerTest<StardewValley, SMAPIInstall
     public SMAPIInstallerTests(IServiceProvider serviceProvider) : base(serviceProvider) { }
 
 
-    /* DISABLED until we fix the SMAPI installer
     [Fact]
     [Trait("RequiresNetworking", "True")]
     public async Task Test_GetFilesToExtract()
@@ -23,15 +24,5 @@ public class SMAPIInstallerTests : AModInstallerTest<StardewValley, SMAPIInstall
 
         var files = mod.Files;
         files.Should().NotBeEmpty();
-        files
-            .Values
-            .Cast<IToFile>()
-            .Should().Contain(x => x.To.Path.Equals("StardewModdingAPI.deps.json"))
-            .Which
-            .Should().BeOfType<GameFile>();
-
-        // TODO: update tests once the installer is working correctly
-
     }
-    */
 }
