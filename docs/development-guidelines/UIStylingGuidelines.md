@@ -7,7 +7,7 @@ This document contains guidelines and tutorials for Stying and Theming the UI of
 
     These design can evolve and change over time, requiring the UI of the app to be updated accordingly.
 
-The NexusMods App uses [Avalonia](https://avaloniaui.net/) for its UI framework.<br/>
+The Nexus Mods App uses [Avalonia](https://avaloniaui.net/) for its UI framework.<br/>
 Avalonia has a [CSS-like styling system](https://docs.avaloniaui.net/docs/get-started/wpf/styling), which is used to style the UI.
 
 ## Avalonia Styling

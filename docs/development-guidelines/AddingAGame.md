@@ -1,8 +1,8 @@
 # Adding a Game
 
-!!! info "Describes how to add a game to the Nexus App."
+!!! info "Describes how to add a game to the Nexus Mods App."
 
-To make a game automatically recognised by the Nexus App, make a class that inherits from `AGame`.
+To make a game automatically recognised by the Nexus Mods App, make a class that inherits from `AGame`.
 
 ??? "Example Game (Click to Expand)"
 
@@ -61,7 +61,7 @@ To add automatic detection for a given game, make your `AGame` implement the fol
 
 ### Quickly Finding the 'App IDs'
 
-!!! tip "Builds of the Nexus App in `Debug` configuration will print all found games."
+!!! tip "Builds of the Nexus Mods App in `Debug` configuration will print all found games."
 
 ```
 [DEBUG] Found Steam Game: 252950, Rocket League
@@ -108,7 +108,7 @@ The function `GetPrimaryFile` is the game's main executable (not a launcher).
 
 !!! tip "To link your game with a Nexus page, you need to set the 'Domain' field."
 
-Each `AGame` instance has a field named, `Domain`. This `Domain` corresponds to the URL used on the Nexus for the game.
+Each `AGame` instance has a field named, `Domain`. This `Domain` corresponds to the URL used on Nexus Mods for the game.
 
 So for example, if you have [https://www.nexusmods.com/sifu][sifu], you should set the value to `sifu`
 
@@ -139,7 +139,7 @@ After that, you may also need to add it to [AddApp][add-app] and call `services.
 
 !!! tip "If your code targets a specific common 'game engine' or middleware, you might want to put your logic there."
 
-For example, the Nexus App has `NexusMods.Games.BethesdaGameStudios`, which contains code for the `Creation` engine.
+For example, the Nexus Mods App has `NexusMods.Games.BethesdaGameStudios`, which contains code for the `Creation` engine.
 
 This code is used by games such as `Skyrim LE` and `Skyrim SE`, so these two games live in the
 `NexusMods.Games.BethesdaGameStudios` project.

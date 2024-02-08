@@ -41,7 +41,7 @@ the forward slash `/` character for cross-platforms applications.
 
 Aside from some edge-cases with POSIX compliant file systems, paths can be considered case-insensitive. Having two files
 with the _same name_ in the _same folder_ that differ only in capitalization is an anti-pattern and should not be
-supported. Archive formats are the biggest culprits of this, and we should recommend that the Nexus Web APIs be updated
+supported. Archive formats are the biggest culprits of this, and we should recommend that the Nexus Mods Web APIs be updated
 to reject archives with those files.
 
 ## Decision Outcome

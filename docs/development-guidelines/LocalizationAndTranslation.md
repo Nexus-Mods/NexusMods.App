@@ -1,10 +1,10 @@
-# Localization and Translation in the Nexus App
+# Localization and Translation in the Nexus Mods App
 
 !!! info "This page describes how to work with 'languages' in the App."
 
 !!! tip "For the research info, see [07: Localization and Internationalisation](../decisions/backend/0007-localization-and-internationalisation.md)"
 
-In the Nexus App we use the industry standard `Resource` (`.resx`) files for porting
+In the Nexus Mods App we use the industry standard `Resource` (`.resx`) files for porting
 the App to different languages and cultures.
 
 You can find them in `Resources` folder for any project that contains UI elements.

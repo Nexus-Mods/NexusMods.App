@@ -27,7 +27,7 @@ In the presence of these scenarios, the mod manager must still have a way to ins
 - Certain mods may not come with a recognizable file structure.
     - The Nexus Mods App might not know how to install them automatically.
 
-- Interoperability: The Nexus App must be able to somehow deploy ANY mod, regardless of its packaging format.
+- Interoperability: The Nexus Mods App must be able to somehow deploy ANY mod, regardless of its packaging format.
     - Otherwise, if users end up having to deploy files manually, they may be discouraged from using the mod manager.
 
 - The Manual Installer must work with minimal game implementation code.
@@ -81,7 +81,7 @@ Blue Hair
 ```
 
 The user is expected to select items from one of the given folders. These folders do map to game folder, but
-because there are duplicates and multiple candidates for deployment, the Nexus App cannot automatically
+because there are duplicates and multiple candidates for deployment, the Nexus Mods App cannot automatically
 choose which one to deploy.
 
 ## Considered Options (Deployment)

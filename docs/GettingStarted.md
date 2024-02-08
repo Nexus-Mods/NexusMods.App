@@ -1,6 +1,6 @@
-﻿!!! info "Describes how to compile and run the Nexus App."
+﻿!!! info "Describes how to compile and run the Nexu Mods App."
 
-The Nexus App is programmed in C# with latest .NET Runtime. Setup should be easy.
+The Nexus Mods App is programmed in C# with latest .NET Runtime. Setup should be easy.
 
 
 ## Prerequisites

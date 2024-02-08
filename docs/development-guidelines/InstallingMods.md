@@ -2,11 +2,11 @@
 
 !!! info "Informs you how you can add support for installing different kinds of mods."
 
-!!! tip "What does 'Installing a Mod' mean in the context of the Nexus App?"
+!!! tip "What does 'Installing a Mod' mean in the context of the Nexus Mods App?"
 
-    The *Nexus App* is strictly a *Mod Manager*, ***not*** a mod loader/framework (e.g. it's not ASI Loader, SMAPI, UE4SS, BepinEx, MelonLoader etc.).
+    The *Nexus Mods App* is strictly a *Mod Manager*, ***not*** a mod loader/framework (e.g. it's not ASI Loader, SMAPI, UE4SS, BepinEx, MelonLoader etc.).
 
-    In the context of the *Nexus App*, 'Installing Mod' means 'Decide where to put it files belonging to a mod in the Mod Folder'
+    In the context of the *Nexus Mods App*, 'Installing Mod' means 'Decide where to put it files belonging to a mod in the Mod Folder'
     for an existing 'loader' or 'game' to use.
 
 Mod installation in the app happens in several phases:
