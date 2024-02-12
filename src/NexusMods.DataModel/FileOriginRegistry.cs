@@ -165,12 +165,10 @@ public class FileOriginRegistry : IFileOriginRegistry
     }
 
     /// <summary>
-    ///     Gets hashes of all known archives.
+    ///     Gets a <see cref="DownloadId"/> with a given hash.
     /// </summary>
     private bool TryGetDownloadIdForHash(ulong expectedHash, [NotNullWhen(true)] out DownloadId? analysis)
     {
-        // Build a Hash Table of all currently known files. We do this to deduplicate files between downloads.
-        // Table not indexed by hash, so we need to query all.
         foreach (var ent in _dataStore.GetAll<DownloadAnalysis>(EntityCategory.DownloadMetadata)!)
         {
             if (ent.Hash != expectedHash)
