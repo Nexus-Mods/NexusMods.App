@@ -124,7 +124,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                             ClearActiveSpineButton();
                             Downloads.IsActive = true;
                             break;
-                        case EmptyContext:
+                        default:
                             ClearActiveSpineButton();
                             break;
                     }
