@@ -27,12 +27,12 @@
   </ItemGroup>
   <ItemGroup>
     <!-- Avalonia -->
-    <PackageVersion Include="Avalonia" Version="11.0.7" />
+    <PackageVersion Include="Avalonia" Version="11.0.9" />
     <PackageVersion Include="Avalonia.Controls.DataGrid" Version="11.0.7" />
     <PackageVersion Include="Avalonia.Controls.TreeDataGrid" Version="11.0.2" />
     <PackageVersion Include="Avalonia.Desktop" Version="11.0.7" />
     <PackageVersion Include="Avalonia.Diagnostics" Version="11.0.7" />
-    <PackageVersion Include="Avalonia.Headless" Version="11.0.7" />
+    <PackageVersion Include="Avalonia.Headless" Version="11.0.9" />
     <PackageVersion Include="Avalonia.ReactiveUI" Version="11.0.7" />
     <PackageVersion Include="Avalonia.Themes.Fluent" Version="11.0.7" />
     <PackageVersion Include="Projektanker.Icons.Avalonia.MaterialDesign" Version="9.0.1" />
