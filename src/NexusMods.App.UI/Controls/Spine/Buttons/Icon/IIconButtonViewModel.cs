@@ -14,4 +14,9 @@ public interface IIconButtonViewModel : IViewModelInterface
     /// </summary>
     public ICommand Click { get; set; }
 
+    /// <summary>
+    /// Name for the tooltip on the button.
+    /// </summary>
+    public string Name { get; set; }
+
 }

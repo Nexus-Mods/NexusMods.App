@@ -9,4 +9,6 @@ public class IconButtonViewModel : AViewModel<IIconButtonViewModel>, IIconButton
     public bool IsActive { get; set; }
 
     [Reactive] public ICommand Click { get; set; } = Initializers.ICommand;
+
+    [Reactive] public string Name { get; set; } = string.Empty;
 }
