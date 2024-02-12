@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <root>
-																																	
-														 
-			
-					  
-				 
 	<resheader name="resmimetype">
 		<value>text/microsoft-resx</value>
 	</resheader>
@@ -130,10 +124,10 @@
 		<value>Zawarte z folderem</value>
 	</data>
 	<data name="TreeEntryView_IncludedRemoveButtonTextBlock_Included_folder" xml:space="preserve">
-		<value>Zawrty folder</value>
+		<value>Zawarty folder</value>
 	</data>
 	<data name="TreeEntryView_IncludedRemoveButtonTextBlock_Included_with_folder" xml:space="preserve">
-		<value>Zawrte z folderem</value>
+		<value>Zawarte z folderem</value>
 	</data>
 	<data name="TreeEntryView_IncludeTransitionButtonTextBlock_Include" xml:space="preserve">
 		<value>Zawiera</value>
@@ -144,7 +138,7 @@
 	<data name="AdvancedInstaller_Manual_Mod" xml:space="preserve">
 		<value>Ręczny mod</value>
 	</data>
-    <data name="SelectLocationViewModel_SuggestedLocationsSubtitle" xml:space="preserve">
-        <value>{0} Modyfikacje są zazwyczaj instalowane w następujących folderach gry.</value>
-    </data>
+	<data name="SelectLocationViewModel_SuggestedLocationsSubtitle" xml:space="preserve">
+		<value>{0} Modyfikacje są zazwyczaj instalowane w następujących folderach gry.</value>
+	</data>
 </root>
