@@ -255,4 +255,10 @@
 	<data name="InProgress_NoDownloadsTextBlock" xml:space="preserve">
 		<value>Brak Pobierań</value>
 	</data>
+	<data name="SpineDownloadButton_ToolTip" xml:space="preserve">
+		<value>Pobieranie</value>
+	</data>
+	<data name="SpineHomeButton_ToolTip_Home" xml:space="preserve">
+		<value>Strona główna</value>
+	</data>
 </root>
