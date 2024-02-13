@@ -140,6 +140,9 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                     }
                 }).DisposeWith(disposables);
 
+            // For now just show the Home workspace on startup
+            // TODO: remove this in favour of restoring the last active workspace when workspace saving is implemented
+            NavigateToHome();
         });
     }
 
