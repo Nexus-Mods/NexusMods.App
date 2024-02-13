@@ -321,7 +321,9 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         behavior.Switch(
             f0: replaceTab => OpenPageReplaceTab(pageData, replaceTab),
             f1: newTab => OpenPageInNewTab(pageData, newTab),
-            f2: newPanel => OpenPageInNewPanel(pageData, newPanel)
+            f2: newPanel => OpenPageInNewPanel(pageData, newPanel),
+            f3: _ => OpenPagePrimaryDefault(pageData),
+            f4: _ => OpenPageSecondaryDefault(pageData)
         );
     }
 
@@ -338,6 +340,35 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
     {
         var panel = OptionalPanelOrFirst(newTab.PanelId);
         panel.AddCustomTab(pageData);
+    }
+
+    private void OpenPagePrimaryDefault(PageData pageData)
+    {
+        // TODO: Query the PageData for default behavior for the particular page
+        // TODO: Query user settings for default behavior
+
+        // Current primary default behavior is to replace the first tab if it's different
+        ReplaceFirstTabIfDifferent(pageData);
+    }
+
+    private void OpenPageSecondaryDefault(PageData pageData)
+    {
+        // TODO: Query the PageData for default behavior for the particular page
+        // TODO: Query user settings for default behavior
+
+        // Current secondary default behavior is to open the page in a new tab in the first panel
+        OpenPageInNewTab(pageData, new OpenPageBehavior.NewTab(Optional<PanelId>.None));
+    }
+
+    private void ReplaceFirstTabIfDifferent(PageData pageData)
+    {
+        var panel = _panels.First();
+        var tab = panel.Tabs.First();
+
+        if (tab.ToData().PageData.FactoryId == pageData.FactoryId) return;
+
+        var newTabPage = _factoryController.Create(pageData, WindowId, Id, panel.Id, tab.Id);
+        tab.Contents = newTabPage;
     }
 
     private static IPanelTabViewModel OptionalTabOrFirst(IPanelViewModel panel, Optional<PanelTabId> optionalTabId)
