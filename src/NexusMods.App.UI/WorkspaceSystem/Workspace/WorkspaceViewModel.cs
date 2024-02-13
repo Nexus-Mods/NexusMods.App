@@ -329,8 +329,6 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         );
     }
 
-
-
     private void OpenPageReplaceTab(PageData pageData, OpenPageBehavior.ReplaceTab replaceTab, bool selectTab)
     {
         var panel = OptionalPanelOrFirst(replaceTab.PanelId);
@@ -381,7 +379,8 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         var panel = _panels.First();
         var tab = panel.Tabs.First();
 
-        if (tab.ToData().PageData.FactoryId == pageData.FactoryId)
+        var tabData = tab.ToData();
+        if (tabData.PageData.FactoryId == pageData.FactoryId && tabData.PageData.Context == pageData.Context)
         {
             if (selectTab) panel.SelectTab(tab.Id);
             return;
