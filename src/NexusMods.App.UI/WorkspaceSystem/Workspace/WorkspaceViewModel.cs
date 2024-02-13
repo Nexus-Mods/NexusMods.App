@@ -164,7 +164,8 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                         if (isHorizontal)
                         {
                             // true if the resizer sits on the "top" edge of the panel
-                            var isResizerYAligned = lastLogicalValue.IsCloseTo(currentSize.Y, tolerance: defaultTolerance);
+                            var isResizerYAligned =
+                                lastLogicalValue.IsCloseTo(currentSize.Y, tolerance: defaultTolerance);
 
                             // if the resizer sits on the "top" edge of the panel, we want to move the panel with the resizer
                             var newY = isResizerYAligned ? newLogicalValue : currentSize.Y;
@@ -185,7 +186,8 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                         else
                         {
                             // true if the resizer sits on the "left" edge of the panel
-                            var isResizerXAligned = lastLogicalValue.IsCloseTo(currentSize.X, tolerance: defaultTolerance);
+                            var isResizerXAligned =
+                                lastLogicalValue.IsCloseTo(currentSize.X, tolerance: defaultTolerance);
 
                             // if the resizer sits on the "left" edge of the panel, we want to move the panel with the resizer
                             var newX = isResizerXAligned ? newLogicalValue : currentSize.X;
@@ -279,7 +281,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         {
             updater.Clear();
 
-            var currentState =WorkspaceGridState.From(_panels, IsHorizontal);
+            var currentState = WorkspaceGridState.From(_panels, IsHorizontal);
             var resizers = GridUtils.GetResizers(currentState);
 
             updater.AddRange(resizers.Select(info =>
@@ -314,26 +316,29 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         return pageData;
     }
 
-    internal void OpenPage(Optional<PageData> optionalPageData, OpenPageBehavior behavior)
+    internal void OpenPage(Optional<PageData> optionalPageData, OpenPageBehavior behavior, bool selectTab = true)
     {
         var pageData = optionalPageData.ValueOr(GetDefaultPageData);
 
         behavior.Switch(
-            f0: replaceTab => OpenPageReplaceTab(pageData, replaceTab),
+            f0: replaceTab => OpenPageReplaceTab(pageData, replaceTab, selectTab),
             f1: newTab => OpenPageInNewTab(pageData, newTab),
             f2: newPanel => OpenPageInNewPanel(pageData, newPanel),
-            f3: _ => OpenPagePrimaryDefault(pageData),
-            f4: _ => OpenPageSecondaryDefault(pageData)
+            f3: _ => OpenPagePrimaryDefault(pageData, selectTab),
+            f4: _ => OpenPageSecondaryDefault(pageData, selectTab)
         );
     }
 
-    private void OpenPageReplaceTab(PageData pageData, OpenPageBehavior.ReplaceTab replaceTab)
+    private void OpenPageReplaceTab(PageData pageData, OpenPageBehavior.ReplaceTab replaceTab, bool selectTab)
     {
         var panel = OptionalPanelOrFirst(replaceTab.PanelId);
         var tab = OptionalTabOrFirst(panel, replaceTab.TabId);
 
         var newTabPage = _factoryController.Create(pageData, WindowId, Id, panel.Id, tab.Id);
         tab.Contents = newTabPage;
+
+        if (selectTab) panel.SelectTab(tab.Id);
+        panel.SelectTab(tab.Id);
     }
 
     private void OpenPageInNewTab(PageData pageData, OpenPageBehavior.NewTab newTab)
@@ -342,16 +347,16 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         panel.AddCustomTab(pageData);
     }
 
-    private void OpenPagePrimaryDefault(PageData pageData)
+    private void OpenPagePrimaryDefault(PageData pageData, bool selectTab)
     {
         // TODO: Query the PageData for default behavior for the particular page
         // TODO: Query user settings for default behavior
 
         // Current primary default behavior is to replace the first tab if it's different
-        ReplaceFirstTabIfDifferent(pageData);
+        ReplaceFirstTabIfDifferent(pageData, selectTab);
     }
 
-    private void OpenPageSecondaryDefault(PageData pageData)
+    private void OpenPageSecondaryDefault(PageData pageData, bool selectTab)
     {
         // TODO: Query the PageData for default behavior for the particular page
         // TODO: Query user settings for default behavior
@@ -360,15 +365,21 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         OpenPageInNewTab(pageData, new OpenPageBehavior.NewTab(Optional<PanelId>.None));
     }
 
-    private void ReplaceFirstTabIfDifferent(PageData pageData)
+    private void ReplaceFirstTabIfDifferent(PageData pageData, bool selectTab)
     {
         var panel = _panels.First();
         var tab = panel.Tabs.First();
 
-        if (tab.ToData().PageData.FactoryId == pageData.FactoryId) return;
+        if (tab.ToData().PageData.FactoryId == pageData.FactoryId)
+        {
+            if (selectTab) panel.SelectTab(tab.Id);
+            return;
+        }
 
         var newTabPage = _factoryController.Create(pageData, WindowId, Id, panel.Id, tab.Id);
         tab.Contents = newTabPage;
+
+        if (selectTab) panel.SelectTab(tab.Id);
     }
 
     private static IPanelTabViewModel OptionalTabOrFirst(IPanelViewModel panel, Optional<PanelTabId> optionalTabId)

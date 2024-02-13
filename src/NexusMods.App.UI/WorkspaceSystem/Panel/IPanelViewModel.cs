@@ -80,6 +80,12 @@ public interface IPanelViewModel : IViewModelInterface
     public void CloseTab(PanelTabId id);
 
     /// <summary>
+    /// Selects the tab with the given <paramref name="id"/>.
+    /// </summary>
+    /// <param name="id"></param>
+    public void SelectTab(PanelTabId id);
+
+    /// <summary>
     /// Transforms the current state of the panel into a serializable data format.
     /// </summary>
     public PanelData ToData();

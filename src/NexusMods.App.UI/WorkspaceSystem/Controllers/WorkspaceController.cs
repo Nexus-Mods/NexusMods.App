@@ -214,7 +214,7 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
         workspaceViewModel.AddPanel(newWorkspaceState, behavior);
     }
 
-    public void OpenPage(WorkspaceId workspaceId, Optional<PageData> pageData, OpenPageBehavior behavior)
+    public void OpenPage(WorkspaceId workspaceId, Optional<PageData> pageData, OpenPageBehavior behavior, bool selectTab = true)
     {
         Dispatcher.UIThread.VerifyAccess();
 
