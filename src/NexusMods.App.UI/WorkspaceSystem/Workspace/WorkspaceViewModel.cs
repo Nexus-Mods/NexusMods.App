@@ -329,11 +329,22 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         );
     }
 
+
+
     private void OpenPageReplaceTab(PageData pageData, OpenPageBehavior.ReplaceTab replaceTab, bool selectTab)
     {
         var panel = OptionalPanelOrFirst(replaceTab.PanelId);
         var tab = OptionalTabOrFirst(panel, replaceTab.TabId);
 
+        // Check if the page is already open in the tab
+        var tabData = tab.ToData();
+        if (tabData.PageData.FactoryId == pageData.FactoryId && tabData.PageData.Context == pageData.Context)
+        {
+            if (selectTab) panel.SelectTab(tab.Id);
+            return;
+        }
+
+        // Replace the tab contents
         var newTabPage = _factoryController.Create(pageData, WindowId, Id, panel.Id, tab.Id);
         tab.Contents = newTabPage;
 
