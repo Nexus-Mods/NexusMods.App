@@ -23,7 +23,7 @@
                 <StackPanel Orientation="Horizontal"
                             Spacing="6"
                             VerticalAlignment="Center">
-                    <icon:GenericIcon MaxSize="24" x:Name="Icon"/>
+                    <icon:GenericIcon MaxSize="24" Size="24" x:Name="Icon"/>
                     <TextBlock x:Name="TitleTextBlock"
                                Padding="0 6 0 0"
                                Classes="BodyLGBold"
