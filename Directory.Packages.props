@@ -2,7 +2,7 @@
   <ItemGroup>
     <!-- Custom Packages -->
     <PackageVersion Include="LinqGen" Version="0.3.1" />
-    <PackageVersion Include="NexusMods.Hashing.xxHash64" Version="1.0.1" />
+    <PackageVersion Include="NexusMods.Hashing.xxHash64" Version="2.0.0" />
     <PackageVersion Include="NexusMods.Paths" Version="0.6.0" />
     <PackageVersion Include="NexusMods.Archives.Nx" Version="0.3.7" />
     <PackageVersion Include="NexusMods.Paths.TestingHelpers" Version="0.6.0" />
@@ -13,7 +13,7 @@
     <PackageVersion Include="FomodInstaller.Scripting.XmlScript" Version="1.0.0" />
     <!-- Bannerlord -->
     <PackageVersion Include="Bannerlord.LauncherManager" Version="1.0.76" />
-    <PackageVersion Include="FetchBannerlordVersion" Version="1.0.6.39" />
+    <PackageVersion Include="FetchBannerlordVersion" Version="1.0.6.45" />
     <PackageVersion Include="System.Linq" Version="4.3.0" />
     <PackageVersion Include="System.Text.Json" Version="8.0.1" />
   </ItemGroup>
@@ -77,13 +77,13 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageVersion>
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.9.0-release-23619-01" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
     <PackageVersion Include="NSubstitute" Version="5.1.0" />
     <PackageVersion Include="NSubstitute.Analyzers.CSharp" Version="1.0.17">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageVersion>
-    <PackageVersion Include="Verify.Xunit" Version="22.8.0" />
+    <PackageVersion Include="Verify.Xunit" Version="23.1.0" />
     <PackageVersion Include="Verify.ImageMagick" Version="3.2.2" />
     <PackageVersion Include="xunit" Version="2.6.6" />
     <PackageVersion Include="Xunit.DependencyInjection" Version="8.9.1" />
