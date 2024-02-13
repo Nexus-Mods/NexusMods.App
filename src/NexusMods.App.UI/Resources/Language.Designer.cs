@@ -519,6 +519,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to My Mods.
+        /// </summary>
+        public static string LoadoutLeftMenuViewModel_LoadoutGridEntry {
+            get {
+                return ResourceManager.GetString("LoadoutLeftMenuViewModel_LoadoutGridEntry", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to NO.
         /// </summary>
         public static string MessageBox_Button_No {

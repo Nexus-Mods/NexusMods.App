@@ -3,6 +3,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Media.Imaging;
 using DynamicData;
+using DynamicData.Binding;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -19,6 +20,7 @@ using NexusMods.App.UI.Pages.MyGames;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
+using NexusMods.App.UI.WorkspaceAttachments;
 using NexusMods.App.UI.WorkspaceSystem;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -88,13 +90,13 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
 
             workspaceController
                 .WhenAnyValue(controller => controller.ActiveWorkspace)
-                .Select(workspace => workspace?.Context)
-                .Select(context =>
+                .Select(workspace =>
                 {
-                    if (context is LoadoutContext loadoutContext)
+                    if (workspace?.Context is LoadoutContext loadoutContext)
                     {
                         return new LoadoutLeftMenuViewModel(
                             loadoutContext,
+                            workspace.Id,
                             workspaceController,
                             serviceProvider
                         );

@@ -3,12 +3,12 @@
         xmlns:ui="clr-namespace:NexusMods.App.UI.LeftMenu.Downloads;assembly=NexusMods.App.UI">
     <Design.PreviewWith>
         <Border Padding="20">
-            <ui:DownloadsView />
+            <ui:DownloadsLeftMenuView />
         </Border>
     </Design.PreviewWith>
 
     <!-- Add Styles Here -->
-    <Style Selector="ui|DownloadsView">
+    <Style Selector="ui|DownloadsLeftMenuView">
 
         <Style Selector="^ StackPanel#LeftPane">
             <Setter Property="Background" Value="{StaticResource ElementBackgroundNeutralBaseBrush}" />

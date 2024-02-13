@@ -108,11 +108,11 @@
         <Compile Update="RightContent\Downloads\InProgressViewModel.cs">
             <DependentUpon>IInProgressViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="LeftMenu\Downloads\DownloadsDesignViewModel.cs">
-            <DependentUpon>IDownloadsViewModel.cs</DependentUpon>
+        <Compile Update="LeftMenu\Downloads\DownloadsLeftMenuDesignViewModel.cs">
+            <DependentUpon>IDownloadsLeftMenuViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="LeftMenu\Downloads\DownloadsViewModel.cs">
-            <DependentUpon>IDownloadsViewModel.cs</DependentUpon>
+        <Compile Update="LeftMenu\Downloads\DownloadsLeftMenuViewModel.cs">
+            <DependentUpon>IDownloadsLeftMenuViewModel.cs</DependentUpon>
         </Compile>
         <Compile Update="Controls\Spine\Buttons\Icon\IconButtonViewModel.cs">
           <DependentUpon>IIconButtonViewModel.cs</DependentUpon>
