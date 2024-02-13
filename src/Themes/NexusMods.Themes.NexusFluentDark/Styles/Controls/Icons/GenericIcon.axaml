@@ -1,7 +1,6 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:local="clr-namespace:NexusMods.App.UI.Controls.GenericIcon"
-                    xmlns:projektanker="https://github.com/projektanker/icons.avalonia">
+                    xmlns:local="clr-namespace:NexusMods.App.UI.Controls.GenericIcon;assembly=NexusMods.App.UI">
 
     <Design.PreviewWith>
 
@@ -38,12 +37,7 @@
 
             <StackPanel.Styles>
                 <Style Selector="local|GenericIcon">
-                    <Setter Property="Height" Value="50"/>
-                    <Setter Property="Width" Value="50"/>
-                </Style>
-
-                <Style Selector="local|GenericIcon projektanker|Icon">
-                    <Setter Property="FontSize" Value="50"/>
+                    <Setter Property="Size" Value="100"/>
                 </Style>
 
                 <Style Selector="local|GenericIcon.icon">
@@ -83,10 +77,12 @@
             <ControlTemplate>
                 <ContentPresenter Name="PART_ContentPresenter"
                                   Content="{TemplateBinding Content}"
-                                  ContentTemplate="{TemplateBinding ContentTemplate}"/>
+                                  ContentTemplate="{TemplateBinding ContentTemplate}"
+                                  Height="{TemplateBinding Size}"
+                                  Width="{TemplateBinding Size}"
+                                  FontSize="{TemplateBinding Size}"/>
             </ControlTemplate>
         </Setter>
     </ControlTheme>
 
 </ResourceDictionary>
-
