@@ -336,7 +336,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
 
         // Check if the page is already open in the tab
         var tabData = tab.ToData();
-        if (tabData.PageData.FactoryId == pageData.FactoryId && tabData.PageData.Context == pageData.Context)
+        if (tabData.PageData.FactoryId == pageData.FactoryId && tabData.PageData.Context.Equals(pageData.Context))
         {
             if (selectTab) panel.SelectTab(tab.Id);
             return;
@@ -380,7 +380,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         var tab = panel.Tabs.First();
 
         var tabData = tab.ToData();
-        if (tabData.PageData.FactoryId == pageData.FactoryId && tabData.PageData.Context == pageData.Context)
+        if (tabData.PageData.FactoryId == pageData.FactoryId && tabData.PageData.Context.Equals(pageData.Context))
         {
             if (selectTab) panel.SelectTab(tab.Id);
             return;
