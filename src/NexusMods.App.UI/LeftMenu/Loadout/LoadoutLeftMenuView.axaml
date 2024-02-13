@@ -9,7 +9,15 @@
 
     <StackPanel Margin="16,16">
         <reactiveUi:ViewModelViewHost x:Name="LaunchButton" />
+        <ItemsControl Margin="16,36" x:Name="MenuItemsControl">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </ItemsControl>
     </StackPanel>
+
 
 </reactiveUi:ReactiveUserControl>
 
