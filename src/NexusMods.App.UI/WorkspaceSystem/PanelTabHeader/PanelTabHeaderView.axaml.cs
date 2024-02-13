@@ -20,7 +20,7 @@ public partial class PanelTabHeaderView : ReactiveUserControl<IPanelTabHeaderVie
             this.WhenAnyValue(view => view.ViewModel!.Icon)
                 .Do(icon =>
                 {
-                    Icon.IsVisible = icon is null;
+                    Icon.IsVisible = icon is not null;
                 })
                 .BindToView(this, view => view.Icon.Value)
                 .DisposeWith(disposables);
