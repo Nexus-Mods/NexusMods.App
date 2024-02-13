@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.DataModel.Entities.Sorting;
 using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.FileStore.ArchiveMetadata;
@@ -10,6 +11,7 @@ using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.NexusWebApi;
+using NexusMods.Games.StardewValley.Sorters;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Trees;
@@ -172,7 +174,11 @@ public class SMAPIInstaller : AModInstaller
         {
             Name = "SMAPI",
             Id = info.BaseModId,
-            Files = modFiles
+            Files = modFiles,
+            SortRules = new []
+            {
+                new SMAPISorter()
+            }
         }};
     }
 }
