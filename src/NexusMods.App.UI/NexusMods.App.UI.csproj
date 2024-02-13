@@ -357,6 +357,9 @@
         <Compile Update="LeftMenu\Loadout\LoadoutLeftMenuViewModel.cs">
           <DependentUpon>ILoadoutLeftMenuViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="LeftMenu\EmptyLeftMenuViewModel.cs">
+          <DependentUpon>ILeftMenuViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>

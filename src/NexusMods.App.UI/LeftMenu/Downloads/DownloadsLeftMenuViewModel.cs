@@ -12,15 +12,15 @@ namespace NexusMods.App.UI.LeftMenu.Downloads;
 [UsedImplicitly]
 public class DownloadsLeftMenuViewModel : AViewModel<IDownloadsLeftMenuViewModel>, IDownloadsLeftMenuViewModel
 {
-    private readonly WorkspaceId _workspaceId;
     private readonly IWorkspaceController _workspaceController;
     public ReadOnlyObservableCollection<ILeftMenuItemViewModel> Items { get; }
+    public WorkspaceId WorkspaceId { get; }
 
     public DownloadsLeftMenuViewModel(IServiceProvider serviceProvider, WorkspaceId workspaceId,
         IWorkspaceController workspaceController)
     {
+        WorkspaceId = workspaceId;
         _workspaceController = workspaceController;
-        _workspaceId = workspaceId;
         var items = new ILeftMenuItemViewModel[]
         {
             new IconViewModel
@@ -28,7 +28,7 @@ public class DownloadsLeftMenuViewModel : AViewModel<IDownloadsLeftMenuViewModel
                 Name = Language.InProgressTitleTextBlock, Icon = IconType.None,
                 Activate = ReactiveCommand.Create(() =>
                 {
-                    _workspaceController.OpenPage(_workspaceId,
+                    _workspaceController.OpenPage(WorkspaceId,
                         new PageData
                         {
                             FactoryId = InProgressPageFactory.StaticId,

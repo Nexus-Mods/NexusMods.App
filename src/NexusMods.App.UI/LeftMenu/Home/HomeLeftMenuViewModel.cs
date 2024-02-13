@@ -13,9 +13,11 @@ namespace NexusMods.App.UI.LeftMenu.Home;
 public class HomeLeftMenuViewModel : AViewModel<IHomeLeftMenuViewModel>, IHomeLeftMenuViewModel
 {
     public ReadOnlyObservableCollection<ILeftMenuItemViewModel> Items { get; }
+    public WorkspaceId WorkspaceId { get; }
 
     public HomeLeftMenuViewModel(IMyGamesViewModel myGamesViewModel, WorkspaceId workspaceId, IWorkspaceController workspaceController)
     {
+        WorkspaceId = workspaceId;
         var items = new ILeftMenuItemViewModel[]
         {
             new IconViewModel

@@ -14,6 +14,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
     public ILaunchButtonViewModel LaunchButtonViewModel { get; }
 
     public ReadOnlyObservableCollection<ILeftMenuItemViewModel> Items { get; }
+    public WorkspaceId WorkspaceId { get; }
 
     public LoadoutLeftMenuViewModel(
         LoadoutContext loadoutContext,
@@ -21,6 +22,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
         IWorkspaceController workspaceController,
         IServiceProvider serviceProvider)
     {
+        WorkspaceId = workspaceId;
         LaunchButtonViewModel = serviceProvider.GetRequiredService<ILaunchButtonViewModel>();
         LaunchButtonViewModel.LoadoutId = loadoutContext.LoadoutId;
 
