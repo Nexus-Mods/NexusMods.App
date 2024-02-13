@@ -3,10 +3,12 @@ using NexusMods.Abstractions.DataModel.Entities.Sorting;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Loadouts.Sorting;
+using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.Abstractions.Triggers;
 
 namespace NexusMods.Games.StardewValley.Sorters;
 
+[JsonName("NexusMods.Games.StardewValley.Sorters")]
 [SuppressMessage("ReSharper", "InconsistentNaming")]
 public class SMAPISorter : IGeneratedSortRule, ISortRule<Mod, ModId>
 {
