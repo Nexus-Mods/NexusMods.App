@@ -1,5 +1,5 @@
 using System.Reactive;
-using Avalonia.Media;
+using NexusMods.App.UI.Controls.GenericIcon;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
@@ -10,7 +10,7 @@ public interface IPanelTabHeaderViewModel : IViewModelInterface
 
     public string Title { get; set; }
 
-    public IImage? Icon { get; set; }
+    public IconValue? Icon { get; set; }
 
     public bool IsSelected { get; set;  }
 

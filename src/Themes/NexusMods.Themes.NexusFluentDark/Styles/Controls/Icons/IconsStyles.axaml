@@ -1,7 +1,8 @@
 ﻿<Styles
     xmlns="https://github.com/avaloniaui"
     xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:genericIcon="clr-namespace:NexusMods.App.UI.Controls.GenericIcon;assembly=NexusMods.App.UI">
 
     <!-- Preview -->
     <Design.PreviewWith>
@@ -73,7 +74,9 @@
 
 
     <!-- Style Definitions -->
-
+    <Style Selector="genericIcon|GenericIcon">
+        <Setter Property="Theme" Value="{StaticResource GenericIconTheme}" />
+    </Style>
 
     <!-- Foreground color classes -->
     <Style Selector="icons|Icon.ForegroundStrong">
