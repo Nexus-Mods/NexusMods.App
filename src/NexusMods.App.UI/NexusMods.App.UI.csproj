@@ -397,4 +397,10 @@
         <LastGenOutput>Language.Designer.cs</LastGenOutput>
       </EmbeddedResource>
     </ItemGroup>
+
+    <ItemGroup>
+      <AvaloniaXaml Update="Controls\GenericIcon\GenericIcon.axaml">
+        <DependentUpon>GenericIcon.cs</DependentUpon>
+      </AvaloniaXaml>
+    </ItemGroup>
 </Project>

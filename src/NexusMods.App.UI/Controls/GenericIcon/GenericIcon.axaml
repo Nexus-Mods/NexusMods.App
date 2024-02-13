@@ -1,0 +1,92 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:NexusMods.App.UI.Controls.GenericIcon"
+                    xmlns:projektanker="https://github.com/projektanker/icons.avalonia">
+
+    <Design.PreviewWith>
+
+        <StackPanel Orientation="Horizontal">
+            <StackPanel.Resources>
+                <local:IconValue x:Key="ProjektankerIconValue">
+                    <local:IconValue.ProjektankerIconValueSetter>
+                        <local:ProjektankerIcon Value="mdi-cog" />
+                    </local:IconValue.ProjektankerIconValueSetter>
+                </local:IconValue>
+
+                <local:IconValue x:Key="AvaloniaImageValue">
+                    <local:IconValue.AvaloniaImageSetter>
+                        <local:AvaloniaImage Image="avares://NexusMods.App.UI/Assets/DesignTime/cyberpunk_game.png"/>
+                    </local:IconValue.AvaloniaImageSetter>
+                </local:IconValue>
+
+                <local:IconValue x:Key="AvaloniaSvgValue">
+                    <local:IconValue.AvaloniaSvgSetter>
+                        <local:AvaloniaSvg Path="avares://NexusMods.App.UI/Assets/Icons/add_circle_24px.svg"/>
+                    </local:IconValue.AvaloniaSvgSetter>
+                </local:IconValue>
+
+                <local:IconValue x:Key="AvaloniaPathIconValue">
+                    <local:IconValue.AvaloniaPathIconSetter>
+                        <local:AvaloniaPathIcon>
+                            <local:AvaloniaPathIcon.Data>
+                                <StreamGeometry>m4 12 1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z</StreamGeometry>
+                            </local:AvaloniaPathIcon.Data>
+                        </local:AvaloniaPathIcon>
+                    </local:IconValue.AvaloniaPathIconSetter>
+                </local:IconValue>
+            </StackPanel.Resources>
+
+            <StackPanel.Styles>
+                <Style Selector="local|GenericIcon">
+                    <Setter Property="Height" Value="50"/>
+                    <Setter Property="Width" Value="50"/>
+                </Style>
+
+                <Style Selector="local|GenericIcon projektanker|Icon">
+                    <Setter Property="FontSize" Value="50"/>
+                </Style>
+
+                <Style Selector="local|GenericIcon.icon">
+                    <Setter Property="Value" Value="{StaticResource ProjektankerIconValue}"/>
+                </Style>
+
+                <Style Selector="local|GenericIcon.image">
+                    <Setter Property="Value" Value="{StaticResource AvaloniaImageValue}"/>
+                </Style>
+
+                <Style Selector="local|GenericIcon.svg">
+                    <Setter Property="Value" Value="{StaticResource AvaloniaSvgValue}"/>
+                </Style>
+
+                <Style Selector="local|GenericIcon.pathIcon">
+                    <Setter Property="Value" Value="{StaticResource AvaloniaPathIconValue}"/>
+                </Style>
+            </StackPanel.Styles>
+
+            <local:GenericIcon Value="{StaticResource ProjektankerIconValue}" />
+            <local:GenericIcon Classes="icon"/>
+
+            <local:GenericIcon Value="{StaticResource AvaloniaImageValue}"/>
+            <local:GenericIcon Classes="image"/>
+
+            <local:GenericIcon Value="{StaticResource AvaloniaSvgValue}"/>
+            <local:GenericIcon Classes="svg"/>
+
+            <local:GenericIcon Value="{StaticResource AvaloniaPathIconValue}"/>
+            <local:GenericIcon Classes="pathIcon"/>
+        </StackPanel>
+
+    </Design.PreviewWith>
+
+    <ControlTheme x:Key="{x:Type local:GenericIcon}" TargetType="local:GenericIcon">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <ContentPresenter Name="PART_ContentPresenter"
+                                  Content="{TemplateBinding Content}"
+                                  ContentTemplate="{TemplateBinding ContentTemplate}"/>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+
+</ResourceDictionary>
+
