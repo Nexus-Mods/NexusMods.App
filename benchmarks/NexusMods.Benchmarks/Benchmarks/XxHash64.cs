@@ -24,7 +24,6 @@ public class XxHash64 : IBenchmark
     [Benchmark]
     public void NonAsyncHash()
     {
-        var algo = new XxHash64Algorithm(0);
-        algo.HashBytes(_oneGB.AsSpan()[..Size]);
+        XxHash64Algorithm.HashBytes(_oneGB.AsSpan()[..Size]);
     }
 }

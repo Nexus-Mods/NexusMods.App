@@ -34,7 +34,7 @@ public static class EntityDictionaryExtensions
 
             if (!id.Equals(oldId))
             {
-                changes.Add(new Change<IId, TK>(ChangeReason.Update, key, id, Optional.Some(oldId)));
+                changes.Add(new Change<IId, TK>(ChangeReason.Update, key, id,  Optional.Some(oldId)));
             }
         }
 

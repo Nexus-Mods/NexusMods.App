@@ -401,7 +401,7 @@ public class SqliteDataStore : IDataStore, IDisposable
         var ms = new MemoryStream();
         JsonSerializer.Serialize(ms, entity, _jsonOptions.Value);
         var msBytes = ms.ToArray();
-        var hash = new XxHash64Algorithm(0).HashBytes(msBytes);
+        var hash = XxHash64Algorithm.HashBytes(msBytes);
         var id = new Id64(entity.Category, hash);
         data = msBytes;
         return id;

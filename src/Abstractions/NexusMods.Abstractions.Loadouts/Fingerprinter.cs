@@ -51,9 +51,8 @@ public struct Fingerprinter : IDisposable
         _binaryWriter.Flush();
         var ms = ((MemoryStream) _binaryWriter.BaseStream);
         ms.Position = 0;
-        XxHash64Algorithm algo = new();
 
-        var hash = Hash.FromULong(algo.HashBytes(ms.ToArray()));
+        var hash = Hash.FromULong(XxHash64Algorithm.HashBytes(ms.ToArray()));
 
         _binaryWriter.Close();
         return hash;
