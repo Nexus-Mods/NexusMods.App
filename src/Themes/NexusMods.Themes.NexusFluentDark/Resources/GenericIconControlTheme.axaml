@@ -68,6 +68,9 @@
 
             <icon:GenericIcon Value="{StaticResource AvaloniaPathIconValue}"/>
             <icon:GenericIcon Classes="pathIcon"/>
+
+            <!-- with max size -->
+            <icon:GenericIcon Classes="image" Size="Infinity" MaxSize="90"/>
         </StackPanel>
 
     </Design.PreviewWith>
@@ -80,7 +83,9 @@
                                   ContentTemplate="{TemplateBinding ContentTemplate}"
                                   Height="{TemplateBinding Size}"
                                   Width="{TemplateBinding Size}"
-                                  FontSize="{TemplateBinding Size}"/>
+                                  FontSize="{TemplateBinding Size}"
+                                  MaxHeight="{TemplateBinding MaxHeight}"
+                                  MaxWidth="{TemplateBinding MaxWidth}"/>
             </ControlTemplate>
         </Setter>
     </ControlTheme>

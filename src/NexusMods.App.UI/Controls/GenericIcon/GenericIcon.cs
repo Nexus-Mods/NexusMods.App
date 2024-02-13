@@ -20,6 +20,9 @@ public sealed class GenericIcon : ContentControl
     public static readonly StyledProperty<double> SizeProperty = AvaloniaProperty
         .Register<GenericIcon, double>(nameof(Size));
 
+    public static readonly StyledProperty<double> MaxSizeProperty = AvaloniaProperty
+        .Register<GenericIcon, double>(nameof(MaxSize));
+
     // NOTE(erri120): The Svg control needs a "baseUri", however, I don't think this does anything.
     private static readonly Uri Default = new("https://example.org");
 
@@ -44,6 +47,18 @@ public sealed class GenericIcon : ContentControl
         set => SetValue(SizeProperty, value);
     }
 
+    /// <summary>
+    /// Gets or sets the max size of the icon.
+    /// </summary>
+    /// <remarks>
+    /// This sets <c>MaxHeight</c>, and <c>MaxWidth</c>.
+    /// </remarks>
+    public double MaxSize
+    {
+        get => GetValue(MaxSizeProperty);
+        set => SetValue(MaxSizeProperty, value);
+    }
+
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
     {
         base.OnPropertyChanged(change);
@@ -53,15 +68,20 @@ public sealed class GenericIcon : ContentControl
             UpdateControl(change.NewValue as IconValue);
         } else if (change.Property == SizeProperty)
         {
-            UpdateSizes((double)change.NewValue!);
-        }
-    }
+            if (change.NewValue is null) return;
+            var value = (double)change.NewValue;
 
-    private void UpdateSizes(double value)
-    {
-        Height = value;
-        Width = value;
-        FontSize = value;
+            Height = value;
+            Width = value;
+            FontSize = value;
+        } else if (change.Property == MaxSizeProperty)
+        {
+            if (change.NewValue is null) return;
+            var value = (double)change.NewValue;
+
+            MaxHeight = value;
+            MaxWidth = value;
+        }
     }
 
     [SuppressMessage("ReSharper", "RedundantNameQualifier")]
@@ -94,7 +114,9 @@ public sealed class GenericIcon : ContentControl
                 // NOTE(erri120): bind our Height and Width properties to their properties
                 // otherwise the icon won't be affected by our dimensions
                 [HeightProperty] = this[HeightProperty],
-                [WidthProperty] = this[WidthProperty]
+                [WidthProperty] = this[WidthProperty],
+                [MaxHeightProperty] = this[MaxHeightProperty],
+                [MaxWidthProperty] = this[MaxWidthProperty]
             }
         );
 
