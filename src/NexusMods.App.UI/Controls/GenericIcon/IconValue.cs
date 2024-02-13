@@ -52,26 +52,64 @@ public sealed class IconValue
     {
         Value = input;
     }
+
+    public static implicit operator IconValue(ProjektankerIcon value) => new(value);
+    public static implicit operator IconValue(AvaloniaImage value) => new(value);
+    public static implicit operator IconValue(AvaloniaSvg value) => new(value);
+    public static implicit operator IconValue(AvaloniaPathIcon value) => new(value);
 }
 
+[PublicAPI]
 public record Empty;
 
+[PublicAPI]
 public class ProjektankerIcon
 {
     public string? Value { get; set; }
+
+    public ProjektankerIcon() { }
+
+    public ProjektankerIcon(string? value)
+    {
+        Value = value;
+    }
 }
 
+[PublicAPI]
 public class AvaloniaImage
 {
     public IImage? Image { get; set; }
+
+    public AvaloniaImage() { }
+
+    public AvaloniaImage(IImage? image)
+    {
+        Image = image;
+    }
 }
 
+[PublicAPI]
 public class AvaloniaSvg
 {
     public string? Path { get; set; }
+
+    public AvaloniaSvg() { }
+
+    public AvaloniaSvg(string? path)
+    {
+        Path = path;
+    }
 }
 
+[PublicAPI]
 public class AvaloniaPathIcon
 {
     public Geometry? Data { get; set; }
+
+    public AvaloniaPathIcon() { }
+
+    public AvaloniaPathIcon(Geometry? data)
+    {
+        Data = data;
+    }
 }

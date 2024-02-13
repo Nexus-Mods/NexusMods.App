@@ -1,11 +1,11 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
-using Avalonia.Media;
 using Avalonia.Threading;
 using DynamicData;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.App.UI.Controls.GenericIcon;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Windows;
 using NexusMods.Extensions.BCL;
@@ -249,7 +249,7 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
         tabViewModel.Header.Title = title;
     }
 
-    public void SetIcon(IImage? icon, WorkspaceId workspaceId, PanelId panelId, PanelTabId tabId)
+    public void SetIcon(IconValue? icon, WorkspaceId workspaceId, PanelId panelId, PanelTabId tabId)
     {
         Dispatcher.UIThread.VerifyAccess();
 
