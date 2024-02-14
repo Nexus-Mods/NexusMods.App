@@ -250,18 +250,18 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             // And mark them as executable if necessary.
             // These below are constants, so on platforms like Windows, the execute bit setting
             // code won't even get JIT-ted at all!
+            // Don't use `path.FileSystem.OS` because that's not constant, and this is a hot path.
             if (!OperatingSystem.IsLinux() && !OperatingSystem.IsMacOS())
                 continue;
 
-            var fullPath = path.GetFullPath();
             var ext = path.Extension.ToString();
             if (ext is not ("" or ".sh" or ".bin" or ".run" or ".py" or ".pl" or ".php" or ".rb" or ".out"
                 or ".elf")) continue;
 
             // Note (Sewer): I don't think we'd ever need anything other than just 'user' execute, but you can never
             // be sure. Just in case, I'll throw in group and other to match 'chmod +x' behaviour.
-            var currentMode = File.GetUnixFileMode(fullPath);
-            File.SetUnixFileMode(fullPath, currentMode | UnixFileMode.UserExecute | UnixFileMode.GroupExecute | UnixFileMode.OtherExecute);
+            var currentMode = path.GetUnixFileMode();
+            path.SetUnixFileMode(currentMode | UnixFileMode.UserExecute | UnixFileMode.GroupExecute | UnixFileMode.OtherExecute);
         }
 
         // Return the new tree

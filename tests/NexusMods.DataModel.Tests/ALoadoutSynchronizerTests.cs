@@ -248,8 +248,8 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
         var scriptPath = Install.LocationsRegister.GetResolvedPath(new GamePath(LocationId.Game, "bin/script.sh"));
         var binaryPath = Install.LocationsRegister.GetResolvedPath(new GamePath(LocationId.Game, "bin/binary"));
         var executeFlags = UnixFileMode.UserExecute | UnixFileMode.GroupExecute | UnixFileMode.OtherExecute;
-        File.GetUnixFileMode(scriptPath.GetFullPath()).Should().HaveFlag(executeFlags);
-        File.GetUnixFileMode(binaryPath.GetFullPath()).Should().HaveFlag(executeFlags);
+        scriptPath.GetUnixFileMode().Should().HaveFlag(executeFlags);
+        binaryPath.GetUnixFileMode().Should().HaveFlag(executeFlags);
     }
 
     [Fact]
