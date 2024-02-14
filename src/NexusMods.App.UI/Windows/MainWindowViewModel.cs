@@ -112,8 +112,18 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
                 .BindTo(_windowManager, manager => manager.ActiveWindowId)
                 .DisposeWith(d);
 
-            Disposable.Create(this, vm => vm._windowManager.UnregisterWindow(vm)).DisposeWith(d);
+            Disposable.Create(this, vm =>
+            {
+                vm._windowManager.UnregisterWindow(vm);
+            }).DisposeWith(d);
         });
+    }
+
+    internal void OnClose()
+    {
+        // NOTE(erri120): This gets called by the View and can't be inside the disposable
+        // of the VM because the MainWindowViewModel gets disposed last, after its contents.
+        _windowManager.SaveWindowState(this);
     }
 
     private async Task HandleDownloadedAnalyzedArchive(IDownloadTask task, DownloadId downloadId, string modName)

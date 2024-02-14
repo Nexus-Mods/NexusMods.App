@@ -67,4 +67,10 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
                 .DisposeWith(disposables);
         });
     }
+
+    protected override void OnClosing(WindowClosingEventArgs e)
+    {
+        ViewModel?.OnClose();
+        base.OnClosing(e);
+    }
 }

@@ -5,10 +5,7 @@ using NexusMods.Abstractions.Serialization.DataModel;
 namespace NexusMods.App.UI.WorkspaceSystem;
 
 [PublicAPI]
-[JsonName("NexusMods.App.UI.WorkspaceSystem.WorkspaceData")]
-public sealed record WorkspaceData : Entity
+public sealed record WorkspaceData
 {
-    public override EntityCategory Category => EntityCategory.Workspaces;
-
     public required PanelData[] Panels { get; init; }
 }

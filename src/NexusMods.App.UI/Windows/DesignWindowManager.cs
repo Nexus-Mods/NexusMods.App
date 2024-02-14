@@ -26,4 +26,6 @@ public class DesignWindowManager : IWindowManager
     public void RegisterWindow(IWorkspaceWindow window) { }
 
     public void UnregisterWindow(IWorkspaceWindow window) { }
+
+    public void SaveWindowState(IWorkspaceWindow window) { }
 }

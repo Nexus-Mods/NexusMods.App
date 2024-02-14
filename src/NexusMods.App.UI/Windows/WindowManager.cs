@@ -3,6 +3,8 @@ using System.Diagnostics.CodeAnalysis;
 using Avalonia.Threading;
 using DynamicData;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.Serialization;
+using NexusMods.App.UI.WorkspaceSystem;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -11,12 +13,17 @@ namespace NexusMods.App.UI.Windows;
 internal sealed class WindowManager : ReactiveObject, IWindowManager
 {
     private readonly ILogger<WindowManager> _logger;
+    private readonly IDataStore _dataStore;
+
     private readonly Dictionary<WindowId, WeakReference<IWorkspaceWindow>> _windows = new();
     private readonly SourceList<WindowId> _allWindowIdSource = new();
 
-    public WindowManager(ILogger<WindowManager> logger)
+    public WindowManager(
+        ILogger<WindowManager> logger,
+        IDataStore dataStore)
     {
         _logger = logger;
+        _dataStore = dataStore;
 
         _allWindowIdSource.Connect().OnUI().Bind(out _allWindowIds);
     }
@@ -72,5 +79,17 @@ internal sealed class WindowManager : ReactiveObject, IWindowManager
         }
 
         _allWindowIdSource.Edit(list => list.Remove(window.WindowId));
+    }
+
+    public void SaveWindowState(IWorkspaceWindow window)
+    {
+        var workspaces = window.WorkspaceController.AllWorkspaces.Select(workspace => workspace.ToData()).ToArray();
+        var data = new WindowData
+        {
+            DataStoreId = WindowData.Id,
+            Workspaces = workspaces
+        };
+
+        _dataStore.Put(WindowData.Id, data);
     }
 }
