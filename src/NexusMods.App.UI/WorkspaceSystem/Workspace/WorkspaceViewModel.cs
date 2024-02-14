@@ -316,7 +316,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         return pageData;
     }
 
-    internal void OpenPage(Optional<PageData> optionalPageData, OpenPageBehavior behavior, bool selectTab = true)
+    internal void OpenPage(Optional<PageData> optionalPageData, OpenPageBehavior behavior, bool selectTab)
     {
         var pageData = optionalPageData.ValueOr(GetDefaultPageData);
 
