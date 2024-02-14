@@ -5,7 +5,7 @@ using DynamicData;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.App.UI.Controls.GenericIcon;
+using NexusMods.App.UI.Controls.UnifiedIcon;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Windows;
 using NexusMods.Extensions.BCL;

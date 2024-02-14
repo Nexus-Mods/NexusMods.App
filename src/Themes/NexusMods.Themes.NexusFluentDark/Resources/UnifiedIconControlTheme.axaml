@@ -1,0 +1,93 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI">
+
+        <Design.PreviewWith>
+
+        <StackPanel Orientation="Horizontal">
+            <StackPanel.Resources>
+                <unifiedIcon:IconValue x:Key="ProjektankerIconValue">
+                    <unifiedIcon:IconValue.ProjektankerIconValueSetter>
+                        <unifiedIcon:ProjektankerIcon Value="mdi-cog" />
+                    </unifiedIcon:IconValue.ProjektankerIconValueSetter>
+                </unifiedIcon:IconValue>
+
+                <unifiedIcon:IconValue x:Key="AvaloniaImageValue">
+                    <unifiedIcon:IconValue.AvaloniaImageSetter>
+                        <unifiedIcon:AvaloniaImage Image="avares://NexusMods.App.UI/Assets/DesignTime/cyberpunk_game.png"/>
+                    </unifiedIcon:IconValue.AvaloniaImageSetter>
+                </unifiedIcon:IconValue>
+
+                <unifiedIcon:IconValue x:Key="AvaloniaSvgValue">
+                    <unifiedIcon:IconValue.AvaloniaSvgSetter>
+                        <unifiedIcon:AvaloniaSvg Path="avares://NexusMods.App.UI/Assets/Icons/add_circle_24px.svg"/>
+                    </unifiedIcon:IconValue.AvaloniaSvgSetter>
+                </unifiedIcon:IconValue>
+
+                <unifiedIcon:IconValue x:Key="AvaloniaPathIconValue">
+                    <unifiedIcon:IconValue.AvaloniaPathIconSetter>
+                        <unifiedIcon:AvaloniaPathIcon>
+                            <unifiedIcon:AvaloniaPathIcon.Data>
+                                <StreamGeometry>m4 12 1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z</StreamGeometry>
+                            </unifiedIcon:AvaloniaPathIcon.Data>
+                        </unifiedIcon:AvaloniaPathIcon>
+                    </unifiedIcon:IconValue.AvaloniaPathIconSetter>
+                </unifiedIcon:IconValue>
+            </StackPanel.Resources>
+
+            <StackPanel.Styles>
+                <Style Selector="unifiedIcon|UnifiedIcon">
+                    <Setter Property="Size" Value="100"/>
+                </Style>
+
+                <Style Selector="unifiedIcon|UnifiedIcon.icon">
+                    <Setter Property="Value" Value="{StaticResource ProjektankerIconValue}"/>
+                </Style>
+
+                <Style Selector="unifiedIcon|UnifiedIcon.image">
+                    <Setter Property="Value" Value="{StaticResource AvaloniaImageValue}"/>
+                </Style>
+
+                <Style Selector="unifiedIcon|UnifiedIcon.svg">
+                    <Setter Property="Value" Value="{StaticResource AvaloniaSvgValue}"/>
+                </Style>
+
+                <Style Selector="unifiedIcon|UnifiedIcon.pathIcon">
+                    <Setter Property="Value" Value="{StaticResource AvaloniaPathIconValue}"/>
+                </Style>
+            </StackPanel.Styles>
+
+            <unifiedIcon:UnifiedIcon Value="{StaticResource ProjektankerIconValue}" />
+            <unifiedIcon:UnifiedIcon Classes="icon"/>
+
+            <unifiedIcon:UnifiedIcon Value="{StaticResource AvaloniaImageValue}"/>
+            <unifiedIcon:UnifiedIcon Classes="image"/>
+
+            <unifiedIcon:UnifiedIcon Value="{StaticResource AvaloniaSvgValue}"/>
+            <unifiedIcon:UnifiedIcon Classes="svg"/>
+
+            <unifiedIcon:UnifiedIcon Value="{StaticResource AvaloniaPathIconValue}"/>
+            <unifiedIcon:UnifiedIcon Classes="pathIcon"/>
+
+            <!-- with max size -->
+            <unifiedIcon:UnifiedIcon Classes="image" Size="Infinity" MaxSize="90"/>
+        </StackPanel>
+
+    </Design.PreviewWith>
+
+    <ControlTheme x:Key="UnifiedIconTheme" TargetType="unifiedIcon:UnifiedIcon">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <ContentPresenter Name="PART_ContentPresenter"
+                                  Content="{TemplateBinding Content}"
+                                  ContentTemplate="{TemplateBinding ContentTemplate}"
+                                  Height="{TemplateBinding Size}"
+                                  Width="{TemplateBinding Size}"
+                                  FontSize="{TemplateBinding Size}"
+                                  MaxHeight="{TemplateBinding MaxHeight}"
+                                  MaxWidth="{TemplateBinding MaxWidth}"/>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+</ResourceDictionary>
+

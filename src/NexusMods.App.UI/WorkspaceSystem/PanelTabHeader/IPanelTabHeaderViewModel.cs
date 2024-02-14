@@ -1,5 +1,5 @@
 using System.Reactive;
-using NexusMods.App.UI.Controls.GenericIcon;
+using NexusMods.App.UI.Controls.UnifiedIcon;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.WorkspaceSystem;

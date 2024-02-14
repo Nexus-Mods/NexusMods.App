@@ -4,24 +4,24 @@ using Avalonia.Controls;
 using Avalonia.Media;
 using JetBrains.Annotations;
 
-namespace NexusMods.App.UI.Controls.GenericIcon;
+namespace NexusMods.App.UI.Controls.UnifiedIcon;
 
 /// <summary>
-/// Generic icon class that supports <see cref="Projektanker.Icons.Avalonia.Icon"/>,
+/// Unified icon class that supports <see cref="Projektanker.Icons.Avalonia.Icon"/>,
 /// <see cref="Avalonia.Controls.Image"/>, <see cref="Avalonia.Svg.Skia.Svg"/>, and
 /// <see cref="Avalonia.Controls.PathIcon"/>.
 /// </summary>
 [PublicAPI]
-public sealed class GenericIcon : ContentControl
+public sealed class UnifiedIcon : ContentControl
 {
     public static readonly StyledProperty<IconValue?> ValueProperty = AvaloniaProperty
-        .Register<GenericIcon, IconValue?>(nameof(Value));
+        .Register<UnifiedIcon, IconValue?>(nameof(Value));
 
     public static readonly StyledProperty<double> SizeProperty = AvaloniaProperty
-        .Register<GenericIcon, double>(nameof(Size));
+        .Register<UnifiedIcon, double>(nameof(Size));
 
     public static readonly StyledProperty<double> MaxSizeProperty = AvaloniaProperty
-        .Register<GenericIcon, double>(nameof(MaxSize));
+        .Register<UnifiedIcon, double>(nameof(MaxSize));
 
     // NOTE(erri120): The Svg control needs a "baseUri", however, I don't think this does anything.
     private static readonly Uri Default = new("https://example.org");
