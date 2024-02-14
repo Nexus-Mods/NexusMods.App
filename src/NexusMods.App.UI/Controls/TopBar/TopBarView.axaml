@@ -23,7 +23,7 @@
                    Classes="TitleMDSemi"
                    VerticalAlignment="Center"
                    Margin="16,0"
-                   x:Name="AtiveWorkspaceTitleTextBlock" />
+                   x:Name="ActiveWorkspaceTitleTextBlock" />
 
         <StackPanel Grid.Column="2"
                     Classes="TopBarActions"

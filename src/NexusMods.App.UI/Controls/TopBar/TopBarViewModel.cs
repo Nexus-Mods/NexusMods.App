@@ -6,6 +6,7 @@ using Avalonia.Media.Imaging;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.NexusWebApi;
+using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -18,10 +19,17 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
     private readonly ILoginManager _loginManager;
     private readonly ILogger<TopBarViewModel> _logger;
 
-    public TopBarViewModel(ILogger<TopBarViewModel> logger, ILoginManager loginManager)
+    public TopBarViewModel(ILogger<TopBarViewModel> logger, ILoginManager loginManager, IWindowManager windowManager)
     {
         _logger = logger;
         _loginManager = loginManager;
+
+        if (!windowManager.TryGetActiveWindow(out var window))
+        {
+            throw new NotImplementedException();
+        }
+
+        var workspaceController = window.WorkspaceController;
 
         this.WhenActivated(d =>
         {
@@ -48,6 +56,11 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
                 .WhereNotNull()
                 .OnUI()
                 .SubscribeWithErrorLogging(logger, x => Avatar = x)
+                .DisposeWith(d);
+
+            workspaceController.WhenAnyValue(controller => controller.ActiveWorkspace!.Title)
+                .OnUI()
+                .BindTo(this, vm => vm.ActiveWorkspaceTitle)
                 .DisposeWith(d);
         });
     }
@@ -81,13 +94,12 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
 
     [Reactive] public bool ShowWindowControls { get; set; } = false;
 
-    [Reactive]
-    public bool IsLoggedIn { get; set; }
+    [Reactive] public bool IsLoggedIn { get; set; }
 
-    [Reactive]
-    public bool IsPremium { get; set; }
+    [Reactive] public bool IsPremium { get; set; }
 
     [Reactive] public IImage Avatar { get; set; } = Initializers.IImage;
+    [Reactive] public string ActiveWorkspaceTitle { get; set; } = string.Empty;
 
     [Reactive] public IAddPanelDropDownViewModel AddPanelDropDownViewModel { get; set; } = null!;
 
@@ -101,4 +113,19 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
     public ReactiveCommand<Unit, Unit> ToggleMaximizeCommand { get; set; } = Initializers.DisabledReactiveCommand;
 
     [Reactive] public ReactiveCommand<Unit, Unit> CloseCommand { get; set; } = Initializers.DisabledReactiveCommand;
+
+    public ReactiveCommand<Unit, Unit> HistoryActionCommand { get; } =
+        ReactiveCommand.Create(() => { }, Observable.Return(false));
+
+    public ReactiveCommand<Unit, Unit> UndoActionCommand { get; } =
+        ReactiveCommand.Create(() => { }, Observable.Return(false));
+
+    public ReactiveCommand<Unit, Unit> RedoActionCommand { get; } =
+        ReactiveCommand.Create(() => { }, Observable.Return(false));
+
+    public ReactiveCommand<Unit, Unit> HelpActionCommand { get; } =
+        ReactiveCommand.Create(() => { }, Observable.Return(false));
+
+    public ReactiveCommand<Unit, Unit> SettingsActionCommand { get; } =
+        ReactiveCommand.Create(() => { }, Observable.Return(false));
 }

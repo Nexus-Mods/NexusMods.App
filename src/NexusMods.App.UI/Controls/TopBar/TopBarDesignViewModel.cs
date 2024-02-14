@@ -22,6 +22,8 @@ public class TopBarDesignViewModel : AViewModel<ITopBarViewModel>, ITopBarViewMo
 
     [Reactive] public IImage Avatar { get; set; } = new Bitmap(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/cyberpunk_game.png")));
 
+    [Reactive] public string ActiveWorkspaceTitle { get; set; } = "HOME";
+
     [Reactive]
     public IAddPanelDropDownViewModel AddPanelDropDownViewModel { get; set; } = new AddPanelDropDownDesignViewModel();
 
@@ -50,4 +52,14 @@ public class TopBarDesignViewModel : AViewModel<ITopBarViewModel>, ITopBarViewMo
     {
         IsLoggedIn = !IsLoggedIn;
     }
+
+    public ReactiveCommand<Unit, Unit> HistoryActionCommand { get; } = ReactiveCommand.Create(() => { }, Observable.Return(false));
+
+    public ReactiveCommand<Unit, Unit> UndoActionCommand { get; } = ReactiveCommand.Create(() => { }, Observable.Return(false));
+
+    public ReactiveCommand<Unit, Unit> RedoActionCommand { get; } = ReactiveCommand.Create(() => { }, Observable.Return(false));
+
+    public ReactiveCommand<Unit, Unit> HelpActionCommand { get; } = ReactiveCommand.Create(() => { }, Observable.Return(false));
+
+    public ReactiveCommand<Unit, Unit> SettingsActionCommand { get; } = ReactiveCommand.Create(() => { }, Observable.Return(false));
 }
