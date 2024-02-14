@@ -26,6 +26,9 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
     public WindowId WindowId => _workspaceController.WindowId;
 
     /// <inheritdoc/>
+    public string Title { get; set; } = string.Empty;
+
+    /// <inheritdoc/>
     public IWorkspaceContext Context { get; set; } = EmptyContext.Instance;
 
     [Reactive] public bool IsActive { get; set; }
