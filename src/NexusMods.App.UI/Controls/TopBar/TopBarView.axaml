@@ -17,55 +17,61 @@
         <topBar:TopBarDesignViewModel ShowWindowControls="True" />
     </Design.DataContext>
 
-    <Grid ColumnDefinitions="163, Auto, *, Auto, Auto" x:Name="MainGrid">
-        <Svg
-            Grid.Column="0"
-            Grid.Row="0"
-            Height="30"
-            HorizontalAlignment="Center"
-            Path="avares://NexusMods.App.UI/Assets/nexus-logo-with-text.svg"
-            VerticalAlignment="Center" />
+    <Grid ColumnDefinitions="Auto, *, Auto, Auto, Auto" x:Name="MainGrid">
 
-        <Button Classes="Pill Light" Grid.Column="1" Grid.Row="0" x:Name="Premium" IsVisible="False">
-            <StackPanel>
-                <avalonia:Icon Classes="Star" />
-                <TextBlock Text="{x:Static resources:Language.Nexus_Premium_Status__Premium}"></TextBlock>
-            </StackPanel>
-        </Button>
+        <TextBlock Grid.Column="0"
+                   Classes="TitleMDSemi"
+                   VerticalAlignment="Center"
+                   Margin="16,0"
+                   x:Name="AtiveWorkspaceTitleTextBlock" />
 
-        <Border Grid.Column="2"
-                Classes="OutlineWeak"
-                x:Name="SearchBoxBorder"
-                Height="36"
-                Margin="12,0">
-            <StackPanel
-                Margin="11,0"
-                Orientation="Horizontal"
-                VerticalAlignment="Center">
-                <avalonia:Icon Classes="Search"
-                               FontSize="20" />
-                <TextBlock
-                    HorizontalAlignment="Left"
-                    Margin="7,0"
-                    Text="{x:Static resources:Language.SearchBox__Search}"
-                    VerticalAlignment="Center" />
-            </StackPanel>
-        </Border>
-
-        <StackPanel Grid.Column="3"
+        <StackPanel Grid.Column="2"
                     Classes="TopBarActions"
                     Orientation="Horizontal"
-                    Spacing="16"
-                    Margin="16,0">
+                    Spacing="8"
+                    Margin="16,0"
+                    x:Name="ActionStackPanel">
 
-            <reactiveUi:ViewModelViewHost VerticalAlignment="Center" x:Name="AddPanelViewModelViewHost"/>
+            <Button Classes="Action"
+                    x:Name="HistoryActionButton">
+                <avalonia:Icon Classes="History ForegroundSubdued" />
+            </Button>
 
-            <Button Classes="Action">
-                <avalonia:Icon Classes="Help" />
+            <Button Classes="Action"
+                    x:Name="UndoActionButton">
+                <avalonia:Icon Classes="Undo ForegroundSubdued" />
             </Button>
-            <Button Classes="Action">
-                <avalonia:Icon Classes="Cog" />
+
+            <Button Classes="Action"
+                    x:Name="RedoActionButton">
+                <avalonia:Icon Classes="Redo ForegroundSubdued" />
             </Button>
+
+            <Button Classes="Action"
+                    x:Name="HelpActionButton">
+                <avalonia:Icon Classes="Help ForegroundSubdued" />
+            </Button>
+
+            <Button Classes="Action"
+                    x:Name="SettingsActionButton">
+                <avalonia:Icon Classes="Cog ForegroundSubdued" />
+            </Button>
+
+            <reactiveUi:ViewModelViewHost VerticalAlignment="Center" x:Name="AddPanelViewModelViewHost" />
+
+        </StackPanel>
+
+        <Border Grid.Column="3" Classes="OutlineWeak"
+                Margin="0,8"
+                BorderThickness="1,0,0,0"
+                x:Name="LoginDivider" />
+
+        <StackPanel Grid.Column="4"
+                    Orientation="Horizontal"
+                    Spacing="8"
+                    Margin="12,0"
+                    x:Name="LoginStackPanel">
+
             <Button
                 Classes="Standard Primary"
                 x:Name="LoginButton">
@@ -75,29 +81,40 @@
                     </TextBlock>
                 </StackPanel>
             </Button>
-        </StackPanel>
 
-        <Border Classes="OutlineWeak"
-                BorderThickness="1,0,0,0"
-                Grid.Column="4"
-                x:Name="UserPanel"
-                IsVisible="False">
-            <StackPanel Orientation="Horizontal" Spacing="16" Margin="16, 0">
-                <Button
-                    Classes="Action"
-                    HorizontalAlignment="Center">
-                    <avalonia:Icon Classes="Bell" />
-                </Button>
-                <Button Classes="Avatar"
-                        HorizontalAlignment="Center"
-                        x:Name="UserButton">
-                    <Image
-                        Height="30"
-                        Width="30"
-                        x:Name="AvatarImage">
-                    </Image>
-                </Button>
-            </StackPanel>
-        </Border>
+            <Border Classes="OutlineWeak"
+                    BorderThickness="0,0,0,0"
+                    x:Name="UserPanel"
+                    IsVisible="False">
+
+                <StackPanel Orientation="Horizontal" Spacing="16" Margin="16, 0">
+
+                    <Button Classes="Pill Light" x:Name="Premium" IsVisible="False">
+                        <StackPanel>
+                            <avalonia:Icon Classes="Star" />
+                            <TextBlock Text="{x:Static resources:Language.Nexus_Premium_Status__Premium}"></TextBlock>
+                        </StackPanel>
+                    </Button>
+
+                    <Button
+                        Classes="Action"
+                        HorizontalAlignment="Center">
+                        <avalonia:Icon Classes="Bell" />
+                    </Button>
+
+                    <Button Classes="Avatar"
+                            HorizontalAlignment="Center"
+                            x:Name="UserButton">
+                        <Image
+                            Height="30"
+                            Width="30"
+                            x:Name="AvatarImage">
+                        </Image>
+                    </Button>
+
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
     </Grid>
 </reactiveUi:ReactiveUserControl>
