@@ -38,11 +38,17 @@ on:
         required: false
         default: false
     secrets:
-      PFX_BASE64:
-        description: "Base64 encoded string of the PFX file for signing"
+      ES_USERNAME:
+        description: "The SSL.com account username."
         required: false
-      PFX_KEY:
-        description: "Key for the PFX file used for signing"
+      ES_PASSWORD:
+        description: "The SSL.com account password."
+        required: false
+      ES_CREDENTIAL_ID:
+        description: "The Credential ID for signing certificate."
+        required: false
+      ES_TOTP_SECRET:
+        description: "The OAuth TOTP secret."
         required: false
     outputs:
       ArtifactNameWindowsArchive:
@@ -51,10 +57,6 @@ on:
       ArtifactNameWindowsInnoSetup:
         description: "Name of the Artifact that contains the Windows Inno Setup"
         value: ${{ jobs.build.outputs.artifactNameWindowsInnoSetup }}
-
-env:
-  SigningCertificate: "GitHubActionsWorkflow.pfx"
-  TimestampServer: "http://timestamp.digicert.com"
 
 jobs:
   build:
@@ -85,13 +87,10 @@ jobs:
       - name: Get PupNet
         run: dotnet tool install -g KuiperZone.PupNet --version ${{ inputs.PupNetVersion }}
 
-      - name: Decode PFX
-        if: inputs.SignExecutable == true
+      - name: Download CodeSignTool
+        id: downloadCodeSignTool
         shell: pwsh
-        run: |
-          $certBytes = [System.Convert]::FromBase64String("${{ secrets.PFX_BASE64 }}")
-          $certPath = Join-Path -Path ${{ steps.transformInputs.outputs.projectDir }} -ChildPath $env:SigningCertificate
-          [IO.File]::WriteAllBytes("$certPath", $certBytes)
+        run: ./scripts/download-codesigntool.ps1
 
       - name: Create Archive
         if: inputs.BuildArchive == true
@@ -99,7 +98,11 @@ jobs:
         run: pupnet -y -v ${{ inputs.AppVersion }} -k zip -p DefineConstants=INSTALLATION_METHOD_ARCHIVE
         env:
           SignExecutable: ${{ inputs.SignExecutable }}
-          SigningCertificatePassword: ${{ secrets.PFX_KEY }}
+          CodeSignToolDir: ${{ steps.downloadCodeSignTool.outputs.codeSignToolDir }}
+          ES_USERNAME: ${{ secrets.ES_USERNAME }}
+          ES_PASSWORD: ${{ secrets.ES_PASSWORD }}
+          ES_CREDENTIAL_ID: ${{ secrets.ES_CREDENTIAL_ID }}
+          ES_TOTP_SECRET: ${{ secrets.ES_TOTP_SECRET }}
 
       - name: Create Setup
         if: inputs.BuildInnoSetup == true
@@ -107,7 +110,11 @@ jobs:
         run: pupnet -y -v ${{ inputs.AppVersion }} -k Setup -p DefineConstants=INSTALLATION_METHOD_INNO_SETUP
         env:
           SignExecutable: ${{ inputs.SignExecutable }}
-          SigningCertificatePassword: ${{ secrets.PFX_KEY }}
+          CodeSignToolDir: ${{ steps.downloadCodeSignTool.outputs.codeSignToolDir }}
+          ES_USERNAME: ${{ secrets.ES_USERNAME }}
+          ES_PASSWORD: ${{ secrets.ES_PASSWORD }}
+          ES_CREDENTIAL_ID: ${{ secrets.ES_CREDENTIAL_ID }}
+          ES_TOTP_SECRET: ${{ secrets.ES_TOTP_SECRET }}
 
       - name: Sign Setup
         if: inputs.BuildInnoSetup == true && inputs.SignExecutable == true
@@ -115,14 +122,11 @@ jobs:
         run: ../../scripts/sign.ps1 Deploy/OUT
         env:
           SignExecutable: ${{ inputs.SignExecutable }}
-          SigningCertificatePassword: ${{ secrets.PFX_KEY }}
-
-      - name: Remove PFX
-        if: inputs.SignExecutable == true
-        shell: pwsh
-        run: |
-          $certPath = Join-Path -Path ${{ steps.transformInputs.outputs.projectDir }} -ChildPath $env:SigningCertificate
-          Remove-Item -Path $certPath
+          CodeSignToolDir: ${{ steps.downloadCodeSignTool.outputs.codeSignToolDir }}
+          ES_USERNAME: ${{ secrets.ES_USERNAME }}
+          ES_PASSWORD: ${{ secrets.ES_PASSWORD }}
+          ES_CREDENTIAL_ID: ${{ secrets.ES_CREDENTIAL_ID }}
+          ES_TOTP_SECRET: ${{ secrets.ES_TOTP_SECRET }}
 
       - name: Set outputs
         id: setOutputs

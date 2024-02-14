@@ -4,21 +4,40 @@
         xmlns:icons="https://github.com/projektanker/icons.avalonia">
     <Design.PreviewWith>
         <Border Padding="20">
-            <ui:AddPanelButtonView Width="60" Height="40"/>
+            <ui:AddPanelButtonView />
         </Border>
     </Design.PreviewWith>
 
     <!-- Add Styles Here -->
     <Style Selector="ui|AddPanelButtonView">
 
-        <Style Selector="^ Button">
-            <Setter Property="Background" Value="{StaticResource ElementBackgroundTransparentBrush}"/>
-            <Setter Property="BorderBrush" Value="{StaticResource ElementForegroundPrimaryModerateBrush}"/>
+        <Style Selector="^ Border#BackgroundBorder">
+            <Setter Property="CornerRadius" Value="0" />
             <Setter Property="Padding" Value="0" />
         </Style>
 
+        <Style Selector="^ Button">
+            <Setter Property="Background" Value="{StaticResource ElementBackgroundTransparentBrush}" />
+            <Setter Property="Height" Value="40" />
+            <Setter Property="Width" Value="48" />
+            <Setter Property="Padding" Value="8,0,4,0" />
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="CornerRadius" Value="8, 0,0,8" />
+        </Style>
+
+        <Style Selector="^ StackPanel">
+            <Setter Property="Height" Value="24" />
+            <Setter Property="Spacing" Value="0" />
+        </Style>
+
+        <Style Selector="^ Image">
+            <Setter Property="Height" Value="18" />
+            <Setter Property="Width" Value="18" />
+        </Style>
+
         <Style Selector="^ icons|Icon">
-            <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralSubduedBrush}"/>
+            <Setter Property="FontSize" Value="10" />
+            <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralSubduedBrush}" />
         </Style>
     </Style>
 </Styles>

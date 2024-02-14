@@ -1,17 +1,17 @@
 using FluentAssertions;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.FileStore;
+using NexusMods.Abstractions.FileStore.ArchiveMetadata;
+using NexusMods.Abstractions.FileStore.Trees;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Games.ArchiveMetadata;
 using NexusMods.Abstractions.Games.Downloads;
 using NexusMods.Abstractions.Installers;
-using NexusMods.Abstractions.Installers.DTO;
-using NexusMods.Abstractions.Installers.DTO.Files;
-using NexusMods.Abstractions.Installers.Trees;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
-using NexusMods.Abstractions.Serialization;
+using NexusMods.Abstractions.Loadouts.Files;
+using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.DataModel.Extensions;
 using NexusMods.Paths;
@@ -86,12 +86,13 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
         var info = new ModInstallerInfo()
         {
             ArchiveFiles = tree,
-            BaseModId = ModId.NewId(), // unused
+            BaseModId = ModId.NewId(),
             Locations = install.LocationsRegister,
             GameName = install.Game.Name,
             Store = install.Store,
             Version = install.Version,
-            ModName = "" // unused
+            ModName = "",
+            ArchiveMetaData = null,
         };
 
         var results = await ModInstaller.GetModsAsync(info, cancellationToken);
@@ -238,12 +239,13 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
         var info = new ModInstallerInfo()
         {
             ArchiveFiles = tree,
-            BaseModId = ModId.NewId(), // unused
+            BaseModId = ModId.NewId(),
             Locations = install.LocationsRegister,
             GameName = install.Game.Name,
             Store = install.Store,
             Version = install.Version,
-            ModName = "" // unused
+            ModName = "",
+            ArchiveMetaData = null
         };
 
         mods = (await ModInstaller.GetModsAsync(info)).ToArray();

@@ -1,4 +1,6 @@
 using JetBrains.Annotations;
+using Microsoft.Extensions.DependencyInjection;
+using NexusMods.App.UI.Windows;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
@@ -17,7 +19,10 @@ public interface IPageFactory
     /// </summary>
     public Page Create(IPageFactoryContext context);
 
-    public IEnumerable<PageDiscoveryDetails?> GetDiscoveryDetails();
+    /// <summary>
+    /// Returns details about every page that can be created with this factory in the given <see cref="IWorkspaceContext"/>.
+    /// </summary>
+    public IEnumerable<PageDiscoveryDetails?> GetDiscoveryDetails(IWorkspaceContext workspaceContext);
 }
 
 /// <summary>
@@ -49,7 +54,7 @@ public interface IPageFactory<out TViewModel, in TContext> : IPageFactory
     /// <summary>
     /// Creates a new view model using the provided context.
     /// </summary>
-    public TViewModel CreateViewModel(TContext parameter);
+    public TViewModel CreateViewModel(TContext context);
 }
 
 /// <summary>
@@ -64,14 +69,17 @@ public abstract class APageFactory<TViewModel, TContext> : IPageFactory<TViewMod
     public abstract PageFactoryId Id { get; }
 
     protected readonly IServiceProvider ServiceProvider;
+    protected readonly IWindowManager WindowManager;
+
     protected APageFactory(IServiceProvider serviceProvider)
     {
         ServiceProvider = serviceProvider;
+        WindowManager = serviceProvider.GetRequiredService<IWindowManager>();
     }
 
     /// <inheritdoc/>
-    public abstract TViewModel CreateViewModel(TContext parameter);
+    public abstract TViewModel CreateViewModel(TContext context);
 
     /// <inheritdoc/>
-    public virtual IEnumerable<PageDiscoveryDetails?> GetDiscoveryDetails() => Array.Empty<PageDiscoveryDetails?>();
+    public virtual IEnumerable<PageDiscoveryDetails?> GetDiscoveryDetails(IWorkspaceContext workspaceContext) => Array.Empty<PageDiscoveryDetails?>();
 }

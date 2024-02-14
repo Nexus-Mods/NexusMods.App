@@ -9,7 +9,7 @@ public static class Services
 {
     public static IServiceCollection AddSifu(this IServiceCollection serviceCollection)
     {
-        serviceCollection.AddAllSingleton<IGame, Sifu>();
+        serviceCollection.AddGame<Sifu>();
         serviceCollection.AddAllSingleton<IModInstaller, SifuModInstaller>();
         return serviceCollection;
     }

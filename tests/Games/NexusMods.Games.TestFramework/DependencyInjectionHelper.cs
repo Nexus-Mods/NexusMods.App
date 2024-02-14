@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Castle.Core.Resource;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
@@ -5,10 +6,10 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.HttpDownloader;
 using NexusMods.DataModel;
 using NexusMods.FileExtractor;
-using NexusMods.FileExtractor.Extractors;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
+using NexusMods.StandardGameLocators;
 
 namespace NexusMods.Games.TestFramework;
 
@@ -44,6 +45,7 @@ public static class DependencyInjectionHelper
 
         return serviceCollection
             .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug))
+            .AddSingleton<JsonConverter, GameInstallationConverter>()
             .AddFileSystem()
             .AddSingleton<TemporaryFileManager>(_ => new TemporaryFileManager(FileSystem.Shared, prefix))
             .AddSingleton<HttpClient>()

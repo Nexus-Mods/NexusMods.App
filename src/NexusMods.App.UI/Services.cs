@@ -1,4 +1,3 @@
-
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
@@ -6,6 +5,12 @@ using NexusMods.Abstractions.Serialization.Json;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.Controls.DevelopmentBuildBanner;
+using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadGameName;
+using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadName;
+using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadSize;
+using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadStatus;
+using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadVersion;
+using NexusMods.App.UI.Controls.FoundGames;
 using NexusMods.App.UI.Controls.GameWidget;
 using NexusMods.App.UI.Controls.Spine;
 using NexusMods.App.UI.Controls.Spine.Buttons.Download;
@@ -14,46 +19,39 @@ using NexusMods.App.UI.Controls.Spine.Buttons.Image;
 using NexusMods.App.UI.Controls.TopBar;
 using NexusMods.App.UI.LeftMenu;
 using NexusMods.App.UI.LeftMenu.Downloads;
-using NexusMods.App.UI.LeftMenu.Game;
 using NexusMods.App.UI.LeftMenu.Home;
 using NexusMods.App.UI.LeftMenu.Items;
+using NexusMods.App.UI.LeftMenu.Loadout;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Overlays.Download.Cancel;
 using NexusMods.App.UI.Overlays.Generic.MessageBox.OkCancel;
 using NexusMods.App.UI.Overlays.Login;
 using NexusMods.App.UI.Overlays.MetricsOptIn;
 using NexusMods.App.UI.Overlays.Updater;
-using NexusMods.App.UI.RightContent;
-using NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadGameName;
-using NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadName;
-using NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadSize;
-using NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadStatus;
-using NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadVersion;
-using NexusMods.App.UI.RightContent.Downloads;
-using NexusMods.App.UI.RightContent.Home;
-using NexusMods.App.UI.RightContent.LoadoutGrid;
-using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModCategory;
-using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModEnabled;
-using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModInstalled;
-using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModName;
-using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModVersion;
-using NexusMods.App.UI.RightContent.MyGames;
-using NexusMods.App.UI.Routing;
+using NexusMods.App.UI.Pages.Downloads;
+using NexusMods.App.UI.Pages.LoadoutGrid;
+using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModCategory;
+using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModEnabled;
+using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModInstalled;
+using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModName;
+using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModVersion;
+using NexusMods.App.UI.Pages.MyGames;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Paths;
 using ReactiveUI;
-using DownloadGameNameView = NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadGameName.DownloadGameNameView;
-using DownloadNameView = NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadName.DownloadNameView;
-using DownloadSizeView = NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadSize.DownloadSizeView;
-using DownloadStatusView = NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadStatus.DownloadStatusView;
-using DownloadVersionView = NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadVersion.DownloadVersionView;
+using DownloadGameNameView = NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadGameName.DownloadGameNameView;
+using DownloadNameView = NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadName.DownloadNameView;
+using DownloadSizeView = NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadSize.DownloadSizeView;
+using DownloadStatusView = NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadStatus.DownloadStatusView;
+using DownloadVersionView = NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadVersion.DownloadVersionView;
+using FoundGamesView = NexusMods.App.UI.Controls.FoundGames.FoundGamesView;
 using ImageButton = NexusMods.App.UI.Controls.Spine.Buttons.Image.ImageButton;
-using ModCategoryView = NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModCategory.ModCategoryView;
-using ModEnabledView = NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModEnabled.ModEnabledView;
-using ModInstalledView = NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModInstalled.ModInstalledView;
-using ModNameView = NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModName.ModNameView;
-using ModVersionView = NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModVersion.ModVersionView;
+using ModCategoryView = NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModCategory.ModCategoryView;
+using ModEnabledView = NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModEnabled.ModEnabledView;
+using ModInstalledView = NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModInstalled.ModInstalledView;
+using ModNameView = NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModName.ModNameView;
+using ModVersionView = NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModVersion.ModVersionView;
 using NexusLoginOverlayView = NexusMods.App.UI.Overlays.Login.NexusLoginOverlayView;
 
 namespace NexusMods.App.UI;
@@ -80,7 +78,6 @@ public static class Services
             .AddTransient<MainWindow>()
 
             // Services
-            .AddSingleton<IRouter, ReactiveMessageRouter>()
             .AddSingleton<IOverlayController, OverlayController>()
             .AddTransient<IImageCache, ImageCache>()
 
@@ -90,15 +87,11 @@ public static class Services
             .AddTransient(typeof(DataGridColumnFactory<,,>))
             .AddSingleton<IViewLocator, InjectedViewLocator>()
 
-            .AddViewModel<CompletedViewModel, ICompletedViewModel>()
             .AddViewModel<DevelopmentBuildBannerViewModel, IDevelopmentBuildBannerViewModel>()
             .AddViewModel<DownloadsViewModel, IDownloadsViewModel>()
             .AddViewModel<FoundGamesViewModel, IFoundGamesViewModel>()
-            .AddViewModel<GameLeftMenuViewModel, IGameLeftMenuViewModel>()
             .AddViewModel<GameWidgetViewModel, IGameWidgetViewModel>()
-            .AddViewModel<HistoryViewModel, IHistoryViewModel>()
             .AddViewModel<HomeLeftMenuViewModel, IHomeLeftMenuViewModel>()
-            .AddViewModel<HomeViewDesignerViewModel, IHomeViewModel>()
             .AddViewModel<IconButtonViewModel, IIconButtonViewModel>()
             .AddViewModel<IconViewModel, IIconViewModel>()
             .AddViewModel<ImageButtonViewModel, IImageButtonViewModel>()
@@ -112,7 +105,6 @@ public static class Services
             .AddViewModel<ModVersionViewModel, IModVersionViewModel>()
             .AddViewModel<MyGamesViewModel, IMyGamesViewModel>()
             .AddViewModel<NexusLoginOverlayViewModel, INexusLoginOverlayViewModel>()
-            .AddViewModel<PlaceholderDesignViewModel, IPlaceholderViewModel>()
             .AddViewModel<SpineViewModel, ISpineViewModel>()
             .AddViewModel<TopBarViewModel, ITopBarViewModel>()
             .AddViewModel<SpineDownloadButtonViewModel, ISpineDownloadButtonViewModel>()
@@ -125,17 +117,14 @@ public static class Services
             .AddViewModel<MessageBoxOkCancelViewModel, IMessageBoxOkCancelViewModel>()
             .AddViewModel<MetricsOptInViewModel, IMetricsOptInViewModel>()
             .AddViewModel<UpdaterViewModel, IUpdaterViewModel>()
+            .AddViewModel<LoadoutLeftMenuViewModel, ILoadoutLeftMenuViewModel>()
 
             // Views
-            .AddView<CompletedView, ICompletedViewModel>()
             .AddView<DevelopmentBuildBannerView, IDevelopmentBuildBannerViewModel>()
             .AddView<DownloadsView, IDownloadsViewModel>()
             .AddView<FoundGamesView, IFoundGamesViewModel>()
-            .AddView<GameLeftMenuView, IGameLeftMenuViewModel>()
             .AddView<GameWidget, IGameWidgetViewModel>()
-            .AddView<HistoryView, IHistoryViewModel>()
             .AddView<HomeLeftMenuView, IHomeLeftMenuViewModel>()
-            .AddView<HomeView, IHomeViewModel>()
             .AddView<IconButton, IIconButtonViewModel>()
             .AddView<IconView, IIconViewModel>()
             .AddView<ImageButton, IImageButtonViewModel>()
@@ -151,7 +140,6 @@ public static class Services
             .AddView<ModVersionView, IModVersionViewModel>()
             .AddView<MyGamesView, IMyGamesViewModel>()
             .AddView<NexusLoginOverlayView, INexusLoginOverlayViewModel>()
-            .AddView<PlaceholderView, IPlaceholderViewModel>()
             .AddView<Spine, ISpineViewModel>()
             .AddView<TopBarView, ITopBarViewModel>()
             .AddView<SpineDownloadButtonView, ISpineDownloadButtonViewModel>()
@@ -163,25 +151,31 @@ public static class Services
             .AddView<CancelDownloadOverlayView, ICancelDownloadOverlayViewModel>()
             .AddView<MessageBoxOkCancelView, IMessageBoxOkCancelViewModel>()
             .AddView<UpdaterView, IUpdaterViewModel>()
+            .AddView<LoadoutLeftMenuView, ILoadoutLeftMenuViewModel>()
 
             // workspace system
+            .AddSingleton<IWindowManager, WindowManager>()
             .AddViewModel<WorkspaceViewModel, IWorkspaceViewModel>()
             .AddViewModel<PanelViewModel, IPanelViewModel>()
             .AddViewModel<AddPanelButtonViewModel, IAddPanelButtonViewModel>()
+            .AddViewModel<AddPanelDropDownViewModel, IAddPanelDropDownViewModel>()
             .AddViewModel<PanelTabHeaderViewModel, IPanelTabHeaderViewModel>()
             .AddViewModel<NewTabPageViewModel, INewTabPageViewModel>()
             .AddViewModel<NewTabPageSectionViewModel, INewTabPageSectionViewModel>()
             .AddView<WorkspaceView, IWorkspaceViewModel>()
             .AddView<PanelView, IPanelViewModel>()
             .AddView<AddPanelButtonView, IAddPanelButtonViewModel>()
+            .AddView<AddPanelDropDownView, IAddPanelDropDownViewModel>()
             .AddView<PanelTabHeaderView, IPanelTabHeaderViewModel>()
             .AddView<NewTabPageView, INewTabPageViewModel>()
 
             // page factories
             .AddSingleton<PageFactoryController>()
             .AddSingleton<IPageFactory, DummyPageFactory>()
-            .AddSingleton<IPageFactory, LoadoutGridPageFactory>()
             .AddSingleton<IPageFactory, NewTabPageFactory>()
+            .AddSingleton<IPageFactory, MyGamesPageFactory>()
+            .AddSingleton<IPageFactory, LoadoutGridPageFactory>()
+            .AddSingleton<IPageFactory, InProgressPageFactory>()
 
             // Other
             .AddViewModel<DummyViewModel, IDummyViewModel>()

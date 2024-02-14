@@ -1,5 +1,5 @@
-using NexusMods.Paths.Extensions;
 using NexusMods.Paths;
+using NexusMods.Paths.Extensions;
 
 namespace NexusMods.Games.BladeAndSorcery;
 

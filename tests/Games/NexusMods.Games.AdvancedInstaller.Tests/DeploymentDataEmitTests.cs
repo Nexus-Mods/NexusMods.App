@@ -1,6 +1,6 @@
 using FluentAssertions;
-using NexusMods.Abstractions.Installers.DTO.Files;
-using NexusMods.Abstractions.Installers.Trees;
+using NexusMods.Abstractions.FileStore.Trees;
+using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 

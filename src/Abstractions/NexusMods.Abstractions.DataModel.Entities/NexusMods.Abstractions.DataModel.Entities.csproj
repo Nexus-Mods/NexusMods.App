@@ -14,4 +14,8 @@
       <ProjectReference Include="..\NexusMods.Abstractions.Serialization\NexusMods.Abstractions.Serialization.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Sorting\" />
+    </ItemGroup>
+
 </Project>

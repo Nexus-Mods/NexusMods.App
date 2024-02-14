@@ -35,6 +35,14 @@ public interface IDataStore
     T? Get<T>(IId id, bool canCache = false) where T : Entity;
 
     /// <summary>
+    /// Retrieves an individual item with a specified ID from the data store.
+    /// </summary>
+    /// <param name="category">Category to retrieve the results from.</param>
+    /// <typeparam name="T">Type of item to retrieve.</typeparam>
+    /// <returns>Retrieved item from the data store, can be null.</returns>
+    IEnumerable<T>? GetAll<T>(EntityCategory category) where T : Entity;
+
+    /// <summary>
     /// Retrieves the raw data for an item with the given ID.
     /// </summary>
     /// <param name="id">Identifier for the item.</param>

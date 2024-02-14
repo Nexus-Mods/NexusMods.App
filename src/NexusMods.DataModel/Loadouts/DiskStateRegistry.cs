@@ -1,8 +1,8 @@
 using System.IO.Compression;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.Games.DTO;
-using NexusMods.Abstractions.Games.Loadouts;
+using NexusMods.Abstractions.DiskState;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Serialization.DataModel;
 using Reloaded.Memory.Extensions;
@@ -34,7 +34,7 @@ public class DiskStateRegistry : IDiskStateRegistry
     /// <param name="loadoutId"></param>
     /// <param name="diskState"></param>
     /// <returns></returns>
-    public void SaveState(LoadoutId loadoutId, DiskState diskState)
+    public void SaveState(LoadoutId loadoutId, DiskStateTree diskState)
     {
         var iid = loadoutId.ToEntityId(EntityCategory.DiskState);
         using var ms = new MemoryStream();
@@ -50,13 +50,13 @@ public class DiskStateRegistry : IDiskStateRegistry
     /// </summary>
     /// <param name="loadoutId"></param>
     /// <returns></returns>
-    public DiskState? GetState(LoadoutId loadoutId)
+    public DiskStateTree? GetState(LoadoutId loadoutId)
     {
         var iid = loadoutId.ToEntityId(EntityCategory.DiskState);
         var data = _dataStore.GetRaw(iid);
         if (data == null) return null;
         using var ms = new MemoryStream(data);
         using var compressed = new GZipStream(ms, CompressionMode.Decompress);
-        return JsonSerializer.Deserialize<DiskState>(compressed);
+        return JsonSerializer.Deserialize<DiskStateTree>(compressed);
     }
 }

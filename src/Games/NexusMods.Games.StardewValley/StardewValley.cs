@@ -1,12 +1,13 @@
 using JetBrains.Annotations;
+using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.GameLocators.GameCapabilities;
+using NexusMods.Abstractions.GameLocators.Stores.GOG;
+using NexusMods.Abstractions.GameLocators.Stores.Steam;
+using NexusMods.Abstractions.GameLocators.Stores.Xbox;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.DTO;
-using NexusMods.Abstractions.Games.GameCapabilities;
-using NexusMods.Abstractions.Games.Stores.GOG;
-using NexusMods.Abstractions.Games.Stores.Steam;
-using NexusMods.Abstractions.Games.Stores.Xbox;
 using NexusMods.Abstractions.Installers;
-using NexusMods.Abstractions.Installers.DTO;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Games.StardewValley.Installers;
@@ -79,7 +80,7 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
 
     public override IEnumerable<IModInstaller> Installers => new IModInstaller[]
     {
-        SMAPIInstaller.Create(_serviceProvider),
+        _serviceProvider.GetRequiredService<SMAPIInstaller>(),
         SMAPIModInstaller.Create(_serviceProvider)
     };
 

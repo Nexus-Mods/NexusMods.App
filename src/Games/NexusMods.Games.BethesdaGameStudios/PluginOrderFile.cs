@@ -1,8 +1,10 @@
-using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.DiskState;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.DTO;
-using NexusMods.Abstractions.Games.Loadouts;
-using NexusMods.Abstractions.Installers.DTO;
-using NexusMods.Abstractions.Installers.DTO.Files;
+using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Files;
+using NexusMods.Abstractions.Loadouts.Mods;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.Extensions.BCL;
 using NexusMods.Hashing.xxHash64;

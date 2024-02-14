@@ -5,10 +5,10 @@ using CliWrap.Exceptions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using NexusMods.Abstractions.Activities;
+using NexusMods.Abstractions.FileExtractor;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Extensions.BCL;
-using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Utilities;
@@ -140,7 +140,7 @@ public class SevenZipExtractor : IExtractor
 
             var result = await process.WithArguments(new[]
                     {
-                        "x", "-bsp1", "-y", $"-o{fixedDestination}", source.ToString(), "-mmt=off"
+                        "x", "-bsp1", "-y", $"-o{fixedDestination}", source.ToString()
                     }, true)
                 .WithStandardOutputPipe(PipeTarget.ToDelegate(line =>
                 {

@@ -261,4 +261,10 @@
     <data name="InProgress_NoDownloadsTextBlock" xml:space="preserve">
         <value>No Downloads</value>
     </data>
+    <data name="SpineDownloadButton_ToolTip" xml:space="preserve">
+        <value>Downloads</value>
+    </data>
+    <data name="SpineHomeButton_ToolTip_Home" xml:space="preserve">
+        <value>Home</value>
+    </data>
 </root>

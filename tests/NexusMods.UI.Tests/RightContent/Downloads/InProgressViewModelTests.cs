@@ -1,8 +1,8 @@
 using System.Reactive;
 using FluentAssertions;
 using NexusMods.App.UI.Helpers;
-using NexusMods.App.UI.RightContent.Downloads;
-using NexusMods.App.UI.RightContent.Downloads.ViewModels;
+using NexusMods.App.UI.Pages.Downloads;
+using NexusMods.App.UI.Pages.Downloads.ViewModels;
 using NexusMods.Networking.Downloaders.Interfaces;
 using Noggog;
 using ReactiveUI;

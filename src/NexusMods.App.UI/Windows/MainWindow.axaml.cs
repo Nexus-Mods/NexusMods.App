@@ -2,7 +2,6 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Input;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 
@@ -29,11 +28,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
             this.OneWayBind(ViewModel, vm => vm.DevelopmentBuildBanner, v => v.DevelopmentBuildBanner.ViewModel)
                 .DisposeWith(disposables);
 
-            this.OneWayBind(ViewModel, vm => vm.RightContent, v => v.RightContent.ViewModel)
-                .DisposeWith(disposables);
-
-            ViewModel.WhenAnyValue(v => v.RightContent)
-                .Subscribe()
+            this.OneWayBind(ViewModel, vm => vm.WorkspaceController.AllWorkspaces, view => view.Workspaces.ItemsSource)
                 .DisposeWith(disposables);
 
             this.WhenAnyValue(view => view.ViewModel!.TopBar.CloseCommand.IsExecuting)
@@ -66,14 +61,10 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
                 .Select(content => content != null)
                 .BindTo(this, view => view.OverlayBorder.IsVisible)
                 .DisposeWith(disposables);
-        });
-    }
 
-    private void PointerPressed_Handler(object? sender, PointerPressedEventArgs e)
-    {
-        if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
-        {
-            BeginMoveDrag(e);
-        }
+            this.WhenAnyValue(view => view.IsActive)
+                .BindTo(this, view => view.ViewModel!.IsActive)
+                .DisposeWith(disposables);
+        });
     }
 }

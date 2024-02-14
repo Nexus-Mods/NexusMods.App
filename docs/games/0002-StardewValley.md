@@ -38,7 +38,7 @@ Stardew Valley and SMAPI are written in C# with .NET 5. SMAPI exposes [APIs](htt
   "Version": "1.0.0",
   "Description": "One or two sentences about the mod.",
   "UniqueID": "YourName.YourProjectName",
-  "EntryDll": "YourDllFileName.dll", 
+  "EntryDll": "YourDllFileName.dll",
   "UpdateKeys": ["Nexus:1"],
   "MinimumApiVersion": "3.14.0",
   "Dependencies": [
@@ -98,7 +98,11 @@ This grouping is completely optional and has no functional difference to a flat 
 
 If a mod doesn't have any special uninstall instructions (likely game related), the mod folder can just be deleted. A folder can also be _disabled_ by adding a dot in front of the folder name: `.Mod A`. Folders starting with a dot are ignored by SMAPI.
 
-#### SMAPI itself
+#### Config Files
+
+If a SMAPI mod has settings can be tweaked by the user, then SMAPI will generate a `config.json` file inside the mod folder. Generation only happens after running the game. See [Pathoschild/SMAPI#928](https://github.com/Pathoschild/SMAPI/issues/928) for an issue to generate a `config.schema.json` file as well.
+
+### SMAPI itself
 
 SMAPI itself comes with a custom [installer](https://github.com/Pathoschild/SMAPI/tree/develop/src/SMAPI.Installer). The [downloaded archive](https://www.nexusmods.com/stardewvalley/mods/2400?tab=files) contains the following important files:
 
@@ -137,6 +141,61 @@ Regardless of platform, similarly to Bethesda Script Extenders, SMAPI comes with
 - Linux and macOS: `unix-launcher.sh` from `install.dat` replaces the original game launcher script `StardewValley`
 - Windows (Steam and GOG): `StardewModdingAPI.exe` can be launched directly. Alternatively, [Steam](https://stardewvalleywiki.com/Modding:Installing_SMAPI_on_Windows#Steam) and [GOG Galaxy](https://stardewvalleywiki.com/Modding:Installing_SMAPI_on_Windows#GOG_Galaxy) can be configured to launch `StardewModdingAPI.exe` instead of the original game executable `Stardew Valley.exe`. This is only needed if you want achievements and playtime tracking to work.
 - Windows ([Xbox Game Pass](https://stardewvalleywiki.com/Modding:Installing_SMAPI_on_Windows#Xbox_app)): the original game executable `Stardew Valley.exe` has to be replaced with `StardewModdingAPI.exe` for mods to work.
+
+## Mod Conflicts
+
+### File Conflicts
+
+Before SMAPI Content Packs and the Content Patcher were a thing, assets had to be changed by replacing the raw XNB files in the `Content` directory. Most XNB mods have been [migrated](https://forums.stardewvalley.net/threads/migrating-xnb-mods-to-content-patcher-packs.564/) to the Content Patcher format, but some older mods didn't receive an "official" update. The wiki contains a [list of unofficial updates](https://stardewvalleywiki.com/Modding:Using_XNB_mods#Alternatives_using_Content_Patcher).
+
+Two mods that replace the same XNB file are in conflict with each other and the order in which they are deployed determines the winner.
+
+### C# Mods
+
+C# Mods can target an incompatible version of SMAPI or of the game itself. Conflicts between SMAPI mods are logic/functionality based.
+
+SMAPI Mods can define a [minimum SMAPI version](https://stardewvalleywiki.com/Modding:Modder_Guide/APIs/Manifest#Minimum_SMAPI_version). Since SMAPI versions are tied to game versions, you indirectly specify what game versions the mod supports.
+
+### Content Packs
+
+SMAPI Content Packs on their own don't do anything. They require a [Content Pack Framework](https://stardewvalleywiki.com/Modding:Content_pack_frameworks) which is a SMAPI C# Mod that updates the assets based on rules defined in the Content Pack.
+
+Generally speaking, Content Packs are applied by the Content Pack Framework in the order that SMAPI loads them. This order is defined by the dependencies in the `manifest.json` file.
+
+As an example, let's say we have three mods: `Pathoschild.ContentPatcherr`, `Foo` and `Bar`.
+
+```json
+{
+  "UniqueID": "Pathoschild.ContentPatcher"
+}
+```
+
+```json
+{
+  "UniqueID": "Foo",
+  "ContentPackFor": {
+    "UniqueID": "Pathoschild.ContentPatcher"
+  }
+}
+```
+
+```json
+{
+  "UniqueID": "Bar",
+  "ContentPackFor": {
+    "UniqueID": "Pathoschild.ContentPatcher"
+  },
+  "Dependencies": [
+    {
+      "UniqueID": "Foo"
+    }
+  ]
+}
+```
+
+SMAPI will first load the C# mod `Pathoschild.ContentPatcher`. The Content Patcher mod will get a list of owned Content Packs from SMAPI. This list is already sorted for dependencies. In the example above, `Foo` will be applied _before_ `Bar` because `Bar` has a dependency on `Foo`. If both `Foo` and `Bar` edit the same asset, the edits of `Bar` will be applied last.
+
+Detecting if two Content Packs are in conflict with one another depends on the Content Pack Framework. Each framework has its own way of modifying existing, or adding new assets.
 
 ## Community
 

@@ -1,6 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using DynamicData;
-using NexusMods.Abstractions.Installers.DTO;
+using NexusMods.Abstractions.GameLocators;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Preview;
 

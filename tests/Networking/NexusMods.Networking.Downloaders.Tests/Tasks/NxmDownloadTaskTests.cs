@@ -1,7 +1,6 @@
 using NexusMods.Abstractions.HttpDownloader;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Networking.Downloaders.Tasks;
-using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
 

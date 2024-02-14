@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using GameFinder.Common;
 using GameFinder.RegistryUtils;
 using GameFinder.StoreHandlers.EADesktop;
@@ -12,15 +13,12 @@ using GameFinder.StoreHandlers.Xbox;
 using GameFinder.Wine;
 using GameFinder.Wine.Bottles;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Games.DTO;
-using NexusMods.Abstractions.Games.Stores.EGS;
-using NexusMods.Abstractions.Games.Stores.GOG;
-using NexusMods.Abstractions.Games.Stores.Origin;
-using NexusMods.Abstractions.Installers.DTO;
+using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.GameLocators.Stores.EGS;
+using NexusMods.Abstractions.GameLocators.Stores.GOG;
+using NexusMods.Abstractions.GameLocators.Stores.Origin;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.Paths;
-using IGame = NexusMods.Abstractions.Games.IGame;
 
 namespace NexusMods.StandardGameLocators;
 
@@ -68,6 +66,9 @@ public static class Services
             {
                 services.AddSingleton<IGameLocator, SteamLocator>();
             });
+
+
+        services.AddSingleton<JsonConverter, GameInstallationConverter>();
 
         if (!registerConcreteLocators) return services;
 
@@ -129,7 +130,7 @@ public static class Services
         Func<TFoundGame, TRequestedGame, bool> matches,
         Func<TFoundGame, GameLocatorResult> createResult)
         where TFoundGame : GameFinder.Common.IGame
-        where TRequestedGame : IGame
+        where TRequestedGame : ILocatableGame
     {
         return (foundGame, requestedGame) =>
         {

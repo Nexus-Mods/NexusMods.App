@@ -1,26 +1,29 @@
+using JetBrains.Annotations;
+
 namespace NexusMods.Abstractions.Installers;
 
 /// <summary>
-///     Mod installer base class that provides support for the installation of mods
+/// Mod installer base class that provides support for the installation of mods
 /// </summary>
+[PublicAPI]
 public abstract class AModInstaller : IModInstaller
 {
     /// <summary>
-    ///     Helper for returning no results
+    /// Return no results.
     /// </summary>
-    public static readonly IEnumerable<ModInstallerResult> NoResults = Enumerable.Empty<ModInstallerResult>();
-
-    // Not used yet, but here to force the service provider to be injected by implementing classes
-    // ReSharper disable once NotAccessedField.Local
-    private readonly IServiceProvider _serviceProvider;
+    protected static readonly IEnumerable<ModInstallerResult> NoResults = Enumerable.Empty<ModInstallerResult>();
 
     /// <summary>
-    ///     DI Constructor
+    /// Service Provider.
     /// </summary>
-    /// <param name="serviceProvider"></param>
+    protected readonly IServiceProvider ServiceProvider;
+
+    /// <summary>
+    /// Constructor.
+    /// </summary>
     protected AModInstaller(IServiceProvider serviceProvider)
     {
-        _serviceProvider = serviceProvider;
+        ServiceProvider = serviceProvider;
     }
 
     /// <inheritdoc />

@@ -1,9 +1,12 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.App.Settings;
-using NexusMods.Abstractions.DataModel.Entities.Mods;
-using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Games.ArchiveMetadata;
+using NexusMods.Abstractions.FileStore;
+using NexusMods.Abstractions.FileStore.ArchiveMetadata;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.Loadouts;
+using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.App.UI;
 using NexusMods.DataModel.Loadouts;

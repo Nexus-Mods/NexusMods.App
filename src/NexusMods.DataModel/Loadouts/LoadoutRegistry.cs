@@ -3,11 +3,11 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using DynamicData;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Games.DTO;
-using NexusMods.Abstractions.Games.Loadouts;
-using NexusMods.Abstractions.Games.Loadouts.Visitors;
+using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Mods;
+using NexusMods.Abstractions.Loadouts.Visitors;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.Abstractions.Serialization.DataModel.Ids;
@@ -41,7 +41,7 @@ public class LoadoutRegistry : IDisposable, ILoadoutRegistry
     /// <summary>
     /// All games that have loadouts
     /// </summary>
-    public IObservable<IDistinctChangeSet<IGame>> Games =>
+    public IObservable<IDistinctChangeSet<ILocatableGame>> Games =>
         Loadouts
             .DistinctValues(d => d.Installation.Game);
 
@@ -427,13 +427,13 @@ public class LoadoutRegistry : IDisposable, ILoadoutRegistry
         if (string.IsNullOrWhiteSpace(name))
             name = SuggestName(installation);
 
-        var result = await installation.Game.Synchronizer.Manage(installation);
+        var result = await installation.GetGame().Synchronizer.Manage(installation);
         result = Alter(result.LoadoutId, $"Manage new instance of {installation.Game.Name} as {name}",
             _ => result with
         {
             Name = name
         });
-        var withExtraFiles = await installation.Game.Synchronizer.Ingest(result);
+        var withExtraFiles = await installation.GetGame().Synchronizer.Ingest(result);
         Alter(result.LoadoutId, $"Adding extra files found in game folder", _ => withExtraFiles);
         return GetMarker(result.LoadoutId);
     }

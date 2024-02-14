@@ -5,6 +5,9 @@ using System.Reactive.Linq;
 using Avalonia;
 using DynamicData;
 using DynamicData.Aggregation;
+using DynamicData.Kernel;
+using NexusMods.App.UI.Extensions;
+using NexusMods.App.UI.Windows;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -15,6 +18,17 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
     private const int MaxColumns = 2;
     private const int MaxRows = 2;
     private const int MaxPanelCount = MaxColumns * MaxRows;
+
+    /// <inheritdoc/>
+    public WorkspaceId Id { get; } = WorkspaceId.NewId();
+
+    /// <inheritdoc/>
+    public WindowId WindowId => _workspaceController.WindowId;
+
+    /// <inheritdoc/>
+    public IWorkspaceContext Context { get; set; } = EmptyContext.Instance;
+
+    [Reactive] public bool IsActive { get; set; }
 
     private readonly SourceCache<IPanelViewModel, PanelId> _panelSource = new(x => x.Id);
     private readonly ReadOnlyObservableCollection<IPanelViewModel> _panels;
@@ -28,9 +42,15 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
     private readonly ReadOnlyObservableCollection<IPanelResizerViewModel> _resizers;
     public ReadOnlyObservableCollection<IPanelResizerViewModel> Resizers => _resizers;
 
+    private readonly IWorkspaceController _workspaceController;
     private readonly PageFactoryController _factoryController;
-    public WorkspaceViewModel(PageFactoryController factoryController)
+
+    public WorkspaceViewModel(
+        IWorkspaceController workspaceController,
+        PageFactoryController factoryController,
+        Action<WorkspaceViewModel> unregisterFunc)
     {
+        _workspaceController = workspaceController;
         _factoryController = factoryController;
 
         _addPanelButtonViewModelSource
@@ -64,7 +84,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
             _addPanelButtonViewModelSource
                 .Connect()
                 .MergeMany(item => item.AddPanelCommand)
-                .SubscribeWithErrorLogging(nextState => AddPanel(nextState))
+                .SubscribeWithErrorLogging(AddPanelWithDefaultTab)
                 .DisposeWith(disposables);
 
             // Closing a panel
@@ -189,6 +209,10 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                 })
                 .SubscribeWithErrorLogging()
                 .DisposeWith(disposables);
+
+            Disposable
+                .Create(this, unregisterFunc.Invoke)
+                .DisposeWith(disposables);
         });
     }
 
@@ -220,11 +244,15 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         }
     }
 
-    public void SwapPanels(IPanelViewModel first, IPanelViewModel second)
+    internal void SwapPanels(PanelId firstPanelId, PanelId secondPanelId)
     {
-        (second.LogicalBounds, first.LogicalBounds) = (first.LogicalBounds, second.LogicalBounds);
+        if (!_panelSource.Lookup(firstPanelId).TryGet(out var firstPanel)) return;
+        if (!_panelSource.Lookup(secondPanelId).TryGet(out var secondPanel)) return;
+
+        (secondPanel.LogicalBounds, firstPanel.LogicalBounds) = (firstPanel.LogicalBounds, secondPanel.LogicalBounds);
         Arrange(_lastWorkspaceSize);
         UpdateStates();
+        UpdateResizers();
     }
 
     private void UpdateStates()
@@ -237,11 +265,11 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
             var currentState = WorkspaceGridState.From(_panels, IsHorizontal);
             var newStates = GridUtils.GetPossibleStates(currentState, MaxColumns, MaxRows);
 
-            foreach (var state in newStates)
+            updater.AddRange(newStates.Select(state =>
             {
                 var image = IconUtils.StateToBitmap(state);
-                updater.Add(new AddPanelButtonViewModel(state, image));
-            }
+                return new AddPanelButtonViewModel(state, image);
+            }));
         });
     }
 
@@ -263,23 +291,111 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         });
     }
 
-    /// <inheritdoc/>
-    public IPanelViewModel AddPanel(WorkspaceGridState state)
+    internal void AddPanel(WorkspaceGridState newWorkspaceState, AddPanelBehavior behavior)
     {
-        IPanelViewModel panelViewModel = null!;
+        behavior.Switch(
+            f0: _ => AddPanelWithDefaultTab(newWorkspaceState),
+            f1: withCustomTab => AddPanelWithCustomTab(newWorkspaceState, withCustomTab.PageData)
+        );
+    }
+
+    private PageData GetDefaultPageData()
+    {
+        var allDetails = _factoryController.GetAllDetails(Context).ToArray();
+        var pageData = new PageData
+        {
+            FactoryId = NewTabPageFactory.StaticId,
+            Context = new NewTabPageContext
+            {
+                DiscoveryDetails = allDetails
+            }
+        };
+
+        return pageData;
+    }
+
+    internal void OpenPage(Optional<PageData> optionalPageData, OpenPageBehavior behavior)
+    {
+        var pageData = optionalPageData.ValueOr(GetDefaultPageData);
+
+        behavior.Switch(
+            f0: replaceTab => OpenPageReplaceTab(pageData, replaceTab),
+            f1: newTab => OpenPageInNewTab(pageData, newTab),
+            f2: newPanel => OpenPageInNewPanel(pageData, newPanel)
+        );
+    }
+
+    private void OpenPageReplaceTab(PageData pageData, OpenPageBehavior.ReplaceTab replaceTab)
+    {
+        var panel = OptionalPanelOrFirst(replaceTab.PanelId);
+        var tab = OptionalTabOrFirst(panel, replaceTab.TabId);
+
+        var newTabPage = _factoryController.Create(pageData, WindowId, Id, panel.Id, tab.Id);
+        tab.Contents = newTabPage;
+    }
+
+    private void OpenPageInNewTab(PageData pageData, OpenPageBehavior.NewTab newTab)
+    {
+        var panel = OptionalPanelOrFirst(newTab.PanelId);
+        panel.AddCustomTab(pageData);
+    }
+
+    private static IPanelTabViewModel OptionalTabOrFirst(IPanelViewModel panel, Optional<PanelTabId> optionalTabId)
+    {
+        if (optionalTabId.HasValue)
+        {
+            var optionalTab = panel.Tabs.FirstOrOptional(x => x.Id == optionalTabId.Value);
+            if (optionalTab.HasValue) return optionalTab.Value;
+        }
+
+        return panel.Tabs.First();
+    }
+
+    private IPanelViewModel OptionalPanelOrFirst(Optional<PanelId> optionalPanelId)
+    {
+        if (optionalPanelId.HasValue)
+        {
+            if (_panelSource.Lookup(optionalPanelId.Value).TryGet(out var panel)) return panel;
+        }
+
+        return _panels.First();
+    }
+
+    private void OpenPageInNewPanel(PageData pageData, OpenPageBehavior.NewPanel newPanel)
+    {
+        var optionalNewWorkspaceState = newPanel.NewWorkspaceState;
+        var newWorkspaceState = optionalNewWorkspaceState.ValueOr(() =>
+        {
+            var currentState = WorkspaceGridState.From(_panels, IsHorizontal);
+            var newStates = GridUtils.GetPossibleStates(currentState, MaxColumns, MaxRows);
+            return newStates.First();
+        });
+
+        AddPanelWithCustomTab(newWorkspaceState, pageData);
+    }
+
+    private void AddPanelWithDefaultTab(WorkspaceGridState newWorkspaceState)
+    {
+        AddPanelWithCustomTab(newWorkspaceState, GetDefaultPageData());
+    }
+
+    private void AddPanelWithCustomTab(WorkspaceGridState newWorkspaceState, PageData pageData)
+    {
         _panelSource.Edit(updater =>
         {
-            foreach (var panel in state)
+            foreach (var panel in newWorkspaceState)
             {
                 var (panelId, logicalBounds) = panel;
                 if (panelId == PanelId.DefaultValue)
                 {
-                    panelViewModel = new PanelViewModel(_factoryController)
+                    var panelViewModel = new PanelViewModel(_workspaceController, _factoryController)
                     {
+                        WindowId = WindowId,
+                        WorkspaceId = Id,
                         LogicalBounds = logicalBounds,
                     };
 
-                    panelViewModel.AddTab();
+                    panelViewModel.AddCustomTab(pageData);
                     panelViewModel.Arrange(_lastWorkspaceSize);
                     updater.AddOrUpdate(panelViewModel);
                 }
@@ -293,12 +409,9 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                 }
             }
         });
-
-        Debug.Assert(panelViewModel is not null);
-        return panelViewModel;
     }
 
-    public void ClosePanel(PanelId panelToClose)
+    internal void ClosePanel(PanelId panelToClose)
     {
         var currentState = WorkspaceGridState.From(_panels, IsHorizontal);
         var newState = GridUtils.GetStateWithoutPanel(currentState, panelToClose);
@@ -339,9 +452,13 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         {
             foreach (var panel in data.Panels)
             {
-                var vm = new PanelViewModel(_factoryController);
-                vm.FromData(panel);
+                var vm = new PanelViewModel(_workspaceController, _factoryController)
+                {
+                    WindowId = WindowId,
+                    WorkspaceId = Id
+                };
 
+                vm.FromData(panel);
                 updater.AddOrUpdate(vm);
             }
         });

@@ -42,6 +42,13 @@ public class FomodXmlAnalyzerTests
         info!.Images[0].Path.Should().Be("fomod/moduleTitle.png");
         info.Images[1].Path.Should().Be("fomod/g1p1i1.png");
         info.Images[2].Path.Should().Be("fomod/g1p2i1.png");
+
+        // Validate that the images have not been replaced with the placeholder (meaning they were not found).
+        var placeholder = await FomodAnalyzer.GetPlaceholderImage(FileSystem.Shared);
+
+        info.Images[0].Image.Should().NotEqual(placeholder);
+        info.Images[1].Image.Should().NotEqual(placeholder);
+        info.Images[2].Image.Should().NotEqual(placeholder);
     }
 
 
@@ -54,8 +61,14 @@ public class FomodXmlAnalyzerTests
         info.Should().NotBeNull();
         info!.Images.Count.Should().Be(3);
 
-        // Placeholder injected.
-        info.Images.Last().Image.Should().Equal(await FomodAnalyzer.GetPlaceholderImage(FileSystem.Shared));
+        // First two images should be valid, last one should be the placeholder.
+        var placeholder = await FomodAnalyzer.GetPlaceholderImage(FileSystem.Shared);
+
+        info.Images[0].Image.Should().NotEqual(placeholder);
+        info.Images[1].Image.Should().NotEqual(placeholder);
+
+        // Should be missing, so it should be the placeholder.
+        info.Images.Last().Image.Should().Equal(placeholder);
     }
 
 }

@@ -5,6 +5,8 @@ using System.Reactive.Linq;
 using Avalonia;
 using DynamicData;
 using DynamicData.Aggregation;
+using DynamicData.Kernel;
+using NexusMods.App.UI.Windows;
 using NexusMods.Extensions.BCL;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -13,7 +15,14 @@ namespace NexusMods.App.UI.WorkspaceSystem;
 
 public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
 {
+    /// <inheritdoc/>
     public PanelId Id { get; } = PanelId.NewId();
+
+    /// <inheritdoc/>
+    public required WindowId WindowId { get; set; }
+
+    /// <inheritdoc/>
+    public required WorkspaceId WorkspaceId { get; set; }
 
     private readonly SourceList<IPanelTabViewModel> _tabsList = new();
     private readonly ReadOnlyObservableCollection<IPanelTabViewModel> _tabs;
@@ -34,19 +43,19 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
 
     [Reactive] private PanelTabId SelectedTabId { get; set; }
 
+    private readonly IWorkspaceController _workspaceController;
     private readonly PageFactoryController _factoryController;
-    public PanelViewModel(PageFactoryController factoryController)
+
+    public PanelViewModel(IWorkspaceController workspaceController, PageFactoryController factoryController)
     {
+        _workspaceController = workspaceController;
         _factoryController = factoryController;
 
         var canExecute = this.WhenAnyValue(vm => vm.IsNotAlone);
         PopoutCommand = ReactiveCommand.Create(() => { }, canExecute);
         CloseCommand = ReactiveCommand.Create(() => Id, canExecute);
 
-        AddTabCommand = ReactiveCommand.Create(() =>
-        {
-            AddTab();
-        });
+        AddTabCommand = ReactiveCommand.Create(AddDefaultTab);
 
         _tabsList
             .Connect()
@@ -135,18 +144,6 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
                 })
                 .Subscribe()
                 .DisposeWith(disposables);
-
-            // react to the change page command
-            _tabsList
-                .Connect()
-                .MergeManyWithSource(item => item.Contents.ViewModel!.ChangePageCommand)
-                .SubscribeWithErrorLogging(tuple =>
-                {
-                    var (item, pageData) = tuple;
-                    var newPage = _factoryController.Create(pageData);
-                    item.Contents = newPage;
-                })
-                .DisposeWith(disposables);
         });
     }
 
@@ -163,26 +160,23 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
         UpdateActualBounds();
     }
 
-    public IPanelTabViewModel AddTab()
+    public void AddDefaultTab()
     {
-        var allDetails = _factoryController.GetAllDetails().ToArray();
-        var newTabPage = _factoryController.Create(new PageData
-        {
-            FactoryId = NewTabPageFactory.StaticId,
-            Context = new NewTabPageContext
-            {
-                DiscoveryDetails = allDetails
-            }
-        });
+        _workspaceController.OpenPage(WorkspaceId, Optional<PageData>.None, new OpenPageBehavior(new OpenPageBehavior.NewTab(Id)));
+    }
 
+    public void AddCustomTab(PageData pageData)
+    {
+        var newTabPage = _factoryController.Create(pageData, WindowId, WorkspaceId, Id, tabId: Optional<PanelTabId>.None);
         var tab = new PanelTabViewModel
         {
             Contents = newTabPage
         };
 
+        newTabPage.ViewModel.TabId = tab.Id;
+
         _tabsList.Edit(updater => updater.Add(tab));
         SelectedTabId = tab.Id;
-        return tab;
     }
 
     public void CloseTab(PanelTabId id)
@@ -214,10 +208,14 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
             for (uint i = 0; i < data.Tabs.Length; i++)
             {
                 var tab = data.Tabs[i];
+                var newTabPage = _factoryController.Create(tab.PageData, WindowId, WorkspaceId, Id, tabId: Optional<PanelTabId>.None);
+
                 var vm = new PanelTabViewModel
                 {
-                    Contents = _factoryController.Create(tab.PageData)
+                    Contents = newTabPage
                 };
+
+                newTabPage.ViewModel.TabId = vm.Id;
 
                 updater.Add(vm);
             }

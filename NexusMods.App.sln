@@ -65,6 +65,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".solutionItems", ".solution
 		README.md = README.md
 		Directory.Packages.props = Directory.Packages.props
 		.gitignore = .gitignore
+		mkdocs.yml = mkdocs.yml
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Games.FOMOD", "src\Games\NexusMods.Games.FOMOD\NexusMods.Games.FOMOD.csproj", "{B43A31B2-1F08-4D8E-9C45-48015FBA983E}"
@@ -147,8 +148,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.Seri
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.Games", "src\Abstractions\NexusMods.Abstractions.Games\NexusMods.Abstractions.Games.csproj", "{FD83B3C6-2F37-4F95-B6F0-4A0BFFD7DD66}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.DataModel.Entities", "src\Abstractions\NexusMods.Abstractions.DataModel.Entities\NexusMods.Abstractions.DataModel.Entities.csproj", "{C385D6E4-CA15-4210-AA92-AD20CD6F390B}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.Messaging", "src\Abstractions\NexusMods.Abstractions.Messaging\NexusMods.Abstractions.Messaging.csproj", "{85B930AE-F36D-471E-AF35-A722B87488CA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.Games.Diagnostics", "src\Abstractions\NexusMods.Abstractions.Games.Diagnostics\NexusMods.Abstractions.Games.Diagnostics.csproj", "{CE7D28B9-41E3-4E30-A819-32198568B4E4}"
@@ -192,6 +191,18 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Extensions.DynamicData", "src\Extensions\NexusMods.Extensions.DynamicData\NexusMods.Extensions.DynamicData.csproj", "{8F783E71-49E6-4504-97E4-D5D28E7ED949}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.HttpDownloader", "src\Abstractions\NexusMods.Abstractions.HttpDownloader\NexusMods.Abstractions.HttpDownloader.csproj", "{646D370F-F790-492A-B79E-1A95E4A8D411}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.Loadouts", "src\Abstractions\NexusMods.Abstractions.Loadouts\NexusMods.Abstractions.Loadouts.csproj", "{4AE9CD2B-1CFB-418E-A2EA-129A2C2B8D9E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.FileStore", "src\Abstractions\NexusMods.Abstractions.FileStore\NexusMods.Abstractions.FileStore.csproj", "{A8E6A5EC-4D5E-42F6-BC74-F224C8983192}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.DiskState", "src\Abstractions\NexusMods.Abstractions.DiskState\NexusMods.Abstractions.DiskState.csproj", "{2558DEF1-213D-4A99-92B6-57A417AF70E1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.Triggers", "src\Abstractions\NexusMods.Abstractions.Triggers\NexusMods.Abstractions.Triggers.csproj", "{83843BDF-870C-462E-95E4-8AE305E22B68}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.Loadouts.Synchronizers", "src\Abstractions\NexusMods.Abstractions.Loadouts.Synchronizers\NexusMods.Abstractions.Loadouts.Synchronizers.csproj", "{77E545C9-64BF-4CA0-9F24-A2DA64C268FB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.GameLocators", "src\Abstractions\NexusMods.Abstractions.GameLocators\NexusMods.Abstractions.GameLocators.csproj", "{4334BE5B-C476-415D-B4FA-183723C4D4D5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -411,10 +422,6 @@ Global
 		{FD83B3C6-2F37-4F95-B6F0-4A0BFFD7DD66}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FD83B3C6-2F37-4F95-B6F0-4A0BFFD7DD66}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FD83B3C6-2F37-4F95-B6F0-4A0BFFD7DD66}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C385D6E4-CA15-4210-AA92-AD20CD6F390B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C385D6E4-CA15-4210-AA92-AD20CD6F390B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C385D6E4-CA15-4210-AA92-AD20CD6F390B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C385D6E4-CA15-4210-AA92-AD20CD6F390B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{85B930AE-F36D-471E-AF35-A722B87488CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{85B930AE-F36D-471E-AF35-A722B87488CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{85B930AE-F36D-471E-AF35-A722B87488CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -495,6 +502,30 @@ Global
 		{646D370F-F790-492A-B79E-1A95E4A8D411}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{646D370F-F790-492A-B79E-1A95E4A8D411}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{646D370F-F790-492A-B79E-1A95E4A8D411}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4AE9CD2B-1CFB-418E-A2EA-129A2C2B8D9E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4AE9CD2B-1CFB-418E-A2EA-129A2C2B8D9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4AE9CD2B-1CFB-418E-A2EA-129A2C2B8D9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4AE9CD2B-1CFB-418E-A2EA-129A2C2B8D9E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A8E6A5EC-4D5E-42F6-BC74-F224C8983192}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A8E6A5EC-4D5E-42F6-BC74-F224C8983192}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A8E6A5EC-4D5E-42F6-BC74-F224C8983192}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A8E6A5EC-4D5E-42F6-BC74-F224C8983192}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2558DEF1-213D-4A99-92B6-57A417AF70E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2558DEF1-213D-4A99-92B6-57A417AF70E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2558DEF1-213D-4A99-92B6-57A417AF70E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2558DEF1-213D-4A99-92B6-57A417AF70E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{83843BDF-870C-462E-95E4-8AE305E22B68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83843BDF-870C-462E-95E4-8AE305E22B68}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83843BDF-870C-462E-95E4-8AE305E22B68}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83843BDF-870C-462E-95E4-8AE305E22B68}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77E545C9-64BF-4CA0-9F24-A2DA64C268FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77E545C9-64BF-4CA0-9F24-A2DA64C268FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77E545C9-64BF-4CA0-9F24-A2DA64C268FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77E545C9-64BF-4CA0-9F24-A2DA64C268FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4334BE5B-C476-415D-B4FA-183723C4D4D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4334BE5B-C476-415D-B4FA-183723C4D4D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4334BE5B-C476-415D-B4FA-183723C4D4D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4334BE5B-C476-415D-B4FA-183723C4D4D5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -558,7 +589,6 @@ Global
 		{EAA331DB-7E01-4215-BE2E-1D52B3EE4F49} = {789C12BC-EE6D-4374-B7EA-70FA81CA99BF}
 		{B90CC2ED-3C8D-4806-A231-395CF9EF6DEF} = {0CB73565-1207-4A56-A79F-6A8E9BBD795C}
 		{FD83B3C6-2F37-4F95-B6F0-4A0BFFD7DD66} = {0CB73565-1207-4A56-A79F-6A8E9BBD795C}
-		{C385D6E4-CA15-4210-AA92-AD20CD6F390B} = {0CB73565-1207-4A56-A79F-6A8E9BBD795C}
 		{85B930AE-F36D-471E-AF35-A722B87488CA} = {0CB73565-1207-4A56-A79F-6A8E9BBD795C}
 		{CE7D28B9-41E3-4E30-A819-32198568B4E4} = {0CB73565-1207-4A56-A79F-6A8E9BBD795C}
 		{551A637D-C777-4115-A844-5A5E35B5D099} = {3C8B4F7A-1964-4166-9E5A-2490BB0DF102}
@@ -583,6 +613,12 @@ Global
 		{2C28A9A9-2561-4137-8EFE-7CA24816A49B} = {0CB73565-1207-4A56-A79F-6A8E9BBD795C}
 		{8F783E71-49E6-4504-97E4-D5D28E7ED949} = {3C8B4F7A-1964-4166-9E5A-2490BB0DF102}
 		{646D370F-F790-492A-B79E-1A95E4A8D411} = {0CB73565-1207-4A56-A79F-6A8E9BBD795C}
+		{4AE9CD2B-1CFB-418E-A2EA-129A2C2B8D9E} = {0CB73565-1207-4A56-A79F-6A8E9BBD795C}
+		{A8E6A5EC-4D5E-42F6-BC74-F224C8983192} = {0CB73565-1207-4A56-A79F-6A8E9BBD795C}
+		{2558DEF1-213D-4A99-92B6-57A417AF70E1} = {0CB73565-1207-4A56-A79F-6A8E9BBD795C}
+		{83843BDF-870C-462E-95E4-8AE305E22B68} = {0CB73565-1207-4A56-A79F-6A8E9BBD795C}
+		{77E545C9-64BF-4CA0-9F24-A2DA64C268FB} = {0CB73565-1207-4A56-A79F-6A8E9BBD795C}
+		{4334BE5B-C476-415D-B4FA-183723C4D4D5} = {0CB73565-1207-4A56-A79F-6A8E9BBD795C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9F9F8352-34DD-42C0-8564-EE9AF34A3501}

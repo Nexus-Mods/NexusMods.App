@@ -1,7 +1,8 @@
 ﻿<Styles
     xmlns="https://github.com/avaloniaui"
     xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI">
 
     <!-- Preview -->
     <Design.PreviewWith>
@@ -73,7 +74,9 @@
 
 
     <!-- Style Definitions -->
-
+    <Style Selector="unifiedIcon|UnifiedIcon">
+        <Setter Property="Theme" Value="{StaticResource UnifiedIconTheme}" />
+    </Style>
 
     <!-- Foreground color classes -->
     <Style Selector="icons|Icon.ForegroundStrong">
@@ -100,7 +103,6 @@
 
     <!-- NOTE: Material icon names are not standardized well, use this site to look them up:  -->
     <!-- https://pictogrammers.com/library/mdi/ -->
-
     <Style Selector="icons|Icon.Alert">
         <Setter Property="Value" Value="mdi-alert" />
     </Style>

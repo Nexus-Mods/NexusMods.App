@@ -1,5 +1,4 @@
-﻿using System.Drawing;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 using NexusMods.Paths;
 using Size = NexusMods.Paths.Size;
 

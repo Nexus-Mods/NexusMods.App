@@ -1,6 +1,5 @@
 using System.Reactive;
-using System.Reactive.Disposables;
-using Avalonia.Media;
+using NexusMods.App.UI.Controls.UnifiedIcon;
 using NexusMods.App.UI.Resources;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -15,7 +14,7 @@ public class PanelTabHeaderViewModel : AViewModel<IPanelTabHeaderViewModel>, IPa
     public string Title { get; set; } = Language.PanelTabHeaderViewModel_Title_New_Tab;
 
     [Reactive]
-    public IImage? Icon { get; set; }
+    public IconValue? Icon { get; set; }
 
     [Reactive] public bool CanClose { get; set; }
 
@@ -27,14 +26,5 @@ public class PanelTabHeaderViewModel : AViewModel<IPanelTabHeaderViewModel>, IPa
     {
         Id = id;
         CloseTabCommand = ReactiveCommand.Create(() => Id, this.WhenAnyValue(vm => vm.CanClose));
-
-        this.WhenActivated(disposables =>
-        {
-            Disposable.Create(this, state =>
-            {
-                if (state.Icon is IDisposable disposable) disposable.Dispose();
-                state.Icon = null;
-            }).DisposeWith(disposables);
-        });
     }
 }

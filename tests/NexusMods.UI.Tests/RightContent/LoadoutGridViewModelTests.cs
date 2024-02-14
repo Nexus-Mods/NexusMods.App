@@ -1,8 +1,7 @@
 ﻿using FluentAssertions;
-using NexusMods.Abstractions.DataModel.Entities.Mods;
-using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Serialization.DataModel;
-using NexusMods.App.UI.RightContent.LoadoutGrid;
+using NexusMods.App.UI.Pages.LoadoutGrid;
 
 namespace NexusMods.UI.Tests.RightContent;
 

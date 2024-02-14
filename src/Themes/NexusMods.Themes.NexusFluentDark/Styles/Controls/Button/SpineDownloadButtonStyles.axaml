@@ -179,10 +179,7 @@
                 <Setter Property="Foreground" Value="{DynamicResource ElementForegroundNeutralStrongBrush}" />
             </Style>
 
-            <!-- Arc -->
-            <Style Selector="^ Arc">
-                <Setter Property="Stroke" Value="{StaticResource ElementForegroundInfoSubduedBrush}" />
-            </Style>
+
         </Style>
 
         <!-- Progress variation -->
@@ -207,6 +204,11 @@
 
             <Style Selector="^ > Grid > StackPanel">
                 <Setter Property="IsVisible" Value="True" />
+            </Style>
+
+            <!-- pointerover color -->
+            <Style Selector="^:pointerover Arc">
+                <Setter Property="Stroke" Value="{StaticResource ElementForegroundInfoSubduedBrush}" />
             </Style>
         </Style>
 

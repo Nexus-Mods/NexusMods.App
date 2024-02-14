@@ -1,9 +1,7 @@
 using GameFinder.Wine;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Games.DTO;
-using IGame = NexusMods.Abstractions.Games.IGame;
+using NexusMods.Abstractions.GameLocators;
 
 namespace NexusMods.StandardGameLocators;
 
@@ -33,7 +31,7 @@ public abstract class AWineGameLocator<TPrefix> : IGameLocator
     }
 
     /// <inheritdoc/>
-    public IEnumerable<GameLocatorResult> Find(IGame game)
+    public IEnumerable<GameLocatorResult> Find(ILocatableGame game)
     {
         _cachedGames ??= FindAllGames();
 

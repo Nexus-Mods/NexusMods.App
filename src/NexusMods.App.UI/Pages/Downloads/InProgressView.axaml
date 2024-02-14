@@ -1,0 +1,123 @@
+﻿<reactiveUi:ReactiveUserControl
+    x:TypeArguments="downloads:IInProgressViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactiveUi="http://reactiveui.net"
+    xmlns:avalonia="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
+    xmlns:downloads="clr-namespace:NexusMods.App.UI.Pages.Downloads"
+    mc:Ignorable="d" d:DesignWidth="920" d:DesignHeight="664"
+    x:Class="NexusMods.App.UI.Pages.Downloads.InProgressView">
+    <Design.DataContext>
+        <downloads:InProgressDesignViewModel />
+    </Design.DataContext>
+    <Grid RowDefinitions="Auto, *">
+        <!-- ToolBar -->
+        <Border Classes="Toolbar" Grid.Row="0">
+            <Grid ColumnDefinitions="*, Auto">
+                <StackPanel Grid.Column="1">
+                    <Button x:Name="CancelButton">
+                        <StackPanel>
+                            <avalonia:Icon Classes="RemoveCircleOutline" />
+                            <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Cancel}"/>
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="PauseButton">
+                        <StackPanel>
+                            <avalonia:Icon Classes="PauseCircleOutline" />
+                            <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Pause}"/>
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="ResumeButton">
+                        <StackPanel>
+                            <avalonia:Icon Classes="PlayCircleOutline" />
+                            <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Resume}"/>
+                        </StackPanel>
+                    </Button>
+                    <Line />
+                    <Button x:Name="ResumeAllButton">
+                        <StackPanel>
+                            <avalonia:Icon Classes="PlayCircleFilled" />
+                            <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Resume_All}"/>
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="PauseAllButton">
+                        <StackPanel>
+                            <avalonia:Icon Classes="PauseCircleFilled" />
+                            <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Pause_All}"/>
+                        </StackPanel>
+                    </Button>
+                    <Line />
+                    <Button x:Name="SettingsButton">
+                        <StackPanel>
+                            <avalonia:Icon Classes="Cog" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Page Content -->
+        <Grid RowDefinitions="Auto, 24, *, Auto" Margin="24, 16" Grid.Row="1">
+
+            <!-- Title & Status -->
+            <DockPanel LastChildFill="True" HorizontalAlignment="Stretch" Grid.Row="0">
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
+                    <TextBlock Classes="HeadingSMSemi"
+                               Text="{x:Static resources:Language.DownloadsView__In_Progress}"
+                               x:Name="InProgressTitleTextBlock"
+                               Margin="0,0,0,16" />
+                    <TextBlock Classes="HeadingSMSemi ForegroundWeak"
+                               Text=" (0)"
+                               x:Name="InProgressTitleCountTextBlock"
+                               Margin="0,0,0,16" />
+                </StackPanel>
+
+
+                <!-- Right Side -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <TextBlock VerticalAlignment="Center"
+                               Classes="BodyMDNormal ForegroundSubdued"
+                               Text="0GB / 0GB" Margin="0,0,16,0"
+                               x:Name="SizeCompletionTextBlock" />
+
+                    <!-- Note: Can use 'run' here, but don't want to make separate styles for 'run' -->
+                    <TextBlock VerticalAlignment="Center"
+                               Classes="BodyMDBold ForegroundInfoModerate"
+                               Text="{x:Static resources:Language.BoldMinutesRemainingTextBlock}" Margin="0,0,4,0"
+                               x:Name="BoldMinutesRemainingTextBlock" />
+
+                    <TextBlock VerticalAlignment="Center"
+                               Classes="BodyMDNormal ForegroundInfoModerate"
+                               Text="{x:Static resources:Language.MinutesRemainingTextBlock}"
+                               x:Name="MinutesRemainingTextBlock" />
+
+                </StackPanel>
+
+            </DockPanel>
+
+            <!-- Progress -->
+            <ProgressBar Classes="DownloadBar"
+                         ProgressTextFormat="{x:Static resources:Language.ProgressBar_ProgressTextFormat__Total_1_0}"
+                         x:Name="DownloadProgressBar" Minimum="0" Maximum="1" Grid.Row="1" />
+
+            <!-- Currently Downloaded Mods -->
+            <DataGrid Grid.Row="2"
+                      HorizontalAlignment="Stretch"
+                      CanUserSortColumns="True"
+                      Margin="-16,16"
+                      x:Name="ModsDataGrid" />
+
+            <TextBlock Grid.Row="2"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Top"
+                       Margin="0,66,0,0"
+                       Classes="HeadingXSSemi ForegroundWeak"
+                       IsVisible="False"
+                       Text="{x:Static resources:Language.InProgress_NoDownloadsTextBlock}"
+                       x:Name="NoDownloadsTextBlock"/>
+        </Grid>
+    </Grid>
+</reactiveUi:ReactiveUserControl>

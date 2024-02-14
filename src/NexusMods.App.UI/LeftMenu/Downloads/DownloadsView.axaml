@@ -5,39 +5,17 @@
                                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:downloads="clr-namespace:NexusMods.App.UI.LeftMenu.Downloads"
-                                xmlns:avalonia="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
-                                xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
                                 mc:Ignorable="d" d:DesignWidth="287"
                                 d:DesignHeight="664"
                                 x:Class="NexusMods.App.UI.LeftMenu.Downloads.DownloadsView">
     <Design.DataContext>
         <downloads:DownloadsDesignViewModel/>
     </Design.DataContext>
-    <StackPanel x:Name="LeftPaneStackPanel">
-        <Border Classes="LeftPaneTitle">
-            <TextBlock Classes="LeftPaneTitle" Text="{x:Static resources:Language.DownloadsView__DOWNLOADS}"/>
-        </Border>
-        <StackPanel x:Name="LeftPaneListStackPanel"
-                    Spacing="4"
-                    Margin="16">
-            <Button x:Name="InProgressButton" Classes="LeftMenuItem">
-                <StackPanel Orientation="Horizontal">
-                    <avalonia:Icon Classes="ProgressDownload"/>
-                    <TextBlock Text="{x:Static resources:Language.DownloadsView__In_Progress}"/>
-                </StackPanel>
-            </Button>
-            <Button x:Name="CompletedButton" Classes="LeftMenuItem">
-                <StackPanel Orientation="Horizontal">
-                    <avalonia:Icon Classes="CheckUnderline"/>
-                    <TextBlock Text="{x:Static resources:Language.DownloadsView__Completed}"/>
-                </StackPanel>
-            </Button>
-            <Button x:Name="HistoryButton" Classes="LeftMenuItem">
-                <StackPanel Orientation="Horizontal">
-                    <avalonia:Icon Classes="History"/>
-                    <TextBlock Text="{x:Static resources:Language.DownloadsView__Download_history}"/>
-                </StackPanel>
-            </Button>
-        </StackPanel>
-    </StackPanel>
+    <ItemsControl Margin="16,36" x:Name="MenuItemsControl">
+        <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+                <StackPanel />
+            </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+    </ItemsControl>
 </reactiveUi:ReactiveUserControl>

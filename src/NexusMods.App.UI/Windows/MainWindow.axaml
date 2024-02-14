@@ -11,6 +11,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:windows="clr-namespace:NexusMods.App.UI.Windows"
+    xmlns:workspace="clr-namespace:NexusMods.App.UI.WorkspaceSystem"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <Design.DataContext>
@@ -24,14 +25,14 @@
 
     <Grid ColumnDefinitions="72, 216, *" RowDefinitions="62, *, 48">
         <Border Classes="Base"
-            Grid.Column="0"
-            Grid.ColumnSpan="3"
-            Grid.Row="0"
-            Grid.RowSpan="2"
-            HorizontalAlignment="Stretch"
-            VerticalAlignment="Stretch"
-            ZIndex="1"
-            x:Name="OverlayBorder">
+                Grid.Column="0"
+                Grid.ColumnSpan="3"
+                Grid.Row="0"
+                Grid.RowSpan="2"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                ZIndex="1"
+                x:Name="OverlayBorder">
             <reactiveUi:ViewModelViewHost
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
@@ -39,35 +40,65 @@
         </Border>
 
         <reactiveUi:ViewModelViewHost
-            Grid.Column="0"
-            Grid.ColumnSpan="3"
+            Grid.Column="1"
+            Grid.ColumnSpan="2"
             Grid.Row="0"
-            x:Name="TopBar"/>
+            x:Name="TopBar" />
 
         <reactiveUi:ViewModelViewHost
             Grid.Column="0"
-            Grid.Row="1"
+            Grid.Row="0"
+            Grid.RowSpan="2"
             x:Name="Spine" />
 
         <Border Classes="OutlineWeak"
-                BorderThickness="1,0"
-                Grid.Column="1"
-                Grid.Row="1" />
-        <Border Classes="OutlineWeak"
-            BorderThickness="0,0,0,1"
-            Grid.Column="0"
-            Grid.ColumnSpan="3"
-            Grid.Row="0" />
+                BorderThickness="0,0,1,0"
+                Grid.Column="0"
+                Grid.Row="0"
+                Grid.RowSpan="2"
+                x:Name="SpineBorder" />
 
         <Border Classes="OutlineWeak"
-            Grid.Column="1"
-            Grid.Row="1"
-            BorderThickness="1,0,1,0">
+                BorderThickness="0,0,0,0"
+                Grid.Column="1"
+                Grid.ColumnSpan="2"
+                Grid.Row="0"
+                x:Name="TopBarBorder" />
+
+        <Border Classes="OutlineWeak"
+                Grid.Column="1"
+                Grid.Row="1"
+                BorderThickness="0,0,0,0"
+                x:Name="LeftMenuBorder">
+
             <reactiveUi:ViewModelViewHost
                 x:Name="LeftMenuViewModelHost" />
         </Border>
 
-        <reactiveUi:ViewModelViewHost Grid.Column="2" Grid.Row="1" x:Name="RightContent" />
+        <Border Classes="Rounded"
+                Grid.Column="2"
+                Grid.Row="1"
+                Margin="0,0,12,12"
+                x:Name="WorkspacesBorder">
+
+            <ItemsControl x:Name="Workspaces">
+
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Grid RowDefinitions="*" ColumnDefinitions="*" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type workspace:IWorkspaceViewModel}">
+                        <reactiveUi:ViewModelViewHost
+                            x:Name="ViewModelViewHost"
+                            IsVisible="{CompiledBinding IsActive, Mode=OneWay}"
+                            ViewModel="{CompiledBinding Mode=OneWay}" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Border>
 
         <reactiveUi:ViewModelViewHost
             Grid.Column="0"
@@ -75,8 +106,5 @@
             Grid.Row="2"
             x:Name="DevelopmentBuildBanner" />
     </Grid>
-
-
-
 
 </reactiveUi:ReactiveWindow>

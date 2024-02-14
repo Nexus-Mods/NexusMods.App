@@ -14,7 +14,7 @@ public static class Services
     /// <summary>
     ///     Added the 'base entities' for the DataModel; building blocks used to create other entities.
     /// </summary>
-    public static IServiceCollection AddDataModelBaseEntities(this IServiceCollection services)
+    public static IServiceCollection AddSerializationAbstractions(this IServiceCollection services)
     {
         services.AddSingleton<JsonConverter, AbstractClassConverterFactory<Entity>>();
         services.AddSingleton<JsonConverter, AbstractClassConverterFactory<IMetadata>>();

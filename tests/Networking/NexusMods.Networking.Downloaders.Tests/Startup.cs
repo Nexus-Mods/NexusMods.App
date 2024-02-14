@@ -31,7 +31,7 @@ public class Startup
             .AddBethesdaGameStudios()
             .AddGenericGameSupport()
             .AddRedEngineGames()
-            .AddDataModelBaseEntities()
+            .AddSerializationAbstractions()
             .AddFomod()
             .AddDownloaders()
             .AddAllSingleton<ITypeFinder, TypeFinder>()

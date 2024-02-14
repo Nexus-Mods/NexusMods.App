@@ -2,12 +2,17 @@ using System.IO.Compression;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.FileStore;
+using NexusMods.Abstractions.FileStore.ArchiveMetadata;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Games.ArchiveMetadata;
 using NexusMods.Abstractions.Games.Loadouts;
+using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
+using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Serialization;
+using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
@@ -23,6 +28,7 @@ namespace NexusMods.DataModel.Tests.Harness;
 public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
 {
     public AbsolutePath DataZipLzma => FileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine("Resources/data_zip_lzma.zip");
+    public AbsolutePath DataZipLzmaWithExtraFile => FileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine("Resources/data_zip_lzma_withextraFile.zip");
     public AbsolutePath Data7ZLzma2 => FileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine("Resources/data_7zip_lzma2.7z");
 
     public AbsolutePath DataTest =>
@@ -78,6 +84,7 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
 
         Game = provider1.GetRequiredService<StubbedGame>();
         Install = Game.Installations.First();
+        ClearDataStore();
     }
 
     public void Dispose()
@@ -87,7 +94,7 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
     public virtual async Task InitializeAsync()
     {
         ((StubbedGame)Game).ResetGameFolders();
-        BaseList = LoadoutRegistry.GetMarker((await Install.Game.Synchronizer.Manage(Install)).LoadoutId);
+        BaseList = LoadoutRegistry.GetMarker((await Install.GetGame().Synchronizer.Manage(Install)).LoadoutId);
     }
 
     protected async Task<ModId[]> AddMods(LoadoutMarker mainList, AbsolutePath path, string? name = null)
@@ -136,5 +143,19 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
     public Task DisposeAsync()
     {
         return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Clears data store of content from previous runs.
+    /// Only valid if tests are ran non-concurrently.
+    /// </summary>
+    private void ClearDataStore()
+    {
+        // TODO: Replace this with something more performant.
+        //       This is not being done now as we'll be switching from SQLite to RocksDB with EventSourcing
+        //       , therefore code will change there.
+        foreach (var category in Enum.GetValues<EntityCategory>())
+        foreach (var id in DataStore.AllIds(category))
+            DataStore.Delete(id);
     }
 }

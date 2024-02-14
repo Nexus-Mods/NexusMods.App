@@ -1,4 +1,4 @@
-using NexusMods.Abstractions.Installers.DTO.Files;
+using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 
 namespace NexusMods.Abstractions.Installers;

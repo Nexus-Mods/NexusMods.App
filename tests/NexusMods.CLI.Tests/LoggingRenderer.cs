@@ -1,7 +1,6 @@
 using NexusMods.ProxyConsole.Abstractions;
 using NexusMods.ProxyConsole.Abstractions.Implementations;
 
-
 namespace NexusMods.CLI.Tests;
 
 // ReSharper disable once ClassNeverInstantiated.Global

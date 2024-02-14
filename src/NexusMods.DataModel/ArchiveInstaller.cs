@@ -2,13 +2,14 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Activities;
-using NexusMods.Abstractions.DataModel.Entities.Mods;
 using NexusMods.Abstractions.DataModel.Entities.Sorting;
+using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.Downloads;
-using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
+using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.DataModel.Extensions;
@@ -81,7 +82,7 @@ public class ArchiveInstaller : IArchiveInstaller
             var tree = TreeCreator.Create(download.Contents, _fileStore);
 
             // Step 3: Run the archive through the installers.
-            var installers = loadout.Value.Installation.Game.Installers;
+            var installers = loadout.Value.Installation.GetGame().Installers;
             if (installer != null)
             {
                 installers = new[] { installer };
@@ -93,7 +94,7 @@ public class ArchiveInstaller : IArchiveInstaller
                     try
                     {
                         var install = loadout.Value.Installation;
-                        var info = new ModInstallerInfo()
+                        var info = new ModInstallerInfo
                         {
                             ArchiveFiles = tree,
                             BaseModId = baseMod.Id,
@@ -101,7 +102,8 @@ public class ArchiveInstaller : IArchiveInstaller
                             GameName = install.Game.Name,
                             Store = install.Store,
                             Version = install.Version,
-                            ModName = baseMod.Name
+                            ModName = baseMod.Name,
+                            ArchiveMetaData = download.MetaData
                         };
 
                         var modResults = (await modInstaller.GetModsAsync(info, token)).ToArray();

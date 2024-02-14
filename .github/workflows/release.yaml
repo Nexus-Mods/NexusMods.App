@@ -80,8 +80,10 @@ jobs:
       RetentionDays: 1
       SignExecutable: true
     secrets:
-      PFX_BASE64: ${{ secrets.PFX_BASE64 }}
-      PFX_KEY: ${{ secrets.PFX_KEY }}
+      ES_USERNAME: ${{ secrets.ES_USERNAME }}
+      ES_PASSWORD: ${{ secrets.ES_PASSWORD }}
+      ES_CREDENTIAL_ID: ${{ secrets.ES_CREDENTIAL_ID }}
+      ES_TOTP_SECRET: ${{ secrets.ES_TOTP_SECRET }}
 
   release-github:
     runs-on: ubuntu-latest

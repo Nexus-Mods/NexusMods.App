@@ -30,4 +30,9 @@ public interface ISpineDownloadButtonViewModel : IViewModelInterface
     /// True when this spine button is active
     /// </summary>
     public bool IsActive { get; set; }
+
+    /// <summary>
+    /// Text to display when hovering over the button
+    /// </summary>
+    public string ToolTip { get; set; }
 }

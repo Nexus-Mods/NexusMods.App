@@ -1,19 +1,17 @@
-﻿using System.Runtime.CompilerServices;
-using FluentAssertions;
-using NexusMods.Abstractions.DataModel.Entities.Mods;
+﻿using FluentAssertions;
 using NexusMods.Abstractions.DataModel.Entities.Sorting;
-using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.Loadouts;
-using NexusMods.Abstractions.Games.Loadouts.Sorting;
-using NexusMods.Abstractions.Games.Triggers;
-using NexusMods.Abstractions.Installers.DTO;
-using NexusMods.Abstractions.Installers.DTO.Files;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
+using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Files;
+using NexusMods.Abstractions.Loadouts.Mods;
+using NexusMods.Abstractions.Loadouts.Sorting;
 using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.Abstractions.Serialization.DataModel.Ids;
+using NexusMods.Abstractions.Triggers;
 using NexusMods.DataModel.Loadouts.LoadoutSynchronizerDTOs;
 using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.TriggerFilter;
@@ -26,7 +24,6 @@ namespace NexusMods.DataModel.Tests.Harness;
 
 public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
 {
-    protected readonly TestDirectoryIndexer TestIndexer;
     protected readonly TestFileStore TestFileStoreInstance;
     protected readonly TestFingerprintCache<Mod, CachedModSortRules> TestFingerprintCacheInstance;
 
@@ -34,7 +31,6 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
     {
         AssertionOptions.AssertEquivalencyUsing(opt => opt.ComparingRecordsByValue());
 
-        TestIndexer = new TestDirectoryIndexer();
         TestFileStoreInstance = new TestFileStore();
         TestFingerprintCacheInstance = new TestFingerprintCache<Mod, CachedModSortRules>();
     }
@@ -80,6 +76,11 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
             throw new NotImplementedException();
         }
 
+        public HashSet<ulong> GetFileHashes()
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task ExtractFiles(IEnumerable<(Hash Src, IStreamFactory Dest)> files, CancellationToken token = default)
         {
             foreach (var entry in files)
@@ -87,21 +88,6 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
         }
     }
 
-    protected class TestDirectoryIndexer : IDirectoryIndexer
-    {
-        public List<HashedEntry> Entries = new();
-
-#pragma warning disable CS1998
-        public async IAsyncEnumerable<HashedEntry> IndexFolders(IEnumerable<AbsolutePath> paths,
-#pragma warning restore CS1998
-            [EnumeratorCancellation] CancellationToken token = default)
-        {
-            foreach (var entry in Entries)
-            {
-                yield return entry;
-            }
-        }
-    }
 
     public class TestFingerprintCache<TSrc, TValue> : IFingerprintCache<TSrc, TValue> where TValue : Entity
     {

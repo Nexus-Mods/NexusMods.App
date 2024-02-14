@@ -1,0 +1,51 @@
+﻿<reactiveUi:ReactiveUserControl
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d"
+    x:Class="NexusMods.App.UI.Pages.LoadoutGrid.LoadoutGridView"
+    x:TypeArguments="loadoutGrid:ILoadoutGridViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactiveUi="http://reactiveui.net"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:avalonia="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
+    xmlns:loadoutGrid="clr-namespace:NexusMods.App.UI.Pages.LoadoutGrid">
+    <Design.DataContext>
+        <loadoutGrid:LoadoutGridDesignViewModel />
+    </Design.DataContext>
+    <Grid RowDefinitions="Auto, *">
+        <Border Grid.Row="0" Classes="Toolbar">
+            <Grid ColumnDefinitions="*, Auto">
+                <TextBlock Grid.Column="0" Text="" x:Name="ModlistNameText"/>
+                <StackPanel Grid.Column="1">
+                    <Button x:Name="DeleteModsButton">
+                        <StackPanel>
+                            <avalonia:Icon Classes="TrashCanOutline" />
+                        </StackPanel>
+                    </Button>
+                    <Line/>
+                    <Button x:Name="AddModButton">
+                        <StackPanel>
+                            <avalonia:Icon Classes="PlusCircleOutline" />
+                            <TextBlock Text="{x:Static resources:Language.LoadoutGridView__Add_Mod}"/>
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="AddModAdvancedButton">
+                        <StackPanel>
+                            <avalonia:Icon Classes="PlusCircleOutline" />
+                            <TextBlock Text="{x:Static resources:Language.LoadoutGridView__Add_Mod_Advanced}"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
+        <DataGrid Grid.Row="1"
+            CanUserResizeColumns="True"
+            CanUserSortColumns="True"
+            Margin="24,16"
+            x:Name="ModsDataGrid" />
+    </Grid>
+</reactiveUi:ReactiveUserControl>
+

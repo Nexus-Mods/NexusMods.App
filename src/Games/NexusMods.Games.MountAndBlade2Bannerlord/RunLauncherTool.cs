@@ -1,9 +1,8 @@
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.DTO;
-using NexusMods.Abstractions.Games.Loadouts;
-using NexusMods.Abstractions.Installers.DTO;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.MountAndBlade2Bannerlord.Extensions;
 using static NexusMods.Games.MountAndBlade2Bannerlord.Utils.GamePathProvier;
 

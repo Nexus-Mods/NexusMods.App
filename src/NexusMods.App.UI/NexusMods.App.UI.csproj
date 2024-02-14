@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
         <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -67,6 +67,7 @@
         <PackageReference Include="DynamicData" />
         <PackageReference Include="Humanizer" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+        <PackageReference Include="OneOf" />
         <PackageReference Include="Projektanker.Icons.Avalonia.MaterialDesign" />
         <PackageReference Include="ReactiveUI.Fody" />
         <PackageReference Include="Splat.Microsoft.Extensions.Logging" />
@@ -83,10 +84,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Compile Update="RightContent\FoundGamesView.axaml.cs">
-            <DependentUpon>FoundGamesView.axaml</DependentUpon>
-            <SubType>Code</SubType>
-        </Compile>
         <Compile Update="Controls\Spine\Buttons\Image\ImageButton.axaml.cs">
             <DependentUpon>Game.axaml</DependentUpon>
             <SubType>Code</SubType>
@@ -99,32 +96,14 @@
             <DependentUpon>MainWindow.axaml</DependentUpon>
             <SubType>Code</SubType>
         </Compile>
-        <Compile Update="RightContent\FoundGamesViewModel.cs">
-            <DependentUpon>IFoundGamesViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="RightContent\FoundGamesDesignViewModel.cs">
-            <DependentUpon>IFoundGamesViewModel.cs</DependentUpon>
-        </Compile>
         <Compile Update="RightContent\LoadoutGrid\LoadoutGridDesignViewModel.cs">
             <DependentUpon>ILoadoutGridViewModel.cs</DependentUpon>
         </Compile>
         <Compile Update="RightContent\LoadoutGrid\LoadoutGridViewModel.cs">
             <DependentUpon>ILoadoutGridViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="RightContent\Downloads\CompletedDesignViewModel.cs">
-            <DependentUpon>ICompletedViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="RightContent\Downloads\HistoryDesignViewModel.cs">
-            <DependentUpon>IHistoryViewModel.cs</DependentUpon>
-        </Compile>
         <Compile Update="RightContent\Downloads\InProgressDesignViewModel.cs">
             <DependentUpon>IInProgressViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="RightContent\Downloads\CompletedViewModel.cs">
-            <DependentUpon>ICompletedViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="RightContent\Downloads\HistoryViewModel.cs">
-            <DependentUpon>IHistoryViewModel.cs</DependentUpon>
         </Compile>
         <Compile Update="RightContent\Downloads\InProgressViewModel.cs">
             <DependentUpon>IInProgressViewModel.cs</DependentUpon>
@@ -134,15 +113,6 @@
         </Compile>
         <Compile Update="LeftMenu\Downloads\DownloadsViewModel.cs">
             <DependentUpon>IDownloadsViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="ViewModels\Helpers\ViewModelSelector\ViewModelDesignSelector.cs">
-            <DependentUpon>IViewModelSelector.cs</DependentUpon>
-        </Compile>
-        <Compile Update="ViewModels\Helpers\ViewModelSelector\ViewModelSelector.cs">
-            <DependentUpon>IViewModelSelector.cs</DependentUpon>
-        </Compile>
-        <Compile Update="ViewModels\Helpers\ViewModelSelector\AViewModelSelector.cs">
-            <DependentUpon>IViewModelSelector.cs</DependentUpon>
         </Compile>
         <Compile Update="Controls\Spine\Buttons\Icon\IconButtonViewModel.cs">
           <DependentUpon>IIconButtonViewModel.cs</DependentUpon>
@@ -289,9 +259,6 @@
         <Compile Update="WorkspaceSystem\Panel\PanelViewModel.cs">
           <DependentUpon>IPanelViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="WorkspaceSystem\Workspace\WorkspacePlaygroundViewModel.cs">
-          <DependentUpon>WorkspacePlaygroundView.axaml</DependentUpon>
-        </Compile>
         <Compile Update="WorkspaceSystem\AddPanelButton\AddPanelButtonViewModel.cs">
           <DependentUpon>IAddPanelButtonViewModel.cs</DependentUpon>
         </Compile>
@@ -338,6 +305,58 @@
           <DependentUpon>ProgressRing.axaml</DependentUpon>
           <SubType>Code</SubType>
         </Compile>
+        <Compile Update="WorkspaceSystem\Controllers\WorkspaceController.cs">
+          <DependentUpon>IWorkspaceController.cs</DependentUpon>
+        </Compile>
+        <Compile Update="WorkspaceSystem\Controllers\DesignWorkspaceController.cs">
+          <DependentUpon>IWorkspaceController.cs</DependentUpon>
+        </Compile>
+        <Compile Update="WorkspaceSystem\AddPanelButton\AddPanelDropDownDesignViewModel.cs">
+          <DependentUpon>IAddPanelDropDownViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="WorkspaceSystem\AddPanelButton\AddPanelDropDownViewModel.cs">
+          <DependentUpon>IAddPanelDropDownViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Windows\MainWindowViewModel.cs">
+          <DependentUpon>IMainWindowViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Windows\WindowManager.cs">
+          <DependentUpon>IWindowManager.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Windows\DesignWindowManager.cs">
+          <DependentUpon>IWindowManager.cs</DependentUpon>
+        </Compile>
+        <Compile Update="LeftMenu\Home\HomeLeftMenuViewModel.cs">
+          <DependentUpon>IHomeLeftMenuViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="LeftMenu\Home\HomeLeftMenuDesignViewModel.cs">
+          <DependentUpon>IHomeLeftMenuViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\Spine\SpineDesignViewModel.cs">
+          <DependentUpon>ISpineViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\Spine\SpineViewModel.cs">
+          <DependentUpon>ISpineViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\Spine\Buttons\Image\ImageButtonDesignViewModel.cs">
+          <DependentUpon>IImageButtonViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\Spine\Buttons\Image\ImageButtonViewModel.cs">
+          <DependentUpon>IImageButtonViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\FoundGames\FoundGamesView.axaml.cs">
+          <DependentUpon>FoundGamesView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Controls\FoundGames\FoundGamesViewModel.cs">
+          <DependentUpon>IFoundGamesViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\FoundGames\FoundGamesDesignViewModel.cs">
+          <DependentUpon>IFoundGamesViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="LeftMenu\Loadout\LoadoutLeftMenuViewModel.cs">
+          <DependentUpon>ILoadoutLeftMenuViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
@@ -352,19 +371,24 @@
       <UpToDateCheckInput Remove="Controls\DownloadProgressBar\DownloadProgressBar.axaml" />
       <UpToDateCheckInput Remove="Controls\Buttons\RoundedButton\RoundedButton.axaml" />
       <UpToDateCheckInput Remove="Controls\Buttons\StandardButtonTheme.axaml" />
+      <UpToDateCheckInput Remove="RightContent\Home\HomeView.axaml" />
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="RightContent\DownloadGrid\Columns\" />
+      <Folder Include="Pages\" />
     </ItemGroup>
 
     <ItemGroup>
       <AdditionalFiles Include="Controls\DevelopmentBuildBanner\DevelopmentBuildBannerView.axaml" />
-      <AdditionalFiles Include="RightContent\DownloadGrid\Columns\DownloadGameName\DownloadGameNameView.axaml" />
-      <AdditionalFiles Include="RightContent\DownloadGrid\Columns\DownloadName\DownloadNameView.axaml" />
-      <AdditionalFiles Include="RightContent\DownloadGrid\Columns\DownloadSize\DownloadSizeView.axaml" />
-      <AdditionalFiles Include="RightContent\DownloadGrid\Columns\DownloadStatus\DownloadStatusView.axaml" />
-      <AdditionalFiles Include="RightContent\DownloadGrid\Columns\DownloadVersion\DownloadVersionView.axaml" />
+      <AdditionalFiles Include="Pages\Downloads\InProgressView.axaml" />
+      <AdditionalFiles Include="Pages\LoadoutGrid\Columns\ModCategory\ModCategoryView.axaml" />
+      <AdditionalFiles Include="Pages\LoadoutGrid\Columns\ModEnabled\ModEnabledHeader.axaml" />
+      <AdditionalFiles Include="Pages\LoadoutGrid\Columns\ModEnabled\ModEnabledView.axaml" />
+      <AdditionalFiles Include="Pages\LoadoutGrid\Columns\ModInstalled\ModInstalledView.axaml" />
+      <AdditionalFiles Include="Pages\LoadoutGrid\Columns\ModName\ModNameView.axaml" />
+      <AdditionalFiles Include="Pages\LoadoutGrid\Columns\ModVersion\ModVersionView.axaml" />
+      <AdditionalFiles Include="Pages\LoadoutGrid\LoadoutGridView.axaml" />
+      <AdditionalFiles Include="Pages\MyGames\MyGamesView.axaml" />
     </ItemGroup>
 
     <ItemGroup>

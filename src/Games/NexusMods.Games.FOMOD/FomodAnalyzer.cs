@@ -1,7 +1,7 @@
-using System.Text;
+﻿using System.Text;
 using FomodInstaller.Scripting.XmlScript;
 using JetBrains.Annotations;
-using NexusMods.Abstractions.Installers.Trees;
+using NexusMods.Abstractions.FileStore.Trees;
 using NexusMods.Extensions.BCL;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees;
@@ -38,11 +38,12 @@ public class FomodAnalyzer
             {
                 if (string.IsNullOrEmpty(imagePathFragment))
                     return;
+
                 var imagePath = pathPrefix.Path().Join(RelativePath.FromUnsanitizedInput(imagePathFragment));
                 byte[] bytes;
                 try
                 {
-                    var node = allFiles.FindByPathFromRoot(imagePath);
+                    var node = allFiles.FindByPathFromChild(imagePath);
                     await using var imageStream = await node!.Item.OpenAsync();
                     using var ms = new MemoryStream();
                     await imageStream.CopyToAsync(ms, ct);

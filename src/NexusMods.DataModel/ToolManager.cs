@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.DataModel.Entities.Mods;
-using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Games.Loadouts;
+using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Extensions;

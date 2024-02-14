@@ -1,7 +1,8 @@
 using FluentAssertions;
-using NexusMods.Abstractions.DataModel.Entities.Mods;
-using NexusMods.Abstractions.Installers.DTO;
-using NexusMods.Abstractions.Installers.DTO.Files;
+using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Loadouts.Files;
+using NexusMods.Abstractions.Loadouts.Mods;
+using NexusMods.DataModel.LoadoutSynchronizer.Extensions;
 using NexusMods.DataModel.Tests.Harness;
 using NexusMods.StandardGameLocators.TestHelpers;
 
@@ -24,7 +25,8 @@ public class ToolTests : ADataModelTest<ToolTests>
 
         var tool = ToolManager.GetTools(BaseList.Value).OfType<ListFilesTool>().First();
         var result = await ToolManager.RunTool(tool, BaseList.Value);
-        BaseList.Merge(result);
+
+        LoadoutRegistry.Merge(BaseList.Value, result);
 
         gameFolder.Combine("files.txt").FileExists.Should().BeTrue("tool should have run");
         gameFolder.Combine("rootFile.txt").FileExists.Should().BeTrue("loadout has been automatically applied");

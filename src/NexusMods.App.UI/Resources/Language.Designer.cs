@@ -694,6 +694,24 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Downloads.
+        /// </summary>
+        public static string SpineDownloadButton_ToolTip {
+            get {
+                return ResourceManager.GetString("SpineDownloadButton_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Home.
+        /// </summary>
+        public static string SpineHomeButton_ToolTip_Home {
+            get {
+                return ResourceManager.GetString("SpineHomeButton_ToolTip_Home", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0} hours.
         /// </summary>
         public static string StringFormatters__HoursRemaining__hours {

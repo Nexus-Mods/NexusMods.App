@@ -1,8 +1,9 @@
 using Bannerlord.LauncherManager;
 using Bannerlord.LauncherManager.Models;
-using NexusMods.Abstractions.DataModel.Entities.Mods;
-using NexusMods.Abstractions.Games.Loadouts;
-using NexusMods.Abstractions.Installers.DTO.Files;
+using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Files;
+using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Games.MountAndBlade2Bannerlord.Models;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord.Extensions;
@@ -23,7 +24,7 @@ internal static class LoadoutExtensions
 
     private static async Task<IEnumerable<Mod>> SortMods(Loadout loadout)
     {
-        var loadoutSynchronizer = (loadout.Installation.Game.Synchronizer as MountAndBlade2BannerlordLoadoutSynchronizer)!;
+        var loadoutSynchronizer = (((IGame)loadout.Installation.Game).Synchronizer as MountAndBlade2BannerlordLoadoutSynchronizer)!;
 
         var sorted = await loadoutSynchronizer.SortMods(loadout);
         return sorted;

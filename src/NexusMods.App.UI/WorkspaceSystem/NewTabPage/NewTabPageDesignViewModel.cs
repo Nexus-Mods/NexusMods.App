@@ -1,10 +1,11 @@
 using NexusMods.App.UI.Controls;
+using NexusMods.App.UI.Windows;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
 public class NewTabPageDesignViewModel : NewTabPageViewModel
 {
-    public NewTabPageDesignViewModel() : base(CreateDesignData()) { }
+    public NewTabPageDesignViewModel() : base(DesignWindowManager.Instance, CreateDesignData()) { }
 
     private static PageDiscoveryDetails[] CreateDesignData()
     {

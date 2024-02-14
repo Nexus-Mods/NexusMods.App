@@ -1,11 +1,10 @@
 using System.Reactive.Disposables;
-using NexusMods.Abstractions.Installers.Info;
-using NexusMods.Abstractions.Installers.Trees;
+using NexusMods.Abstractions.FileStore.Trees;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-
 
 namespace NexusMods.Games.AdvancedInstaller.UI;
 

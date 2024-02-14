@@ -1,6 +1,6 @@
 ﻿using Bannerlord.LauncherManager.Models;
 using FluentAssertions;
-using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Games.MountAndBlade2Bannerlord.Extensions;
 using NexusMods.Games.MountAndBlade2Bannerlord.Models;
 using NexusMods.Games.MountAndBlade2Bannerlord.Tests.Shared;

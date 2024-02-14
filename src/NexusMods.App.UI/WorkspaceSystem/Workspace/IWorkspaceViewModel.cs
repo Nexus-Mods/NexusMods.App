@@ -1,10 +1,33 @@
 using System.Collections.ObjectModel;
 using Avalonia;
+using JetBrains.Annotations;
+using NexusMods.App.UI.Windows;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
+[PublicAPI]
 public interface IWorkspaceViewModel : IViewModelInterface
 {
+    /// <summary>
+    /// Gets the ID of the workspace.
+    /// </summary>
+    public WorkspaceId Id { get; }
+
+    /// <summary>
+    /// Gets the ID of the window this workspace is in.
+    /// </summary>
+    public WindowId WindowId { get; }
+
+    /// <summary>
+    /// Gets or sets the context of the workspace.
+    /// </summary>
+    public IWorkspaceContext Context { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether this is the currently visible workspace in the window.
+    /// </summary>
+    public bool IsActive { get; set; }
+
     public ReadOnlyObservableCollection<IPanelViewModel> Panels { get; }
 
     public ReadOnlyObservableCollection<IPanelResizerViewModel> Resizers { get; }
@@ -17,12 +40,6 @@ public interface IWorkspaceViewModel : IViewModelInterface
     /// Called by the View to notify the VM about the new size of the control.
     /// </summary>
     public void Arrange(Size workspaceSize);
-
-    /// <summary>
-    /// Add a new panel to the workspace.
-    /// </summary>
-    /// <returns>The newly created <see cref="IPanelViewModel"/>.</returns>
-    public IPanelViewModel AddPanel(WorkspaceGridState state);
 
     /// <summary>
     /// Transforms the current state of the workspace into a serializable data format.

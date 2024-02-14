@@ -1,7 +1,7 @@
 using Cathei.LinqGen;
+using NexusMods.Abstractions.FileStore.Trees;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Installers;
-using NexusMods.Abstractions.Installers.DTO;
-using NexusMods.Abstractions.Installers.Trees;
 using NexusMods.Extensions.BCL;
 using NexusMods.Games.Generic.FileAnalyzers;
 using NexusMods.Paths;
@@ -29,7 +29,6 @@ public class ReshadePresetInstaller : AModInstaller
         ModInstallerInfo info,
         CancellationToken cancellationToken = default)
     {
-
         var filtered = info.ArchiveFiles.GetFiles()
             .Gen()
             .Where(f => !IgnoreFiles.Contains(f.Path().FileName))

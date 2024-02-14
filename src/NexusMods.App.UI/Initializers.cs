@@ -7,13 +7,12 @@ using Avalonia;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
-using NexusMods.Abstractions.DataModel.Entities.Mods;
-using NexusMods.Abstractions.Games.DTO;
-using NexusMods.Abstractions.Games.Loadouts;
+using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.App.UI.LeftMenu;
 using NexusMods.App.UI.LeftMenu.Home;
-using NexusMods.App.UI.RightContent;
 using ReactiveUI;
+
 // ReSharper disable InconsistentNaming
 
 namespace NexusMods.App.UI;
@@ -22,8 +21,6 @@ public static class Initializers
 {
     public static readonly ICommand ICommand = ReactiveCommand.Create(() => { });
     public static IImage IImage => new WriteableBitmap(new PixelSize(16, 16), new Vector(96, 96), PixelFormat.Rgba8888, AlphaFormat.Opaque);
-    public static readonly ILeftMenuViewModel ILeftMenuViewModel = new HomeLeftMenuDesignViewModel();
-    public static readonly IRightContentViewModel IRightContent = new PlaceholderDesignViewModel();
 
     public static readonly ReactiveCommand<Unit, Unit> EnabledReactiveCommand = ReactiveCommand.Create(() => { }, Observable.Return(true));
     public static readonly ReactiveCommand<Unit, Unit> DisabledReactiveCommand = ReactiveCommand.Create(() => { }, Observable.Return(false));

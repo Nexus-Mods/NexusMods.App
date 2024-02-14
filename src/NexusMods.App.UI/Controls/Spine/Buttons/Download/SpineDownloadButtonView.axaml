@@ -8,12 +8,16 @@
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:download="clr-namespace:NexusMods.App.UI.Controls.Spine.Buttons.Download"
                                 xmlns:avalonia="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+                                xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
                                 mc:Ignorable="d" d:DesignWidth="64" d:DesignHeight="64"
                                 x:Class="NexusMods.App.UI.Controls.Spine.Buttons.Download.SpineDownloadButtonView">
     <Design.DataContext>
         <download:SpineDownloadButtonDesignerViewModel/>
     </Design.DataContext>
     <Button Classes="SpineDownloadButton Idle" x:Name="ParentButton">
+        <ToolTip.Tip>
+            <TextBlock x:Name="ToolTipTextBlock"/>
+        </ToolTip.Tip>
         <Grid>
             <Border></Border>
             <Arc x:Name="ProgressArc"></Arc>

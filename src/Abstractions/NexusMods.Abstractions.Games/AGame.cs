@@ -1,14 +1,14 @@
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.DataModel.Entities.Mods;
+using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.GameLocators.GameCapabilities;
 using NexusMods.Abstractions.Games.DTO;
-using NexusMods.Abstractions.Games.GameCapabilities;
 using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Installers;
-using NexusMods.Abstractions.Installers.DTO;
 using NexusMods.Abstractions.IO;
+using NexusMods.Abstractions.Loadouts.Mods;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Paths;
-using LocationId = NexusMods.Abstractions.Installers.DTO.LocationId;
 
 namespace NexusMods.Abstractions.Games;
 
@@ -89,22 +89,6 @@ public abstract class AGame : IGame
         return Array.Empty<IModInstaller>();
     }
 
-    /// <summary>
-    /// By default this method just returns the current state of the game folders. Most of the time
-    /// this creates a sub-par user experience as users may have installed mods in the past and then
-    /// these files will be marked as part of the game files when they are not. Properly implemented
-    /// games should override this method and return only the files that are part of the game itself.
-    ///
-    /// Doing so, will cause the next "Ingest" to pull in the remaining files in a way consistent with
-    /// the ingestion process of the game. Likely this will involve adding the files to a "Override" mod.
-    /// </summary>
-    /// <param name="installation"></param>
-    /// <returns></returns>
-    public virtual ValueTask<DiskState> GetInitialDiskState(GameInstallation installation)
-    {
-        var cache = _provider.GetRequiredService<IFileHashCache>();
-        return cache.IndexDiskState(installation);
-    }
 
     /// <inheritdoc />
     public virtual ILoadoutSynchronizer Synchronizer => _synchronizer.Value;

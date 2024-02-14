@@ -23,8 +23,9 @@ public static class Services
             coll.AddSingleton<IFileExtractorSettings, FileExtractorSettings>();
         else
             coll.AddSingleton(settings);
+
         coll.AddFileExtractorVerbs();
-        coll.AddSingleton<FileExtractor>();
+        coll.AddSingleton<IFileExtractor, FileExtractor>();
         coll.AddSingleton<IExtractor, SevenZipExtractor>();
         coll.TryAddSingleton<TemporaryFileManager, TemporaryFileManagerEx>();
         return coll;

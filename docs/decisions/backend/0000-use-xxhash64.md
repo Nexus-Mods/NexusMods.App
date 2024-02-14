@@ -3,20 +3,20 @@
 ## Context and Problem Statement
 
 Several aspects of the app require a fast and efficient file hashing routine. The undo functionality is based on content hashing many of the files
-involved in the modding process. 
+involved in the modding process.
 
 ## Decision Drivers
 
 * Speed of the hashing algorithm
-  * Should be able to keep up with a modern NVME drive and a 4 core system
+    * Should be able to keep up with a modern NVME drive and a 4 core system
 * Ease of implementation
-  * We may be asking Nexus Mods content servers to also implement this hash, so a involved complex algorithm may not be applicable
+    * We may be asking Nexus Mods content servers to also implement this hash, so a involved complex algorithm may not be applicable
 * Low collision rate
-  * Having two files collide on hashes would be catastrophic. Something like CRC will not work here
+    * Having two files collide on hashes would be catastrophic. Something like CRC will not work here
 * Need not be cryptographic
-  * None of these systems deal with security concerns, so we need not consider only cryptographic hashes 
+    * None of these systems deal with security concerns, so we need not consider only cryptographic hashes
 * Streaming support
-  * Several files are quite large (10GB+) the algorithm should not require all the contents to be in memory at one time  
+    * Several files are quite large (10GB+) the algorithm should not require all the contents to be in memory at one time
 
 ## Considered Options
 
@@ -28,7 +28,7 @@ involved in the modding process.
 
 ## Decision Outcome
 
-Chosen option: xxHash64 provides the best balance of simplicity, performance, and uniqueness. 
+Chosen option: xxHash64 provides the best balance of simplicity, performance, and uniqueness.
 
 ### Consequences
 
@@ -58,19 +58,20 @@ are the time taken to hash 1GB of in-memory data. These benchmarks are for a sin
 | System_CRC32           | 1,774.06 ms | 2.995 ms | 2.655 ms |     512 B | 0.56   |
 
 Test System:
+
 * CPU: Ryzen 9 7950x @ 5.35Ghz
 * RAM: DDR5 6000Mhz CL30
 
 The relatively high performance of the SHA256 hash is assumed to be related to support for AES instructions in .NET and the related
-algorithms. 
+algorithms.
 
 While 600MB/sec of hashing may sound rather fast, this is the *starting* speed for SSD drives. Modern SATA SSDs can easily saturate
 a 600MB/sec SATA connection, and entry level NVME drives start at 1.5GB/sec and go up to 3GB/sec on high end models. As of the time
 of this writing, NVME 4.0 drives are fairly commonplace on high end systems (~6GB/sec read speeds), and NVME 5.0 drives are expected
 to start appearing on the market in the next 6 months (~12GB/sec). This mostly rules out any of the cryptographic algorithms
 due to their relatively low performance on low-core-count systems. xxHash3 is extremely fast, but the implementation has been expanded
-quite a bit from the previous incarnation (xxHash64) in order to offer higher performance on smaller hash sizes (less than 128 bytes). 
-In addition xxHash3 only performs best when backed up by AVX2 and SSE2 instructions which further complicate the implementation. 
+quite a bit from the previous incarnation (xxHash64) in order to offer higher performance on smaller hash sizes (less than 128 bytes).
+In addition xxHash3 only performs best when backed up by AVX2 and SSE2 instructions which further complicate the implementation.
 
 The xxHash3 implementation is not extremely complex but is complex enough that a junior level programmer may have problems understanding
 and implementing the algorithm. Contrast this with xxHash64 which comes in at less than 200 lines of C# code. This extreme simplicity
@@ -252,7 +253,7 @@ public struct xxHashAlgorithm
         hashValue ^= hashValue >> 29;
         hashValue *= Primes64[2];
         hashValue ^= hashValue >> 32;
-         
+
         _finished = true;
         return hashValue;
     }

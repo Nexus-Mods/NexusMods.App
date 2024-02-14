@@ -1,9 +1,13 @@
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.FileExtractor;
 using NexusMods.Paths;
 using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
 
 namespace NexusMods.FileExtractor;
 
+/// <summary>
+/// Extracts files from an archive.
+/// </summary>
 public static class FileExtractorVerbs
 {
     public static IServiceCollection AddFileExtractorVerbs(this IServiceCollection services) =>
@@ -12,7 +16,7 @@ public static class FileExtractorVerbs
     [Verb("extract-archive", "Extracts an archive to a folder on-disk")]
     private static async Task<int> ExtractArchive([Option("i", "inputFile", "Input archive to extract")] AbsolutePath inputFile,
         [Option("o", "outputFolder", "Output location for files")] AbsolutePath outputFolder,
-        [Injected] FileExtractor extractor,
+        [Injected] IFileExtractor extractor,
         [Injected] CancellationToken token)
     {
         await extractor.ExtractAllAsync(inputFile, outputFolder, token);

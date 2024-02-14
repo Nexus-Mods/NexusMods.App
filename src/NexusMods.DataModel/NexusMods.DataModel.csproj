@@ -8,7 +8,6 @@
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Games.Diagnostics\NexusMods.Abstractions.Games.Diagnostics.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Games\NexusMods.Abstractions.Games.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Messaging\NexusMods.Abstractions.Messaging.csproj" />
-        <ProjectReference Include="..\ArchiveManagement\NexusMods.FileExtractor\NexusMods.FileExtractor.csproj" />
         <ProjectReference Include="..\Extensions\NexusMods.Extensions.DependencyInjection\NexusMods.Extensions.DependencyInjection.csproj" />
         <ProjectReference Include="..\Extensions\NexusMods.Extensions.DynamicData\NexusMods.Extensions.DynamicData.csproj" />
         <ProjectReference Include="..\Extensions\NexusMods.Extensions.Hashing\NexusMods.Extensions.Hashing.csproj" />
@@ -40,5 +39,9 @@
     <ItemGroup>
       <Folder Include="LoadoutSynchronizer\Exceptions\" />
       <Folder Include="Loadouts\Markers\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Remove="DirectoryIndexer.cs" />
     </ItemGroup>
 </Project>

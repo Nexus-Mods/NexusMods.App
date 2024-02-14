@@ -1,4 +1,4 @@
-using NexusMods.Abstractions.Games.Loadouts;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.Abstractions.Serialization.DataModel.Ids;

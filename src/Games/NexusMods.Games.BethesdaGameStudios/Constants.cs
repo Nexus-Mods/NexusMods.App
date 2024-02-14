@@ -1,4 +1,4 @@
-using NexusMods.Abstractions.Installers.DTO;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Paths.Extensions;
 
 namespace NexusMods.Games.BethesdaGameStudios;

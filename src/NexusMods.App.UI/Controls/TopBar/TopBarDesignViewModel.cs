@@ -4,6 +4,7 @@ using System.Reactive.Linq;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using NexusMods.App.UI.WorkspaceSystem;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -20,6 +21,9 @@ public class TopBarDesignViewModel : AViewModel<ITopBarViewModel>, ITopBarViewMo
     [Reactive] public bool IsPremium { get; set; } = true;
 
     [Reactive] public IImage Avatar { get; set; } = new Bitmap(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/cyberpunk_game.png")));
+
+    [Reactive]
+    public IAddPanelDropDownViewModel AddPanelDropDownViewModel { get; set; } = new AddPanelDropDownDesignViewModel();
 
     [Reactive] public ReactiveCommand<Unit, Unit> LoginCommand { get; set; } = Initializers.EnabledReactiveCommand;
 

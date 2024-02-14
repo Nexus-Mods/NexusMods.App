@@ -4,7 +4,6 @@ using NexusMods.App.UI.WorkspaceSystem;
 
 namespace NexusMods.UI.Tests.WorkspaceSystem;
 
-[UsesVerify]
 public class IconUtilsTests(IServiceProvider provider) : AUiTest(provider)
 {
     [Fact]

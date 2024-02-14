@@ -1,7 +1,8 @@
 using GameFinder.StoreHandlers.Xbox;
+using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.GameLocators.Stores.Xbox;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.Stores.Xbox;
-using NexusMods.Abstractions.Installers.DTO;
 using NexusMods.Paths;
 
 namespace NexusMods.StandardGameLocators;

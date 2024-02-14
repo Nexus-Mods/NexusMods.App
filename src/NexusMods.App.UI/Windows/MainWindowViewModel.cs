@@ -1,8 +1,10 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Games.Downloads;
-using NexusMods.Abstractions.Games.Loadouts;
+using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Controls.DevelopmentBuildBanner;
 using NexusMods.App.UI.Controls.Spine;
 using NexusMods.App.UI.Controls.TopBar;
@@ -10,6 +12,7 @@ using NexusMods.App.UI.LeftMenu;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Overlays.MetricsOptIn;
 using NexusMods.App.UI.Overlays.Updater;
+using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Networking.Downloaders.Interfaces.Traits;
 using NexusMods.Paths;
@@ -18,18 +21,17 @@ using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Windows;
 
-public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
+public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindowViewModel
 {
-    private readonly IOverlayController _overlayController;
     private readonly IArchiveInstaller _archiveInstaller;
-    private ILoadoutRegistry _registry;
+    private readonly ILoadoutRegistry _registry;
+    private readonly IWindowManager _windowManager;
 
     public MainWindowViewModel(
+        IServiceProvider serviceProvider,
         ILogger<MainWindowViewModel> logger,
         IOSInformation osInformation,
-        ISpineViewModel spineViewModel,
-        ITopBarViewModel topBarViewModel,
-        IDevelopmentBuildBannerViewModel developmentBuildBannerViewModel,
+        IWindowManager windowManager,
         IOverlayController controller,
         IDownloadService downloadService,
         IArchiveInstaller archiveInstaller,
@@ -37,10 +39,23 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
         IUpdaterViewModel updaterViewModel,
         ILoadoutRegistry registry)
     {
-        TopBar = topBarViewModel;
-        Spine = spineViewModel;
-        DevelopmentBuildBanner = developmentBuildBannerViewModel;
-        _overlayController = controller;
+        // NOTE(erri120): can't use DI for VMs that require an active Window because
+        // those VMs would be instantiated before this constructor gets called.
+        // Use GetRequiredService<TVM> instead.
+        _windowManager = windowManager;
+        _windowManager.RegisterWindow(this);
+
+        WorkspaceController = new WorkspaceController(
+            window: this,
+            serviceProvider: serviceProvider
+        );
+
+        TopBar = serviceProvider.GetRequiredService<ITopBarViewModel>();
+        TopBar.AddPanelDropDownViewModel = new AddPanelDropDownViewModel(WorkspaceController);
+
+        Spine = serviceProvider.GetRequiredService<ISpineViewModel>();
+        DevelopmentBuildBanner = serviceProvider.GetRequiredService<IDevelopmentBuildBannerViewModel>();
+
         _archiveInstaller = archiveInstaller;
         _registry = registry;
 
@@ -49,10 +64,6 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
 
         this.WhenActivated(d =>
         {
-            Spine.Actions
-                .SubscribeWithErrorLogging(logger, HandleSpineAction)
-                .DisposeWith(d);
-
             // When the user closes the window, we should persist all download state such that it shows
             // accurate values after a reboot.
             // If we ever plan to remove and re-add main window (unlikely), this might need changing to not dispose but only save.
@@ -68,7 +79,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
                 });
             }).DisposeWith(d);
 
-            _overlayController.ApplyNextOverlay.Subscribe(item =>
+            controller.ApplyNextOverlay.Subscribe(item =>
                 {
                     if (item == null)
                     {
@@ -87,31 +98,23 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
                 })
                 .DisposeWith(d);
 
-            this.WhenAnyValue(vm => vm.Spine.LeftMenu)
-                .Select(left =>
-                {
-                    logger.LogDebug("Spine changed left menu to {LeftMenu}", left);
-                    return left;
-                })
-                .BindTo(this, vm => vm.LeftMenu)
-                .DisposeWith(d);
-
-            this.WhenAnyValue(vm => vm.LeftMenu.RightContent)
-                .Select(right =>
-                {
-                    logger.LogDebug(
-                        "Left menu changed right content to {RightContent}",
-                        right);
-                    return right;
-                }).BindTo(this, vm => vm.RightContent);
-
             // Only show the updater if the metrics opt-in has been shown before, so we don't spam the user.
             if (!metricsOptInViewModel.MaybeShow())
                 updaterViewModel.MaybeShow();
 
+            this.WhenAnyValue(vm => vm.Spine.LeftMenuViewModel)
+                .BindToVM(this, vm => vm.LeftMenu)
+                .DisposeWith(d);
+
+            this.WhenAnyValue(vm => vm.IsActive)
+                .Where(isActive => isActive)
+                .Select(_ => WindowId)
+                .BindTo(_windowManager, manager => manager.ActiveWindowId)
+                .DisposeWith(d);
+
+            Disposable.Create(this, vm => vm._windowManager.UnregisterWindow(vm)).DisposeWith(d);
         });
     }
-
 
     private async Task HandleDownloadedAnalyzedArchive(IDownloadTask task, DownloadId downloadId, string modName)
     {
@@ -133,21 +136,17 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
         });
     }
 
-    private void HandleSpineAction(SpineButtonAction action)
-    {
-        Spine.Activations.OnNext(action);
-    }
+    public WindowId WindowId { get; } = WindowId.NewId();
 
-    [Reactive]
-    public ISpineViewModel Spine { get; set; }
+    /// <inheritdoc/>
+    [Reactive] public bool IsActive { get; set; }
 
-    [Reactive]
-    public IViewModelInterface RightContent { get; set; } =
-        Initializers.IRightContent;
+    /// <inheritdoc/>
+    public IWorkspaceController WorkspaceController { get; }
 
-    [Reactive]
-    public ILeftMenuViewModel LeftMenu { get; set; } =
-        Initializers.ILeftMenuViewModel;
+    [Reactive] public ISpineViewModel Spine { get; set; }
+
+    [Reactive] public ILeftMenuViewModel? LeftMenu { get; set; }
 
     [Reactive]
     public ITopBarViewModel TopBar { get; set; }
