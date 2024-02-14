@@ -40,7 +40,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                             FactoryId = LoadoutGridPageFactory.StaticId,
                             Context = new LoadoutGridContext { LoadoutId = loadoutContext.LoadoutId }
                         },
-                        new OpenPageBehavior(new OpenPageBehavior.PrimaryDefault()));
+                        workspaceController.GetDefaultOpenPageBehavior());
                 })
             }
         };

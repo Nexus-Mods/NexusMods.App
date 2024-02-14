@@ -323,9 +323,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         behavior.Switch(
             f0: replaceTab => OpenPageReplaceTab(pageData, replaceTab, selectTab),
             f1: newTab => OpenPageInNewTab(pageData, newTab),
-            f2: newPanel => OpenPageInNewPanel(pageData, newPanel),
-            f3: _ => OpenPagePrimaryDefault(pageData, selectTab),
-            f4: _ => OpenPageSecondaryDefault(pageData, selectTab)
+            f2: newPanel => OpenPageInNewPanel(pageData, newPanel)
         );
     }
 
@@ -354,42 +352,6 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
     {
         var panel = OptionalPanelOrFirst(newTab.PanelId);
         panel.AddCustomTab(pageData);
-    }
-
-    private void OpenPagePrimaryDefault(PageData pageData, bool selectTab)
-    {
-        // TODO: Query the PageData for default behavior for the particular page
-        // TODO: Query user settings for default behavior
-
-        // Current primary default behavior is to replace the first tab if it's different
-        ReplaceFirstTabIfDifferent(pageData, selectTab);
-    }
-
-    private void OpenPageSecondaryDefault(PageData pageData, bool selectTab)
-    {
-        // TODO: Query the PageData for default behavior for the particular page
-        // TODO: Query user settings for default behavior
-
-        // Current secondary default behavior is to open the page in a new tab in the first panel
-        OpenPageInNewTab(pageData, new OpenPageBehavior.NewTab(Optional<PanelId>.None));
-    }
-
-    private void ReplaceFirstTabIfDifferent(PageData pageData, bool selectTab)
-    {
-        var panel = _panels.First();
-        var tab = panel.Tabs.First();
-
-        if (tab.Contents.PageData.FactoryId == pageData.FactoryId &&
-            tab.Contents.PageData.Context.Equals(pageData.Context))
-        {
-            if (selectTab) panel.SelectTab(tab.Id);
-            return;
-        }
-
-        var newTabPage = _factoryController.Create(pageData, WindowId, Id, panel.Id, tab.Id);
-        tab.Contents = newTabPage;
-
-        if (selectTab) panel.SelectTab(tab.Id);
     }
 
     private static IPanelTabViewModel OptionalTabOrFirst(IPanelViewModel panel, Optional<PanelTabId> optionalTabId)

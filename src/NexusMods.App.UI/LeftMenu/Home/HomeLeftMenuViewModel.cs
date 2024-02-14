@@ -31,7 +31,7 @@ public class HomeLeftMenuViewModel : AViewModel<IHomeLeftMenuViewModel>, IHomeLe
                                 FactoryId = MyGamesPageFactory.StaticId,
                                 Context = new MyGamesPageContext()
                             },
-                            new OpenPageBehavior(new OpenPageBehavior.PrimaryDefault()));
+                            workspaceController.GetDefaultOpenPageBehavior());
                     })
             }
         };

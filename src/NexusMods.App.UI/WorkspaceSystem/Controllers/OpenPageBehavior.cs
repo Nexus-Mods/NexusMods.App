@@ -11,9 +11,7 @@ namespace NexusMods.App.UI.WorkspaceSystem;
 public class OpenPageBehavior : OneOfBase<
     OpenPageBehavior.ReplaceTab,
     OpenPageBehavior.NewTab,
-    OpenPageBehavior.NewPanel,
-    OpenPageBehavior.PrimaryDefault,
-    OpenPageBehavior.SecondaryDefault>
+    OpenPageBehavior.NewPanel>
 {
     /// <summary>
     /// Replace the page in the given tab inside the given panel.
@@ -34,15 +32,5 @@ public class OpenPageBehavior : OneOfBase<
     /// <param name="NewWorkspaceState">Optional new workspace state, if this is <see cref="Optional{T}.None"/> the first possible state will be used.</param>
     public record NewPanel(Optional<WorkspaceGridState> NewWorkspaceState);
 
-    /// <summary>
-    /// Opens the page in using the primary default behavior (e.g. when normal click is used).
-    /// </summary>
-    public record PrimaryDefault;
-
-    /// <summary>
-    /// Opens the page in using the secondary default behavior (e.g. when middle click is used).
-    /// </summary>
-    public record SecondaryDefault;
-
-    public OpenPageBehavior(OneOf<ReplaceTab, NewTab, NewPanel, PrimaryDefault, SecondaryDefault> input) : base(input) { }
+    public OpenPageBehavior(OneOf<ReplaceTab, NewTab, NewPanel> input) : base(input) { }
 }

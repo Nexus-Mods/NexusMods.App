@@ -34,7 +34,7 @@ public class DownloadsLeftMenuViewModel : AViewModel<IDownloadsLeftMenuViewModel
                             FactoryId = InProgressPageFactory.StaticId,
                             Context = new InProgressPageContext()
                         },
-                        new OpenPageBehavior(new OpenPageBehavior.PrimaryDefault()));
+                        _workspaceController.GetDefaultOpenPageBehavior());
                 })
             }
         };
