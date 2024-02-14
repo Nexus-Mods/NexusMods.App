@@ -4,9 +4,9 @@ using ReactiveUI;
 
 namespace NexusMods.App.UI.LeftMenu.Downloads;
 
-public partial class DownloadsView : ReactiveUserControl<IDownloadsViewModel>
+public partial class DownloadsLeftMenuView : ReactiveUserControl<IDownloadsLeftMenuViewModel>
 {
-    public DownloadsView()
+    public DownloadsLeftMenuView()
     {
         InitializeComponent();
 

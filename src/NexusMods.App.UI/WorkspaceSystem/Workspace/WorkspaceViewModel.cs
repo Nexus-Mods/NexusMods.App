@@ -164,7 +164,8 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                         if (isHorizontal)
                         {
                             // true if the resizer sits on the "top" edge of the panel
-                            var isResizerYAligned = lastLogicalValue.IsCloseTo(currentSize.Y, tolerance: defaultTolerance);
+                            var isResizerYAligned =
+                                lastLogicalValue.IsCloseTo(currentSize.Y, tolerance: defaultTolerance);
 
                             // if the resizer sits on the "top" edge of the panel, we want to move the panel with the resizer
                             var newY = isResizerYAligned ? newLogicalValue : currentSize.Y;
@@ -185,7 +186,8 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                         else
                         {
                             // true if the resizer sits on the "left" edge of the panel
-                            var isResizerXAligned = lastLogicalValue.IsCloseTo(currentSize.X, tolerance: defaultTolerance);
+                            var isResizerXAligned =
+                                lastLogicalValue.IsCloseTo(currentSize.X, tolerance: defaultTolerance);
 
                             // if the resizer sits on the "left" edge of the panel, we want to move the panel with the resizer
                             var newX = isResizerXAligned ? newLogicalValue : currentSize.X;
@@ -279,7 +281,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         {
             updater.Clear();
 
-            var currentState =WorkspaceGridState.From(_panels, IsHorizontal);
+            var currentState = WorkspaceGridState.From(_panels, IsHorizontal);
             var resizers = GridUtils.GetResizers(currentState);
 
             updater.AddRange(resizers.Select(info =>
@@ -314,24 +316,36 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         return pageData;
     }
 
-    internal void OpenPage(Optional<PageData> optionalPageData, OpenPageBehavior behavior)
+    internal void OpenPage(Optional<PageData> optionalPageData, OpenPageBehavior behavior, bool selectTab)
     {
         var pageData = optionalPageData.ValueOr(GetDefaultPageData);
 
         behavior.Switch(
-            f0: replaceTab => OpenPageReplaceTab(pageData, replaceTab),
+            f0: replaceTab => OpenPageReplaceTab(pageData, replaceTab, selectTab),
             f1: newTab => OpenPageInNewTab(pageData, newTab),
             f2: newPanel => OpenPageInNewPanel(pageData, newPanel)
         );
     }
 
-    private void OpenPageReplaceTab(PageData pageData, OpenPageBehavior.ReplaceTab replaceTab)
+    private void OpenPageReplaceTab(PageData pageData, OpenPageBehavior.ReplaceTab replaceTab, bool selectTab)
     {
         var panel = OptionalPanelOrFirst(replaceTab.PanelId);
         var tab = OptionalTabOrFirst(panel, replaceTab.TabId);
 
+        // Check if the page is already open in the tab
+        if (tab.Contents.PageData.FactoryId == pageData.FactoryId &&
+            tab.Contents.PageData.Context.Equals(pageData.Context))
+        {
+            if (selectTab) panel.SelectTab(tab.Id);
+            return;
+        }
+
+        // Replace the tab contents
         var newTabPage = _factoryController.Create(pageData, WindowId, Id, panel.Id, tab.Id);
         tab.Contents = newTabPage;
+
+        if (selectTab) panel.SelectTab(tab.Id);
+        panel.SelectTab(tab.Id);
     }
 
     private void OpenPageInNewTab(PageData pageData, OpenPageBehavior.NewTab newTab)

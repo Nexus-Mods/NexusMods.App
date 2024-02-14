@@ -267,4 +267,7 @@
     <data name="SpineHomeButton_ToolTip_Home" xml:space="preserve">
         <value>Home</value>
     </data>
+    <data name="LoadoutLeftMenuViewModel_LoadoutGridEntry" xml:space="preserve">
+        <value>My Mods</value>
+    </data>
 </root>

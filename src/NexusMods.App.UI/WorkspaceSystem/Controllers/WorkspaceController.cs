@@ -84,11 +84,14 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
         }
     }
 
-    private bool TryGetWorkspace(WorkspaceId workspaceId, [NotNullWhen(true)] out WorkspaceViewModel? workspaceViewModel)
+    private bool TryGetWorkspace(WorkspaceId workspaceId,
+        [NotNullWhen(true)] out WorkspaceViewModel? workspaceViewModel)
     {
         if (!_workspaces.Lookup(workspaceId).TryGet(out workspaceViewModel))
         {
-            _logger.LogError("Failed to retrieve the Workspace View Model with the ID {WorkspaceID} referenced by the WeakReference", workspaceId);
+            _logger.LogError(
+                "Failed to retrieve the Workspace View Model with the ID {WorkspaceID} referenced by the WeakReference",
+                workspaceId);
             return false;
         }
 
@@ -103,7 +106,8 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
         return res;
     }
 
-    public IEnumerable<ValueTuple<IWorkspaceViewModel, TContext>> FindWorkspacesByContext<TContext>() where TContext : IWorkspaceContext
+    public IEnumerable<ValueTuple<IWorkspaceViewModel, TContext>> FindWorkspacesByContext<TContext>()
+        where TContext : IWorkspaceContext
     {
         foreach (var workspace in _allWorkspaces)
         {
@@ -114,29 +118,35 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
         }
     }
 
-    public bool TryGetWorkspaceByContext<TContext>([NotNullWhen(true)] out IWorkspaceViewModel? workspace) where TContext : IWorkspaceContext
+    public bool TryGetWorkspaceByContext<TContext>([NotNullWhen(true)] out IWorkspaceViewModel? workspace)
+        where TContext : IWorkspaceContext
     {
         return _allWorkspaces.TryGetFirst(workspace => workspace.Context is TContext, out workspace);
     }
 
-    private bool TryGetPanel(IWorkspaceViewModel workspaceViewModel, PanelId panelId, [NotNullWhen(true)] out IPanelViewModel? panelViewModel)
+    private bool TryGetPanel(IWorkspaceViewModel workspaceViewModel, PanelId panelId,
+        [NotNullWhen(true)] out IPanelViewModel? panelViewModel)
     {
         panelViewModel = workspaceViewModel.Panels.FirstOrDefault(panel => panel.Id == panelId);
         if (panelViewModel is null)
         {
-            _logger.LogError("Failed to find Panel with ID {PanelID} in Workspace with ID {WorkspaceID}", panelId, workspaceViewModel.Id);
+            _logger.LogError("Failed to find Panel with ID {PanelID} in Workspace with ID {WorkspaceID}", panelId,
+                workspaceViewModel.Id);
             return false;
         }
 
         return true;
     }
 
-    private bool TryGetTab(IPanelViewModel panelViewModel, PanelTabId tabId, [NotNullWhen(true)] out IPanelTabViewModel? tabViewModel)
+    private bool TryGetTab(IPanelViewModel panelViewModel, PanelTabId tabId,
+        [NotNullWhen(true)] out IPanelTabViewModel? tabViewModel)
     {
         tabViewModel = panelViewModel.Tabs.FirstOrDefault(tab => tab.Id == tabId);
         if (tabViewModel is null)
         {
-            _logger.LogError("Failed to find Tab with ID {TabID} in Panel with ID {PanelID} in Workspace with ID {WorkspaceID}", tabId, panelViewModel.Id, panelViewModel.WorkspaceId);
+            _logger.LogError(
+                "Failed to find Tab with ID {TabID} in Panel with ID {PanelID} in Workspace with ID {WorkspaceID}",
+                tabId, panelViewModel.Id, panelViewModel.WorkspaceId);
             return false;
         }
 
@@ -162,7 +172,8 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
     }
 
     /// <inheritdoc/>
-    public IWorkspaceViewModel ChangeOrCreateWorkspaceByContext<TContext>(Func<Optional<PageData>> getPageData) where TContext : IWorkspaceContext, new()
+    public IWorkspaceViewModel ChangeOrCreateWorkspaceByContext<TContext>(Func<Optional<PageData>> getPageData)
+        where TContext : IWorkspaceContext, new()
     {
         Dispatcher.UIThread.VerifyAccess();
 
@@ -183,7 +194,8 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
     }
 
     /// <inheritdoc/>
-    public IWorkspaceViewModel ChangeOrCreateWorkspaceByContext<TContext>(Func<TContext, bool> predicate, Func<Optional<PageData>> getPageData,
+    public IWorkspaceViewModel ChangeOrCreateWorkspaceByContext<TContext>(Func<TContext, bool> predicate,
+        Func<Optional<PageData>> getPageData,
         Func<TContext> getWorkspaceContext) where TContext : IWorkspaceContext
     {
         Dispatcher.UIThread.VerifyAccess();
@@ -214,12 +226,13 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
         workspaceViewModel.AddPanel(newWorkspaceState, behavior);
     }
 
-    public void OpenPage(WorkspaceId workspaceId, Optional<PageData> pageData, OpenPageBehavior behavior)
+    public void OpenPage(WorkspaceId workspaceId, Optional<PageData> pageData, OpenPageBehavior behavior,
+        bool selectTab = true)
     {
         Dispatcher.UIThread.VerifyAccess();
 
         if (!TryGetWorkspace(workspaceId, out WorkspaceViewModel? workspaceViewModel)) return;
-        workspaceViewModel.OpenPage(pageData, behavior);
+        workspaceViewModel.OpenPage(pageData, behavior, selectTab);
     }
 
     public void SwapPanels(WorkspaceId workspaceId, PanelId firstPanelId, PanelId secondPanelId)
@@ -258,5 +271,14 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
         if (!TryGetTab(panelViewModel, tabId, out var tabViewModel)) return;
 
         tabViewModel.Header.Icon = icon;
+    }
+
+    public OpenPageBehavior GetDefaultOpenPageBehavior()
+    {
+        // TODO: Query user settings for default behaviors for:
+        // specific pages, specific interaction (mouse button modifiers), source workspace (if popped out or not)
+
+        // Current default behavior is to replace the first tab in the first panel
+        return new OpenPageBehavior(new OpenPageBehavior.ReplaceTab(Optional<PanelId>.None, Optional<PanelTabId>.None));
     }
 }

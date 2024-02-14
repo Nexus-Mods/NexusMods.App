@@ -179,6 +179,12 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
         SelectedTabId = tab.Id;
     }
 
+    public void SelectTab(PanelTabId tabId)
+    {
+        if (_tabsList.Items.Any(tab => tab.Id == tabId))
+            SelectedTabId = tabId;
+    }
+
     public void CloseTab(PanelTabId id)
     {
         _tabsList.Edit(updater =>

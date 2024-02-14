@@ -78,7 +78,8 @@ public interface IWorkspaceController
     /// <param name="workspaceId"></param>
     /// <param name="pageData">Optional <see cref="PageData"/> for the first tab. If this is <see cref="Optional{T}.None"/> the default tab will be shown.</param>
     /// <param name="behavior"></param>
-    public void OpenPage(WorkspaceId workspaceId, Optional<PageData> pageData, OpenPageBehavior behavior);
+    /// <param name="selectTab"> Whether to auto select the tab</param>
+    public void OpenPage(WorkspaceId workspaceId, Optional<PageData> pageData, OpenPageBehavior behavior, bool selectTab = true);
 
     /// <summary>
     /// Swaps the positions of two panels.
@@ -99,4 +100,13 @@ public interface IWorkspaceController
     /// Sets the icon of a tab.
     /// </summary>
     public void SetIcon(IconValue? icon, WorkspaceId workspaceId, PanelId panelId, PanelTabId tabId);
+
+
+    /// <summary>
+    /// Returns what the default OpenPageBehavior should be to open a page.
+    /// This will check user settings and other factors to determine the default behavior.
+    ///
+    /// TODO: Add parameters for: page, mouse button, source Workspace (if popped out or not)
+    /// </summary>
+    public OpenPageBehavior GetDefaultOpenPageBehavior();
 }

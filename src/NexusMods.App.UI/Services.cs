@@ -37,6 +37,7 @@ using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModName;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModVersion;
 using NexusMods.App.UI.Pages.MyGames;
 using NexusMods.App.UI.Windows;
+using NexusMods.App.UI.WorkspaceAttachments;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Paths;
 using ReactiveUI;
@@ -88,7 +89,7 @@ public static class Services
             .AddSingleton<IViewLocator, InjectedViewLocator>()
 
             .AddViewModel<DevelopmentBuildBannerViewModel, IDevelopmentBuildBannerViewModel>()
-            .AddViewModel<DownloadsViewModel, IDownloadsViewModel>()
+            .AddViewModel<DownloadsLeftMenuViewModel, IDownloadsLeftMenuViewModel>()
             .AddViewModel<FoundGamesViewModel, IFoundGamesViewModel>()
             .AddViewModel<GameWidgetViewModel, IGameWidgetViewModel>()
             .AddViewModel<HomeLeftMenuViewModel, IHomeLeftMenuViewModel>()
@@ -121,7 +122,7 @@ public static class Services
 
             // Views
             .AddView<DevelopmentBuildBannerView, IDevelopmentBuildBannerViewModel>()
-            .AddView<DownloadsView, IDownloadsViewModel>()
+            .AddView<DownloadsLeftMenuView, IDownloadsLeftMenuViewModel>()
             .AddView<FoundGamesView, IFoundGamesViewModel>()
             .AddView<GameWidget, IGameWidgetViewModel>()
             .AddView<HomeLeftMenuView, IHomeLeftMenuViewModel>()
@@ -176,6 +177,14 @@ public static class Services
             .AddSingleton<IPageFactory, MyGamesPageFactory>()
             .AddSingleton<IPageFactory, LoadoutGridPageFactory>()
             .AddSingleton<IPageFactory, InProgressPageFactory>()
+
+            // LeftMenu factories
+            .AddSingleton<ILeftMenuFactory, DownloadsLeftMenuFactory>()
+            .AddSingleton<ILeftMenuFactory, HomeLeftMenuFactory>()
+            .AddSingleton<ILeftMenuFactory, LoadoutLeftMenuFactory>()
+
+            // Workspace Attachments
+            .AddSingleton<IWorkspaceAttachmentsFactoryManager, WorkspaceAttachmentsFactoryManager>()
 
             // Other
             .AddViewModel<DummyViewModel, IDummyViewModel>()

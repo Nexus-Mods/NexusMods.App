@@ -3,6 +3,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Media.Imaging;
 using DynamicData;
+using DynamicData.Binding;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -19,6 +20,7 @@ using NexusMods.App.UI.Pages.MyGames;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
+using NexusMods.App.UI.WorkspaceAttachments;
 using NexusMods.App.UI.WorkspaceSystem;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -33,6 +35,11 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
     private readonly IWindowManager _windowManager;
 
     [Reactive] public ILeftMenuViewModel? LeftMenuViewModel { get; private set; }
+
+    private ReadOnlyObservableCollection<ILeftMenuViewModel> _leftMenus =
+        Initializers.ReadOnlyObservableCollection<ILeftMenuViewModel>();
+
+
 
     public IIconButtonViewModel Home { get; }
 
@@ -50,7 +57,8 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         IWindowManager windowManager,
         IIconButtonViewModel addButtonViewModel,
         IIconButtonViewModel homeButtonViewModel,
-        ISpineDownloadButtonViewModel spineDownloadsButtonViewModel)
+        ISpineDownloadButtonViewModel spineDownloadsButtonViewModel,
+        IWorkspaceAttachmentsFactoryManager leftMenuFactory)
     {
         _serviceProvider = serviceProvider;
         _logger = logger;
@@ -83,27 +91,29 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                 .SubscribeWithErrorLogging()
                 .DisposeWith(disposables);
 
-            Home.Click = ReactiveCommand.Create(NavigateToHome);
-            Downloads.Click = ReactiveCommand.Create(NavigateToDownloads);
-
-            workspaceController
-                .WhenAnyValue(controller => controller.ActiveWorkspace)
-                .Select(workspace => workspace?.Context)
-                .Select(context =>
+            // Create Left Menus for each workspace on demand
+            workspaceController.AllWorkspaces
+                .ToObservableChangeSet()
+                .Transform( workspace =>
                 {
-                    if (context is LoadoutContext loadoutContext)
-                    {
-                        return new LoadoutLeftMenuViewModel(
-                            loadoutContext,
-                            workspaceController,
-                            serviceProvider
-                        );
-                    }
-
-                    return null;
+                    var leftMenu = leftMenuFactory.CreateLeftMenu(workspace.Context, workspace.Id, workspaceController);
+                    // This should never be null, since there should be a factory for each context type, but in case
+                    return leftMenu ?? new EmptyLeftMenuViewModel(workspace.Id);
                 })
+                .Bind(out _leftMenus)
+                .SubscribeWithErrorLogging()
+                .DisposeWith(disposables);
+
+            // Update the LeftMenuViewModel when the active workspace changes
+            workspaceController.
+                WhenAnyValue(controller => controller.ActiveWorkspace)
+                .Select(workspace => workspace?.Id)
+                .Select(workspaceId => _leftMenus.FirstOrDefault(menu => menu.WorkspaceId == workspaceId))
                 .BindToVM(this, vm => vm.LeftMenuViewModel)
                 .DisposeWith(disposables);
+
+            Home.Click = ReactiveCommand.Create(NavigateToHome);
+            Downloads.Click = ReactiveCommand.Create(NavigateToDownloads);
 
             workspaceController
                 .WhenAnyValue(controller => controller.ActiveWorkspace)
@@ -124,12 +134,15 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                             ClearActiveSpineButton();
                             Downloads.IsActive = true;
                             break;
-                        case EmptyContext:
+                        default:
                             ClearActiveSpineButton();
                             break;
                     }
                 }).DisposeWith(disposables);
 
+            // For now just show the Home workspace on startup
+            // TODO: remove this in favour of restoring the last active workspace when workspace saving is implemented
+            NavigateToHome();
         });
     }
 

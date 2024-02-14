@@ -4,6 +4,7 @@ using NexusMods.App.UI.Icons;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.Pages.MyGames;
 using NexusMods.App.UI.Resources;
+using NexusMods.App.UI.WorkspaceSystem;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.LeftMenu.Home;
@@ -12,15 +13,26 @@ namespace NexusMods.App.UI.LeftMenu.Home;
 public class HomeLeftMenuViewModel : AViewModel<IHomeLeftMenuViewModel>, IHomeLeftMenuViewModel
 {
     public ReadOnlyObservableCollection<ILeftMenuItemViewModel> Items { get; }
+    public WorkspaceId WorkspaceId { get; }
 
-    public HomeLeftMenuViewModel(IMyGamesViewModel myGamesViewModel)
+    public HomeLeftMenuViewModel(IMyGamesViewModel myGamesViewModel, WorkspaceId workspaceId, IWorkspaceController workspaceController)
     {
+        WorkspaceId = workspaceId;
         var items = new ILeftMenuItemViewModel[]
         {
             new IconViewModel
             {
                 Name = Language.MyGames, Icon = IconType.Bookmark, Activate = ReactiveCommand.Create(
-                    () => throw new NotImplementedException("Navigate to workspace"))
+                    () =>
+                    {
+                        workspaceController.OpenPage(workspaceId,
+                            new PageData
+                            {
+                                FactoryId = MyGamesPageFactory.StaticId,
+                                Context = new MyGamesPageContext()
+                            },
+                            workspaceController.GetDefaultOpenPageBehavior());
+                    })
             }
         };
         Items = new ReadOnlyObservableCollection<ILeftMenuItemViewModel>(new ObservableCollection<ILeftMenuItemViewModel>(items));
