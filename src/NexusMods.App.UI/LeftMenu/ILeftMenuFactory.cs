@@ -41,6 +41,6 @@ public interface ILeftMenuFactory<in TContext> : ILeftMenuFactory
     /// <param name="workspaceId">Id of the workspace that the LeftMenu will open new tabs on</param>
     /// <param name="workspaceController">WorkspaceController to pass on to the LeftMenu</param>
     /// <returns></returns>
-    protected ILeftMenuViewModel CreateLeftMenuViewModel(TContext context, WorkspaceId workspaceId,
+    ILeftMenuViewModel CreateLeftMenuViewModel(TContext context, WorkspaceId workspaceId,
         IWorkspaceController workspaceController);
 }
