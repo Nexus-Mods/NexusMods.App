@@ -64,9 +64,9 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
                 (_prefsPath.Path, $"mod{i}-prefs"),
                 (_savePath.Path, $"mod{i}-save"),
                 // When flattened, this will show as one file per mod
-                ($"perMod/{i}.dat", "mod{i}-perMod"));
-
-
+                ($"perMod/{i}.dat", $"mod{i}-perMod"),
+                ("bin/script.sh", $"script{i}.sh"),
+                ("bin/binary", $"binary{i}"));
 
             _modIdForName[modName] = modId;
             _modNames[modId] = modName;
@@ -127,6 +127,8 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
                     "{Game}/perMod/8.dat",
                     "{Game}/perMod/9.dat",
                     "{Game}/textures/a.dds",
+                    "{Game}/bin/script.sh",
+                    "{Game}/bin/binary",
                     "{Preferences}/preferences/prefs.dat",
                     "{Saves}/saves/save.dat"
                 },
@@ -173,6 +175,8 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
                     "{Game}/perMod/8.dat",
                     "{Game}/perMod/9.dat",
                     "{Game}/textures/a.dds",
+                    "{Game}/bin/script.sh",
+                    "{Game}/bin/binary",
                     "{Preferences}/preferences/prefs.dat",
                     "{Saves}/saves/save.dat"
                 },
@@ -221,6 +225,8 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
                     "{Game}/perMod/8.dat",
                     "{Game}/perMod/9.dat",
                     "{Game}/textures/a.dds",
+                    "{Game}/bin/script.sh",
+                    "{Game}/bin/binary",
                     "{Preferences}/preferences/prefs.dat",
                     "{Saves}/saves/save.dat"
                 },
@@ -235,6 +241,15 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
                 .Be(file.Item.Value.LastModified, "the file last modified time should match");
             (await path.XxHash64Async()).Should().Be(file.Item.Value.Hash, "the file hash should match");
         }
+
+        if (!OperatingSystem.IsLinux() && !OperatingSystem.IsMacOS())
+            return;
+
+        var scriptPath = Install.LocationsRegister.GetResolvedPath(new GamePath(LocationId.Game, "bin/script.sh"));
+        var binaryPath = Install.LocationsRegister.GetResolvedPath(new GamePath(LocationId.Game, "bin/binary"));
+        var executeFlags = UnixFileMode.UserExecute | UnixFileMode.GroupExecute | UnixFileMode.OtherExecute;
+        File.GetUnixFileMode(scriptPath.GetFullPath()).Should().HaveFlag(executeFlags);
+        File.GetUnixFileMode(binaryPath.GetFullPath()).Should().HaveFlag(executeFlags);
     }
 
     [Fact]
@@ -273,6 +288,8 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
                     "{Game}/perMod/8.dat",
                     // deletedFile: 9.dat is deleted
                     "{Game}/textures/a.dds",
+                    "{Game}/bin/script.sh",
+                    "{Game}/bin/binary",
                     "{Preferences}/preferences/prefs.dat",
                     // newFile: newSave.dat is created
                     "{Saves}/saves/newSave.dat",
@@ -326,6 +343,8 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
                     "{Game}/perMod/6.dat",
                     "{Game}/perMod/7.dat",
                     "{Game}/perMod/8.dat",
+                    "{Game}/bin/script.sh",
+                    "{Game}/bin/binary",
                     // deletedFile: 9.dat is deleted
                     "{Game}/textures/a.dds",
                     "{Preferences}/preferences/prefs.dat",
@@ -385,6 +404,8 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
                     "{Game}/perMod/6.dat",
                     "{Game}/perMod/7.dat",
                     "{Game}/perMod/8.dat",
+                    "{Game}/bin/script.sh",
+                    "{Game}/bin/binary",
                     // deletedFile: 9.dat is deleted
                     "{Game}/textures/a.dds",
                     "{Preferences}/preferences/prefs.dat",
@@ -455,6 +476,8 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
                     "{Game}/perMod/6.dat",
                     "{Game}/perMod/7.dat",
                     "{Game}/perMod/8.dat",
+                    "{Game}/bin/script.sh",
+                    "{Game}/bin/binary",
                     // deletedFile: 9.dat is deleted
                     "{Game}/textures/a.dds",
                     "{Preferences}/preferences/prefs.dat",
