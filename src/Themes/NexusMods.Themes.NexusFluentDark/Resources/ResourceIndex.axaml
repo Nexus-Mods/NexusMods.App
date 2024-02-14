@@ -6,6 +6,6 @@
         <ResourceInclude Source="/Resources/Palette/Opacity/ElementOpacities.axaml"/>
         <ResourceInclude Source="/Resources/ThemeBaseResources.axaml"/>
         <ResourceInclude Source="/Resources/Typography/TextBlockControlThemes.axaml"/>
-        <ResourceInclude Source="/Resources/GenericIconControlTheme.axaml"/>
+        <ResourceInclude Source="/Resources/UnifiedIconControlTheme.axaml"/>
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

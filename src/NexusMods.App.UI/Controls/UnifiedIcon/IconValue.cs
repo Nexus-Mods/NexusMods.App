@@ -1,13 +1,13 @@
 using Avalonia.Media;
 using JetBrains.Annotations;
 using Union = OneOf.OneOf<
-    NexusMods.App.UI.Controls.GenericIcon.Empty,
-    NexusMods.App.UI.Controls.GenericIcon.ProjektankerIcon,
-    NexusMods.App.UI.Controls.GenericIcon.AvaloniaImage,
-    NexusMods.App.UI.Controls.GenericIcon.AvaloniaSvg,
-    NexusMods.App.UI.Controls.GenericIcon.AvaloniaPathIcon>;
+    NexusMods.App.UI.Controls.UnifiedIcon.Empty,
+    NexusMods.App.UI.Controls.UnifiedIcon.ProjektankerIcon,
+    NexusMods.App.UI.Controls.UnifiedIcon.AvaloniaImage,
+    NexusMods.App.UI.Controls.UnifiedIcon.AvaloniaSvg,
+    NexusMods.App.UI.Controls.UnifiedIcon.AvaloniaPathIcon>;
 
-namespace NexusMods.App.UI.Controls.GenericIcon;
+namespace NexusMods.App.UI.Controls.UnifiedIcon;
 
 /// <summary>
 /// Represents a union between
@@ -17,7 +17,7 @@ namespace NexusMods.App.UI.Controls.GenericIcon;
 /// <see cref="AvaloniaSvg"/>, and
 /// <see cref="AvaloniaPathIcon"/>.
 /// </summary>
-/// <seealso cref="GenericIcon"/>
+/// <seealso cref="UnifiedIcon"/>
 [PublicAPI]
 public sealed class IconValue
 {

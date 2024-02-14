@@ -1,5 +1,5 @@
 using System.Reactive;
-using NexusMods.App.UI.Controls.GenericIcon;
+using NexusMods.App.UI.Controls.UnifiedIcon;
 using NexusMods.App.UI.Resources;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
