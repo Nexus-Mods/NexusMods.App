@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.App.UI.Controls.UnifiedIcon;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Windows;
+using NexusMods.App.UI.WorkspaceAttachments;
 using NexusMods.Extensions.BCL;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -19,6 +20,7 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
     private readonly IWorkspaceWindow _window;
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<WorkspaceController> _logger;
+    private readonly IWorkspaceAttachmentsFactoryManager _workspaceAttachementsFactory;
 
     public WindowId WindowId => _window.WindowId;
 
@@ -34,6 +36,7 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
 
         _serviceProvider = serviceProvider;
         _logger = serviceProvider.GetRequiredService<ILogger<WorkspaceController>>();
+        _workspaceAttachementsFactory = serviceProvider.GetRequiredService<IWorkspaceAttachmentsFactoryManager>();
 
         _workspaces
             .Connect()
@@ -54,6 +57,8 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
         {
             Context = context.HasValue ? context.Value : EmptyContext.Instance
         };
+
+        vm.Title = _workspaceAttachementsFactory.CreateTitleFor(vm.Context);
 
         _workspaces.AddOrUpdate(vm);
 

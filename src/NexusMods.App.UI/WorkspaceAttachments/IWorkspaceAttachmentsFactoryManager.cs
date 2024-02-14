@@ -5,5 +5,7 @@ namespace NexusMods.App.UI.WorkspaceAttachments;
 
 public interface IWorkspaceAttachmentsFactoryManager
 {
-    public ILeftMenuViewModel? CreateLeftMenu(IWorkspaceContext context, WorkspaceId workspaceId, IWorkspaceController workspaceController);
+    public ILeftMenuViewModel? CreateLeftMenuFor(IWorkspaceContext context, WorkspaceId workspaceId, IWorkspaceController workspaceController);
+
+    public string CreateTitleFor(IWorkspaceContext context);
 }
