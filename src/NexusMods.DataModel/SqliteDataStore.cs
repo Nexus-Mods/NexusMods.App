@@ -20,8 +20,14 @@ namespace NexusMods.DataModel;
 /// </summary>
 public class SqliteDataStore : IDataStore, IDisposable
 {
+    // TODO: Hello, I'm sure you'll be reading this sometime while doing event sourcing.
+    // Can you make these dictionaries as arrays when porting to RocksDB?
+    // These are finite size we know at compile time, we don't replace the statements,
+    // so using dicts just slows down all of our database hits.
+
     private bool _isDisposed;
 
+    private readonly Dictionary<EntityCategory, string> _getAllStatements;
     private readonly Dictionary<EntityCategory, string> _getStatements;
     private readonly Dictionary<EntityCategory, string> _putStatements;
     // ReSharper disable once CollectionNeverQueried.Local
@@ -69,6 +75,7 @@ public class SqliteDataStore : IDataStore, IDisposable
         // if we're using a in-memory store, as closing the final connection will delete the DB.
         _globalHandle = _pool.RentDisposable();
 
+        _getAllStatements = new Dictionary<EntityCategory, string>();
         _getStatements = new Dictionary<EntityCategory, string>();
         _putStatements = new Dictionary<EntityCategory, string>();
         _allIdsStatements = new Dictionary<EntityCategory, string>();
@@ -103,6 +110,7 @@ public class SqliteDataStore : IDataStore, IDisposable
             cmd.CommandText = $"CREATE TABLE IF NOT EXISTS {tableName} (Id BLOB PRIMARY KEY, Data BLOB)";
             cmd.ExecuteNonQuery();
 
+            _getAllStatements[table] = $"SELECT Id,Data FROM [{tableName}]";
             _getStatements[table] = $"SELECT Data FROM [{tableName}] WHERE Id = @id";
             _putStatements[table] = $"INSERT OR REPLACE INTO [{tableName}] (Id, Data) VALUES (@id, @data)";
             _allIdsStatements[table] = $"SELECT Id FROM [{tableName}]";
@@ -186,6 +194,30 @@ public class SqliteDataStore : IDataStore, IDisposable
             _cache.AddOrUpdate(id, value);
 
         return value;
+    }
+
+    /// <inheritdoc />
+    public IEnumerable<T> GetAll<T>(EntityCategory category) where T : Entity
+    {
+        if (_isDisposed)
+            throw new ObjectDisposedException(nameof(SqliteDataStore));
+
+        using var conn = _pool.RentDisposable();
+        using var cmd = conn.Value.CreateCommand();
+        cmd.CommandText = _getAllStatements[category];
+
+        using var reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            var id = reader.GetId(category, 0);
+
+            var value = JsonSerializer.Deserialize<Entity>(reader.GetBlob(1), _jsonOptions.Value);
+            if (value is not T tc)
+                continue;
+
+            value.DataStoreId = id;
+            yield return tc;
+        }
     }
 
     /// <inheritdoc />
@@ -369,7 +401,7 @@ public class SqliteDataStore : IDataStore, IDisposable
         var ms = new MemoryStream();
         JsonSerializer.Serialize(ms, entity, _jsonOptions.Value);
         var msBytes = ms.ToArray();
-        var hash = new XxHash64Algorithm(0).HashBytes(msBytes);
+        var hash = XxHash64Algorithm.HashBytes(msBytes);
         var id = new Id64(entity.Category, hash);
         data = msBytes;
         return id;

@@ -6,7 +6,7 @@ namespace NexusMods.Abstractions.NexusWebApi.DTOs.OAuth;
 /// <summary>
 /// Describes the role the user has on the site.
 /// </summary>
-[JsonConverter(typeof(JsonStringEnumConverter))]
+[JsonConverter(typeof(JsonStringEnumConverter<MembershipRole>))]
 public enum MembershipRole
 {
     /// <summary>

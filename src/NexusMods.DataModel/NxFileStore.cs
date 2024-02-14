@@ -228,13 +228,29 @@ public class NxFileStore : IFileStore
             new ChunkedStream<ChunkedArchiveStream>(new ChunkedArchiveStream(entry, header, file)));
     }
 
+    /// <inheritdoc />
+    public unsafe HashSet<ulong> GetFileHashes()
+    {
+        // Build a Hash Table of all currently known files. We do this to deduplicate files between downloads.
+        var fileHashes = new HashSet<ulong>();
+        foreach (var arcFile in _store.GetAll<ArchivedFiles>(EntityCategory.ArchivedFiles)!)
+        {
+            fixed (byte* ptr = arcFile.FileEntryData.AsSpan())
+            {
+                var reader = new LittleEndianReader(ptr);
+                fileHashes.Add(reader.ReadUlongAtOffset(8)); // Hash. Offset 8 in V1 header, per spec.
+            }
+        }
+
+        return fileHashes;
+    }
+
     private class ChunkedArchiveStream : IChunkedStreamSource
     {
         private FileEntry _entry;
         private readonly ParsedHeader _header;
         private readonly List<ExtractableBlock> _blocks;
         private readonly Stream _stream;
-
 
         public ChunkedArchiveStream(FileEntry entry, ParsedHeader header, Stream stream)
         {

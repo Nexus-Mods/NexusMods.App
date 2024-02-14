@@ -1,5 +1,6 @@
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.Games.StardewValley.Models;
+using NexusMods.Games.StardewValley.Sorters;
 
 namespace NexusMods.Games.StardewValley;
 
@@ -14,6 +15,7 @@ public class TypeFinder : ITypeFinder
     {
         typeof(SMAPIManifest),
         typeof(SMAPIManifestDependency),
-        typeof(SMAPIVersion)
+        typeof(SMAPIVersion),
+        typeof(SMAPISorter)
     };
 }

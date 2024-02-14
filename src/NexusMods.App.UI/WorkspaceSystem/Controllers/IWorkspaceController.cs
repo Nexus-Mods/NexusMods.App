@@ -1,8 +1,8 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
-using Avalonia.Media;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
+using NexusMods.App.UI.Controls.GenericIcon;
 using NexusMods.App.UI.Windows;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
@@ -99,5 +99,5 @@ public interface IWorkspaceController
     /// <summary>
     /// Sets the icon of a tab.
     /// </summary>
-    public void SetIcon(IImage? icon, WorkspaceId workspaceId, PanelId panelId, PanelTabId tabId);
+    public void SetIcon(IconValue? icon, WorkspaceId workspaceId, PanelId panelId, PanelTabId tabId);
 }
