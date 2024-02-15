@@ -96,9 +96,6 @@ internal sealed class WindowManager : ReactiveObject, IWindowManager
 
     public bool RestoreWindowState(IWorkspaceWindow window)
     {
-        var isFirstWindow = _windows.Count == 1;
-        if (!isFirstWindow) return false;
-
         try
         {
             var data = _dataStore.Get<WindowData>(WindowData.Id);
