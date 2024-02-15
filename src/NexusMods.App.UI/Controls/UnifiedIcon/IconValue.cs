@@ -63,53 +63,14 @@ public sealed class IconValue
 public record Empty;
 
 [PublicAPI]
-public class ProjektankerIcon
-{
-    public string? Value { get; set; }
-
-    public ProjektankerIcon() { }
-
-    public ProjektankerIcon(string? value)
-    {
-        Value = value;
-    }
-}
+public record ProjektankerIcon(string? Value);
 
 [PublicAPI]
-public class AvaloniaImage
-{
-    public IImage? Image { get; set; }
-
-    public AvaloniaImage() { }
-
-    public AvaloniaImage(IImage? image)
-    {
-        Image = image;
-    }
-}
+public record AvaloniaImage(IImage? Image);
 
 [PublicAPI]
-public class AvaloniaSvg
-{
-    public string? Path { get; set; }
-
-    public AvaloniaSvg() { }
-
-    public AvaloniaSvg(string? path)
-    {
-        Path = path;
-    }
-}
+public record AvaloniaSvg(string? Path);
 
 [PublicAPI]
-public class AvaloniaPathIcon
-{
-    public Geometry? Data { get; set; }
+public record AvaloniaPathIcon(Geometry? Geometry);
 
-    public AvaloniaPathIcon() { }
-
-    public AvaloniaPathIcon(Geometry? data)
-    {
-        Data = data;
-    }
-}
