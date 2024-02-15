@@ -8,6 +8,7 @@ using NexusMods.Abstractions.Serialization;
 using NexusMods.Activities;
 using NexusMods.App.BuildInfo;
 using NexusMods.CLI;
+using NexusMods.CrossPlatform;
 using NexusMods.Games.FOMOD;
 using NexusMods.Games.Generic;
 using NexusMods.Games.TestFramework;
@@ -38,6 +39,7 @@ public class Startup
             .AddCLI()
             .AddSingleton<IGuidedInstaller, NullGuidedInstaller>()
             .AddLogging(builder => builder.AddXunitOutput())
+            .AddCrossPlatform()
             .Validate();
     }
 }
