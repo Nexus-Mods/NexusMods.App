@@ -83,13 +83,46 @@ internal sealed class WindowManager : ReactiveObject, IWindowManager
 
     public void SaveWindowState(IWorkspaceWindow window)
     {
-        var workspaces = window.WorkspaceController.AllWorkspaces.Select(workspace => workspace.ToData()).ToArray();
-        var data = new WindowData
+        try
         {
-            DataStoreId = WindowData.Id,
-            Workspaces = workspaces
-        };
+            var data = window.WorkspaceController.ToData();
+            _dataStore.Put(WindowData.Id, data);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Exception while saving window state");
+        }
+    }
 
-        _dataStore.Put(WindowData.Id, data);
+    public bool RestoreWindowState(IWorkspaceWindow window)
+    {
+        var isFirstWindow = _windows.Count == 1;
+        if (!isFirstWindow) return false;
+
+        try
+        {
+            var data = _dataStore.Get<WindowData>(WindowData.Id);
+            if (data is null) return false;
+
+            window.WorkspaceController.FromData(data);
+            return true;
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Exception while loading window state");
+
+            _logger.LogInformation("Removing possible broken window state from the DataStore");
+
+            try
+            {
+                _dataStore.Delete(WindowData.Id);
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
+        }
+
+        return false;
     }
 }

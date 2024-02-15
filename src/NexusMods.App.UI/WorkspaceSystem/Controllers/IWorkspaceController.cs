@@ -29,6 +29,17 @@ public interface IWorkspaceController
     public ReadOnlyObservableCollection<IWorkspaceViewModel> AllWorkspaces { get; }
 
     /// <summary>
+    /// Transforms the current state of the window into a serializable data format.
+    /// </summary>
+    /// <returns></returns>
+    public WindowData ToData();
+
+    /// <summary>
+    /// Applies <paramref name="data"/> to the window.
+    /// </summary>
+    public void FromData(WindowData data);
+
+    /// <summary>
     /// Tries to get a workspace.
     /// </summary>
     public bool TryGetWorkspace(WorkspaceId workspaceId, [NotNullWhen(true)] out IWorkspaceViewModel? workspace);

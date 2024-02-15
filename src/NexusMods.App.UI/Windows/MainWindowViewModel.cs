@@ -116,6 +116,12 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
             {
                 vm._windowManager.UnregisterWindow(vm);
             }).DisposeWith(d);
+
+            if (!_windowManager.RestoreWindowState(this))
+            {
+                // NOTE(erri120): select home on startup if we didn't restore the previous state
+                Spine.NavigateToHome();
+            }
         });
     }
 

@@ -27,4 +27,6 @@ public interface ISpineViewModel : IViewModelInterface
     /// Gets all loadout buttons.
     /// </summary>
     public ReadOnlyObservableCollection<IImageButtonViewModel> Loadouts { get; }
+
+    public void NavigateToHome();
 }

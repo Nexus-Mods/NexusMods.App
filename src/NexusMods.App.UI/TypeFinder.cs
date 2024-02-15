@@ -1,6 +1,9 @@
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.App.UI.Controls;
+using NexusMods.App.UI.Pages.Downloads;
 using NexusMods.App.UI.Pages.LoadoutGrid;
+using NexusMods.App.UI.Pages.MyGames;
+using NexusMods.App.UI.WorkspaceSystem;
 
 namespace NexusMods.App.UI;
 
@@ -14,6 +17,15 @@ internal class TypeFinder : ITypeFinder
     private static IEnumerable<Type> AllTypes => new[]
     {
         typeof(DummyPageContext),
-        typeof(LoadoutGridContext)
+        typeof(LoadoutGridContext),
+        typeof(InProgressPageContext),
+        typeof(MyGamesPageContext),
+
+        typeof(EmptyContext),
+        typeof(HomeContext),
+        typeof(LoadoutContext),
+        typeof(DownloadsContext),
+
+        typeof(WindowData)
     };
 }

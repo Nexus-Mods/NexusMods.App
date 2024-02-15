@@ -20,4 +20,6 @@ public class SpineDesignViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         new ImageButtonDesignViewModel(),
         new ImageButtonDesignViewModel(),
     });
+
+    public void NavigateToHome() { }
 }

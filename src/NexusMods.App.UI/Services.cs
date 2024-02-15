@@ -72,6 +72,7 @@ public static class Services
             .AddSingleton<JsonConverter, RectJsonConverter>()
             .AddSingleton<JsonConverter, ColorJsonConverter>()
             .AddSingleton<JsonConverter, AbstractClassConverterFactory<IPageFactoryContext>>()
+            .AddSingleton<JsonConverter, AbstractClassConverterFactory<IWorkspaceContext>>()
 
             // Type Finder
             .AddSingleton<ITypeFinder, TypeFinder>()
