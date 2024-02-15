@@ -465,6 +465,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Downloads.
+        /// </summary>
+        public static string InProgressDownloadsPage_Title {
+            get {
+                return ResourceManager.GetString("InProgressDownloadsPage_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to In progress.
         /// </summary>
         public static string InProgressTitleTextBlock {
