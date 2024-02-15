@@ -10,6 +10,7 @@ using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.Activities;
 using NexusMods.App.BuildInfo;
+using NexusMods.CrossPlatform;
 using NexusMods.DataModel.Tests.Diagnostics;
 using NexusMods.FileExtractor;
 using NexusMods.Paths;
@@ -42,6 +43,7 @@ public class Startup
             .AddSerializationAbstractions()
             .AddActivityMonitor()
             .AddInstallerTypes()
+            .AddCrossPlatform()
             .AddSingleton<ITypeFinder>(_ => new AssemblyTypeFinder(typeof(Startup).Assembly))
 
             // Diagnostics
