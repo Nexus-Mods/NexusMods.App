@@ -23,24 +23,24 @@ public sealed class IconValue
 {
     public Union Value { get; set; }
 
-    public ProjektankerIcon ProjektankerIconValueSetter
+    public string? MdiValueSetter
     {
-        set => Value = value;
+        set => Value = new ProjektankerIcon(value);
     }
 
-    public AvaloniaImage AvaloniaImageSetter
+    public IImage? ImageSetter
     {
-        set => Value = value;
+        set => Value = new AvaloniaImage(value);
     }
 
-    public AvaloniaSvg AvaloniaSvgSetter
+    public string? SvgSetter
     {
-        set => Value = value;
+        set => Value = new AvaloniaSvg(value);
     }
 
-    public AvaloniaPathIcon AvaloniaPathIconSetter
+    public Geometry? GeometrySetter
     {
-        set => Value = value;
+        set => Value = new AvaloniaPathIcon(value);
     }
 
     public IconValue()
