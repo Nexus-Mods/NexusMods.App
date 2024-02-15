@@ -6,6 +6,7 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Activities;
 using NexusMods.App.BuildInfo;
+using NexusMods.CrossPlatform;
 using NexusMods.Games.TestFramework;
 using NexusMods.StandardGameLocators.TestHelpers;
 using Xunit.DependencyInjection.Logging;
@@ -27,6 +28,7 @@ public class Startup
             .AddFileStoreAbstractions()
             .AddLoadoutAbstractions()
             .AddInstallerTypes()
+            .AddCrossPlatform()
             .Validate();
     }
 }
