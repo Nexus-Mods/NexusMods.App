@@ -59,6 +59,7 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
                 .DisposeWith(d);
 
             workspaceController.WhenAnyValue(controller => controller.ActiveWorkspace!.Title)
+                .Select(title => title.ToUpperInvariant())
                 .OnUI()
                 .BindTo(this, vm => vm.ActiveWorkspaceTitle)
                 .DisposeWith(d);
