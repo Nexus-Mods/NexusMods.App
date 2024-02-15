@@ -6,32 +6,22 @@
 
         <StackPanel Orientation="Horizontal">
             <StackPanel.Resources>
-                <unifiedIcon:IconValue x:Key="ProjektankerIconValue">
-                    <unifiedIcon:IconValue.ProjektankerIconValueSetter>
-                        <unifiedIcon:ProjektankerIcon Value="mdi-cog" />
-                    </unifiedIcon:IconValue.ProjektankerIconValueSetter>
-                </unifiedIcon:IconValue>
+                <!-- Projektanker Icon -->
+                <unifiedIcon:IconValue x:Key="ProjektankerIconValue" MdiValueSetter="mdi-cog"/>
 
-                <unifiedIcon:IconValue x:Key="AvaloniaImageValue">
-                    <unifiedIcon:IconValue.AvaloniaImageSetter>
-                        <unifiedIcon:AvaloniaImage Image="avares://NexusMods.App.UI/Assets/DesignTime/cyberpunk_game.png"/>
-                    </unifiedIcon:IconValue.AvaloniaImageSetter>
-                </unifiedIcon:IconValue>
+                <!-- Image -->
+                <unifiedIcon:IconValue x:Key="AvaloniaImageValue"
+                                       ImageSetter="avares://NexusMods.App.UI/Assets/DesignTime/cyberpunk_game.png"/>
 
-                <unifiedIcon:IconValue x:Key="AvaloniaSvgValue">
-                    <unifiedIcon:IconValue.AvaloniaSvgSetter>
-                        <unifiedIcon:AvaloniaSvg Path="avares://NexusMods.App.UI/Assets/Icons/add_circle_24px.svg"/>
-                    </unifiedIcon:IconValue.AvaloniaSvgSetter>
-                </unifiedIcon:IconValue>
+                <!-- Svg -->
+                <unifiedIcon:IconValue x:Key="AvaloniaSvgValue"
+                                       SvgSetter="avares://NexusMods.App.UI/Assets/Icons/add_circle_24px.svg"/>
 
+                <!-- PathIcon -->
                 <unifiedIcon:IconValue x:Key="AvaloniaPathIconValue">
-                    <unifiedIcon:IconValue.AvaloniaPathIconSetter>
-                        <unifiedIcon:AvaloniaPathIcon>
-                            <unifiedIcon:AvaloniaPathIcon.Data>
-                                <StreamGeometry>m4 12 1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z</StreamGeometry>
-                            </unifiedIcon:AvaloniaPathIcon.Data>
-                        </unifiedIcon:AvaloniaPathIcon>
-                    </unifiedIcon:IconValue.AvaloniaPathIconSetter>
+                    <unifiedIcon:IconValue.GeometrySetter>
+                        <StreamGeometry>m4 12 1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z</StreamGeometry>
+                    </unifiedIcon:IconValue.GeometrySetter>
                 </unifiedIcon:IconValue>
             </StackPanel.Resources>
 
