@@ -72,14 +72,15 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// Helper constructor that takes only a service provider, and resolves the dependencies from it.
     /// </summary>
     /// <param name="provider"></param>
-    protected ALoadoutSynchronizer(IServiceProvider provider, IOSInformation os) : this(
+    protected ALoadoutSynchronizer(IServiceProvider provider) : this(
         provider.GetRequiredService<ILogger<ALoadoutSynchronizer>>(),
         provider.GetRequiredService<IFileHashCache>(),
         provider.GetRequiredService<IDataStore>(),
         provider.GetRequiredService<ILoadoutRegistry>(),
         provider.GetRequiredService<IDiskStateRegistry>(),
         provider.GetRequiredService<IFileStore>(),
-        provider.GetRequiredService<ISorter>(), os)
+        provider.GetRequiredService<ISorter>(),
+        provider.GetRequiredService<IOSInformation>())
 
     {
 
