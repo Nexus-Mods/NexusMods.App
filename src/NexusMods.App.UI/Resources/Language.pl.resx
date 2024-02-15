@@ -49,7 +49,7 @@
 		<value>Aktualizuj swoją aplikację, by otrzymywać najnowsze ulepszenia.</value>
 	</data>
 	<data name="Updater_UseSystemUpdater" xml:space="preserve">
-		<value>Wygląda na to, że twoja aplikacja została zainstalowana za pośrednictwem narzędzia Menedżer pakietów systemu. Proszę zaktualizować aplikację za pośrednictwem systemowej aplikacji do aktualizacji.</value>
+		<value>Wygląda na to, że twoja aplikacja została zainstalowana za pośrednictwem systemu zarządzania pakietami. Proszę zaktualizować aplikację za pośrednictwem systemowej aplikacji do aktualizacji.</value>
 	</data>
 	<data name="Updater_ViewChangelog" xml:space="preserve">
 		<value>Zobacz dziennik zmian na GitHub</value>
