@@ -73,7 +73,7 @@
 		<value>NIE</value>
 	</data>
 	<data name="CancelDownloadOverlayView_Description_download_will_be_cancelled" xml:space="preserve">
-		<value>{0} pobierań zostanie anulowane, a pliki zostaną usunięte.</value>
+		<value>{0} / pobierań zostanie anulowane, a pliki zostaną usunięte.</value>
 	</data>
 	<data name="CancelDownloadOverlayView_Title" xml:space="preserve">
 		<value>Anulować i usunąć pobierane pliki?</value>
@@ -247,7 +247,7 @@
 		<value>Wznów wszystko</value>
 	</data>
 	<data name="CancelDownloadOverlayView_Description__Download" xml:space="preserve">
-		<value>pobieranie</value>
+		<value>Pobieranie</value>
 	</data>
 	<data name="CancelDownloadOverlayView_Description_downloads" xml:space="preserve">
 		<value>pobierania</value>
@@ -261,7 +261,16 @@
 	<data name="SpineHomeButton_ToolTip_Home" xml:space="preserve">
 		<value>Strona główna</value>
 	</data>
-	    <data name="LoadoutLeftMenuViewModel_LoadoutGridEntry" xml:space="preserve">
-        <value>Moje modyfikacje</value>
-    </data>
+	<data name="LoadoutLeftMenuViewModel_LoadoutGridEntry" xml:space="preserve">
+		<value>Moje modyfikacje</value>
+	</data>
+	<data name="Downloads_WorkspaceTitle" xml:space="preserve">
+		<value>Pobieranie</value>
+	</data>
+	<data name="HomeWorkspace_Title" xml:space="preserve">
+		<value>Strona główna</value>
+	</data>
+	<data name="InProgressDownloadsPage_Title" xml:space="preserve">
+		<value>Pobieranie</value>
+	</data>
 </root>
