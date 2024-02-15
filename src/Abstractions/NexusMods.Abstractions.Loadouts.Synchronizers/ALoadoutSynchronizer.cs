@@ -36,6 +36,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     private readonly IDiskStateRegistry _diskStateRegistry;
     private readonly IFileStore _fileStore;
     private readonly ISorter _sorter;
+    private readonly IOSInformation _os;
 
     /// <summary>
     /// Loadout synchronizer base constructor.
@@ -47,13 +48,15 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// <param name="diskStateRegistry"></param>
     /// <param name="fileStore"></param>
     /// <param name="sorter"></param>
+    /// <param name="os"></param>
     protected ALoadoutSynchronizer(ILogger logger,
         IFileHashCache hashCache,
         IDataStore store,
         ILoadoutRegistry loadoutRegistry,
         IDiskStateRegistry diskStateRegistry,
         IFileStore fileStore,
-        ISorter sorter)
+        ISorter sorter,
+        IOSInformation os)
     {
         _logger = logger;
         _hashCache = hashCache;
@@ -62,20 +65,21 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         _diskStateRegistry = diskStateRegistry;
         _fileStore = fileStore;
         _sorter = sorter;
+        _os = os;
     }
 
     /// <summary>
     /// Helper constructor that takes only a service provider, and resolves the dependencies from it.
     /// </summary>
     /// <param name="provider"></param>
-    protected ALoadoutSynchronizer(IServiceProvider provider) : this(
+    protected ALoadoutSynchronizer(IServiceProvider provider, IOSInformation os) : this(
         provider.GetRequiredService<ILogger<ALoadoutSynchronizer>>(),
         provider.GetRequiredService<IFileHashCache>(),
         provider.GetRequiredService<IDataStore>(),
         provider.GetRequiredService<ILoadoutRegistry>(),
         provider.GetRequiredService<IDiskStateRegistry>(),
         provider.GetRequiredService<IFileStore>(),
-        provider.GetRequiredService<ISorter>())
+        provider.GetRequiredService<ISorter>(), os)
 
     {
 
@@ -238,6 +242,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             .Select(f => (f.Value.Hash, f.Key)));
 
         // Update the resulting items with the new file times
+        var isUnix = _os.IsUnix();
         foreach (var (path, entry) in toExtract)
         {
             resultingItems[entry.To] = new DiskStateEntry
@@ -247,11 +252,8 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                 LastModified = path.FileInfo.LastWriteTimeUtc
             };
 
-            // And mark them as executable if necessary.
-            // These below are constants, so on platforms like Windows, the execute bit setting
-            // code won't even get JIT-ted at all!
-            // Don't use `path.FileSystem.OS` because that's not constant, and this is a hot path.
-            if (!OperatingSystem.IsLinux() && !OperatingSystem.IsMacOS())
+            // And mark them as executable if necessary, on Unix
+            if (!isUnix)
                 continue;
 
             var ext = path.Extension.ToString();
