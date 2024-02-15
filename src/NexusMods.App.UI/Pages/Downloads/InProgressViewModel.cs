@@ -90,10 +90,7 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
 
         this.WhenActivated(d =>
         {
-            if (WindowManager.TryGetActiveWindow(out var window))
-            {
-                window.WorkspaceController.SetTabTitle(Language.InProgressDownloadsPage_Title, WorkspaceId, PanelId, TabId);
-            }
+            GetWorkspaceController().SetTabTitle(Language.InProgressDownloadsPage_Title, WorkspaceId, PanelId, TabId);
 
             ShowCancelDialogCommand = ReactiveCommand.Create(async () =>
                 {

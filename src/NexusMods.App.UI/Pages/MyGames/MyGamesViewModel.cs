@@ -32,10 +32,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
 
         this.WhenActivated(() =>
         {
-            if (windowManager.TryGetWindow(WindowId, out var window))
-            {
-                window.WorkspaceController.SetTabTitle(Language.MyGames, WorkspaceId, PanelId, TabId);
-            }
+            GetWorkspaceController().SetTabTitle(Language.MyGames, WorkspaceId, PanelId, TabId);
 
             return Array.Empty<IDisposable>();
         });
