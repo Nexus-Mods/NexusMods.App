@@ -16,6 +16,7 @@ using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadStatus;
 using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadVersion;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Pages.Downloads.ViewModels;
+using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Networking.Downloaders.Interfaces;
@@ -89,6 +90,8 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
 
         this.WhenActivated(d =>
         {
+            GetWorkspaceController().SetTabTitle(Language.InProgressDownloadsPage_Title, WorkspaceId, PanelId, TabId);
+
             ShowCancelDialogCommand = ReactiveCommand.Create(async () =>
                 {
                     if (SelectedTasks.Items.Any())

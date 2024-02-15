@@ -66,6 +66,8 @@
             <icons:Icon Classes="Bookmark" />
             <icons:Icon Classes="Game" />
             <icons:Icon Classes="HourglassEmpty" />
+            <icons:Icon Classes="Undo" />
+            <icons:Icon Classes="Redo" />
 
             <Svg Classes="AddCircle" />
 
@@ -291,6 +293,13 @@
         <Setter Property="Value" Value="mdi-timer-sand-empty" />
     </Style>
 
+    <Style Selector="icons|Icon.Undo">
+        <Setter Property="Value" Value="mdi-undo" />
+    </Style>
+
+    <Style Selector="icons|Icon.Redo">
+        <Setter Property="Value" Value="mdi-redo" />
+    </Style>
 
 
 

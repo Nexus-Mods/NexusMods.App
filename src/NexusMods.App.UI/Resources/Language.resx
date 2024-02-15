@@ -270,4 +270,13 @@
     <data name="LoadoutLeftMenuViewModel_LoadoutGridEntry" xml:space="preserve">
         <value>My Mods</value>
     </data>
+    <data name="Downloads_WorkspaceTitle" xml:space="preserve">
+        <value>Downloads</value>
+    </data>
+    <data name="HomeWorkspace_Title" xml:space="preserve">
+        <value>Home</value>
+    </data>
+    <data name="InProgressDownloadsPage_Title" xml:space="preserve">
+        <value>Downloads</value>
+    </data>
 </root>

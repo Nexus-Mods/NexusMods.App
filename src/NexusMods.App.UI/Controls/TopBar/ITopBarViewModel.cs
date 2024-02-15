@@ -11,6 +11,7 @@ public interface ITopBarViewModel : IViewModelInterface
     public bool IsLoggedIn { get; }
     public bool IsPremium { get; }
     public IImage Avatar { get; }
+    public string ActiveWorkspaceTitle { get; }
 
     public IAddPanelDropDownViewModel AddPanelDropDownViewModel { get; set; }
 
@@ -20,4 +21,11 @@ public interface ITopBarViewModel : IViewModelInterface
     public ReactiveCommand<Unit, Unit> MinimizeCommand { get; }
     public ReactiveCommand<Unit, Unit> ToggleMaximizeCommand { get; }
     public ReactiveCommand<Unit, Unit> CloseCommand { get; }
+    public ReactiveCommand<Unit, Unit> HistoryActionCommand { get; }
+    public ReactiveCommand<Unit, Unit> UndoActionCommand { get; }
+    public ReactiveCommand<Unit, Unit> RedoActionCommand { get; }
+    public ReactiveCommand<Unit, Unit> HelpActionCommand { get; }
+    public ReactiveCommand<Unit, Unit> SettingsActionCommand { get; }
+
+
 }
