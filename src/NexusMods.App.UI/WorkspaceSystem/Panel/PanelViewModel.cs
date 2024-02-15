@@ -162,7 +162,7 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
 
     public void AddDefaultTab()
     {
-        _workspaceController.OpenPage(WorkspaceId, Optional<PageData>.None, new OpenPageBehavior(new OpenPageBehavior.NewTab(Id)));
+        _workspaceController.OpenPage(WorkspaceId, Optional<PageData>.None, new OpenPageBehavior.NewTab(Id));
     }
 
     public void AddCustomTab(PageData pageData)
