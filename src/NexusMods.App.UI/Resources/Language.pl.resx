@@ -16,10 +16,10 @@
 		<value>Aktualności</value>
 	</data>
 	<data name="MyGames" xml:space="preserve">
-		<value>Moje Gry</value>
+		<value>Moje gry</value>
 	</data>
 	<data name="BrowseGames" xml:space="preserve">
-		<value>Przeglądaj Gry</value>
+		<value>Przeglądaj gry</value>
 	</data>
 	<data name="MetricsOptIn_ALLOW" xml:space="preserve">
 		<value>ZEZWÓL</value>
