@@ -284,6 +284,6 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
         // specific pages, specific interaction (mouse button modifiers), source workspace (if popped out or not)
 
         // Current default behavior is to replace the first tab in the first panel
-        return new OpenPageBehavior(new OpenPageBehavior.ReplaceTab(Optional<PanelId>.None, Optional<PanelTabId>.None));
+        return new OpenPageBehavior.ReplaceTab(Optional<PanelId>.None, Optional<PanelTabId>.None);
     }
 }
