@@ -35,23 +35,41 @@ public class StartupHandler(ILogger<StartupHandler> logger, IServiceProvider pro
     public override Task<int> StartUiWindowAsync()
     {
         logger.LogDebug("Starting UI window");
-        if (!StartUI())
+        var tcs = new TaskCompletionSource<int>();
+        GlobalFlags.MainThreadActions.Enqueue( () =>
         {
-            logger.LogDebug("UI already running, opening a new window on the existing instance");
-            Dispatcher.UIThread.Invoke(() =>
+            try
             {
-                var reactiveWindow = provider.GetRequiredService<MainWindow>();
-                reactiveWindow.ViewModel = provider.GetRequiredService<MainWindowViewModel>();
-                reactiveWindow.Show();
-            });
-            logger.LogDebug("UI window opened");
-        }
-        else
-        {
-            provider.GetRequiredService<NxmRpcListener>();
-            Startup.Main(provider, Array.Empty<string>());
-        }
-        return Task.FromResult(0);
+                if (!GlobalFlags.IsStartingThread)
+                {
+                    logger.LogCritical("UI should only start from the main thread");
+                    return -1;
+                }
+
+                if (!StartUI())
+                {
+                    logger.LogDebug("UI already running, opening a new window on the existing instance");
+                    Dispatcher.UIThread.Invoke(() =>
+                    {
+                        var reactiveWindow = provider.GetRequiredService<MainWindow>();
+                        reactiveWindow.ViewModel = provider.GetRequiredService<MainWindowViewModel>();
+                        reactiveWindow.Show();
+                    });
+                    logger.LogDebug("UI window opened");
+                }
+                else
+                {
+                    provider.GetRequiredService<NxmRpcListener>();
+                    Startup.Main(provider, []);
+                }
+            }
+            finally
+            {
+                tcs.SetResult(0);
+            }
+            return 0;
+        });
+        return tcs.Task;
     }
 
     /// <summary>

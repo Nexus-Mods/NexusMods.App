@@ -30,8 +30,10 @@ public class Program
 
 
     [STAThread]
-    public static async Task<int> Main(string[] args)
+    public static int Main(string[] args)
     {
+        GlobalFlags.StartingThread = Thread.CurrentThread;
+
 
         var isMain = IsMainProcess(args);
 
@@ -50,20 +52,27 @@ public class Program
         });
 
 
-        // NOTE(erri120): DI is lazy by default and these services
-        // do additional initialization inside their constructors.
-        // We need to make sure their constructors are called to
-        // finalize our OpenTelemetry configuration.
-        //host.Services.GetService<TracerProvider>();
-        //host.Services.GetService<MeterProvider>();
-
-
         _logger.LogDebug("Application starting in {Mode} mode", _isDebug ? "debug" : "release");
         var startup = host.Services.GetRequiredService<StartupDirector>();
         _logger.LogDebug("Calling startup handler");
-        var result = await startup.Start(args, _isDebug);
-        _logger.LogDebug("Startup handler returned {Result}", result);
-        return result;
+        var managerTask = Task.Run(async () => await startup.Start(args, _isDebug));
+
+
+        // The UI *must* be started on the main thread, according to the Avalonia docs, although it
+        // seems to work fine on some platforms (this behavior is not guaranteed). So when we need to open a new
+        // window, the handler will enqueue an action to be run on the main thread.
+        while (!managerTask.IsCompleted)
+        {
+            if (GlobalFlags.MainThreadActions.TryDequeue(out var action))
+            {
+                action();
+                continue;
+            }
+            Thread.Sleep(250);
+        }
+
+        _logger.LogDebug("Startup handler returned {Result}", managerTask.Result);
+        return managerTask.Result;
     }
 
     private static bool IsMainProcess(IReadOnlyList<string> args)
