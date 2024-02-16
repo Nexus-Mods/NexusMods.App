@@ -6,6 +6,7 @@ using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Activities;
+using NexusMods.CrossPlatform;
 using NexusMods.DataModel;
 using NexusMods.FileExtractor;
 using NexusMods.Paths;
@@ -30,6 +31,7 @@ public class Startup
             .AddStubbedGameLocators()
             .AddSerializationAbstractions()
             .AddInstallerTypes()
+            .AddCrossPlatform()
             .AddLogging(builder => builder.AddXUnit());
     }
 }

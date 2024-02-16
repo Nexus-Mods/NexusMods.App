@@ -204,6 +204,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Downloads.
+        /// </summary>
+        public static string Downloads_WorkspaceTitle {
+            get {
+                return ResourceManager.GetString("Downloads_WorkspaceTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Idle.
         /// </summary>
         public static string DownloadStatus_Idle {
@@ -438,11 +447,29 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Home.
+        /// </summary>
+        public static string HomeWorkspace_Title {
+            get {
+                return ResourceManager.GetString("HomeWorkspace_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No Downloads.
         /// </summary>
         public static string InProgress_NoDownloadsTextBlock {
             get {
                 return ResourceManager.GetString("InProgress_NoDownloadsTextBlock", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Downloads.
+        /// </summary>
+        public static string InProgressDownloadsPage_Title {
+            get {
+                return ResourceManager.GetString("InProgressDownloadsPage_Title", resourceCulture);
             }
         }
         

@@ -19,6 +19,11 @@ public interface IWorkspaceViewModel : IViewModelInterface
     public WindowId WindowId { get; }
 
     /// <summary>
+    /// A title for the workspace to be displayed in the window.
+    /// </summary>
+    public string Title { get; set; }
+
+    /// <summary>
     /// Gets or sets the context of the workspace.
     /// </summary>
     public IWorkspaceContext Context { get; set; }

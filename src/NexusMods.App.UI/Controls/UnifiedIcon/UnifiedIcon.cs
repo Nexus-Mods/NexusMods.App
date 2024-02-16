@@ -110,7 +110,7 @@ public sealed class UnifiedIcon : ContentControl
             },
             f4: avaloniaPathIcon => new Avalonia.Controls.PathIcon
             {
-                Data = avaloniaPathIcon.Data ?? new LineGeometry(),
+                Data = avaloniaPathIcon.Geometry ?? new LineGeometry(),
                 // NOTE(erri120): bind our Height and Width properties to their properties
                 // otherwise the icon won't be affected by our dimensions
                 [HeightProperty] = this[HeightProperty],

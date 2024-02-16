@@ -21,10 +21,6 @@ public partial class LoadoutGridView : ReactiveUserControl<ILoadoutGridViewModel
                 .BindToUi(this, view => view.ModsDataGrid.ItemsSource)
                 .DisposeWith(d);
 
-            this.WhenAnyValue(view => view.ViewModel!.LoadoutName)
-                .BindToUi(this, view => view.ModlistNameText.Text)
-                .DisposeWith(d);
-
             AddModButton.Command =
                 ReactiveCommand.CreateFromTask(AddMod);
 

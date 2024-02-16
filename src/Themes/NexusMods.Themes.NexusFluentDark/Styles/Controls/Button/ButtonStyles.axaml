@@ -7,6 +7,9 @@
                 <Button Classes="Action" HorizontalAlignment="Center">
                     <icons:Icon Classes="Help" />
                 </Button>
+                <Button Classes="Action" HorizontalAlignment="Center" IsEnabled="False">
+                    <icons:Icon Classes="Help" />
+                </Button>
                 <Button Classes="Avatar" HorizontalAlignment="Center">
                     <Image Source="avares://NexusMods.Themes.NexusFluentDark/Assets/DesignTime/cyberpunk_game.png" />
                 </Button>
@@ -30,11 +33,21 @@
         <Setter Property="Background" Value="{StaticResource ElementBackgroundTransparentBrush}" />
         <Setter Property="Width" Value="40" />
         <Setter Property="Height" Value="40" />
+        <Setter Property="CornerRadius" Value="4" />
 
         <Style Selector="^ icons|Icon">
             <Setter Property="FontSize" Value="20" />
             <Setter Property="Width" Value="20" />
             <Setter Property="Height" Value="20" />
+        </Style>
+
+        <Style Selector="^:disabled">
+            <Setter Property="Opacity" Value="{StaticResource OpacityDisabledElement}" />
+        </Style>
+
+        <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource ElementBackgroundNeutralMidBrush}" />
+            <!-- <Setter Property="Background" Value="{StaticResource ElementBackgroundTransparentBrush}" /> -->
         </Style>
     </Style>
 

@@ -40,7 +40,6 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         Initializers.ReadOnlyObservableCollection<ILeftMenuViewModel>();
 
 
-
     public IIconButtonViewModel Home { get; }
 
     public ISpineDownloadButtonViewModel Downloads { get; }
@@ -58,7 +57,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         IIconButtonViewModel addButtonViewModel,
         IIconButtonViewModel homeButtonViewModel,
         ISpineDownloadButtonViewModel spineDownloadsButtonViewModel,
-        IWorkspaceAttachmentsFactoryManager leftMenuFactory)
+        IWorkspaceAttachmentsFactoryManager workspaceAttachmentsFactory)
     {
         _serviceProvider = serviceProvider;
         _logger = logger;
@@ -94,9 +93,11 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
             // Create Left Menus for each workspace on demand
             workspaceController.AllWorkspaces
                 .ToObservableChangeSet()
-                .Transform( workspace =>
+                .Transform(workspace =>
                 {
-                    var leftMenu = leftMenuFactory.CreateLeftMenu(workspace.Context, workspace.Id, workspaceController);
+                    var leftMenu =
+                        workspaceAttachmentsFactory.CreateLeftMenuFor(workspace.Context, workspace.Id,
+                            workspaceController);
                     // This should never be null, since there should be a factory for each context type, but in case
                     return leftMenu ?? new EmptyLeftMenuViewModel(workspace.Id);
                 })
@@ -105,8 +106,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                 .DisposeWith(disposables);
 
             // Update the LeftMenuViewModel when the active workspace changes
-            workspaceController.
-                WhenAnyValue(controller => controller.ActiveWorkspace)
+            workspaceController.WhenAnyValue(controller => controller.ActiveWorkspace)
                 .Select(workspace => workspace?.Id)
                 .Select(workspaceId => _leftMenus.FirstOrDefault(menu => menu.WorkspaceId == workspaceId))
                 .BindToVM(this, vm => vm.LeftMenuViewModel)

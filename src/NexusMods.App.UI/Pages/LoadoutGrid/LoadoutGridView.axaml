@@ -18,7 +18,6 @@
     <Grid RowDefinitions="Auto, *">
         <Border Grid.Row="0" Classes="Toolbar">
             <Grid ColumnDefinitions="*, Auto">
-                <TextBlock Grid.Column="0" Text="" x:Name="ModlistNameText"/>
                 <StackPanel Grid.Column="1">
                     <Button x:Name="DeleteModsButton">
                         <StackPanel>

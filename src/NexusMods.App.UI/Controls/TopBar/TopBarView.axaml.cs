@@ -15,6 +15,21 @@ public partial class TopBarView : ReactiveUserControl<ITopBarViewModel>
             this.BindCommand(ViewModel, vm => vm.LoginCommand, view => view.LoginButton)
                 .DisposeWith(d);
 
+            this.BindCommand(ViewModel, vm => vm.HistoryActionCommand, view => view.HistoryActionButton)
+                .DisposeWith(d);
+
+            this.BindCommand(ViewModel, vm => vm.UndoActionCommand, view => view.UndoActionButton)
+                .DisposeWith(d);
+
+            this.BindCommand(ViewModel, vm => vm.RedoActionCommand, view => view.RedoActionButton)
+                .DisposeWith(d);
+
+            this.BindCommand(ViewModel, vm => vm.HelpActionCommand, view => view.HelpActionButton)
+                .DisposeWith(d);
+
+            this.BindCommand(ViewModel, vm => vm.SettingsActionCommand, view => view.SettingsActionButton)
+                .DisposeWith(d);
+
             this.BindCommand(ViewModel, vm => vm.LogoutCommand, view => view.UserButton)
                 .DisposeWith(d);
 
@@ -36,6 +51,9 @@ public partial class TopBarView : ReactiveUserControl<ITopBarViewModel>
                 .DisposeWith(d);
 
             this.OneWayBind(ViewModel, vm => vm.Avatar, view => view.AvatarImage.Source)
+                .DisposeWith(d);
+
+            this.OneWayBind(ViewModel, vm => vm.ActiveWorkspaceTitle, view => view.ActiveWorkspaceTitleTextBlock.Text)
                 .DisposeWith(d);
         });
     }

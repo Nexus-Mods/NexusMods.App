@@ -185,6 +185,9 @@ public static class Services
 
             // Workspace Attachments
             .AddSingleton<IWorkspaceAttachmentsFactoryManager, WorkspaceAttachmentsFactoryManager>()
+            .AddSingleton<IWorkspaceAttachmentsFactory, DownloadsAttachmentsFactory>()
+            .AddSingleton<IWorkspaceAttachmentsFactory, HomeAttachmentsFactory>()
+            .AddSingleton<IWorkspaceAttachmentsFactory, LoadoutAttachmentsFactory>()
 
             // Other
             .AddViewModel<DummyViewModel, IDummyViewModel>()

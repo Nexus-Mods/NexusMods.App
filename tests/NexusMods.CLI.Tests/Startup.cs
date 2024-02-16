@@ -7,6 +7,7 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Activities;
 using NexusMods.App.BuildInfo;
+using NexusMods.CrossPlatform;
 using NexusMods.DataModel;
 using NexusMods.FileExtractor;
 using NexusMods.Networking.HttpDownloader;
@@ -42,6 +43,7 @@ public class Startup
                 .AddSerializationAbstractions()
                 .AddGames()
                 .AddInstallerTypes()
+                .AddCrossPlatform()
                 .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace))
                 .AddSingleton<LocalHttpServer>()
                 .AddLogging(builder => builder.AddXUnit())

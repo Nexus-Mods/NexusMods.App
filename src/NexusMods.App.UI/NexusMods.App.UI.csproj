@@ -360,6 +360,18 @@
         <Compile Update="LeftMenu\EmptyLeftMenuViewModel.cs">
           <DependentUpon>ILeftMenuViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="WorkspaceAttachments\WorkspaceAttachmentsFactoryManager.cs">
+          <DependentUpon>IWorkspaceAttachmentsFactoryManager.cs</DependentUpon>
+        </Compile>
+        <Compile Update="WorkspaceAttachments\AttachmentsFactories\DownloadsAttachmentsFactory.cs">
+          <DependentUpon>IWorkspaceAttachmentsFactory.cs</DependentUpon>
+        </Compile>
+        <Compile Update="WorkspaceAttachments\AttachmentsFactories\HomeAttachmentsFactory.cs">
+          <DependentUpon>IWorkspaceAttachmentsFactory.cs</DependentUpon>
+        </Compile>
+        <Compile Update="WorkspaceAttachments\AttachmentsFactories\LoadoutAttachmentsFactory.cs">
+          <DependentUpon>IWorkspaceAttachmentsFactory.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>

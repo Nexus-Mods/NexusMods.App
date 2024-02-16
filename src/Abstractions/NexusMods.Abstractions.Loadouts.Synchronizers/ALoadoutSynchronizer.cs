@@ -36,6 +36,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     private readonly IDiskStateRegistry _diskStateRegistry;
     private readonly IFileStore _fileStore;
     private readonly ISorter _sorter;
+    private readonly IOSInformation _os;
 
     /// <summary>
     /// Loadout synchronizer base constructor.
@@ -47,13 +48,15 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// <param name="diskStateRegistry"></param>
     /// <param name="fileStore"></param>
     /// <param name="sorter"></param>
+    /// <param name="os"></param>
     protected ALoadoutSynchronizer(ILogger logger,
         IFileHashCache hashCache,
         IDataStore store,
         ILoadoutRegistry loadoutRegistry,
         IDiskStateRegistry diskStateRegistry,
         IFileStore fileStore,
-        ISorter sorter)
+        ISorter sorter,
+        IOSInformation os)
     {
         _logger = logger;
         _hashCache = hashCache;
@@ -62,6 +65,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         _diskStateRegistry = diskStateRegistry;
         _fileStore = fileStore;
         _sorter = sorter;
+        _os = os;
     }
 
     /// <summary>
@@ -75,7 +79,8 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         provider.GetRequiredService<ILoadoutRegistry>(),
         provider.GetRequiredService<IDiskStateRegistry>(),
         provider.GetRequiredService<IFileStore>(),
-        provider.GetRequiredService<ISorter>())
+        provider.GetRequiredService<ISorter>(),
+        provider.GetRequiredService<IOSInformation>())
 
     {
 
@@ -152,7 +157,6 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                     resultingItems.Add(newEntry.GamePath(), prevEntry.Item.Value);
                     switch (newEntry.Item.Value!)
                     {
-
                         case StoredFile fa:
                             // StoredFile files are special cased so we can batch them up and extract them all at once.
                             // Don't add toExtract to the results yet as we'll need to get the modified file times
@@ -189,7 +193,6 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                 continue;
 
             var absolutePath = installation.LocationsRegister.GetResolvedPath(path);
-
             switch (item.Item.Value!)
             {
                 case StoredFile fa:
@@ -240,6 +243,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             .Select(f => (f.Value.Hash, f.Key)));
 
         // Update the resulting items with the new file times
+        var isUnix = _os.IsUnix();
         foreach (var (path, entry) in toExtract)
         {
             resultingItems[entry.To] = new DiskStateEntry
@@ -248,6 +252,19 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                 Size = entry.Size,
                 LastModified = path.FileInfo.LastWriteTimeUtc
             };
+
+            // And mark them as executable if necessary, on Unix
+            if (!isUnix)
+                continue;
+
+            var ext = path.Extension.ToString();
+            if (ext is not ("" or ".sh" or ".bin" or ".run" or ".py" or ".pl" or ".php" or ".rb" or ".out"
+                or ".elf")) continue;
+
+            // Note (Sewer): I don't think we'd ever need anything other than just 'user' execute, but you can never
+            // be sure. Just in case, I'll throw in group and other to match 'chmod +x' behaviour.
+            var currentMode = path.GetUnixFileMode();
+            path.SetUnixFileMode(currentMode | UnixFileMode.UserExecute | UnixFileMode.GroupExecute | UnixFileMode.OtherExecute);
         }
 
         // Return the new tree
@@ -286,7 +303,6 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                     results.Add(KeyValuePair.Create(gamePath, prevFile));
                     continue;
                 }
-
 
                 // Else, the file has changed, so we need to update it.
                 var newFile = await HandleChangedFile(prevFile, prevEntry.Item.Value, item.Item.Value, gamePath, absPath);
@@ -521,7 +537,6 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         // IGeneratedFile is pointless, since when it comes time to restore that file we'll call file.Generate on it since
         // it's a generated file.
 
-
         // Backup the files that are new or changed
         await _fileStore.BackupFiles(await fileTree.GetAllDescendentFiles()
             .Select(n => n.Item.Value)
@@ -549,8 +564,6 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         var initialState = await GetInitialDiskState(installation);
 
         var loadoutId = LoadoutId.Create();
-
-
         var gameFiles = new Mod()
         {
             Name = "Game Files",
