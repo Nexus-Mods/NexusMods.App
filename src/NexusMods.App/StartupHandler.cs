@@ -36,11 +36,11 @@ public class StartupHandler(ILogger<StartupHandler> logger, IServiceProvider pro
     {
         logger.LogDebug("Starting UI window");
         var tcs = new TaskCompletionSource<int>();
-        GlobalFlags.MainThreadActions.Enqueue( () =>
+        MainThreadData.MainThreadActions.Enqueue( () =>
         {
             try
             {
-                if (!GlobalFlags.IsStartingThread)
+                if (!MainThreadData.IsStartingThread)
                 {
                     logger.LogCritical("UI should only start from the main thread");
                     return -1;

@@ -32,8 +32,7 @@ public class Program
     [STAThread]
     public static int Main(string[] args)
     {
-        GlobalFlags.StartingThread = Thread.CurrentThread;
-
+        MainThreadData.SetMainThread();
 
         var isMain = IsMainProcess(args);
 
@@ -63,7 +62,7 @@ public class Program
         // window, the handler will enqueue an action to be run on the main thread.
         while (!managerTask.IsCompleted)
         {
-            if (GlobalFlags.MainThreadActions.TryDequeue(out var action))
+            if (MainThreadData.MainThreadActions.TryDequeue(out var action))
             {
                 action();
                 continue;
