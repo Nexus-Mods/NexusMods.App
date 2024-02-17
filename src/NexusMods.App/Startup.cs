@@ -3,6 +3,8 @@ using Avalonia.ReactiveUI;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.App.UI;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Trace;
 using Projektanker.Icons.Avalonia;
 using Projektanker.Icons.Avalonia.MaterialDesign;
 using ReactiveUI;
@@ -20,6 +22,13 @@ public class Startup
     {
         var logger = provider.GetRequiredService<ILogger<Startup>>();
         var builder = BuildAvaloniaApp(provider);
+
+        // NOTE(erri120): DI is lazy by default and these services
+        // do additional initialization inside their constructors.
+        // We need to make sure their constructors are called to
+        // finalize our OpenTelemetry configuration.
+        provider.GetService<TracerProvider>();
+        provider.GetService<MeterProvider>();
 
         try
         {
