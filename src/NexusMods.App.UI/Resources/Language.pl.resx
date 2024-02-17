@@ -16,7 +16,7 @@
 		<value>Aktualności</value>
 	</data>
 	<data name="MyGames" xml:space="preserve">
-		<value>Moje gry</value>
+		<value>Moje Gry</value>
 	</data>
 	<data name="BrowseGames" xml:space="preserve">
 		<value>Przeglądaj gry</value>
@@ -142,7 +142,7 @@
 		<value>POBRANE</value>
 	</data>
 	<data name="DownloadsView__In_Progress" xml:space="preserve">
-		<value>W trakcie</value>
+		<value>Postęp pobierania</value>
 	</data>
 	<data name="DownloadsView__Completed" xml:space="preserve">
 		<value>Ukończone</value>
@@ -181,7 +181,7 @@
 		<value>Wstrzymaj wszystko</value>
 	</data>
 	<data name="InProgressTitleTextBlock" xml:space="preserve">
-		<value>W trakcie</value>
+		<value>Pobierane</value>
 	</data>
 	<data name="BoldMinutesRemainingTextBlock" xml:space="preserve">
 		<value>0 min</value>
@@ -262,7 +262,7 @@
 		<value>Strona główna</value>
 	</data>
 	<data name="LoadoutLeftMenuViewModel_LoadoutGridEntry" xml:space="preserve">
-		<value>Moje modyfikacje</value>
+		<value>Moje Mody</value>
 	</data>
 	<data name="Downloads_WorkspaceTitle" xml:space="preserve">
 		<value>Pobieranie</value>
