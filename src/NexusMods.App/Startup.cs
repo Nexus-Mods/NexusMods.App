@@ -24,6 +24,7 @@ public class Startup
     private static bool _hasBeenSetup = false;
     private static IServiceProvider _provider = null!;
     private static ILogger<Startup> _logger = null!;
+    private static uint _windowCount = 0;
 
 #pragma warning disable CS0028 // Disables warning about not being a valid entry point
     
@@ -80,11 +81,17 @@ public class Startup
         reactiveWindow.ViewModel = _provider.GetRequiredService<MainWindowViewModel>();
         reactiveWindow.WhenActivated(d =>
             {
+                Interlocked.Increment(ref _windowCount);
                 var token = _provider.GetRequiredService<MainProcessDirector>().MakeKeepAliveToken();
                 _logger.LogDebug("MainWindow activated");
                 token.DisposeWith(d);
                 Disposable.Create(() =>
                     {
+                        if (Interlocked.Decrement(ref _windowCount) == 0 && MainThreadData.IsDebugMode)
+                        {
+                            _logger.LogDebug("Final window closed, in debug mode, shutting down");
+                            MainThreadData.Shutdown();
+                        }
                         _logger.LogDebug("MainWindow deactivated");
                     }
                 ).DisposeWith(d);
