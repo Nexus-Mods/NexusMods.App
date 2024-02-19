@@ -455,7 +455,9 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
     {
         var workspaceData = new WorkspaceData
         {
-            Panels = _panels.Select(panel => panel.ToData()).ToArray()
+            Id = Id,
+            Context = Context,
+            Panels = _panels.Select(panel => panel.ToData()).ToArray(),
         };
 
         return workspaceData;

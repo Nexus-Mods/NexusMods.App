@@ -13,11 +13,9 @@ using NexusMods.App.UI.Controls.Spine.Buttons.Download;
 using NexusMods.App.UI.Controls.Spine.Buttons.Icon;
 using NexusMods.App.UI.Controls.Spine.Buttons.Image;
 using NexusMods.App.UI.LeftMenu;
-using NexusMods.App.UI.LeftMenu.Loadout;
 using NexusMods.App.UI.Pages.Downloads;
 using NexusMods.App.UI.Pages.LoadoutGrid;
 using NexusMods.App.UI.Pages.MyGames;
-using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceAttachments;
@@ -139,10 +137,6 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                             break;
                     }
                 }).DisposeWith(disposables);
-
-            // For now just show the Home workspace on startup
-            // TODO: remove this in favour of restoring the last active workspace when workspace saving is implemented
-            NavigateToHome();
         });
     }
 
@@ -160,7 +154,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         }
     }
 
-    private void NavigateToHome()
+    public void NavigateToHome()
     {
         if (!_windowManager.TryGetActiveWindow(out var window)) return;
         var workspaceController = window.WorkspaceController;
@@ -187,7 +181,10 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                     LoadoutId = loadoutId
                 }
             },
-            () => new LoadoutContext(loadoutId)
+            () => new LoadoutContext
+            {
+                LoadoutId = loadoutId
+            }
         );
     }
 

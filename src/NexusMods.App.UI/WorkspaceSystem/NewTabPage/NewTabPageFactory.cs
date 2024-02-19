@@ -1,8 +1,10 @@
 using JetBrains.Annotations;
+using NexusMods.Abstractions.Serialization.Attributes;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
 [UsedImplicitly]
+[JsonName("NexusMods.App.UI.Workspace.NewTabPageContext")]
 public record NewTabPageContext : IPageFactoryContext
 {
     public required PageDiscoveryDetails[] DiscoveryDetails { get; init; }

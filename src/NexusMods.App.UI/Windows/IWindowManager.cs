@@ -42,4 +42,17 @@ public interface IWindowManager
     /// This should be called when the window gets disposed.
     /// </remarks>
     public void UnregisterWindow(IWorkspaceWindow window);
+
+    /// <summary>
+    /// Saves current state of the window.
+    /// </summary>
+    /// <param name="window"></param>
+    public void SaveWindowState(IWorkspaceWindow window);
+
+    /// <summary>
+    /// Restores the saved window state.
+    /// </summary>
+    /// <param name="window"></param>
+    /// <returns>Whether the restore was successful.</returns>
+    public bool RestoreWindowState(IWorkspaceWindow window);
 }
