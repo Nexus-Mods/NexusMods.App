@@ -84,7 +84,7 @@ internal sealed class DiagnosticManager : IDiagnosticManager
     internal async Task RefreshLoadoutDiagnostics(Loadout loadout)
     {
         // Remove outdated diagnostics for previous revisions of the loadout
-        RemoveDiagnostics(kv => kv.DataReferences
+        RemoveDiagnostics(kv => kv.DataReferences.Values
             .OfType<LoadoutReference>()
             .Any(loadoutReference =>
                 loadoutReference.DataId == loadout.LoadoutId
@@ -113,7 +113,7 @@ internal sealed class DiagnosticManager : IDiagnosticManager
                 .ToHashSet();
 
             // Remove outdated diagnostics for mods that have been removed or updated.
-            RemoveDiagnostics(kv => kv.DataReferences
+            RemoveDiagnostics(kv => kv.DataReferences.Values
                 .OfType<ModReference>()
                 .Any(modReference => removedMods.Contains(modReference.DataId))
             );
