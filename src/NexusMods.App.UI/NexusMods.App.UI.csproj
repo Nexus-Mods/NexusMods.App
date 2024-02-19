@@ -375,6 +375,18 @@
         <Compile Update="LeftMenu\Loadout\LoadoutLeftMenuDesignViewModel.cs">
           <DependentUpon>ILoadoutLeftMenuViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="LeftMenu\Items\LaunchButtonDesignViewModel.cs">
+          <DependentUpon>ILaunchButtonViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="LeftMenu\Items\LaunchButtonViewModel.cs">
+          <DependentUpon>ILaunchButtonViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="LeftMenu\Items\IconViewModel.cs">
+          <DependentUpon>IIconViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="LeftMenu\Items\IApplyButtonDesignViewModel.cs">
+          <DependentUpon>IApplyButtonViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
