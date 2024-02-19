@@ -62,7 +62,14 @@ public class Program
                 }
                 finally
                 {
-                    MainThreadData.Shutdown();
+                    try
+                    {
+                        MainThreadData.Shutdown();
+                    }
+                    catch (Exception e)
+                    {
+                        _logger.LogError(e, "Error shutting down main thread");
+                    }
                 }
             }
         );
@@ -75,7 +82,14 @@ public class Program
         {
             if (MainThreadData.MainThreadActions.TryDequeue(out var action))
             {
-                action();
+                try
+                {
+                    action();
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e, "Error running main thread action");
+                }
                 continue;
             }
             Thread.Sleep(250);

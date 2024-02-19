@@ -30,9 +30,6 @@ public class Startup
     /// <summary>
     /// Main entry point for the application, the application loop will only exit when the token is cancelled.
     /// </summary>
-    /// <param name="provider"></param>
-    /// <param name="args"></param>
-    /// <param name="token"></param>
     public static void Main(IServiceProvider provider, string[] args)
     {
         if (_hasBeenSetup)
@@ -72,9 +69,9 @@ public class Startup
         ShowMainWindow();
 
         // Start the app, linking to the global shutdown token
-        _logger.LogInformation("Starting application loop.");
+        _logger.LogInformation("Starting application loop");
         app.Run(MainThreadData.GlobalShutdownToken);
-        _logger.LogInformation("Application loop ended.");
+        _logger.LogInformation("Application loop ended");
     }
 
     internal static void ShowMainWindow()
