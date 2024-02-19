@@ -6,6 +6,9 @@
                                 xmlns:left="clr-namespace:NexusMods.App.UI.LeftMenu.Loadout"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="NexusMods.App.UI.LeftMenu.Loadout.LoadoutLeftMenuView">
+    <Design.DataContext>
+        <left:LoadoutLeftMenuDesignViewModel />
+    </Design.DataContext>
 
     <StackPanel Margin="16,16">
         <reactiveUi:ViewModelViewHost x:Name="LaunchButton" />
