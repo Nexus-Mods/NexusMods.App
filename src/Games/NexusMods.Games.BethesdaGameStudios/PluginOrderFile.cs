@@ -16,7 +16,7 @@ namespace NexusMods.Games.BethesdaGameStudios;
 [JsonName("NexusMods.Games.BethesdaGameStudios.PluginOrderFile")]
 public record PluginOrderFile : AModFile, IGeneratedFile, IToFile
 {
-    public static GamePath Path = new(LocationId.AppData, "plugins.txt");
+    private static readonly GamePath Path = new(LocationId.AppData, "plugins.txt");
 
     public GamePath To => Path;
 

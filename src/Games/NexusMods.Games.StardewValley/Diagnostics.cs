@@ -14,13 +14,13 @@ internal static class Diagnostics
         return new Diagnostic
         {
             Id = new DiagnosticId(Source, 1),
-            Message = DiagnosticMessage.From($"Mod '{mod.Name}' is missing required dependency '{missingDependency}'"),
             Severity = DiagnosticSeverity.Warning,
-            DataReferences = new IDataReference[]
+            Message = DiagnosticMessage.From($"Mod '{mod.Name}' is missing required dependency '{missingDependency}'"),
+            DataReferences = new Dictionary<DataReferenceDescription, IDataReference>
             {
-                loadout.ToReference(),
-                mod.ToReference(loadout)
-            }
+                { DataReferenceDescription.Loadout, loadout.ToReference() },
+                { DataReferenceDescription.Mod, mod.ToReference(loadout) },
+            },
         };
     }
 }

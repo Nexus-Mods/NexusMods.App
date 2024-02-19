@@ -43,7 +43,7 @@ public class MissingDependenciesEmitterTests : ALoadoutDiagnosticEmitterTest<Sta
         diagnostic.Id.Should().Be(new DiagnosticId(Diagnostics.Source, 1));
         diagnostic.Severity.Should().Be(DiagnosticSeverity.Warning);
         diagnostic.Message.Should().Be(DiagnosticMessage.From($"Mod 'ModA' is missing required dependency 'ModB'"));
-        diagnostic.DataReferences.Should().Equal(
+        diagnostic.DataReferences.Values.Should().Equal(
             loadoutMarker.Value.ToReference(),
             modA.ToReference(loadoutMarker.Value)
         );

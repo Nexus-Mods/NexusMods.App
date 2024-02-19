@@ -84,7 +84,7 @@ public class DiagnosticManagerTests : ADataModelTest<DiagnosticManagerTests>
                 Id = new DiagnosticId(),
                 Message = DiagnosticMessage.From(""),
                 Severity = DiagnosticSeverity.Warning,
-                DataReferences = ImmutableArray<IDataReference>.Empty
+                DataReferences = new Dictionary<DataReferenceDescription, IDataReference>()
             }
         };
 
@@ -110,7 +110,7 @@ public class DiagnosticManagerTests : ADataModelTest<DiagnosticManagerTests>
                 Id = new DiagnosticId("foo", 1),
                 Message = DiagnosticMessage.From(""),
                 Severity = DiagnosticSeverity.Warning,
-                DataReferences = ImmutableArray<IDataReference>.Empty
+                DataReferences = new Dictionary<DataReferenceDescription, IDataReference>()
             }
         };
 

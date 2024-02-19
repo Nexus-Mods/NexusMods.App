@@ -11,3 +11,6 @@ dotnet_diagnostic.CS8524.severity = none
 
 # Enums should not have duplicate values
 dotnet_diagnostic.CA1069.severity = error
+
+# Non-constant fields should not be visible
+dotnet_diagnostic.CA2211.severity = error

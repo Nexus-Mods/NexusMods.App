@@ -30,7 +30,7 @@ public record Diagnostic
     /// <summary>
     /// Gets all data references.
     /// </summary>
-    public required IReadOnlyList<IDataReference> DataReferences { get; init; }
+    public required Dictionary<DataReferenceDescription, IDataReference> DataReferences { get; init; }
 
     /// <summary>
     /// Gets the creation time of this diagnostics.
