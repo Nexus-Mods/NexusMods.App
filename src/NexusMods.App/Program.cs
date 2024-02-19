@@ -54,13 +54,24 @@ public class Program
         _logger.LogDebug("Application starting in {Mode} mode", _isDebug ? "debug" : "release");
         var startup = host.Services.GetRequiredService<StartupDirector>();
         _logger.LogDebug("Calling startup handler");
-        var managerTask = Task.Run(async () => await startup.Start(args, _isDebug));
+        var managerTask = Task.Run(async () =>
+            {
+                try
+                {
+                    return await startup.Start(args, _isDebug);
+                }
+                finally
+                {
+                    MainThreadData.Shutdown();
+                }
+            }
+        );
 
 
         // The UI *must* be started on the main thread, according to the Avalonia docs, although it
         // seems to work fine on some platforms (this behavior is not guaranteed). So when we need to open a new
         // window, the handler will enqueue an action to be run on the main thread.
-        while (!managerTask.IsCompleted)
+        while (!MainThreadData.GlobalShutdownToken.IsCancellationRequested)
         {
             if (MainThreadData.MainThreadActions.TryDequeue(out var action))
             {

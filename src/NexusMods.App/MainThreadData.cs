@@ -9,7 +9,22 @@ public static class MainThreadData
 {
 
     private static Thread? _mainThread = null!;
-
+    
+    private static CancellationTokenSource _cancellationTokenSource = new();
+    
+    /// <summary>
+    /// A token that's used system-wide to signal that the application is shutting down.
+    /// </summary>
+    public static CancellationToken GlobalShutdownToken => _cancellationTokenSource.Token;
+    
+    /// <summary>
+    /// Shuts down the application.
+    /// </summary>
+    public static void Shutdown()
+    {
+        _cancellationTokenSource.Cancel();
+    }
+    
     /// <summary>
     /// Flags the current thread as the one that started the application.
     /// </summary>

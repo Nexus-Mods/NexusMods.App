@@ -1,8 +1,12 @@
+using System.Reactive.Disposables;
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.ReactiveUI;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.App.UI;
+using NexusMods.App.UI.Windows;
+using NexusMods.SingleProcess;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using Projektanker.Icons.Avalonia;
@@ -17,9 +21,27 @@ namespace NexusMods.App;
 // ReSharper disable once ClassNeverInstantiated.Global
 public class Startup
 {
-    #pragma warning disable CS0028 // Disables warning about not being a valid entry point
+    private static bool _hasBeenSetup = false;
+    private static IServiceProvider _provider = null!;
+    private static ILogger<Startup> _logger = null!;
+
+#pragma warning disable CS0028 // Disables warning about not being a valid entry point
+    
+    /// <summary>
+    /// Main entry point for the application, the application loop will only exit when the token is cancelled.
+    /// </summary>
+    /// <param name="provider"></param>
+    /// <param name="args"></param>
+    /// <param name="token"></param>
     public static void Main(IServiceProvider provider, string[] args)
     {
+        if (_hasBeenSetup)
+            throw new InvalidOperationException("Startup has already been called!");
+        
+        _hasBeenSetup = true;
+        _provider = provider;
+        _logger = provider.GetRequiredService<ILogger<Startup>>();
+        
         var logger = provider.GetRequiredService<ILogger<Startup>>();
         var builder = BuildAvaloniaApp(provider);
 
@@ -32,7 +54,10 @@ public class Startup
 
         try
         {
-            builder.StartWithClassicDesktopLifetime(args);
+            // We aren't going to use the standard Avalonia startup because we don't want the app to exit
+            // when the last window closes. Instead we want to exit only when the single process IPC server
+            // has shutdown
+            builder.Start(AppMain, args);
         }
         catch (Exception e)
         {
@@ -41,6 +66,36 @@ public class Startup
     }
 #pragma warning restore CS0028
 
+    private static void AppMain(Application app, string[] args)
+    {
+        _logger.LogInformation("Starting UI application");
+        ShowMainWindow();
+
+        // Start the app, linking to the global shutdown token
+        _logger.LogInformation("Starting application loop.");
+        app.Run(MainThreadData.GlobalShutdownToken);
+        _logger.LogInformation("Application loop ended.");
+    }
+
+    internal static void ShowMainWindow()
+    {
+        var reactiveWindow = _provider.GetRequiredService<MainWindow>();
+        reactiveWindow.ViewModel = _provider.GetRequiredService<MainWindowViewModel>();
+        reactiveWindow.WhenActivated(d =>
+            {
+                var token = _provider.GetRequiredService<MainProcessDirector>().MakeKeepAliveToken();
+                _logger.LogDebug("MainWindow activated");
+                token.DisposeWith(d);
+                Disposable.Create(() =>
+                    {
+                        _logger.LogDebug("MainWindow deactivated");
+                    }
+                ).DisposeWith(d);
+            }
+        );
+        reactiveWindow.Show();
+    }
+
     public static AppBuilder BuildAvaloniaApp(IServiceProvider serviceProvider)
     {
         ReactiveUiExtensions.DefaultLogger = serviceProvider.GetRequiredService<ILogger<Startup>>();
@@ -48,7 +103,8 @@ public class Startup
         IconProvider.Current
             .Register<MaterialDesignIconProvider>();
 
-        var app = AppBuilder.Configure(serviceProvider.GetRequiredService<App>)
+        var app = AppBuilder
+            .Configure(serviceProvider.GetRequiredService<App>)
             .UsePlatformDetect()
             .LogToTrace()
             .UseReactiveUI();
