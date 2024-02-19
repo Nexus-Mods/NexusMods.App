@@ -9,8 +9,6 @@ using NexusMods.Abstractions.Diagnostics.References;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Serialization;
-using NexusMods.Abstractions.Serialization.DataModel;
-using NexusMods.Abstractions.Serialization.DataModel.Ids;
 using NexusMods.DataModel.Extensions;
 using NexusMods.Extensions.BCL;
 using NexusMods.Extensions.DynamicData;
@@ -32,7 +30,7 @@ internal sealed class DiagnosticManager : IDiagnosticManager
     private readonly IModFileDiagnosticEmitter[] _modFileDiagnosticEmitters;
 
     private readonly CompositeDisposable _compositeDisposable;
-    private readonly SourceCache<Diagnostic, IId> _diagnosticCache = new(x => x.DataStoreId);
+    private readonly SourceList<Diagnostic> _diagnosticCache = new();
 
     /// <summary>
     /// Constructor.
@@ -53,7 +51,7 @@ internal sealed class DiagnosticManager : IDiagnosticManager
         _modDiagnosticEmitters = modDiagnosticEmitters.ToArray();
         _modFileDiagnosticEmitters = modFileDiagnosticEmitters.ToArray();
 
-        _compositeDisposable = new();
+        _compositeDisposable = new CompositeDisposable();
 
         // Listen to option changes and update the currently existing diagnostics.
         var disposable = _optionsMonitor.OnChange(newOptions =>
@@ -61,14 +59,15 @@ internal sealed class DiagnosticManager : IDiagnosticManager
             var filteredDiagnostics = FilterDiagnostics(_diagnosticCache.Items, newOptions);
             _diagnosticCache.Edit(updater =>
             {
-                updater.Load(filteredDiagnostics);
+                updater.Clear();
+                updater.AddRange(filteredDiagnostics);
             });
         });
 
         if (disposable is not null) _compositeDisposable.Add(disposable);
     }
 
-    public IObservable<IChangeSet<Diagnostic, IId>> DiagnosticChanges => _diagnosticCache.Connect();
+    public IObservable<IChangeSet<Diagnostic>> DiagnosticChanges => _diagnosticCache.Connect();
     public IEnumerable<Diagnostic> ActiveDiagnostics => _diagnosticCache.Items;
 
     public async ValueTask OnLoadoutChanged(Loadout loadout)
@@ -85,7 +84,7 @@ internal sealed class DiagnosticManager : IDiagnosticManager
     internal async Task RefreshLoadoutDiagnostics(Loadout loadout)
     {
         // Remove outdated diagnostics for previous revisions of the loadout
-        RemoveDiagnostics(kv => kv.Value.DataReferences
+        RemoveDiagnostics(kv => kv.DataReferences
             .OfType<LoadoutReference>()
             .Any(loadoutReference =>
                 loadoutReference.DataId == loadout.LoadoutId
@@ -114,7 +113,7 @@ internal sealed class DiagnosticManager : IDiagnosticManager
                 .ToHashSet();
 
             // Remove outdated diagnostics for mods that have been removed or updated.
-            RemoveDiagnostics(kv => kv.Value.DataReferences
+            RemoveDiagnostics(kv => kv.DataReferences
                 .OfType<ModReference>()
                 .Any(modReference => removedMods.Contains(modReference.DataId))
             );
@@ -150,16 +149,13 @@ internal sealed class DiagnosticManager : IDiagnosticManager
         throw new NotImplementedException();
     }
 
-    private void RemoveDiagnostics(Func<KeyValuePair<IId, Diagnostic>, bool> predicate)
+    private void RemoveDiagnostics(Func<Diagnostic, bool> predicate)
     {
-        // TODO: consider removing them from the DataStore as well. This requires batching.
+        var toRemove = _diagnosticCache.Items.Where(predicate);
+
         _diagnosticCache.Edit(updater =>
         {
-            var toRemove = updater.KeyValues
-                .Where(predicate)
-                .Select(kv => kv.Key);
-
-            updater.RemoveKeys(toRemove);
+            updater.Remove(toRemove);
         });
     }
 
@@ -169,7 +165,7 @@ internal sealed class DiagnosticManager : IDiagnosticManager
 
         _diagnosticCache.Edit(updater =>
         {
-            updater.AddOrUpdate(toAdd.Select(diagnostic => diagnostic.WithPersist(_dataStore)));
+            updater.Add(toAdd);
         });
     }
 

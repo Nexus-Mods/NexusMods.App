@@ -99,11 +99,6 @@ public enum EntityCategory : byte
     ManuallyAddedGame = 13,
 
     /// <summary>
-    /// See <see cref="Diagnostics"/>.
-    /// </summary>
-    Diagnostics = 14,
-
-    /// <summary>
     /// Downloader resume/suspend state.
     /// </summary>
     DownloadStates = 15,

@@ -1,7 +1,5 @@
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Diagnostics.References;
-using NexusMods.Abstractions.Serialization.Attributes;
-using NexusMods.Abstractions.Serialization.DataModel;
 
 namespace NexusMods.Abstractions.Diagnostics;
 
@@ -9,8 +7,7 @@ namespace NexusMods.Abstractions.Diagnostics;
 /// Represents a diagnostic.
 /// </summary>
 [PublicAPI]
-[JsonName("NexusMods.Abstractions.Diagnostics.Diagnostic")]
-public record Diagnostic : Entity
+public record Diagnostic
 {
     /// <summary>
     /// Gets the identifier of the diagnostic.
@@ -39,19 +36,4 @@ public record Diagnostic : Entity
     /// Gets the creation time of this diagnostics.
     /// </summary>
     public DateTimeOffset CreatedAt { get; init; } = DateTimeOffset.UtcNow;
-
-    /// <inheritdoc/>
-    public override EntityCategory Category => EntityCategory.Diagnostics;
-
-    /// <inheritdoc/>
-    public virtual bool Equals(Diagnostic? other)
-    {
-        return other is not null && DataStoreId.Equals(other.DataStoreId);
-    }
-
-    /// <inheritdoc/>
-    public override int GetHashCode()
-    {
-        return DataStoreId.GetHashCode();
-    }
 }
