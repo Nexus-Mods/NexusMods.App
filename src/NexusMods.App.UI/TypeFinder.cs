@@ -16,16 +16,20 @@ internal class TypeFinder : ITypeFinder
 
     private static IEnumerable<Type> AllTypes => new[]
     {
+        // factory context
         typeof(DummyPageContext),
+        typeof(NewTabPageContext),
         typeof(LoadoutGridContext),
         typeof(InProgressPageContext),
         typeof(MyGamesPageContext),
 
+        // workspace context
         typeof(EmptyContext),
         typeof(HomeContext),
         typeof(LoadoutContext),
         typeof(DownloadsContext),
 
+        // other
         typeof(WindowData)
     };
 }
