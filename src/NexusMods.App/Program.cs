@@ -51,6 +51,12 @@ public class Program
                 {
                     return await startup.Start(args, MainThreadData.IsDebugMode);
                 }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error in startup handler");
+                    Environment.Exit(-1);
+                    throw;
+                }
                 finally
                 {
                     try
