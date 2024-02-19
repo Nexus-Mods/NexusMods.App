@@ -10,16 +10,27 @@
         <left:LoadoutLeftMenuDesignViewModel />
     </Design.DataContext>
 
-    <StackPanel Margin="16,16">
-        <reactiveUi:ViewModelViewHost x:Name="LaunchButton" />
-        <ItemsControl Margin="16,36" x:Name="MenuItemsControl">
+    <Grid RowDefinitions="*,Auto"
+        Margin="16,16">
+
+        <ItemsControl Grid.Row="0" Margin="16,36" x:Name="MenuItemsControl">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <StackPanel />
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
         </ItemsControl>
-    </StackPanel>
+
+        <Border Grid.Row="1"
+                Classes="Rounded Low"
+                Padding="12">
+            <StackPanel Orientation="Vertical"
+                        Spacing="8">
+                <reactiveUi:ViewModelViewHost x:Name="ApplyButton" />
+                <reactiveUi:ViewModelViewHost x:Name="LaunchButton" />
+            </StackPanel>
+        </Border>
+    </Grid>
 
 
 </reactiveUi:ReactiveUserControl>
