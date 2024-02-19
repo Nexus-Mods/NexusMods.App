@@ -205,7 +205,7 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
     {
         var flattened = await _synchronizer.LoadoutToFlattenedLoadout(BaseList.Value);
         var fileTree = await _synchronizer.FlattenedLoadoutToFileTree(flattened, BaseList.Value);
-        var prevState = DiskStateRegistry.GetState(BaseList.Id)!;
+        var prevState = DiskStateRegistry.GetState(BaseList.Value.Installation)!;
         var diskState = await _synchronizer.FileTreeToDisk(fileTree, BaseList.Value, flattened, prevState, Install);
 
         diskState.GetAllDescendentFiles()
@@ -323,7 +323,7 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
         // Reconstruct the previous file tree
         var prevFlattenedLoadout = await _synchronizer.LoadoutToFlattenedLoadout(BaseList.Value);
         var prevFileTree = await _synchronizer.FlattenedLoadoutToFileTree(prevFlattenedLoadout, BaseList.Value);
-        var prevDiskState = DiskStateRegistry.GetState(BaseList.Id);
+        var prevDiskState = DiskStateRegistry.GetState(BaseList.Value.Installation);
 
         var fileTree = await _synchronizer.DiskToFileTree(diskState, BaseList.Value, prevFileTree, prevDiskState);
 
@@ -383,7 +383,7 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
         // Reconstruct the previous file tree
         var prevFlattenedLoadout = await _synchronizer.LoadoutToFlattenedLoadout(BaseList.Value);
         var prevFileTree = await _synchronizer.FlattenedLoadoutToFileTree(prevFlattenedLoadout, BaseList.Value);
-        var prevDiskState = DiskStateRegistry.GetState(BaseList.Id)!;
+        var prevDiskState = DiskStateRegistry.GetState(BaseList.Value.Installation)!;
 
         var fileTree = await _synchronizer.DiskToFileTree(diskState, BaseList.Value, prevFileTree, prevDiskState);
         var flattenedLoadout = await _synchronizer.FileTreeToFlattenedLoadout(fileTree, BaseList.Value, prevFlattenedLoadout);
@@ -452,7 +452,7 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
         // Reconstruct the previous file tree
         var prevFlattenedLoadout = await _synchronizer.LoadoutToFlattenedLoadout(BaseList.Value);
         var prevFileTree = await _synchronizer.FlattenedLoadoutToFileTree(prevFlattenedLoadout, BaseList.Value);
-        var prevDiskState = DiskStateRegistry.GetState(BaseList.Id)!;
+        var prevDiskState = DiskStateRegistry.GetState(BaseList.Value.Installation)!;
 
         var fileTree = await _synchronizer.DiskToFileTree(diskState, BaseList.Value, prevFileTree, prevDiskState);
         var flattenedLoadout = await _synchronizer.FileTreeToFlattenedLoadout(fileTree, BaseList.Value, prevFlattenedLoadout);
@@ -652,4 +652,15 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
 
     }
 
+    [Fact]
+    public async Task CanSwitchBetweenLoadouts()
+    {
+        // Apply the old state
+        await _synchronizer.Apply(BaseList.Value);
+
+        var listB = LoadoutRegistry.GetMarker((await _synchronizer.Manage(Install)).LoadoutId);
+        
+        await _synchronizer.Apply(listB.Value);
+
+    }
 }

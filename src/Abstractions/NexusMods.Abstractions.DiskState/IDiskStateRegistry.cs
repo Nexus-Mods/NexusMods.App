@@ -1,3 +1,4 @@
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
 
 namespace NexusMods.Abstractions.DiskState;
@@ -8,17 +9,14 @@ namespace NexusMods.Abstractions.DiskState;
 public interface IDiskStateRegistry
 {
     /// <summary>
-    /// Saves a disk state to the data store
+    /// Saves a disk state to the data store for the given game installation
     /// </summary>
-    /// <param name="loadoutId"></param>
-    /// <param name="diskState"></param>
     /// <returns></returns>
-    void SaveState(LoadoutId loadoutId, DiskStateTree diskState);
+    void SaveState(GameInstallation installation, DiskStateTree diskState);
 
     /// <summary>
-    /// Gets the disk state associated with a specific version of a loadout (if any)
+    /// Gets the disk state associated with a specific game installation, returns false if no state is found
     /// </summary>
-    /// <param name="loadoutId"></param>
     /// <returns></returns>
-    DiskStateTree? GetState(LoadoutId loadoutId);
+    DiskStateTree? GetState(GameInstallation gameInstallation);
 }
