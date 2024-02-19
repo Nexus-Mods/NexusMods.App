@@ -1,5 +1,6 @@
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Loadouts.Mods;
+using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Serialization.DataModel.Ids;
 
 namespace NexusMods.Abstractions.Diagnostics.References;
@@ -11,8 +12,17 @@ namespace NexusMods.Abstractions.Diagnostics.References;
 public record ModFileReference : IDataReference<ModFileId, AModFile>
 {
     /// <inheritdoc/>
+    public required IId DataStoreId { get; init; }
+
+    /// <inheritdoc/>
     public required ModFileId DataId { get; init; }
 
     /// <inheritdoc/>
-    public required IId DataStoreId { get; init; }
+    public AModFile? ResolveData(IServiceProvider serviceProvider, IDataStore dataStore)
+    {
+        return dataStore.Get<AModFile>(DataStoreId);
+    }
+
+    /// <inheritdoc/>
+    public string ToStringRepresentation(AModFile data) => data.ToString();
 }
