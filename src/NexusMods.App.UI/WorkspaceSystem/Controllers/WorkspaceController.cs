@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Avalonia.Threading;
 using DynamicData;
@@ -43,6 +44,42 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
             .Transform(x => (IWorkspaceViewModel)x)
             .Bind(out _allWorkspaces)
             .Subscribe();
+    }
+
+    public WindowData ToData()
+    {
+        var workspaces = _allWorkspaces.Select(workspace => workspace.ToData()).ToArray();
+        var data = new WindowData
+        {
+            DataStoreId = WindowData.Id,
+            ActiveWorkspaceId = ActiveWorkspace?.Id,
+            Workspaces = workspaces,
+        };
+
+        return data;
+    }
+
+    public void FromData(WindowData data)
+    {
+        Dispatcher.UIThread.VerifyAccess();
+        Debug.Assert(_workspaces.Count == 0);
+
+        IWorkspaceViewModel? activeWorkspace = null;
+
+        foreach (var workspaceData in data.Workspaces)
+        {
+            var vm = CreateWorkspace(
+                context: Optional<IWorkspaceContext>.Create(workspaceData.Context),
+                pageData: Optional<PageData>.None
+            );
+
+            vm.FromData(workspaceData);
+
+            if (workspaceData.Id == data.ActiveWorkspaceId)
+                activeWorkspace = vm;
+        }
+
+        ChangeActiveWorkspace(activeWorkspace?.Id ?? _workspaces.Keys.First());
     }
 
     public IWorkspaceViewModel CreateWorkspace(Optional<IWorkspaceContext> context, Optional<PageData> pageData)
@@ -94,9 +131,7 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
     {
         if (!_workspaces.Lookup(workspaceId).TryGet(out workspaceViewModel))
         {
-            _logger.LogError(
-                "Failed to retrieve the Workspace View Model with the ID {WorkspaceID} referenced by the WeakReference",
-                workspaceId);
+            _logger.LogError("Failed to retrieve the Workspace View Model with the ID {WorkspaceID}", workspaceId);
             return false;
         }
 

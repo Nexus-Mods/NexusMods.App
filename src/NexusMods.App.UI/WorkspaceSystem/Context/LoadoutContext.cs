@@ -1,5 +1,10 @@
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Serialization.Attributes;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
-public record LoadoutContext(LoadoutId LoadoutId) : IWorkspaceContext;
+[JsonName("NexusMods.App.UI.WorkspaceSystem.LoadoutContext")]
+public record LoadoutContext : IWorkspaceContext
+{
+    public required LoadoutId LoadoutId { get; init; }
+}

@@ -53,7 +53,10 @@ public class FoundGamesViewModel : AViewModel<IFoundGamesViewModel>, IFoundGames
                         LoadoutId = loadoutId
                     }
                 },
-                () => new LoadoutContext(loadoutId)
+                () => new LoadoutContext
+                {
+                    LoadoutId = loadoutId
+                }
             );
         });
     }

@@ -3,6 +3,8 @@ using System.Diagnostics.CodeAnalysis;
 using Avalonia.Threading;
 using DynamicData;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.Serialization;
+using NexusMods.App.UI.WorkspaceSystem;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -11,12 +13,17 @@ namespace NexusMods.App.UI.Windows;
 internal sealed class WindowManager : ReactiveObject, IWindowManager
 {
     private readonly ILogger<WindowManager> _logger;
+    private readonly IDataStore _dataStore;
+
     private readonly Dictionary<WindowId, WeakReference<IWorkspaceWindow>> _windows = new();
     private readonly SourceList<WindowId> _allWindowIdSource = new();
 
-    public WindowManager(ILogger<WindowManager> logger)
+    public WindowManager(
+        ILogger<WindowManager> logger,
+        IDataStore dataStore)
     {
         _logger = logger;
+        _dataStore = dataStore;
 
         _allWindowIdSource.Connect().OnUI().Bind(out _allWindowIds);
     }
@@ -72,5 +79,47 @@ internal sealed class WindowManager : ReactiveObject, IWindowManager
         }
 
         _allWindowIdSource.Edit(list => list.Remove(window.WindowId));
+    }
+
+    public void SaveWindowState(IWorkspaceWindow window)
+    {
+        try
+        {
+            var data = window.WorkspaceController.ToData();
+            _dataStore.Put(WindowData.Id, data);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Exception while saving window state");
+        }
+    }
+
+    public bool RestoreWindowState(IWorkspaceWindow window)
+    {
+        try
+        {
+            var data = _dataStore.Get<WindowData>(WindowData.Id);
+            if (data is null) return false;
+
+            window.WorkspaceController.FromData(data);
+            return true;
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Exception while loading window state");
+
+            _logger.LogInformation("Removing possible broken window state from the DataStore");
+
+            try
+            {
+                _dataStore.Delete(WindowData.Id);
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
+        }
+
+        return false;
     }
 }
