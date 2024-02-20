@@ -90,6 +90,7 @@
     </PackageVersion>
     <PackageVersion Include="Verify.Xunit" Version="23.1.0" />
     <PackageVersion Include="Verify.ImageMagick" Version="3.2.2" />
+      <PackageVersion Include="Verify.SourceGenerators" Version="2.2.0" />
     <PackageVersion Include="xunit" Version="2.6.6" />
     <PackageVersion Include="Xunit.DependencyInjection" Version="8.9.1" />
     <PackageVersion Include="Xunit.DependencyInjection.Logging" Version="8.1.0" />

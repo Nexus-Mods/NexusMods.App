@@ -2,6 +2,8 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp.SourceGenerators.Testing.XUnit"/>
+        <PackageReference Include="Verify.Xunit"/>
+        <PackageReference Include="Verify.SourceGenerators"/>
 
         <PackageReference Remove="Xunit.DependencyInjection" />
         <PackageReference Remove="Xunit.DependencyInjection.Logging" />
