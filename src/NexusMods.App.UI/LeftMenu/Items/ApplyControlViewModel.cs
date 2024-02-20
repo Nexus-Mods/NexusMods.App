@@ -22,7 +22,9 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
 
     private Abstractions.Loadouts.Loadout NewestLoadout => _newestLoadout.Value;
 
-    public ICommand ApplyCommand { get; }
+    public ICommand ApplyCommand => _applyReactiveCommand;
+
+    private readonly ReactiveCommand<System.Reactive.Unit, System.Reactive.Unit> _applyReactiveCommand;
 
     [Reactive] public bool CanApply { get; private set; }
 
@@ -47,8 +49,8 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
 
         _newestLoadout = _loadoutRegistry.RevisionsAsLoadouts(loadoutId)
             .ToProperty(this, vm => vm.NewestLoadout, scheduler: RxApp.MainThreadScheduler);
-
-        ApplyCommand = ReactiveCommand.CreateFromTask(async () => await Apply());
+        
+        _applyReactiveCommand = ReactiveCommand.CreateFromTask(async () => await Apply());
 
         this.WhenActivated(disposables =>
         {
@@ -62,17 +64,23 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
                         !NewestLoadout.DataStoreId.Equals(_lastAppliedRevisionId));
                 })
                 .DisposeWith(disposables);
+            
+            _applyReactiveCommand.IsExecuting
+                .Subscribe(isExecuting => IsApplying = isExecuting)
+                .DisposeWith(disposables);
         });
     }
 
     private async Task Apply()
     {
-        IsApplying = true;
         _lastAppliedLoadoutId = _loadoutId;
         _lastAppliedRevisionId = _loadoutRegistry.Get(_loadoutId)!.DataStoreId;
 
-        await _applyService.Apply(_loadoutId);
-        IsApplying = false;
+        await Task.Run(async () =>
+            {
+                await _applyService.Apply(_loadoutId);
+            }
+        );
     }
 
     private (LoadoutId, IId) GetLastAppliedLoadout()
