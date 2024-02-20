@@ -1,0 +1,48 @@
+﻿<reactiveUi:ReactiveUserControl x:TypeArguments="items:IApplyControlViewModel" xmlns="https://github.com/avaloniaui"
+                                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                                xmlns:reactiveUi="http://reactiveui.net"
+                                xmlns:items="clr-namespace:NexusMods.App.UI.LeftMenu.Items"
+                                xmlns:avalonia="https://github.com/projektanker/icons.avalonia"
+                                xmlns:progressRing="clr-namespace:NexusMods.App.UI.Controls.ProgressRing"
+                                mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="100"
+                                x:Class="NexusMods.App.UI.LeftMenu.Items.ApplyControlView">
+    <Design.DataContext>
+        <items:ApplyControlDesignViewModel />
+    </Design.DataContext>
+
+    <Border Classes="Rounded Low"
+            Padding="12"
+            HorizontalAlignment="Stretch">
+
+        <StackPanel Orientation="Vertical"
+                    Spacing="8">
+
+            <Button Classes="Standard SecondaryOutlined"
+                    HorizontalAlignment="Stretch"
+                    x:Name="ApplyButton">
+                <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Center">
+                    <avalonia:Icon FontSize="24" Classes="Check" />
+                    <TextBlock Classes="TitleSMSemi"
+                               Text="APPLY" />
+                </StackPanel>
+            </Button>
+
+            <Border Padding="12"
+                    HorizontalAlignment="Stretch"
+                    x:Name="InProgressBorder">
+                <StackPanel Orientation="Horizontal"
+                            Spacing="6">
+                    <progressRing:ProgressRing/>
+                    <TextBlock Classes="BodySMNormal ForegroundModerate"
+                               Text="Applying..."
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+
+            <items:LaunchButtonView x:Name="LaunchButtonView" />
+        </StackPanel>
+    </Border>
+</reactiveUi:ReactiveUserControl>

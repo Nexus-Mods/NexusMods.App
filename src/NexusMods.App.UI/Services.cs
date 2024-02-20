@@ -99,6 +99,7 @@ public static class Services
             .AddViewModel<ImageButtonViewModel, IImageButtonViewModel>()
             .AddViewModel<InProgressViewModel, IInProgressViewModel>()
             .AddViewModel<LaunchButtonViewModel, ILaunchButtonViewModel>()
+            .AddViewModel<ApplyControlViewModel, IApplyControlViewModel>()
             .AddViewModel<LoadoutGridViewModel, ILoadoutGridViewModel>()
             .AddViewModel<ModCategoryViewModel, IModCategoryViewModel>()
             .AddViewModel<ModEnabledViewModel, IModEnabledViewModel>()
@@ -154,6 +155,7 @@ public static class Services
             .AddView<MessageBoxOkCancelView, IMessageBoxOkCancelViewModel>()
             .AddView<UpdaterView, IUpdaterViewModel>()
             .AddView<LoadoutLeftMenuView, ILoadoutLeftMenuViewModel>()
+            .AddView<ApplyControlView, IApplyControlViewModel>()
 
             // workspace system
             .AddSingleton<IWindowManager, WindowManager>()
