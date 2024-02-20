@@ -37,3 +37,14 @@ public record Diagnostic
     /// </summary>
     public DateTimeOffset CreatedAt { get; init; } = DateTimeOffset.UtcNow;
 }
+
+/// <summary>
+/// Diagnostic with message data.
+/// </summary>
+public record Diagnostic<TMessageData> : Diagnostic where TMessageData : struct
+{
+    /// <summary>
+    /// Gets the message data.
+    /// </summary>
+    public required TMessageData MessageData { get; init; }
+}
