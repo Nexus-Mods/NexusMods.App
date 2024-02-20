@@ -1,0 +1,9 @@
+﻿{
+  "$schema": "http://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "DebugRoslynSourceGenerator": {
+      "commandName": "DebugRoslynComponent",
+      "targetProject": "../NexusMods.App.Generators.Diagnostics.Sample/NexusMods.App.Generators.Diagnostics.Sample.csproj"
+    }
+  }
+}

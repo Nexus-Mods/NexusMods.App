@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.SourceGenerators.Testing.XUnit"/>
+
+        <PackageReference Remove="Xunit.DependencyInjection" />
+        <PackageReference Remove="Xunit.DependencyInjection.Logging" />
+        <PackageReference Remove="Xunit.DependencyInjection.SkippableFact" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\src\NexusMods.App.Generators.Diagnostics\NexusMods.App.Generators.Diagnostics\NexusMods.App.Generators.Diagnostics.csproj" />
+    </ItemGroup>
+
+</Project>
