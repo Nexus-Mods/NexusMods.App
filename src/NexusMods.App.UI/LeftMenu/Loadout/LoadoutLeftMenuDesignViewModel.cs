@@ -8,5 +8,5 @@ public class LoadoutLeftMenuDesignViewModel : AViewModel<ILoadoutLeftMenuViewMod
 {
     public ReadOnlyObservableCollection<ILeftMenuItemViewModel> Items { get; } = new([]);
     public WorkspaceId WorkspaceId { get; } = new();
-    public ILaunchButtonViewModel LaunchButtonViewModel { get; } = new LaunchButtonDesignViewModel();
+    public IApplyControlViewModel ApplyControlViewModel { get; } = new ApplyControlDesignViewModel();
 }

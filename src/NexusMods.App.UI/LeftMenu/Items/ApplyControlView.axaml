@@ -5,10 +5,11 @@
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:items="clr-namespace:NexusMods.App.UI.LeftMenu.Items"
                                 xmlns:avalonia="https://github.com/projektanker/icons.avalonia"
+                                xmlns:progressRing="clr-namespace:NexusMods.App.UI.Controls.ProgressRing"
                                 mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="100"
                                 x:Class="NexusMods.App.UI.LeftMenu.Items.ApplyControlView">
     <Design.DataContext>
-        <items:IApplyControlDesignViewModel />
+        <items:ApplyControlDesignViewModel />
     </Design.DataContext>
 
     <Border Classes="Rounded Low"
@@ -29,7 +30,19 @@
                 </StackPanel>
             </Button>
 
-            <reactiveUi:ViewModelViewHost x:Name="RunButtonViewHost"/>
+            <Border Padding="12"
+                    HorizontalAlignment="Stretch"
+                    x:Name="InProgressBorder">
+                <StackPanel Orientation="Horizontal"
+                            Spacing="6">
+                    <progressRing:ProgressRing/>
+                    <TextBlock Classes="BodySMNormal ForegroundModerate"
+                               Text="Applying..."
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+
+            <items:LaunchButtonView x:Name="LaunchButtonView" />
         </StackPanel>
     </Border>
 </reactiveUi:ReactiveUserControl>

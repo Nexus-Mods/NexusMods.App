@@ -24,11 +24,7 @@
         <Border Grid.Row="1"
                 Classes="Rounded Low"
                 Padding="12">
-            <StackPanel Orientation="Vertical"
-                        Spacing="8">
-                <reactiveUi:ViewModelViewHost x:Name="ApplyButton" />
-                <reactiveUi:ViewModelViewHost x:Name="LaunchButton" />
-            </StackPanel>
+                <reactiveUi:ViewModelViewHost x:Name="ApplyControlViewHost" />
         </Border>
     </Grid>
 

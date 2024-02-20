@@ -11,7 +11,8 @@ namespace NexusMods.App.UI.LeftMenu.Loadout;
 
 public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, ILoadoutLeftMenuViewModel
 {
-    public ILaunchButtonViewModel LaunchButtonViewModel { get; }
+    public IApplyControlViewModel ApplyControlViewModel { get; }
+
 
     public ReadOnlyObservableCollection<ILeftMenuItemViewModel> Items { get; }
     public WorkspaceId WorkspaceId { get; }
@@ -23,8 +24,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
         IServiceProvider serviceProvider)
     {
         WorkspaceId = workspaceId;
-        LaunchButtonViewModel = serviceProvider.GetRequiredService<ILaunchButtonViewModel>();
-        LaunchButtonViewModel.LoadoutId = loadoutContext.LoadoutId;
+        ApplyControlViewModel = new ApplyControlViewModel(loadoutContext.LoadoutId, serviceProvider);
 
         var items = new ILeftMenuItemViewModel[]
         {
@@ -47,4 +47,5 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
         Items = new ReadOnlyObservableCollection<ILeftMenuItemViewModel>(
             new ObservableCollection<ILeftMenuItemViewModel>(items));
     }
+
 }
