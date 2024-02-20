@@ -384,8 +384,11 @@
         <Compile Update="LeftMenu\Items\IconViewModel.cs">
           <DependentUpon>IIconViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="LeftMenu\Items\IApplyButtonDesignViewModel.cs">
-          <DependentUpon>IApplyButtonViewModel.cs</DependentUpon>
+        <Compile Update="LeftMenu\Items\IApplyControlDesignViewModel.cs">
+          <DependentUpon>IApplyControlViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="LeftMenu\Items\ApplyControlViewModel.cs">
+          <DependentUpon>IApplyControlViewModel.cs</DependentUpon>
         </Compile>
     </ItemGroup>
 

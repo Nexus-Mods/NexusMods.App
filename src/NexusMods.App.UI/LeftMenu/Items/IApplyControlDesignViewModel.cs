@@ -3,7 +3,7 @@ using ReactiveUI;
 
 namespace NexusMods.App.UI.LeftMenu.Items;
 
-public class IApplyButtonDesignViewModel : AViewModel<IApplyButtonViewModel>, IApplyButtonViewModel
+public class IApplyControlDesignViewModel : AViewModel<IApplyControlViewModel>, IApplyControlViewModel
 {
     public ICommand ApplyCommand { get; } = ReactiveCommand.Create(() => { });
 }

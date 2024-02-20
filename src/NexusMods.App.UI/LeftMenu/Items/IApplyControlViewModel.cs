@@ -2,7 +2,7 @@
 
 namespace NexusMods.App.UI.LeftMenu.Items;
 
-public interface IApplyButtonViewModel : IViewModelInterface
+public interface IApplyControlViewModel : IViewModelInterface
 {
     ICommand ApplyCommand { get; }
 }

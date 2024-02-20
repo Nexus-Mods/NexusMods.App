@@ -4,9 +4,9 @@ using ReactiveUI;
 
 namespace NexusMods.App.UI.LeftMenu.Items;
 
-public partial class ApplyButtonView : ReactiveUserControl<IApplyButtonViewModel>
+public partial class ApplyControlView : ReactiveUserControl<IApplyControlViewModel>
 {
-    public ApplyButtonView()
+    public ApplyControlView()
     {
         InitializeComponent();
 
