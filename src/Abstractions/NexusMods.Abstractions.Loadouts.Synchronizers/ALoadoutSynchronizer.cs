@@ -513,6 +513,8 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         var newLoadout = await FlattenedLoadoutToLoadout(flattenedLoadout, loadout, prevFlattenedLoadout);
 
         await BackupNewFiles(loadout, fileTree);
+        newLoadout.EnsurePersisted(_store);
+        diskState.LoadoutRevision = newLoadout.DataStoreId;
         _diskStateRegistry.SaveState(loadout.Installation, diskState);
 
         return newLoadout;

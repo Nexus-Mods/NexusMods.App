@@ -655,12 +655,59 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
     [Fact]
     public async Task CanSwitchBetweenLoadouts()
     {
+        var listA = BaseList;
         // Apply the old state
-        await _synchronizer.Apply(BaseList.Value);
+        var baseState = await _synchronizer.Apply(listA.Value);
 
-        var listB = LoadoutRegistry.GetMarker((await _synchronizer.Manage(Install)).LoadoutId);
+        var newId = LoadoutId.NewId();
+        LoadoutRegistry.Alter(newId, "Clone List", 
+            _ => listA.Value with { 
+                LoadoutId = newId, 
+                Name = "List B", 
+            });
+        var listB = LoadoutRegistry.GetMarker(newId);
         
+        // We have two lists, so we can now swap between them and that's fine because they are the same so far
         await _synchronizer.Apply(listB.Value);
+        await _synchronizer.Apply(listA.Value);
+        await _synchronizer.Apply(listB.Value);
+
+        GamePath testFilePath = new(LocationId.Game, "textures/test_file_switcher.dds");
+        
+        // Now let's add a mod to listA
+        await AddMod("Other Files",
+            // Each mod overrides the same files for these three files
+            (testFilePath.Path, $"test-file-switcher")
+        );
+        
+        listA.Value.Mods.Count.Should().Be(listB.Value.Mods.Count + 1, "the mod should have been added");
+
+        var absPath = Install.LocationsRegister.GetResolvedPath(testFilePath);
+        // And apply it
+        await _synchronizer.Apply(listA.Value);
+        absPath.FileExists.Should().BeTrue("the file should have been written to disk");
+        (await absPath.ReadAllTextAsync()).Should().Be("test-file-switcher", "the file should contain the new data");
+        
+        
+        // And switch back to listB
+        await _synchronizer.Apply(listB.Value);
+        
+        absPath.FileExists.Should().BeFalse("the file should have been removed from disk");
+        
+        
+        var listCValue = await _synchronizer.Manage(Install);
+        
+        var listC = LoadoutRegistry.GetMarker(listCValue.LoadoutId);
+        await _synchronizer.Ingest(listC.Value);
+
+        await _synchronizer.Apply(listC.Value);
+        
+        await _synchronizer.Apply(listA.Value);
+        await _synchronizer.Apply(listB.Value);
+        await _synchronizer.Apply(listC.Value);
+
+
+
 
     }
 }
