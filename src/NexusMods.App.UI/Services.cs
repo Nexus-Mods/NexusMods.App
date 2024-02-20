@@ -100,7 +100,6 @@ public static class Services
             .AddViewModel<InProgressViewModel, IInProgressViewModel>()
             .AddViewModel<LaunchButtonViewModel, ILaunchButtonViewModel>()
             .AddViewModel<ApplyControlViewModel, IApplyControlViewModel>()
-            .AddViewModel<ApplyControlDesignViewModel, IApplyControlViewModel>()
             .AddViewModel<LoadoutGridViewModel, ILoadoutGridViewModel>()
             .AddViewModel<ModCategoryViewModel, IModCategoryViewModel>()
             .AddViewModel<ModEnabledViewModel, IModEnabledViewModel>()

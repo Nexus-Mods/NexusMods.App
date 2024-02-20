@@ -41,13 +41,12 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
 
 
         _gameInstallation = _loadoutRegistry.Get(_loadoutId)?.Installation ??
-                            throw new InvalidOperationException("Loadout not found: " + _loadoutId);
+                            throw new ArgumentException("Loadout not found: " + _loadoutId);
 
         (_lastAppliedLoadoutId, _lastAppliedRevisionId) = GetLastAppliedLoadout();
 
         _newestLoadout = _loadoutRegistry.RevisionsAsLoadouts(loadoutId)
-            .ToProperty(this, vm => vm.NewestLoadout);
-
+            .ToProperty(this, vm => vm.NewestLoadout, scheduler: RxApp.MainThreadScheduler);
 
         ApplyCommand = ReactiveCommand.CreateFromTask(async () => await Apply());
 
@@ -59,8 +58,8 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
                 .Subscribe(_ =>
                 {
                     CanApply = !IsApplying && (
-                        !Equals(_lastAppliedLoadoutId, _loadoutId) ||
-                        !Equals(NewestLoadout.DataStoreId, _lastAppliedRevisionId));
+                        !_lastAppliedLoadoutId.Equals(_loadoutId) ||
+                        !NewestLoadout.DataStoreId.Equals(_lastAppliedRevisionId));
                 })
                 .DisposeWith(disposables);
         });
