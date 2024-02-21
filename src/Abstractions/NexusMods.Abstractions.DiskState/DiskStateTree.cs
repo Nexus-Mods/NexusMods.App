@@ -2,6 +2,8 @@
 using System.Text.Json.Serialization;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.Trees;
+using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Serialization.DataModel.Ids;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees.Traits;
@@ -16,6 +18,11 @@ public class DiskStateTree : AGamePathNodeTree<DiskStateEntry>
 {
     private DiskStateTree(IEnumerable<KeyValuePair<GamePath, DiskStateEntry>> tree) : base(tree) { }
 
+    /// <summary>
+    /// The associated loadout id.
+    /// </summary>
+    public IId LoadoutRevision { get; set; } = IdEmpty.Empty;
+    
     /// <summary>
     ///     Creates a disk state from a list of files.
     /// </summary>
