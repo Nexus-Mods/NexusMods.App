@@ -63,7 +63,7 @@
                             VerticalAlignment="Center">
                             <Button Classes="Rounded Primary" x:Name="PrimaryButton">
                                 <StackPanel Orientation="Horizontal">
-                                    <unifiedIcon:UnifiedIcon Classes="AddCircle" />
+                                    <unifiedIcon:UnifiedIcon Size="20" Classes="AddCircle" />
                                     <TextBlock
                                         Text="{x:Static resources:Language.GameWidget__Add_game}">
                                     </TextBlock>
