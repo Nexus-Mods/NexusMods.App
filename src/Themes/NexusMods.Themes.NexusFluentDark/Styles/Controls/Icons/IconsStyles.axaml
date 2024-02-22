@@ -404,10 +404,9 @@
     <Style Selector="unifiedIcon|UnifiedIcon.DragVertical">
         <Setter Property="Value">
             <Setter.Value>
-                <unifiedIcon:IconValue MdiValueSetter="mdi-check-underline"/>
+                <unifiedIcon:IconValue MdiValueSetter="mdi-drag-vertical-variant"/>
             </Setter.Value>
         </Setter>
-        <unifiedIcon:IconValue MdiValueSetter="mdi-drag-vertical-variant"/>
     </Style>
 
     <Style Selector="unifiedIcon|UnifiedIcon.Search">

@@ -11,7 +11,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources">
+    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
+    xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon">
 
     <Design.DataContext>
         <gameWidget:GameWidgetDesignViewModel />
@@ -62,7 +63,7 @@
                             VerticalAlignment="Center">
                             <Button Classes="Rounded Primary" x:Name="PrimaryButton">
                                 <StackPanel Orientation="Horizontal">
-                                    <Svg Classes="AddCircle" />
+                                    <unifiedIcon:UnifiedIcon Classes="AddCircle" />
                                     <TextBlock
                                         Text="{x:Static resources:Language.GameWidget__Add_game}">
                                     </TextBlock>

@@ -6,7 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactive="http://reactiveui.net"
     xmlns:workspace="clr-namespace:NexusMods.App.UI.WorkspaceSystem"
-    xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+    xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI"
     mc:Ignorable="d" d:DesignWidth="80" d:DesignHeight="60"
     x:Class="NexusMods.App.UI.WorkspaceSystem.AddPanelButtonView">
 
@@ -18,7 +18,7 @@
         <Button x:Name="AddPanelButton">
             <StackPanel Orientation="Horizontal">
                 <Image x:Name="ButtonImage"/>
-                <icons:Icon Classes="Plus"/>
+                <unifiedIcon:UnifiedIcon Classes="Plus"/>
             </StackPanel>
         </Button>
     </Border>

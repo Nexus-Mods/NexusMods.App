@@ -6,7 +6,7 @@
     x:Class="NexusMods.App.UI.Controls.TopBar.TopBarView"
     x:TypeArguments="topBar:ITopBarViewModel"
     xmlns="https://github.com/avaloniaui"
-    xmlns:avalonia="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+    xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
@@ -34,27 +34,27 @@
 
             <Button Classes="Action"
                     x:Name="HistoryActionButton">
-                <avalonia:Icon Classes="History ForegroundSubdued" />
+                <unifiedIcon:UnifiedIcon Classes="History ForegroundSubdued" />
             </Button>
 
             <Button Classes="Action"
                     x:Name="UndoActionButton">
-                <avalonia:Icon Classes="Undo ForegroundSubdued" />
+                <unifiedIcon:UnifiedIcon Classes="Undo ForegroundSubdued" />
             </Button>
 
             <Button Classes="Action"
                     x:Name="RedoActionButton">
-                <avalonia:Icon Classes="Redo ForegroundSubdued" />
+                <unifiedIcon:UnifiedIcon Classes="Redo ForegroundSubdued" />
             </Button>
 
             <Button Classes="Action"
                     x:Name="HelpActionButton">
-                <avalonia:Icon Classes="Help ForegroundSubdued" />
+                <unifiedIcon:UnifiedIcon Classes="Help ForegroundSubdued" />
             </Button>
 
             <Button Classes="Action"
                     x:Name="SettingsActionButton">
-                <avalonia:Icon Classes="Cog ForegroundSubdued" />
+                <unifiedIcon:UnifiedIcon Classes="Cog ForegroundSubdued" />
             </Button>
 
             <reactiveUi:ViewModelViewHost VerticalAlignment="Center" x:Name="AddPanelViewModelViewHost" />
@@ -91,7 +91,7 @@
 
                     <Button Classes="Pill Light" x:Name="Premium" IsVisible="False">
                         <StackPanel>
-                            <avalonia:Icon Classes="Star" />
+                            <unifiedIcon:UnifiedIcon Classes="Star" />
                             <TextBlock Text="{x:Static resources:Language.Nexus_Premium_Status__Premium}"></TextBlock>
                         </StackPanel>
                     </Button>
@@ -99,7 +99,7 @@
                     <Button
                         Classes="Action"
                         HorizontalAlignment="Center">
-                        <avalonia:Icon Classes="Bell" />
+                        <unifiedIcon:UnifiedIcon Classes="Bell" />
                     </Button>
 
                     <Button Classes="Avatar"

@@ -4,9 +4,9 @@
                                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                                 xmlns:reactiveUi="http://reactiveui.net"
-                                xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
                                 xmlns:resources="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Resources"
                                 xmlns:modContent="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.ModContent"
+                                xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI"
                                 mc:Ignorable="d" d:DesignWidth="710" d:DesignHeight="44"
                                 x:Class="NexusMods.Games.AdvancedInstaller.UI.ModContent.ModContentTreeEntryView">
     <Design.DataContext>
@@ -15,13 +15,13 @@
 
     <Grid ColumnDefinitions="*, Auto" Margin="0,5,0,5">
         <Grid.Styles>
-            <Style Selector="icons|Icon.FileTypeIcon">
-                <Setter Property="FontSize" Value="18" />
+            <Style Selector="unifiedIcon|UnifiedIcon.FileTypeIcon">
+                <Setter Property="Size" Value="18" />
                 <Setter Property="Margin" Value="8, 0, 0, 0" />
             </Style>
 
-            <Style Selector="icons|Icon.Close">
-                <Setter Property="FontSize" Value="20" />
+            <Style Selector="unifiedIcon|UnifiedIcon.Close">
+                <Setter Property="Size" Value="20" />
             </Style>
 
             <Style Selector="Button.RightElements">
@@ -37,8 +37,8 @@
         <Grid Grid.Column="0" ClipToBounds="True" ColumnDefinitions="Auto,Auto" Name="FileElementGrid">
 
             <!-- File / Directory Icon -->
-            <icons:Icon Grid.Column="0" Classes="File FileTypeIcon" IsVisible="False" x:Name="FileEntryIcon" />
-            <icons:Icon Grid.Column="0" Classes="FolderOutline FileTypeIcon" IsVisible="False"
+            <unifiedIcon:UnifiedIcon Grid.Column="0" Classes="File FileTypeIcon" IsVisible="False" x:Name="FileEntryIcon" />
+            <unifiedIcon:UnifiedIcon Grid.Column="0" Classes="FolderOutline FileTypeIcon" IsVisible="False"
                         x:Name="FolderEntryIcon" />
 
             <!-- File Name -->
@@ -62,7 +62,7 @@
             <Button Classes="Rounded Primary Active RightElements" HorizontalAlignment="Right" IsVisible="False"
                     x:Name="SelectLocationRoundedButton">
                 <StackPanel Orientation="Horizontal">
-                    <icons:Icon Classes="Close" x:Name="SelectLocationCloseIcon" />
+                    <unifiedIcon:UnifiedIcon Classes="Close" x:Name="SelectLocationCloseIcon" />
                     <TextBlock Text="{x:Static resources:Language.SelectLocationButton_Select_location}"
                                x:Name="SelectLocationRoundedButtonTextBlock" />
                 </StackPanel>
@@ -72,7 +72,7 @@
             <Button Classes="Rounded Accent RightElements" HorizontalAlignment="Right" IsVisible="False"
                     x:Name="RemoveFromLocationButton">
                 <StackPanel Orientation="Horizontal">
-                    <icons:Icon Classes="Close" x:Name="RemoveFromLocationCloseIcon" />
+                    <unifiedIcon:UnifiedIcon Classes="Close" x:Name="RemoveFromLocationCloseIcon" />
                     <TextBlock Text="temp Loc" x:Name="RemoveFromLocationButtonTextBlock" />
                 </StackPanel>
             </Button>
@@ -81,7 +81,7 @@
             <Button Classes="Rounded Primary SemiActive RightElements" HorizontalAlignment="Right" IsVisible="False"
                     x:Name="IncludeTransitionButton">
                 <StackPanel Orientation="Horizontal">
-                    <icons:Icon Classes="Close" x:Name="IncludeTransitionCloseIcon" />
+                    <unifiedIcon:UnifiedIcon Classes="Close" x:Name="IncludeTransitionCloseIcon" />
                     <TextBlock Text="Include temp text" x:Name="IncludeTransitionButtonTextBlock" />
                 </StackPanel>
             </Button>
@@ -90,7 +90,7 @@
             <Button Classes="Rounded Accent SemiActive RightElements" HorizontalAlignment="Right" IsVisible="False"
                     x:Name="IncludedRemoveButton">
                 <StackPanel Orientation="Horizontal">
-                    <icons:Icon Classes="Close" x:Name="IncludedRemoveButtonCloseIcon" />
+                    <unifiedIcon:UnifiedIcon Classes="Close" x:Name="IncludedRemoveButtonCloseIcon" />
                     <TextBlock Text="Included temp text" x:Name="IncludedRemoveButtonTextBlock" />
                 </StackPanel>
             </Button>
