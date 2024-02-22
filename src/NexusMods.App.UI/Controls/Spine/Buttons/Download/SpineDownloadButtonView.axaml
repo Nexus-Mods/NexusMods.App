@@ -20,7 +20,7 @@
         <Grid>
             <Border></Border>
             <Arc x:Name="ProgressArc"></Arc>
-            <unifiedIcon:UnifiedIcon Classes="Download"/>
+            <unifiedIcon:UnifiedIcon Size="24" Classes="Download"/>
             <StackPanel>
                 <TextBlock Classes="Number" x:Name="NumberTextBlock"/>
                 <TextBlock Classes="Units" x:Name="UnitsTextBlock"/>
