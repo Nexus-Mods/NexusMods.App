@@ -1,6 +1,6 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:icons="https://github.com/projektanker/icons.avalonia"
+        xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI"
         xmlns:extensions="clr-namespace:NexusMods.Themes.NexusFluentDark.Extensions">
     <Design.PreviewWith>
         <WrapPanel Width="500">
@@ -117,9 +117,9 @@
                 <Setter Property="Template">
                     <ControlTemplate>
                         <Grid>
-                            <icons:Icon
+                            <unifiedIcon:UnifiedIcon
                                 Classes="HelpCircle"
-                                FontSize="20"
+                                Size="20"
                                 HorizontalAlignment="Center"
                                 Margin="0"
                                 Padding="0"
@@ -132,19 +132,23 @@
                 </Setter>
             </Style>
 
-            <Style Selector="^.Add /template/ icons|Icon">
-                <Setter Property="Value" Value="mdi-plus" />
+            <Style Selector="^.Add /template/ unifiedIcon|UnifiedIcon">
+                <Setter Property="Value">
+                    <unifiedIcon:IconValue MdiValueSetter="mdi-plus"/>
+                </Setter>
             </Style>
 
-            <Style Selector="^.Home /template/ icons|Icon">
-                <Setter Property="Value" Value="mdi-home" />
+            <Style Selector="^.Home /template/ unifiedIcon|UnifiedIcon">
+                <Setter Property="Value">
+                    <unifiedIcon:IconValue MdiValueSetter="mdi-home"/>
+                </Setter>
             </Style>
 
-            <Style Selector="^.Inactive icons|Icon">
+            <Style Selector="^.Inactive unifiedIcon|UnifiedIcon">
                 <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralSubduedBrush}" />
             </Style>
 
-            <Style Selector="^.Active icons|Icon">
+            <Style Selector="^.Active unifiedIcon|UnifiedIcon">
                 <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralStrongBrush}" />
             </Style>
 

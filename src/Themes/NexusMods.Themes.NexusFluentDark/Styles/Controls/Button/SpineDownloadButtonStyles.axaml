@@ -1,6 +1,6 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:icons="https://github.com/projektanker/icons.avalonia"
+        xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI"
         xmlns:ui="clr-namespace:NexusMods.App.UI.Controls.Spine.Buttons.Download;assembly=NexusMods.App.UI"
         xmlns:extensions="clr-namespace:NexusMods.Themes.NexusFluentDark.Extensions">
 
@@ -13,7 +13,7 @@
                     <Grid>
                         <Border></Border>
                         <Arc></Arc>
-                        <icons:Icon Classes="Download" />
+                        <unifiedIcon:UnifiedIcon Classes="Download" />
                         <StackPanel>
                             <TextBlock Text="8.6" Classes="Number" />
                             <TextBlock Text="MB/s" Classes="Units" />
@@ -24,7 +24,7 @@
                     <Grid>
                         <Border></Border>
                         <Arc></Arc>
-                        <icons:Icon Classes="Download" />
+                        <unifiedIcon:UnifiedIcon Classes="Download" />
                         <StackPanel>
                             <TextBlock Text="8.6" Classes="Number" />
                             <TextBlock Text="MB/s" Classes="Units" />
@@ -38,7 +38,7 @@
                     <Grid>
                         <Border></Border>
                         <Arc SweepAngle="270"></Arc>
-                        <icons:Icon Classes="Download" />
+                        <unifiedIcon:UnifiedIcon Classes="Download" />
                         <StackPanel>
                             <TextBlock Text="18.6" Classes="Number" />
                             <TextBlock Text="MB/s" Classes="Units" />
@@ -49,7 +49,7 @@
                     <Grid>
                         <Border></Border>
                         <Arc SweepAngle="90"></Arc>
-                        <icons:Icon Classes="Download" />
+                        <unifiedIcon:UnifiedIcon Classes="Download" />
                         <StackPanel>
                             <TextBlock Text="18.6" Classes="Number" />
                             <TextBlock Text="MB/s" Classes="Units" />
@@ -63,7 +63,7 @@
                     <Grid>
                         <Border></Border>
                         <Arc SweepAngle="180"></Arc>
-                        <icons:Icon Classes="Download" />
+                        <unifiedIcon:UnifiedIcon Classes="Download" />
                         <StackPanel>
                             <TextBlock Text="48" Classes="Number" />
                             <TextBlock Text="MINS" Classes="Units" />
@@ -74,7 +74,7 @@
                     <Grid>
                         <Border></Border>
                         <Arc SweepAngle="90"></Arc>
-                        <icons:Icon Classes="Download" />
+                        <unifiedIcon:UnifiedIcon Classes="Download" />
                         <StackPanel>
                             <TextBlock Text="48" Classes="Number" />
                             <TextBlock Text="MINS" Classes="Units" />
@@ -118,11 +118,9 @@
         </Style>
 
         <!-- Icon -->
-        <Style Selector="^ icons|Icon">
-            <Setter Property="Width" Value="24" />
-            <Setter Property="Height" Value="24" />
+        <Style Selector="^ unifiedIcon|UnifiedIcon">
+            <Setter Property="Size" Value="24" />
             <Setter Property="Margin" Value="12" />
-            <Setter Property="FontSize" Value="18" />
             <Setter Property="Foreground" Value="{DynamicResource ElementForegroundNeutralStrongBrush}" />
         </Style>
 
@@ -175,7 +173,7 @@
             </Style>
 
             <!-- Icon -->
-            <Style Selector="^ icons|Icon">
+            <Style Selector="^ unifiedIcon|UnifiedIcon">
                 <Setter Property="Foreground" Value="{DynamicResource ElementForegroundNeutralStrongBrush}" />
             </Style>
 
@@ -198,7 +196,7 @@
                 <Setter Property="Stroke" Value="{StaticResource ElementForegroundInfoWeakBrush}" />
             </Style>
 
-            <Style Selector="^ > Grid > icons|Icon">
+            <Style Selector="^ > Grid > unifiedIcon|UnifiedIcon">
                 <Setter Property="IsVisible" Value="False" />
             </Style>
 
@@ -215,7 +213,7 @@
         <!-- Idle variation -->
         <Style Selector="^.Idle">
 
-            <Style Selector="^ > Grid > icons|Icon">
+            <Style Selector="^ > Grid > unifiedIcon|UnifiedIcon">
                 <Setter Property="IsVisible" Value="True" />
             </Style>
 
@@ -248,7 +246,7 @@
                 </Setter>
             </Style>
 
-            <Style Selector="^ icons|Icon">
+            <Style Selector="^ unifiedIcon|UnifiedIcon">
                 <Setter Property="Foreground" Value="{DynamicResource ElementForegroundNeutralStrongBrush}" />
             </Style>
         </Style>

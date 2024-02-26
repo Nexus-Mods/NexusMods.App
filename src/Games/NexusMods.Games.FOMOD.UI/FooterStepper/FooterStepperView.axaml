@@ -5,7 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="clr-namespace:NexusMods.Games.FOMOD.UI"
-    xmlns:avalonia="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+    xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI"
     xmlns:resources="clr-namespace:NexusMods.Games.FOMOD.UI.Resources"
     mc:Ignorable="d"
     d:DesignWidth="1232"
@@ -21,7 +21,7 @@
             <Button Classes="Standard PrimaryOutlined" HorizontalAlignment="Left" Margin="24, 0" Grid.Column="0"
                     x:Name="GoToPrevButton">
                 <StackPanel>
-                    <avalonia:Icon Classes="ArrowLeft" />
+                    <unifiedIcon:UnifiedIcon Classes="ArrowLeft" />
                     <TextBlock Text="{x:Static resources:Language.FooterStepperView_FooterStepperView_Previous}" />
                 </StackPanel>
             </Button>
@@ -33,7 +33,7 @@
                 <StackPanel>
                     <TextBlock x:Name="GoToNextButtonTextBlock"
                                Text="{x:Static resources:Language.FooterStepperView_FooterStepperView_Next}" />
-                    <avalonia:Icon Classes="ArrowRight" x:Name="IconArrowRight" />
+                    <unifiedIcon:UnifiedIcon Classes="ArrowRight" x:Name="IconArrowRight" />
                 </StackPanel>
             </Button>
         </Grid>

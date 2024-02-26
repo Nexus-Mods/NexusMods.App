@@ -1,7 +1,7 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:ui="clr-namespace:NexusMods.App.UI.WorkspaceSystem;assembly=NexusMods.App.UI"
-        xmlns:icons="https://github.com/projektanker/icons.avalonia"
+        xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI"
         xmlns:reactive="http://reactiveui.net">
 
     <!-- Add Styles Here -->
@@ -10,7 +10,7 @@
         <Style Selector="^ Border#Container:not(.Selected)">
             <Setter Property="Background" Value="Transparent" />
 
-            <Style Selector="^ icons|Icon">
+            <Style Selector="^ unifiedIcon|UnifiedIcon">
                 <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralSubduedBrush}" />
             </Style>
 
@@ -22,7 +22,7 @@
         <Style Selector="^ Border#Container.Selected">
             <Setter Property="Background" Value="{StaticResource ElementBackgroundNeutralLowBrush}" />
 
-            <Style Selector="^ icons|Icon">
+            <Style Selector="^ unifiedIcon|UnifiedIcon">
                 <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralStrongBrush}" />
             </Style>
 

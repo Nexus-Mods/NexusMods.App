@@ -1,7 +1,7 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:fomod="clr-namespace:NexusMods.Games.FOMOD.UI;assembly=NexusMods.Games.FOMOD.UI"
-        xmlns:icons="https://github.com/projektanker/icons.avalonia">
+        xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI">
     <Design.PreviewWith>
         <Border Padding="20">
             <fomod:GuidedInstallerOptionView />
@@ -12,8 +12,8 @@
     <!-- Style Definitions -->
 
     <Style Selector="fomod|GuidedInstallerOptionView">
-        <Style Selector="^ icons|Icon">
-            <Setter Property="FontSize" Value="18"/>
+        <Style Selector="^ unifiedIcon|UnifiedIcon">
+            <Setter Property="Size" Value="18"/>
             <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralSubduedBrush}" />
             <Setter Property="Margin" Value="0,10,10,10" />
         </Style>

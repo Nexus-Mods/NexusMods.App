@@ -9,7 +9,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon">
     <Design.DataContext>
         <buttons:ImageButtonDesignViewModel />
     </Design.DataContext>
@@ -22,22 +23,19 @@
         <ToolTip.Tip>
             <TextBlock x:Name="ToolTipTextBlock"/>
         </ToolTip.Tip>
-        <Button.Template>
-            <ControlTemplate>
-                <Grid>
-                    <Image
-                        Height="50"
-                        Width="50"
-                        x:Name="Image">
-                        <Image.Clip>
-                            <EllipseGeometry Rect="0, 0, 50, 50" />
-                        </Image.Clip>
-                    </Image>
-                    <Border
-                        Height="50"
-                        Width="50" />
-                </Grid>
-            </ControlTemplate>
-        </Button.Template>
+
+        <Grid>
+            <unifiedIcon:UnifiedIcon
+                Size="50"
+                x:Name="Image">
+                <unifiedIcon:UnifiedIcon.Clip>
+                    <EllipseGeometry Rect="0, 0, 50, 50" />
+                </unifiedIcon:UnifiedIcon.Clip>
+            </unifiedIcon:UnifiedIcon>
+            <Border
+                Height="50"
+                Width="50" />
+        </Grid>
+
     </Button>
 </reactiveUi:ReactiveUserControl>

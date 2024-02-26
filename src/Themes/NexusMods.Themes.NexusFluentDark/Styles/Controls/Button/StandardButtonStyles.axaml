@@ -1,6 +1,6 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:avalonia="https://github.com/projektanker/icons.avalonia">
+        xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI">
 
     <!-- Preview -->
     <Design.PreviewWith>
@@ -36,13 +36,13 @@
                     <TextBlock>Standard Primary + Icon</TextBlock>
                     <Button Classes="Standard Primary">
                         <StackPanel>
-                            <avalonia:Icon Classes="Play" />
+                            <unifiedIcon:UnifiedIcon Classes="Play" />
                             <TextBlock Text="BUTTON" />
                         </StackPanel>
                     </Button>
                     <Button Classes="Standard Primary" IsEnabled="False">
                         <StackPanel>
-                            <avalonia:Icon Classes="Play" />
+                            <unifiedIcon:UnifiedIcon Classes="Play" />
                             <TextBlock Text="BUTTON" />
                         </StackPanel>
                     </Button>
@@ -52,15 +52,21 @@
                     <TextBlock>Standard Primary + Image</TextBlock>
                     <Button Classes="Standard Primary">
                         <StackPanel>
-                            <Image
-                                Source="avares://NexusMods.Themes.NexusFluentDark/Assets/DesignTime/cyberpunk_game.png" />
+                            <unifiedIcon:UnifiedIcon>
+                                <unifiedIcon:UnifiedIcon.Value>
+                                    <unifiedIcon:IconValue ImageSetter="avares://NexusMods.Themes.NexusFluentDark/Assets/DesignTime/cyberpunk_game.png"/>
+                                </unifiedIcon:UnifiedIcon.Value>
+                            </unifiedIcon:UnifiedIcon>
                             <TextBlock Text="BUTTON" />
                         </StackPanel>
                     </Button>
                     <Button Classes="Standard Primary" IsEnabled="False">
                         <StackPanel>
-                            <Image
-                                Source="avares://NexusMods.Themes.NexusFluentDark/Assets/DesignTime/cyberpunk_game.png" />
+                            <unifiedIcon:UnifiedIcon>
+                                <unifiedIcon:UnifiedIcon.Value>
+                                    <unifiedIcon:IconValue ImageSetter="avares://NexusMods.Themes.NexusFluentDark/Assets/DesignTime/cyberpunk_game.png"/>
+                                </unifiedIcon:UnifiedIcon.Value>
+                            </unifiedIcon:UnifiedIcon>
                             <TextBlock Text="BUTTON" />
                         </StackPanel>
                     </Button>
@@ -81,13 +87,13 @@
                     <TextBlock>Standard Primary Outline</TextBlock>
                     <Button Classes="Standard PrimaryOutlined">
                         <StackPanel>
-                            <avalonia:Icon Classes="Play" />
+                            <unifiedIcon:UnifiedIcon Classes="Play" />
                             <TextBlock Text="BUTTON" />
                         </StackPanel>
                     </Button>
                     <Button Classes="Standard PrimaryOutlined" IsEnabled="False">
                         <StackPanel>
-                            <avalonia:Icon Classes="Play" />
+                            <unifiedIcon:UnifiedIcon Classes="Play" />
                             <TextBlock Text="BUTTON" />
                         </StackPanel>
                     </Button>
@@ -98,13 +104,13 @@
                     <TextBlock>Standard Secondary</TextBlock>
                     <Button Classes="Standard Secondary">
                         <StackPanel>
-                            <avalonia:Icon Classes="Play" />
+                            <unifiedIcon:UnifiedIcon Classes="Play" />
                             <TextBlock Text="BUTTON" />
                         </StackPanel>
                     </Button>
                     <Button Classes="Standard Secondary" IsEnabled="False">
                         <StackPanel>
-                            <avalonia:Icon Classes="Play" />
+                            <unifiedIcon:UnifiedIcon Classes="Play" />
                             <TextBlock Text="BUTTON" />
                         </StackPanel>
                     </Button>
@@ -115,13 +121,13 @@
                     <TextBlock>Standard Secondary Outline</TextBlock>
                     <Button Classes="Standard SecondaryOutlined">
                         <StackPanel>
-                            <avalonia:Icon Classes="Play" />
+                            <unifiedIcon:UnifiedIcon Classes="Play" />
                             <TextBlock Text="BUTTON" />
                         </StackPanel>
                     </Button>
                     <Button Classes="Standard SecondaryOutlined" IsEnabled="False">
                         <StackPanel>
-                            <avalonia:Icon Classes="Play" />
+                            <unifiedIcon:UnifiedIcon Classes="Play" />
                             <TextBlock Text="BUTTON" />
                         </StackPanel>
                     </Button>
@@ -132,13 +138,13 @@
                     <TextBlock>Standard Tertiary</TextBlock>
                     <Button Classes="Standard Tertiary">
                         <StackPanel>
-                            <avalonia:Icon Classes="Play" />
+                            <unifiedIcon:UnifiedIcon Classes="Play" />
                             <TextBlock Text="BUTTON" />
                         </StackPanel>
                     </Button>
                     <Button Classes="Standard Tertiary" IsEnabled="False">
                         <StackPanel>
-                            <avalonia:Icon Classes="Play" />
+                            <unifiedIcon:UnifiedIcon Classes="Play" />
                             <TextBlock Text="BUTTON" />
                         </StackPanel>
                     </Button>
@@ -150,13 +156,13 @@
                     <TextBlock>Standard Success</TextBlock>
                     <Button Classes="Standard Success">
                         <StackPanel>
-                            <avalonia:Icon Classes="Play" />
+                            <unifiedIcon:UnifiedIcon Classes="Play" />
                             <TextBlock Text="BUTTON" />
                         </StackPanel>
                     </Button>
                     <Button Classes="Standard Success" IsEnabled="False">
                         <StackPanel>
-                            <avalonia:Icon Classes="Play" />
+                            <unifiedIcon:UnifiedIcon Classes="Play" />
                             <TextBlock Text="BUTTON" />
                         </StackPanel>
                     </Button>
@@ -205,21 +211,9 @@
             <!-- NOTE: Spacing is handled through margin of icon and images as icons seem to behave strangely -->
         </Style>
 
-        <Style Selector="^ > StackPanel > avalonia|Icon">
-            <!-- Icons size seem determined by font size, width and height are just there to limit the bounds -->
-            <Setter Property="FontSize" Value="24" />
-            <Setter Property="Width" Value="24" />
-            <Setter Property="Height" Value="24" />
-
-            <!-- NOTE: For some reason setting this to 8 causes a big distance for icons only, this is a workaround -->
-            <!-- If the distance from the text is too low, try setting this to 8 as design -->
-            <Setter Property="Margin" Value="0,0,3,0" />
-        </Style>
-
-        <Style Selector="^ > StackPanel > Image">
+        <Style Selector="^ > StackPanel > unifiedIcon|UnifiedIcon">
+            <Setter Property="Size" Value="24" />
             <Setter Property="Margin" Value="0,0,8,0" />
-            <Setter Property="Width" Value="24" />
-            <Setter Property="Height" Value="24" />
         </Style>
 
         <Style Selector="^:focus /template/ ContentPresenter#PART_ContentPresenter">

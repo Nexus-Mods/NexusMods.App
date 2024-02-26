@@ -4,7 +4,7 @@
                                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:items="clr-namespace:NexusMods.App.UI.LeftMenu.Items"
-                                xmlns:avalonia="https://github.com/projektanker/icons.avalonia"
+                                xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI"
                                 xmlns:progressRing="clr-namespace:NexusMods.App.UI.Controls.ProgressRing"
                                 mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="100"
                                 x:Class="NexusMods.App.UI.LeftMenu.Items.ApplyControlView">
@@ -24,7 +24,7 @@
                     x:Name="ApplyButton">
                 <StackPanel Orientation="Horizontal"
                             HorizontalAlignment="Center">
-                    <avalonia:Icon FontSize="24" Classes="Check" />
+                    <unifiedIcon:UnifiedIcon Size="24" Classes="Check" />
                     <TextBlock Classes="TitleSMSemi"
                                Text="APPLY" />
                 </StackPanel>

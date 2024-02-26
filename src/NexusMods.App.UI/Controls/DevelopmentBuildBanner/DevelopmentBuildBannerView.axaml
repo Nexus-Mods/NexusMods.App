@@ -4,21 +4,21 @@
     mc:Ignorable="d"
     x:Class="NexusMods.App.UI.Controls.DevelopmentBuildBanner.DevelopmentBuildBannerView"
     x:TypeArguments="developmentBuildBanner:IDevelopmentBuildBannerViewModel"
-    xmlns:avalonia="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
-    xmlns:developmentBuildBanner="clr-namespace:NexusMods.App.UI.Controls.DevelopmentBuildBanner">
+    xmlns:developmentBuildBanner="clr-namespace:NexusMods.App.UI.Controls.DevelopmentBuildBanner"
+    xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon">
     <Design.DataContext>
         <developmentBuildBanner:DevelopmentBuildBannerViewModel />
     </Design.DataContext>
     <Border Classes="DangerWeak">
         <StackPanel Orientation="Horizontal">
-            <avalonia:Icon
+            <unifiedIcon:UnifiedIcon
                 Classes="Alert"
-                FontSize="20"
+                Size="20"
                 Margin="30 2 8 2"
                 VerticalAlignment="Center" />
             <TextBlock Classes="TitleSMSemi"
