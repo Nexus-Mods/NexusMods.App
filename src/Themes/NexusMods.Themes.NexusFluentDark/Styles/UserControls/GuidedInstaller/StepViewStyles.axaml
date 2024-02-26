@@ -14,7 +14,7 @@
     <Style Selector="fomod|GuidedInstallerStepView">
         <Style Selector="^ Border#TopPart">
                 <Setter Property="Padding" Value="24, 16, 24, 24" />
-                <Setter Property="Background" Value="{StaticResource ElementBackgroundNeutralTopBrush}" />
+                <Setter Property="Background" Value="{StaticResource SurfaceTopBrush}" />
             </Style>
             <Style Selector="^ Border#MultiOptionHeaderBorder">
                 <Setter Property="Padding" Value="0,0,0,16" />
@@ -28,7 +28,7 @@
             </Style>
 
             <Style Selector="^ Border#GroupsBorder">
-                <Setter Property="Background" Value="{StaticResource ElementBackgroundNeutralMidBrush}" />
+                <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
                 <Setter Property="CornerRadius" Value="8,8, 8,8" />
                 <Setter Property="Padding" Value="16" />
                 <Setter Property="Margin" Value="0,0,16,0" />

@@ -14,7 +14,7 @@
     <Style Selector="fomod|GuidedInstallerOptionView">
         <Style Selector="^ unifiedIcon|UnifiedIcon">
             <Setter Property="Size" Value="18"/>
-            <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralSubduedBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
             <Setter Property="Margin" Value="0,10,10,10" />
         </Style>
         <Style Selector="^ TextBlock.BodyMDNormal">
@@ -22,7 +22,7 @@
             <Setter Property="Padding" Value="8,3,8,0" />
         </Style>
         <Style Selector="^ TextBlock.StatusDangerLighter">
-            <Setter Property="Foreground" Value="{StaticResource ElementForegroundDangerModerateBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource DangerModerateBrush}" />
         </Style>
         <Style Selector="^ TextBlock.Disabled">
             <Setter Property="Opacity" Value="{StaticResource OpacityDisabledElement}"/>

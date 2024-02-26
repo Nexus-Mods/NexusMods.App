@@ -99,12 +99,12 @@
 
         <Setter Property="CornerRadius" Value="45" />
         <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="BorderBrush" Value="{StaticResource ElementBackgroundNeutralMidBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource SurfaceMidBrush}" />
 
         <Setter Property="HorizontalAlignment" Value="Center" />
         <Setter Property="ClipToBounds" Value="False" />
 
-        <Setter Property="Background" Value="{StaticResource ElementBackgroundTransparentBrush}" />
+        <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
 
         <!-- Border -->
         <Style Selector="^ Border">
@@ -112,7 +112,7 @@
             <Setter Property="Height" Value="50" />
             <Setter Property="CornerRadius" Value="45" />
             <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="BorderBrush" Value="{StaticResource ElementBackgroundNeutralMidBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource SurfaceMidBrush}" />
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="ClipToBounds" Value="False" />
         </Style>
@@ -121,7 +121,7 @@
         <Style Selector="^ unifiedIcon|UnifiedIcon">
             <Setter Property="Size" Value="24" />
             <Setter Property="Margin" Value="12" />
-            <Setter Property="Foreground" Value="{DynamicResource ElementForegroundNeutralStrongBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource NeutralStrongBrush}" />
         </Style>
 
         <!-- StackPanel -->
@@ -160,21 +160,21 @@
         <Style Selector="^:pointerover">
 
             <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
-                <Setter Property="Background" Value="{StaticResource ElementBackgroundTransparentBrush}" />
+                <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
             </Style>
 
             <!-- Border -->
             <Style Selector="^ Border">
-                <Setter Property="BorderBrush" Value="{DynamicResource ElementForegroundNeutralModerateBrush}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource NeutralModerateBrush}" />
                 <Setter Property="Background">
-                    <SolidColorBrush Color="{StaticResource ElementForegroundNeutralStrong}"
+                    <SolidColorBrush Color="{StaticResource NeutralStrong}"
                                      Opacity="{StaticResource OpacitySubdued}" />
                 </Setter>
             </Style>
 
             <!-- Icon -->
             <Style Selector="^ unifiedIcon|UnifiedIcon">
-                <Setter Property="Foreground" Value="{DynamicResource ElementForegroundNeutralStrongBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource NeutralStrongBrush}" />
             </Style>
 
 
@@ -193,7 +193,7 @@
                 <Setter Property="Height" Value="50" />
                 <Setter Property="StrokeThickness" Value="3" />
                 <Setter Property="StartAngle" Value="270" />
-                <Setter Property="Stroke" Value="{StaticResource ElementForegroundInfoWeakBrush}" />
+                <Setter Property="Stroke" Value="{StaticResource InfoWeakBrush}" />
             </Style>
 
             <Style Selector="^ > Grid > unifiedIcon|UnifiedIcon">
@@ -206,7 +206,7 @@
 
             <!-- pointerover color -->
             <Style Selector="^:pointerover Arc">
-                <Setter Property="Stroke" Value="{StaticResource ElementForegroundInfoSubduedBrush}" />
+                <Setter Property="Stroke" Value="{StaticResource InfoSubduedBrush}" />
             </Style>
         </Style>
 
@@ -227,7 +227,7 @@
 
             <Style Selector="^ Border">
                 <Setter Property="Background">
-                    <SolidColorBrush Color="{StaticResource ElementForegroundNeutralStrong}"
+                    <SolidColorBrush Color="{StaticResource NeutralStrong}"
                                      Opacity="{StaticResource OpacityWeak}" />
                 </Setter>
                 <Setter Property="BoxShadow">
@@ -239,7 +239,7 @@
             <Style Selector="^.Progress Border">
                 <Setter Property="BorderThickness" Value="2" />
                 <Setter Property="CornerRadius" Value="45" />
-                <Setter Property="BorderBrush" Value="{StaticResource ElementForegroundNeutralModerateBrush}" />
+                <Setter Property="BorderBrush" Value="{StaticResource NeutralModerateBrush}" />
                 <Setter Property="BoxShadow">
                     <extensions:BoxShadow BlurRadius="10" SpreadRadius="2"
                                           ShadowColor="{StaticResource BrandNeutral200}" />
@@ -247,7 +247,7 @@
             </Style>
 
             <Style Selector="^ unifiedIcon|UnifiedIcon">
-                <Setter Property="Foreground" Value="{DynamicResource ElementForegroundNeutralStrongBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource NeutralStrongBrush}" />
             </Style>
         </Style>
 

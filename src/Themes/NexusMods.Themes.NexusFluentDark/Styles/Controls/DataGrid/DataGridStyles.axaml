@@ -24,12 +24,12 @@
     <!-- Add Styles Here -->
 
     <Style Selector="DataGrid">
-        <Setter Property="Background" Value="{StaticResource ElementBackgroundTransparentBrush}" />
+        <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
     </Style>
 
     <Style Selector="DataGridColumnHeader">
-        <Setter Property="Background" Value="{StaticResource ElementBackgroundTransparentBrush}" />
-        <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralStrongBrush}" />
+        <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
+        <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
         <Setter Property="Padding" Value="16, 0, 0, 0" />
     </Style>
 
@@ -43,11 +43,11 @@
 
     <Style Selector="DataGridColumnHeader TextBlock">
         <Setter Property="Theme" Value="{StaticResource TitleXSSemiTheme}" />
-        <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralStrongBrush}" />
+        <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
     </Style>
 
     <Style Selector="DataGridRow:selected Rectangle#BackgroundRectangle">
-        <Setter Property="Fill" Value="{StaticResource ElementBackgroundNeutralMidBrush}" />
+        <Setter Property="Fill" Value="{StaticResource SurfaceMidBrush}" />
     </Style>
 
     <Style Selector="DataGridCell">
@@ -66,6 +66,6 @@
 
     <Style Selector="DataGridCell TextBlock">
         <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
-        <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralStrongBrush}" />
+        <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
     </Style>
 </Styles>

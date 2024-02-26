@@ -12,18 +12,18 @@
     <Style Selector="ui|TopBarView">
 
         <Style Selector="^ Border#SearchBoxBorder">
-            <Setter Property="BorderBrush" Value="{StaticResource ElementStrokeTranslucentWeakBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
         </Style>
 
         <Style Selector="^ Border#SearchBoxBorder">
             <Setter Property="CornerRadius" Value="4" />
 
             <Style Selector="^ TextBlock">
-                <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralWeakBrush}" />
+                <Setter Property="Foreground" Value="{StaticResource NeutralWeakBrush}" />
             </Style>
 
             <Style Selector="^ unifiedIcon|UnifiedIcon">
-                <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralWeakBrush}" />
+                <Setter Property="Foreground" Value="{StaticResource NeutralWeakBrush}" />
             </Style>
         </Style>
 

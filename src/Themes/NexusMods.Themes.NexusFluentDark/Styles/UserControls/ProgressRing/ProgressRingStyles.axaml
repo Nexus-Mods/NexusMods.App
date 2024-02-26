@@ -13,7 +13,7 @@
     <Style Selector="progressRing|ProgressRing">
 
         <Style Selector="^ Arc">
-            <Setter Property="Stroke" Value="{StaticResource ElementForegroundPrimaryModerateBrush}" />
+            <Setter Property="Stroke" Value="{StaticResource PrimaryModerateBrush}" />
             <Setter Property="StrokeThickness" Value="2.0" />
             <Setter Property="SweepAngle" Value="135" />
 
@@ -30,7 +30,7 @@
         </Style>
 
         <Style Selector="^ Ellipse">
-            <Setter Property="Stroke" Value="{StaticResource ElementStrokeTranslucentSubduedBrush}" />
+            <Setter Property="Stroke" Value="{StaticResource StrokeTranslucentSubduedBrush}" />
             <Setter Property="StrokeThickness" Value="2.8" />
         </Style>
     </Style>

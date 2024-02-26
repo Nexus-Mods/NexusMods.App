@@ -16,7 +16,7 @@
 
     <Style Selector="ui|GameWidget Button.FirstButton unifiedIcon|UnifiedIcon">
         <Setter Property="Size" Value="20" />
-        <Setter Property="Foreground" Value="{DynamicResource ElementForegroundNeutralStrongBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource NeutralStrongBrush}" />
     </Style>
 
 </Styles>

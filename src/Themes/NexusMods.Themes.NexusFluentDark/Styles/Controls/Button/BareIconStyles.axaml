@@ -30,7 +30,7 @@
         <Setter Property="Template">
             <ControlTemplate>
                 <!--  Transparent background so that the button is clickable over the entire area  -->
-                <Border Background="{StaticResource ElementBackgroundTransparentBrush}">
+                <Border Background="{StaticResource SurfaceTransparentBrush}">
                     <unifiedIcon:UnifiedIcon/>
                 </Border>
             </ControlTemplate>

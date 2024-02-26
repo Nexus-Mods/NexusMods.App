@@ -19,25 +19,25 @@
     <Style Selector="Button.PanelTitlebar">
 
         <Style Selector="^ unifiedIcon|UnifiedIcon">
-            <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralSubduedBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
             <Setter Property="Size" Value="24" />
         </Style>
 
         <Style Selector="^ Border">
-            <Setter Property="Background" Value="{StaticResource ElementBackgroundTransparentBrush}" />
+            <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
             <Setter Property="CornerRadius" Value="8" />
         </Style>
 
         <Style Selector="^:pointerover unifiedIcon|UnifiedIcon">
-            <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralStrongBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
         </Style>
 
         <Style Selector="^:pointerover Border">
-            <Setter Property="Background" Value="{StaticResource ElementBackgroundNeutralTranslucentLow}" />
+            <Setter Property="Background" Value="{StaticResource SurfaceTranslucentLow}" />
         </Style>
 
         <Style Selector="^:pressed Border">
-            <Setter Property="Background" Value="{StaticResource ElementBackgroundTransparentBrush}" />
+            <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
         </Style>
 
         <Style Selector="^:disabled unifiedIcon|UnifiedIcon">
@@ -45,7 +45,7 @@
         </Style>
 
         <Style Selector="^.Active unifiedIcon|UnifiedIcon">
-            <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralStrongBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
         </Style>
 
         <Style Selector="^.Close">

@@ -34,7 +34,7 @@
 
     <!-- TopBar Action Button -->
     <Style Selector="Button.Action">
-        <Setter Property="Background" Value="{StaticResource ElementBackgroundTransparentBrush}" />
+        <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
         <Setter Property="Width" Value="40" />
         <Setter Property="Height" Value="40" />
         <Setter Property="CornerRadius" Value="4" />
@@ -48,7 +48,7 @@
         </Style>
 
         <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource ElementBackgroundNeutralMidBrush}" />
+            <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
             <!-- <Setter Property="Background" Value="{StaticResource ElementBackgroundTransparentBrush}" /> -->
         </Style>
     </Style>
@@ -56,7 +56,7 @@
 
     <!-- Avatar Button -->
     <Style Selector="Button.Avatar">
-        <Setter Property="Background" Value="{StaticResource ElementBackgroundTransparentBrush}" />
+        <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
         <Setter Property="Width" Value="30" />
         <Setter Property="Height" Value="30" />
         <Setter Property="Margin" Value="0" />
@@ -78,7 +78,7 @@
         <Setter Property="Padding" Value="0" />
         <Setter Property="CornerRadius" Value="8" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />
-        <Setter Property="Background" Value="{StaticResource ElementBackgroundTransparentBrush}" />
+        <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
 
         <Style Selector="^.LeftMenuItem StackPanel">
             <Setter Property="Orientation" Value="Horizontal" />
@@ -96,25 +96,25 @@
         </Style>
 
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource ElementBackgroundNeutralTopBrush}" />
+            <Setter Property="Background" Value="{StaticResource SurfaceTopBrush}" />
         </Style>
 
         <Style Selector="^.Active /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource ElementBackgroundNeutralMidBrush}" />
+            <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
         </Style>
     </Style>
 
 
     <!--  Invisible button  -->
     <Style Selector="Button.Invisible">
-        <Setter Property="Background" Value="{StaticResource ElementBackgroundTransparentBrush}" />
+        <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Padding" Value="0" />
         <Setter Property="Margin" Value="0" />
     </Style>
 
     <Style Selector="Button.Invisible:pressed">
-        <Setter Property="Background" Value="{StaticResource ElementBackgroundTransparentBrush}" />
+        <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
     </Style>
 
 
