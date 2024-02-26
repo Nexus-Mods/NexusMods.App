@@ -22,14 +22,14 @@
 
         <ItemsControl.ItemTemplate>
             <DataTemplate DataType="{x:Type workspace:INewTabPageSectionViewModel}">
-                <StackPanel Spacing="12" Width="375" Margin="0 0 12 0">
+                <StackPanel Classes="Spacing-3" Width="375" Margin="0 0 12 0">
                     <TextBlock x:Name="SectionNameTextBlock" Text="{CompiledBinding SectionName}"
                                Classes="HeadingSMSemi" />
 
                     <ItemsControl x:Name="Items" ItemsSource="{CompiledBinding Items}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <StackPanel Spacing="8" />
+                                <StackPanel Classes="Spacing-2" />
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
 
@@ -42,7 +42,7 @@
                                             Padding="0"
                                             Command="{CompiledBinding SelectItemCommand}">
 
-                                        <StackPanel Margin="16" Orientation="Horizontal" Spacing="4">
+                                        <StackPanel Margin="16" Orientation="Horizontal" Classes="Spacing-1">
                                             <unifiedIcon:UnifiedIcon Classes="ProgressDownload" Size="24"/>
                                             <TextBlock x:Name="NameTextBlock"
                                                        Text="{CompiledBinding Name}"

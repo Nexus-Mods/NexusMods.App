@@ -29,7 +29,8 @@
                                     <ItemsControl x:Name="TabHeaders" Height="52">
                                         <ItemsControl.ItemsPanel>
                                             <ItemsPanelTemplate>
-                                                <StackPanel Orientation="Horizontal" Spacing="0" />
+                                                <StackPanel Classes="Spacing-none" 
+                                                    Orientation="Horizontal" />
                                             </ItemsPanelTemplate>
                                         </ItemsControl.ItemsPanel>
 
@@ -69,7 +70,7 @@
                         <StackPanel
                             x:Name="TabHeaderSideArea"
                             Orientation="Horizontal"
-                            Spacing="12"
+                            Classes="Spacing-3"
                             Margin="12, 12, 12, 12">
                             <Button x:Name="PopOutPanelButton"
                                     Classes="PanelTitlebar OpenInWindow" />

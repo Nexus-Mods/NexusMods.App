@@ -27,7 +27,7 @@
 
         <Style Selector="^ StackPanel">
             <Setter Property="Height" Value="24" />
-            <Setter Property="Spacing" Value="0" />
+            <Setter Property="Spacing" Value="{StaticResource Spacing-none}" />
         </Style>
 
         <Style Selector="^ unifiedIcon|UnifiedIcon#ButtonImage">

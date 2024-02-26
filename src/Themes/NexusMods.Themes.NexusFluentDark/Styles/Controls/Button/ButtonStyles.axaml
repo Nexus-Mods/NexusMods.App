@@ -3,7 +3,7 @@
         xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI">
     <Design.PreviewWith>
         <Border Padding="20">
-            <StackPanel Spacing="20">
+            <StackPanel Classes="Spacing-5">
                 <Button Classes="Action" HorizontalAlignment="Center">
                     <unifiedIcon:UnifiedIcon Classes="Help" />
                 </Button>
@@ -82,7 +82,7 @@
 
         <Style Selector="^.LeftMenuItem StackPanel">
             <Setter Property="Orientation" Value="Horizontal" />
-            <Setter Property="Spacing" Value="4" />
+            <Setter Property="Spacing" Value="{StaticResource Spacing-1}" />
             <Setter Property="Margin" Value="9, 12" />
         </Style>
 

@@ -6,9 +6,9 @@
 
     <!-- Preview -->
     <Design.PreviewWith>
-        <StackPanel Orientation="Horizontal" Margin="24" Spacing="8">
+        <StackPanel Orientation="Horizontal" Margin="24" Classes="Spacing-2">
             <ui:SpineDownloadButtonView />
-            <StackPanel Orientation="Vertical" Spacing="8">
+            <StackPanel Orientation="Vertical" Classes="Spacing-2">
                 <Button Classes="SpineDownloadButton Idle">
                     <Grid>
                         <Border></Border>
@@ -33,7 +33,7 @@
                 </Button>
             </StackPanel>
 
-            <StackPanel Orientation="Vertical" Spacing="8">
+            <StackPanel Orientation="Vertical" Classes="Spacing-2">
                 <Button Classes="SpineDownloadButton Progress">
                     <Grid>
                         <Border></Border>
@@ -58,7 +58,7 @@
                 </Button>
             </StackPanel>
 
-            <StackPanel Orientation="Vertical" Spacing="8">
+            <StackPanel Orientation="Vertical" Classes="Spacing-2">
                 <Button Classes="SpineDownloadButton Progress">
                     <Grid>
                         <Border></Border>
@@ -126,7 +126,7 @@
 
         <!-- StackPanel -->
         <Style Selector="^ > Grid > StackPanel">
-            <Setter Property="Spacing" Value="0" />
+            <Setter Property="Spacing" Value="{StaticResource Spacing-none}" />
             <Setter Property="Orientation" Value="Vertical" />
             <Setter Property="HorizontalAlignment" Value="Center" />
             <Setter Property="VerticalAlignment" Value="Center" />

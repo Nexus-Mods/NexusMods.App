@@ -3,7 +3,7 @@
         xmlns:workspaceSystem="clr-namespace:NexusMods.App.UI.WorkspaceSystem;assembly=NexusMods.App.UI">
     <Design.PreviewWith>
         <Border Padding="20" Height="300">
-            <StackPanel Orientation="Vertical" Spacing="4">
+            <StackPanel Orientation="Vertical" Classes="Spacing-1">
                 <ComboBox SelectedIndex="0" Classes="AddPanelDropDown">
                     <ComboBoxItem Content="Item 1" />
                     <ComboBoxItem Content="Item 2" />

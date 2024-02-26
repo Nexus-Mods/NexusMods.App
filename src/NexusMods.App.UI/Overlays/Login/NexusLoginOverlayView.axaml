@@ -38,7 +38,7 @@
             </Grid>
             <StackPanel Orientation="Horizontal"
                         HorizontalAlignment="Center"
-                        Spacing="8">
+                        Classes="Spacing-2">
                 <progressRing:ProgressRing/>
                 <TextBlock
                     x:Name="TitleTextBlock"
