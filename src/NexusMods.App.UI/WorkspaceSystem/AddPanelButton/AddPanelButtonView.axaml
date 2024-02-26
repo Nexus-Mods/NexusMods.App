@@ -17,8 +17,8 @@
     <Border x:Name="BackgroundBorder">
         <Button x:Name="AddPanelButton">
             <StackPanel Orientation="Horizontal">
-                <Image x:Name="ButtonImage"/>
-                <unifiedIcon:UnifiedIcon Classes="Plus"/>
+                <unifiedIcon:UnifiedIcon x:Name="ButtonImage"/>
+                <unifiedIcon:UnifiedIcon x:Name="PlusIcon" Classes="Plus"/>
             </StackPanel>
         </Button>
     </Border>

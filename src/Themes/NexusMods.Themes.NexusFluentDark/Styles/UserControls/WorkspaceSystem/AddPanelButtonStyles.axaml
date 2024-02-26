@@ -30,12 +30,11 @@
             <Setter Property="Spacing" Value="0" />
         </Style>
 
-        <Style Selector="^ Image">
-            <Setter Property="Height" Value="18" />
-            <Setter Property="Width" Value="18" />
+        <Style Selector="^ unifiedIcon|UnifiedIcon#ButtonImage">
+            <Setter Property="Size" Value="18" />
         </Style>
 
-        <Style Selector="^ unifiedIcon|UnifiedIcon">
+        <Style Selector="^ unifiedIcon|UnifiedIcon#PlusIcon">
             <Setter Property="Size" Value="10" />
             <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralSubduedBrush}" />
         </Style>
