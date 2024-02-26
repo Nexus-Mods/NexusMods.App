@@ -12,9 +12,10 @@ partial class MyClass
 
 		return new global::NexusMods.Abstractions.Diagnostics.Diagnostic<Diagnostic1MessageData>
 		{
-			Id = new global::NexusMods.Abstractions.Diagnostics.DiagnosticId(source: "MyCoolSource",number: 13),
+			Id = new global::NexusMods.Abstractions.Diagnostics.DiagnosticId(source: "Example",number: 1),
 			Severity = global::NexusMods.Abstractions.Diagnostics.DiagnosticSeverity.Warning,
-			Message = global::NexusMods.Abstractions.Diagnostics.DiagnosticMessage.From("Mod '{ModA}' is not working because of '{ModB}'!"),
+			Summary = global::NexusMods.Abstractions.Diagnostics.DiagnosticMessage.From("Mod '{ModA}' conflicts with '{ModB}'!"),
+			Details = global::NexusMods.Abstractions.Diagnostics.DiagnosticMessage.DefaultValue,
 			MessageData = messageData,
 			DataReferences = new global::System.Collections.Generic.Dictionary<global::NexusMods.Abstractions.Diagnostics.References.DataReferenceDescription, global::NexusMods.Abstractions.Diagnostics.References.IDataReference>
 			{

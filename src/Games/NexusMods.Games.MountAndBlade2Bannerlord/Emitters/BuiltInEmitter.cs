@@ -91,7 +91,8 @@ public class BuiltInEmitter : ILoadoutDiagnosticEmitter
         return new Diagnostic
         {
             Id = new DiagnosticId(Source, (ushort) issue.Type),
-            Message = DiagnosticMessage.From(message.ToString()),
+            Summary = DiagnosticMessage.From(message.ToString()),
+            Details = DiagnosticMessage.DefaultValue,
             Severity = level,
             DataReferences = new Dictionary<DataReferenceDescription, IDataReference>
             {

@@ -11,7 +11,9 @@ public partial class ExampleDiagnostics
         .Start()
         .WithId(new DiagnosticId(source: "Example", number: 1))
         .WithSeverity(DiagnosticSeverity.Warning)
-        .WithMessage("Mod '{ModA}' conflicts with '{ModB}'!", messageBuilder => messageBuilder
+        .WithSummary("Mod '{ModA}' conflicts with '{ModB}'!")
+        .WithoutDetails()
+        .WithMessageData(messageBuilder => messageBuilder
             .AddDataReference<ModReference>("ModA")
             .AddDataReference<ModReference>("ModB")
         )

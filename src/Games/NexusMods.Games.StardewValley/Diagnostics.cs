@@ -15,7 +15,8 @@ internal static class Diagnostics
         {
             Id = new DiagnosticId(Source, 1),
             Severity = DiagnosticSeverity.Warning,
-            Message = DiagnosticMessage.From($"Mod '{mod.Name}' is missing required dependency '{missingDependency}'"),
+            Summary = DiagnosticMessage.From($"Mod '{mod.Name}' is missing required dependency '{missingDependency}'"),
+            Details = DiagnosticMessage.DefaultValue,
             DataReferences = new Dictionary<DataReferenceDescription, IDataReference>
             {
                 { DataReferenceDescription.Loadout, loadout.ToReference() },

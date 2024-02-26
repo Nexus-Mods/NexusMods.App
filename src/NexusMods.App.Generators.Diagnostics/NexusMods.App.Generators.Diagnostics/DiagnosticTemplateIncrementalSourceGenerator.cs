@@ -123,12 +123,21 @@ public class DiagnosticTemplateIncrementalSourceGenerator : IIncrementalGenerato
 
                 cw.AppendLine($"Severity = {Constants.DiagnosticsNamespace}.DiagnosticSeverity.{parsedData.SeverityName},");
 
-                cw.Append($"Message = {Constants.DiagnosticsNamespace}.DiagnosticMessage.From(");
-                if (parsedData.MessageTemplateExpression is LiteralExpressionSyntax literalMessage)
+                cw.Append($"Summary = {Constants.DiagnosticsNamespace}.DiagnosticMessage.From(");
+                if (parsedData.SummaryTemplateExpression is LiteralExpressionSyntax literalSummary)
                 {
-                    cw.Append($"\"{literalMessage.Token.ValueText}\"");
+                    cw.Append($"\"{literalSummary.Token.ValueText}\"");
                 }
                 cw.AppendLine("),");
+
+                cw.Append($"Details = {Constants.DiagnosticsNamespace}.DiagnosticMessage.");
+                if (parsedData.DetailsTemplateExpression is null)
+                {
+                    cw.AppendLine("DefaultValue,");
+                } else if (parsedData.DetailsTemplateExpression is LiteralExpressionSyntax literalDetails)
+                {
+                    cw.AppendLine($"From(\"{literalDetails.Token.ValueText}\"),");
+                }
 
                 cw.AppendLine("MessageData = messageData,");
                 cw.AppendLine($"DataReferences = new global::System.Collections.Generic.Dictionary<{Constants.DiagnosticsNamespace}.References.DataReferenceDescription, {Constants.DiagnosticsNamespace}.References.IDataReference>");
@@ -195,7 +204,10 @@ public class DiagnosticTemplateIncrementalSourceGenerator : IIncrementalGenerato
         out ParsedData parsedData)
     {
         const string finish = "Finish";
-        const string withMessage = "WithMessage";
+        const string withMessageData = "WithMessageData";
+        const string withDetails = "WithDetails";
+        const string withoutDetails = "WithoutDetails";
+        const string withSummary = "WithSummary";
         const string withSeverity = "WithSeverity";
         const string withId = "WithId";
         const string start = "Start";
@@ -208,14 +220,29 @@ public class DiagnosticTemplateIncrementalSourceGenerator : IIncrementalGenerato
         // Finish
         if (!IsInvocationWithName(initializer?.Value, finish, out _, out var next)) return false;
 
-        // WithMessage
-        if (!IsInvocationWithName(next, withMessage, out var withMessageArguments, out next)) return false;
-        if (withMessageArguments.Count != 2) return false;
-
-        var messageTemplateExpression = withMessageArguments[0].Expression;
-        if (withMessageArguments[1].Expression is not SimpleLambdaExpressionSyntax messageBuilderExpression) return false;
+        // WithMessageData
+        if (!IsInvocationWithName(next, withMessageData, out var withMessageDataArguments, out next)) return false;
+        if (withMessageDataArguments.Count != 1) return false;
+        if (withMessageDataArguments[0].Expression is not SimpleLambdaExpressionSyntax messageBuilderExpression) return false;
         if (messageBuilderExpression.Body is not InvocationExpressionSyntax messageBuilderExpressionBody) return false;
         if (!ParseMessageBuilder(semanticModel, messageBuilderExpressionBody, out var parsedReferences)) return false;
+
+        // WithDetails
+        ExpressionSyntax? detailsTemplateExpression = null;
+        if (IsInvocationWithName(next, withDetails, out var withDetailsArguments, out next))
+        {
+            if (withDetailsArguments.Count != 1) return false;
+            detailsTemplateExpression = withDetailsArguments[0].Expression;
+        } else if (IsInvocationWithName(next, withoutDetails, out var withoutDetailsArguments, out next))
+        {
+            if (withoutDetailsArguments.Count != 0) return false;
+            detailsTemplateExpression = null;
+        }
+
+        // WithSummary
+        if (!IsInvocationWithName(next, withSummary, out var withSummaryArguments, out next));
+        if (withSummaryArguments.Count != 1) return false;
+        var summaryTemplateExpression = withSummaryArguments[0].Expression;
 
         // WithSeverity
         if (!IsInvocationWithName(next, withSeverity, out var withSeverityArguments, out next)) return false;
@@ -236,7 +263,8 @@ public class DiagnosticTemplateIncrementalSourceGenerator : IIncrementalGenerato
         parsedData = new ParsedData(
             IdCreationExpression: idCreation,
             SeverityName: severityName,
-            MessageTemplateExpression: messageTemplateExpression,
+            SummaryTemplateExpression: summaryTemplateExpression,
+            DetailsTemplateExpression: detailsTemplateExpression,
             ParsedMessageDataReferences: parsedReferences
         );
 
@@ -249,7 +277,7 @@ public class DiagnosticTemplateIncrementalSourceGenerator : IIncrementalGenerato
             out ExpressionSyntax next)
         {
             arguments = [];
-            next = null!;
+            next = expression!;
 
             if (expression is not InvocationExpressionSyntax invocationExpressionSyntax) return false;
             if (invocationExpressionSyntax.Expression is not MemberAccessExpressionSyntax memberAccessExpressionSyntax) return false;
@@ -306,7 +334,8 @@ public class DiagnosticTemplateIncrementalSourceGenerator : IIncrementalGenerato
     private record struct ParsedData(
         ObjectCreationExpressionSyntax IdCreationExpression,
         string SeverityName,
-        ExpressionSyntax MessageTemplateExpression,
+        ExpressionSyntax SummaryTemplateExpression,
+        ExpressionSyntax? DetailsTemplateExpression,
         List<ParsedMessageBuilderDataReference> ParsedMessageDataReferences
     );
 

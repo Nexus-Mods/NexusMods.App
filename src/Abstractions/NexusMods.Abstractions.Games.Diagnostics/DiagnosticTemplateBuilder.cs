@@ -48,18 +48,45 @@ public static class DiagnosticTemplateBuilder
         /// <summary>
         /// Sets the <see cref="DiagnosticSeverity"/>.
         /// </summary>
-        IWithMessageStep WithSeverity(DiagnosticSeverity severity);
+        IWithSummaryStep WithSeverity(DiagnosticSeverity severity);
     }
 
     /// <summary>
-    /// Message Step.
+    /// Summary step.
     /// </summary>
-    public interface IWithMessageStep
+    public interface IWithSummaryStep
     {
         /// <summary>
-        /// Sets the message template.
+        /// Sets the message template for the <see cref="Diagnostic.Summary"/> property.
         /// </summary>
-        IFinishStep WithMessage(string message, Func<IMessageBuilder, IMessageBuilder> messageBuilder);
+        IWithDetailsStep WithSummary(string message);
+    }
+
+    /// <summary>
+    /// Details step.
+    /// </summary>
+    public interface IWithDetailsStep
+    {
+        /// <summary>
+        /// Sets the message template for the <see cref="Diagnostic.Details"/> property.
+        /// </summary>
+        IWithMessageData WithDetails(string message);
+
+        /// <summary>
+        /// Sets nothing for the <see cref="Diagnostic.Details"/> property.
+        /// </summary>
+        IWithMessageData WithoutDetails();
+    }
+
+    /// <summary>
+    /// Message data step.
+    /// </summary>
+    public interface IWithMessageData
+    {
+        /// <summary>
+        /// Configures the message builder.
+        /// </summary>
+        IFinishStep WithMessageData(Func<IMessageBuilder, IMessageBuilder> messageBuilder);
     }
 
     /// <summary>
@@ -90,56 +117,3 @@ public static class DiagnosticTemplateBuilder
 /// </summary>
 /// <seealso cref="DiagnosticTemplateBuilder"/>
 public interface IDiagnosticTemplate;
-
-#if DiagnosticTemplateBuilderExperimentTestOutput
-#if RELEASE
-#else
-
-[SuppressMessage("ReSharper", "UnusedType.Global")]
-[SuppressMessage("ReSharper", "UnusedMember.Local")]
-internal partial class Test
-{
-    private static readonly IDiagnosticTemplate Diagnostic1Template = DiagnosticTemplateBuilder
-        .Start()
-        .WithId(new DiagnosticId(source: "MyCoolSource", number: 13))
-        .WithSeverity(DiagnosticSeverity.Warning)
-        .WithMessage("Mod '{Mod}' is not working!", messageBuilder => messageBuilder
-            .AddDataReference<ModReference>("Mod")
-        )
-        .Finish();
-}
-
-[SuppressMessage("ReSharper", "UnusedType.Global")]
-[SuppressMessage("ReSharper", "UnusedMember.Global")]
-[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
-internal partial class Test
-{
-    public static Diagnostic<Diagnostic1MessageData> CreateDiagnostic1(ModReference mod)
-    {
-        var messageData = new Diagnostic1MessageData(mod);
-
-        return new Diagnostic<Diagnostic1MessageData>
-        {
-            Id = new DiagnosticId(source: "MyCoolSource", number: 13),
-            Severity = DiagnosticSeverity.Warning,
-            Message = DiagnosticMessage.From("Mod '{Mod}' is not working!"),
-            MessageData = messageData,
-            DataReferences = new Dictionary<DataReferenceDescription, IDataReference>
-            {
-                { DataReferenceDescription.From("Mod"), messageData.Mod },
-            },
-        };
-    }
-
-    public readonly struct Diagnostic1MessageData
-    {
-        public readonly ModReference Mod;
-
-        public Diagnostic1MessageData(ModReference mod)
-        {
-            Mod = mod;
-        }
-    }
-}
-#endif
-#endif
