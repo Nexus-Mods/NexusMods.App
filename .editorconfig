@@ -1,3 +1,5 @@
+root = true
+
 [*]
 charset = utf-8
 end_of_line = lf
@@ -23,7 +25,7 @@ indent_size = 4
 tab_width = 4
 
 # Verify settings
-[*.{received,verified}.{txt,xml,json}]
+[*.{received,verified}.{txt,xml,json,cs}]
 charset = "utf-8-bom"
 end_of_line = lf
 indent_size =

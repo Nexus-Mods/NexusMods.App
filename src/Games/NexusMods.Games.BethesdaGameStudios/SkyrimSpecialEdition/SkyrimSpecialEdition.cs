@@ -14,12 +14,12 @@ namespace NexusMods.Games.BethesdaGameStudios.SkyrimSpecialEdition;
 public class SkyrimSpecialEdition : ABethesdaGame, ISteamGame, IGogGame, IXboxGame
 {
     // ReSharper disable InconsistentNaming
-    public static Extension ESL = new(".esl");
-    public static Extension ESM = new(".esm");
-    public static Extension ESP = new(".esp");
+    public static readonly Extension ESL = new(".esl");
+    public static readonly Extension ESM = new(".esm");
+    public static readonly Extension ESP = new(".esp");
     // ReSharper restore InconsistentNaming
 
-    public static HashSet<Extension> PluginExtensions = new() { ESL, ESM, ESP };
+    public static readonly HashSet<Extension> PluginExtensions = [ESL, ESM, ESP];
     public static GameDomain StaticDomain => GameDomain.From("skyrimspecialedition");
     public override string Name => "Skyrim Special Edition";
     public override GameDomain Domain => StaticDomain;

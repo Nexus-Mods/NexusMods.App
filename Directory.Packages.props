@@ -58,6 +58,11 @@
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
     <PackageVersion Include="Microsoft.Extensions.ObjectPool" Version="8.0.1" />
     <PackageVersion Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.0" />
+
+      <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4"/>
+      <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0"/>
+      <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.8.0"/>
+      <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.SourceGenerators.Testing.XUnit" Version="1.1.1"/>
   </ItemGroup>
   <ItemGroup>
     <!-- Testing -->
@@ -85,6 +90,7 @@
     </PackageVersion>
     <PackageVersion Include="Verify.Xunit" Version="23.1.0" />
     <PackageVersion Include="Verify.ImageMagick" Version="3.2.2" />
+      <PackageVersion Include="Verify.SourceGenerators" Version="2.2.0" />
     <PackageVersion Include="xunit" Version="2.6.6" />
     <PackageVersion Include="Xunit.DependencyInjection" Version="8.9.1" />
     <PackageVersion Include="Xunit.DependencyInjection.Logging" Version="8.1.0" />

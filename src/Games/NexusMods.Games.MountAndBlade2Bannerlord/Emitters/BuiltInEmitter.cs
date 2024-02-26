@@ -93,11 +93,11 @@ public class BuiltInEmitter : ILoadoutDiagnosticEmitter
             Id = new DiagnosticId(Source, (ushort) issue.Type),
             Message = DiagnosticMessage.From(message.ToString()),
             Severity = level,
-            DataReferences = new IDataReference[]
+            DataReferences = new Dictionary<DataReferenceDescription, IDataReference>
             {
-                loadout.ToReference(),
-                mod.ToReference(loadout)
-            }
+                { DataReferenceDescription.Loadout, loadout.ToReference() },
+                { DataReferenceDescription.Mod, mod.ToReference(loadout) },
+            },
         };
     }
 }

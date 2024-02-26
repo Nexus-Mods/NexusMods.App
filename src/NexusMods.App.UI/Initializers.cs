@@ -35,11 +35,9 @@ public static class Initializers
         return ReactiveCommand.Create<TInput, TOutput>(_ => throw new UnreachableException(), Observable.Return(false));
     }
 
-    public static readonly ModCursor ModCursor = new(LoadoutId,
-        ModId.From(new Guid("00000000-0000-0000-0000-000000000002")));
+    public static readonly ModCursor ModCursor = new(LoadoutId, ModId.From(new Guid("00000000-0000-0000-0000-000000000002")));
 
-    public static LoadoutId LoadoutId =
-        LoadoutId.From(new Guid("00000000-0000-0000-0000-000000000001"));
+    public static readonly LoadoutId LoadoutId = LoadoutId.From(new Guid("00000000-0000-0000-0000-000000000001"));
 
     public static ReadOnlyObservableCollection<T> ReadOnlyObservableCollection<T>()
     {

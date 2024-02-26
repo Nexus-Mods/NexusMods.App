@@ -113,7 +113,7 @@ namespace NexusMods.Abstractions.FileExtractor {
     public static class Definitions {
 
 
-    public static (FileType, byte[])[] Signatures = {
+    public static readonly (FileType, byte[])[] Signatures = {
             // 7-Zip compressed file
         (FileType._7Z, new byte[] {0x37, 0x7A, 0xBC, 0xAF, 0x27, 0x1C}),
 
@@ -180,7 +180,7 @@ namespace NexusMods.Abstractions.FileExtractor {
         
     };
 
-    public static (FileType, Extension)[] Extensions = {
+    public static readonly (FileType, Extension)[] Extensions = {
                 // Ini Configuration File
         (FileType.INI, new Extension(".ini")),
 

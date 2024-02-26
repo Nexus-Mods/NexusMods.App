@@ -66,7 +66,7 @@ namespace NexusMods.Abstractions.FileExtractor {
     public static class Definitions {
 
 
-    public static (FileType, byte[])[] Signatures = {
+    public static readonly (FileType, byte[])[] Signatures = {
     <#
     foreach (var row in magicRows)
     {
@@ -80,7 +80,7 @@ namespace NexusMods.Abstractions.FileExtractor {
 
     };
 
-    public static (FileType, Extension)[] Extensions = {
+    public static readonly (FileType, Extension)[] Extensions = {
         <#
     foreach (var row in mundaneRows)
     {
