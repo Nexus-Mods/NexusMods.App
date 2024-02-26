@@ -162,8 +162,8 @@
 
     <!-- Colors -->
     <StaticResource x:Key="StrokeTranslucentWeak" ResourceKey="BrandTranslucentLight100" />
-    <StaticResource x:Key="StrokeTranslucentSubdued" ResourceKey="BrandTranslucentLight300" />
-    <StaticResource x:Key="StrokeTranslucentModerate" ResourceKey="BrandTranslucentLight500" />
+    <StaticResource x:Key="StrokeTranslucentSubdued" ResourceKey="BrandTranslucentLight200" />
+    <StaticResource x:Key="StrokeTranslucentModerate" ResourceKey="BrandTranslucentLight300" />
     <StaticResource x:Key="StrokeTranslucentStrong" ResourceKey="BrandTranslucentLight800" />
 
     <!-- SolidColorBrushes -->
