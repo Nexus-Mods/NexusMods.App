@@ -13,6 +13,17 @@
     <CornerRadius x:Key="Rounded-3xl">24</CornerRadius>
     <CornerRadius x:Key="Rounded-full">9999</CornerRadius>
     
+    <!-- Rounding sides separately -->
+    <!-- Note: The order of the values is TopLeft, TopRight, BottomRight, BottomLeft -->
+    <CornerRadius x:Key="Rounded-t-lg">8,8,0,0</CornerRadius>
+    <CornerRadius x:Key="Rounded-b-lg">0,0,8,8</CornerRadius>
+    <CornerRadius x:Key="Rounded-l-lg">8,0,0,8</CornerRadius>
+    <CornerRadius x:Key="Rounded-r-lg">0,8,8,0</CornerRadius>
     
+    <!-- Rounding corners separately -->
+    <CornerRadius x:Key="Rounded-tl-lg">8,0,0,0</CornerRadius>
+    <CornerRadius x:Key="Rounded-tr-lg">0,8,0,0</CornerRadius>
+    <CornerRadius x:Key="Rounded-br-lg">0,0,8,0</CornerRadius>
+    <CornerRadius x:Key="Rounded-bl-lg">0,0,0,8</CornerRadius>
 </ResourceDictionary>
 
