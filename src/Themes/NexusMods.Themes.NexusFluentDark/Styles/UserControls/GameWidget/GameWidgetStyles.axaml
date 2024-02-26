@@ -36,12 +36,12 @@
         </Style>
 
         <Style Selector="^ Border#SeparationLine">
-            <Setter Property="BorderBrush" Value="{StaticResource ElementStrokeTranslucentWeakBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
         </Style>
 
         <Style Selector="^ Button.FirstButton unifiedIcon|UnifiedIcon">
             <Setter Property="Size" Value="20" />
-            <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralStrongBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
         </Style>
 
         <Style Selector="^ Image#GameImage">

@@ -229,123 +229,123 @@
 
     <!-- Standard Primary -->
     <Style Selector="Button.Standard.Primary">
-        <Setter Property="Background" Value="{DynamicResource ElementForegroundPrimaryModerateBrush}" />
+        <Setter Property="Background" Value="{DynamicResource PrimaryModerateBrush}" />
 
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource ElementForegroundPrimaryStrongBrush}" />
+            <Setter Property="Background" Value="{DynamicResource PrimaryStrongBrush}" />
         </Style>
 
         <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource ElementForegroundPrimaryWeakBrush}" />
+            <Setter Property="Background" Value="{DynamicResource PrimaryWeakBrush}" />
         </Style>
 
         <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource ElementForegroundPrimaryModerateBrush}" />
+            <Setter Property="Background" Value="{DynamicResource PrimaryModerateBrush}" />
         </Style>
     </Style>
 
 
     <!-- Standard PrimaryOutlined -->
     <Style Selector="Button.Standard.PrimaryOutlined">
-        <Setter Property="Background" Value="{DynamicResource ElementBackgroundTransparentBrush}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource ElementForegroundPrimaryModerateBrush}" />
+        <Setter Property="Background" Value="{DynamicResource SurfaceTransparentBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource PrimaryModerateBrush}" />
 
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource ElementBackgroundNeutralTopBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource ElementForegroundPrimaryStrongBrush}" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceTopBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource PrimaryStrongBrush}" />
         </Style>
 
         <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource ElementBackgroundNeutralMidBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource ElementForegroundPrimaryWeakBrush}" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceMidBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource PrimaryWeakBrush}" />
         </Style>
 
         <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource ElementBackgroundTransparentBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource ElementForegroundPrimaryModerateBrush}" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceTransparentBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource PrimaryModerateBrush}" />
         </Style>
     </Style>
 
 
     <!-- Standard Secondary -->
     <Style Selector="Button.Standard.Secondary">
-        <Setter Property="Background" Value="{DynamicResource ElementForegroundNeutralModerateBrush}" />
-        <Setter Property="Foreground" Value="{DynamicResource ElementForegroundNeutralInvertedBrush}" />
+        <Setter Property="Background" Value="{DynamicResource NeutralModerateBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource NeutralInvertedBrush}" />
 
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource ElementForegroundNeutralStrongBrush}" />
+            <Setter Property="Background" Value="{DynamicResource NeutralStrongBrush}" />
 
             <!-- Pointerover uses a different foreground color, so we need to set it again here. -->
-            <Setter Property="Foreground" Value="{DynamicResource ElementForegroundNeutralInvertedBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource NeutralInvertedBrush}" />
         </Style>
 
         <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource ElementForegroundNeutralSubduedBrush}" />
+            <Setter Property="Background" Value="{DynamicResource NeutralSubduedBrush}" />
         </Style>
 
         <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource ElementForegroundNeutralSubduedBrush}" />
+            <Setter Property="Background" Value="{DynamicResource NeutralSubduedBrush}" />
 
             <!-- Disabled uses a different foreground color, so we need to set it again here. -->
-            <Setter Property="Foreground" Value="{DynamicResource ElementForegroundNeutralInvertedBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource NeutralInvertedBrush}" />
         </Style>
     </Style>
 
 
     <!-- Standard SecondaryOutlined -->
     <Style Selector="Button.Standard.SecondaryOutlined">
-        <Setter Property="Background" Value="{DynamicResource ElementBackgroundTransparentBrush}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource ElementForegroundNeutralModerateBrush}" />
+        <Setter Property="Background" Value="{DynamicResource SurfaceTransparentBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource NeutralModerateBrush}" />
 
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource ElementBackgroundNeutralTopBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource ElementForegroundNeutralStrongBrush}" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceTopBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource NeutralStrongBrush}" />
         </Style>
 
         <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource ElementBackgroundNeutralMidBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource ElementForegroundNeutralModerateBrush}" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceMidBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource NeutralModerateBrush}" />
         </Style>
 
         <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource ElementBackgroundTransparentBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource ElementForegroundNeutralWeakBrush}" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceTransparentBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource NeutralWeakBrush}" />
         </Style>
     </Style>
 
 
     <!-- Standard Tertiary -->
     <Style Selector="Button.Standard.Tertiary">
-        <Setter Property="Background" Value="{DynamicResource ElementBackgroundTransparentBrush}" />
+        <Setter Property="Background" Value="{DynamicResource SurfaceTransparentBrush}" />
 
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource ElementBackgroundNeutralTopBrush}" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceTopBrush}" />
         </Style>
 
         <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource ElementBackgroundNeutralMidBrush}" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceMidBrush}" />
         </Style>
 
         <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource ElementBackgroundTransparentBrush}" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceTransparentBrush}" />
         </Style>
     </Style>
 
 
     <!-- Standard Success -->
     <Style Selector="Button.Standard.Success">
-        <Setter Property="Background" Value="{DynamicResource ElementForegroundSuccessSubduedBrush}" />
+        <Setter Property="Background" Value="{DynamicResource SuccessSubduedBrush}" />
 
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource ElementForegroundSuccessModerateBrush}" />
+            <Setter Property="Background" Value="{DynamicResource SuccessModerateBrush}" />
         </Style>
 
         <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource ElementForegroundSuccessWeakBrush}" />
+            <Setter Property="Background" Value="{DynamicResource SuccessWeakBrush}" />
         </Style>
 
         <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource ElementForegroundSuccessWeakBrush}" />
+            <Setter Property="Background" Value="{DynamicResource SuccessWeakBrush}" />
         </Style>
     </Style>
 

@@ -17,7 +17,7 @@
         </Style>
 
         <Style Selector="^ Button">
-            <Setter Property="Background" Value="{StaticResource ElementBackgroundTransparentBrush}" />
+            <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
             <Setter Property="Height" Value="40" />
             <Setter Property="Width" Value="48" />
             <Setter Property="Padding" Value="8,0,4,0" />
@@ -36,7 +36,7 @@
 
         <Style Selector="^ unifiedIcon|UnifiedIcon#PlusIcon">
             <Setter Property="Size" Value="10" />
-            <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralSubduedBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
         </Style>
     </Style>
 </Styles>

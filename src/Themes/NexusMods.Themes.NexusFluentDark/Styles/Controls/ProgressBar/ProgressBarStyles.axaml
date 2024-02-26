@@ -31,9 +31,9 @@
     <Style Selector="ProgressBar.DownloadBar">
         <Setter Property="ShowProgressText" Value="True" />
         <Setter Property="Height" Value="24" />
-        <Setter Property="Foreground" Value="{StaticResource ElementForegroundInfoWeakBrush}" />
+        <Setter Property="Foreground" Value="{StaticResource InfoWeakBrush}" />
         <Setter Property="Background">
-            <SolidColorBrush Color="{StaticResource ElementForegroundInfoWeak}"
+            <SolidColorBrush Color="{StaticResource InfoWeak}"
                              Opacity="{StaticResource OpacitySubdued}" />
         </Setter>
 
@@ -46,8 +46,8 @@
         <Setter Property="MinWidth" Value="100" />
 
         <Style Selector="^.DisabledDownloadBar">
-            <Setter Property="Background" Value="{StaticResource ElementBackgroundNeutralMidBrush}" />
-            <Setter Property="Foreground" Value="{StaticResource ElementBackgroundNeutralTopBrush}" />
+            <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource SurfaceTopBrush}" />
         </Style>
 
         <Style Selector="^ TextBlock">
@@ -71,9 +71,9 @@
     <Style Selector="ProgressBar.LaunchButton">
         <Setter Property="ShowProgressText" Value="True" />
         <Setter Property="Height" Value="34" />
-        <Setter Property="Foreground" Value="{StaticResource ElementForegroundPrimaryModerateBrush}" />
+        <Setter Property="Foreground" Value="{StaticResource PrimaryModerateBrush}" />
         <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="BorderBrush" Value="{StaticResource ElementForegroundPrimaryModerateBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource PrimaryModerateBrush}" />
         <Setter Property="MinWidth" Value="100" />
 
         <Style Selector="^ TextBlock">
@@ -85,7 +85,7 @@
     <Style Selector="ProgressBar.Stepper">
         <Setter Property="ShowProgressText" Value="False" />
         <Setter Property="Height" Value="16" />
-        <Setter Property="Foreground" Value="{StaticResource ElementForegroundPrimaryModerateBrush}" />
+        <Setter Property="Foreground" Value="{StaticResource PrimaryModerateBrush}" />
         <Setter Property="CornerRadius" Value="45" />
     </Style>
 

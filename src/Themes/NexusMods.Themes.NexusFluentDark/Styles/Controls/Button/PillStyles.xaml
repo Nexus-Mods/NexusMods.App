@@ -244,115 +244,115 @@
 
     <!-- Pill StandardPill -->
     <Style Selector="Button.Pill.StandardPill">
-        <Setter Property="Background" Value="{StaticResource ElementForegroundNeutralSubduedBrush}" />
-        <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralInvertedBrush}" />
+        <Setter Property="Background" Value="{StaticResource NeutralSubduedBrush}" />
+        <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
 
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource ElementForegroundNeutralStrongBrush}" />
-            <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralInvertedBrush}" />
+            <Setter Property="Background" Value="{StaticResource NeutralStrongBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
         </Style>
 
         <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource ElementForegroundNeutralModerateBrush}" />
-            <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralInvertedBrush}" />
+            <Setter Property="Background" Value="{StaticResource NeutralModerateBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
         </Style>
 
         <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource ElementForegroundNeutralSubduedBrush}" />
-            <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralInvertedBrush}" />
+            <Setter Property="Background" Value="{StaticResource NeutralSubduedBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
         </Style>
 
         <!-- Disable pointerOver for Label version-->
         <Style Selector="^.Label:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource ElementForegroundNeutralSubduedBrush}" />
+            <Setter Property="Background" Value="{StaticResource NeutralSubduedBrush}" />
         </Style>
     </Style>
 
     <!-- Pill StandardPillOutline -->
     <Style Selector="Button.Pill.StandardPillOutline">
-        <Setter Property="Background" Value="{StaticResource ElementBackgroundNeutralBaseBrush}" />
-        <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralSubduedBrush}" />
-        <Setter Property="BorderBrush" Value="{StaticResource ElementForegroundNeutralSubduedBrush}" />
+        <Setter Property="Background" Value="{StaticResource SurfaceBaseBrush}" />
+        <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource NeutralSubduedBrush}" />
 
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource ElementBackgroundNeutralMidBrush}" />
-            <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralStrongBrush}" />
-            <Setter Property="BorderBrush" Value="{StaticResource ElementForegroundNeutralStrongBrush}" />
+            <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource NeutralStrongBrush}" />
         </Style>
 
         <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource ElementBackgroundNeutralLowBrush}" />
-            <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralModerateBrush}" />
-            <Setter Property="BorderBrush" Value="{StaticResource ElementForegroundNeutralModerateBrush}" />
+            <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource NeutralModerateBrush}" />
         </Style>
 
         <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource ElementBackgroundNeutralBaseBrush}" />
-            <Setter Property="BorderBrush" Value="{StaticResource ElementForegroundNeutralSubduedBrush}" />
+            <Setter Property="Background" Value="{StaticResource SurfaceBaseBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource NeutralSubduedBrush}" />
         </Style>
 
         <!-- Disable pointerOver for Label version-->
         <Style Selector="^.Label:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource ElementBackgroundNeutralBaseBrush}" />
-            <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralSubduedBrush}" />
-            <Setter Property="BorderBrush" Value="{StaticResource ElementForegroundNeutralSubduedBrush}" />
+            <Setter Property="Background" Value="{StaticResource SurfaceBaseBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource NeutralSubduedBrush}" />
         </Style>
     </Style>
 
 
     <!-- Pill Light -->
     <Style Selector="Button.Pill.Light">
-        <Setter Property="Background" Value="{StaticResource ElementForegroundNeutralStrongBrush}" />
-        <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralInvertedBrush}" />
+        <Setter Property="Background" Value="{StaticResource NeutralStrongBrush}" />
+        <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
 
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource ElementForegroundNeutralModerateBrush}" />
-            <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralInvertedBrush}" />
+            <Setter Property="Background" Value="{StaticResource NeutralModerateBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
         </Style>
 
         <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource ElementForegroundNeutralSubduedBrush}" />
-            <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralInvertedBrush}" />
+            <Setter Property="Background" Value="{StaticResource NeutralSubduedBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
         </Style>
 
         <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource ElementForegroundNeutralStrongBrush}" />
-            <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralInvertedBrush}" />
+            <Setter Property="Background" Value="{StaticResource NeutralStrongBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
         </Style>
 
         <!-- Disable pointerOver for Label version-->
         <Style Selector="^.Label:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource ElementForegroundNeutralStrongBrush}" />
-            <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralInvertedBrush}" />
+            <Setter Property="Background" Value="{StaticResource NeutralStrongBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
         </Style>
     </Style>
 
 
     <!-- Pill Accent -->
     <Style Selector="Button.Pill.Accent">
-        <Setter Property="Background" Value="{StaticResource ElementForegroundInfoModerateBrush}" />
-        <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralInvertedBrush}" />
+        <Setter Property="Background" Value="{StaticResource InfoModerateBrush}" />
+        <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
 
 
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource ElementForegroundInfoStrongBrush}" />
-            <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralInvertedBrush}" />
+            <Setter Property="Background" Value="{StaticResource InfoStrongBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
         </Style>
 
         <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource ElementForegroundInfoSubduedBrush}" />
-            <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralInvertedBrush}" />
+            <Setter Property="Background" Value="{StaticResource InfoSubduedBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
         </Style>
 
         <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource ElementForegroundInfoModerateBrush}" />
-            <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralInvertedBrush}" />
+            <Setter Property="Background" Value="{StaticResource InfoModerateBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
         </Style>
 
         <!-- Disable pointerOver for Label version-->
         <Style Selector="^.Label:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource ElementForegroundInfoModerateBrush}" />
-            <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralInvertedBrush}" />
+            <Setter Property="Background" Value="{StaticResource InfoModerateBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
         </Style>
     </Style>
 

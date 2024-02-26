@@ -156,11 +156,11 @@ The corrected code should target content presenter directly as well:
 
 <Style Selector="Border.OutlineModerate">
     <Setter Property="BorderThickness" Value="1" />
-    <Setter Property="BorderBrush" Value="{StaticResource ElementStrokeTranslucentModerateBrush}" />
+    <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentModerateBrush}" />
 </Style>
 
 <Style Selector="Border.Mid">
-    <Setter Property="Background" Value="{StaticResource ElementBackgroundNeutralMidBrush}" />
+    <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
 </Style>
 ```
 
@@ -180,19 +180,19 @@ This should be used to avoid defining many different combinations of appearances
 
 <!-- Standard Primary -->
 <Style Selector="Button.Standard.Primary">
-    <Setter Property="Background" Value="{DynamicResource ElementForegroundPrimaryModerateBrush}" />
+    <Setter Property="Background" Value="{DynamicResource PrimaryModerateBrush}" />
 
     <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-        <Setter Property="Background" Value="{DynamicResource ElementForegroundPrimaryStrongBrush}" />
+        <Setter Property="Background" Value="{DynamicResource PrimaryStrongBrush}" />
     </Style>
 </Style>
 
 <!-- Standard Secondary -->
 <Style Selector="Button.Standard.Secondary">
-    <Setter Property="Background" Value="{DynamicResource ElementForegroundPrimaryStrongBrush}" />
+    <Setter Property="Background" Value="{DynamicResource PrimaryStrongBrush}" />
 
     <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-        <Setter Property="Background" Value="{DynamicResource ElementForegroundPrimaryWeakBrush}" />
+        <Setter Property="Background" Value="{DynamicResource PrimaryWeakBrush}" />
     </Style>
 </Style>
 ```
@@ -206,19 +206,19 @@ Styles can also be defined nested in parent Styles, e.g.:
 
     <!-- Standard Primary -->
     <Style Selector="^.Primary">
-        <Setter Property="Background" Value="{DynamicResource ElementForegroundPrimaryModerateBrush}"/>
+        <Setter Property="Background" Value="{DynamicResource PrimaryModerateBrush}"/>
 
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource ElementForegroundPrimaryStrongBrush}"/>
+            <Setter Property="Background" Value="{DynamicResource PrimaryStrongBrush}"/>
         </Style>
     </Style>
 
     <!-- Standard Secondary -->
     <Style Selector="^.Secondary">
-        <Setter Property="Background" Value="{DynamicResource ElementForegroundPrimaryStrongBrush}"/>
+        <Setter Property="Background" Value="{DynamicResource PrimaryStrongBrush}"/>
 
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource ElementForegroundPrimaryWeakBrush}"/>
+            <Setter Property="Background" Value="{DynamicResource PrimaryWeakBrush}"/>
         </Style>
     </Style>
 </Style>
@@ -389,12 +389,12 @@ This system was newly introduced to the App with the creation of the Theme proje
 - The first level is the 'Primitive' later, (e.g. `Red100`, `Red50`, `Green100`, ...).
 - The second level is the 'Brand' palette of 'Semantic' colours, (e.g. `BrandWarning90`, `BrandInfo50`, ...).
 - The third level is the 'Element' palette of colors that should be used directly in the Styles of the UI Elements,
-(e.g. `ElementBackgroundNeutralMidBrush`, `ElementForegroundPrimaryStrongBrush`, ...).
+(e.g. `SurfaceNeutralMidBrush`, `PrimaryStrongBrush`, ...).
 
 !!! tip "The main idea is that of separating the names of the colours used in the Styles, from the actual values."
 
 This way, if the design team decides to change the colour of all `Information` elements, this can be accomplished by
-changing the value of the `ElementInfo` colour, without having to change the name of the colour in all the Styles.
+changing the value of the `Info` colour, without having to change the name of the colour in all the Styles.
 
 !!! tip "The Theme project should always prefer to user the third level of the colour system when possible."
 
@@ -544,8 +544,8 @@ Some functionality properties of controls can and should be defined directly on 
 
 - `ControlThemes` names should follow PascalCase naming convention, and end with `Theme`, e.g. `BodyMDRegularTheme`.
 
-- Colors should start with the name of the palette [level](#color-system) they belong to, e.g. `ElementBackgroundNeutralMid`.
-  `SolidColorBrushes` should end with `Brush`, e.g. `ElementBackgroundNeutralMidBrush`.
+- Colors should start with the name of the palette [level](#color-system) they belong to, e.g. `SurfaceMid`.
+  `SolidColorBrushes` should end with `Brush`, e.g. `SurfaceMidBrush`.
 
 ## 3rd Party Theming
 

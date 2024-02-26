@@ -18,7 +18,7 @@
         </Style>
 
         <Style Selector="^ SelectableTextBlock#UrlTextBlock">
-            <Setter Property="SelectionBrush" Value="{StaticResource ElementForegroundPrimaryModerateBrush}" />
+            <Setter Property="SelectionBrush" Value="{StaticResource PrimaryModerateBrush}" />
             <Setter Property="FontFamily" Value="{StaticResource FontBodyRegular}" />
             <Setter Property="FontSize" Value="14" />
         </Style>
