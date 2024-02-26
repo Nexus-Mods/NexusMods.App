@@ -43,11 +43,7 @@
                                             Command="{CompiledBinding SelectItemCommand}">
 
                                         <StackPanel Margin="16" Orientation="Horizontal" Spacing="4">
-                                            <unifiedIcon:UnifiedIcon Classes="ProgressDownload"
-                                                        Width="24"
-                                                        Height="24"
-                                                        FontSize="24"/>
-
+                                            <unifiedIcon:UnifiedIcon Classes="ProgressDownload" Size="24"/>
                                             <TextBlock x:Name="NameTextBlock"
                                                        Text="{CompiledBinding Name}"
                                                        Classes="BodyLGBold" />

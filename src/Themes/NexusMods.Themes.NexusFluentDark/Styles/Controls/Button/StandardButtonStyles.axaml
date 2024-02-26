@@ -213,15 +213,7 @@
 
         <Style Selector="^ > StackPanel > unifiedIcon|UnifiedIcon">
             <Setter Property="Size" Value="24" />
-
-            <!-- NOTE: For some reason setting this to 8 causes a big distance for icons only, this is a workaround -->
-            <!-- If the distance from the text is too low, try setting this to 8 as design -->
-            <Setter Property="Margin" Value="0,0,3,0" />
-        </Style>
-
-        <Style Selector="^ > StackPanel > unifiedIcon|UnifiedIcon">
             <Setter Property="Margin" Value="0,0,8,0" />
-            <Setter Property="Size" Value="24" />
         </Style>
 
         <Style Selector="^:focus /template/ ContentPresenter#PART_ContentPresenter">

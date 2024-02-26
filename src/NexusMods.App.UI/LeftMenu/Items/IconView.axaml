@@ -20,7 +20,7 @@
             Height="40"
             Width="184">
             <unifiedIcon:UnifiedIcon
-                FontSize="18"
+                Size="18"
                 Grid.Column="0"
                 Height="18"
                 Width="18"
