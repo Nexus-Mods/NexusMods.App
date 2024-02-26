@@ -37,10 +37,10 @@
                              Opacity="{StaticResource OpacitySubdued}" />
         </Setter>
 
-        <Setter Property="CornerRadius" Value="2" />
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-sm}" />
 
         <Style Selector="^ /template/ Border#PART_Indicator">
-            <Setter Property="CornerRadius" Value="0" />
+            <Setter Property="CornerRadius" Value="{StaticResource Rounded-none}" />
         </Style>
 
         <Setter Property="MinWidth" Value="100" />
@@ -86,7 +86,7 @@
         <Setter Property="ShowProgressText" Value="False" />
         <Setter Property="Height" Value="16" />
         <Setter Property="Foreground" Value="{StaticResource PrimaryModerateBrush}" />
-        <Setter Property="CornerRadius" Value="45" />
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-full}" />
     </Style>
 
 

@@ -17,7 +17,7 @@
         <Setter Property="TextWrapping" Value="Wrap" />
         <Setter Property="BorderBrush" Value="{StaticResource SurfaceTransparentBrush}" />
         <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="CornerRadius" Value="0" />
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-none}" />
 
         <Style Selector="^:focus /template/ Border#PART_BorderElement">
             <Setter Property="BorderBrush" Value="{StaticResource SurfaceTransparentBrush}" />

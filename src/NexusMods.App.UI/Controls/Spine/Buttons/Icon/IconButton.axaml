@@ -34,7 +34,7 @@
                         Padding="0"
                         VerticalAlignment="Center" />
                     <Border
-                        CornerRadius="48"
+                        Classes="Rounded-full"
                         Height="50"
                         Width="50" />
                 </Grid>

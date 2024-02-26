@@ -36,7 +36,7 @@
                         <ItemsControl.ItemTemplate>
                             <DataTemplate DataType="{x:Type workspace:INewTabPageSectionItemViewModel}">
 
-                                <Border Classes="Mid" CornerRadius="4">
+                                <Border Classes="Mid Rounded">
                                     <Button Width="375"
                                             Height="56"
                                             Padding="0"

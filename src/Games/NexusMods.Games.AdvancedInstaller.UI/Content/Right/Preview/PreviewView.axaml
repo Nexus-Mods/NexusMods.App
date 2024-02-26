@@ -12,7 +12,7 @@
         <preview:PreviewViewModel />
     </Design.DataContext>
 
-    <Border Classes="Rounded Mid" x:Name="TopLevelBorder" Padding="16">
+    <Border Classes="Rounded-lg Mid" x:Name="TopLevelBorder" Padding="16">
         <Border.Styles>
             <Style Selector="Border.HeaderAreaBorder">
                 <Setter Property="BorderThickness" Value="0, 0, 0, 1" />

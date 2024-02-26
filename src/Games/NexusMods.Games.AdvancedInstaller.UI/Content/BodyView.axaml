@@ -61,7 +61,7 @@
         <Border Grid.Row="1" x:Name="BodyContainerBorder">
             <Grid ColumnDefinitions="*, Auto, *" x:Name="CentralGrid">
                 <!-- Mod Content -->
-                <Border Classes="Rounded Mid" Grid.Column="0" x:Name="ModContentBorder">
+                <Border Classes="Rounded-lg Mid" Grid.Column="0" x:Name="ModContentBorder">
                     <ScrollViewer x:Name="ModContentScrollViewer">
                         <reactiveUi:ViewModelViewHost x:Name="ModContentSectionViewHost" />
                     </ScrollViewer>
@@ -71,7 +71,7 @@
                 <unifiedIcon:UnifiedIcon Classes="Play ForegroundSubdued CentralIcon" Grid.Column="1" x:Name="PlayArrowIcon" />
 
                 <!-- Install Location Preview -->
-                <Border Classes="Rounded" Grid.Column="2" x:Name="ResultsBorder">
+                <Border Classes="Rounded-lg" Grid.Column="2" x:Name="ResultsBorder">
                     <reactiveUi:ViewModelViewHost x:Name="PreviewSectionViewHost" />
                 </Border>
             </Grid>

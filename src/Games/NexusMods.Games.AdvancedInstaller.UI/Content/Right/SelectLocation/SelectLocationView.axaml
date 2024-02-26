@@ -13,7 +13,7 @@
     </Design.DataContext>
 
 
-    <Border Classes="Rounded Mid OutlineStrong" x:Name="TopLevelBorder" Padding="16">
+    <Border Classes="Rounded-lg Mid OutlineStrong" x:Name="TopLevelBorder" Padding="16">
         <Border.Styles>
             <Style Selector="Border#HeaderAreaBorder">
                 <Setter Property="Margin" Value="0, 0, 0, 16" />
@@ -56,7 +56,7 @@
                     </StackPanel>
                 </Border>
 
-                <Border Grid.Row="1" Classes="Top Rounded Padding16 SuggestedAreaBorder"
+                <Border Grid.Row="1" Classes="Top Rounded-lg Padding16 SuggestedAreaBorder"
                         x:Name="SuggestedAreaBorder">
                     <Grid RowDefinitions="Auto, *" Name="SuggestedAreaGrid">
 
@@ -84,7 +84,7 @@
                     </Grid>
                 </Border>
 
-                <Border Grid.Row="2" Classes="Rounded OutlineWeak Padding16" x:Name="CustomAreaBorder">
+                <Border Grid.Row="2" Classes="Rounded-lg OutlineWeak Padding16" x:Name="CustomAreaBorder">
                     <Grid RowDefinitions="Auto, *" Name="CustomAreaGrid">
 
                         <StackPanel Grid.Row="0" Classes="SuggestedHeaderStackPanel" Orientation="Vertical">

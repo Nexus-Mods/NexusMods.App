@@ -37,7 +37,7 @@
         <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
         <Setter Property="Width" Value="40" />
         <Setter Property="Height" Value="40" />
-        <Setter Property="CornerRadius" Value="4" />
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
 
         <Style Selector="^ unifiedIcon|UnifiedIcon">
             <Setter Property="Size" Value="20" />
@@ -61,7 +61,7 @@
         <Setter Property="Height" Value="30" />
         <Setter Property="Margin" Value="0" />
         <Setter Property="Padding" Value="0" />
-        <Setter Property="CornerRadius" Value="15" />
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-2xl}" />
 
         <Style Selector="^ unifiedIcon|UnifiedIcon">
             <Setter Property="Size" Value="30" />
@@ -76,7 +76,7 @@
     <Style Selector="Button.LeftMenuItem">
         <Setter Property="Height" Value="40" />
         <Setter Property="Padding" Value="0" />
-        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-lg}" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
 

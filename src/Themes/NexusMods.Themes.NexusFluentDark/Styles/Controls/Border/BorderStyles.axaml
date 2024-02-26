@@ -4,52 +4,52 @@
     <!-- Preview -->
     <Design.PreviewWith>
         <WrapPanel Margin="10" Width="600">
-            <Border Classes="Rounded OutlineStrong" Padding="16">
+            <Border Classes="Rounded-lg OutlineStrong" Padding="16">
                 <TextBlock Text="OUTLINE Strong" />
             </Border>
-            <Border Classes="Rounded OutlineModerate" Padding="16">
+            <Border Classes="Rounded-lg OutlineModerate" Padding="16">
                 <TextBlock Text="OUTLINE Moderate" />
             </Border>
-            <Border Classes="Rounded OutlineSubdued" Padding="16">
+            <Border Classes="Rounded-lg OutlineSubdued" Padding="16">
                 <TextBlock Text="OUTLINE Subdued" />
             </Border>
-            <Border Classes="Rounded OutlineWeak" Padding="16">
+            <Border Classes="Rounded-lg OutlineWeak" Padding="16">
                 <TextBlock Text="OUTLINE Weak" />
             </Border>
-            <Border Classes="Rounded OutlineInfoStrong" Padding="16">
+            <Border Classes="Rounded-lg OutlineInfoStrong" Padding="16">
                 <TextBlock Text="OUTLINE Info Strong" />
             </Border>
-            <Border Classes="Rounded OutlineInfoModerate" Padding="16">
+            <Border Classes="Rounded-lg OutlineInfoModerate" Padding="16">
                 <TextBlock Text="OUTLINE Info Moderate" />
             </Border>
-            <Border Classes="Rounded OutlineInfoSubdued" Padding="16">
+            <Border Classes="Rounded-lg OutlineInfoSubdued" Padding="16">
                 <TextBlock Text="OUTLINE Info Subdued" />
             </Border>
-            <Border Classes="Rounded OutlineInfoWeak" Padding="16">
+            <Border Classes="Rounded-lg OutlineInfoWeak" Padding="16">
                 <TextBlock Text="OUTLINE Info Weak" />
             </Border>
-            <Border Classes="Rounded OutlineWeak Base" Padding="16">
+            <Border Classes="Rounded-lg OutlineWeak Base" Padding="16">
                 <TextBlock Text="BASE" />
             </Border>
-            <Border Classes="Rounded Low" Padding="16">
+            <Border Classes="Rounded-lg Low" Padding="16">
                 <TextBlock Text="LOW" />
             </Border>
-            <Border Classes="Rounded Mid" Padding="16">
+            <Border Classes="Rounded-lg Mid" Padding="16">
                 <TextBlock Text="MID" />
             </Border>
-            <Border Classes="Rounded Top" Padding="16">
+            <Border Classes="Rounded-lg Top" Padding="16">
                 <TextBlock Text="TOP" />
             </Border>
-            <Border Classes="Rounded DangerWeak" Padding="16">
+            <Border Classes="Rounded-lg DangerWeak" Padding="16">
                 <TextBlock Text="DANGER weak" />
             </Border>
-            <Border Classes="Rounded DangerSubdued" Padding="16">
+            <Border Classes="Rounded-lg DangerSubdued" Padding="16">
                 <TextBlock Text="DANGER subdued" />
             </Border>
-            <Border Classes="Rounded DangerModerate" Padding="16">
+            <Border Classes="Rounded-lg DangerModerate" Padding="16">
                 <TextBlock Text="DANGER moderate" />
             </Border>
-            <Border Classes="Rounded DangerStrong" Padding="16">
+            <Border Classes="Rounded-lg DangerStrong" Padding="16">
                 <TextBlock Text="DANGER strong" />
             </Border>
             <Border Classes="LeftPaneTitle" Padding="16">
@@ -62,18 +62,73 @@
 
     <!-- Corner Radius -->
 
+    <Style Selector="Border.Rounded-none">
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-none}" />
+    </Style>
+    
+    <Style Selector="Border.Rounded-sm">
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-sm}" />
+    </Style>
+    
     <Style Selector="Border.Rounded">
-        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
+    </Style>
+    
+    <Style Selector="Border.Rounded-md">
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-md}" />
+    </Style>
+    
+    <Style Selector="Border.Rounded-lg">
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-lg}" />
+    </Style>
+    
+    <Style Selector="Border.Rounded-xl">
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-xl}" />
+    </Style>
+    
+    <Style Selector="Border.Rounded-2xl">
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-2xl}" />
+    </Style>
+    
+    <Style Selector="Border.Rounded-3xl">
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-3xl}" />
+    </Style>
+    
+    <Style Selector="Border.Rounded-full">
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-full}" />
     </Style>
 
-    <Style Selector="Border.RoundedTop">
-        <Setter Property="CornerRadius" Value="8,8, 0, 0" />
+    <Style Selector="Border.Rounded-t-lg">
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-t-lg}" />
     </Style>
 
-    <Style Selector="Border.RoundedBottom">
-        <Setter Property="CornerRadius" Value="0,0, 8,8" />
+    <Style Selector="Border.Rounded-b-lg">
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-b-lg}" />
     </Style>
-
+    
+    <Style Selector="Border.Rounded-l-lg">
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-l-lg}" />
+    </Style>
+    
+    <Style Selector="Border.Rounded-r-lg">
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-r-lg}" />
+    </Style>
+    
+    <Style Selector="Border.Rounded-tl-lg">
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-tl-lg}" />
+    </Style>
+    
+    <Style Selector="Border.Rounded-tr-lg">
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-tr-lg}" />
+    </Style>
+    
+    <Style Selector="Border.Rounded-bl-lg">
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-bl-lg}" />
+    </Style>
+    
+    <Style Selector="Border.Rounded-br-lg">
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-br-lg}" />
+    </Style>
 
     <!-- Border Brushes -->
 

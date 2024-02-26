@@ -181,7 +181,7 @@
 
     <!-- Base Standard Button (only use with additional qualifiers)-->
     <Style Selector="Button.Standard">
-        <Setter Property="CornerRadius" Value="4" />
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
         <Setter Property="Height" Value="36" />
 
         <!-- Don't set vertical margins, use vertical alignment to keep things centered instead -->

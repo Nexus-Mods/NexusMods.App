@@ -16,13 +16,13 @@
     <!-- Styles Definitions-->
 
     <Style Selector="Button.Spine">
-        <Setter Property="CornerRadius" Value="45" />
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-full}" />
         <Setter Property="HorizontalAlignment" Value="Center" />
         <Setter Property="ClipToBounds" Value="False" />
         <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
 
         <Style Selector="^ Border">
-            <Setter Property="CornerRadius" Value="45" />
+            <Setter Property="CornerRadius" Value="{StaticResource Rounded-full}" />
         </Style>
 
         <Style Selector="^:pressed">

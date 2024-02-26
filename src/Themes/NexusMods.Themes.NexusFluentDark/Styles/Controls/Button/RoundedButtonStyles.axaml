@@ -178,7 +178,7 @@
 
     <!-- Base Rounded Button (only use with additional qualifiers) -->
     <Style Selector="Button.Rounded">
-        <Setter Property="CornerRadius" Value="48" />
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-full}" />
         <Setter Property="Height" Value="32" />
 
         <!-- Set an invisible border thickness to 1 to avoid size differences with outlined variants. -->

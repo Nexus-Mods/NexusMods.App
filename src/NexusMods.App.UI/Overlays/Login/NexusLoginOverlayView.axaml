@@ -16,7 +16,7 @@
     <Design.DataContext>
         <login:NexusLoginOverlayDesignerViewModel />
     </Design.DataContext>
-    <Border Classes="Rounded Low">
+    <Border Classes="Rounded-lg Low">
         <StackPanel
             Margin="24"
             Orientation="Vertical"
@@ -48,7 +48,7 @@
                     VerticalAlignment="Center" />
             </StackPanel>
             <Border
-                Classes="Mid Rounded"
+                Classes="Mid Rounded-lg"
                 VerticalAlignment="Stretch">
                 <StackPanel Margin="24">
                     <TextBlock x:Name="CaptionTextBlock"

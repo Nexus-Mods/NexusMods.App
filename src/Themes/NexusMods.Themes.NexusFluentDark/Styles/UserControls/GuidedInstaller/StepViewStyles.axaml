@@ -29,14 +29,14 @@
 
             <Style Selector="^ Border#GroupsBorder">
                 <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
-                <Setter Property="CornerRadius" Value="8,8, 8,8" />
+                <Setter Property="CornerRadius" Value="{StaticResource Rounded-lg}" />
                 <Setter Property="Padding" Value="16" />
                 <Setter Property="Margin" Value="0,0,16,0" />
             </Style>
 
             <Style Selector="^ Border#PreviewTitleBorder">
                 <Setter Property="Padding" Value="16,12,16,12" />
-                <Setter Property="CornerRadius" Value="8,8,0,0" />
+                <Setter Property="CornerRadius" Value="{StaticResource Rounded-t-lg}" />
             </Style>
             <Style Selector="^ unifiedIcon|UnifiedIcon.PreviewIcon">
                 <Setter Property="Size" Value="18"/>
@@ -44,7 +44,7 @@
             </Style>
             <Style Selector="^ Border#PreviewContentBorder">
                 <Setter Property="Padding" Value="16,16,8,0" />
-                <Setter Property="CornerRadius" Value="0,0,8,8" />
+                <Setter Property="CornerRadius" Value="{StaticResource Rounded-b-lg}" />
             </Style>
             <Style Selector="^ TextBlock#HighlightedOptionDescription">
                 <Setter Property="Margin" Value="0,0,0,0" />

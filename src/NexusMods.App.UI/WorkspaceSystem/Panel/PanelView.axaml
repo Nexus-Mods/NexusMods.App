@@ -9,7 +9,7 @@
     x:Class="NexusMods.App.UI.WorkspaceSystem.PanelView"
     Width="0" Height="0">
 
-    <Border x:Name="PanelBorder" Classes="Rounded Low">
+    <Border x:Name="PanelBorder" Classes="Rounded-lg Low">
         <Grid RowDefinitions="Auto, *">
             <Border Grid.Row="0" x:Name="TabHeaderBorder">
                 <Grid ColumnDefinitions="*, Auto">

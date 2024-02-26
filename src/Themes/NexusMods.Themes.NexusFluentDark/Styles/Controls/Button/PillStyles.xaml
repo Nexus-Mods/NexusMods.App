@@ -177,7 +177,7 @@
     <!-- Pill -->
     <Style Selector="Button.Pill">
         <Setter Property="Height" Value="16" />
-        <Setter Property="CornerRadius" Value="12" />
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-xl}" />
 
         <!-- Don't set vertical margins, use vertical alignment to keep things centered instead -->
         <Setter Property="Padding" Value="6, 0" />

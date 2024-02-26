@@ -12,7 +12,7 @@
         <items:ApplyControlDesignViewModel />
     </Design.DataContext>
 
-    <Border Classes="Rounded Low"
+    <Border Classes="Rounded-lg Low"
             Padding="12"
             HorizontalAlignment="Stretch">
 
