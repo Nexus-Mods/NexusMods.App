@@ -105,11 +105,10 @@
                     <Button Classes="Avatar"
                             HorizontalAlignment="Center"
                             x:Name="UserButton">
-                        <Image
-                            Height="30"
-                            Width="30"
+                        <unifiedIcon:UnifiedIcon
+                            Size="30"
                             x:Name="AvatarImage">
-                        </Image>
+                        </unifiedIcon:UnifiedIcon>
                     </Button>
 
                 </StackPanel>
