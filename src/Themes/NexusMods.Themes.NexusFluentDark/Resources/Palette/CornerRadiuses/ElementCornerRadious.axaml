@@ -1,0 +1,17 @@
+﻿<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Values for CornerRadius property on Borders or other Components -->
+    
+    <!-- ReSharper disable InconsistentNaming -->
+    <Thickness x:Key="rounded-none">0</Thickness>
+    <Thickness x:Key="rounded-sm">2</Thickness>
+    <Thickness x:Key="rounded">4</Thickness>
+    <Thickness x:Key="rounded-md">6</Thickness>
+    <Thickness x:Key="rounded-lg">8</Thickness>
+    <Thickness x:Key="rounded-xl">12</Thickness>
+    <Thickness x:Key="rounded-2xl">16</Thickness>
+    <Thickness x:Key="rounded-3xl">24</Thickness>
+    <Thickness x:Key="rounded-full">9999</Thickness>
+    
+</ResourceDictionary>
+

@@ -3,7 +3,7 @@
     <ResourceDictionary.MergedDictionaries>
         <ResourceInclude Source="/Resources/Palette/Colors/BrandColors.axaml"/>
         <ResourceInclude Source="/Resources/Palette/Colors/ElementColors.axaml"/>
-        <ResourceInclude Source="/Resources/Palette/Opacity/ElementOpacities.axaml"/>
+        <ResourceInclude Source="/Resources/Palette/Opacities/ElementOpacities.axaml"/>
         <ResourceInclude Source="/Resources/ThemeBaseResources.axaml"/>
         <ResourceInclude Source="/Resources/Typography/TextBlockControlThemes.axaml"/>
         <ResourceInclude Source="/Resources/ControlThemes/UnifiedIconControlTheme.axaml"/>

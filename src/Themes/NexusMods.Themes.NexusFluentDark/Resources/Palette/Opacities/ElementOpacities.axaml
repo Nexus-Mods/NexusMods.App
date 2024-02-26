@@ -3,7 +3,7 @@
 
     <!-- Include the Primitive Opacities -->
     <ResourceDictionary.MergedDictionaries>
-        <ResourceInclude Source="/Resources/Palette/Opacity/PrimitiveOpacities.axaml" />
+        <ResourceInclude Source="/Resources/Palette/Opacities/PrimitiveOpacities.axaml" />
     </ResourceDictionary.MergedDictionaries>
 
     <!-- Element Opacity levels -->
