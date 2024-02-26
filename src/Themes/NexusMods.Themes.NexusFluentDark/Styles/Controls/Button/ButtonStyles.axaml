@@ -11,7 +11,11 @@
                     <unifiedIcon:UnifiedIcon Classes="Help" />
                 </Button>
                 <Button Classes="Avatar" HorizontalAlignment="Center">
-                    <Image Source="avares://NexusMods.Themes.NexusFluentDark/Assets/DesignTime/cyberpunk_game.png" />
+                    <unifiedIcon:UnifiedIcon>
+                        <unifiedIcon:UnifiedIcon.Value>
+                            <unifiedIcon:IconValue ImageSetter="avares://NexusMods.Themes.NexusFluentDark/Assets/DesignTime/cyberpunk_game.png"/>
+                        </unifiedIcon:UnifiedIcon.Value>
+                    </unifiedIcon:UnifiedIcon>
                 </Button>
                 <Button Classes="LeftMenuItem" HorizontalAlignment="Center">
                     <StackPanel>
@@ -59,9 +63,8 @@
         <Setter Property="Padding" Value="0" />
         <Setter Property="CornerRadius" Value="15" />
 
-        <Style Selector="^ Image">
-            <Setter Property="Width" Value="30" />
-            <Setter Property="Height" Value="30" />
+        <Style Selector="^ unifiedIcon|UnifiedIcon">
+            <Setter Property="Size" Value="30" />
             <Setter Property="Clip">
                 <EllipseGeometry Rect="0, 0, 30, 30" />
             </Setter>
