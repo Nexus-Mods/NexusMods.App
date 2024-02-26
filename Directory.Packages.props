@@ -50,13 +50,13 @@
   <ItemGroup>
     <!-- Microsoft -->
     <PackageVersion Include="Microsoft.AspNetCore.WebUtilities" Version="8.0.2" />
-    <PackageVersion Include="Microsoft.Data.Sqlite" Version="8.0.1" />
+    <PackageVersion Include="Microsoft.Data.Sqlite" Version="8.0.2" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Logging" Version="8.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
-    <PackageVersion Include="Microsoft.Extensions.ObjectPool" Version="8.0.1" />
+    <PackageVersion Include="Microsoft.Extensions.ObjectPool" Version="8.0.2" />
     <PackageVersion Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.0" />
   </ItemGroup>
   <ItemGroup>
