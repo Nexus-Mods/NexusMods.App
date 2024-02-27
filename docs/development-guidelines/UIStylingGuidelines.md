@@ -429,8 +429,9 @@ Developers should avoid using numeric values directly and instead strive to use 
 !!! tip "In particular a `OpacityDisabledElement` alias is defined, which should be used for disabled elements."
 
 ### Other Resource Palettes
-!!! info "Like Opacity and Colors, the App has palettes for other resources"
-These provide an abstraction over the actual values, and should be used in the Styles of the UI Elements.
+!!! info "Like Opacity and Colors, the App has alias palettes for other resources"
+
+Value aliases provide an abstraction over the actual values, and should be used in the Styles of the UI Elements.
 
 #### Spacing
 A numbered alias system following the `Spacing-none`, `Spacing-1`, `Spacing-2`, ... pattern.
