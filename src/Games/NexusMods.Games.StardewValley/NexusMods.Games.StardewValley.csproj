@@ -20,6 +20,7 @@
       <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.Games.Diagnostics\NexusMods.Abstractions.Games.Diagnostics.csproj" />
       <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.Games\NexusMods.Abstractions.Games.csproj" />
       <ProjectReference Include="..\..\Extensions\NexusMods.Extensions.DependencyInjection\NexusMods.Extensions.DependencyInjection.csproj" />
+      <ProjectReference Include="..\NexusMods.Games.StardewValley.SMAPI\NexusMods.Games.StardewValley.SMAPI.csproj" />
     </ItemGroup>
 
 </Project>
