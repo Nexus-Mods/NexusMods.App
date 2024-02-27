@@ -44,7 +44,7 @@
         <base:MessageBoxBackground.BottomContent>
 
             <!-- Buttons -->
-            <StackPanel Orientation="Horizontal" Margin="24" VerticalAlignment="Center" HorizontalAlignment="Right" Spacing="24">
+            <StackPanel Orientation="Horizontal" Margin="24" VerticalAlignment="Center" HorizontalAlignment="Right" Classes="Spacing-6">
 
                 <Button x:Name="CancelButton"
                         Classes="Standard Tertiary"

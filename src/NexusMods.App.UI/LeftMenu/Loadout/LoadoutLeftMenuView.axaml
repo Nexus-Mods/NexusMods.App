@@ -22,7 +22,7 @@
         </ItemsControl>
 
         <Border Grid.Row="1"
-                Classes="Rounded Low"
+                Classes="Rounded-lg Low"
                 Padding="12">
                 <reactiveUi:ViewModelViewHost x:Name="ApplyControlViewHost" />
         </Border>

@@ -25,7 +25,7 @@
         <!-- one tab -->
         <Style Selector="^ Border#TabHeaderBorder.OneTab">
             <Style Selector="^ ui|PanelTabHeaderView Border#Container">
-                <Setter Property="CornerRadius" Value="8 0 0 0"/>
+                <Setter Property="CornerRadius" Value="{StaticResource Rounded-tl-lg}"/>
 
                 <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeak}"/>
                 <Setter Property="BorderThickness" Value="0 0 1 0" />
@@ -34,14 +34,14 @@
 
         <!-- multiple tabs -->
         <Style Selector="^ Border#TabHeaderBorder:not(.OneTab)">
-            <Setter Property="CornerRadius" Value="8 8 0 0" />
+            <Setter Property="CornerRadius" Value="{StaticResource Rounded-t-lg}" />
             <Setter Property="Background" Value="{StaticResource SurfaceBaseBrush}" />
 
             <Style Selector="^ ItemsControl#TabHeaders">
                 <!-- every tab -->
                 <Style Selector="^ ContentPresenter:nth-child(n) ui|PanelTabHeaderView">
                     <Style Selector="^ Border#Container">
-                        <Setter Property="CornerRadius" Value="0" />
+                        <Setter Property="CornerRadius" Value="{StaticResource Rounded-none}" />
                         <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeak}" />
                     </Style>
 
@@ -59,7 +59,7 @@
                 <!-- first tab -->
                 <Style Selector="^ ContentPresenter:nth-child(1) ui|PanelTabHeaderView">
                     <Style Selector="^ Border#Container">
-                        <Setter Property="CornerRadius" Value="8 0 0 0" />
+                        <Setter Property="CornerRadius" Value="{StaticResource Rounded-tl-lg}" />
                     </Style>
 
                     <!-- selected tab -->

@@ -12,12 +12,12 @@
         <items:ApplyControlDesignViewModel />
     </Design.DataContext>
 
-    <Border Classes="Rounded Low"
+    <Border Classes="Rounded-lg Low"
             Padding="12"
             HorizontalAlignment="Stretch">
 
         <StackPanel Orientation="Vertical"
-                    Spacing="8">
+                    Classes="Spacing-2">
 
             <Button Classes="Standard SecondaryOutlined"
                     HorizontalAlignment="Stretch"
@@ -34,7 +34,7 @@
                     HorizontalAlignment="Stretch"
                     x:Name="InProgressBorder">
                 <StackPanel Orientation="Horizontal"
-                            Spacing="6">
+                            Classes="Spacing-1_5">
                     <progressRing:ProgressRing/>
                     <TextBlock Classes="BodySMNormal ForegroundModerate"
                                Text="Applying..."

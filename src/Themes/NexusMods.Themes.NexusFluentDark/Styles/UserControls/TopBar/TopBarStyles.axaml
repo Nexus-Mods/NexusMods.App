@@ -16,7 +16,7 @@
         </Style>
 
         <Style Selector="^ Border#SearchBoxBorder">
-            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
 
             <Style Selector="^ TextBlock">
                 <Setter Property="Foreground" Value="{StaticResource NeutralWeakBrush}" />

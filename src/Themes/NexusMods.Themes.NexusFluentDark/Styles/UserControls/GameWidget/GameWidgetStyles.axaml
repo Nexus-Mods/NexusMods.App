@@ -15,7 +15,7 @@
         <Setter Property="ClipToBounds" Value="False" />
 
         <Style Selector="^ > Border">
-            <Setter Property="CornerRadius" Value="25" />
+            <Setter Property="CornerRadius" Value="{StaticResource Rounded-3xl}" />
             <Setter Property="BoxShadow">
                 <extensions:BoxShadow
                     BlurRadius="5" ShadowColor="{StaticResource BrandTranslucentDark500}"
@@ -25,7 +25,7 @@
         </Style>
 
         <Style Selector="^ Border.MainBorder">
-            <Setter Property="CornerRadius" Value="25" />
+            <Setter Property="CornerRadius" Value="{StaticResource Rounded-3xl}" />
             <Setter Property="ClipToBounds" Value="True" />
         </Style>
 

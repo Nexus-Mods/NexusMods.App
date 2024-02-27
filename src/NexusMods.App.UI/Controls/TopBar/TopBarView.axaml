@@ -26,9 +26,8 @@
                    x:Name="ActiveWorkspaceTitleTextBlock" />
 
         <StackPanel Grid.Column="2"
-                    Classes="TopBarActions"
+                    Classes="TopBarActions Spacing-2"
                     Orientation="Horizontal"
-                    Spacing="8"
                     Margin="16,0"
                     x:Name="ActionStackPanel">
 
@@ -68,7 +67,7 @@
 
         <StackPanel Grid.Column="4"
                     Orientation="Horizontal"
-                    Spacing="8"
+                    Classes="Spacing-2"
                     Margin="12,0"
                     x:Name="LoginStackPanel">
 
@@ -87,7 +86,7 @@
                     x:Name="UserPanel"
                     IsVisible="False">
 
-                <StackPanel Orientation="Horizontal" Spacing="16" Margin="16, 0">
+                <StackPanel Orientation="Horizontal" Classes="Spacing-3_5" Margin="16, 0">
 
                     <Button Classes="Pill Light" x:Name="Premium" IsVisible="False">
                         <StackPanel>

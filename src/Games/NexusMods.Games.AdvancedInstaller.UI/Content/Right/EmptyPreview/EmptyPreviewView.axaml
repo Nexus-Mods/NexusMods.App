@@ -12,7 +12,7 @@
         <emptyPreview:EmptyPreviewViewModel />
     </Design.DataContext>
 
-    <Border Classes="Rounded OutlineModerate">
+    <Border Classes="Rounded-lg OutlineModerate">
         <Border.Styles>
             <Style Selector="TextBlock#EmptyPreviewTextBlock">
                 <Setter Property="VerticalAlignment" Value="Center" />

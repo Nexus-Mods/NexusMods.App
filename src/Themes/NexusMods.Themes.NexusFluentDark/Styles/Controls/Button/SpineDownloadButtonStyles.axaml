@@ -6,9 +6,9 @@
 
     <!-- Preview -->
     <Design.PreviewWith>
-        <StackPanel Orientation="Horizontal" Margin="24" Spacing="8">
+        <StackPanel Orientation="Horizontal" Margin="24" Classes="Spacing-2">
             <ui:SpineDownloadButtonView />
-            <StackPanel Orientation="Vertical" Spacing="8">
+            <StackPanel Orientation="Vertical" Classes="Spacing-2">
                 <Button Classes="SpineDownloadButton Idle">
                     <Grid>
                         <Border></Border>
@@ -33,7 +33,7 @@
                 </Button>
             </StackPanel>
 
-            <StackPanel Orientation="Vertical" Spacing="8">
+            <StackPanel Orientation="Vertical" Classes="Spacing-2">
                 <Button Classes="SpineDownloadButton Progress">
                     <Grid>
                         <Border></Border>
@@ -58,7 +58,7 @@
                 </Button>
             </StackPanel>
 
-            <StackPanel Orientation="Vertical" Spacing="8">
+            <StackPanel Orientation="Vertical" Classes="Spacing-2">
                 <Button Classes="SpineDownloadButton Progress">
                     <Grid>
                         <Border></Border>
@@ -97,7 +97,7 @@
         <Setter Property="Margin" Value="0" />
         <Setter Property="Padding" Value="0" />
 
-        <Setter Property="CornerRadius" Value="45" />
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-full}" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="BorderBrush" Value="{StaticResource SurfaceMidBrush}" />
 
@@ -110,7 +110,7 @@
         <Style Selector="^ Border">
             <Setter Property="Width" Value="50" />
             <Setter Property="Height" Value="50" />
-            <Setter Property="CornerRadius" Value="45" />
+            <Setter Property="CornerRadius" Value="{StaticResource Rounded-full}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="BorderBrush" Value="{StaticResource SurfaceMidBrush}" />
             <Setter Property="VerticalAlignment" Value="Center" />
@@ -126,7 +126,7 @@
 
         <!-- StackPanel -->
         <Style Selector="^ > Grid > StackPanel">
-            <Setter Property="Spacing" Value="0" />
+            <Setter Property="Spacing" Value="{StaticResource Spacing-none}" />
             <Setter Property="Orientation" Value="Vertical" />
             <Setter Property="HorizontalAlignment" Value="Center" />
             <Setter Property="VerticalAlignment" Value="Center" />
@@ -185,7 +185,7 @@
 
             <Style Selector="^ Border">
                 <Setter Property="BorderThickness" Value="2" />
-                <Setter Property="CornerRadius" Value="45" />
+                <Setter Property="CornerRadius" Value="{StaticResource Rounded-full}" />
             </Style>
 
             <Style Selector="^ Arc">
@@ -238,7 +238,7 @@
 
             <Style Selector="^.Progress Border">
                 <Setter Property="BorderThickness" Value="2" />
-                <Setter Property="CornerRadius" Value="45" />
+                <Setter Property="CornerRadius" Value="{StaticResource Rounded-full}" />
                 <Setter Property="BorderBrush" Value="{StaticResource NeutralModerateBrush}" />
                 <Setter Property="BoxShadow">
                     <extensions:BoxShadow BlurRadius="10" SpreadRadius="2"

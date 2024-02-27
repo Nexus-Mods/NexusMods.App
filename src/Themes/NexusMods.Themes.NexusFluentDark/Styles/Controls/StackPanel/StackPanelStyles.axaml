@@ -1,0 +1,147 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <StackPanel>
+                <TextBlock Text="Hello, World!" FontSize="24" />
+                <Button Content="Click me!" />
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+
+    <!-- Add Styles Here -->
+
+    <!-- Spacing Styles -->
+    <Style Selector="StackPanel.Spacing-none">
+        <Setter Property="Spacing" Value="{StaticResource Spacing-none}" />
+    </Style>
+
+    <Style Selector="StackPanel.Spacing-px">
+        <Setter Property="Spacing" Value="{StaticResource Spacing-px}" />
+    </Style>
+
+    <Style Selector="StackPanel.Spacing-0_5">
+        <Setter Property="Spacing" Value="{StaticResource Spacing-0.5}" />
+    </Style>
+
+    <Style Selector="StackPanel.Spacing-1">
+        <Setter Property="Spacing" Value="{StaticResource Spacing-1}" />
+    </Style>
+
+    <Style Selector="StackPanel.Spacing-1_5">
+        <Setter Property="Spacing" Value="{StaticResource Spacing-1.5}" />
+    </Style>
+
+    <Style Selector="StackPanel.Spacing-2">
+        <Setter Property="Spacing" Value="{StaticResource Spacing-2}" />
+    </Style>
+
+    <Style Selector="StackPanel.Spacing-2_5">
+        <Setter Property="Spacing" Value="{StaticResource Spacing-2.5}" />
+    </Style>
+
+    <Style Selector="StackPanel.Spacing-3">
+        <Setter Property="Spacing" Value="{StaticResource Spacing-3}" />
+    </Style>
+
+    <Style Selector="StackPanel.Spacing-3_5">
+        <Setter Property="Spacing" Value="{StaticResource Spacing-3.5}" />
+    </Style>
+
+    <Style Selector="StackPanel.Spacing-4">
+        <Setter Property="Spacing" Value="{StaticResource Spacing-4}" />
+    </Style>
+
+    <Style Selector="StackPanel.Spacing-5">
+        <Setter Property="Spacing" Value="{StaticResource Spacing-5}" />
+    </Style>
+
+    <Style Selector="StackPanel.Spacing-6">
+        <Setter Property="Spacing" Value="{StaticResource Spacing-6}" />
+    </Style>
+
+    <Style Selector="StackPanel.Spacing-7">
+        <Setter Property="Spacing" Value="{StaticResource Spacing-7}" />
+    </Style>
+
+    <Style Selector="StackPanel.Spacing-10">
+        <Setter Property="Spacing" Value="{StaticResource Spacing-10}" />
+    </Style>
+
+    <Style Selector="StackPanel.Spacing-11">
+        <Setter Property="Spacing" Value="{StaticResource Spacing-11}" />
+    </Style>
+    
+    <Style Selector="StackPanel.Spacing-12">
+        <Setter Property="Spacing" Value="{StaticResource Spacing-12}" />
+    </Style>
+    
+    <Style Selector="StackPanel.Spacing-14">
+        <Setter Property="Spacing" Value="{StaticResource Spacing-14}" />
+    </Style>
+    
+    <Style Selector="StackPanel.Spacing-16">
+        <Setter Property="Spacing" Value="{StaticResource Spacing-16}" />
+    </Style>
+    
+    <Style Selector="StackPanel.Spacing-20">
+        <Setter Property="Spacing" Value="{StaticResource Spacing-20}" />
+    </Style>
+    
+    <Style Selector="StackPanel.Spacing-24">
+        <Setter Property="Spacing" Value="{StaticResource Spacing-24}" />
+    </Style>
+    
+    <Style Selector="StackPanel.Spacing-28">
+        <Setter Property="Spacing" Value="{StaticResource Spacing-28}" />
+    </Style>
+    
+    <Style Selector="StackPanel.Spacing-32">
+        <Setter Property="Spacing" Value="{StaticResource Spacing-32}" />
+    </Style>
+        
+    <Style Selector="StackPanel.Spacing-36">
+        <Setter Property="Spacing" Value="{StaticResource Spacing-36}" />
+    </Style>
+    
+    <Style Selector="StackPanel.Spacing-40">
+        <Setter Property="Spacing" Value="{StaticResource Spacing-40}" />
+    </Style>
+    
+    <Style Selector="StackPanel.Spacing-44">
+        <Setter Property="Spacing" Value="{StaticResource Spacing-44}" />
+    </Style>
+    
+    <Style Selector="StackPanel.Spacing-48">
+        <Setter Property="Spacing" Value="{StaticResource Spacing-48}" />
+    </Style>
+    
+    <Style Selector="StackPanel.Spacing-52">
+        <Setter Property="Spacing" Value="{StaticResource Spacing-52}" />
+</Style>
+    
+    <Style Selector="StackPanel.Spacing-56">
+        <Setter Property="Spacing" Value="{StaticResource Spacing-56}" />
+    </Style>
+    
+    <Style Selector="StackPanel.Spacing-60">
+        <Setter Property="Spacing" Value="{StaticResource Spacing-60}" />
+    </Style>
+    
+    <Style Selector="StackPanel.Spacing-64">
+        <Setter Property="Spacing" Value="{StaticResource Spacing-64}" />
+    </Style>
+    
+    <Style Selector="StackPanel.Spacing-72">
+        <Setter Property="Spacing" Value="{StaticResource Spacing-72}" />
+    </Style>
+    
+    <Style Selector="StackPanel.Spacing-80">
+        <Setter Property="Spacing" Value="{StaticResource Spacing-80}" />
+    </Style>
+    
+    <Style Selector="StackPanel.Spacing-96">
+        <Setter Property="Spacing" Value="{StaticResource Spacing-96}" />
+    </Style>
+
+</Styles>

@@ -25,7 +25,7 @@
 
         <Style Selector="^ Border">
             <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
-            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="CornerRadius" Value="{StaticResource Rounded-lg}" />
         </Style>
 
         <Style Selector="^:pointerover unifiedIcon|UnifiedIcon">

@@ -12,7 +12,7 @@
     <Style Selector="ui|AddPanelButtonView">
 
         <Style Selector="^ Border#BackgroundBorder">
-            <Setter Property="CornerRadius" Value="0" />
+            <Setter Property="CornerRadius" Value="{StaticResource Rounded-none}" />
             <Setter Property="Padding" Value="0" />
         </Style>
 
@@ -22,12 +22,12 @@
             <Setter Property="Width" Value="48" />
             <Setter Property="Padding" Value="8,0,4,0" />
             <Setter Property="Margin" Value="0" />
-            <Setter Property="CornerRadius" Value="8, 0,0,8" />
+            <Setter Property="CornerRadius" Value="{StaticResource Rounded-l-lg}" />
         </Style>
 
         <Style Selector="^ StackPanel">
             <Setter Property="Height" Value="24" />
-            <Setter Property="Spacing" Value="0" />
+            <Setter Property="Spacing" Value="{StaticResource Spacing-none}" />
         </Style>
 
         <Style Selector="^ unifiedIcon|UnifiedIcon#ButtonImage">

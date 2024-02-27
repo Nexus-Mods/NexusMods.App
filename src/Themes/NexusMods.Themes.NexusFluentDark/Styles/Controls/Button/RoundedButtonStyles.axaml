@@ -9,13 +9,13 @@
             <StackPanel.Styles>
                 <Style Selector="StackPanel.HorizontalShowcase">
                     <Setter Property="Orientation" Value="Horizontal" />
-                    <Setter Property="Spacing" Value="8" />
+                    <Setter Property="Spacing" Value="{StaticResource Spacing-2}" />
                 </Style>
 
                 <Style Selector="StackPanel.VerticalTwoButtonStack">
                     <Setter Property="Orientation" Value="Vertical" />
                     <Setter Property="VerticalAlignment" Value="Bottom" />
-                    <Setter Property="Spacing" Value="8" />
+                    <Setter Property="Spacing" Value="{StaticResource Spacing-2}" />
                 </Style>
 
                 <Style Selector="StackPanel.VerticalTwoButtonStack > TextBlock">
@@ -178,7 +178,7 @@
 
     <!-- Base Rounded Button (only use with additional qualifiers) -->
     <Style Selector="Button.Rounded">
-        <Setter Property="CornerRadius" Value="48" />
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-full}" />
         <Setter Property="Height" Value="32" />
 
         <!-- Set an invisible border thickness to 1 to avoid size differences with outlined variants. -->
@@ -203,7 +203,7 @@
 
         <Style Selector="^ > StackPanel">
             <Setter Property="Orientation" Value="Horizontal" />
-            <Setter Property="Spacing" Value="4" />
+            <Setter Property="Spacing" Value="{StaticResource Spacing-1}" />
             <!-- Don't set vertical margins, use vertical alignment to keep things centered instead -->
             <Setter Property="Margin" Value="8,0" />
         </Style>

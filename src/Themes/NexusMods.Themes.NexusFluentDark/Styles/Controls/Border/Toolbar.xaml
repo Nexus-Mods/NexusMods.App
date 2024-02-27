@@ -48,7 +48,7 @@
 
     <Style Selector="Border.Toolbar > Grid > StackPanel">
         <Setter Property="Orientation" Value="Horizontal"/>
-        <Setter Property="Spacing" Value="8"/>
+        <Setter Property="Spacing" Value="{StaticResource Spacing-2}"/>
     </Style>
 
     <Style Selector="Border.Toolbar > Grid > StackPanel > Line">
@@ -86,7 +86,7 @@
 
     <Style Selector="Border.Toolbar Button StackPanel">
         <Setter Property="Orientation" Value="Horizontal" />
-        <Setter Property="Spacing" Value="4" />
+        <Setter Property="Spacing" Value="{StaticResource Spacing-1}" />
         <Setter Property="Margin" Value="6" />
     </Style>
 
