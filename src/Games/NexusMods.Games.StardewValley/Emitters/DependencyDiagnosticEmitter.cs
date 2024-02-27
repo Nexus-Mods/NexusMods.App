@@ -6,16 +6,17 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Extensions.BCL;
 using SMAPIManifest = StardewModdingAPI.Toolkit.Serialization.Models.Manifest;
+using SMAPIManifestDependency = StardewModdingAPI.IManifestDependency;
 
 namespace NexusMods.Games.StardewValley.Emitters;
 
-public class MissingDependenciesEmitter : ILoadoutDiagnosticEmitter
+public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
 {
-    private readonly ILogger<MissingDependenciesEmitter> _logger;
+    private readonly ILogger<DependencyDiagnosticEmitter> _logger;
     private readonly IFileStore _fileStore;
 
-    public MissingDependenciesEmitter(
-        ILogger<MissingDependenciesEmitter> logger,
+    public DependencyDiagnosticEmitter(
+        ILogger<DependencyDiagnosticEmitter> logger,
         IFileStore fileStore)
     {
         _logger = logger;
@@ -35,12 +36,31 @@ public class MissingDependenciesEmitter : ILoadoutDiagnosticEmitter
             .Select(x => x.Value.UniqueID)
             .ToHashSet();
 
+        var diagnostics = DiagnoseMissingDependencies(loadout, modIdToManifest, knownUniqueIds).ToList();
+
+        foreach (var diagnostic in diagnostics)
+        {
+            yield return diagnostic;
+        }
+    }
+
+    private static IEnumerable<Diagnostic> DiagnoseMissingDependencies(
+        Loadout loadout,
+        Dictionary<ModId, SMAPIManifest> modIdToManifest,
+        HashSet<string> knownUniqueIds)
+    {
         var modsWithMissingDependencies = modIdToManifest
-            .Select(kv => (Id: kv.Key, MissingDependencies: GetRequiredDependencies(kv.Value)
-                    .Where(x => !knownUniqueIds.Contains(x))
-                    .ToList()
-                ))
-            .ToDictionary(x => x.Id, x => x.MissingDependencies);
+            .Select(kv =>
+                {
+                    var (modId, manifest) = kv;
+                    var requiredDependencies = manifest.Dependencies.Where(x => x.IsRequired);
+                    var missingDependencies = requiredDependencies.Where(x => !knownUniqueIds.Contains(x.UniqueID)).ToList();
+
+                    return (Id: modId, MissingDependencies: missingDependencies);
+                }
+            )
+            .Where(kv => kv.MissingDependencies.Count != 0)
+            .ToDictionary(kv => kv.Id, kv => kv.MissingDependencies);
 
         foreach (var kv in modsWithMissingDependencies)
         {
@@ -51,21 +71,10 @@ public class MissingDependenciesEmitter : ILoadoutDiagnosticEmitter
                 yield return Diagnostics.MissingRequiredDependency(
                     loadout,
                     mod,
-                    missingDependency
+                    missingDependency.UniqueID
                 );
             }
         }
-    }
-
-    private static IEnumerable<string> GetRequiredDependencies(SMAPIManifest? manifest)
-    {
-        if (manifest?.Dependencies is null) return Enumerable.Empty<string>();
-
-        var requiredDependencies = manifest.Dependencies
-            .Where(x => x.IsRequired)
-            .Select(x => x.UniqueID);
-
-        return requiredDependencies;
     }
 
     private async ValueTask<SMAPIManifest?> GetManifest(Mod mod)
