@@ -1,5 +1,3 @@
-#define DiagnosticTemplateBuilderExperimentTestOutput
-
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using JetBrains.Annotations;
