@@ -1,7 +1,6 @@
 using System.Text;
-using System.Text.Json;
-using NexusMods.Games.StardewValley.Models;
 using NexusMods.Paths;
+using SMAPIManifest = StardewModdingAPI.Toolkit.Serialization.Models.Manifest;
 
 namespace NexusMods.Games.StardewValley.Tests;
 
@@ -25,11 +24,12 @@ public static class TestHelper
 
     public static Dictionary<RelativePath, byte[]> CreateTestFiles(SMAPIManifest manifest)
     {
-        var bytes = JsonSerializer.SerializeToUtf8Bytes(manifest);
+        var json = Interop.SMAPIJsonHelper.Serialize(manifest);
+        var bytes = Encoding.UTF8.GetBytes(json);
 
         return new Dictionary<RelativePath, byte[]>
         {
-            { "manifest.json", bytes }
+            { "manifest.json", bytes },
         };
     }
 }

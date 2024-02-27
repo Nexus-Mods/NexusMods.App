@@ -1,21 +1,24 @@
-using System.Text.Json;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Extensions.BCL;
-using NexusMods.Games.StardewValley.Models;
+using SMAPIManifest = StardewModdingAPI.Toolkit.Serialization.Models.Manifest;
 
 namespace NexusMods.Games.StardewValley.Emitters;
 
 public class MissingDependenciesEmitter : ILoadoutDiagnosticEmitter
 {
+    private readonly ILogger<MissingDependenciesEmitter> _logger;
     private readonly IFileStore _fileStore;
 
-    public MissingDependenciesEmitter(IFileStore fileStore)
+    public MissingDependenciesEmitter(
+        ILogger<MissingDependenciesEmitter> logger,
+        IFileStore fileStore)
     {
+        _logger = logger;
         _fileStore = fileStore;
     }
 
@@ -67,24 +70,14 @@ public class MissingDependenciesEmitter : ILoadoutDiagnosticEmitter
 
     private async ValueTask<SMAPIManifest?> GetManifest(Mod mod)
     {
-
-        var manifest = await mod.Files
-            .Values
-            .OfType<IToFile>()
-            .Where(f => f.To.FileName == Constants.ManifestFile)
-            .OfType<StoredFile>()
-            .SelectAsync<StoredFile, SMAPIManifest?>(async fa =>
-            {
-                try
-                {
-                    await using var stream = await _fileStore.GetFileStream(fa.Hash);
-                    return await JsonSerializer.DeserializeAsync<SMAPIManifest>(stream);
-                }
-                catch (Exception)
-                {
-                    return null;
-                }
-            }).FirstOrDefaultAsync(m => m != null);
-        return manifest;
+        try
+        {
+            return await Interop.GetManifest(_fileStore, mod);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Exception trying to get manifest for mod {Mod}", mod.Name);
+            return null;
+        }
     }
 }
