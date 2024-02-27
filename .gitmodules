@@ -1,3 +1,7 @@
 [submodule "docs/Nexus"]
 	path = docs/Nexus
 	url = https://github.com/Nexus-Mods/NexusMods.MkDocsMaterial.Themes.Next.git
+[submodule "extern/SMAPI"]
+	path = extern/SMAPI
+	url = https://github.com/Pathoschild/SMAPI.git
+	branch = stable
