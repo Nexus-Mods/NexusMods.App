@@ -17,8 +17,9 @@ public class DummyLoadoutDiagnosticEmitter : ILoadoutDiagnosticEmitter
         yield return new Diagnostic
         {
             Id = new DiagnosticId("NexusMods.DataModel.Tests.Diagnostics.DummyLoadoutDiagnosticEmitter", 1),
-            Message = CreateMessage(loadout),
             Severity = DiagnosticSeverity.Critical,
+            Summary = CreateMessage(loadout),
+            Details = DiagnosticMessage.DefaultValue,
             DataReferences = new Dictionary<DataReferenceDescription, IDataReference>()
             {
                 { DataReferenceDescription.Loadout, loadout.ToReference() }

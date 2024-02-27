@@ -19,7 +19,8 @@ public class DummyModDiagnosticEmitter : IModDiagnosticEmitter
         {
             Id = new DiagnosticId("NexusMods.DataModels.Tests.Diagnostics.DummyModDiagnosticEmitter", 1),
             Severity = DiagnosticSeverity.Critical,
-            Message = CreateMessage(loadout, mod),
+            Summary = CreateMessage(loadout, mod),
+            Details = DiagnosticMessage.DefaultValue,
             DataReferences = new Dictionary<DataReferenceDescription, IDataReference>
             {
                 { DataReferenceDescription.Loadout, loadout.ToReference() },

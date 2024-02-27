@@ -23,9 +23,16 @@ public record Diagnostic
     public required DiagnosticSeverity Severity { get; init; }
 
     /// <summary>
-    /// Gets the message of the diagnostic.
+    /// Gets the summary of the diagnostic.
     /// </summary>
-    public required DiagnosticMessage Message { get; init; }
+    /// <seealso cref="Details"/>
+    public required DiagnosticMessage Summary { get; init; }
+
+    /// <summary>
+    /// Gets the details of the diagnostic.
+    /// </summary>
+    /// <seealso cref="Summary"/>
+    public required DiagnosticMessage Details { get; init; }
 
     /// <summary>
     /// Gets all data references.
@@ -44,7 +51,7 @@ public record Diagnostic
 public record Diagnostic<TMessageData> : Diagnostic where TMessageData : struct
 {
     /// <summary>
-    /// Gets the message data.
+    /// Gets the message data used for <see cref="Diagnostic.Summary"/> and <see cref="Diagnostic.Details"/>.
     /// </summary>
     public required TMessageData MessageData { get; init; }
 }

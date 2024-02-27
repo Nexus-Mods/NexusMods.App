@@ -18,11 +18,14 @@ internal partial class MyClass
     [DiagnosticTemplate]
     private static readonly IDiagnosticTemplate Diagnostic1Template = DiagnosticTemplateBuilder
         .Start()
-        .WithId(new DiagnosticId(source: ""MyCoolSource"", number: 13))
+        .WithId(new DiagnosticId(source: ""Example"", number: 1))
         .WithSeverity(DiagnosticSeverity.Warning)
-        .WithMessage(""Mod '{ModA}' is not working because of '{ModB}'!"", messageBuilder => messageBuilder
+        .WithSummary(""Mod '{ModA}' conflicts with '{ModB}' because it's missing '{Something}'!"")
+        .WithoutDetails()
+        .WithMessageData(messageBuilder => messageBuilder
             .AddDataReference<ModReference>(""ModA"")
             .AddDataReference<ModReference>(""ModB"")
+            .AddValue<string>(""Something"")
         )
         .Finish();
 }";

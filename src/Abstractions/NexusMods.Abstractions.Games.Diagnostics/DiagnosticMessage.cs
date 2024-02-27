@@ -3,12 +3,15 @@ using TransparentValueObjects;
 
 namespace NexusMods.Abstractions.Diagnostics;
 
-// TODO: figure out the formatting of this message, so that certain elements can be made clickable
-// example: "Mod '{{modName}}' is broken, please fix!" where {{modName}} should be clickable
-
 /// <summary>
 /// Represents a message of a diagnostic.
 /// </summary>
 [PublicAPI]
 [ValueObject<string>]
-public readonly partial struct DiagnosticMessage { }
+public readonly partial struct DiagnosticMessage : IAugmentWith<DefaultValueAugment>
+{
+    /// <summary>
+    /// Gets the default value.
+    /// </summary>
+    public static DiagnosticMessage DefaultValue { get; } = From("");
+}

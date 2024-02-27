@@ -85,21 +85,21 @@ public class DiagnosticTemplateIncrementalSourceGenerator : IIncrementalGenerato
         var diagnosticName = GetDiagnosticName(target.FieldSymbol);
 
         cw.Append($"internal static {Constants.DiagnosticsNamespace}.Diagnostic<{diagnosticName}MessageData> Create{diagnosticName}(");
-        for (var i = 0; i < parsedData.ParsedMessageDataReferences.Count; i++)
+        for (var i = 0; i < parsedData.ParsedMessageBuilderFields.Count; i++)
         {
             if (i != 0) cw.Append(", ");
-            var dataReference = parsedData.ParsedMessageDataReferences[i];
-            cw.Append($"{dataReference.DataReferenceTypeSymbol.ToDisplayString(CustomSymbolDisplayFormats.GlobalFormat)} {dataReference.FieldName}");
+            var field = parsedData.ParsedMessageBuilderFields[i];
+            cw.Append($"{field.TypeSymbol.ToDisplayString(CustomSymbolDisplayFormats.GlobalFormat)} {field.Name}");
         }
         cw.AppendLine(")");
         using (cw.AddBlock())
         {
             cw.Append($"var messageData = new {diagnosticName}MessageData(");
-            for (var i = 0; i < parsedData.ParsedMessageDataReferences.Count; i++)
+            for (var i = 0; i < parsedData.ParsedMessageBuilderFields.Count; i++)
             {
                 if (i != 0) cw.Append(", ");
-                var dataReference = parsedData.ParsedMessageDataReferences[i];
-                cw.Append($"{dataReference.FieldName}");
+                var field = parsedData.ParsedMessageBuilderFields[i];
+                cw.Append($"{field.Name}");
             }
             cw.AppendLine(");");
 
@@ -123,20 +123,29 @@ public class DiagnosticTemplateIncrementalSourceGenerator : IIncrementalGenerato
 
                 cw.AppendLine($"Severity = {Constants.DiagnosticsNamespace}.DiagnosticSeverity.{parsedData.SeverityName},");
 
-                cw.Append($"Message = {Constants.DiagnosticsNamespace}.DiagnosticMessage.From(");
-                if (parsedData.MessageTemplateExpression is LiteralExpressionSyntax literalMessage)
+                cw.Append($"Summary = {Constants.DiagnosticsNamespace}.DiagnosticMessage.From(");
+                if (parsedData.SummaryTemplateExpression is LiteralExpressionSyntax literalSummary)
                 {
-                    cw.Append($"\"{literalMessage.Token.ValueText}\"");
+                    cw.Append($"\"{literalSummary.Token.ValueText}\"");
                 }
                 cw.AppendLine("),");
+
+                cw.Append($"Details = {Constants.DiagnosticsNamespace}.DiagnosticMessage.");
+                if (parsedData.DetailsTemplateExpression is null)
+                {
+                    cw.AppendLine("DefaultValue,");
+                } else if (parsedData.DetailsTemplateExpression is LiteralExpressionSyntax literalDetails)
+                {
+                    cw.AppendLine($"From(\"{literalDetails.Token.ValueText}\"),");
+                }
 
                 cw.AppendLine("MessageData = messageData,");
                 cw.AppendLine($"DataReferences = new global::System.Collections.Generic.Dictionary<{Constants.DiagnosticsNamespace}.References.DataReferenceDescription, {Constants.DiagnosticsNamespace}.References.IDataReference>");
                 using (cw.AddBlock())
                 {
-                    foreach (var dataReference in parsedData.ParsedMessageDataReferences)
+                    foreach (var field in parsedData.ParsedMessageBuilderFields.Where(x => x.IsDataReference))
                     {
-                        cw.AppendLine($"{{ {Constants.DiagnosticsNamespace}.References.DataReferenceDescription.From(\"{dataReference.FieldName}\"), messageData.{dataReference.FieldName} }},");
+                        cw.AppendLine($"{{ {Constants.DiagnosticsNamespace}.References.DataReferenceDescription.From(\"{field.Name}\"), messageData.{field.Name} }},");
                     }
                 }
 
@@ -149,26 +158,26 @@ public class DiagnosticTemplateIncrementalSourceGenerator : IIncrementalGenerato
         cw.AppendLine($"internal readonly struct {diagnosticName}MessageData");
         using (cw.AddBlock())
         {
-            foreach (var dataReference in parsedData.ParsedMessageDataReferences)
+            foreach (var field in parsedData.ParsedMessageBuilderFields)
             {
-                cw.AppendLine($"public readonly {dataReference.DataReferenceTypeSymbol.ToDisplayString(CustomSymbolDisplayFormats.GlobalFormat)} {dataReference.FieldName};");
+                cw.AppendLine($"public readonly {field.TypeSymbol.ToDisplayString(CustomSymbolDisplayFormats.GlobalFormat)} {field.Name};");
             }
 
             cw.AppendLine();
 
             cw.Append($"public {diagnosticName}MessageData(");
-            for (var i = 0; i < parsedData.ParsedMessageDataReferences.Count; i++)
+            for (var i = 0; i < parsedData.ParsedMessageBuilderFields.Count; i++)
             {
                 if (i != 0) cw.Append(", ");
-                var dataReference = parsedData.ParsedMessageDataReferences[i];
-                cw.Append($"{dataReference.DataReferenceTypeSymbol.ToDisplayString(CustomSymbolDisplayFormats.GlobalFormat)} {dataReference.FieldName}");
+                var field = parsedData.ParsedMessageBuilderFields[i];
+                cw.Append($"{field.TypeSymbol.ToDisplayString(CustomSymbolDisplayFormats.GlobalFormat)} {field.Name}");
             }
             cw.AppendLine(")");
             using (cw.AddBlock())
             {
-                foreach (var dataReference in parsedData.ParsedMessageDataReferences)
+                foreach (var field in parsedData.ParsedMessageBuilderFields)
                 {
-                    cw.AppendLine($"this.{dataReference.FieldName} = {dataReference.FieldName};");
+                    cw.AppendLine($"this.{field.Name} = {field.Name};");
                 }
             }
         }
@@ -195,7 +204,10 @@ public class DiagnosticTemplateIncrementalSourceGenerator : IIncrementalGenerato
         out ParsedData parsedData)
     {
         const string finish = "Finish";
-        const string withMessage = "WithMessage";
+        const string withMessageData = "WithMessageData";
+        const string withDetails = "WithDetails";
+        const string withoutDetails = "WithoutDetails";
+        const string withSummary = "WithSummary";
         const string withSeverity = "WithSeverity";
         const string withId = "WithId";
         const string start = "Start";
@@ -208,14 +220,29 @@ public class DiagnosticTemplateIncrementalSourceGenerator : IIncrementalGenerato
         // Finish
         if (!IsInvocationWithName(initializer?.Value, finish, out _, out var next)) return false;
 
-        // WithMessage
-        if (!IsInvocationWithName(next, withMessage, out var withMessageArguments, out next)) return false;
-        if (withMessageArguments.Count != 2) return false;
-
-        var messageTemplateExpression = withMessageArguments[0].Expression;
-        if (withMessageArguments[1].Expression is not SimpleLambdaExpressionSyntax messageBuilderExpression) return false;
+        // WithMessageData
+        if (!IsInvocationWithName(next, withMessageData, out var withMessageDataArguments, out next)) return false;
+        if (withMessageDataArguments.Count != 1) return false;
+        if (withMessageDataArguments[0].Expression is not SimpleLambdaExpressionSyntax messageBuilderExpression) return false;
         if (messageBuilderExpression.Body is not InvocationExpressionSyntax messageBuilderExpressionBody) return false;
-        if (!ParseMessageBuilder(semanticModel, messageBuilderExpressionBody, out var parsedReferences)) return false;
+        if (!ParseMessageBuilder(semanticModel, messageBuilderExpressionBody, out var parsedMessageBuilderFields)) return false;
+
+        // WithDetails
+        ExpressionSyntax? detailsTemplateExpression = null;
+        if (IsInvocationWithName(next, withDetails, out var withDetailsArguments, out next))
+        {
+            if (withDetailsArguments.Count != 1) return false;
+            detailsTemplateExpression = withDetailsArguments[0].Expression;
+        } else if (IsInvocationWithName(next, withoutDetails, out var withoutDetailsArguments, out next))
+        {
+            if (withoutDetailsArguments.Count != 0) return false;
+            detailsTemplateExpression = null;
+        }
+
+        // WithSummary
+        if (!IsInvocationWithName(next, withSummary, out var withSummaryArguments, out next));
+        if (withSummaryArguments.Count != 1) return false;
+        var summaryTemplateExpression = withSummaryArguments[0].Expression;
 
         // WithSeverity
         if (!IsInvocationWithName(next, withSeverity, out var withSeverityArguments, out next)) return false;
@@ -236,8 +263,9 @@ public class DiagnosticTemplateIncrementalSourceGenerator : IIncrementalGenerato
         parsedData = new ParsedData(
             IdCreationExpression: idCreation,
             SeverityName: severityName,
-            MessageTemplateExpression: messageTemplateExpression,
-            ParsedMessageDataReferences: parsedReferences
+            SummaryTemplateExpression: summaryTemplateExpression,
+            DetailsTemplateExpression: detailsTemplateExpression,
+            ParsedMessageBuilderFields: parsedMessageBuilderFields
         );
 
         return true;
@@ -249,7 +277,7 @@ public class DiagnosticTemplateIncrementalSourceGenerator : IIncrementalGenerato
             out ExpressionSyntax next)
         {
             arguments = [];
-            next = null!;
+            next = expression!;
 
             if (expression is not InvocationExpressionSyntax invocationExpressionSyntax) return false;
             if (invocationExpressionSyntax.Expression is not MemberAccessExpressionSyntax memberAccessExpressionSyntax) return false;
@@ -264,9 +292,10 @@ public class DiagnosticTemplateIncrementalSourceGenerator : IIncrementalGenerato
     private static bool ParseMessageBuilder(
         SemanticModel semanticModel,
         InvocationExpressionSyntax messageBuilderExpressionBody,
-        out List<ParsedMessageBuilderDataReference> res)
+        out List<ParsedMessageBuilderField> res)
     {
         const string addDataReference = "AddDataReference";
+        const string addValue = "AddValue";
         res = [];
 
         var currentInvocation = messageBuilderExpressionBody;
@@ -278,14 +307,29 @@ public class DiagnosticTemplateIncrementalSourceGenerator : IIncrementalGenerato
 
             if (currentInvocation.Expression is not MemberAccessExpressionSyntax memberAccessExpression) return false;
             if (memberAccessExpression.Name is not GenericNameSyntax genericName) return false;
-            if (!genericName.Identifier.ToString().Equals(addDataReference)) return false;
+
+            var genericNameString = genericName.Identifier.ToString();
+            bool isDataReference;
+
+            if (genericNameString == addDataReference)
+            {
+                isDataReference = true;
+            } else if (genericNameString == addValue)
+            {
+                isDataReference = false;
+            }
+            else
+            {
+                return false;
+            }
+
             if (genericName.TypeArgumentList.Arguments.Count != 1) return false;
             var typeArgument = genericName.TypeArgumentList.Arguments[0];
 
             var typeSymbol = semanticModel.GetSymbolInfo(typeArgument).Symbol;
             if (typeSymbol is not INamedTypeSymbol namedTypeSymbol) return false;
 
-            res.Add(new ParsedMessageBuilderDataReference(namedTypeSymbol, fieldName));
+            res.Add(new ParsedMessageBuilderField(namedTypeSymbol, fieldName, isDataReference));
 
             if (memberAccessExpression.Expression is InvocationExpressionSyntax tmp)
             {
@@ -301,13 +345,14 @@ public class DiagnosticTemplateIncrementalSourceGenerator : IIncrementalGenerato
         return true;
     }
 
-    private record struct ParsedMessageBuilderDataReference(INamedTypeSymbol DataReferenceTypeSymbol, string FieldName);
+    private record struct ParsedMessageBuilderField(INamedTypeSymbol TypeSymbol, string Name, bool IsDataReference);
 
     private record struct ParsedData(
         ObjectCreationExpressionSyntax IdCreationExpression,
         string SeverityName,
-        ExpressionSyntax MessageTemplateExpression,
-        List<ParsedMessageBuilderDataReference> ParsedMessageDataReferences
+        ExpressionSyntax SummaryTemplateExpression,
+        ExpressionSyntax? DetailsTemplateExpression,
+        List<ParsedMessageBuilderField> ParsedMessageBuilderFields
     );
 
     private record struct Target(IFieldSymbol FieldSymbol, VariableDeclaratorSyntax VariableDeclaratorSyntax);
