@@ -50,7 +50,8 @@ public class DiskStateRegistry : IDiskStateRegistry
 
     private IId MakeId(GameInstallation installation)
     {
-        var str = $"{installation.Game.Name}|{installation.Version}|{installation.Store.Value}";
+        var str = $"{installation.Game.GetType()}|{installation.LocationsRegister[LocationId.Game]}";
+
         var bytes = Encoding.UTF8.GetBytes(str);
         return IId.FromSpan(EntityCategory.DiskState, bytes); 
     }
