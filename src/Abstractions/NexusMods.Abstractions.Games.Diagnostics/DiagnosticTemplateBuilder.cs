@@ -98,6 +98,11 @@ public static class DiagnosticTemplateBuilder
         /// Adds data references to the message.
         /// </summary>
         IMessageBuilder AddDataReference<T>(string name) where T : IDataReference;
+
+        /// <summary>
+        /// Adds a simple value to the message.
+        /// </summary>
+        IMessageBuilder AddValue<T>(string name) where T : notnull;
     }
 
     /// <summary>

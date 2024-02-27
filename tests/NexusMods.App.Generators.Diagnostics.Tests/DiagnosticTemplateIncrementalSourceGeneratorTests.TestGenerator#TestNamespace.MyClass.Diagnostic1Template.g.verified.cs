@@ -6,15 +6,15 @@ namespace TestNamespace;
 
 partial class MyClass
 {
-	internal static global::NexusMods.Abstractions.Diagnostics.Diagnostic<Diagnostic1MessageData> CreateDiagnostic1(global::NexusMods.Abstractions.Diagnostics.References.ModReference ModA, global::NexusMods.Abstractions.Diagnostics.References.ModReference ModB)
+	internal static global::NexusMods.Abstractions.Diagnostics.Diagnostic<Diagnostic1MessageData> CreateDiagnostic1(global::NexusMods.Abstractions.Diagnostics.References.ModReference ModA, global::NexusMods.Abstractions.Diagnostics.References.ModReference ModB, global::System.String Something)
 	{
-		var messageData = new Diagnostic1MessageData(ModA, ModB);
+		var messageData = new Diagnostic1MessageData(ModA, ModB, Something);
 
 		return new global::NexusMods.Abstractions.Diagnostics.Diagnostic<Diagnostic1MessageData>
 		{
 			Id = new global::NexusMods.Abstractions.Diagnostics.DiagnosticId(source: "Example",number: 1),
 			Severity = global::NexusMods.Abstractions.Diagnostics.DiagnosticSeverity.Warning,
-			Summary = global::NexusMods.Abstractions.Diagnostics.DiagnosticMessage.From("Mod '{ModA}' conflicts with '{ModB}'!"),
+			Summary = global::NexusMods.Abstractions.Diagnostics.DiagnosticMessage.From("Mod '{ModA}' conflicts with '{ModB}' because it's missing '{Something}'!"),
 			Details = global::NexusMods.Abstractions.Diagnostics.DiagnosticMessage.DefaultValue,
 			MessageData = messageData,
 			DataReferences = new global::System.Collections.Generic.Dictionary<global::NexusMods.Abstractions.Diagnostics.References.DataReferenceDescription, global::NexusMods.Abstractions.Diagnostics.References.IDataReference>
@@ -33,11 +33,13 @@ partial class MyClass
 	{
 		public readonly global::NexusMods.Abstractions.Diagnostics.References.ModReference ModA;
 		public readonly global::NexusMods.Abstractions.Diagnostics.References.ModReference ModB;
+		public readonly global::System.String Something;
 
-		public Diagnostic1MessageData(global::NexusMods.Abstractions.Diagnostics.References.ModReference ModA, global::NexusMods.Abstractions.Diagnostics.References.ModReference ModB)
+		public Diagnostic1MessageData(global::NexusMods.Abstractions.Diagnostics.References.ModReference ModA, global::NexusMods.Abstractions.Diagnostics.References.ModReference ModB, global::System.String Something)
 		{
 			this.ModA = ModA;
 			this.ModB = ModB;
+			this.Something = Something;
 		}
 
 	}
