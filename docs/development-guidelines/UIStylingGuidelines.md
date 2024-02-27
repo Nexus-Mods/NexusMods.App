@@ -11,7 +11,7 @@ The Nexus Mods App uses [Avalonia](https://avaloniaui.net/) for its UI framework
 Avalonia has a [CSS-like styling system](https://docs.avaloniaui.net/docs/get-started/wpf/styling), which is used to style the UI.
 
 ## Avalonia Styling
-d
+
 !!! info "Avalonia uses a cascading (stacking) style system"
 
 In other words, styles defined at the highest level of the application (the `App.axaml` file) will be be used everywhere
