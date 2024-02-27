@@ -21,6 +21,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+        with:
+          submodules: "recursive"
 
       - name: Info
         run: dotnet --info
