@@ -11,7 +11,7 @@ The Nexus Mods App uses [Avalonia](https://avaloniaui.net/) for its UI framework
 Avalonia has a [CSS-like styling system](https://docs.avaloniaui.net/docs/get-started/wpf/styling), which is used to style the UI.
 
 ## Avalonia Styling
-
+d
 !!! info "Avalonia uses a cascading (stacking) style system"
 
 In other words, styles defined at the highest level of the application (the `App.axaml` file) will be be used everywhere
@@ -428,6 +428,26 @@ Developers should avoid using numeric values directly and instead strive to use 
 
 !!! tip "In particular a `OpacityDisabledElement` alias is defined, which should be used for disabled elements."
 
+### Other Resource Palettes
+!!! info "Like Opacity and Colors, the App has palettes for other resources"
+These provide an abstraction over the actual values, and should be used in the Styles of the UI Elements.
+
+#### Spacing
+A numbered alias system following the `Spacing-none`, `Spacing-1`, `Spacing-2`, ... pattern.
+The values are used to define the `Spacing` property of Panel controls such as `StackPanel`.
+The values can be found in `Resources/Palette/Spacing/ElementSpacing.axaml` and 
+`/Styles/Controls/StackPanel/StackPanelStyles.axaml` contains classes to apply the spacing to the `StackPanel` control.
+
+#### CornerRadius
+`Resources/Palette/CornerRadiuses/ElementCornerRadius.axaml` contains the aliases for the `CornerRadius` property,
+of controls such as `Border`. These follow the pattern `Rounded-none`, `Rounded-sm`, `Rounded-md`, ...
+
+To round sides separately use or add an alias `Rounded-{t|r|b|l}{-size}`, e.g `Rounded-t-lg` for a large top rounding.
+
+To round individual corners use or add an alias `Rounded-{tl|tr|bl|br}{-size}`, e.g `Rounded-tl-lg` for a large top-left rounding.
+
+These aliases follow the pattern described on the [Tailwind CSS documentation](https://tailwindcss.com/docs/border-radius).
+
 ### Typography
 
 !!! info "There's also a multi-level typography system for fonts and text styles."
@@ -469,23 +489,31 @@ to be used in the UI projects.
     <Style Selector="TextBlock.Heading2XLSemi">
         <Setter Property="Theme" Value="{StaticResource Heading2XLSemiTheme}" />
     </Style>
+
     ```
 
 ### Icons
+!!! info "The app uses a custom `UnifiedIcon` control to display different types of icons."
 
+This control supports `Avalonia.Controls.Image`, `Avalonia.Svg.Skia.Svg`, `Avalonia.Controls.PathIcon` and `Projektanker.Icons.Avalonia.Icon`.
+This permits the use of different types of icons interchangeably.
+
+#### Adding & Placing New Icons
 !!! info "The app primarily uses [Material Design Icons](https://pictogrammers.com/library/mdi/)."
 
 These need not be manually included in the project, as the App uses the
 [Icons.Avalonia](https://github.com/Projektanker/Icons.Avalonia) library, which offers a
 convenient way to use Material Design Icons in Avalonia.
 
-#### Adding & Placing New Icons
-
-The way it works is through an `icons|Icon` type, that has a `Value` property that can be set to the mdi-code of the desired icon.
+To add a material design icon in the App, a new Style `Class` should be defined in the `IconsStyles.axaml` file.
+The class should set the `Value` property of the `UnifiedIcon` control to an `IconValue`, 
+with the `MdiValueSetter` property set to the mdi-code of the icon.
 
 ```xml
-<Style Selector="icons|Icon.Close">
-    <Setter Property="Value" Value="mdi-close" />
+<Style Selector="unifiedIcon|UnifiedIcon.Close">
+    <Setter Property="Value">
+        <unifiedIcon:IconValue MdiValueSetter="mdi-close"/>
+    </Setter>
 </Style>
 ```
 
@@ -495,7 +523,7 @@ The UI projects can then use this Style `Class` to set the icon without having t
 
 ```xml
 <!--                 👇 -->
-<icons:Icon Classes="Close" />
+<unifiedIcon:UnifiedIcon Classes="Close" />
 ```
 
 This way all icons used in the app can easily be found in the `IconsStyles.axaml` file,
@@ -503,11 +531,11 @@ and the mdi-code can be changed in one place if needed.
 
 #### Scaling Icons
 
-!!! warning "To change the Size of an icon, it needs to have its `FontSize` property set."
+!!! warning "`UnifiedIcon`s are assumed to be square, and should not have their `Width` and `Height` properties set."
 
-    Changing the `Width` and `Height` properties will change the bounds of the icon, but not visually scale it.
+    The `Size` property should be used instead, which will scale the underlying icon to the specified size regardless of type.
 
-Font size closely matches the size of the icon, e.g. `FontSize="16"` should be equivalent to `Width="16" Height="16"`.
+`Size="16"` should be equivalent to `Width="16" Height="16"`.
 
 ### Using Styles in the UI
 
