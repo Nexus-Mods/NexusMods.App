@@ -12,7 +12,7 @@ partial class MyClass
 
 		return new global::NexusMods.Abstractions.Diagnostics.Diagnostic<Diagnostic1MessageData>
 		{
-			Id = new global::NexusMods.Abstractions.Diagnostics.DiagnosticId(source: "Example",number: 1),
+			Id = new global::NexusMods.Abstractions.Diagnostics.DiagnosticId(source: Source,number: 1),
 			Severity = global::NexusMods.Abstractions.Diagnostics.DiagnosticSeverity.Warning,
 			Summary = global::NexusMods.Abstractions.Diagnostics.DiagnosticMessage.From("Mod '{ModA}' conflicts with '{ModB}' because it's missing '{Something}'!"),
 			Details = global::NexusMods.Abstractions.Diagnostics.DiagnosticMessage.DefaultValue,

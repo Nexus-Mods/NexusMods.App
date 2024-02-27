@@ -1,12 +1,12 @@
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
+using NexusMods.Abstractions.Diagnostics.References;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Extensions.BCL;
 using SMAPIManifest = StardewModdingAPI.Toolkit.Serialization.Models.Manifest;
-using SMAPIManifestDependency = StardewModdingAPI.IManifestDependency;
 
 namespace NexusMods.Games.StardewValley.Emitters;
 
@@ -25,8 +25,6 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
     public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout loadout)
     {
-        // TODO: check the versions
-
         var modIdToManifest = await loadout.Mods
             .SelectAsync(async kv => (Id: kv.Key, Manifest: await GetManifest(kv.Value)))
             .Where(tuple => tuple.Manifest is not null)
@@ -68,10 +66,9 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
             foreach (var missingDependency in missingDependencies)
             {
                 var mod = loadout.Mods[modId];
-                yield return Diagnostics.MissingRequiredDependency(
-                    loadout,
-                    mod,
-                    missingDependency.UniqueID
+                yield return Diagnostics.CreateMissingRequiredDependency(
+                    Mod: mod.ToReference(loadout),
+                    MissingDependency: missingDependency.UniqueID
                 );
             }
         }
