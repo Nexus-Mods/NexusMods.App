@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Loadouts;
@@ -12,14 +13,16 @@ public class ApplyService : IApplyService
 {
     private readonly ILoadoutRegistry _loadoutRegistry;
     private readonly ILogger<ApplyService> _logger;
+    private readonly IDiskStateRegistry _diskStateRegistry;
 
     /// <summary>
     /// DI Constructor
     /// </summary>
-    public ApplyService(ILoadoutRegistry loadoutRegistry, ILogger<ApplyService> logger)
+    public ApplyService(ILoadoutRegistry loadoutRegistry, IDiskStateRegistry diskStateRegistry, ILogger<ApplyService> logger)
     {
         _loadoutRegistry = loadoutRegistry;
         _logger = logger;
+        _diskStateRegistry = diskStateRegistry;
     }
 
     /// <inheritdoc />
@@ -33,7 +36,8 @@ public class ApplyService : IApplyService
             throw new ArgumentException("Loadout not found", nameof(loadoutId));
 
         _logger.LogInformation("Applying loadout {LoadoutId} to {GameName} {GameVersion}", loadout.LoadoutId,
-            loadout.Installation.Game.Name, loadout.Installation.Version);
+            loadout.Installation.Game.Name, loadout.Installation.Version
+        );
         try
         {
             await loadout.Apply();
@@ -41,10 +45,15 @@ public class ApplyService : IApplyService
         catch (NeedsIngestException)
         {
             _logger.LogInformation("Ingesting loadout {LoadoutId} from {GameName} {GameVersion}", loadout.LoadoutId,
-                loadout.Installation.Game.Name, loadout.Installation.Version);
+                loadout.Installation.Game.Name, loadout.Installation.Version
+            );
+
             await loadout.Ingest();
+
             _logger.LogInformation("Applying loadout {LoadoutId} to {GameName} {GameVersion}", loadout.LoadoutId,
-                loadout.Installation.Game.Name, loadout.Installation.Version);
+                loadout.Installation.Game.Name, loadout.Installation.Version
+            );
+
             await loadout.Apply();
         }
 
@@ -52,9 +61,17 @@ public class ApplyService : IApplyService
     }
 
     /// <inheritdoc />
-    public (LoadoutId, IId) GetLastAppliedLoadout(GameInstallation gameInstallation)
+    public (LoadoutId, IId)? GetLastAppliedLoadout(GameInstallation gameInstallation)
     {
-        // TODO: Keep track of the last applied loadout and revision for each game installation
-        throw new NotImplementedException();
+        var loadoutRevision = _diskStateRegistry.GetLastAppliedLoadout(gameInstallation);
+        if (loadoutRevision is null)
+            return null;
+        
+        var loadoutId = _loadoutRegistry.GetLoadout(loadoutRevision);
+        if (loadoutId is null)
+            throw new Exception("Loadout not found for last applied revision");
+        
+        return (loadoutId.LoadoutId, loadoutRevision);
     }
+    
 }

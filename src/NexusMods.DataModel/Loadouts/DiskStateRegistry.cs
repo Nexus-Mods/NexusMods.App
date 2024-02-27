@@ -5,7 +5,6 @@ using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.Abstractions.Serialization.DataModel.Ids;
@@ -20,12 +19,11 @@ public class DiskStateRegistry : IDiskStateRegistry
 {
     private readonly ILogger<DiskStateRegistry> _logger;
     private readonly IDataStore _dataStore;
+    private readonly IDictionary<GameInstallation, IId> _lastAppliedRevisionDictionary = new Dictionary<GameInstallation, IId>();
 
     /// <summary>
     /// DI Constructor
     /// </summary>
-    /// <param name="logger"></param>
-    /// <param name="dataStore"></param>
     public DiskStateRegistry(ILogger<DiskStateRegistry> logger, IDataStore dataStore)
     {
         _logger = logger;
@@ -46,6 +44,8 @@ public class DiskStateRegistry : IDiskStateRegistry
             JsonSerializer.Serialize(compressed, diskState);
         }
         _dataStore.PutRaw(iid, ms.GetBuffer().AsSpan().SliceFast(0, (int)ms.Length));
+        // TODO: this might need to be made thread safe
+        _lastAppliedRevisionDictionary[installation] = diskState.LoadoutRevision;
     }
 
     private IId MakeId(GameInstallation installation)
@@ -53,7 +53,7 @@ public class DiskStateRegistry : IDiskStateRegistry
         var str = $"{installation.Game.GetType()}|{installation.LocationsRegister[LocationId.Game]}";
 
         var bytes = Encoding.UTF8.GetBytes(str);
-        return IId.FromSpan(EntityCategory.DiskState, bytes); 
+        return IId.FromSpan(EntityCategory.DiskState, bytes);
     }
 
     /// <summary>
@@ -69,5 +69,19 @@ public class DiskStateRegistry : IDiskStateRegistry
         using var ms = new MemoryStream(data);
         using var compressed = new GZipStream(ms, CompressionMode.Decompress);
         return JsonSerializer.Deserialize<DiskStateTree>(compressed);
+    }
+
+    /// <Inheritdoc />
+    public IId? GetLastAppliedLoadout(GameInstallation gameInstallation)
+    {
+        if (_lastAppliedRevisionDictionary.TryGetValue(gameInstallation, out var lastAppliedLoadout))
+        {
+            return lastAppliedLoadout;
+        }
+
+        var diskStateTree = GetState(gameInstallation);
+        if (diskStateTree is null) return null; ;
+
+        return diskStateTree.LoadoutRevision;
     }
 }

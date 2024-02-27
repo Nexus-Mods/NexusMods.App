@@ -21,5 +21,6 @@ public interface IApplyService
     /// </summary>
     /// <param name="gameInstallation"></param>
     /// <returns>A tuple of the LoadoutId and loadout revision Id of the last applied state</returns>
-    public (LoadoutId, IId) GetLastAppliedLoadout(GameInstallation gameInstallation);
+    public (LoadoutId, IId)? GetLastAppliedLoadout(GameInstallation gameInstallation);
+    
 }
