@@ -50,29 +50,32 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
         Dictionary<ModId, SMAPIManifest> modIdToManifest,
         ImmutableDictionary<string, ModId> uniqueIdToModId)
     {
-        var modsWithMissingDependencies = modIdToManifest.Select(kv =>
+        return modIdToManifest.Select(kv =>
         {
             var (modId, manifest) = kv;
-            var requiredDependencies = manifest.Dependencies.Where(x => x.IsRequired);
-            var missingDependencies = requiredDependencies.Where(x => !uniqueIdToModId.ContainsKey(x.UniqueID)).ToList();
+
+            var requiredDependencies = manifest.Dependencies.Where(x => x.IsRequired).Select(x => x.UniqueID);
+            var missingDependencies = requiredDependencies.Where(x => !uniqueIdToModId.ContainsKey(x)).ToList();
+
+            var contentPack = manifest.ContentPackFor?.UniqueID;
+            if (contentPack is not null && !uniqueIdToModId.ContainsKey(contentPack))
+                missingDependencies.Add(contentPack);
 
             return (Id: modId, MissingDependencies: missingDependencies);
         })
         .Where(kv => kv.MissingDependencies.Count != 0)
-        .ToImmutableDictionary(kv => kv.Id, kv => kv.MissingDependencies);
-
-        foreach (var kv in modsWithMissingDependencies)
+        .SelectMany(kv =>
         {
             var (modId, missingDependencies) = kv;
-            foreach (var missingDependency in missingDependencies)
+            return missingDependencies.Select(missingDependency =>
             {
                 var mod = loadout.Mods[modId];
-                yield return Diagnostics.CreateMissingRequiredDependency(
+                return Diagnostics.CreateMissingRequiredDependency(
                     Mod: mod.ToReference(loadout),
-                    MissingDependency: missingDependency.UniqueID
+                    MissingDependency: missingDependency
                 );
-            }
-        }
+            });
+        });
     }
 
     private static IEnumerable<Diagnostic> DiagnoseOutdatedDependencies(
@@ -88,7 +91,15 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
         {
             var (modId, manifest) = kv;
 
-            var minimumVersionDependencies = manifest.Dependencies.Where(x => uniqueIdToModId.ContainsKey(x.UniqueID) && x.MinimumVersion is not null);
+            var minimumVersionDependencies = manifest.Dependencies
+                .Where(x => uniqueIdToModId.ContainsKey(x.UniqueID) && x.MinimumVersion is not null)
+                .Select(x => (x.UniqueID, x.MinimumVersion))
+                .ToList();
+
+            var contentPack = manifest.ContentPackFor;
+            if (contentPack?.MinimumVersion is not null && uniqueIdToModId.ContainsKey(contentPack.UniqueID))
+                minimumVersionDependencies.Add((contentPack.UniqueID, contentPack.MinimumVersion));
+
             return minimumVersionDependencies.Select(dependency =>
             {
                 var dependencyModId = uniqueIdToModId[dependency.UniqueID];
