@@ -13,9 +13,9 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="HtmlAgilityPack" Version="1.11.52" />
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-        <PackageReference Include="Pathoschild.Http.FluentClient" Version="4.3.0" />
+        <PackageReference Include="HtmlAgilityPack" VersionOverride="1.11.52" />
+        <PackageReference Include="Newtonsoft.Json" VersionOverride="13.0.3" />
+        <PackageReference Include="Pathoschild.Http.FluentClient" VersionOverride="4.3.0" />
     </ItemGroup>
 
 </Project>
