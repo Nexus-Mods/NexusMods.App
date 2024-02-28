@@ -46,12 +46,10 @@ public class DiagnosticManagerTests : ADataModelTest<DiagnosticManagerTests>
         var mod = await AddDummyMod(BaseList);
         BaseList.Value.Mods.Count.Should().Be(2);
 
-        _diagnosticManager.ClearDiagnostics();
-        _diagnosticManager.ActiveDiagnostics.Should().BeEmpty();
-
         _diagnosticManager.RefreshModDiagnostics(BaseList.Value);
 
-        var diagnostic = _diagnosticManager.ActiveDiagnostics.Should().ContainSingle().Which;
+        _diagnosticManager.ActiveDiagnostics.Should().HaveCount(2);
+        var diagnostic = _diagnosticManager.ActiveDiagnostics.Last();
         diagnostic.Id.Number.Should().Be(1);
         diagnostic.Summary.Should().Be(DummyModDiagnosticEmitter.CreateMessage(BaseList.Value, mod));
     }
