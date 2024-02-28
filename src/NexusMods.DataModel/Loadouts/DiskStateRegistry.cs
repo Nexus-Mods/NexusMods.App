@@ -22,6 +22,7 @@ public class DiskStateRegistry : IDiskStateRegistry
     private readonly IDataStore _dataStore;
     private readonly IDictionary<GameInstallation, IId> _lastAppliedRevisionDictionary = new Dictionary<GameInstallation, IId>();
     private readonly Subject<(GameInstallation gameInstallation, IId loadoutRevision)> _lastAppliedRevisionSubject = new();
+    private readonly JsonSerializerOptions _jsonSerializerOptions;
 
     /// <inheritdoc />
     public IObservable<(GameInstallation gameInstallation, IId loadoutRevision)> LastAppliedRevisionObservable => _lastAppliedRevisionSubject;
@@ -29,10 +30,11 @@ public class DiskStateRegistry : IDiskStateRegistry
     /// <summary>
     /// DI Constructor
     /// </summary>
-    public DiskStateRegistry(ILogger<DiskStateRegistry> logger, IDataStore dataStore)
+    public DiskStateRegistry(ILogger<DiskStateRegistry> logger, IDataStore dataStore, JsonSerializerOptions jsonSerializerOptions)
     {
         _logger = logger;
         _dataStore = dataStore;
+        _jsonSerializerOptions = jsonSerializerOptions;
     }
 
     /// <summary>
@@ -46,7 +48,7 @@ public class DiskStateRegistry : IDiskStateRegistry
         using var ms = new MemoryStream();
         {
             using var compressed = new GZipStream(ms, CompressionMode.Compress, leaveOpen: true);
-            JsonSerializer.Serialize(compressed, diskState);
+            JsonSerializer.Serialize(compressed, diskState, _jsonSerializerOptions);
         }
         _dataStore.PutRaw(iid, ms.GetBuffer().AsSpan().SliceFast(0, (int)ms.Length));
         // TODO: this might need to be made thread safe
@@ -74,7 +76,7 @@ public class DiskStateRegistry : IDiskStateRegistry
         if (data == null) return null;
         using var ms = new MemoryStream(data);
         using var compressed = new GZipStream(ms, CompressionMode.Decompress);
-        return JsonSerializer.Deserialize<DiskStateTree>(compressed);
+        return JsonSerializer.Deserialize<DiskStateTree>(compressed, _jsonSerializerOptions);
     }
 
     /// <Inheritdoc />

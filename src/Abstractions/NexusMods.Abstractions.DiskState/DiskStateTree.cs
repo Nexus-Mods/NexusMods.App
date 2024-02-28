@@ -45,6 +45,7 @@ class DiskStateConverter : JsonConverter<DiskStateTree>
         reader.Read();
         
         var revId = options.Converters.OfType<IdJsonConverter>().First().Read(ref reader, typeof(IId), options);
+        reader.Read();
         
         if (reader.TokenType != JsonTokenType.PropertyName)
             throw new JsonException();
