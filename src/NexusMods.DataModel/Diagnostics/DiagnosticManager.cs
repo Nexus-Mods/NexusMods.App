@@ -70,6 +70,8 @@ internal sealed class DiagnosticManager : IDiagnosticManager
 
         var loadoutChangesDisposable = loadoutRegistry.LoadoutChanges
             .EnsureUniqueKeys()
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+            .Filter(id => id is not null)
             .Transform(id => loadoutRegistry.GetLoadout(id)!)
             // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
             .Filter(loadout => loadout is not null)
