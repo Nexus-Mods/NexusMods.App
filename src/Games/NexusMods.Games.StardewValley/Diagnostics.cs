@@ -22,4 +22,20 @@ internal static partial class Diagnostics
             .AddValue<string>("MissingDependency")
         )
         .Finish();
+
+    [DiagnosticTemplate]
+    [UsedImplicitly]
+    internal static IDiagnosticTemplate OutdatedDependencyTemplate = DiagnosticTemplateBuilder
+        .Start()
+        .WithId(new DiagnosticId(Source, number: 2))
+        .WithSeverity(DiagnosticSeverity.Warning)
+        .WithSummary("Mod {Dependent} requires at least version {MinimumVersion} of {Dependency} but installed is {CurrentVersion}")
+        .WithoutDetails()
+        .WithMessageData(messageBuilder => messageBuilder
+            .AddDataReference<ModReference>("Dependent")
+            .AddDataReference<ModReference>("Dependency")
+            .AddValue<string>("MinimumVersion")
+            .AddValue<string>("CurrentVersion")
+        )
+        .Finish();
 }

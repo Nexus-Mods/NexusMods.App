@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
@@ -30,11 +31,13 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
             .Where(tuple => tuple.Manifest is not null)
             .ToDictionaryAsync(x => x.Id, x => x.Manifest!);
 
-        var knownUniqueIds = modIdToManifest
-            .Select(x => x.Value.UniqueID)
-            .ToHashSet();
+        var uniqueIdToModId = modIdToManifest
+            .Select(kv => (UniqueId: kv.Value.UniqueID, ModId: kv.Key))
+            .ToImmutableDictionary(kv => kv.UniqueId, kv => kv.ModId);
 
-        var diagnostics = DiagnoseMissingDependencies(loadout, modIdToManifest, knownUniqueIds).ToList();
+        var diagnostics = DiagnoseMissingDependencies(loadout, modIdToManifest, uniqueIdToModId)
+            .Concat(DiagnoseOutdatedDependencies(loadout, modIdToManifest, uniqueIdToModId))
+            .ToList();
 
         foreach (var diagnostic in diagnostics)
         {
@@ -45,20 +48,18 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
     private static IEnumerable<Diagnostic> DiagnoseMissingDependencies(
         Loadout loadout,
         Dictionary<ModId, SMAPIManifest> modIdToManifest,
-        HashSet<string> knownUniqueIds)
+        ImmutableDictionary<string, ModId> uniqueIdToModId)
     {
-        var modsWithMissingDependencies = modIdToManifest
-            .Select(kv =>
-                {
-                    var (modId, manifest) = kv;
-                    var requiredDependencies = manifest.Dependencies.Where(x => x.IsRequired);
-                    var missingDependencies = requiredDependencies.Where(x => !knownUniqueIds.Contains(x.UniqueID)).ToList();
+        var modsWithMissingDependencies = modIdToManifest.Select(kv =>
+        {
+            var (modId, manifest) = kv;
+            var requiredDependencies = manifest.Dependencies.Where(x => x.IsRequired);
+            var missingDependencies = requiredDependencies.Where(x => !uniqueIdToModId.ContainsKey(x.UniqueID)).ToList();
 
-                    return (Id: modId, MissingDependencies: missingDependencies);
-                }
-            )
-            .Where(kv => kv.MissingDependencies.Count != 0)
-            .ToDictionary(kv => kv.Id, kv => kv.MissingDependencies);
+            return (Id: modId, MissingDependencies: missingDependencies);
+        })
+        .Where(kv => kv.MissingDependencies.Count != 0)
+        .ToImmutableDictionary(kv => kv.Id, kv => kv.MissingDependencies);
 
         foreach (var kv in modsWithMissingDependencies)
         {
@@ -72,6 +73,40 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
                 );
             }
         }
+    }
+
+    private static IEnumerable<Diagnostic> DiagnoseOutdatedDependencies(
+        Loadout loadout,
+        Dictionary<ModId, SMAPIManifest> modIdToManifest,
+        ImmutableDictionary<string, ModId> uniqueIdToModId)
+    {
+        var uniqueIdToVersion = modIdToManifest
+            .Select(kv => (kv.Value.UniqueID, kv.Value.Version))
+            .ToImmutableDictionary(kv => kv.UniqueID, kv => kv.Version);
+
+        return modIdToManifest.SelectMany(kv =>
+        {
+            var (modId, manifest) = kv;
+
+            var minimumVersionDependencies = manifest.Dependencies.Where(x => uniqueIdToModId.ContainsKey(x.UniqueID) && x.MinimumVersion is not null);
+            return minimumVersionDependencies.Select(dependency =>
+            {
+                var dependencyModId = uniqueIdToModId[dependency.UniqueID];
+
+                var minimumVersion = dependency.MinimumVersion!;
+                var currentVersion = uniqueIdToVersion[dependency.UniqueID];
+
+                var isOutdated = currentVersion.IsOlderThan(minimumVersion);
+                return (DependencyModId: dependencyModId, MinimumVersion: minimumVersion, CurrentVersion: currentVersion, IsOutdated: isOutdated);
+            })
+            .Where(tuple => tuple.IsOutdated)
+            .Select(tuple => Diagnostics.CreateOutdatedDependency(
+                Dependent: loadout.Mods[modId].ToReference(loadout),
+                Dependency: loadout.Mods[tuple.DependencyModId].ToReference(loadout),
+                MinimumVersion: tuple.MinimumVersion.ToString(),
+                CurrentVersion: tuple.CurrentVersion.ToString()
+            ));
+        });
     }
 
     private async ValueTask<SMAPIManifest?> GetManifest(Mod mod)
