@@ -24,61 +24,61 @@ public class ViewModFilesDesignViewModel : AViewModel<IViewModFilesViewModel>,
         const bool alwaysRootFolders = false; // always make 'saves', 'game' root nodes
         
         // ReSharper disable once RedundantSuppressNullableWarningExpression
-        void SaveFile(string filePath) => CreateModFileNode(filePath, LocationId.Saves, cache!);
-        void GameFile(string filePath) => CreateModFileNode(filePath, LocationId.Game, cache);
+        void SaveFile(string filePath, long fileSize) => CreateModFileNode(filePath, LocationId.Saves, cache!, fileSize);
+        void GameFile(string filePath, long fileSize) => CreateModFileNode(filePath, LocationId.Game, cache, fileSize);
 
         // Root Files
         locations.Add(LocationId.Game, "GAME");
-        GameFile("bink2w64.dll");
-        GameFile("High.ini");
-        GameFile("installscript.vdf");
-        GameFile("Low.ini");
-        GameFile("Medium.ini");
-        GameFile("Skyrim/SkyrimPrefs.ini");
-        GameFile("Skyrim.ccc");
-        GameFile("Skyrim_Default.ini");
-        GameFile("SkyrimSE.exe");
-        GameFile("SkyrimSELauncher.exe");
-        GameFile("steam_api64.dll");
-        GameFile("Ultra.ini");
+        GameFile("bink2w64.dll", 391360);
+        GameFile("High.ini", 906);
+        GameFile("installscript.vdf", 648);
+        GameFile("Low.ini", 898);
+        GameFile("Medium.ini", 898);
+        GameFile("Skyrim/SkyrimPrefs.ini", 3498); 
+        GameFile("Skyrim.ccc", 2035); 
+        GameFile("Skyrim_Default.ini", 1859);
+        GameFile("SkyrimSE.exe", 37157144); 
+        GameFile("SkyrimSELauncher.exe", 4713472);
+        GameFile("steam_api64.dll", 298384); 
+        GameFile("Ultra.ini", 911); 
 
         // Data Folder
-        GameFile("Data/ccBGSSSE001-Fish.bsa");
-        GameFile("Data/ccBGSSSE001-Fish.esm");
-        GameFile("Data/ccBGSSSE025-AdvDSGS.bsa");
-        GameFile("Data/ccBGSSSE025-AdvDSGS.esm");
-        GameFile("Data/ccBGSSSE037-Curios.bsa");
-        GameFile("Data/ccBGSSSE037-Curios.esl");
-        GameFile("Data/ccQDRSSE001-SurvivalMode.bsa");
-        GameFile("Data/ccQDRSSE001-SurvivalMode.esl");
-        GameFile("Data/Dawnguard.esm");
-        GameFile("Data/Dragonborn.esm");
-        GameFile("Data/HearthFires.esm");
-        GameFile("Data/MarketplaceTextures.bsa");
-        GameFile("Data/_ResourcePack.bsa");
-        GameFile("Data/_ResourcePack.esl");
-        GameFile("Data/Skyrim - Animations.bsa");
-        GameFile("Data/Skyrim.esm");
-        GameFile("Data/Skyrim - Interface.bsa");
-        GameFile("Data/Skyrim - Meshes0.bsa");
-        GameFile("Data/Skyrim - Meshes1.bsa");
-        GameFile("Data/Skyrim - Misc.bsa");
-        GameFile("Data/Skyrim - Shaders.bsa");
-        GameFile("Data/Skyrim - Sounds.bsa");
-        GameFile("Data/Skyrim - Textures0.bsa");
-        GameFile("Data/Skyrim - Textures1.bsa");
-        GameFile("Data/Skyrim - Textures2.bsa");
-        GameFile("Data/Skyrim - Textures3.bsa");
-        GameFile("Data/Skyrim - Textures4.bsa");
-        GameFile("Data/Skyrim - Textures5.bsa");
-        GameFile("Data/Skyrim - Textures6.bsa");
-        GameFile("Data/Skyrim - Textures7.bsa");
-        GameFile("Data/Skyrim - Textures8.bsa");
-        GameFile("Data/Skyrim - Voices_en0.bsa");
-        GameFile("Data/Update.esm");
+        GameFile("Data/ccBGSSSE001-Fish.bsa", 377675522);
+        GameFile("Data/ccBGSSSE001-Fish.esm", 1425176);
+        GameFile("Data/ccBGSSSE025-AdvDSGS.bsa", 1092876237);
+        GameFile("Data/ccBGSSSE025-AdvDSGS.esm", 812873);
+        GameFile("Data/ccBGSSSE037-Curios.bsa", 111740475);
+        GameFile("Data/ccBGSSSE037-Curios.esl", 37476);
+        GameFile("Data/ccQDRSSE001-SurvivalMode.bsa", 12835601);
+        GameFile("Data/ccQDRSSE001-SurvivalMode.esl", 240724);
+        GameFile("Data/Dawnguard.esm", 25885111);
+        GameFile("Data/Dragonborn.esm", 64663863);
+        GameFile("Data/HearthFires.esm", 3977420);
+        GameFile("Data/MarketplaceTextures.bsa", 2938167);
+        GameFile("Data/_ResourcePack.bsa", 916509890);
+        GameFile("Data/_ResourcePack.esl", 78418);
+        GameFile("Data/Skyrim - Animations.bsa", 65155583);
+        GameFile("Data/Skyrim.esm", 249753412);
+        GameFile("Data/Skyrim - Interface.bsa", 105799354);
+        GameFile("Data/Skyrim - Meshes0.bsa", 1153126177);
+        GameFile("Data/Skyrim - Meshes1.bsa", 378762772);
+        GameFile("Data/Skyrim - Misc.bsa", 17713449);
+        GameFile("Data/Skyrim - Shaders.bsa", 67308970);
+        GameFile("Data/Skyrim - Sounds.bsa", 1538656059);
+        GameFile("Data/Skyrim - Textures0.bsa", 652490581);
+        GameFile("Data/Skyrim - Textures1.bsa", 1511492648);
+        GameFile("Data/Skyrim - Textures2.bsa", 1345109830);
+        GameFile("Data/Skyrim - Textures3.bsa", 1406304717);
+        GameFile("Data/Skyrim - Textures4.bsa", 1265325033);
+        GameFile("Data/Skyrim - Textures5.bsa", 813639992);
+        GameFile("Data/Skyrim - Textures6.bsa", 97210200);
+        GameFile("Data/Skyrim - Textures7.bsa", 677006639);
+        GameFile("Data/Skyrim - Textures8.bsa", 255927303);
+        GameFile("Data/Skyrim - Voices_en0.bsa", 1807969854);
+        GameFile("Data/Update.esm", 18874041);
 
         // Video Folder
-        GameFile("Video/BGS_Logo.bik");
+        GameFile("Video/BGS_Logo.bik", 13835808);
 
 #pragma warning disable CS0162 // Unreachable code detected
         if (showMultipleRoots)
@@ -87,14 +87,14 @@ public class ViewModFilesDesignViewModel : AViewModel<IViewModFilesViewModel>,
             locations.Add(LocationId.Saves, "SAVE");
 
             // Core save file
-            SaveFile("Save 1 - Quicksave.ess"); 
+            SaveFile("Save 1 - Quicksave.ess", 4000000);
 
             // SKSE co-save (if applicable)
-            SaveFile("Save 1 - Quicksave.skse"); 
+            SaveFile("Save 1 - Quicksave.skse", 800000);
 
             // Configuration files
-            SaveFile("SkyrimPrefs.ini");
-            SaveFile("Skyrim.ini");
+            SaveFile("SkyrimPrefs.ini", 15000);
+            SaveFile("Skyrim.ini", 10000);
         }
 #pragma warning restore CS0162 // Unreachable code detected
 
@@ -107,7 +107,7 @@ public class ViewModFilesDesignViewModel : AViewModel<IViewModFilesViewModel>,
         //throw new NotImplementedException();
     }
 
-    private static void CreateModFileNode(RelativePath filePath, LocationId locationId, SourceCache<IFileTreeNodeViewModel, GamePath> cache)
+    private static void CreateModFileNode(RelativePath filePath, LocationId locationId, SourceCache<IFileTreeNodeViewModel, GamePath> cache, long fileSize)
     {
         // Build the path, creating directories as needed
         var currentPath = new RelativePath();
@@ -121,11 +121,11 @@ public class ViewModFilesDesignViewModel : AViewModel<IViewModFilesViewModel>,
 
             // Check if the directory already exists
             if (!cache.Lookup(curGamePath).HasValue)
-                cache.AddOrUpdate(new FileTreeNodeDesignViewModel(false, new GamePath(locationId, part)));
+                cache.AddOrUpdate(new FileTreeNodeDesignViewModel(false, new GamePath(locationId, part), fileSize));
         }
 
         // Final part is the file
-        cache.AddOrUpdate(new FileTreeNodeDesignViewModel(true, new GamePath(locationId, currentPath.Join(parts[index]))));
+        cache.AddOrUpdate(new FileTreeNodeDesignViewModel(true, new GamePath(locationId, currentPath.Join(parts[index])), fileSize));
     }
 
 }

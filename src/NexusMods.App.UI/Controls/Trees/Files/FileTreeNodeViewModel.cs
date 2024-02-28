@@ -1,4 +1,5 @@
 using System.Reactive;
+using System.Reactive.Disposables;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.Trees;
 using NexusMods.Paths;
@@ -14,17 +15,17 @@ public class FileTreeNodeViewModel<TValue> : AViewModel<IFileTreeNodeViewModel>,
     private KeyedBox<RelativePath, GamePathNode<TValue>> _item;
     
     [Reactive]
-    public FileTreeNodeIconType Icon { get; private set; }
+    public FileTreeNodeIconType Icon { get; set; }
+
+    public bool IsFile => _item.Item.IsFile;
     public string Name => _item.Item.Segment;
     public long FileSize => 999999; // TEMP
     public GamePath FullPath => _item.GamePath();
     public GamePath ParentPath => _item.Parent()!.GamePath();
 
-    public ReactiveCommand<Unit, Unit> ViewCommand { get; } = ReactiveCommand.Create(() => {});
-
     public FileTreeNodeViewModel(KeyedBox<RelativePath, GamePathNode<TValue>> item)
     {
         _item = item;
-        Icon = _item.Item.IsFile ? FileTreeNodeIconType.OpenFolder : FileTreeNodeIconType.ClosedFolder;
+        Icon = _item.Item.IsFile ? FileTreeNodeIconType.File : FileTreeNodeIconType.ClosedFolder;
     }
 }

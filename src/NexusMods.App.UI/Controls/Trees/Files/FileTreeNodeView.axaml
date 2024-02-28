@@ -50,20 +50,6 @@
                        Text="Example-file.bsa"
                        x:Name="FileNameTextBlock" />
         </Grid>
-
-        <!-- Right Elements -->
-        <StackPanel Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal"
-                    x:Name="EntryRightElementsStackPanel">
-            
-            <!-- View Button -->
-            <Button Classes="Rounded Primary RightElements" HorizontalAlignment="Right" IsVisible="True"
-                    x:Name="InstallRoundedButton">
-                <StackPanel Orientation="Horizontal">
-                    <unifiedIcon:UnifiedIcon Classes="Eye" x:Name="ViewIcon" VerticalAlignment="Center" />
-                    <TextBlock Text="{x:Static resources:Language.FileTreeNodeView__View}" x:Name="ViewTextBlock" VerticalAlignment="Center" />
-                </StackPanel>
-            </Button>
-        </StackPanel>
     </Grid>
 
 </reactiveUi:ReactiveUserControl>

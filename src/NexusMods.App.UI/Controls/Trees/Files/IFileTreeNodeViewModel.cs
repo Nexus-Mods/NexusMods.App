@@ -9,7 +9,12 @@ public interface IFileTreeNodeViewModel : IViewModelInterface
     /// <summary>
     ///     The icon that's used to display this specific node.
     /// </summary>
-    FileTreeNodeIconType Icon { get; }
+    FileTreeNodeIconType Icon { get; protected set; }
+    
+    /// <summary>
+    ///     True if this node represents a file.
+    /// </summary>
+    bool IsFile { get; }
     
     /// <summary>
     ///     Name of the file or folder segment.
@@ -30,11 +35,18 @@ public interface IFileTreeNodeViewModel : IViewModelInterface
     ///     The full path to this node's parent.
     /// </summary>
     GamePath ParentPath { get; }
-    
+
     /// <summary>
-    ///     The command used to begin 'viewing' a file.
+    ///     A method called when the tree item is expanded, this by default changes the icon style.
     /// </summary>
-    ReactiveCommand<Unit, Unit> ViewCommand { get; }
+    /// <param name="isExpanded">True if the item is expanded.</param>
+    void OnExpanded(bool isExpanded)
+    {
+        if (IsFile)
+            return;
+
+        Icon = isExpanded ? FileTreeNodeIconType.OpenFolder : FileTreeNodeIconType.ClosedFolder;
+    }
 }
 
 public enum FileTreeNodeIconType

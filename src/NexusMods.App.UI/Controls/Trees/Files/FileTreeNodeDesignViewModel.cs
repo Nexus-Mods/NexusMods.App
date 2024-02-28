@@ -2,40 +2,42 @@ using System.Reactive;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.GameLocators;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Controls.Trees.Files;
 
 public class FileTreeNodeDesignViewModel : AViewModel<IFileTreeNodeViewModel>, IFileTreeNodeViewModel
 {
     [UsedImplicitly] // Via designer, if uncommented.
-    public static FileTreeNodeDesignViewModel SampleFile { get; } = new(true, new GamePath(LocationId.Game, "Sample File"));
+    public static FileTreeNodeDesignViewModel SampleFile { get; } = new(true, new GamePath(LocationId.Game, "Sample File"), -1);
 
     [UsedImplicitly] // Via designer, if uncommented.
-    public static FileTreeNodeDesignViewModel SampleFolder { get; } = new(false, new GamePath(LocationId.Game, "Sample Folder"));
+    public static FileTreeNodeDesignViewModel SampleFolder { get; } = new(false, new GamePath(LocationId.Game, "Sample Folder"), -1);
 
-    public FileTreeNodeIconType Icon { get; }
+    [Reactive]
+    public FileTreeNodeIconType Icon { get; set; }
+    public bool IsFile { get; }
     public string Name { get; }
     public long FileSize { get; }
     public GamePath FullPath { get; set; } = default;
     public GamePath ParentPath { get; set; } = default;
-    public ReactiveCommand<Unit, Unit> ViewCommand { get; } = ReactiveCommand.Create(() => {});
-    private bool _isFile;
     
     public FileTreeNodeDesignViewModel() : this(true, new GamePath(LocationId.Game, ""), "Design Folder Name")
     {
         
     }
     
-    public FileTreeNodeDesignViewModel(bool isFile, GamePath fullPath)
+    public FileTreeNodeDesignViewModel(bool isFile, GamePath fullPath, long fileSize)
     {
-        _isFile = isFile;
-        Icon = _isFile ? FileTreeNodeIconType.File : FileTreeNodeIconType.ClosedFolder;
+        IsFile = isFile;
+        Icon = IsFile ? FileTreeNodeIconType.File : FileTreeNodeIconType.ClosedFolder;
         Name = fullPath.Path.FileName;
         FullPath = fullPath;
         ParentPath = fullPath.Parent;
+        FileSize = fileSize;
     }
 
-    public FileTreeNodeDesignViewModel(bool isFile, GamePath fullPath, string name) : this(isFile, fullPath)
+    public FileTreeNodeDesignViewModel(bool isFile, GamePath fullPath, string name) : this(isFile, fullPath, -1)
     {
         Name = name;
         ParentPath = default(GamePath);

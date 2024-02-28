@@ -1,14 +1,16 @@
 ﻿using System.Collections.ObjectModel;
+using System.Globalization;
+using System.Reactive.Disposables;
+using System.Security.Cryptography;
 using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Controls.Templates;
 using Avalonia.ReactiveUI;
+using Humanizer.Bytes;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.App.UI.Controls.Trees.Files;
-using NexusMods.App.UI.Helpers;
 using NexusMods.App.UI.Resources;
 using ReactiveUI;
-using Splat;
 
 namespace NexusMods.App.UI.Controls.ModInfo.ViewModFiles;
 using ModFileNode = TreeNodeVM<IFileTreeNodeViewModel, GamePath>;
@@ -28,13 +30,13 @@ public partial class ViewModFilesView : ReactiveUserControl<IViewModFilesViewMod
     private static HierarchicalTreeDataGridSource<ModFileNode> CreateTreeSource(
         ReadOnlyObservableCollection<ModFileNode> treeRoots)
     {
-        var locator = Locator.Current.GetService<IViewLocator>();
         return new HierarchicalTreeDataGridSource<ModFileNode>(treeRoots)
         {
             Columns =
             {
                 new HierarchicalExpanderColumn<ModFileNode>(
-                    new TemplateColumn<ModFileNode>(null,
+                    new TemplateColumn<ModFileNode>(
+                        Language.Helpers_GenerateHeader_NAME,
                         new FuncDataTemplate<ModFileNode>((node, _) =>
                             {
                                 // This should never be null but can be during rapid resize, due to
@@ -44,29 +46,44 @@ public partial class ViewModFilesView : ReactiveUserControl<IViewModFilesViewMod
                                     return new Control();
                                     
                                 // Very sus but it works, t r u s t.
-                                var view = locator!.ResolveView(node.Item);
-                                var ctrl = view as Control;
-                                ctrl!.DataContext = node.Item;
-                                return ctrl;
+                                var view = new FileTreeNodeView();
+                                view!.DataContext = node.Item;
+                                
+                                // This is a 'hack' which allows us to receive events from the wrapping 'ModFileNode'
+                                // and transfer it into the child IFileTreeNodeViewModel.
+                                
+                                // Given that we may reuse the `FileTreeNodeView` for other views in the future, 
+                                // which may not necessarily need the wrapping `ModFileNode` to get info on when it's
+                                // expanded or not expanded, this does not seem unreasonable to do.
+                                ((IActivatableViewModel)node.Item).WhenActivated(d =>
+                                {
+                                    node.WhenAnyValue(x => x.IsExpanded)
+                                        .Subscribe(isExpanded => node.Item.OnExpanded(isExpanded))
+                                        .DisposeWith(d);
+                                });
+                                
+                                return view;
                             }
                         ),
-                        width: new GridLength(1, GridUnitType.Star)
+                        width: new GridLength(1, GridUnitType.Star),
+                        options: new()
+                        {
+                            CompareAscending = (x, y) => string.Compare(x!.Item.Name, y!.Item.Name, StringComparison.OrdinalIgnoreCase),
+                            CompareDescending = (x, y) => string.Compare(y!.Item.Name, x!.Item.Name, StringComparison.OrdinalIgnoreCase),
+                        }
                     ),
                     node => node.Children,
                     null,  
                     node => node.IsExpanded),
                 
-                new TextColumn<ModFileNode,long?>(
+                new TextColumn<ModFileNode,string?>(
                     Language.Helpers_GenerateHeader_SIZE,
-                    x => 9999
-                    /*
-                    ,
+                    x => ByteSize.FromBytes(x.Item.FileSize).ToString(),
                     options: new()
                     {
-                        CompareAscending = IViewModFilesViewModel.SortAscending(x => x.Size),
-                        CompareDescending = IViewModFilesViewModel.SortDescending(x => x.Size),
+                        CompareAscending = (x, y) => x!.Item.FileSize.CompareTo(y!.Item.FileSize),
+                        CompareDescending = (x, y) => y!.Item.FileSize.CompareTo(x!.Item.FileSize),
                     }
-                    */
                 ),
             }
         };

@@ -69,7 +69,7 @@ public class ViewModFilesViewModel : AViewModel<IViewModFilesViewModel>, IViewMo
             namedLocations.Add(location, register[location].ToString());
         
         // Flatten them with DynamicData
-        BindItems(_sourceCache, namedLocations, true, out _items);
+        BindItems(_sourceCache, namedLocations, false, out _items);
     }
     
     /// <summary>
@@ -78,6 +78,7 @@ public class ViewModFilesViewModel : AViewModel<IViewModFilesViewModel>, IViewMo
     /// </summary>
     internal static void BindItems(SourceCache<IFileTreeNodeViewModel, GamePath> cache, Dictionary<LocationId, string> locations, bool alwaysRoot, out ReadOnlyObservableCollection<ModFileNode> result)
     {
+        // AlwaysRoot is left as a parameter because it may be a user preference in settings in the future.
         // If there's more than 1 location, create dummy nodes.
         if (alwaysRoot || locations.Count > 1)
         {
