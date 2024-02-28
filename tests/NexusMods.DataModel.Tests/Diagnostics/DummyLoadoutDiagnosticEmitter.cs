@@ -17,11 +17,12 @@ public class DummyLoadoutDiagnosticEmitter : ILoadoutDiagnosticEmitter
         yield return new Diagnostic
         {
             Id = new DiagnosticId("NexusMods.DataModel.Tests.Diagnostics.DummyLoadoutDiagnosticEmitter", 1),
-            Message = CreateMessage(loadout),
             Severity = DiagnosticSeverity.Critical,
-            DataReferences = new[]
+            Summary = CreateMessage(loadout),
+            Details = DiagnosticMessage.DefaultValue,
+            DataReferences = new Dictionary<DataReferenceDescription, IDataReference>()
             {
-                loadout.ToReference()
+                { DataReferenceDescription.Loadout, loadout.ToReference() }
             }
         };
     }

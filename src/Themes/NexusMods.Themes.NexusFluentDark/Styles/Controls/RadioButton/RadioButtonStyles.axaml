@@ -3,7 +3,7 @@
 
     <Design.PreviewWith>
         <Border Padding="20">
-            <StackPanel Orientation="Vertical" Spacing="4" Margin="8">
+            <StackPanel Orientation="Vertical" Classes="Spacing-1" Margin="8">
                 <RadioButton IsChecked="False" GroupName="g1">
                     <TextBlock Theme="{StaticResource BodyLGBoldTheme}" Text="Unchecked"/>
                 </RadioButton>

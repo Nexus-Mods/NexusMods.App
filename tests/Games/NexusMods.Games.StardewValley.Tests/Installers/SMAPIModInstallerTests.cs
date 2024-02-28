@@ -70,8 +70,8 @@ public class SMAPIModInstallerTests : AModInstallerTest<StardewValley, SMAPIModI
             })
             .And.Satisfy(
                 x => x.Name == "Raised Garden Beds",
-                x => x.Name == "[CP] Raised Garden Beds Translation: English",
-                x => x.Name == "[RGB] Raised Garden Beds"
+                x => x.Name == "(CP) Raised Garden Beds Translation: English",
+                x => x.Name == "(RGB) Raised Garden Beds"
             );
 
     }

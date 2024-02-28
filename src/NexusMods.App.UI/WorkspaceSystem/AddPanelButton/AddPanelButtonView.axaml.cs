@@ -1,6 +1,7 @@
 using System.Reactive.Disposables;
 using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
+using NexusMods.App.UI.Controls.UnifiedIcon;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
@@ -17,7 +18,7 @@ public partial class AddPanelButtonView : ReactiveUserControl<IAddPanelButtonVie
             this.BindCommand(ViewModel, vm => vm.AddPanelCommand, view => view.AddPanelButton)
                 .DisposeWith(disposables);
 
-            this.OneWayBind(ViewModel, vm => vm.ButtonImage, view => view.ButtonImage.Source)
+            this.OneWayBind(ViewModel, vm => vm.ButtonImage, view => view.ButtonImage.Value, img => new IconValue(new AvaloniaImage(img)))
                 .DisposeWith(disposables);
         });
     }

@@ -1,6 +1,6 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:icons="https://github.com/projektanker/icons.avalonia"
+        xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI"
         xmlns:extensions="clr-namespace:NexusMods.Themes.NexusFluentDark.Extensions">
     <Design.PreviewWith>
         <WrapPanel Width="500">
@@ -16,13 +16,13 @@
     <!-- Styles Definitions-->
 
     <Style Selector="Button.Spine">
-        <Setter Property="CornerRadius" Value="45" />
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-full}" />
         <Setter Property="HorizontalAlignment" Value="Center" />
         <Setter Property="ClipToBounds" Value="False" />
-        <Setter Property="Background" Value="{StaticResource ElementBackgroundTransparentBrush}" />
+        <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
 
         <Style Selector="^ Border">
-            <Setter Property="CornerRadius" Value="45" />
+            <Setter Property="CornerRadius" Value="{StaticResource Rounded-full}" />
         </Style>
 
         <Style Selector="^:pressed">
@@ -30,8 +30,8 @@
         </Style>
 
         <Style Selector="^.Inactive Border">
-            <Setter Property="BorderBrush" Value="{StaticResource ElementBackgroundNeutralMidBrush}" />
-            <Setter Property="Background" Value="{StaticResource ElementBackgroundTransparentBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource SurfaceMidBrush}" />
+            <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
             <Setter Property="BorderThickness" Value="1" />
 
             <Setter Property="Transitions">
@@ -46,16 +46,16 @@
 
         <Style Selector="^.Inactive:pointerover Border">
             <Setter Property="Background">
-                <SolidColorBrush Color="{StaticResource ElementForegroundNeutralStrong}"
+                <SolidColorBrush Color="{StaticResource NeutralStrong}"
                                  Opacity="{StaticResource OpacityModerate}" />
             </Setter>
-            <Setter Property="BorderBrush" Value="{StaticResource ElementForegroundNeutralStrongBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource NeutralStrongBrush}" />
             <Setter Property="BorderThickness" Value="1" />
         </Style>
 
         <Style Selector="^.Active Border">
-            <Setter Property="Background" Value="{StaticResource ElementBackgroundTransparentBrush}" />
-            <Setter Property="BorderBrush" Value="{StaticResource ElementForegroundNeutralStrongBrush}" />
+            <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource NeutralStrongBrush}" />
             <Setter Property="BorderThickness" Value="2" />
             <Setter Property="BoxShadow">
                 <extensions:BoxShadow BlurRadius="12" SpreadRadius="0" ShadowColor="{StaticResource BrandNeutral200}" />
@@ -64,10 +64,10 @@
 
         <Style Selector="^.Active:pointerover Border">
             <Setter Property="Background">
-                <SolidColorBrush Color="{StaticResource ElementForegroundNeutralStrong}"
+                <SolidColorBrush Color="{StaticResource NeutralStrong}"
                                  Opacity="{StaticResource Alpha50}" />
             </Setter>
-            <Setter Property="BorderBrush" Value="{StaticResource ElementForegroundNeutralStrongBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource NeutralStrongBrush}" />
             <Setter Property="BorderThickness" Value="2" />
         </Style>
 
@@ -99,13 +99,13 @@
 
             <Style Selector="^.Inactive:pointerover Border">
                 <Setter Property="BorderBrush">
-                    <SolidColorBrush Color="{StaticResource ElementForegroundNeutralStrong}"
+                    <SolidColorBrush Color="{StaticResource NeutralStrong}"
                                      Opacity="{StaticResource Alpha50}" />
                 </Setter>
             </Style>
 
             <Style Selector="^.Active:pointerover Border">
-                <Setter Property="BorderBrush" Value="{DynamicResource ElementForegroundPrimaryModerateBrush}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource PrimaryModerateBrush}" />
             </Style>
         </Style>
 
@@ -117,9 +117,9 @@
                 <Setter Property="Template">
                     <ControlTemplate>
                         <Grid>
-                            <icons:Icon
+                            <unifiedIcon:UnifiedIcon
                                 Classes="HelpCircle"
-                                FontSize="20"
+                                Size="20"
                                 HorizontalAlignment="Center"
                                 Margin="0"
                                 Padding="0"
@@ -132,20 +132,24 @@
                 </Setter>
             </Style>
 
-            <Style Selector="^.Add /template/ icons|Icon">
-                <Setter Property="Value" Value="mdi-plus" />
+            <Style Selector="^.Add /template/ unifiedIcon|UnifiedIcon">
+                <Setter Property="Value">
+                    <unifiedIcon:IconValue MdiValueSetter="mdi-plus"/>
+                </Setter>
             </Style>
 
-            <Style Selector="^.Home /template/ icons|Icon">
-                <Setter Property="Value" Value="mdi-home" />
+            <Style Selector="^.Home /template/ unifiedIcon|UnifiedIcon">
+                <Setter Property="Value">
+                    <unifiedIcon:IconValue MdiValueSetter="mdi-home"/>
+                </Setter>
             </Style>
 
-            <Style Selector="^.Inactive icons|Icon">
-                <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralSubduedBrush}" />
+            <Style Selector="^.Inactive unifiedIcon|UnifiedIcon">
+                <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
             </Style>
 
-            <Style Selector="^.Active icons|Icon">
-                <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralStrongBrush}" />
+            <Style Selector="^.Active unifiedIcon|UnifiedIcon">
+                <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
             </Style>
 
         </Style>

@@ -5,7 +5,7 @@
     x:Class="NexusMods.App.UI.LeftMenu.Items.IconView"
     x:TypeArguments="items:IIconViewModel"
     xmlns="https://github.com/avaloniaui"
-    xmlns:avalonia="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+    xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:items="clr-namespace:NexusMods.App.UI.LeftMenu.Items"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -19,8 +19,8 @@
             ColumnDefinitions="38, *"
             Height="40"
             Width="184">
-            <avalonia:Icon
-                FontSize="18"
+            <unifiedIcon:UnifiedIcon
+                Size="18"
                 Grid.Column="0"
                 Height="18"
                 Width="18"

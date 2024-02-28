@@ -1,26 +1,41 @@
+using JetBrains.Annotations;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.References;
-using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Mods;
+using NexusMods.Generators.Diagnostics;
 
 namespace NexusMods.Games.StardewValley;
 
-internal static class Diagnostics
+internal static partial class Diagnostics
 {
-    internal const string Source = "NexusMods.Games.StardewValley";
+    private const string Source = "NexusMods.Games.StardewValley";
 
-    internal static Diagnostic MissingRequiredDependency(Loadout loadout, Mod mod, string missingDependency)
-    {
-        return new Diagnostic
-        {
-            Id = new DiagnosticId(Source, 1),
-            Message = DiagnosticMessage.From($"Mod '{mod.Name}' is missing required dependency '{missingDependency}'"),
-            Severity = DiagnosticSeverity.Warning,
-            DataReferences = new IDataReference[]
-            {
-                loadout.ToReference(),
-                mod.ToReference(loadout)
-            }
-        };
-    }
+    [DiagnosticTemplate]
+    [UsedImplicitly]
+    internal static IDiagnosticTemplate MissingRequiredDependencyTemplate = DiagnosticTemplateBuilder
+        .Start()
+        .WithId(new DiagnosticId(Source, number: 1))
+        .WithSeverity(DiagnosticSeverity.Warning)
+        .WithSummary("Mod {Mod} is missing required dependency {MissingDependency}")
+        .WithoutDetails()
+        .WithMessageData(messageBuilder => messageBuilder
+            .AddDataReference<ModReference>("Mod")
+            .AddValue<string>("MissingDependency")
+        )
+        .Finish();
+
+    [DiagnosticTemplate]
+    [UsedImplicitly]
+    internal static IDiagnosticTemplate OutdatedDependencyTemplate = DiagnosticTemplateBuilder
+        .Start()
+        .WithId(new DiagnosticId(Source, number: 2))
+        .WithSeverity(DiagnosticSeverity.Warning)
+        .WithSummary("Mod {Dependent} requires at least version {MinimumVersion} of {Dependency} but installed is {CurrentVersion}")
+        .WithoutDetails()
+        .WithMessageData(messageBuilder => messageBuilder
+            .AddDataReference<ModReference>("Dependent")
+            .AddDataReference<ModReference>("Dependency")
+            .AddValue<string>("MinimumVersion")
+            .AddValue<string>("CurrentVersion")
+        )
+        .Finish();
 }

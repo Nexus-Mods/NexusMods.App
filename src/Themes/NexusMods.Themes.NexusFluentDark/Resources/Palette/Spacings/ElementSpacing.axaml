@@ -1,0 +1,41 @@
+﻿<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Sizes for setting padding, margins, gaps and spacings -->
+    
+    <!-- ReSharper disable InconsistentNaming -->
+    <x:Double x:Key="Spacing-none">0</x:Double>
+    <x:Double x:Key="Spacing-px">1</x:Double>
+    <x:Double x:Key="Spacing-0.5">1</x:Double>
+    <x:Double x:Key="Spacing-1">4</x:Double>
+    <x:Double x:Key="Spacing-1.5">6</x:Double>
+    <x:Double x:Key="Spacing-2">8</x:Double>
+    <x:Double x:Key="Spacing-2.5">10</x:Double>
+    <x:Double x:Key="Spacing-3">12</x:Double>
+    <x:Double x:Key="Spacing-3.5">16</x:Double>
+    <x:Double x:Key="Spacing-4">16</x:Double>
+    <x:Double x:Key="Spacing-5">20</x:Double>
+    <x:Double x:Key="Spacing-6">24</x:Double>
+    <x:Double x:Key="Spacing-7">28</x:Double>
+    <x:Double x:Key="Spacing-10">40</x:Double>
+    <x:Double x:Key="Spacing-11">44</x:Double>
+    <x:Double x:Key="Spacing-12">48</x:Double>
+    <x:Double x:Key="Spacing-14">56</x:Double>
+    <x:Double x:Key="Spacing-16">64</x:Double>
+    <x:Double x:Key="Spacing-20">80</x:Double>
+    <x:Double x:Key="Spacing-24">96</x:Double>
+    <x:Double x:Key="Spacing-28">122</x:Double>
+    <x:Double x:Key="Spacing-32">128</x:Double>
+    <x:Double x:Key="Spacing-36">144</x:Double>
+    <x:Double x:Key="Spacing-40">160</x:Double>
+    <x:Double x:Key="Spacing-44">176</x:Double>
+    <x:Double x:Key="Spacing-48">192</x:Double>
+    <x:Double x:Key="Spacing-52">208</x:Double>
+    <x:Double x:Key="Spacing-56">224</x:Double>
+    <x:Double x:Key="Spacing-60">240</x:Double>
+    <x:Double x:Key="Spacing-64">256</x:Double>
+    <x:Double x:Key="Spacing-72">288</x:Double>
+    <x:Double x:Key="Spacing-80">320</x:Double>
+    <x:Double x:Key="Spacing-96">384</x:Double>
+    
+</ResourceDictionary>
+

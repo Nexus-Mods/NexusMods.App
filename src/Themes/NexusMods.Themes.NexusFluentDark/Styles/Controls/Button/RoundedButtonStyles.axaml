@@ -1,6 +1,6 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:icons="https://github.com/projektanker/icons.avalonia">
+        xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI">
 
     <!-- Preview -->
     <Design.PreviewWith>
@@ -9,13 +9,13 @@
             <StackPanel.Styles>
                 <Style Selector="StackPanel.HorizontalShowcase">
                     <Setter Property="Orientation" Value="Horizontal" />
-                    <Setter Property="Spacing" Value="8" />
+                    <Setter Property="Spacing" Value="{StaticResource Spacing-2}" />
                 </Style>
 
                 <Style Selector="StackPanel.VerticalTwoButtonStack">
                     <Setter Property="Orientation" Value="Vertical" />
                     <Setter Property="VerticalAlignment" Value="Bottom" />
-                    <Setter Property="Spacing" Value="8" />
+                    <Setter Property="Spacing" Value="{StaticResource Spacing-2}" />
                 </Style>
 
                 <Style Selector="StackPanel.VerticalTwoButtonStack > TextBlock">
@@ -36,7 +36,7 @@
                     <TextBlock>Rounded Primary</TextBlock>
                     <Button Classes="Rounded Primary">
                         <StackPanel>
-                            <icons:Icon Classes="Play" />
+                            <unifiedIcon:UnifiedIcon Classes="Play" />
                             <TextBlock Text="Button" />
                             <Button Classes="Pill StandardPill Label">
                                 <StackPanel>
@@ -47,7 +47,7 @@
                     </Button>
                     <Button Classes="Rounded Primary" IsEnabled="False">
                         <StackPanel>
-                            <icons:Icon Classes="Play" />
+                            <unifiedIcon:UnifiedIcon Classes="Play" />
                             <TextBlock Text="Button" />
                             <Button Classes="Pill StandardPill Label">
                                 <StackPanel>
@@ -63,7 +63,7 @@
                     <TextBlock>Rounded Primary Active</TextBlock>
                     <Button Classes="Rounded Primary Active">
                         <StackPanel>
-                            <icons:Icon Classes="Play" />
+                            <unifiedIcon:UnifiedIcon Classes="Play" />
                             <TextBlock Text="Button" />
                             <Button Classes="Pill StandardPill Label">
                                 <StackPanel>
@@ -74,7 +74,7 @@
                     </Button>
                     <Button Classes="Rounded Primary Active" IsEnabled="False">
                         <StackPanel>
-                            <icons:Icon Classes="Play" />
+                            <unifiedIcon:UnifiedIcon Classes="Play" />
                             <TextBlock Text="Button" />
                             <Button Classes="Pill StandardPill Label">
                                 <StackPanel>
@@ -91,7 +91,7 @@
                     <TextBlock>Rounded Primary SemiActive</TextBlock>
                     <Button Classes="Rounded Primary SemiActive">
                         <StackPanel>
-                            <icons:Icon Classes="Play" />
+                            <unifiedIcon:UnifiedIcon Classes="Play" />
                             <TextBlock Text="Button" />
                             <Button Classes="Pill StandardPill Label">
                                 <StackPanel>
@@ -102,7 +102,7 @@
                     </Button>
                     <Button Classes="Rounded Primary SemiActive" IsEnabled="False">
                         <StackPanel>
-                            <icons:Icon Classes="Play" />
+                            <unifiedIcon:UnifiedIcon Classes="Play" />
                             <TextBlock Text="Button" />
                             <Button Classes="Pill StandardPill Label">
                                 <StackPanel>
@@ -118,7 +118,7 @@
                     <TextBlock>Rounded Accent</TextBlock>
                     <Button Classes="Rounded Accent">
                         <StackPanel>
-                            <icons:Icon Classes="Play" />
+                            <unifiedIcon:UnifiedIcon Classes="Play" />
                             <TextBlock Text="Button" />
                             <Button Classes="Pill StandardPill Label">
                                 <StackPanel>
@@ -129,7 +129,7 @@
                     </Button>
                     <Button Classes="Rounded Accent" IsEnabled="False">
                         <StackPanel>
-                            <icons:Icon Classes="Play" />
+                            <unifiedIcon:UnifiedIcon Classes="Play" />
                             <TextBlock Text="Button" />
                             <Button Classes="Pill StandardPill Label">
                                 <StackPanel>
@@ -145,7 +145,7 @@
                     <TextBlock>Rounded Accent SemiActive</TextBlock>
                     <Button Classes="Rounded Accent SemiActive">
                         <StackPanel>
-                            <icons:Icon Classes="Play" />
+                            <unifiedIcon:UnifiedIcon Classes="Play" />
                             <TextBlock Text="Button" />
                             <Button Classes="Pill StandardPill Label">
                                 <StackPanel>
@@ -156,7 +156,7 @@
                     </Button>
                     <Button Classes="Rounded Accent SemiActive" IsEnabled="False">
                         <StackPanel>
-                            <icons:Icon Classes="Play" />
+                            <unifiedIcon:UnifiedIcon Classes="Play" />
                             <TextBlock Text="Button" />
                             <Button Classes="Pill StandardPill Label">
                                 <StackPanel>
@@ -178,7 +178,7 @@
 
     <!-- Base Rounded Button (only use with additional qualifiers) -->
     <Style Selector="Button.Rounded">
-        <Setter Property="CornerRadius" Value="48" />
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-full}" />
         <Setter Property="Height" Value="32" />
 
         <!-- Set an invisible border thickness to 1 to avoid size differences with outlined variants. -->
@@ -203,7 +203,7 @@
 
         <Style Selector="^ > StackPanel">
             <Setter Property="Orientation" Value="Horizontal" />
-            <Setter Property="Spacing" Value="4" />
+            <Setter Property="Spacing" Value="{StaticResource Spacing-1}" />
             <!-- Don't set vertical margins, use vertical alignment to keep things centered instead -->
             <Setter Property="Margin" Value="8,0" />
         </Style>
@@ -214,11 +214,8 @@
             <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
 
-        <Style Selector="^ > StackPanel > icons|Icon">
-            <!-- Icons size seem determined by font size, width and height are just there to limit the bounds -->
-            <Setter Property="FontSize" Value="24" />
-            <Setter Property="Width" Value="24" />
-            <Setter Property="Height" Value="24" />
+        <Style Selector="^ > StackPanel > unifiedIcon|UnifiedIcon">
+            <Setter Property="Size" Value="24" />
         </Style>
 
         <Style Selector="^ > StackPanel > Button.Pill.Label">
@@ -257,57 +254,57 @@
 
     <!-- Rounded Primary Active -->
     <Style Selector="Button.Rounded.Primary.Active">
-        <Setter Property="Background" Value="{StaticResource ElementForegroundNeutralStrongBrush}" />
-        <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralInvertedBrush}" />
+        <Setter Property="Background" Value="{StaticResource NeutralStrongBrush}" />
+        <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
 
 
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource ElementForegroundNeutralModerateBrush}" />
-            <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralInvertedBrush}" />
+            <Setter Property="Background" Value="{StaticResource NeutralModerateBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
         </Style>
 
         <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource ElementForegroundNeutralSubduedBrush}" />
+            <Setter Property="Background" Value="{StaticResource NeutralSubduedBrush}" />
         </Style>
 
         <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource ElementForegroundNeutralStrongBrush}" />
-            <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralInvertedBrush}" />
+            <Setter Property="Background" Value="{StaticResource NeutralStrongBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
         </Style>
     </Style>
 
 
     <!-- Rounded Primary SemiActive -->
     <Style Selector="Button.Rounded.Primary.SemiActive">
-        <Setter Property="BorderBrush" Value="{StaticResource ElementForegroundNeutralStrongBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource NeutralStrongBrush}" />
 
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="BorderBrush" Value="{StaticResource ElementForegroundNeutralStrongBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource NeutralStrongBrush}" />
         </Style>
 
         <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="BorderBrush" Value="{StaticResource ElementForegroundNeutralStrongBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource NeutralStrongBrush}" />
         </Style>
     </Style>
 
 
     <!-- Rounded Accent -->
     <Style Selector="Button.Rounded.Accent">
-        <Setter Property="Background" Value="{StaticResource ElementForegroundInfoModerateBrush}" />
-        <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralInvertedBrush}" />
+        <Setter Property="Background" Value="{StaticResource InfoModerateBrush}" />
+        <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
 
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource ElementForegroundInfoStrongBrush}" />
-            <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralInvertedBrush}" />
+            <Setter Property="Background" Value="{StaticResource InfoStrongBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
         </Style>
 
         <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource ElementForegroundInfoSubduedBrush}" />
+            <Setter Property="Background" Value="{StaticResource InfoSubduedBrush}" />
         </Style>
 
         <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource ElementForegroundInfoModerateBrush}" />
-            <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralInvertedBrush}" />
+            <Setter Property="Background" Value="{StaticResource InfoModerateBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
         </Style>
     </Style>
 
@@ -315,36 +312,36 @@
     <!-- Rounded Accent SemiActive -->
     <Style Selector="Button.Rounded.Accent.SemiActive">
         <Setter Property="Background">
-            <SolidColorBrush Color="{StaticResource ElementForegroundInfoModerate}"
+            <SolidColorBrush Color="{StaticResource InfoModerate}"
                              Opacity="{StaticResource OpacityWeak}" />
         </Setter>
-        <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralStrongBrush}" />
-        <Setter Property="BorderBrush" Value="{StaticResource ElementForegroundInfoModerateBrush}" />
+        <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource InfoModerateBrush}" />
 
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="Background">
-                <SolidColorBrush Color="{StaticResource ElementForegroundInfoModerate}"
+                <SolidColorBrush Color="{StaticResource InfoModerate}"
                                  Opacity="{StaticResource OpacityModerate}" />
             </Setter>
-            <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralStrongBrush}" />
-            <Setter Property="BorderBrush" Value="{StaticResource ElementForegroundInfoModerateBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource InfoModerateBrush}" />
         </Style>
 
         <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="Background">
-                <SolidColorBrush Color="{StaticResource ElementForegroundInfoModerate}"
+                <SolidColorBrush Color="{StaticResource InfoModerate}"
                                  Opacity="{StaticResource OpacityWeak}" />
             </Setter>
-            <Setter Property="BorderBrush" Value="{StaticResource ElementForegroundInfoModerateBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource InfoModerateBrush}" />
         </Style>
 
         <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="Background">
-                <SolidColorBrush Color="{StaticResource ElementForegroundInfoModerate}"
+                <SolidColorBrush Color="{StaticResource InfoModerate}"
                                  Opacity="{StaticResource OpacityWeak}" />
             </Setter>
-            <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralStrongBrush}" />
-            <Setter Property="BorderBrush" Value="{StaticResource ElementForegroundInfoModerateBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource InfoModerateBrush}" />
 
         </Style>
     </Style>

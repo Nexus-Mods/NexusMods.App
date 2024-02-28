@@ -4,7 +4,7 @@
                                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                                 xmlns:reactiveUi="http://reactiveui.net"
-                                xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+                                xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI"
                                 xmlns:resources="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Resources"
                                 xmlns:preview="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Preview"
                                 mc:Ignorable="d" d:DesignWidth="710" d:DesignHeight="44"
@@ -15,13 +15,13 @@
 
     <Grid ColumnDefinitions="*, Auto" Margin="0,5,0,5">
         <Grid.Styles>
-            <Style Selector="icons|Icon.FileTypeIcon">
-                <Setter Property="FontSize" Value="18" />
+            <Style Selector="unifiedIcon|UnifiedIcon.FileTypeIcon">
+                <Setter Property="Size" Value="18" />
                 <Setter Property="Margin" Value="8, 0, 8, 0" />
             </Style>
 
-            <Style Selector="icons|Icon.Close">
-                <Setter Property="FontSize" Value="20" />
+            <Style Selector="unifiedIcon|UnifiedIcon.Close">
+                <Setter Property="Size" Value="20" />
             </Style>
 
             <Style Selector="Button.RightElements">
@@ -41,8 +41,8 @@
         <Grid Grid.Column="0" ClipToBounds="True" ColumnDefinitions="Auto,Auto,Auto" x:Name="FileElementGrid">
 
             <!-- File / Directory Icon -->
-            <icons:Icon Grid.Column="0" Classes="File FileTypeIcon" IsVisible="False" x:Name="FileEntryIcon" />
-            <icons:Icon Grid.Column="0" Classes="FolderOutline FileTypeIcon" IsVisible="False"
+            <unifiedIcon:UnifiedIcon Grid.Column="0" Classes="File FileTypeIcon" IsVisible="False" x:Name="FileEntryIcon" />
+            <unifiedIcon:UnifiedIcon Grid.Column="0" Classes="FolderOutline FileTypeIcon" IsVisible="False"
                         x:Name="FolderEntryIcon" />
 
             <!-- File Name -->
@@ -52,7 +52,7 @@
                        x:Name="FileNameTextBlock" />
 
             <!-- Pills -->
-            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" x:Name="PillStackPanel">
+            <StackPanel Grid.Column="2" Orientation="Horizontal" Classes="Spacing-2" x:Name="PillStackPanel">
 
                 <!-- NEW Pill Label -->
                 <Button Classes="Pill Accent Label Hug PillElement" IsVisible="False" x:Name="NewPill">
@@ -65,7 +65,7 @@
                 <Button Classes="Pill Light Label Hug PillElement" IsVisible="False"
                         x:Name="DupeFolderPill">
                     <StackPanel>
-                        <icons:Icon Classes="Alert" />
+                        <unifiedIcon:UnifiedIcon Classes="Alert" />
                         <TextBlock Text="{x:Static resources:Language.Pill_DUPE_FOLDER}" />
                     </StackPanel>
                 </Button>
@@ -74,7 +74,7 @@
                 <Button Classes="Pill Light Label Hug PillElement" IsVisible="False"
                         x:Name="FolderMergedPill">
                     <StackPanel>
-                        <icons:Icon Classes="Check" />
+                        <unifiedIcon:UnifiedIcon Classes="Check" />
                         <TextBlock Text="{x:Static resources:Language.Pill_FOLDER_MERGED}" />
                     </StackPanel>
                 </Button>
@@ -87,7 +87,7 @@
         <!-- X Button -->
         <Button Grid.Column="1" Classes="Rounded Primary RightElements" HorizontalAlignment="Right"
                 x:Name="XRoundedButton">
-            <icons:Icon Classes="Close" x:Name="StandaloneCloseIcon" />
+            <unifiedIcon:UnifiedIcon Classes="Close" x:Name="StandaloneCloseIcon" />
         </Button>
     </Grid>
 

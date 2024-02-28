@@ -9,7 +9,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:avalonia="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+    xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
     xmlns:loadoutGrid="clr-namespace:NexusMods.App.UI.Pages.LoadoutGrid">
     <Design.DataContext>
@@ -21,7 +21,7 @@
                 <StackPanel Grid.Column="1">
                     <Button x:Name="DeleteModsButton">
                         <StackPanel>
-                            <avalonia:Icon Classes="TrashCanOutline" />
+                            <unifiedIcon:UnifiedIcon Classes="TrashCanOutline" />
                         </StackPanel>
                     </Button>
                     <Button x:Name="ViewModFilesButton">
@@ -33,13 +33,13 @@
                     <Line/>
                     <Button x:Name="AddModButton">
                         <StackPanel>
-                            <avalonia:Icon Classes="PlusCircleOutline" />
+                            <unifiedIcon:UnifiedIcon Classes="PlusCircleOutline" />
                             <TextBlock Text="{x:Static resources:Language.LoadoutGridView__Add_Mod}"/>
                         </StackPanel>
                     </Button>
                     <Button x:Name="AddModAdvancedButton">
                         <StackPanel>
-                            <avalonia:Icon Classes="PlusCircleOutline" />
+                            <unifiedIcon:UnifiedIcon Classes="PlusCircleOutline" />
                             <TextBlock Text="{x:Static resources:Language.LoadoutGridView__Add_Mod_Advanced}"/>
                         </StackPanel>
                     </Button>

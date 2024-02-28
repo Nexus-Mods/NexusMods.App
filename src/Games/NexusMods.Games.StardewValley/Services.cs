@@ -15,7 +15,7 @@ public static class Services
         services
             .AddGame<StardewValley>()
             .AddSingleton<ITool, RunGameTool<StardewValley>>()
-            .AddSingleton<ILoadoutDiagnosticEmitter, MissingDependenciesEmitter>()
+            .AddSingleton<ILoadoutDiagnosticEmitter, DependencyDiagnosticEmitter>()
             .AddSingleton<ITypeFinder, TypeFinder>()
             .AddSingleton<SMAPIInstaller>();
         return services;

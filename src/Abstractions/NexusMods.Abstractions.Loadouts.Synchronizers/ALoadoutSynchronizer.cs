@@ -491,9 +491,10 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     {
         var flattened = await LoadoutToFlattenedLoadout(loadout);
         var fileTree = await FlattenedLoadoutToFileTree(flattened, loadout);
-        var prevState = _diskStateRegistry.GetState(loadout.LoadoutId)!;
+        var prevState = _diskStateRegistry.GetState(loadout.Installation)!;
         var diskState = await FileTreeToDisk(fileTree, loadout, flattened, prevState, loadout.Installation);
-        _diskStateRegistry.SaveState(loadout.LoadoutId, diskState);
+        diskState.LoadoutRevision = loadout.DataStoreId;
+        _diskStateRegistry.SaveState(loadout.Installation, diskState);
         return diskState;
     }
 
@@ -503,7 +504,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         // Reconstruct the previous file tree
         var prevFlattenedLoadout = await LoadoutToFlattenedLoadout(loadout);
         var prevFileTree = await FlattenedLoadoutToFileTree(prevFlattenedLoadout, loadout);
-        var prevDiskState = _diskStateRegistry.GetState(loadout.LoadoutId)!;
+        var prevDiskState = _diskStateRegistry.GetState(loadout.Installation)!;
 
         // Get the new disk state
         var diskState = await GetDiskState(loadout.Installation);
@@ -512,7 +513,9 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         var newLoadout = await FlattenedLoadoutToLoadout(flattenedLoadout, loadout, prevFlattenedLoadout);
 
         await BackupNewFiles(loadout, fileTree);
-        _diskStateRegistry.SaveState(loadout.LoadoutId, diskState);
+        newLoadout.EnsurePersisted(_store);
+        diskState.LoadoutRevision = newLoadout.DataStoreId;
+        _diskStateRegistry.SaveState(loadout.Installation, diskState);
 
         return newLoadout;
     }
@@ -591,8 +594,9 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                 Installation = installation,
                 Mods = loadout.Mods.With(gameFiles.Id, gameFiles)
             });
-
-        _diskStateRegistry.SaveState(loadout.LoadoutId, initialState);
+        
+        initialState.LoadoutRevision = loadout.DataStoreId;
+        _diskStateRegistry.SaveState(loadout.Installation, initialState);
 
         return loadout;
     }

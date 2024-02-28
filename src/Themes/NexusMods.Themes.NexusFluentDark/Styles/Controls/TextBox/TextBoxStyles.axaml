@@ -2,7 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Design.PreviewWith>
         <Border Padding="20">
-            <StackPanel Orientation="Vertical" Spacing="4">
+            <StackPanel Orientation="Vertical" Classes="Spacing-1">
                 <TextBox Text="Hello World!" />
                 <TextBox Classes="Bare BodyMDBold" Text="Hello World!" />
             </StackPanel>
@@ -15,12 +15,12 @@
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="HorizontalAlignment" Value="Center" />
         <Setter Property="TextWrapping" Value="Wrap" />
-        <Setter Property="BorderBrush" Value="{StaticResource ElementBackgroundTransparentBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource SurfaceTransparentBrush}" />
         <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="CornerRadius" Value="0" />
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-none}" />
 
         <Style Selector="^:focus /template/ Border#PART_BorderElement">
-            <Setter Property="BorderBrush" Value="{StaticResource ElementBackgroundTransparentBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource SurfaceTransparentBrush}" />
             <Setter Property="BorderThickness" Value="0" />
         </Style>
     </Style>

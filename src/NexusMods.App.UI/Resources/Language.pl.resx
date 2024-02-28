@@ -49,7 +49,7 @@
 		<value>Aktualizuj swoją aplikację, by otrzymywać najnowsze ulepszenia.</value>
 	</data>
 	<data name="Updater_UseSystemUpdater" xml:space="preserve">
-		<value>Wygląda na to, że twoja aplikacja została zainstalowana za pośrednictwem narzędzia Menedżer pakietów systemu. Proszę zaktualizować aplikację za pośrednictwem systemowej aplikacji do aktualizacji.</value>
+		<value>Wygląda na to, że twoja aplikacja została zainstalowana za pośrednictwem systemu zarządzania pakietami. Proszę zaktualizować aplikację za pośrednictwem systemowej aplikacji do aktualizacji.</value>
 	</data>
 	<data name="Updater_ViewChangelog" xml:space="preserve">
 		<value>Zobacz dziennik zmian na GitHub</value>
@@ -73,7 +73,7 @@
 		<value>NIE</value>
 	</data>
 	<data name="CancelDownloadOverlayView_Description_download_will_be_cancelled" xml:space="preserve">
-		<value>{0} pobierań zostanie anulowane, a pliki zostaną usunięte.</value>
+		<value>{0} zostanie(ą) anulowane, a pliki zostaną usunięte.</value>
 	</data>
 	<data name="CancelDownloadOverlayView_Title" xml:space="preserve">
 		<value>Anulować i usunąć pobierane pliki?</value>
@@ -118,7 +118,7 @@
 		<value>{0} godz.</value>
 	</data>
 	<data name="StringFormatters__In_progress__numDownloads" xml:space="preserve">
-		<value>W trakcie pobierania: ({0})</value>
+		<value> ({0})</value>
 	</data>
 	<data name="DownloadStatus_Idle" xml:space="preserve">
 		<value>Bezczynne</value>
@@ -142,7 +142,7 @@
 		<value>POBRANE</value>
 	</data>
 	<data name="DownloadsView__In_Progress" xml:space="preserve">
-		<value>W trakcie pobierania</value>
+		<value>Postęp pobierania</value>
 	</data>
 	<data name="DownloadsView__Completed" xml:space="preserve">
 		<value>Ukończone</value>
@@ -169,7 +169,7 @@
 		<value>HISTORIA</value>
 	</data>
 	<data name="DownloadInProgressView__IN_PROGRESS" xml:space="preserve">
-		<value>W TRAKCIE POBIERANIA</value>
+		<value>W TRAKCIE</value>
 	</data>
 	<data name="DownloadInProgressView__Cancel" xml:space="preserve">
 		<value>Anuluj</value>
@@ -181,7 +181,7 @@
 		<value>Wstrzymaj wszystko</value>
 	</data>
 	<data name="InProgressTitleTextBlock" xml:space="preserve">
-		<value>W trakcie pobierania (0)</value>
+		<value>Pobierane</value>
 	</data>
 	<data name="BoldMinutesRemainingTextBlock" xml:space="preserve">
 		<value>0 min</value>
@@ -244,16 +244,16 @@
 		<value>Wznów</value>
 	</data>
 	<data name="DownloadInProgressView__Resume_All" xml:space="preserve">
-		<value>Wznów Wszystko</value>
+		<value>Wznów wszystko</value>
 	</data>
 	<data name="CancelDownloadOverlayView_Description__Download" xml:space="preserve">
-		<value>pobieranie</value>
+		<value>Pobieranie</value>
 	</data>
 	<data name="CancelDownloadOverlayView_Description_downloads" xml:space="preserve">
-		<value>pobierania</value>
+		<value>pobierania(ń)</value>
 	</data>
 	<data name="InProgress_NoDownloadsTextBlock" xml:space="preserve">
-		<value>Brak Pobierań</value>
+		<value>Brak pobierań</value>
 	</data>
 	<data name="SpineDownloadButton_ToolTip" xml:space="preserve">
 		<value>Pobieranie</value>
@@ -270,4 +270,16 @@
     <data name="ViewModInfoPage_TItle" xml:space="preserve">
         <value>Zobacz Informacje Moda</value>
     </data>
+	<data name="LoadoutLeftMenuViewModel_LoadoutGridEntry" xml:space="preserve">
+		<value>Moje Mody</value>
+	</data>
+	<data name="Downloads_WorkspaceTitle" xml:space="preserve">
+		<value>Pobieranie</value>
+	</data>
+	<data name="HomeWorkspace_Title" xml:space="preserve">
+		<value>Strona główna</value>
+	</data>
+	<data name="InProgressDownloadsPage_Title" xml:space="preserve">
+		<value>Pobieranie</value>
+	</data>
 </root>

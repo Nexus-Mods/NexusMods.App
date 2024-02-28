@@ -1,10 +1,8 @@
 using DynamicData;
 using JetBrains.Annotations;
-using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Serialization.DataModel.Ids;
 
-namespace NexusMods.DataModel.Diagnostics;
+namespace NexusMods.Abstractions.Diagnostics;
 
 /// <summary>
 /// A diagnostic manager, which keeps track of all current diagnostics and refreshes them if necessary.
@@ -15,7 +13,7 @@ public interface IDiagnosticManager : IDisposable
     /// <summary>
     /// Gets an observable for all diagnostic changes.
     /// </summary>
-    IObservable<IChangeSet<Diagnostic, IId>> DiagnosticChanges { get; }
+    IObservable<IChangeSet<Diagnostic>> DiagnosticChanges { get; }
 
     /// <summary>
     /// Gets all active diagnostics.

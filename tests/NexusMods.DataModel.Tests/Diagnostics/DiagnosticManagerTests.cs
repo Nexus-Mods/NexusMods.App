@@ -37,7 +37,7 @@ public class DiagnosticManagerTests : ADataModelTest<DiagnosticManagerTests>
 
         var diagnostic = _diagnosticManager.ActiveDiagnostics.Should().ContainSingle().Which;
         diagnostic.Id.Number.Should().Be(1);
-        diagnostic.Message.Should().Be(DummyLoadoutDiagnosticEmitter.CreateMessage(BaseList.Value));
+        diagnostic.Summary.Should().Be(DummyLoadoutDiagnosticEmitter.CreateMessage(BaseList.Value));
     }
 
     [Fact]
@@ -53,7 +53,7 @@ public class DiagnosticManagerTests : ADataModelTest<DiagnosticManagerTests>
 
         var diagnostic = _diagnosticManager.ActiveDiagnostics.Should().ContainSingle().Which;
         diagnostic.Id.Number.Should().Be(1);
-        diagnostic.Message.Should().Be(DummyModDiagnosticEmitter.CreateMessage(BaseList.Value, mod));
+        diagnostic.Summary.Should().Be(DummyModDiagnosticEmitter.CreateMessage(BaseList.Value, mod));
 
         BaseList.Remove(mod);
         BaseList.Value.Mods.Count.Should().Be(1);
@@ -82,9 +82,10 @@ public class DiagnosticManagerTests : ADataModelTest<DiagnosticManagerTests>
             new()
             {
                 Id = new DiagnosticId(),
-                Message = DiagnosticMessage.From(""),
                 Severity = DiagnosticSeverity.Warning,
-                DataReferences = ImmutableArray<IDataReference>.Empty
+                Summary = DiagnosticMessage.DefaultValue,
+                Details = DiagnosticMessage.DefaultValue,
+                DataReferences = new Dictionary<DataReferenceDescription, IDataReference>()
             }
         };
 
@@ -108,9 +109,10 @@ public class DiagnosticManagerTests : ADataModelTest<DiagnosticManagerTests>
             new()
             {
                 Id = new DiagnosticId("foo", 1),
-                Message = DiagnosticMessage.From(""),
                 Severity = DiagnosticSeverity.Warning,
-                DataReferences = ImmutableArray<IDataReference>.Empty
+                Summary = DiagnosticMessage.DefaultValue,
+                Details = DiagnosticMessage.DefaultValue,
+                DataReferences = new Dictionary<DataReferenceDescription, IDataReference>()
             }
         };
 

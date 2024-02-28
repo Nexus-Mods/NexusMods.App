@@ -13,7 +13,7 @@
     <Design.DataContext>
         <foundGames:FoundGamesDesignViewModel />
     </Design.DataContext>
-    <Border Classes="Low Rounded" Padding="24">
+    <Border Classes="Low Rounded-lg" Padding="24">
         <ItemsControl
             x:Name="FoundGamesItemsControl">
             <ItemsControl.ItemsPanel>

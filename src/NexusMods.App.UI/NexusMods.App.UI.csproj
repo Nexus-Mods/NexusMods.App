@@ -398,6 +398,24 @@
         <Compile Update="Pages\ViewModInfo\ViewModInfoViewModel.cs">
           <DependentUpon>IViewModInfoViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="LeftMenu\Loadout\LoadoutLeftMenuDesignViewModel.cs">
+          <DependentUpon>ILoadoutLeftMenuViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="LeftMenu\Items\LaunchButtonDesignViewModel.cs">
+          <DependentUpon>ILaunchButtonViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="LeftMenu\Items\LaunchButtonViewModel.cs">
+          <DependentUpon>ILaunchButtonViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="LeftMenu\Items\IconViewModel.cs">
+          <DependentUpon>IIconViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="LeftMenu\Items\IApplyControlDesignViewModel.cs">
+          <DependentUpon>IApplyControlViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="LeftMenu\Items\ApplyControlViewModel.cs">
+          <DependentUpon>IApplyControlViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>

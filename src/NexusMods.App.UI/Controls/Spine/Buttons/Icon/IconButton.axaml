@@ -10,7 +10,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:icons="https://github.com/projektanker/icons.avalonia">
+    xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI">
     <Design.DataContext>
         <icon:IconButtonDesignViewModel />
     </Design.DataContext>
@@ -26,15 +26,15 @@
         <Button.Template>
             <ControlTemplate>
                 <Grid>
-                    <icons:Icon
+                    <unifiedIcon:UnifiedIcon
                         Classes="HelpCircle"
-                        FontSize="20"
+                        Size="20"
                         HorizontalAlignment="Center"
                         Margin="0"
                         Padding="0"
                         VerticalAlignment="Center" />
                     <Border
-                        CornerRadius="48"
+                        Classes="Rounded-full"
                         Height="50"
                         Width="50" />
                 </Grid>

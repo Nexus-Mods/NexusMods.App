@@ -1,6 +1,6 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:icons="https://github.com/projektanker/icons.avalonia">
+        xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI">
     <!-- Buttons that only contain a single icon -->
 
     <!-- Preview -->
@@ -30,8 +30,8 @@
         <Setter Property="Template">
             <ControlTemplate>
                 <!--  Transparent background so that the button is clickable over the entire area  -->
-                <Border Background="{StaticResource ElementBackgroundTransparentBrush}">
-                    <icons:Icon/>
+                <Border Background="{StaticResource SurfaceTransparentBrush}">
+                    <unifiedIcon:UnifiedIcon/>
                 </Border>
             </ControlTemplate>
         </Setter>
@@ -39,10 +39,8 @@
         <Setter Property="Width" Value="24" />
         <Setter Property="Height" Value="24" />
 
-        <Style Selector="^ /template/ icons|Icon">
-            <Setter Property="FontSize" Value="24" />
-            <Setter Property="Height" Value="24" />
-            <Setter Property="Width" Value="24" />
+        <Style Selector="^ /template/ unifiedIcon|UnifiedIcon">
+            <Setter Property="Size" Value="24" />
         </Style>
 
         <Style Selector="^:pressed">
@@ -56,65 +54,87 @@
     </Style>
 
     <!-- Small version -->
-    <Style Selector="Button.BareIcon.Small /template/ icons|Icon">
-        <Setter Property="FontSize" Value="14" />
-        <Setter Property="Height" Value="14" />
-        <Setter Property="Width" Value="24" />
+    <Style Selector="Button.BareIcon.Small /template/ unifiedIcon|UnifiedIcon">
+        <Setter Property="Size" Value="14" />
     </Style>
-
 
     <!-- BareIcon Icon selection -->
-    <Style Selector="Button.BareIcon.Cog /template/ icons|Icon">
-        <Setter Property="Value" Value="mdi-cog" />
+    <Style Selector="Button.BareIcon.Cog /template/ unifiedIcon|UnifiedIcon">
+        <Setter Property="Value">
+            <unifiedIcon:IconValue MdiValueSetter="mdi-cog"/>
+        </Setter>
     </Style>
 
-    <Style Selector="Button.BareIcon.Help /template/ icons|Icon">
-        <Setter Property="Value" Value="mdi-help-circle-outline" />
+    <Style Selector="Button.BareIcon.Help /template/ unifiedIcon|UnifiedIcon">
+        <Setter Property="Value">
+            <unifiedIcon:IconValue MdiValueSetter="mdi-help-circle-outline"/>
+        </Setter>
     </Style>
 
-    <Style Selector="Button.BareIcon.Bell /template/ icons|Icon">
-        <Setter Property="Value" Value="mdi-bell" />
+    <Style Selector="Button.BareIcon.Bell /template/ unifiedIcon|UnifiedIcon">
+        <Setter Property="Value">
+            <unifiedIcon:IconValue MdiValueSetter="mdi-bell"/>
+        </Setter>
     </Style>
 
-    <Style Selector="Button.BareIcon.WindowClose /template/ icons|Icon">
-        <Setter Property="Value" Value="mdi-window-close" />
+    <Style Selector="Button.BareIcon.WindowClose /template/ unifiedIcon|UnifiedIcon">
+        <Setter Property="Value">
+            <unifiedIcon:IconValue MdiValueSetter="mdi-window-close"/>
+        </Setter>
     </Style>
 
-    <Style Selector="Button.BareIcon.WindowMinimize /template/ icons|Icon">
-        <Setter Property="Value" Value="mdi-window-minimize" />
+    <Style Selector="Button.BareIcon.WindowMinimize /template/ unifiedIcon|UnifiedIcon">
+        <Setter Property="Value">
+            <unifiedIcon:IconValue MdiValueSetter="mdi-window-minimize"/>
+        </Setter>
     </Style>
 
-    <Style Selector="Button.BareIcon.WindowMaximize /template/ icons|Icon">
-        <Setter Property="Value" Value="mdi-window-maximize" />
+    <Style Selector="Button.BareIcon.WindowMaximize /template/ unifiedIcon|UnifiedIcon">
+        <Setter Property="Value">
+            <unifiedIcon:IconValue MdiValueSetter="mdi-window-maximize"/>
+        </Setter>
     </Style>
 
-    <Style Selector="Button.BareIcon.KeyboardArrowDown /template/ icons|Icon">
-        <Setter Property="Value" Value="mdi-chevron-down" />
+    <Style Selector="Button.BareIcon.KeyboardArrowDown /template/ unifiedIcon|UnifiedIcon">
+        <Setter Property="Value">
+            <unifiedIcon:IconValue MdiValueSetter="mdi-chevron-down"/>
+        </Setter>
     </Style>
 
-    <Style Selector="Button.BareIcon.KeyboardArrowUp /template/ icons|Icon">
-        <Setter Property="Value" Value="mdi-chevron-up" />
+    <Style Selector="Button.BareIcon.KeyboardArrowUp /template/ unifiedIcon|UnifiedIcon">
+        <Setter Property="Value">
+            <unifiedIcon:IconValue MdiValueSetter="mdi-chevron-up"/>
+        </Setter>
     </Style>
 
-    <Style Selector="Button.BareIcon.KeyboardArrowRight /template/ icons|Icon">
-        <Setter Property="Value" Value="mdi-chevron-right" />
+    <Style Selector="Button.BareIcon.KeyboardArrowRight /template/ unifiedIcon|UnifiedIcon">
+        <Setter Property="Value">
+            <unifiedIcon:IconValue MdiValueSetter="mdi-chevron-right"/>
+        </Setter>
     </Style>
 
-    <Style Selector="Button.BareIcon.KeyboardArrowLeft /template/ icons|Icon">
-        <Setter Property="Value" Value="mdi-chevron-left" />
+    <Style Selector="Button.BareIcon.KeyboardArrowLeft /template/ unifiedIcon|UnifiedIcon">
+        <Setter Property="Value">
+            <unifiedIcon:IconValue MdiValueSetter="mdi-chevron-left"/>
+        </Setter>
     </Style>
 
-    <Style Selector="Button.BareIcon.Copy /template/ icons|Icon">
-        <Setter Property="Value" Value="mdi-content-copy" />
+    <Style Selector="Button.BareIcon.Copy /template/ unifiedIcon|UnifiedIcon">
+        <Setter Property="Value">
+            <unifiedIcon:IconValue MdiValueSetter="mdi-content-copy"/>
+        </Setter>
     </Style>
 
-    <Style Selector="Button.BareIcon.PlayCircleOutline /template/ icons|Icon">
-        <Setter Property="Value" Value="mdi-play-circle-outline" />
+    <Style Selector="Button.BareIcon.PlayCircleOutline /template/ unifiedIcon|UnifiedIcon">
+        <Setter Property="Value">
+            <unifiedIcon:IconValue MdiValueSetter="mdi-play-circle-outline"/>
+        </Setter>
     </Style>
 
-    <Style Selector="Button.BareIcon.PauseCircleOutline /template/ icons|Icon">
-        <Setter Property="Value" Value="mdi-pause-circle-outline" />
+    <Style Selector="Button.BareIcon.PauseCircleOutline /template/ unifiedIcon|UnifiedIcon">
+        <Setter Property="Value">
+            <unifiedIcon:IconValue MdiValueSetter="mdi-pause-circle-outline"/>
+        </Setter>
     </Style>
-
 
 </Styles>

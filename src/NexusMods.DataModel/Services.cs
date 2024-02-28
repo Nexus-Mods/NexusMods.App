@@ -60,6 +60,7 @@ public static class Services
         coll.AddAllSingleton<IArchiveInstaller, ArchiveInstaller>();
         coll.AddAllSingleton<IToolManager, ToolManager>();
         coll.AddAllSingleton<IDiskStateRegistry, DiskStateRegistry>();
+        coll.AddAllSingleton<IApplyService, ApplyService>();
 
         coll.AddSingleton<ITypeFinder>(_ => new AssemblyTypeFinder(typeof(Services).Assembly));
         coll.AddAllSingleton<ISorter, Sorter>();

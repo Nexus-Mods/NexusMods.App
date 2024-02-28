@@ -1,0 +1,29 @@
+﻿<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Values for CornerRadius property on Borders or other Components -->
+    
+    <!-- ReSharper disable InconsistentNaming -->
+    <CornerRadius x:Key="Rounded-none">0</CornerRadius>
+    <CornerRadius x:Key="Rounded-sm">2</CornerRadius>
+    <CornerRadius x:Key="Rounded">4</CornerRadius>
+    <CornerRadius x:Key="Rounded-md">6</CornerRadius>
+    <CornerRadius x:Key="Rounded-lg">8</CornerRadius>
+    <CornerRadius x:Key="Rounded-xl">12</CornerRadius>
+    <CornerRadius x:Key="Rounded-2xl">16</CornerRadius>
+    <CornerRadius x:Key="Rounded-3xl">24</CornerRadius>
+    <CornerRadius x:Key="Rounded-full">9999</CornerRadius>
+    
+    <!-- Rounding sides separately -->
+    <!-- Note: The order of the values is TopLeft, TopRight, BottomRight, BottomLeft -->
+    <CornerRadius x:Key="Rounded-t-lg">8,8,0,0</CornerRadius>
+    <CornerRadius x:Key="Rounded-b-lg">0,0,8,8</CornerRadius>
+    <CornerRadius x:Key="Rounded-l-lg">8,0,0,8</CornerRadius>
+    <CornerRadius x:Key="Rounded-r-lg">0,8,8,0</CornerRadius>
+    
+    <!-- Rounding corners separately -->
+    <CornerRadius x:Key="Rounded-tl-lg">8,0,0,0</CornerRadius>
+    <CornerRadius x:Key="Rounded-tr-lg">0,8,0,0</CornerRadius>
+    <CornerRadius x:Key="Rounded-br-lg">0,0,8,0</CornerRadius>
+    <CornerRadius x:Key="Rounded-bl-lg">0,0,0,8</CornerRadius>
+</ResourceDictionary>
+
