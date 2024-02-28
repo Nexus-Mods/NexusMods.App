@@ -1,4 +1,5 @@
 ﻿using System.Windows.Input;
+using NexusMods.App.UI.Resources;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -11,6 +12,7 @@ public class ApplyControlDesignViewModel : AViewModel<IApplyControlViewModel>, I
     [Reactive] public bool IsApplying { get; private set; } = false;
 
     public ILaunchButtonViewModel LaunchButtonViewModel { get; } = new LaunchButtonDesignViewModel();
+    public string ApplyButtonText { get; } = Language.ApplyControlViewModel__APPLY;
 
     public ApplyControlDesignViewModel()
     {

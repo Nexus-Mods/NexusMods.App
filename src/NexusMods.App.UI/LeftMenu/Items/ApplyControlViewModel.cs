@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization.DataModel.Ids;
+using NexusMods.App.UI.Resources;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -17,6 +18,10 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
 
     private readonly LoadoutId _loadoutId;
     private readonly GameInstallation _gameInstallation;
+    private readonly string _activateLoadoutText = Language.ApplyControlViewModel__ACTIVATE_LOADOUT;
+    private readonly string _activateAndApplyText = Language.ApplyControlViewModel__ACTIVATE_AND_APPLY;
+    private readonly string _applyText = Language.ApplyControlViewModel__APPLY;
+    
 
 
     private readonly ReactiveCommand<System.Reactive.Unit, System.Reactive.Unit> _applyReactiveCommand;
@@ -31,6 +36,8 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
     [Reactive] public bool CanApply { get; private set; }
 
     [Reactive] public bool IsApplying { get; private set; }
+    
+    [Reactive] public string ApplyButtonText { get; private set; } = Language.ApplyControlViewModel__APPLY;
 
     public ILaunchButtonViewModel LaunchButtonViewModel { get; }
 
@@ -91,6 +98,13 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
             
             _applyReactiveCommand.IsExecuting
                 .Subscribe(isExecuting => IsApplying = isExecuting)
+                .DisposeWith(disposables);
+            
+            this.WhenAnyValue(vm => vm.LastAppliedLoadoutId,
+                    vm => vm.NewestLoadout)
+                .Select(_ => !LastAppliedLoadoutId.Equals(_loadoutId) ? _activateAndApplyText : _applyText)
+                .OnUI()
+                .BindToVM(this, vm => vm.ApplyButtonText)
                 .DisposeWith(disposables);
         });
     }
