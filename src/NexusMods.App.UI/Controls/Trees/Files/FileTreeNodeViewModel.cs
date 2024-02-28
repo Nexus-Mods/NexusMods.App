@@ -14,6 +14,7 @@ public class FileTreeNodeViewModel<TValue> : AViewModel<IFileTreeNodeViewModel>,
     
     public bool IsFile => _item.Item.IsFile;
     public string Name => _item.Item.Segment;
+    public long FileSize => 999999; // TEMP
     public GamePath FullPath => _item.GamePath();
     public GamePath ParentPath => _item.Parent()!.GamePath();
 

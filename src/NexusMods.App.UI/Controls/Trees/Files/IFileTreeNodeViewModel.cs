@@ -17,6 +17,11 @@ public interface IFileTreeNodeViewModel : IViewModelInterface
     string Name { get; }
     
     /// <summary>
+    ///     The size of the file, in bytes.
+    /// </summary>
+    long FileSize { get; }
+    
+    /// <summary>
     ///     The full path to this visible node.
     /// </summary>
     GamePath FullPath { get; }

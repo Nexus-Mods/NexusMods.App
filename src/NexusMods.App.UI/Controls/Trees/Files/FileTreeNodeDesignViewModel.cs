@@ -15,6 +15,7 @@ public class FileTreeNodeDesignViewModel : AViewModel<IFileTreeNodeViewModel>, I
     
     public bool IsFile { get; }
     public string Name { get; }
+    public long FileSize { get; }
     public GamePath FullPath { get; set; } = default;
     public GamePath ParentPath { get; set; } = default;
     public ReactiveCommand<Unit, Unit> ViewCommand { get; } = ReactiveCommand.Create(() => {});

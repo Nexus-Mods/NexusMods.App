@@ -14,7 +14,7 @@
         <!-- This ViewModel has a bool switch 'showMultipleRoots' to toggle a view which also has Saves -->
         <viewModFiles:ViewModFilesDesignViewModel />
     </Design.DataContext>
-    <TreeDataGrid Classes="TreeNoHeader TreeWhiteCaret"
+    <TreeDataGrid Classes="TreeWhiteCaret"
                   ShowColumnHeaders="True"
                   x:Name="ModFilesTreeDataGrid" />
 </reactiveUi:ReactiveUserControl>

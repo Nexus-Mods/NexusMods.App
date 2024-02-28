@@ -20,7 +20,7 @@ public static class TreeDataGridHelpers
     /// <typeparam name="TNode">Type of node which derives from <see cref="TreeNodeVM{TItem,TKey}"/></typeparam>
     /// <typeparam name="TItem">Type of item which is stored inside <typeparamref name="TNode"/>'s value</typeparam>
     /// <typeparam name="TKey">Type of item which is stored inside <typeparamref name="TNode"/>'s key</typeparam>
-    public static HierarchicalTreeDataGridSource<TNode> CreateTreeSource<TNode, TItem, TKey>(
+    public static HierarchicalTreeDataGridSource<TNode> CreateTreeSourceWithSingleCustomColumn<TNode, TItem, TKey>(
         ReadOnlyObservableCollection<TNode> treeRoots) 
         where TNode : TreeNodeVM<TItem, TKey>
         where TItem : class, IViewModelInterface
