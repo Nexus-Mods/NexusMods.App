@@ -32,6 +32,8 @@ internal sealed class DiagnosticManager : IDiagnosticManager
     private readonly CompositeDisposable _compositeDisposable;
     private readonly SourceList<Diagnostic> _diagnosticCache = new();
 
+    private readonly CancellationTokenSource _cts = new();
+
     /// <summary>
     /// Constructor.
     /// </summary>
@@ -41,7 +43,8 @@ internal sealed class DiagnosticManager : IDiagnosticManager
         IOptionsMonitor<DiagnosticOptions> optionsMonitor,
         IEnumerable<ILoadoutDiagnosticEmitter> loadoutDiagnosticEmitters,
         IEnumerable<IModDiagnosticEmitter> modDiagnosticEmitters,
-        IEnumerable<IModFileDiagnosticEmitter> modFileDiagnosticEmitters)
+        IEnumerable<IModFileDiagnosticEmitter> modFileDiagnosticEmitters,
+        ILoadoutRegistry loadoutRegistry)
     {
         _logger = logger;
         _dataStore = dataStore;
@@ -52,6 +55,32 @@ internal sealed class DiagnosticManager : IDiagnosticManager
         _modFileDiagnosticEmitters = modFileDiagnosticEmitters.ToArray();
 
         _compositeDisposable = new CompositeDisposable();
+        _compositeDisposable.Add(Disposable.Create(_cts, cts =>
+        {
+            try
+            {
+                cts.Cancel(throwOnFirstException: false);
+                cts.Dispose();
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
+        }));
+
+        var loadoutChangesDisposable = loadoutRegistry.LoadoutChanges
+            .EnsureUniqueKeys()
+            .Transform(id => loadoutRegistry.GetLoadout(id)!)
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+            .Filter(loadout => loadout is not null)
+            .ForEachChange(change =>
+            {
+                if (_cts.IsCancellationRequested) return;
+                Task.Run(() => OnLoadoutChanged(change.Current), _cts.Token);
+            })
+            .Subscribe();
+
+        _compositeDisposable.Add(loadoutChangesDisposable);
 
         // Listen to option changes and update the currently existing diagnostics.
         var disposable = _optionsMonitor.OnChange(newOptions =>
@@ -93,10 +122,22 @@ internal sealed class DiagnosticManager : IDiagnosticManager
         );
 
         var newDiagnostics = await _loadoutDiagnosticEmitters
-            .SelectAsync(async emitter => await emitter.Diagnose(loadout).ToArrayAsync())
+            .SelectAsync(async emitter =>
+            {
+                try
+                {
+                    return await emitter.Diagnose(loadout).ToArrayAsync();
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e, "Exception running emitter {Emitter}", emitter.GetType());
+                }
+
+                return Array.Empty<Diagnostic>();
+            })
             .ToArrayAsync();
 
-        AddDiagnostics(newDiagnostics.SelectMany(vals => vals));
+        AddDiagnostics(newDiagnostics.SelectMany(x => x));
     }
 
     internal void RefreshModDiagnostics(Loadout loadout)
