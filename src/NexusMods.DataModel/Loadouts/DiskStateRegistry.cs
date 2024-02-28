@@ -87,6 +87,7 @@ public class DiskStateRegistry : IDiskStateRegistry
 
         var diskStateTree = GetState(gameInstallation);
         if (diskStateTree is null) return null;
+        Debug.Assert(!diskStateTree.LoadoutRevision.Equals(IdEmpty.Empty), "diskState.LoadoutRevision must be set");
 
         _lastAppliedRevisionDictionary[gameInstallation] = diskStateTree.LoadoutRevision;
         return diskStateTree.LoadoutRevision;
