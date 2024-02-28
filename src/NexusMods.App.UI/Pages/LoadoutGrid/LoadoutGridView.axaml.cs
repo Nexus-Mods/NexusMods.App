@@ -16,7 +16,6 @@ public partial class LoadoutGridView : ReactiveUserControl<ILoadoutGridViewModel
         InitializeComponent();
         this.WhenActivated(d =>
         {
-
             this.WhenAnyValue(view => view.ViewModel!.Mods)
                 .BindToUi(this, view => view.ModsDataGrid.ItemsSource)
                 .DisposeWith(d);
@@ -29,6 +28,9 @@ public partial class LoadoutGridView : ReactiveUserControl<ILoadoutGridViewModel
 
             DeleteModsButton.Command =
                 ReactiveCommand.CreateFromTask(DeleteSelectedMods);
+            
+            ViewModFilesButton.Command =
+                ReactiveCommand.Create(ViewModContents);
 
             this.WhenAnyValue(view => view.ViewModel!.Columns)
                 .GenerateColumns(ModsDataGrid)
@@ -78,6 +80,33 @@ public partial class LoadoutGridView : ReactiveUserControl<ILoadoutGridViewModel
             toDelete.Add(modCursor.ModId);
         }
         await ViewModel!.DeleteMods(toDelete, "Deleted by user via UI.");
+    }
+    
+    private void ViewModContents()
+    {
+        const bool viewMultiple = false;
+        if (ModsDataGrid.SelectedIndex == -1)
+            return;
+
+#pragma warning disable CS0162 // Unreachable code detected
+        if (!viewMultiple)
+        {
+            ViewModel!.ViewModContents(
+                [((ModCursor)ModsDataGrid.SelectedItem).ModId]
+            );
+        }
+        else
+        {
+            var toView = new List<ModId>();
+            foreach (var row in ModsDataGrid.SelectedItems)
+            {
+                if (row is not ModCursor modCursor) continue;
+                toView.Add(modCursor.ModId);
+            }
+
+            ViewModel!.ViewModContents(toView);
+        }
+#pragma warning restore CS0162 // Unreachable code detected
     }
 }
 

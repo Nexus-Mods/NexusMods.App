@@ -261,4 +261,13 @@
 	<data name="SpineHomeButton_ToolTip_Home" xml:space="preserve">
 		<value>Strona główna</value>
 	</data>
+    <data name="LoadoutGridView__View_Files" xml:space="preserve">
+        <value>Zobacz Pliki Moda</value>
+    </data>
+    <data name="FileTreeNodeView__View" xml:space="preserve">
+        <value>Zobacz</value>
+    </data>
+    <data name="ViewModInfoPage_TItle" xml:space="preserve">
+        <value>Zobacz Informacje Moda</value>
+    </data>
 </root>

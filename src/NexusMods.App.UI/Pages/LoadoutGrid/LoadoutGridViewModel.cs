@@ -3,6 +3,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Controls;
 using DynamicData;
+using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -18,6 +19,8 @@ using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModEnabled;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModInstalled;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModName;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModVersion;
+using NexusMods.App.UI.Pages.ViewModInfo;
+using NexusMods.App.UI.Pages.ViewModInfo.Types;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Extensions.DynamicData;
@@ -194,5 +197,26 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
             return loadout with { Mods = mods };
         });
         return Task.CompletedTask;
+    }
+
+    public void ViewModContents(List<ModId> toView)
+    {
+        // Or if desired, we can desire to show a merged view, that's supported by
+        // underlying ViewModFilesView too
+        foreach (var modId in toView)
+        {
+            var pageData = new PageData()
+            {
+                Context = new ViewModInfoPageContext()
+                {
+                    LoadoutId = LoadoutId,
+                    ModId = modId,
+                    Page = CurrentViewModInfoPage.Files,
+                },
+                FactoryId = ViewModInfoPageFactory.StaticId,
+            };
+            var behaviour = new OpenPageBehavior(new OpenPageBehavior.NewPanel(Optional<WorkspaceGridState>.None));
+            GetWorkspaceController().OpenPage(WorkspaceId, pageData, behaviour);
+        }
     }
 }

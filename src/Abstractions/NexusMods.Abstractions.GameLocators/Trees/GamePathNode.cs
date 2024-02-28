@@ -53,7 +53,7 @@ public struct GamePathNode<TValue> :
                 Segment = RelativePath.Empty,
                 Parent = null,
                 IsFile = false,
-                Id = LocationId.Unknown!,
+                Id = items.FirstOrDefault().Key.LocationId!,
                 Value = default!
             }
         };

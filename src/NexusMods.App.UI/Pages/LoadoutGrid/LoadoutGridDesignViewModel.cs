@@ -79,6 +79,11 @@ public class LoadoutGridDesignViewModel : APageViewModel<ILoadoutGridViewModel>,
         return Task.CompletedTask;
     }
 
+    public void ViewModContents(List<ModId> toView)
+    {
+        throw new NotImplementedException();
+    }
+
     public LoadoutGridDesignViewModel() : base(DesignWindowManager.Instance)
     {
         _mods = new SourceCache<ModCursor, ModId>(x => x.ModId);

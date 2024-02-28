@@ -372,6 +372,32 @@
         <Compile Update="WorkspaceAttachments\AttachmentsFactories\LoadoutAttachmentsFactory.cs">
           <DependentUpon>IWorkspaceAttachmentsFactory.cs</DependentUpon>
         </Compile>
+        <Compile Update="Controls\Trees\Files\FileTreeNodeViewModel.cs">
+          <DependentUpon>IFileTreeNodeViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\Trees\Files\FileTreeNodeDesignViewModel.cs">
+          <DependentUpon>IFileTreeNodeViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\ModInfo\ViewModFiles\ViewModFilesView.axaml.cs">
+          <DependentUpon>ViewModFilesView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Controls\ModInfo\ViewModFiles\ViewModFilesDesignViewModel.cs">
+          <DependentUpon>IViewModFilesViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\ModInfo\ViewModFiles\ViewModFilesViewModel.cs">
+          <DependentUpon>IViewModFilesViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\ViewModInfo\ViewModInfoView.axaml.cs">
+          <DependentUpon>ViewModFilesView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Pages\ViewModInfo\ViewModInfoDesignViewModel.cs">
+          <DependentUpon>IViewModInfoViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\ViewModInfo\ViewModInfoViewModel.cs">
+          <DependentUpon>IViewModInfoViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
@@ -387,10 +413,6 @@
       <UpToDateCheckInput Remove="Controls\Buttons\RoundedButton\RoundedButton.axaml" />
       <UpToDateCheckInput Remove="Controls\Buttons\StandardButtonTheme.axaml" />
       <UpToDateCheckInput Remove="RightContent\Home\HomeView.axaml" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Pages\" />
     </ItemGroup>
 
     <ItemGroup>

@@ -70,6 +70,7 @@
             <icons:Icon Classes="Redo" />
 
             <Svg Classes="AddCircle" />
+            <icons:Icon Classes="View" />
 
         </WrapPanel>
     </Design.PreviewWith>
@@ -301,9 +302,10 @@
         <Setter Property="Value" Value="mdi-redo" />
     </Style>
 
-
-
-
+    <Style Selector="icons|Icon.View">
+        <Setter Property="Value" Value="mdi-eye" />
+    </Style>
+    
     <Style Selector="Svg.AddCircle">
         <Setter Property="Path" Value="avares://NexusMods.App.UI/Assets/Icons/add_circle_24px.svg" />
     </Style>

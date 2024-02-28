@@ -31,6 +31,14 @@ public abstract class AGamePathNodeTree<TValue>
     {
         return _trees.Values.SelectMany(e => e.GetFiles());
     }
+    
+    /// <summary>
+    /// Enumerates all the descendants in the tree. (files and directories)
+    /// </summary>
+    public IEnumerable<KeyedBox<RelativePath, GamePathNode<TValue>>> GetAllDescendents()
+    {
+        return _trees.Values.SelectMany(e => e.GetChildrenRecursive());
+    }
 
     /// <summary>
     /// Returns all the files in a specific location

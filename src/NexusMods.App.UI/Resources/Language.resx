@@ -279,4 +279,13 @@
     <data name="InProgressDownloadsPage_Title" xml:space="preserve">
         <value>Downloads</value>
     </data>
+    <data name="LoadoutGridView__View_Files" xml:space="preserve">
+        <value>View Mod Files</value>
+    </data>
+    <data name="FileTreeNodeView__View" xml:space="preserve">
+        <value>View</value>
+    </data>
+    <data name="ViewModInfoPage_TItle" xml:space="preserve">
+        <value>View Mod Info</value>
+    </data>
 </root>

@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.Abstractions.Serialization.Json;
 using NexusMods.App.UI.Controls;
@@ -12,11 +13,13 @@ using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadStatus;
 using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadVersion;
 using NexusMods.App.UI.Controls.FoundGames;
 using NexusMods.App.UI.Controls.GameWidget;
+using NexusMods.App.UI.Controls.ModInfo.ViewModFiles;
 using NexusMods.App.UI.Controls.Spine;
 using NexusMods.App.UI.Controls.Spine.Buttons.Download;
 using NexusMods.App.UI.Controls.Spine.Buttons.Icon;
 using NexusMods.App.UI.Controls.Spine.Buttons.Image;
 using NexusMods.App.UI.Controls.TopBar;
+using NexusMods.App.UI.Controls.Trees.Files;
 using NexusMods.App.UI.LeftMenu;
 using NexusMods.App.UI.LeftMenu.Downloads;
 using NexusMods.App.UI.LeftMenu.Home;
@@ -36,6 +39,7 @@ using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModInstalled;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModName;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModVersion;
 using NexusMods.App.UI.Pages.MyGames;
+using NexusMods.App.UI.Pages.ViewModInfo;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceAttachments;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -120,6 +124,9 @@ public static class Services
             .AddViewModel<MetricsOptInViewModel, IMetricsOptInViewModel>()
             .AddViewModel<UpdaterViewModel, IUpdaterViewModel>()
             .AddViewModel<LoadoutLeftMenuViewModel, ILoadoutLeftMenuViewModel>()
+            .AddViewModel<ViewModFilesViewModel, IViewModFilesViewModel>()
+            .AddViewModel<ViewModInfoViewModel, IViewModInfoViewModel>()
+            .AddViewModel<FileTreeNodeViewModel<ModFilePair>, IFileTreeNodeViewModel>()
 
             // Views
             .AddView<DevelopmentBuildBannerView, IDevelopmentBuildBannerViewModel>()
@@ -154,6 +161,9 @@ public static class Services
             .AddView<MessageBoxOkCancelView, IMessageBoxOkCancelViewModel>()
             .AddView<UpdaterView, IUpdaterViewModel>()
             .AddView<LoadoutLeftMenuView, ILoadoutLeftMenuViewModel>()
+            .AddView<ViewModFilesView, IViewModFilesViewModel>()
+            .AddView<ViewModInfoView, IViewModInfoViewModel>()
+            .AddView<FileTreeNodeView, IFileTreeNodeViewModel>()
 
             // workspace system
             .AddSingleton<IWindowManager, WindowManager>()
@@ -178,6 +188,7 @@ public static class Services
             .AddSingleton<IPageFactory, MyGamesPageFactory>()
             .AddSingleton<IPageFactory, LoadoutGridPageFactory>()
             .AddSingleton<IPageFactory, InProgressPageFactory>()
+            .AddSingleton<IPageFactory, ViewModInfoPageFactory>()
 
             // LeftMenu factories
             .AddSingleton<ILeftMenuFactory, DownloadsLeftMenuFactory>()
