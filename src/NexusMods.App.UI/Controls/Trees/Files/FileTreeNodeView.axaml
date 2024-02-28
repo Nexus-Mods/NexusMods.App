@@ -8,18 +8,23 @@
                                 xmlns:ui="clr-namespace:NexusMods.App.UI"
                                 xmlns:files="clr-namespace:NexusMods.App.UI.Controls.Trees.Files"
                                 xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
+                                xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon"
                                 mc:Ignorable="d" d:DesignWidth="710" d:DesignHeight="44"
                                 x:Class="NexusMods.App.UI.Controls.Trees.Files.FileTreeNodeView"
                                 d:DataContext="{x:Static files:FileTreeNodeDesignViewModel.SampleFolder}">
+    <Design.DataContext>
+        <!-- This ViewModel has a bool switch 'showMultipleRoots' to toggle a view which also has Saves -->
+        <files:FileTreeNodeDesignViewModel />
+    </Design.DataContext>
     <Grid ColumnDefinitions="*, Auto" Margin="0,5,0,5">
         <Grid.Styles>
-            <Style Selector="icons|Icon.FileTypeIcon">
-                <Setter Property="FontSize" Value="18" />
+            <Style Selector="unifiedIcon|UnifiedIcon.FileTypeIcon">
+                <Setter Property="Size" Value="18" />
                 <Setter Property="Margin" Value="8, 0, 0, 0" />
             </Style>
 
-            <Style Selector="icons|Icon.View">
-                <Setter Property="FontSize" Value="20" />
+            <Style Selector="unifiedIcon|UnifiedIcon.View">
+                <Setter Property="Size" Value="20" />
             </Style>
 
             <Style Selector="Button.RightElements">
@@ -27,17 +32,17 @@
             </Style>
 
             <Style Selector="TextBlock#FileNameTextBlock">
-                <Setter Property="Margin" Value="8,0,8,0" />
+                <Setter Property="Margin" Value="4,0,8,0" />
             </Style>
         </Grid.Styles>
 
         <!-- Left Elements -->
         <Grid Grid.Column="0" ClipToBounds="True" ColumnDefinitions="Auto,Auto" Name="FileElementGrid">
-
+            
             <!-- File / Directory Icon -->
-            <icons:Icon Grid.Column="0" Classes="File FileTypeIcon" IsVisible="False" x:Name="FileEntryIcon" />
-            <icons:Icon Grid.Column="0" Classes="FolderOutline FileTypeIcon" IsVisible="False"
-                        x:Name="FolderEntryIcon" />
+            <unifiedIcon:UnifiedIcon Grid.Column="0" Classes="File FileTypeIcon" IsVisible="False" x:Name="FileEntryIcon" />
+            <unifiedIcon:UnifiedIcon Grid.Column="0" Classes="FolderOutline FileTypeIcon" IsVisible="False" x:Name="FolderEntryIcon" />
+            <unifiedIcon:UnifiedIcon Grid.Column="0" Classes="FolderOpenOutline FileTypeIcon" IsVisible="False" x:Name="FolderOpenEntryIcon" />
 
             <!-- File Name -->
             <TextBlock Grid.Column="1" Classes="BodyMDNormal" VerticalAlignment="Center"
@@ -49,12 +54,12 @@
         <!-- Right Elements -->
         <StackPanel Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal"
                     x:Name="EntryRightElementsStackPanel">
-
+            
             <!-- View Button -->
             <Button Classes="Rounded Primary RightElements" HorizontalAlignment="Right" IsVisible="True"
                     x:Name="InstallRoundedButton">
                 <StackPanel Orientation="Horizontal">
-                    <icons:Icon Classes="View" x:Name="ViewIcon" VerticalAlignment="Center" />
+                    <unifiedIcon:UnifiedIcon Classes="Eye" x:Name="ViewIcon" VerticalAlignment="Center" />
                     <TextBlock Text="{x:Static resources:Language.FileTreeNodeView__View}" x:Name="ViewTextBlock" VerticalAlignment="Center" />
                 </StackPanel>
             </Button>

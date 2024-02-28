@@ -7,10 +7,10 @@ namespace NexusMods.App.UI.Controls.Trees.Files;
 public interface IFileTreeNodeViewModel : IViewModelInterface
 {
     /// <summary>
-    ///     Returns true if this is a folder.
+    ///     The icon that's used to display this specific node.
     /// </summary>
-    bool IsFile { get; }
-
+    FileTreeNodeIconType Icon { get; }
+    
     /// <summary>
     ///     Name of the file or folder segment.
     /// </summary>
@@ -35,4 +35,22 @@ public interface IFileTreeNodeViewModel : IViewModelInterface
     ///     The command used to begin 'viewing' a file.
     /// </summary>
     ReactiveCommand<Unit, Unit> ViewCommand { get; }
+}
+
+public enum FileTreeNodeIconType
+{
+    /// <summary>
+    ///     Shows a regular 'file' icon.
+    /// </summary>
+    File,
+    
+    /// <summary>
+    ///     Show a 'closed folder' icon.
+    /// </summary>
+    ClosedFolder,
+    
+    /// <summary>
+    ///     Show an 'open folder' icon.
+    /// </summary>
+    OpenFolder,
 }

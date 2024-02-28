@@ -1,3 +1,4 @@
+using System.Reactive.Disposables;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 
@@ -10,10 +11,16 @@ public partial class FileTreeNodeView : ReactiveUserControl<IFileTreeNodeViewMod
         InitializeComponent();
         
         // We don't need to subscribe in 'WhenActivated', because the state does not mutate.
-        this.WhenActivated(_ =>
+        this.WhenActivated(d =>
             {
-                FileEntryIcon.IsVisible = ViewModel!.IsFile;
-                FolderEntryIcon.IsVisible = !ViewModel!.IsFile;
+                ViewModel.WhenAnyValue(vm => vm.Icon)
+                    .Subscribe(iconType =>
+                    {
+                        FileEntryIcon.IsVisible = iconType == FileTreeNodeIconType.File;
+                        FolderEntryIcon.IsVisible = iconType == FileTreeNodeIconType.ClosedFolder;
+                        FolderOpenEntryIcon.IsVisible = iconType == FileTreeNodeIconType.OpenFolder;
+                    })
+                    .DisposeWith(d);
                 FileNameTextBlock.Text = ViewModel!.Name;
             }
         );

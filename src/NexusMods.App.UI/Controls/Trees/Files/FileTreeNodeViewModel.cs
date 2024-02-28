@@ -5,6 +5,7 @@ using NexusMods.Paths;
 using NexusMods.Paths.Trees;
 using NexusMods.Paths.Trees.Traits;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Controls.Trees.Files;
 
@@ -12,7 +13,8 @@ public class FileTreeNodeViewModel<TValue> : AViewModel<IFileTreeNodeViewModel>,
 {
     private KeyedBox<RelativePath, GamePathNode<TValue>> _item;
     
-    public bool IsFile => _item.Item.IsFile;
+    [Reactive]
+    public FileTreeNodeIconType Icon { get; private set; }
     public string Name => _item.Item.Segment;
     public long FileSize => 999999; // TEMP
     public GamePath FullPath => _item.GamePath();
@@ -20,5 +22,9 @@ public class FileTreeNodeViewModel<TValue> : AViewModel<IFileTreeNodeViewModel>,
 
     public ReactiveCommand<Unit, Unit> ViewCommand { get; } = ReactiveCommand.Create(() => {});
 
-    public FileTreeNodeViewModel(KeyedBox<RelativePath, GamePathNode<TValue>> item) => _item = item;
+    public FileTreeNodeViewModel(KeyedBox<RelativePath, GamePathNode<TValue>> item)
+    {
+        _item = item;
+        Icon = _item.Item.IsFile ? FileTreeNodeIconType.OpenFolder : FileTreeNodeIconType.ClosedFolder;
+    }
 }
