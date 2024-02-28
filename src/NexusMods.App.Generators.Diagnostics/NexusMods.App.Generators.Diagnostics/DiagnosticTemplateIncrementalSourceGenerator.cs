@@ -113,6 +113,9 @@ public class DiagnosticTemplateIncrementalSourceGenerator : IIncrementalGenerato
                 if (args[0].Expression is LiteralExpressionSyntax literalSource)
                 {
                     cw.Append($"source: \"{literalSource.Token.ValueText}\",");
+                } else if (args[0].Expression is IdentifierNameSyntax identifierNameSyntax)
+                {
+                    cw.Append($"source: {identifierNameSyntax.Identifier.Value},");
                 }
 
                 if (args[1].Expression is LiteralExpressionSyntax literalNumber)

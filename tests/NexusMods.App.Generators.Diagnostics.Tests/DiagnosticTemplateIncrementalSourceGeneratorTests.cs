@@ -15,10 +15,12 @@ namespace TestNamespace;
 
 internal partial class MyClass
 {
+    private const string Source = ""Example"";
+
     [DiagnosticTemplate]
     private static readonly IDiagnosticTemplate Diagnostic1Template = DiagnosticTemplateBuilder
         .Start()
-        .WithId(new DiagnosticId(source: ""Example"", number: 1))
+        .WithId(new DiagnosticId(source: Source, number: 1))
         .WithSeverity(DiagnosticSeverity.Warning)
         .WithSummary(""Mod '{ModA}' conflicts with '{ModB}' because it's missing '{Something}'!"")
         .WithoutDetails()

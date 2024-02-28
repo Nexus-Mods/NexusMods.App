@@ -32,6 +32,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+        with:
+          submodules: "recursive"
 
       - name: Setup .NET Core SDK 7.0.x
         uses: actions/setup-dotnet@v3

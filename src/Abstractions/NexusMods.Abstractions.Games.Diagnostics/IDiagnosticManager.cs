@@ -1,9 +1,8 @@
 using DynamicData;
 using JetBrains.Annotations;
-using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Loadouts;
 
-namespace NexusMods.DataModel.Diagnostics;
+namespace NexusMods.Abstractions.Diagnostics;
 
 /// <summary>
 /// A diagnostic manager, which keeps track of all current diagnostics and refreshes them if necessary.

@@ -211,6 +211,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.App.Generators.Di
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.App.Generators.Diagnostics.Tests", "tests\NexusMods.App.Generators.Diagnostics.Tests\NexusMods.App.Generators.Diagnostics.Tests.csproj", "{D497C3DF-C84C-460A-88B9-DD3D129387CC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.StardewValley.SMAPI", "src\Games\NexusMods.Games.StardewValley.SMAPI\NexusMods.Games.StardewValley.SMAPI.csproj", "{674E8B0A-8F77-4DDE-BFCD-618F030DE01B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -545,6 +547,10 @@ Global
 		{D497C3DF-C84C-460A-88B9-DD3D129387CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D497C3DF-C84C-460A-88B9-DD3D129387CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D497C3DF-C84C-460A-88B9-DD3D129387CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{674E8B0A-8F77-4DDE-BFCD-618F030DE01B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{674E8B0A-8F77-4DDE-BFCD-618F030DE01B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{674E8B0A-8F77-4DDE-BFCD-618F030DE01B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{674E8B0A-8F77-4DDE-BFCD-618F030DE01B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -641,6 +647,7 @@ Global
 		{76F37CC8-994C-4A43-AB99-C1618FF83272} = {E7BAE287-D505-4D6D-A090-665A64309B2D}
 		{6AE7F1F0-3E5A-42D9-BFF9-2B8F76410F4C} = {E7BAE287-D505-4D6D-A090-665A64309B2D}
 		{D497C3DF-C84C-460A-88B9-DD3D129387CC} = {52AF9D62-7D5B-4AD0-BA12-86F2AA67428B}
+		{674E8B0A-8F77-4DDE-BFCD-618F030DE01B} = {70D38D24-79AE-4600-8E83-17F3C11BA81F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9F9F8352-34DD-42C0-8564-EE9AF34A3501}
