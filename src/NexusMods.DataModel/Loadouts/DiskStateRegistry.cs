@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.IO.Compression;
+using System.Reactive.Subjects;
 using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
@@ -20,6 +21,10 @@ public class DiskStateRegistry : IDiskStateRegistry
     private readonly ILogger<DiskStateRegistry> _logger;
     private readonly IDataStore _dataStore;
     private readonly IDictionary<GameInstallation, IId> _lastAppliedRevisionDictionary = new Dictionary<GameInstallation, IId>();
+    private readonly Subject<(GameInstallation gameInstallation, IId loadoutRevision)> _lastAppliedRevisionSubject = new();
+
+    /// <inheritdoc />
+    public IObservable<(GameInstallation gameInstallation, IId loadoutRevision)> LastAppliedRevisionObservable => _lastAppliedRevisionSubject;
 
     /// <summary>
     /// DI Constructor
@@ -46,6 +51,7 @@ public class DiskStateRegistry : IDiskStateRegistry
         _dataStore.PutRaw(iid, ms.GetBuffer().AsSpan().SliceFast(0, (int)ms.Length));
         // TODO: this might need to be made thread safe
         _lastAppliedRevisionDictionary[installation] = diskState.LoadoutRevision;
+        _lastAppliedRevisionSubject.OnNext((installation, diskState.LoadoutRevision));
     }
 
     private IId MakeId(GameInstallation installation)
@@ -80,8 +86,9 @@ public class DiskStateRegistry : IDiskStateRegistry
         }
 
         var diskStateTree = GetState(gameInstallation);
-        if (diskStateTree is null) return null; ;
+        if (diskStateTree is null) return null;
 
+        _lastAppliedRevisionDictionary[gameInstallation] = diskStateTree.LoadoutRevision;
         return diskStateTree.LoadoutRevision;
     }
 }

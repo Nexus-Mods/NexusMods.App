@@ -27,4 +27,8 @@ public interface IDiskStateRegistry
     /// <returns></returns>
     IId? GetLastAppliedLoadout(GameInstallation gameInstallation);
     
+    /// <summary>
+    /// Observable of all the last applied revisions for all game installations
+    /// </summary>
+    IObservable<(GameInstallation gameInstallation, IId loadoutRevision)> LastAppliedRevisionObservable { get; }
 }

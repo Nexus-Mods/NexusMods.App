@@ -21,6 +21,12 @@ public interface IApplyService
     /// </summary>
     /// <param name="gameInstallation"></param>
     /// <returns>A tuple of the LoadoutId and loadout revision Id of the last applied state</returns>
-    public (LoadoutId, IId)? GetLastAppliedLoadout(GameInstallation gameInstallation);
+    public IId? GetLastAppliedLoadout(GameInstallation gameInstallation);
     
+    /// <summary>
+    /// Returns an observable of the last applied revisions for a specific game installation
+    /// </summary>
+    /// <param name="gameInstallation"></param>
+    /// <returns></returns>
+    public IObservable<IId> LastAppliedRevisionFor(GameInstallation gameInstallation);    
 }

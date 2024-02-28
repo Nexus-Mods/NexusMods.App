@@ -45,7 +45,9 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
         _gameInstallation = _loadoutRegistry.Get(_loadoutId)?.Installation ??
                             throw new ArgumentException("Loadout not found: " + _loadoutId);
 
-        (_lastAppliedLoadoutId, _lastAppliedRevisionId) = GetLastAppliedLoadout();
+        _lastAppliedRevisionId = _applyService.GetLastAppliedLoadout(_gameInstallation) ??
+                                                         throw new ArgumentException("No last applied loadout found for: " +
+                                                                                 _gameInstallation);
 
         _newestLoadout = _loadoutRegistry.RevisionsAsLoadouts(loadoutId)
             .ToProperty(this, vm => vm.NewestLoadout, scheduler: RxApp.MainThreadScheduler);
@@ -81,15 +83,5 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
                 await _applyService.Apply(_loadoutId);
             }
         );
-    }
-
-    private (LoadoutId, IId) GetLastAppliedLoadout()
-    {
-        // TODO: uncomment this when the method is implemented
-        // return _applyService.GetLastAppliedLoadout(_gameInstallation);
-
-        // Fake implementation returns the current loadout and latest revision
-        var revId = _loadoutRegistry.Get(_loadoutId)!.DataStoreId;
-        return (_loadoutId, revId);
     }
 }
