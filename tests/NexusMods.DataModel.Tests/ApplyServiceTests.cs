@@ -47,7 +47,8 @@ public class ApplyServiceTests : ADataModelTest<ApplyServiceTests>
         gameFolder.Combine("rootFile.txt").FileExists.Should().BeFalse("loadout has not yet been applied");
         
         // Act
-        FileSystem.CreateFile(gameFolder.Combine("newFile.txt"));
+        var newFile = new GamePath(LocationId.Saves, "newfile.dat");
+        await Install.LocationsRegister.GetResolvedPath(newFile).WriteAllBytesAsync(new byte[] { 0x01, 0x02, 0x03 });
         var result = await _applyService.Apply(loadout.LoadoutId);
         
         // Assert
@@ -57,7 +58,7 @@ public class ApplyServiceTests : ADataModelTest<ApplyServiceTests>
         var loadoutResult = _loadoutRegistry.Get(result.LoadoutId);
         loadoutResult.Should().NotBeNull();
         loadoutResult!.Mods.Values.SelectMany(mod=> mod.Files.Values).OfType<IToFile>()
-            .Should().Contain(file => file.To.EndsWith( "newFile.txt"));
+            .Should().Contain(file => file.To.EndsWith( "newFile.dat"));
     }
 
     [Fact]
@@ -67,17 +68,18 @@ public class ApplyServiceTests : ADataModelTest<ApplyServiceTests>
         BaseList.Value.Mods.Should().HaveCount(1);
         var gameFolder = BaseList.Value.Installation.LocationsRegister[LocationId.Game];
         BaseList.Value.Mods.Values.SelectMany(mod=> mod.Files.Values).OfType<IToFile>()
-            .Should().NotContain(file => file.To.EndsWith( "newDiskFile.txt"));
+            .Should().NotContain(file => file.To.EndsWith( "newDiskFile.dat"));
         
         // Act
-        FileSystem.CreateFile(gameFolder.Combine("newDiskFile.txt"));
+        var newFile = new GamePath(LocationId.Saves, "newDiskFile.dat");
+        await Install.LocationsRegister.GetResolvedPath(newFile).WriteAllBytesAsync(new byte[] { 0x01, 0x02, 0x03 });
         var result = await _applyService.Ingest(BaseList.Value.Installation);
         
         // Assert
         var loadout = _loadoutRegistry.Get(result.LoadoutId);
         loadout.Should().NotBeNull();
         loadout!.Mods.Values.SelectMany(mod=> mod.Files.Values).OfType<IToFile>()
-            .Should().Contain(file => file.To.EndsWith( "newDiskFile.txt"));
+            .Should().Contain(file => file.To.EndsWith( "newDiskFile.dat"));
     }
     
     [Fact]
@@ -85,18 +87,19 @@ public class ApplyServiceTests : ADataModelTest<ApplyServiceTests>
     {
         // Arrange
         BaseList.Value.Mods.Should().HaveCount(1);
-        var gameFolder = BaseList.Value.Installation.LocationsRegister[LocationId.Game];
-        gameFolder.Combine("config.ini").FileExists.Should().BeTrue("base game file was not deleted yet");
+        await AddMods(BaseList, Data7ZLzma2, "Mod1");
+        var deletedFile = new GamePath(LocationId.Game, "rootFile.txt");
+        // Apply the loadout to make sure there are no uncommitted revisions
+        await _applyService.Apply(BaseList.Value.LoadoutId);
 
         // Act
-        FileSystem.DeleteFile(gameFolder.Combine("config.ini"));
-        gameFolder.Combine("config.ini").FileExists.Should().BeFalse("File was deleted");
+        Install.LocationsRegister.GetResolvedPath(deletedFile).Delete();
         var result = await _applyService.Ingest(BaseList.Value.Installation);
         
         // Assert
         var loadout = _loadoutRegistry.Get(result.LoadoutId);
         loadout.Should().NotBeNull();
         loadout!.Mods.Values.SelectMany(mod=> mod.Files.Values).OfType<IToFile>()
-            .Should().NotContain(file => file.To.EndsWith( "config.ini"));
+            .Should().NotContain(file => file.To.EndsWith( "rootFile.txt"));
     }
 }
