@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization.DataModel.Ids;
@@ -71,15 +72,19 @@ public class ApplyService : IApplyService
 
             // TODO: Actually do something with the loadoutWithIngest, right now we just ignore it
             var loadoutWithIngest = await lastAppliedLoadout.Ingest();
+            
+            // Rebase unapplied changes on top of ingested changes
+            var mergedLoadout = _loadoutRegistry.Alter(loadout.LoadoutId, $"Rebase unapplied changes on top of ingested changes in loadout: {loadout.Name}",
+                l => l.Installation.GetGame().Synchronizer.MergeLoadouts(loadoutWithIngest, loadout));
 
-            _logger.LogInformation("Applying loadout {LoadoutId} to {GameName} {GameVersion}", loadout.LoadoutId,
-                loadout.Installation.Game.Name, loadout.Installation.Version
+            _logger.LogInformation("Applying loadout {LoadoutId} to {GameName} {GameVersion}", mergedLoadout.LoadoutId,
+                mergedLoadout.Installation.Game.Name, mergedLoadout.Installation.Version
             );
             
-            // TODO: Apply a loadout containing both the ingest and the unapplied changes
-            await loadout.Apply();
+            await mergedLoadout.Apply();
+            return mergedLoadout;
         }
-
+        
         return loadout;
     }
 
