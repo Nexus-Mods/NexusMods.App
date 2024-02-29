@@ -29,7 +29,8 @@
                                 HorizontalAlignment="Center">
                         <unifiedIcon:UnifiedIcon Size="24" Classes="Check" />
                         <TextBlock Classes="TitleSMSemi"
-                                   x:Name="ApplyButtonTextBlock" />
+                                   x:Name="ApplyButtonTextBlock" 
+                                   VerticalAlignment="Center"/>
                     </StackPanel>
                 </Viewbox>
             </Button>
