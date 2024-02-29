@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Globalization;
 using System.Reactive.Disposables;
 using System.Security.Cryptography;
@@ -23,7 +24,9 @@ public partial class ViewModFilesView : ReactiveUserControl<IViewModFilesViewMod
         this.WhenActivated(d =>
         {
             // Unleash the tree!
-            ModFilesTreeDataGrid.Source = CreateTreeSource(ViewModel!.Items);
+            var source = CreateTreeSource(ViewModel!.Items);
+            source.SortBy(source.Columns[0], ListSortDirection.Ascending);
+            ModFilesTreeDataGrid.Source = source;
         });
     }
     
@@ -68,12 +71,22 @@ public partial class ViewModFilesView : ReactiveUserControl<IViewModFilesViewMod
                         width: new GridLength(1, GridUnitType.Star),
                         options: new()
                         {
-                            CompareAscending = (x, y) => string.Compare(x!.Item.Name, y!.Item.Name, StringComparison.OrdinalIgnoreCase),
-                            CompareDescending = (x, y) => string.Compare(y!.Item.Name, x!.Item.Name, StringComparison.OrdinalIgnoreCase),
+                            // Compares if folder first, such that folders show first, then by file name.
+                            CompareAscending = (x, y) => 
+                            {
+                                var folderComparison = x!.Item.IsFile.CompareTo(y!.Item.IsFile); 
+                                return folderComparison != 0 ? folderComparison : string.Compare(x!.Item.Name, y!.Item.Name, StringComparison.OrdinalIgnoreCase);
+                            },
+
+                            CompareDescending = (x, y) => 
+                            {
+                                var folderComparison = x!.Item.IsFile.CompareTo(y!.Item.IsFile); 
+                                return folderComparison != 0 ? folderComparison : string.Compare(y!.Item.Name, x!.Item.Name, StringComparison.OrdinalIgnoreCase);
+                            },
                         }
                     ),
                     node => node.Children,
-                    null,  
+                    null,
                     node => node.IsExpanded),
                 
                 new TextColumn<ModFileNode,string?>(
@@ -81,8 +94,18 @@ public partial class ViewModFilesView : ReactiveUserControl<IViewModFilesViewMod
                     x => ByteSize.FromBytes(x.Item.FileSize).ToString(),
                     options: new()
                     {
-                        CompareAscending = (x, y) => x!.Item.FileSize.CompareTo(y!.Item.FileSize),
-                        CompareDescending = (x, y) => y!.Item.FileSize.CompareTo(x!.Item.FileSize),
+                        // Compares if folder first, such that folders show first, then by file name.
+                        CompareAscending = (x, y) => 
+                        {
+                            var folderComparison = x!.Item.IsFile.CompareTo(y!.Item.IsFile);
+                            return folderComparison != 0 ? folderComparison : x!.Item.FileSize.CompareTo(y!.Item.FileSize);
+                        },
+
+                        CompareDescending = (x, y) => 
+                        {
+                            var folderComparison = x!.Item.IsFile.CompareTo(y!.Item.IsFile);  
+                            return folderComparison != 0 ? folderComparison : y!.Item.FileSize.CompareTo(x!.Item.FileSize);
+                        },
                     }
                 ),
             }

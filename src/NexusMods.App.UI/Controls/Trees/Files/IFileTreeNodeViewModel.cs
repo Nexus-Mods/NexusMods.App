@@ -1,6 +1,4 @@
-using System.Reactive;
 using NexusMods.Abstractions.GameLocators;
-using ReactiveUI;
 
 namespace NexusMods.App.UI.Controls.Trees.Files;
 
