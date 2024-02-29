@@ -27,6 +27,10 @@ public partial class ViewModFilesView : ReactiveUserControl<IViewModFilesViewMod
             var source = CreateTreeSource(ViewModel!.Items);
             source.SortBy(source.Columns[0], ListSortDirection.Ascending);
             ModFilesTreeDataGrid.Source = source;
+            
+            // Hide Stack Panel
+            LocationStackPanel.IsVisible = !ViewModel.HasMultipleRoots;
+            LocationText.Text = ViewModel.PrimaryRootLocation;
         });
     }
     
@@ -106,7 +110,10 @@ public partial class ViewModFilesView : ReactiveUserControl<IViewModFilesViewMod
                             var folderComparison = x!.Item.IsFile.CompareTo(y!.Item.IsFile);  
                             return folderComparison != 0 ? folderComparison : y!.Item.FileSize.CompareTo(x!.Item.FileSize);
                         },
-                    }
+                    },
+                    // HACK(sewer): If I don't overwrite this, the column may be zero sized if put into certain containers, e.g. StackPanel
+                    //              Since I need a min size anyway, this isn't a bad way to set it.
+                    width:new GridLength(100)
                 ),
             }
         };

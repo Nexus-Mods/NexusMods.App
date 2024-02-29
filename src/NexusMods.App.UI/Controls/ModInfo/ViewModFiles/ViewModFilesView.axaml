@@ -9,13 +9,24 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:viewModFiles="clr-namespace:NexusMods.App.UI.Controls.ModInfo.ViewModFiles">
+    xmlns:viewModFiles="clr-namespace:NexusMods.App.UI.Controls.ModInfo.ViewModFiles"
+    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources">
     <Design.DataContext>
         <!-- This ViewModel has a bool switch 'showMultipleRoots' to toggle a view which also has Saves -->
         <viewModFiles:ViewModFilesDesignViewModel />
     </Design.DataContext>
-    <TreeDataGrid Classes="TreeWhiteCaret"
-                  ShowColumnHeaders="True"
-                  x:Name="ModFilesTreeDataGrid" />
+    <StackPanel Orientation="Vertical">
+        <StackPanel Orientation="Horizontal" IsVisible="True" Name="LocationStackPanel">
+            <TextBlock Text="{x:Static resources:Language.ViewModFilesView_Location}"
+                       Margin="4,0,0,0"/>
+
+            <TextBlock Text="SAMPLE LOCATION" Name="LocationText"
+                       Margin="8,0,0,0"/>
+        </StackPanel>
+        
+        <TreeDataGrid Classes="TreeWhiteCaret"
+                      ShowColumnHeaders="True"
+                      x:Name="ModFilesTreeDataGrid" />
+    </StackPanel>
 </reactiveUi:ReactiveUserControl>
 

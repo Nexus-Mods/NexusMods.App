@@ -16,11 +16,18 @@ public class ViewModFilesDesignViewModel : AViewModel<IViewModFilesViewModel>,
 
     public ReadOnlyObservableCollection<ModFileNode> Items => _items;
 
+    private bool _hasMultipleRoots;
+    
+    public bool HasMultipleRoots => _hasMultipleRoots;
+
+    private string? _primaryRootLocation;
+    public string? PrimaryRootLocation => _primaryRootLocation;
+    
     public ViewModFilesDesignViewModel()
     {
         var cache = new SourceCache<IFileTreeNodeViewModel, GamePath>(x => x.FullPath);
         var locations = new Dictionary<LocationId, string>();
-        const bool showMultipleRoots = false;
+        const bool showMultipleRoots = false; // adds 'saves' folder.
         const bool alwaysRootFolders = false; // always make 'saves', 'game' root nodes
         
         // ReSharper disable once RedundantSuppressNullableWarningExpression
@@ -99,7 +106,7 @@ public class ViewModFilesDesignViewModel : AViewModel<IViewModFilesViewModel>,
 #pragma warning restore CS0162 // Unreachable code detected
 
         // Assign
-        ViewModFilesViewModel.BindItems(cache, locations, alwaysRootFolders, out _items);
+        ViewModFilesViewModel.BindItems(cache, locations, alwaysRootFolders, out _items, out _hasMultipleRoots, out _primaryRootLocation);
     }
 
     public void Initialize(LoadoutId loadoutId, List<ModId> contextModIds)

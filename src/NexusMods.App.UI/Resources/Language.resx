@@ -288,4 +288,7 @@
     <data name="ViewModInfoPage_TItle" xml:space="preserve">
         <value>View Mod Info</value>
     </data>
+    <data name="ViewModFilesView_Location" xml:space="preserve">
+        <value>LOCATION:</value>
+    </data>
 </root>

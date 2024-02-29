@@ -12,10 +12,16 @@ namespace NexusMods.App.UI.Controls.ModInfo.ViewModFiles;
 public class ViewModFilesViewModel : AViewModel<IViewModFilesViewModel>, IViewModFilesViewModel
 {
     private readonly ILoadoutRegistry _registry;
-    private SourceCache<IFileTreeNodeViewModel, GamePath> _sourceCache;
+    private readonly SourceCache<IFileTreeNodeViewModel, GamePath> _sourceCache;
     private ReadOnlyObservableCollection<ModFileNode> _items;
 
     public ReadOnlyObservableCollection<ModFileNode> Items => _items;
+
+    private bool _hasMultipleRoots;
+    public bool HasMultipleRoots => _hasMultipleRoots;
+
+    private string? _primaryRootLocation;
+    public string? PrimaryRootLocation => _primaryRootLocation;
 
     public ViewModFilesViewModel(ILoadoutRegistry registry)
     {
@@ -69,21 +75,35 @@ public class ViewModFilesViewModel : AViewModel<IViewModFilesViewModel>, IViewMo
             namedLocations.Add(location, register[location].ToString());
         
         // Flatten them with DynamicData
-        BindItems(_sourceCache, namedLocations, false, out _items);
+        BindItems(_sourceCache, namedLocations, false, out _items, out _hasMultipleRoots, out _primaryRootLocation);
     }
     
     /// <summary>
     ///     Binds all items in the given cache.
     ///     If the items have multiple roots (LocationIds), separate nodes are made for them.
     /// </summary>
-    internal static void BindItems(SourceCache<IFileTreeNodeViewModel, GamePath> cache, Dictionary<LocationId, string> locations, bool alwaysRoot, out ReadOnlyObservableCollection<ModFileNode> result)
+    internal static void BindItems(
+        SourceCache<IFileTreeNodeViewModel, GamePath> cache, 
+        Dictionary<LocationId, string> locations, 
+        bool alwaysRoot, 
+        out ReadOnlyObservableCollection<ModFileNode> result, 
+        out bool hasMultipleRoots,
+        out string? primaryRootLocation)
     {
         // AlwaysRoot is left as a parameter because it may be a user preference in settings in the future.
         // If there's more than 1 location, create dummy nodes.
-        if (alwaysRoot || locations.Count > 1)
+        hasMultipleRoots = (alwaysRoot || locations.Count > 1); 
+        if (hasMultipleRoots)
         {
             foreach (var location in locations)
                 cache.AddOrUpdate(new FileTreeNodeDesignViewModel(false, new GamePath(location.Key, ""), location.Value));
+
+            hasMultipleRoots = true;
+            primaryRootLocation = null;
+        }
+        else
+        {
+            primaryRootLocation = locations.First().Value;
         }
         
         cache.Connect()

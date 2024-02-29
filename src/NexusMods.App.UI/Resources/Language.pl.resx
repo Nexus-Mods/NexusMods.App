@@ -282,4 +282,7 @@
 	<data name="InProgressDownloadsPage_Title" xml:space="preserve">
 		<value>Pobieranie</value>
 	</data>
+    <data name="ViewModFilesView_Location" xml:space="preserve">
+        <value>LOKALIZACJA:</value>
+    </data>
 </root>
