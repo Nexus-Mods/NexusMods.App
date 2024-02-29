@@ -129,6 +129,11 @@ public class SMAPIInstaller : AModInstaller
         var isUnix = _osInformation.IsUnix();
         var isXboxGamePass = info.Store == GameStore.XboxGamePass;
 
+        // NOTE(erri120): paths can be verified using Steam depots: https://steamdb.info/app/413150/depots/
+        RelativePath unixLauncherPath = _osInformation.IsOSX
+            ? "Contents/MacOS/StardewValley"
+            : "StardewValley";
+
         // add all files from the archive
         foreach (var kv in archiveContents.GetFiles())
         {
@@ -138,7 +143,7 @@ public class SMAPIInstaller : AModInstaller
             // https://github.com/Pathoschild/SMAPI/blob/5919337236650c6a0d7755863d35b2923a94775c/src/SMAPI.Installer/InteractiveInstaller.cs#L395-L425
             if (isUnix && kv.Item.FileName.Equals("unix-launcher.sh"))
             {
-                to = new GamePath(LocationId.Game, "StardewValley");
+                to = new GamePath(LocationId.Game, unixLauncherPath);
             }
 
             // For Xbox Game Pass: replace "Stardew Valley.exe" with "StardewModdingAPI.exe"
