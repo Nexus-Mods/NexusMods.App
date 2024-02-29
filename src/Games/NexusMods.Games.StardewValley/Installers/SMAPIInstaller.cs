@@ -127,7 +127,6 @@ public class SMAPIInstaller : AModInstaller
         // https://github.com/Pathoschild/SMAPI/blob/5919337236650c6a0d7755863d35b2923a94775c/src/SMAPI.Installer/InteractiveInstaller.cs#L384
 
         var isUnix = _osInformation.IsUnix();
-        var isXboxGamePass = info.Store == GameStore.XboxGamePass;
 
         // NOTE(erri120): paths can be verified using Steam depots: https://steamdb.info/app/413150/depots/
         RelativePath unixLauncherPath = _osInformation.IsOSX
@@ -146,9 +145,11 @@ public class SMAPIInstaller : AModInstaller
                 to = new GamePath(LocationId.Game, unixLauncherPath);
             }
 
-            // For Xbox Game Pass: replace "Stardew Valley.exe" with "StardewModdingAPI.exe"
-            // https://stardewvalleywiki.com/Modding:Installing_SMAPI_on_Windows#Xbox_app
-            if (isXboxGamePass && kv.Item.FileName.Equals("StardewModdingAPI.exe"))
+            // NOTE(erri120): The official installer doesn't replace "Stardew Valley.exe" with
+            // "StardewModdingAPI.exe" to allow players to run the vanilla game without having
+            // to uninstall SMAPI. However, we don't need this behavior.
+            // https://github.com/Nexus-Mods/NexusMods.App/issues/1012#issuecomment-1971039971
+            if (kv.Item.FileName.Equals("StardewModdingAPI.exe"))
             {
                 to = new GamePath(LocationId.Game, "Stardew Valley.exe");
             }
