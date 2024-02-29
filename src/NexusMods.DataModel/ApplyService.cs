@@ -70,22 +70,57 @@ public class ApplyService : IApplyService
                 lastAppliedLoadout = loadout;
             }
 
-            // TODO: Actually do something with the loadoutWithIngest, right now we just ignore it
             var loadoutWithIngest = await lastAppliedLoadout.Ingest();
-            
+
             // Rebase unapplied changes on top of ingested changes
             var mergedLoadout = _loadoutRegistry.Alter(loadout.LoadoutId, $"Rebase unapplied changes on top of ingested changes in loadout: {loadout.Name}",
-                l => l.Installation.GetGame().Synchronizer.MergeLoadouts(loadoutWithIngest, loadout));
+                l => l.Installation.GetGame().Synchronizer.MergeLoadouts(loadoutWithIngest, loadout)
+            );
 
             _logger.LogInformation("Applying loadout {LoadoutId} to {GameName} {GameVersion}", mergedLoadout.LoadoutId,
                 mergedLoadout.Installation.Game.Name, mergedLoadout.Installation.Version
             );
-            
+
             await mergedLoadout.Apply();
             return mergedLoadout;
         }
-        
+
         return loadout;
+    }
+
+    public async Task<Loadout> Ingest(GameInstallation gameInstallation)
+    {
+        var lastAppliedRevision = GetLastAppliedLoadout(gameInstallation);
+        if (lastAppliedRevision is null)
+        {
+            throw new InvalidOperationException("Game installation does not have a last applied loadout to ingest into");
+        }
+
+        var lastLoadout = _loadoutRegistry.GetLoadout(lastAppliedRevision);
+        var lastAppliedLoadout = lastLoadout ?? throw new Exception("Loadout not found for last applied revision");
+        
+        var loadoutWithIngest = await lastAppliedLoadout.Ingest();
+        
+        // Get the latest loadout revision
+        var latestRevision = _loadoutRegistry.Get(loadoutWithIngest.LoadoutId);
+        if (latestRevision is null)
+            throw new Exception("No latest revision found for last applied loadout");
+        
+        // if latest revision is the same as the last applied revision, no need to rebase
+        if (latestRevision.DataStoreId.Equals(loadoutWithIngest.DataStoreId))
+        {
+            var newLoadout = _loadoutRegistry.Alter(loadoutWithIngest.LoadoutId, $"Ingested changes in loadout: {loadoutWithIngest.Name}",
+                l => loadoutWithIngest
+            );
+            return newLoadout;
+        }
+        
+        // Rebase unapplied changes on top of ingested changes
+        var mergedLoadout = _loadoutRegistry.Alter(latestRevision.LoadoutId, $"Rebase unapplied changes on top of ingested changes in loadout: {latestRevision.Name}",
+            l => l.Installation.GetGame().Synchronizer.MergeLoadouts(loadoutWithIngest, latestRevision)
+        );
+        
+        return mergedLoadout;
     }
 
     /// <inheritdoc />

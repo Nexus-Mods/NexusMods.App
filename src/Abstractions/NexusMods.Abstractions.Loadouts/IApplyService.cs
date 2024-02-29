@@ -10,11 +10,21 @@ public interface IApplyService
 {
     /// <summary>
     /// Apply a loadout to its game installation.
+    /// This will also ingest outside changes and merge unapplied changes on top and apply them.
     /// </summary>
     /// <param name="loadoutId"></param>
     /// <returns></returns>
     public Task<Loadout> Apply(LoadoutId loadoutId);
 
+    
+    /// <summary>
+    /// Ingest any detected outside changes into the last applied loadout.
+    /// This will also rebase any unapplied changes on top of the last applied state, but will not apply them to disk.
+    /// The loadoutId will point to the new merged loadout
+    /// </summary>
+    /// <param name="gameInstallation"></param>
+    /// <returns>The merged loadout</returns>
+    public Task<Loadout> Ingest(GameInstallation gameInstallation);
 
     /// <summary>
     /// Returns the last applied loadout for a given game installation.
