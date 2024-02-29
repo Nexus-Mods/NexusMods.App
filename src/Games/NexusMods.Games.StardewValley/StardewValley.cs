@@ -40,17 +40,11 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
 
     public override GamePath GetPrimaryFile(GameStore store)
     {
-        // "StardewValley" is a wrapper shell script that launches the "Stardew Valley" binary
-        // on OSX, it's used to check the .NET version, on Linux it just launches the game
-        // for XboxGamePass, the original exe gets replaced during installation
+        // NOTE(erri120): Our SMAPI installer overrides all of these files.
         return _osInformation.MatchPlatform(
-            state: ref store,
-            onWindows: (ref GameStore gameStore) =>
-                gameStore == GameStore.XboxGamePass
-                    ? new GamePath(LocationId.Game, "Stardew Valley.exe")
-                    : new GamePath(LocationId.Game, "StardewModdingAPI.exe"),
-            onLinux: (ref GameStore _) => new GamePath(LocationId.Game, "StardewValley"),
-            onOSX: (ref GameStore _) => new GamePath(LocationId.Game, "Contents/MacOS/StardewValley")
+            onWindows: () => new GamePath(LocationId.Game, "Stardew Valley.exe"),
+            onLinux: () => new GamePath(LocationId.Game, "StardewValley"),
+            onOSX: () => new GamePath(LocationId.Game, "Contents/MacOS/StardewValley")
         );
     }
 
