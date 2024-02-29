@@ -44,27 +44,16 @@ public class ToolManager : IToolManager
     /// <inheritdoc />
     public async Task<Loadout> RunTool(ITool tool, Loadout loadout, ModId? generatedFilesMod = null, CancellationToken token = default)
     {
-
         if (!tool.Domains.Contains(loadout.Installation.Game.Domain))
             throw new Exception("Tool does not support this game");
-
-        _logger.LogInformation("Applying loadout {LoadoutId} to {GameName} {GameVersion}", loadout.LoadoutId, loadout.Installation.Game.Name, loadout.Installation.Version);
-        try
-        {
-            await loadout.Apply();
-        }
-        catch (NeedsIngestException)
-        {
-            _logger.LogInformation("Ingesting loadout {LoadoutId} from {GameName} {GameVersion}", loadout.LoadoutId, loadout.Installation.Game.Name, loadout.Installation.Version);
-            await loadout.Ingest();
-            _logger.LogInformation("Applying loadout {LoadoutId} to {GameName} {GameVersion}", loadout.LoadoutId, loadout.Installation.Game.Name, loadout.Installation.Version);
-            await loadout.Apply();
-        }
 
         _logger.LogInformation("Running tool {ToolName} for loadout {LoadoutId} on {GameName} {GameVersion}", tool.Name, loadout.LoadoutId, loadout.Installation.Game.Name, loadout.Installation.Version);
         await tool.Execute(loadout, token);
 
-        _logger.LogInformation("Ingesting loadout {LoadoutId} from {GameName} {GameVersion}", loadout.LoadoutId, loadout.Installation.Game.Name, loadout.Installation.Version);
-        return await loadout.Ingest();
+        // TODO: Auto ingest newly generated files. Need to first resolve how ingested changes will be applied to loadout (rebase, merge, etc)
+        // _logger.LogInformation("Ingesting loadout {LoadoutId} from {GameName} {GameVersion}", loadout.LoadoutId, loadout.Installation.Game.Name, loadout.Installation.Version);
+        // return await _applyService.Ingest(loadout.Installation);
+        
+        return loadout;
     }
 }
