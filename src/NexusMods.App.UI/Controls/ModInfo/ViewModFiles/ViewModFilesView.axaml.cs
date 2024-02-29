@@ -21,7 +21,7 @@ public partial class ViewModFilesView : ReactiveUserControl<IViewModFilesViewMod
     public ViewModFilesView()
     {
         InitializeComponent();
-        this.WhenActivated(d =>
+        this.WhenActivated(_ =>
         {
             // Unleash the tree!
             var source = CreateTreeSource(ViewModel!.Items);

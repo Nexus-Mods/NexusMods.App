@@ -2,16 +2,19 @@ using System.Collections.ObjectModel;
 using DynamicData;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.App.UI.Controls.Trees.Files;
+using NexusMods.Paths.Trees.Traits;
 using ModFileNode = NexusMods.App.UI.TreeNodeVM<NexusMods.App.UI.Controls.Trees.Files.IFileTreeNodeViewModel, NexusMods.Abstractions.GameLocators.GamePath>;
 namespace NexusMods.App.UI.Controls.ModInfo.ViewModFiles;
 
 public class ViewModFilesViewModel : AViewModel<IViewModFilesViewModel>, IViewModFilesViewModel
 {
     private readonly ILoadoutRegistry _registry;
+    private readonly IFileStore _fileStore;
     private readonly SourceCache<IFileTreeNodeViewModel, GamePath> _sourceCache;
     private ReadOnlyObservableCollection<ModFileNode> _items;
 
@@ -23,9 +26,10 @@ public class ViewModFilesViewModel : AViewModel<IViewModFilesViewModel>, IViewMo
     private string? _primaryRootLocation;
     public string? PrimaryRootLocation => _primaryRootLocation;
 
-    public ViewModFilesViewModel(ILoadoutRegistry registry)
+    public ViewModFilesViewModel(ILoadoutRegistry registry, IFileStore fileStore)
     {
         _registry = registry;
+        _fileStore = fileStore;
         _items = new ReadOnlyObservableCollection<ModFileNode>([]);
         _sourceCache = new SourceCache<IFileTreeNodeViewModel, GamePath>(x => x.FullPath);
     }
@@ -50,22 +54,50 @@ public class ViewModFilesViewModel : AViewModel<IViewModFilesViewModel>, IViewMo
 
             foreach (var (_, file) in mod.Files)
             {
-                if (file is not IToFile toFile)
+                // TODO: Check for IStoredFile, IToFile interfaces if we ever have more types of files that get put to disk.
+                if (file is not StoredFile storedFile)
                     continue;
-
-                dict[toFile.To] = new ModFilePair { Mod = mod, File = file };
-                availableLocations.Add(toFile.To.LocationId);
+                
+                dict[storedFile.To] = new ModFilePair { Mod = mod, File = file };
+                availableLocations.Add(storedFile.To.LocationId);
             }
         }
 
         // Add them to the cache.
-        var roots = FlattenedLoadout.Create(dict)
-            .GetAllDescendents()
-            .Select(x => (IFileTreeNodeViewModel)new FileTreeNodeViewModel<ModFilePair>(x));
+        var allItems = FlattenedLoadout.Create(dict).GetAllDescendents().ToArray();
+        
+        var displayedItems = new List<IFileTreeNodeViewModel>();
+        var hashToFileSize = new Dictionary<ulong, long>();
+        foreach (var x in allItems)
+        {
+            if (!x.Item.IsFile)
+                continue;
+            
+            var storedFile = (StoredFile)x.Item.Value.File;
+            
+            // TODO: Optimize fetching file sizes, this is pretty inefficient for very large mods.
+            var fileSize = _fileStore.GetFileStream(storedFile.Hash).Result.Length;
+            hashToFileSize[storedFile.Hash.Value] = fileSize;
+            displayedItems.Add(new FileTreeNodeViewModel<ModFilePair>(x, fileSize));
+        }
+        
+        // Now calculate folder sizes.
+        foreach (var x in allItems)
+        {
+            if (x.Item.IsFile)
+                continue;
+
+            var fileSize = (long)0;
+            foreach (var child in x.EnumerateChildrenBfs())
+            {
+                var storedFile = (StoredFile)child.Value.Item.Value.File;
+                fileSize += hashToFileSize[storedFile.Hash.Value];
+            }
+            displayedItems.Add(new FileTreeNodeViewModel<ModFilePair>(x, fileSize));
+        }
  
-        // Create folder nodes for all of the roots
         _sourceCache.Clear();
-        _sourceCache.AddOrUpdate(roots);
+        _sourceCache.AddOrUpdate(displayedItems);
         
         // Resolve folder locations.
         var namedLocations = new Dictionary<LocationId, string>();

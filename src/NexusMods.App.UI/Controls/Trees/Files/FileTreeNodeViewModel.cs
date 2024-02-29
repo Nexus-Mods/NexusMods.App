@@ -19,13 +19,14 @@ public class FileTreeNodeViewModel<TValue> : AViewModel<IFileTreeNodeViewModel>,
 
     public bool IsFile => _item.Item.IsFile;
     public string Name => _item.Item.Segment;
-    public long FileSize => 999999; // TEMP
+    public long FileSize { get; }
     public GamePath FullPath => _item.GamePath();
     public GamePath ParentPath => _item.Parent()!.GamePath();
 
-    public FileTreeNodeViewModel(KeyedBox<RelativePath, GamePathNode<TValue>> item)
+    public FileTreeNodeViewModel(KeyedBox<RelativePath, GamePathNode<TValue>> item, long fileSize)
     {
         _item = item;
+        FileSize = fileSize;
         Icon = _item.Item.IsFile ? FileTreeNodeIconType.File : FileTreeNodeIconType.ClosedFolder;
     }
 }
