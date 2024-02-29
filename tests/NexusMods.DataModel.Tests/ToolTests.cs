@@ -1,5 +1,7 @@
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.DataModel.LoadoutSynchronizer.Extensions;
@@ -10,8 +12,12 @@ namespace NexusMods.DataModel.Tests;
 
 public class ToolTests : ADataModelTest<ToolTests>
 {
+    private IApplyService _applyService;
+    private ILoadoutRegistry _loadoutRegistry;
     public ToolTests(IServiceProvider provider) : base(provider)
     {
+        _applyService = provider.GetRequiredService<IApplyService>();
+        _loadoutRegistry = provider.GetRequiredService<ILoadoutRegistry>();
     }
 
     [Fact]
@@ -20,17 +26,17 @@ public class ToolTests : ADataModelTest<ToolTests>
         await AddMods(BaseList, Data7ZLzma2, "Mod1");
         var gameFolder = BaseList.Value.Installation.LocationsRegister[LocationId.Game];
 
-        gameFolder.Combine("files.txt").FileExists.Should().BeFalse("tool should not have run yet");
+        gameFolder.Combine("toolFiles.txt").FileExists.Should().BeFalse("tool should not have run yet");
         gameFolder.Combine("rootFile.txt").FileExists.Should().BeFalse("loadout has not yet been applied");
 
         var tool = ToolManager.GetTools(BaseList.Value).OfType<ListFilesTool>().First();
         var result = await ToolManager.RunTool(tool, BaseList.Value);
 
-        LoadoutRegistry.Merge(BaseList.Value, result);
-
-        gameFolder.Combine("files.txt").FileExists.Should().BeTrue("tool should have run");
-        gameFolder.Combine("rootFile.txt").FileExists.Should().BeTrue("loadout has been automatically applied");
-
+        gameFolder.Combine("toolFiles.txt").FileExists.Should().BeTrue("tool should have run");
+        gameFolder.Combine("rootFile.txt").FileExists.Should().BeFalse("loadout has not been automatically applied");
+        
+        result.Should().NotBe(BaseList.Value, "the result should be a new loadout");
+        
         var generatedFile = BaseList.Value.Mods.Values
             .SelectMany(m => m.Files.Values)
             .OfType<IToFile>()
@@ -40,5 +46,9 @@ public class ToolTests : ADataModelTest<ToolTests>
         generatedFile.Should().NotBeNull("the generated file should be in the loadout");
         BaseList.Value.Mods.Values.Where(m => m.ModCategory == Mod.OverridesCategory)
             .Should().HaveCount(1, "the generated file should be in a generated mod");
+        
+        var latestLoadout = _loadoutRegistry.Get(result.LoadoutId);
+        latestLoadout.Should().NotBeNull();
+        latestLoadout!.DataStoreId.Should().BeEquivalentTo(result.DataStoreId, "the result should be the active loadout");
     }
 }
