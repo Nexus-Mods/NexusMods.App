@@ -29,4 +29,39 @@
         </Style>
     </Style>
 
+    <!-- Default Header Style for TreeDataGrid, for when the header exists -->
+    <Style Selector="TreeDataGrid">
+        <!-- Column Style -->
+        <Style Selector="^ /template/ Border#ColumnHeadersPresenterBorder">
+            <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeak}" />
+            <Setter Property="BorderThickness" Value="0,1,0,1" />
+            <Setter Property="Height" Value="38"/>
+        </Style>
+        
+        <Style Selector="^ /template/ TreeDataGridColumnHeadersPresenter">
+        </Style>
+
+        <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter TextBlock">
+            <Setter Property="Foreground"
+                    Value="{StaticResource NeutralSubdued}" />
+        </Style>
+    </Style>
+    
+    <!-- Column Header/Text Style -->
+    <Style Selector="TreeDataGridColumnHeader">
+        <!-- Text Inside Column Header -->
+        <!-- Note: Keeping Highlight as White for now. -->
+        <!-- Note(Sewer): This is not ideal.
+             I tried selecting with `^ /template/ ContentPresenter#PART_ContentPresenter TextBlock`
+             but it seems the style system isn't happy to let me nest inside the ContentPresenter.
+             
+             I'm not 100% sure what to do.
+        -->
+        <Style Selector="^ TextBlock">
+            <Setter Property="TextBlock.Foreground"
+                    Value="{StaticResource NeutralSubdued}" />
+            <Setter Property="TextBlock.Theme" Value="{StaticResource TitleSMSemiTheme}"/>
+        </Style>
+    </Style>
+
 </Styles>

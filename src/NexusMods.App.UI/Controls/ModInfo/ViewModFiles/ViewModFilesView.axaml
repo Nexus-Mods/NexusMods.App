@@ -16,11 +16,17 @@
         <viewModFiles:ViewModFilesDesignViewModel />
     </Design.DataContext>
     <StackPanel Orientation="Vertical">
-        <StackPanel Orientation="Horizontal" IsVisible="True" Name="LocationStackPanel">
+        <StackPanel Orientation="Horizontal" IsVisible="True" Name="LocationStackPanel"
+                    Margin="24, 11.5,24, 11.5">
             <TextBlock Text="{x:Static resources:Language.ViewModFilesView_Location}"
+                       Foreground="{StaticResource NeutralSubdued}"
+                       VerticalAlignment="Center"
+                       Classes="TitleSMSemi"
                        Margin="4,0,0,0"/>
 
-            <TextBlock Text="SAMPLE LOCATION" Name="LocationText"
+            <TextBlock Name="LocationText"
+                       VerticalAlignment="Center"
+                       Foreground="{StaticResource NeutralSubdued}"
                        Margin="8,0,0,0"/>
         </StackPanel>
         
