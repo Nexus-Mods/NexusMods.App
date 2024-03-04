@@ -22,9 +22,13 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
 
     private readonly ReactiveCommand<System.Reactive.Unit, System.Reactive.Unit> _applyReactiveCommand;
 
-    [Reactive] private IId LastAppliedRevisionId { get; set; }
+    private ObservableAsPropertyHelper<IId> _lastAppliedRevisionId;
+    private IId LastAppliedRevisionId => _lastAppliedRevisionId.Value;
+    
     [Reactive] private LoadoutId LastAppliedLoadoutId { get; set; }
-    [Reactive] private Abstractions.Loadouts.Loadout NewestLoadout { get; set; }
+    
+    private ObservableAsPropertyHelper<Abstractions.Loadouts.Loadout> _newestLoadout;
+    private Abstractions.Loadouts.Loadout NewestLoadout => _newestLoadout.Value;
 
 
     public ICommand ApplyCommand => _applyReactiveCommand;
@@ -45,31 +49,26 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
         _applyService = serviceProvider.GetRequiredService<IApplyService>();
         LaunchButtonViewModel = serviceProvider.GetRequiredService<ILaunchButtonViewModel>();
         LaunchButtonViewModel.LoadoutId = loadoutId;
+        
+        var currentLoadout = _loadoutRegistry.Get(loadoutId);
+        if (currentLoadout is null)
+            throw new ArgumentException("Loadout not found", nameof(loadoutId));
+        
+        _newestLoadout = Observable.Return(currentLoadout)
+            .Merge(_loadoutRegistry.RevisionsAsLoadouts(loadoutId))
+            .OnUI()
+            .ToProperty(this, vm => vm.NewestLoadout);
 
-        NewestLoadout = _loadoutRegistry.Get(_loadoutId) ??
-                        throw new ArgumentException("Loadout not found: " + _loadoutId);
-
-        _gameInstallation = NewestLoadout.Installation;
-
-        LastAppliedRevisionId = _applyService.GetLastAppliedLoadout(_gameInstallation) ??
-                                throw new ArgumentException("No last applied loadout found for: " +
-                                                            _gameInstallation
-                                );
+        _gameInstallation = currentLoadout.Installation;
+        
+        _lastAppliedRevisionId =_applyService.LastAppliedRevisionFor(_gameInstallation)
+            .OnUI()
+            .ToProperty(this, vm => vm.LastAppliedRevisionId);
 
         _applyReactiveCommand = ReactiveCommand.CreateFromTask(async () => await Apply());
 
         this.WhenActivated(disposables =>
             {
-                _loadoutRegistry.RevisionsAsLoadouts(loadoutId)
-                    .OnUI()
-                    .BindToVM(this, vm => vm.NewestLoadout)
-                    .DisposeWith(disposables);
-
-                _applyService.LastAppliedRevisionFor(_gameInstallation)
-                    .OnUI()
-                    .BindToVM(this, vm => vm.LastAppliedRevisionId)
-                    .DisposeWith(disposables);
-
                 this.WhenAnyValue(vm => vm.LastAppliedRevisionId)
                     .Select(revId =>
                         {
