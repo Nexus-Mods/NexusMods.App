@@ -267,4 +267,16 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
         // ReSharper disable once ExplicitCallerInfoArgument
         await Verify(res, sourceFile: sourceFile);
     }
+
+    protected async Task VerifyMods(Mod[] mods, [CallerFilePath] string sourceFile = "")
+    {
+        var res = mods
+            .Select(VerifiableMod.From)
+            .OrderByDescending(mod => mod.Name)
+            .ThenByDescending(mod => mod.Files.Count)
+            .ToArray();
+
+        // ReSharper disable once ExplicitCallerInfoArgument
+        await Verify(res, sourceFile: sourceFile);
+    }
 }

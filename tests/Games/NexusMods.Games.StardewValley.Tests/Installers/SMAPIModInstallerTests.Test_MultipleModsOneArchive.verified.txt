@@ -1,0 +1,78 @@
+﻿[
+  {
+    Name: Raised Garden Beds,
+    Version: 1.0.5,
+    Category: ,
+    Files: [
+      {
+        To: {Game}/Mods/RaisedGardenBeds/RaisedGardenBeds.pdb,
+        Size: 25576,
+        Hash: 16574077546826116417
+      },
+      {
+        To: {Game}/Mods/RaisedGardenBeds/RaisedGardenBeds.dll,
+        Size: 65024,
+        Hash: 16623852306848535704
+      },
+      {
+        To: {Game}/Mods/RaisedGardenBeds/manifest.json,
+        Size: 395,
+        Hash: 7655340020190551570
+      },
+      {
+        To: {Game}/Mods/RaisedGardenBeds/config.json,
+        Size: 214,
+        Hash: 1685933331328654924
+      },
+      {
+        To: {Game}/Mods/RaisedGardenBeds/assets/eventData.json,
+        Size: 373,
+        Hash: 9596720478300140013
+      },
+      {
+        To: {Game}/Mods/RaisedGardenBeds/assets/endOfNightSprites.png,
+        Size: 268,
+        Hash: 4824823080111877285
+      }
+    ]
+  },
+  {
+    Name: (RGB) Raised Garden Beds,
+    Version: 1.0.5,
+    Category: ,
+    Files: [
+      {
+        To: {Game}/Mods/[RGB] RaisedGardenBeds/sprites.png,
+        Size: 23494,
+        Hash: 10169511849522994898
+      },
+      {
+        To: {Game}/Mods/[RGB] RaisedGardenBeds/manifest.json,
+        Size: 303,
+        Hash: 3489491537157495220
+      },
+      {
+        To: {Game}/Mods/[RGB] RaisedGardenBeds/content.json,
+        Size: 3570,
+        Hash: 18369253235667764066
+      }
+    ]
+  },
+  {
+    Name: (CP) Raised Garden Beds Translation: English,
+    Version: 1.0.5,
+    Category: ,
+    Files: [
+      {
+        To: {Game}/Mods/[CP] RaisedGardenBeds - English/manifest.json,
+        Size: 346,
+        Hash: 8005193332923240767
+      },
+      {
+        To: {Game}/Mods/[CP] RaisedGardenBeds - English/content.json,
+        Size: 3486,
+        Hash: 7993678887230854930
+      }
+    ]
+  }
+]

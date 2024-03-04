@@ -60,18 +60,6 @@ public class SMAPIModInstallerTests : AModInstallerTest<StardewValley, SMAPIModI
 
         // var mods = await GetModsFromInstaller(path);
         var mods = await InstallModsStoredFileIntoLoadout(loadout, downloadId);
-        mods
-            .Should().HaveCount(3)
-            .And.AllSatisfy(x =>
-            {
-                x.Metadata.Should().BeOfType<GroupMetadata>();
-                x.Version.Should().Be("1.0.5");
-            })
-            .And.Satisfy(
-                x => x.Name == "Raised Garden Beds",
-                x => x.Name == "(CP) Raised Garden Beds Translation: English",
-                x => x.Name == "(RGB) Raised Garden Beds"
-            );
-
+        await VerifyMods(mods);
     }
 }
