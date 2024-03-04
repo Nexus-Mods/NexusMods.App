@@ -103,7 +103,7 @@ public class ArchiveInstaller : IArchiveInstaller
                             Store = install.Store,
                             Version = install.Version,
                             ModName = baseMod.Name,
-                            ArchiveMetaData = download.MetaData
+                            ArchiveMetaData = download.MetaData,
                         };
 
                         var modResults = (await modInstaller.GetModsAsync(info, token)).ToArray();
@@ -117,8 +117,7 @@ public class ArchiveInstaller : IArchiveInstaller
                 })
                 .FirstOrDefault(result => result.Item1.Any());
 
-
-            if (results == null || results.Length == 0)
+            if (results is null || results.Length == 0)
             {
                 if (useCustomInstaller)
                 {
@@ -127,6 +126,7 @@ public class ArchiveInstaller : IArchiveInstaller
                     _registry.Alter(cursor, $"Cancelled installation of {archiveName}", _ => null);
                     return Array.Empty<ModId>();
                 }
+
                 _logger.LogError("No Installer found for {Name}", archiveName);
                 _registry.Alter(cursor, $"Failed to install mod {archiveName}",m => m! with { Status = ModStatus.Failed });
                 throw new NotSupportedException($"No Installer found for {archiveName}");
@@ -138,7 +138,8 @@ public class ArchiveInstaller : IArchiveInstaller
                 Files = result.Files.ToEntityDictionary(_dataStore),
                 Name = result.Name ?? baseMod.Name,
                 Version = result.Version ?? baseMod.Version,
-                SortRules = (result.SortRules ?? Array.Empty<ISortRule<Mod, ModId>>()).ToImmutableList()
+                SortRules = (result.SortRules ?? Array.Empty<ISortRule<Mod, ModId>>()).ToImmutableList(),
+                Metadata = result.Metadata.ToImmutableList(),
             }).WithPersist(_dataStore).ToArray();
 
             if (mods.Length == 0)
@@ -171,8 +172,8 @@ public class ArchiveInstaller : IArchiveInstaller
 
             foreach (var mod in mods)
             {
-                var metadata = new List<AModMetadata>();
-                if (groupMetadata is not null) metadata.Add(groupMetadata);
+                var metadata = mod.Metadata;
+                if (groupMetadata is not null) metadata = metadata.Add(groupMetadata);
 
                 if (mod.Id.Equals(baseMod.Id))
                 {
@@ -187,7 +188,7 @@ public class ArchiveInstaller : IArchiveInstaller
                             Version = mod.Version,
                             SortRules = mod.SortRules,
                             Files = mod.Files,
-                            Metadata = metadata.ToImmutableList(),
+                            Metadata = metadata,
                         });
                 }
                 else
