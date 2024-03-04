@@ -4,7 +4,7 @@
                                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:left="clr-namespace:NexusMods.App.UI.LeftMenu.Loadout"
-                                mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+                                mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="450"
                                 x:Class="NexusMods.App.UI.LeftMenu.Loadout.LoadoutLeftMenuView">
     <Design.DataContext>
         <left:LoadoutLeftMenuDesignViewModel />
@@ -21,11 +21,7 @@
             </ItemsControl.ItemsPanel>
         </ItemsControl>
 
-        <Border Grid.Row="1"
-                Classes="Rounded-lg Low"
-                Padding="12">
-                <reactiveUi:ViewModelViewHost x:Name="ApplyControlViewHost" />
-        </Border>
+        <reactiveUi:ViewModelViewHost Grid.Row="1" x:Name="ApplyControlViewHost" />
     </Grid>
 
 

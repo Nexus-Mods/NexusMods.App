@@ -22,5 +22,5 @@ public class ListFilesTool : ITool
     }
 
     public string Name => "List Files";
-    public static readonly GamePath GeneratedFilePath = new(LocationId.Game, "files.txt");
+    public static readonly GamePath GeneratedFilePath = new(LocationId.Game, "toolFiles.txt");
 }
