@@ -15,13 +15,30 @@ public static class TreeDataGridHelpers
     /// <summary>
     /// Generates a HierarchicalTreeDataGridSource with a custom column for a given tree structure.
     /// </summary>
+    /// <param name="treeRoot">The single root.</param>
+    /// <returns>A configured HierarchicalTreeDataGridSource.</returns>
+    /// <typeparam name="TNode">Type of node which derives from <see cref="TreeNodeVM{TItem,TKey}"/></typeparam>
+    /// <typeparam name="TItem">Type of item which is stored inside <typeparamref name="TNode"/>'s value</typeparam>
+    /// <typeparam name="TKey">Type of item which is stored inside <typeparamref name="TNode"/>'s key</typeparam>
+    public static HierarchicalTreeDataGridSource<TNode> CreateTreeSourceWithSingleCustomColumn<TNode, TItem, TKey>(
+        TNode treeRoot)
+        where TNode : TreeNodeVM<TItem, TKey>
+        where TItem : class, IViewModelInterface
+        where TKey : notnull
+    {
+        return CreateTreeSourceWithSingleCustomColumn<TNode, TItem, TKey>(Enumerable.Repeat(treeRoot, 1));
+    }
+
+    /// <summary>
+    /// Generates a HierarchicalTreeDataGridSource with a custom column for a given tree structure.
+    /// </summary>
     /// <param name="treeRoots">An observable collection of the tree roots.</param>
     /// <returns>A configured HierarchicalTreeDataGridSource.</returns>
     /// <typeparam name="TNode">Type of node which derives from <see cref="TreeNodeVM{TItem,TKey}"/></typeparam>
     /// <typeparam name="TItem">Type of item which is stored inside <typeparamref name="TNode"/>'s value</typeparam>
     /// <typeparam name="TKey">Type of item which is stored inside <typeparamref name="TNode"/>'s key</typeparam>
     public static HierarchicalTreeDataGridSource<TNode> CreateTreeSourceWithSingleCustomColumn<TNode, TItem, TKey>(
-        ReadOnlyObservableCollection<TNode> treeRoots) 
+        IEnumerable<TNode> treeRoots) 
         where TNode : TreeNodeVM<TItem, TKey>
         where TItem : class, IViewModelInterface
         where TKey : notnull
