@@ -16,7 +16,6 @@ public class ApplyService : IApplyService
     private readonly ILoadoutRegistry _loadoutRegistry;
     private readonly ILogger<ApplyService> _logger;
     private readonly IDiskStateRegistry _diskStateRegistry;
-    private readonly IObservable<(GameInstallation gameInstallation, IId loadoutRevision)> _lastAppliedRevisionObservable;
 
     /// <summary>
     /// DI Constructor
@@ -26,8 +25,6 @@ public class ApplyService : IApplyService
         _loadoutRegistry = loadoutRegistry;
         _logger = logger;
         _diskStateRegistry = diskStateRegistry;
-
-        _lastAppliedRevisionObservable = _diskStateRegistry.LastAppliedRevisionObservable;
     }
 
     /// <inheritdoc />
@@ -135,7 +132,7 @@ public class ApplyService : IApplyService
     public IObservable<IId> LastAppliedRevisionFor(GameInstallation gameInstallation)
     {
         // Return a deferred observable that computes the starting value only on first subscription
-        return Observable.Defer(() => _lastAppliedRevisionObservable
+        return Observable.Defer(() => _diskStateRegistry.LastAppliedRevisionObservable
             .Where(x => x.gameInstallation.Equals(gameInstallation))
             .Select(x => x.loadoutRevision)
             .StartWith(_diskStateRegistry.GetLastAppliedLoadout(gameInstallation) ?? IdEmpty.Empty)
