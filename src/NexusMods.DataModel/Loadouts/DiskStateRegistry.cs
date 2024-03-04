@@ -1,11 +1,11 @@
 using System.Diagnostics;
 using System.IO.Compression;
+using System.Reactive.Subjects;
 using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.Abstractions.Serialization.DataModel.Ids;
@@ -20,16 +20,21 @@ public class DiskStateRegistry : IDiskStateRegistry
 {
     private readonly ILogger<DiskStateRegistry> _logger;
     private readonly IDataStore _dataStore;
+    private readonly IDictionary<GameInstallation, IId> _lastAppliedRevisionDictionary = new Dictionary<GameInstallation, IId>();
+    private readonly Subject<(GameInstallation gameInstallation, IId loadoutRevision)> _lastAppliedRevisionSubject = new();
+    private readonly JsonSerializerOptions _jsonSerializerOptions;
+
+    /// <inheritdoc />
+    public IObservable<(GameInstallation gameInstallation, IId loadoutRevision)> LastAppliedRevisionObservable => _lastAppliedRevisionSubject;
 
     /// <summary>
     /// DI Constructor
     /// </summary>
-    /// <param name="logger"></param>
-    /// <param name="dataStore"></param>
-    public DiskStateRegistry(ILogger<DiskStateRegistry> logger, IDataStore dataStore)
+    public DiskStateRegistry(ILogger<DiskStateRegistry> logger, IDataStore dataStore, JsonSerializerOptions jsonSerializerOptions)
     {
         _logger = logger;
         _dataStore = dataStore;
+        _jsonSerializerOptions = jsonSerializerOptions;
     }
 
     /// <summary>
@@ -43,16 +48,20 @@ public class DiskStateRegistry : IDiskStateRegistry
         using var ms = new MemoryStream();
         {
             using var compressed = new GZipStream(ms, CompressionMode.Compress, leaveOpen: true);
-            JsonSerializer.Serialize(compressed, diskState);
+            JsonSerializer.Serialize(compressed, diskState, _jsonSerializerOptions);
         }
         _dataStore.PutRaw(iid, ms.GetBuffer().AsSpan().SliceFast(0, (int)ms.Length));
+        // TODO: this might need to be made thread safe
+        _lastAppliedRevisionDictionary[installation] = diskState.LoadoutRevision;
+        _lastAppliedRevisionSubject.OnNext((installation, diskState.LoadoutRevision));
     }
 
     private IId MakeId(GameInstallation installation)
     {
-        var str = $"{installation.Game.Name}|{installation.Version}|{installation.Store.Value}";
+        var str = $"{installation.Game.GetType()}|{installation.LocationsRegister[LocationId.Game]}";
+
         var bytes = Encoding.UTF8.GetBytes(str);
-        return IId.FromSpan(EntityCategory.DiskState, bytes); 
+        return IId.FromSpan(EntityCategory.DiskState, bytes);
     }
 
     /// <summary>
@@ -67,6 +76,22 @@ public class DiskStateRegistry : IDiskStateRegistry
         if (data == null) return null;
         using var ms = new MemoryStream(data);
         using var compressed = new GZipStream(ms, CompressionMode.Decompress);
-        return JsonSerializer.Deserialize<DiskStateTree>(compressed);
+        return JsonSerializer.Deserialize<DiskStateTree>(compressed, _jsonSerializerOptions);
+    }
+
+    /// <inheritdoc />
+    public IId? GetLastAppliedLoadout(GameInstallation gameInstallation)
+    {
+        if (_lastAppliedRevisionDictionary.TryGetValue(gameInstallation, out var lastAppliedLoadout))
+        {
+            return lastAppliedLoadout;
+        }
+
+        var diskStateTree = GetState(gameInstallation);
+        if (diskStateTree is null) return null;
+        Debug.Assert(!diskStateTree.LoadoutRevision.Equals(IdEmpty.Empty), "diskState.LoadoutRevision must be set");
+
+        _lastAppliedRevisionDictionary[gameInstallation] = diskStateTree.LoadoutRevision;
+        return diskStateTree.LoadoutRevision;
     }
 }

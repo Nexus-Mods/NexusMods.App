@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.Trees;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Serialization.DataModel.Converters;
 using NexusMods.Abstractions.Serialization.DataModel.Ids;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
@@ -33,6 +34,25 @@ class DiskStateConverter : JsonConverter<DiskStateTree>
 {
     public override DiskStateTree Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
+        if (reader.TokenType != JsonTokenType.StartObject)
+            throw new JsonException();
+        reader.Read();
+        
+        if (reader.TokenType != JsonTokenType.PropertyName)
+            throw new JsonException();
+        if (reader.GetString() != "loadoutRevision")
+            throw new JsonException();
+        reader.Read();
+        
+        var revId = options.Converters.OfType<IdJsonConverter>().First().Read(ref reader, typeof(IId), options);
+        reader.Read();
+        
+        if (reader.TokenType != JsonTokenType.PropertyName)
+            throw new JsonException();
+        if (reader.GetString() != "files")
+            throw new JsonException();
+        reader.Read();
+        
         if (reader.TokenType != JsonTokenType.StartArray)
             throw new JsonException();
 
@@ -40,7 +60,7 @@ class DiskStateConverter : JsonConverter<DiskStateTree>
         while (reader.Read())
         {
             if (reader.TokenType == JsonTokenType.EndArray)
-                return DiskStateTree.Create(itms);
+               break;
 
             if (reader.TokenType != JsonTokenType.StartArray)
                 throw new JsonException();
@@ -67,12 +87,23 @@ class DiskStateConverter : JsonConverter<DiskStateTree>
                 LastModified = lastModified
             }));
         }
-
-        return DiskStateTree.Create(itms);
+        reader.Read();
+        
+        if(reader.TokenType != JsonTokenType.EndObject)
+            throw new JsonException();
+        
+        var tree = DiskStateTree.Create(itms);
+        tree.LoadoutRevision = revId;
+        return tree;
     }
 
     public override void Write(Utf8JsonWriter writer, DiskStateTree value, JsonSerializerOptions options)
     {
+        writer.WriteStartObject();
+        writer.WritePropertyName("loadoutRevision");
+        options.Converters.OfType<IdJsonConverter>().First().Write(writer, value.LoadoutRevision, options);
+        
+        writer.WritePropertyName("files");
         writer.WriteStartArray();
         foreach (var boxed in value.GetAllDescendentFiles())
         {
@@ -88,5 +119,6 @@ class DiskStateConverter : JsonConverter<DiskStateTree>
             writer.WriteEndArray();
         }
         writer.WriteEndArray();
+        writer.WriteEndObject();
     }
 }

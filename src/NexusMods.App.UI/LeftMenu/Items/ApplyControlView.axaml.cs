@@ -24,6 +24,9 @@ public partial class ApplyControlView : ReactiveUserControl<IApplyControlViewMod
             
             this.OneWayBind(ViewModel, vm => vm.IsApplying, v => v.InProgressBorder.IsVisible)
                 .DisposeWith(disposables);
+            
+            this.OneWayBind(ViewModel, vm => vm.ApplyButtonText, v => v.ApplyButtonTextBlock.Text)
+                .DisposeWith(disposables);
 
             this.WhenAnyValue(view => view.ViewModel!.IsApplying)
                 .Select(isApplying => !isApplying)

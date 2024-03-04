@@ -2,6 +2,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Serialization.DataModel;
+using NexusMods.Abstractions.Serialization.DataModel.Converters;
 using NexusMods.Abstractions.Serialization.Json;
 
 namespace NexusMods.Abstractions.Serialization;
@@ -25,6 +26,7 @@ public static class Services
         services.AddSingleton(typeof(EntityDictionaryConverter<,>));
         services.AddSingleton<JsonConverter, EntityLinkConverterFactory>();
         services.AddSingleton(typeof(EntityLinkConverter<>));
+        services.AddSingleton<JsonConverter, IdJsonConverter>();
 
         services.AddSingleton(s =>
         {

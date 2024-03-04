@@ -6,7 +6,8 @@
                                 xmlns:items="clr-namespace:NexusMods.App.UI.LeftMenu.Items"
                                 xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI"
                                 xmlns:progressRing="clr-namespace:NexusMods.App.UI.Controls.ProgressRing"
-                                mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="100"
+                                xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
+                                mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="100"
                                 x:Class="NexusMods.App.UI.LeftMenu.Items.ApplyControlView">
     <Design.DataContext>
         <items:ApplyControlDesignViewModel />
@@ -17,17 +18,21 @@
             HorizontalAlignment="Stretch">
 
         <StackPanel Orientation="Vertical"
-                    Classes="Spacing-2">
+                    Classes="Spacing-2"
+                    HorizontalAlignment="Stretch">
 
             <Button Classes="Standard SecondaryOutlined"
                     HorizontalAlignment="Stretch"
                     x:Name="ApplyButton">
-                <StackPanel Orientation="Horizontal"
-                            HorizontalAlignment="Center">
-                    <unifiedIcon:UnifiedIcon Size="24" Classes="Check" />
-                    <TextBlock Classes="TitleSMSemi"
-                               Text="APPLY" />
-                </StackPanel>
+                <Viewbox StretchDirection="DownOnly">
+                    <StackPanel Orientation="Horizontal"
+                                HorizontalAlignment="Center">
+                        <unifiedIcon:UnifiedIcon Size="24" Classes="Check" />
+                        <TextBlock Classes="TitleSMSemi"
+                                   x:Name="ApplyButtonTextBlock" 
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Viewbox>
             </Button>
 
             <Border Padding="12"
@@ -35,14 +40,16 @@
                     x:Name="InProgressBorder">
                 <StackPanel Orientation="Horizontal"
                             Classes="Spacing-1_5">
-                    <progressRing:ProgressRing/>
+                    <progressRing:ProgressRing />
                     <TextBlock Classes="BodySMNormal ForegroundModerate"
-                               Text="Applying..."
-                               VerticalAlignment="Center"/>
+                               Text="{x:Static resources:Language.ApplyingControlView__ApplyingText}"
+                               VerticalAlignment="Center"
+                               x:Name="ApplyingTextBlock" />
                 </StackPanel>
             </Border>
 
-            <items:LaunchButtonView x:Name="LaunchButtonView" />
+            <items:LaunchButtonView x:Name="LaunchButtonView"
+                                    HorizontalAlignment="Stretch" />
         </StackPanel>
     </Border>
 </reactiveUi:ReactiveUserControl>
