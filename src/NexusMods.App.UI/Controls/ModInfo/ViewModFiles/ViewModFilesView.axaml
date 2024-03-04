@@ -15,6 +15,19 @@
         <!-- This ViewModel has a bool switch 'showMultipleRoots' to toggle a view which also has Saves -->
         <viewModFiles:ViewModFilesDesignViewModel />
     </Design.DataContext>
+    <!-- In this view specifically, we want to shift the text of the TreeDataGrid 
+         such that we align the 'name' field with the
+    -->
+    <UserControl.Styles>
+        <!-- Note: Can't use nth-child on textblock itself. Not even actual control source does that. -->
+        <Style Selector="TreeDataGridColumnHeader:nth-child(1)">
+            <Style Selector="^ TextBlock">
+                <Setter Property="Margin" Value="24, 0,0, 0" />
+            </Style>
+        </Style>
+    </UserControl.Styles>
+    
+    <!-- Visual Tree -->
     <StackPanel Orientation="Vertical">
         <StackPanel Orientation="Horizontal" IsVisible="True" Name="LocationStackPanel"
                     Margin="24, 11.5,24, 11.5">

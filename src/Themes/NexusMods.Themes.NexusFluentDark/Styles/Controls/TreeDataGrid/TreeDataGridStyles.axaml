@@ -37,9 +37,6 @@
             <Setter Property="BorderThickness" Value="0,1,0,1" />
             <Setter Property="Height" Value="38"/>
         </Style>
-        
-        <Style Selector="^ /template/ TreeDataGridColumnHeadersPresenter">
-        </Style>
 
         <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter TextBlock">
             <Setter Property="Foreground"
