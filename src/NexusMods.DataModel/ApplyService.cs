@@ -88,6 +88,7 @@ public class ApplyService : IApplyService
         return loadout;
     }
 
+    /// <inheritdoc />
     public async Task<Loadout> Ingest(GameInstallation gameInstallation)
     {
         var lastAppliedRevision = GetLastAppliedLoadout(gameInstallation);
