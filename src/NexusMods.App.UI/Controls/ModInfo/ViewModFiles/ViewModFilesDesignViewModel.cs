@@ -13,12 +13,11 @@ public class ViewModFilesDesignViewModel : AViewModel<IViewModFilesViewModel>,
     IViewModFilesViewModel
 {
     private ReadOnlyObservableCollection<ModFileNode> _items;
+    private int _rootCount;
 
-    public ReadOnlyObservableCollection<ModFileNode> Items => _items;
-
-    private bool _hasMultipleRoots;
+    public int RootCount => _rootCount;
     
-    public bool HasMultipleRoots => _hasMultipleRoots;
+    public ReadOnlyObservableCollection<ModFileNode> Items => _items;
 
     private string? _primaryRootLocation;
     public string? PrimaryRootLocation => _primaryRootLocation;
@@ -106,7 +105,7 @@ public class ViewModFilesDesignViewModel : AViewModel<IViewModFilesViewModel>,
 #pragma warning restore CS0162 // Unreachable code detected
 
         // Assign
-        ViewModFilesViewModel.BindItems(cache, locations, alwaysRootFolders, out _items, out _hasMultipleRoots, out _primaryRootLocation);
+        ViewModFilesViewModel.BindItems(cache, locations, alwaysRootFolders, out _items, out _rootCount, out _primaryRootLocation);
     }
 
     public void Initialize(LoadoutId loadoutId, List<ModId> contextModIds)

@@ -291,4 +291,7 @@
     <data name="ViewModFilesView_Location" xml:space="preserve">
         <value>LOCATION:</value>
     </data>
+    <data name="ViewModFilesView_Locations" xml:space="preserve">
+        <value>LOCATIONS:</value>
+    </data>
 </root>

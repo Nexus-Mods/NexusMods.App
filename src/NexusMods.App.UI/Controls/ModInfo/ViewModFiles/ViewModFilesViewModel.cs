@@ -17,13 +17,11 @@ public class ViewModFilesViewModel : AViewModel<IViewModFilesViewModel>, IViewMo
     private readonly IFileStore _fileStore;
     private readonly SourceCache<IFileTreeNodeViewModel, GamePath> _sourceCache;
     private ReadOnlyObservableCollection<ModFileNode> _items;
+    private int _rootCount;
+    private string? _primaryRootLocation;
 
     public ReadOnlyObservableCollection<ModFileNode> Items => _items;
-
-    private bool _hasMultipleRoots;
-    public bool HasMultipleRoots => _hasMultipleRoots;
-
-    private string? _primaryRootLocation;
+    public int RootCount => _rootCount;
     public string? PrimaryRootLocation => _primaryRootLocation;
 
     public ViewModFilesViewModel(ILoadoutRegistry registry, IFileStore fileStore)
@@ -107,7 +105,7 @@ public class ViewModFilesViewModel : AViewModel<IViewModFilesViewModel>, IViewMo
             namedLocations.Add(location, register[location].ToString());
         
         // Flatten them with DynamicData
-        BindItems(_sourceCache, namedLocations, false, out _items, out _hasMultipleRoots, out _primaryRootLocation);
+        BindItems(_sourceCache, namedLocations, false, out _items, out _rootCount, out _primaryRootLocation);
     }
     
     /// <summary>
@@ -118,19 +116,19 @@ public class ViewModFilesViewModel : AViewModel<IViewModFilesViewModel>, IViewMo
         SourceCache<IFileTreeNodeViewModel, GamePath> cache, 
         Dictionary<LocationId, string> locations, 
         bool alwaysRoot, 
-        out ReadOnlyObservableCollection<ModFileNode> result, 
-        out bool hasMultipleRoots,
+        out ReadOnlyObservableCollection<ModFileNode> result,
+        out int rootCount,
         out string? primaryRootLocation)
     {
         // AlwaysRoot is left as a parameter because it may be a user preference in settings in the future.
         // If there's more than 1 location, create dummy nodes.
-        hasMultipleRoots = (alwaysRoot || locations.Count > 1); 
+        rootCount = locations.Count;
+        var hasMultipleRoots = (alwaysRoot || locations.Count > 1); 
         if (hasMultipleRoots)
         {
             foreach (var location in locations)
                 cache.AddOrUpdate(new FileTreeNodeDesignViewModel(false, new GamePath(location.Key, ""), location.Value));
 
-            hasMultipleRoots = true;
             primaryRootLocation = null;
         }
         else

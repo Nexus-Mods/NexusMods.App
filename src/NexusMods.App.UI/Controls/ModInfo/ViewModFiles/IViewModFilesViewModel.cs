@@ -14,9 +14,9 @@ public interface IViewModFilesViewModel : IViewModelInterface
     string? PrimaryRootLocation { get; }
     
     /// <summary>
-    ///     True if multiple roots are present in <see cref="Items"/>
+    ///     The number of roots present in <see cref="Items"/>
     /// </summary>
-    bool HasMultipleRoots { get; }
+    int RootCount { get; }
     
     /// <summary>
     ///     All items to be displayed.

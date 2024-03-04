@@ -29,8 +29,11 @@ public partial class ViewModFilesView : ReactiveUserControl<IViewModFilesViewMod
             ModFilesTreeDataGrid.Source = source;
             
             // Hide Stack Panel
-            LocationStackPanel.IsVisible = !ViewModel.HasMultipleRoots;
-            LocationText.Text = ViewModel.PrimaryRootLocation;
+            MultiLocationStackPanel.IsVisible = ViewModel.RootCount > 1;
+            SingleLocationStackPanel.IsVisible = ViewModel.RootCount <= 1;
+
+            SingleLocationText.Text = ViewModel.PrimaryRootLocation;
+            MultiLocationCountText.Text = $"{ViewModel.RootCount}";
         });
     }
     

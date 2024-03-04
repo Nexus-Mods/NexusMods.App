@@ -285,4 +285,7 @@
     <data name="ViewModFilesView_Location" xml:space="preserve">
         <value>LOKALIZACJA:</value>
     </data>
+    <data name="ViewModFilesView_Locations" xml:space="preserve">
+        <value>LOKALIZACJE:</value>
+    </data>
 </root>

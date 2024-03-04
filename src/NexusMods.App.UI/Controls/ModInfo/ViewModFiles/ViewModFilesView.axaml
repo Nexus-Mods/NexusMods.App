@@ -29,15 +29,34 @@
     
     <!-- Visual Tree -->
     <StackPanel Orientation="Vertical">
-        <StackPanel Orientation="Horizontal" IsVisible="True" Name="LocationStackPanel"
+        
+        <!-- 1 location, display its path -->
+        <StackPanel Orientation="Horizontal" IsVisible="True" Name="SingleLocationStackPanel"
                     Margin="24, 11.5,24, 11.5">
+            
             <TextBlock Text="{x:Static resources:Language.ViewModFilesView_Location}"
                        Foreground="{StaticResource NeutralSubdued}"
                        VerticalAlignment="Center"
                        Classes="TitleSMSemi"
                        Margin="4,0,0,0"/>
 
-            <TextBlock Name="LocationText"
+            <TextBlock Name="SingleLocationText"
+                       VerticalAlignment="Center"
+                       Foreground="{StaticResource NeutralSubdued}"
+                       Margin="8,0,0,0"/>
+        </StackPanel>
+        
+        <!-- 2 locations, display the number -->
+        <StackPanel Orientation="Horizontal" IsVisible="True" Name="MultiLocationStackPanel"
+                    Margin="24, 11.5,24, 11.5">
+            
+            <TextBlock Text="{x:Static resources:Language.ViewModFilesView_Locations}"
+                       Foreground="{StaticResource NeutralSubdued}"
+                       VerticalAlignment="Center"
+                       Classes="TitleSMSemi"
+                       Margin="4,0,0,0"/>
+
+            <TextBlock Name="MultiLocationCountText"
                        VerticalAlignment="Center"
                        Foreground="{StaticResource NeutralSubdued}"
                        Margin="8,0,0,0"/>

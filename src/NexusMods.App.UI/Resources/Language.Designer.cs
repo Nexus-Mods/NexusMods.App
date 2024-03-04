@@ -590,5 +590,11 @@ namespace NexusMods.App.UI.Resources {
                 return ResourceManager.GetString("ViewModFilesView_Location", resourceCulture);
             }
         }
+        
+        public static string ViewModFilesView_Locations {
+            get {
+                return ResourceManager.GetString("ViewModFilesView_Locations", resourceCulture);
+            }
+        }
     }
 }
