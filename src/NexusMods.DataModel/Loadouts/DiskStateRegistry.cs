@@ -79,7 +79,7 @@ public class DiskStateRegistry : IDiskStateRegistry
         return JsonSerializer.Deserialize<DiskStateTree>(compressed, _jsonSerializerOptions);
     }
 
-    /// <Inheritdoc />
+    /// <inheritdoc />
     public IId? GetLastAppliedLoadout(GameInstallation gameInstallation)
     {
         if (_lastAppliedRevisionDictionary.TryGetValue(gameInstallation, out var lastAppliedLoadout))
