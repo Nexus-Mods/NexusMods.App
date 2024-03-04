@@ -24,9 +24,9 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
 
     private ObservableAsPropertyHelper<IId> _lastAppliedRevisionId;
     private IId LastAppliedRevisionId => _lastAppliedRevisionId.Value;
-    
+
     [Reactive] private LoadoutId LastAppliedLoadoutId { get; set; }
-    
+
     private ObservableAsPropertyHelper<Abstractions.Loadouts.Loadout> _newestLoadout;
     private Abstractions.Loadouts.Loadout NewestLoadout => _newestLoadout.Value;
 
@@ -49,21 +49,19 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
         _applyService = serviceProvider.GetRequiredService<IApplyService>();
         LaunchButtonViewModel = serviceProvider.GetRequiredService<ILaunchButtonViewModel>();
         LaunchButtonViewModel.LoadoutId = loadoutId;
-        
+
         var currentLoadout = _loadoutRegistry.Get(loadoutId);
         if (currentLoadout is null)
             throw new ArgumentException("Loadout not found", nameof(loadoutId));
-        
+
         _newestLoadout = Observable.Return(currentLoadout)
             .Merge(_loadoutRegistry.RevisionsAsLoadouts(loadoutId))
-            .OnUI()
-            .ToProperty(this, vm => vm.NewestLoadout);
+            .ToProperty(this, vm => vm.NewestLoadout, scheduler: RxApp.MainThreadScheduler);
 
         _gameInstallation = currentLoadout.Installation;
-        
-        _lastAppliedRevisionId =_applyService.LastAppliedRevisionFor(_gameInstallation)
-            .OnUI()
-            .ToProperty(this, vm => vm.LastAppliedRevisionId);
+
+        _lastAppliedRevisionId = _applyService.LastAppliedRevisionFor(_gameInstallation)
+            .ToProperty(this, vm => vm.LastAppliedRevisionId, scheduler: RxApp.MainThreadScheduler);
 
         _applyReactiveCommand = ReactiveCommand.CreateFromTask(async () => await Apply());
 
@@ -78,7 +76,6 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
                             return loadout.LoadoutId;
                         }
                     )
-                    .OnUI()
                     .BindToVM(this, vm => vm.LastAppliedLoadoutId)
                     .DisposeWith(disposables);
 
@@ -102,8 +99,11 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
                 this.WhenAnyValue(vm => vm.LastAppliedLoadoutId,
                         vm => vm.NewestLoadout
                     )
-                    .Select(_ => !LastAppliedLoadoutId.Equals(_loadoutId) ? Language.ApplyControlViewModel__ACTIVATE_AND_APPLY : Language.ApplyControlViewModel__APPLY)
-                    .OnUI()
+                    .Select(_ =>
+                        !LastAppliedLoadoutId.Equals(_loadoutId)
+                            ? Language.ApplyControlViewModel__ACTIVATE_AND_APPLY
+                            : Language.ApplyControlViewModel__APPLY
+                    )
                     .BindToVM(this, vm => vm.ApplyButtonText)
                     .DisposeWith(disposables);
             }
