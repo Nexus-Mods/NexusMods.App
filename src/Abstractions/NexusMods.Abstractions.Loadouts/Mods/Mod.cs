@@ -59,7 +59,7 @@ public record Mod : Entity, IHasEntityId<ModId>
     /// <summary>
     /// Metadata of the mod.
     /// </summary>
-    public AModMetadata? Metadata { get; set; }
+    public ImmutableList<AModMetadata> Metadata { get; init; } = ImmutableList<AModMetadata>.Empty;
 
     /// <summary>
     /// Category of the mod

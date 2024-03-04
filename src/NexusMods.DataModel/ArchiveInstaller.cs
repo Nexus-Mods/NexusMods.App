@@ -158,7 +158,7 @@ public class ArchiveInstaller : IArchiveInstaller
             job.AddProgress(Percent.CreateClamped(0.75));
 
             // Step 5: Add the mod to the loadout.
-            AModMetadata? modMetadata = mods.Length > 1
+            var groupMetadata = mods.Length > 1
                 ? new GroupMetadata
                 {
                     Id = GroupId.NewId(),
@@ -171,7 +171,8 @@ public class ArchiveInstaller : IArchiveInstaller
 
             foreach (var mod in mods)
             {
-                mod.Metadata = modMetadata;
+                var metadata = new List<AModMetadata>();
+                if (groupMetadata is not null) metadata.Add(groupMetadata);
 
                 if (mod.Id.Equals(baseMod.Id))
                 {
@@ -186,7 +187,7 @@ public class ArchiveInstaller : IArchiveInstaller
                             Version = mod.Version,
                             SortRules = mod.SortRules,
                             Files = mod.Files,
-                            Metadata = mod.Metadata
+                            Metadata = metadata.ToImmutableList(),
                         });
                 }
                 else
@@ -211,7 +212,7 @@ public class ArchiveInstaller : IArchiveInstaller
             _logger.LogError(ex, "Failed to install mod {Name}", archiveName);
             _registry.Alter(cursor, $"Failed to install {archiveName}", mod => mod! with
             {
-                Status = ModStatus.Failed
+                Status = ModStatus.Failed,
             });
 
             throw;
