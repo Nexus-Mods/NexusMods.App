@@ -59,7 +59,7 @@ public class ApplyService : IApplyService
             if (lastAppliedRevision is not null)
             {
                 var lastLoadout = _loadoutRegistry.GetLoadout(lastAppliedRevision);
-                lastAppliedLoadout = lastLoadout ?? throw new Exception("Loadout not found for last applied revision");
+                lastAppliedLoadout = lastLoadout ?? throw new KeyNotFoundException("Loadout not found for last applied revision");
             }
             else
             {
@@ -95,14 +95,14 @@ public class ApplyService : IApplyService
         }
 
         var lastLoadout = _loadoutRegistry.GetLoadout(lastAppliedRevision);
-        var lastAppliedLoadout = lastLoadout ?? throw new Exception("Loadout not found for last applied revision");
+        var lastAppliedLoadout = lastLoadout ?? throw new KeyNotFoundException("Loadout not found for last applied revision");
         
         var loadoutWithIngest = await lastAppliedLoadout.Ingest();
         
         // Get the latest loadout revision
         var latestRevision = _loadoutRegistry.Get(loadoutWithIngest.LoadoutId);
         if (latestRevision is null)
-            throw new Exception("No latest revision found for last applied loadout");
+            throw new KeyNotFoundException("No latest revision found for last applied loadout");
         
         // if latest revision is the same as the last applied revision, no need to rebase
         if (latestRevision.DataStoreId.Equals(loadoutWithIngest.DataStoreId))
