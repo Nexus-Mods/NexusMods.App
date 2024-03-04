@@ -1,0 +1,122 @@
+﻿{
+  Name: NPC Map Locations,
+  Version: 2.11.3,
+  Category: ,
+  Files: [
+    {
+      To: {Game}/Mods/NPCMapLocations/NPCMapLocations.pdb,
+      Size: 42868,
+      Hash: 7909052853389631309
+    },
+    {
+      To: {Game}/Mods/NPCMapLocations/NPCMapLocations.dll,
+      Size: 127488,
+      Hash: 17633111645367539703
+    },
+    {
+      To: {Game}/Mods/NPCMapLocations/maps/_default/winter_map.png,
+      Size: 76427,
+      Hash: 16014463790474435373
+    },
+    {
+      To: {Game}/Mods/NPCMapLocations/maps/_default/summer_map.png,
+      Size: 94219,
+      Hash: 8313311812604916696
+    },
+    {
+      To: {Game}/Mods/NPCMapLocations/maps/_default/spring_map.png,
+      Size: 91883,
+      Hash: 7822035109451312380
+    },
+    {
+      To: {Game}/Mods/NPCMapLocations/maps/_default/fall_map.png,
+      Size: 81746,
+      Hash: 6198862362434547675
+    },
+    {
+      To: {Game}/Mods/NPCMapLocations/maps/_default/buildings.png,
+      Size: 749,
+      Hash: 5811971446182230957
+    },
+    {
+      To: {Game}/Mods/NPCMapLocations/manifest.json,
+      Size: 338,
+      Hash: 9574496621472312885
+    },
+    {
+      To: {Game}/Mods/NPCMapLocations/i18n/zh.json,
+      Size: 1285,
+      Hash: 15415103844434970758
+    },
+    {
+      To: {Game}/Mods/NPCMapLocations/i18n/uk.json,
+      Size: 1826,
+      Hash: 17372084086483710241
+    },
+    {
+      To: {Game}/Mods/NPCMapLocations/i18n/tr.json,
+      Size: 1334,
+      Hash: 3379074489939113236
+    },
+    {
+      To: {Game}/Mods/NPCMapLocations/i18n/th.json,
+      Size: 2008,
+      Hash: 7201787791860042322
+    },
+    {
+      To: {Game}/Mods/NPCMapLocations/i18n/ru.json,
+      Size: 1771,
+      Hash: 2422551262801190011
+    },
+    {
+      To: {Game}/Mods/NPCMapLocations/i18n/pt.json,
+      Size: 1393,
+      Hash: 14946519066007806838
+    },
+    {
+      To: {Game}/Mods/NPCMapLocations/i18n/pl.json,
+      Size: 1360,
+      Hash: 6964442656894316006
+    },
+    {
+      To: {Game}/Mods/NPCMapLocations/i18n/ko.json,
+      Size: 1248,
+      Hash: 13822201515900637908
+    },
+    {
+      To: {Game}/Mods/NPCMapLocations/i18n/ja.json,
+      Size: 1344,
+      Hash: 6984179870573787715
+    },
+    {
+      To: {Game}/Mods/NPCMapLocations/i18n/it.json,
+      Size: 1371,
+      Hash: 12272262777978204238
+    },
+    {
+      To: {Game}/Mods/NPCMapLocations/i18n/hu.json,
+      Size: 1590,
+      Hash: 17942536179015763997
+    },
+    {
+      To: {Game}/Mods/NPCMapLocations/i18n/fr.json,
+      Size: 1430,
+      Hash: 17540911283156947138
+    },
+    {
+      To: {Game}/Mods/NPCMapLocations/i18n/es.json,
+      Size: 1337,
+      Hash: 10597368778500176790
+    },
+    {
+      To: {Game}/Mods/NPCMapLocations/i18n/default.json,
+      Size: 1241,
+      Hash: 16665762132715109805
+    },
+    {
+      To: {Game}/Mods/NPCMapLocations/i18n/de.json,
+      Size: 1325,
+      Hash: 12416485908277067149
+    }
+  ]
+}

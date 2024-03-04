@@ -1,3 +1,5 @@
+using System.Runtime.CompilerServices;
+using System.Text.Json;
 using FluentAssertions;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,6 +16,7 @@ using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.DataModel.Extensions;
+using NexusMods.Games.TestFramework.Verifiers;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 
@@ -255,5 +258,13 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
         mods.Length.Should().BeGreaterOrEqualTo(1);
         var contents = mods.First().Files;
         return contents.OfType<StoredFile>().Select(m => (m.Hash.Value, m.To.LocationId, m.To.Path.ToString()));
+    }
+
+    protected async Task VerifyMod(Mod mod, [CallerFilePath] string sourceFile = "")
+    {
+        var res = VerifiableMod.From(mod);
+
+        // ReSharper disable once ExplicitCallerInfoArgument
+        await Verify(res, sourceFile: sourceFile);
     }
 }
