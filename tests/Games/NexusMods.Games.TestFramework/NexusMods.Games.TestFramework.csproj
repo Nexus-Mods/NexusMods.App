@@ -6,6 +6,11 @@
         <ProjectReference Include="..\..\..\src\NexusMods.DataModel\NexusMods.DataModel.csproj" />
         <ProjectReference Include="..\..\NexusMods.StandardGameLocators.TestHelpers\NexusMods.StandardGameLocators.TestHelpers.csproj" />
     </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Verify.Xunit"/>
+    </ItemGroup>
+
     <ItemGroup>
       <None Update="xunit.runner.json">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
