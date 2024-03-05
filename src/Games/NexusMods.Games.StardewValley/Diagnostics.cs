@@ -38,4 +38,17 @@ internal static partial class Diagnostics
             .AddValue<string>("CurrentVersion")
         )
         .Finish();
+
+    [DiagnosticTemplate]
+    [UsedImplicitly]
+    internal static IDiagnosticTemplate MissingSMAPITemplate = DiagnosticTemplateBuilder
+        .Start()
+        .WithId(new DiagnosticId(Source, number: 3))
+        .WithSeverity(DiagnosticSeverity.Warning)
+        .WithSummary("SMAPI is required for {ModCount} Mod(s)")
+        .WithoutDetails()
+        .WithMessageData(messageBuilder => messageBuilder
+            .AddValue<int>("ModCount")
+        )
+        .Finish();
 }
