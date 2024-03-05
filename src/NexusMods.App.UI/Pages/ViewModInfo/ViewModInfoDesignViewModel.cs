@@ -9,12 +9,11 @@ namespace NexusMods.App.UI.Pages.ViewModInfo;
 
 public class ViewModInfoDesignViewModel : APageViewModel<IViewModInfoViewModel>, IViewModInfoViewModel
 {
-
     public LoadoutId LoadoutId { get; set; }
     public ModId ModId { get; set; }
     public CurrentViewModInfoPage Page { get; set; }
     public IViewModelInterface PageViewModel { get; set; }
     
     // Design
-    public ViewModInfoDesignViewModel() : base(null!) => PageViewModel = new ViewModFilesDesignViewModel();
+    public ViewModInfoDesignViewModel() : base(new DesignWindowManager()) => PageViewModel = new ViewModFilesDesignViewModel();
 }
