@@ -1,5 +1,4 @@
 using System.Collections.ObjectModel;
-using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.UI.Icons;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.Pages.LoadoutGrid;

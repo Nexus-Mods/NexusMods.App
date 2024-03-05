@@ -1,5 +1,4 @@
 using System.Collections.ObjectModel;
-using System.Reactive.Disposables;
 using DynamicData;
 using DynamicData.Kernel;
 using ReactiveUI;

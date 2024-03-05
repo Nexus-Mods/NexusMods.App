@@ -1,4 +1,3 @@
-using System.Collections;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Games;
 using NexusMods.App.UI.Controls.FoundGames;

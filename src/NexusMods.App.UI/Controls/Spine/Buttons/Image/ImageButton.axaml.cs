@@ -1,7 +1,6 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.ReactiveUI;
-using Avalonia.VisualTree;
 using NexusMods.App.UI.Controls.UnifiedIcon;
 using ReactiveUI;
 

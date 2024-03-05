@@ -1,8 +1,6 @@
 using System.Collections.ObjectModel;
 using DynamicData;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.App.UI.Controls.Trees.Files;
 using NexusMods.Paths;
 
@@ -159,5 +157,4 @@ public class ViewModFilesDesignViewModel : AViewModel<IViewModFilesViewModel>,
         // Final part is the file
         cache.AddOrUpdate(new FileTreeNodeDesignViewModel(true, new GamePath(locationId, currentPath.Join(parts[index])), fileSize));
     }
-
 }

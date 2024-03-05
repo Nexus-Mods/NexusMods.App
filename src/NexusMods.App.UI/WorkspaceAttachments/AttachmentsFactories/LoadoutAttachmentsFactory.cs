@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.Loadouts;
+﻿using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.WorkspaceSystem;
 
 namespace NexusMods.App.UI.WorkspaceAttachments;
