@@ -46,9 +46,10 @@ internal static partial class Diagnostics
         .WithId(new DiagnosticId(Source, number: 3))
         .WithSeverity(DiagnosticSeverity.Warning)
         .WithSummary("SMAPI is required for {ModCount} Mod(s)")
-        .WithoutDetails()
+        .WithDetails("You can install the latest SMAPI version at {NexusModsSMAPIUri}.")
         .WithMessageData(messageBuilder => messageBuilder
             .AddValue<int>("ModCount")
+            .AddValue<Uri>("NexusModsSMAPIUri")
         )
         .Finish();
 }

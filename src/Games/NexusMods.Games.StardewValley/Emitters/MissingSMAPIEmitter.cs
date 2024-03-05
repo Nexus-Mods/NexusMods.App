@@ -7,6 +7,8 @@ namespace NexusMods.Games.StardewValley.Emitters;
 
 public class MissingSMAPIEmitter : ILoadoutDiagnosticEmitter
 {
+    private static readonly Uri NexusModsSMAPIUri = new("https://nexusmods.com/stardewvalley/mods/2400");
+
     public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout loadout)
     {
         await Task.Yield();
@@ -18,7 +20,8 @@ public class MissingSMAPIEmitter : ILoadoutDiagnosticEmitter
         if (hasSMAPI) yield break;
 
         yield return Diagnostics.CreateMissingSMAPI(
-            ModCount: smapiModCount
+            ModCount: smapiModCount,
+            NexusModsSMAPIUri: NexusModsSMAPIUri
         );
     }
 }
