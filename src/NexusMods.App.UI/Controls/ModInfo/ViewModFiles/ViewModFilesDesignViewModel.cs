@@ -139,11 +139,6 @@ public class ViewModFilesDesignViewModel : AViewModel<IViewModFilesViewModel>,
         ViewModFilesViewModel.BindItems(cache, locations, alwaysRootFolders, out _items, out _rootCount, out _primaryRootLocation);
     }
 
-    public void Initialize(LoadoutId loadoutId, List<ModId> contextModIds)
-    {
-        //throw new NotImplementedException();
-    }
-
     private static void CreateModFileNode(RelativePath filePath, LocationId locationId, SourceCache<IFileTreeNodeViewModel, GamePath> cache, ulong fileSize)
     {
         // Build the path, creating directories as needed
