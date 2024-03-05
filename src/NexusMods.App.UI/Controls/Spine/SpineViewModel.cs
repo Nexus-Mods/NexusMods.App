@@ -71,7 +71,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
 
         this.WhenActivated(disposables =>
         {
-            loadoutRegistry.LoadoutsIds
+            loadoutRegistry.LoadoutRootChanges
                 .Transform(loadoutId => (loadoutId,loadout: loadoutRegistry.Get(loadoutId)))
                 .Filter(tuple => tuple.loadout != null)
                 .TransformAsync(async tuple =>

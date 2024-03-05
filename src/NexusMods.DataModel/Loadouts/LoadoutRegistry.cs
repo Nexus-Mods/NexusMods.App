@@ -39,7 +39,7 @@ public class LoadoutRegistry : IDisposable, ILoadoutRegistry
     /// All the loadoutRoots (<see cref="LoadoutId"/>)
     /// </summary>
     /// <returns></returns>
-    public IObservable<IChangeSet<LoadoutId>> LoadoutsIds => _loadoutsIds.ToObservableChangeSet();
+    public IObservable<IChangeSet<LoadoutId>> LoadoutRootChanges => _loadoutsIds.ToObservableChangeSet();
 
     /// <summary>
     /// All the loadouts and their current root ids

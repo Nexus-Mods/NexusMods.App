@@ -20,7 +20,7 @@ public interface ILoadoutRegistry
     /// All the loadoutRoots (<see cref="LoadoutId"/>)
     /// </summary>
     /// <returns></returns>
-    IObservable<IChangeSet<LoadoutId>> LoadoutsIds { get; }
+    IObservable<IChangeSet<LoadoutId>> LoadoutRootChanges { get; }
 
     /// <summary>
     /// All the loadouts and their current root ids
