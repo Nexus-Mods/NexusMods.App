@@ -32,7 +32,7 @@
         
         <!-- 1 location, display its path -->
         <StackPanel Orientation="Horizontal" IsVisible="True" Name="SingleLocationStackPanel"
-                    Margin="24, 11.5,24, 11.5">
+                    Margin="24,12,24,12">
             
             <TextBlock Text="{x:Static resources:Language.ViewModFilesView_Location}"
                        Foreground="{StaticResource NeutralSubdued}"
@@ -48,7 +48,7 @@
         
         <!-- 2 locations, display the number -->
         <StackPanel Orientation="Horizontal" IsVisible="True" Name="MultiLocationStackPanel"
-                    Margin="24, 11.5,24, 11.5">
+                    Margin="24,12,24,12">
             
             <TextBlock Text="{x:Static resources:Language.ViewModFilesView_Locations}"
                        Foreground="{StaticResource NeutralSubdued}"
