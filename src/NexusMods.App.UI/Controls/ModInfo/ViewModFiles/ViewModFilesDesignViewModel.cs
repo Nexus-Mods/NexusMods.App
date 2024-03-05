@@ -22,8 +22,8 @@ public class ViewModFilesDesignViewModel : AViewModel<IViewModFilesViewModel>,
     private string? _primaryRootLocation;
     public string? PrimaryRootLocation => _primaryRootLocation;
 
-    private bool _showMultipleRoots = false;
-    private bool _alwaysRootFolders = false;
+    private bool _showMultipleRoots;
+    private bool _alwaysRootFolders;
     
     /// <summary>
     ///     Adds a 'saves' folder.
@@ -63,8 +63,8 @@ public class ViewModFilesDesignViewModel : AViewModel<IViewModFilesViewModel>,
         var locations = new Dictionary<LocationId, string>();
 
         // ReSharper disable once RedundantSuppressNullableWarningExpression
-        void SaveFile(string filePath, long fileSize) => CreateModFileNode(filePath, LocationId.Saves, cache!, fileSize);
-        void GameFile(string filePath, long fileSize) => CreateModFileNode(filePath, LocationId.Game, cache, fileSize);
+        void SaveFile(string filePath, ulong fileSize) => CreateModFileNode(filePath, LocationId.Saves, cache!, fileSize);
+        void GameFile(string filePath, ulong fileSize) => CreateModFileNode(filePath, LocationId.Game, cache, fileSize);
 
         // Root Files
         locations.Add(LocationId.Game, "GAME");
@@ -144,7 +144,7 @@ public class ViewModFilesDesignViewModel : AViewModel<IViewModFilesViewModel>,
         //throw new NotImplementedException();
     }
 
-    private static void CreateModFileNode(RelativePath filePath, LocationId locationId, SourceCache<IFileTreeNodeViewModel, GamePath> cache, long fileSize)
+    private static void CreateModFileNode(RelativePath filePath, LocationId locationId, SourceCache<IFileTreeNodeViewModel, GamePath> cache, ulong fileSize)
     {
         // Build the path, creating directories as needed
         var currentPath = new RelativePath();

@@ -7,16 +7,16 @@ namespace NexusMods.App.UI.Controls.Trees.Files;
 public class FileTreeNodeDesignViewModel : AViewModel<IFileTreeNodeViewModel>, IFileTreeNodeViewModel
 {
     [UsedImplicitly] // Via designer, if uncommented.
-    public static FileTreeNodeDesignViewModel SampleFile { get; } = new(true, new GamePath(LocationId.Game, "Sample File"), -1);
+    public static FileTreeNodeDesignViewModel SampleFile { get; } = new(true, new GamePath(LocationId.Game, "Sample File"), 0);
 
     [UsedImplicitly] // Via designer, if uncommented.
-    public static FileTreeNodeDesignViewModel SampleFolder { get; } = new(false, new GamePath(LocationId.Game, "Sample Folder"), -1);
+    public static FileTreeNodeDesignViewModel SampleFolder { get; } = new(false, new GamePath(LocationId.Game, "Sample Folder"), 0);
 
     [Reactive]
     public FileTreeNodeIconType Icon { get; set; }
     public bool IsFile { get; }
     public string Name { get; }
-    public long FileSize { get; }
+    public ulong FileSize { get; }
     public GamePath FullPath { get; set; } = default;
     public GamePath ParentPath { get; set; } = default;
     
@@ -25,7 +25,7 @@ public class FileTreeNodeDesignViewModel : AViewModel<IFileTreeNodeViewModel>, I
         
     }
     
-    public FileTreeNodeDesignViewModel(bool isFile, GamePath fullPath, long fileSize)
+    public FileTreeNodeDesignViewModel(bool isFile, GamePath fullPath, ulong fileSize)
     {
         IsFile = isFile;
         Icon = IsFile ? FileTreeNodeIconType.File : FileTreeNodeIconType.ClosedFolder;
@@ -35,7 +35,7 @@ public class FileTreeNodeDesignViewModel : AViewModel<IFileTreeNodeViewModel>, I
         FileSize = fileSize;
     }
 
-    public FileTreeNodeDesignViewModel(bool isFile, GamePath fullPath, string name) : this(isFile, fullPath, -1)
+    public FileTreeNodeDesignViewModel(bool isFile, GamePath fullPath, string name) : this(isFile, fullPath, 0)
     {
         Name = name;
         ParentPath = default(GamePath);

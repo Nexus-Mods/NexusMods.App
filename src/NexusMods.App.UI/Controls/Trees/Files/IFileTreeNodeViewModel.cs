@@ -22,7 +22,7 @@ public interface IFileTreeNodeViewModel : IViewModelInterface
     /// <summary>
     ///     The size of the file, in bytes.
     /// </summary>
-    long FileSize { get; }
+    ulong FileSize { get; }
     
     /// <summary>
     ///     The full path to this visible node.

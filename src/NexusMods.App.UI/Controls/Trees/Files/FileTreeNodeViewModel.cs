@@ -16,11 +16,11 @@ public class FileTreeNodeViewModel<TValue> : AViewModel<IFileTreeNodeViewModel>,
 
     public bool IsFile => _item.Item.IsFile;
     public string Name => _item.Item.Segment;
-    public long FileSize { get; }
+    public ulong FileSize { get; }
     public GamePath FullPath => _item.GamePath();
     public GamePath ParentPath => _item.Parent()!.GamePath();
 
-    public FileTreeNodeViewModel(KeyedBox<RelativePath, GamePathNode<TValue>> item, long fileSize)
+    public FileTreeNodeViewModel(KeyedBox<RelativePath, GamePathNode<TValue>> item, ulong fileSize)
     {
         _item = item;
         FileSize = fileSize;

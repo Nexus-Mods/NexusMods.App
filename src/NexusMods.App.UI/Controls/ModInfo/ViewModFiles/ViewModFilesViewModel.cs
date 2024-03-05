@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using DynamicData;
+using JetBrains.Annotations;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.IO;
@@ -11,6 +12,7 @@ using NexusMods.Paths.Trees.Traits;
 using ModFileNode = NexusMods.App.UI.TreeNodeVM<NexusMods.App.UI.Controls.Trees.Files.IFileTreeNodeViewModel, NexusMods.Abstractions.GameLocators.GamePath>;
 namespace NexusMods.App.UI.Controls.ModInfo.ViewModFiles;
 
+[UsedImplicitly]
 public class ViewModFilesViewModel : AViewModel<IViewModFilesViewModel>, IViewModFilesViewModel
 {
     private readonly ILoadoutRegistry _registry;
@@ -65,18 +67,13 @@ public class ViewModFilesViewModel : AViewModel<IViewModFilesViewModel>, IViewMo
         var allItems = FlattenedLoadout.Create(dict).GetAllDescendents().ToArray();
         
         var displayedItems = new List<IFileTreeNodeViewModel>();
-        var hashToFileSize = new Dictionary<ulong, long>();
         foreach (var x in allItems)
         {
             if (!x.Item.IsFile)
                 continue;
             
             var storedFile = (StoredFile)x.Item.Value.File;
-            
-            // TODO: Optimize fetching file sizes, this is pretty inefficient for very large mods.
-            var fileSize = _fileStore.GetFileStream(storedFile.Hash).Result.Length;
-            hashToFileSize[storedFile.Hash.Value] = fileSize;
-            displayedItems.Add(new FileTreeNodeViewModel<ModFilePair>(x, fileSize));
+            displayedItems.Add(new FileTreeNodeViewModel<ModFilePair>(x, storedFile.Size.Value));
         }
         
         // Now calculate folder sizes.
@@ -85,11 +82,11 @@ public class ViewModFilesViewModel : AViewModel<IViewModFilesViewModel>, IViewMo
             if (x.Item.IsFile)
                 continue;
 
-            var fileSize = (long)0;
+            var fileSize = (ulong)0;
             foreach (var child in x.EnumerateChildrenBfs())
             {
                 var storedFile = (StoredFile)child.Value.Item.Value.File;
-                fileSize += hashToFileSize[storedFile.Hash.Value];
+                fileSize += storedFile.Size.Value;
             }
             displayedItems.Add(new FileTreeNodeViewModel<ModFilePair>(x, fileSize));
         }
