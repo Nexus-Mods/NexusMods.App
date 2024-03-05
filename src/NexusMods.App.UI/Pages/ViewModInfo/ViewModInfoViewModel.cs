@@ -51,11 +51,6 @@ public class ViewModInfoViewModel : APageViewModel<IViewModInfoViewModel>, IView
                 vm.Initialize(LoadoutId, [ModId]);
                 PageViewModel = vm;
                 break;
-            case CurrentViewModInfoPage.Notes:
-            case CurrentViewModInfoPage.Dependencies:
-            case CurrentViewModInfoPage.Conflicts:
-            case CurrentViewModInfoPage.Categories:
-            case CurrentViewModInfoPage.Description:
             default:
                 throw new ArgumentOutOfRangeException(nameof(page), page, null);
         }
