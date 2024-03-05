@@ -61,8 +61,7 @@ public partial class ViewModFilesView : ReactiveUserControl<IViewModFilesViewMod
                                 // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
                                 if (node == null)
                                     return new Control();
-                                    
-                                // Very sus but it works, t r u s t.
+
                                 var view = new FileTreeNodeView();
                                 view.DataContext = node.Item;
                                 
