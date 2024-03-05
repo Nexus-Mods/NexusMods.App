@@ -47,7 +47,6 @@
             <!-- File Name -->
             <TextBlock Grid.Column="1" Classes="BodyMDNormal" VerticalAlignment="Center"
                        TextTrimming="CharacterEllipsis"
-                       Text="Example-file.bsa"
                        x:Name="FileNameTextBlock" />
         </Grid>
     </Grid>
