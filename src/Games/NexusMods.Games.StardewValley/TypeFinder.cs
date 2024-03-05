@@ -13,6 +13,7 @@ public class TypeFinder : ITypeFinder
 
     private static IEnumerable<Type> AllTypes => new[]
     {
+        typeof(SMAPIMarker),
         typeof(SMAPIManifestMetadata),
         typeof(SMAPISorter),
     };
