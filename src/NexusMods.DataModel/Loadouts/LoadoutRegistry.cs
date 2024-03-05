@@ -92,7 +92,6 @@ public class LoadoutRegistry : IDisposable, ILoadoutRegistry
                     x.AddOrUpdate(dataStoreId!, loadoutId);
                 });
                 
-                // don't trigger a change if the loadout already exists, we are only storing ids after all
                 if (!_loadoutsIds.Contains(loadoutId))
                     _loadoutsIds.Add(loadoutId);
             });
