@@ -42,19 +42,6 @@ public class ViewModInfoViewModel : APageViewModel<IViewModInfoViewModel>, IView
         });
     }
 
-    public void OnSetContext()
-    {
-        // In case 
-        try
-        {
-            GetWorkspaceController().SetTabTitle(GetModName(), WorkspaceId, PanelId, TabId);
-        }
-        catch (Exception)
-        {
-            // Ignored if no window/workspace present
-        }
-    }
-    
     private void CreateNewPage(CurrentViewModInfoPage page)
     {
         switch (page)
