@@ -16,13 +16,13 @@ namespace NexusMods.App.UI;
 public class TreeNodeVM<TItem, TKey> : ReactiveObject, IActivatableViewModel
     where TItem : class, IViewModelInterface where TKey : notnull
 {
-    private readonly ReadOnlyObservableCollection<TreeNodeVM<TItem, TKey>> _children;
+    private readonly Lazy<ReadOnlyObservableCollection<TreeNodeVM<TItem, TKey>>> _children;
 
     /// <summary>
     /// Collection of child nodes.
     /// This is an observable collection so that the UI can be notified of changes to the tree structure.
     /// </summary>
-    public ReadOnlyObservableCollection<TreeNodeVM<TItem, TKey>> Children => _children;
+    public ReadOnlyObservableCollection<TreeNodeVM<TItem, TKey>> Children => _children.Value;
 
     /// <summary>
     /// Reference to the original item of type <see cref="TItem"/> in the flat list.
@@ -58,11 +58,15 @@ public class TreeNodeVM<TItem, TKey> : ReactiveObject, IActivatableViewModel
         Id = node.Key;
         Parent = parent;
 
-        node.Children
-            .Connect()
-            .Transform(child => new TreeNodeVM<TItem, TKey>(child, this))
-            .Bind(out _children)
-            .Subscribe();
+        _children = new Lazy<ReadOnlyObservableCollection<TreeNodeVM<TItem, TKey>>>(() =>
+        {
+            node.Children
+                .Connect()
+                .Transform(child => new TreeNodeVM<TItem, TKey>(child, this))
+                .Bind(out var children)
+                .Subscribe();
+            return children;
+        });
     }
 
     /// <summary>
@@ -74,8 +78,7 @@ public class TreeNodeVM<TItem, TKey> : ReactiveObject, IActivatableViewModel
     {
         Item = item;
         Id = id;
-        _children = new ReadOnlyObservableCollection<TreeNodeVM<TItem, TKey>>(
-            new ObservableCollection<TreeNodeVM<TItem, TKey>>());
+        _children = new Lazy<ReadOnlyObservableCollection<TreeNodeVM<TItem, TKey>>>(new ReadOnlyObservableCollection<TreeNodeVM<TItem, TKey>>([]));
     }
 
     /// <summary>
