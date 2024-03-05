@@ -3,6 +3,7 @@ using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Pages.Downloads;
 using NexusMods.App.UI.Pages.LoadoutGrid;
 using NexusMods.App.UI.Pages.MyGames;
+using NexusMods.App.UI.Pages.ViewModInfo;
 using NexusMods.App.UI.WorkspaceSystem;
 
 namespace NexusMods.App.UI;
@@ -22,6 +23,7 @@ internal class TypeFinder : ITypeFinder
         typeof(LoadoutGridContext),
         typeof(InProgressPageContext),
         typeof(MyGamesPageContext),
+        typeof(ViewModInfoPageContext),
 
         // workspace context
         typeof(EmptyContext),
