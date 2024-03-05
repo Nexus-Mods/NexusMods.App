@@ -11,6 +11,7 @@ using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.NexusWebApi;
+using NexusMods.Games.StardewValley.Models;
 using NexusMods.Games.StardewValley.Sorters;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
@@ -183,8 +184,9 @@ public class SMAPIInstaller : AModInstaller
             Files = modFiles,
             SortRules = new []
             {
-                new SMAPISorter()
-            }
+                new SMAPISorter(),
+            },
+            Metadata = [new SMAPIMarker()],
         }};
     }
 }
