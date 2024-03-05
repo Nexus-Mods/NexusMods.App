@@ -12,8 +12,8 @@
         <modContent:ModContentDesignViewModel />
     </Design.DataContext>
 
-    <Grid RowDefinitions="Auto, *" x:Name="TopLevelGrid">
-        <Grid.Styles>
+    <StackPanel Orientation="Vertical" x:Name="TopLevelPanel">
+        <StackPanel.Styles>
             <Style Selector="Border.HeaderAreaBorder">
                 <Setter Property="BorderThickness" Value="0, 0, 0, 1" />
                 <Setter Property="Margin" Value="0, 0, 0, 16" />
@@ -22,10 +22,10 @@
             <Style Selector="TextBlock.ContentSubHeading">
                 <Setter Property="Margin" Value="0, 4, 0, 16" />
             </Style>
-        </Grid.Styles>
+        </StackPanel.Styles>
 
         <!-- "Mod Content" Header and "Description" -->
-        <Border Grid.Row="0" Classes="HeaderAreaBorder OutlineWeak" x:Name="HeaderAreaBorder">
+        <Border Classes="HeaderAreaBorder OutlineWeak" x:Name="HeaderAreaBorder">
             <StackPanel Orientation="Vertical">
 
                 <TextBlock Classes="TitleSMSemi"
@@ -39,8 +39,8 @@
         </Border>
 
         <!-- "Mod Content" Tree -->
-        <TreeDataGrid Grid.Row="1" Classes="TreeNoHeader TreeWhiteCaret" x:Name="ModContentTreeDataGrid"
-                      ShowColumnHeaders="True"/>
+        <TreeDataGrid Classes="TreeWhiteCaret" x:Name="ModContentTreeDataGrid"
+                      ShowColumnHeaders="False"/>
 
-    </Grid>
+    </StackPanel>
 </reactiveUi:ReactiveUserControl>

@@ -14,21 +14,6 @@
         </Style>
     </Style>
 
-    <Style Selector="TreeDataGrid.TreeNoHeader">
-        <!-- NOTE(Al12rs) This is to hide the TreeDataGrid Headers, without actually removing them.  -->
-        <!-- Hiding the headers completely breaks the Star columns, collapsing them to minimum space -->
-        <Style Selector="^ /template/ Border#ColumnHeadersPresenterBorder">
-            <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="MaxHeight" Value="1" />
-        </Style>
-
-        <Style Selector="^ TreeDataGridColumnHeader:pointerover /template/ Border#DataGridBorder">
-            <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
-            <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="BorderBrush" Value="Transparent" />
-        </Style>
-    </Style>
-
     <!-- Default Header Style for TreeDataGrid, for when the header exists -->
     <Style Selector="TreeDataGrid">
         <!-- Column Style -->

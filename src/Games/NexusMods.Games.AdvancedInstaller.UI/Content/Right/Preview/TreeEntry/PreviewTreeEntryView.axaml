@@ -38,21 +38,20 @@
         </Grid.Styles>
 
         <!-- Left Elements -->
-        <Grid Grid.Column="0" ClipToBounds="True" ColumnDefinitions="Auto,Auto,Auto" x:Name="FileElementGrid">
+        <StackPanel Grid.Column="0" Orientation="Horizontal" x:Name="FileElementGrid">
 
             <!-- File / Directory Icon -->
-            <unifiedIcon:UnifiedIcon Grid.Column="0" Classes="File FileTypeIcon" IsVisible="False" x:Name="FileEntryIcon" />
-            <unifiedIcon:UnifiedIcon Grid.Column="0" Classes="FolderOutline FileTypeIcon" IsVisible="False"
-                        x:Name="FolderEntryIcon" />
+            <unifiedIcon:UnifiedIcon Classes="File FileTypeIcon" IsVisible="False" x:Name="FileEntryIcon" />
+            <unifiedIcon:UnifiedIcon Classes="FolderOutline FileTypeIcon" IsVisible="False" x:Name="FolderEntryIcon" />
 
             <!-- File Name -->
-            <TextBlock Grid.Column="1" Classes="BodyMDNormal" VerticalAlignment="Center"
+            <TextBlock Classes="BodyMDNormal" VerticalAlignment="Center"
                        TextTrimming="CharacterEllipsis"
                        Text="Example-file.bsa"
                        x:Name="FileNameTextBlock" />
 
             <!-- Pills -->
-            <StackPanel Grid.Column="2" Orientation="Horizontal" Classes="Spacing-2" x:Name="PillStackPanel">
+            <StackPanel Orientation="Horizontal" Classes="Spacing-2">
 
                 <!-- NEW Pill Label -->
                 <Button Classes="Pill Accent Label Hug PillElement" IsVisible="False" x:Name="NewPill">
@@ -62,8 +61,7 @@
                 </Button>
 
                 <!-- Dupe Folder Pill Label -->
-                <Button Classes="Pill Light Label Hug PillElement" IsVisible="False"
-                        x:Name="DupeFolderPill">
+                <Button Classes="Pill Light Label Hug PillElement" IsVisible="False" x:Name="DupeFolderPill">
                     <StackPanel>
                         <unifiedIcon:UnifiedIcon Classes="Alert" />
                         <TextBlock Text="{x:Static resources:Language.Pill_DUPE_FOLDER}" />
@@ -71,8 +69,7 @@
                 </Button>
 
                 <!-- Folder Merged Pill Label -->
-                <Button Classes="Pill Light Label Hug PillElement" IsVisible="False"
-                        x:Name="FolderMergedPill">
+                <Button Classes="Pill Light Label Hug PillElement" IsVisible="False" x:Name="FolderMergedPill">
                     <StackPanel>
                         <unifiedIcon:UnifiedIcon Classes="Check" />
                         <TextBlock Text="{x:Static resources:Language.Pill_FOLDER_MERGED}" />
@@ -81,7 +78,7 @@
 
             </StackPanel>
 
-        </Grid>
+        </StackPanel>
 
         <!-- Right Elements // Add StackPanel here if adding additional ones -->
         <!-- X Button -->

@@ -19,7 +19,7 @@ public partial class ModContentView : ReactiveUserControl<IModContentViewModel>
                 .DisposeWith(disposables);
 
             // Disable the view when user is Create a new folder
-            this.OneWayBind(ViewModel, vm => vm.IsDisabled, view => view.TopLevelGrid.IsEnabled,
+            this.OneWayBind(ViewModel, vm => vm.IsDisabled, view => view.TopLevelPanel.IsEnabled,
                     isDisabled => !isDisabled)
                 .DisposeWith(disposables);
         });

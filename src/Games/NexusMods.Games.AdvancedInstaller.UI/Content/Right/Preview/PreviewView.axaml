@@ -12,7 +12,7 @@
         <preview:PreviewViewModel />
     </Design.DataContext>
 
-    <Border Classes="Rounded-lg Mid" x:Name="TopLevelBorder" Padding="16">
+    <Border Classes="Rounded-lg Mid" Padding="16">
         <Border.Styles>
             <Style Selector="Border.HeaderAreaBorder">
                 <Setter Property="BorderThickness" Value="0, 0, 0, 1" />
@@ -24,15 +24,12 @@
             </Style>
         </Border.Styles>
 
-        <ScrollViewer x:Name="ResultsScrollViewer">
-            <Grid RowDefinitions="Auto, *" x:Name="TopLevelGrid">
-
-                <Border Grid.Row="0" Classes="OutlineWeak HeaderAreaBorder" x:Name="HeaderAreaBorder">
+        <ScrollViewer>
+            <StackPanel Orientation="Vertical">
+                <Border Classes="OutlineWeak HeaderAreaBorder" x:Name="HeaderAreaBorder">
                     <StackPanel Orientation="Vertical">
-
                         <TextBlock Classes="TitleSMSemi"
-                                   Text="{x:Static resources:Language.PreviewHeader_INSTALL_LOCATOIN_PREVIEW}"
-                                   x:Name="InstallLocationPreviewHeader" />
+                                   Text="{x:Static resources:Language.PreviewHeader_INSTALL_LOCATION_PREVIEW}" />
 
                         <TextBlock Classes="BodySMNormal ForegroundSubdued SubHeading"
                                    Text="{x:Static resources:Language.PreviewSubHeading_Files_labelled_as_new}"
@@ -40,10 +37,8 @@
                     </StackPanel>
                 </Border>
 
-                <TreeDataGrid Grid.Row="1" Classes="TreeNoHeader TreeWhiteCaret" x:Name="LocationPreviewTreeDataGrid"
-                              ShowColumnHeaders="True"/>
-
-            </Grid>
+                <TreeDataGrid Classes="TreeWhiteCaret" x:Name="LocationPreviewTreeDataGrid" ShowColumnHeaders="False"/>
+            </StackPanel>
         </ScrollViewer>
     </Border>
 

@@ -21,7 +21,7 @@
             </Style>
         </Border.Styles>
 
-        <ScrollViewer x:Name="ResultsScrollViewer">
+        <ScrollViewer>
             <TextBlock Classes="BodyMDNormal ForegroundSubdued"
                        Text="{x:Static resources:Language.EmptyPreviewText_Select_files_to_install}"
                        x:Name="EmptyPreviewTextBlock" />

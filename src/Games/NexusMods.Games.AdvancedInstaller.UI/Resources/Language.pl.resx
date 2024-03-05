@@ -81,7 +81,7 @@
 	<data name="FileTree_ALL_MOD_FILES" xml:space="preserve">
 		<value>Wszystkie pliki modyfikacji</value>
 	</data>
-	<data name="PreviewHeader_INSTALL_LOCATOIN_PREVIEW" xml:space="preserve">
+	<data name="PreviewHeader_INSTALL_LOCATION_PREVIEW" xml:space="preserve">
 		<value>PODGLĄD SCIEŻKI INSTALACJI</value>
 	</data>
 	<data name="PreviewSubHeading_Files_labelled_as_new" xml:space="preserve">
