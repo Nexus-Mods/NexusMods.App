@@ -9,8 +9,6 @@ public partial class FileTreeNodeView : ReactiveUserControl<IFileTreeNodeViewMod
     public FileTreeNodeView()
     {
         InitializeComponent();
-        
-        // We don't need to subscribe in 'WhenActivated', because the state does not mutate.
         this.WhenActivated(d =>
             {
                 ViewModel.WhenAnyValue(vm => vm.Icon)
