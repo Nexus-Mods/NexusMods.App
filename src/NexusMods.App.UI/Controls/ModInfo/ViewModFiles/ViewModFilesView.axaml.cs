@@ -86,16 +86,18 @@ public partial class ViewModFilesView : ReactiveUserControl<IViewModFilesViewMod
                         options: new()
                         {
                             // Compares if folder first, such that folders show first, then by file name.
-                            CompareAscending = (x, y) => 
+                            CompareAscending = (x, y) =>
                             {
-                                var folderComparison = x!.Item.IsFile.CompareTo(y!.Item.IsFile); 
-                                return folderComparison != 0 ? folderComparison : string.Compare(x!.Item.Name, y!.Item.Name, StringComparison.OrdinalIgnoreCase);
+                                if (x == null || y == null) return 0;
+                                var folderComparison = x.Item.IsFile.CompareTo(y!.Item.IsFile); 
+                                return folderComparison != 0 ? folderComparison : string.Compare(x.Item.Name, y!.Item.Name, StringComparison.OrdinalIgnoreCase);
                             },
 
                             CompareDescending = (x, y) => 
                             {
-                                var folderComparison = x!.Item.IsFile.CompareTo(y!.Item.IsFile); 
-                                return folderComparison != 0 ? folderComparison : string.Compare(y!.Item.Name, x!.Item.Name, StringComparison.OrdinalIgnoreCase);
+                                if (x == null || y == null) return 0;
+                                var folderComparison = x.Item.IsFile.CompareTo(y!.Item.IsFile); 
+                                return folderComparison != 0 ? folderComparison : string.Compare(y.Item.Name, x!.Item.Name, StringComparison.OrdinalIgnoreCase);
                             },
                         }
                     ),
@@ -111,14 +113,16 @@ public partial class ViewModFilesView : ReactiveUserControl<IViewModFilesViewMod
                         // Compares if folder first, such that folders show first, then by file name.
                         CompareAscending = (x, y) => 
                         {
-                            var folderComparison = x!.Item.IsFile.CompareTo(y!.Item.IsFile);
-                            return folderComparison != 0 ? folderComparison : x!.Item.FileSize.CompareTo(y!.Item.FileSize);
+                            if (x == null || y == null) return 0;
+                            var folderComparison = x.Item.IsFile.CompareTo(y.Item.IsFile);
+                            return folderComparison != 0 ? folderComparison : x.Item.FileSize.CompareTo(y!.Item.FileSize);
                         },
 
                         CompareDescending = (x, y) => 
                         {
-                            var folderComparison = x!.Item.IsFile.CompareTo(y!.Item.IsFile);  
-                            return folderComparison != 0 ? folderComparison : y!.Item.FileSize.CompareTo(x!.Item.FileSize);
+                            if (x == null || y == null) return 0;
+                            var folderComparison = x.Item.IsFile.CompareTo(y.Item.IsFile);  
+                            return folderComparison != 0 ? folderComparison : y.Item.FileSize.CompareTo(x!.Item.FileSize);
                         },
                     },
                     // HACK(sewer): If I don't overwrite this, the column may be zero sized if put into certain containers, e.g. StackPanel
