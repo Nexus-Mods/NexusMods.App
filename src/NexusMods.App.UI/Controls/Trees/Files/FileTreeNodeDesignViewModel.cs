@@ -1,7 +1,5 @@
-using System.Reactive;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.GameLocators;
-using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Controls.Trees.Files;

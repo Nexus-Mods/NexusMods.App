@@ -4,18 +4,13 @@
                                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                                 xmlns:reactiveUi="http://reactiveui.net"
-                                xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
                                 xmlns:ui="clr-namespace:NexusMods.App.UI"
                                 xmlns:files="clr-namespace:NexusMods.App.UI.Controls.Trees.Files"
-                                xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
                                 xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon"
                                 mc:Ignorable="d" d:DesignWidth="710" d:DesignHeight="44"
                                 x:Class="NexusMods.App.UI.Controls.Trees.Files.FileTreeNodeView"
                                 d:DataContext="{x:Static files:FileTreeNodeDesignViewModel.SampleFolder}">
-    <Design.DataContext>
-        <!-- This ViewModel has a bool switch 'showMultipleRoots' to toggle a view which also has Saves -->
-        <files:FileTreeNodeDesignViewModel />
-    </Design.DataContext>
+    <!-- You can switch 'SampleFolder' to 'SampleFile' to get preview of file -->
     <Grid ColumnDefinitions="*, Auto" Margin="0,5,0,5">
         <Grid.Styles>
             <Style Selector="unifiedIcon|UnifiedIcon.FileTypeIcon">
