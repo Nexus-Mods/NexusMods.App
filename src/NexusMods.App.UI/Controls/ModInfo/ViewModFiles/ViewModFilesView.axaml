@@ -22,7 +22,7 @@
         <!-- Note: Can't use nth-child on textblock itself. Not even actual control source does that. -->
         <Style Selector="TreeDataGridColumnHeader:nth-child(1)">
             <Style Selector="^ TextBlock">
-                <Setter Property="Margin" Value="24, 0,0, 0" />
+                <Setter Property="Margin" Value="24,0,0,0" />
             </Style>
         </Style>
     </UserControl.Styles>
