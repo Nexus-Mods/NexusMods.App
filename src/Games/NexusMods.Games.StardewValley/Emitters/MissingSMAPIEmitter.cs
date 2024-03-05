@@ -16,12 +16,25 @@ public class MissingSMAPIEmitter : ILoadoutDiagnosticEmitter
         var smapiModCount = loadout.Mods.Count(kv => kv.Value.Metadata.OfType<SMAPIModMarker>().Any());
         if (smapiModCount == 0) yield break;
 
-        var hasSMAPI = loadout.Mods.Any(kv => kv.Value.Metadata.OfType<SMAPIMarker>().Any());
-        if (hasSMAPI) yield break;
+        var smapiInstallations = loadout.Mods
+            .Where(kv => kv.Value.Metadata.OfType<SMAPIMarker>().Any())
+            .ToArray();
 
-        yield return Diagnostics.CreateMissingSMAPI(
-            ModCount: smapiModCount,
-            NexusModsSMAPIUri: NexusModsSMAPIUri
-        );
+        var hasSMAPI = smapiInstallations.Length == 0;
+        if (!hasSMAPI)
+        {
+            yield return Diagnostics.CreateSMAPIRequiredButNotInstalled(
+                ModCount: smapiModCount,
+                NexusModsSMAPIUri: NexusModsSMAPIUri
+            );
+        }
+
+        var hasSMAPIEnabled = smapiInstallations.Any(kv => kv.Value.Enabled);
+        if (!hasSMAPIEnabled)
+        {
+            yield return Diagnostics.CreateSMAPIRequiredButDisabled(
+                ModCount: smapiModCount
+            );
+        }
     }
 }

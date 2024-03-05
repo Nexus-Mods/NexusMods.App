@@ -41,15 +41,28 @@ internal static partial class Diagnostics
 
     [DiagnosticTemplate]
     [UsedImplicitly]
-    internal static IDiagnosticTemplate MissingSMAPITemplate = DiagnosticTemplateBuilder
+    internal static IDiagnosticTemplate SMAPIRequiredButNotInstalledTemplate = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, number: 3))
         .WithSeverity(DiagnosticSeverity.Warning)
-        .WithSummary("SMAPI is required for {ModCount} Mod(s)")
+        .WithSummary("SMAPI is required for {ModCount} Mod(s) but it's not installed")
         .WithDetails("You can install the latest SMAPI version at {NexusModsSMAPIUri}.")
         .WithMessageData(messageBuilder => messageBuilder
             .AddValue<int>("ModCount")
             .AddValue<Uri>("NexusModsSMAPIUri")
+        )
+        .Finish();
+
+    [DiagnosticTemplate]
+    [UsedImplicitly]
+    internal static IDiagnosticTemplate SMAPIRequiredButDisabledTemplate = DiagnosticTemplateBuilder
+        .Start()
+        .WithId(new DiagnosticId(Source, number: 4))
+        .WithSeverity(DiagnosticSeverity.Warning)
+        .WithSummary("SMAPI is required for {ModCount} Mod(s) but it's not enabled")
+        .WithoutDetails()
+        .WithMessageData(messageBuilder => messageBuilder
+            .AddValue<int>("ModCount")
         )
         .Finish();
 }
