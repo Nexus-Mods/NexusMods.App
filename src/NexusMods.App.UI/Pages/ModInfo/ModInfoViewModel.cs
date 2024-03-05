@@ -3,15 +3,15 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.App.UI.Controls.ModInfo.ViewModFiles;
-using NexusMods.App.UI.Pages.ViewModInfo.Types;
+using NexusMods.App.UI.Pages.ModInfo.Types;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
-namespace NexusMods.App.UI.Pages.ViewModInfo;
+namespace NexusMods.App.UI.Pages.ModInfo;
 
-public class ViewModInfoViewModel : APageViewModel<IViewModInfoViewModel>, IViewModInfoViewModel
+public class ModInfoViewModel : APageViewModel<IModInfoViewModel>, IModInfoViewModel
 {
     [Reactive]
     public LoadoutId LoadoutId { get; set; }
@@ -20,7 +20,7 @@ public class ViewModInfoViewModel : APageViewModel<IViewModInfoViewModel>, IView
     public ModId ModId { get; set; }
     
     [Reactive]
-    public CurrentViewModInfoPage Page { get; set; }
+    public CurrentModInfoPage Page { get; set; }
 
     [Reactive]
     public IViewModelInterface PageViewModel { get; set; } = default!;
@@ -28,7 +28,7 @@ public class ViewModInfoViewModel : APageViewModel<IViewModInfoViewModel>, IView
     private readonly IServiceProvider _serviceProvider;
     private readonly ILoadoutRegistry _registry;
 
-    public ViewModInfoViewModel(IWindowManager windowManager, IServiceProvider serviceProvider, ILoadoutRegistry registry) : base(windowManager)
+    public ModInfoViewModel(IWindowManager windowManager, IServiceProvider serviceProvider, ILoadoutRegistry registry) : base(windowManager)
     {
         _serviceProvider = serviceProvider;
         _registry = registry;
@@ -42,11 +42,11 @@ public class ViewModInfoViewModel : APageViewModel<IViewModInfoViewModel>, IView
         });
     }
 
-    private void CreateNewPage(CurrentViewModInfoPage page)
+    private void CreateNewPage(CurrentModInfoPage page)
     {
         switch (page)
         {
-            case CurrentViewModInfoPage.Files:
+            case CurrentModInfoPage.Files:
                 var vm = _serviceProvider.GetRequiredService<IViewModFilesViewModel>();
                 vm.Initialize(LoadoutId, [ModId]);
                 PageViewModel = vm;

@@ -38,8 +38,8 @@ using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModEnabled;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModInstalled;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModName;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModVersion;
+using NexusMods.App.UI.Pages.ModInfo;
 using NexusMods.App.UI.Pages.MyGames;
-using NexusMods.App.UI.Pages.ViewModInfo;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceAttachments;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -126,7 +126,7 @@ public static class Services
             .AddViewModel<UpdaterViewModel, IUpdaterViewModel>()
             .AddViewModel<LoadoutLeftMenuViewModel, ILoadoutLeftMenuViewModel>()
             .AddViewModel<ViewModFilesViewModel, IViewModFilesViewModel>()
-            .AddViewModel<ViewModInfoViewModel, IViewModInfoViewModel>()
+            .AddViewModel<ModInfoViewModel, IModInfoViewModel>()
             .AddViewModel<FileTreeNodeViewModel<ModFilePair>, IFileTreeNodeViewModel>()
 
             // Views
@@ -164,7 +164,7 @@ public static class Services
             .AddView<LoadoutLeftMenuView, ILoadoutLeftMenuViewModel>()
             .AddView<ApplyControlView, IApplyControlViewModel>()
             .AddView<ViewModFilesView, IViewModFilesViewModel>()
-            .AddView<ViewModInfoView, IViewModInfoViewModel>()
+            .AddView<ModInfoView, IModInfoViewModel>()
             .AddView<FileTreeNodeView, IFileTreeNodeViewModel>()
 
             // workspace system

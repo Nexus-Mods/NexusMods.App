@@ -19,8 +19,8 @@ using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModEnabled;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModInstalled;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModName;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModVersion;
-using NexusMods.App.UI.Pages.ViewModInfo;
-using NexusMods.App.UI.Pages.ViewModInfo.Types;
+using NexusMods.App.UI.Pages.ModInfo;
+using NexusMods.App.UI.Pages.ModInfo.Types;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Extensions.DynamicData;
@@ -211,7 +211,7 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
                 {
                     LoadoutId = LoadoutId,
                     ModId = modId,
-                    Page = CurrentViewModInfoPage.Files,
+                    Page = CurrentModInfoPage.Files,
                 },
                 FactoryId = ViewModInfoPageFactory.StaticId,
             };

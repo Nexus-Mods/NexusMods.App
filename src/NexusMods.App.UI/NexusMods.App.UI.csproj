@@ -388,15 +388,15 @@
         <Compile Update="Controls\ModInfo\ViewModFiles\ViewModFilesViewModel.cs">
           <DependentUpon>IViewModFilesViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Pages\ViewModInfo\ViewModInfoView.axaml.cs">
+        <Compile Update="Pages\ViewModInfo\ModInfoView.axaml.cs">
           <DependentUpon>ViewModFilesView.axaml</DependentUpon>
           <SubType>Code</SubType>
         </Compile>
-        <Compile Update="Pages\ViewModInfo\ViewModInfoDesignViewModel.cs">
-          <DependentUpon>IViewModInfoViewModel.cs</DependentUpon>
+        <Compile Update="Pages\ViewModInfo\ModInfoViewModInfoDesignModInfoViewModel.cs">
+          <DependentUpon>IModInfoViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Pages\ViewModInfo\ViewModInfoViewModel.cs">
-          <DependentUpon>IViewModInfoViewModel.cs</DependentUpon>
+        <Compile Update="Pages\ViewModInfo\ModInfoViewModel.cs">
+          <DependentUpon>IModInfoViewModel.cs</DependentUpon>
         </Compile>
         <Compile Update="LeftMenu\Loadout\LoadoutLeftMenuDesignViewModel.cs">
           <DependentUpon>ILoadoutLeftMenuViewModel.cs</DependentUpon>

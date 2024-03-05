@@ -2,7 +2,7 @@
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d"
-    x:Class="NexusMods.App.UI.Pages.ViewModInfo.ViewModInfoView"
+    x:Class="NexusMods.App.UI.Pages.ModInfo.ModInfoView"
     x:TypeArguments="viewModFiles:IViewModFilesViewModel"
     xmlns="https://github.com/avaloniaui"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -10,13 +10,13 @@
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:viewModFiles="clr-namespace:NexusMods.App.UI.Controls.ModInfo.ViewModFiles"
-    xmlns:viewModInfo="clr-namespace:NexusMods.App.UI.Pages.ViewModInfo">
+    xmlns:modInfo="clr-namespace:NexusMods.App.UI.Pages.ModInfo">
     <Design.DataContext>
-        <viewModInfo:ViewModInfoDesignViewModel />
+        <modInfo:ModInfoViewModInfoDesignModInfoViewModel />
     </Design.DataContext>
     <ScrollViewer>
         <!-- There will be other things around this, but for now we don't have designs for switching pages etc. -->
-        <reactiveUi:ViewModelViewHost x:Name="PageViewHost" />
+        <reactiveUi:ViewModelViewHost x:Name="ModInfoCategoryViewHost" />
     </ScrollViewer>
 </reactiveUi:ReactiveUserControl>
 
