@@ -16,7 +16,6 @@ namespace NexusMods.App.UI.Controls.ModInfo.ViewModFiles;
 public class ViewModFilesViewModel : AViewModel<IViewModFilesViewModel>, IViewModFilesViewModel
 {
     private readonly ILoadoutRegistry _registry;
-    private readonly IFileStore _fileStore;
     private readonly SourceCache<IFileTreeNodeViewModel, GamePath> _sourceCache;
     private ReadOnlyObservableCollection<ModFileNode> _items;
     private int _rootCount;
@@ -29,7 +28,6 @@ public class ViewModFilesViewModel : AViewModel<IViewModFilesViewModel>, IViewMo
     public ViewModFilesViewModel(ILoadoutRegistry registry, IFileStore fileStore)
     {
         _registry = registry;
-        _fileStore = fileStore;
         _items = new ReadOnlyObservableCollection<ModFileNode>([]);
         _sourceCache = new SourceCache<IFileTreeNodeViewModel, GamePath>(x => x.FullPath);
     }
