@@ -18,4 +18,8 @@
         <PackageReference Include="Pathoschild.Http.FluentClient" VersionOverride="4.3.0" />
     </ItemGroup>
 
+    <Target Name="ValidateSubmodule" AfterTargets="BeforeBuild">
+        <Error Condition="!Exists('..\..\..\extern\SMAPI\src')" Text="Missing SMAPI submodule! Make sure to run 'git submodule update --init --recursive'" />
+    </Target>
+
 </Project>
