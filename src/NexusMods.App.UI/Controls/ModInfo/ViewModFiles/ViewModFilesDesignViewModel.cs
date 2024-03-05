@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using DynamicData;
+using JetBrains.Annotations;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.App.UI.Controls.Trees.Files;
 using NexusMods.Paths;
@@ -28,6 +29,7 @@ public class ViewModFilesDesignViewModel : AViewModel<IViewModFilesViewModel>,
     /// </summary>
     public bool ShowMultipleRoots
     {
+        [UsedImplicitly]
         get => _showMultipleRoots;
         set
         {
@@ -41,6 +43,7 @@ public class ViewModFilesDesignViewModel : AViewModel<IViewModFilesViewModel>,
     /// </summary>
     public bool AlwaysRootFolders
     {
+        [UsedImplicitly]
         get => _alwaysRootFolders;
         set
         {
