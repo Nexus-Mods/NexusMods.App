@@ -23,7 +23,6 @@ public partial class ViewModFilesView : ReactiveUserControl<IViewModFilesViewMod
         InitializeComponent();
         this.WhenActivated(_ =>
         {
-            // Unleash the tree!
             var source = CreateTreeSource(ViewModel!.Items);
             source.SortBy(source.Columns[0], ListSortDirection.Ascending);
             ModFilesTreeDataGrid.Source = source;
