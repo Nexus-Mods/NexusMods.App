@@ -64,7 +64,7 @@ public partial class ViewModFilesView : ReactiveUserControl<IViewModFilesViewMod
                                     
                                 // Very sus but it works, t r u s t.
                                 var view = new FileTreeNodeView();
-                                view!.DataContext = node.Item;
+                                view.DataContext = node.Item;
                                 
                                 // This is a 'hack' which allows us to receive events from the wrapping 'ModFileNode'
                                 // and transfer it into the child IFileTreeNodeViewModel.

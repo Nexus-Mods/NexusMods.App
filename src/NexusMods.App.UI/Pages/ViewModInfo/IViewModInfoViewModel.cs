@@ -1,7 +1,5 @@
-using System.Collections.ObjectModel;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Mods;
-using NexusMods.App.UI.Controls.Trees.Files;
 using NexusMods.App.UI.Pages.ViewModInfo.Types;
 using NexusMods.App.UI.WorkspaceSystem;
 
