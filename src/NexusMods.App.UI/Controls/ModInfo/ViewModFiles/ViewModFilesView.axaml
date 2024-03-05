@@ -13,7 +13,7 @@
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources">
     <Design.DataContext>
         <!-- This ViewModel has a bool switch 'showMultipleRoots' to toggle a view which also has Saves -->
-        <viewModFiles:ViewModFilesDesignViewModel />
+        <viewModFiles:ViewModFilesDesignViewModel AlwaysRootFolders="False" ShowMultipleRoots="False" />
     </Design.DataContext>
     <!-- In this view specifically, we want to shift the text of the TreeDataGrid 
          such that we align the 'name' field with the

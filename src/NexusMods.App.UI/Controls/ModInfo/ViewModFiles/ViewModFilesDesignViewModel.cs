@@ -21,14 +21,47 @@ public class ViewModFilesDesignViewModel : AViewModel<IViewModFilesViewModel>,
 
     private string? _primaryRootLocation;
     public string? PrimaryRootLocation => _primaryRootLocation;
+
+    private bool _showMultipleRoots = false;
+    private bool _alwaysRootFolders = false;
+    
+    /// <summary>
+    ///     Adds a 'saves' folder.
+    /// </summary>
+    public bool ShowMultipleRoots
+    {
+        get => _showMultipleRoots;
+        set
+        {
+            _showMultipleRoots = value;
+            RefreshData(_showMultipleRoots, _alwaysRootFolders);
+        }
+    }
+    
+    /// <summary>
+    ///     Always make 'saves', 'game' root nodes.
+    /// </summary>
+    public bool AlwaysRootFolders
+    {
+        get => _alwaysRootFolders;
+        set
+        {
+            _alwaysRootFolders = value;
+            RefreshData(_showMultipleRoots, _alwaysRootFolders);
+        }
+    }
     
     public ViewModFilesDesignViewModel()
     {
+        _items = null!; // initialized in refresh
+        RefreshData(false, false);
+    }
+
+    private void RefreshData(bool showMultipleRoots, bool alwaysRootFolders)
+    {
         var cache = new SourceCache<IFileTreeNodeViewModel, GamePath>(x => x.FullPath);
         var locations = new Dictionary<LocationId, string>();
-        const bool showMultipleRoots = false; // adds 'saves' folder.
-        const bool alwaysRootFolders = false; // always make 'saves', 'game' root nodes
-        
+
         // ReSharper disable once RedundantSuppressNullableWarningExpression
         void SaveFile(string filePath, long fileSize) => CreateModFileNode(filePath, LocationId.Saves, cache!, fileSize);
         void GameFile(string filePath, long fileSize) => CreateModFileNode(filePath, LocationId.Game, cache, fileSize);
@@ -86,7 +119,6 @@ public class ViewModFilesDesignViewModel : AViewModel<IViewModFilesViewModel>,
         // Video Folder
         GameFile("Video/BGS_Logo.bik", 13835808);
 
-#pragma warning disable CS0162 // Unreachable code detected
         if (showMultipleRoots)
         {
             // Add some saves
@@ -102,7 +134,6 @@ public class ViewModFilesDesignViewModel : AViewModel<IViewModFilesViewModel>,
             SaveFile("SkyrimPrefs.ini", 15000);
             SaveFile("Skyrim.ini", 10000);
         }
-#pragma warning restore CS0162 // Unreachable code detected
 
         // Assign
         ViewModFilesViewModel.BindItems(cache, locations, alwaysRootFolders, out _items, out _rootCount, out _primaryRootLocation);
