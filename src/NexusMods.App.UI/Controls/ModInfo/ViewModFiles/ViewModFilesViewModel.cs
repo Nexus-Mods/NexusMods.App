@@ -128,7 +128,7 @@ public class ViewModFilesViewModel : AViewModel<IViewModFilesViewModel>, IViewMo
         }
         else
         {
-            primaryRootLocation = locations.First().Value;
+            primaryRootLocation = locations.FirstOrDefault().Value;
         }
         
         cache.Connect()
