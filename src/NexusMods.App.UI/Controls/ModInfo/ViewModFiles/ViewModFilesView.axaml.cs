@@ -1,8 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Globalization;
 using System.Reactive.Disposables;
-using System.Security.Cryptography;
+using System.Reactive.Linq;
 using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Controls.Templates;
@@ -21,21 +20,30 @@ public partial class ViewModFilesView : ReactiveUserControl<IViewModFilesViewMod
     public ViewModFilesView()
     {
         InitializeComponent();
-        this.WhenActivated(_ =>
+        this.WhenActivated(disposables =>
         {
-            var source = CreateTreeSource(ViewModel!.Items);
-            source.SortBy(source.Columns[0], ListSortDirection.Ascending);
-            ModFilesTreeDataGrid.Source = source;
-            
-            // Hide Stack Panel
-            MultiLocationStackPanel.IsVisible = ViewModel.RootCount > 1;
-            SingleLocationStackPanel.IsVisible = ViewModel.RootCount <= 1;
-
-            SingleLocationText.Text = ViewModel.PrimaryRootLocation;
-            MultiLocationCountText.Text = $"{ViewModel.RootCount}";
+            this.WhenAnyValue(view => view.ViewModel)
+                .WhereNotNull()
+                .Do(PopulateFromViewModel)
+                .Subscribe()
+                .DisposeWith(disposables);
         });
     }
-    
+
+    private void PopulateFromViewModel(IViewModFilesViewModel vm)
+    {
+        var source = CreateTreeSource(ViewModel!.Items);
+        source.SortBy(source.Columns[0], ListSortDirection.Ascending);
+        ModFilesTreeDataGrid.Source = source;
+            
+        // Hide Stack Panel
+        MultiLocationStackPanel.IsVisible = ViewModel.RootCount > 1;
+        SingleLocationStackPanel.IsVisible = ViewModel.RootCount <= 1;
+
+        SingleLocationText.Text = ViewModel.PrimaryRootLocation;
+        MultiLocationCountText.Text = $"{ViewModel.RootCount}";
+    }
+
     private static HierarchicalTreeDataGridSource<ModFileNode> CreateTreeSource(
         ReadOnlyObservableCollection<ModFileNode> treeRoots)
     {
