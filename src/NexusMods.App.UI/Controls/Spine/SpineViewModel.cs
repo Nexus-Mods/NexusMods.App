@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Media.Imaging;
@@ -70,17 +71,22 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
 
         this.WhenActivated(disposables =>
         {
-            loadoutRegistry.Loadouts
-                .TransformAsync(async loadout =>
+            loadoutRegistry.LoadoutsIds
+                .Transform(loadoutId => (loadoutId,loadout: loadoutRegistry.Get(loadoutId)))
+                .Filter(tuple => tuple.loadout != null)
+                .TransformAsync(async tuple =>
                 {
+                    var loadoutId = tuple.loadoutId;
+                    var loadout = tuple.loadout!;
+                    
                     await using var iconStream = await ((IGame)loadout.Installation.Game).Icon.GetStreamAsync();
-
+                    
                     var vm = serviceProvider.GetRequiredService<IImageButtonViewModel>();
                     vm.Name = loadout.Name;
                     vm.Image = LoadImageFromStream(iconStream);
                     vm.IsActive = false;
-                    vm.Click = ReactiveCommand.Create(() => ChangeToLoadoutWorkspace(loadout.LoadoutId));
-                    vm.Tag = loadout.LoadoutId;
+                    vm.Click = ReactiveCommand.Create(() => ChangeToLoadoutWorkspace(loadoutId));
+                    vm.Tag = loadoutId;
                     return vm;
                 })
                 .OnUI()

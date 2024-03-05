@@ -1,7 +1,9 @@
 using System.Collections.Concurrent;
+using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using DynamicData;
+using DynamicData.Binding;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
@@ -26,11 +28,18 @@ public class LoadoutRegistry : IDisposable, ILoadoutRegistry
     private readonly ILogger<LoadoutRegistry> _logger;
     private readonly IDataStore _store;
     private SourceCache<IId, LoadoutId> _cache;
+    private readonly ObservableCollection<LoadoutId> _loadoutsIds;
 
     /// <summary>
     /// All the loadoutIds and their current root entity IDs
     /// </summary>
     public IObservable<IChangeSet<IId,LoadoutId>> LoadoutChanges => _cache.Connect();
+
+    /// <summary>
+    /// All the loadoutRoots (<see cref="LoadoutId"/>)
+    /// </summary>
+    /// <returns></returns>
+    public IObservable<IChangeSet<LoadoutId>> LoadoutsIds => _loadoutsIds.ToObservableChangeSet();
 
     /// <summary>
     /// All the loadouts and their current root ids
@@ -59,6 +68,9 @@ public class LoadoutRegistry : IDisposable, ILoadoutRegistry
         _compositeDisposable = new CompositeDisposable();
         _markers = new ConcurrentDictionary<LoadoutId, LoadoutMarker>();
 
+        _loadoutsIds = new ObservableCollection<LoadoutId>();
+        _loadoutsIds.AddRange(AllLoadoutIds().Distinct());
+        
         _cache = new SourceCache<IId, LoadoutId>(_ => throw new NotImplementedException());
         _cache.Edit(x =>
         {
@@ -79,6 +91,10 @@ public class LoadoutRegistry : IDisposable, ILoadoutRegistry
                     var dataStoreId = GetId(loadoutId);
                     x.AddOrUpdate(dataStoreId!, loadoutId);
                 });
+                
+                // don't trigger a change if the loadout already exists, we are only storing ids after all
+                if (!_loadoutsIds.Contains(loadoutId))
+                    _loadoutsIds.Add(loadoutId);
             });
 
         _compositeDisposable.Add(dispose);
