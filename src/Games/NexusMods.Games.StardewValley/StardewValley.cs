@@ -52,7 +52,13 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
     {
         try
         {
-            var fileInfo = new GamePath(LocationId.Game, "Stardew Valley.dll").Combine(installation.Path).FileInfo;
+            var path = _osInformation.MatchPlatform(
+                onWindows: () => "Stardew Valley.dll",
+                onLinux: () => "Stardew Valley.dll",
+                onOSX: () => "Contents/MacOS/Stardew Valley.dll"
+            );
+
+            var fileInfo = installation.Path.Combine(path).FileInfo;
             return fileInfo.GetFileVersionInfo().FileVersion;
         }
         catch (Exception)
