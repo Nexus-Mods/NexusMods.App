@@ -24,5 +24,7 @@ public class SMAPIInstallerTests : AModInstallerTest<StardewValley, SMAPIInstall
 
         var files = mod.Files;
         files.Should().NotBeEmpty();
+
+        mod.Version.Should().Be("3.18.2");
     }
 }
