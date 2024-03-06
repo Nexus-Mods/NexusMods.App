@@ -38,6 +38,6 @@ public class FileTreeNodeDesignViewModel : AViewModel<IFileTreeNodeViewModel>, I
     public FileTreeNodeDesignViewModel(bool isFile, GamePath fullPath, string name) : this(isFile, fullPath, 0)
     {
         Name = name;
-        ParentKey = default(GamePath);
+        ParentKey = new GamePath(LocationId.Unknown, "");
     }
 }
