@@ -124,7 +124,16 @@ public class ViewModFilesViewModel : AViewModel<IViewModFilesViewModel>, IViewMo
         if (hasMultipleRoots)
         {
             foreach (var location in locations)
-                cache.AddOrUpdate(new FileTreeNodeDesignViewModel(false, new GamePath(location.Key, ""), location.Value));
+            {
+                ulong totalSize = 0;
+                foreach (var item in cache.Items)
+                {
+                    if (item.Key.LocationId == location.Key && item.IsFile)
+                        totalSize += item.FileSize;
+                }
+                
+                cache.AddOrUpdate(new FileTreeNodeDesignViewModel(false, new GamePath(location.Key, ""), location.Value, totalSize));
+            }
 
             primaryRootLocation = null;
         }
