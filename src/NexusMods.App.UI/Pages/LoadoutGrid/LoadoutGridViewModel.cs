@@ -27,6 +27,7 @@ using NexusMods.Extensions.DynamicData;
 using NexusMods.Paths;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using static NexusMods.App.UI.WorkspaceSystem.OpenPageBehavior;
 
 namespace NexusMods.App.UI.Pages.LoadoutGrid;
 
@@ -217,12 +218,8 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
             };
 
             var workspaceController = GetWorkspaceController();
-            //var behaviour = workspaceController.GetDefaultOpenPageBehavior();
-            
-            // Silent Unhandled Exception if GetDefaultOpenPageBehavior (defaults to replacing current page),
-            // or poor UX otherwise. I don't know which is better at this point.
-            var behaviour = new OpenPageBehavior(new OpenPageBehavior.NewPanel(Optional<WorkspaceGridState>.None));
-            workspaceController.OpenPage(WorkspaceId, pageData, behaviour);
+            var openPageBehavior = new OpenPageBehavior(new NewPanelOrTab(Optional<WorkspaceGridState>.None, Optional<PanelId>.None));
+            workspaceController.OpenPage(WorkspaceId, pageData, openPageBehavior);
         }
     }
 }

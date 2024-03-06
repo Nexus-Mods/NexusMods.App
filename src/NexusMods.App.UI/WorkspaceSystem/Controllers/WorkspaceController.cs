@@ -321,4 +321,14 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
         // Current default behavior is to replace the first tab in the first panel
         return new OpenPageBehavior.ReplaceTab(Optional<PanelId>.None, Optional<PanelTabId>.None);
     }
+
+    public bool CanCreateNewPanel(WorkspaceId workspaceId)
+    {
+        Dispatcher.UIThread.VerifyAccess();
+
+        if (!TryGetWorkspace(workspaceId, out WorkspaceViewModel? workspaceViewModel)) 
+            return false;
+
+        return workspaceViewModel.CanAddPanel();
+    }
 }

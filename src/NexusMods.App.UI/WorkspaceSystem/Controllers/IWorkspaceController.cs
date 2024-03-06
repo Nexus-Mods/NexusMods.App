@@ -120,4 +120,10 @@ public interface IWorkspaceController
     /// TODO: Add parameters for: page, mouse button, source Workspace (if popped out or not)
     /// </summary>
     public OpenPageBehavior GetDefaultOpenPageBehavior();
+
+    /// <summary>
+    /// Returns true if a new panel can be created, else false.
+    /// </summary>
+    /// <param name="workspaceId">Workspace identifier.</param>
+    bool CanCreateNewPanel(WorkspaceId workspaceId);
 }
