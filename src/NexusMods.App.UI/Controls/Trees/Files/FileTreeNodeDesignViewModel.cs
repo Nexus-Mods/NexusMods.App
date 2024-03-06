@@ -17,8 +17,8 @@ public class FileTreeNodeDesignViewModel : AViewModel<IFileTreeNodeViewModel>, I
     public bool IsFile { get; }
     public string Name { get; }
     public ulong FileSize { get; }
-    public GamePath FullPath { get; set; } = default;
-    public GamePath ParentPath { get; set; } = default;
+    public object Key { get; }
+    public object ParentKey { get; }
     
     public FileTreeNodeDesignViewModel() : this(true, new GamePath(LocationId.Game, ""), "Design Folder Name")
     {
@@ -30,14 +30,14 @@ public class FileTreeNodeDesignViewModel : AViewModel<IFileTreeNodeViewModel>, I
         IsFile = isFile;
         Icon = IsFile ? FileTreeNodeIconType.File : FileTreeNodeIconType.ClosedFolder;
         Name = fullPath.Path.FileName;
-        FullPath = fullPath;
-        ParentPath = fullPath.Parent;
+        Key = fullPath;
+        ParentKey = fullPath.Parent;
         FileSize = fileSize;
     }
 
     public FileTreeNodeDesignViewModel(bool isFile, GamePath fullPath, string name) : this(isFile, fullPath, 0)
     {
         Name = name;
-        ParentPath = default(GamePath);
+        ParentKey = default(GamePath);
     }
 }

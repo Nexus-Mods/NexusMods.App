@@ -25,14 +25,14 @@ public interface IFileTreeNodeViewModel : IViewModelInterface
     ulong FileSize { get; }
     
     /// <summary>
-    ///     The full path to this visible node.
+    ///     The key to this node.
     /// </summary>
-    GamePath FullPath { get; }
+    object Key { get; }
 
     /// <summary>
-    ///     The full path to this node's parent.
+    ///     The key to the parent of this node.
     /// </summary>
-    GamePath ParentPath { get; }
+    object ParentKey { get; }
 
     /// <summary>
     ///     A method called when the tree item is expanded, this by default changes the icon style.

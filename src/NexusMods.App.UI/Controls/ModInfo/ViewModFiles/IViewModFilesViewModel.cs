@@ -4,7 +4,7 @@ using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.App.UI.Controls.Trees.Files;
 
 namespace NexusMods.App.UI.Controls.ModInfo.ViewModFiles;
-using ModFileNode = TreeNodeVM<IFileTreeNodeViewModel, Abstractions.GameLocators.GamePath>;
+using ModFileNode = TreeNodeVM<IFileTreeNodeViewModel, object>;
 
 public interface IViewModFilesViewModel : IViewModelInterface
 {

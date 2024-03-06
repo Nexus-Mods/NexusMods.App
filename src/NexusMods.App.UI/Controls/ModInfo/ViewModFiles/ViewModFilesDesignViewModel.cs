@@ -6,7 +6,7 @@ using NexusMods.App.UI.Controls.Trees.Files;
 using NexusMods.Paths;
 
 namespace NexusMods.App.UI.Controls.ModInfo.ViewModFiles;
-using ModFileNode = TreeNodeVM<IFileTreeNodeViewModel, GamePath>;
+using ModFileNode = TreeNodeVM<IFileTreeNodeViewModel, object>;
 
 public class ViewModFilesDesignViewModel : AViewModel<IViewModFilesViewModel>,
     IViewModFilesViewModel
@@ -60,7 +60,7 @@ public class ViewModFilesDesignViewModel : AViewModel<IViewModFilesViewModel>,
 
     private void RefreshData(bool showMultipleRoots, bool alwaysRootFolders)
     {
-        var cache = new SourceCache<IFileTreeNodeViewModel, GamePath>(x => x.FullPath);
+        var cache = new SourceCache<IFileTreeNodeViewModel, object>(x => x.Key);
         var locations = new Dictionary<LocationId, string>();
 
         // ReSharper disable once RedundantSuppressNullableWarningExpression
@@ -140,7 +140,7 @@ public class ViewModFilesDesignViewModel : AViewModel<IViewModFilesViewModel>,
         ViewModFilesViewModel.BindItems(cache, locations, alwaysRootFolders, out _items, out _rootCount, out _primaryRootLocation);
     }
 
-    private static void CreateModFileNode(RelativePath filePath, LocationId locationId, SourceCache<IFileTreeNodeViewModel, GamePath> cache, ulong fileSize)
+    private static void CreateModFileNode(RelativePath filePath, LocationId locationId, SourceCache<IFileTreeNodeViewModel, object> cache, ulong fileSize)
     {
         // Build the path, creating directories as needed
         var currentPath = new RelativePath();

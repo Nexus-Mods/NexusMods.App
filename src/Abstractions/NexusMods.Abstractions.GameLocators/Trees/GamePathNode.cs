@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees;
@@ -11,7 +12,7 @@ namespace NexusMods.Abstractions.Games.Trees;
 /// <typeparam name="TValue">Type of value contained within the tree.</typeparam>
 public struct GamePathNode<TValue> :
     IHaveBoxedChildrenWithKey<RelativePath, GamePathNode<TValue>>, IHaveValue<TValue>, IHavePathSegment,
-    IHaveParent<GamePathNode<TValue>>, IHaveAFileOrDirectory
+    IHaveParent<GamePathNode<TValue>>, IHaveAFileOrDirectory, IEquatable<GamePathNode<TValue>>
 
 {
     /// <inheritdoc />
@@ -25,6 +26,11 @@ public struct GamePathNode<TValue> :
 
     /// <inheritdoc />
     public bool IsFile { get; init; } // 24 (size 1-8, depending on padding)
+
+    /// <summary>
+    ///     Hashcode.
+    /// </summary>
+    private int _hashCode; // 28 (size 4)
 
     /// <inheritdoc />
     public TValue Value { get; init; } // ?? (variable, potentially not 8 aligned)
@@ -54,7 +60,8 @@ public struct GamePathNode<TValue> :
                 Parent = null,
                 IsFile = false,
                 Id = items.FirstOrDefault().Key.LocationId!,
-                Value = default!
+                Value = default!,
+                _hashCode = 0,
             }
         };
 
@@ -85,6 +92,7 @@ public struct GamePathNode<TValue> :
                             Value = entry.Value,
                         }
                     };
+                    child.Item._hashCode = child.Item.MakeHashCode();
 
                     current.Item.Children.Add(segment, child);
                 }
@@ -94,6 +102,57 @@ public struct GamePathNode<TValue> :
         }
 
         return root;
+    }
+
+    /// <summary>
+    ///     Fast check for equality against other node.
+    /// </summary>
+    public bool Equals(GamePathNode<TValue> other)
+    {
+        // Start with comparing current nodes
+        if (!Segment.Equals(other.Segment)) return false;
+    
+        // Traverse up the parent chain of both nodes, comparing segments
+        var currentNodeParent = this.Parent;
+        var otherNodeParent = other.Parent;
+    
+        while (currentNodeParent != null && otherNodeParent != null)
+        {
+            // If both parents are not null but their segments don't match, return false
+            if (!currentNodeParent.Item.Segment.Equals(otherNodeParent.Item.Segment))
+            {
+                return false;
+            }
+        
+            // Move up the tree
+            currentNodeParent = currentNodeParent.Item.Parent;
+            otherNodeParent = otherNodeParent.Item.Parent;
+        }
+    
+        // If both currentNodeParent and otherNodeParent are null, we reached the root and all segments matched
+        // If only one is null, the trees have different depths and are not equal
+        return currentNodeParent == null && otherNodeParent == null;
+    }
+
+    /// <inheritdoc />
+    public override bool Equals(object? obj) => obj is GamePathNode<TValue> other && Equals(other);
+    
+    /// <inheritdoc />
+    public override int GetHashCode() => _hashCode; // Cached to maximize performance.
+
+    private int MakeHashCode()
+    {
+        var hashCode = new HashCode();
+        hashCode.Add(Segment);
+
+        var parent = this.Parent;
+        while (parent != null)
+        {
+            hashCode.Add(parent.Segment());
+            parent = parent.Parent();
+        }
+        
+        return hashCode.ToHashCode();
     }
 }
 
