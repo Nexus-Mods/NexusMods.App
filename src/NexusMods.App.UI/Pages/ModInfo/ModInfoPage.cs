@@ -8,8 +8,8 @@ using NexusMods.App.UI.WorkspaceSystem;
 
 namespace NexusMods.App.UI.Pages.ModInfo;
 
-[JsonName("NexusMods.App.UI.Pages.ViewModInfo.ViewModInfoPageContext")]
-public record ViewModInfoPageContext : IPageFactoryContext
+[JsonName("NexusMods.App.UI.Pages.ViewModInfo.ModInfoPageContext")]
+public record ModInfoPageContext : IPageFactoryContext
 {
     public required LoadoutId LoadoutId { get; init; }
     public required ModId ModId { get; init; }
@@ -17,14 +17,14 @@ public record ViewModInfoPageContext : IPageFactoryContext
 }
 
 [UsedImplicitly]
-public class ViewModInfoPageFactory : APageFactory<IModInfoViewModel, ViewModInfoPageContext>
+public class ModInfoPageFactory : APageFactory<IModInfoViewModel, ModInfoPageContext>
 {
-    public ViewModInfoPageFactory(IServiceProvider serviceProvider) : base(serviceProvider) { }
+    public ModInfoPageFactory(IServiceProvider serviceProvider) : base(serviceProvider) { }
 
     public static readonly PageFactoryId StaticId = PageFactoryId.From(Guid.Parse("12ac717d-fa73-4dc0-a23b-17fd5410b065"));
     public override PageFactoryId Id => StaticId;
 
-    public override IModInfoViewModel CreateViewModel(ViewModInfoPageContext context)
+    public override IModInfoViewModel CreateViewModel(ModInfoPageContext context)
     {
         var vm = ServiceProvider.GetRequiredService<IModInfoViewModel>();
         vm.SetContext(context);

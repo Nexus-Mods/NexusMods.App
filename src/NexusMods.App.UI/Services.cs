@@ -197,7 +197,7 @@ public static class Services
             .AddSingleton<IPageFactory, MyGamesPageFactory>()
             .AddSingleton<IPageFactory, LoadoutGridPageFactory>()
             .AddSingleton<IPageFactory, InProgressPageFactory>()
-            .AddSingleton<IPageFactory, ViewModInfoPageFactory>()
+            .AddSingleton<IPageFactory, ModInfoPageFactory>()
 
             // LeftMenu factories
             .AddSingleton<ILeftMenuFactory, DownloadsLeftMenuFactory>()

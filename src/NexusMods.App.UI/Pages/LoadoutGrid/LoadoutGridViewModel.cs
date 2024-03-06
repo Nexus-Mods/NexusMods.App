@@ -208,13 +208,13 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
         {
             var pageData = new PageData()
             {
-                Context = new ViewModInfoPageContext()
+                Context = new ModInfoPageContext()
                 {
                     LoadoutId = LoadoutId,
                     ModId = modId,
                     Page = CurrentModInfoPage.Files,
                 },
-                FactoryId = ViewModInfoPageFactory.StaticId,
+                FactoryId = ModInfoPageFactory.StaticId,
             };
 
             var workspaceController = GetWorkspaceController();

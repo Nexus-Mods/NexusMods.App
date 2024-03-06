@@ -55,7 +55,7 @@ public class ModInfoViewModel : APageViewModel<IModInfoViewModel>, IModInfoViewM
         });
     }
     
-    public void SetContext(ViewModInfoPageContext context)
+    public void SetContext(ModInfoPageContext context)
     {
         if (!_isInvalid)
             IModInfoViewModel.SetContextImpl(this, context);

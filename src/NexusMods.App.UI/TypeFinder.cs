@@ -23,7 +23,7 @@ internal class TypeFinder : ITypeFinder
         typeof(LoadoutGridContext),
         typeof(InProgressPageContext),
         typeof(MyGamesPageContext),
-        typeof(ViewModInfoPageContext),
+        typeof(ModInfoPageContext),
 
         // workspace context
         typeof(EmptyContext),
