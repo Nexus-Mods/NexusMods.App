@@ -11,7 +11,7 @@ public class ModInfoViewModInfoDesignModInfoViewModel : APageViewModel<IModInfoV
 {
     public LoadoutId LoadoutId { get; set; }
     public ModId ModId { get; set; }
-    public CurrentModInfoPage Page { get; set; }
+    public CurrentModInfoSection Section { get; set; }
     public IViewModelInterface PageViewModel { get; set; }
     
     // Design

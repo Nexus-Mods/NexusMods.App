@@ -212,7 +212,7 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
                 {
                     LoadoutId = LoadoutId,
                     ModId = modId,
-                    Page = CurrentModInfoPage.Files,
+                    Section = CurrentModInfoSection.Files,
                 },
                 FactoryId = ModInfoPageFactory.StaticId,
             };

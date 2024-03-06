@@ -13,7 +13,7 @@ public record ModInfoPageContext : IPageFactoryContext
 {
     public required LoadoutId LoadoutId { get; init; }
     public required ModId ModId { get; init; }
-    public required CurrentModInfoPage Page { get; init; }
+    public required CurrentModInfoSection Section { get; init; }
 }
 
 [UsedImplicitly]

@@ -26,7 +26,7 @@ public class ModInfoViewModel : APageViewModel<IModInfoViewModel>, IModInfoViewM
     public ModId ModId { get; set; }
     
     [Reactive]
-    public CurrentModInfoPage Page { get; set; }
+    public CurrentModInfoSection Section { get; set; }
 
     [Reactive]
     public IViewModelInterface PageViewModel { get; set; } = default!;
@@ -45,7 +45,7 @@ public class ModInfoViewModel : APageViewModel<IModInfoViewModel>, IModInfoViewM
             PageViewModel = !_isInvalid ? new DummyLoadingViewModel() : new DummyErrorViewModel();
             if (!_isInvalid)
             {
-                this.WhenAnyValue(x => x.Page)
+                this.WhenAnyValue(x => x.Section)
                     .OffUi()
                     .Select(CreateNewPage)
                     .OnUI()
@@ -61,16 +61,16 @@ public class ModInfoViewModel : APageViewModel<IModInfoViewModel>, IModInfoViewM
             IModInfoViewModel.SetContextImpl(this, context);
     }
 
-    private IViewModelInterface CreateNewPage(CurrentModInfoPage page)
+    private IViewModelInterface CreateNewPage(CurrentModInfoSection section)
     {
-        switch (page)
+        switch (section)
         {
-            case CurrentModInfoPage.Files:
+            case CurrentModInfoSection.Files:
                 var vm = _serviceProvider.GetRequiredService<IModFilesViewModel>();
                 vm.Initialize(LoadoutId, [ModId]);
                 return vm;
             default:
-                throw new ArgumentOutOfRangeException(nameof(page), page, null);
+                throw new ArgumentOutOfRangeException(nameof(section), section, null);
         }
     }
 
