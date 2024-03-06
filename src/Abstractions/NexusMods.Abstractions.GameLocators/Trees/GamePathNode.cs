@@ -100,7 +100,9 @@ public struct GamePathNode<TValue> :
                     // We use a forward slash here, to comply with NexusMods.Paths rules.
                     // Don't use Join API, as that will slow down our work, we don't have unsanitized
                     // input, we're complying with underlying library's documented rules.
-                    child.Item.GamePath = new GamePath(child.Item.Id, string.Concat(current.GamePath().Path, "/", segment));
+                    var existingPath = current.GamePath().Path;
+                    var relativePath = existingPath.Length > 0 ? (RelativePath)string.Concat(current.GamePath().Path, "/", segment) : segment;
+                    child.Item.GamePath = new GamePath(child.Item.Id, relativePath);
                     child.Item._hashCode = child.Item.MakeHashCode(); // depends on GamePath
                     current.Item.Children.Add(segment, child);
                 }
