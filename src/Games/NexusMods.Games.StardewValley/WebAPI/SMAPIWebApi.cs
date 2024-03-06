@@ -86,9 +86,10 @@ internal sealed class SMAPIWebApi : ISMAPIWebApi
         }
 
         return smapiIDs
-            .Select(id => _knownModPageUrls.TryGetValue(id, out var uri) ? (id, uri) : (id, null))
-            .Where(kv => kv.uri is not null)
-            .ToDictionary(kv => kv.id, kv => kv.uri!, StringComparer.OrdinalIgnoreCase);
+            .Select(id => (Id: id, Uri: _knownModPageUrls.GetValueOrDefault(id)))
+            .Where(tuple => tuple.Uri is not null)
+            .Select(tuple => new KeyValuePair<string, Uri>(tuple.Id, tuple.Uri!))
+            .ToDictionary(StringComparer.OrdinalIgnoreCase);
     }
 
     private static Platform ToPlatform(IOSInformation os)
