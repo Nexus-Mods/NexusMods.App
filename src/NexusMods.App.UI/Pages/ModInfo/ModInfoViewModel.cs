@@ -1,4 +1,6 @@
+using System.Reactive;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Mods;
@@ -37,20 +39,22 @@ public class ModInfoViewModel : APageViewModel<IModInfoViewModel>, IModInfoViewM
             GetWorkspaceController().SetTabTitle(GetModName(), WorkspaceId, PanelId, TabId);
 
             this.WhenAnyValue(x => x.Page)
-                .Subscribe(CreateNewPage)
+                .OffUi()
+                .Select(CreateNewPage)
+                .OnUI()
+                .Subscribe(x => PageViewModel = x)
                 .DisposeWith(dp);
         });
     }
 
-    private void CreateNewPage(CurrentModInfoPage page)
+    private IViewModelInterface CreateNewPage(CurrentModInfoPage page)
     {
         switch (page)
         {
             case CurrentModInfoPage.Files:
                 var vm = _serviceProvider.GetRequiredService<IViewModFilesViewModel>();
                 vm.Initialize(LoadoutId, [ModId]);
-                PageViewModel = vm;
-                break;
+                return vm;
             default:
                 throw new ArgumentOutOfRangeException(nameof(page), page, null);
         }
