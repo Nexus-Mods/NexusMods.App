@@ -50,7 +50,7 @@ public class ModFilesViewModel : AViewModel<IModFilesViewModel>, IModFilesViewMo
             if (mod == null)
                 continue;
 
-            // TODO: Querying all of the files bottlenecks hard. I (Sewer) made the query parallel for now, but that's just a hack.
+            // TODO: Querying all of the files bottlenecks hard.
             // As this will be revised with EventSourcing, am not making a faster getter. 
             foreach (var file in mod.Files.Values)
             {
