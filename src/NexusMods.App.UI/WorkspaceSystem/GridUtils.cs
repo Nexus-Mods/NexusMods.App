@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Avalonia;
+using DynamicData;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
@@ -65,7 +66,8 @@ public static class GridUtils
         int maxColumns,
         int maxRows)
     {
-        var res = new List<WorkspaceGridState>();
+        var res1 = new List<WorkspaceGridState>();
+        var res2 = new List<WorkspaceGridState>();
 
         var (columnCount, maxRowCount) = currentState.CountColumns();
 
@@ -85,8 +87,8 @@ public static class GridUtils
             {
                 foreach (var panelToSplit in rows)
                 {
-                    res.Add(SplitPanelInHalf(currentState, panelToSplit, splitVertically: false, inverse: false));
-                    res.Add(SplitPanelInHalf(currentState, panelToSplit, splitVertically: false, inverse: true));
+                    res1.Add(SplitPanelInHalf(currentState, panelToSplit, splitVertically: false, inverse: false));
+                    res1.Add(SplitPanelInHalf(currentState, panelToSplit, splitVertically: false, inverse: true));
                 }
             }
 
@@ -95,8 +97,8 @@ public static class GridUtils
             // iterations are required (that's what CountColumns does).
             if (rows.Length > 1 && columnCount != maxColumns)
             {
-                res.Add(AddColumn(currentState, column.Info, rows, inverse: false));
-                res.Add(AddColumn(currentState, column.Info, rows, inverse: true));
+                res1.Add(AddColumn(currentState, column.Info, rows, inverse: false));
+                res1.Add(AddColumn(currentState, column.Info, rows, inverse: true));
             }
         }
 
@@ -120,8 +122,8 @@ public static class GridUtils
 
                 if (columnCount == 1)
                 {
-                    res.Add(SplitPanelInHalf(currentState, panelToSplit, splitVertically: true, inverse: false));
-                    res.Add(SplitPanelInHalf(currentState, panelToSplit, splitVertically: true, inverse: true));
+                    res2.Add(SplitPanelInHalf(currentState, panelToSplit, splitVertically: true, inverse: false));
+                    res2.Add(SplitPanelInHalf(currentState, panelToSplit, splitVertically: true, inverse: true));
                     continue;
                 }
 
@@ -134,14 +136,15 @@ public static class GridUtils
                         var updatedLogicalBounds = new Rect(rect.X, rect.Y, seenColumn.X, rect.Height);
                         var newPanelLogicalBounds = new Rect(seenColumn.X, rect.Y, seenColumn.Width, rect.Height);
 
-                        res.Add(SplitPanelWithBounds(currentState, panelToSplit,updatedLogicalBounds,newPanelLogicalBounds, inverse: false));
-                        res.Add(SplitPanelWithBounds(currentState, panelToSplit, updatedLogicalBounds, newPanelLogicalBounds, inverse: true));
+                        res2.Add(SplitPanelWithBounds(currentState, panelToSplit,updatedLogicalBounds,newPanelLogicalBounds, inverse: false));
+                        res2.Add(SplitPanelWithBounds(currentState, panelToSplit, updatedLogicalBounds, newPanelLogicalBounds, inverse: true));
                     }
                 }
             }
         }
 
-        return res;
+        res2.Add(res1);
+        return res2;
     }
 
     private static List<WorkspaceGridState> GetPossibleStatesForVertical(
@@ -149,7 +152,8 @@ public static class GridUtils
         int maxColumns,
         int maxRows)
     {
-        var res = new List<WorkspaceGridState>();
+        var res1 = new List<WorkspaceGridState>();
+        var res2 = new List<WorkspaceGridState>();
 
         var (rowCount, maxColumnCount) = currentState.CountRows();
 
@@ -168,8 +172,8 @@ public static class GridUtils
             {
                 foreach (var panelToSplit in columns)
                 {
-                    res.Add(SplitPanelInHalf(currentState, panelToSplit, splitVertically: true, inverse: false));
-                    res.Add(SplitPanelInHalf(currentState, panelToSplit, splitVertically: true, inverse: true));
+                    res1.Add(SplitPanelInHalf(currentState, panelToSplit, splitVertically: true, inverse: false));
+                    res1.Add(SplitPanelInHalf(currentState, panelToSplit, splitVertically: true, inverse: true));
                 }
             }
 
@@ -178,8 +182,8 @@ public static class GridUtils
             // iterations are required (that's what CountRows does).
             if (columns.Length > 1 && rowCount != maxRows)
             {
-                res.Add(AddRow(currentState, row.Info, columns, inverse: false));
-                res.Add(AddRow(currentState, row.Info, columns, inverse: true));
+                res1.Add(AddRow(currentState, row.Info, columns, inverse: false));
+                res1.Add(AddRow(currentState, row.Info, columns, inverse: true));
             }
         }
 
@@ -203,8 +207,8 @@ public static class GridUtils
 
                 if (rowCount == 1)
                 {
-                    res.Add(SplitPanelInHalf(currentState, panelToSplit, splitVertically: false, inverse: false));
-                    res.Add(SplitPanelInHalf(currentState, panelToSplit, splitVertically: false, inverse: true));
+                    res2.Add(SplitPanelInHalf(currentState, panelToSplit, splitVertically: false, inverse: false));
+                    res2.Add(SplitPanelInHalf(currentState, panelToSplit, splitVertically: false, inverse: true));
                 }
 
                 foreach (var seenRow in seenRowSlice)
@@ -216,14 +220,15 @@ public static class GridUtils
                         var updatedLogicalBounds = new Rect(rect.X, rect.Y, rect.Width, seenRow.Y);
                         var newPanelLogicalBounds = new Rect(rect.X, seenRow.Y, rect.Width, seenRow.Height);
 
-                        res.Add(SplitPanelWithBounds(currentState, panelToSplit,updatedLogicalBounds,newPanelLogicalBounds, inverse: false));
-                        res.Add(SplitPanelWithBounds(currentState, panelToSplit, updatedLogicalBounds, newPanelLogicalBounds, inverse: true));
+                        res2.Add(SplitPanelWithBounds(currentState, panelToSplit,updatedLogicalBounds,newPanelLogicalBounds, inverse: false));
+                        res2.Add(SplitPanelWithBounds(currentState, panelToSplit, updatedLogicalBounds, newPanelLogicalBounds, inverse: true));
                     }
                 }
             }
         }
 
-        return res;
+        res2.Add(res1);
+        return res2;
     }
 
     private static WorkspaceGridState AddRow(
