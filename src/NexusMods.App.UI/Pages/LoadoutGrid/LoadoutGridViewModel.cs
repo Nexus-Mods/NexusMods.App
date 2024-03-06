@@ -218,7 +218,7 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
             };
 
             var workspaceController = GetWorkspaceController();
-            var openPageBehavior = new OpenPageBehavior(new NewPanelOrTab(Optional<WorkspaceGridState>.None, Optional<PanelId>.None));
+            var openPageBehavior = new OpenPageBehavior(new NewTab(Optional<PanelId>.None));
             workspaceController.OpenPage(WorkspaceId, pageData, openPageBehavior);
         }
     }

@@ -88,29 +88,17 @@ public partial class LoadoutGridView : ReactiveUserControl<ILoadoutGridViewModel
     
     private void ViewModContents()
     {
-        const bool viewMultiple = false;
         if (ModsDataGrid.SelectedIndex == -1)
             return;
 
-#pragma warning disable CS0162 // Unreachable code detected
-        if (!viewMultiple)
+        var toView = new List<ModId>();
+        foreach (var row in ModsDataGrid.SelectedItems)
         {
-            ViewModel!.ViewModContents(
-                [((ModCursor)ModsDataGrid.SelectedItem).ModId]
-            );
+            if (row is not ModCursor modCursor) continue;
+            toView.Add(modCursor.ModId);
         }
-        else
-        {
-            var toView = new List<ModId>();
-            foreach (var row in ModsDataGrid.SelectedItems)
-            {
-                if (row is not ModCursor modCursor) continue;
-                toView.Add(modCursor.ModId);
-            }
 
-            ViewModel!.ViewModContents(toView);
-        }
-#pragma warning restore CS0162 // Unreachable code detected
+        ViewModel!.ViewModContents(toView);
     }
 }
 
