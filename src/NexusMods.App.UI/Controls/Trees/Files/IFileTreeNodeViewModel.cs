@@ -27,12 +27,12 @@ public interface IFileTreeNodeViewModel : IViewModelInterface
     /// <summary>
     ///     The key to this node.
     /// </summary>
-    object Key { get; }
+    GamePath Key { get; }
 
     /// <summary>
     ///     The key to the parent of this node.
     /// </summary>
-    object ParentKey { get; }
+    GamePath ParentKey { get; }
 
     /// <summary>
     ///     A method called when the tree item is expanded, this by default changes the icon style.

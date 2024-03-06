@@ -3,23 +3,20 @@ using DynamicData;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.DTO;
-using NexusMods.Abstractions.Games.Trees;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.App.UI.Controls.Trees.Files;
-using NexusMods.Paths;
-using NexusMods.Paths.Trees;
 using NexusMods.Paths.Trees.Traits;
-using ModFileNode = NexusMods.App.UI.TreeNodeVM<NexusMods.App.UI.Controls.Trees.Files.IFileTreeNodeViewModel, object>;
+using ModFileNode = NexusMods.App.UI.TreeNodeVM<NexusMods.App.UI.Controls.Trees.Files.IFileTreeNodeViewModel, NexusMods.Abstractions.GameLocators.GamePath>;
 namespace NexusMods.App.UI.Controls.ModInfo.ViewModFiles;
 
 [UsedImplicitly]
 public class ViewModFilesViewModel : AViewModel<IViewModFilesViewModel>, IViewModFilesViewModel
 {
     private readonly ILoadoutRegistry _registry;
-    private readonly SourceCache<IFileTreeNodeViewModel, object> _sourceCache;
+    private readonly SourceCache<IFileTreeNodeViewModel, GamePath> _sourceCache;
     private ReadOnlyObservableCollection<ModFileNode> _items;
     private int _rootCount;
     private string? _primaryRootLocation;
@@ -32,7 +29,7 @@ public class ViewModFilesViewModel : AViewModel<IViewModFilesViewModel>, IViewMo
     {
         _registry = registry;
         _items = new ReadOnlyObservableCollection<ModFileNode>([]);
-        _sourceCache = new SourceCache<IFileTreeNodeViewModel, object>(x => x.Key);
+        _sourceCache = new SourceCache<IFileTreeNodeViewModel, GamePath>(x => x.Key);
     }
 
     public void Initialize(LoadoutId loadoutId, List<ModId> contextModIds)
@@ -113,7 +110,7 @@ public class ViewModFilesViewModel : AViewModel<IViewModFilesViewModel>, IViewMo
     ///     If the items have multiple roots (LocationIds), separate nodes are made for them.
     /// </summary>
     internal static void BindItems(
-        SourceCache<IFileTreeNodeViewModel, object> cache, 
+        SourceCache<IFileTreeNodeViewModel, GamePath> cache, 
         Dictionary<LocationId, string> locations, 
         bool alwaysRoot, 
         out ReadOnlyObservableCollection<ModFileNode> result,

@@ -31,6 +31,14 @@ public struct GamePathNode<TValue> :
     ///     Hashcode.
     /// </summary>
     private int _hashCode; // 28 (size 4)
+    
+    /// <summary>
+    ///     Contains the full path to the file.
+    /// </summary>
+    /// <remarks>
+    ///     We sacrifice some memory here in order to speed up `Equals` and `GetHashCode`.
+    /// </remarks>
+    public GamePath GamePath { get; private set; } // 32
 
     /// <inheritdoc />
     public TValue Value { get; init; } // ?? (variable, potentially not 8 aligned)
@@ -41,16 +49,12 @@ public struct GamePathNode<TValue> :
     public LocationId Id { get; init; } // ?? (variable, always 8 aligned)
 
     /// <summary>
-    ///     Retrieves the corresponding <see cref="GamePath" /> from given location ID and this node's path.
-    /// </summary>
-    public GamePath GetGamePath() => new(Id, this.ReconstructPath());
-
-    /// <summary>
     ///     Creates nodes from an IEnumerable of items.
     /// </summary>
     public static KeyedBox<RelativePath, GamePathNode<TValue>> Create(IEnumerable<KeyValuePair<GamePath, TValue>> items)
     {
         // Unboxed root node.
+        var rootLocationId = items.FirstOrDefault().Key.LocationId!;
         var root = new KeyedBox<RelativePath, GamePathNode<TValue>>()
         {
             Item = new GamePathNode<TValue>
@@ -59,8 +63,9 @@ public struct GamePathNode<TValue> :
                 Segment = RelativePath.Empty,
                 Parent = null,
                 IsFile = false,
-                Id = items.FirstOrDefault().Key.LocationId!,
-                Value = default!,
+                Id = rootLocationId,
+                Value = default(TValue)!,
+                GamePath = new GamePath(rootLocationId, ""),
                 _hashCode = 0,
             }
         };
@@ -92,8 +97,11 @@ public struct GamePathNode<TValue> :
                             Value = entry.Value,
                         }
                     };
-                    child.Item._hashCode = child.Item.MakeHashCode();
-
+                    // We use a forward slash here, to comply with NexusMods.Paths rules.
+                    // Don't use Join API, as that will slow down our work, we don't have unsanitized
+                    // input, we're complying with underlying library's documented rules.
+                    child.Item.GamePath = new GamePath(child.Item.Id, string.Concat(current.GamePath().Path, "/", segment));
+                    child.Item._hashCode = child.Item.MakeHashCode(); // depends on GamePath
                     current.Item.Children.Add(segment, child);
                 }
 
@@ -105,34 +113,9 @@ public struct GamePathNode<TValue> :
     }
 
     /// <summary>
-    ///     Fast check for equality against other node.
+    ///     Check for equality against other node.
     /// </summary>
-    public bool Equals(GamePathNode<TValue> other)
-    {
-        // Start with comparing current nodes
-        if (!Segment.Equals(other.Segment)) return false;
-    
-        // Traverse up the parent chain of both nodes, comparing segments
-        var currentNodeParent = this.Parent;
-        var otherNodeParent = other.Parent;
-    
-        while (currentNodeParent != null && otherNodeParent != null)
-        {
-            // If both parents are not null but their segments don't match, return false
-            if (!currentNodeParent.Item.Segment.Equals(otherNodeParent.Item.Segment))
-            {
-                return false;
-            }
-        
-            // Move up the tree
-            currentNodeParent = currentNodeParent.Item.Parent;
-            otherNodeParent = otherNodeParent.Item.Parent;
-        }
-    
-        // If both currentNodeParent and otherNodeParent are null, we reached the root and all segments matched
-        // If only one is null, the trees have different depths and are not equal
-        return currentNodeParent == null && otherNodeParent == null;
-    }
+    public bool Equals(GamePathNode<TValue> other) => GamePath.Equals(other.GamePath);
 
     /// <inheritdoc />
     public override bool Equals(object? obj) => obj is GamePathNode<TValue> other && Equals(other);
@@ -140,20 +123,7 @@ public struct GamePathNode<TValue> :
     /// <inheritdoc />
     public override int GetHashCode() => _hashCode; // Cached to maximize performance.
 
-    private int MakeHashCode()
-    {
-        var hashCode = new HashCode();
-        hashCode.Add(Segment);
-
-        var parent = this.Parent;
-        while (parent != null)
-        {
-            hashCode.Add(parent.Segment());
-            parent = parent.Parent();
-        }
-        
-        return hashCode.ToHashCode();
-    }
+    private int MakeHashCode() => GamePath.GetHashCode();
 }
 
 /// <summary>
@@ -165,5 +135,5 @@ public static class GamePathNodeExtensions
     ///     Gets the <see cref="GamePath{T}"/> for the given boxed node.
     /// </summary>
     /// <param name="keyedBox">The KeyedBox containing a ModFileTree instance.</param>
-    public static GamePath GamePath<T>(this KeyedBox<RelativePath, GamePathNode<T>> keyedBox) => keyedBox.Item.GetGamePath();
+    public static GamePath GamePath<T>(this KeyedBox<RelativePath, GamePathNode<T>> keyedBox) => keyedBox.Item.GamePath;
 }

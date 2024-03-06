@@ -1,10 +1,11 @@
 using System.Collections.ObjectModel;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.App.UI.Controls.Trees.Files;
 
 namespace NexusMods.App.UI.Controls.ModInfo.ViewModFiles;
-using ModFileNode = TreeNodeVM<IFileTreeNodeViewModel, object>;
+using ModFileNode = TreeNodeVM<IFileTreeNodeViewModel, GamePath>;
 
 public interface IViewModFilesViewModel : IViewModelInterface
 {

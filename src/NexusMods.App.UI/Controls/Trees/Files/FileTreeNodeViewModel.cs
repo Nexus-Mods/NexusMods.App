@@ -1,3 +1,4 @@
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.Trees;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees;
@@ -16,8 +17,8 @@ public class FileTreeNodeViewModel<TValue> : AViewModel<IFileTreeNodeViewModel>,
     public bool IsFile => _item.Item.IsFile;
     public string Name => _item.Item.Segment;
     public ulong FileSize { get; }
-    public object Key => _item;
-    public object ParentKey => _item.Parent()!;
+    public GamePath Key => _item.GamePath();
+    public GamePath ParentKey => _item.Parent()!.GamePath();
 
     public FileTreeNodeViewModel(KeyedBox<RelativePath, GamePathNode<TValue>> item, ulong fileSize)
     {

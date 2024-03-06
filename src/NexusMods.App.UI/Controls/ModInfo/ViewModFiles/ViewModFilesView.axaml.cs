@@ -7,12 +7,13 @@ using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Controls.Templates;
 using Avalonia.ReactiveUI;
 using Humanizer.Bytes;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.App.UI.Controls.Trees.Files;
 using NexusMods.App.UI.Resources;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Controls.ModInfo.ViewModFiles;
-using ModFileNode = TreeNodeVM<IFileTreeNodeViewModel, object>;
+using ModFileNode = TreeNodeVM<IFileTreeNodeViewModel, GamePath>;
 
 public partial class ViewModFilesView : ReactiveUserControl<IViewModFilesViewModel>
 {
