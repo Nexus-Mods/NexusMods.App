@@ -79,16 +79,6 @@ public partial class GridUtilsTests
             {
                 CreateState(
                     isHorizontal: false,
-                    new PanelGridState(firstPanelId, new Rect(0, 0, 0.5, 1)),
-                    new PanelGridState(newPanelId, new Rect(0.5, 0, 0.5, 1))
-                ),
-                CreateState(
-                    isHorizontal: false,
-                    new PanelGridState(newPanelId, new Rect(0, 0, 0.5, 1)),
-                    new PanelGridState(firstPanelId, new Rect(0.5, 0, 0.5, 1))
-                ),
-                CreateState(
-                    isHorizontal: false,
                     new PanelGridState(firstPanelId, new Rect(0, 0, 1, 0.5)),
                     new PanelGridState(newPanelId, new Rect(0, 0.5, 1, 0.5))
                 ),
@@ -96,6 +86,16 @@ public partial class GridUtilsTests
                     isHorizontal: false,
                     new PanelGridState(newPanelId, new Rect(0, 0, 1, 0.5)),
                     new PanelGridState(firstPanelId, new Rect(0, 0.5, 1, 0.5))
+                ),
+                CreateState(
+                    isHorizontal: false,
+                    new PanelGridState(firstPanelId, new Rect(0, 0, 0.5, 1)),
+                    new PanelGridState(newPanelId, new Rect(0.5, 0, 0.5, 1))
+                ),
+                CreateState(
+                    isHorizontal: false,
+                    new PanelGridState(newPanelId, new Rect(0, 0, 0.5, 1)),
+                    new PanelGridState(firstPanelId, new Rect(0.5, 0, 0.5, 1))
                 ),
             }
         };
@@ -123,18 +123,6 @@ public partial class GridUtilsTests
                 CreateState(
                     isHorizontal: false,
                     new PanelGridState(firstPanelId, new Rect(0, 0, 0.5, 0.5)),
-                    new PanelGridState(secondPanelId, new Rect(0.5, 0, 0.5, 0.5)),
-                    new PanelGridState(newPanelId, new Rect(0, 0.5, 1.0, 0.5))
-                ),
-                CreateState(
-                    isHorizontal: false,
-                    new PanelGridState(newPanelId, new Rect(0, 0, 1.0, 0.5)),
-                    new PanelGridState(firstPanelId, new Rect(0, 0.5, 0.5, 0.5)),
-                    new PanelGridState(secondPanelId, new Rect(0.5, 0.5, 0.5, 0.5))
-                ),
-                CreateState(
-                    isHorizontal: false,
-                    new PanelGridState(firstPanelId, new Rect(0, 0, 0.5, 0.5)),
                     new PanelGridState(newPanelId, new Rect(0, 0.5, 0.5, 0.5)),
                     new PanelGridState(secondPanelId, new Rect(0.5, 0, 1 - 0.5, 1))
                 ),
@@ -155,6 +143,18 @@ public partial class GridUtilsTests
                     new PanelGridState(firstPanelId, new Rect(0, 0, 0.5, 1)),
                     new PanelGridState(newPanelId, new Rect(0.5, 0, 1 - 0.5, 0.5)),
                     new PanelGridState(secondPanelId, new Rect(0.5, 0.5, 1 - 0.5, 0.5))
+                ),
+                CreateState(
+                    isHorizontal: false,
+                    new PanelGridState(firstPanelId, new Rect(0, 0, 0.5, 0.5)),
+                    new PanelGridState(secondPanelId, new Rect(0.5, 0, 0.5, 0.5)),
+                    new PanelGridState(newPanelId, new Rect(0, 0.5, 1.0, 0.5))
+                ),
+                CreateState(
+                    isHorizontal: false,
+                    new PanelGridState(newPanelId, new Rect(0, 0, 1.0, 0.5)),
+                    new PanelGridState(firstPanelId, new Rect(0, 0.5, 0.5, 0.5)),
+                    new PanelGridState(secondPanelId, new Rect(0.5, 0.5, 0.5, 0.5))
                 ),
             }
         };
@@ -323,16 +323,6 @@ public partial class GridUtilsTests
             {
                 CreateState(
                     isHorizontal: true,
-                    new PanelGridState(firstPanelId, new Rect(0, 0, 1, 0.5)),
-                    new PanelGridState(newPanelId, new Rect(0, 0.5, 1, 0.5))
-                ),
-                CreateState(
-                    isHorizontal: true,
-                    new PanelGridState(newPanelId, new Rect(0, 0, 1, 0.5)),
-                    new PanelGridState(firstPanelId, new Rect(0, 0.5, 1, 0.5))
-                ),
-                CreateState(
-                    isHorizontal: true,
                     new PanelGridState(firstPanelId, new Rect(0, 0, 0.5, 1)),
                     new PanelGridState(newPanelId, new Rect(0.5, 0, 0.5, 1))
                 ),
@@ -340,6 +330,16 @@ public partial class GridUtilsTests
                     isHorizontal: true,
                     new PanelGridState(newPanelId, new Rect(0, 0, 0.5, 1)),
                     new PanelGridState(firstPanelId, new Rect(0.5, 0, 0.5, 1))
+                ),
+                CreateState(
+                    isHorizontal: true,
+                    new PanelGridState(firstPanelId, new Rect(0, 0, 1, 0.5)),
+                    new PanelGridState(newPanelId, new Rect(0, 0.5, 1, 0.5))
+                ),
+                CreateState(
+                    isHorizontal: true,
+                    new PanelGridState(newPanelId, new Rect(0, 0, 1, 0.5)),
+                    new PanelGridState(firstPanelId, new Rect(0, 0.5, 1, 0.5))
                 ),
             }
         };
@@ -415,18 +415,6 @@ public partial class GridUtilsTests
                 CreateState(
                     isHorizontal: true,
                     new PanelGridState(firstPanelId, new Rect(0, 0, 0.5, 0.5)),
-                    new PanelGridState(secondPanelId, new Rect(0, 0.5, 0.5, 0.5)),
-                    new PanelGridState(newPanelId, new Rect(0.5, 0, 0.5, 1))
-                ),
-                CreateState(
-                    isHorizontal: true,
-                    new PanelGridState(newPanelId, new Rect(0, 0, 0.5, 1)),
-                    new PanelGridState(firstPanelId, new Rect(0.5, 0, 0.5, 0.5)),
-                    new PanelGridState(secondPanelId, new Rect(0.5, 0.5, 0.5, 0.5))
-                ),
-                CreateState(
-                    isHorizontal: true,
-                    new PanelGridState(firstPanelId, new Rect(0, 0, 0.5, 0.5)),
                     new PanelGridState(secondPanelId, new Rect(0, 0.5, 1, 0.5)),
                     new PanelGridState(newPanelId, new Rect(0.5, 0, 0.5, 0.5))
                 ),
@@ -446,6 +434,18 @@ public partial class GridUtilsTests
                     isHorizontal: true,
                     new PanelGridState(firstPanelId, new Rect(0, 0, 1, 0.5)),
                     new PanelGridState(newPanelId, new Rect(0, 0.5, 0.5, 0.5)),
+                    new PanelGridState(secondPanelId, new Rect(0.5, 0.5, 0.5, 0.5))
+                ),
+                CreateState(
+                    isHorizontal: true,
+                    new PanelGridState(firstPanelId, new Rect(0, 0, 0.5, 0.5)),
+                    new PanelGridState(secondPanelId, new Rect(0, 0.5, 0.5, 0.5)),
+                    new PanelGridState(newPanelId, new Rect(0.5, 0, 0.5, 1))
+                ),
+                CreateState(
+                    isHorizontal: true,
+                    new PanelGridState(newPanelId, new Rect(0, 0, 0.5, 1)),
+                    new PanelGridState(firstPanelId, new Rect(0.5, 0, 0.5, 0.5)),
                     new PanelGridState(secondPanelId, new Rect(0.5, 0.5, 0.5, 0.5))
                 ),
             }
