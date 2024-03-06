@@ -4,6 +4,7 @@ using System.Reactive.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Mods;
+using NexusMods.App.UI.Controls.ModInfo.Loading;
 using NexusMods.App.UI.Controls.ModInfo.ViewModFiles;
 using NexusMods.App.UI.Pages.ModInfo.Types;
 using NexusMods.App.UI.Windows;
@@ -38,6 +39,7 @@ public class ModInfoViewModel : APageViewModel<IModInfoViewModel>, IModInfoViewM
         {
             GetWorkspaceController().SetTabTitle(GetModName(), WorkspaceId, PanelId, TabId);
 
+            PageViewModel = new DummyLoadingViewModel();
             this.WhenAnyValue(x => x.Page)
                 .OffUi()
                 .Select(CreateNewPage)

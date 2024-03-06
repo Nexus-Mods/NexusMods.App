@@ -45,51 +45,6 @@ namespace NexusMods.App.UI.Resources {
             }
         }
         
-        /// <summary>
-        ///   Looks up a localized string similar to ACTIVATE &amp; APPLY.
-        /// </summary>
-        public static string ApplyControlViewModel__ACTIVATE_AND_APPLY {
-            get {
-                return ResourceManager.GetString("ApplyControlViewModel__ACTIVATE_AND_APPLY", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to ACTIVATE LOADOUT.
-        /// </summary>
-        public static string ApplyControlViewModel__ACTIVATE_LOADOUT {
-            get {
-                return ResourceManager.GetString("ApplyControlViewModel__ACTIVATE_LOADOUT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to APPLY.
-        /// </summary>
-        public static string ApplyControlViewModel__APPLY {
-            get {
-                return ResourceManager.GetString("ApplyControlViewModel__APPLY", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Applying....
-        /// </summary>
-        public static string ApplyingControlView__ApplyingText {
-            get {
-                return ResourceManager.GetString("ApplyingControlView__ApplyingText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 0 mins.
-        /// </summary>
-        public static string BoldMinutesRemainingTextBlock {
-            get {
-                return ResourceManager.GetString("BoldMinutesRemainingTextBlock", resourceCulture);
-            }
-        }
-
         public static string Newsfeed {
             get {
                 return ResourceManager.GetString("Newsfeed", resourceCulture);
@@ -432,6 +387,12 @@ namespace NexusMods.App.UI.Resources {
             }
         }
         
+        public static string BoldMinutesRemainingTextBlock {
+            get {
+                return ResourceManager.GetString("BoldMinutesRemainingTextBlock", resourceCulture);
+            }
+        }
+        
         public static string MinutesRemainingTextBlock {
             get {
                 return ResourceManager.GetString("MinutesRemainingTextBlock", resourceCulture);
@@ -633,6 +594,36 @@ namespace NexusMods.App.UI.Resources {
         public static string ViewModFilesView_Locations {
             get {
                 return ResourceManager.GetString("ViewModFilesView_Locations", resourceCulture);
+            }
+        }
+        
+        public static string ApplyControlViewModel__ACTIVATE_LOADOUT {
+            get {
+                return ResourceManager.GetString("ApplyControlViewModel__ACTIVATE_LOADOUT", resourceCulture);
+            }
+        }
+        
+        public static string ApplyControlViewModel__ACTIVATE_AND_APPLY {
+            get {
+                return ResourceManager.GetString("ApplyControlViewModel__ACTIVATE_AND_APPLY", resourceCulture);
+            }
+        }
+        
+        public static string ApplyControlViewModel__APPLY {
+            get {
+                return ResourceManager.GetString("ApplyControlViewModel__APPLY", resourceCulture);
+            }
+        }
+        
+        public static string ApplyingControlView__ApplyingText {
+            get {
+                return ResourceManager.GetString("ApplyingControlView__ApplyingText", resourceCulture);
+            }
+        }
+        
+        public static string Helpers_LOADING {
+            get {
+                return ResourceManager.GetString("Helpers_LOADING", resourceCulture);
             }
         }
     }

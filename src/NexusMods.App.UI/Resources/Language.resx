@@ -306,4 +306,7 @@
     <data name="ApplyingControlView__ApplyingText" xml:space="preserve">
         <value>Applying...</value>
     </data>
+    <data name="Helpers_LOADING" xml:space="preserve">
+        <value>LOADING...</value>
+    </data>
 </root>

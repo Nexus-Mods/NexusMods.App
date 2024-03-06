@@ -416,6 +416,10 @@
         <Compile Update="LeftMenu\Items\ApplyControlViewModel.cs">
           <DependentUpon>IApplyControlViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Controls\ModInfo\Dummy\ViewModFilesView.axaml.cs">
+          <DependentUpon>ViewModFilesView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>

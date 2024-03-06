@@ -6,6 +6,11 @@ namespace NexusMods.App.UI.Pages.ModInfo.Types;
 public enum CurrentModInfoPage
 {
     /// <summary>
+    ///     Loading
+    /// </summary>
+    Loading,
+    
+    /// <summary>
     ///     For the file tree.
     /// </summary>
     Files,

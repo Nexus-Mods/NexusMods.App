@@ -13,6 +13,7 @@ using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadStatus;
 using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadVersion;
 using NexusMods.App.UI.Controls.FoundGames;
 using NexusMods.App.UI.Controls.GameWidget;
+using NexusMods.App.UI.Controls.ModInfo.Loading;
 using NexusMods.App.UI.Controls.ModInfo.ViewModFiles;
 using NexusMods.App.UI.Controls.Spine;
 using NexusMods.App.UI.Controls.Spine.Buttons.Download;
@@ -52,6 +53,7 @@ using DownloadStatusView = NexusMods.App.UI.Controls.DownloadGrid.Columns.Downlo
 using DownloadVersionView = NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadVersion.DownloadVersionView;
 using FoundGamesView = NexusMods.App.UI.Controls.FoundGames.FoundGamesView;
 using ImageButton = NexusMods.App.UI.Controls.Spine.Buttons.Image.ImageButton;
+using LoadingView = NexusMods.App.UI.Controls.ModInfo.Loading.LoadingView;
 using ModCategoryView = NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModCategory.ModCategoryView;
 using ModEnabledView = NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModEnabled.ModEnabledView;
 using ModInstalledView = NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModInstalled.ModInstalledView;
@@ -128,6 +130,7 @@ public static class Services
             .AddViewModel<ViewModFilesViewModel, IViewModFilesViewModel>()
             .AddViewModel<ModInfoViewModel, IModInfoViewModel>()
             .AddViewModel<FileTreeNodeViewModel<ModFilePair>, IFileTreeNodeViewModel>()
+            .AddViewModel<DummyLoadingViewModel, ILoadingViewModel>()
 
             // Views
             .AddView<DevelopmentBuildBannerView, IDevelopmentBuildBannerViewModel>()
@@ -166,6 +169,7 @@ public static class Services
             .AddView<ViewModFilesView, IViewModFilesViewModel>()
             .AddView<ModInfoView, IModInfoViewModel>()
             .AddView<FileTreeNodeView, IFileTreeNodeViewModel>()
+            .AddView<LoadingView, ILoadingViewModel>()
 
             // workspace system
             .AddSingleton<IWindowManager, WindowManager>()
