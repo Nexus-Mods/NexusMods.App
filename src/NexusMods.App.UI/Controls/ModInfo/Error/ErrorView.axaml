@@ -1,0 +1,40 @@
+﻿<reactiveUi:ReactiveUserControl
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d"
+    x:Class="NexusMods.App.UI.Controls.ModInfo.Error.ErrorView"
+    x:TypeArguments="loading:ILoadingViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactiveUi="http://reactiveui.net"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:loading="clr-namespace:NexusMods.App.UI.Controls.ModInfo.Loading"
+    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources">
+    
+    <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
+        <StackPanel.Styles>
+            <Style Selector="Line">
+                <Setter Property="Width" Value="300"/>
+                <Setter Property="Height" Value="32"/>
+                <Setter Property="StrokeThickness" Value="3"/>
+                <Setter Property="StartPoint" Value="0, 16"/>
+                <Setter Property="EndPoint" Value="300, 16"/>
+                <Setter Property="Stroke" Value="{StaticResource StrokeTranslucentWeakBrush}"/>
+            </Style>
+        </StackPanel.Styles>
+        
+        
+        <TextBlock Classes="HeadingXLSemi"
+                   HorizontalAlignment="Center"
+                   Text="{x:Static resources:Language.ErrorView_Title}" />
+        <TextBlock Classes="HeadingSMSemi"
+                   HorizontalAlignment="Center"
+                   Text="{x:Static resources:Language.ErrorView_SubHeading}" />
+        <Line Classes="Separator"/>
+        <TextBlock Classes="BodyXLNormal"
+                   HorizontalAlignment="Center"
+                   Text="{x:Static resources:Language.ErrorView_Description}" />
+    </StackPanel>
+</reactiveUi:ReactiveUserControl>
+

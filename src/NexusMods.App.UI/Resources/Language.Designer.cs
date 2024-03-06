@@ -626,5 +626,29 @@ namespace NexusMods.App.UI.Resources {
                 return ResourceManager.GetString("Helpers_LOADING", resourceCulture);
             }
         }
+        
+        public static string Helpers_ERROR {
+            get {
+                return ResourceManager.GetString("Helpers_ERROR", resourceCulture);
+            }
+        }
+        
+        public static string ErrorView_Title {
+            get {
+                return ResourceManager.GetString("ErrorView_Title", resourceCulture);
+            }
+        }
+        
+        public static string ErrorView_SubHeading {
+            get {
+                return ResourceManager.GetString("ErrorView_SubHeading", resourceCulture);
+            }
+        }
+        
+        public static string ErrorView_Description {
+            get {
+                return ResourceManager.GetString("ErrorView_Description", resourceCulture);
+            }
+        }
     }
 }

@@ -13,6 +13,7 @@ using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadStatus;
 using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadVersion;
 using NexusMods.App.UI.Controls.FoundGames;
 using NexusMods.App.UI.Controls.GameWidget;
+using NexusMods.App.UI.Controls.ModInfo.Error;
 using NexusMods.App.UI.Controls.ModInfo.Loading;
 using NexusMods.App.UI.Controls.ModInfo.ViewModFiles;
 using NexusMods.App.UI.Controls.Spine;
@@ -131,6 +132,7 @@ public static class Services
             .AddViewModel<ModInfoViewModel, IModInfoViewModel>()
             .AddViewModel<FileTreeNodeViewModel<ModFilePair>, IFileTreeNodeViewModel>()
             .AddViewModel<DummyLoadingViewModel, ILoadingViewModel>()
+            .AddViewModel<DummyErrorViewModel, IErrorViewModel>()
 
             // Views
             .AddView<DevelopmentBuildBannerView, IDevelopmentBuildBannerViewModel>()
@@ -170,6 +172,7 @@ public static class Services
             .AddView<ModInfoView, IModInfoViewModel>()
             .AddView<FileTreeNodeView, IFileTreeNodeViewModel>()
             .AddView<LoadingView, ILoadingViewModel>()
+            .AddView<ErrorView, IErrorViewModel>()
 
             // workspace system
             .AddSingleton<IWindowManager, WindowManager>()

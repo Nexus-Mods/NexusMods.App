@@ -11,14 +11,13 @@ public interface IModInfoViewModel : IPageViewModelInterface
     ModId ModId { get; set; }
     CurrentModInfoPage Page { get; set; }
     IViewModelInterface PageViewModel { get; set; }
+    void SetContext(ViewModInfoPageContext context) => SetContextImpl(this, context);
 
-    /// <summary>
-    ///     Copies information about current page from a given 'context'.
-    /// </summary>
-    void SetContext(ViewModInfoPageContext context)
+    internal static void SetContextImpl(IModInfoViewModel vm, ViewModInfoPageContext context) 
     {
-        LoadoutId = context.LoadoutId;
-        ModId = context.ModId;
-        Page = context.Page;
+        vm.LoadoutId = context.LoadoutId;
+        vm.ModId = context.ModId;
+        vm.Page = context.Page;
     }
 }
+

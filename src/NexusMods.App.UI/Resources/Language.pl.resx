@@ -291,4 +291,16 @@
     <data name="Helpers_LOADING" xml:space="preserve">
         <value>ŁADOWANIE...</value>
     </data>
+    <data name="Helpers_ERROR" xml:space="preserve">
+        <value>BŁĄD</value>
+    </data>
+    <data name="ErrorView_Title" xml:space="preserve">
+        <value>Wystąpił Błąd</value>
+    </data>
+    <data name="ErrorView_SubHeading" xml:space="preserve">
+        <value>Wyświetlany Tutaj Mod Został Usunięty</value>
+    </data>
+    <data name="ErrorView_Description" xml:space="preserve">
+        <value>Zamknij to okno, kartę lub panel.</value>
+    </data>
 </root>

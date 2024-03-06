@@ -2,11 +2,14 @@ using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Mods;
+using NexusMods.App.UI.Controls.ModInfo.Error;
 using NexusMods.App.UI.Controls.ModInfo.Loading;
 using NexusMods.App.UI.Controls.ModInfo.ViewModFiles;
 using NexusMods.App.UI.Pages.ModInfo.Types;
+using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using ReactiveUI;
@@ -30,6 +33,7 @@ public class ModInfoViewModel : APageViewModel<IModInfoViewModel>, IModInfoViewM
 
     private readonly IServiceProvider _serviceProvider;
     private readonly ILoadoutRegistry _registry;
+    private bool _isInvalid;
 
     public ModInfoViewModel(IWindowManager windowManager, IServiceProvider serviceProvider, ILoadoutRegistry registry) : base(windowManager)
     {
@@ -37,16 +41,24 @@ public class ModInfoViewModel : APageViewModel<IModInfoViewModel>, IModInfoViewM
         _registry = registry;
         this.WhenActivated(delegate(CompositeDisposable dp)
         {
-            GetWorkspaceController().SetTabTitle(GetModName(), WorkspaceId, PanelId, TabId);
-
-            PageViewModel = new DummyLoadingViewModel();
-            this.WhenAnyValue(x => x.Page)
-                .OffUi()
-                .Select(CreateNewPage)
-                .OnUI()
-                .Subscribe(x => PageViewModel = x)
-                .DisposeWith(dp);
+            GetWorkspaceController().SetTabTitle(GetModName(out _isInvalid), WorkspaceId, PanelId, TabId);
+            PageViewModel = !_isInvalid ? new DummyLoadingViewModel() : new DummyErrorViewModel();
+            if (!_isInvalid)
+            {
+                this.WhenAnyValue(x => x.Page)
+                    .OffUi()
+                    .Select(CreateNewPage)
+                    .OnUI()
+                    .Subscribe(x => PageViewModel = x)
+                    .DisposeWith(dp);
+            }
         });
+    }
+    
+    public void SetContext(ViewModInfoPageContext context)
+    {
+        if (!_isInvalid)
+            IModInfoViewModel.SetContextImpl(this, context);
     }
 
     private IViewModelInterface CreateNewPage(CurrentModInfoPage page)
@@ -62,5 +74,23 @@ public class ModInfoViewModel : APageViewModel<IModInfoViewModel>, IModInfoViewM
         }
     }
 
-    private string GetModName() => _registry.Get(LoadoutId, ModId)!.Name;
+    private string GetModName(out bool isInvalid)
+    {
+        try
+        {
+            isInvalid = false;
+            return _registry.Get(LoadoutId, ModId)!.Name;
+        }
+        catch (KeyNotFoundException ex)
+        {
+            // The user deleted this mod and restarted the app while having this panel open.
+            // In theory this could also be thrown for invalid loadout, but then you'd lose the whole workspace,
+            // so in this context, that's impossible to happen.
+            isInvalid = true;
+            
+            var log = _serviceProvider.GetRequiredService<ILogger<ModInfoViewModel>>();
+            log.LogError(ex, "Failed to Get Mod Name, Because ModId {0} no longer exists.", ModId);
+            return Language.Helpers_ERROR;
+        }
+    }
 }

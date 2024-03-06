@@ -420,6 +420,10 @@
           <DependentUpon>ViewModFilesView.axaml</DependentUpon>
           <SubType>Code</SubType>
         </Compile>
+        <Compile Update="Controls\ModInfo\Error\ErrorView.axaml.cs">
+          <DependentUpon>LoadingView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>

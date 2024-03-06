@@ -309,4 +309,16 @@
     <data name="Helpers_LOADING" xml:space="preserve">
         <value>LOADING...</value>
     </data>
+    <data name="Helpers_ERROR" xml:space="preserve">
+        <value>ERROR</value>
+    </data>
+    <data name="ErrorView_Title" xml:space="preserve">
+        <value>An Error Occurred</value>
+    </data>
+    <data name="ErrorView_SubHeading" xml:space="preserve">
+        <value>The Mod Displayed Here was Deleted</value>
+    </data>
+    <data name="ErrorView_Description" xml:space="preserve">
+        <value>Please close this window, tab or panel.</value>
+    </data>
 </root>
