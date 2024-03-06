@@ -12,10 +12,10 @@ using NexusMods.App.UI.Controls.Trees.Files;
 using NexusMods.App.UI.Resources;
 using ReactiveUI;
 
-namespace NexusMods.App.UI.Controls.ModInfo.ViewModFiles;
+namespace NexusMods.App.UI.Controls.ModInfo.ModFiles;
 using ModFileNode = TreeNodeVM<IFileTreeNodeViewModel, GamePath>;
 
-public partial class ViewModFilesView : ReactiveUserControl<IViewModFilesViewModel>
+public partial class ViewModFilesView : ReactiveUserControl<IModFilesViewModel>
 {
     public ViewModFilesView()
     {
@@ -30,7 +30,7 @@ public partial class ViewModFilesView : ReactiveUserControl<IViewModFilesViewMod
         });
     }
 
-    private void PopulateFromViewModel(IViewModFilesViewModel vm)
+    private void PopulateFromViewModel(IModFilesViewModel vm)
     {
         var source = CreateTreeSource(ViewModel!.Items);
         source.SortBy(source.Columns[0], ListSortDirection.Ascending);

@@ -15,7 +15,7 @@ using NexusMods.App.UI.Controls.FoundGames;
 using NexusMods.App.UI.Controls.GameWidget;
 using NexusMods.App.UI.Controls.ModInfo.Error;
 using NexusMods.App.UI.Controls.ModInfo.Loading;
-using NexusMods.App.UI.Controls.ModInfo.ViewModFiles;
+using NexusMods.App.UI.Controls.ModInfo.ModFiles;
 using NexusMods.App.UI.Controls.Spine;
 using NexusMods.App.UI.Controls.Spine.Buttons.Download;
 using NexusMods.App.UI.Controls.Spine.Buttons.Icon;
@@ -128,7 +128,7 @@ public static class Services
             .AddViewModel<MetricsOptInViewModel, IMetricsOptInViewModel>()
             .AddViewModel<UpdaterViewModel, IUpdaterViewModel>()
             .AddViewModel<LoadoutLeftMenuViewModel, ILoadoutLeftMenuViewModel>()
-            .AddViewModel<ViewModFilesViewModel, IViewModFilesViewModel>()
+            .AddViewModel<ModFilesViewModel, IModFilesViewModel>()
             .AddViewModel<ModInfoViewModel, IModInfoViewModel>()
             .AddViewModel<FileTreeNodeViewModel<ModFilePair>, IFileTreeNodeViewModel>()
             .AddViewModel<DummyLoadingViewModel, ILoadingViewModel>()
@@ -168,7 +168,7 @@ public static class Services
             .AddView<UpdaterView, IUpdaterViewModel>()
             .AddView<LoadoutLeftMenuView, ILoadoutLeftMenuViewModel>()
             .AddView<ApplyControlView, IApplyControlViewModel>()
-            .AddView<ViewModFilesView, IViewModFilesViewModel>()
+            .AddView<ViewModFilesView, IModFilesViewModel>()
             .AddView<ModInfoView, IModInfoViewModel>()
             .AddView<FileTreeNodeView, IFileTreeNodeViewModel>()
             .AddView<LoadingView, ILoadingViewModel>()

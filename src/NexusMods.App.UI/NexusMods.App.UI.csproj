@@ -382,11 +382,11 @@
           <DependentUpon>ViewModFilesView.axaml</DependentUpon>
           <SubType>Code</SubType>
         </Compile>
-        <Compile Update="Controls\ModInfo\ViewModFiles\ViewModFilesDesignViewModel.cs">
-          <DependentUpon>IViewModFilesViewModel.cs</DependentUpon>
+        <Compile Update="Controls\ModInfo\ViewModFiles\ModFilesViewModFilesDesignModFilesViewModel.cs">
+          <DependentUpon>IModFilesViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Controls\ModInfo\ViewModFiles\ViewModFilesViewModel.cs">
-          <DependentUpon>IViewModFilesViewModel.cs</DependentUpon>
+        <Compile Update="Controls\ModInfo\ViewModFiles\ModFilesViewModel.cs">
+          <DependentUpon>IModFilesViewModel.cs</DependentUpon>
         </Compile>
         <Compile Update="Pages\ViewModInfo\ModInfoView.axaml.cs">
           <DependentUpon>ViewModFilesView.axaml</DependentUpon>

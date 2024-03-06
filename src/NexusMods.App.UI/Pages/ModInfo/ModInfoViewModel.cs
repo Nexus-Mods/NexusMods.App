@@ -7,7 +7,7 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.App.UI.Controls.ModInfo.Error;
 using NexusMods.App.UI.Controls.ModInfo.Loading;
-using NexusMods.App.UI.Controls.ModInfo.ViewModFiles;
+using NexusMods.App.UI.Controls.ModInfo.ModFiles;
 using NexusMods.App.UI.Pages.ModInfo.Types;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
@@ -66,7 +66,7 @@ public class ModInfoViewModel : APageViewModel<IModInfoViewModel>, IModInfoViewM
         switch (page)
         {
             case CurrentModInfoPage.Files:
-                var vm = _serviceProvider.GetRequiredService<IViewModFilesViewModel>();
+                var vm = _serviceProvider.GetRequiredService<IModFilesViewModel>();
                 vm.Initialize(LoadoutId, [ModId]);
                 return vm;
             default:

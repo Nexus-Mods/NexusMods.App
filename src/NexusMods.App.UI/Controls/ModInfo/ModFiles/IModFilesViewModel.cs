@@ -4,10 +4,10 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.App.UI.Controls.Trees.Files;
 
-namespace NexusMods.App.UI.Controls.ModInfo.ViewModFiles;
+namespace NexusMods.App.UI.Controls.ModInfo.ModFiles;
 using ModFileNode = TreeNodeVM<IFileTreeNodeViewModel, GamePath>;
 
-public interface IViewModFilesViewModel : IViewModelInterface
+public interface IModFilesViewModel : IViewModelInterface
 {
     /// <summary>
     ///     Location of the primary root (e.g. Game folder, Saves folder)

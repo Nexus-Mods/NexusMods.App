@@ -1,6 +1,6 @@
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Mods;
-using NexusMods.App.UI.Controls.ModInfo.ViewModFiles;
+using NexusMods.App.UI.Controls.ModInfo.ModFiles;
 using NexusMods.App.UI.Pages.ModInfo.Types;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -15,5 +15,5 @@ public class ModInfoViewModInfoDesignModInfoViewModel : APageViewModel<IModInfoV
     public IViewModelInterface PageViewModel { get; set; }
     
     // Design
-    public ModInfoViewModInfoDesignModInfoViewModel() : base(new DesignWindowManager()) => PageViewModel = new ViewModFilesDesignViewModel();
+    public ModInfoViewModInfoDesignModInfoViewModel() : base(new DesignWindowManager()) => PageViewModel = new ModFilesViewModFilesDesignModFilesViewModel();
 }

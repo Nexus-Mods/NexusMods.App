@@ -3,14 +3,14 @@
     d:DesignWidth="800"
     mc:Ignorable="d"
     x:Class="NexusMods.App.UI.Pages.ModInfo.ModInfoView"
-    x:TypeArguments="viewModFiles:IViewModFilesViewModel"
+    x:TypeArguments="viewModFiles:IModFilesViewModel"
     xmlns="https://github.com/avaloniaui"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:viewModFiles="clr-namespace:NexusMods.App.UI.Controls.ModInfo.ViewModFiles"
-    xmlns:modInfo="clr-namespace:NexusMods.App.UI.Pages.ModInfo">
+    xmlns:modInfo="clr-namespace:NexusMods.App.UI.Pages.ModInfo"
+    xmlns:viewModFiles="clr-namespace:NexusMods.App.UI.Controls.ModInfo.ModFiles">
     <Design.DataContext>
         <modInfo:ModInfoViewModInfoDesignModInfoViewModel />
     </Design.DataContext>

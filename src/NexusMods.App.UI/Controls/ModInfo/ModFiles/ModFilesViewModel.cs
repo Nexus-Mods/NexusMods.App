@@ -10,10 +10,10 @@ using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.App.UI.Controls.Trees.Files;
 using NexusMods.Paths.Trees.Traits;
 using ModFileNode = NexusMods.App.UI.TreeNodeVM<NexusMods.App.UI.Controls.Trees.Files.IFileTreeNodeViewModel, NexusMods.Abstractions.GameLocators.GamePath>;
-namespace NexusMods.App.UI.Controls.ModInfo.ViewModFiles;
+namespace NexusMods.App.UI.Controls.ModInfo.ModFiles;
 
 [UsedImplicitly]
-public class ViewModFilesViewModel : AViewModel<IViewModFilesViewModel>, IViewModFilesViewModel
+public class ModFilesViewModel : AViewModel<IModFilesViewModel>, IModFilesViewModel
 {
     private readonly ILoadoutRegistry _registry;
     private readonly SourceCache<IFileTreeNodeViewModel, GamePath> _sourceCache;
@@ -25,7 +25,7 @@ public class ViewModFilesViewModel : AViewModel<IViewModFilesViewModel>, IViewMo
     public int RootCount => _rootCount;
     public string? PrimaryRootLocation => _primaryRootLocation;
 
-    public ViewModFilesViewModel(ILoadoutRegistry registry, IFileStore fileStore)
+    public ModFilesViewModel(ILoadoutRegistry registry, IFileStore fileStore)
     {
         _registry = registry;
         _items = new ReadOnlyObservableCollection<ModFileNode>([]);

@@ -2,18 +2,18 @@
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d"
-    x:Class="NexusMods.App.UI.Controls.ModInfo.ViewModFiles.ViewModFilesView"
-    x:TypeArguments="viewModFiles:IViewModFilesViewModel"
+    x:Class="NexusMods.App.UI.Controls.ModInfo.ModFiles.ViewModFilesView"
+    x:TypeArguments="viewModFiles:IModFilesViewModel"
     xmlns="https://github.com/avaloniaui"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:viewModFiles="clr-namespace:NexusMods.App.UI.Controls.ModInfo.ViewModFiles"
-    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources">
+    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
+    xmlns:viewModFiles="clr-namespace:NexusMods.App.UI.Controls.ModInfo.ModFiles">
     <Design.DataContext>
         <!-- This ViewModel has a bool switch 'showMultipleRoots' to toggle a view which also has Saves -->
-        <viewModFiles:ViewModFilesDesignViewModel AlwaysRootFolders="False" ShowMultipleRoots="False" />
+        <viewModFiles:ModFilesViewModFilesDesignModFilesViewModel AlwaysRootFolders="False" ShowMultipleRoots="False" />
     </Design.DataContext>
     <!-- In this view specifically, we want to shift the text of the TreeDataGrid 
          such that we align the 'name' field with the

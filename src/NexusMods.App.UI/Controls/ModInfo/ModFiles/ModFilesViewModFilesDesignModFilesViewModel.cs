@@ -5,11 +5,11 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.App.UI.Controls.Trees.Files;
 using NexusMods.Paths;
 
-namespace NexusMods.App.UI.Controls.ModInfo.ViewModFiles;
+namespace NexusMods.App.UI.Controls.ModInfo.ModFiles;
 using ModFileNode = TreeNodeVM<IFileTreeNodeViewModel, GamePath>;
 
-public class ViewModFilesDesignViewModel : AViewModel<IViewModFilesViewModel>,
-    IViewModFilesViewModel
+public class ModFilesViewModFilesDesignModFilesViewModel : AViewModel<IModFilesViewModel>,
+    IModFilesViewModel
 {
     private ReadOnlyObservableCollection<ModFileNode> _items;
     private int _rootCount;
@@ -52,7 +52,7 @@ public class ViewModFilesDesignViewModel : AViewModel<IViewModFilesViewModel>,
         }
     }
     
-    public ViewModFilesDesignViewModel()
+    public ModFilesViewModFilesDesignModFilesViewModel()
     {
         _items = null!; // initialized in refresh
         RefreshData(false, false);
@@ -137,7 +137,7 @@ public class ViewModFilesDesignViewModel : AViewModel<IViewModFilesViewModel>,
         }
 
         // Assign
-        ViewModFilesViewModel.BindItems(cache, locations, alwaysRootFolders, out _items, out _rootCount, out _primaryRootLocation);
+        ModFilesViewModel.BindItems(cache, locations, alwaysRootFolders, out _items, out _rootCount, out _primaryRootLocation);
     }
 
     private static void CreateModFileNode(RelativePath filePath, LocationId locationId, SourceCache<IFileTreeNodeViewModel, GamePath> cache, ulong fileSize)
