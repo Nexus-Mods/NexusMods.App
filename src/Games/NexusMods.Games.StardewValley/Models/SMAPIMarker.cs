@@ -4,4 +4,7 @@ using NexusMods.Abstractions.Serialization.Attributes;
 namespace NexusMods.Games.StardewValley.Models;
 
 [JsonName("NexusMods.Games.StardewValley.Models.SMAPIMarker")]
-public record SMAPIMarker : AModMetadata;
+public record SMAPIMarker : AModMetadata
+{
+    public required Version? Version { get; init; }
+}
