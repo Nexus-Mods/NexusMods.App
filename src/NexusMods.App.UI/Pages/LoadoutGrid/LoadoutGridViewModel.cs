@@ -215,8 +215,14 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
                 },
                 FactoryId = ViewModInfoPageFactory.StaticId,
             };
+
+            var workspaceController = GetWorkspaceController();
+            //var behaviour = workspaceController.GetDefaultOpenPageBehavior();
+            
+            // Silent Unhandled Exception if GetDefaultOpenPageBehavior (defaults to replacing current page),
+            // or poor UX otherwise. I don't know which is better at this point.
             var behaviour = new OpenPageBehavior(new OpenPageBehavior.NewPanel(Optional<WorkspaceGridState>.None));
-            GetWorkspaceController().OpenPage(WorkspaceId, pageData, behaviour);
+            workspaceController.OpenPage(WorkspaceId, pageData, behaviour);
         }
     }
 }
