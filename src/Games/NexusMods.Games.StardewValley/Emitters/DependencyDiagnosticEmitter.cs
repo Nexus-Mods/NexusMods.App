@@ -7,25 +7,46 @@ using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Extensions.BCL;
+using NexusMods.Games.StardewValley.Models;
+using NexusMods.Games.StardewValley.WebAPI;
+using NexusMods.Paths;
 using SMAPIManifest = StardewModdingAPI.Toolkit.Serialization.Models.Manifest;
 
 namespace NexusMods.Games.StardewValley.Emitters;
 
 public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
 {
+    private static readonly Uri NexusModsPage = new("https://nexusmods.com/stardewvalley");
+
     private readonly ILogger<DependencyDiagnosticEmitter> _logger;
     private readonly IFileStore _fileStore;
+    private readonly IOSInformation _os;
+    private readonly ISMAPIWebApi _smapiWebApi;
 
     public DependencyDiagnosticEmitter(
         ILogger<DependencyDiagnosticEmitter> logger,
-        IFileStore fileStore)
+        IFileStore fileStore,
+        ISMAPIWebApi smapiWebApi,
+        IOSInformation os)
     {
         _logger = logger;
         _fileStore = fileStore;
+        _smapiWebApi = smapiWebApi;
+        _os = os;
     }
 
     public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout loadout)
     {
+        var gameVersion = loadout.Installation.Version;
+        var smapiMarker = loadout.Mods
+            .Where(kv => kv.Value.Enabled)
+            .Select(kv => kv.Value.Metadata)
+            .Select(metadata => metadata.OfType<SMAPIMarker>().FirstOrDefault())
+            .FirstOrDefault(marker => marker is not null);
+
+        if (smapiMarker?.Version is null) yield break;
+        var smapiVersion = smapiMarker.Version!;
+
         var modIdToManifest = await loadout.Mods
             .SelectAsync(async kv => (Id: kv.Key, Manifest: await GetManifest(kv.Value)))
             .Where(tuple => tuple.Manifest is not null)
@@ -35,9 +56,9 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
             .Select(kv => (UniqueId: kv.Value.UniqueID, ModId: kv.Key))
             .ToImmutableDictionary(kv => kv.UniqueId, kv => kv.ModId);
 
-        var diagnostics = DiagnoseMissingDependencies(loadout, modIdToManifest, uniqueIdToModId)
-            .Concat(DiagnoseOutdatedDependencies(loadout, modIdToManifest, uniqueIdToModId))
-            .ToList();
+        var a = await DiagnoseMissingDependencies(loadout, gameVersion, smapiVersion, modIdToManifest, uniqueIdToModId);
+        var b = await DiagnoseOutdatedDependencies(loadout, gameVersion, smapiVersion, modIdToManifest, uniqueIdToModId);
+        var diagnostics = a.Concat(b).ToArray();
 
         foreach (var diagnostic in diagnostics)
         {
@@ -45,12 +66,14 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
         }
     }
 
-    private static IEnumerable<Diagnostic> DiagnoseMissingDependencies(
+    private async Task<IEnumerable<Diagnostic>> DiagnoseMissingDependencies(
         Loadout loadout,
+        Version gameVersion,
+        Version smapiVersion,
         Dictionary<ModId, SMAPIManifest> modIdToManifest,
         ImmutableDictionary<string, ModId> uniqueIdToModId)
     {
-        return modIdToManifest.Select(kv =>
+        var collect = modIdToManifest.Select(kv =>
         {
             var (modId, manifest) = kv;
 
@@ -64,7 +87,21 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
             return (Id: modId, MissingDependencies: missingDependencies);
         })
         .Where(kv => kv.MissingDependencies.Count != 0)
-        .SelectMany(kv =>
+        .ToArray();
+
+        var allMissingDependencies = collect
+            .SelectMany(kv => kv.MissingDependencies)
+            .Distinct()
+            .ToArray();
+
+        var missingDependencyUris = await _smapiWebApi.GetModPageUrls(
+            os: _os,
+            gameVersion,
+            smapiVersion,
+            smapiIDs: allMissingDependencies
+        );
+
+        return collect.SelectMany(kv =>
         {
             var (modId, missingDependencies) = kv;
             return missingDependencies.Select(missingDependency =>
@@ -72,14 +109,17 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
                 var mod = loadout.Mods[modId];
                 return Diagnostics.CreateMissingRequiredDependency(
                     Mod: mod.ToReference(loadout),
-                    MissingDependency: missingDependency
+                    MissingDependency: missingDependency,
+                    NexusModsDependencyUri: missingDependencyUris.GetValueOrDefault(missingDependency, NexusModsPage)
                 );
             });
         });
     }
 
-    private static IEnumerable<Diagnostic> DiagnoseOutdatedDependencies(
+    private async Task<IEnumerable<Diagnostic>> DiagnoseOutdatedDependencies(
         Loadout loadout,
+        Version gameVersion,
+        Version smapiVersion,
         Dictionary<ModId, SMAPIManifest> modIdToManifest,
         ImmutableDictionary<string, ModId> uniqueIdToModId)
     {
@@ -87,7 +127,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
             .Select(kv => (kv.Value.UniqueID, kv.Value.Version))
             .ToImmutableDictionary(kv => kv.UniqueID, kv => kv.Version);
 
-        return modIdToManifest.SelectMany(kv =>
+        var collect = modIdToManifest.SelectMany(kv =>
         {
             var (modId, manifest) = kv;
 
@@ -108,16 +148,37 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
                 var currentVersion = uniqueIdToVersion[dependency.UniqueID];
 
                 var isOutdated = currentVersion.IsOlderThan(minimumVersion);
-                return (DependencyModId: dependencyModId, MinimumVersion: minimumVersion, CurrentVersion: currentVersion, IsOutdated: isOutdated);
+                return (
+                    ModId: modId,
+                    DependencyModId: dependencyModId,
+                    DependencyId: dependency.UniqueID,
+                    MinimumVersion: minimumVersion,
+                    CurrentVersion: currentVersion,
+                    IsOutdated: isOutdated
+                );
             })
-            .Where(tuple => tuple.IsOutdated)
-            .Select(tuple => Diagnostics.CreateOutdatedDependency(
-                Dependent: loadout.Mods[modId].ToReference(loadout),
-                Dependency: loadout.Mods[tuple.DependencyModId].ToReference(loadout),
-                MinimumVersion: tuple.MinimumVersion.ToString(),
-                CurrentVersion: tuple.CurrentVersion.ToString()
-            ));
-        });
+            .Where(tuple => tuple.IsOutdated);
+        }).ToArray();
+
+        var allMissingDependencies = collect
+            .Select(tuple => tuple.DependencyId)
+            .Distinct()
+            .ToArray();
+
+        var missingDependencyUris = await _smapiWebApi.GetModPageUrls(
+            os: _os,
+            gameVersion,
+            smapiVersion,
+            smapiIDs: allMissingDependencies
+        );
+
+        return collect.Select(tuple => Diagnostics.CreateRequiredDependencyIsOutdated(
+            Dependent: loadout.Mods[tuple.ModId].ToReference(loadout),
+            Dependency: loadout.Mods[tuple.DependencyModId].ToReference(loadout),
+            MinimumVersion: tuple.MinimumVersion.ToString(),
+            CurrentVersion: tuple.CurrentVersion.ToString(),
+            NexusModsDependencyUri: missingDependencyUris.GetValueOrDefault(tuple.DependencyId, NexusModsPage)
+        ));
     }
 
     private async ValueTask<SMAPIManifest?> GetManifest(Mod mod)

@@ -24,4 +24,10 @@
         <ProjectReference Include="..\NexusMods.Games.StardewValley.SMAPI\NexusMods.Games.StardewValley.SMAPI.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Update="WebAPI\SMAPIWebApi.cs">
+        <DependentUpon>ISMAPIWebApi.cs</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
 </Project>
