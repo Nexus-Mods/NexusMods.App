@@ -36,3 +36,11 @@ public interface IWorkspaceContext;
 ```
 
 By design, the context must be unique across all Workspaces in a Window. It can be used to identify a Workspace while also providing information on what the Workspace is used for. Without this context, anything outside a Workspace won't be able to refer to it without using a computer generated GUID.
+
+### Pages and Factories
+
+As mentioned earlier, the `Page` type is a simple record that contains the View Model and `PageData`. We have to be able to indirectly create Pages from anywhere, to achieve this, we use the factory pattern.
+
+Implementations of `IPageFactory` have a hardcoded GUID and can create a `Page` given a context `IPageFactoryContext`. Consumers would want to use the more helpful `APageFactory` abstract class but that'll be covered later. Similar to `IWorkspaceContext`, `IPageFactoryContext` is just an empty interface that allows inheritors to provide context to the contents of a Page.
+
+To create a `Page`, you only need to know the ID of the factory and the context you want to pass it. Both of these values are stored in the `PageData` property of the `Page` type. `PageData` gets serialized to save, and deserialized to restore, a Page.
