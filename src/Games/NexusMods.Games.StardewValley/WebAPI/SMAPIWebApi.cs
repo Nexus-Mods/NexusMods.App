@@ -76,7 +76,7 @@ internal sealed class SMAPIWebApi : ISMAPIWebApi
             if (apiResult is not null)
             {
                 var tmp = apiResult
-                    .Select(kv =>
+                    .Select<KeyValuePair<string, ModEntryModel>, ValueTuple<string?, Uri?>>(kv =>
                     {
                         var (id, model) = kv;
                         var metadata = model.Metadata;
@@ -87,8 +87,8 @@ internal sealed class SMAPIWebApi : ISMAPIWebApi
                         var uri = new Uri($"{NexusModsBaseUrl}/{nexusId.Value}");
                         return (id, uri);
                     })
-                    .Where(kv => kv.id is not null)
-                    .Select(tuple => new KeyValuePair<string, Uri>(tuple.id!, tuple.uri!))
+                    .Where(kv => kv.Item1 is not null)
+                    .Select(tuple => new KeyValuePair<string, Uri>(tuple.Item1!, tuple.Item2!))
                     .ToDictionary();
 
                 ImmutableDictionary<string, Uri> initial, updated;
