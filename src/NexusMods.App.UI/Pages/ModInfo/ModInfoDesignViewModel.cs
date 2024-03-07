@@ -7,13 +7,13 @@ using NexusMods.App.UI.WorkspaceSystem;
 
 namespace NexusMods.App.UI.Pages.ModInfo;
 
-public class ModInfoViewModInfoDesignModInfoViewModel : APageViewModel<IModInfoViewModel>, IModInfoViewModel
+public class ModInfoDesignViewModel : APageViewModel<IModInfoViewModel>, IModInfoViewModel
 {
     public LoadoutId LoadoutId { get; set; }
     public ModId ModId { get; set; }
     public CurrentModInfoSection Section { get; set; }
-    public IViewModelInterface PageViewModel { get; set; }
+    public IViewModelInterface SectionViewModel { get; set; }
     
     // Design
-    public ModInfoViewModInfoDesignModInfoViewModel() : base(new DesignWindowManager()) => PageViewModel = new ModFilesViewModFilesDesignModFilesViewModel();
+    public ModInfoDesignViewModel() : base(new DesignWindowManager()) => SectionViewModel = new ModFilesDesignViewModel();
 }

@@ -12,7 +12,7 @@
     xmlns:modInfo="clr-namespace:NexusMods.App.UI.Pages.ModInfo"
     xmlns:viewModFiles="clr-namespace:NexusMods.App.UI.Controls.ModInfo.ModFiles">
     <Design.DataContext>
-        <modInfo:ModInfoViewModInfoDesignModInfoViewModel />
+        <modInfo:ModInfoDesignViewModel />
     </Design.DataContext>
     <!-- There will be other things around this, but for now we don't have designs for switching pages etc. -->
     <reactiveUi:ViewModelViewHost x:Name="ModInfoCategoryViewHost" />

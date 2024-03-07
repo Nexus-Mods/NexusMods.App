@@ -10,7 +10,7 @@ public interface IModInfoViewModel : IPageViewModelInterface
     LoadoutId LoadoutId { get; set; }
     ModId ModId { get; set; }
     CurrentModInfoSection Section { get; set; }
-    IViewModelInterface PageViewModel { get; set; }
+    IViewModelInterface SectionViewModel { get; set; }
     void SetContext(ModInfoPageContext context) => SetContextImpl(this, context);
 
     internal static void SetContextImpl(IModInfoViewModel vm, ModInfoPageContext context) 

@@ -28,7 +28,7 @@ public class ModInfoViewModel : APageViewModel<IModInfoViewModel>, IModInfoViewM
     public CurrentModInfoSection Section { get; set; }
 
     [Reactive]
-    public IViewModelInterface PageViewModel { get; set; } = default!;
+    public IViewModelInterface SectionViewModel { get; set; } = default!;
 
     private readonly IServiceProvider _serviceProvider;
     private readonly ILoadoutRegistry _registry;
@@ -41,14 +41,14 @@ public class ModInfoViewModel : APageViewModel<IModInfoViewModel>, IModInfoViewM
         this.WhenActivated(delegate(CompositeDisposable dp)
         {
             GetWorkspaceController().SetTabTitle(GetModName(out _isInvalid), WorkspaceId, PanelId, TabId);
-            PageViewModel = !_isInvalid ? new DummyLoadingViewModel() : new DummyErrorViewModel();
+            SectionViewModel = !_isInvalid ? new DummyLoadingViewModel() : new DummyErrorViewModel();
             if (!_isInvalid)
             {
                 this.WhenAnyValue(x => x.Section)
                     .OffUi()
                     .Select(CreateNewPage)
                     .OnUI()
-                    .Subscribe(x => PageViewModel = x)
+                    .Subscribe(x => SectionViewModel = x)
                     .DisposeWith(dp);
             }
         });

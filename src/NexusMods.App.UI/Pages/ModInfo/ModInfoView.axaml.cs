@@ -11,7 +11,7 @@ public partial class ModInfoView : ReactiveUserControl<IModInfoViewModel>
         InitializeComponent();
         this.WhenActivated(d =>
         {
-            this.OneWayBind(ViewModel, vm => vm.PageViewModel, view => view.ModInfoCategoryViewHost.ViewModel)
+            this.OneWayBind(ViewModel, vm => vm.SectionViewModel, view => view.ModInfoCategoryViewHost.ViewModel)
                 .DisposeWith(d);
         });
     }

@@ -8,7 +8,7 @@ using NexusMods.Paths;
 namespace NexusMods.App.UI.Controls.ModInfo.ModFiles;
 using ModFileNode = TreeNodeVM<IFileTreeNodeViewModel, GamePath>;
 
-public class ModFilesViewModFilesDesignModFilesViewModel : AViewModel<IModFilesViewModel>,
+public class ModFilesDesignViewModel : AViewModel<IModFilesViewModel>,
     IModFilesViewModel
 {
     private ReadOnlyObservableCollection<ModFileNode> _items;
@@ -52,7 +52,7 @@ public class ModFilesViewModFilesDesignModFilesViewModel : AViewModel<IModFilesV
         }
     }
     
-    public ModFilesViewModFilesDesignModFilesViewModel()
+    public ModFilesDesignViewModel()
     {
         _items = null!; // initialized in refresh
         RefreshData(false, false);
