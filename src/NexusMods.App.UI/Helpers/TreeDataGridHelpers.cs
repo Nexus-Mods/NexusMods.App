@@ -70,7 +70,7 @@ public static class TreeDataGridHelpers
                     ),
                     node => (IEnumerable<TNode>?)node.Children,
                     null,  
-                    node => node.IsExpanded)
+                    node => node.IsExpanded),
             }
         };
     }

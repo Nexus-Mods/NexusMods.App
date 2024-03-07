@@ -14,9 +14,7 @@
     <Design.DataContext>
         <modInfo:ModInfoViewModInfoDesignModInfoViewModel />
     </Design.DataContext>
-    <ScrollViewer>
-        <!-- There will be other things around this, but for now we don't have designs for switching pages etc. -->
-        <reactiveUi:ViewModelViewHost x:Name="ModInfoCategoryViewHost" />
-    </ScrollViewer>
+    <!-- There will be other things around this, but for now we don't have designs for switching pages etc. -->
+    <reactiveUi:ViewModelViewHost x:Name="ModInfoCategoryViewHost" />
 </reactiveUi:ReactiveUserControl>
 

@@ -28,10 +28,10 @@
     </UserControl.Styles>
     
     <!-- Visual Tree -->
-    <StackPanel Orientation="Vertical">
+    <Grid RowDefinitions="Auto Auto *">
         
         <!-- 1 location, display its path -->
-        <StackPanel Orientation="Horizontal" IsVisible="True" Name="SingleLocationStackPanel"
+        <StackPanel Grid.Row="0" Orientation="Horizontal" IsVisible="True" Name="SingleLocationStackPanel"
                     Margin="24,12,24,12">
             
             <TextBlock Text="{x:Static resources:Language.ViewModFilesView_Location}"
@@ -47,7 +47,7 @@
         </StackPanel>
         
         <!-- 2 locations, display the number -->
-        <StackPanel Orientation="Horizontal" IsVisible="True" Name="MultiLocationStackPanel"
+        <StackPanel Grid.Row="1" Orientation="Horizontal" IsVisible="True" Name="MultiLocationStackPanel"
                     Margin="24,12,24,12">
             
             <TextBlock Text="{x:Static resources:Language.ViewModFilesView_Locations}"
@@ -62,9 +62,9 @@
                        Margin="8,0,0,0"/>
         </StackPanel>
         
-        <TreeDataGrid Classes="TreeWhiteCaret"
+        <TreeDataGrid Grid.Row="2" Classes="TreeWhiteCaret"
                       ShowColumnHeaders="True"
                       x:Name="ModFilesTreeDataGrid" />
-    </StackPanel>
+    </Grid>
 </reactiveUi:ReactiveUserControl>
 

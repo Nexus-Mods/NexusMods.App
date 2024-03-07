@@ -18,6 +18,9 @@ public partial class PreviewView : ReactiveUserControl<IPreviewViewModel>
             this.OneWayBind(ViewModel, vm => vm.Tree,
                     view => view.LocationPreviewTreeDataGrid.Source!)
                 .DisposeWith(disposables);
+
+            // A hack around https://github.com/AvaloniaUI/Avalonia.Controls.TreeDataGrid/issues/221
+            LocationPreviewTreeDataGrid.Width = double.NaN;
         });
     }
 }

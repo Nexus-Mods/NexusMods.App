@@ -24,22 +24,22 @@
             </Style>
         </Border.Styles>
 
-        <ScrollViewer>
-            <StackPanel Orientation="Vertical">
-                <Border Classes="OutlineWeak HeaderAreaBorder" x:Name="HeaderAreaBorder">
-                    <StackPanel Orientation="Vertical">
-                        <TextBlock Classes="TitleSMSemi"
-                                   Text="{x:Static resources:Language.PreviewHeader_INSTALL_LOCATION_PREVIEW}" />
+        <Grid RowDefinitions="Auto *">
+            <Border Grid.Row="0" Classes="OutlineWeak HeaderAreaBorder" x:Name="HeaderAreaBorder">
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Classes="TitleSMSemi"
+                               Text="{x:Static resources:Language.PreviewHeader_INSTALL_LOCATION_PREVIEW}" />
 
-                        <TextBlock Classes="BodySMNormal ForegroundSubdued SubHeading"
-                                   Text="{x:Static resources:Language.PreviewSubHeading_Files_labelled_as_new}"
-                                   x:Name="InstallLocationPreviewSubHeading" />
-                    </StackPanel>
-                </Border>
+                    <TextBlock Classes="BodySMNormal ForegroundSubdued SubHeading"
+                               Text="{x:Static resources:Language.PreviewSubHeading_Files_labelled_as_new}"
+                               x:Name="InstallLocationPreviewSubHeading" />
+                </StackPanel>
+            </Border>
 
-                <TreeDataGrid Classes="TreeWhiteCaret" x:Name="LocationPreviewTreeDataGrid" ShowColumnHeaders="False"/>
-            </StackPanel>
-        </ScrollViewer>
+            <!-- Don't remove this width, it's a hack around https://github.com/AvaloniaUI/Avalonia.Controls.TreeDataGrid/issues/221 -->
+            <TreeDataGrid Grid.Row="1" Classes="TreeWhiteCaret" x:Name="LocationPreviewTreeDataGrid" 
+                          ShowColumnHeaders="False" Width="1" />
+        </Grid>
     </Border>
 
 </reactiveUi:ReactiveUserControl>
