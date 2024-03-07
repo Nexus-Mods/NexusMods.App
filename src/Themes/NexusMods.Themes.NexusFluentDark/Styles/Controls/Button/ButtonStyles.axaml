@@ -48,8 +48,7 @@
         </Style>
 
         <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
-            <!-- <Setter Property="Background" Value="{StaticResource ElementBackgroundTransparentBrush}" /> -->
+            <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
         </Style>
     </Style>
 
