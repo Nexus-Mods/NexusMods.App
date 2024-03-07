@@ -1,4 +1,3 @@
-using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Microsoft.Extensions.DependencyInjection;
@@ -67,7 +66,7 @@ public class ModInfoViewModel : APageViewModel<IModInfoViewModel>, IModInfoViewM
         {
             case CurrentModInfoSection.Files:
                 var vm = _serviceProvider.GetRequiredService<IModFilesViewModel>();
-                vm.Initialize(LoadoutId, [ModId]);
+                vm.Initialize(LoadoutId, ModId);
                 return vm;
             default:
                 throw new ArgumentOutOfRangeException(nameof(section), section, null);

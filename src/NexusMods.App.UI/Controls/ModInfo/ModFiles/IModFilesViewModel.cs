@@ -24,5 +24,5 @@ public interface IModFilesViewModel : IViewModelInterface
     /// </summary>
     ReadOnlyObservableCollection<ModFileNode> Items { get; }
 
-    void Initialize(LoadoutId loadoutId, List<ModId> contextModIds) { }
+    void Initialize(LoadoutId loadoutId, ModId modId) { }
 }

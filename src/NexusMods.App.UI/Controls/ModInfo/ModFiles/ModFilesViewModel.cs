@@ -1,4 +1,7 @@
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using DynamicData;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.GameLocators;
@@ -32,63 +35,86 @@ public class ModFilesViewModel : AViewModel<IModFilesViewModel>, IModFilesViewMo
         _sourceCache = new SourceCache<IFileTreeNodeViewModel, GamePath>(x => x.Key);
     }
 
-    public void Initialize(LoadoutId loadoutId, List<ModId> contextModIds)
+    public void Initialize(LoadoutId loadoutId, ModId modId)
     {
-        // Note: The code below only shows the 'raw' files, not as deployed in the case of multi-select.
-        //       This is because games can use custom synchronizers, which means custom sort rules,
-        //       so functionality such as 'get me sorted mods' can vary with game and need to instead
-        //       be implemented in a loadout synchronizer.
-        //
-        //       In the UI, we will need some sort of warning that this does not represent the 'final' state.
-
-        // Fetch all the files.
-        var dict = new Dictionary<GamePath, ModFilePair>();
+        // Misc note (Sewer).
+        // I wish LocationId was an enum, there's a huge amount of perf being left on the table here by it being a string.
+        // Both with all dictionary accesses, and needing a HashSet in the first place.
+        // Aside from that however, this is pretty optimised, despite the given limitations.
         var availableLocations = new HashSet<LocationId>();
-        foreach (var modId in contextModIds)
+        
+        // Store GamePaths to dedupe the strings. No unsafe API in .NET to access the keys directly, but we need parent anyway, so it's ok.
+        var folderToSize = new Dictionary<GamePath, (ulong size, GamePath folder, GamePath parent, bool isLeaf)>(); 
+        var mod = _registry.Get(loadoutId, modId)!; // <= suppressed because this throws on error, and we should always have valid mod if we made it here.
+        var displayedItems = new List<IFileTreeNodeViewModel>();
+
+        // TODO: Querying all of the files bottlenecks hard.
+        // As this will be revised with EventSourcing, am not making a faster getter. 
+        foreach (var file in mod.Files.Values) 
         {
-            var mod = _registry.Get(loadoutId, modId);
-            if (mod == null)
+            // TODO: Check for IStoredFile, IToFile interfaces if we ever have more types of files that get put to disk.
+            if (file is not StoredFile storedFile)
                 continue;
 
-            // TODO: Querying all of the files bottlenecks hard.
-            // As this will be revised with EventSourcing, am not making a faster getter. 
-            foreach (var file in mod.Files.Values)
+            var folderName = storedFile.To.Parent;
+            ref var item = ref CollectionsMarshal.GetValueRefOrNullRef(folderToSize, folderName);
+            var exists = !Unsafe.IsNullRef(ref item);
+            if (exists)
+                item.size += storedFile.Size.Value;
+            else
+                folderToSize.Add(folderName, (storedFile.Size.Value, folderName, folderName.Parent, true));
+
+            availableLocations.Add(storedFile.To.LocationId);
+            displayedItems.Add(new FileTreeNodeViewModel(storedFile.To, folderName, true, storedFile.Size.Value));
+        }
+        
+        // Make missing folders and update 'leaf' status.
+        // It's possible that some folders only have subfolders, and not files, in which case they're missing from folderToSize.
+        foreach (var existingItem in folderToSize.ToArray())
+        {
+            var parent = existingItem.Value.parent;
+            while (parent.Path != "")
             {
-                // TODO: Check for IStoredFile, IToFile interfaces if we ever have more types of files that get put to disk.
-                if (file is not StoredFile storedFile)
-                    continue;
-                
-                dict[storedFile.To] = new ModFilePair { Mod = mod, File = file };
-                availableLocations.Add(storedFile.To.LocationId);
+                ref var item = ref CollectionsMarshal.GetValueRefOrNullRef(folderToSize, parent);
+                var exists = !Unsafe.IsNullRef(ref item);
+                var parentParent = parent.Parent;
+                if (!exists)
+                {
+                    // We don't have a parent, so add a non-leaf node.
+                    folderToSize.Add(parent, (0, parent, parentParent, false));
+                    displayedItems.Add(new FileTreeNodeViewModel(parent, parent.Parent, false, 0));
+                }
+                else
+                {
+                    item.isLeaf = false; // Mark the parent as a non-leaf node.
+                }
+
+                parent = parentParent;
             }
         }
-
-        // Add them to the cache.
-        var allItems = FlattenedLoadout.Create(dict).GetAllDescendents().ToArray();
         
-        var displayedItems = new List<IFileTreeNodeViewModel>();
-        foreach (var x in allItems)
+        // Calculate folder sizes. Basically bubble up sizes of all leaf folders.
+        foreach (var existingItem in folderToSize)
         {
-            if (!x.Item.IsFile)
+            if (!existingItem.Value.isLeaf)
                 continue;
             
-            var storedFile = (StoredFile)x.Item.Value.File;
-            displayedItems.Add(new FileTreeNodeViewModel<ModFilePair>(x, storedFile.Size.Value));
+            var parent = existingItem.Value.parent;
+            while (parent.Path != "")
+            {
+                ref var item = ref CollectionsMarshal.GetValueRefOrNullRef(folderToSize, parent);
+                Debug.Assert(!Unsafe.IsNullRef(ref item));
+                item.size += existingItem.Value.size;
+                parent = parent.Parent;
+            }
         }
         
-        // Now calculate folder sizes.
-        foreach (var x in allItems)
+        // Now add up all of the folders.
+        foreach (var item in folderToSize)
         {
-            if (x.Item.IsFile)
-                continue;
-
-            var fileSize = (ulong)0;
-            foreach (var child in x.EnumerateChildrenBfs())
-            {
-                var storedFile = (StoredFile)child.Value.Item.Value.File;
-                fileSize += storedFile.Size.Value;
-            }
-            displayedItems.Add(new FileTreeNodeViewModel<ModFilePair>(x, fileSize));
+            // But don't add the 'root' node.
+            if (item.Value.folder.Path != "")
+                displayedItems.Add(new FileTreeNodeViewModel(item.Value.folder, item.Value.parent, false, item.Value.size));
         }
  
         _sourceCache.Clear();

@@ -1,6 +1,5 @@
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.Abstractions.Serialization.Json;
 using NexusMods.App.UI.Controls;
@@ -130,7 +129,7 @@ public static class Services
             .AddViewModel<LoadoutLeftMenuViewModel, ILoadoutLeftMenuViewModel>()
             .AddViewModel<ModFilesViewModel, IModFilesViewModel>()
             .AddViewModel<ModInfoViewModel, IModInfoViewModel>()
-            .AddViewModel<FileTreeNodeViewModel<ModFilePair>, IFileTreeNodeViewModel>()
+            .AddViewModel<FileTreeNodeViewModel, IFileTreeNodeViewModel>()
             .AddViewModel<DummyLoadingViewModel, ILoadingViewModel>()
             .AddViewModel<DummyErrorViewModel, IErrorViewModel>()
 

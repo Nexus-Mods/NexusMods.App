@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.Trees;
 using NexusMods.Paths;
@@ -7,23 +8,24 @@ using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Controls.Trees.Files;
 
-public class FileTreeNodeViewModel<TValue> : AViewModel<IFileTreeNodeViewModel>, IFileTreeNodeViewModel
+[DebuggerDisplay("Key = {Key.ToString()}, ParentKey = {ParentKey.ToString()}")]
+public class FileTreeNodeViewModel : AViewModel<IFileTreeNodeViewModel>, IFileTreeNodeViewModel
 {
-    private readonly KeyedBox<RelativePath, GamePathNode<TValue>> _item;
-    
     [Reactive]
     public FileTreeNodeIconType Icon { get; set; }
 
-    public bool IsFile => _item.Item.IsFile;
-    public string Name => _item.Item.Segment;
+    public bool IsFile { get; }
+    public string Name => Key.FileName;
     public ulong FileSize { get; }
-    public GamePath Key => _item.GamePath();
-    public GamePath ParentKey => _item.Parent()!.GamePath();
+    public GamePath Key { get; }
+    public GamePath ParentKey { get; }
 
-    public FileTreeNodeViewModel(KeyedBox<RelativePath, GamePathNode<TValue>> item, ulong fileSize)
+    public FileTreeNodeViewModel(GamePath fullPath, GamePath parentPath, bool isFile, ulong fileSize)
     {
-        _item = item;
+        Key = fullPath;
+        ParentKey = parentPath;
         FileSize = fileSize;
-        Icon = _item.Item.IsFile ? FileTreeNodeIconType.File : FileTreeNodeIconType.ClosedFolder;
+        IsFile = isFile;
+        Icon = isFile ? FileTreeNodeIconType.File : FileTreeNodeIconType.ClosedFolder;
     }
 }
