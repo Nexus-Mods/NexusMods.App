@@ -89,7 +89,7 @@ public class ModInfoViewModel : APageViewModel<IModInfoViewModel>, IModInfoViewM
             
             var log = _serviceProvider.GetRequiredService<ILogger<ModInfoViewModel>>();
             log.LogError(ex, "Failed to Get Mod Name, Because ModId {0} no longer exists.", ModId);
-            return Language.Helpers_ERROR;
+            return Language.ViewModInfoPage_TItle;
         }
     }
 }

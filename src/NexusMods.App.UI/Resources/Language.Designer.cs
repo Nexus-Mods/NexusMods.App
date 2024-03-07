@@ -633,15 +633,9 @@ namespace NexusMods.App.UI.Resources {
             }
         }
         
-        public static string ErrorView_SubHeading {
+        public static string ErrorView_MissingMod_Description {
             get {
-                return ResourceManager.GetString("ErrorView_SubHeading", resourceCulture);
-            }
-        }
-        
-        public static string ErrorView_Description {
-            get {
-                return ResourceManager.GetString("ErrorView_Description", resourceCulture);
+                return ResourceManager.GetString("ErrorView_MissingMod_Description", resourceCulture);
             }
         }
     }

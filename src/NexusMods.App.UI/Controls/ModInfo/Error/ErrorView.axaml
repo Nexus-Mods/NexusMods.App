@@ -1,6 +1,7 @@
-﻿<reactiveUi:ReactiveUserControl
+﻿<!-- guidelines in design say 'keep it to 500px' -->
+<reactiveUi:ReactiveUserControl
     d:DesignHeight="450"
-    d:DesignWidth="800"
+    d:DesignWidth="500"
     mc:Ignorable="d"
     x:Class="NexusMods.App.UI.Controls.ModInfo.Error.ErrorView"
     x:TypeArguments="loading:ILoadingViewModel"
@@ -10,31 +11,21 @@
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:loading="clr-namespace:NexusMods.App.UI.Controls.ModInfo.Loading"
-    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources">
+    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
+    xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon">
     
-    <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
-        <StackPanel.Styles>
-            <Style Selector="Line">
-                <Setter Property="Width" Value="300"/>
-                <Setter Property="Height" Value="32"/>
-                <Setter Property="StrokeThickness" Value="3"/>
-                <Setter Property="StartPoint" Value="0, 16"/>
-                <Setter Property="EndPoint" Value="300, 16"/>
-                <Setter Property="Stroke" Value="{StaticResource StrokeTranslucentWeakBrush}"/>
-            </Style>
-        </StackPanel.Styles>
-        
-        
-        <TextBlock Classes="HeadingXLSemi"
-                   HorizontalAlignment="Center"
-                   Text="{x:Static resources:Language.ErrorView_Title}" />
-        <TextBlock Classes="HeadingSMSemi"
-                   HorizontalAlignment="Center"
-                   Text="{x:Static resources:Language.ErrorView_SubHeading}" />
-        <Line Classes="Separator"/>
-        <TextBlock Classes="BodyXLNormal"
-                   HorizontalAlignment="Center"
-                   Text="{x:Static resources:Language.ErrorView_Description}" />
+    <StackPanel Orientation="Vertical" Margin="24">
+        <StackPanel Orientation="Vertical">
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                <unifiedIcon:UnifiedIcon Classes="AlertCircle ForegroundModerate" Size="25" x:Name="SelectLocationCloseIcon"
+                                         Margin="0,0,8,0" />
+                <TextBlock Classes="HeadingSMSemi ForegroundModerate"
+                           Text="{x:Static resources:Language.ErrorView_Title}" />
+            </StackPanel>
+
+            <TextBlock Classes="BodyLGNormal ForegroundSubdued"
+                       Text="{x:Static resources:Language.ErrorView_MissingMod_Description}" />
+        </StackPanel>
     </StackPanel>
 </reactiveUi:ReactiveUserControl>
 
