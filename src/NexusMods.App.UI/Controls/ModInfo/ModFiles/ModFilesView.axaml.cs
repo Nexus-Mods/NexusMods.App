@@ -15,9 +15,9 @@ using ReactiveUI;
 namespace NexusMods.App.UI.Controls.ModInfo.ModFiles;
 using ModFileNode = TreeNodeVM<IFileTreeNodeViewModel, GamePath>;
 
-public partial class ViewModFilesView : ReactiveUserControl<IModFilesViewModel>
+public partial class ModFilesView : ReactiveUserControl<IModFilesViewModel>
 {
-    public ViewModFilesView()
+    public ModFilesView()
     {
         InitializeComponent();
         this.WhenActivated(disposables =>

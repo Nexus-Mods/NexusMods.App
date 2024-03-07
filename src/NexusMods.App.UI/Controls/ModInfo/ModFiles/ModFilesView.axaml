@@ -2,7 +2,7 @@
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d"
-    x:Class="NexusMods.App.UI.Controls.ModInfo.ModFiles.ViewModFilesView"
+    x:Class="NexusMods.App.UI.Controls.ModInfo.ModFiles.ModFilesView"
     x:TypeArguments="viewModFiles:IModFilesViewModel"
     xmlns="https://github.com/avaloniaui"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"

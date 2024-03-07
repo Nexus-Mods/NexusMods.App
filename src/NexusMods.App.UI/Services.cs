@@ -167,7 +167,7 @@ public static class Services
             .AddView<UpdaterView, IUpdaterViewModel>()
             .AddView<LoadoutLeftMenuView, ILoadoutLeftMenuViewModel>()
             .AddView<ApplyControlView, IApplyControlViewModel>()
-            .AddView<ViewModFilesView, IModFilesViewModel>()
+            .AddView<ModFilesView, IModFilesViewModel>()
             .AddView<ModInfoView, IModInfoViewModel>()
             .AddView<FileTreeNodeView, IFileTreeNodeViewModel>()
             .AddView<LoadingView, ILoadingViewModel>()
