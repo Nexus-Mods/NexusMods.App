@@ -313,10 +313,14 @@
         <value>Something went wrong</value>
     </data>
     <data name="ErrorView_MissingMod_Description" xml:space="preserve">
-        <value>The mod was deleted and cannot be displayed.
-Please close this window, tab or panel.</value>
+        <value>The mod you're trying to access has been deleted or is missing.
+It may have been removed manually outside of the Nexus Mods App
+or is no longer available at its original location.</value>
     </data>
     <data name="ViewModInfoPage_NotFound_Title" xml:space="preserve">
         <value>Mod Not Found</value>
+    </data>
+    <data name="ErrorView_MissingMod_Subheader" xml:space="preserve">
+        <value>Mod not found</value>
     </data>
 </root>

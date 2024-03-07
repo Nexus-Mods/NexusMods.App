@@ -644,5 +644,11 @@ namespace NexusMods.App.UI.Resources {
                 return ResourceManager.GetString("ViewModInfoPage_NotFound_Title", resourceCulture);
             }
         }
+        
+        public static string ErrorView_MissingMod_Subheader {
+            get {
+                return ResourceManager.GetString("ErrorView_MissingMod_Subheader", resourceCulture);
+            }
+        }
     }
 }

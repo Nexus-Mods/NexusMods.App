@@ -1,7 +1,7 @@
 ﻿<!-- guidelines in design say 'keep it to 500px' -->
 <reactiveUi:ReactiveUserControl
     d:DesignHeight="450"
-    d:DesignWidth="500"
+    d:DesignWidth="550"
     mc:Ignorable="d"
     x:Class="NexusMods.App.UI.Controls.ModInfo.Error.ErrorView"
     x:TypeArguments="loading:ILoadingViewModel"
@@ -23,6 +23,8 @@
                            Text="{x:Static resources:Language.ErrorView_Title}" />
             </StackPanel>
 
+            <TextBlock Classes="BodyLGBold ForegroundSubdued"
+                       Text="{x:Static resources:Language.ErrorView_MissingMod_Subheader}" />
             <TextBlock Classes="BodyLGNormal ForegroundSubdued"
                        Text="{x:Static resources:Language.ErrorView_MissingMod_Description}" />
         </StackPanel>
