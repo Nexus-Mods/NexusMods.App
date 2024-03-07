@@ -33,6 +33,7 @@ public class ModInfoViewModel : APageViewModel<IModInfoViewModel>, IModInfoViewM
     private readonly IServiceProvider _serviceProvider;
     private readonly ILoadoutRegistry _registry;
     private bool _isInvalid;
+    private Dictionary<CurrentModInfoSection, IViewModelInterface> _cache = new();
 
     public ModInfoViewModel(IWindowManager windowManager, IServiceProvider serviceProvider, ILoadoutRegistry registry) : base(windowManager)
     {
@@ -44,6 +45,8 @@ public class ModInfoViewModel : APageViewModel<IModInfoViewModel>, IModInfoViewM
             SectionViewModel = !_isInvalid ? new DummyLoadingViewModel() : new DummyErrorViewModel();
             if (!_isInvalid)
             {
+                // TODO: Reduce latency here if possible, by assigning on UI thread
+                //       if the VM is cached.
                 this.WhenAnyValue(x => x.Section)
                     .OffUi()
                     .Select(CreateNewPage)
@@ -62,11 +65,15 @@ public class ModInfoViewModel : APageViewModel<IModInfoViewModel>, IModInfoViewM
 
     private IViewModelInterface CreateNewPage(CurrentModInfoSection section)
     {
+        if (_cache.TryGetValue(section, out var cached))
+            return cached;
+        
         switch (section)
         {
             case CurrentModInfoSection.Files:
                 var vm = _serviceProvider.GetRequiredService<IModFilesViewModel>();
                 vm.Initialize(LoadoutId, ModId);
+                _cache.Add(section, vm);
                 return vm;
             default:
                 throw new ArgumentOutOfRangeException(nameof(section), section, null);
