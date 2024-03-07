@@ -10,12 +10,7 @@
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:loading="clr-namespace:NexusMods.App.UI.Controls.ModInfo.Loading"
-    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources">
-    
-    <TextBlock x:Name="LoadingText" 
-               HorizontalAlignment="Center" 
-               VerticalAlignment="Center" 
-               Classes="HeadingXLSemi"
-               Text="{x:Static resources:Language.Helpers_LOADING}" />
+    xmlns:spinner="clr-namespace:NexusMods.App.UI.Controls.Spinner">
+    <spinner:Spinner Classes="SmallerSpinner" HorizontalAlignment="Center" VerticalAlignment="Center" />
 </reactiveUi:ReactiveUserControl>
 

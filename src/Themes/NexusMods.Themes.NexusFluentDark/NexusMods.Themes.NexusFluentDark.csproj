@@ -26,6 +26,7 @@
       <UpToDateCheckInput Remove="Palette\Spacing\PrimitiveSpacings.axaml" />
       <UpToDateCheckInput Remove="Styles\TextBox\TextBoxStyles.axaml" />
       <UpToDateCheckInput Remove="Styles\Icons\IconsStyles.axaml" />
+      <UpToDateCheckInput Remove="Resources\UserControls\SpinnerControlThemes.axaml" />
     </ItemGroup>
 
     <ItemGroup>

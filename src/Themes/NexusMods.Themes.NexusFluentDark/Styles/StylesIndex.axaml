@@ -26,6 +26,7 @@
     <StyleInclude Source="/Styles/Controls/StackPanel/StackPanelStyles.axaml"/>
 
     <StyleInclude Source="/Styles/UserControls/ProgressRing/ProgressRingStyles.axaml"/>
+    <StyleInclude Source="/Styles/UserControls/Spinner/SpinnerStyles.axaml"/>
     <StyleInclude Source="/Styles/UserControls/GameWidget/GameWidgetStyles.axaml"/>
     <StyleInclude Source="/Styles/UserControls/TopBar/TopBarStyles.axaml"/>
     <StyleInclude Source="/Styles/UserControls/LeftPane/LeftPaneDownloadStyles.axaml"/>

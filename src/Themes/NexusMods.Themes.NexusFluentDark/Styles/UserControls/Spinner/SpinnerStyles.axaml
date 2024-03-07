@@ -1,0 +1,47 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:spinner="clr-namespace:NexusMods.App.UI.Controls.Spinner;assembly=NexusMods.App.UI">
+
+    <Design.PreviewWith>
+        <StackPanel Orientation="Horizontal">
+            <Border Padding="20">
+                <spinner:Spinner />
+            </Border>
+            <Border Padding="20">
+                <spinner:Spinner Classes="SmallerSpinner" />
+            </Border>
+        </StackPanel>
+    </Design.PreviewWith>
+
+    <!-- Styles Definitions -->
+    <Style Selector="spinner|Spinner">
+        <Setter Property="Height" Value="60" />
+        <Setter Property="Width" Value="60" />
+        <Style Selector="^ Arc">
+            <Setter Property="Stroke" Value="{StaticResource PrimaryModerateBrush}" />
+            <Setter Property="StrokeThickness" Value="7.0" />
+            <Setter Property="SweepAngle" Value="270" />
+
+            <Style.Animations>
+                <Animation Duration="0:0:1" IterationCount="INFINITE">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="StartAngle" Value="0" />
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="StartAngle" Value="360" />
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+    </Style>
+    
+    <!-- This doesn't have an explicit name in the design. As it's just a resized regular spinner that appears only on one page. --> 
+    <Style Selector="spinner|Spinner.SmallerSpinner">
+        <!-- I have no idea why I can't overwrite this when I set default size in control itself. -->
+        <Setter Property="Height" Value="48" />
+        <Setter Property="Width" Value="48" />
+        <Style Selector="^ Arc">
+            <Setter Property="StrokeThickness" Value="6.0" />
+        </Style>
+    </Style>
+</Styles>

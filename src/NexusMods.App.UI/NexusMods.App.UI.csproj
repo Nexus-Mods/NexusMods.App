@@ -424,6 +424,10 @@
           <DependentUpon>LoadingView.axaml</DependentUpon>
           <SubType>Code</SubType>
         </Compile>
+        <Compile Update="Controls\Spinner\Spinner.axaml.cs">
+          <DependentUpon>ProgressRing.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>

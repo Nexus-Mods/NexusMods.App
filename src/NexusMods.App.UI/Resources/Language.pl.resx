@@ -288,9 +288,6 @@
     <data name="ViewModFilesView_Locations" xml:space="preserve">
         <value>LOKALIZACJE:</value>
     </data>
-    <data name="Helpers_LOADING" xml:space="preserve">
-        <value>ŁADOWANIE...</value>
-    </data>
     <data name="Helpers_ERROR" xml:space="preserve">
         <value>BŁĄD</value>
     </data>

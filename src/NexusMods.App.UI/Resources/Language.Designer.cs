@@ -621,12 +621,6 @@ namespace NexusMods.App.UI.Resources {
             }
         }
         
-        public static string Helpers_LOADING {
-            get {
-                return ResourceManager.GetString("Helpers_LOADING", resourceCulture);
-            }
-        }
-        
         public static string Helpers_ERROR {
             get {
                 return ResourceManager.GetString("Helpers_ERROR", resourceCulture);
