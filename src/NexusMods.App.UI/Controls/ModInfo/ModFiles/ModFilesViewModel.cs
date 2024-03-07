@@ -5,13 +5,11 @@ using System.Runtime.InteropServices;
 using DynamicData;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.App.UI.Controls.Trees.Files;
-using NexusMods.Paths.Trees.Traits;
 using ModFileNode = NexusMods.App.UI.TreeNodeVM<NexusMods.App.UI.Controls.Trees.Files.IFileTreeNodeViewModel, NexusMods.Abstractions.GameLocators.GamePath>;
 namespace NexusMods.App.UI.Controls.ModInfo.ModFiles;
 
