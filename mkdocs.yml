@@ -57,6 +57,7 @@ nav:
       - UI Coding Guidelines: development-guidelines/UICodingGuidelines.md
       - UI Styling Guidelines: development-guidelines/UIStylingGuidelines.md
       - Interacting with FileSystem: development-guidelines/UsingIFileSystem.md
+      - Using Workspaces: development-guidelines/UsingWorkspaces.md
 
   - Decisions:
       - Backend:
