@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using Microsoft.Extensions.Logging;
 using NexusMods.Paths;
 using StardewModdingAPI.Toolkit;
@@ -19,7 +20,7 @@ internal sealed class SMAPIWebApi : ISMAPIWebApi
     private bool _isDisposed;
     private WebApiClient? _client;
 
-    private readonly Dictionary<string, Uri> _knownModPageUrls = new(StringComparer.OrdinalIgnoreCase);
+    private ImmutableDictionary<string, Uri> _knownModPageUrls = ImmutableDictionary<string, Uri>.Empty.WithComparers(StringComparer.OrdinalIgnoreCase);
 
     public SMAPIWebApi(ILogger<SMAPIWebApi> logger)
     {
@@ -50,38 +51,52 @@ internal sealed class SMAPIWebApi : ISMAPIWebApi
                     installedVersion: null,
                     updateKeys: null,
                     isBroken: false
-                )
-            )
+            ))
             .ToArray();
 
         if (mods.Length != 0)
         {
+            IDictionary<string, ModEntryModel>? apiResult = null;
+
             try
             {
-                var res = await _client.GetModInfoAsync(
+                apiResult = await _client.GetModInfoAsync(
                     mods: mods,
                     apiVersion: semanticSMAPIVersion,
                     gameVersion: semanticGameVersion,
                     platform: platform,
                     includeExtendedMetadata: true
                 );
-
-                foreach (var kv in res)
-                {
-                    var (id, model) = kv;
-                    var metadata = model.Metadata;
-                    if (metadata is null) continue;
-
-                    var nexusId = metadata.NexusID;
-                    if (nexusId is null) continue;
-
-                    var uri = new Uri($"{NexusModsBaseUrl}/{nexusId.Value}");
-                    _knownModPageUrls[id] = uri;
-                }
             }
             catch (Exception e)
             {
                 _logger.LogError(e, "Exception contacting {Url}", ApiBaseUrl);
+            }
+
+            if (apiResult is not null)
+            {
+                var tmp = apiResult
+                    .Select(kv =>
+                    {
+                        var (id, model) = kv;
+                        var metadata = model.Metadata;
+
+                        var nexusId = metadata?.NexusID;
+                        if (nexusId is null) return (null, null);
+
+                        var uri = new Uri($"{NexusModsBaseUrl}/{nexusId.Value}");
+                        return (id, uri);
+                    })
+                    .Where(kv => kv.id is not null)
+                    .Select(tuple => new KeyValuePair<string, Uri>(tuple.id!, tuple.uri!))
+                    .ToDictionary();
+
+                ImmutableDictionary<string, Uri> initial, updated;
+                do
+                {
+                    initial = _knownModPageUrls;
+                    updated = _knownModPageUrls.SetItems(tmp);
+                } while (initial != Interlocked.CompareExchange(ref _knownModPageUrls, updated, initial));
             }
         }
 
