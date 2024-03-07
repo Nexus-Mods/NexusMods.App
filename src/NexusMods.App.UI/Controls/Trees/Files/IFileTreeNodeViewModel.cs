@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using NexusMods.Abstractions.GameLocators;
 
 namespace NexusMods.App.UI.Controls.Trees.Files;
@@ -64,3 +65,18 @@ public enum FileTreeNodeIconType
     /// </summary>
     OpenFolder,
 }
+
+public static class FileTreeNodeIconTypeExtensions
+{
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static string GetIconClass(this FileTreeNodeIconType iconType) => iconType switch
+    {
+        FileTreeNodeIconType.File => "File",
+        FileTreeNodeIconType.ClosedFolder => "FolderOutline",
+        FileTreeNodeIconType.OpenFolder => "FolderOpenOutline",
+        _ => ThrowArgumentOutOfRangeException(iconType),
+    };
+    
+    private static string ThrowArgumentOutOfRangeException(FileTreeNodeIconType iconType) => throw new ArgumentOutOfRangeException(nameof(iconType), iconType, null);
+}
+

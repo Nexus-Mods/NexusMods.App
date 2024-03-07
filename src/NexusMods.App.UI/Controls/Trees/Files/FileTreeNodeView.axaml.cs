@@ -6,6 +6,8 @@ namespace NexusMods.App.UI.Controls.Trees.Files;
 
 public partial class FileTreeNodeView : ReactiveUserControl<IFileTreeNodeViewModel>
 {
+    private FileTreeNodeIconType _lastType = FileTreeNodeIconType.File;
+    
     public FileTreeNodeView()
     {
         InitializeComponent();
@@ -14,9 +16,9 @@ public partial class FileTreeNodeView : ReactiveUserControl<IFileTreeNodeViewMod
                 ViewModel.WhenAnyValue(vm => vm.Icon)
                     .Subscribe(iconType =>
                     {
-                        FileEntryIcon.IsVisible = iconType == FileTreeNodeIconType.File;
-                        FolderEntryIcon.IsVisible = iconType == FileTreeNodeIconType.ClosedFolder;
-                        FolderOpenEntryIcon.IsVisible = iconType == FileTreeNodeIconType.OpenFolder;
+                        EntryIcon.Classes.Remove(_lastType.GetIconClass());
+                        EntryIcon.Classes.Add(iconType.GetIconClass());
+                        _lastType = iconType;
                     })
                     .DisposeWith(d);
                 FileNameTextBlock.Text = ViewModel!.Name;
