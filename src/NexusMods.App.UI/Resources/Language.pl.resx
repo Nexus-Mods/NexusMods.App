@@ -267,7 +267,7 @@
     <data name="FileTreeNodeView__View" xml:space="preserve">
         <value>Zobacz</value>
     </data>
-    <data name="ViewModInfoPage_TItle" xml:space="preserve">
+    <data name="ViewModInfoPage_Title" xml:space="preserve">
         <value>Informacje Moda</value>
     </data>
 	<data name="LoadoutLeftMenuViewModel_LoadoutGridEntry" xml:space="preserve">
@@ -297,5 +297,8 @@
     <data name="ErrorView_MissingMod_Description" xml:space="preserve">
         <value>Mod został usunięty i nie można go wyświetlić.
 Zamknij to okno, kartę lub panel.</value>
+    </data>
+    <data name="ViewModInfoPage_NotFound_Title" xml:space="preserve">
+        <value>Mod Nie Znaleziony</value>
     </data>
 </root>

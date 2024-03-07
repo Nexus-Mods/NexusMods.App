@@ -285,7 +285,7 @@
     <data name="FileTreeNodeView__View" xml:space="preserve">
         <value>View</value>
     </data>
-    <data name="ViewModInfoPage_TItle" xml:space="preserve">
+    <data name="ViewModInfoPage_Title" xml:space="preserve">
         <value>Mod Info</value>
     </data>
     <data name="ViewModFilesView_Location" xml:space="preserve">
@@ -315,5 +315,8 @@
     <data name="ErrorView_MissingMod_Description" xml:space="preserve">
         <value>The mod was deleted and cannot be displayed.
 Please close this window, tab or panel.</value>
+    </data>
+    <data name="ViewModInfoPage_NotFound_Title" xml:space="preserve">
+        <value>Mod Not Found</value>
     </data>
 </root>

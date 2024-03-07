@@ -579,9 +579,9 @@ namespace NexusMods.App.UI.Resources {
             }
         }
         
-        public static string ViewModInfoPage_TItle {
+        public static string ViewModInfoPage_Title {
             get {
-                return ResourceManager.GetString("ViewModInfoPage_TItle", resourceCulture);
+                return ResourceManager.GetString("ViewModInfoPage_Title", resourceCulture);
             }
         }
         
@@ -636,6 +636,12 @@ namespace NexusMods.App.UI.Resources {
         public static string ErrorView_MissingMod_Description {
             get {
                 return ResourceManager.GetString("ErrorView_MissingMod_Description", resourceCulture);
+            }
+        }
+        
+        public static string ViewModInfoPage_NotFound_Title {
+            get {
+                return ResourceManager.GetString("ViewModInfoPage_NotFound_Title", resourceCulture);
             }
         }
     }
