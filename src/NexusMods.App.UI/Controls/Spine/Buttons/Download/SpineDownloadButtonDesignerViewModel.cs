@@ -2,6 +2,7 @@ using System.Windows.Input;
 using DynamicData.Kernel;
 using NexusMods.Abstractions.Activities;
 using NexusMods.App.UI.Resources;
+using NexusMods.App.UI.WorkspaceSystem;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -20,6 +21,8 @@ public class SpineDownloadButtonDesignerViewModel : AViewModel<ISpineDownloadBut
 
     [Reactive]
     public ICommand Click { get; set; }
+
+    public IWorkspaceContext? WorkspaceContext { get; set; }
 
     [Reactive]
     public bool IsActive { get; set; }

@@ -6,6 +6,7 @@ using DynamicData.Kernel;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Activities;
 using NexusMods.App.UI.Resources;
+using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Paths;
 using ReactiveUI;
@@ -42,6 +43,8 @@ public class SpineDownloadButtonViewModel : AViewModel<ISpineDownloadButtonViewM
     [Reactive] public Optional<Percent> Progress { get; set; }
 
     [Reactive] public ICommand Click { get; set; } = Initializers.ICommand;
+    
+    public IWorkspaceContext? WorkspaceContext { get; set; }
 
     [Reactive] public bool IsActive { get; set; }
 
