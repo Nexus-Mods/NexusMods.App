@@ -4,4 +4,8 @@
         <IsPackable>false</IsPackable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\NexusMods.App.UI\NexusMods.App.UI.csproj" />
+    </ItemGroup>
+
 </Project>
