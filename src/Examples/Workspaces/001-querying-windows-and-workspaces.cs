@@ -4,11 +4,14 @@ using NexusMods.App.UI.WorkspaceSystem;
 
 namespace Examples.Workspaces;
 
-file class Example
+// This class shows how to query Windows and Workspace from outside a page.
+// See the end of the file for an example on how to query these types from
+// within a page.
+file class ExampleOutsideAPage
 {
     private readonly IWindowManager _windowManager;
 
-    public Example(IWindowManager windowManager)
+    public ExampleOutsideAPage(IWindowManager windowManager)
     {
         // The IWindowManager implementation is registered with DI as a singleton.
         _windowManager = windowManager;
@@ -16,8 +19,6 @@ file class Example
 
     public void Do()
     {
-        // TODO: from within a page
-
         // Most of the time, you'll want to get the currently active Window.
         // The active Window is the one that the user is currently interacting
         // with.
@@ -50,3 +51,25 @@ file class Example
 }
 
 file record ExampleContext : IWorkspaceContext;
+
+// This example class shows how to query Windows and Workspaces from within a page.
+file class ExamplePage : APageViewModel<IMyPageInterface>, IMyPageInterface
+{
+    public ExamplePage(IWindowManager windowManager) : base(windowManager) { }
+
+    public void Do()
+    {
+        // A Page knows it's own location. This makes it easy to query the exact
+        // objects that you need using these IDs:
+        var windowId = base.WindowId;
+        var workspaceId = base.WorkspaceId;
+        var panelId = base.PanelId;
+        var tabId = base.TabId;
+
+        // APageViewModel<TVM> also has a utility method to quickly get the
+        // current Workspace Controller.
+        var workspaceController = base.GetWorkspaceController();
+    }
+}
+
+file interface IMyPageInterface : IPageViewModelInterface;
