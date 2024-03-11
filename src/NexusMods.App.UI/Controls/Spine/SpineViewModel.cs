@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.App.UI.Controls.Spine.Buttons;
 using NexusMods.App.UI.Controls.Spine.Buttons.Download;
 using NexusMods.App.UI.Controls.Spine.Buttons.Icon;
 using NexusMods.App.UI.Controls.Spine.Buttons.Image;
@@ -32,21 +33,14 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<SpineViewModel> _logger;
     private readonly IWindowManager _windowManager;
-
-    [Reactive] public ILeftMenuViewModel? LeftMenuViewModel { get; private set; }
-
-    private ReadOnlyObservableCollection<ILeftMenuViewModel> _leftMenus =
-        Initializers.ReadOnlyObservableCollection<ILeftMenuViewModel>();
-
-
+    
+    private ReadOnlyObservableCollection<IImageButtonViewModel> _loadoutSpineItems = new([]);
+    public ReadOnlyObservableCollection<IImageButtonViewModel> LoadoutSpineItems => _loadoutSpineItems;
     public IIconButtonViewModel Home { get; }
-
     public ISpineDownloadButtonViewModel Downloads { get; }
-
-    private ReadOnlyObservableCollection<IImageButtonViewModel> _loadouts =
-        Initializers.ReadOnlyObservableCollection<IImageButtonViewModel>();
-
-    public ReadOnlyObservableCollection<IImageButtonViewModel> Loadouts => _loadouts;
+    
+    private ReadOnlyObservableCollection<ILeftMenuViewModel> _leftMenus = new([]);
+    [Reactive] public ILeftMenuViewModel? LeftMenuViewModel { get; private set; }
 
     public SpineViewModel(
         IServiceProvider serviceProvider,
@@ -90,7 +84,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                     return vm;
                 })
                 .OnUI()
-                .Bind(out _loadouts)
+                .Bind(out _loadoutSpineItems)
                 .SubscribeWithErrorLogging()
                 .DisposeWith(disposables);
 
@@ -210,7 +204,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
     {
         Home.IsActive = false;
         Downloads.IsActive = false;
-        foreach (var loadout in Loadouts)
+        foreach (var loadout in LoadoutSpineItems)
         {
             loadout.IsActive = false;
         }
@@ -218,7 +212,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
 
     private void ActivateLoadoutSpineButton(LoadoutId loadoutId)
     {
-        var loadoutButton = Loadouts.FirstOrDefault(button =>
+        var loadoutButton = LoadoutSpineItems.FirstOrDefault(button =>
         {
             if (button.Tag is LoadoutId id)
             {
