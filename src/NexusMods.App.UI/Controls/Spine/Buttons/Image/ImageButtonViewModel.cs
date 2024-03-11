@@ -17,7 +17,4 @@ public class ImageButtonViewModel : AViewModel<IImageButtonViewModel>, IImageBut
     [Reactive] public ICommand Click { get; set; } = Initializers.ICommand;
     
     public IWorkspaceContext? WorkspaceContext { get; set; }
-
-    [Reactive]
-    public object? Tag { get; set; }
 }

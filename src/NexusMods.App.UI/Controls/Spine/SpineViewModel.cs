@@ -61,11 +61,11 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         Home = homeButtonViewModel;
         Home.Name = Language.SpineHomeButton_ToolTip_Home;
         Home.WorkspaceContext = new HomeContext();
-        _specialSpineItems.Add(homeButtonViewModel);
+        _specialSpineItems.Add(Home);
 
         Downloads = spineDownloadsButtonViewModel;
         Downloads.WorkspaceContext = new DownloadsContext();
-        _specialSpineItems.Add(addButtonViewModel);
+        _specialSpineItems.Add(Downloads);
 
 
         if (!_windowManager.TryGetActiveWindow(out var currentWindow)) return;
@@ -89,7 +89,6 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                             vm.IsActive = false;
                             vm.WorkspaceContext = new LoadoutContext { LoadoutId = loadoutId };
                             vm.Click = ReactiveCommand.Create(() => ChangeToLoadoutWorkspace(loadoutId));
-                            vm.Tag = loadoutId;
                             return vm;
                         }
                     )

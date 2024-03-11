@@ -15,10 +15,4 @@ public interface IImageButtonViewModel : ISpineItemViewModel
     /// Image for the button
     /// </summary>
     public IImage Image { get; set; }
-    
-
-    /// <summary>
-    /// User defined data
-    /// </summary>
-    public object? Tag { get; set; }
 }
