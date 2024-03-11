@@ -1,16 +1,11 @@
-using System.Diagnostics.CodeAnalysis;
 using DynamicData.Kernel;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
+// ReSharper disable All
 
 namespace Examples.Workspaces;
 
-[SuppressMessage("ReSharper", "UnusedType.Local", Justification = "Example")]
-[SuppressMessage("ReSharper", "UnusedVariable", Justification = "Example")]
-[SuppressMessage("ReSharper", "UnusedMember.Local", Justification = "Example")]
-[SuppressMessage("ReSharper", "SuggestVarOrType_Elsewhere", Justification = "Example")]
-[SuppressMessage("ReSharper", "RedundantAssignment", Justification = "Example")]
 file class Example
 {
     private readonly IWindowManager _windowManager;

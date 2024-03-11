@@ -1,13 +1,9 @@
-using System.Diagnostics.CodeAnalysis;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
+// ReSharper disable All
 
 namespace Examples.Workspaces;
 
-[SuppressMessage("ReSharper", "UnusedType.Local", Justification = "Example")]
-[SuppressMessage("ReSharper", "UnusedVariable", Justification = "Example")]
-[SuppressMessage("ReSharper", "UnusedMember.Local", Justification = "Example")]
-[SuppressMessage("ReSharper", "SuggestVarOrType_Elsewhere", Justification = "Example")]
 file class Example
 {
     private readonly IWindowManager _windowManager;
@@ -20,6 +16,8 @@ file class Example
 
     public void Do()
     {
+        // TODO: from within a page
+
         // Most of the time, you'll want to get the currently active Window.
         // The active Window is the one that the user is currently interacting
         // with.
@@ -51,5 +49,4 @@ file class Example
     }
 }
 
-[SuppressMessage("ReSharper", "ClassNeverInstantiated.Local", Justification = "Example")]
 file record ExampleContext : IWorkspaceContext;
