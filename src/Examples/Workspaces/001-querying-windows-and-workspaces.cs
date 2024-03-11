@@ -1,0 +1,2 @@
+namespace Examples.Workspaces;
+

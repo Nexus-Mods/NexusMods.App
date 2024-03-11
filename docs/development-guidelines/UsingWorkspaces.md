@@ -44,3 +44,7 @@ As mentioned earlier, the `Page` type is a simple record that contains the View 
 Implementations of `IPageFactory` have a hardcoded GUID and can create a `Page` given a context `IPageFactoryContext`. Consumers would want to use the more helpful `APageFactory` abstract class but that'll be covered later. Similar to `IWorkspaceContext`, `IPageFactoryContext` is just an empty interface that allows inheritors to provide context to the contents of a Page.
 
 To create a `Page`, you only need to know the ID of the factory and the context you want to pass it. Both of these values are stored in the `PageData` property of the `Page` type. `PageData` gets serialized to save, and deserialized to restore, a Page.
+
+## Examples
+
+See the [Examples projects](https://github.com/Nexus-Mods/NexusMods.App/tree/main/src/Examples) on how to use these concepts and APIs.
