@@ -16,6 +16,8 @@ public readonly struct NavigationInput : IEquatable<NavigationInput>
     public readonly KeyType Key;
     public readonly ModifierType Modifiers;
 
+    public static readonly NavigationInput Default = new(MouseButton.Left, KeyboardModifiers.None);
+
     public NavigationInput(KeyType key, ModifierType modifiers)
     {
         Key = key;
