@@ -1,4 +1,6 @@
-using System.Windows.Input;
+using System.Reactive;
+using NexusMods.App.UI.WorkspaceSystem;
+using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Controls.Spine.Buttons.Icon;
@@ -8,7 +10,9 @@ public class IconButtonViewModel : AViewModel<IIconButtonViewModel>, IIconButton
     [Reactive]
     public bool IsActive { get; set; }
 
-    [Reactive] public ICommand Click { get; set; } = Initializers.ICommand;
+    [Reactive] public ReactiveCommand<Unit,Unit> Click { get; set; } = Initializers.EmptyReactiveCommand;
+    
+    public IWorkspaceContext? WorkspaceContext { get; set; }
 
     [Reactive] public string Name { get; set; } = string.Empty;
 }
