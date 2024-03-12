@@ -5,6 +5,7 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Games.AdvancedInstaller.UI.ModContent;
 using NexusMods.Paths;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Preview;
 
@@ -20,6 +21,7 @@ public class PreviewTreeEntryViewModel : AViewModel<IPreviewTreeEntryViewModel>,
     public bool IsNew { get; private set; }
     public bool IsFolderMerged { get; set; }
     public bool IsFolderDupe { get; }
+    [Reactive] public bool IsExpanded { get; set; }
 
     public Optional<IModContentTreeEntryViewModel> MappedEntry { get; set; }
 

@@ -19,6 +19,7 @@ public class FileTreeNodeDesignViewModel : AViewModel<IFileTreeNodeViewModel>, I
     public ulong FileSize { get; }
     public GamePath Key { get; }
     public GamePath ParentKey { get; }
+    public bool IsExpanded { get; set; }
     
     public FileTreeNodeDesignViewModel() : this(true, new GamePath(LocationId.Game, ""), "Design Folder Name")
     {

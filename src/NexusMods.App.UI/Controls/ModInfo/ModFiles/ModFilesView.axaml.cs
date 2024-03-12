@@ -64,20 +64,6 @@ public partial class ModFilesView : ReactiveUserControl<IModFilesViewModel>
 
                                 var view = new FileTreeNodeView();
                                 view.DataContext = node.Item;
-                                
-                                // This is a 'hack' which allows us to receive events from the wrapping 'ModFileNode'
-                                // and transfer it into the child IFileTreeNodeViewModel.
-                                
-                                // Given that we may reuse the `FileTreeNodeView` for other views in the future, 
-                                // which may not necessarily need the wrapping `ModFileNode` to get info on when it's
-                                // expanded or not expanded, this does not seem unreasonable to do.
-                                ((IActivatableViewModel)node.Item).WhenActivated(d =>
-                                {
-                                    node.WhenAnyValue(x => x.IsExpanded)
-                                        .Subscribe(isExpanded => node.Item.OnExpanded(isExpanded))
-                                        .DisposeWith(d);
-                                });
-                                
                                 return view;
                             }
                         ),

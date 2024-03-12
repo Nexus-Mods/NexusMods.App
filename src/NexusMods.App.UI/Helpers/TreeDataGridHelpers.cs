@@ -23,7 +23,7 @@ public static class TreeDataGridHelpers
     public static HierarchicalTreeDataGridSource<TNode> CreateTreeSourceWithSingleCustomColumn<TNode, TItem, TKey>(
         TNode treeRoot)
         where TNode : TreeNodeVM<TItem, TKey>
-        where TItem : class, IViewModelInterface
+        where TItem : class, IViewModelInterface, IExpandableItem
         where TKey : notnull
     {
         return CreateTreeSourceWithSingleCustomColumn<TNode, TItem, TKey>(Enumerable.Repeat(treeRoot, 1));
@@ -40,7 +40,7 @@ public static class TreeDataGridHelpers
     public static HierarchicalTreeDataGridSource<TNode> CreateTreeSourceWithSingleCustomColumn<TNode, TItem, TKey>(
         IEnumerable<TNode> treeRoots) 
         where TNode : TreeNodeVM<TItem, TKey>
-        where TItem : class, IViewModelInterface
+        where TItem : class, IViewModelInterface, IExpandableItem
         where TKey : notnull
     {
         var locator = Locator.Current.GetService<IViewLocator>();
@@ -74,4 +74,15 @@ public static class TreeDataGridHelpers
             }
         };
     }
+}
+
+/// <summary>
+///     Represents a ViewModel that can be expanded.
+/// </summary>
+public interface IExpandableItem
+{
+    /// <summary>
+    /// Whether the node is expanded in the UI.
+    /// </summary>
+    public bool IsExpanded { get; set; }
 }

@@ -1,9 +1,10 @@
 using System.Runtime.CompilerServices;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.App.UI.Helpers;
 
 namespace NexusMods.App.UI.Controls.Trees.Files;
 
-public interface IFileTreeNodeViewModel : IViewModelInterface
+public interface IFileTreeNodeViewModel : IViewModelInterface, IExpandableItem
 {
     /// <summary>
     ///     The icon that's used to display this specific node.
