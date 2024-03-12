@@ -303,6 +303,6 @@ lub nie jest już dostępna w pierwotnej ścieżce.</value>
         <value>Mod Nie Znaleziony</value>
     </data>
     <data name="ErrorView_MissingMod_Subheader" xml:space="preserve">
-        <value>Mod nie znaleziony</value>
+        <value>Modyfikacja nie została znaleziona</value>
     </data>
 </root>
