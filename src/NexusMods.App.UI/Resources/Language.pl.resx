@@ -281,6 +281,18 @@
 	</data>
 	<data name="InProgressDownloadsPage_Title" xml:space="preserve">
 		<value>Pobieranie</value>
+    </data>
+    <data name="ApplyControlViewModel__ACTIVATE_LOADOUT" xml:space="preserve">
+        <value>AKTYWUJ ZESTAW</value>
+    </data>
+    <data name="ApplyControlViewModel__ACTIVATE_AND_APPLY" xml:space="preserve">
+        <value>AKTYWUJ i ZASTOSUJ</value>
+    </data>
+    <data name="ApplyControlViewModel__APPLY" xml:space="preserve">
+        <value>ZASTOSUJ</value>
+    </data>
+    <data name="ApplyingControlView__ApplyingText" xml:space="preserve">
+        <value>Zastosowywanie...</value>
 	</data>
     <data name="ViewModFilesView_Location" xml:space="preserve">
         <value>ŚCIEŻKA:</value>
@@ -300,7 +312,7 @@ lub nie istnieje. Najprawdopodobniej została usunięta ręcznie poza Nexus Mods
 lub nie jest już dostępna w pierwotnej ścieżce.</value>
     </data>
     <data name="ViewModInfoPage_NotFound_Title" xml:space="preserve">
-        <value>Mod Nie Znaleziony</value>
+        <value>Mod nie znaleziony</value>
     </data>
     <data name="ErrorView_MissingMod_Subheader" xml:space="preserve">
         <value>Modyfikacja nie została znaleziona</value>
