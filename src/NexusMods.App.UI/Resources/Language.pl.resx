@@ -262,7 +262,7 @@
 		<value>Strona główna</value>
 	</data>
     <data name="LoadoutGridView__View_Files" xml:space="preserve">
-        <value>Zobacz Pliki Moda</value>
+        <value>Zobacz pliki modyfikacji</value>
     </data>
     <data name="FileTreeNodeView__View" xml:space="preserve">
         <value>Zobacz</value>
