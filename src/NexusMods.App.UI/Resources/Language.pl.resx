@@ -286,7 +286,7 @@
         <value>ŚCIEŻKA:</value>
     </data>
     <data name="ViewModFilesView_Locations" xml:space="preserve">
-        <value>LOKALIZACJE:</value>
+        <value>ŚCIEŻKI:</value>
     </data>
     <data name="Helpers_ERROR" xml:space="preserve">
         <value>BŁĄD</value>
