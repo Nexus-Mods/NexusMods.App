@@ -44,10 +44,25 @@ file class Example
         // 2) The OpenPageBehavior:
         // The type OpenPageBehavior is a union between various types, and it's
         // value can only be one of those types. There are currently 3 different
-        // behaviors:
+        // behaviors. While you can specify exactly how a page should be opened,
+        // it's recommended to use the default behavior:
+
+        // GetDefaultOpenPageBehavior will figure out the best behavior for the
+        // requested page depending on a variety of factors.
+        OpenPageBehavior behavior = workspaceController.GetDefaultOpenPageBehavior(
+            // The requested page itself can specify a default behavior.
+            requestedPage: pageData.Value,
+            // Depending on the input, different behaviors are desired.
+            // TODO: https://github.com/Nexus-Mods/NexusMods.App/issues/942
+            input: NavigationInput.Default,
+            // Most of the time, the request to open a new page comes from
+            // an existing Page. An exception would be something like the
+            // Left Menu, which is outside the Workspace system.
+            currentPage: Optional<PageIdBundle>.None
+        );
 
         // 1) ReplaceTab will replace the page inside an existing tab.
-        OpenPageBehavior behavior = new OpenPageBehavior.ReplaceTab(
+        behavior = new OpenPageBehavior.ReplaceTab(
             // If this is None, the first panel of the Workspace will be selected.
             PanelId: Optional<PanelId>.None,
             // If this is None, the first tab of the Panel will be replaced.
@@ -66,9 +81,6 @@ file class Example
             // If this is None, the first possible state will be used.
             NewWorkspaceState: Optional<WorkspaceGridState>.None
         );
-
-        // TODO: Default OpenPageBehavior
-        behavior = workspaceController.GetDefaultOpenPageBehavior();
 
         workspaceController.OpenPage(
             workspaceId,
