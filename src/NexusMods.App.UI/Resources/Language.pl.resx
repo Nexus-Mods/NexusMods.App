@@ -295,7 +295,7 @@
         <value>Coś poszło nie tak</value>
     </data>
     <data name="ErrorView_MissingMod_Description" xml:space="preserve">
-        <value>Mod, do którego próbujesz uzyskać dostęp, został usunięty 
+        <value>Modyfikacja, do której próbujesz uzyskać dostęp, została usunięta 
 lub nie istnieje. Najprawdopodobniej została usunięta ręcznie poza Nexus Mods App 
 lub nie jest już dostępna w pierwotnej ścieżce.</value>
     </data>
