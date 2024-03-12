@@ -7,6 +7,7 @@ namespace NexusMods.App.UI.WorkspaceSystem;
 /// <summary>
 /// Behavior for opening a new page in the workspace.
 /// </summary>
+/// <seealso cref="OpenPageBehaviorType"/>
 [PublicAPI]
 public class OpenPageBehavior : OneOfBase<
     OpenPageBehavior.ReplaceTab,
