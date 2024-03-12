@@ -1,5 +1,6 @@
-﻿using System.Windows.Input;
+﻿using System.Reactive;
 using NexusMods.App.UI.WorkspaceSystem;
+using ReactiveUI;
 
 namespace NexusMods.App.UI.Controls.Spine.Buttons;
 
@@ -13,7 +14,7 @@ public interface ISpineItemViewModel : IViewModelInterface
     /// <summary>
     /// Command to execute when the spine item is clicked.
     /// </summary>
-    ICommand Click { get; set; }
+    ReactiveCommand<Unit,Unit> Click { get; set; }
     
     /// <summary>
     /// The context of the workspace associated with the spine item.

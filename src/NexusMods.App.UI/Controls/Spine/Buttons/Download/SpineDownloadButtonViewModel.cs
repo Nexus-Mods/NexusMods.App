@@ -1,7 +1,6 @@
 ﻿using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Windows.Input;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Activities;
@@ -42,7 +41,7 @@ public class SpineDownloadButtonViewModel : AViewModel<ISpineDownloadButtonViewM
 
     [Reactive] public Optional<Percent> Progress { get; set; }
 
-    [Reactive] public ICommand Click { get; set; } = Initializers.ICommand;
+    [Reactive] public ReactiveCommand<Unit,Unit> Click { get; set; } = Initializers.EmptyReactiveCommand;
     
     public IWorkspaceContext? WorkspaceContext { get; set; }
 

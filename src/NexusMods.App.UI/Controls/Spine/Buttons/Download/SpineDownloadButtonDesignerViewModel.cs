@@ -1,4 +1,4 @@
-using System.Windows.Input;
+using System.Reactive;
 using DynamicData.Kernel;
 using NexusMods.Abstractions.Activities;
 using NexusMods.App.UI.Resources;
@@ -20,7 +20,7 @@ public class SpineDownloadButtonDesignerViewModel : AViewModel<ISpineDownloadBut
     public Optional<Percent> Progress { get; set; }
 
     [Reactive]
-    public ICommand Click { get; set; }
+    public ReactiveCommand<Unit,Unit> Click { get; set; }
 
     public IWorkspaceContext? WorkspaceContext { get; set; }
 

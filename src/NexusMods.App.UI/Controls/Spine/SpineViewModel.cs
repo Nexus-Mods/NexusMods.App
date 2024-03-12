@@ -58,16 +58,19 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         _logger = logger;
         _windowManager = windowManager;
 
+        // Setup the special spine items
         Home = homeButtonViewModel;
         Home.Name = Language.SpineHomeButton_ToolTip_Home;
         Home.WorkspaceContext = new HomeContext();
         _specialSpineItems.Add(Home);
+        Home.Click = ReactiveCommand.Create(NavigateToHome);
 
         Downloads = spineDownloadsButtonViewModel;
         Downloads.WorkspaceContext = new DownloadsContext();
         _specialSpineItems.Add(Downloads);
+        Downloads.Click = ReactiveCommand.Create(NavigateToDownloads);
 
-
+        
         if (!_windowManager.TryGetActiveWindow(out var currentWindow)) return;
         var workspaceController = currentWindow.WorkspaceController;
 
@@ -122,8 +125,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                     .BindToVM(this, vm => vm.LeftMenuViewModel)
                     .DisposeWith(disposables);
 
-                Home.Click = ReactiveCommand.Create(NavigateToHome);
-                Downloads.Click = ReactiveCommand.Create(NavigateToDownloads);
+
 
                 // Update the active spine item when the active workspace changes
                 workspaceController
