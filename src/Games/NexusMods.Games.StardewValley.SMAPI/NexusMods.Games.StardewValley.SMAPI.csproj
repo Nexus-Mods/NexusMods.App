@@ -13,7 +13,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="HtmlAgilityPack" VersionOverride="1.11.52" />
+        <PackageReference Include="HtmlAgilityPack" VersionOverride="1.11.59" />
         <PackageReference Include="Newtonsoft.Json" VersionOverride="13.0.3" />
         <PackageReference Include="Pathoschild.Http.FluentClient" VersionOverride="4.3.0" />
     </ItemGroup>
