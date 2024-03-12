@@ -113,14 +113,13 @@ public interface IWorkspaceController
     public void SetIcon(IconValue? icon, WorkspaceId workspaceId, PanelId panelId, PanelTabId tabId);
 
     /// <summary>
-    /// Returns what the default OpenPageBehavior should be to open a page.
-    /// This will check user settings and other factors to determine the default behavior.
-    /// </summary>
-    public OpenPageBehavior GetDefaultOpenPageBehavior();
-
-    /// <summary>
     /// Returns true if a new panel can be created, else false.
     /// </summary>
     /// <param name="workspaceId">Workspace identifier.</param>
     bool CanCreateNewPanel(WorkspaceId workspaceId);
+
+    public OpenPageBehavior GetDefaultOpenPageBehavior(
+        PageData requestedPage,
+        NavigationInput input,
+        Optional<PageIdBundle> currentPage);
 }

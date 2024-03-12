@@ -6,32 +6,32 @@ using KeyboardKey = Avalonia.Input.Key;
 using KeyboardModifiers = Avalonia.Input.KeyModifiers;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
-using InputType = OneOf<MouseButton, KeyboardKey>;
+using KeyType = OneOf<MouseButton, KeyboardKey>;
 using ModifierType = KeyboardModifiers;
 
-[DebuggerDisplay("Modifier={Modifiers} Input={Input}")]
+[DebuggerDisplay("Modifier={Modifiers} Key={Key}")]
 [PublicAPI]
 public readonly struct NavigationInput : IEquatable<NavigationInput>
 {
-    public readonly InputType Input;
+    public readonly KeyType Key;
     public readonly ModifierType Modifiers;
 
-    public NavigationInput(InputType input, ModifierType modifiers)
+    public NavigationInput(KeyType key, ModifierType modifiers)
     {
-        Input = input;
+        Key = key;
         Modifiers = modifiers;
     }
 
     /// <inheritdoc/>
     public override string ToString()
     {
-        return $"{Modifiers} + {Input}";
+        return $"{Modifiers} + {Key}";
     }
 
     /// <inheritdoc/>
     public bool Equals(NavigationInput other)
     {
-        return Input.Equals(other.Input) && Modifiers == other.Modifiers;
+        return Key.Equals(other.Key) && Modifiers == other.Modifiers;
     }
 
     /// <inheritdoc/>
@@ -43,7 +43,7 @@ public readonly struct NavigationInput : IEquatable<NavigationInput>
     /// <inheritdoc/>
     public override int GetHashCode()
     {
-        return HashCode.Combine(Input, Modifiers);
+        return HashCode.Combine(Key, Modifiers);
     }
 
     public static bool operator ==(NavigationInput left, NavigationInput right)
@@ -54,6 +54,22 @@ public readonly struct NavigationInput : IEquatable<NavigationInput>
     public static bool operator !=(NavigationInput left, NavigationInput right)
     {
         return !(left == right);
+    }
+
+    public void Deconstruct(out KeyType key, out ModifierType modifiers)
+    {
+        key = Key;
+        modifiers = Modifiers;
+    }
+
+    public bool IsPrimaryInput()
+    {
+        if (Modifiers != KeyboardModifiers.None) return false;
+
+        return Key.Match(
+            f0: mouseButton => mouseButton == MouseButton.Left,
+            f1: keyboardKey => keyboardKey == KeyboardKey.Enter
+        );
     }
 }
 
