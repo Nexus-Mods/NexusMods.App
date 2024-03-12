@@ -12,11 +12,15 @@ using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadStatus;
 using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadVersion;
 using NexusMods.App.UI.Controls.FoundGames;
 using NexusMods.App.UI.Controls.GameWidget;
+using NexusMods.App.UI.Controls.ModInfo.Error;
+using NexusMods.App.UI.Controls.ModInfo.Loading;
+using NexusMods.App.UI.Controls.ModInfo.ModFiles;
 using NexusMods.App.UI.Controls.Spine;
 using NexusMods.App.UI.Controls.Spine.Buttons.Download;
 using NexusMods.App.UI.Controls.Spine.Buttons.Icon;
 using NexusMods.App.UI.Controls.Spine.Buttons.Image;
 using NexusMods.App.UI.Controls.TopBar;
+using NexusMods.App.UI.Controls.Trees.Files;
 using NexusMods.App.UI.LeftMenu;
 using NexusMods.App.UI.LeftMenu.Downloads;
 using NexusMods.App.UI.LeftMenu.Home;
@@ -35,6 +39,7 @@ using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModEnabled;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModInstalled;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModName;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModVersion;
+using NexusMods.App.UI.Pages.ModInfo;
 using NexusMods.App.UI.Pages.MyGames;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceAttachments;
@@ -48,6 +53,7 @@ using DownloadStatusView = NexusMods.App.UI.Controls.DownloadGrid.Columns.Downlo
 using DownloadVersionView = NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadVersion.DownloadVersionView;
 using FoundGamesView = NexusMods.App.UI.Controls.FoundGames.FoundGamesView;
 using ImageButton = NexusMods.App.UI.Controls.Spine.Buttons.Image.ImageButton;
+using LoadingView = NexusMods.App.UI.Controls.ModInfo.Loading.LoadingView;
 using ModCategoryView = NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModCategory.ModCategoryView;
 using ModEnabledView = NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModEnabled.ModEnabledView;
 using ModInstalledView = NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModInstalled.ModInstalledView;
@@ -121,6 +127,11 @@ public static class Services
             .AddViewModel<MetricsOptInViewModel, IMetricsOptInViewModel>()
             .AddViewModel<UpdaterViewModel, IUpdaterViewModel>()
             .AddViewModel<LoadoutLeftMenuViewModel, ILoadoutLeftMenuViewModel>()
+            .AddViewModel<ModFilesViewModel, IModFilesViewModel>()
+            .AddViewModel<ModInfoViewModel, IModInfoViewModel>()
+            .AddViewModel<FileTreeNodeViewModel, IFileTreeNodeViewModel>()
+            .AddViewModel<DummyLoadingViewModel, ILoadingViewModel>()
+            .AddViewModel<DummyErrorViewModel, IErrorViewModel>()
 
             // Views
             .AddView<DevelopmentBuildBannerView, IDevelopmentBuildBannerViewModel>()
@@ -156,6 +167,11 @@ public static class Services
             .AddView<UpdaterView, IUpdaterViewModel>()
             .AddView<LoadoutLeftMenuView, ILoadoutLeftMenuViewModel>()
             .AddView<ApplyControlView, IApplyControlViewModel>()
+            .AddView<ModFilesView, IModFilesViewModel>()
+            .AddView<ModInfoView, IModInfoViewModel>()
+            .AddView<FileTreeNodeView, IFileTreeNodeViewModel>()
+            .AddView<LoadingView, ILoadingViewModel>()
+            .AddView<ErrorView, IErrorViewModel>()
 
             // workspace system
             .AddSingleton<IWindowManager, WindowManager>()
@@ -180,6 +196,7 @@ public static class Services
             .AddSingleton<IPageFactory, MyGamesPageFactory>()
             .AddSingleton<IPageFactory, LoadoutGridPageFactory>()
             .AddSingleton<IPageFactory, InProgressPageFactory>()
+            .AddSingleton<IPageFactory, ModInfoPageFactory>()
 
             // LeftMenu factories
             .AddSingleton<ILeftMenuFactory, DownloadsLeftMenuFactory>()

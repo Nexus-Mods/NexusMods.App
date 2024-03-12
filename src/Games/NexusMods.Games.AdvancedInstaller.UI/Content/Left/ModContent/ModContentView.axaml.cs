@@ -1,6 +1,8 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Disposables;
+using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.ReactiveUI;
+using NexusMods.Paths;
 using ReactiveUI;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.ModContent;
@@ -19,9 +21,12 @@ public partial class ModContentView : ReactiveUserControl<IModContentViewModel>
                 .DisposeWith(disposables);
 
             // Disable the view when user is Create a new folder
-            this.OneWayBind(ViewModel, vm => vm.IsDisabled, view => view.TopLevelGrid.IsEnabled,
+            this.OneWayBind(ViewModel, vm => vm.IsDisabled, view => view.TopLevelPanel.IsEnabled,
                     isDisabled => !isDisabled)
                 .DisposeWith(disposables);
+
+            // A hack around https://github.com/AvaloniaUI/Avalonia.Controls.TreeDataGrid/issues/221
+            ModContentTreeDataGrid.Width = double.NaN;
         });
     }
 }

@@ -60,17 +60,17 @@ public sealed class IconValue
 }
 
 [PublicAPI]
-public record Empty;
+public record struct Empty;
 
 [PublicAPI]
-public record ProjektankerIcon(string? Value);
+public record struct ProjektankerIcon(string? Value);
 
 [PublicAPI]
-public record AvaloniaImage(IImage? Image);
+public record struct AvaloniaImage(IImage? Image);
 
 [PublicAPI]
-public record AvaloniaSvg(string? Path);
+public record struct AvaloniaSvg(string? Path);
 
 [PublicAPI]
-public record AvaloniaPathIcon(Geometry? Geometry);
+public record struct AvaloniaPathIcon(Geometry? Geometry);
 

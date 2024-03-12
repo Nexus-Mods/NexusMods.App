@@ -372,6 +372,32 @@
         <Compile Update="WorkspaceAttachments\AttachmentsFactories\LoadoutAttachmentsFactory.cs">
           <DependentUpon>IWorkspaceAttachmentsFactory.cs</DependentUpon>
         </Compile>
+        <Compile Update="Controls\Trees\Files\FileTreeNodeViewModel.cs">
+          <DependentUpon>IFileTreeNodeViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\Trees\Files\FileTreeNodeDesignViewModel.cs">
+          <DependentUpon>IFileTreeNodeViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\ModInfo\ViewModFiles\ViewModFilesView.axaml.cs">
+          <DependentUpon>ViewModFilesView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Controls\ModInfo\ViewModFiles\ModFilesViewModFilesDesignModFilesViewModel.cs">
+          <DependentUpon>IModFilesViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\ModInfo\ViewModFiles\ModFilesViewModel.cs">
+          <DependentUpon>IModFilesViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\ViewModInfo\ModInfoView.axaml.cs">
+          <DependentUpon>ViewModFilesView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Pages\ViewModInfo\ModInfoViewModInfoDesignModInfoViewModel.cs">
+          <DependentUpon>IModInfoViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\ViewModInfo\ModInfoViewModel.cs">
+          <DependentUpon>IModInfoViewModel.cs</DependentUpon>
+        </Compile>
         <Compile Update="LeftMenu\Loadout\LoadoutLeftMenuDesignViewModel.cs">
           <DependentUpon>ILoadoutLeftMenuViewModel.cs</DependentUpon>
         </Compile>
@@ -390,6 +416,30 @@
         <Compile Update="LeftMenu\Items\ApplyControlViewModel.cs">
           <DependentUpon>IApplyControlViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Controls\ModInfo\Dummy\ViewModFilesView.axaml.cs">
+          <DependentUpon>ViewModFilesView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Controls\ModInfo\Error\ErrorView.axaml.cs">
+          <DependentUpon>LoadingView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Controls\Spinner\Spinner.axaml.cs">
+          <DependentUpon>ProgressRing.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Pages\ModInfo\ModInfoDesignViewModel.cs">
+          <DependentUpon>IModInfoViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\ModInfo\ModInfoViewModel.cs">
+          <DependentUpon>IModInfoViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\ModInfo\ModFiles\ModFilesDesignViewModel.cs">
+          <DependentUpon>IModFilesViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\ModInfo\ModFiles\ModFilesViewModel.cs">
+          <DependentUpon>IModFilesViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
@@ -405,10 +455,6 @@
       <UpToDateCheckInput Remove="Controls\Buttons\RoundedButton\RoundedButton.axaml" />
       <UpToDateCheckInput Remove="Controls\Buttons\StandardButtonTheme.axaml" />
       <UpToDateCheckInput Remove="RightContent\Home\HomeView.axaml" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Pages\" />
     </ItemGroup>
 
     <ItemGroup>

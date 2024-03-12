@@ -28,7 +28,6 @@ public class Program
     private static bool _isDebug = false;
 #endif
 
-
     [STAThread]
     public static int Main(string[] args)
     {

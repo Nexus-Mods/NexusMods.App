@@ -24,6 +24,12 @@
                             <unifiedIcon:UnifiedIcon Classes="TrashCanOutline" />
                         </StackPanel>
                     </Button>
+                    <Button x:Name="ViewModFilesButton">
+                        <StackPanel>
+                            <unifiedIcon:UnifiedIcon Classes="FolderOutline" />
+                            <TextBlock Text="{x:Static resources:Language.LoadoutGridView__View_Files}"/>
+                        </StackPanel>
+                    </Button>
                     <Line/>
                     <Button x:Name="AddModButton">
                         <StackPanel>

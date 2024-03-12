@@ -259,6 +259,8 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         UpdateStates();
         UpdateResizers();
     }
+    
+    public bool CanAddPanel() => Panels.Count < MaxPanelCount;
 
     private void UpdateStates()
     {
@@ -326,7 +328,8 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         behavior.Switch(
             f0: replaceTab => OpenPageReplaceTab(pageData, replaceTab, selectTab),
             f1: newTab => OpenPageInNewTab(pageData, newTab),
-            f2: newPanel => OpenPageInNewPanel(pageData, newPanel)
+            f2: newPanel => OpenPageInNewPanel(pageData, newPanel),
+            f3: newPanelOrTab => OpenPageInNewPanelOrTab(pageData, newPanelOrTab)
         );
     }
 
@@ -389,6 +392,14 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         });
 
         AddPanelWithCustomTab(newWorkspaceState, pageData);
+    }
+
+    private void OpenPageInNewPanelOrTab(PageData pageData, OpenPageBehavior.NewPanelOrTab newPanelOrTab)
+    {
+        if (CanAddPanel())
+            OpenPageInNewPanel(pageData, new OpenPageBehavior.NewPanel(newPanelOrTab.NewPanelWorkspaceState));
+        else
+            OpenPageInNewTab(pageData, new OpenPageBehavior.NewTab(newPanelOrTab.PanelId));
     }
 
     private void AddPanelWithDefaultTab(WorkspaceGridState newWorkspaceState)

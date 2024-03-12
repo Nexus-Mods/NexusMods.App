@@ -1,0 +1,33 @@
+﻿<!-- guidelines in design say 'keep it to 500px' -->
+<reactiveUi:ReactiveUserControl
+    d:DesignHeight="450"
+    d:DesignWidth="550"
+    mc:Ignorable="d"
+    x:Class="NexusMods.App.UI.Controls.ModInfo.Error.ErrorView"
+    x:TypeArguments="loading:ILoadingViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactiveUi="http://reactiveui.net"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:loading="clr-namespace:NexusMods.App.UI.Controls.ModInfo.Loading"
+    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
+    xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon">
+    
+    <StackPanel Orientation="Vertical" Margin="24">
+        <StackPanel Orientation="Vertical">
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                <unifiedIcon:UnifiedIcon Classes="AlertCircle ForegroundModerate" Size="25" x:Name="SelectLocationCloseIcon"
+                                         Margin="0,0,8,0" />
+                <TextBlock Classes="HeadingSMSemi ForegroundModerate"
+                           Text="{x:Static resources:Language.ErrorView_Title}" />
+            </StackPanel>
+
+            <TextBlock Classes="BodyLGBold ForegroundSubdued"
+                       Text="{x:Static resources:Language.ErrorView_MissingMod_Subheader}" />
+            <TextBlock Classes="BodyLGNormal ForegroundSubdued"
+                       Text="{x:Static resources:Language.ErrorView_MissingMod_Description}" />
+        </StackPanel>
+    </StackPanel>
+</reactiveUi:ReactiveUserControl>
+

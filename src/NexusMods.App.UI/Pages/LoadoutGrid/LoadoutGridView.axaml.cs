@@ -16,11 +16,14 @@ public partial class LoadoutGridView : ReactiveUserControl<ILoadoutGridViewModel
         InitializeComponent();
         this.WhenActivated(d =>
         {
-
             this.WhenAnyValue(view => view.ViewModel!.Mods)
                 .BindToUi(this, view => view.ModsDataGrid.ItemsSource)
                 .DisposeWith(d);
 
+            var isItemSelected = this.WhenAnyValue(
+                view => view.ModsDataGrid.SelectedIndex,
+                (selectedIndex) => selectedIndex >= 0);
+            
             AddModButton.Command =
                 ReactiveCommand.CreateFromTask(AddMod);
 
@@ -28,7 +31,10 @@ public partial class LoadoutGridView : ReactiveUserControl<ILoadoutGridViewModel
                 ReactiveCommand.CreateFromTask(AddModAdvanced);
 
             DeleteModsButton.Command =
-                ReactiveCommand.CreateFromTask(DeleteSelectedMods);
+                ReactiveCommand.CreateFromTask(DeleteSelectedMods, isItemSelected);
+            
+            ViewModFilesButton.Command =
+                ReactiveCommand.Create(ViewModContents, isItemSelected);
 
             this.WhenAnyValue(view => view.ViewModel!.Columns)
                 .GenerateColumns(ModsDataGrid)
@@ -78,6 +84,21 @@ public partial class LoadoutGridView : ReactiveUserControl<ILoadoutGridViewModel
             toDelete.Add(modCursor.ModId);
         }
         await ViewModel!.DeleteMods(toDelete, "Deleted by user via UI.");
+    }
+    
+    private void ViewModContents()
+    {
+        if (ModsDataGrid.SelectedIndex == -1)
+            return;
+
+        var toView = new List<ModId>();
+        foreach (var row in ModsDataGrid.SelectedItems)
+        {
+            if (row is not ModCursor modCursor) continue;
+            toView.Add(modCursor.ModId);
+        }
+
+        ViewModel!.ViewModContents(toView);
     }
 }
 

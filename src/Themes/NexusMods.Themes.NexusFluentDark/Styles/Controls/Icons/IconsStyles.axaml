@@ -47,6 +47,7 @@
             <unifiedIcon:UnifiedIcon Classes="ChevronLeft" />
             <unifiedIcon:UnifiedIcon Classes="ChevronRight" />
             <unifiedIcon:UnifiedIcon Classes="FolderOutline" />
+            <unifiedIcon:UnifiedIcon Classes="FolderOpenOutline" />
             <unifiedIcon:UnifiedIcon Classes="File" />
             <unifiedIcon:UnifiedIcon Classes="Check" />
             <unifiedIcon:UnifiedIcon Classes="DeleteOutline" />
@@ -63,6 +64,8 @@
             <unifiedIcon:UnifiedIcon Classes="Undo" />
             <unifiedIcon:UnifiedIcon Classes="Redo" />
             <unifiedIcon:UnifiedIcon Classes="AddCircle" />
+            <unifiedIcon:UnifiedIcon Classes="Eye" />
+            <unifiedIcon:UnifiedIcon Classes="AlertCircle" />
         </WrapPanel>
     </Design.PreviewWith>
 
@@ -300,6 +303,12 @@
             <unifiedIcon:IconValue MdiValueSetter="mdi-folder-outline"/>
         </Setter>
     </Style>
+    
+    <Style Selector="unifiedIcon|UnifiedIcon.FolderOpenOutline">
+        <Setter Property="Value">
+            <unifiedIcon:IconValue MdiValueSetter="mdi-folder-open-outline"/>
+        </Setter>
+    </Style>
 
     <Style Selector="unifiedIcon|UnifiedIcon.File">
         <Setter Property="Value">
@@ -396,5 +405,16 @@
             <unifiedIcon:IconValue SvgSetter="avares://NexusMods.App.UI/Assets/Icons/add_circle_24px.svg" />
         </Setter>
     </Style>
+    
+    <Style Selector="unifiedIcon|UnifiedIcon.Eye">
+        <Setter Property="Value">
+            <unifiedIcon:IconValue MdiValueSetter="mdi-eye" />
+        </Setter>
+    </Style>
 
+    <Style Selector="unifiedIcon|UnifiedIcon.AlertCircle">
+        <Setter Property="Value">
+            <unifiedIcon:IconValue MdiValueSetter="mdi-alert-circle" />
+        </Setter>
+    </Style>
 </Styles>

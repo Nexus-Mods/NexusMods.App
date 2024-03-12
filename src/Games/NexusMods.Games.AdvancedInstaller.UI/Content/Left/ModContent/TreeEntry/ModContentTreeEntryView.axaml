@@ -34,19 +34,18 @@
         </Grid.Styles>
 
         <!-- Left Elements -->
-        <Grid Grid.Column="0" ClipToBounds="True" ColumnDefinitions="Auto,Auto" Name="FileElementGrid">
-
+        <StackPanel Grid.Column="0" Orientation="Horizontal" Name="FileElementPanel">
             <!-- File / Directory Icon -->
-            <unifiedIcon:UnifiedIcon Grid.Column="0" Classes="File FileTypeIcon" IsVisible="False" x:Name="FileEntryIcon" />
-            <unifiedIcon:UnifiedIcon Grid.Column="0" Classes="FolderOutline FileTypeIcon" IsVisible="False"
-                        x:Name="FolderEntryIcon" />
+            <unifiedIcon:UnifiedIcon Classes="File FileTypeIcon" IsVisible="False" x:Name="FileEntryIcon" />
+            <unifiedIcon:UnifiedIcon Classes="FolderOutline FileTypeIcon" IsVisible="False"
+                                     x:Name="FolderEntryIcon" />
 
             <!-- File Name -->
-            <TextBlock Grid.Column="1" Classes="BodyMDNormal" VerticalAlignment="Center"
+            <TextBlock Classes="BodyMDNormal" VerticalAlignment="Center"
                        TextTrimming="CharacterEllipsis"
                        Text="Example-file.bsa"
                        x:Name="FileNameTextBlock" />
-        </Grid>
+        </StackPanel>
 
         <!-- Right Elements -->
         <StackPanel Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal"

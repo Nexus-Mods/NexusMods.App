@@ -1,8 +1,7 @@
 using System.Collections.ObjectModel;
-using Avalonia.Controls.Models.TreeDataGrid;
-using Avalonia.Controls.Templates;
 using DynamicData;
 using NexusMods.Abstractions.FileStore.Trees;
+using NexusMods.App.UI.Helpers;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees;
 using NexusMods.Paths.Trees.Traits;
@@ -37,8 +36,7 @@ internal class ModContentViewModel : AViewModel<IModContentViewModel>, IModConte
             .Bind(out _modContentTreeRoots)
             .Subscribe();
 
-        Tree = CreateTreeDataGridSource(Root);
-
+        Tree = TreeDataGridHelpers.CreateTreeSourceWithSingleCustomColumn<ModContentNode, IModContentTreeEntryViewModel, RelativePath>(Root);
         Root.IsExpanded = true;
     }
 
@@ -98,35 +96,5 @@ internal class ModContentViewModel : AViewModel<IModContentViewModel>, IModConte
             }
         });
     }
-
-    /// <summary>
-    /// Required to display the tree in the TreeDataGrid.
-    /// </summary>
-    /// <param name="root">The root node of the view</param>
-    /// <returns></returns>
-    private static TreeDataGridSource CreateTreeDataGridSource(ModContentNode root)
-    {
-        return new TreeDataGridSource(root)
-        {
-            Columns =
-            {
-                new HierarchicalExpanderColumn<ModContentNode>(
-                    new TemplateColumn<ModContentNode>(null,
-                        new FuncDataTemplate<ModContentNode>((node, _) =>
-                            new ModContentTreeEntryView
-                            {
-                                // node can apparently be null even if it isn't nullable, likely for virtualization
-                                // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
-                                DataContext = node?.Item,
-                            }),
-                        width: new GridLength(1, GridUnitType.Star)
-                    ),
-                    node => node.Children,
-                    null,
-                    node => node.IsExpanded)
-            }
-        };
-    }
-
-    #endregion private
+#endregion private
 }

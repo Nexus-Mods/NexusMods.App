@@ -33,31 +33,28 @@
         <unifiedIcon:UnifiedIcon Grid.Column="0" Classes="FolderOutline FileTypeIcon"
                     x:Name="FolderEntryIcon" />
 
-        <Grid Grid.Column="1" VerticalAlignment="Center" RowDefinitions="Auto,Auto">
+        <StackPanel Grid.Column="1" VerticalAlignment="Center">
             <!-- Location Title -->
-            <TextBlock Grid.Row="0" Classes="BodyMDBold" VerticalAlignment="Center"
+            <TextBlock Classes="BodyMDBold" VerticalAlignment="Center"
                        TextTrimming="CharacterEllipsis"
                        TextWrapping="Wrap"
                        Text="Temp Skyrim Special Edition"
                        x:Name="LocationName" />
 
             <!-- Location SubHeading -->
-            <TextBlock Grid.Row="1" Classes="BodySMNormal ForegroundSubdued" VerticalAlignment="Center"
+            <TextBlock Classes="BodySMNormal ForegroundSubdued" VerticalAlignment="Center"
                        TextWrapping="Wrap"
                        TextTrimming="CharacterEllipsis"
                        Text="Temp Game root folder"
                        x:Name="LocationSubHeading" />
-        </Grid>
-
+        </StackPanel>
 
         <!-- Select Button -->
         <Button Grid.Column="2" Classes="Rounded Primary RightElements" HorizontalAlignment="Right"
                 x:Name="SelectRoundedButton">
             <StackPanel Orientation="Horizontal">
-                <TextBlock Text="{x:Static resources:Language.SelectButton_Select}"
-                           x:Name="SelectButtonTextBlock" />
+                <TextBlock Text="{x:Static resources:Language.SelectButton_Select}" />
             </StackPanel>
         </Button>
-
     </Grid>
 </reactiveUi:ReactiveUserControl>

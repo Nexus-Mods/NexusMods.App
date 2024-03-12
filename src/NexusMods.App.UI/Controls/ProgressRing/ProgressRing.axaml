@@ -1,6 +1,6 @@
 ﻿<UserControl
-    d:DesignHeight="24"
-    d:DesignWidth="24"
+    d:DesignHeight="48"
+    d:DesignWidth="48"
     mc:Ignorable="d"
     x:Class="NexusMods.App.UI.Controls.ProgressRing.ProgressRing"
     xmlns="https://github.com/avaloniaui"
@@ -9,11 +9,11 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Grid>
         <Ellipse
-            Height="24"
-            Width="24" />
+            Height="{Binding $parent.Width}"
+            Width="{Binding $parent.Height}" />
         <Arc
-            Height="24"
-            Width="24" />
+            Height="{Binding $parent.Width}"
+            Width="{Binding $parent.Height}" />
     </Grid>
 </UserControl>
 

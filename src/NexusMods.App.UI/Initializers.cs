@@ -9,8 +9,6 @@ using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Mods;
-using NexusMods.App.UI.LeftMenu;
-using NexusMods.App.UI.LeftMenu.Home;
 using ReactiveUI;
 
 // ReSharper disable InconsistentNaming

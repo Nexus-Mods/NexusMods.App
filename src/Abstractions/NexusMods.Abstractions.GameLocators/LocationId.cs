@@ -1,11 +1,9 @@
-﻿using Vogen;
-
-namespace NexusMods.Abstractions.GameLocators;
+﻿namespace NexusMods.Abstractions.GameLocators;
 
 /// <summary>
 /// The base folder for the GamePath, more values can easily be added here as needed
 /// </summary>
-[ValueObject<string>]
+[TransparentValueObjects.ValueObject<string>]
 public readonly partial struct LocationId
 {
     /// <summary>

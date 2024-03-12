@@ -19,9 +19,23 @@ public abstract class AGamePathNodeTree<TValue>
     /// <param name="items">Items from which to create the tree.</param>
     protected AGamePathNodeTree(IEnumerable<KeyValuePair<GamePath, TValue>> items)
     {
-        _trees = items.GroupBy(i => i.Key.LocationId)
-            .Select(g => (g.Key, GamePathNode<TValue>.Create(g)))
-            .ToDictionary(d => d.Key, d => d.Item2);
+        var groups = new Dictionary<LocationId, List<KeyValuePair<GamePath, TValue>>>();
+
+        // First, group items by LocationId
+        foreach (var item in items)
+        {
+            if (!groups.TryGetValue(item.Key.LocationId, out var list))
+            {
+                list = new List<KeyValuePair<GamePath, TValue>>();
+                groups[item.Key.LocationId] = list;
+            }
+            list.Add(item);
+        }
+
+        // Then, create a GamePathNode for each group
+        _trees = new Dictionary<LocationId, KeyedBox<RelativePath, GamePathNode<TValue>>>();
+        foreach (var group in groups)
+            _trees[group.Key] = GamePathNode<TValue>.Create(group.Value);
     }
 
     /// <summary>
@@ -30,6 +44,14 @@ public abstract class AGamePathNodeTree<TValue>
     public IEnumerable<KeyedBox<RelativePath, GamePathNode<TValue>>> GetAllDescendentFiles()
     {
         return _trees.Values.SelectMany(e => e.GetFiles());
+    }
+    
+    /// <summary>
+    /// Enumerates all the descendants in the tree. (files and directories)
+    /// </summary>
+    public IEnumerable<KeyedBox<RelativePath, GamePathNode<TValue>>> GetAllDescendents()
+    {
+        return _trees.Values.SelectMany(e => e.GetChildrenRecursive());
     }
 
     /// <summary>

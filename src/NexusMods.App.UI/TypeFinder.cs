@@ -2,6 +2,7 @@ using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Pages.Downloads;
 using NexusMods.App.UI.Pages.LoadoutGrid;
+using NexusMods.App.UI.Pages.ModInfo;
 using NexusMods.App.UI.Pages.MyGames;
 using NexusMods.App.UI.WorkspaceSystem;
 
@@ -22,6 +23,7 @@ internal class TypeFinder : ITypeFinder
         typeof(LoadoutGridContext),
         typeof(InProgressPageContext),
         typeof(MyGamesPageContext),
+        typeof(ModInfoPageContext),
 
         // workspace context
         typeof(EmptyContext),
