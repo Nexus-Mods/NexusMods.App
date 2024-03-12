@@ -112,12 +112,9 @@ public interface IWorkspaceController
     /// </summary>
     public void SetIcon(IconValue? icon, WorkspaceId workspaceId, PanelId panelId, PanelTabId tabId);
 
-
     /// <summary>
     /// Returns what the default OpenPageBehavior should be to open a page.
     /// This will check user settings and other factors to determine the default behavior.
-    ///
-    /// TODO: Add parameters for: page, mouse button, source Workspace (if popped out or not)
     /// </summary>
     public OpenPageBehavior GetDefaultOpenPageBehavior();
 
