@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using DynamicData.Kernel;
 using JetBrains.Annotations;
 using NexusMods.App.UI.Icons;
 using NexusMods.App.UI.LeftMenu.Items;
@@ -12,7 +13,6 @@ namespace NexusMods.App.UI.LeftMenu.Downloads;
 [UsedImplicitly]
 public class DownloadsLeftMenuViewModel : AViewModel<IDownloadsLeftMenuViewModel>, IDownloadsLeftMenuViewModel
 {
-    private readonly IWorkspaceController _workspaceController;
     public ReadOnlyObservableCollection<ILeftMenuItemViewModel> Items { get; }
     public WorkspaceId WorkspaceId { get; }
 
@@ -20,7 +20,7 @@ public class DownloadsLeftMenuViewModel : AViewModel<IDownloadsLeftMenuViewModel
         IWorkspaceController workspaceController)
     {
         WorkspaceId = workspaceId;
-        _workspaceController = workspaceController;
+
         var items = new ILeftMenuItemViewModel[]
         {
             new IconViewModel
@@ -28,17 +28,21 @@ public class DownloadsLeftMenuViewModel : AViewModel<IDownloadsLeftMenuViewModel
                 Name = Language.InProgressTitleTextBlock, Icon = IconType.None,
                 Activate = ReactiveCommand.Create(() =>
                 {
-                    _workspaceController.OpenPage(WorkspaceId,
-                        new PageData
-                        {
-                            FactoryId = InProgressPageFactory.StaticId,
-                            Context = new InProgressPageContext()
-                        },
-                        _workspaceController.GetDefaultOpenPageBehavior());
-                })
-            }
+                    var pageData = new PageData
+                    {
+                        FactoryId = InProgressPageFactory.StaticId,
+                        Context = new InProgressPageContext(),
+                    };
+
+                    // TODO: use https://github.com/Nexus-Mods/NexusMods.App/issues/942
+                    var input = NavigationInput.Default;
+
+                    var behavior = workspaceController.GetDefaultOpenPageBehavior(pageData, input, Optional<PageIdBundle>.None);
+                    workspaceController.OpenPage(WorkspaceId, pageData, behavior);
+                }),
+            },
         };
-        Items = new ReadOnlyObservableCollection<ILeftMenuItemViewModel>(
-            new ObservableCollection<ILeftMenuItemViewModel>(items));
+
+        Items = new ReadOnlyObservableCollection<ILeftMenuItemViewModel>(new ObservableCollection<ILeftMenuItemViewModel>(items));
     }
 }

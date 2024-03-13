@@ -1,3 +1,4 @@
+using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.UI.Windows;
@@ -23,6 +24,9 @@ public interface IPageFactory
     /// Returns details about every page that can be created with this factory in the given <see cref="IWorkspaceContext"/>.
     /// </summary>
     public IEnumerable<PageDiscoveryDetails?> GetDiscoveryDetails(IWorkspaceContext workspaceContext);
+
+    public Optional<OpenPageBehaviorType> DefaultOpenPageBehaviorWithData { get; }
+    public Optional<OpenPageBehaviorType> DefaultOpenPageBehaviorWithoutData { get; }
 }
 
 /// <summary>
@@ -82,4 +86,10 @@ public abstract class APageFactory<TViewModel, TContext> : IPageFactory<TViewMod
 
     /// <inheritdoc/>
     public virtual IEnumerable<PageDiscoveryDetails?> GetDiscoveryDetails(IWorkspaceContext workspaceContext) => Array.Empty<PageDiscoveryDetails?>();
+
+    /// <inheritdoc/>
+    public virtual Optional<OpenPageBehaviorType> DefaultOpenPageBehaviorWithData { get; } = Optional<OpenPageBehaviorType>.None;
+
+    /// <inheritdoc/>
+    public virtual Optional<OpenPageBehaviorType> DefaultOpenPageBehaviorWithoutData { get; } = Optional<OpenPageBehaviorType>.None;
 }

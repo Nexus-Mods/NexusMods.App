@@ -19,9 +19,9 @@ namespace NexusMods.App.UI.WorkspaceSystem;
 internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
 {
     private readonly IWorkspaceWindow _window;
-    private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<WorkspaceController> _logger;
-    private readonly IWorkspaceAttachmentsFactoryManager _workspaceAttachementsFactory;
+    private readonly IWorkspaceAttachmentsFactoryManager _workspaceAttachmentsFactory;
+    private readonly PageFactoryController _pageFactoryController;
 
     public WindowId WindowId => _window.WindowId;
 
@@ -35,9 +35,9 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
     {
         _window = window;
 
-        _serviceProvider = serviceProvider;
         _logger = serviceProvider.GetRequiredService<ILogger<WorkspaceController>>();
-        _workspaceAttachementsFactory = serviceProvider.GetRequiredService<IWorkspaceAttachmentsFactoryManager>();
+        _workspaceAttachmentsFactory = serviceProvider.GetRequiredService<IWorkspaceAttachmentsFactoryManager>();
+        _pageFactoryController = serviceProvider.GetRequiredService<PageFactoryController>();
 
         _workspaces
             .Connect()
@@ -88,14 +88,14 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
 
         var vm = new WorkspaceViewModel(
             workspaceController: this,
-            factoryController: _serviceProvider.GetRequiredService<PageFactoryController>(),
+            factoryController: _pageFactoryController,
             unregisterFunc: UnregisterWorkspace
         )
         {
-            Context = context.HasValue ? context.Value : EmptyContext.Instance
+            Context = context.HasValue ? context.Value : EmptyContext.Instance,
         };
 
-        vm.Title = _workspaceAttachementsFactory.CreateTitleFor(vm.Context);
+        vm.Title = _workspaceAttachmentsFactory.CreateTitleFor(vm.Context);
 
         _workspaces.AddOrUpdate(vm);
 
@@ -313,22 +313,62 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
         tabViewModel.Header.Icon = icon;
     }
 
-    public OpenPageBehavior GetDefaultOpenPageBehavior()
+    /// <inheritdoc/>
+    public OpenPageBehavior GetDefaultOpenPageBehavior(
+        PageData requestedPage,
+        NavigationInput input,
+        Optional<PageIdBundle> optionalCurrentPage)
     {
-        // TODO: Query user settings for default behaviors for:
-        // specific pages, specific interaction (mouse button modifiers), source workspace (if popped out or not)
+        const OpenPageBehaviorType fallback = OpenPageBehaviorType.NewTab;
 
-        // Current default behavior is to replace the first tab in the first panel
-        return new OpenPageBehavior.ReplaceTab(Optional<PanelId>.None, Optional<PanelTabId>.None);
+        var requestedPageFactory = _pageFactoryController.GetFactory(requestedPage);
+
+        var hasData = optionalCurrentPage.HasValue;
+        var isPrimaryInput = input.IsPrimaryInput();
+
+        // TODO: fetch this from settings depending on hasData
+        var globalSettings = hasData
+            ? OpenPageBehaviorSettings.DefaultWithData
+            : OpenPageBehaviorSettings.DefaultWithoutData;
+
+        var pageDefaultBehavior = hasData
+            ? requestedPageFactory.DefaultOpenPageBehaviorWithData
+            : requestedPageFactory.DefaultOpenPageBehaviorWithoutData;
+
+        var behaviorType = isPrimaryInput
+            ? pageDefaultBehavior.ValueOr(globalSettings.GetValueOrDefault(input, fallback))
+            : globalSettings.GetValueOrDefault(input, fallback);
+
+        if (!hasData)
+        {
+            return behaviorType switch
+            {
+                OpenPageBehaviorType.ReplaceTab => new OpenPageBehavior.ReplaceTab(Optional<PanelId>.None, Optional<PanelTabId>.None),
+                OpenPageBehaviorType.NewTab => new OpenPageBehavior.NewTab(Optional<PanelId>.None),
+                OpenPageBehaviorType.NewPanel => new OpenPageBehavior.NewPanel(Optional<WorkspaceGridState>.None),
+            };
+        }
+
+        var currentPage = optionalCurrentPage.Value;
+
+        var isPoppedOutWorkspace = IsPoppedOutWorkspace(optionalCurrentPage.Value);
+        if (isPoppedOutWorkspace)
+        {
+            // TODO: default behavior for popped out workspaces
+            behaviorType = fallback;
+        }
+
+        return behaviorType switch
+        {
+            OpenPageBehaviorType.ReplaceTab => new OpenPageBehavior.ReplaceTab(currentPage.PanelId, currentPage.TabId),
+            OpenPageBehaviorType.NewTab => new OpenPageBehavior.NewTab(currentPage.PanelId),
+            OpenPageBehaviorType.NewPanel => new OpenPageBehavior.NewPanel(Optional<WorkspaceGridState>.None),
+        };
     }
 
-    public bool CanCreateNewPanel(WorkspaceId workspaceId)
+    private static bool IsPoppedOutWorkspace(PageIdBundle currentPage)
     {
-        Dispatcher.UIThread.VerifyAccess();
-
-        if (!TryGetWorkspace(workspaceId, out WorkspaceViewModel? workspaceViewModel)) 
-            return false;
-
-        return workspaceViewModel.CanAddPanel();
+        // TODO:
+        return false;
     }
 }

@@ -7,12 +7,12 @@ namespace NexusMods.App.UI.WorkspaceSystem;
 /// <summary>
 /// Behavior for opening a new page in the workspace.
 /// </summary>
+/// <seealso cref="OpenPageBehaviorType"/>
 [PublicAPI]
 public class OpenPageBehavior : OneOfBase<
     OpenPageBehavior.ReplaceTab,
     OpenPageBehavior.NewTab,
-    OpenPageBehavior.NewPanel,
-    OpenPageBehavior.NewPanelOrTab>
+    OpenPageBehavior.NewPanel>
 {
     /// <summary>
     /// Replace the page in the given tab inside the given panel.
@@ -35,12 +35,6 @@ public class OpenPageBehavior : OneOfBase<
     /// <param name="NewWorkspaceState">Optional new workspace state, if this is <see cref="Optional{T}.None"/> the first possible state will be used.</param>
     public record NewPanel(Optional<WorkspaceGridState> NewWorkspaceState);
     public static implicit operator OpenPageBehavior(NewPanel input) => new(input);
-    
-    /// <summary>
-    /// Opens the page in a new panel if possible, otherwise
-    /// </summary>
-    /// <param name="NewPanelWorkspaceState">Optional new workspace state, if this is <see cref="Optional{T}.None"/> the first possible state will be used.</param>
-    public record NewPanelOrTab(Optional<WorkspaceGridState> NewPanelWorkspaceState, Optional<PanelId> PanelId);
 
-    public OpenPageBehavior(OneOf<ReplaceTab, NewTab, NewPanel, NewPanelOrTab> input) : base(input) { }
+    public OpenPageBehavior(OneOf<ReplaceTab, NewTab, NewPanel> input) : base(input) { }
 }
