@@ -36,9 +36,7 @@
         <!-- Left Elements -->
         <StackPanel Grid.Column="0" Orientation="Horizontal" Name="FileElementPanel">
             <!-- File / Directory Icon -->
-            <unifiedIcon:UnifiedIcon Classes="File FileTypeIcon" IsVisible="False" x:Name="FileEntryIcon" />
-            <unifiedIcon:UnifiedIcon Classes="FolderOutline FileTypeIcon" IsVisible="False"
-                                     x:Name="FolderEntryIcon" />
+            <unifiedIcon:UnifiedIcon Classes="FileTypeIcon" x:Name="EntryIcon" />
 
             <!-- File Name -->
             <TextBlock Classes="BodyMDNormal" VerticalAlignment="Center"

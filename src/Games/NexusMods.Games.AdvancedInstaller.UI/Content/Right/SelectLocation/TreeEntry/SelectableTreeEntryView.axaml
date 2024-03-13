@@ -49,7 +49,6 @@
             <StackPanel IsVisible="False" Orientation="Horizontal" x:Name="FileElementGrid">
 
                 <!-- File / Directory Icon -->
-                <unifiedIcon:UnifiedIcon Classes="File FileTypeIcon" IsVisible="False" x:Name="FileEntryIcon" />
                 <unifiedIcon:UnifiedIcon Classes="FolderOutline FileTypeIcon" IsVisible="False" x:Name="FolderEntryIcon" />
 
                 <!-- File Name -->
