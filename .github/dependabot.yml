@@ -16,6 +16,9 @@ updates:
       - dependency-name: "Microsoft.*"
       - dependency-name: "NexusMods.*"
       - dependency-name: "Avalonia*"
+    ignore:
+      # NOTE(erri120): "special" dependencies that are tied to the roslyn compiler version
+      - dependency-name: "Microsoft.CodeAnalysis.CSharp*"
     groups:
       System:
         patterns:
