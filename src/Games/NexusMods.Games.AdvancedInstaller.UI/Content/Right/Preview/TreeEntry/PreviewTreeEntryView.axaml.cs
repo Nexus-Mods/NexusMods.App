@@ -44,7 +44,7 @@ public partial class PreviewTreeEntryView : ReactiveUserControl<IPreviewTreeEntr
         // Always show unlink button, it means unlink child nodes if it is a folder.
         if (ViewModel.IsDirectory)
         {
-            FolderEntryIcon.IsVisible = true;
+            EntryIcon.Classes.Add("FolderOutline");
 
             // Make directory name bold.
             FileNameTextBlock.Classes.Remove("BodyMDNormal");
@@ -52,7 +52,7 @@ public partial class PreviewTreeEntryView : ReactiveUserControl<IPreviewTreeEntr
         }
         else
         {
-            FileEntryIcon.IsVisible = true;
+            EntryIcon.Classes.Add("File");
         }
     }
 }
