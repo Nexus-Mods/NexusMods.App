@@ -327,7 +327,9 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
         var isPrimaryInput = input.IsPrimaryInput();
 
         // TODO: fetch this from settings depending on hasData
-        var globalSettings = OpenPageBehaviorSettings.Default;
+        var globalSettings = hasData
+            ? OpenPageBehaviorSettings.DefaultWithData
+            : OpenPageBehaviorSettings.DefaultWithoutData;
 
         var pageDefaultBehavior = hasData
             ? requestedPageFactory.DefaultOpenPageBehaviorWithData
