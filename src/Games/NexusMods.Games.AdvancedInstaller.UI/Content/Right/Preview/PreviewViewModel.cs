@@ -2,6 +2,7 @@
 using DynamicData;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.App.UI.Helpers;
+using NexusMods.App.UI.Helpers.TreeDataGrid;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Preview;
 

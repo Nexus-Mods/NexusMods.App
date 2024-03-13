@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.App.UI.Helpers;
+using NexusMods.App.UI.Helpers.TreeDataGrid;
 
 namespace NexusMods.App.UI.Controls.Trees.Files;
 

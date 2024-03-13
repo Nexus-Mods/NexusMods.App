@@ -3,6 +3,7 @@ using System.Reactive;
 using DynamicData.Kernel;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.App.UI.Helpers;
+using NexusMods.App.UI.Helpers.TreeDataGrid;
 using NexusMods.Games.AdvancedInstaller.UI.ModContent;
 using ReactiveUI;
 

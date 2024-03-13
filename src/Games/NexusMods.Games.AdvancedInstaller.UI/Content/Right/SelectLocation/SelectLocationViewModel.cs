@@ -4,6 +4,7 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Helpers;
+using NexusMods.App.UI.Helpers.TreeDataGrid;
 using NexusMods.Games.AdvancedInstaller.UI.Resources;
 using NexusMods.Paths;
 
