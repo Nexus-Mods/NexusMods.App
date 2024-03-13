@@ -100,6 +100,7 @@ public class SMAPIModInstaller : AModInstaller
                     Files = modFiles,
                     Name = manifest.Name,
                     Version = manifest.Version.ToString(),
+                    Metadata = [new SMAPIModMarker()],
                 };
             });
 

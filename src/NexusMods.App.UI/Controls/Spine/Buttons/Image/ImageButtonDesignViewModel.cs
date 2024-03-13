@@ -11,6 +11,5 @@ public class ImageButtonDesignViewModel : ImageButtonViewModel
         Image = new Bitmap(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/cyberpunk_game.png")));
         Click = ReactiveCommand.Create(() => { IsActive = !IsActive; });
         Name = "Image Text";
-        Tag = new object();
     }
 }

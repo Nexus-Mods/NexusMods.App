@@ -62,9 +62,7 @@
             <Grid ColumnDefinitions="*, Auto, *" x:Name="CentralGrid">
                 <!-- Mod Content -->
                 <Border Classes="Rounded-lg Mid" Grid.Column="0" x:Name="ModContentBorder">
-                    <ScrollViewer x:Name="ModContentScrollViewer">
-                        <reactiveUi:ViewModelViewHost x:Name="ModContentSectionViewHost" />
-                    </ScrollViewer>
+                    <reactiveUi:ViewModelViewHost x:Name="ModContentSectionViewHost" />
                 </Border>
 
                 <!-- Arrow to Install Location Preview -->

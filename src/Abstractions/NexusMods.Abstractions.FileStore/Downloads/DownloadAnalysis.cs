@@ -46,7 +46,7 @@ public record DownloadAnalysis : Entity
     /// <summary>
     /// Returns a file tree of the contents of the download
     /// </summary>
-    public ModFileTreeNode GetFileTree() => TreeCreator.Create(Contents);
+    public ModFileTreeNode GetFileTree(IFileStore? fileStore) => TreeCreator.Create(Contents, fileStore);
 
     /// <summary>
     /// Meta data for the download

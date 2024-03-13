@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.DataModel.Entities.Sorting;
 using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.FileStore.ArchiveMetadata;
@@ -8,9 +7,11 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.Downloads;
 using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.NexusWebApi;
+using NexusMods.Games.StardewValley.Models;
 using NexusMods.Games.StardewValley.Sorters;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
@@ -37,19 +38,25 @@ public class SMAPIInstaller : AModInstaller
     private readonly IOSInformation _osInformation;
     private readonly IFileHashCache _fileHashCache;
     private readonly IFileOriginRegistry _fileOriginRegistry;
+    private readonly TemporaryFileManager _temporaryFileManager;
+    private readonly IFileStore _fileStore;
 
     public SMAPIInstaller(
         IServiceProvider serviceProvider,
         ILogger<SMAPIInstaller> logger,
         IOSInformation osInformation,
         IFileHashCache fileHashCache,
-        IFileOriginRegistry fileOriginRegistry)
+        IFileOriginRegistry fileOriginRegistry,
+        TemporaryFileManager temporaryFileManager,
+        IFileStore fileStore)
         : base(serviceProvider)
     {
         _logger = logger;
         _osInformation = osInformation;
         _fileHashCache = fileHashCache;
         _fileOriginRegistry = fileOriginRegistry;
+        _temporaryFileManager = temporaryFileManager;
+        _fileStore = fileStore;
     }
 
     private static KeyedBox<RelativePath, ModFileTree>[] GetInstallDataFiles(KeyedBox<RelativePath, ModFileTree> files)
@@ -121,7 +128,7 @@ public class SMAPIInstaller : AModInstaller
         }
 
         var gameFolderPath = info.Locations[LocationId.Game];
-        var archiveContents = (await _fileOriginRegistry.Get(downloadId)).GetFileTree();
+        var archiveContents = (await _fileOriginRegistry.Get(downloadId)).GetFileTree(_fileStore);
 
         // see original installer:
         // https://github.com/Pathoschild/SMAPI/blob/5919337236650c6a0d7755863d35b2923a94775c/src/SMAPI.Installer/InteractiveInstaller.cs#L384
@@ -133,10 +140,31 @@ public class SMAPIInstaller : AModInstaller
             ? "Contents/MacOS/StardewValley"
             : "StardewValley";
 
+        Version? version = null;
+
         // add all files from the archive
         foreach (var kv in archiveContents.GetFiles())
         {
             var to = new GamePath(LocationId.Game, kv.Path());
+
+            if (kv.Item.FileName.Equals("StardewModdingAPI.dll"))
+            {
+                try
+                {
+                    await using var tempFile = _temporaryFileManager.CreateFile(new Extension(".dll"));
+                    await using (var stream = await kv.Item.OpenAsync())
+                    {
+                        await using var fs = tempFile.Path.Open(FileMode.Create, FileAccess.ReadWrite, FileShare.None);
+                        await stream.CopyToAsync(fs, cancellationToken);
+                    }
+
+                    version = tempFile.Path.FileInfo.GetFileVersionInfo().GetBestVersion();
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e, "Exception while getting version of {Path}", kv.Item.Path);
+                }
+            }
 
             // For Linux & macOS: replace the game launcher executable "StardewValley" with "unix-launcher.sh"
             // https://github.com/Pathoschild/SMAPI/blob/5919337236650c6a0d7755863d35b2923a94775c/src/SMAPI.Installer/InteractiveInstaller.cs#L395-L425
@@ -176,15 +204,26 @@ public class SMAPIInstaller : AModInstaller
             _logger.LogError("Unable to find {Path} in the game folder. Your installation might be broken!", gameDepsFilePath);
         }
 
-        return new [] { new ModInstallerResult
+        return new[]
         {
-            Name = "SMAPI",
-            Id = info.BaseModId,
-            Files = modFiles,
-            SortRules = new []
+            new ModInstallerResult
             {
-                new SMAPISorter()
-            }
-        }};
+                Name = "SMAPI",
+                Id = info.BaseModId,
+                Files = modFiles,
+                SortRules = new[]
+                {
+                    new SMAPISorter(),
+                },
+                Metadata =
+                [
+                    new SMAPIMarker
+                    {
+                        Version = version,
+                    },
+                ],
+                Version = version?.ToString(),
+            },
+        };
     }
 }

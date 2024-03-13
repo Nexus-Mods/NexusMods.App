@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using System.Reactive;
 using System.Windows.Input;
 using Avalonia.Controls;
 using Avalonia.ReactiveUI;
@@ -70,13 +71,13 @@ public class AViewTest<TView, TViewModel, TViewModelInterface> : AUiTest, IAsync
         if (_host != null)
             await _host.DisposeAsync();
     }
-
+    
     /// <summary>
-    /// Tests that clicking the button with the given name fires the command found on the viewmodel under the given expression.
+    /// Tests that clicking the button with the given name fires the <see cref="ReactiveCommand{TParam,TResult}"/> found on the viewmodel under the given expression.
     /// </summary>
     /// <param name="commandExpression"></param>
     /// <param name="buttonName"></param>
-    protected async Task ButtonShouldFireCommand(Expression<Func<TViewModelInterface, ICommand>> commandExpression,
+    protected async Task ButtonShouldFireReactiveCommand(Expression<Func<TViewModelInterface, ReactiveCommand<Unit,Unit>>> commandExpression,
         string buttonName)
     {
 
@@ -86,8 +87,8 @@ public class AViewTest<TView, TViewModel, TViewModelInterface> : AUiTest, IAsync
         // Recompile the expression into a setter
         // if we're handed vm => vm.Click
         // we'll rewrite that into (vm, newValue) => vm.Click = newValue
-        var setterParam = Expression.Parameter(typeof(ICommand), "newValue");
-        var setter = Expression.Lambda<Action<TViewModelInterface, ICommand>>(Expression.Assign(commandExpression.Body, setterParam),
+        var setterParam = Expression.Parameter(typeof(ReactiveCommand<Unit,Unit>), "newValue");
+        var setter = Expression.Lambda<Action<TViewModelInterface, ReactiveCommand<Unit,Unit>>>(Expression.Assign(commandExpression.Body, setterParam),
             commandExpression.Parameters.First(), setterParam).Compile();
 
         var cmd = ReactiveCommand.Create(() => src.SetResult(true));

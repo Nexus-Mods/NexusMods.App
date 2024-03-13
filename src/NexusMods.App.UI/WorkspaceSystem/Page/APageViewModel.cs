@@ -1,7 +1,9 @@
+using JetBrains.Annotations;
 using NexusMods.App.UI.Windows;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
+[PublicAPI]
 public abstract class APageViewModel<TInterface> : AViewModel<TInterface>, IPageViewModelInterface
     where TInterface : class, IPageViewModelInterface
 {

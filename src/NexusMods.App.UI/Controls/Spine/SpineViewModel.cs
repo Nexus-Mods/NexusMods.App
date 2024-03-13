@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.App.UI.Controls.Spine.Buttons;
 using NexusMods.App.UI.Controls.Spine.Buttons.Download;
 using NexusMods.App.UI.Controls.Spine.Buttons.Icon;
 using NexusMods.App.UI.Controls.Spine.Buttons.Image;
@@ -32,20 +33,16 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
     private readonly ILogger<SpineViewModel> _logger;
     private readonly IWindowManager _windowManager;
 
-    [Reactive] public ILeftMenuViewModel? LeftMenuViewModel { get; private set; }
-
-    private ReadOnlyObservableCollection<ILeftMenuViewModel> _leftMenus =
-        Initializers.ReadOnlyObservableCollection<ILeftMenuViewModel>();
-
-
+    private ReadOnlyObservableCollection<IImageButtonViewModel> _loadoutSpineItems = new([]);
+    public ReadOnlyObservableCollection<IImageButtonViewModel> LoadoutSpineItems => _loadoutSpineItems;
     public IIconButtonViewModel Home { get; }
-
     public ISpineDownloadButtonViewModel Downloads { get; }
+    private IList<ISpineItemViewModel> _specialSpineItems = new List<ISpineItemViewModel>();
 
-    private ReadOnlyObservableCollection<IImageButtonViewModel> _loadouts =
-        Initializers.ReadOnlyObservableCollection<IImageButtonViewModel>();
+    private ISpineItemViewModel? _activeSpineItem;
 
-    public ReadOnlyObservableCollection<IImageButtonViewModel> Loadouts => _loadouts;
+    private ReadOnlyObservableCollection<ILeftMenuViewModel> _leftMenus = new([]);
+    [Reactive] public ILeftMenuViewModel? LeftMenuViewModel { get; private set; }
 
     public SpineViewModel(
         IServiceProvider serviceProvider,
@@ -61,83 +58,118 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         _logger = logger;
         _windowManager = windowManager;
 
+        // Setup the special spine items
         Home = homeButtonViewModel;
         Home.Name = Language.SpineHomeButton_ToolTip_Home;
-        Downloads = spineDownloadsButtonViewModel;
+        Home.WorkspaceContext = new HomeContext();
+        _specialSpineItems.Add(Home);
+        Home.Click = ReactiveCommand.Create(NavigateToHome);
 
+        Downloads = spineDownloadsButtonViewModel;
+        Downloads.WorkspaceContext = new DownloadsContext();
+        _specialSpineItems.Add(Downloads);
+        Downloads.Click = ReactiveCommand.Create(NavigateToDownloads);
+
+        
         if (!_windowManager.TryGetActiveWindow(out var currentWindow)) return;
         var workspaceController = currentWindow.WorkspaceController;
 
         this.WhenActivated(disposables =>
-        {
-            loadoutRegistry.Loadouts
-                .TransformAsync(async loadout =>
-                {
-                    await using var iconStream = await ((IGame)loadout.Installation.Game).Icon.GetStreamAsync();
+            {
+                loadoutRegistry.LoadoutRootChanges
+                    .Transform(loadoutId => (loadoutId, loadout: loadoutRegistry.Get(loadoutId)))
+                    .Filter(tuple => tuple.loadout != null)
+                    .TransformAsync(async tuple =>
+                        {
+                            var loadoutId = tuple.loadoutId;
+                            var loadout = tuple.loadout!;
 
-                    var vm = serviceProvider.GetRequiredService<IImageButtonViewModel>();
-                    vm.Name = loadout.Name;
-                    vm.Image = LoadImageFromStream(iconStream);
-                    vm.IsActive = false;
-                    vm.Click = ReactiveCommand.Create(() => ChangeToLoadoutWorkspace(loadout.LoadoutId));
-                    vm.Tag = loadout.LoadoutId;
-                    return vm;
-                })
-                .OnUI()
-                .Bind(out _loadouts)
-                .SubscribeWithErrorLogging()
-                .DisposeWith(disposables);
+                            await using var iconStream = await ((IGame)loadout.Installation.Game).Icon.GetStreamAsync();
 
-            // Create Left Menus for each workspace on demand
-            workspaceController.AllWorkspaces
-                .ToObservableChangeSet()
-                .Transform(workspace =>
-                {
-                    var leftMenu =
-                        workspaceAttachmentsFactory.CreateLeftMenuFor(workspace.Context, workspace.Id,
-                            workspaceController);
-                    // This should never be null, since there should be a factory for each context type, but in case
-                    return leftMenu ?? new EmptyLeftMenuViewModel(workspace.Id);
-                })
-                .Bind(out _leftMenus)
-                .SubscribeWithErrorLogging()
-                .DisposeWith(disposables);
+                            var vm = serviceProvider.GetRequiredService<IImageButtonViewModel>();
+                            vm.Name = loadout.Name;
+                            vm.Image = LoadImageFromStream(iconStream);
+                            vm.IsActive = false;
+                            vm.WorkspaceContext = new LoadoutContext { LoadoutId = loadoutId };
+                            vm.Click = ReactiveCommand.Create(() => ChangeToLoadoutWorkspace(loadoutId));
+                            return vm;
+                        }
+                    )
+                    .OnUI()
+                    .Bind(out _loadoutSpineItems)
+                    .SubscribeWithErrorLogging()
+                    .DisposeWith(disposables);
 
-            // Update the LeftMenuViewModel when the active workspace changes
-            workspaceController.WhenAnyValue(controller => controller.ActiveWorkspace)
-                .Select(workspace => workspace?.Id)
-                .Select(workspaceId => _leftMenus.FirstOrDefault(menu => menu.WorkspaceId == workspaceId))
-                .BindToVM(this, vm => vm.LeftMenuViewModel)
-                .DisposeWith(disposables);
+                // Create Left Menus for each workspace on demand
+                workspaceController.AllWorkspaces
+                    .ToObservableChangeSet()
+                    .Transform(workspace =>
+                        {
+                            var leftMenu = workspaceAttachmentsFactory.CreateLeftMenuFor(
+                                workspace.Context,
+                                workspace.Id,
+                                workspaceController
+                            );
+                            // This should never be null, since there should be a factory for each context type, but in case
+                            return leftMenu ?? new EmptyLeftMenuViewModel(workspace.Id);
+                        }
+                    )
+                    .Bind(out _leftMenus)
+                    .SubscribeWithErrorLogging()
+                    .DisposeWith(disposables);
 
-            Home.Click = ReactiveCommand.Create(NavigateToHome);
-            Downloads.Click = ReactiveCommand.Create(NavigateToDownloads);
+                // Update the LeftMenuViewModel when the active workspace changes
+                workspaceController.WhenAnyValue(controller => controller.ActiveWorkspace)
+                    .Select(workspace => workspace?.Id)
+                    .Select(workspaceId => _leftMenus.FirstOrDefault(menu => menu.WorkspaceId == workspaceId))
+                    .BindToVM(this, vm => vm.LeftMenuViewModel)
+                    .DisposeWith(disposables);
 
-            workspaceController
-                .WhenAnyValue(controller => controller.ActiveWorkspace)
-                .Select(workspace => workspace?.Context)
-                .SubscribeWithErrorLogging(context =>
-                {
-                    switch (context)
-                    {
-                        case LoadoutContext loadoutContext:
-                            ClearActiveSpineButton();
-                            ActivateLoadoutSpineButton(loadoutContext.LoadoutId);
-                            break;
-                        case HomeContext:
-                            ClearActiveSpineButton();
-                            Home.IsActive = true;
-                            break;
-                        case DownloadsContext:
-                            ClearActiveSpineButton();
-                            Downloads.IsActive = true;
-                            break;
-                        default:
-                            ClearActiveSpineButton();
-                            break;
-                    }
-                }).DisposeWith(disposables);
-        });
+
+
+                // Update the active spine item when the active workspace changes
+                workspaceController
+                    .WhenAnyValue(controller => controller.ActiveWorkspace)
+                    .Select(workspace => workspace?.Context)
+                    .WhereNotNull()
+                    .SubscribeWithErrorLogging(context =>
+                        {
+                            var itemToActivate = _specialSpineItems
+                                .Concat(_loadoutSpineItems)
+                                .FirstOrDefault(spineItem => spineItem.WorkspaceContext?.Equals(context) == true);
+
+                            if (itemToActivate == null)
+                                return;
+
+                            if (_activeSpineItem != null)
+                                _activeSpineItem.IsActive = false;
+
+                            itemToActivate.IsActive = true;
+                            _activeSpineItem = itemToActivate;
+                        }
+                    )
+                    .DisposeWith(disposables);
+
+                // Update the active spine item if the loadoutList changes
+                _loadoutSpineItems.ToObservableChangeSet()
+                    .SubscribeWithErrorLogging(_ =>
+                        {
+                            if (_activeSpineItem is not { WorkspaceContext: LoadoutContext loadoutContext }) return;
+
+                            // The spine item might have been replaced with a new one (TransformAsync)
+                            var newSpineItem = _loadoutSpineItems.FirstOrDefault(
+                                spineItem => loadoutContext.Equals(spineItem.WorkspaceContext)
+                            );
+                            if (newSpineItem == null) return;
+
+                            _activeSpineItem.IsActive = false;
+                            newSpineItem.IsActive = true;
+                            _activeSpineItem = newSpineItem;
+                        }
+                    )
+                    .DisposeWith(disposables);
+            }
+        );
     }
 
     private Bitmap LoadImageFromStream(Stream iconStream)
@@ -160,10 +192,11 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         var workspaceController = window.WorkspaceController;
 
         workspaceController.ChangeOrCreateWorkspaceByContext<HomeContext>(() => new PageData
-        {
-            FactoryId = MyGamesPageFactory.StaticId,
-            Context = new MyGamesPageContext()
-        });
+            {
+                FactoryId = MyGamesPageFactory.StaticId,
+                Context = new MyGamesPageContext()
+            }
+        );
     }
 
     private void ChangeToLoadoutWorkspace(LoadoutId loadoutId)
@@ -194,36 +227,10 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         var workspaceController = window.WorkspaceController;
 
         workspaceController.ChangeOrCreateWorkspaceByContext<DownloadsContext>(() => new PageData
-        {
-            FactoryId = InProgressPageFactory.StaticId,
-            Context = new InProgressPageContext()
-        });
-    }
-
-    private void ClearActiveSpineButton()
-    {
-        Home.IsActive = false;
-        Downloads.IsActive = false;
-        foreach (var loadout in Loadouts)
-        {
-            loadout.IsActive = false;
-        }
-    }
-
-    private void ActivateLoadoutSpineButton(LoadoutId loadoutId)
-    {
-        var loadoutButton = Loadouts.FirstOrDefault(button =>
-        {
-            if (button.Tag is LoadoutId id)
             {
-                return id == loadoutId;
+                FactoryId = InProgressPageFactory.StaticId,
+                Context = new InProgressPageContext()
             }
-
-            return false;
-        });
-        if (loadoutButton != null)
-        {
-            loadoutButton.IsActive = true;
-        }
+        );
     }
 }

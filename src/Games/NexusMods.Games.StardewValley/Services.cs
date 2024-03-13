@@ -5,6 +5,7 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.Games.StardewValley.Emitters;
 using NexusMods.Games.StardewValley.Installers;
+using NexusMods.Games.StardewValley.WebAPI;
 
 namespace NexusMods.Games.StardewValley;
 
@@ -16,8 +17,11 @@ public static class Services
             .AddGame<StardewValley>()
             .AddSingleton<ITool, RunGameTool<StardewValley>>()
             .AddSingleton<ILoadoutDiagnosticEmitter, DependencyDiagnosticEmitter>()
+            .AddSingleton<ILoadoutDiagnosticEmitter, MissingSMAPIEmitter>()
+            .AddSingleton<ISMAPIWebApi, SMAPIWebApi>()
             .AddSingleton<ITypeFinder, TypeFinder>()
             .AddSingleton<SMAPIInstaller>();
+
         return services;
     }
 }
