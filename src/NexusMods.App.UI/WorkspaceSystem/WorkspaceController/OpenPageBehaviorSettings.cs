@@ -18,6 +18,8 @@ public class OpenPageBehaviorSettings : Dictionary<NavigationInput, OpenPageBeha
         { new NavigationInput(KeyboardKey.Enter, KeyboardModifiers.None), OpenPageBehaviorType.NewTab },
 
         // Others
+        { new NavigationInput(MouseButton.Middle, KeyboardModifiers.None), OpenPageBehaviorType.NewTab },
+
         { new NavigationInput(MouseButton.Left, KeyboardModifiers.Control), OpenPageBehaviorType.ReplaceTab },
         { new NavigationInput(MouseButton.Left, KeyboardModifiers.Shift), OpenPageBehaviorType.NewTab },
     };

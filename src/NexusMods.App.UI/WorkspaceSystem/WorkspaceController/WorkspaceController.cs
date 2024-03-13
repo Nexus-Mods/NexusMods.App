@@ -369,14 +369,4 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
         // TODO:
         return false;
     }
-
-    public bool CanCreateNewPanel(WorkspaceId workspaceId)
-    {
-        Dispatcher.UIThread.VerifyAccess();
-
-        if (!TryGetWorkspace(workspaceId, out WorkspaceViewModel? workspaceViewModel)) 
-            return false;
-
-        return workspaceViewModel.CanAddPanel();
-    }
 }

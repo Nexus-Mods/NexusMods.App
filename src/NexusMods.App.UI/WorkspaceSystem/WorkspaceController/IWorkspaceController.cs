@@ -113,11 +113,12 @@ public interface IWorkspaceController
     public void SetIcon(IconValue? icon, WorkspaceId workspaceId, PanelId panelId, PanelTabId tabId);
 
     /// <summary>
-    /// Returns true if a new panel can be created, else false.
+    /// Returns the default <see cref="OpenPageBehavior"/> for the inputs.
     /// </summary>
-    /// <param name="workspaceId">Workspace identifier.</param>
-    bool CanCreateNewPanel(WorkspaceId workspaceId);
-
+    /// <remarks>
+    /// Various aspects go into determining the default <see cref="OpenPageBehavior"/>,
+    /// this method abstracts all of that into a simple API call.
+    /// </remarks>
     public OpenPageBehavior GetDefaultOpenPageBehavior(
         PageData requestedPage,
         NavigationInput input,
