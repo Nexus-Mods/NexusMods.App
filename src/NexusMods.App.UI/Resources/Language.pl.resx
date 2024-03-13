@@ -308,8 +308,7 @@
     </data>
     <data name="ErrorView_MissingMod_Description" xml:space="preserve">
         <value>Modyfikacja, do której próbujesz uzyskać dostęp, została usunięta 
-lub nie istnieje. Najprawdopodobniej została usunięta ręcznie poza Nexus Mods App 
-lub nie jest już dostępna w pierwotnej ścieżce.</value>
+lub nie istnieje.</value>
     </data>
     <data name="ViewModInfoPage_NotFound_Title" xml:space="preserve">
         <value>Mod nie znaleziony</value>
