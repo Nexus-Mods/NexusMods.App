@@ -52,6 +52,7 @@ public class AdvancedHttpDownloaderTests
     }
 
     [Fact]
+    [Trait("RequiresNetworking", "True")]
     public async Task CanResumeDownload()
     {
         await using var path = _temporaryFileManager.CreateFile();
