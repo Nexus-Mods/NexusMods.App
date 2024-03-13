@@ -15,7 +15,7 @@
     <PackageVersion Include="Bannerlord.LauncherManager" Version="1.0.76" />
     <PackageVersion Include="FetchBannerlordVersion" Version="1.0.6.45" />
     <PackageVersion Include="System.Linq" Version="4.3.0" />
-    <PackageVersion Include="System.Text.Json" Version="8.0.2" />
+    <PackageVersion Include="System.Text.Json" Version="8.0.3" />
   </ItemGroup>
   <ItemGroup>
     <PackageVersion Include="JetBrains.Annotations" Version="2023.3.0" PrivateAssets="all" />
@@ -35,7 +35,7 @@
     <PackageVersion Include="Avalonia.Headless" Version="11.0.10" />
     <PackageVersion Include="Avalonia.ReactiveUI" Version="11.0.10" />
     <PackageVersion Include="Avalonia.Themes.Fluent" Version="11.0.10" />
-    <PackageVersion Include="Projektanker.Icons.Avalonia.MaterialDesign" Version="9.1.1" />
+    <PackageVersion Include="Projektanker.Icons.Avalonia.MaterialDesign" Version="9.1.2" />
     <PackageVersion Include="Avalonia.Svg.Skia" Version="11.0.0.14" />
   </ItemGroup>
   <ItemGroup>
@@ -49,14 +49,14 @@
   </ItemGroup>
   <ItemGroup>
     <!-- Microsoft -->
-    <PackageVersion Include="Microsoft.AspNetCore.WebUtilities" Version="8.0.2" />
-    <PackageVersion Include="Microsoft.Data.Sqlite" Version="8.0.2" />
-    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.WebUtilities" Version="8.0.3" />
+    <PackageVersion Include="Microsoft.Data.Sqlite" Version="8.0.3" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.1" />
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Logging" Version="8.0.0" />
-    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
-    <PackageVersion Include="Microsoft.Extensions.ObjectPool" Version="8.0.2" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1" />
+    <PackageVersion Include="Microsoft.Extensions.ObjectPool" Version="8.0.3" />
     <PackageVersion Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.9.2" />
