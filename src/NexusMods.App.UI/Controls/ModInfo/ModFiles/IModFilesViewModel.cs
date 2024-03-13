@@ -5,7 +5,6 @@ using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.App.UI.Controls.Trees.Files;
 
 namespace NexusMods.App.UI.Controls.ModInfo.ModFiles;
-using ModFileNode = TreeNodeVM<IFileTreeNodeViewModel, GamePath>;
 
 public interface IModFilesViewModel : IViewModelInterface
 {
@@ -22,7 +21,7 @@ public interface IModFilesViewModel : IViewModelInterface
     /// <summary>
     ///     All items to be displayed.
     /// </summary>
-    ReadOnlyObservableCollection<ModFileNode> Items { get; }
+    ReadOnlyObservableCollection<IFileTreeNodeViewModel> Items { get; }
 
     void Initialize(LoadoutId loadoutId, ModId modId) { }
 }

@@ -1,12 +1,9 @@
 using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Kernel;
-using NexusMods.App.UI.Helpers;
 using NexusMods.App.UI.Helpers.TreeDataGrid;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI;
 

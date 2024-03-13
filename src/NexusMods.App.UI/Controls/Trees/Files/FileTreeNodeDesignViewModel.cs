@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.GameLocators;
 using ReactiveUI.Fody.Helpers;
@@ -17,9 +18,11 @@ public class FileTreeNodeDesignViewModel : AViewModel<IFileTreeNodeViewModel>, I
     public bool IsFile { get; }
     public string Name { get; }
     public ulong FileSize { get; }
-    public GamePath Key { get; }
+    public GamePath Key { get; set; }
     public GamePath ParentKey { get; }
     public bool IsExpanded { get; set; }
+    public ReadOnlyObservableCollection<IFileTreeNodeViewModel>? Children { get; set; }
+    public IFileTreeNodeViewModel? Parent { get; set; }
     
     public FileTreeNodeDesignViewModel() : this(true, new GamePath(LocationId.Game, ""), "Design Folder Name")
     {

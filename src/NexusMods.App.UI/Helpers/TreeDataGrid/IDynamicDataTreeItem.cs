@@ -19,7 +19,7 @@ public interface IDynamicDataTreeItem<TItem, TKey>
     ///     This is an observable collection so that the UI can be
     ///     notified of changes to the tree structure.
     /// </summary>
-    public ReadOnlyObservableCollection<TItem> Children { get; internal set; }
+    public ReadOnlyObservableCollection<TItem>? Children { get; internal set; }
 
     /// <summary>
     ///     The parent of the current node.
@@ -73,7 +73,7 @@ public static class DynamicDataTreeItemExtensions
         where TKey : notnull
     {
         var results = new List<TKey>();
-        if (self.Children.Count == 0)
+        if (self.Children?.Count == 0)
             return results;
 
         // guaranteed not null due to generic constraint:
@@ -86,7 +86,7 @@ public static class DynamicDataTreeItemExtensions
         where TItem : class, IDynamicDataTreeItem<TItem, TKey>
         where TKey : notnull
     {
-        foreach (var child in node.Children)
+        foreach (var child in node.Children!)
         {
             results.Add(child.Key);
             GetAllDescendentKeysRecursive(child, results);
@@ -103,7 +103,7 @@ public static class DynamicDataTreeItemExtensions
         where TKey : notnull
     {
         var results = new List<TItem>();
-        if (self.Children.Count == 0)
+        if (self.Children?.Count == 0)
             return results;
 
         // guaranteed not null due to generic constraint:
@@ -116,7 +116,7 @@ public static class DynamicDataTreeItemExtensions
         where TItem : class, IDynamicDataTreeItem<TItem, TKey>
         where TKey : notnull
     {
-        foreach (var child in node.Children)
+        foreach (var child in node.Children!)
         {
             results.Add(child);
             GetAllDescendentNodesRecursive<TItem, TKey>(child, results);

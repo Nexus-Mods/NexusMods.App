@@ -13,7 +13,6 @@ using NexusMods.App.UI.Resources;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Controls.ModInfo.ModFiles;
-using ModFileNode = TreeNodeVM<IFileTreeNodeViewModel, GamePath>;
 
 public partial class ModFilesView : ReactiveUserControl<IModFilesViewModel>
 {
@@ -44,17 +43,17 @@ public partial class ModFilesView : ReactiveUserControl<IModFilesViewModel>
         MultiLocationCountText.Text = $"{ViewModel.RootCount}";
     }
 
-    private static HierarchicalTreeDataGridSource<ModFileNode> CreateTreeSource(
-        ReadOnlyObservableCollection<ModFileNode> treeRoots)
+    private static HierarchicalTreeDataGridSource<IFileTreeNodeViewModel> CreateTreeSource(
+        ReadOnlyObservableCollection<IFileTreeNodeViewModel> treeRoots)
     {
-        return new HierarchicalTreeDataGridSource<ModFileNode>(treeRoots)
+        return new HierarchicalTreeDataGridSource<IFileTreeNodeViewModel>(treeRoots)
         {
             Columns =
             {
-                new HierarchicalExpanderColumn<ModFileNode>(
-                    new TemplateColumn<ModFileNode>(
+                new HierarchicalExpanderColumn<IFileTreeNodeViewModel>(
+                    new TemplateColumn<IFileTreeNodeViewModel>(
                         Language.Helpers_GenerateHeader_NAME,
-                        new FuncDataTemplate<ModFileNode>((node, _) =>
+                        new FuncDataTemplate<IFileTreeNodeViewModel>((node, _) =>
                             {
                                 // This should never be null but can be during rapid resize, due to
                                 // virtualization shenanigans. Think this is a control bug, but well, gotta work with what we have.
@@ -63,7 +62,7 @@ public partial class ModFilesView : ReactiveUserControl<IModFilesViewModel>
                                     return new Control();
 
                                 var view = new FileTreeNodeView();
-                                view.DataContext = node.Item;
+                                view.DataContext = node;
                                 return view;
                             }
                         ),
@@ -74,15 +73,15 @@ public partial class ModFilesView : ReactiveUserControl<IModFilesViewModel>
                             CompareAscending = (x, y) =>
                             {
                                 if (x == null || y == null) return 0;
-                                var folderComparison = x.Item.IsFile.CompareTo(y!.Item.IsFile); 
-                                return folderComparison != 0 ? folderComparison : string.Compare(x.Item.Name, y!.Item.Name, StringComparison.OrdinalIgnoreCase);
+                                var folderComparison = x.IsFile.CompareTo(y.IsFile); 
+                                return folderComparison != 0 ? folderComparison : string.Compare(x.Name, y.Name, StringComparison.OrdinalIgnoreCase);
                             },
 
                             CompareDescending = (x, y) => 
                             {
                                 if (x == null || y == null) return 0;
-                                var folderComparison = x.Item.IsFile.CompareTo(y!.Item.IsFile); 
-                                return folderComparison != 0 ? folderComparison : string.Compare(y.Item.Name, x!.Item.Name, StringComparison.OrdinalIgnoreCase);
+                                var folderComparison = x.IsFile.CompareTo(y.IsFile); 
+                                return folderComparison != 0 ? folderComparison : string.Compare(y.Name, x.Name, StringComparison.OrdinalIgnoreCase);
                             },
                         }
                     ),
@@ -90,24 +89,24 @@ public partial class ModFilesView : ReactiveUserControl<IModFilesViewModel>
                     null,
                     node => node.IsExpanded),
                 
-                new TextColumn<ModFileNode,string?>(
+                new TextColumn<IFileTreeNodeViewModel,string?>(
                     Language.Helpers_GenerateHeader_SIZE,
-                    x => ByteSize.FromBytes(x.Item.FileSize).ToString(),
+                    x => ByteSize.FromBytes(x.FileSize).ToString(),
                     options: new()
                     {
                         // Compares if folder first, such that folders show first, then by file name.
                         CompareAscending = (x, y) => 
                         {
                             if (x == null || y == null) return 0;
-                            var folderComparison = x.Item.IsFile.CompareTo(y.Item.IsFile);
-                            return folderComparison != 0 ? folderComparison : x.Item.FileSize.CompareTo(y!.Item.FileSize);
+                            var folderComparison = x.IsFile.CompareTo(y.IsFile);
+                            return folderComparison != 0 ? folderComparison : x.FileSize.CompareTo(y.FileSize);
                         },
 
                         CompareDescending = (x, y) => 
                         {
                             if (x == null || y == null) return 0;
-                            var folderComparison = x.Item.IsFile.CompareTo(y.Item.IsFile);  
-                            return folderComparison != 0 ? folderComparison : y.Item.FileSize.CompareTo(x!.Item.FileSize);
+                            var folderComparison = x.IsFile.CompareTo(y.IsFile);  
+                            return folderComparison != 0 ? folderComparison : y.FileSize.CompareTo(x.FileSize);
                         },
                     },
                     // HACK(sewer): If I don't overwrite this, the column may be zero sized if put into certain containers, e.g. StackPanel
