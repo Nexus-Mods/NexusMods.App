@@ -47,7 +47,8 @@ public class TreeNodeVM<TItem, TKey> : ReactiveObject, IActivatableViewModel
     ///     A wrapper around the inner reactive <see cref="Item"/>'s IsExpanded property.
     /// </summary>
     /// <remarks>
-    ///     Don't subscribe to this, subscribe to the child.
+    ///     This exists due to binding shenanigans with TreeDataGrid, it uses the
+    ///     Avalonia binding system, and we can't bind to the inner item's IsExpanded property directly.
     /// </remarks>
     public bool IsExpanded
     {
