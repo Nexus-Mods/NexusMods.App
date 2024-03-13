@@ -35,7 +35,7 @@
     <PackageVersion Include="Avalonia.Headless" Version="11.0.10" />
     <PackageVersion Include="Avalonia.ReactiveUI" Version="11.0.10" />
     <PackageVersion Include="Avalonia.Themes.Fluent" Version="11.0.10" />
-    <PackageVersion Include="Projektanker.Icons.Avalonia.MaterialDesign" Version="9.1.1" />
+    <PackageVersion Include="Projektanker.Icons.Avalonia.MaterialDesign" Version="9.1.2" />
     <PackageVersion Include="Avalonia.Svg.Skia" Version="11.0.0.14" />
   </ItemGroup>
   <ItemGroup>
