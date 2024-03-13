@@ -202,13 +202,15 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
 
     public void ViewModContents(List<ModId> toView)
     {
+        var workspaceController = GetWorkspaceController();
+
         // Or if desired, we can desire to show a merged view, that's supported by
         // underlying ViewModFilesView too
         foreach (var modId in toView)
         {
-            var pageData = new PageData()
+            var pageData = new PageData
             {
-                Context = new ModInfoPageContext()
+                Context = new ModInfoPageContext
                 {
                     LoadoutId = LoadoutId,
                     ModId = modId,
@@ -217,9 +219,16 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
                 FactoryId = ModInfoPageFactory.StaticId,
             };
 
-            var workspaceController = GetWorkspaceController();
-            var openPageBehavior = new OpenPageBehavior(new NewTab(Optional<PanelId>.None));
-            workspaceController.OpenPage(WorkspaceId, pageData, openPageBehavior);
+            // TODO: use https://github.com/Nexus-Mods/NexusMods.App/issues/942
+            var input = NavigationInput.Default;
+
+            var behavior = workspaceController.GetDefaultOpenPageBehavior(
+                requestedPage: pageData,
+                input: input,
+                currentPage: IdBundle
+            );
+
+            workspaceController.OpenPage(WorkspaceId, pageData, behavior);
         }
     }
 }
