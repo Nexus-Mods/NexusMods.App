@@ -114,6 +114,9 @@ public readonly partial struct WorkspaceGridState :
         Span<PanelGridState> rowBuffer = stackalloc PanelGridState[MaxRows];
         while (enumerator.MoveNext(rowBuffer))
         {
+            var current = enumerator.Current;
+            if (current.Info.IsInfinity()) continue;
+
             columnCount += 1;
             maxRowCount = Math.Max(maxRowCount, enumerator.Current.Rows.Length);
         }
@@ -132,6 +135,9 @@ public readonly partial struct WorkspaceGridState :
         Span<PanelGridState> columnBuffer = stackalloc PanelGridState[MaxColumns];
         while (enumerator.MoveNext(columnBuffer))
         {
+            var current = enumerator.Current;
+            if (current.Info.IsInfinity()) continue;
+
             rowCount += 1;
             maxColumnCount = Math.Max(maxColumnCount, enumerator.Current.Columns.Length);
         }

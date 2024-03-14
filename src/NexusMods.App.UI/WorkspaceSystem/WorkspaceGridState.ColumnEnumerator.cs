@@ -8,6 +8,8 @@ public readonly partial struct WorkspaceGridState
     public readonly record struct ColumnInfo(double X, double Width)
     {
         public double Right() => X + Width;
+
+        public bool IsInfinity() => double.IsInfinity(X) || double.IsInfinity(Width);
     }
 
     public readonly ref struct Column(ColumnInfo info, ReadOnlySpan<PanelGridState> rows)
@@ -101,8 +103,10 @@ public readonly partial struct WorkspaceGridState
                     var index = _seenColumns.BinarySearch(info, XComparer.Instance);
                     if (index < 0)
                     {
+                        var other = _seenColumns[~index];
+                        if (other.IsInfinity()) _numColumns += 1;
+
                         _seenColumns[~index] = info;
-                        _numColumns += 1;
                     }
                     else
                     {
