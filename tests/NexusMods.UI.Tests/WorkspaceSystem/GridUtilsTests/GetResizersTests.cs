@@ -12,6 +12,7 @@ public partial class GridUtilsTests
 {
     [Theory]
     [MemberData(nameof(TestData_GetResizers_Generated))]
+    [MemberData(nameof(TestData_GetResizers_Issue1065))]
     [SuppressMessage("Usage", "xUnit1026:Theory methods should use all of their parameters")]
     public void Test_GetResizers(
         string name,
@@ -33,6 +34,32 @@ public partial class GridUtilsTests
             actual.End.Should().Be(expected.End);
             actual.ConnectedPanels.Order().Should().Equal(expected.ConnectedPanels.Order());
         }
+    }
+
+    public static TheoryData<string, WorkspaceGridState, List<GridUtils.ResizerInfo>> TestData_GetResizers_Issue1065()
+    {
+        var firstPanelId = PanelId.From(Guid.Parse("11111111-1111-1111-1111-111111111111"));
+        var secondPanelId = PanelId.From(Guid.Parse("22222222-2222-2222-2222-222222222222"));
+        var thirdPanelId = PanelId.From(Guid.Parse("33333333-3333-3333-3333-333333333333"));
+        var fourthPanelId = PanelId.From(Guid.Parse("44444444-4444-4444-4444-444444444444"));
+
+        var res = new TheoryData<string, WorkspaceGridState, List<GridUtils.ResizerInfo>>();
+
+        res.Add("Issue #1065", CreateState(
+            isHorizontal: true,
+            panels: [
+                new PanelGridState(firstPanelId, new Rect(0, 0, 0.40358467243510504, 0.64897074756229689)),
+                new PanelGridState(secondPanelId, new Rect(0, 0.64897074756229689, 0.40358467243510504, 0.35102925243770305)),
+                new PanelGridState(thirdPanelId, new Rect(0.40358467243510504, 0, 0.59641532756489557, 0.38678223185265437)),
+                new PanelGridState(fourthPanelId, new Rect(0.40358467243510504, 0.38678223185265437, 0.59641532756489557, 0.6132177681473453)),
+            ]
+        ), [
+            new GridUtils.ResizerInfo(new Point(0, 0.6489707475622969), new Point(0.40358467243510504, 0.6489707475622969), true, [firstPanelId, secondPanelId]),
+            new GridUtils.ResizerInfo(new Point(0.40358467243510504, 0), new Point(0.40358467243510504, 1), false, [firstPanelId, secondPanelId, thirdPanelId, fourthPanelId]),
+            new GridUtils.ResizerInfo(new Point(0.40358467243510504, 0.38678223185265437), new Point(1, 0.38678223185265437), true, [thirdPanelId, fourthPanelId]),
+        ]);
+
+        return res;
     }
 
     public static TheoryData<string, WorkspaceGridState, List<GridUtils.ResizerInfo>> TestData_GetResizers_Generated()

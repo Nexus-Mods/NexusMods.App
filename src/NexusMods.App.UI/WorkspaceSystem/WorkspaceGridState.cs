@@ -22,12 +22,6 @@ public readonly partial struct WorkspaceGridState :
         IsHorizontal = isHorizontal;
     }
 
-    [Obsolete("Usages of the Workspace State as an ImmutableDictionary<> will be phased out.")]
-    public ImmutableDictionary<PanelId, Rect> ToDictionary()
-    {
-        return Inner.ToImmutableDictionary(x => x.Id, x => x.Rect);
-    }
-
     public static WorkspaceGridState From(IEnumerable<IPanelViewModel> panels, bool isHorizontal)
     {
         return new WorkspaceGridState(
@@ -85,7 +79,7 @@ public readonly partial struct WorkspaceGridState :
             return true;
         }
 
-        panel = default;
+        panel = default(PanelGridState);
         return false;
     }
 
@@ -120,6 +114,9 @@ public readonly partial struct WorkspaceGridState :
         Span<PanelGridState> rowBuffer = stackalloc PanelGridState[MaxRows];
         while (enumerator.MoveNext(rowBuffer))
         {
+            var current = enumerator.Current;
+            if (current.Info.IsInfinity()) continue;
+
             columnCount += 1;
             maxRowCount = Math.Max(maxRowCount, enumerator.Current.Rows.Length);
         }
@@ -138,6 +135,9 @@ public readonly partial struct WorkspaceGridState :
         Span<PanelGridState> columnBuffer = stackalloc PanelGridState[MaxColumns];
         while (enumerator.MoveNext(columnBuffer))
         {
+            var current = enumerator.Current;
+            if (current.Info.IsInfinity()) continue;
+
             rowCount += 1;
             maxColumnCount = Math.Max(maxColumnCount, enumerator.Current.Columns.Length);
         }
