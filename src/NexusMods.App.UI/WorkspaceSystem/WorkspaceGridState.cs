@@ -22,12 +22,6 @@ public readonly partial struct WorkspaceGridState :
         IsHorizontal = isHorizontal;
     }
 
-    [Obsolete("Usages of the Workspace State as an ImmutableDictionary<> will be phased out.")]
-    public ImmutableDictionary<PanelId, Rect> ToDictionary()
-    {
-        return Inner.ToImmutableDictionary(x => x.Id, x => x.Rect);
-    }
-
     public static WorkspaceGridState From(IEnumerable<IPanelViewModel> panels, bool isHorizontal)
     {
         return new WorkspaceGridState(
@@ -85,7 +79,7 @@ public readonly partial struct WorkspaceGridState :
             return true;
         }
 
-        panel = default;
+        panel = default(PanelGridState);
         return false;
     }
 
