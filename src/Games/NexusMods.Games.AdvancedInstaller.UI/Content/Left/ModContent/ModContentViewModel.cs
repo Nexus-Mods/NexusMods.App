@@ -37,7 +37,7 @@ internal class ModContentViewModel : AViewModel<IModContentViewModel>, IModConte
             .Subscribe();
 
         Tree = TreeDataGridHelpers.CreateTreeSourceWithSingleCustomColumn<ModContentNode, IModContentTreeEntryViewModel, RelativePath>(Root);
-        Root.IsExpanded = true;
+        Root.Item.IsExpanded = true;
     }
 
     #region utility

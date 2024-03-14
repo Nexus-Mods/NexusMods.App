@@ -28,7 +28,7 @@ public class ModInfoViewModel : APageViewModel<IModInfoViewModel>, IModInfoViewM
     public CurrentModInfoSection Section { get; set; }
 
     [Reactive]
-    public IViewModelInterface SectionViewModel { get; set; } = default!;
+    public IViewModelInterface SectionViewModel { get; set; }
 
     private readonly IServiceProvider _serviceProvider;
     private readonly ILoadoutRegistry _registry;
@@ -39,11 +39,16 @@ public class ModInfoViewModel : APageViewModel<IModInfoViewModel>, IModInfoViewM
     {
         _serviceProvider = serviceProvider;
         _registry = registry;
+        SectionViewModel = new DummyLoadingViewModel();
+        
         this.WhenActivated(delegate(CompositeDisposable dp)
         {
             GetWorkspaceController().SetTabTitle(GetModName(out _isInvalid), WorkspaceId, PanelId, TabId);
-            SectionViewModel = !_isInvalid ? new DummyLoadingViewModel() : new DummyErrorViewModel();
-            if (!_isInvalid)
+            if (_isInvalid)
+            {
+                SectionViewModel = new DummyErrorViewModel();
+            }
+            else
             {
                 // TODO: Reduce latency here if possible, by assigning on UI thread
                 //       if the VM is cached.

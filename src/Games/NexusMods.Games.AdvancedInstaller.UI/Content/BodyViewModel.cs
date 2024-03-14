@@ -152,7 +152,7 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
         ModContentViewModel.SelectedEntriesCache.AddOrUpdate(modContentTreeEntryViewModel);
 
         // Expand the node
-        foundNode.Value.IsExpanded = true;
+        foundNode.Value.Item.IsExpanded = true;
 
         // Update the UI to show the SelectLocationViewModel
         CurrentRightContentViewModel = SelectLocationViewModel;
@@ -422,11 +422,11 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
             if (!child.Item.MappedEntries.Any(modEntry =>
                     ModContentViewModel.Root.GetTreeNode(modEntry.RelativePath).ValueOrDefault() is
                     {
-                        IsExpanded: true
+                        Item.IsExpanded: true,
                     })) continue;
 
             // At least one of the mapped entries is expanded in the modContent tree, so we expand this node as well.
-            child.IsExpanded = true;
+            child.Item.IsExpanded = true;
             ExpandPreviewNodesToMatchModContent(child);
         }
     }
@@ -441,11 +441,11 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
         if (previewNode is null)
             return;
 
-        previewNode.IsExpanded = true;
+        previewNode.Item.IsExpanded = true;
 
         while (previewNode.Parent.HasValue)
         {
-            previewNode.Parent.Value.IsExpanded = true;
+            previewNode.Parent.Value.Item.IsExpanded = true;
             previewNode = previewNode.Parent.Value;
         }
     }
@@ -857,7 +857,7 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
         foundNode.Item.InputText = string.Empty;
 
         // Expand the new node
-        SelectLocationViewModel.TreeRoots.GetTreeNode(newPath).Value.IsExpanded = true;
+        SelectLocationViewModel.TreeRoots.GetTreeNode(newPath).Value.Item.IsExpanded = true;
     }
 
     /// <summary>
