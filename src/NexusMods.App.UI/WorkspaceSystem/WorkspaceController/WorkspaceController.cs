@@ -88,8 +88,7 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
 
         var vm = new WorkspaceViewModel(
             workspaceController: this,
-            factoryController: _pageFactoryController,
-            unregisterFunc: UnregisterWorkspace
+            factoryController: _pageFactoryController
         )
         {
             Context = context.HasValue ? context.Value : EmptyContext.Instance,
@@ -116,6 +115,8 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
 
     private void UnregisterWorkspace(WorkspaceViewModel workspaceViewModel)
     {
+        //TODO: currently unused, we have no cases where we unregister a workspace
+        // will need this when we support removing loadouts
         Dispatcher.UIThread.VerifyAccess();
 
         _workspaces.Remove(workspaceViewModel.Id);
