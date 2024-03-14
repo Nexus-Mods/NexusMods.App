@@ -68,12 +68,20 @@ internal static class MathUtils
             var yStart = a.Top.IsLessThanOrCloseTo(b.Top) ? a.Top : b.Top;
             var yEnd = a.Bottom.IsGreaterThanOrCloseTo(b.Bottom) ? a.Bottom : b.Bottom;
 
+            x = Math.Min(x, 1.0);
+            yStart = Math.Max(yStart, 0.0);
+            yEnd = Math.Min(yEnd, 1.0);
+
             return (new Point(x, yStart), new Point(x, yEnd));
         }
 
         var y = a.Bottom.IsCloseTo(b.Top) ? a.Bottom : b.Bottom;
         var xStart = a.Left.IsLessThanOrCloseTo(b.Left) ? a.Left : b.Left;
         var xEnd = a.Right.IsGreaterThanOrCloseTo(b.Right) ? a.Right : b.Right;
+
+        y = Math.Min(y, 1.0);
+        xStart = Math.Max(xStart, 0.0);
+        xEnd = Math.Min(xEnd, 1.0);
 
         return (new Point(xStart, y), new Point(xEnd, y));
     }

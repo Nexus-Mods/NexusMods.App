@@ -56,7 +56,7 @@ public partial class GridUtilsTests
         ), [
             new GridUtils.ResizerInfo(new Point(0, 0.6489707475622969), new Point(0.40358467243510504, 0.6489707475622969), true, [firstPanelId, secondPanelId]),
             new GridUtils.ResizerInfo(new Point(0.40358467243510504, 0), new Point(0.40358467243510504, 1), false, [firstPanelId, secondPanelId, thirdPanelId, fourthPanelId]),
-            new GridUtils.ResizerInfo(new Point(0.40358467243510504, 0.38678223185265437), new Point(1.0000000000000007, 0.38678223185265437), true, [thirdPanelId, fourthPanelId]),
+            new GridUtils.ResizerInfo(new Point(0.40358467243510504, 0.38678223185265437), new Point(1, 0.38678223185265437), true, [thirdPanelId, fourthPanelId]),
         ]);
 
         return res;
