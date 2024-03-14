@@ -20,7 +20,10 @@ public static class GridUtils
         foreach (var panelState in gridState)
         {
             var (id, rect) = panelState;
-            if (rect.Left < 0.0 || rect.Right > 1.0 || rect.Top < 0.0 || rect.Bottom > 1.0)
+            if (!rect.Left.IsGreaterThanOrCloseTo(0.0) ||
+                !rect.Right.IsLessThanOrCloseTo(1.0)   ||
+                !rect.Top.IsGreaterThanOrCloseTo(0.0)  ||
+                !rect.Bottom.IsLessThanOrCloseTo(1.0))
             {
                 throw new Exception($"Panel {panelState} is out of bounds");
             }
