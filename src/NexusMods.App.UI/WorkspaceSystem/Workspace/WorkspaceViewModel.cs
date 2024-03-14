@@ -50,8 +50,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
 
     public WorkspaceViewModel(
         IWorkspaceController workspaceController,
-        PageFactoryController factoryController,
-        Action<WorkspaceViewModel> unregisterFunc)
+        PageFactoryController factoryController)
     {
         _workspaceController = workspaceController;
         _factoryController = factoryController;
@@ -213,10 +212,6 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                     }
                 })
                 .SubscribeWithErrorLogging()
-                .DisposeWith(disposables);
-
-            Disposable
-                .Create(this, unregisterFunc.Invoke)
                 .DisposeWith(disposables);
         });
     }
