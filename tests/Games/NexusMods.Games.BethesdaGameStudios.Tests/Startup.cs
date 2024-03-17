@@ -24,6 +24,7 @@ public class Startup
     {
         services
             .AddDefaultServicesForTesting()
+            .AddUniversalGameLocator<Fallout4.Fallout4>(new Version("1.10.163.0"))
             .AddUniversalGameLocator<SkyrimSpecialEdition.SkyrimSpecialEdition>(new Version("1.6.659.0"))
             .AddUniversalGameLocator<SkyrimLegendaryEdition.SkyrimLegendaryEdition>(new Version("1.9.32.0"))
             .AddSingleton<CommandLineConfigurator>()
