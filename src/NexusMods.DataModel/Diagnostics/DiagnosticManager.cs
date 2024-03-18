@@ -1,17 +1,12 @@
-using System.Reactive.Disposables;
-using DynamicData;
+using System.Reactive.Linq;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
-using NexusMods.Abstractions.Diagnostics.References;
+using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Mods;
-using NexusMods.Abstractions.Serialization;
 using NexusMods.DataModel.Extensions;
 using NexusMods.Extensions.BCL;
-using NexusMods.Extensions.DynamicData;
 
 namespace NexusMods.DataModel.Diagnostics;
 
@@ -22,169 +17,55 @@ internal sealed class DiagnosticManager : IDiagnosticManager
     private bool _isDisposed;
 
     private readonly ILogger<DiagnosticManager> _logger;
-    private readonly IDataStore _dataStore;
-    private readonly IOptionsMonitor<DiagnosticOptions> _optionsMonitor;
+    private readonly ILoadoutRegistry _loadoutRegistry;
 
-    private readonly ILoadoutDiagnosticEmitter[] _loadoutDiagnosticEmitters;
-    private readonly IModDiagnosticEmitter[] _modDiagnosticEmitters;
-    private readonly IModFileDiagnosticEmitter[] _modFileDiagnosticEmitters;
-
-    private readonly CompositeDisposable _compositeDisposable;
-    private readonly SourceList<Diagnostic> _diagnosticCache = new();
-
-    /// <summary>
-    /// Constructor.
-    /// </summary>
     public DiagnosticManager(
         ILogger<DiagnosticManager> logger,
-        IDataStore dataStore,
-        IOptionsMonitor<DiagnosticOptions> optionsMonitor,
-        IEnumerable<ILoadoutDiagnosticEmitter> loadoutDiagnosticEmitters,
-        IEnumerable<IModDiagnosticEmitter> modDiagnosticEmitters,
-        IEnumerable<IModFileDiagnosticEmitter> modFileDiagnosticEmitters)
+        ILoadoutRegistry loadoutRegistry)
     {
         _logger = logger;
-        _dataStore = dataStore;
-        _optionsMonitor = optionsMonitor;
+        _loadoutRegistry = loadoutRegistry;
+    }
 
-        _loadoutDiagnosticEmitters = loadoutDiagnosticEmitters.ToArray();
-        _modDiagnosticEmitters = modDiagnosticEmitters.ToArray();
-        _modFileDiagnosticEmitters = modFileDiagnosticEmitters.ToArray();
+    public IObservable<Diagnostic[]> GetLoadoutDiagnostics(LoadoutId loadoutId)
+    {
+        // TODO: cancellation token
+        var cancellationToken = CancellationToken.None;
 
-        _compositeDisposable = new CompositeDisposable();
+        return _loadoutRegistry
+            .RevisionsAsLoadouts(loadoutId)
+            .DistinctUntilChanged(loadout => loadout.DataStoreId)
+            .Throttle(dueTime: TimeSpan.FromMilliseconds(250))
+            .SelectMany(async loadout => await GetLoadoutDiagnostics(loadout, cancellationToken));
+    }
 
-        // Listen to option changes and update the currently existing diagnostics.
-        var disposable = _optionsMonitor.OnChange(newOptions =>
+    private static async Task<Diagnostic[]> GetLoadoutDiagnostics(Loadout loadout, CancellationToken cancellationToken)
+    {
+        var diagnosticEmitters = loadout.Installation.GetGame().DiagnosticEmitters;
+
+        try
         {
-            var filteredDiagnostics = FilterDiagnostics(_diagnosticCache.Items, newOptions);
-            _diagnosticCache.Edit(updater =>
-            {
-                updater.Clear();
-                updater.AddRange(filteredDiagnostics);
-            });
-        });
-
-        if (disposable is not null) _compositeDisposable.Add(disposable);
-    }
-
-    public IObservable<IChangeSet<Diagnostic>> DiagnosticChanges => _diagnosticCache.Connect();
-    public IEnumerable<Diagnostic> ActiveDiagnostics => _diagnosticCache.Items;
-
-    public async ValueTask OnLoadoutChanged(Loadout loadout)
-    {
-        await RefreshLoadoutDiagnostics(loadout);
-        RefreshModDiagnostics(loadout);
-    }
-
-    public void ClearDiagnostics()
-    {
-        _diagnosticCache.Edit(updater => updater.Clear());
-    }
-
-    internal async Task RefreshLoadoutDiagnostics(Loadout loadout)
-    {
-        // Remove outdated diagnostics for previous revisions of the loadout
-        RemoveDiagnostics(kv => kv.DataReferences.Values
-            .OfType<LoadoutReference>()
-            .Any(loadoutReference =>
-                loadoutReference.DataId == loadout.LoadoutId
-                && !Equals(loadoutReference.DataStoreId, loadout.DataStoreId)
-            )
-        );
-
-        var newDiagnostics = await _loadoutDiagnosticEmitters
-            .SelectAsync(async emitter => await emitter.Diagnose(loadout).ToArrayAsync())
-            .ToArrayAsync();
-
-        AddDiagnostics(newDiagnostics.SelectMany(vals => vals));
-    }
-
-    internal void RefreshModDiagnostics(Loadout loadout)
-    {
-        var previousLoadout = loadout.PreviousVersion.Value;
-
-        Mod[] addedMods;
-        if (previousLoadout is not null)
-        {
-            var modChangeSet = loadout.Mods.Diff(previousLoadout.Mods);
-            var removedMods = modChangeSet
-                .Where(change => change.Reason is ChangeReason.Remove or ChangeReason.Update)
-                .Select(change => new ModCursor(loadout.LoadoutId, change.Key))
-                .ToHashSet();
-
-            // Remove outdated diagnostics for mods that have been removed or updated.
-            RemoveDiagnostics(kv => kv.DataReferences.Values
-                .OfType<ModReference>()
-                .Any(modReference => removedMods.Contains(modReference.DataId))
-            );
-
-            // Prepare a collection of new or updated mods.
-            addedMods = modChangeSet
-                .Where(change => change.Reason is ChangeReason.Add or ChangeReason.Update)
-                .Select(change => change.Key)
-                .Select(modId => loadout.Mods[modId])
+            var diagnostics = (
+                    await diagnosticEmitters
+                        .OfType<ILoadoutDiagnosticEmitter>()
+                        .SelectAsync(async emitter => await emitter.Diagnose(loadout, cancellationToken).ToArrayAsync())
+                        .ToArrayAsync()
+                )
+                .SelectMany(arr => arr)
                 .ToArray();
+
+            return diagnostics;
         }
-        else
+        catch (TaskCanceledException)
         {
-            // Every mod is considered to be new if there is no previous loadout revision.
-            addedMods = loadout.Mods
-                .Select(x => x.Value)
-                .ToArray();
+            // ignore
+            return Array.Empty<Diagnostic>();
         }
-
-        // Run the emitters on the added mods.
-        var newDiagnostics = addedMods
-            .SelectMany(mod => _modDiagnosticEmitters
-                .SelectMany(emitter => emitter.Diagnose(loadout, mod))
-            )
-            .ToArray();
-
-        AddDiagnostics(newDiagnostics);
-    }
-
-    internal void RefreshModFileDiagnostics()
-    {
-        // TODO: figure out how to track changes to files (mods and files are "immutable")
-        throw new NotImplementedException();
-    }
-
-    private void RemoveDiagnostics(Func<Diagnostic, bool> predicate)
-    {
-        var toRemove = _diagnosticCache.Items.Where(predicate);
-
-        _diagnosticCache.Edit(updater =>
-        {
-            updater.Remove(toRemove);
-        });
-    }
-
-    private void AddDiagnostics(IEnumerable<Diagnostic> newDiagnostics)
-    {
-        var toAdd = FilterDiagnostics(newDiagnostics, _optionsMonitor.CurrentValue);
-
-        _diagnosticCache.Edit(updater =>
-        {
-            updater.Add(toAdd);
-        });
-    }
-
-    internal static IEnumerable<Diagnostic> FilterDiagnostics(
-        IEnumerable<Diagnostic> diagnostics,
-        DiagnosticOptions options)
-    {
-        return diagnostics
-            .Where(x => x.Severity >= options.MinimumSeverity)
-            .Where(x => !options.IgnoredDiagnostics.Contains(x.Id));
     }
 
     public void Dispose()
     {
         if (_isDisposed) return;
-
-        _diagnosticCache.Dispose();
-        _compositeDisposable.Dispose();
-
         _isDisposed = true;
     }
 }

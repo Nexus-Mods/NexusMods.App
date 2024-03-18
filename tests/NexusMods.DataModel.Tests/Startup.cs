@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.GuidedInstallers;
@@ -11,7 +10,6 @@ using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.Activities;
 using NexusMods.App.BuildInfo;
 using NexusMods.CrossPlatform;
-using NexusMods.DataModel.Tests.Diagnostics;
 using NexusMods.FileExtractor;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators;
@@ -45,13 +43,7 @@ public class Startup
             .AddInstallerTypes()
             .AddCrossPlatform()
             .AddSingleton<ITypeFinder>(_ => new AssemblyTypeFinder(typeof(Startup).Assembly))
-
-            // Diagnostics
-            .AddSingleton<ILoadoutDiagnosticEmitter, DummyLoadoutDiagnosticEmitter>()
-            .AddSingleton<IModDiagnosticEmitter, DummyModDiagnosticEmitter>()
-
             .AddLogging(builder => builder.AddXunitOutput())
-
             .Validate();
     }
 }

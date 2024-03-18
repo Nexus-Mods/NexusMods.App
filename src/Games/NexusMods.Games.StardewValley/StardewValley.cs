@@ -1,5 +1,6 @@
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.GameCapabilities;
 using NexusMods.Abstractions.GameLocators.Stores.GOG;
@@ -10,6 +11,7 @@ using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
+using NexusMods.Games.StardewValley.Emitters;
 using NexusMods.Games.StardewValley.Installers;
 using NexusMods.Paths;
 
@@ -97,6 +99,11 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
         SMAPIModInstaller.Create(_serviceProvider),
     };
 
-    public override List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations)
-        => ModInstallDestinationHelpers.GetCommonLocations(locations);
+    public override IDiagnosticEmitter[] DiagnosticEmitters =>
+    [
+        _serviceProvider.GetRequiredService<DependencyDiagnosticEmitter>(),
+        _serviceProvider.GetRequiredService<MissingSMAPIEmitter>(),
+    ];
+
+    public override List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations) => ModInstallDestinationHelpers.GetCommonLocations(locations);
 }

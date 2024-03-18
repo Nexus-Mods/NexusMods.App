@@ -25,12 +25,12 @@ internal static class Interop
         return manifest;
     }
 
-    public static async ValueTask<Manifest?> GetManifest(IFileStore fileStore, Mod mod)
+    public static async ValueTask<Manifest?> GetManifest(IFileStore fileStore, Mod mod, CancellationToken cancellationToken = default)
     {
         var manifestFile = mod.Files.Values.FirstOrDefault(f => f.HasMetadata<SMAPIManifestMetadata>());
         if (manifestFile is not StoredFile storedFile) return null;
 
-        await using var stream = await fileStore.GetFileStream(storedFile.Hash);
+        await using var stream = await fileStore.GetFileStream(storedFile.Hash, cancellationToken);
         return await DeserializeManifest(stream);
     }
 }

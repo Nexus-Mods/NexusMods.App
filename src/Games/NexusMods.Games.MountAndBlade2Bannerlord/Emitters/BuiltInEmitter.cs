@@ -1,4 +1,5 @@
-﻿using Bannerlord.LauncherManager;
+﻿using System.Runtime.CompilerServices;
+using Bannerlord.LauncherManager;
 using Bannerlord.LauncherManager.Localization;
 using Bannerlord.ModuleManager;
 using NexusMods.Abstractions.Diagnostics;
@@ -15,7 +16,7 @@ public class BuiltInEmitter : ILoadoutDiagnosticEmitter
 {
     internal const string Source = "NexusMods.Games.MountAndBlade2Bannerlord";
 
-    public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout loadout)
+    public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         await Task.Yield();
 
