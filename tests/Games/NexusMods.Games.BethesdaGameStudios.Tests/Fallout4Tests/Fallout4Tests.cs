@@ -37,29 +37,28 @@ public class Fallout4Tests(IServiceProvider serviceProvider) : AGameTest<Fallout
 
         // install f4se
         var uri = $"nxm://{Game.Domain}/mods/{f4seModId}/files/{f4seFileId}";
-        log = await _verbTester.Run("download-and-install-mod", "-u", uri, "-l", loadoutName, "-n", f4seModName);
+        await _verbTester.Run("download-and-install-mod", "-u", uri, "-l", loadoutName, "-n", f4seModName);
         
-        // log = await _verbTester.Run("list-mods", "-l", loadoutName);
-        // log.LastTable.Rows.Should().HaveCount(?);
-        //
-        // log = await _verbTester.Run("list-mod-contents", "-l", loadoutName, "-n", f4seModName);
-        // log.LastTable.Rows.Should().HaveCount(?);
-        //
-        // // install ufo4p
-        // uri = $"nxm://{Game.Domain}/mods/{ufo4pModId}/files/{ufo4pFileId}";
-        // log = await _verbTester.Run("download-and-install-mod", "-u", uri, "-l", loadoutName, "-n", ufo4pModName);
-        //
-        // log = await _verbTester.Run("list-mods", "-l", loadoutName);
-        // log.LastTable.Rows.Should().HaveCount(?);
-        //
-        // log = await _verbTester.Run("list-mod-contents", "-l", loadoutName, "-n", ufo4pModName);
-        // log.LastTable.Rows.Should().HaveCount(?);
-        //
-        // // Test Apply
-        // log = await _verbTester.Run("flatten-list", "-l", loadoutName);
-        // // count plugins.txt
-        // log.LastTable.Rows.Should().HaveCount(?);
-        //
-        // log = await _verbTester.Run("apply", "-l", loadoutName, "-r", "false");
+        log = await _verbTester.Run("list-mods", "-l", loadoutName);
+        log.LastTable.Rows.Should().HaveCount(3);
+        
+        log = await _verbTester.Run("list-mod-contents", "-l", loadoutName, "-m", f4seModName);
+        log.LastTable.Rows.Should().HaveCount(64);
+        
+        // install ufo4p
+        uri = $"nxm://{Game.Domain}/mods/{ufo4pModId}/files/{ufo4pFileId}";
+        await _verbTester.Run("download-and-install-mod", "-u", uri, "-l", loadoutName, "-n", ufo4pModName);
+
+        log = await _verbTester.Run("list-mods", "-l", loadoutName);
+        log.LastTable.Rows.Should().HaveCount(4);
+
+        log = await _verbTester.Run("list-mod-contents", "-l", loadoutName, "-m", ufo4pModName);
+        log.LastTable.Rows.Should().HaveCount(6);
+
+        // Test Apply
+        log = await _verbTester.Run("flatten-loadout", "-l", loadoutName);
+        // count plugins.txt
+        log.LastTable.Rows.Should().HaveCount(71);
+        await _verbTester.Run("apply", "-l", loadoutName);
     }
 }
