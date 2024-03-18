@@ -21,7 +21,8 @@ public record Diagnostic
     /// Gets the title of the diagnostic.
     /// </summary>
     /// <remarks>
-    /// This must not contain any fields.
+    /// This must not contain any fields. This differs from <see cref="Summary"/>
+    /// in that it describes the type of diagnostic, similar to <see cref="Id"/>.
     /// </remarks>
     public required string Title { get; init; }
 
