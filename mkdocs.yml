@@ -100,6 +100,7 @@ nav:
       - '05: Skyrim LE': games/0005-SkyrimLE.md
       - '06: Blade And Sorcery': games/0006-BladeAndSorcery.md
       - '07: Bannerlord': games/0007-Bannerlord.md
+      - '08: Fallout 4': games/0008-Fallout4.md
   - Misc:
       - About Fomod: misc/AboutFomod.md
       - Comparison of File Management Systems: misc/ComparisonOfFileManagementSystems.md
