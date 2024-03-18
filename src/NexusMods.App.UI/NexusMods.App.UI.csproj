@@ -77,6 +77,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.App.Settings\NexusMods.Abstractions.App.Settings.csproj" />
+        <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Games.Diagnostics\NexusMods.Abstractions.Games.Diagnostics.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.GuidedInstallers\NexusMods.Abstractions.GuidedInstallers.csproj" />
         <ProjectReference Include="..\Extensions\NexusMods.Extensions.DynamicData\NexusMods.Extensions.DynamicData.csproj" />
         <ProjectReference Include="..\Networking\NexusMods.Networking.Downloaders\NexusMods.Networking.Downloaders.csproj" />
@@ -440,6 +441,9 @@
         <Compile Update="Controls\ModInfo\ModFiles\ModFilesViewModel.cs">
           <DependentUpon>IModFilesViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Controls\Diagnostics\DiagnosticEntryViewModel.cs">
+          <DependentUpon>IDiagnosticEntryViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
@@ -475,5 +479,9 @@
         <Generator>PublicResXFileCodeGenerator</Generator>
         <LastGenOutput>Language.Designer.cs</LastGenOutput>
       </EmbeddedResource>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Pages\Diagnostics\" />
     </ItemGroup>
 </Project>
