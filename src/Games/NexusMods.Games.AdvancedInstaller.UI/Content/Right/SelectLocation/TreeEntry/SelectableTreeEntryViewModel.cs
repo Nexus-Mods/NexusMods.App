@@ -16,6 +16,7 @@ public class SelectableTreeEntryViewModel : AViewModel<ISelectableTreeEntryViewM
     public string DisplayName { get; }
     [Reactive] public string InputText { get; set; }
     [Reactive] private bool CanSave { get; set; }
+    [Reactive] public bool IsExpanded { get; set; }
     public bool IsRoot { get; }
     public GamePath Parent { get; }
     [Reactive] public SelectableDirectoryNodeStatus Status { get; set; }

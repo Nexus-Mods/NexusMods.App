@@ -28,14 +28,23 @@ public class PageFactoryController
     }
 
     /// <summary>
+    /// Returns the factory associated with the given ID.
+    /// </summary>
+    /// <exception cref="KeyNotFoundException">Thrown when there is no registered factory with ID <see cref="PageData.FactoryId"/></exception>
+    public IPageFactory GetFactory(PageData pageData)
+    {
+        if (!_factories.TryGetValue(pageData.FactoryId, out var factory))
+            throw new KeyNotFoundException($"Unable to find registered factory with ID {pageData.FactoryId}");
+        return factory;
+    }
+
+    /// <summary>
     /// Uses the factory with ID <see cref="PageData.FactoryId"/> to create a new page.
     /// </summary>
     /// <exception cref="KeyNotFoundException">Thrown when there is no registered factory with ID <see cref="PageData.FactoryId"/></exception>
     public Page Create(PageData pageData, WindowId windowId, WorkspaceId workspaceId, PanelId panelId, Optional<PanelTabId> tabId)
     {
-        if (!_factories.TryGetValue(pageData.FactoryId, out var factory))
-            throw new KeyNotFoundException($"Unable to find registered factory with ID {pageData.FactoryId}");
-
+        var factory = GetFactory(pageData);
         var page = factory.Create(pageData.Context);
         page.ViewModel.WindowId = windowId;
         page.ViewModel.WorkspaceId = workspaceId;

@@ -46,8 +46,7 @@ public class SMAPIModInstallerTests : AModInstallerTest<StardewValley, SMAPIModI
         var downloadId = await DownloadMod(GameInstallation.Game.Domain, ModId.From(239), FileId.From(68865));
 
         var mod = await InstallModStoredFileIntoLoadout(loadout, downloadId);
-        mod.Files.Should().NotBeEmpty();
-        mod.Files.Values.Cast<IToFile>().Should().AllSatisfy(kv => kv.To.Path.StartsWith("Mods/NPCMapLocations").Should().BeTrue());
+        await VerifyMod(mod);
     }
 
     [Fact]
@@ -61,18 +60,6 @@ public class SMAPIModInstallerTests : AModInstallerTest<StardewValley, SMAPIModI
 
         // var mods = await GetModsFromInstaller(path);
         var mods = await InstallModsStoredFileIntoLoadout(loadout, downloadId);
-        mods
-            .Should().HaveCount(3)
-            .And.AllSatisfy(x =>
-            {
-                x.Metadata.Should().BeOfType<GroupMetadata>();
-                x.Version.Should().Be("1.0.5");
-            })
-            .And.Satisfy(
-                x => x.Name == "Raised Garden Beds",
-                x => x.Name == "[CP] Raised Garden Beds Translation: English",
-                x => x.Name == "[RGB] Raised Garden Beds"
-            );
-
+        await VerifyMods(mods);
     }
 }

@@ -5,7 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
-    xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+    xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI"
     xmlns:resources="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Resources"
     xmlns:ui="clr-namespace:NexusMods.Games.AdvancedInstaller.UI"
     mc:Ignorable="d" d:DesignWidth="1184" d:DesignHeight="492"
@@ -30,9 +30,9 @@
                 <Setter Property="Margin" Value="0,16,0,0" />
             </Style>
 
-            <Style Selector="icons|Icon.CentralIcon">
+            <Style Selector="unifiedIcon|UnifiedIcon.CentralIcon">
                 <Setter Property="Margin" Value="16,0,16,0" />
-                <Setter Property="FontSize" Value="24" />
+                <Setter Property="Size" Value="24" />
             </Style>
 
             <Style Selector="Border#ModContentBorder">
@@ -61,17 +61,15 @@
         <Border Grid.Row="1" x:Name="BodyContainerBorder">
             <Grid ColumnDefinitions="*, Auto, *" x:Name="CentralGrid">
                 <!-- Mod Content -->
-                <Border Classes="Rounded Mid" Grid.Column="0" x:Name="ModContentBorder">
-                    <ScrollViewer x:Name="ModContentScrollViewer">
-                        <reactiveUi:ViewModelViewHost x:Name="ModContentSectionViewHost" />
-                    </ScrollViewer>
+                <Border Classes="Rounded-lg Mid" Grid.Column="0" x:Name="ModContentBorder">
+                    <reactiveUi:ViewModelViewHost x:Name="ModContentSectionViewHost" />
                 </Border>
 
                 <!-- Arrow to Install Location Preview -->
-                <icons:Icon Classes="Play ForegroundSubdued CentralIcon" Grid.Column="1" x:Name="PlayArrowIcon" />
+                <unifiedIcon:UnifiedIcon Classes="Play ForegroundSubdued CentralIcon" Grid.Column="1" x:Name="PlayArrowIcon" />
 
                 <!-- Install Location Preview -->
-                <Border Classes="Rounded" Grid.Column="2" x:Name="ResultsBorder">
+                <Border Classes="Rounded-lg" Grid.Column="2" x:Name="ResultsBorder">
                     <reactiveUi:ViewModelViewHost x:Name="PreviewSectionViewHost" />
                 </Border>
             </Grid>

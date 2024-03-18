@@ -39,7 +39,7 @@ public class BuiltInEmitterTests : ALoadoutDiagnosticEmitterTest<MountAndBlade2B
 
         var diagnostic = await GetSingleDiagnostic(loadoutMarker.Value);
         diagnostic.Id.Should().Be(new DiagnosticId(BuiltInEmitter.Source, (ushort) ModuleIssueType.MissingDependencies));
-        diagnostic.DataReferences.Should().Equal(
+        diagnostic.DataReferences.Values.Should().Equal(
             loadoutMarker.Value.ToReference(),
             modA.ToReference(loadoutMarker.Value)
         );

@@ -1,7 +1,7 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:ui="clr-namespace:NexusMods.App.UI.Controls.TopBar;assembly=NexusMods.App.UI"
-        xmlns:icons="https://github.com/projektanker/icons.avalonia">
+        xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI">
     <Design.PreviewWith>
         <Border Width="720" Height="56">
             <ui:TopBarView />
@@ -12,18 +12,18 @@
     <Style Selector="ui|TopBarView">
 
         <Style Selector="^ Border#SearchBoxBorder">
-            <Setter Property="BorderBrush" Value="{StaticResource ElementStrokeTranslucentWeakBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
         </Style>
 
         <Style Selector="^ Border#SearchBoxBorder">
-            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
 
             <Style Selector="^ TextBlock">
-                <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralWeakBrush}" />
+                <Setter Property="Foreground" Value="{StaticResource NeutralWeakBrush}" />
             </Style>
 
-            <Style Selector="^ icons|Icon">
-                <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralWeakBrush}" />
+            <Style Selector="^ unifiedIcon|UnifiedIcon">
+                <Setter Property="Foreground" Value="{StaticResource NeutralWeakBrush}" />
             </Style>
         </Style>
 

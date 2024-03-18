@@ -22,6 +22,7 @@ public class ModContentTreeEntryViewModel : AViewModel<IModContentTreeEntryViewM
     public ReactiveCommand<Unit, Unit> BeginSelectCommand { get; }
     public ReactiveCommand<Unit, Unit> CancelSelectCommand { get; }
     public ReactiveCommand<Unit, Unit> RemoveMappingCommand { get; }
+    [Reactive] public bool IsExpanded { get; set; }
 
     /// <summary>
     /// Constructs a ModContent tree entry view model.

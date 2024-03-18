@@ -18,13 +18,15 @@ public class DummyModDiagnosticEmitter : IModDiagnosticEmitter
         yield return new Diagnostic
         {
             Id = new DiagnosticId("NexusMods.DataModels.Tests.Diagnostics.DummyModDiagnosticEmitter", 1),
+            Title = "Dummy",
             Severity = DiagnosticSeverity.Critical,
-            Message = CreateMessage(loadout, mod),
-            DataReferences = new IDataReference[]
+            Summary = CreateMessage(loadout, mod),
+            Details = DiagnosticMessage.DefaultValue,
+            DataReferences = new Dictionary<DataReferenceDescription, IDataReference>
             {
-                loadout.ToReference(),
-                mod.ToReference(loadout)
-            }
+                { DataReferenceDescription.Loadout, loadout.ToReference() },
+                { DataReferenceDescription.Mod, mod.ToReference(loadout) },
+            },
         };
     }
 }

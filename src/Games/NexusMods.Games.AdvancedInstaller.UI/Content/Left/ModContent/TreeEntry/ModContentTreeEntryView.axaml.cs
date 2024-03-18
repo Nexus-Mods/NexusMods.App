@@ -56,6 +56,7 @@ public partial class
     {
         if (vm.IsRoot)
         {
+            EntryIcon.IsVisible = false;
             MakeTextBlockBold();
             FileNameTextBlock.Text = Language.TreeEntryView_FileNameTextBlock_All_mod_files;
             InstallRoundedButtonTextBlock.Text = Language.TreeEntryView_InstallRoundedButtonTextBlock_Install_all;
@@ -66,14 +67,14 @@ public partial class
 
             if (vm.IsDirectory)
             {
-                FolderEntryIcon.IsVisible = true;
+                EntryIcon.Classes.Add("FolderOutline");
                 MakeTextBlockBold();
                 InstallRoundedButtonTextBlock.Text =
                     Language.TreeEntryView_InstallRoundedButtonTextBlock_Install_folder;
             }
             else
             {
-                FileEntryIcon.IsVisible = true;
+                EntryIcon.Classes.Add("File");
                 InstallRoundedButtonTextBlock.Text = Language.TreeEntryView_InstallRoundedButtonTextBlock_Install;
             }
         }

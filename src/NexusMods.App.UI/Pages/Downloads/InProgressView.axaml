@@ -5,7 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
-    xmlns:avalonia="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+    xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
     xmlns:downloads="clr-namespace:NexusMods.App.UI.Pages.Downloads"
     mc:Ignorable="d" d:DesignWidth="920" d:DesignHeight="664"
@@ -20,39 +20,39 @@
                 <StackPanel Grid.Column="1">
                     <Button x:Name="CancelButton">
                         <StackPanel>
-                            <avalonia:Icon Classes="RemoveCircleOutline" />
+                            <unifiedIcon:UnifiedIcon Classes="RemoveCircleOutline" />
                             <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Cancel}"/>
                         </StackPanel>
                     </Button>
                     <Button x:Name="PauseButton">
                         <StackPanel>
-                            <avalonia:Icon Classes="PauseCircleOutline" />
+                            <unifiedIcon:UnifiedIcon Classes="PauseCircleOutline" />
                             <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Pause}"/>
                         </StackPanel>
                     </Button>
                     <Button x:Name="ResumeButton">
                         <StackPanel>
-                            <avalonia:Icon Classes="PlayCircleOutline" />
+                            <unifiedIcon:UnifiedIcon Classes="PlayCircleOutline" />
                             <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Resume}"/>
                         </StackPanel>
                     </Button>
                     <Line />
                     <Button x:Name="ResumeAllButton">
                         <StackPanel>
-                            <avalonia:Icon Classes="PlayCircleFilled" />
+                            <unifiedIcon:UnifiedIcon Classes="PlayCircleFilled" />
                             <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Resume_All}"/>
                         </StackPanel>
                     </Button>
                     <Button x:Name="PauseAllButton">
                         <StackPanel>
-                            <avalonia:Icon Classes="PauseCircleFilled" />
+                            <unifiedIcon:UnifiedIcon Classes="PauseCircleFilled" />
                             <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Pause_All}"/>
                         </StackPanel>
                     </Button>
                     <Line />
                     <Button x:Name="SettingsButton">
                         <StackPanel>
-                            <avalonia:Icon Classes="Cog" />
+                            <unifiedIcon:UnifiedIcon Classes="Cog" />
                         </StackPanel>
                     </Button>
                 </StackPanel>

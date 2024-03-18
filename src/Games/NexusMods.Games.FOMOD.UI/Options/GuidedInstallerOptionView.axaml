@@ -5,7 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="clr-namespace:NexusMods.Games.FOMOD.UI"
-    xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+    xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI"
     mc:Ignorable="d" d:DesignWidth="544" d:DesignHeight="44"
     x:Class="NexusMods.Games.FOMOD.UI.GuidedInstallerOptionView">
 
@@ -23,9 +23,9 @@
                 <Grid ColumnDefinitions="*,Auto,Auto">
                     <TextBlock Grid.Column="0" Classes="BodyMDNormal" x:Name="OptionNameTextBlock"
                                VerticalAlignment="Center" />
-                    <icons:Icon Classes="Image" IsVisible="False" Grid.Column="1" x:Name="ImageIcon"
+                    <unifiedIcon:UnifiedIcon Classes="Image" IsVisible="False" Grid.Column="1" x:Name="ImageIcon"
                                 VerticalAlignment="Center" />
-                    <icons:Icon Classes="Description" IsVisible="False" Grid.Column="2" x:Name="DescriptionIcon"
+                    <unifiedIcon:UnifiedIcon Classes="Description" IsVisible="False" Grid.Column="2" x:Name="DescriptionIcon"
                                 VerticalAlignment="Center" />
                 </Grid>
             </Border>

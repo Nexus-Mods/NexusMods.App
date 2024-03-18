@@ -18,8 +18,7 @@ namespace NexusMods.App;
 public class Program
 {
     private static ILogger<Program> _logger = default!;
-
-    
+  
     [STAThread]
     public static int Main(string[] args)
     {

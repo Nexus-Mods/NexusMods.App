@@ -4,23 +4,21 @@
     mc:Ignorable="d"
     x:Class="NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModEnabled.ModEnabledHeader"
     xmlns="https://github.com/avaloniaui"
-    xmlns:avalonia="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+    xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Grid>
-        <avalonia:Icon
-            FontSize="18"
-            Height="24"
+    <Grid Width="24" Margin="8, 0, 8, 0">
+        <unifiedIcon:UnifiedIcon
+            Size="18"
             Margin="0,-10,0,0"
             Classes="ToggleSwitch"
-            Width="24" />
-        <avalonia:Icon
-            FontSize="18"
-            Height="24"
+            HorizontalAlignment="Center" />
+        <unifiedIcon:UnifiedIcon
+            Size="18"
             Margin="0,10,0,0"
             Classes="ToggleSwitchOff"
-            Width="24" />
+            HorizontalAlignment="Center" />
     </Grid>
 </UserControl>
 

@@ -2,7 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:ui="clr-namespace:NexusMods.App.UI.Controls.GameWidget;assembly=NexusMods.App.UI"
         xmlns:extensions="clr-namespace:NexusMods.Themes.NexusFluentDark.Extensions"
-        xmlns:icons="https://github.com/projektanker/icons.avalonia">
+        xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI">
     <Design.PreviewWith>
         <Border Classes="Mid" Padding="20">
             <ui:GameWidget>
@@ -15,7 +15,7 @@
         <Setter Property="ClipToBounds" Value="False" />
 
         <Style Selector="^ > Border">
-            <Setter Property="CornerRadius" Value="25" />
+            <Setter Property="CornerRadius" Value="{StaticResource Rounded-3xl}" />
             <Setter Property="BoxShadow">
                 <extensions:BoxShadow
                     BlurRadius="5" ShadowColor="{StaticResource BrandTranslucentDark500}"
@@ -25,7 +25,7 @@
         </Style>
 
         <Style Selector="^ Border.MainBorder">
-            <Setter Property="CornerRadius" Value="25" />
+            <Setter Property="CornerRadius" Value="{StaticResource Rounded-3xl}" />
             <Setter Property="ClipToBounds" Value="True" />
         </Style>
 
@@ -36,12 +36,12 @@
         </Style>
 
         <Style Selector="^ Border#SeparationLine">
-            <Setter Property="BorderBrush" Value="{StaticResource ElementStrokeTranslucentWeakBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
         </Style>
 
-        <Style Selector="^ Button.FirstButton icons|Icon">
-            <Setter Property="FontSize" Value="20" />
-            <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralStrongBrush}" />
+        <Style Selector="^ Button.FirstButton unifiedIcon|UnifiedIcon">
+            <Setter Property="Size" Value="20" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
         </Style>
 
         <Style Selector="^ Image#GameImage">

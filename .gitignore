@@ -1,4 +1,4 @@
-﻿# Common IntelliJ Platform excludes
+# Common IntelliJ Platform excludes
 
 # User specific
 **/.idea/**/workspace.xml
@@ -39,3 +39,6 @@ coverage.json
 
 # Verify
 *.received.*
+
+# python virtual environment
+.venv

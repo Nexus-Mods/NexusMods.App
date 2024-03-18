@@ -3,7 +3,7 @@
 
     <!-- Preview -->
     <Design.PreviewWith>
-        <StackPanel Width="200" Spacing="8" Margin="10">
+        <StackPanel Width="200" Classes="Spacing-2" Margin="10">
             <TextBlock Text="DownloadBar" TextAlignment="Center" />
             <ProgressBar Classes="DownloadBar" Minimum="0" Maximum="1" />
             <ProgressBar Classes="DownloadBar" Minimum="0" Maximum="1" Value="0.75" />
@@ -31,23 +31,23 @@
     <Style Selector="ProgressBar.DownloadBar">
         <Setter Property="ShowProgressText" Value="True" />
         <Setter Property="Height" Value="24" />
-        <Setter Property="Foreground" Value="{StaticResource ElementForegroundInfoWeakBrush}" />
+        <Setter Property="Foreground" Value="{StaticResource InfoWeakBrush}" />
         <Setter Property="Background">
-            <SolidColorBrush Color="{StaticResource ElementForegroundInfoWeak}"
+            <SolidColorBrush Color="{StaticResource InfoWeak}"
                              Opacity="{StaticResource OpacitySubdued}" />
         </Setter>
 
-        <Setter Property="CornerRadius" Value="2" />
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-sm}" />
 
         <Style Selector="^ /template/ Border#PART_Indicator">
-            <Setter Property="CornerRadius" Value="0" />
+            <Setter Property="CornerRadius" Value="{StaticResource Rounded-none}" />
         </Style>
 
         <Setter Property="MinWidth" Value="100" />
 
         <Style Selector="^.DisabledDownloadBar">
-            <Setter Property="Background" Value="{StaticResource ElementBackgroundNeutralMidBrush}" />
-            <Setter Property="Foreground" Value="{StaticResource ElementBackgroundNeutralTopBrush}" />
+            <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource SurfaceTopBrush}" />
         </Style>
 
         <Style Selector="^ TextBlock">
@@ -71,9 +71,9 @@
     <Style Selector="ProgressBar.LaunchButton">
         <Setter Property="ShowProgressText" Value="True" />
         <Setter Property="Height" Value="34" />
-        <Setter Property="Foreground" Value="{StaticResource ElementForegroundPrimaryModerateBrush}" />
+        <Setter Property="Foreground" Value="{StaticResource PrimaryModerateBrush}" />
         <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="BorderBrush" Value="{StaticResource ElementForegroundPrimaryModerateBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource PrimaryModerateBrush}" />
         <Setter Property="MinWidth" Value="100" />
 
         <Style Selector="^ TextBlock">
@@ -85,8 +85,8 @@
     <Style Selector="ProgressBar.Stepper">
         <Setter Property="ShowProgressText" Value="False" />
         <Setter Property="Height" Value="16" />
-        <Setter Property="Foreground" Value="{StaticResource ElementForegroundPrimaryModerateBrush}" />
-        <Setter Property="CornerRadius" Value="45" />
+        <Setter Property="Foreground" Value="{StaticResource PrimaryModerateBrush}" />
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-full}" />
     </Style>
 
 

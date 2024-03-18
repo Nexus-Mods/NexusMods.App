@@ -1,6 +1,9 @@
 using System.Collections.ObjectModel;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Kernel;
+using NexusMods.App.UI.Helpers;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -14,15 +17,15 @@ namespace NexusMods.App.UI;
 /// <typeparam name="TItem">The type of the items in the original flat list</typeparam>
 /// <typeparam name="TKey">The type of the Key for the items</typeparam>
 public class TreeNodeVM<TItem, TKey> : ReactiveObject, IActivatableViewModel
-    where TItem : class, IViewModelInterface where TKey : notnull
+    where TItem : class, IViewModelInterface, IExpandableItem where TKey : notnull
 {
-    private readonly ReadOnlyObservableCollection<TreeNodeVM<TItem, TKey>> _children;
+    private readonly Lazy<ReadOnlyObservableCollection<TreeNodeVM<TItem, TKey>>> _children;
 
     /// <summary>
     /// Collection of child nodes.
     /// This is an observable collection so that the UI can be notified of changes to the tree structure.
     /// </summary>
-    public ReadOnlyObservableCollection<TreeNodeVM<TItem, TKey>> Children => _children;
+    public ReadOnlyObservableCollection<TreeNodeVM<TItem, TKey>> Children => _children.Value;
 
     /// <summary>
     /// Reference to the original item of type <see cref="TItem"/> in the flat list.
@@ -41,10 +44,17 @@ public class TreeNodeVM<TItem, TKey> : ReactiveObject, IActivatableViewModel
     public Optional<TreeNodeVM<TItem, TKey>> Parent { get; }
 
     /// <summary>
-    /// Whether the node is expanded in the UI.
+    ///     A wrapper around the inner reactive <see cref="Item"/>'s IsExpanded property.
     /// </summary>
-    [Reactive]
-    public bool IsExpanded { get; set; }
+    /// <remarks>
+    ///     This exists due to binding shenanigans with TreeDataGrid, it uses the
+    ///     Avalonia binding system, and we can't bind to the inner item's IsExpanded property directly.
+    /// </remarks>
+    public bool IsExpanded
+    {
+        get => Item.IsExpanded;
+        set => Item.IsExpanded = value;
+    }
 
     /// <summary>
     /// Creates a new <see cref="TreeNodeVM{TItem,TKey}"/> from a <see cref="Node{TItem,TKey}"/>.
@@ -57,12 +67,24 @@ public class TreeNodeVM<TItem, TKey> : ReactiveObject, IActivatableViewModel
         Item = node.Item;
         Id = node.Key;
         Parent = parent;
+        
+        this.WhenActivated(d =>
+        {
+            // re-broadcast 'PropertyChanged' event from the inner item.
+            Item.WhenAnyValue(x => x.IsExpanded)
+                .Subscribe(_ => this.RaisePropertyChanged(nameof(IsExpanded)))
+                .DisposeWith(d);
+        });
 
-        node.Children
-            .Connect()
-            .Transform(child => new TreeNodeVM<TItem, TKey>(child, this))
-            .Bind(out _children)
-            .Subscribe();
+        _children = new Lazy<ReadOnlyObservableCollection<TreeNodeVM<TItem, TKey>>>(() =>
+        {
+            node.Children
+                .Connect()
+                .Transform(child => new TreeNodeVM<TItem, TKey>(child, this))
+                .Bind(out var children)
+                .Subscribe();
+            return children;
+        });
     }
 
     /// <summary>
@@ -74,8 +96,7 @@ public class TreeNodeVM<TItem, TKey> : ReactiveObject, IActivatableViewModel
     {
         Item = item;
         Id = id;
-        _children = new ReadOnlyObservableCollection<TreeNodeVM<TItem, TKey>>(
-            new ObservableCollection<TreeNodeVM<TItem, TKey>>());
+        _children = new Lazy<ReadOnlyObservableCollection<TreeNodeVM<TItem, TKey>>>(new ReadOnlyObservableCollection<TreeNodeVM<TItem, TKey>>([]));
     }
 
     /// <summary>

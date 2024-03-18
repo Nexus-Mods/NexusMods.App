@@ -1,10 +1,12 @@
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.Abstractions.Serialization.Json;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.Controls.DevelopmentBuildBanner;
+using NexusMods.App.UI.Controls.Diagnostics;
 using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadGameName;
 using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadName;
 using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadSize;
@@ -12,11 +14,16 @@ using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadStatus;
 using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadVersion;
 using NexusMods.App.UI.Controls.FoundGames;
 using NexusMods.App.UI.Controls.GameWidget;
+using NexusMods.App.UI.Controls.ModInfo.Error;
+using NexusMods.App.UI.Controls.ModInfo.Loading;
+using NexusMods.App.UI.Controls.ModInfo.ModFiles;
 using NexusMods.App.UI.Controls.Spine;
 using NexusMods.App.UI.Controls.Spine.Buttons.Download;
 using NexusMods.App.UI.Controls.Spine.Buttons.Icon;
 using NexusMods.App.UI.Controls.Spine.Buttons.Image;
 using NexusMods.App.UI.Controls.TopBar;
+using NexusMods.App.UI.Controls.Trees.Files;
+using NexusMods.App.UI.DiagnosticSystem;
 using NexusMods.App.UI.LeftMenu;
 using NexusMods.App.UI.LeftMenu.Downloads;
 using NexusMods.App.UI.LeftMenu.Home;
@@ -35,6 +42,7 @@ using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModEnabled;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModInstalled;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModName;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModVersion;
+using NexusMods.App.UI.Pages.ModInfo;
 using NexusMods.App.UI.Pages.MyGames;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceAttachments;
@@ -48,6 +56,7 @@ using DownloadStatusView = NexusMods.App.UI.Controls.DownloadGrid.Columns.Downlo
 using DownloadVersionView = NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadVersion.DownloadVersionView;
 using FoundGamesView = NexusMods.App.UI.Controls.FoundGames.FoundGamesView;
 using ImageButton = NexusMods.App.UI.Controls.Spine.Buttons.Image.ImageButton;
+using LoadingView = NexusMods.App.UI.Controls.ModInfo.Loading.LoadingView;
 using ModCategoryView = NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModCategory.ModCategoryView;
 using ModEnabledView = NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModEnabled.ModEnabledView;
 using ModInstalledView = NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModInstalled.ModInstalledView;
@@ -99,6 +108,7 @@ public static class Services
             .AddViewModel<ImageButtonViewModel, IImageButtonViewModel>()
             .AddViewModel<InProgressViewModel, IInProgressViewModel>()
             .AddViewModel<LaunchButtonViewModel, ILaunchButtonViewModel>()
+            .AddViewModel<ApplyControlViewModel, IApplyControlViewModel>()
             .AddViewModel<LoadoutGridViewModel, ILoadoutGridViewModel>()
             .AddViewModel<ModCategoryViewModel, IModCategoryViewModel>()
             .AddViewModel<ModEnabledViewModel, IModEnabledViewModel>()
@@ -120,6 +130,11 @@ public static class Services
             .AddViewModel<MetricsOptInViewModel, IMetricsOptInViewModel>()
             .AddViewModel<UpdaterViewModel, IUpdaterViewModel>()
             .AddViewModel<LoadoutLeftMenuViewModel, ILoadoutLeftMenuViewModel>()
+            .AddViewModel<ModFilesViewModel, IModFilesViewModel>()
+            .AddViewModel<ModInfoViewModel, IModInfoViewModel>()
+            .AddViewModel<FileTreeNodeViewModel, IFileTreeNodeViewModel>()
+            .AddViewModel<DummyLoadingViewModel, ILoadingViewModel>()
+            .AddViewModel<DummyErrorViewModel, IErrorViewModel>()
 
             // Views
             .AddView<DevelopmentBuildBannerView, IDevelopmentBuildBannerViewModel>()
@@ -154,6 +169,13 @@ public static class Services
             .AddView<MessageBoxOkCancelView, IMessageBoxOkCancelViewModel>()
             .AddView<UpdaterView, IUpdaterViewModel>()
             .AddView<LoadoutLeftMenuView, ILoadoutLeftMenuViewModel>()
+            .AddView<ApplyControlView, IApplyControlViewModel>()
+            .AddView<ModFilesView, IModFilesViewModel>()
+            .AddView<ModInfoView, IModInfoViewModel>()
+            .AddView<FileTreeNodeView, IFileTreeNodeViewModel>()
+            .AddView<LoadingView, ILoadingViewModel>()
+            .AddView<ErrorView, IErrorViewModel>()
+            .AddView<DiagnosticEntryView, IDiagnosticEntryViewModel>()
 
             // workspace system
             .AddSingleton<IWindowManager, WindowManager>()
@@ -178,6 +200,7 @@ public static class Services
             .AddSingleton<IPageFactory, MyGamesPageFactory>()
             .AddSingleton<IPageFactory, LoadoutGridPageFactory>()
             .AddSingleton<IPageFactory, InProgressPageFactory>()
+            .AddSingleton<IPageFactory, ModInfoPageFactory>()
 
             // LeftMenu factories
             .AddSingleton<ILeftMenuFactory, DownloadsLeftMenuFactory>()
@@ -190,9 +213,18 @@ public static class Services
             .AddSingleton<IWorkspaceAttachmentsFactory, HomeAttachmentsFactory>()
             .AddSingleton<IWorkspaceAttachmentsFactory, LoadoutAttachmentsFactory>()
 
-            // Other
+            // Debugging
             .AddViewModel<DummyViewModel, IDummyViewModel>()
             .AddView<DummyView, IDummyViewModel>()
+
+            // Diagnostics
+            .AddSingleton<ValueFormatterCache>()
+            .AddSingleton<IValueFormatter, ModReferenceFormatter>()
+            .AddSingleton<IValueFormatter, LoadoutReferenceFormatter>()
+            .AddSingleton<IValueFormatter, NamedLinkFormatter>()
+            .AddTransient<IDiagnosticWriter, DiagnosticWriter>()
+
+            // Other
             .AddSingleton<InjectedViewLocator>()
             .AddFileSystem();
     }

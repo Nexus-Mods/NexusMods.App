@@ -40,18 +40,31 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
 
     public override GamePath GetPrimaryFile(GameStore store)
     {
-        // "StardewValley" is a wrapper shell script that launches the "Stardew Valley" binary
-        // on OSX, it's used to check the .NET version, on Linux it just launches the game
-        // for XboxGamePass, the original exe gets replaced during installation
+        // NOTE(erri120): Our SMAPI installer overrides all of these files.
         return _osInformation.MatchPlatform(
-            state: ref store,
-            onWindows: (ref GameStore gameStore) =>
-                gameStore == GameStore.XboxGamePass
-                    ? new GamePath(LocationId.Game, "Stardew Valley.exe")
-                    : new GamePath(LocationId.Game, "StardewModdingAPI.exe"),
-            onLinux: (ref GameStore _) => new GamePath(LocationId.Game, "StardewValley"),
-            onOSX: (ref GameStore _) => new GamePath(LocationId.Game, "Contents/MacOS/StardewValley")
+            onWindows: () => new GamePath(LocationId.Game, "Stardew Valley.exe"),
+            onLinux: () => new GamePath(LocationId.Game, "StardewValley"),
+            onOSX: () => new GamePath(LocationId.Game, "Contents/MacOS/StardewValley")
         );
+    }
+
+    protected override Version GetVersion(GameLocatorResult installation)
+    {
+        try
+        {
+            var path = _osInformation.MatchPlatform(
+                onWindows: () => "Stardew Valley.dll",
+                onLinux: () => "Stardew Valley.dll",
+                onOSX: () => "Contents/MacOS/Stardew Valley.dll"
+            );
+
+            var fileInfo = installation.Path.Combine(path).FileInfo;
+            return fileInfo.GetFileVersionInfo().FileVersion;
+        }
+        catch (Exception)
+        {
+            return new Version(0, 0, 0, 0);
+        }
     }
 
     protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem,
@@ -81,10 +94,9 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
     public override IEnumerable<IModInstaller> Installers => new IModInstaller[]
     {
         _serviceProvider.GetRequiredService<SMAPIInstaller>(),
-        SMAPIModInstaller.Create(_serviceProvider)
+        SMAPIModInstaller.Create(_serviceProvider),
     };
 
-    public override List<IModInstallDestination> GetInstallDestinations(
-        IReadOnlyDictionary<LocationId, AbsolutePath> locations)
+    public override List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations)
         => ModInstallDestinationHelpers.GetCommonLocations(locations);
 }

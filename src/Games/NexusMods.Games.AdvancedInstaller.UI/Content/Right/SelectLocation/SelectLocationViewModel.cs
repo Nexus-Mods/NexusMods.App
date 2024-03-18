@@ -1,10 +1,9 @@
 ﻿using System.Collections.ObjectModel;
-using Avalonia.Controls.Models.TreeDataGrid;
-using Avalonia.Controls.Templates;
 using DynamicData;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Extensions;
+using NexusMods.App.UI.Helpers;
 using NexusMods.Games.AdvancedInstaller.UI.Resources;
 using NexusMods.Paths;
 
@@ -46,41 +45,10 @@ public class SelectLocationViewModel : AViewModel<ISelectLocationViewModel>,
             .Bind(out _treeRoots)
             .Subscribe();
 
-        Tree = GetTreeSource(_treeRoots);
+        Tree = TreeDataGridHelpers.CreateTreeSourceWithSingleCustomColumn<SelectableTreeNode, ISelectableTreeEntryViewModel, GamePath>(_treeRoots);
     }
 
     #region private
-
-    /// <summary>
-    /// Generates the Tree source for the TreeDataGrid.
-    /// </summary>
-    /// <param name="treeRoots">An observable collection of the tree roots.</param>
-    /// <returns></returns>
-    private static HierarchicalTreeDataGridSource<SelectableTreeNode> GetTreeSource(
-        ReadOnlyObservableCollection<SelectableTreeNode> treeRoots)
-    {
-        return new HierarchicalTreeDataGridSource<SelectableTreeNode>(treeRoots)
-        {
-            Columns =
-            {
-                new HierarchicalExpanderColumn<SelectableTreeNode>(
-                    new TemplateColumn<SelectableTreeNode>(null,
-                        new FuncDataTemplate<SelectableTreeNode>((node, _) =>
-                            new SelectableTreeEntryView
-                            {
-                                // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
-                                DataContext = node?.Item,
-                            }),
-                        width: new GridLength(1, GridUnitType.Star)
-                    ),
-                    node => node.Children,
-                    null,
-                    node => node.IsExpanded)
-            }
-        };
-    }
-
-
     /// <summary>
     /// Generates the SuggestedEntries using LocationIds that the game provides.
     /// </summary>

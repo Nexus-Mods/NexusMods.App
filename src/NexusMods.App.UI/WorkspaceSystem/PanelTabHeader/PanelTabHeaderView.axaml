@@ -17,11 +17,11 @@
     <Border x:Name="Container">
         <StackPanel Orientation="Horizontal">
             <StackPanel Orientation="Horizontal"
-                        Spacing="8"
+                        Classes="Spacing-2"
                         Height="52"
                         Margin="24, 0, 24, 14">
                 <StackPanel Orientation="Horizontal"
-                            Spacing="6"
+                            Classes="Spacing-1_5"
                             VerticalAlignment="Center">
                     <unifiedIcon:UnifiedIcon MaxSize="24" Size="24" x:Name="Icon"/>
                     <TextBlock x:Name="TitleTextBlock"

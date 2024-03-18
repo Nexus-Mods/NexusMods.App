@@ -4,7 +4,7 @@
         xmlns:okCancel="clr-namespace:NexusMods.App.UI.Overlays.Generic.MessageBox.OkCancel;assembly=NexusMods.App.UI">
     <Design.PreviewWith>
         <Border Padding="20">
-            <StackPanel Spacing="8">
+            <StackPanel Classes="Spacing-2">
                 <messageBox:MessageBoxBackground />
                 <okCancel:MessageBoxOkCancelView />
             </StackPanel>
@@ -17,11 +17,11 @@
     <Style Selector="messageBox|MessageBoxBackground">
 
         <Style Selector="^ Border#TopBorder">
-            <Setter Property="Background" Value="{StaticResource ElementBackgroundNeutralTopBrush}" />
+            <Setter Property="Background" Value="{StaticResource SurfaceTopBrush}" />
         </Style>
 
         <Style Selector="^ Border#BottomBorder">
-            <Setter Property="Background" Value="{StaticResource ElementBackgroundNeutralMidBrush}" />
+            <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
         </Style>
     </Style>
 

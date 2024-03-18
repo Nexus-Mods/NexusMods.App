@@ -15,6 +15,12 @@ public interface ILoadoutRegistry
     /// All the loadoutIds and their current root entity IDs
     /// </summary>
     IObservable<IChangeSet<IId, LoadoutId>> LoadoutChanges { get; }
+    
+    /// <summary>
+    /// All the loadoutRoots (<see cref="LoadoutId"/>)
+    /// </summary>
+    /// <returns></returns>
+    IObservable<IChangeSet<LoadoutId>> LoadoutRootChanges { get; }
 
     /// <summary>
     /// All the loadouts and their current root ids

@@ -1,7 +1,7 @@
 ﻿<Styles
     xmlns="https://github.com/avaloniaui"
     xmlns:ui="clr-namespace:NexusMods.App.UI.Controls.GameWidget"
-    xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+    xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <Design.PreviewWith>
@@ -14,9 +14,9 @@
         </Border>
     </Design.PreviewWith>
 
-    <Style Selector="ui|GameWidget Button.FirstButton icons|Icon">
-        <Setter Property="FontSize" Value="20" />
-        <Setter Property="Foreground" Value="{DynamicResource ElementForegroundNeutralStrongBrush}" />
+    <Style Selector="ui|GameWidget Button.FirstButton unifiedIcon|UnifiedIcon">
+        <Setter Property="Size" Value="20" />
+        <Setter Property="Foreground" Value="{DynamicResource NeutralStrongBrush}" />
     </Style>
 
 </Styles>

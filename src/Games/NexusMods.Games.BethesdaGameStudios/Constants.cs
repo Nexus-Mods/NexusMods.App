@@ -5,5 +5,5 @@ namespace NexusMods.Games.BethesdaGameStudios;
 
 public static class Constants
 {
-    public static GamePath DataFolder = new(LocationId.Game, "Data".ToRelativePath());
+    public static readonly GamePath DataFolder = new(LocationId.Game, "Data".ToRelativePath());
 }

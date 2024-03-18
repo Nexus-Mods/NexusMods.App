@@ -1,8 +1,7 @@
 ﻿using System.Collections.ObjectModel;
-using Avalonia.Controls.Models.TreeDataGrid;
-using Avalonia.Controls.Templates;
 using DynamicData;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.App.UI.Helpers;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Preview;
 
@@ -28,35 +27,6 @@ internal class PreviewViewModel : AViewModel<IPreviewViewModel>, IPreviewViewMod
             .Bind(out _treeRoots)
             .Subscribe();
 
-        Tree = GetTreeSource(_treeRoots);
-    }
-
-    /// <summary>
-    /// Generates the required source data for the TreeDataGrid from the observable tree roots.
-    /// </summary>
-    /// <param name="treeRoots">Observable collection of tree roots.</param>
-    /// <returns></returns>
-    private static HierarchicalTreeDataGridSource<PreviewTreeNode> GetTreeSource(
-        ReadOnlyObservableCollection<PreviewTreeNode> treeRoots)
-    {
-        return new HierarchicalTreeDataGridSource<PreviewTreeNode>(treeRoots)
-        {
-            Columns =
-            {
-                new HierarchicalExpanderColumn<PreviewTreeNode>(
-                    new TemplateColumn<PreviewTreeNode>(null,
-                        new FuncDataTemplate<PreviewTreeNode>((node, _) =>
-                            new PreviewTreeEntryView
-                            {
-                                // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
-                                DataContext = node?.Item,
-                            }),
-                        width: new GridLength(1, GridUnitType.Star)
-                    ),
-                    node => node.Children,
-                    null,
-                    node => node.IsExpanded)
-            }
-        };
+        Tree = TreeDataGridHelpers.CreateTreeSourceWithSingleCustomColumn<PreviewTreeNode, IPreviewTreeEntryViewModel, GamePath>(_treeRoots);
     }
 }

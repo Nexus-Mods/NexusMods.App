@@ -12,22 +12,21 @@
         <modContent:ModContentDesignViewModel />
     </Design.DataContext>
 
-    <Grid RowDefinitions="Auto, *" x:Name="TopLevelGrid">
-        <Grid.Styles>
-            <Style Selector="Border.HeaderAreaBorder">
-                <Setter Property="BorderThickness" Value="0, 0, 0, 1" />
-                <Setter Property="Margin" Value="0, 0, 0, 16" />
-            </Style>
+    <UserControl.Styles>
+        <Style Selector="Border.HeaderAreaBorder">
+            <Setter Property="BorderThickness" Value="0, 0, 0, 1" />
+            <Setter Property="Margin" Value="0, 0, 0, 16" />
+        </Style>
 
-            <Style Selector="TextBlock.ContentSubHeading">
-                <Setter Property="Margin" Value="0, 4, 0, 16" />
-            </Style>
-        </Grid.Styles>
-
+        <Style Selector="TextBlock.ContentSubHeading">
+            <Setter Property="Margin" Value="0, 4, 0, 16" />
+        </Style>
+    </UserControl.Styles>
+    
+    <Grid RowDefinitions="Auto *" x:Name="TopLevelPanel">
         <!-- "Mod Content" Header and "Description" -->
         <Border Grid.Row="0" Classes="HeaderAreaBorder OutlineWeak" x:Name="HeaderAreaBorder">
             <StackPanel Orientation="Vertical">
-
                 <TextBlock Classes="TitleSMSemi"
                            Text="{x:Static resources:Language.ModContentTitle_MOD_CONTENT}"
                            x:Name="ModContentTitle" />
@@ -39,8 +38,8 @@
         </Border>
 
         <!-- "Mod Content" Tree -->
-        <TreeDataGrid Grid.Row="1" Classes="TreeNoHeader TreeWhiteCaret" x:Name="ModContentTreeDataGrid"
-                      ShowColumnHeaders="True"/>
-
+        <!-- Don't remove the width, it's a hack around https://github.com/AvaloniaUI/Avalonia.Controls.TreeDataGrid/issues/221 -->
+        <TreeDataGrid Grid.Row="1" Classes="TreeWhiteCaret" x:Name="ModContentTreeDataGrid" 
+                      ShowColumnHeaders="False" Width="1"/>
     </Grid>
 </reactiveUi:ReactiveUserControl>

@@ -11,7 +11,10 @@ namespace NexusMods.App.UI;
 
 public static class ReactiveUiExtensions
 {
+    // NOTE(erri120): this field is set in Startup.cs
+#pragma warning disable CA2211
     public static ILogger DefaultLogger = NullLogger.Instance;
+#pragma warning restore CA2211
 
     /// <summary>
     /// Run the current observable on the UI thread.

@@ -1,6 +1,5 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:ui="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI"
         xmlns:progressRing="clr-namespace:NexusMods.App.UI.Controls.ProgressRing;assembly=NexusMods.App.UI">
 
     <Design.PreviewWith>
@@ -11,9 +10,10 @@
 
     <!-- Styles Definitions -->
     <Style Selector="progressRing|ProgressRing">
-
+        <Setter Property="Height" Value="24"/>
+        <Setter Property="Width" Value="24"/>
         <Style Selector="^ Arc">
-            <Setter Property="Stroke" Value="{StaticResource ElementForegroundPrimaryModerateBrush}" />
+            <Setter Property="Stroke" Value="{StaticResource PrimaryModerateBrush}" />
             <Setter Property="StrokeThickness" Value="2.0" />
             <Setter Property="SweepAngle" Value="135" />
 
@@ -30,10 +30,8 @@
         </Style>
 
         <Style Selector="^ Ellipse">
-            <Setter Property="Stroke" Value="{StaticResource ElementStrokeTranslucentSubduedBrush}" />
+            <Setter Property="Stroke" Value="{StaticResource StrokeTranslucentSubduedBrush}" />
             <Setter Property="StrokeThickness" Value="2.8" />
         </Style>
     </Style>
-
-
 </Styles>

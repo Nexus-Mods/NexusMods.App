@@ -1,7 +1,8 @@
 ﻿<Styles
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:avalonia="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia">
+    xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI">
+
     <Design.PreviewWith >
         <StackPanel Width="920">
             <Border Classes="Toolbar">
@@ -10,20 +11,20 @@
                     <StackPanel Grid.Column="1">
                         <Button>
                             <StackPanel>
-                                <avalonia:Icon Classes="RemoveCircleOutline"/>
+                                <unifiedIcon:UnifiedIcon Classes="RemoveCircleOutline"/>
                                 <TextBlock Text="Remove"/>
                             </StackPanel>
                         </Button>
                         <Line Classes="Separator"/>
                         <Button>
                             <StackPanel>
-                                <avalonia:Icon Classes="RemoveCircleOutline"/>
+                                <unifiedIcon:UnifiedIcon Classes="RemoveCircleOutline"/>
                                 <TextBlock Text="Remove All"/>
                             </StackPanel>
                         </Button>
                         <Button IsEnabled="False">
                             <StackPanel>
-                                <avalonia:Icon Classes="RemoveCircleOutline"/>
+                                <unifiedIcon:UnifiedIcon Classes="RemoveCircleOutline"/>
                                 <TextBlock Text="Remove All"/>
                             </StackPanel>
                         </Button>
@@ -38,7 +39,7 @@
     <Style Selector="Border.Toolbar">
         <Setter Property="HorizontalAlignment" Value="Stretch"/>
         <Setter Property="Height" Value="52"/>
-        <Setter Property="Background" Value="{StaticResource ElementBackgroundNeutralLow}"/>
+        <Setter Property="Background" Value="{StaticResource SurfaceLow}"/>
     </Style>
 
     <Style Selector="Border.Toolbar > Grid">
@@ -47,7 +48,7 @@
 
     <Style Selector="Border.Toolbar > Grid > StackPanel">
         <Setter Property="Orientation" Value="Horizontal"/>
-        <Setter Property="Spacing" Value="8"/>
+        <Setter Property="Spacing" Value="{StaticResource Spacing-2}"/>
     </Style>
 
     <Style Selector="Border.Toolbar > Grid > StackPanel > Line">
@@ -56,41 +57,41 @@
         <Setter Property="StrokeThickness" Value="1"/>
         <Setter Property="StartPoint" Value="6, 0"/>
         <Setter Property="EndPoint" Value="6, 32"/>
-        <Setter Property="Stroke" Value="{StaticResource ElementStrokeTranslucentWeakBrush}"/>
+        <Setter Property="Stroke" Value="{StaticResource StrokeTranslucentWeakBrush}"/>
     </Style>
 
     <Style Selector="Border.Toolbar > Grid > TextBlock">
         <Setter Property="Theme" Value="{StaticResource HeadingXSSemiTheme}"/>
-        <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralSubduedBrush}" />
+        <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
         <Setter Property="VerticalAlignment" Value="Center"/>
     </Style>
 
     <Style Selector="Border.Toolbar Button">
-        <Setter Property="Background" Value="{StaticResource ElementBackgroundTransparentBrush}" />
+        <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
         <Setter Property="Height" Value="32" />
         <Setter Property="Padding" Value="0" />
     </Style>
 
     <Style Selector="Border.Toolbar Button:disabled /template/ ContentPresenter#PART_ContentPresenter">
-        <Setter Property="Background" Value="{DynamicResource ElementBackgroundTransparentBrush}" />
+        <Setter Property="Background" Value="{DynamicResource SurfaceTransparentBrush}" />
     </Style>
 
     <Style Selector="Border.Toolbar Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-        <Setter Property="Background" Value="{DynamicResource ElementBackgroundNeutralMidBrush}" />
+        <Setter Property="Background" Value="{DynamicResource SurfaceMidBrush}" />
     </Style>
 
     <Style Selector="Border.Toolbar Button:pressed /template/ ContentPresenter#PART_ContentPresenter">
-        <Setter Property="Background" Value="{DynamicResource ElementBackgroundNeutralLowBrush}" />
+        <Setter Property="Background" Value="{DynamicResource SurfaceLowBrush}" />
     </Style>
 
     <Style Selector="Border.Toolbar Button StackPanel">
         <Setter Property="Orientation" Value="Horizontal" />
-        <Setter Property="Spacing" Value="4" />
+        <Setter Property="Spacing" Value="{StaticResource Spacing-1}" />
         <Setter Property="Margin" Value="6" />
     </Style>
 
-    <Style Selector="Border.Toolbar Button avalonia|Icon">
-        <Setter Property="FontSize" Value="20" />
+    <Style Selector="Border.Toolbar Button unifiedIcon|UnifiedIcon">
+        <Setter Property="Size" Value="20" />
     </Style>
 
     <Style Selector="Border.Toolbar Button TextBlock">

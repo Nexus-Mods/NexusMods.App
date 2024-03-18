@@ -1,5 +1,6 @@
 using System.Reactive.Disposables;
 using Avalonia.ReactiveUI;
+using NexusMods.App.UI.Controls.UnifiedIcon;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Controls.TopBar;
@@ -50,7 +51,7 @@ public partial class TopBarView : ReactiveUserControl<ITopBarViewModel>
                 .BindTo(this, view => view.Premium.IsVisible)
                 .DisposeWith(d);
 
-            this.OneWayBind(ViewModel, vm => vm.Avatar, view => view.AvatarImage.Source)
+            this.OneWayBind(ViewModel, vm => vm.Avatar, view => view.AvatarImage.Value, image => new IconValue(new AvaloniaImage(image)))
                 .DisposeWith(d);
 
             this.OneWayBind(ViewModel, vm => vm.ActiveWorkspaceTitle, view => view.ActiveWorkspaceTitleTextBlock.Text)

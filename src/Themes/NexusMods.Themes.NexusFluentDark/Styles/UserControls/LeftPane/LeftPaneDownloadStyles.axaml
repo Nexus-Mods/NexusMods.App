@@ -11,11 +11,11 @@
     <Style Selector="ui|DownloadsLeftMenuView">
 
         <Style Selector="^ StackPanel#LeftPane">
-            <Setter Property="Background" Value="{StaticResource ElementBackgroundNeutralBaseBrush}" />
+            <Setter Property="Background" Value="{StaticResource SurfaceBaseBrush}" />
         </Style>
 
         <Style Selector="^ StackPanel#LeftPaneListStackPanel">
-            <Setter Property="Background" Value="{StaticResource ElementBackgroundNeutralBaseBrush}" />
+            <Setter Property="Background" Value="{StaticResource SurfaceBaseBrush}" />
         </Style>
     </Style>
 </Styles>

@@ -156,11 +156,11 @@ The corrected code should target content presenter directly as well:
 
 <Style Selector="Border.OutlineModerate">
     <Setter Property="BorderThickness" Value="1" />
-    <Setter Property="BorderBrush" Value="{StaticResource ElementStrokeTranslucentModerateBrush}" />
+    <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentModerateBrush}" />
 </Style>
 
 <Style Selector="Border.Mid">
-    <Setter Property="Background" Value="{StaticResource ElementBackgroundNeutralMidBrush}" />
+    <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
 </Style>
 ```
 
@@ -180,19 +180,19 @@ This should be used to avoid defining many different combinations of appearances
 
 <!-- Standard Primary -->
 <Style Selector="Button.Standard.Primary">
-    <Setter Property="Background" Value="{DynamicResource ElementForegroundPrimaryModerateBrush}" />
+    <Setter Property="Background" Value="{DynamicResource PrimaryModerateBrush}" />
 
     <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-        <Setter Property="Background" Value="{DynamicResource ElementForegroundPrimaryStrongBrush}" />
+        <Setter Property="Background" Value="{DynamicResource PrimaryStrongBrush}" />
     </Style>
 </Style>
 
 <!-- Standard Secondary -->
 <Style Selector="Button.Standard.Secondary">
-    <Setter Property="Background" Value="{DynamicResource ElementForegroundPrimaryStrongBrush}" />
+    <Setter Property="Background" Value="{DynamicResource PrimaryStrongBrush}" />
 
     <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-        <Setter Property="Background" Value="{DynamicResource ElementForegroundPrimaryWeakBrush}" />
+        <Setter Property="Background" Value="{DynamicResource PrimaryWeakBrush}" />
     </Style>
 </Style>
 ```
@@ -206,19 +206,19 @@ Styles can also be defined nested in parent Styles, e.g.:
 
     <!-- Standard Primary -->
     <Style Selector="^.Primary">
-        <Setter Property="Background" Value="{DynamicResource ElementForegroundPrimaryModerateBrush}"/>
+        <Setter Property="Background" Value="{DynamicResource PrimaryModerateBrush}"/>
 
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource ElementForegroundPrimaryStrongBrush}"/>
+            <Setter Property="Background" Value="{DynamicResource PrimaryStrongBrush}"/>
         </Style>
     </Style>
 
     <!-- Standard Secondary -->
     <Style Selector="^.Secondary">
-        <Setter Property="Background" Value="{DynamicResource ElementForegroundPrimaryStrongBrush}"/>
+        <Setter Property="Background" Value="{DynamicResource PrimaryStrongBrush}"/>
 
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource ElementForegroundPrimaryWeakBrush}"/>
+            <Setter Property="Background" Value="{DynamicResource PrimaryWeakBrush}"/>
         </Style>
     </Style>
 </Style>
@@ -389,12 +389,12 @@ This system was newly introduced to the App with the creation of the Theme proje
 - The first level is the 'Primitive' later, (e.g. `Red100`, `Red50`, `Green100`, ...).
 - The second level is the 'Brand' palette of 'Semantic' colours, (e.g. `BrandWarning90`, `BrandInfo50`, ...).
 - The third level is the 'Element' palette of colors that should be used directly in the Styles of the UI Elements,
-(e.g. `ElementBackgroundNeutralMidBrush`, `ElementForegroundPrimaryStrongBrush`, ...).
+(e.g. `SurfaceNeutralMidBrush`, `PrimaryStrongBrush`, ...).
 
 !!! tip "The main idea is that of separating the names of the colours used in the Styles, from the actual values."
 
 This way, if the design team decides to change the colour of all `Information` elements, this can be accomplished by
-changing the value of the `ElementInfo` colour, without having to change the name of the colour in all the Styles.
+changing the value of the `Info` colour, without having to change the name of the colour in all the Styles.
 
 !!! tip "The Theme project should always prefer to user the third level of the colour system when possible."
 
@@ -427,6 +427,27 @@ everywhere else colors should be referenced through higher resource aliases.
 Developers should avoid using numeric values directly and instead strive to use the semantic aliases instead.
 
 !!! tip "In particular a `OpacityDisabledElement` alias is defined, which should be used for disabled elements."
+
+### Other Resource Palettes
+!!! info "Like Opacity and Colors, the App has alias palettes for other resources"
+
+Value aliases provide an abstraction over the actual values, and should be used in the Styles of the UI Elements.
+
+#### Spacing
+A numbered alias system following the `Spacing-none`, `Spacing-1`, `Spacing-2`, ... pattern.
+The values are used to define the `Spacing` property of Panel controls such as `StackPanel`.
+The values can be found in `Resources/Palette/Spacing/ElementSpacing.axaml` and 
+`/Styles/Controls/StackPanel/StackPanelStyles.axaml` contains classes to apply the spacing to the `StackPanel` control.
+
+#### CornerRadius
+`Resources/Palette/CornerRadiuses/ElementCornerRadius.axaml` contains the aliases for the `CornerRadius` property,
+of controls such as `Border`. These follow the pattern `Rounded-none`, `Rounded-sm`, `Rounded-md`, ...
+
+To round sides separately use or add an alias `Rounded-{t|r|b|l}{-size}`, e.g `Rounded-t-lg` for a large top rounding.
+
+To round individual corners use or add an alias `Rounded-{tl|tr|bl|br}{-size}`, e.g `Rounded-tl-lg` for a large top-left rounding.
+
+These aliases follow the pattern described on the [Tailwind CSS documentation](https://tailwindcss.com/docs/border-radius).
 
 ### Typography
 
@@ -469,23 +490,31 @@ to be used in the UI projects.
     <Style Selector="TextBlock.Heading2XLSemi">
         <Setter Property="Theme" Value="{StaticResource Heading2XLSemiTheme}" />
     </Style>
+
     ```
 
 ### Icons
+!!! info "The app uses a custom `UnifiedIcon` control to display different types of icons."
 
+This control supports `Avalonia.Controls.Image`, `Avalonia.Svg.Skia.Svg`, `Avalonia.Controls.PathIcon` and `Projektanker.Icons.Avalonia.Icon`.
+This permits the use of different types of icons interchangeably.
+
+#### Adding & Placing New Icons
 !!! info "The app primarily uses [Material Design Icons](https://pictogrammers.com/library/mdi/)."
 
 These need not be manually included in the project, as the App uses the
 [Icons.Avalonia](https://github.com/Projektanker/Icons.Avalonia) library, which offers a
 convenient way to use Material Design Icons in Avalonia.
 
-#### Adding & Placing New Icons
-
-The way it works is through an `icons|Icon` type, that has a `Value` property that can be set to the mdi-code of the desired icon.
+To add a material design icon in the App, a new Style `Class` should be defined in the `IconsStyles.axaml` file.
+The class should set the `Value` property of the `UnifiedIcon` control to an `IconValue`, 
+with the `MdiValueSetter` property set to the mdi-code of the icon.
 
 ```xml
-<Style Selector="icons|Icon.Close">
-    <Setter Property="Value" Value="mdi-close" />
+<Style Selector="unifiedIcon|UnifiedIcon.Close">
+    <Setter Property="Value">
+        <unifiedIcon:IconValue MdiValueSetter="mdi-close"/>
+    </Setter>
 </Style>
 ```
 
@@ -495,7 +524,7 @@ The UI projects can then use this Style `Class` to set the icon without having t
 
 ```xml
 <!--                 👇 -->
-<icons:Icon Classes="Close" />
+<unifiedIcon:UnifiedIcon Classes="Close" />
 ```
 
 This way all icons used in the app can easily be found in the `IconsStyles.axaml` file,
@@ -503,11 +532,11 @@ and the mdi-code can be changed in one place if needed.
 
 #### Scaling Icons
 
-!!! warning "To change the Size of an icon, it needs to have its `FontSize` property set."
+!!! warning "`UnifiedIcon`s are assumed to be square, and should not have their `Width` and `Height` properties set."
 
-    Changing the `Width` and `Height` properties will change the bounds of the icon, but not visually scale it.
+    The `Size` property should be used instead, which will scale the underlying icon to the specified size regardless of type.
 
-Font size closely matches the size of the icon, e.g. `FontSize="16"` should be equivalent to `Width="16" Height="16"`.
+`Size="16"` should be equivalent to `Width="16" Height="16"`.
 
 ### Using Styles in the UI
 
@@ -544,8 +573,8 @@ Some functionality properties of controls can and should be defined directly on 
 
 - `ControlThemes` names should follow PascalCase naming convention, and end with `Theme`, e.g. `BodyMDRegularTheme`.
 
-- Colors should start with the name of the palette [level](#color-system) they belong to, e.g. `ElementBackgroundNeutralMid`.
-  `SolidColorBrushes` should end with `Brush`, e.g. `ElementBackgroundNeutralMidBrush`.
+- Colors should start with the name of the palette [level](#color-system) they belong to, e.g. `SurfaceMid`.
+  `SolidColorBrushes` should end with `Brush`, e.g. `SurfaceMidBrush`.
 
 ## 3rd Party Theming
 

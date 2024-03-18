@@ -25,13 +25,13 @@
 		<value>Zaawansowany ręczny instalator modyfikacji</value>
 	</data>
 	<data name="SubHeadingText_Please_select_files" xml:space="preserve">
-		<value>Wybierz pliki do zainstalowania i lokalizację, w której mają zostać zainstalowane.</value>
+		<value>Wybierz pliki do zainstalowania i ścieżkę, w której mają zostać zainstalowane.</value>
 	</data>
 	<data name="ModContentTitle_MOD_CONTENT" xml:space="preserve">
 		<value>ZAWARTOŚĆ MODYFIKACJI</value>
 	</data>
 	<data name="ModContentSubHeading_Files_with_no" xml:space="preserve">
-		<value>Pliki bez wybranej lokalizacji nie zostaną zainstalowane.</value>
+		<value>Pliki bez wybranej scieżki nie zostaną zainstalowane.</value>
 	</data>
 	<data name="CreateFolderButton_Create_new_folder" xml:space="preserve">
 		<value>Utwórz nowy folder</value>
@@ -46,7 +46,7 @@
 		<value>FOLDER SCALONY</value>
 	</data>
 	<data name="SelectLocationButton_Select_location" xml:space="preserve">
-		<value>Wybierz lokalizację</value>
+		<value>Wybierz ścieżkę</value>
 	</data>
 	<data name="SelectButton_Select" xml:space="preserve">
 		<value>Wybierz</value>
@@ -64,10 +64,10 @@
 		<value>Wybierz pliki do zainstalowania z archiwum modyfikacji po lewej stronie.</value>
 	</data>
 	<data name="SelectLocationHeaderText_SELECT_INSTALL_LOCATION" xml:space="preserve">
-		<value>WYBIERZ LOKALIZACJĘ INSTALACJI</value>
+		<value>WYBIERZ ŚCIEŻKĘ INSTALACJI</value>
 	</data>
 	<data name="SelectLocationSubHeadingText_Select_where_to" xml:space="preserve">
-		<value>Wybierz lokalizację instalacji pliku/folderu modyfikacji.</value>
+		<value>Wybierz scieżkę instalacji pliku/folderu modyfikacji.</value>
 	</data>
 	<data name="SuggestedHeaderText_SUGGESTED" xml:space="preserve">
 		<value>SUGEROWANE</value>
@@ -81,8 +81,8 @@
 	<data name="FileTree_ALL_MOD_FILES" xml:space="preserve">
 		<value>Wszystkie pliki modyfikacji</value>
 	</data>
-	<data name="PreviewHeader_INSTALL_LOCATOIN_PREVIEW" xml:space="preserve">
-		<value>PODGLĄD LOKALIZACJI INSTALACJI</value>
+	<data name="PreviewHeader_INSTALL_LOCATION_PREVIEW" xml:space="preserve">
+		<value>PODGLĄD SCIEŻKI INSTALACJI</value>
 	</data>
 	<data name="PreviewSubHeading_Files_labelled_as_new" xml:space="preserve">
 		<value>Pliki/foldery oznaczone jako „Nowe” zostaną zainstalowane/dodane.</value>

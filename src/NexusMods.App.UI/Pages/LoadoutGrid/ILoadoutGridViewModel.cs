@@ -39,4 +39,9 @@ public interface ILoadoutGridViewModel : IPageViewModelInterface
     /// <returns></returns>
     public Task DeleteMods(IEnumerable<ModId> modsToDelete, string commitMessage);
 
+    /// <summary>
+    /// Views the contents of a given mod.
+    /// </summary>
+    /// <param name="toView">IDs of all mods whose contents should be viewed.</param>
+    public void ViewModContents(List<ModId> toView);
 }

@@ -25,23 +25,21 @@ jobs:
       NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
 
     strategy:
+      fail-fast: false
       matrix:
-        #os: [ubuntu-latest, windows-latest, macos-latest]
         os: [windows-latest]
-        game: [cyberpunk2077, darkestdungeon, sifu, stardewvalley]
+        game: [cyberpunk2077, darkestdungeon, stardewvalley, mountandblade2bannerlord]
 
     steps:
       - uses: actions/checkout@v3
+        with:
+          submodules: "recursive"
 
-      - name: Setup .NET Core SDK 7.0.x
+      - name: Setup .NET Core SDK 8.0.x
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '7.0.x'
+          dotnet-version: '8.0.x'
 
       - name: Stress Test
+        continue-on-error: true
         run: dotnet run --project ./src/NexusMods.App/NexusMods.App.csproj -- stress-test -g ${{matrix.game}} -o ${{ github.step_summary }}
-
-      - uses: codecov/codecov-action@v3
-        with:
-          flags: networking_tests, ${{runner.os}}
-          verbose: true

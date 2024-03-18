@@ -1,21 +1,25 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:icons="https://github.com/projektanker/icons.avalonia">
+        xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI">
     <Design.PreviewWith>
         <Border Padding="20">
-            <StackPanel Spacing="20">
+            <StackPanel Classes="Spacing-5">
                 <Button Classes="Action" HorizontalAlignment="Center">
-                    <icons:Icon Classes="Help" />
+                    <unifiedIcon:UnifiedIcon Classes="Help" />
                 </Button>
                 <Button Classes="Action" HorizontalAlignment="Center" IsEnabled="False">
-                    <icons:Icon Classes="Help" />
+                    <unifiedIcon:UnifiedIcon Classes="Help" />
                 </Button>
                 <Button Classes="Avatar" HorizontalAlignment="Center">
-                    <Image Source="avares://NexusMods.Themes.NexusFluentDark/Assets/DesignTime/cyberpunk_game.png" />
+                    <unifiedIcon:UnifiedIcon>
+                        <unifiedIcon:UnifiedIcon.Value>
+                            <unifiedIcon:IconValue ImageSetter="avares://NexusMods.Themes.NexusFluentDark/Assets/DesignTime/cyberpunk_game.png"/>
+                        </unifiedIcon:UnifiedIcon.Value>
+                    </unifiedIcon:UnifiedIcon>
                 </Button>
                 <Button Classes="LeftMenuItem" HorizontalAlignment="Center">
                     <StackPanel>
-                        <icons:Icon Classes="Home" />
+                        <unifiedIcon:UnifiedIcon Classes="Home" />
                         <TextBlock Text="Left Menu Item" />
                     </StackPanel>
                 </Button>
@@ -30,15 +34,13 @@
 
     <!-- TopBar Action Button -->
     <Style Selector="Button.Action">
-        <Setter Property="Background" Value="{StaticResource ElementBackgroundTransparentBrush}" />
+        <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
         <Setter Property="Width" Value="40" />
         <Setter Property="Height" Value="40" />
-        <Setter Property="CornerRadius" Value="4" />
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
 
-        <Style Selector="^ icons|Icon">
-            <Setter Property="FontSize" Value="20" />
-            <Setter Property="Width" Value="20" />
-            <Setter Property="Height" Value="20" />
+        <Style Selector="^ unifiedIcon|UnifiedIcon">
+            <Setter Property="Size" Value="20" />
         </Style>
 
         <Style Selector="^:disabled">
@@ -46,24 +48,22 @@
         </Style>
 
         <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource ElementBackgroundNeutralMidBrush}" />
-            <!-- <Setter Property="Background" Value="{StaticResource ElementBackgroundTransparentBrush}" /> -->
+            <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
         </Style>
     </Style>
 
 
     <!-- Avatar Button -->
     <Style Selector="Button.Avatar">
-        <Setter Property="Background" Value="{StaticResource ElementBackgroundTransparentBrush}" />
+        <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
         <Setter Property="Width" Value="30" />
         <Setter Property="Height" Value="30" />
         <Setter Property="Margin" Value="0" />
         <Setter Property="Padding" Value="0" />
-        <Setter Property="CornerRadius" Value="15" />
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-2xl}" />
 
-        <Style Selector="^ Image">
-            <Setter Property="Width" Value="30" />
-            <Setter Property="Height" Value="30" />
+        <Style Selector="^ unifiedIcon|UnifiedIcon">
+            <Setter Property="Size" Value="30" />
             <Setter Property="Clip">
                 <EllipseGeometry Rect="0, 0, 30, 30" />
             </Setter>
@@ -75,20 +75,18 @@
     <Style Selector="Button.LeftMenuItem">
         <Setter Property="Height" Value="40" />
         <Setter Property="Padding" Value="0" />
-        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-lg}" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />
-        <Setter Property="Background" Value="{StaticResource ElementBackgroundTransparentBrush}" />
+        <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
 
         <Style Selector="^.LeftMenuItem StackPanel">
             <Setter Property="Orientation" Value="Horizontal" />
-            <Setter Property="Spacing" Value="4" />
+            <Setter Property="Spacing" Value="{StaticResource Spacing-1}" />
             <Setter Property="Margin" Value="9, 12" />
         </Style>
 
-        <Style Selector="^.LeftMenuItem icons|Icon">
-            <Setter Property="FontSize" Value="20" />
-            <Setter Property="Width" Value="20" />
-            <Setter Property="Height" Value="20" />
+        <Style Selector="^.LeftMenuItem unifiedIcon|UnifiedIcon">
+            <Setter Property="Size" Value="20" />
         </Style>
 
         <Style Selector="^.LeftMenuItem TextBlock">
@@ -97,25 +95,25 @@
         </Style>
 
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource ElementBackgroundNeutralTopBrush}" />
+            <Setter Property="Background" Value="{StaticResource SurfaceTopBrush}" />
         </Style>
 
         <Style Selector="^.Active /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource ElementBackgroundNeutralMidBrush}" />
+            <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
         </Style>
     </Style>
 
 
     <!--  Invisible button  -->
     <Style Selector="Button.Invisible">
-        <Setter Property="Background" Value="{StaticResource ElementBackgroundTransparentBrush}" />
+        <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Padding" Value="0" />
         <Setter Property="Margin" Value="0" />
     </Style>
 
     <Style Selector="Button.Invisible:pressed">
-        <Setter Property="Background" Value="{StaticResource ElementBackgroundTransparentBrush}" />
+        <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
     </Style>
 
 

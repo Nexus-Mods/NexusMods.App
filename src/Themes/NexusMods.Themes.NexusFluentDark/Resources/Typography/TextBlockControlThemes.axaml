@@ -179,7 +179,7 @@
     <!-- Preview -->
    <Design.PreviewWith>
         <Border Padding="20">
-            <StackPanel Spacing="10">
+            <StackPanel Classes="Spacing-2_5">
                 <Border BorderThickness="1" BorderBrush="White" Padding="2">
                     <TextBlock Theme="{StaticResource Heading2XLSemiTheme}" Text="Sample Text Heading2XLSemi" />
                 </Border>

@@ -1,5 +1,5 @@
 using System.Collections.ObjectModel;
-using Microsoft.Extensions.DependencyInjection;
+using DynamicData.Kernel;
 using NexusMods.App.UI.Icons;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.Pages.LoadoutGrid;
@@ -11,7 +11,7 @@ namespace NexusMods.App.UI.LeftMenu.Loadout;
 
 public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, ILoadoutLeftMenuViewModel
 {
-    public ILaunchButtonViewModel LaunchButtonViewModel { get; }
+    public IApplyControlViewModel ApplyControlViewModel { get; }
 
     public ReadOnlyObservableCollection<ILeftMenuItemViewModel> Items { get; }
     public WorkspaceId WorkspaceId { get; }
@@ -23,8 +23,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
         IServiceProvider serviceProvider)
     {
         WorkspaceId = workspaceId;
-        LaunchButtonViewModel = serviceProvider.GetRequiredService<ILaunchButtonViewModel>();
-        LaunchButtonViewModel.LoadoutId = loadoutContext.LoadoutId;
+        ApplyControlViewModel = new ApplyControlViewModel(loadoutContext.LoadoutId, serviceProvider);
 
         var items = new ILeftMenuItemViewModel[]
         {
@@ -34,17 +33,21 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                 Icon = IconType.None,
                 Activate = ReactiveCommand.Create(() =>
                 {
-                    workspaceController.OpenPage(workspaceId,
-                        new PageData
-                        {
-                            FactoryId = LoadoutGridPageFactory.StaticId,
-                            Context = new LoadoutGridContext { LoadoutId = loadoutContext.LoadoutId }
-                        },
-                        workspaceController.GetDefaultOpenPageBehavior());
-                })
-            }
+                    var pageData = new PageData
+                    {
+                        FactoryId = LoadoutGridPageFactory.StaticId,
+                        Context = new LoadoutGridContext { LoadoutId = loadoutContext.LoadoutId },
+                    };
+
+                    // TODO: use https://github.com/Nexus-Mods/NexusMods.App/issues/942
+                    var input = NavigationInput.Default;
+
+                    var behavior = workspaceController.GetDefaultOpenPageBehavior(pageData, input, Optional<PageIdBundle>.None);
+                    workspaceController.OpenPage(WorkspaceId, pageData, behavior);
+                }),
+            },
         };
-        Items = new ReadOnlyObservableCollection<ILeftMenuItemViewModel>(
-            new ObservableCollection<ILeftMenuItemViewModel>(items));
+
+        Items = new ReadOnlyObservableCollection<ILeftMenuItemViewModel>(new ObservableCollection<ILeftMenuItemViewModel>(items));
     }
 }

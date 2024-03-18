@@ -1,7 +1,7 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:fomod="clr-namespace:NexusMods.Games.FOMOD.UI;assembly=NexusMods.Games.FOMOD.UI"
-        xmlns:icons="https://github.com/projektanker/icons.avalonia">
+        xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI">
     <Design.PreviewWith>
         <Border Padding="20">
             <fomod:GuidedInstallerOptionView />
@@ -12,9 +12,9 @@
     <!-- Style Definitions -->
 
     <Style Selector="fomod|GuidedInstallerOptionView">
-        <Style Selector="^ icons|Icon">
-            <Setter Property="FontSize" Value="18"/>
-            <Setter Property="Foreground" Value="{StaticResource ElementForegroundNeutralSubduedBrush}" />
+        <Style Selector="^ unifiedIcon|UnifiedIcon">
+            <Setter Property="Size" Value="18"/>
+            <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
             <Setter Property="Margin" Value="0,10,10,10" />
         </Style>
         <Style Selector="^ TextBlock.BodyMDNormal">
@@ -22,7 +22,7 @@
             <Setter Property="Padding" Value="8,3,8,0" />
         </Style>
         <Style Selector="^ TextBlock.StatusDangerLighter">
-            <Setter Property="Foreground" Value="{StaticResource ElementForegroundDangerModerateBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource DangerModerateBrush}" />
         </Style>
         <Style Selector="^ TextBlock.Disabled">
             <Setter Property="Opacity" Value="{StaticResource OpacityDisabledElement}"/>

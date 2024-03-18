@@ -26,17 +26,14 @@ public class FlattenedToLoadoutTransformer : ALoadoutVisitor
     /// <param name="prevFlattenedLoadout"></param>
     public FlattenedToLoadoutTransformer(FlattenedLoadout flattenedLoadout, Loadout prevLoadout, FlattenedLoadout prevFlattenedLoadout)
     {
-
         // The pattern is pretty simple here, we'll preprocess as much information as we can, and construct
         // helper collections to allow us to efficiently transform the loadout. The overall goal is to reduce
         // all operations to O(n) time complexity, where n is the number of files in the loadout.
-
         _modReplacements = new Dictionary<ModId, Mod>();
 
         // These are files that no longer exist in the loadout, so we need to delete them
-        // TODO: This is inefficient due to double call of GamePath()
         _toDelete = prevFlattenedLoadout.GetAllDescendentFiles()
-            .Where(f => !flattenedLoadout.TryGetValue(f.Item.GetGamePath(), out _))
+            .Where(f => !flattenedLoadout.TryGetValue(f.Item.GamePath, out _))
             .Select(f => f.GamePath())
             .ToHashSet();
 

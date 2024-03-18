@@ -5,7 +5,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:ui="clr-namespace:NexusMods.Games.FOMOD.UI"
-    xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+    xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI"
     xmlns:resources="clr-namespace:NexusMods.Games.FOMOD.UI.Resources"
     mc:Ignorable="d" d:DesignWidth="1232" d:DesignHeight="672"
     x:Class="NexusMods.Games.FOMOD.UI.GuidedInstallerStepView">
@@ -20,7 +20,7 @@
                 <Border Grid.Row="0" x:Name="MultiOptionHeaderBorder">
                     <StackPanel x:Name="MultiOptionHeaderStackPanel" Orientation="Horizontal">
 
-                        <icons:Icon x:Name="MultiOptionHeaderIcon" Classes="Tune"/>
+                        <unifiedIcon:UnifiedIcon x:Name="MultiOptionHeaderIcon" Classes="Tune"/>
                         <TextBlock x:Name="MultiOptionHeaderTextBlock" Classes="BodyLGBold"
                                    Text="{x:Static resources:Language.MultiOptionHeader_Multi_Otion_Mod}" />
 
@@ -30,7 +30,7 @@
                 <Border Grid.Row="1" x:Name="BodyBorder">
                     <Grid x:Name="BodyStackPanel" RowDefinitions="Auto, *">
                         <Border Grid.Row="0" x:Name="HeadingAndSubHeadingBorder">
-                            <StackPanel x:Name="HeadingAndSubHeadingStackPanel" Spacing="4">
+                            <StackPanel x:Name="HeadingAndSubHeadingStackPanel" Classes="Spacing-1">
 
                                 <TextBlock Classes="HeadingXSSemi" x:Name="ModName" />
                                 <TextBlock Classes="HeadingMDSemi" x:Name="StepName" />
@@ -63,9 +63,9 @@
 
                                         <TextBlock Grid.Column="0" x:Name="PreviewTitleTextBox" Classes="BodyXLBold"
                                                    VerticalAlignment="Center"/>
-                                        <icons:Icon Grid.Column="2" x:Name="PreviewHeaderDescriptionIcon"
+                                        <unifiedIcon:UnifiedIcon Grid.Column="2" x:Name="PreviewHeaderDescriptionIcon"
                                                     Classes="Description PreviewIcon" VerticalAlignment="Center" />
-                                        <icons:Icon Grid.Column="1" x:Name="PreviewHeaderImageIcon"
+                                        <unifiedIcon:UnifiedIcon Grid.Column="1" x:Name="PreviewHeaderImageIcon"
                                                     Classes="Image PreviewIcon" VerticalAlignment="Center" />
 
                                     </Grid>
@@ -75,7 +75,7 @@
                                         Classes="RoundedBottom OutlineStrong"
                                         BorderThickness="1,0,1,1">
                                     <ScrollViewer x:Name="PreviewScrollViewer">
-                                        <StackPanel x:Name="PreviewContentsStackPanel" Orientation="Vertical" Spacing="8"
+                                        <StackPanel x:Name="PreviewContentsStackPanel" Orientation="Vertical" Classes="Spacing-2"
                                                     VerticalAlignment="Stretch">
                                             <TextBlock Classes="BodyMDNormal" x:Name="HighlightedOptionDescription"
                                                        TextWrapping="Wrap"

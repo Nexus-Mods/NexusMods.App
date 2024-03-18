@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees;
@@ -11,7 +12,7 @@ namespace NexusMods.Abstractions.Games.Trees;
 /// <typeparam name="TValue">Type of value contained within the tree.</typeparam>
 public struct GamePathNode<TValue> :
     IHaveBoxedChildrenWithKey<RelativePath, GamePathNode<TValue>>, IHaveValue<TValue>, IHavePathSegment,
-    IHaveParent<GamePathNode<TValue>>, IHaveAFileOrDirectory
+    IHaveParent<GamePathNode<TValue>>, IHaveAFileOrDirectory, IEquatable<GamePathNode<TValue>>
 
 {
     /// <inheritdoc />
@@ -26,6 +27,19 @@ public struct GamePathNode<TValue> :
     /// <inheritdoc />
     public bool IsFile { get; init; } // 24 (size 1-8, depending on padding)
 
+    /// <summary>
+    ///     Hashcode.
+    /// </summary>
+    private int _hashCode; // 28 (size 4)
+    
+    /// <summary>
+    ///     Contains the full path to the file.
+    /// </summary>
+    /// <remarks>
+    ///     We sacrifice some memory here in order to speed up `Equals` and `GetHashCode`.
+    /// </remarks>
+    public GamePath GamePath { get; private set; } // 32
+
     /// <inheritdoc />
     public TValue Value { get; init; } // ?? (variable, potentially not 8 aligned)
 
@@ -35,16 +49,12 @@ public struct GamePathNode<TValue> :
     public LocationId Id { get; init; } // ?? (variable, always 8 aligned)
 
     /// <summary>
-    ///     Retrieves the corresponding <see cref="GamePath" /> from given location ID and this node's path.
-    /// </summary>
-    public GamePath GetGamePath() => new(Id, this.ReconstructPath());
-
-    /// <summary>
     ///     Creates nodes from an IEnumerable of items.
     /// </summary>
     public static KeyedBox<RelativePath, GamePathNode<TValue>> Create(IEnumerable<KeyValuePair<GamePath, TValue>> items)
     {
         // Unboxed root node.
+        var rootLocationId = items.FirstOrDefault().Key.LocationId!;
         var root = new KeyedBox<RelativePath, GamePathNode<TValue>>()
         {
             Item = new GamePathNode<TValue>
@@ -53,8 +63,10 @@ public struct GamePathNode<TValue> :
                 Segment = RelativePath.Empty,
                 Parent = null,
                 IsFile = false,
-                Id = LocationId.Unknown!,
-                Value = default!
+                Id = rootLocationId,
+                Value = default(TValue)!,
+                GamePath = new GamePath(rootLocationId, ""),
+                _hashCode = 0,
             }
         };
 
@@ -85,7 +97,13 @@ public struct GamePathNode<TValue> :
                             Value = entry.Value,
                         }
                     };
-
+                    // We use a forward slash here, to comply with NexusMods.Paths rules.
+                    // Don't use Join API, as that will slow down our work, we don't have unsanitized
+                    // input, we're complying with underlying library's documented rules.
+                    var existingPath = current.GamePath().Path;
+                    var relativePath = existingPath.Length > 0 ? (RelativePath)string.Concat(current.GamePath().Path, "/", segment) : segment;
+                    child.Item.GamePath = new GamePath(child.Item.Id, relativePath);
+                    child.Item._hashCode = child.Item.MakeHashCode(); // depends on GamePath
                     current.Item.Children.Add(segment, child);
                 }
 
@@ -95,6 +113,19 @@ public struct GamePathNode<TValue> :
 
         return root;
     }
+
+    /// <summary>
+    ///     Check for equality against other node.
+    /// </summary>
+    public bool Equals(GamePathNode<TValue> other) => GamePath.Equals(other.GamePath);
+
+    /// <inheritdoc />
+    public override bool Equals(object? obj) => obj is GamePathNode<TValue> other && Equals(other);
+    
+    /// <inheritdoc />
+    public override int GetHashCode() => _hashCode; // Cached to maximize performance.
+
+    private int MakeHashCode() => GamePath.GetHashCode();
 }
 
 /// <summary>
@@ -106,5 +137,5 @@ public static class GamePathNodeExtensions
     ///     Gets the <see cref="GamePath{T}"/> for the given boxed node.
     /// </summary>
     /// <param name="keyedBox">The KeyedBox containing a ModFileTree instance.</param>
-    public static GamePath GamePath<T>(this KeyedBox<RelativePath, GamePathNode<T>> keyedBox) => keyedBox.Item.GetGamePath();
+    public static GamePath GamePath<T>(this KeyedBox<RelativePath, GamePathNode<T>> keyedBox) => keyedBox.Item.GamePath;
 }

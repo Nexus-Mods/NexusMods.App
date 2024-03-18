@@ -2,7 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Design.PreviewWith>
         <Border Padding="10" Classes="Low">
-            <StackPanel Spacing="4" Margin="6">
+            <StackPanel Classes="Spacing-1" Margin="6">
                 <ToggleSwitch />
                 <ToggleSwitch IsEnabled="False" IsChecked="False"/>
                 <ToggleSwitch IsEnabled="False" IsChecked="True"/>
@@ -16,16 +16,16 @@
 
     <Style Selector="ToggleSwitch">
         <Style.Resources>
-            <SolidColorBrush Color="{StaticResource ElementForegroundPrimaryWeak}" x:Key="ToggleSwitchFillOn" />
-            <SolidColorBrush Color="{StaticResource ElementForegroundPrimaryModerate}" x:Key="ToggleSwitchKnobFillOn" />
-            <SolidColorBrush Color="{StaticResource ElementForegroundPrimaryStrong}" x:Key="ToggleSwitchKnobFillOnPointerOver" />
-            <SolidColorBrush Color="{StaticResource ElementForegroundPrimaryModerate}" x:Key="ToggleSwitchFillOnPointerOver" />
-            <SolidColorBrush Color="{StaticResource ElementForegroundPrimaryWeak}" x:Key="ToggleSwitchFillOnPressed" />
-            <SolidColorBrush Color="{StaticResource ElementForegroundPrimaryWeak}" x:Key="ToggleSwitchFillOffPressed" />
-            <SolidColorBrush Color="{StaticResource ElementForegroundNeutralWeak}" x:Key="ToggleSwitchFillOff" />
-            <SolidColorBrush Color="{StaticResource ElementForegroundNeutralSubdued}" x:Key="ToggleSwitchKnobFillOff" />
-            <SolidColorBrush Color="{StaticResource ElementForegroundNeutralSubdued}" x:Key="ToggleSwitchKnobFillOffPointerOver" />
-            <SolidColorBrush Color="{StaticResource ElementForegroundNeutralWeak}" x:Key="ToggleSwitchFillOffPointerOver" />
+            <SolidColorBrush Color="{StaticResource PrimaryWeak}" x:Key="ToggleSwitchFillOn" />
+            <SolidColorBrush Color="{StaticResource PrimaryModerate}" x:Key="ToggleSwitchKnobFillOn" />
+            <SolidColorBrush Color="{StaticResource PrimaryStrong}" x:Key="ToggleSwitchKnobFillOnPointerOver" />
+            <SolidColorBrush Color="{StaticResource PrimaryModerate}" x:Key="ToggleSwitchFillOnPointerOver" />
+            <SolidColorBrush Color="{StaticResource PrimaryWeak}" x:Key="ToggleSwitchFillOnPressed" />
+            <SolidColorBrush Color="{StaticResource PrimaryWeak}" x:Key="ToggleSwitchFillOffPressed" />
+            <SolidColorBrush Color="{StaticResource NeutralWeak}" x:Key="ToggleSwitchFillOff" />
+            <SolidColorBrush Color="{StaticResource NeutralSubdued}" x:Key="ToggleSwitchKnobFillOff" />
+            <SolidColorBrush Color="{StaticResource NeutralSubdued}" x:Key="ToggleSwitchKnobFillOffPointerOver" />
+            <SolidColorBrush Color="{StaticResource NeutralWeak}" x:Key="ToggleSwitchFillOffPointerOver" />
         </Style.Resources>
 
         <Setter Property="Template">
@@ -91,7 +91,7 @@
                             Background="{StaticResource ToggleSwitchFillOff}"
                             BorderBrush="{DynamicResource ToggleSwitchStrokeOff}"
                             BorderThickness="0"
-                            CornerRadius="10"
+                            CornerRadius="{StaticResource Rounded-xl}"
                             Grid.Row="1"
                             Grid.Column="0"
                             Height="14"
@@ -102,7 +102,7 @@
                             Background="{StaticResource ToggleSwitchFillOn}"
                             BorderBrush="{DynamicResource ToggleSwitchStrokeOn}"
                             BorderThickness="0"
-                            CornerRadius="10"
+                            CornerRadius="{StaticResource Rounded-xl}"
                             Grid.Row="1"
                             Grid.Column="0"
                             Height="14"

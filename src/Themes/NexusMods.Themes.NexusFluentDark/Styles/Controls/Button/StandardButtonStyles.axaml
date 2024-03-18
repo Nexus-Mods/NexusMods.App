@@ -1,6 +1,6 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:avalonia="https://github.com/projektanker/icons.avalonia">
+        xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI">
 
     <!-- Preview -->
     <Design.PreviewWith>
@@ -9,12 +9,12 @@
             <!-- Setup -->
             <StackPanel.Styles>
                 <Style Selector="StackPanel.HorizontalShowcase">
-                    <Setter Property="Spacing" Value="8" />
+                    <Setter Property="Spacing" Value="{StaticResource Spacing-2}" />
                 </Style>
 
                 <Style Selector="StackPanel.VerticalTwoButtonStack">
                     <Setter Property="VerticalAlignment" Value="Bottom" />
-                    <Setter Property="Spacing" Value="8" />
+                    <Setter Property="Spacing" Value="{StaticResource Spacing-2}" />
                 </Style>
 
                 <Style Selector="StackPanel.VerticalTwoButtonStack > TextBlock">
@@ -36,13 +36,13 @@
                     <TextBlock>Standard Primary + Icon</TextBlock>
                     <Button Classes="Standard Primary">
                         <StackPanel>
-                            <avalonia:Icon Classes="Play" />
+                            <unifiedIcon:UnifiedIcon Classes="Play" />
                             <TextBlock Text="BUTTON" />
                         </StackPanel>
                     </Button>
                     <Button Classes="Standard Primary" IsEnabled="False">
                         <StackPanel>
-                            <avalonia:Icon Classes="Play" />
+                            <unifiedIcon:UnifiedIcon Classes="Play" />
                             <TextBlock Text="BUTTON" />
                         </StackPanel>
                     </Button>
@@ -52,15 +52,21 @@
                     <TextBlock>Standard Primary + Image</TextBlock>
                     <Button Classes="Standard Primary">
                         <StackPanel>
-                            <Image
-                                Source="avares://NexusMods.Themes.NexusFluentDark/Assets/DesignTime/cyberpunk_game.png" />
+                            <unifiedIcon:UnifiedIcon>
+                                <unifiedIcon:UnifiedIcon.Value>
+                                    <unifiedIcon:IconValue ImageSetter="avares://NexusMods.Themes.NexusFluentDark/Assets/DesignTime/cyberpunk_game.png"/>
+                                </unifiedIcon:UnifiedIcon.Value>
+                            </unifiedIcon:UnifiedIcon>
                             <TextBlock Text="BUTTON" />
                         </StackPanel>
                     </Button>
                     <Button Classes="Standard Primary" IsEnabled="False">
                         <StackPanel>
-                            <Image
-                                Source="avares://NexusMods.Themes.NexusFluentDark/Assets/DesignTime/cyberpunk_game.png" />
+                            <unifiedIcon:UnifiedIcon>
+                                <unifiedIcon:UnifiedIcon.Value>
+                                    <unifiedIcon:IconValue ImageSetter="avares://NexusMods.Themes.NexusFluentDark/Assets/DesignTime/cyberpunk_game.png"/>
+                                </unifiedIcon:UnifiedIcon.Value>
+                            </unifiedIcon:UnifiedIcon>
                             <TextBlock Text="BUTTON" />
                         </StackPanel>
                     </Button>
@@ -81,13 +87,13 @@
                     <TextBlock>Standard Primary Outline</TextBlock>
                     <Button Classes="Standard PrimaryOutlined">
                         <StackPanel>
-                            <avalonia:Icon Classes="Play" />
+                            <unifiedIcon:UnifiedIcon Classes="Play" />
                             <TextBlock Text="BUTTON" />
                         </StackPanel>
                     </Button>
                     <Button Classes="Standard PrimaryOutlined" IsEnabled="False">
                         <StackPanel>
-                            <avalonia:Icon Classes="Play" />
+                            <unifiedIcon:UnifiedIcon Classes="Play" />
                             <TextBlock Text="BUTTON" />
                         </StackPanel>
                     </Button>
@@ -98,13 +104,13 @@
                     <TextBlock>Standard Secondary</TextBlock>
                     <Button Classes="Standard Secondary">
                         <StackPanel>
-                            <avalonia:Icon Classes="Play" />
+                            <unifiedIcon:UnifiedIcon Classes="Play" />
                             <TextBlock Text="BUTTON" />
                         </StackPanel>
                     </Button>
                     <Button Classes="Standard Secondary" IsEnabled="False">
                         <StackPanel>
-                            <avalonia:Icon Classes="Play" />
+                            <unifiedIcon:UnifiedIcon Classes="Play" />
                             <TextBlock Text="BUTTON" />
                         </StackPanel>
                     </Button>
@@ -115,13 +121,13 @@
                     <TextBlock>Standard Secondary Outline</TextBlock>
                     <Button Classes="Standard SecondaryOutlined">
                         <StackPanel>
-                            <avalonia:Icon Classes="Play" />
+                            <unifiedIcon:UnifiedIcon Classes="Play" />
                             <TextBlock Text="BUTTON" />
                         </StackPanel>
                     </Button>
                     <Button Classes="Standard SecondaryOutlined" IsEnabled="False">
                         <StackPanel>
-                            <avalonia:Icon Classes="Play" />
+                            <unifiedIcon:UnifiedIcon Classes="Play" />
                             <TextBlock Text="BUTTON" />
                         </StackPanel>
                     </Button>
@@ -132,13 +138,13 @@
                     <TextBlock>Standard Tertiary</TextBlock>
                     <Button Classes="Standard Tertiary">
                         <StackPanel>
-                            <avalonia:Icon Classes="Play" />
+                            <unifiedIcon:UnifiedIcon Classes="Play" />
                             <TextBlock Text="BUTTON" />
                         </StackPanel>
                     </Button>
                     <Button Classes="Standard Tertiary" IsEnabled="False">
                         <StackPanel>
-                            <avalonia:Icon Classes="Play" />
+                            <unifiedIcon:UnifiedIcon Classes="Play" />
                             <TextBlock Text="BUTTON" />
                         </StackPanel>
                     </Button>
@@ -150,13 +156,13 @@
                     <TextBlock>Standard Success</TextBlock>
                     <Button Classes="Standard Success">
                         <StackPanel>
-                            <avalonia:Icon Classes="Play" />
+                            <unifiedIcon:UnifiedIcon Classes="Play" />
                             <TextBlock Text="BUTTON" />
                         </StackPanel>
                     </Button>
                     <Button Classes="Standard Success" IsEnabled="False">
                         <StackPanel>
-                            <avalonia:Icon Classes="Play" />
+                            <unifiedIcon:UnifiedIcon Classes="Play" />
                             <TextBlock Text="BUTTON" />
                         </StackPanel>
                     </Button>
@@ -175,7 +181,7 @@
 
     <!-- Base Standard Button (only use with additional qualifiers)-->
     <Style Selector="Button.Standard">
-        <Setter Property="CornerRadius" Value="4" />
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
         <Setter Property="Height" Value="36" />
 
         <!-- Don't set vertical margins, use vertical alignment to keep things centered instead -->
@@ -205,21 +211,9 @@
             <!-- NOTE: Spacing is handled through margin of icon and images as icons seem to behave strangely -->
         </Style>
 
-        <Style Selector="^ > StackPanel > avalonia|Icon">
-            <!-- Icons size seem determined by font size, width and height are just there to limit the bounds -->
-            <Setter Property="FontSize" Value="24" />
-            <Setter Property="Width" Value="24" />
-            <Setter Property="Height" Value="24" />
-
-            <!-- NOTE: For some reason setting this to 8 causes a big distance for icons only, this is a workaround -->
-            <!-- If the distance from the text is too low, try setting this to 8 as design -->
-            <Setter Property="Margin" Value="0,0,3,0" />
-        </Style>
-
-        <Style Selector="^ > StackPanel > Image">
+        <Style Selector="^ > StackPanel > unifiedIcon|UnifiedIcon">
+            <Setter Property="Size" Value="24" />
             <Setter Property="Margin" Value="0,0,8,0" />
-            <Setter Property="Width" Value="24" />
-            <Setter Property="Height" Value="24" />
         </Style>
 
         <Style Selector="^:focus /template/ ContentPresenter#PART_ContentPresenter">
@@ -235,123 +229,123 @@
 
     <!-- Standard Primary -->
     <Style Selector="Button.Standard.Primary">
-        <Setter Property="Background" Value="{DynamicResource ElementForegroundPrimaryModerateBrush}" />
+        <Setter Property="Background" Value="{DynamicResource PrimaryModerateBrush}" />
 
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource ElementForegroundPrimaryStrongBrush}" />
+            <Setter Property="Background" Value="{DynamicResource PrimaryStrongBrush}" />
         </Style>
 
         <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource ElementForegroundPrimaryWeakBrush}" />
+            <Setter Property="Background" Value="{DynamicResource PrimaryWeakBrush}" />
         </Style>
 
         <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource ElementForegroundPrimaryModerateBrush}" />
+            <Setter Property="Background" Value="{DynamicResource PrimaryModerateBrush}" />
         </Style>
     </Style>
 
 
     <!-- Standard PrimaryOutlined -->
     <Style Selector="Button.Standard.PrimaryOutlined">
-        <Setter Property="Background" Value="{DynamicResource ElementBackgroundTransparentBrush}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource ElementForegroundPrimaryModerateBrush}" />
+        <Setter Property="Background" Value="{DynamicResource SurfaceTransparentBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource PrimaryModerateBrush}" />
 
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource ElementBackgroundNeutralTopBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource ElementForegroundPrimaryStrongBrush}" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceTopBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource PrimaryStrongBrush}" />
         </Style>
 
         <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource ElementBackgroundNeutralMidBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource ElementForegroundPrimaryWeakBrush}" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceMidBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource PrimaryWeakBrush}" />
         </Style>
 
         <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource ElementBackgroundTransparentBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource ElementForegroundPrimaryModerateBrush}" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceTransparentBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource PrimaryModerateBrush}" />
         </Style>
     </Style>
 
 
     <!-- Standard Secondary -->
     <Style Selector="Button.Standard.Secondary">
-        <Setter Property="Background" Value="{DynamicResource ElementForegroundNeutralModerateBrush}" />
-        <Setter Property="Foreground" Value="{DynamicResource ElementForegroundNeutralInvertedBrush}" />
+        <Setter Property="Background" Value="{DynamicResource NeutralModerateBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource NeutralInvertedBrush}" />
 
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource ElementForegroundNeutralStrongBrush}" />
+            <Setter Property="Background" Value="{DynamicResource NeutralStrongBrush}" />
 
             <!-- Pointerover uses a different foreground color, so we need to set it again here. -->
-            <Setter Property="Foreground" Value="{DynamicResource ElementForegroundNeutralInvertedBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource NeutralInvertedBrush}" />
         </Style>
 
         <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource ElementForegroundNeutralSubduedBrush}" />
+            <Setter Property="Background" Value="{DynamicResource NeutralSubduedBrush}" />
         </Style>
 
         <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource ElementForegroundNeutralSubduedBrush}" />
+            <Setter Property="Background" Value="{DynamicResource NeutralSubduedBrush}" />
 
             <!-- Disabled uses a different foreground color, so we need to set it again here. -->
-            <Setter Property="Foreground" Value="{DynamicResource ElementForegroundNeutralInvertedBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource NeutralInvertedBrush}" />
         </Style>
     </Style>
 
 
     <!-- Standard SecondaryOutlined -->
     <Style Selector="Button.Standard.SecondaryOutlined">
-        <Setter Property="Background" Value="{DynamicResource ElementBackgroundTransparentBrush}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource ElementForegroundNeutralModerateBrush}" />
+        <Setter Property="Background" Value="{DynamicResource SurfaceTransparentBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource NeutralModerateBrush}" />
 
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource ElementBackgroundNeutralTopBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource ElementForegroundNeutralStrongBrush}" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceTopBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource NeutralStrongBrush}" />
         </Style>
 
         <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource ElementBackgroundNeutralMidBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource ElementForegroundNeutralModerateBrush}" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceMidBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource NeutralModerateBrush}" />
         </Style>
 
         <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource ElementBackgroundTransparentBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource ElementForegroundNeutralWeakBrush}" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceTransparentBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource NeutralWeakBrush}" />
         </Style>
     </Style>
 
 
     <!-- Standard Tertiary -->
     <Style Selector="Button.Standard.Tertiary">
-        <Setter Property="Background" Value="{DynamicResource ElementBackgroundTransparentBrush}" />
+        <Setter Property="Background" Value="{DynamicResource SurfaceTransparentBrush}" />
 
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource ElementBackgroundNeutralTopBrush}" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceTopBrush}" />
         </Style>
 
         <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource ElementBackgroundNeutralMidBrush}" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceMidBrush}" />
         </Style>
 
         <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource ElementBackgroundTransparentBrush}" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceTransparentBrush}" />
         </Style>
     </Style>
 
 
     <!-- Standard Success -->
     <Style Selector="Button.Standard.Success">
-        <Setter Property="Background" Value="{DynamicResource ElementForegroundSuccessSubduedBrush}" />
+        <Setter Property="Background" Value="{DynamicResource SuccessSubduedBrush}" />
 
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource ElementForegroundSuccessModerateBrush}" />
+            <Setter Property="Background" Value="{DynamicResource SuccessModerateBrush}" />
         </Style>
 
         <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource ElementForegroundSuccessWeakBrush}" />
+            <Setter Property="Background" Value="{DynamicResource SuccessWeakBrush}" />
         </Style>
 
         <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource ElementForegroundSuccessWeakBrush}" />
+            <Setter Property="Background" Value="{DynamicResource SuccessWeakBrush}" />
         </Style>
     </Style>
 

@@ -75,24 +75,24 @@
                 x:Name="LeftMenuViewModelHost" />
         </Border>
 
-        <Border Classes="Rounded"
+        <Border Classes="Rounded-lg"
                 Grid.Column="2"
                 Grid.Row="1"
                 Margin="0,0,12,12"
                 x:Name="WorkspacesBorder">
 
-            <ItemsControl x:Name="Workspaces">
+            <ItemsControl x:Name="WorkspacesItemsControl">
 
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <Grid RowDefinitions="*" ColumnDefinitions="*" />
+                        <Grid RowDefinitions="*" ColumnDefinitions="*" x:Name="WorkspaceContainerGrid"/>
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
 
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="{x:Type workspace:IWorkspaceViewModel}">
                         <reactiveUi:ViewModelViewHost
-                            x:Name="ViewModelViewHost"
+                            x:Name="WorkspaceViewHost"
                             IsVisible="{CompiledBinding IsActive, Mode=OneWay}"
                             ViewModel="{CompiledBinding Mode=OneWay}" />
                     </DataTemplate>

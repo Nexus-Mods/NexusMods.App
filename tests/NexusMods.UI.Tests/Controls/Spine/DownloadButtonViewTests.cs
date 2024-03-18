@@ -112,6 +112,6 @@ public class DownloadButtonViewTests : AViewTest<SpineDownloadButtonView, SpineD
     [Fact]
     public async Task ClickingTheButtonTriggersTheCommand()
     {
-        await ButtonShouldFireCommand(vm => vm.Click, "ParentButton");
+        await ButtonShouldFireReactiveCommand(vm => vm.Click, "ParentButton");
     }
 }

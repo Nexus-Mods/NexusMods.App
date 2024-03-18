@@ -15,13 +15,13 @@
     </Design.DataContext>
     <base:MessageBoxBackground MinWidth="576" MaxWidth="576">
         <base:MessageBoxBackground.TopContent>
-            <StackPanel Orientation="Vertical" Margin="16, 24, 24, 0" Spacing="16">
+            <StackPanel Orientation="Vertical" Margin="16, 24, 24, 0" Classes="Spacing-3_5">
 
                 <TextBlock Classes="HeadingXSSemi"
                            Text="{x:Static resources:Language.Updater_UpdateAvailable}"/>
 
                 <!-- Message -->
-                <StackPanel Spacing="8">
+                <StackPanel Classes="Spacing-2">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Classes="BodyMDBold"
                                    x:Name="FromVersionTextBlock"/>
@@ -51,7 +51,7 @@
         <base:MessageBoxBackground.BottomContent>
 
             <!-- Buttons -->
-            <StackPanel Orientation="Horizontal" Margin="24" HorizontalAlignment="Right" Spacing="8">
+            <StackPanel Orientation="Horizontal" Margin="24" HorizontalAlignment="Right" Classes="Spacing-2">
                 <Button x:Name="LaterButton" Classes="Standard Tertiary" HorizontalAlignment="Stretch">
                     <TextBlock Text="{x:Static resources:Language.Updater_LATER}" />
                 </Button>

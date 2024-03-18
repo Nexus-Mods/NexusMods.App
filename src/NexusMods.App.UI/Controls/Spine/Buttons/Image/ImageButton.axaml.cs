@@ -1,15 +1,13 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.ReactiveUI;
-using Avalonia.VisualTree;
+using NexusMods.App.UI.Controls.UnifiedIcon;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Controls.Spine.Buttons.Image;
 
 public partial class ImageButton : ReactiveUserControl<IImageButtonViewModel>
 {
-    private Avalonia.Controls.Image? _image;
-
     public ImageButton()
     {
         InitializeComponent();
@@ -18,14 +16,13 @@ public partial class ImageButton : ReactiveUserControl<IImageButtonViewModel>
         {
             this.WhenAnyValue(vm => vm.ViewModel!.IsActive)
                 .StartWith(false)
-                .SubscribeWithErrorLogging(logger: default, SetClasses)
+                .SubscribeWithErrorLogging(SetClasses)
                 .DisposeWith(d);
 
             this.BindCommand(ViewModel, vm => vm.Click, v => v.Button)
                 .DisposeWith(d);
 
-            _image = this.FindDescendantOfType<Avalonia.Controls.Image>();
-            this.OneWayBind(ViewModel, vm => vm.Image, v => v._image!.Source)
+            this.OneWayBind(ViewModel, vm => vm.Image, view => view.Image.Value, image => new IconValue(new AvaloniaImage(image)))
                 .DisposeWith(d);
 
             this.OneWayBind(ViewModel, vm => vm.Name, v => v.ToolTipTextBlock.Text)
