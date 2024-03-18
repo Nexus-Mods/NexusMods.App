@@ -108,6 +108,7 @@ public class DiagnosticTemplateIncrementalSourceGenerator : IIncrementalGenerato
             cw.AppendLine($"return new {Constants.DiagnosticsNamespace}.Diagnostic<{diagnosticName}MessageData>");
             using (cw.AddBlock())
             {
+                // Id
                 cw.Append($"Id = new {Constants.DiagnosticsNamespace}.DiagnosticId(");
                 var args = parsedData.IdCreationExpression.ArgumentList!.Arguments;
                 if (args[0].Expression is LiteralExpressionSyntax literalSource)
@@ -115,7 +116,7 @@ public class DiagnosticTemplateIncrementalSourceGenerator : IIncrementalGenerato
                     cw.Append($"source: \"{literalSource.Token.ValueText}\",");
                 } else if (args[0].Expression is IdentifierNameSyntax identifierNameSyntax)
                 {
-                    cw.Append($"source: {identifierNameSyntax.Identifier.Value},");
+                    cw.Append($"source: {identifierNameSyntax.Identifier.Value}, ");
                 }
 
                 if (args[1].Expression is LiteralExpressionSyntax literalNumber)
@@ -124,8 +125,18 @@ public class DiagnosticTemplateIncrementalSourceGenerator : IIncrementalGenerato
                 }
                 cw.AppendLine("),");
 
+                // Title
+                cw.Append("Title = ");
+                if (parsedData.TitleExpression is LiteralExpressionSyntax literalTitle)
+                {
+                    cw.Append($"\"{literalTitle.Token.ValueText}\"");
+                }
+                cw.AppendLine(",");
+
+                // Severity
                 cw.AppendLine($"Severity = {Constants.DiagnosticsNamespace}.DiagnosticSeverity.{parsedData.SeverityName},");
 
+                // Summary
                 cw.Append($"Summary = {Constants.DiagnosticsNamespace}.DiagnosticMessage.From(");
                 if (parsedData.SummaryTemplateExpression is LiteralExpressionSyntax literalSummary)
                 {
@@ -133,6 +144,7 @@ public class DiagnosticTemplateIncrementalSourceGenerator : IIncrementalGenerato
                 }
                 cw.AppendLine("),");
 
+                // Details
                 cw.Append($"Details = {Constants.DiagnosticsNamespace}.DiagnosticMessage.");
                 if (parsedData.DetailsTemplateExpression is null)
                 {
@@ -142,7 +154,9 @@ public class DiagnosticTemplateIncrementalSourceGenerator : IIncrementalGenerato
                     cw.AppendLine($"From(\"{literalDetails.Token.ValueText}\"),");
                 }
 
+                // MessageData
                 cw.AppendLine("MessageData = messageData,");
+                // DataReferences
                 cw.AppendLine($"DataReferences = new global::System.Collections.Generic.Dictionary<{Constants.DiagnosticsNamespace}.References.DataReferenceDescription, {Constants.DiagnosticsNamespace}.References.IDataReference>");
                 using (cw.AddBlock())
                 {
@@ -212,6 +226,7 @@ public class DiagnosticTemplateIncrementalSourceGenerator : IIncrementalGenerato
         const string withoutDetails = "WithoutDetails";
         const string withSummary = "WithSummary";
         const string withSeverity = "WithSeverity";
+        const string withTitle = "WithTitle";
         const string withId = "WithId";
         const string start = "Start";
 
@@ -253,6 +268,11 @@ public class DiagnosticTemplateIncrementalSourceGenerator : IIncrementalGenerato
         if (withSeverityArguments[0].Expression is not MemberAccessExpressionSyntax severityMemberAccess) return false;
         var severityName = severityMemberAccess.Name.Identifier.ToString();
 
+        // WithTitle
+        if (!IsInvocationWithName(next, withTitle, out var withTitleArguments, out next));
+        if (withTitleArguments.Count != 1) return false;
+        var titleExpression = withTitleArguments[0].Expression;
+
         // WithId
         if (!IsInvocationWithName(next, withId, out var withIdArguments, out next)) return false;
         if (withIdArguments.Count != 1) return false;
@@ -265,6 +285,7 @@ public class DiagnosticTemplateIncrementalSourceGenerator : IIncrementalGenerato
 
         parsedData = new ParsedData(
             IdCreationExpression: idCreation,
+            TitleExpression: titleExpression,
             SeverityName: severityName,
             SummaryTemplateExpression: summaryTemplateExpression,
             DetailsTemplateExpression: detailsTemplateExpression,
@@ -352,6 +373,7 @@ public class DiagnosticTemplateIncrementalSourceGenerator : IIncrementalGenerato
 
     private record struct ParsedData(
         ObjectCreationExpressionSyntax IdCreationExpression,
+        ExpressionSyntax TitleExpression,
         string SeverityName,
         ExpressionSyntax SummaryTemplateExpression,
         ExpressionSyntax? DetailsTemplateExpression,

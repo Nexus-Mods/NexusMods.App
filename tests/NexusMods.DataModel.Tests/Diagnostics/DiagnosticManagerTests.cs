@@ -82,6 +82,7 @@ public class DiagnosticManagerTests : ADataModelTest<DiagnosticManagerTests>
             new()
             {
                 Id = new DiagnosticId(),
+                Title = "Dummy",
                 Severity = DiagnosticSeverity.Warning,
                 Summary = DiagnosticMessage.DefaultValue,
                 Details = DiagnosticMessage.DefaultValue,
@@ -109,6 +110,7 @@ public class DiagnosticManagerTests : ADataModelTest<DiagnosticManagerTests>
             new()
             {
                 Id = new DiagnosticId("foo", 1),
+                Title = "Dummy",
                 Severity = DiagnosticSeverity.Warning,
                 Summary = DiagnosticMessage.DefaultValue,
                 Details = DiagnosticMessage.DefaultValue,

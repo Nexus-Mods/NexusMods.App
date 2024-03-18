@@ -14,6 +14,7 @@ internal static partial class Diagnostics
     internal static IDiagnosticTemplate MissingRequiredDependencyTemplate = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, number: 1))
+        .WithTitle("Missing required dependency")
         .WithSeverity(DiagnosticSeverity.Warning)
         .WithSummary("Mod {Mod} is missing required dependency {MissingDependency}")
         .WithDetails("You can download the latest version at {NexusModsDependencyUri}")
@@ -29,6 +30,7 @@ internal static partial class Diagnostics
     internal static IDiagnosticTemplate RequiredDependencyIsOutdatedTemplate = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, number: 2))
+        .WithTitle("Required dependency is outdated")
         .WithSeverity(DiagnosticSeverity.Warning)
         .WithSummary("Mod {Dependent} requires at least version {MinimumVersion} of {Dependency} but installed is {CurrentVersion}")
         .WithDetails("You can download the latest version at {NexusModsDependencyUri}")
@@ -46,6 +48,7 @@ internal static partial class Diagnostics
     internal static IDiagnosticTemplate SMAPIRequiredButNotInstalledTemplate = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, number: 3))
+        .WithTitle("SMAPI is not installed")
         .WithSeverity(DiagnosticSeverity.Warning)
         .WithSummary("SMAPI is required for {ModCount} Mod(s) but it's not installed")
         .WithDetails("You can install the latest SMAPI version at {NexusModsSMAPIUri}.")
@@ -60,6 +63,7 @@ internal static partial class Diagnostics
     internal static IDiagnosticTemplate SMAPIRequiredButDisabledTemplate = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, number: 4))
+        .WithTitle("SMAPI is not enabled")
         .WithSeverity(DiagnosticSeverity.Warning)
         .WithSummary("SMAPI is required for {ModCount} Mod(s) but it's not enabled")
         .WithoutDetails()
