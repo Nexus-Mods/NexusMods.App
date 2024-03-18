@@ -1,5 +1,6 @@
 using System.Runtime.CompilerServices;
 using NexusMods.Paths;
+using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Utilities;
 using NexusMods.Paths.Utilities.Enums;
 
@@ -46,6 +47,9 @@ public enum FileTreeNodeIconType
 
 public static class FileTreeNodeIconTypeHelpers
 {
+    /// <summary>
+    /// Maps an Icon Type from an extension to an Icon category used by the Nexus App UI.
+    /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static FileTreeNodeIconType GetIconType(this Extension extension)
     {
@@ -53,6 +57,9 @@ public static class FileTreeNodeIconTypeHelpers
         return GetIconType(category);
     }
 
+    /// <summary>
+    /// Maps an Icon Type from the Paths library to an Icon Category used by the Nexus App UI.
+    /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static FileTreeNodeIconType GetIconType(this ExtensionCategory category) => category switch
     {
@@ -82,6 +89,9 @@ public static class FileTreeNodeIconTypeHelpers
         _ => FileTreeNodeIconType.File,
     };
     
+    /// <summary>
+    /// Provides the XAML class to be used with <see cref="UnifiedIcon"/> for the given icon type.
+    /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string GetIconClass(this FileTreeNodeIconType iconType) => iconType switch
     {
@@ -94,6 +104,25 @@ public static class FileTreeNodeIconTypeHelpers
         FileTreeNodeIconType.Video => "VideoOutline",
         _ => ThrowArgumentOutOfRangeException(iconType),
     };
+
+    /// <summary>
+    /// Provides the XAML class to be used with <see cref="UnifiedIcon"/> for the given extension.
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static string GetIconClass(this Extension extension)
+    {
+        var category = extension.GetCategory();
+        return GetIconClass(GetIconType(category));
+    }
+    
+    /// <summary>
+    /// Provides the XAML class to be used with <see cref="UnifiedIcon"/> for the given file name.
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static string GetIconClassFromFileName(this string fileName)
+    {
+        return fileName.ToRelativePath().Extension.GetIconClass();
+    }
     
     private static string ThrowArgumentOutOfRangeException(FileTreeNodeIconType iconType) => throw new ArgumentOutOfRangeException(nameof(iconType), iconType, null);
 }
