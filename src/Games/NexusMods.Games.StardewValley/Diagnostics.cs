@@ -1,6 +1,7 @@
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.References;
+using NexusMods.Abstractions.Diagnostics.Values;
 using NexusMods.Generators.Diagnostics;
 
 namespace NexusMods.Games.StardewValley;
@@ -21,7 +22,7 @@ internal static partial class Diagnostics
         .WithMessageData(messageBuilder => messageBuilder
             .AddDataReference<ModReference>("Mod")
             .AddValue<string>("MissingDependency")
-            .AddValue<Uri>("NexusModsDependencyUri")
+            .AddValue<NamedLink>("NexusModsDependencyUri")
         )
         .Finish();
 
@@ -39,7 +40,7 @@ internal static partial class Diagnostics
             .AddDataReference<ModReference>("Dependency")
             .AddValue<string>("MinimumVersion")
             .AddValue<string>("CurrentVersion")
-            .AddValue<Uri>("NexusModsDependencyUri")
+            .AddValue<NamedLink>("NexusModsDependencyUri")
         )
         .Finish();
 
@@ -54,7 +55,7 @@ internal static partial class Diagnostics
         .WithDetails("You can install the latest SMAPI version at {NexusModsSMAPIUri}.")
         .WithMessageData(messageBuilder => messageBuilder
             .AddValue<int>("ModCount")
-            .AddValue<Uri>("NexusModsSMAPIUri")
+            .AddValue<NamedLink>("NexusModsSMAPIUri")
         )
         .Finish();
 

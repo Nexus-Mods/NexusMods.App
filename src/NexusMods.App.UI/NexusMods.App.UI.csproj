@@ -444,6 +444,15 @@
         <Compile Update="DiagnosticSystem\ValueFormatterCache.cs">
           <DependentUpon>IValueFormatter.cs</DependentUpon>
         </Compile>
+        <Compile Update="DiagnosticSystem\ModReferenceFormatter.cs">
+          <DependentUpon>IValueFormatter.cs</DependentUpon>
+        </Compile>
+        <Compile Update="DiagnosticSystem\LoadoutReferenceFormatter.cs">
+          <DependentUpon>IValueFormatter.cs</DependentUpon>
+        </Compile>
+        <Compile Update="DiagnosticSystem\NamedLinkFormatter.cs">
+          <DependentUpon>IValueFormatter.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>

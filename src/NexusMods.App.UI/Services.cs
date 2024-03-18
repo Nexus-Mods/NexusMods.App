@@ -217,6 +217,9 @@ public static class Services
 
             // Diagnostics
             .AddSingleton<ValueFormatterCache>()
+            .AddSingleton<IValueFormatter, ModReferenceFormatter>()
+            .AddSingleton<IValueFormatter, LoadoutReferenceFormatter>()
+            .AddSingleton<IValueFormatter, NamedLinkFormatter>()
             .AddTransient<IDiagnosticWriter, DiagnosticWriter>()
 
             // Other

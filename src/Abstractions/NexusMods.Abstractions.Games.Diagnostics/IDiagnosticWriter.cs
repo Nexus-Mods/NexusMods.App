@@ -32,6 +32,9 @@ public interface IDiagnosticWriter : IDisposable
     /// </remarks>
     void Write(ReadOnlySpan<char> value);
 
+    /// <inheritdoc cref="Write(ReadOnlySpan{char})"/>
+    void Write(string value) => Write(value.AsSpan());
+
     /// <summary>
     /// Returns he output of the writer and calls <see cref="Reset"/>.
     /// </summary>
