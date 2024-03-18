@@ -38,13 +38,13 @@ public interface IDiagnosticWriter : IDisposable
     /// <summary>
     /// Returns he output of the writer and calls <see cref="Reset"/>.
     /// </summary>
-    string GetOutput();
+    string ToOutput();
 
     /// <summary>
     /// Resets the writer to it's initial state.
     /// </summary>
     /// <remarks>
-    /// This gets called automatically by <see cref="GetOutput"/>.
+    /// This gets called automatically by <see cref="ToOutput"/>.
     /// </remarks>
     void Reset();
 }

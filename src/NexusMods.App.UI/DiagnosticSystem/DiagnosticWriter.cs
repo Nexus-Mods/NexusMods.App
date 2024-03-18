@@ -39,7 +39,7 @@ internal sealed class DiagnosticWriter : IDiagnosticWriter
 
     public void Write(ReadOnlySpan<char> value) => _sb.Append(value);
 
-    public string GetOutput()
+    public string ToOutput()
     {
         var res = _sb.ToString();
         Reset();
