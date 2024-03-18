@@ -172,9 +172,10 @@ public class DiagnosticTemplateIncrementalSourceGenerator : IIncrementalGenerato
             cw.AppendLine(";");
         }
 
-        cw.AppendLine($"internal readonly struct {diagnosticName}MessageData");
+        cw.AppendLine($"internal readonly struct {diagnosticName}MessageData : {Constants.DiagnosticsNamespace}.IDiagnosticMessageData");
         using (cw.AddBlock())
         {
+            // fields
             foreach (var field in parsedData.ParsedMessageBuilderFields)
             {
                 cw.AppendLine($"public readonly {field.TypeSymbol.ToDisplayString(CustomSymbolDisplayFormats.GlobalFormat)} {field.Name};");
@@ -182,6 +183,7 @@ public class DiagnosticTemplateIncrementalSourceGenerator : IIncrementalGenerato
 
             cw.AppendLine();
 
+            // constructor
             cw.Append($"public {diagnosticName}MessageData(");
             for (var i = 0; i < parsedData.ParsedMessageBuilderFields.Count; i++)
             {
@@ -196,6 +198,68 @@ public class DiagnosticTemplateIncrementalSourceGenerator : IIncrementalGenerato
                 {
                     cw.AppendLine($"this.{field.Name} = {field.Name};");
                 }
+            }
+
+            // Format method
+            cw.AppendLine($"public void Format({Constants.DiagnosticsNamespace}.DiagnosticMessage message, {Constants.DiagnosticsNamespace}.IDiagnosticWriter writer)");
+            using (cw.AddBlock())
+            {
+                cw.AppendLine("var value = message.Value;");
+                cw.AppendLine("var span = value.AsSpan();");
+
+                cw.AppendLine("int i;");
+                cw.AppendLine("var bracesStartIndex = -1;");
+                cw.AppendLine("var bracesEndIndex = -1;");
+                cw.AppendLine("for (i = 0; i < value.Length; i++)");
+                using (cw.AddBlock())
+                {
+                    cw.AppendLine("var c = value[i];");
+
+                    cw.AppendLine("if (bracesStartIndex == -1)");
+                    using (cw.AddBlock())
+                    {
+                        cw.AppendLine("if (c != '{') continue;");
+                        cw.AppendLine("bracesStartIndex = i;");
+
+                        cw.AppendLine("var slice = span.Slice(bracesEndIndex + 1, i - bracesEndIndex - 1);");
+                        cw.AppendLine("writer.Write(slice);");
+                        cw.AppendLine("continue;");
+                    }
+
+                    cw.AppendLine("if (c != '}') continue;");
+
+                    cw.AppendLine("var fieldName = span.Slice(bracesStartIndex + 1, i - bracesStartIndex - 1);");
+                    for (var i = 0; i < parsedData.ParsedMessageBuilderFields.Count; i++)
+                    {
+                        if (i != 0) cw.Append(" else ");
+                        var field = parsedData.ParsedMessageBuilderFields[i];
+                        cw.AppendLine($"if (fieldName.Equals(nameof({field.Name}), global::System.StringComparison.Ordinal))");
+                        using (cw.AddBlock())
+                        {
+                            if (field.TypeSymbol.IsValueType)
+                            {
+                                cw.AppendLine($"writer.WriteValueType({field.Name});");
+                            }
+                            else
+                            {
+                                cw.AppendLine($"writer.Write({field.Name});");
+                            }
+                        }
+                    }
+
+                    cw.AppendLine("else");
+                    using (cw.AddBlock())
+                    {
+                        cw.AppendLine("throw new global::System.NotImplementedException();");
+                    }
+
+                    cw.AppendLine("bracesStartIndex = -1;");
+                    cw.AppendLine("bracesEndIndex = -1;");
+                }
+
+                cw.AppendLine("if (bracesEndIndex == i) return;");
+                cw.AppendLine("var endSlice = span.Slice(bracesEndIndex + 1, i - bracesEndIndex - 1);");
+                cw.AppendLine("writer.Write(endSlice);");
             }
         }
 
@@ -258,7 +322,7 @@ public class DiagnosticTemplateIncrementalSourceGenerator : IIncrementalGenerato
         }
 
         // WithSummary
-        if (!IsInvocationWithName(next, withSummary, out var withSummaryArguments, out next));
+        if (!IsInvocationWithName(next, withSummary, out var withSummaryArguments, out next)) return false;
         if (withSummaryArguments.Count != 1) return false;
         var summaryTemplateExpression = withSummaryArguments[0].Expression;
 
@@ -269,7 +333,7 @@ public class DiagnosticTemplateIncrementalSourceGenerator : IIncrementalGenerato
         var severityName = severityMemberAccess.Name.Identifier.ToString();
 
         // WithTitle
-        if (!IsInvocationWithName(next, withTitle, out var withTitleArguments, out next));
+        if (!IsInvocationWithName(next, withTitle, out var withTitleArguments, out next)) return false;
         if (withTitleArguments.Count != 1) return false;
         var titleExpression = withTitleArguments[0].Expression;
 

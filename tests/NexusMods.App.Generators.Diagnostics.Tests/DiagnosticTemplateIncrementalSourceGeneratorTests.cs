@@ -25,12 +25,13 @@ internal partial class MyClass
         .WithId(new DiagnosticId(source: Source, number: 1))
         .WithTitle("Diagnostic 1")
         .WithSeverity(DiagnosticSeverity.Warning)
-        .WithSummary("Mod '{ModA}' conflicts with '{ModB}' because it's missing '{Something}'!")
+        .WithSummary("Mod '{ModA}' conflicts with '{ModB}' because it's missing '{Something}' and {Count} other stuff!")
         .WithoutDetails()
         .WithMessageData(messageBuilder => messageBuilder
             .AddDataReference<ModReference>("ModA")
             .AddDataReference<ModReference>("ModB")
             .AddValue<string>("Something")
+            .AddValue<int>("Count")
         )
         .Finish();
 }

@@ -1,5 +1,6 @@
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
+using NexusMods.Abstractions.Diagnostics.Values;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.StardewValley.Models;
 
@@ -7,7 +8,7 @@ namespace NexusMods.Games.StardewValley.Emitters;
 
 public class MissingSMAPIEmitter : ILoadoutDiagnosticEmitter
 {
-    private static readonly Uri NexusModsSMAPIUri = new("https://nexusmods.com/stardewvalley/mods/2400");
+    private static readonly NamedLink NexusModsSMAPILink = new("Nexus Mods", new Uri("https://nexusmods.com/stardewvalley/mods/2400"));
 
     public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout loadout)
     {
@@ -25,7 +26,7 @@ public class MissingSMAPIEmitter : ILoadoutDiagnosticEmitter
         {
             yield return Diagnostics.CreateSMAPIRequiredButNotInstalled(
                 ModCount: smapiModCount,
-                NexusModsSMAPIUri: NexusModsSMAPIUri
+                NexusModsSMAPIUri: NexusModsSMAPILink
             );
         }
 
