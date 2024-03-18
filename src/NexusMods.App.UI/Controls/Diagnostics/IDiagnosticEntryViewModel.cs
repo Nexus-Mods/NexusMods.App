@@ -10,6 +10,6 @@ public interface IDiagnosticEntryViewModel : IViewModelInterface
     
     DiagnosticSeverity Severity { get; }
     
-    ReactiveCommand<Unit, Unit> SeeDetailsCommand { get; }
+    ReactiveCommand<Unit, Diagnostic> SeeDetailsCommand { get; }
 }
 

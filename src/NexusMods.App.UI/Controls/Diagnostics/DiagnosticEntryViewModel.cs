@@ -1,5 +1,4 @@
 using System.Reactive;
-using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics;
 using ReactiveUI;
 
@@ -15,10 +14,10 @@ public class DiagnosticEntryViewModel : AViewModel<IDiagnosticEntryViewModel>, I
         Summary = writer.ToOutput();
         
         Severity = diagnostic.Severity;
-        SeeDetailsCommand = ReactiveCommand.Create(() => { });
+        SeeDetailsCommand = ReactiveCommand.Create(() => diagnostic);
     }
 
     public string Summary { get; }
     public DiagnosticSeverity Severity { get; }
-    public ReactiveCommand<Unit, Unit> SeeDetailsCommand { get; }
+    public ReactiveCommand<Unit, Diagnostic> SeeDetailsCommand { get; }
 }
