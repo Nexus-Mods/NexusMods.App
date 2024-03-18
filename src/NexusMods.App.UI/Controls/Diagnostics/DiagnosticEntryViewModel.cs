@@ -1,4 +1,5 @@
 using System.Reactive;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics;
 using ReactiveUI;
 
@@ -7,9 +8,12 @@ namespace NexusMods.App.UI.Controls.Diagnostics;
 public class DiagnosticEntryViewModel : AViewModel<IDiagnosticEntryViewModel>, IDiagnosticEntryViewModel
 {
     
-    public DiagnosticEntryViewModel(Diagnostic diagnostic)
+    public DiagnosticEntryViewModel(Diagnostic diagnostic, IDiagnosticWriter writer)
     {
-        Summary = diagnostic.Summary.ToString();
+        // Obtain plain text version of the diagnostic summary
+        diagnostic.FormatSummary(writer);
+        Summary = writer.ToOutput();
+        
         Severity = diagnostic.Severity;
         SeeDetailsCommand = ReactiveCommand.Create(() => { });
     }
