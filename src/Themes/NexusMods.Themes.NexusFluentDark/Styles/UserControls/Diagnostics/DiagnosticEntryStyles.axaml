@@ -1,0 +1,17 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ui="clr-namespace:NexusMods.App.UI.Controls.Diagnostics;assembly=NexusMods.App.UI">
+    <Design.PreviewWith>
+        <ui:DiagnosticEntryView />
+    </Design.PreviewWith>
+
+    <!-- Add Styles Here -->
+    <Style Selector="ui|DiagnosticEntryView">
+        <Style Selector="^ Button#EntryButton">
+            <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
+            
+            <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
+        </Style>
+    </Style>
+</Styles>

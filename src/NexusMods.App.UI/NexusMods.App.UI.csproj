@@ -441,6 +441,15 @@
         <Compile Update="Controls\ModInfo\ModFiles\ModFilesViewModel.cs">
           <DependentUpon>IModFilesViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Controls\Diagnostics\DiagnosticEntryView.axaml.cs">
+            <DependentUpon>DiagnosticEntryView.xaml</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\Diagnostics\DiagnosticEntryViewModel.cs">
+          <DependentUpon>IDiagnosticEntryViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\Diagnostics\DiagnosticEntryDesignViewModel.cs">
+          <DependentUpon>IDiagnosticEntryViewModel.cs</DependentUpon>
+        </Compile>
         <Compile Update="DiagnosticSystem\ValueFormatterCache.cs">
           <DependentUpon>IValueFormatter.cs</DependentUpon>
         </Compile>
@@ -488,5 +497,9 @@
         <Generator>PublicResXFileCodeGenerator</Generator>
         <LastGenOutput>Language.Designer.cs</LastGenOutput>
       </EmbeddedResource>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Pages\Diagnostics\" />
     </ItemGroup>
 </Project>

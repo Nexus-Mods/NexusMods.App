@@ -66,6 +66,9 @@
             <unifiedIcon:UnifiedIcon Classes="AddCircle" />
             <unifiedIcon:UnifiedIcon Classes="Eye" />
             <unifiedIcon:UnifiedIcon Classes="AlertCircle" />
+            <unifiedIcon:UnifiedIcon Classes="AlertOctagon" />
+            <unifiedIcon:UnifiedIcon Classes="MonitorDiagnostics" />
+            <unifiedIcon:UnifiedIcon Classes="ListBulleted" />
         </WrapPanel>
     </Design.PreviewWith>
 
@@ -95,6 +98,18 @@
     <Style Selector="unifiedIcon|UnifiedIcon.ForegroundInverted">
         <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
     </Style>
+    
+    <Style Selector="unifiedIcon|UnifiedIcon.ForegroundInfoStrong">
+        <Setter Property="Foreground" Value="{StaticResource InfoStrongBrush}" />
+    </Style>
+    
+    <Style Selector="unifiedIcon|UnifiedIcon.ForegroundWarningStrong">
+        <Setter Property="Foreground" Value="{StaticResource WarningStrongBrush}" />
+    </Style>
+    
+    <Style Selector="unifiedIcon|UnifiedIcon.ForegroundDangerStrong">
+        <Setter Property="Foreground" Value="{StaticResource DangerStrongBrush}" />
+    </Style>
 
     <!-- Icon Selection -->
 
@@ -102,241 +117,241 @@
     <!-- https://pictogrammers.com/library/mdi/ -->
     <Style Selector="unifiedIcon|UnifiedIcon.Alert">
         <Setter Property="Value">
-            <unifiedIcon:IconValue MdiValueSetter="mdi-alert"/>
+            <unifiedIcon:IconValue MdiValueSetter="mdi-alert" />
         </Setter>
     </Style>
 
     <Style Selector="unifiedIcon|UnifiedIcon.AlertOutline">
         <Setter Property="Value">
-            <unifiedIcon:IconValue MdiValueSetter="mdi-alert-outline"/>
+            <unifiedIcon:IconValue MdiValueSetter="mdi-alert-outline" />
         </Setter>
     </Style>
 
     <Style Selector="unifiedIcon|UnifiedIcon.Bell">
         <Setter Property="Value">
-            <unifiedIcon:IconValue MdiValueSetter="mdi-bell"/>
+            <unifiedIcon:IconValue MdiValueSetter="mdi-bell" />
         </Setter>
     </Style>
 
     <Style Selector="unifiedIcon|UnifiedIcon.CheckUnderline">
         <Setter Property="Value">
-            <unifiedIcon:IconValue MdiValueSetter="mdi-check-underline"/>
+            <unifiedIcon:IconValue MdiValueSetter="mdi-check-underline" />
         </Setter>
     </Style>
 
     <Style Selector="unifiedIcon|UnifiedIcon.ClearAll">
         <Setter Property="Value">
-            <unifiedIcon:IconValue MdiValueSetter="mdi-notification-clear-all"/>
+            <unifiedIcon:IconValue MdiValueSetter="mdi-notification-clear-all" />
         </Setter>
     </Style>
 
     <Style Selector="unifiedIcon|UnifiedIcon.Cog">
         <Setter Property="Value">
-            <unifiedIcon:IconValue MdiValueSetter="mdi-cog"/>
+            <unifiedIcon:IconValue MdiValueSetter="mdi-cog" />
         </Setter>
     </Style>
 
     <Style Selector="unifiedIcon|UnifiedIcon.Download">
         <Setter Property="Value">
-            <unifiedIcon:IconValue MdiValueSetter="mdi-download"/>
+            <unifiedIcon:IconValue MdiValueSetter="mdi-download" />
         </Setter>
     </Style>
 
     <Style Selector="unifiedIcon|UnifiedIcon.HelpCircle">
         <Setter Property="Value">
-            <unifiedIcon:IconValue MdiValueSetter="mdi-help-circle"/>
+            <unifiedIcon:IconValue MdiValueSetter="mdi-help-circle" />
         </Setter>
     </Style>
 
     <Style Selector="unifiedIcon|UnifiedIcon.Help">
         <Setter Property="Value">
-            <unifiedIcon:IconValue MdiValueSetter="mdi-help-circle-outline"/>
+            <unifiedIcon:IconValue MdiValueSetter="mdi-help-circle-outline" />
         </Setter>
     </Style>
 
     <Style Selector="unifiedIcon|UnifiedIcon.History">
         <Setter Property="Value">
-            <unifiedIcon:IconValue MdiValueSetter="mdi-history"/>
+            <unifiedIcon:IconValue MdiValueSetter="mdi-history" />
         </Setter>
     </Style>
 
     <Style Selector="unifiedIcon|UnifiedIcon.Play">
         <Setter Property="Value">
-            <unifiedIcon:IconValue MdiValueSetter="mdi-play"/>
+            <unifiedIcon:IconValue MdiValueSetter="mdi-play" />
         </Setter>
     </Style>
 
     <Style Selector="unifiedIcon|UnifiedIcon.PlusCircleOutline">
         <Setter Property="Value">
-            <unifiedIcon:IconValue MdiValueSetter="mdi-plus-circle-outline"/>
+            <unifiedIcon:IconValue MdiValueSetter="mdi-plus-circle-outline" />
         </Setter>
     </Style>
 
     <Style Selector="unifiedIcon|UnifiedIcon.ProgressDownload">
         <Setter Property="Value">
-            <unifiedIcon:IconValue MdiValueSetter="mdi-progress-download"/>
+            <unifiedIcon:IconValue MdiValueSetter="mdi-progress-download" />
         </Setter>
     </Style>
 
     <Style Selector="unifiedIcon|UnifiedIcon.PauseCircleOutline">
         <Setter Property="Value">
-            <unifiedIcon:IconValue MdiValueSetter="mdi-pause-circle-outline"/>
+            <unifiedIcon:IconValue MdiValueSetter="mdi-pause-circle-outline" />
         </Setter>
     </Style>
 
     <Style Selector="unifiedIcon|UnifiedIcon.PauseCircleFilled">
         <Setter Property="Value">
-            <unifiedIcon:IconValue MdiValueSetter="mdi-pause-circle"/>
+            <unifiedIcon:IconValue MdiValueSetter="mdi-pause-circle" />
         </Setter>
     </Style>
 
     <Style Selector="unifiedIcon|UnifiedIcon.RemoveCircleOutline">
         <Setter Property="Value">
-            <unifiedIcon:IconValue MdiValueSetter="mdi-minus-circle-outline"/>
+            <unifiedIcon:IconValue MdiValueSetter="mdi-minus-circle-outline" />
         </Setter>
     </Style>
 
     <Style Selector="unifiedIcon|UnifiedIcon.Star">
         <Setter Property="Value">
-            <unifiedIcon:IconValue MdiValueSetter="mdi-star"/>
+            <unifiedIcon:IconValue MdiValueSetter="mdi-star" />
         </Setter>
     </Style>
 
     <Style Selector="unifiedIcon|UnifiedIcon.TrashCanOutline">
         <Setter Property="Value">
-            <unifiedIcon:IconValue MdiValueSetter="mdi-trash-can-outline"/>
+            <unifiedIcon:IconValue MdiValueSetter="mdi-trash-can-outline" />
         </Setter>
     </Style>
 
     <Style Selector="unifiedIcon|UnifiedIcon.PlayCircleOutline">
         <Setter Property="Value">
-            <unifiedIcon:IconValue MdiValueSetter="mdi-play-circle-outline"/>
+            <unifiedIcon:IconValue MdiValueSetter="mdi-play-circle-outline" />
         </Setter>
     </Style>
 
     <Style Selector="unifiedIcon|UnifiedIcon.PlayCircleFilled">
         <Setter Property="Value">
-            <unifiedIcon:IconValue MdiValueSetter="mdi-play-circle"/>
+            <unifiedIcon:IconValue MdiValueSetter="mdi-play-circle" />
         </Setter>
     </Style>
 
     <Style Selector="unifiedIcon|UnifiedIcon.Image">
         <Setter Property="Value">
-            <unifiedIcon:IconValue MdiValueSetter="mdi-image"/>
+            <unifiedIcon:IconValue MdiValueSetter="mdi-image" />
         </Setter>
     </Style>
 
     <Style Selector="unifiedIcon|UnifiedIcon.Description">
         <Setter Property="Value">
-            <unifiedIcon:IconValue MdiValueSetter="mdi-text-box"/>
+            <unifiedIcon:IconValue MdiValueSetter="mdi-text-box" />
         </Setter>
     </Style>
 
     <Style Selector="unifiedIcon|UnifiedIcon.Tune">
         <Setter Property="Value">
-            <unifiedIcon:IconValue MdiValueSetter="mdi-tune"/>
+            <unifiedIcon:IconValue MdiValueSetter="mdi-tune" />
         </Setter>
     </Style>
 
     <Style Selector="unifiedIcon|UnifiedIcon.ArrowLeft">
         <Setter Property="Value">
-            <unifiedIcon:IconValue MdiValueSetter="mdi-arrow-left"/>
+            <unifiedIcon:IconValue MdiValueSetter="mdi-arrow-left" />
         </Setter>
     </Style>
 
     <Style Selector="unifiedIcon|UnifiedIcon.ArrowRight">
         <Setter Property="Value">
-            <unifiedIcon:IconValue MdiValueSetter="mdi-arrow-right"/>
+            <unifiedIcon:IconValue MdiValueSetter="mdi-arrow-right" />
         </Setter>
     </Style>
 
     <Style Selector="unifiedIcon|UnifiedIcon.Plus">
         <Setter Property="Value">
-            <unifiedIcon:IconValue MdiValueSetter="mdi-plus"/>
+            <unifiedIcon:IconValue MdiValueSetter="mdi-plus" />
         </Setter>
     </Style>
 
     <Style Selector="unifiedIcon|UnifiedIcon.MenuDown">
         <Setter Property="Value">
-            <unifiedIcon:IconValue MdiValueSetter="mdi-menu-down"/>
+            <unifiedIcon:IconValue MdiValueSetter="mdi-menu-down" />
         </Setter>
     </Style>
 
     <Style Selector="unifiedIcon|UnifiedIcon.MenuUp">
         <Setter Property="Value">
-            <unifiedIcon:IconValue MdiValueSetter="mdi-menu-up"/>
+            <unifiedIcon:IconValue MdiValueSetter="mdi-menu-up" />
         </Setter>
     </Style>
 
     <Style Selector="unifiedIcon|UnifiedIcon.Close">
         <Setter Property="Value">
-            <unifiedIcon:IconValue MdiValueSetter="mdi-close"/>
+            <unifiedIcon:IconValue MdiValueSetter="mdi-close" />
         </Setter>
     </Style>
 
     <Style Selector="unifiedIcon|UnifiedIcon.OpenInNew">
         <Setter Property="Value">
-            <unifiedIcon:IconValue MdiValueSetter="mdi-open-in-new"/>
+            <unifiedIcon:IconValue MdiValueSetter="mdi-open-in-new" />
         </Setter>
     </Style>
 
     <Style Selector="unifiedIcon|UnifiedIcon.Tab">
         <Setter Property="Value">
-            <unifiedIcon:IconValue MdiValueSetter="mdi-tab"/>
+            <unifiedIcon:IconValue MdiValueSetter="mdi-tab" />
         </Setter>
     </Style>
 
     <Style Selector="unifiedIcon|UnifiedIcon.ChevronLeft">
         <Setter Property="Value">
-            <unifiedIcon:IconValue MdiValueSetter="mdi-chevron-left"/>
+            <unifiedIcon:IconValue MdiValueSetter="mdi-chevron-left" />
         </Setter>
     </Style>
 
     <Style Selector="unifiedIcon|UnifiedIcon.ChevronRight">
         <Setter Property="Value">
-            <unifiedIcon:IconValue MdiValueSetter="mdi-chevron-right"/>
+            <unifiedIcon:IconValue MdiValueSetter="mdi-chevron-right" />
         </Setter>
     </Style>
 
     <Style Selector="unifiedIcon|UnifiedIcon.FolderOutline">
         <Setter Property="Value">
-            <unifiedIcon:IconValue MdiValueSetter="mdi-folder-outline"/>
+            <unifiedIcon:IconValue MdiValueSetter="mdi-folder-outline" />
         </Setter>
     </Style>
-    
+
     <Style Selector="unifiedIcon|UnifiedIcon.FolderOpenOutline">
         <Setter Property="Value">
-            <unifiedIcon:IconValue MdiValueSetter="mdi-folder-open-outline"/>
+            <unifiedIcon:IconValue MdiValueSetter="mdi-folder-open-outline" />
         </Setter>
     </Style>
 
     <Style Selector="unifiedIcon|UnifiedIcon.File">
         <Setter Property="Value">
-            <unifiedIcon:IconValue MdiValueSetter="mdi-file"/>
+            <unifiedIcon:IconValue MdiValueSetter="mdi-file" />
         </Setter>
     </Style>
 
     <Style Selector="unifiedIcon|UnifiedIcon.Check">
         <Setter Property="Value">
-            <unifiedIcon:IconValue MdiValueSetter="mdi-check"/>
+            <unifiedIcon:IconValue MdiValueSetter="mdi-check" />
         </Setter>
     </Style>
 
     <Style Selector="unifiedIcon|UnifiedIcon.DeleteOutline">
         <Setter Property="Value">
-            <unifiedIcon:IconValue MdiValueSetter="mdi-delete-outline"/>
+            <unifiedIcon:IconValue MdiValueSetter="mdi-delete-outline" />
         </Setter>
     </Style>
 
     <Style Selector="unifiedIcon|UnifiedIcon.DragHorizontal">
         <Setter Property="Value">
-            <unifiedIcon:IconValue MdiValueSetter="mdi-drag-horizontal-variant"/>
+            <unifiedIcon:IconValue MdiValueSetter="mdi-drag-horizontal-variant" />
         </Setter>
     </Style>
 
     <Style Selector="unifiedIcon|UnifiedIcon.DragVertical">
         <Setter Property="Value">
-            <unifiedIcon:IconValue MdiValueSetter="mdi-drag-vertical-variant"/>
+            <unifiedIcon:IconValue MdiValueSetter="mdi-drag-vertical-variant" />
         </Setter>
     </Style>
 
@@ -405,7 +420,7 @@
             <unifiedIcon:IconValue SvgSetter="avares://NexusMods.App.UI/Assets/Icons/add_circle_24px.svg" />
         </Setter>
     </Style>
-    
+
     <Style Selector="unifiedIcon|UnifiedIcon.Eye">
         <Setter Property="Value">
             <unifiedIcon:IconValue MdiValueSetter="mdi-eye" />
@@ -415,6 +430,26 @@
     <Style Selector="unifiedIcon|UnifiedIcon.AlertCircle">
         <Setter Property="Value">
             <unifiedIcon:IconValue MdiValueSetter="mdi-alert-circle" />
+        </Setter>
+    </Style>
+
+    <Style Selector="unifiedIcon|UnifiedIcon.AlertOctagon">
+        <Setter Property="Value">
+            <unifiedIcon:IconValue MdiValueSetter="mdi-alert-octagon" />
+        </Setter>
+    </Style>
+
+    <Style Selector="unifiedIcon|UnifiedIcon.MonitorDiagnostics">
+        <Setter Property="Value">
+            <!-- From Design System "Custom Icons" section on Figma -->
+            <unifiedIcon:IconValue
+                GeometrySetter="M9.07495 19.25C8.80828 19.25 8.56662 19.175 8.34995 19.025C8.13328 18.875 7.98328 18.6834 7.89995 18.45L5.47495 12.75H1.19995V11.25H6.52495L9.07495 17.275L13.75 5.60005C13.8333 5.36672 13.9833 5.17505 14.2 5.02505C14.4166 4.87505 14.6583 4.80005 14.925 4.80005C15.1916 4.80005 15.4333 4.87505 15.65 5.02505C15.8666 5.17505 16.0166 5.36672 16.1 5.60005L18.525 11.25H22.8V12.75H17.475L14.925 6.77505L10.25 18.45C10.1666 18.6834 10.0166 18.875 9.79995 19.025C9.58328 19.175 9.34162 19.25 9.07495 19.25Z" />
+        </Setter>
+    </Style>
+    
+    <Style Selector="unifiedIcon|UnifiedIcon.ListBulleted">
+        <Setter Property="Value">
+            <unifiedIcon:IconValue MdiValueSetter="mdi-format-list-bulleted" />
         </Setter>
     </Style>
 </Styles>

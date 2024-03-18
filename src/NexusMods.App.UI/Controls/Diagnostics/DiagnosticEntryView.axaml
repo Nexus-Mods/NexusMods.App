@@ -1,0 +1,29 @@
+<reactiveUi:ReactiveUserControl x:TypeArguments="diagnostics:IDiagnosticEntryViewModel" xmlns="https://github.com/avaloniaui"
+                                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                                xmlns:reactiveUi="http://reactiveui.net"
+                                xmlns:diagnostics="clr-namespace:NexusMods.App.UI.Controls.Diagnostics"
+                                xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon"
+                                mc:Ignorable="d" d:DesignWidth="980" d:DesignHeight="60"
+                                x:Class="NexusMods.App.UI.Controls.Diagnostics.DiagnosticEntryView">
+    <Design.DataContext>
+        <diagnostics:DiagnosticEntryDesignViewModel />
+    </Design.DataContext>
+
+    <Button x:Name="EntryButton"
+            HorizontalAlignment="Stretch">
+
+        <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Stretch"
+                    Classes="Spacing-2"
+                    VerticalAlignment="Center">
+
+            <unifiedIcon:UnifiedIcon x:Name="SeverityIcon" Size="24" />
+            <TextBlock x:Name="DescriptionText"
+                       Classes="BodyMDBold"
+                       VerticalAlignment="Center" />
+        </StackPanel>
+    </Button>
+
+</reactiveUi:ReactiveUserControl>
