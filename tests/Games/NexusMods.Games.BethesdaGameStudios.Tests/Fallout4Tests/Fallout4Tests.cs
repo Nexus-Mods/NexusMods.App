@@ -1,5 +1,4 @@
 ﻿using FluentAssertions;
-using Microsoft.Extensions.DependencyInjection;
 using NexusMods.CLI.Tests.VerbTests;
 using NexusMods.Games.TestFramework;
 
@@ -7,8 +6,7 @@ namespace NexusMods.Games.BethesdaGameStudios.Tests.Fallout4Tests;
 
 public class Fallout4Tests(IServiceProvider serviceProvider) : AGameTest<Fallout4.Fallout4>(serviceProvider)
 {
-    private readonly TestModDownloader _downloader = serviceProvider.GetRequiredService<TestModDownloader>();
-    private readonly AVerbTest _verbTester = new AVerbTest(serviceProvider);
+    private readonly AVerbTest _verbTester = new(serviceProvider);
 
     [Fact]
     [Trait("FlakeyTest", "True")]
