@@ -7,7 +7,7 @@ namespace NexusMods.Abstractions.Diagnostics;
 /// A diagnostic manager, which keeps track of all current diagnostics and refreshes them if necessary.
 /// </summary>
 [PublicAPI]
-public interface IDiagnosticManager : IDisposable
+public interface IDiagnosticManager
 {
     /// <summary>
     /// Returns an observable stream of all diagnostics for a loadout.

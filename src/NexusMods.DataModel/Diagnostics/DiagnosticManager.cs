@@ -14,8 +14,6 @@ namespace NexusMods.DataModel.Diagnostics;
 [UsedImplicitly]
 internal sealed class DiagnosticManager : IDiagnosticManager
 {
-    private bool _isDisposed;
-
     private readonly ILogger<DiagnosticManager> _logger;
     private readonly ILoadoutRegistry _loadoutRegistry;
 
@@ -61,11 +59,5 @@ internal sealed class DiagnosticManager : IDiagnosticManager
             // ignore
             return Array.Empty<Diagnostic>();
         }
-    }
-
-    public void Dispose()
-    {
-        if (_isDisposed) return;
-        _isDisposed = true;
     }
 }
