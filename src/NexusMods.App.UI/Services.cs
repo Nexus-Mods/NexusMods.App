@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.Abstractions.Serialization.Json;
 using NexusMods.App.UI.Controls;
@@ -21,6 +22,7 @@ using NexusMods.App.UI.Controls.Spine.Buttons.Icon;
 using NexusMods.App.UI.Controls.Spine.Buttons.Image;
 using NexusMods.App.UI.Controls.TopBar;
 using NexusMods.App.UI.Controls.Trees.Files;
+using NexusMods.App.UI.DiagnosticSystem;
 using NexusMods.App.UI.LeftMenu;
 using NexusMods.App.UI.LeftMenu.Downloads;
 using NexusMods.App.UI.LeftMenu.Home;
@@ -209,9 +211,15 @@ public static class Services
             .AddSingleton<IWorkspaceAttachmentsFactory, HomeAttachmentsFactory>()
             .AddSingleton<IWorkspaceAttachmentsFactory, LoadoutAttachmentsFactory>()
 
-            // Other
+            // Debugging
             .AddViewModel<DummyViewModel, IDummyViewModel>()
             .AddView<DummyView, IDummyViewModel>()
+
+            // Diagnostics
+            .AddSingleton<ValueFormatterCache>()
+            .AddTransient<IDiagnosticWriter, DiagnosticWriter>()
+
+            // Other
             .AddSingleton<InjectedViewLocator>()
             .AddFileSystem();
     }
