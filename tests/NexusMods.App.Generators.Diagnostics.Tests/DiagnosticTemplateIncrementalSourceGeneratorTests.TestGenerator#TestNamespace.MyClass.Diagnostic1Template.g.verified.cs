@@ -30,7 +30,7 @@ partial class MyClass
 		;
 	}
 
-	internal readonly struct Diagnostic1MessageData
+	internal readonly struct Diagnostic1MessageData : global::NexusMods.Abstractions.Diagnostics.IDiagnosticMessageData
 	{
 		public readonly global::NexusMods.Abstractions.Diagnostics.References.ModReference ModA;
 		public readonly global::NexusMods.Abstractions.Diagnostics.References.ModReference ModB;
@@ -41,6 +41,56 @@ partial class MyClass
 			this.ModA = ModA;
 			this.ModB = ModB;
 			this.Something = Something;
+		}
+
+		public void Format(global::NexusMods.Abstractions.Diagnostics.DiagnosticMessage message, global::NexusMods.Abstractions.Diagnostics.IDiagnosticWriter writer)
+		{
+			var value = message.Value;
+			var span = value.AsSpan();
+			int i;
+			var bracesStartIndex = -1;
+			var bracesEndIndex = -1;
+			for (i = 0; i < value.Length; i++)
+			{
+				var c = value[i];
+				if (bracesStartIndex == -1)
+				{
+					if (c != '{') continue;
+					bracesStartIndex = i;
+					var slice = span.Slice(bracesEndIndex + 1, i - bracesEndIndex - 1);
+					writer.Write(slice);
+					continue;
+				}
+
+				if (c != '}') continue;
+				var fieldName = span.Slice(bracesStartIndex + 1, i - bracesStartIndex - 1);
+				if (fieldName.Equals(nameof(ModA), global::System.StringComparison.Ordinal))
+				{
+					writer.Write(ModA);
+				}
+
+				 else if (fieldName.Equals(nameof(ModB), global::System.StringComparison.Ordinal))
+				{
+					writer.Write(ModB);
+				}
+
+				 else if (fieldName.Equals(nameof(Something), global::System.StringComparison.Ordinal))
+				{
+					writer.Write(Something);
+				}
+
+				else
+				{
+					throw new global::System.NotImplementedException();
+				}
+
+				bracesStartIndex = -1;
+				bracesEndIndex = -1;
+			}
+
+			if (bracesEndIndex == i) return;
+			var endSlice = span.Slice(bracesEndIndex + 1, i - bracesEndIndex - 1);
+			writer.Write(endSlice);
 		}
 
 	}
