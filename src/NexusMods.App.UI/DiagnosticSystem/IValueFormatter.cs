@@ -3,20 +3,22 @@ using NexusMods.Abstractions.Diagnostics;
 
 namespace NexusMods.App.UI.DiagnosticSystem;
 
+/// <summary>
+/// Marker interface for value formatters. This should never be implemented
+/// directly, use <see cref="IValueFormatter{T}"/> instead.
+/// </summary>
 [PublicAPI]
-public interface IValueFormatter
-{
-    void Format(object value, IDiagnosticWriter writer);
-}
+public interface IValueFormatter;
 
+/// <summary>
+/// Generic value formatter for values of type <typeparamref name="T"/>.
+/// </summary>
 [PublicAPI]
 public interface IValueFormatter<in T> : IValueFormatter where T : notnull
 {
-    void IValueFormatter.Format(object value, IDiagnosticWriter writer)
-    {
-        if (value is not T actualValue) throw new NotImplementedException();
-        Format(actualValue, writer);
-    }
-
+    /// <summary>
+    /// Formats the given value of type <typeparamref name="T"/> and writes it
+    /// to the given <see cref="IDiagnosticWriter"/>.
+    /// </summary>
     void Format(T value, IDiagnosticWriter writer);
 }
