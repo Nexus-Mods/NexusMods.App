@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using NexusMods.Abstractions.Diagnostics;
@@ -6,7 +7,8 @@ namespace NexusMods.App.Generators.Diagnostics.Tests;
 
 public class DiagnosticTemplateIncrementalSourceGeneratorTests
 {
-    private const string SourceText = @"
+    [LanguageInjection("csharp")]
+    private const string SourceText = """
 using NexusMods.Generators.Diagnostics;
 using NexusMods.Abstractions.Diagnostic;
 using NexusMods.Abstractions.Diagnostics.References;
@@ -15,22 +17,25 @@ namespace TestNamespace;
 
 internal partial class MyClass
 {
-    private const string Source = ""Example"";
+    private const string Source = "Example";
 
     [DiagnosticTemplate]
     private static readonly IDiagnosticTemplate Diagnostic1Template = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(source: Source, number: 1))
+        .WithTitle("Diagnostic 1")
         .WithSeverity(DiagnosticSeverity.Warning)
-        .WithSummary(""Mod '{ModA}' conflicts with '{ModB}' because it's missing '{Something}'!"")
+        .WithSummary("Mod '{ModA}' conflicts with '{ModB}' because it's missing '{Something}' and {Count} other stuff!")
         .WithoutDetails()
         .WithMessageData(messageBuilder => messageBuilder
-            .AddDataReference<ModReference>(""ModA"")
-            .AddDataReference<ModReference>(""ModB"")
-            .AddValue<string>(""Something"")
+            .AddDataReference<ModReference>("ModA")
+            .AddDataReference<ModReference>("ModB")
+            .AddValue<string>("Something")
+            .AddValue<int>("Count")
         )
         .Finish();
-}";
+}
+""";
 
     [Fact]
     public Task TestGenerator()

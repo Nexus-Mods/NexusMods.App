@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Diagnostics.References;
+using NexusMods.Abstractions.Diagnostics.Values;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Mods;
@@ -110,7 +111,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
                 return Diagnostics.CreateMissingRequiredDependency(
                     Mod: mod.ToReference(loadout),
                     MissingDependency: missingDependency,
-                    NexusModsDependencyUri: missingDependencyUris.GetValueOrDefault(missingDependency, NexusModsPage)
+                    NexusModsDependencyUri: missingDependencyUris.GetValueOrDefault(missingDependency, NexusModsPage).WithName("Nexus Mods")
                 );
             });
         });
@@ -177,7 +178,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
             Dependency: loadout.Mods[tuple.DependencyModId].ToReference(loadout),
             MinimumVersion: tuple.MinimumVersion.ToString(),
             CurrentVersion: tuple.CurrentVersion.ToString(),
-            NexusModsDependencyUri: missingDependencyUris.GetValueOrDefault(tuple.DependencyId, NexusModsPage)
+            NexusModsDependencyUri: missingDependencyUris.GetValueOrDefault(tuple.DependencyId, NexusModsPage).WithName("Nexus Mods")
         ));
     }
 

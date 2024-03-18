@@ -35,7 +35,18 @@ public static class DiagnosticTemplateBuilder
         /// <summary>
         /// Sets the <see cref="DiagnosticId"/>.
         /// </summary>
-        IWithSeverityStep WithId(DiagnosticId id);
+        IWithTitle WithId(DiagnosticId id);
+    }
+
+    /// <summary>
+    /// Title step.
+    /// </summary>
+    public interface IWithTitle
+    {
+        /// <summary>
+        /// Sets <see cref="Diagnostic.Title"/>.
+        /// </summary>
+        IWithSeverityStep WithTitle(string title);
     }
 
     /// <summary>

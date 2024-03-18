@@ -10,6 +10,7 @@ public partial class ExampleDiagnostics
     private static readonly IDiagnosticTemplate Diagnostic1Template = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(source: "Example", number: 1))
+        .WithTitle("Diagnostic 1")
         .WithSeverity(DiagnosticSeverity.Warning)
         .WithSummary("Mod '{ModA}' conflicts with '{ModB}' because it's missing '{Something}'!")
         .WithoutDetails()
