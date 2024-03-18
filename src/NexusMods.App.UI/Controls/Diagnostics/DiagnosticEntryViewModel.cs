@@ -6,6 +6,7 @@ namespace NexusMods.App.UI.Controls.Diagnostics;
 
 public class DiagnosticEntryViewModel : AViewModel<IDiagnosticEntryViewModel>, IDiagnosticEntryViewModel
 {
+    
     public DiagnosticEntryViewModel(Diagnostic diagnostic)
     {
         Summary = diagnostic.Summary.ToString();

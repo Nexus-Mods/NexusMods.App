@@ -98,6 +98,18 @@
     <Style Selector="unifiedIcon|UnifiedIcon.ForegroundInverted">
         <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
     </Style>
+    
+    <Style Selector="unifiedIcon|UnifiedIcon.ForegroundInfoStrong">
+        <Setter Property="Foreground" Value="{StaticResource InfoStrongBrush}" />
+    </Style>
+    
+    <Style Selector="unifiedIcon|UnifiedIcon.ForegroundWarningStrong">
+        <Setter Property="Foreground" Value="{StaticResource WarningStrongBrush}" />
+    </Style>
+    
+    <Style Selector="unifiedIcon|UnifiedIcon.ForegroundDangerStrong">
+        <Setter Property="Foreground" Value="{StaticResource DangerStrongBrush}" />
+    </Style>
 
     <!-- Icon Selection -->
 

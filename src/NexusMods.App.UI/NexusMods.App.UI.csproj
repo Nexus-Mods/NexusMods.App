@@ -444,6 +444,9 @@
         <Compile Update="Controls\Diagnostics\DiagnosticEntryViewModel.cs">
           <DependentUpon>IDiagnosticEntryViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Controls\Diagnostics\DiagnosticEntryDesignViewModel.cs">
+          <DependentUpon>IDiagnosticEntryViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>

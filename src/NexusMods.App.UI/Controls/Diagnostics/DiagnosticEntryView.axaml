@@ -8,17 +8,24 @@
                                 mc:Ignorable="d" d:DesignWidth="980" d:DesignHeight="60"
                                 x:Class="NexusMods.App.UI.Controls.Diagnostics.DiagnosticEntryView">
     <Design.DataContext>
-        <diagnostics:DiagnosticEntryViewModel />
+        <diagnostics:DiagnosticEntryDesignViewModel />
     </Design.DataContext>
     
-    <Button x:Name="EntryButton" 
-            HorizontalAlignment="Stretch">
+    <Border Classes="Mid Rounded">
+        <Button x:Name="EntryButton" 
+                HorizontalAlignment="Stretch">
         
-        <StackPanel Orientation="Horizontal"
-                    HorizontalAlignment="Stretch">
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Stretch"
+                        Classes="Spacing-2"
+                        VerticalAlignment="Center">
             
-            <unifiedIcon:UnifiedIcon x:Name="SeverityIcon" />
-            <TextBlock x:Name="DescriptionText" />
-        </StackPanel>
-    </Button>
+                <unifiedIcon:UnifiedIcon x:Name="SeverityIcon" Size="24"/>
+                <TextBlock x:Name="DescriptionText"
+                           Classes="BodyMDBold"
+                           VerticalAlignment="Center"/>
+            </StackPanel>
+        </Button>
+    </Border>
+    
 </reactiveUi:ReactiveUserControl>
