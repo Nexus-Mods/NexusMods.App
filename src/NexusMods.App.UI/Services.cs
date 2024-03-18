@@ -6,6 +6,7 @@ using NexusMods.Abstractions.Serialization.Json;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.Controls.DevelopmentBuildBanner;
+using NexusMods.App.UI.Controls.Diagnostics;
 using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadGameName;
 using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadName;
 using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadSize;
@@ -174,6 +175,7 @@ public static class Services
             .AddView<FileTreeNodeView, IFileTreeNodeViewModel>()
             .AddView<LoadingView, ILoadingViewModel>()
             .AddView<ErrorView, IErrorViewModel>()
+            .AddView<DiagnosticEntryView, IDiagnosticEntryViewModel>()
 
             // workspace system
             .AddSingleton<IWindowManager, WindowManager>()

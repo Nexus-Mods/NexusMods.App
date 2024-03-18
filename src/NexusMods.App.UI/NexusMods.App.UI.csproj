@@ -441,6 +441,9 @@
         <Compile Update="Controls\ModInfo\ModFiles\ModFilesViewModel.cs">
           <DependentUpon>IModFilesViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Controls\Diagnostics\DiagnosticEntryView.axaml.cs">
+            <DependentUpon>DiagnosticEntryView.xaml</DependentUpon>
+        </Compile>
         <Compile Update="Controls\Diagnostics\DiagnosticEntryViewModel.cs">
           <DependentUpon>IDiagnosticEntryViewModel.cs</DependentUpon>
         </Compile>

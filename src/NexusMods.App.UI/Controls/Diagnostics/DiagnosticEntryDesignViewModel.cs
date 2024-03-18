@@ -13,7 +13,7 @@ public class DiagnosticEntryDesignViewModel : DiagnosticEntryViewModel
             Id = new DiagnosticId(),
             Title = "This is an example diagnostic Title",
             Severity = DiagnosticSeverity.Warning,
-            Summary = DiagnosticMessage.From("This is an example diagnostic summary."),
+            Summary = DiagnosticMessage.From("This is an example diagnostic summary"),
             Details = DiagnosticMessage.DefaultValue,
             DataReferences = new Dictionary<DataReferenceDescription, IDataReference>(),
         };

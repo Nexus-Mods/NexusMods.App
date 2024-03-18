@@ -10,22 +10,20 @@
     <Design.DataContext>
         <diagnostics:DiagnosticEntryDesignViewModel />
     </Design.DataContext>
-    
-    <Border Classes="Mid Rounded">
-        <Button x:Name="EntryButton" 
-                HorizontalAlignment="Stretch">
-        
-            <StackPanel Orientation="Horizontal"
-                        HorizontalAlignment="Stretch"
-                        Classes="Spacing-2"
-                        VerticalAlignment="Center">
-            
-                <unifiedIcon:UnifiedIcon x:Name="SeverityIcon" Size="24"/>
-                <TextBlock x:Name="DescriptionText"
-                           Classes="BodyMDBold"
-                           VerticalAlignment="Center"/>
-            </StackPanel>
-        </Button>
-    </Border>
-    
+
+    <Button x:Name="EntryButton"
+            HorizontalAlignment="Stretch">
+
+        <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Stretch"
+                    Classes="Spacing-2"
+                    VerticalAlignment="Center">
+
+            <unifiedIcon:UnifiedIcon x:Name="SeverityIcon" Size="24" />
+            <TextBlock x:Name="DescriptionText"
+                       Classes="BodyMDBold"
+                       VerticalAlignment="Center" />
+        </StackPanel>
+    </Button>
+
 </reactiveUi:ReactiveUserControl>
