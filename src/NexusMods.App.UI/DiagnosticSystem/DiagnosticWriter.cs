@@ -25,6 +25,18 @@ internal sealed class DiagnosticWriter : IDiagnosticWriter
         }
     }
 
+    public void WriteValueType<T>(T value) where T : struct
+    {
+        if (_formatterCache.TryGetFormatter<T>(out var formatter))
+        {
+            formatter.Format(value, this);
+        }
+        else
+        {
+            Write(value.ToString().AsSpan());
+        }
+    }
+
     public void Write(ReadOnlySpan<char> value) => _sb.Append(value);
 
     public string GetOutput()

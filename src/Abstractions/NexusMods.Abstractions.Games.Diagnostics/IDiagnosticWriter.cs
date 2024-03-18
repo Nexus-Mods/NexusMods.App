@@ -21,6 +21,13 @@ public interface IDiagnosticWriter : IDisposable
 
     /// <inheritdoc cref="Write{T}"/>
     /// <remarks>
+    /// This is used to write fields that are value types to the output to prevent
+    /// boxing.
+    /// </remarks>
+    void WriteValueType<T>(T value) where T : struct;
+
+    /// <inheritdoc cref="Write{T}"/>
+    /// <remarks>
     /// This is used to write everything between field values to the output.
     /// </remarks>
     void Write(ReadOnlySpan<char> value);

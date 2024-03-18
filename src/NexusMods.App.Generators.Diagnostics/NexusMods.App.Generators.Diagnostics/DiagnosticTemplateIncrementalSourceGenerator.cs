@@ -236,7 +236,14 @@ public class DiagnosticTemplateIncrementalSourceGenerator : IIncrementalGenerato
                         cw.AppendLine($"if (fieldName.Equals(nameof({field.Name}), global::System.StringComparison.Ordinal))");
                         using (cw.AddBlock())
                         {
-                            cw.AppendLine($"writer.Write({field.Name});");
+                            if (field.TypeSymbol.IsValueType)
+                            {
+                                cw.AppendLine($"writer.WriteValueType({field.Name});");
+                            }
+                            else
+                            {
+                                cw.AppendLine($"writer.Write({field.Name});");
+                            }
                         }
                     }
 

@@ -6,16 +6,16 @@ namespace TestNamespace;
 
 partial class MyClass
 {
-	internal static global::NexusMods.Abstractions.Diagnostics.Diagnostic<Diagnostic1MessageData> CreateDiagnostic1(global::NexusMods.Abstractions.Diagnostics.References.ModReference ModA, global::NexusMods.Abstractions.Diagnostics.References.ModReference ModB, global::System.String Something)
+	internal static global::NexusMods.Abstractions.Diagnostics.Diagnostic<Diagnostic1MessageData> CreateDiagnostic1(global::NexusMods.Abstractions.Diagnostics.References.ModReference ModA, global::NexusMods.Abstractions.Diagnostics.References.ModReference ModB, global::System.String Something, global::System.Int32 Count)
 	{
-		var messageData = new Diagnostic1MessageData(ModA, ModB, Something);
+		var messageData = new Diagnostic1MessageData(ModA, ModB, Something, Count);
 
 		return new global::NexusMods.Abstractions.Diagnostics.Diagnostic<Diagnostic1MessageData>
 		{
 			Id = new global::NexusMods.Abstractions.Diagnostics.DiagnosticId(source: Source, number: 1),
 			Title = "Diagnostic 1",
 			Severity = global::NexusMods.Abstractions.Diagnostics.DiagnosticSeverity.Warning,
-			Summary = global::NexusMods.Abstractions.Diagnostics.DiagnosticMessage.From("Mod '{ModA}' conflicts with '{ModB}' because it's missing '{Something}'!"),
+			Summary = global::NexusMods.Abstractions.Diagnostics.DiagnosticMessage.From("Mod '{ModA}' conflicts with '{ModB}' because it's missing '{Something}' and {Count} other stuff!"),
 			Details = global::NexusMods.Abstractions.Diagnostics.DiagnosticMessage.DefaultValue,
 			MessageData = messageData,
 			DataReferences = new global::System.Collections.Generic.Dictionary<global::NexusMods.Abstractions.Diagnostics.References.DataReferenceDescription, global::NexusMods.Abstractions.Diagnostics.References.IDataReference>
@@ -35,12 +35,14 @@ partial class MyClass
 		public readonly global::NexusMods.Abstractions.Diagnostics.References.ModReference ModA;
 		public readonly global::NexusMods.Abstractions.Diagnostics.References.ModReference ModB;
 		public readonly global::System.String Something;
+		public readonly global::System.Int32 Count;
 
-		public Diagnostic1MessageData(global::NexusMods.Abstractions.Diagnostics.References.ModReference ModA, global::NexusMods.Abstractions.Diagnostics.References.ModReference ModB, global::System.String Something)
+		public Diagnostic1MessageData(global::NexusMods.Abstractions.Diagnostics.References.ModReference ModA, global::NexusMods.Abstractions.Diagnostics.References.ModReference ModB, global::System.String Something, global::System.Int32 Count)
 		{
 			this.ModA = ModA;
 			this.ModB = ModB;
 			this.Something = Something;
+			this.Count = Count;
 		}
 
 		public void Format(global::NexusMods.Abstractions.Diagnostics.DiagnosticMessage message, global::NexusMods.Abstractions.Diagnostics.IDiagnosticWriter writer)
@@ -77,6 +79,11 @@ partial class MyClass
 				 else if (fieldName.Equals(nameof(Something), global::System.StringComparison.Ordinal))
 				{
 					writer.Write(Something);
+				}
+
+				 else if (fieldName.Equals(nameof(Count), global::System.StringComparison.Ordinal))
+				{
+					writer.WriteValueType(Count);
 				}
 
 				else

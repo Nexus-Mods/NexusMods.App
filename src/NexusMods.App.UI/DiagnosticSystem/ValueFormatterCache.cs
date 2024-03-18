@@ -21,7 +21,7 @@ internal sealed class ValueFormatterCache
         formatter = _formatters.OfType<IValueFormatter<T>>().FirstOrDefault();
         if (formatter is not null) return true;
 
-        _logger.LogDebug("Unable to find formatter for type {Type}", typeof(T).ToString());
+        _logger.LogTrace("Unable to find formatter for type {Type}", typeof(T).ToString());
         return false;
     }
 }
