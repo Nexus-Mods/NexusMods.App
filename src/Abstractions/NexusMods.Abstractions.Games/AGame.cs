@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.GameCapabilities;
@@ -15,20 +16,22 @@ namespace NexusMods.Abstractions.Games;
 /// <summary>
 /// Base class for all games supported by the Nexus app.
 /// </summary>
+[PublicAPI]
 public abstract class AGame : IGame
 {
     private IReadOnlyCollection<GameInstallation>? _installations;
-    private readonly IEnumerable<IGameLocator> _gamelocators;
+    private readonly IEnumerable<IGameLocator> _gameLocators;
     private readonly Lazy<IStandardizedLoadoutSynchronizer> _synchronizer;
     private readonly Lazy<IEnumerable<IModInstaller>> _installers;
     private readonly IServiceProvider _provider;
 
-    /// <summary/>
-    /// <param name="gameLocators">Services used for locating games.</param>
+    /// <summary>
+    /// Constructor.
+    /// </summary>
     protected AGame(IServiceProvider provider)
     {
         _provider = provider;
-        _gamelocators = provider.GetServices<IGameLocator>();
+        _gameLocators = provider.GetServices<IGameLocator>();
         // In a Lazy so we don't get a circular dependency
         _synchronizer = new Lazy<IStandardizedLoadoutSynchronizer>(() => MakeSynchronizer(provider));
         _installers = new Lazy<IEnumerable<IModInstaller>>(() => MakeInstallers(provider));
@@ -72,8 +75,7 @@ public abstract class AGame : IGame
     public virtual IStreamFactory Icon => throw new NotImplementedException("No icon provided for this game.");
 
     /// <inheritdoc />
-    public virtual IStreamFactory GameImage =>
-        throw new NotImplementedException("No game image provided for this game.");
+    public virtual IStreamFactory GameImage => throw new NotImplementedException("No game image provided for this game.");
 
     /// <inheritdoc />
     public virtual IEnumerable<IModInstaller> Installers => _installers.Value;
@@ -88,7 +90,6 @@ public abstract class AGame : IGame
     {
         return Array.Empty<IModInstaller>();
     }
-
 
     /// <inheritdoc />
     public virtual ILoadoutSynchronizer Synchronizer => _synchronizer.Value;
@@ -121,21 +122,21 @@ public abstract class AGame : IGame
 
     private List<GameInstallation> GetInstallations()
     {
-        return (_gamelocators.SelectMany(locator => locator.Find(this),
-                (locator, installation) =>
+        return _gameLocators
+            .SelectMany(locator => locator.Find(this), (locator, installation) =>
+            {
+                var locations = GetLocations(installation.Path.FileSystem, installation);
+                return new GameInstallation
                 {
-                    var locations = GetLocations(installation.Path.FileSystem, installation);
-                    return new GameInstallation
-                    {
-                        Game = this,
-                        LocationsRegister = new GameLocationsRegister(new Dictionary<LocationId, AbsolutePath>(locations)),
-                        InstallDestinations = GetInstallDestinations(locations),
-                        Version = installation.Version ?? GetVersion(installation),
-                        Store = installation.Store,
-                        LocatorResultMetadata = installation.Metadata,
-                        Locator = locator
-                    };
-                }))
+                    Game = this,
+                    LocationsRegister = new GameLocationsRegister(new Dictionary<LocationId, AbsolutePath>(locations)),
+                    InstallDestinations = GetInstallDestinations(locations),
+                    Version = installation.Version ?? GetVersion(installation),
+                    Store = installation.Store,
+                    LocatorResultMetadata = installation.Metadata,
+                    Locator = locator,
+                };
+            })
             .DistinctBy(g => g.LocationsRegister[LocationId.Game])
             .ToList();
     }
@@ -143,15 +144,7 @@ public abstract class AGame : IGame
     /// <summary>
     /// Returns the locations of known game elements, such as save folder, etc.
     /// </summary>
-    /// <remarks>
-    /// TODO: (Al12rs) Games can return Locations that point to the same AbsolutePath, a way is needed to decide which to use.
-    /// Current code will use the first declared one but relies on undefined ordering of Dictionary.
-    /// </remarks>
-    /// <param name="fileSystem">The file system where the game was found in. This comes from <paramref name="installation"/>.</param>
-    /// <param name="installation">An installation of the game found by the <paramref name="locator"/>.</param>
-    /// <returns></returns>
-    protected abstract IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem,
-        GameLocatorResult installation);
+    protected abstract IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem, GameLocatorResult installation);
 
     /// <summary>
     /// Returns the locations of installation destinations used by the Advanced Installer.
