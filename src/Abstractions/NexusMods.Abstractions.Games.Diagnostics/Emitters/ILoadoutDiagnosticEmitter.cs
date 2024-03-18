@@ -12,7 +12,7 @@ namespace NexusMods.Abstractions.Diagnostics.Emitters;
 /// </remarks>
 /// <seealso cref="IModDiagnosticEmitter"/>
 [PublicAPI]
-public interface ILoadoutDiagnosticEmitter
+public interface ILoadoutDiagnosticEmitter : IDiagnosticEmitter
 {
     /// <summary>
     /// Diagnoses a loadout and creates instances of <see cref="Diagnostic"/>.

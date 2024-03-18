@@ -9,7 +9,7 @@ namespace NexusMods.Abstractions.Diagnostics.Emitters;
 /// Interface for diagnostic emitters that only run on <see cref="AModFile"/>.
 /// </summary>
 [PublicAPI]
-public interface IModFileDiagnosticEmitter
+public interface IModFileDiagnosticEmitter : IDiagnosticEmitter
 {
     /// <summary>
     /// Defines the file types supported by this emitter. The emitter

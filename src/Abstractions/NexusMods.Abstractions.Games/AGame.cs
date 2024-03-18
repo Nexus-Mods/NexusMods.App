@@ -1,5 +1,6 @@
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.GameCapabilities;
 using NexusMods.Abstractions.Games.DTO;
@@ -79,6 +80,9 @@ public abstract class AGame : IGame
 
     /// <inheritdoc />
     public virtual IEnumerable<IModInstaller> Installers => _installers.Value;
+
+    /// <inheritdoc/>
+    public virtual IDiagnosticEmitter[] DiagnosticEmitters { get; } = Array.Empty<IDiagnosticEmitter>();
 
     /// <summary>
     /// Helper method to create a list of <see cref="IModInstaller"/>s. The result of this method is cached
