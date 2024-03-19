@@ -11,8 +11,7 @@
         <diagnostics:DiagnosticEntryDesignViewModel />
     </Design.DataContext>
 
-    <Button x:Name="EntryButton"
-            HorizontalAlignment="Stretch">
+    <Button x:Name="EntryButton" HorizontalAlignment="Stretch">
 
         <StackPanel Orientation="Horizontal"
                     HorizontalAlignment="Stretch"

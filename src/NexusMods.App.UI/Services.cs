@@ -179,9 +179,10 @@ public static class Services
 
             .AddView<DiagnosticEntryView, IDiagnosticEntryViewModel>()
             .AddViewModel<DiagnosticEntryViewModel, IDiagnosticEntryViewModel>()
-
             .AddView<DiagnosticListView, IDiagnosticListViewModel>()
             .AddViewModel<DiagnosticListViewModel, IDiagnosticListViewModel>()
+            .AddView<DiagnosticDetailsView, IDiagnosticDetailsViewModel>()
+            .AddViewModel<DiagnosticDetailsViewModel, IDiagnosticDetailsViewModel>()
 
             // workspace system
             .AddSingleton<IWindowManager, WindowManager>()

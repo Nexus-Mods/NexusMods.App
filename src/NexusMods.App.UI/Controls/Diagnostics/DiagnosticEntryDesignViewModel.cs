@@ -6,7 +6,7 @@ namespace NexusMods.App.UI.Controls.Diagnostics;
 
 public class DiagnosticEntryDesignViewModel : DiagnosticEntryViewModel
 {
-    public DiagnosticEntryDesignViewModel() : base(_data, _writer) { }
+    public DiagnosticEntryDesignViewModel() : base(_data, Writer) { }
     
     private static Diagnostic _data =
         new()
@@ -19,7 +19,7 @@ public class DiagnosticEntryDesignViewModel : DiagnosticEntryViewModel
             DataReferences = new Dictionary<DataReferenceDescription, IDataReference>(),
         };
  
-    private static readonly DummyDiagnosticWriter _writer = new();
+    private static readonly DummyDiagnosticWriter Writer = new();
 }
 
 internal sealed class DummyDiagnosticWriter : IDiagnosticWriter
