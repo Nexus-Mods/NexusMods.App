@@ -1,8 +1,6 @@
-using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
-using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Pages.Diagnostics;
 
