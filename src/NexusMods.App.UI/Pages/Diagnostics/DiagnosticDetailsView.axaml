@@ -11,7 +11,7 @@
         <diagnostics:DiagnosticDetailsDesignViewModel />
     </Design.DataContext>
     
-    <Border>
+    <Border Padding="24">
         <StackPanel Orientation="Vertical"
                     HorizontalAlignment="Stretch"
                     Classes="Spacing-3">
