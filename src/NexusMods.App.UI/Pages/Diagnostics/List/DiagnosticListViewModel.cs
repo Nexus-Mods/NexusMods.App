@@ -1,5 +1,8 @@
+using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using DynamicData;
+using DynamicData.Binding;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics;
@@ -17,38 +20,48 @@ public class DiagnosticListViewModel : APageViewModel<IDiagnosticListViewModel>,
 {
     [Reactive] public LoadoutId LoadoutId { get; set; }
 
-    private ObservableAsPropertyHelper<IDiagnosticEntryViewModel[]>? _diagnosticEntries;
-    public IDiagnosticEntryViewModel[] DiagnosticEntries => _diagnosticEntries?.Value ?? Array.Empty<IDiagnosticEntryViewModel>();
+    private readonly SourceList<IDiagnosticEntryViewModel> _sourceList = new();
+    private readonly ReadOnlyObservableCollection<IDiagnosticEntryViewModel> _entries;
+    public ReadOnlyObservableCollection<IDiagnosticEntryViewModel> DiagnosticEntries => _entries;
 
     public DiagnosticListViewModel(
         IServiceProvider serviceProvider,
         IWindowManager windowManager,
         IDiagnosticManager diagnosticManager) : base(windowManager)
     {
+        _sourceList
+            .Connect()
+            .Bind(out _entries)
+            .Subscribe();
+
         this.WhenActivated(disposable =>
         {
             GetWorkspaceController().SetTabTitle("Diagnostics", WorkspaceId, PanelId, TabId);
 
             var serialDisposable = new SerialDisposable();
+            serialDisposable.DisposeWith(disposable);
 
             this.WhenAnyValue(vm => vm.LoadoutId)
                 .Do(loadoutId =>
                 {
-                    var value = diagnosticManager
+                    serialDisposable.Disposable = diagnosticManager
                         .GetLoadoutDiagnostics(loadoutId)
                         .Select(diagnostics => diagnostics
                             .Select(diagnostic => new DiagnosticEntryViewModel(diagnostic, serviceProvider.GetRequiredService<IDiagnosticWriter>()))
                             .ToArray()
                         )
-                        .ToProperty(this, vm => vm.DiagnosticEntries, scheduler: RxApp.MainThreadScheduler);
-
-                    _diagnosticEntries = value;
-                    serialDisposable.Disposable = value;
+                        .OnUI()
+                        .SubscribeWithErrorLogging(entries =>
+                        {
+                            _sourceList.Edit(updater =>
+                            {
+                                updater.Clear();
+                                updater.AddRange(entries);
+                            });
+                        });
                 })
                 .SubscribeWithErrorLogging()
                 .DisposeWith(disposable);
-
-            serialDisposable.DisposeWith(disposable);
         });
     }
 }

@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Controls.Diagnostics;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -8,5 +9,5 @@ public interface IDiagnosticListViewModel : IPageViewModelInterface
 {
     public LoadoutId LoadoutId { get; set; }
 
-    public IDiagnosticEntryViewModel[] DiagnosticEntries { get; }
+    public ReadOnlyObservableCollection<IDiagnosticEntryViewModel> DiagnosticEntries { get; }
 }
