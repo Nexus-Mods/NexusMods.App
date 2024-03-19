@@ -52,6 +52,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                 Name = Language.LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics,
                 Activate = ReactiveCommand.Create(() =>
                 {
+                    // TODO: change to diagnostics page
                     var pageData = new PageData
                     {
                         FactoryId = DummyPageFactory.StaticId,
