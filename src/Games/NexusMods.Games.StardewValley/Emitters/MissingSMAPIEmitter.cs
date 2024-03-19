@@ -22,13 +22,15 @@ public class MissingSMAPIEmitter : ILoadoutDiagnosticEmitter
             .Where(kv => kv.Value.Metadata.OfType<SMAPIMarker>().Any())
             .ToArray();
 
-        var hasSMAPI = smapiInstallations.Length == 0;
+        var hasSMAPI = smapiInstallations.Length != 0;
         if (!hasSMAPI)
         {
             yield return Diagnostics.CreateSMAPIRequiredButNotInstalled(
                 ModCount: smapiModCount,
                 NexusModsSMAPIUri: NexusModsSMAPILink
             );
+
+            yield break;
         }
 
         var hasSMAPIEnabled = smapiInstallations.Any(kv => kv.Value.Enabled);
