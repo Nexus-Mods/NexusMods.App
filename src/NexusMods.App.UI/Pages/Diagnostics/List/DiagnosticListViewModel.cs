@@ -1,8 +1,10 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using JetBrains.Annotations;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.App.UI.Controls.Diagnostics;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using ReactiveUI;
@@ -15,10 +17,11 @@ public class DiagnosticListViewModel : APageViewModel<IDiagnosticListViewModel>,
 {
     [Reactive] public LoadoutId LoadoutId { get; set; }
 
-    private ObservableAsPropertyHelper<Diagnostic[]>? _diagnostics;
-    public Diagnostic[] Diagnostics => _diagnostics?.Value ?? Array.Empty<Diagnostic>();
+    private ObservableAsPropertyHelper<IDiagnosticEntryViewModel[]>? _diagnosticEntries;
+    public IDiagnosticEntryViewModel[] DiagnosticEntries => _diagnosticEntries?.Value ?? Array.Empty<IDiagnosticEntryViewModel>();
 
     public DiagnosticListViewModel(
+        IServiceProvider serviceProvider,
         IWindowManager windowManager,
         IDiagnosticManager diagnosticManager) : base(windowManager)
     {
@@ -33,9 +36,13 @@ public class DiagnosticListViewModel : APageViewModel<IDiagnosticListViewModel>,
                 {
                     var value = diagnosticManager
                         .GetLoadoutDiagnostics(loadoutId)
-                        .ToProperty(this, vm => vm.Diagnostics, scheduler: RxApp.MainThreadScheduler);
+                        .Select(diagnostics => diagnostics
+                            .Select(diagnostic => new DiagnosticEntryViewModel(diagnostic, serviceProvider.GetRequiredService<IDiagnosticWriter>()))
+                            .ToArray()
+                        )
+                        .ToProperty(this, vm => vm.DiagnosticEntries, scheduler: RxApp.MainThreadScheduler);
 
-                    _diagnostics = value;
+                    _diagnosticEntries = value;
                     serialDisposable.Disposable = value;
                 })
                 .SubscribeWithErrorLogging()
