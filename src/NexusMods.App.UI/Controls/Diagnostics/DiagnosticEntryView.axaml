@@ -19,7 +19,7 @@
                     Classes="Spacing-2"
                     VerticalAlignment="Center">
 
-            <unifiedIcon:UnifiedIcon x:Name="SeverityIcon" Size="24" />
+            <unifiedIcon:UnifiedIcon x:Name="SeverityIcon" Size="20" />
             <TextBlock x:Name="DescriptionText"
                        Classes="BodyMDBold"
                        VerticalAlignment="Center" />

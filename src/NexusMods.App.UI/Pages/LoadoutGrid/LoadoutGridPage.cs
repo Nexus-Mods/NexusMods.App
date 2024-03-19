@@ -20,7 +20,6 @@ public class LoadoutGridPageFactory : APageFactory<ILoadoutGridViewModel, Loadou
     {
         _loadoutRegistry = serviceProvider.GetRequiredService<ILoadoutRegistry>();
     }
-
     public static readonly PageFactoryId StaticId = PageFactoryId.From(Guid.Parse("c6221ce6-cf12-49bf-b32c-8138ef701cc5"));
     public override PageFactoryId Id => StaticId;
 

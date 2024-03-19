@@ -184,5 +184,37 @@
     <Style Selector="TextBlock.ForegroundInfoWeak">
         <Setter Property="Foreground" Value="{StaticResource InfoWeakBrush}" />
     </Style>
+    
+    <Style Selector="TextBlock.ForegroundDangerStrong">
+        <Setter Property="Foreground" Value="{StaticResource DangerStrongBrush}" />
+    </Style>
+    
+    <Style Selector="TextBlock.ForegroundDangerModerate">
+        <Setter Property="Foreground" Value="{StaticResource DangerModerateBrush}" />
+    </Style>
+    
+    <Style Selector="TextBlock.ForegroundDangerSubdued">
+        <Setter Property="Foreground" Value="{StaticResource DangerSubduedBrush}" />
+    </Style>
+    
+    <Style Selector="TextBlock.ForegroundDangerWeak">
+        <Setter Property="Foreground" Value="{StaticResource DangerWeakBrush}" />
+    </Style>
+    
+    <Style Selector="TextBlock.ForegroundWarningStrong">
+        <Setter Property="Foreground" Value="{StaticResource WarningStrongBrush}" />
+    </Style>
+    
+    <Style Selector="TextBlock.ForegroundWarningModerate">
+        <Setter Property="Foreground" Value="{StaticResource WarningModerateBrush}" />
+    </Style>
+    
+    <Style Selector="TextBlock.ForegroundWarningSubdued">
+        <Setter Property="Foreground" Value="{StaticResource WarningSubduedBrush}" />
+    </Style>
+    
+    <Style Selector="TextBlock.ForegroundWarningWeak">
+        <Setter Property="Foreground" Value="{StaticResource WarningWeakBrush}" />
+    </Style>
 
 </Styles>

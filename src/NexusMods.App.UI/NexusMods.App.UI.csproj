@@ -462,6 +462,12 @@
         <Compile Update="DiagnosticSystem\NamedLinkFormatter.cs">
           <DependentUpon>IValueFormatter.cs</DependentUpon>
         </Compile>
+        <Compile Update="Pages\Diagnostics\DiagnosticDetailsDesignViewModel.cs">
+          <DependentUpon>IDiagnosticDetailsViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\Diagnostics\DiagnosticDetailsViewModel.cs">
+          <DependentUpon>IDiagnosticDetailsViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
@@ -497,9 +503,5 @@
         <Generator>PublicResXFileCodeGenerator</Generator>
         <LastGenOutput>Language.Designer.cs</LastGenOutput>
       </EmbeddedResource>
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Pages\Diagnostics\" />
     </ItemGroup>
 </Project>

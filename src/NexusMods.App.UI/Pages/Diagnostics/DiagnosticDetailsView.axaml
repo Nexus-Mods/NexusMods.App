@@ -1,0 +1,38 @@
+<reactiveUi:ReactiveUserControl x:TypeArguments="diagnostics:IDiagnosticDetailsViewModel" xmlns="https://github.com/avaloniaui"
+                                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                                xmlns:reactiveUi="http://reactiveui.net"
+                                xmlns:diagnostics="clr-namespace:NexusMods.App.UI.Pages.Diagnostics"
+                                xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon"
+                                mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+                                x:Class="NexusMods.App.UI.Pages.Diagnostics.DiagnosticDetailsView">
+    <Design.DataContext>
+        <diagnostics:DiagnosticDetailsDesignViewModel />
+    </Design.DataContext>
+    
+    <Border Padding="24">
+        <StackPanel Orientation="Vertical"
+                    HorizontalAlignment="Stretch"
+                    Classes="Spacing-3">
+            
+            <StackPanel x:Name="TitleLineStackPanel"
+                        Orientation="Horizontal"
+                        Classes="Spacing-1">
+                
+                <unifiedIcon:UnifiedIcon x:Name="SeverityIcon" 
+                                         Size="20"
+                                         VerticalAlignment="Center"/>
+                
+                <TextBlock x:Name="SeverityTitleTextBlock"
+                           Classes="TitleSMSemi" 
+                           VerticalAlignment="Center"/>
+            </StackPanel>
+            
+            <Border Height="1" Classes="DangerStrong" />
+            
+            <TextBlock x:Name="DetailsTextBlock"
+                       Classes="BodyMDNormal ForegroundSubdued"/>
+        </StackPanel>
+    </Border>
+</reactiveUi:ReactiveUserControl>

@@ -321,4 +321,16 @@
     <data name="ErrorView_MissingMod_Subheader" xml:space="preserve">
         <value>Mod not found</value>
     </data>
+    <data name="DiagnosticDetailsView_SeverityTitle_SUGGESTION" xml:space="preserve">
+        <value>SUGGESTION</value>
+    </data>
+    <data name="DiagnosticDetailsView_SeverityTitle_WARNING" xml:space="preserve">
+        <value>WARNING</value>
+    </data>
+    <data name="DiagnosticDetailsView_SeverityTitle_CRITICAL_ERROR" xml:space="preserve">
+        <value>CRITICAL ERROR</value>
+    </data>
+    <data name="DiagnosticDetailsView_SeverityTitle_HIDDEN" xml:space="preserve">
+        <value>HIDDEN</value>
+    </data>
 </root>
