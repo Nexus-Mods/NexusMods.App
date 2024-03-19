@@ -35,6 +35,7 @@ using NexusMods.App.UI.Overlays.Generic.MessageBox.OkCancel;
 using NexusMods.App.UI.Overlays.Login;
 using NexusMods.App.UI.Overlays.MetricsOptIn;
 using NexusMods.App.UI.Overlays.Updater;
+using NexusMods.App.UI.Pages.Diagnostics;
 using NexusMods.App.UI.Pages.Downloads;
 using NexusMods.App.UI.Pages.LoadoutGrid;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModCategory;
@@ -175,7 +176,12 @@ public static class Services
             .AddView<FileTreeNodeView, IFileTreeNodeViewModel>()
             .AddView<LoadingView, ILoadingViewModel>()
             .AddView<ErrorView, IErrorViewModel>()
+
             .AddView<DiagnosticEntryView, IDiagnosticEntryViewModel>()
+            .AddViewModel<DiagnosticEntryViewModel, IDiagnosticEntryViewModel>()
+
+            .AddView<DiagnosticListView, IDiagnosticListViewModel>()
+            .AddViewModel<DiagnosticListViewModel, IDiagnosticListViewModel>()
 
             // workspace system
             .AddSingleton<IWindowManager, WindowManager>()
@@ -201,6 +207,8 @@ public static class Services
             .AddSingleton<IPageFactory, LoadoutGridPageFactory>()
             .AddSingleton<IPageFactory, InProgressPageFactory>()
             .AddSingleton<IPageFactory, ModInfoPageFactory>()
+            .AddSingleton<IPageFactory, DiagnosticListPageFactory>()
+            .AddSingleton<IPageFactory, DiagnosticDetailsPageFactory>()
 
             // LeftMenu factories
             .AddSingleton<ILeftMenuFactory, DownloadsLeftMenuFactory>()

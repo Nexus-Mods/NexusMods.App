@@ -1,5 +1,6 @@
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.App.UI.Controls;
+using NexusMods.App.UI.Pages.Diagnostics;
 using NexusMods.App.UI.Pages.Downloads;
 using NexusMods.App.UI.Pages.LoadoutGrid;
 using NexusMods.App.UI.Pages.ModInfo;
@@ -24,6 +25,7 @@ internal class TypeFinder : ITypeFinder
         typeof(InProgressPageContext),
         typeof(MyGamesPageContext),
         typeof(ModInfoPageContext),
+        typeof(DiagnosticListPageContext),
 
         // workspace context
         typeof(EmptyContext),
@@ -32,6 +34,6 @@ internal class TypeFinder : ITypeFinder
         typeof(DownloadsContext),
 
         // other
-        typeof(WindowData)
+        typeof(WindowData),
     };
 }

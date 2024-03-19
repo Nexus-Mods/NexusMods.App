@@ -472,6 +472,9 @@
         <Compile Update="Pages\Diagnostics\Details\DiagnosticDetailsDesignViewModel.cs">
           <DependentUpon>IDiagnosticDetailsViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Pages\Diagnostics\List\DiagnosticListViewModel.cs">
+          <DependentUpon>IDiagnosticListViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
