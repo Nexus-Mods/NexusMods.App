@@ -14,7 +14,7 @@ public record DiagnosticDetailsPageContext : IPageFactoryContext
 [UsedImplicitly]
 public class DiagnosticDetailsPageFactory : APageFactory<IDiagnosticDetailsViewModel, DiagnosticDetailsPageContext>
 {
-    public static readonly PageFactoryId StaticId = PageFactoryId.From(new Guid("96A85EAB-3748-4D30-8212-7A09CCDA225B"));
+    public static readonly PageFactoryId StaticId = PageFactoryId.From(Guid.Parse("96A85EAB-3748-4D30-8212-7A09CCDA225B"));
     
     public override PageFactoryId Id => StaticId;
     
@@ -22,7 +22,9 @@ public class DiagnosticDetailsPageFactory : APageFactory<IDiagnosticDetailsViewM
     
     public override IDiagnosticDetailsViewModel CreateViewModel(DiagnosticDetailsPageContext context)
     {
-        var windowManager = ServiceProvider.GetRequiredService<IWindowManager>();
-        return new DiagnosticDetailsViewModel(windowManager, ServiceProvider, context.Diagnostic);
+        return new DiagnosticDetailsViewModel(
+            WindowManager, 
+            ServiceProvider.GetRequiredService<IDiagnosticWriter>(), 
+            context.Diagnostic);
     }
 }

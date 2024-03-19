@@ -12,13 +12,14 @@ public class DiagnosticDetailsViewModel : APageViewModel<IDiagnosticDetailsViewM
     public string Details { get; }
     public DiagnosticSeverity Severity { get; }
 
-    public DiagnosticDetailsViewModel(IWindowManager windowManager, IServiceProvider serviceProvider, Diagnostic diagnostic) : base(windowManager)
+    public DiagnosticDetailsViewModel(IWindowManager windowManager, 
+        IDiagnosticWriter diagnosticWriter, 
+        Diagnostic diagnostic) : base(windowManager)
     {
         Diagnostic = diagnostic;
-        using var writer = serviceProvider.GetRequiredService<IDiagnosticWriter>();
-
-        diagnostic.FormatDetails(writer);
-        Details = writer.ToOutput(); 
         Severity = diagnostic.Severity;
+
+        diagnostic.FormatDetails(diagnosticWriter);
+        Details = diagnosticWriter.ToOutput();
     }
 }
