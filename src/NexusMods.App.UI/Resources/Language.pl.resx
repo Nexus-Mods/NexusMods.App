@@ -202,10 +202,10 @@
 		<value>PRZEGLĄDAJ WSZYSTKIE GRY</value>
 	</data>
 	<data name="LoadoutGridView__Add_Mod" xml:space="preserve">
-		<value>Dodaj Mod</value>
+		<value>Dodaj mod</value>
 	</data>
 	<data name="LoadoutGridView__Add_Mod_Advanced" xml:space="preserve">
-		<value>Dodaj Mod (Zaawansowane)</value>
+		<value>Dodaj mod (Zaawansowane)</value>
 	</data>
 	<data name="MyGamesView__Ready_to_mod" xml:space="preserve">
 		<value>Gotowe do modowania</value>
@@ -262,7 +262,7 @@
 		<value>Strona główna</value>
 	</data>
     <data name="LoadoutGridView__View_Files" xml:space="preserve">
-        <value>Zobacz pliki modyfikacji</value>
+        <value>Pokaż pliki moda</value>
     </data>
     <data name="FileTreeNodeView__View" xml:space="preserve">
         <value>Zobacz</value>
