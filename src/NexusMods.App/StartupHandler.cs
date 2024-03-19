@@ -2,7 +2,6 @@ using Avalonia.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.App.Listeners;
-using NexusMods.App.UI.Windows;
 using NexusMods.Paths;
 using NexusMods.ProxyConsole.Abstractions;
 using NexusMods.SingleProcess;
@@ -36,37 +35,29 @@ public class StartupHandler(ILogger<StartupHandler> logger, IServiceProvider pro
     {
         logger.LogDebug("Starting UI window");
         var tcs = new TaskCompletionSource<int>();
+        
+        // If this not the first time this method has been called during this app's lifetime, then
+        // just enqueue a create window call.
+        
+        if (!UiNeedsStartup())
+        {
+            logger.LogDebug("UI already running, opening a new window on the existing instance");
+            Dispatcher.UIThread.Invoke(Startup.ShowMainWindow);
+            return Task.FromResult(0);
+        }
+        
+        // Otherwise we need to startup Avalonia. This results in lazy loading of avalonia
         MainThreadData.MainThreadActions.Enqueue( () =>
         {
-            try
+            tcs.SetResult(0);
+            if (!MainThreadData.IsStartingThread)
             {
-                if (!MainThreadData.IsStartingThread)
-                {
-                    logger.LogCritical("UI should only start from the main thread");
-                    return -1;
-                }
+                logger.LogCritical("UI should only start from the main thread");
+                return -1;
+            }
 
-                if (!StartUI())
-                {
-                    logger.LogDebug("UI already running, opening a new window on the existing instance");
-                    Dispatcher.UIThread.Invoke(() =>
-                    {
-                        var reactiveWindow = provider.GetRequiredService<MainWindow>();
-                        reactiveWindow.ViewModel = provider.GetRequiredService<MainWindowViewModel>();
-                        reactiveWindow.Show();
-                    });
-                    logger.LogDebug("UI window opened");
-                }
-                else
-                {
-                    provider.GetRequiredService<NxmRpcListener>();
-                    Startup.Main(provider, []);
-                }
-            }
-            finally
-            {
-                tcs.SetResult(0);
-            }
+            provider.GetRequiredService<NxmRpcListener>();
+            Startup.Main(provider, []);
             return 0;
         });
         return tcs.Task;
@@ -76,7 +67,7 @@ public class StartupHandler(ILogger<StartupHandler> logger, IServiceProvider pro
     /// Returns true if the main UI of the app should be started.
     /// </summary>
     /// <returns></returns>
-    private bool StartUI()
+    private bool UiNeedsStartup()
     {
         lock (mainLock)
         {

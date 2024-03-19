@@ -18,16 +18,7 @@ namespace NexusMods.App;
 public class Program
 {
     private static ILogger<Program> _logger = default!;
-
-    // Run in debug mode if we are in debug mode and the debugger is attached. We use preprocessor flags here as
-    // some AV software may be configured to flag processes that look for debuggers as malicious. So we don't even
-    // look for a debugger unless we are in debug mode.
-#if DEBUG
-    private static bool _isDebug = Debugger.IsAttached;
-#else
-    private static bool _isDebug = false;
-#endif
-
+  
     [STAThread]
     public static int Main(string[] args)
     {
@@ -50,20 +41,52 @@ public class Program
         });
 
 
-        _logger.LogDebug("Application starting in {Mode} mode", _isDebug ? "debug" : "release");
+        _logger.LogDebug("Application starting in {Mode} mode", MainThreadData.IsDebugMode ? "debug" : "release");
         var startup = host.Services.GetRequiredService<StartupDirector>();
         _logger.LogDebug("Calling startup handler");
-        var managerTask = Task.Run(async () => await startup.Start(args, _isDebug));
+        var managerTask = Task.Run(async () =>
+            {
+                try
+                {
+                    return await startup.Start(args, MainThreadData.IsDebugMode);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error in startup handler");
+                    Environment.Exit(-1);
+                    throw;
+                }
+                finally
+                {
+                    try
+                    {
+                        if (!MainThreadData.IsDebugMode) 
+                            MainThreadData.Shutdown();
+                    }
+                    catch (Exception e)
+                    {
+                        _logger.LogError(e, "Error shutting down main thread");
+                    }
+                }
+            }
+        );
 
 
         // The UI *must* be started on the main thread, according to the Avalonia docs, although it
         // seems to work fine on some platforms (this behavior is not guaranteed). So when we need to open a new
         // window, the handler will enqueue an action to be run on the main thread.
-        while (!managerTask.IsCompleted)
+        while (!MainThreadData.GlobalShutdownToken.IsCancellationRequested)
         {
             if (MainThreadData.MainThreadActions.TryDequeue(out var action))
             {
-                action();
+                try
+                {
+                    action();
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e, "Error running main thread action");
+                }
                 continue;
             }
             Thread.Sleep(250);
@@ -75,7 +98,7 @@ public class Program
 
     private static bool IsMainProcess(IReadOnlyList<string> args)
     {
-        if (_isDebug) return true;
+        if (MainThreadData.IsDebugMode) return true;
         return args.Count == 1 && args[0] == StartupHandler.MainProcessVerb;
     }
 
