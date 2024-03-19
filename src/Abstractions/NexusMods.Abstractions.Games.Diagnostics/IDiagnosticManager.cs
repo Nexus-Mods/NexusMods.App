@@ -1,4 +1,3 @@
-using DynamicData;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Loadouts;
 
@@ -8,25 +7,10 @@ namespace NexusMods.Abstractions.Diagnostics;
 /// A diagnostic manager, which keeps track of all current diagnostics and refreshes them if necessary.
 /// </summary>
 [PublicAPI]
-public interface IDiagnosticManager : IDisposable
+public interface IDiagnosticManager
 {
     /// <summary>
-    /// Gets an observable for all diagnostic changes.
+    /// Returns an observable stream of all diagnostics for a loadout.
     /// </summary>
-    IObservable<IChangeSet<Diagnostic>> DiagnosticChanges { get; }
-
-    /// <summary>
-    /// Gets all active diagnostics.
-    /// </summary>
-    IEnumerable<Diagnostic> ActiveDiagnostics { get; }
-
-    /// <summary>
-    /// Clears all active diagnostics.
-    /// </summary>
-    void ClearDiagnostics();
-
-    /// <summary>
-    /// Callback for loadout changes.
-    /// </summary>
-    ValueTask OnLoadoutChanged(Loadout loadout);
+    IObservable<Diagnostic[]> GetLoadoutDiagnostics(LoadoutId loadoutId);
 }

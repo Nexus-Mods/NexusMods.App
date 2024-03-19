@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Diagnostics.Values;
@@ -10,7 +11,7 @@ public class MissingSMAPIEmitter : ILoadoutDiagnosticEmitter
 {
     private static readonly NamedLink NexusModsSMAPILink = new("Nexus Mods", new Uri("https://nexusmods.com/stardewvalley/mods/2400"));
 
-    public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout loadout)
+    public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         await Task.Yield();
 

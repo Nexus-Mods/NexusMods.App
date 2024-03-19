@@ -19,7 +19,7 @@ public class ALoadoutDiagnosticEmitterTest<TGame, TEmitter> : AGameTest<TGame>
 
     protected async ValueTask<Diagnostic[]> GetAllDiagnostics(Loadout loadout)
     {
-        return await Emitter.Diagnose(loadout).ToArrayAsync();
+        return await Emitter.Diagnose(loadout, CancellationToken.None).ToArrayAsync();
     }
 
     protected async ValueTask<Diagnostic> GetSingleDiagnostic(Loadout loadout)
