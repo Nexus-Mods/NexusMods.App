@@ -14,7 +14,7 @@ public partial class DiagnosticListView : ReactiveUserControl<IDiagnosticListVie
 
         this.WhenActivated(disposable =>
         {
-            this.OneWayBind(ViewModel, vm => vm.DiagnosticEntries, view => view.ListBox.ItemsSource)
+            this.OneWayBind(ViewModel, vm => vm.DiagnosticEntries, view => view.ItemsControl.ItemsSource)
                 .DisposeWith(disposable);
         });
     }

@@ -2,7 +2,6 @@ using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using DynamicData;
-using DynamicData.Binding;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics;
@@ -61,6 +60,30 @@ public class DiagnosticListViewModel : APageViewModel<IDiagnosticListViewModel>,
                         });
                 })
                 .SubscribeWithErrorLogging()
+                .DisposeWith(disposable);
+
+            _sourceList
+                .Connect()
+                .MergeMany(entry => entry.SeeDetailsCommand)
+                .SubscribeWithErrorLogging(diagnostic =>
+                {
+                    var workspaceController = GetWorkspaceController();
+
+                    var pageData = new PageData
+                    {
+                        FactoryId = DiagnosticDetailsPageFactory.StaticId,
+                        Context = new DiagnosticDetailsPageContext
+                        {
+                            Diagnostic = diagnostic,
+                        },
+                    };
+
+                    // TODO: use https://github.com/Nexus-Mods/NexusMods.App/issues/942
+                    var input = NavigationInput.Default;
+
+                    var behavior = workspaceController.GetDefaultOpenPageBehavior(pageData, input, IdBundle);
+                    workspaceController.OpenPage(WorkspaceId, pageData, behavior);
+                })
                 .DisposeWith(disposable);
         });
     }
