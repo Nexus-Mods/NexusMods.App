@@ -227,11 +227,10 @@ public static class Services
             .AddView<DummyView, IDummyViewModel>()
 
             // Diagnostics
-            .AddSingleton<ValueFormatterCache>()
             .AddSingleton<IValueFormatter, ModReferenceFormatter>()
             .AddSingleton<IValueFormatter, LoadoutReferenceFormatter>()
             .AddSingleton<IValueFormatter, NamedLinkFormatter>()
-            .AddTransient<IDiagnosticWriter, DiagnosticWriter>()
+            .AddSingleton<IDiagnosticWriter, DiagnosticWriter>()
 
             // Other
             .AddSingleton<InjectedViewLocator>()
