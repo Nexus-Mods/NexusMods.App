@@ -21,7 +21,7 @@
             <unifiedIcon:UnifiedIcon x:Name="SeverityIcon" Size="20" />
             <TextBlock x:Name="DescriptionText"
                        Classes="BodyMDBold"
-                       VerticalAlignment="Center" />
+                       VerticalAlignment="Center"/>
         </StackPanel>
     </Button>
 
