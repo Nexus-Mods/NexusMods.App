@@ -13,7 +13,7 @@
         <ItemsControl x:Name="ItemsControl">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <StackPanel Classes="Spacing-4"/>
+                    <StackPanel Classes="Spacing-2"/>
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
         </ItemsControl>
