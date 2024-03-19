@@ -22,10 +22,10 @@ public class DiagnosticListViewModel : APageViewModel<IDiagnosticListViewModel>,
         IWindowManager windowManager,
         IDiagnosticManager diagnosticManager) : base(windowManager)
     {
-        GetWorkspaceController().SetTabTitle("Diagnostics", WorkspaceId, PanelId, TabId);
-
         this.WhenActivated(disposable =>
         {
+            GetWorkspaceController().SetTabTitle("Diagnostics", WorkspaceId, PanelId, TabId);
+
             var serialDisposable = new SerialDisposable();
 
             this.WhenAnyValue(vm => vm.LoadoutId)
@@ -38,7 +38,7 @@ public class DiagnosticListViewModel : APageViewModel<IDiagnosticListViewModel>,
                     _diagnostics = value;
                     serialDisposable.Disposable = value;
                 })
-                .Subscribe()
+                .SubscribeWithErrorLogging()
                 .DisposeWith(disposable);
 
             serialDisposable.DisposeWith(disposable);

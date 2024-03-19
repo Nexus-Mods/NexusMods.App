@@ -34,7 +34,18 @@ internal sealed class DiagnosticManager : IDiagnosticManager
             .RevisionsAsLoadouts(loadoutId)
             .DistinctUntilChanged(loadout => loadout.DataStoreId)
             .Throttle(dueTime: TimeSpan.FromMilliseconds(250))
-            .SelectMany(async loadout => await GetLoadoutDiagnostics(loadout, cancellationToken));
+            .SelectMany(async loadout =>
+            {
+                try
+                {
+                    return await GetLoadoutDiagnostics(loadout, cancellationToken);
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e, "Exception while diagnosing loadout {Loadout}", loadout.Name);
+                    return Array.Empty<Diagnostic>();
+                }
+            });
     }
 
     private static async Task<Diagnostic[]> GetLoadoutDiagnostics(Loadout loadout, CancellationToken cancellationToken)
