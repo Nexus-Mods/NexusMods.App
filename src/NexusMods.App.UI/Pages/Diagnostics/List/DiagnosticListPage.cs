@@ -42,7 +42,7 @@ public class DiagnosticListPageFactory : APageFactory<IDiagnosticListViewModel, 
         {
             // TODO: translations?
             SectionName = "Utilities",
-            ItemName = loadout.Name,
+            ItemName = "Diagnostics",
             PageData = new PageData
             {
                 FactoryId = StaticId,
