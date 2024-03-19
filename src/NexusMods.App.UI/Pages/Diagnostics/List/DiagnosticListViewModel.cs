@@ -15,7 +15,7 @@ using ReactiveUI.Fody.Helpers;
 namespace NexusMods.App.UI.Pages.Diagnostics;
 
 [UsedImplicitly]
-public class DiagnosticListViewModel : APageViewModel<IDiagnosticListViewModel>, IDiagnosticListViewModel
+internal class DiagnosticListViewModel : APageViewModel<IDiagnosticListViewModel>, IDiagnosticListViewModel
 {
     [Reactive] public LoadoutId LoadoutId { get; set; }
 
@@ -35,7 +35,11 @@ public class DiagnosticListViewModel : APageViewModel<IDiagnosticListViewModel>,
 
         this.WhenActivated(disposable =>
         {
-            GetWorkspaceController().SetTabTitle("Diagnostics", WorkspaceId, PanelId, TabId);
+            {
+                var workspaceController = GetWorkspaceController();
+                workspaceController.SetTabTitle("Diagnostics", WorkspaceId, PanelId, TabId);
+                workspaceController.SetIcon(DiagnosticIcons.DiagnosticIcon1, WorkspaceId, PanelId, TabId);
+            }
 
             var serialDisposable = new SerialDisposable();
             serialDisposable.DisposeWith(disposable);

@@ -22,7 +22,11 @@ public class DiagnosticDetailsViewModel : APageViewModel<IDiagnosticDetailsViewM
 
         this.WhenActivated(disposable =>
         {
-            GetWorkspaceController().SetTabTitle(diagnostic.Title, WorkspaceId, PanelId, TabId);
+            {
+                var workspaceController = GetWorkspaceController();
+                workspaceController.SetTabTitle(diagnostic.Title, WorkspaceId, PanelId, TabId);
+                workspaceController.SetIcon(DiagnosticIcons.DiagnosticIcon2, WorkspaceId, PanelId, TabId);
+            }
 
             Disposable.Empty.DisposeWith(disposable);
         });
