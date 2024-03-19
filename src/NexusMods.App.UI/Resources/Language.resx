@@ -333,4 +333,7 @@
     <data name="DiagnosticDetailsView_SeverityTitle_HIDDEN" xml:space="preserve">
         <value>HIDDEN</value>
     </data>
+    <data name="LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics" xml:space="preserve">
+        <value>Diagnostics</value>
+    </data>
 </root>
