@@ -89,7 +89,7 @@ public class OAuth
         // see https://www.rfc-editor.org/rfc/rfc7636#section-4.3
         await _os.OpenUrl(url, cancellationToken);
 
-        cts.CancelAfter(TimeSpan.FromMinutes(1));
+        cts.CancelAfter(TimeSpan.FromMinutes(3));
         var code = await codeTask;
 
         return await AuthorizeToken(codeVerifier, code, cancellationToken);
