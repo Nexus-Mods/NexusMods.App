@@ -1,5 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using System.Text;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Diagnostics;
 
@@ -27,29 +26,32 @@ internal sealed class DiagnosticWriter : IDiagnosticWriter
         return false;
     }
 
-    public void Write<T>(ref readonly DiagnosticWriterState state, T value) where T : notnull
+    public void Write<T>(ref DiagnosticWriterState state, T value) where T : notnull
     {
         if (TryGetFormatter<T>(out var formatter))
         {
-            formatter.Format(this, stringBuilder, value);
+            formatter.Format(this, ref state, value);
         }
         else
         {
-            Write(stringBuilder, value.ToString().AsSpan());
+            Write(ref state, value.ToString().AsSpan());
         }
     }
 
-    public void WriteValueType<T>(StringBuilder stringBuilder, T value) where T : struct
+    public void WriteValueType<T>(ref DiagnosticWriterState state, T value) where T : struct
     {
         if (TryGetFormatter<T>(out var formatter))
         {
-            formatter.Format(this, stringBuilder, value);
+            formatter.Format(this, ref state, value);
         }
         else
         {
-            Write(stringBuilder, value.ToString().AsSpan());
+            Write(ref state, value.ToString().AsSpan());
         }
     }
 
-    public void Write(StringBuilder stringBuilder, ReadOnlySpan<char> value) => stringBuilder.Append(value);
+    public void Write(ref DiagnosticWriterState state, ReadOnlySpan<char> value)
+    {
+        state.StringBuilder.Append(value);
+    }
 }

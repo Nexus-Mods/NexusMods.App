@@ -1,4 +1,3 @@
-using System.Text;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.References;
 using NexusMods.Abstractions.Loadouts;
@@ -14,10 +13,10 @@ internal sealed class ModReferenceFormatter : IValueFormatter<ModReference>
         _loadoutRegistry = loadoutRegistry;
     }
 
-    public void Format(IDiagnosticWriter writer, StringBuilder stringBuilder, ModReference value)
+    public void Format(IDiagnosticWriter writer, ref DiagnosticWriterState state, ModReference value)
     {
         // TODO: custom markdown control
         var mod = _loadoutRegistry.Get(value.DataId);
-        writer.Write(stringBuilder, mod?.Name ?? "MISSING MOD");
+        writer.Write(ref state, mod?.Name ?? "MISSING MOD");
     }
 }

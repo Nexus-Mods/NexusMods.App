@@ -1,4 +1,3 @@
-using System.Text;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Diagnostics.References;
 
@@ -59,9 +58,9 @@ public record Diagnostic
     /// </summary>
     public virtual string FormatSummary(IDiagnosticWriter writer)
     {
-        var sb = new StringBuilder();
-        writer.Write(sb, Summary.Value);
-        return sb.ToString();
+        var state = new DiagnosticWriterState();
+        writer.Write(ref state, Summary.Value);
+        return state.ToOutput();
     }
 
     /// <summary>
@@ -69,9 +68,9 @@ public record Diagnostic
     /// </summary>
     public virtual string FormatDetails(IDiagnosticWriter writer)
     {
-        var sb = new StringBuilder();
-        writer.Write(sb, Details.Value);
-        return sb.ToString();
+        var state = new DiagnosticWriterState();
+        writer.Write(ref state, Details.Value);
+        return state.ToOutput();
     }
 }
 
@@ -88,12 +87,16 @@ public record Diagnostic<TMessageData> : Diagnostic where TMessageData : struct,
     /// <inheritdoc/>
     public override string FormatSummary(IDiagnosticWriter writer)
     {
-        return MessageData.Format(Summary, writer);
+        var state = new DiagnosticWriterState();
+        MessageData.Format(writer, ref state, Summary);
+        return state.ToOutput();
     }
 
     /// <inheritdoc/>
     public override string FormatDetails(IDiagnosticWriter writer)
     {
-        return MessageData.Format(Details, writer);
+        var state = new DiagnosticWriterState();
+        MessageData.Format(writer, ref state, Details);
+        return state.ToOutput();
     }
 }

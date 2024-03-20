@@ -21,4 +21,9 @@ public readonly struct DiagnosticWriterState
     {
         StringBuilder = new StringBuilder();
     }
+
+    /// <summary>
+    /// Produces a string output of the state.
+    /// </summary>
+    public string ToOutput() => StringBuilder.ToString();
 }
