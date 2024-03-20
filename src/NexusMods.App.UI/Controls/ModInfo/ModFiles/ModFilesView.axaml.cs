@@ -53,19 +53,7 @@ public partial class ModFilesView : ReactiveUserControl<IModFilesViewModel>
                 new HierarchicalExpanderColumn<IFileTreeNodeViewModel>(
                     new TemplateColumn<IFileTreeNodeViewModel>(
                         Language.Helpers_GenerateHeader_NAME,
-                        new FuncDataTemplate<IFileTreeNodeViewModel>((node, _) =>
-                            {
-                                // This should never be null but can be during rapid resize, due to
-                                // virtualization shenanigans. Think this is a control bug, but well, gotta work with what we have.
-                                // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
-                                if (node == null)
-                                    return new Control();
-
-                                var view = new FileTreeNodeView();
-                                view.DataContext = node;
-                                return view;
-                            }
-                        ),
+                        "CustomRow",
                         width: new GridLength(1, GridUnitType.Star),
                         options: new()
                         {
