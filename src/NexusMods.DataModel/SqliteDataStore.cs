@@ -26,6 +26,7 @@ public class SqliteDataStore : IDataStore, IDisposable
     // so using dicts just slows down all of our database hits.
 
     private bool _isDisposed;
+    private object _writerLock;
 
     private readonly Dictionary<EntityCategory, string> _getAllStatements;
     private readonly Dictionary<EntityCategory, string> _getStatements;
@@ -52,6 +53,7 @@ public class SqliteDataStore : IDataStore, IDisposable
     public SqliteDataStore(ILogger<SqliteDataStore> logger, IDataModelSettings settings, IServiceProvider provider)
     {
         _logger = logger;
+        _writerLock = new object();
 
         string connectionString;
         if (settings.UseInMemoryDataModel)
@@ -150,7 +152,10 @@ public class SqliteDataStore : IDataStore, IDisposable
         JsonSerializer.Serialize(ms, value, _jsonOptions.Value);
         ms.Position = 0;
         cmd.Parameters.AddWithValue("@data", ms.ToArray());
-        cmd.ExecuteNonQuery();
+        lock (_writerLock)
+        {
+            cmd.ExecuteNonQuery();
+        }
 
         NotifyOfUpdatedId(id);
     }
@@ -251,7 +256,10 @@ public class SqliteDataStore : IDataStore, IDisposable
 
         cmd.Parameters.AddWithValueUntagged("@id", id);
         cmd.Parameters.AddWithValue("@data", val.ToArray());
-        cmd.ExecuteNonQuery();
+        lock (_writerLock)
+        {
+            cmd.ExecuteNonQuery();
+        }
 
         NotifyOfUpdatedId(id);
     }
@@ -278,7 +286,10 @@ public class SqliteDataStore : IDataStore, IDisposable
             cmd.CommandText = _putStatements[id.Category];
             cmd.Parameters.AddWithValueUntagged("@id", id);
             cmd.Parameters.AddWithValue("@data", val.ToArray());
-            cmd.ExecuteNonQuery();
+            lock (_writerLock)
+            {
+                cmd.ExecuteNonQuery();
+            }
             transaction.Commit();
         }
 
@@ -296,7 +307,10 @@ public class SqliteDataStore : IDataStore, IDisposable
         using var cmd = conn.Value.CreateCommand();
         cmd.CommandText = _deleteStatements[id.Category];
         cmd.Parameters.AddWithValueUntagged("@id", id);
-        cmd.ExecuteNonQuery();
+        lock (_writerLock)
+        {
+            cmd.ExecuteNonQuery();
+        }
 
         NotifyOfUpdatedId(id);
     }

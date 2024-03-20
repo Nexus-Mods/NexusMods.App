@@ -131,6 +131,7 @@ public class FileHashCache : IFileHashCache
             DiskStateEntry.From(h))));
     }
 
+    [SkipLocalsInit] // We don't need to zero the memory here
     private void PutCachedAsync(AbsolutePath path, FileHashCacheEntry entry)
     {
         var normalized = path.ToString();
