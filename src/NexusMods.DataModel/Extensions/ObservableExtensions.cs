@@ -1,4 +1,5 @@
 ﻿using System.Reactive.Linq;
+using System.Reactive.Subjects;
 
 namespace NexusMods.DataModel.Extensions;
 
@@ -18,4 +19,12 @@ public static class ObservableExtensions
         observable
             .Where(x => x is not null)
             .Select(x => x!);
+
+    /// <summary>
+    /// Variation of multicast using <see cref="ReplaySubject{T}"/> with bufferSize 1.
+    /// </summary>
+    public static IConnectableObservable<T> PublishWithReplay<T>(this IObservable<T> source)
+    {
+        return source.Multicast(new ReplaySubject<T>(bufferSize: 1));
+    }
 }

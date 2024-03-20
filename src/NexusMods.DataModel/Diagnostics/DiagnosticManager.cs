@@ -61,7 +61,7 @@ internal sealed class DiagnosticManager : IDiagnosticManager
                         return Array.Empty<Diagnostic>();
                     }
                 })
-                .Publish();
+                .PublishWithReplay();
 
             _compositeDisposable.Add(connectableObservable.Connect());
             _observableCache.Edit(updater => updater.AddOrUpdate(connectableObservable, loadoutId));
