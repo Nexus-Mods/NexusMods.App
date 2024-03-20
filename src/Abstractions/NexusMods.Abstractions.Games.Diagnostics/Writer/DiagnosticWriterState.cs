@@ -15,11 +15,17 @@ public readonly struct DiagnosticWriterState
     public readonly StringBuilder StringBuilder;
 
     /// <summary>
+    /// Gets the mode of the writer.
+    /// </summary>
+    public readonly DiagnosticWriterMode Mode;
+
+    /// <summary>
     /// Constructor.
     /// </summary>
-    public DiagnosticWriterState()
+    public DiagnosticWriterState(DiagnosticWriterMode mode)
     {
         StringBuilder = new StringBuilder();
+        Mode = mode;
     }
 
     /// <summary>

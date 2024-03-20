@@ -56,9 +56,9 @@ public record Diagnostic
     /// <summary>
     /// Formats <see cref="Summary"/> using <paramref name="writer"/>.
     /// </summary>
-    public virtual string FormatSummary(IDiagnosticWriter writer)
+    public virtual string FormatSummary(IDiagnosticWriter writer, DiagnosticWriterMode mode)
     {
-        var state = new DiagnosticWriterState();
+        var state = new DiagnosticWriterState(mode);
         writer.Write(ref state, Summary.Value);
         return state.ToOutput();
     }
@@ -66,9 +66,9 @@ public record Diagnostic
     /// <summary>
     /// Formats <see cref="Details"/> using <paramref name="writer"/>.
     /// </summary>
-    public virtual string FormatDetails(IDiagnosticWriter writer)
+    public virtual string FormatDetails(IDiagnosticWriter writer, DiagnosticWriterMode mode)
     {
-        var state = new DiagnosticWriterState();
+        var state = new DiagnosticWriterState(mode);
         writer.Write(ref state, Details.Value);
         return state.ToOutput();
     }
@@ -85,17 +85,17 @@ public record Diagnostic<TMessageData> : Diagnostic where TMessageData : struct,
     public required TMessageData MessageData { get; init; }
 
     /// <inheritdoc/>
-    public override string FormatSummary(IDiagnosticWriter writer)
+    public override string FormatSummary(IDiagnosticWriter writer, DiagnosticWriterMode mode)
     {
-        var state = new DiagnosticWriterState();
+        var state = new DiagnosticWriterState(mode);
         MessageData.Format(writer, ref state, Summary);
         return state.ToOutput();
     }
 
     /// <inheritdoc/>
-    public override string FormatDetails(IDiagnosticWriter writer)
+    public override string FormatDetails(IDiagnosticWriter writer, DiagnosticWriterMode mode)
     {
-        var state = new DiagnosticWriterState();
+        var state = new DiagnosticWriterState(mode);
         MessageData.Format(writer, ref state, Details);
         return state.ToOutput();
     }
