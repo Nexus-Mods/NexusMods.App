@@ -450,9 +450,6 @@
         <Compile Update="Controls\Diagnostics\DiagnosticEntryDesignViewModel.cs">
           <DependentUpon>IDiagnosticEntryViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="DiagnosticSystem\ValueFormatterCache.cs">
-          <DependentUpon>IValueFormatter.cs</DependentUpon>
-        </Compile>
         <Compile Update="DiagnosticSystem\ModReferenceFormatter.cs">
           <DependentUpon>IValueFormatter.cs</DependentUpon>
         </Compile>

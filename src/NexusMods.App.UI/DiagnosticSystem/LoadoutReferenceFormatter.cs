@@ -1,3 +1,4 @@
+using System.Text;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.References;
 using NexusMods.Abstractions.Loadouts;
@@ -13,10 +14,10 @@ internal sealed class LoadoutReferenceFormatter : IValueFormatter<LoadoutReferen
         _loadoutRegistry = loadoutRegistry;
     }
 
-    public void Format(LoadoutReference value, IDiagnosticWriter writer)
+    public void Format(IDiagnosticWriter writer, StringBuilder stringBuilder, LoadoutReference value)
     {
         // TODO: custom markdown control
         var loadout = _loadoutRegistry.Get(value.DataId);
-        writer.Write(loadout?.Name ?? "MISSING LOADOUT");
+        writer.Write(stringBuilder, loadout?.Name ?? "MISSING LOADOUT");
     }
 }

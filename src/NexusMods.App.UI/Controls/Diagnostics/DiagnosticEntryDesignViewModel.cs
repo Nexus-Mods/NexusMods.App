@@ -24,21 +24,18 @@ public class DiagnosticEntryDesignViewModel : DiagnosticEntryViewModel
 
 internal sealed class DummyDiagnosticWriter : IDiagnosticWriter
 {
-    private readonly StringBuilder _sb = new();
-    public void Dispose() { }
-
-    public void Write<T>(T value) where T : notnull => Write(value.ToString().AsSpan());
-
-    public void WriteValueType<T>(T value) where T : struct => Write(value.ToString().AsSpan());
-
-    public void Write(ReadOnlySpan<char> value) => _sb.Append(value);
-    
-    public string ToOutput()
+    public void Write<T>(StringBuilder stringBuilder, T value) where T : notnull
     {
-        var res = _sb.ToString();
-        Reset();
-        return res;
+        Write(stringBuilder, value.ToString().AsSpan());
     }
-    
-    public void Reset()  => _sb.Clear();
+
+    public void WriteValueType<T>(StringBuilder stringBuilder, T value) where T : struct
+    {
+        Write(stringBuilder, value.ToString().AsSpan());
+    }
+
+    public void Write(StringBuilder stringBuilder, ReadOnlySpan<char> value)
+    {
+        stringBuilder.Append(value);
+    }
 }

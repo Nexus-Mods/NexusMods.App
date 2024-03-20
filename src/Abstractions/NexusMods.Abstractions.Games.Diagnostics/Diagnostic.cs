@@ -1,3 +1,4 @@
+using System.Text;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Diagnostics.References;
 
@@ -56,17 +57,21 @@ public record Diagnostic
     /// <summary>
     /// Formats <see cref="Summary"/> using <paramref name="writer"/>.
     /// </summary>
-    public virtual void FormatSummary(IDiagnosticWriter writer)
+    public virtual string FormatSummary(IDiagnosticWriter writer)
     {
-        writer.Write(Summary.Value);
+        var sb = new StringBuilder();
+        writer.Write(sb, Summary.Value);
+        return sb.ToString();
     }
 
     /// <summary>
     /// Formats <see cref="Details"/> using <paramref name="writer"/>.
     /// </summary>
-    public virtual void FormatDetails(IDiagnosticWriter writer)
+    public virtual string FormatDetails(IDiagnosticWriter writer)
     {
-        writer.Write(Details.Value);
+        var sb = new StringBuilder();
+        writer.Write(sb, Details.Value);
+        return sb.ToString();
     }
 }
 
@@ -81,14 +86,14 @@ public record Diagnostic<TMessageData> : Diagnostic where TMessageData : struct,
     public required TMessageData MessageData { get; init; }
 
     /// <inheritdoc/>
-    public override void FormatSummary(IDiagnosticWriter writer)
+    public override string FormatSummary(IDiagnosticWriter writer)
     {
-        MessageData.Format(Summary, writer);
+        return MessageData.Format(Summary, writer);
     }
 
     /// <inheritdoc/>
-    public override void FormatDetails(IDiagnosticWriter writer)
+    public override string FormatDetails(IDiagnosticWriter writer)
     {
-        MessageData.Format(Details, writer);
+        return MessageData.Format(Details, writer);
     }
 }

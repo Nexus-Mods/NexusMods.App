@@ -16,9 +16,7 @@ public class DiagnosticDetailsViewModel : APageViewModel<IDiagnosticDetailsViewM
         Diagnostic diagnostic) : base(windowManager)
     {
         Severity = diagnostic.Severity;
-
-        diagnostic.FormatDetails(diagnosticWriter);
-        Details = diagnosticWriter.ToOutput();
+        Details = diagnostic.FormatDetails(diagnosticWriter);
 
         this.WhenActivated(disposable =>
         {

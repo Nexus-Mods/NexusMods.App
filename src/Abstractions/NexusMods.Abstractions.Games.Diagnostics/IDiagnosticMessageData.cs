@@ -11,5 +11,5 @@ public interface IDiagnosticMessageData
     /// <summary>
     /// Formats the given message using the current message data.
     /// </summary>
-    void Format(DiagnosticMessage message, IDiagnosticWriter writer);
+    string Format(DiagnosticMessage message, IDiagnosticWriter writer);
 }

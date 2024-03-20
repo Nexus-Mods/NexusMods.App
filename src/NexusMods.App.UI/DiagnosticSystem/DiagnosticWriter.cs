@@ -1,52 +1,55 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Diagnostics;
 
 namespace NexusMods.App.UI.DiagnosticSystem;
 
 internal sealed class DiagnosticWriter : IDiagnosticWriter
 {
-    private readonly ValueFormatterCache _formatterCache;
-    private readonly StringBuilder _sb = new();
+    private readonly ILogger<DiagnosticWriter> _logger;
+    private readonly IValueFormatter[] _formatters;
 
-    public DiagnosticWriter(ValueFormatterCache formatterCache)
+    public DiagnosticWriter(
+        ILogger<DiagnosticWriter> logger,
+        IEnumerable<IValueFormatter> formatters)
     {
-        _formatterCache = formatterCache;
+        _logger = logger;
+        _formatters = formatters.ToArray();
     }
 
-    public void Write<T>(T value) where T : notnull
+    private bool TryGetFormatter<T>([NotNullWhen(true)] out IValueFormatter<T>? formatter) where T : notnull
     {
-        if (_formatterCache.TryGetFormatter<T>(out var formatter))
+        formatter = _formatters.OfType<IValueFormatter<T>>().FirstOrDefault();
+        if (formatter is not null) return true;
+
+        _logger.LogTrace("Unable to find formatter for type {Type}", typeof(T).ToString());
+        return false;
+    }
+
+    public void Write<T>(StringBuilder stringBuilder, T value) where T : notnull
+    {
+        if (TryGetFormatter<T>(out var formatter))
         {
-            formatter.Format(value, this);
+            formatter.Format(this, stringBuilder, value);
         }
         else
         {
-            Write(value.ToString().AsSpan());
+            Write(stringBuilder, value.ToString().AsSpan());
         }
     }
 
-    public void WriteValueType<T>(T value) where T : struct
+    public void WriteValueType<T>(StringBuilder stringBuilder, T value) where T : struct
     {
-        if (_formatterCache.TryGetFormatter<T>(out var formatter))
+        if (TryGetFormatter<T>(out var formatter))
         {
-            formatter.Format(value, this);
+            formatter.Format(this, stringBuilder, value);
         }
         else
         {
-            Write(value.ToString().AsSpan());
+            Write(stringBuilder, value.ToString().AsSpan());
         }
     }
 
-    public void Write(ReadOnlySpan<char> value) => _sb.Append(value);
-
-    public string ToOutput()
-    {
-        var res = _sb.ToString();
-        Reset();
-        return res;
-    }
-
-    public void Reset() => _sb.Clear();
-
-    public void Dispose() { }
+    public void Write(StringBuilder stringBuilder, ReadOnlySpan<char> value) => stringBuilder.Append(value);
 }
