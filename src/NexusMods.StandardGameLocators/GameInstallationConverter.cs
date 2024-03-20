@@ -37,7 +37,7 @@ public class GameInstallationConverter : JsonConverter<GameInstallation>
 
         var foundGame = _games[slug]
             .SelectMany(g => ((IGame)g).Installations)
-            .FirstOrDefault(install => install.Version == version && install.Store == store);
+            .FirstOrDefault(install => install.Store == store);
 
         return foundGame ?? new UnknownGame(slug, version).Installations.First();
     }
