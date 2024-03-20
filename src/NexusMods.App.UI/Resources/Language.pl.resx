@@ -325,6 +325,9 @@ lub nie istnieje.</value>
     <data name="DiagnosticDetailsView_SeverityTitle_CRITICAL_ERROR" xml:space="preserve">
         <value>BŁĄD KRYTYCZNY</value>
     </data>
+    <data name="LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics" xml:space="preserve">
+        <value>Diagnostyka</value>
+    </data>
     <data name="DiagnosticDetailsView_SeverityTitle_HIDDEN" xml:space="preserve">
         <value>UKRYTE</value>
     </data>
