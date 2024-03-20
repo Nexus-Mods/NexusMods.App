@@ -27,7 +27,7 @@ internal sealed class DiagnosticWriter : IDiagnosticWriter
         return false;
     }
 
-    public void Write<T>(StringBuilder stringBuilder, T value) where T : notnull
+    public void Write<T>(ref readonly DiagnosticWriterState state, T value) where T : notnull
     {
         if (TryGetFormatter<T>(out var formatter))
         {

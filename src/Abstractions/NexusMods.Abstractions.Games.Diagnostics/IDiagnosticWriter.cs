@@ -10,12 +10,12 @@ namespace NexusMods.Abstractions.Diagnostics;
 public interface IDiagnosticWriter
 {
     /// <summary>
-    /// Writes <paramref name="value"/> to the <see cref="StringBuilder"/>.
+    /// Writes <paramref name="value"/>
     /// </summary>
     /// <remarks>
     /// This is used to write field values to the output.
     /// </remarks>
-    void Write<T>(StringBuilder stringBuilder, T value) where T : notnull;
+    void Write<T>(ref readonly DiagnosticWriterState state, T value) where T : notnull;
 
     /// <inheritdoc cref="Write{T}"/>
     /// <remarks>
