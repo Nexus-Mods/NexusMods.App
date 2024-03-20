@@ -60,7 +60,6 @@ public class OAuth
     /// Make an authorization request
     /// </summary>
     /// <param name="cancellationToken"></param>
-    /// <param name="state">Pre-computed 'state' value for the authorize URL.</param>
     /// <returns>task with the jwt token once we receive one</returns>
     public async Task<JwtTokenReply?> AuthorizeRequest(CancellationToken cancellationToken)
     {
@@ -73,6 +72,8 @@ public class OAuth
 
         var state = _idGenerator.UUIDv4();
 
+        var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+
         // Start listening first, otherwise we might miss the message
         var codeTask = _nxmUrlMessages.Messages
             .Where(url => url.Value.UrlType == NXMUrlType.OAuth && url.Value.OAuth.State == state)
@@ -80,13 +81,15 @@ public class OAuth
             .Where(code => code is not null)
             .Select(code => code!)
             .ToAsyncEnumerable()
-            .FirstAsync(cancellationToken);
+            .FirstAsync(cts.Token);
 
         var url = GenerateAuthorizeUrl(codeChallenge, state);
         using var job = CreateJob(url);
 
         // see https://www.rfc-editor.org/rfc/rfc7636#section-4.3
         await _os.OpenUrl(url, cancellationToken);
+
+        cts.CancelAfter(TimeSpan.FromMinutes(1));
         var code = await codeTask;
 
         return await AuthorizeToken(codeVerifier, code, cancellationToken);
