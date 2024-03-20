@@ -316,4 +316,16 @@ lub nie istnieje.</value>
     <data name="ErrorView_MissingMod_Subheader" xml:space="preserve">
         <value>Modyfikacja nie została znaleziona</value>
     </data>
+    <data name="DiagnosticDetailsView_SeverityTitle_SUGGESTION" xml:space="preserve">
+        <value>SUGESTIA</value>
+    </data>
+    <data name="DiagnosticDetailsView_SeverityTitle_WARNING" xml:space="preserve">
+        <value>OSTRZEŻENIE</value>
+    </data>
+    <data name="DiagnosticDetailsView_SeverityTitle_CRITICAL_ERROR" xml:space="preserve">
+        <value>BŁĄD KRYTYCZNY</value>
+    </data>
+    <data name="DiagnosticDetailsView_SeverityTitle_HIDDEN" xml:space="preserve">
+        <value>UKRYTE</value>
+    </data>
 </root>
