@@ -22,9 +22,9 @@ public readonly struct DiagnosticWriterState
     /// <summary>
     /// Constructor.
     /// </summary>
-    public DiagnosticWriterState(DiagnosticWriterMode mode)
+    public DiagnosticWriterState(DiagnosticWriterMode mode, int capacity = 16)
     {
-        StringBuilder = new StringBuilder();
+        StringBuilder = new StringBuilder(capacity);
         Mode = mode;
     }
 

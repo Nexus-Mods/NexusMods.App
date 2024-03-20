@@ -58,7 +58,7 @@ public record Diagnostic
     /// </summary>
     public virtual string FormatSummary(IDiagnosticWriter writer, DiagnosticWriterMode mode = DiagnosticWriterMode.PlainText)
     {
-        var state = new DiagnosticWriterState(mode);
+        var state = new DiagnosticWriterState(mode, capacity: Summary.Value.Length);
         writer.Write(ref state, Summary.Value);
         return state.ToOutput();
     }
@@ -68,7 +68,7 @@ public record Diagnostic
     /// </summary>
     public virtual string FormatDetails(IDiagnosticWriter writer, DiagnosticWriterMode mode = DiagnosticWriterMode.Markdown)
     {
-        var state = new DiagnosticWriterState(mode);
+        var state = new DiagnosticWriterState(mode, capacity: Details.Value.Length);
         writer.Write(ref state, Details.Value);
         return state.ToOutput();
     }
@@ -87,7 +87,7 @@ public record Diagnostic<TMessageData> : Diagnostic where TMessageData : struct,
     /// <inheritdoc/>
     public override string FormatSummary(IDiagnosticWriter writer, DiagnosticWriterMode mode = DiagnosticWriterMode.PlainText)
     {
-        var state = new DiagnosticWriterState(mode);
+        var state = new DiagnosticWriterState(mode, capacity: Summary.Value.Length);
         MessageData.Format(writer, ref state, Summary);
         return state.ToOutput();
     }
@@ -95,7 +95,7 @@ public record Diagnostic<TMessageData> : Diagnostic where TMessageData : struct,
     /// <inheritdoc/>
     public override string FormatDetails(IDiagnosticWriter writer, DiagnosticWriterMode mode = DiagnosticWriterMode.Markdown)
     {
-        var state = new DiagnosticWriterState(mode);
+        var state = new DiagnosticWriterState(mode, capacity: Details.Value.Length);
         MessageData.Format(writer, ref state, Details);
         return state.ToOutput();
     }
