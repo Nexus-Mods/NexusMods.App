@@ -1,14 +1,9 @@
 name: Git Builds
 
 on:
-  push:
-    branches: [ main ]
-    paths:
-      - ".github/workflows/clean_environment_tests.yaml"
-      - "./src/**"
-      - "./tests/**"
-      - "**.props"
-      - "**.targets"
+  schedule:
+    - cron: '17 08,15 * * *'
+  workflow_dispatch:
 
 jobs:
   build:
