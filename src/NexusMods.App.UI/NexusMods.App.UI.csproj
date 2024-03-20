@@ -462,11 +462,18 @@
         <Compile Update="DiagnosticSystem\NamedLinkFormatter.cs">
           <DependentUpon>IValueFormatter.cs</DependentUpon>
         </Compile>
-        <Compile Update="Pages\Diagnostics\DiagnosticDetailsDesignViewModel.cs">
+        <Compile Update="Pages\Diagnostics\Details\DiagnosticDetailsView.axaml.cs">
+          <DependentUpon>DiagnosticDetailsView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Pages\Diagnostics\Details\DiagnosticDetailsViewModel.cs">
           <DependentUpon>IDiagnosticDetailsViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Pages\Diagnostics\DiagnosticDetailsViewModel.cs">
+        <Compile Update="Pages\Diagnostics\Details\DiagnosticDetailsDesignViewModel.cs">
           <DependentUpon>IDiagnosticDetailsViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\Diagnostics\List\DiagnosticListViewModel.cs">
+          <DependentUpon>IDiagnosticListViewModel.cs</DependentUpon>
         </Compile>
     </ItemGroup>
 

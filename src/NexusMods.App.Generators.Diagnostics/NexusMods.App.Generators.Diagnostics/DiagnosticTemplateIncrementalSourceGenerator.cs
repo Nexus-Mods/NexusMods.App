@@ -254,10 +254,17 @@ public class DiagnosticTemplateIncrementalSourceGenerator : IIncrementalGenerato
                     }
 
                     cw.AppendLine("bracesStartIndex = -1;");
-                    cw.AppendLine("bracesEndIndex = -1;");
+                    cw.AppendLine("bracesEndIndex = i;");
                 }
 
-                cw.AppendLine("if (bracesEndIndex == i) return;");
+                cw.AppendLine("if (bracesEndIndex == i - 1) return;");
+                cw.AppendLine("if (bracesEndIndex == -1)");
+                using (cw.AddBlock())
+                {
+                    cw.AppendLine("writer.Write(span);");
+                    cw.AppendLine("return;");
+                }
+
                 cw.AppendLine("var endSlice = span.Slice(bracesEndIndex + 1, i - bracesEndIndex - 1);");
                 cw.AppendLine("writer.Write(endSlice);");
             }

@@ -26,13 +26,12 @@
                 
                 <TextBlock x:Name="SeverityTitleTextBlock"
                            Classes="TitleSMSemi" 
-                           VerticalAlignment="Center"/>
+                           VerticalAlignment="Center" />
             </StackPanel>
-            
+
             <Border Height="1" Classes="DangerStrong" />
             
-            <TextBlock x:Name="DetailsTextBlock"
-                       Classes="BodyMDNormal ForegroundSubdued"/>
+            <TextBlock x:Name="DetailsTextBlock" Classes="BodyMDNormal ForegroundSubdued" TextWrapping="Wrap"/>
         </StackPanel>
     </Border>
 </reactiveUi:ReactiveUserControl>

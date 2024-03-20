@@ -1,7 +1,9 @@
 using System.Collections.ObjectModel;
 using DynamicData.Kernel;
+using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Icons;
 using NexusMods.App.UI.LeftMenu.Items;
+using NexusMods.App.UI.Pages.Diagnostics;
 using NexusMods.App.UI.Pages.LoadoutGrid;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -37,6 +39,27 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                     {
                         FactoryId = LoadoutGridPageFactory.StaticId,
                         Context = new LoadoutGridContext { LoadoutId = loadoutContext.LoadoutId },
+                    };
+
+                    // TODO: use https://github.com/Nexus-Mods/NexusMods.App/issues/942
+                    var input = NavigationInput.Default;
+
+                    var behavior = workspaceController.GetDefaultOpenPageBehavior(pageData, input, Optional<PageIdBundle>.None);
+                    workspaceController.OpenPage(WorkspaceId, pageData, behavior);
+                }),
+            },
+            new IconViewModel
+            {
+                Name = Language.LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics,
+                Activate = ReactiveCommand.Create(() =>
+                {
+                    var pageData = new PageData
+                    {
+                        FactoryId = DiagnosticListPageFactory.StaticId,
+                        Context = new DiagnosticListPageContext
+                        {
+                            LoadoutId = loadoutContext.LoadoutId,
+                        },
                     };
 
                     // TODO: use https://github.com/Nexus-Mods/NexusMods.App/issues/942

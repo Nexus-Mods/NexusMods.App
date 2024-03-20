@@ -92,10 +92,16 @@ partial class MyClass
 				}
 
 				bracesStartIndex = -1;
-				bracesEndIndex = -1;
+				bracesEndIndex = i;
 			}
 
-			if (bracesEndIndex == i) return;
+			if (bracesEndIndex == i - 1) return;
+			if (bracesEndIndex == -1)
+			{
+				writer.Write(span);
+				return;
+			}
+
 			var endSlice = span.Slice(bracesEndIndex + 1, i - bracesEndIndex - 1);
 			writer.Write(endSlice);
 		}

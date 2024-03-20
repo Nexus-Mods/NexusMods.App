@@ -4,29 +4,29 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.App.UI.WorkspaceSystem;
 
-namespace NexusMods.App.UI.Pages.LoadoutGrid;
+namespace NexusMods.App.UI.Pages.Diagnostics;
 
-[JsonName("NexusMods.App.UI.Page.LoadoutGridContext")]
-public record LoadoutGridContext : IPageFactoryContext
+[JsonName("NexusMods.App.UI.Pages.Diagnostics.DiagnosticListPageContext")]
+public record DiagnosticListPageContext : IPageFactoryContext
 {
     public required LoadoutId LoadoutId { get; init; }
 }
 
 [UsedImplicitly]
-public class LoadoutGridPageFactory : APageFactory<ILoadoutGridViewModel, LoadoutGridContext>
+public class DiagnosticListPageFactory : APageFactory<IDiagnosticListViewModel, DiagnosticListPageContext>
 {
     private readonly ILoadoutRegistry _loadoutRegistry;
-    public LoadoutGridPageFactory(IServiceProvider serviceProvider) : base(serviceProvider)
+    public DiagnosticListPageFactory(IServiceProvider serviceProvider) : base(serviceProvider)
     {
         _loadoutRegistry = serviceProvider.GetRequiredService<ILoadoutRegistry>();
     }
 
-    public static readonly PageFactoryId StaticId = PageFactoryId.From(Guid.Parse("c6221ce6-cf12-49bf-b32c-8138ef701cc5"));
+    public static readonly PageFactoryId StaticId = PageFactoryId.From(Guid.Parse("db77a8c2-61ad-4d59-8e95-4bebbba9ea5f"));
     public override PageFactoryId Id => StaticId;
 
-    public override ILoadoutGridViewModel CreateViewModel(LoadoutGridContext context)
+    public override IDiagnosticListViewModel CreateViewModel(DiagnosticListPageContext context)
     {
-        var vm = ServiceProvider.GetRequiredService<ILoadoutGridViewModel>();
+        var vm = ServiceProvider.GetRequiredService<IDiagnosticListViewModel>();
         vm.LoadoutId = context.LoadoutId;
         return vm;
     }
@@ -41,16 +41,16 @@ public class LoadoutGridPageFactory : APageFactory<ILoadoutGridViewModel, Loadou
         yield return new PageDiscoveryDetails
         {
             // TODO: translations?
-            SectionName = "Loadouts",
-            ItemName = loadout.Name,
+            SectionName = "Utilities",
+            ItemName = "Diagnostics",
             PageData = new PageData
             {
-                FactoryId = Id,
-                Context = new LoadoutGridContext
+                FactoryId = StaticId,
+                Context = new DiagnosticListPageContext
                 {
-                    LoadoutId = loadout.LoadoutId
-                }
-            }
+                    LoadoutId = loadout.LoadoutId,
+                },
+            },
         };
     }
 }

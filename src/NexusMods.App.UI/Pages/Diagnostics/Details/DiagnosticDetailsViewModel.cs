@@ -1,14 +1,13 @@
-using Microsoft.Extensions.DependencyInjection;
+using System.Reactive.Disposables;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
-using ReactiveUI.Fody.Helpers;
+using ReactiveUI;
 
 namespace NexusMods.App.UI.Pages.Diagnostics;
 
 public class DiagnosticDetailsViewModel : APageViewModel<IDiagnosticDetailsViewModel>, IDiagnosticDetailsViewModel
 {
-    private Diagnostic Diagnostic { get; set; }
     public string Details { get; }
     public DiagnosticSeverity Severity { get; }
 
@@ -16,10 +15,20 @@ public class DiagnosticDetailsViewModel : APageViewModel<IDiagnosticDetailsViewM
         IDiagnosticWriter diagnosticWriter, 
         Diagnostic diagnostic) : base(windowManager)
     {
-        Diagnostic = diagnostic;
         Severity = diagnostic.Severity;
 
         diagnostic.FormatDetails(diagnosticWriter);
         Details = diagnosticWriter.ToOutput();
+
+        this.WhenActivated(disposable =>
+        {
+            {
+                var workspaceController = GetWorkspaceController();
+                workspaceController.SetTabTitle(diagnostic.Title, WorkspaceId, PanelId, TabId);
+                workspaceController.SetIcon(DiagnosticIcons.DiagnosticIcon2, WorkspaceId, PanelId, TabId);
+            }
+
+            Disposable.Empty.DisposeWith(disposable);
+        });
     }
 }
