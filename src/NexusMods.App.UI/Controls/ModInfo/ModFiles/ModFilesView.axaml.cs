@@ -55,7 +55,7 @@ public partial class ModFilesView : ReactiveUserControl<IModFilesViewModel>
                         Language.Helpers_GenerateHeader_NAME,
                         "CustomRow",
                         width: new GridLength(1, GridUnitType.Star),
-                        options: new()
+                        options: new TemplateColumnOptions<IFileTreeNodeViewModel>
                         {
                             // Compares if folder first, such that folders show first, then by file name.
                             CompareAscending = (x, y) =>
@@ -80,7 +80,7 @@ public partial class ModFilesView : ReactiveUserControl<IModFilesViewModel>
                 new TextColumn<IFileTreeNodeViewModel,string?>(
                     Language.Helpers_GenerateHeader_SIZE,
                     x => ByteSize.FromBytes(x.FileSize).ToString(),
-                    options: new()
+                    options: new TextColumnOptions<IFileTreeNodeViewModel>
                     {
                         // Compares if folder first, such that folders show first, then by file name.
                         CompareAscending = (x, y) => 
