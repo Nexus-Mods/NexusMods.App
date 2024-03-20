@@ -72,4 +72,19 @@ internal static partial class Diagnostics
             .AddValue<int>("ModCount")
         )
         .Finish();
+
+    [DiagnosticTemplate]
+    [UsedImplicitly]
+    internal static IDiagnosticTemplate DisabledRequiredDependencyTemplate = DiagnosticTemplateBuilder
+        .Start()
+        .WithId(new DiagnosticId(Source, number: 5))
+        .WithTitle("Required dependency is disabled")
+        .WithSeverity(DiagnosticSeverity.Warning)
+        .WithSummary("Mod {Mod} requires {Dependency} to be enabled")
+        .WithoutDetails()
+        .WithMessageData(messageBuilder => messageBuilder
+            .AddDataReference<ModReference>("Mod")
+            .AddDataReference<ModReference>("Dependency")
+        )
+        .Finish();
 }
