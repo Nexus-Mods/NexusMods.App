@@ -76,13 +76,6 @@ public interface IDataStore
     void Delete(IId id);
 
     /// <summary>
-    /// Places raw data for an item with a specified key into the data store.
-    /// </summary>
-    /// <param name="kvs">The key-value pairs to add to the data store.</param>
-    /// <param name="token">Use this to cancel the operation at any time.</param>
-    Task<long> PutRaw(IAsyncEnumerable<(IId Key, byte[] Value)> kvs, CancellationToken token = default);
-
-    /// <summary>
     /// Retrieves a collection of items whose IDs begin with a specified prefix.
     /// </summary>
     /// <param name="prefix">The sequence of bytes/id that returned items should start with.</param>
