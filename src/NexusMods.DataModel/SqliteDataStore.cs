@@ -26,7 +26,7 @@ public class SqliteDataStore : IDataStore, IDisposable
     // so using dicts just slows down all of our database hits.
 
     private bool _isDisposed;
-    private object _writerLock;
+    private readonly object _writerLock;
 
     private readonly Dictionary<EntityCategory, string> _getAllStatements;
     private readonly Dictionary<EntityCategory, string> _getStatements;
@@ -289,8 +289,8 @@ public class SqliteDataStore : IDataStore, IDisposable
             lock (_writerLock)
             {
                 cmd.ExecuteNonQuery();
+                transaction.Commit();
             }
-            transaction.Commit();
         }
 
         NotifyOfUpdatedId(id);
@@ -313,57 +313,6 @@ public class SqliteDataStore : IDataStore, IDisposable
         }
 
         NotifyOfUpdatedId(id);
-    }
-
-    /// <inheritdoc />
-    public async Task<long> PutRaw(IAsyncEnumerable<(IId Key, byte[] Value)> kvs, CancellationToken token = default)
-    {
-        if (_isDisposed)
-            throw new ObjectDisposedException(nameof(SqliteDataStore));
-
-        var iterator = kvs.GetAsyncEnumerator(token);
-        var processed = 0;
-        var totalLoaded = 0L;
-        var done = false;
-
-        using var conn = _pool.RentDisposable();
-        while (true)
-        {
-            {
-                await using var tx = conn.Value.BeginTransaction();
-
-                while (processed < 100)
-                {
-                    if (!await iterator.MoveNextAsync())
-                    {
-                        done = true;
-                        break;
-                    }
-
-                    var (id, val) = iterator.Current;
-                    await using var cmd = conn.Value.CreateCommand();
-                    cmd.CommandText = _putStatements[id.Category];
-
-                    cmd.Parameters.AddWithValueUntagged("@id", id);
-                    cmd.Parameters.AddWithValue("@data", val);
-                    await cmd.ExecuteNonQueryAsync(token);
-                    processed++;
-                }
-
-                if (processed > 0)
-                {
-                    await tx.CommitAsync(token);
-                    totalLoaded += processed;
-                }
-
-                if (done)
-                    break;
-                processed = 0;
-            }
-        }
-
-        return totalLoaded;
-
     }
 
     /// <inheritdoc />
