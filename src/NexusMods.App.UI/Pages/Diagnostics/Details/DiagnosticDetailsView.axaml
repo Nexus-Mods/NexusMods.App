@@ -33,7 +33,7 @@
                            VerticalAlignment="Center" />
             </StackPanel>
 
-            <Border Height="1" Classes="DangerStrong" />
+            <Border x:Name="HorizontalLine" Height="1" />
 
             <md:MarkdownScrollViewer x:Name="MarkdownScrollViewer"/>
         </StackPanel>
