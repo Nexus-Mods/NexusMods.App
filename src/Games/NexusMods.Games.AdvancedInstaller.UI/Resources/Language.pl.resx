@@ -97,7 +97,7 @@
 		<value>Modyfikacja ma nierozpoznaną strukturę lub zawiera nierozpoznane typy plików, więc nie może zostać zainstalowana automatycznie.</value>
 	</data>
 	<data name="ExtraDescriptionTextBlock_If_you_are_confident" xml:space="preserve">
-		<value>Jeśli masz pewność, że pliki modyfikacji są bezpieczne i wiesz, gdzie należy zainstalować pliki, możesz spróbować ręcznej zaawansowanej instalacji.</value>
+		<value>Jeśli masz pewność, że pliki modyfikacji są bezpieczne i wiesz, gdzie należy je zainstalować, możesz spróbować ręcznej zaawansowanej instalacji.</value>
 	</data>
 	<data name="UnsupportedOverlayFooter_ADVANCED_INSTALL" xml:space="preserve">
 		<value>ZAAWANSOWANA INSTALACJA</value>
