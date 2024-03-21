@@ -32,7 +32,11 @@
         <TreeDataGrid Classes="TreeWhiteCaret"
                       ShowColumnHeaders="True"
                       x:Name="ModFilesTreeDataGrid"
-                      HorizontalAlignment="Stretch">
+                      HorizontalAlignment="Stretch"
+                      Width="1">
+            <!-- NOTE: we set TreeDataGrid.Width to 1 and then to double.NaN in the code behind to force a refresh of width -->
+            <!-- That is a workaround for TreeDataGrid star columns collapsing to 0 width.  -->
+            
             <TreeDataGrid.Resources>
                 <DataTemplate x:Key="CustomRow" DataType="{x:Type files:IFileTreeNodeViewModel}">
                     <files:FileTreeNodeView DataContext="{CompiledBinding}" />
