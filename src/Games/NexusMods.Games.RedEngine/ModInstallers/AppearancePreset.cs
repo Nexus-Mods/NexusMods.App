@@ -30,7 +30,7 @@ public class AppearancePreset : AModInstaller
         CancellationToken cancellationToken = default)
     {
         var modFiles = info.ArchiveFiles.GetFiles()
-            .Where(kv => kv.Path().Extension == KnownExtensions.Preset)
+            .Where(kv => kv.Path().Extension == new Extension(".preset"))
             .SelectMany(kv => Paths.Select(relPath => kv.ToStoredFile(
                 new GamePath(LocationId.Game, relPath.Join(kv.Path()))
             ))).ToArray();
