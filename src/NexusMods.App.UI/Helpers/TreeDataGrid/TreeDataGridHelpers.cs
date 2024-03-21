@@ -5,7 +5,7 @@ using Avalonia.Controls.Templates;
 using ReactiveUI;
 using Splat;
 
-namespace NexusMods.App.UI.Helpers;
+namespace NexusMods.App.UI.Helpers.TreeDataGrid;
 
 /// <summary>
 /// Helper functions for constructing <see cref="TreeDataGrid"/>(s)
@@ -76,13 +76,3 @@ public static class TreeDataGridHelpers
     }
 }
 
-/// <summary>
-///     Represents a ViewModel that can be expanded.
-/// </summary>
-public interface IExpandableItem
-{
-    /// <summary>
-    /// Whether the node is expanded in the UI.
-    /// </summary>
-    public bool IsExpanded { get; set; }
-}

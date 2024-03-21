@@ -10,7 +10,8 @@
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
-    xmlns:viewModFiles="clr-namespace:NexusMods.App.UI.Controls.ModInfo.ModFiles">
+    xmlns:viewModFiles="clr-namespace:NexusMods.App.UI.Controls.ModInfo.ModFiles"
+    xmlns:files="clr-namespace:NexusMods.App.UI.Controls.Trees.Files">
     <Design.DataContext>
         <!-- This ViewModel has a bool switch 'showMultipleRoots' to toggle a view which also has Saves -->
         <viewModFiles:ModFilesDesignViewModel AlwaysRootFolders="False" ShowMultipleRoots="False" />
@@ -64,7 +65,13 @@
         
         <TreeDataGrid Grid.Row="2" Classes="TreeWhiteCaret"
                       ShowColumnHeaders="True"
-                      x:Name="ModFilesTreeDataGrid" />
+                      x:Name="ModFilesTreeDataGrid" >
+            <TreeDataGrid.Resources>
+                <DataTemplate x:Key="CustomRow" DataType="{x:Type files:IFileTreeNodeViewModel}">
+                    <files:FileTreeNodeView DataContext="{CompiledBinding}" />
+                </DataTemplate>
+            </TreeDataGrid.Resources>
+        </TreeDataGrid>
     </Grid>
 </reactiveUi:ReactiveUserControl>
 

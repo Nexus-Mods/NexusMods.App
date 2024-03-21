@@ -1,4 +1,3 @@
-using System.Text;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Diagnostics;
 
@@ -21,5 +20,5 @@ public interface IValueFormatter<in T> : IValueFormatter where T : notnull
     /// Formats the given value of type <typeparamref name="T"/> and writes it
     /// to the given <see cref="IDiagnosticWriter"/>.
     /// </summary>
-    void Format(IDiagnosticWriter writer, StringBuilder stringBuilder, T value);
+    void Format(IDiagnosticWriter writer, ref DiagnosticWriterState state, T value);
 }

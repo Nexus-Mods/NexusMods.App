@@ -10,7 +10,8 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.App.UI.Controls.Trees.Files;
-using ModFileNode = NexusMods.App.UI.TreeNodeVM<NexusMods.App.UI.Controls.Trees.Files.IFileTreeNodeViewModel, NexusMods.Abstractions.GameLocators.GamePath>;
+using NexusMods.App.UI.Helpers.TreeDataGrid;
+
 namespace NexusMods.App.UI.Controls.ModInfo.ModFiles;
 
 [UsedImplicitly]
@@ -18,18 +19,18 @@ public class ModFilesViewModel : AViewModel<IModFilesViewModel>, IModFilesViewMo
 {
     private readonly ILoadoutRegistry _registry;
     private readonly SourceCache<IFileTreeNodeViewModel, GamePath> _sourceCache;
-    private ReadOnlyObservableCollection<ModFileNode> _items;
+    private ReadOnlyObservableCollection<IFileTreeNodeViewModel> _items;
     private int _rootCount;
     private string? _primaryRootLocation;
 
-    public ReadOnlyObservableCollection<ModFileNode> Items => _items;
+    public ReadOnlyObservableCollection<IFileTreeNodeViewModel> Items => _items;
     public int RootCount => _rootCount;
     public string? PrimaryRootLocation => _primaryRootLocation;
 
     public ModFilesViewModel(ILoadoutRegistry registry, IFileStore fileStore)
     {
         _registry = registry;
-        _items = new ReadOnlyObservableCollection<ModFileNode>([]);
+        _items = new ReadOnlyObservableCollection<IFileTreeNodeViewModel>([]);
         _sourceCache = new SourceCache<IFileTreeNodeViewModel, GamePath>(x => x.Key);
     }
 
@@ -137,7 +138,7 @@ public class ModFilesViewModel : AViewModel<IModFilesViewModel>, IModFilesViewMo
         SourceCache<IFileTreeNodeViewModel, GamePath> cache, 
         Dictionary<LocationId, string> locations, 
         bool alwaysRoot, 
-        out ReadOnlyObservableCollection<ModFileNode> result,
+        out ReadOnlyObservableCollection<IFileTreeNodeViewModel> result,
         out int rootCount,
         out string? primaryRootLocation)
     {
@@ -168,7 +169,7 @@ public class ModFilesViewModel : AViewModel<IModFilesViewModel>, IModFilesViewMo
         
         cache.Connect()
             .TransformToTree(model => model.ParentKey)
-            .Transform(node => new ModFileNode(node))
+            .Transform(node => node.Item.Initialize(node))
             .Bind(out result)
             .Subscribe(); // force evaluation
     }

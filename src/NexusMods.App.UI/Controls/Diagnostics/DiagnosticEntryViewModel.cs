@@ -9,7 +9,6 @@ public class DiagnosticEntryViewModel : AViewModel<IDiagnosticEntryViewModel>, I
     
     public DiagnosticEntryViewModel(Diagnostic diagnostic, IDiagnosticWriter writer)
     {
-        // Obtain plain text version of the diagnostic summary
         Summary = diagnostic.FormatSummary(writer);
         Severity = diagnostic.Severity;
         SeeDetailsCommand = ReactiveCommand.Create(() => diagnostic);
