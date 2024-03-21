@@ -17,6 +17,9 @@ using NexusMods.App.UI.Resources;
 
 namespace NexusMods.App.UI.Controls.Trees;
 
+/// <summary>
+/// This is one implementation of the IFileTreeViewModel, which is used to display a tree of files in a mod.
+/// </summary>
 public class ModFileTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeViewModel
 {
     private readonly ILoadoutRegistry _registry;

@@ -1,16 +1,11 @@
-using System.Collections.ObjectModel;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Mods;
-using NexusMods.App.UI.Controls.Trees.Files;
+using NexusMods.App.UI.Controls.Trees;
 
 namespace NexusMods.App.UI.Controls.ModInfo.ModFiles;
 
 public interface IModFilesViewModel : IViewModelInterface
 {
-    /// <summary>
-    ///     All items to be displayed.
-    /// </summary>
-    ReadOnlyObservableCollection<IFileTreeNodeViewModel> Items { get; }
-
+    IFileTreeViewModel? FileTreeViewModel { get; }
     void Initialize(LoadoutId loadoutId, ModId modId) { }
 }

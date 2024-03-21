@@ -3,7 +3,6 @@ using System.ComponentModel;
 using Avalonia.Controls;
 using DynamicData;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.App.UI.Controls.ModInfo.ModFiles;
 using NexusMods.App.UI.Controls.Trees.Files;
 using NexusMods.Paths;
 
@@ -106,7 +105,7 @@ public class ModFileTreeDesignViewModel : AViewModel<IFileTreeViewModel>, IFileT
 
 
         // Assign
-        ModFilesViewModel.BindItems(cache, locations, out _items);
+        ModFileTreeViewModel.BindItems(cache, locations, out _items);
     }
 
     private static void CreateModFileNode(
