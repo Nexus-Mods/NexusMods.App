@@ -54,7 +54,7 @@ internal class DiagnosticListViewModel : APageViewModel<IDiagnosticListViewModel
             var flag = SeverityToFilter(severity);
 
             if (Filter == AllFilter) Filter = flag;
-            else Filter ^= flag;
+            else Filter = flag;
 
             if (Filter == DiagnosticFilter.None) Filter = AllFilter;
         });
@@ -126,7 +126,6 @@ internal class DiagnosticListViewModel : APageViewModel<IDiagnosticListViewModel
             _sourceList
                 .Connect()
                 .MergeMany(entry => entry.SeeDetailsCommand)
-                .Where(diagnostic => diagnostic.Details != DiagnosticMessage.DefaultValue)
                 .SubscribeWithErrorLogging(diagnostic =>
                 {
                     var workspaceController = GetWorkspaceController();
