@@ -93,6 +93,33 @@ internal sealed class DiagnosticManager : IDiagnosticManager
         }
     }
 
+    public IObservable<(int NumSuggestions, int NumWarnings, int NumCritical)> CountDiagnostics(LoadoutId loadoutId)
+    {
+        return GetLoadoutDiagnostics(loadoutId)
+            .Select(diagnostics =>
+            {
+                int numSuggestions = 0, numWarnings = 0, numCritical = 0;
+                foreach (var diagnostic in diagnostics)
+                {
+                    switch (diagnostic.Severity)
+                    {
+                        case DiagnosticSeverity.Suggestion:
+                            numSuggestions += 1;
+                            break;
+                        case DiagnosticSeverity.Warning:
+                            numWarnings += 1;
+                            break;
+                        case DiagnosticSeverity.Critical:
+                            numCritical += 1;
+                            break;
+                        default: break;
+                    }
+                }
+
+                return (numSuggestions, numWarnings, numCritical);
+            });
+    }
+
     public void Dispose()
     {
         if (_isDisposed) return;
