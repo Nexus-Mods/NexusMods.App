@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.App.UI.Controls.Trees.Common;
 using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Controls.Trees.Files;
@@ -32,7 +33,7 @@ public class FileTreeNodeDesignViewModel : AViewModel<IFileTreeNodeViewModel>, I
     public FileTreeNodeDesignViewModel(bool isFile, GamePath fullPath, ulong fileSize)
     {
         IsFile = isFile;
-        Icon = IsFile ? FileTreeNodeIconType.File : FileTreeNodeIconType.ClosedFolder;
+        Icon = IsFile ? fullPath.Extension.GetIconType() : FileTreeNodeIconType.ClosedFolder;
         Name = fullPath.Path.FileName;
         Key = fullPath;
         ParentKey = fullPath.Parent;
