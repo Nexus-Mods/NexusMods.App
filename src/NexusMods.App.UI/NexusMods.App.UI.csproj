@@ -64,6 +64,7 @@
         <PackageReference Include="Avalonia.ReactiveUI" />
         <PackageReference Include="Avalonia.Svg.Skia" />
         <PackageReference Include="Avalonia.Themes.Fluent" />
+        <PackageReference Include="Markdown.Avalonia.Tight" />
         <PackageReference Include="DynamicData" />
         <PackageReference Include="Humanizer" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
