@@ -52,6 +52,6 @@ public partial class DiagnosticDetailsView : ReactiveUserControl<IDiagnosticDeta
                 break;
         }
 
-        DetailsTextBlock.Text = vm.Details;
+        MarkdownScrollViewer.Markdown = vm.Details;
     }
 }
