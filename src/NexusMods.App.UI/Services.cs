@@ -1,10 +1,12 @@
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.Abstractions.Serialization.Json;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.Controls.DevelopmentBuildBanner;
+using NexusMods.App.UI.Controls.Diagnostics;
 using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadGameName;
 using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadName;
 using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadSize;
@@ -21,6 +23,7 @@ using NexusMods.App.UI.Controls.Spine.Buttons.Icon;
 using NexusMods.App.UI.Controls.Spine.Buttons.Image;
 using NexusMods.App.UI.Controls.TopBar;
 using NexusMods.App.UI.Controls.Trees.Files;
+using NexusMods.App.UI.DiagnosticSystem;
 using NexusMods.App.UI.LeftMenu;
 using NexusMods.App.UI.LeftMenu.Downloads;
 using NexusMods.App.UI.LeftMenu.Home;
@@ -32,6 +35,7 @@ using NexusMods.App.UI.Overlays.Generic.MessageBox.OkCancel;
 using NexusMods.App.UI.Overlays.Login;
 using NexusMods.App.UI.Overlays.MetricsOptIn;
 using NexusMods.App.UI.Overlays.Updater;
+using NexusMods.App.UI.Pages.Diagnostics;
 using NexusMods.App.UI.Pages.Downloads;
 using NexusMods.App.UI.Pages.LoadoutGrid;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModCategory;
@@ -173,6 +177,13 @@ public static class Services
             .AddView<LoadingView, ILoadingViewModel>()
             .AddView<ErrorView, IErrorViewModel>()
 
+            .AddView<DiagnosticEntryView, IDiagnosticEntryViewModel>()
+            .AddViewModel<DiagnosticEntryViewModel, IDiagnosticEntryViewModel>()
+            .AddView<DiagnosticListView, IDiagnosticListViewModel>()
+            .AddViewModel<DiagnosticListViewModel, IDiagnosticListViewModel>()
+            .AddView<DiagnosticDetailsView, IDiagnosticDetailsViewModel>()
+            .AddViewModel<DiagnosticDetailsViewModel, IDiagnosticDetailsViewModel>()
+
             // workspace system
             .AddSingleton<IWindowManager, WindowManager>()
             .AddViewModel<WorkspaceViewModel, IWorkspaceViewModel>()
@@ -197,6 +208,8 @@ public static class Services
             .AddSingleton<IPageFactory, LoadoutGridPageFactory>()
             .AddSingleton<IPageFactory, InProgressPageFactory>()
             .AddSingleton<IPageFactory, ModInfoPageFactory>()
+            .AddSingleton<IPageFactory, DiagnosticListPageFactory>()
+            .AddSingleton<IPageFactory, DiagnosticDetailsPageFactory>()
 
             // LeftMenu factories
             .AddSingleton<ILeftMenuFactory, DownloadsLeftMenuFactory>()
@@ -209,9 +222,17 @@ public static class Services
             .AddSingleton<IWorkspaceAttachmentsFactory, HomeAttachmentsFactory>()
             .AddSingleton<IWorkspaceAttachmentsFactory, LoadoutAttachmentsFactory>()
 
-            // Other
+            // Debugging
             .AddViewModel<DummyViewModel, IDummyViewModel>()
             .AddView<DummyView, IDummyViewModel>()
+
+            // Diagnostics
+            .AddSingleton<IValueFormatter, ModReferenceFormatter>()
+            .AddSingleton<IValueFormatter, LoadoutReferenceFormatter>()
+            .AddSingleton<IValueFormatter, NamedLinkFormatter>()
+            .AddSingleton<IDiagnosticWriter, DiagnosticWriter>()
+
+            // Other
             .AddSingleton<InjectedViewLocator>()
             .AddFileSystem();
     }

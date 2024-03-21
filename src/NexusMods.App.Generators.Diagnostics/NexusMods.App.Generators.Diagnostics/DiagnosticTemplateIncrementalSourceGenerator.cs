@@ -108,6 +108,7 @@ public class DiagnosticTemplateIncrementalSourceGenerator : IIncrementalGenerato
             cw.AppendLine($"return new {Constants.DiagnosticsNamespace}.Diagnostic<{diagnosticName}MessageData>");
             using (cw.AddBlock())
             {
+                // Id
                 cw.Append($"Id = new {Constants.DiagnosticsNamespace}.DiagnosticId(");
                 var args = parsedData.IdCreationExpression.ArgumentList!.Arguments;
                 if (args[0].Expression is LiteralExpressionSyntax literalSource)
@@ -115,7 +116,7 @@ public class DiagnosticTemplateIncrementalSourceGenerator : IIncrementalGenerato
                     cw.Append($"source: \"{literalSource.Token.ValueText}\",");
                 } else if (args[0].Expression is IdentifierNameSyntax identifierNameSyntax)
                 {
-                    cw.Append($"source: {identifierNameSyntax.Identifier.Value},");
+                    cw.Append($"source: {identifierNameSyntax.Identifier.Value}, ");
                 }
 
                 if (args[1].Expression is LiteralExpressionSyntax literalNumber)
@@ -124,8 +125,18 @@ public class DiagnosticTemplateIncrementalSourceGenerator : IIncrementalGenerato
                 }
                 cw.AppendLine("),");
 
+                // Title
+                cw.Append("Title = ");
+                if (parsedData.TitleExpression is LiteralExpressionSyntax literalTitle)
+                {
+                    cw.Append($"\"{literalTitle.Token.ValueText}\"");
+                }
+                cw.AppendLine(",");
+
+                // Severity
                 cw.AppendLine($"Severity = {Constants.DiagnosticsNamespace}.DiagnosticSeverity.{parsedData.SeverityName},");
 
+                // Summary
                 cw.Append($"Summary = {Constants.DiagnosticsNamespace}.DiagnosticMessage.From(");
                 if (parsedData.SummaryTemplateExpression is LiteralExpressionSyntax literalSummary)
                 {
@@ -133,6 +144,7 @@ public class DiagnosticTemplateIncrementalSourceGenerator : IIncrementalGenerato
                 }
                 cw.AppendLine("),");
 
+                // Details
                 cw.Append($"Details = {Constants.DiagnosticsNamespace}.DiagnosticMessage.");
                 if (parsedData.DetailsTemplateExpression is null)
                 {
@@ -142,7 +154,9 @@ public class DiagnosticTemplateIncrementalSourceGenerator : IIncrementalGenerato
                     cw.AppendLine($"From(\"{literalDetails.Token.ValueText}\"),");
                 }
 
+                // MessageData
                 cw.AppendLine("MessageData = messageData,");
+                // DataReferences
                 cw.AppendLine($"DataReferences = new global::System.Collections.Generic.Dictionary<{Constants.DiagnosticsNamespace}.References.DataReferenceDescription, {Constants.DiagnosticsNamespace}.References.IDataReference>");
                 using (cw.AddBlock())
                 {
@@ -158,9 +172,10 @@ public class DiagnosticTemplateIncrementalSourceGenerator : IIncrementalGenerato
             cw.AppendLine(";");
         }
 
-        cw.AppendLine($"internal readonly struct {diagnosticName}MessageData");
+        cw.AppendLine($"internal readonly struct {diagnosticName}MessageData : {Constants.DiagnosticsNamespace}.IDiagnosticMessageData");
         using (cw.AddBlock())
         {
+            // fields
             foreach (var field in parsedData.ParsedMessageBuilderFields)
             {
                 cw.AppendLine($"public readonly {field.TypeSymbol.ToDisplayString(CustomSymbolDisplayFormats.GlobalFormat)} {field.Name};");
@@ -168,6 +183,7 @@ public class DiagnosticTemplateIncrementalSourceGenerator : IIncrementalGenerato
 
             cw.AppendLine();
 
+            // constructor
             cw.Append($"public {diagnosticName}MessageData(");
             for (var i = 0; i < parsedData.ParsedMessageBuilderFields.Count; i++)
             {
@@ -182,6 +198,76 @@ public class DiagnosticTemplateIncrementalSourceGenerator : IIncrementalGenerato
                 {
                     cw.AppendLine($"this.{field.Name} = {field.Name};");
                 }
+            }
+
+            // Format method
+            cw.AppendLine($"public void Format({Constants.DiagnosticsNamespace}.IDiagnosticWriter writer, ref {Constants.DiagnosticsNamespace}.DiagnosticWriterState state, {Constants.DiagnosticsNamespace}.DiagnosticMessage message)");
+            using (cw.AddBlock())
+            {
+                cw.AppendLine("var value = message.Value;");
+                cw.AppendLine("var span = value.AsSpan();");
+
+                cw.AppendLine("int i;");
+                cw.AppendLine("var bracesStartIndex = -1;");
+                cw.AppendLine("var bracesEndIndex = -1;");
+                cw.AppendLine("for (i = 0; i < value.Length; i++)");
+                using (cw.AddBlock())
+                {
+                    cw.AppendLine("var c = value[i];");
+
+                    cw.AppendLine("if (bracesStartIndex == -1)");
+                    using (cw.AddBlock())
+                    {
+                        cw.AppendLine("if (c != '{') continue;");
+                        cw.AppendLine("bracesStartIndex = i;");
+
+                        cw.AppendLine("var slice = span.Slice(bracesEndIndex + 1, i - bracesEndIndex - 1);");
+                        cw.AppendLine("writer.Write(ref state, slice);");
+                        cw.AppendLine("continue;");
+                    }
+
+                    cw.AppendLine("if (c != '}') continue;");
+
+                    cw.AppendLine("var fieldName = span.Slice(bracesStartIndex + 1, i - bracesStartIndex - 1);");
+                    for (var i = 0; i < parsedData.ParsedMessageBuilderFields.Count; i++)
+                    {
+                        if (i != 0) cw.Append(" else ");
+                        var field = parsedData.ParsedMessageBuilderFields[i];
+                        cw.AppendLine($"if (fieldName.Equals(nameof({field.Name}), global::System.StringComparison.Ordinal))");
+                        using (cw.AddBlock())
+                        {
+                            if (field.TypeSymbol.IsValueType)
+                            {
+                                cw.AppendLine($"writer.WriteValueType(ref state, {field.Name});");
+                            }
+                            else
+                            {
+                                cw.AppendLine($"writer.Write(ref state, {field.Name});");
+                            }
+                        }
+                    }
+
+                    cw.AppendLine("else");
+                    using (cw.AddBlock())
+                    {
+                        cw.AppendLine("throw new global::System.NotImplementedException();");
+                    }
+
+                    cw.AppendLine("bracesStartIndex = -1;");
+                    cw.AppendLine("bracesEndIndex = i;");
+                }
+
+                cw.AppendLine("if (bracesEndIndex == i - 1) return;");
+                cw.AppendLine("if (bracesEndIndex == -1)");
+                using (cw.AddBlock())
+                {
+                    cw.AppendLine("writer.Write(ref state, span);");
+                    cw.AppendLine("return;");
+                }
+
+                cw.AppendLine("var endSlice = span.Slice(bracesEndIndex + 1, i - bracesEndIndex - 1);");
+                cw.AppendLine("writer.Write(ref state, endSlice);");
+                cw.AppendLine("return;");
             }
         }
 
@@ -212,6 +298,7 @@ public class DiagnosticTemplateIncrementalSourceGenerator : IIncrementalGenerato
         const string withoutDetails = "WithoutDetails";
         const string withSummary = "WithSummary";
         const string withSeverity = "WithSeverity";
+        const string withTitle = "WithTitle";
         const string withId = "WithId";
         const string start = "Start";
 
@@ -243,7 +330,7 @@ public class DiagnosticTemplateIncrementalSourceGenerator : IIncrementalGenerato
         }
 
         // WithSummary
-        if (!IsInvocationWithName(next, withSummary, out var withSummaryArguments, out next));
+        if (!IsInvocationWithName(next, withSummary, out var withSummaryArguments, out next)) return false;
         if (withSummaryArguments.Count != 1) return false;
         var summaryTemplateExpression = withSummaryArguments[0].Expression;
 
@@ -252,6 +339,11 @@ public class DiagnosticTemplateIncrementalSourceGenerator : IIncrementalGenerato
         if (withSeverityArguments.Count != 1) return false;
         if (withSeverityArguments[0].Expression is not MemberAccessExpressionSyntax severityMemberAccess) return false;
         var severityName = severityMemberAccess.Name.Identifier.ToString();
+
+        // WithTitle
+        if (!IsInvocationWithName(next, withTitle, out var withTitleArguments, out next)) return false;
+        if (withTitleArguments.Count != 1) return false;
+        var titleExpression = withTitleArguments[0].Expression;
 
         // WithId
         if (!IsInvocationWithName(next, withId, out var withIdArguments, out next)) return false;
@@ -265,6 +357,7 @@ public class DiagnosticTemplateIncrementalSourceGenerator : IIncrementalGenerato
 
         parsedData = new ParsedData(
             IdCreationExpression: idCreation,
+            TitleExpression: titleExpression,
             SeverityName: severityName,
             SummaryTemplateExpression: summaryTemplateExpression,
             DetailsTemplateExpression: detailsTemplateExpression,
@@ -352,6 +445,7 @@ public class DiagnosticTemplateIncrementalSourceGenerator : IIncrementalGenerato
 
     private record struct ParsedData(
         ObjectCreationExpressionSyntax IdCreationExpression,
+        ExpressionSyntax TitleExpression,
         string SeverityName,
         ExpressionSyntax SummaryTemplateExpression,
         ExpressionSyntax? DetailsTemplateExpression,

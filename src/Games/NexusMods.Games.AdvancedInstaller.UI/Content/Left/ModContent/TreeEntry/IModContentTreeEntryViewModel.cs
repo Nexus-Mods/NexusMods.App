@@ -1,6 +1,8 @@
 ﻿using System.Reactive;
 using DynamicData.Kernel;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.App.UI.Helpers;
+using NexusMods.App.UI.Helpers.TreeDataGrid;
 using NexusMods.Games.AdvancedInstaller.UI.Preview;
 using NexusMods.Paths;
 using ReactiveUI;
@@ -11,7 +13,7 @@ namespace NexusMods.Games.AdvancedInstaller.UI.ModContent;
 ///     Represents an individual node in the 'Mod Content' section.
 ///     A node can represent any file or directory within the mod being unpacked during advanced install.
 /// </summary>
-public interface IModContentTreeEntryViewModel : IViewModelInterface
+public interface IModContentTreeEntryViewModel : IViewModelInterface, IExpandableItem
 {
     /// <summary>
     /// The path relative to the archive root.

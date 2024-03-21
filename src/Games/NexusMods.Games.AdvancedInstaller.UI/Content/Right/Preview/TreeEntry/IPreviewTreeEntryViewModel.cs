@@ -2,6 +2,8 @@
 using System.Reactive;
 using DynamicData.Kernel;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.App.UI.Helpers;
+using NexusMods.App.UI.Helpers.TreeDataGrid;
 using NexusMods.Games.AdvancedInstaller.UI.ModContent;
 using ReactiveUI;
 
@@ -15,9 +17,8 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Preview;
 ///     Trees are build from top level LocationIds, all descendants are relative to the root GamePath.
 ///     If it happens that after a deletion, no files are deployed, the entire tree should be cleared.
 /// </remarks>
-public interface IPreviewTreeEntryViewModel : IViewModelInterface
+public interface IPreviewTreeEntryViewModel : IViewModelInterface, IExpandableItem
 {
-
     /// <summary>
     /// The GamePath of this entry.
     /// </summary>

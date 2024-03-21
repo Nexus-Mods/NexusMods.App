@@ -5,7 +5,7 @@ using Avalonia.Controls.Templates;
 using ReactiveUI;
 using Splat;
 
-namespace NexusMods.App.UI.Helpers;
+namespace NexusMods.App.UI.Helpers.TreeDataGrid;
 
 /// <summary>
 /// Helper functions for constructing <see cref="TreeDataGrid"/>(s)
@@ -23,7 +23,7 @@ public static class TreeDataGridHelpers
     public static HierarchicalTreeDataGridSource<TNode> CreateTreeSourceWithSingleCustomColumn<TNode, TItem, TKey>(
         TNode treeRoot)
         where TNode : TreeNodeVM<TItem, TKey>
-        where TItem : class, IViewModelInterface
+        where TItem : class, IViewModelInterface, IExpandableItem
         where TKey : notnull
     {
         return CreateTreeSourceWithSingleCustomColumn<TNode, TItem, TKey>(Enumerable.Repeat(treeRoot, 1));
@@ -40,7 +40,7 @@ public static class TreeDataGridHelpers
     public static HierarchicalTreeDataGridSource<TNode> CreateTreeSourceWithSingleCustomColumn<TNode, TItem, TKey>(
         IEnumerable<TNode> treeRoots) 
         where TNode : TreeNodeVM<TItem, TKey>
-        where TItem : class, IViewModelInterface
+        where TItem : class, IViewModelInterface, IExpandableItem
         where TKey : notnull
     {
         var locator = Locator.Current.GetService<IViewLocator>();
@@ -75,3 +75,4 @@ public static class TreeDataGridHelpers
         };
     }
 }
+

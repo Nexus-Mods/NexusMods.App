@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Diagnostics;
 
 namespace NexusMods.App;
 
@@ -7,9 +8,33 @@ namespace NexusMods.App;
 /// </summary>
 public static class MainThreadData
 {
+    // Run in debug mode if we are in debug mode and the debugger is attached. We use preprocessor flags here as
+    // some AV software may be configured to flag processes that look for debuggers as malicious. So we don't even
+    // look for a debugger unless we are in debug mode.
+#if DEBUG
+    public static readonly bool IsDebugMode = Debugger.IsAttached;
+#else
+    public const bool IsDebugMode = false;
+#endif
+    
 
     private static Thread? _mainThread = null!;
-
+    
+    private static readonly CancellationTokenSource CancellationTokenSource = new();
+    
+    /// <summary>
+    /// A token that's used system-wide to signal that the application is shutting down.
+    /// </summary>
+    public static CancellationToken GlobalShutdownToken => CancellationTokenSource.Token;
+    
+    /// <summary>
+    /// Shuts down the application.
+    /// </summary>
+    public static void Shutdown()
+    {
+        CancellationTokenSource.Cancel();
+    }
+    
     /// <summary>
     /// Flags the current thread as the one that started the application.
     /// </summary>

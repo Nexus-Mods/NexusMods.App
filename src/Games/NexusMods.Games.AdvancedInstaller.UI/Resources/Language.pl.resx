@@ -91,13 +91,13 @@
 		<value>Niewspierana modyfikacja</value>
 	</data>
 	<data name="UnsupportedTitleTextBlock_This_mod_is_not_supported" xml:space="preserve">
-		<value>Ta modyfikacja nie jest wspierana</value>
+		<value>Modyfikacja nie jest wspierana</value>
 	</data>
 	<data name="UnsupportedDescriptionTextBlock_This_mod_is_structured" xml:space="preserve">
 		<value>Modyfikacja ma nierozpoznaną strukturę lub zawiera nierozpoznane typy plików, więc nie może zostać zainstalowana automatycznie.</value>
 	</data>
 	<data name="ExtraDescriptionTextBlock_If_you_are_confident" xml:space="preserve">
-		<value>Jeśli masz pewność, że modyfikacja jest bezpieczna i wiesz, gdzie należy zainstalować pliki, możesz spróbować ręcznej zaawansowanej instalacji.</value>
+		<value>Jeśli masz pewność, że pliki modyfikacji są bezpieczne i wiesz, gdzie należy je zainstalować, możesz spróbować ręcznej zaawansowanej instalacji.</value>
 	</data>
 	<data name="UnsupportedOverlayFooter_ADVANCED_INSTALL" xml:space="preserve">
 		<value>ZAAWANSOWANA INSTALACJA</value>
@@ -139,6 +139,6 @@
 		<value>Ręczny mod</value>
 	</data>
 	<data name="SelectLocationViewModel_SuggestedLocationsSubtitle" xml:space="preserve">
-		<value>{0} Modyfikacje są zazwyczaj instalowane w następujących folderach gry.</value>
+		<value>Modyfikacje dla {0} są zazwyczaj instalowane w następujących folderach gry.</value>
 	</data>
 </root>

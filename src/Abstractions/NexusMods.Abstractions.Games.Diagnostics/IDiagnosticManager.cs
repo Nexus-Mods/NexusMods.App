@@ -1,4 +1,3 @@
-using DynamicData;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Loadouts;
 
@@ -11,22 +10,12 @@ namespace NexusMods.Abstractions.Diagnostics;
 public interface IDiagnosticManager : IDisposable
 {
     /// <summary>
-    /// Gets an observable for all diagnostic changes.
+    /// Returns an observable stream of all diagnostics for a loadout.
     /// </summary>
-    IObservable<IChangeSet<Diagnostic>> DiagnosticChanges { get; }
+    IObservable<Diagnostic[]> GetLoadoutDiagnostics(LoadoutId loadoutId);
 
     /// <summary>
-    /// Gets all active diagnostics.
+    /// Returns the counts of the diagnostics per severity level.
     /// </summary>
-    IEnumerable<Diagnostic> ActiveDiagnostics { get; }
-
-    /// <summary>
-    /// Clears all active diagnostics.
-    /// </summary>
-    void ClearDiagnostics();
-
-    /// <summary>
-    /// Callback for loadout changes.
-    /// </summary>
-    ValueTask OnLoadoutChanged(Loadout loadout);
+    IObservable<(int NumSuggestions, int NumWarnings, int NumCritical)> CountDiagnostics(LoadoutId loadoutId);
 }

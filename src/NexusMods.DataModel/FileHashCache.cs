@@ -92,7 +92,7 @@ public class FileHashCache : IFileHashCache
                 }
             }
             var hashed = await info.Path.XxHash64Async(activity, innerToken);
-            PutCachedAsync(info.Path, new FileHashCacheEntry(info.LastWriteTimeUtc, hashed, info.Size));
+            PutCached(info.Path, new FileHashCacheEntry(info.LastWriteTimeUtc, hashed, info.Size));
             return new HashedEntry(info, hashed);
 
         });
@@ -117,7 +117,7 @@ public class FileHashCache : IFileHashCache
         using var job = _activityFactory.Create<Size>(Group, "Hashing {FileName}", file.FileName);
         job.SetMax(info.Size);
         var hashed = await file.XxHash64Async(job, token);
-        PutCachedAsync(file, new FileHashCacheEntry(info.LastWriteTimeUtc, hashed, size));
+        PutCached(file, new FileHashCacheEntry(info.LastWriteTimeUtc, hashed, size));
         return new HashedEntry(file, hashed, info.LastWriteTimeUtc, size);
     }
 
@@ -131,7 +131,8 @@ public class FileHashCache : IFileHashCache
             DiskStateEntry.From(h))));
     }
 
-    private void PutCachedAsync(AbsolutePath path, FileHashCacheEntry entry)
+    [SkipLocalsInit] // We don't need to zero the memory here
+    private void PutCached(AbsolutePath path, FileHashCacheEntry entry)
     {
         var normalized = path.ToString();
         Span<byte> kSpan = stackalloc byte[Encoding.UTF8.GetByteCount(normalized)];

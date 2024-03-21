@@ -1,3 +1,4 @@
+using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
@@ -47,6 +48,12 @@ public interface IGame : ILocatableGame
     /// will be tested against a mod's files in the order they are returned by this property.
     /// </summary>
     public IEnumerable<IModInstaller> Installers { get; }
+
+    /// <summary>
+    /// An array of all instances of <see cref="IDiagnosticEmitter"/> supported
+    /// by the game.
+    /// </summary>
+    public IDiagnosticEmitter[] DiagnosticEmitters { get; }
 
     /// <summary>
     /// Returns a <see cref="ILoadoutSynchronizer"/> for this game.

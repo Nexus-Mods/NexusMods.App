@@ -1,17 +1,15 @@
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using DynamicData;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
-using NexusMods.Abstractions.Diagnostics.References;
+using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Mods;
-using NexusMods.Abstractions.Serialization;
 using NexusMods.DataModel.Extensions;
 using NexusMods.Extensions.BCL;
-using NexusMods.Extensions.DynamicData;
 
 namespace NexusMods.DataModel.Diagnostics;
 
@@ -19,172 +17,118 @@ namespace NexusMods.DataModel.Diagnostics;
 [UsedImplicitly]
 internal sealed class DiagnosticManager : IDiagnosticManager
 {
-    private bool _isDisposed;
-
     private readonly ILogger<DiagnosticManager> _logger;
-    private readonly IDataStore _dataStore;
-    private readonly IOptionsMonitor<DiagnosticOptions> _optionsMonitor;
+    private readonly ILoadoutRegistry _loadoutRegistry;
 
-    private readonly ILoadoutDiagnosticEmitter[] _loadoutDiagnosticEmitters;
-    private readonly IModDiagnosticEmitter[] _modDiagnosticEmitters;
-    private readonly IModFileDiagnosticEmitter[] _modFileDiagnosticEmitters;
+    private static readonly object Lock = new();
+    private readonly SourceCache<IConnectableObservable<Diagnostic[]>, LoadoutId> _observableCache = new(_ => throw new NotSupportedException());
 
-    private readonly CompositeDisposable _compositeDisposable;
-    private readonly SourceList<Diagnostic> _diagnosticCache = new();
+    private bool _isDisposed;
+    private readonly CompositeDisposable _compositeDisposable = new();
 
-    /// <summary>
-    /// Constructor.
-    /// </summary>
     public DiagnosticManager(
         ILogger<DiagnosticManager> logger,
-        IDataStore dataStore,
-        IOptionsMonitor<DiagnosticOptions> optionsMonitor,
-        IEnumerable<ILoadoutDiagnosticEmitter> loadoutDiagnosticEmitters,
-        IEnumerable<IModDiagnosticEmitter> modDiagnosticEmitters,
-        IEnumerable<IModFileDiagnosticEmitter> modFileDiagnosticEmitters)
+        ILoadoutRegistry loadoutRegistry)
     {
         _logger = logger;
-        _dataStore = dataStore;
-        _optionsMonitor = optionsMonitor;
+        _loadoutRegistry = loadoutRegistry;
+    }
 
-        _loadoutDiagnosticEmitters = loadoutDiagnosticEmitters.ToArray();
-        _modDiagnosticEmitters = modDiagnosticEmitters.ToArray();
-        _modFileDiagnosticEmitters = modFileDiagnosticEmitters.ToArray();
+    public IObservable<Diagnostic[]> GetLoadoutDiagnostics(LoadoutId loadoutId)
+    {
+        ObjectDisposedException.ThrowIf(_isDisposed, typeof(DiagnosticManager));
 
-        _compositeDisposable = new CompositeDisposable();
-
-        // Listen to option changes and update the currently existing diagnostics.
-        var disposable = _optionsMonitor.OnChange(newOptions =>
+        lock (Lock)
         {
-            var filteredDiagnostics = FilterDiagnostics(_diagnosticCache.Items, newOptions);
-            _diagnosticCache.Edit(updater =>
+            var existingObservable = _observableCache.Lookup(loadoutId);
+            if (existingObservable.HasValue) return existingObservable.Value;
+
+            var connectableObservable = _loadoutRegistry
+                .RevisionsAsLoadouts(loadoutId)
+                .DistinctUntilChanged(loadout => loadout.DataStoreId)
+                .Throttle(dueTime: TimeSpan.FromMilliseconds(250))
+                .SelectMany(async loadout =>
+                {
+                    try
+                    {
+                        // TODO: cancellation token
+                        var cancellationToken = CancellationToken.None;
+                        return await GetLoadoutDiagnostics(loadout, cancellationToken);
+                    }
+                    catch (Exception e)
+                    {
+                        _logger.LogError(e, "Exception while diagnosing loadout {Loadout}", loadout.Name);
+                        return Array.Empty<Diagnostic>();
+                    }
+                })
+                .Replay(bufferSize: 1);
+
+            _compositeDisposable.Add(connectableObservable.Connect());
+            _observableCache.Edit(updater => updater.AddOrUpdate(connectableObservable, loadoutId));
+            return connectableObservable;
+        }
+    }
+
+    private static async Task<Diagnostic[]> GetLoadoutDiagnostics(Loadout loadout, CancellationToken cancellationToken)
+    {
+        var diagnosticEmitters = loadout.Installation.GetGame().DiagnosticEmitters;
+
+        try
+        {
+            var diagnostics = (
+                    await diagnosticEmitters
+                        .OfType<ILoadoutDiagnosticEmitter>()
+                        .SelectAsync(async emitter => await emitter.Diagnose(loadout, cancellationToken).ToArrayAsync())
+                        .ToArrayAsync()
+                )
+                .SelectMany(arr => arr)
+                .ToArray();
+
+            return diagnostics;
+        }
+        catch (TaskCanceledException)
+        {
+            // ignore
+            return Array.Empty<Diagnostic>();
+        }
+    }
+
+    public IObservable<(int NumSuggestions, int NumWarnings, int NumCritical)> CountDiagnostics(LoadoutId loadoutId)
+    {
+        return GetLoadoutDiagnostics(loadoutId)
+            .Select(diagnostics =>
             {
-                updater.Clear();
-                updater.AddRange(filteredDiagnostics);
+                int numSuggestions = 0, numWarnings = 0, numCritical = 0;
+                foreach (var diagnostic in diagnostics)
+                {
+                    switch (diagnostic.Severity)
+                    {
+                        case DiagnosticSeverity.Suggestion:
+                            numSuggestions += 1;
+                            break;
+                        case DiagnosticSeverity.Warning:
+                            numWarnings += 1;
+                            break;
+                        case DiagnosticSeverity.Critical:
+                            numCritical += 1;
+                            break;
+                        default: break;
+                    }
+                }
+
+                return (numSuggestions, numWarnings, numCritical);
             });
-        });
-
-        if (disposable is not null) _compositeDisposable.Add(disposable);
-    }
-
-    public IObservable<IChangeSet<Diagnostic>> DiagnosticChanges => _diagnosticCache.Connect();
-    public IEnumerable<Diagnostic> ActiveDiagnostics => _diagnosticCache.Items;
-
-    public async ValueTask OnLoadoutChanged(Loadout loadout)
-    {
-        await RefreshLoadoutDiagnostics(loadout);
-        RefreshModDiagnostics(loadout);
-    }
-
-    public void ClearDiagnostics()
-    {
-        _diagnosticCache.Edit(updater => updater.Clear());
-    }
-
-    internal async Task RefreshLoadoutDiagnostics(Loadout loadout)
-    {
-        // Remove outdated diagnostics for previous revisions of the loadout
-        RemoveDiagnostics(kv => kv.DataReferences.Values
-            .OfType<LoadoutReference>()
-            .Any(loadoutReference =>
-                loadoutReference.DataId == loadout.LoadoutId
-                && !Equals(loadoutReference.DataStoreId, loadout.DataStoreId)
-            )
-        );
-
-        var newDiagnostics = await _loadoutDiagnosticEmitters
-            .SelectAsync(async emitter => await emitter.Diagnose(loadout).ToArrayAsync())
-            .ToArrayAsync();
-
-        AddDiagnostics(newDiagnostics.SelectMany(vals => vals));
-    }
-
-    internal void RefreshModDiagnostics(Loadout loadout)
-    {
-        var previousLoadout = loadout.PreviousVersion.Value;
-
-        Mod[] addedMods;
-        if (previousLoadout is not null)
-        {
-            var modChangeSet = loadout.Mods.Diff(previousLoadout.Mods);
-            var removedMods = modChangeSet
-                .Where(change => change.Reason is ChangeReason.Remove or ChangeReason.Update)
-                .Select(change => new ModCursor(loadout.LoadoutId, change.Key))
-                .ToHashSet();
-
-            // Remove outdated diagnostics for mods that have been removed or updated.
-            RemoveDiagnostics(kv => kv.DataReferences.Values
-                .OfType<ModReference>()
-                .Any(modReference => removedMods.Contains(modReference.DataId))
-            );
-
-            // Prepare a collection of new or updated mods.
-            addedMods = modChangeSet
-                .Where(change => change.Reason is ChangeReason.Add or ChangeReason.Update)
-                .Select(change => change.Key)
-                .Select(modId => loadout.Mods[modId])
-                .ToArray();
-        }
-        else
-        {
-            // Every mod is considered to be new if there is no previous loadout revision.
-            addedMods = loadout.Mods
-                .Select(x => x.Value)
-                .ToArray();
-        }
-
-        // Run the emitters on the added mods.
-        var newDiagnostics = addedMods
-            .SelectMany(mod => _modDiagnosticEmitters
-                .SelectMany(emitter => emitter.Diagnose(loadout, mod))
-            )
-            .ToArray();
-
-        AddDiagnostics(newDiagnostics);
-    }
-
-    internal void RefreshModFileDiagnostics()
-    {
-        // TODO: figure out how to track changes to files (mods and files are "immutable")
-        throw new NotImplementedException();
-    }
-
-    private void RemoveDiagnostics(Func<Diagnostic, bool> predicate)
-    {
-        var toRemove = _diagnosticCache.Items.Where(predicate);
-
-        _diagnosticCache.Edit(updater =>
-        {
-            updater.Remove(toRemove);
-        });
-    }
-
-    private void AddDiagnostics(IEnumerable<Diagnostic> newDiagnostics)
-    {
-        var toAdd = FilterDiagnostics(newDiagnostics, _optionsMonitor.CurrentValue);
-
-        _diagnosticCache.Edit(updater =>
-        {
-            updater.Add(toAdd);
-        });
-    }
-
-    internal static IEnumerable<Diagnostic> FilterDiagnostics(
-        IEnumerable<Diagnostic> diagnostics,
-        DiagnosticOptions options)
-    {
-        return diagnostics
-            .Where(x => x.Severity >= options.MinimumSeverity)
-            .Where(x => !options.IgnoredDiagnostics.Contains(x.Id));
     }
 
     public void Dispose()
     {
         if (_isDisposed) return;
-
-        _diagnosticCache.Dispose();
-        _compositeDisposable.Dispose();
-
         _isDisposed = true;
+
+        lock (Lock)
+        {
+            _compositeDisposable.Dispose();
+            _observableCache.Dispose();
+        }
     }
 }

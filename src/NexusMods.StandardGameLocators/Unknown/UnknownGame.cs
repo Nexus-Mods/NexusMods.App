@@ -1,3 +1,4 @@
+using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.DTO;
@@ -57,7 +58,10 @@ public class UnknownGame : IGame
 
     /// <inheritdoc />
     public IEnumerable<IModInstaller> Installers => Array.Empty<IModInstaller>();
-    
+
+    /// <inheritdoc />
+    public IDiagnosticEmitter[] DiagnosticEmitters => Array.Empty<IDiagnosticEmitter>();
+
     /// <inheritdoc />
     public ILoadoutSynchronizer Synchronizer => throw new NotImplementedException();
 

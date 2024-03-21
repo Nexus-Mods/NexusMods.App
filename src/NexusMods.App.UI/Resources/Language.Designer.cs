@@ -650,5 +650,35 @@ namespace NexusMods.App.UI.Resources {
                 return ResourceManager.GetString("ErrorView_MissingMod_Subheader", resourceCulture);
             }
         }
+        
+        public static string DiagnosticDetailsView_SeverityTitle_SUGGESTION {
+            get {
+                return ResourceManager.GetString("DiagnosticDetailsView_SeverityTitle_SUGGESTION", resourceCulture);
+            }
+        }
+        
+        public static string DiagnosticDetailsView_SeverityTitle_WARNING {
+            get {
+                return ResourceManager.GetString("DiagnosticDetailsView_SeverityTitle_WARNING", resourceCulture);
+            }
+        }
+        
+        public static string DiagnosticDetailsView_SeverityTitle_CRITICAL_ERROR {
+            get {
+                return ResourceManager.GetString("DiagnosticDetailsView_SeverityTitle_CRITICAL_ERROR", resourceCulture);
+            }
+        }
+        
+        public static string DiagnosticDetailsView_SeverityTitle_HIDDEN {
+            get {
+                return ResourceManager.GetString("DiagnosticDetailsView_SeverityTitle_HIDDEN", resourceCulture);
+            }
+        }
+        
+        public static string LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics {
+            get {
+                return ResourceManager.GetString("LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics", resourceCulture);
+            }
+        }
     }
 }

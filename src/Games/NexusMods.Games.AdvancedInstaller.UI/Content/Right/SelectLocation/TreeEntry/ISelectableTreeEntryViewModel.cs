@@ -1,5 +1,7 @@
 ﻿using System.Reactive;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.App.UI.Helpers;
+using NexusMods.App.UI.Helpers.TreeDataGrid;
 using NexusMods.Paths;
 using ReactiveUI;
 
@@ -9,9 +11,8 @@ namespace NexusMods.Games.AdvancedInstaller.UI.SelectLocation;
 /// Represents an individual entry in the 'All Folders' tree when selecting an install location.
 /// This always represents a directory where mod files can be mapped to.
 /// </summary>
-public interface ISelectableTreeEntryViewModel : IViewModelInterface
+public interface ISelectableTreeEntryViewModel : IViewModelInterface, IExpandableItem
 {
-
     /// <summary>
     /// The GamePath relative to a top level location of this directory.
     /// </summary>

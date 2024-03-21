@@ -1,9 +1,11 @@
 using System.Runtime.CompilerServices;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.App.UI.Helpers;
+using NexusMods.App.UI.Helpers.TreeDataGrid;
 
 namespace NexusMods.App.UI.Controls.Trees.Files;
 
-public interface IFileTreeNodeViewModel : IViewModelInterface
+public interface IFileTreeNodeViewModel : IViewModelInterface, IExpandableItem, IDynamicDataTreeItem<IFileTreeNodeViewModel, GamePath>
 {
     /// <summary>
     ///     The icon that's used to display this specific node.
@@ -24,11 +26,6 @@ public interface IFileTreeNodeViewModel : IViewModelInterface
     ///     The size of the file, in bytes.
     /// </summary>
     ulong FileSize { get; }
-    
-    /// <summary>
-    ///     The key to this node.
-    /// </summary>
-    GamePath Key { get; }
 
     /// <summary>
     ///     The key to the parent of this node.

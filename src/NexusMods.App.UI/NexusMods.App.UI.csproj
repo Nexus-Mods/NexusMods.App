@@ -64,6 +64,7 @@
         <PackageReference Include="Avalonia.ReactiveUI" />
         <PackageReference Include="Avalonia.Svg.Skia" />
         <PackageReference Include="Avalonia.Themes.Fluent" />
+        <PackageReference Include="Markdown.Avalonia.Tight" />
         <PackageReference Include="DynamicData" />
         <PackageReference Include="Humanizer" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
@@ -77,6 +78,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.App.Settings\NexusMods.Abstractions.App.Settings.csproj" />
+        <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Games.Diagnostics\NexusMods.Abstractions.Games.Diagnostics.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.GuidedInstallers\NexusMods.Abstractions.GuidedInstallers.csproj" />
         <ProjectReference Include="..\Extensions\NexusMods.Extensions.DynamicData\NexusMods.Extensions.DynamicData.csproj" />
         <ProjectReference Include="..\Networking\NexusMods.Networking.Downloaders\NexusMods.Networking.Downloaders.csproj" />
@@ -439,6 +441,37 @@
         </Compile>
         <Compile Update="Controls\ModInfo\ModFiles\ModFilesViewModel.cs">
           <DependentUpon>IModFilesViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\Diagnostics\DiagnosticEntryView.axaml.cs">
+            <DependentUpon>DiagnosticEntryView.xaml</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\Diagnostics\DiagnosticEntryViewModel.cs">
+          <DependentUpon>IDiagnosticEntryViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\Diagnostics\DiagnosticEntryDesignViewModel.cs">
+          <DependentUpon>IDiagnosticEntryViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="DiagnosticSystem\ModReferenceFormatter.cs">
+          <DependentUpon>IValueFormatter.cs</DependentUpon>
+        </Compile>
+        <Compile Update="DiagnosticSystem\LoadoutReferenceFormatter.cs">
+          <DependentUpon>IValueFormatter.cs</DependentUpon>
+        </Compile>
+        <Compile Update="DiagnosticSystem\NamedLinkFormatter.cs">
+          <DependentUpon>IValueFormatter.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\Diagnostics\Details\DiagnosticDetailsView.axaml.cs">
+          <DependentUpon>DiagnosticDetailsView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Pages\Diagnostics\Details\DiagnosticDetailsViewModel.cs">
+          <DependentUpon>IDiagnosticDetailsViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\Diagnostics\Details\DiagnosticDetailsDesignViewModel.cs">
+          <DependentUpon>IDiagnosticDetailsViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\Diagnostics\List\DiagnosticListViewModel.cs">
+          <DependentUpon>IDiagnosticListViewModel.cs</DependentUpon>
         </Compile>
     </ItemGroup>
 

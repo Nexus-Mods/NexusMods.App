@@ -90,5 +90,7 @@ public class MathUtilsTests
 
         { new Rect(0, 0, 1, 0.5), new Rect(0, 0.5, 0.5, 0.5), WorkspaceGridState.AdjacencyKind.SameColumn, new Point(0, 0.5), new Point(1, 0.5) },
         { new Rect(0, 0, 1, 0.5), new Rect(0.5, 0.5, 0.5, 0.5), WorkspaceGridState.AdjacencyKind.SameColumn, new Point(0, 0.5), new Point(1, 0.5) },
+
+        { new Rect(0.40358467243510504, 0, 0.59641532756489557, 0.38678223185265437), new Rect(0.40358467243510504, 0.38678223185265437, 0.59641532756489557, 0.6132177681473453), WorkspaceGridState.AdjacencyKind.SameColumn, new Point(0.40358467243510504, 0.38678223185265437), new Point(1, 0.38678223185265437) },
     };
 }

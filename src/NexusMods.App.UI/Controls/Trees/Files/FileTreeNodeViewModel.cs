@@ -1,9 +1,6 @@
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Games.Trees;
-using NexusMods.Paths;
-using NexusMods.Paths.Trees;
-using NexusMods.Paths.Trees.Traits;
 using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Controls.Trees.Files;
@@ -17,8 +14,11 @@ public class FileTreeNodeViewModel : AViewModel<IFileTreeNodeViewModel>, IFileTr
     public bool IsFile { get; }
     public string Name => Key.FileName;
     public ulong FileSize { get; }
-    public GamePath Key { get; }
+    public GamePath Key { get; set; }
     public GamePath ParentKey { get; }
+    [Reactive] public bool IsExpanded { get; set; }
+    public ReadOnlyObservableCollection<IFileTreeNodeViewModel>? Children { get; set; }
+    public IFileTreeNodeViewModel? Parent { get; set; }
 
     public FileTreeNodeViewModel(GamePath fullPath, GamePath parentPath, bool isFile, ulong fileSize)
     {
