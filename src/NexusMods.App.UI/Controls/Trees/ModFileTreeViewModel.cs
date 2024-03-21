@@ -1,37 +1,37 @@
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using Avalonia.Controls;
+using Avalonia.Controls.Models.TreeDataGrid;
 using DynamicData;
-using JetBrains.Annotations;
+using Humanizer.Bytes;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.App.UI.Controls.Trees.Files;
 using NexusMods.App.UI.Helpers.TreeDataGrid;
+using NexusMods.App.UI.Resources;
 
-namespace NexusMods.App.UI.Controls.ModInfo.ModFiles;
+namespace NexusMods.App.UI.Controls.Trees;
 
-[UsedImplicitly]
-public class ModFilesViewModel : AViewModel<IModFilesViewModel>, IModFilesViewModel
+public class ModFileTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeViewModel
 {
     private readonly ILoadoutRegistry _registry;
     private readonly SourceCache<IFileTreeNodeViewModel, GamePath> _sourceCache;
     private ReadOnlyObservableCollection<IFileTreeNodeViewModel> _items;
-
-    public ReadOnlyObservableCollection<IFileTreeNodeViewModel> Items => _items;
-
-    public ModFilesViewModel(ILoadoutRegistry registry)
+    
+    public ITreeDataGridSource<IFileTreeNodeViewModel> TreeSource { get; }
+    
+    public ModFileTreeViewModel(LoadoutId loadoutId, ModId modId, ILoadoutRegistry registry)
     {
         _registry = registry;
         _items = new ReadOnlyObservableCollection<IFileTreeNodeViewModel>([]);
         _sourceCache = new SourceCache<IFileTreeNodeViewModel, GamePath>(x => x.Key);
-    }
-
-    public void Initialize(LoadoutId loadoutId, ModId modId)
-    {
-        var availableLocations = new HashSet<LocationId>();
+        
+         var availableLocations = new HashSet<LocationId>();
 
         // Store GamePaths to dedupe the strings. No unsafe API in .NET to access the keys directly, but we need parent anyway, so it's ok.
         var folderToSize = new Dictionary<GamePath, (ulong size, GamePath folder, GamePath parent, bool isLeaf)>();
@@ -129,8 +129,12 @@ public class ModFilesViewModel : AViewModel<IModFilesViewModel>, IModFilesViewMo
         // Flatten them with DynamicData
         BindItems(_sourceCache, namedLocations, out _items
         );
+        
+        
+        TreeSource = CreateTreeSource(_items);
+        TreeSource.SortBy(TreeSource.Columns[0], ListSortDirection.Ascending);
     }
-
+    
     /// <summary>
     ///     Binds all items in the given cache.
     ///     Root nodes are added for each locationId with children to show.
@@ -161,5 +165,66 @@ public class ModFilesViewModel : AViewModel<IModFilesViewModel>, IModFilesViewMo
             .Transform(node => node.Item.Initialize(node))
             .Bind(out result)
             .Subscribe(); // force evaluation
+    }
+    
+    internal static HierarchicalTreeDataGridSource<IFileTreeNodeViewModel> CreateTreeSource(
+        ReadOnlyObservableCollection<IFileTreeNodeViewModel> treeRoots)
+    {
+        return new HierarchicalTreeDataGridSource<IFileTreeNodeViewModel>(treeRoots)
+        {
+            Columns =
+            {
+                new HierarchicalExpanderColumn<IFileTreeNodeViewModel>(
+                    new TemplateColumn<IFileTreeNodeViewModel>(
+                        Language.Helpers_GenerateHeader_NAME,
+                        "FileNameColumnTemplate",
+                        width: new GridLength(1, GridUnitType.Star),
+                        options: new TemplateColumnOptions<IFileTreeNodeViewModel>
+                        {
+                            // Compares if folder first, such that folders show first, then by file name.
+                            CompareAscending = (x, y) =>
+                            {
+                                if (x == null || y == null) return 0;
+                                var folderComparison = x.IsFile.CompareTo(y.IsFile);
+                                return folderComparison != 0 ? folderComparison : string.Compare(x.Name, y.Name, StringComparison.OrdinalIgnoreCase);
+                            },
+
+                            CompareDescending = (x, y) =>
+                            {
+                                if (x == null || y == null) return 0;
+                                var folderComparison = x.IsFile.CompareTo(y.IsFile);
+                                return folderComparison != 0 ? folderComparison : string.Compare(y.Name, x.Name, StringComparison.OrdinalIgnoreCase);
+                            },
+                        }
+                    ),
+                    node => node.Children,
+                    null,
+                    node => node.IsExpanded
+                ),
+
+                new TextColumn<IFileTreeNodeViewModel, string?>(
+                    Language.Helpers_GenerateHeader_SIZE,
+                    x => ByteSize.FromBytes(x.FileSize).ToString(),
+                    options: new TextColumnOptions<IFileTreeNodeViewModel>
+                    {
+                        // Compares if folder first, such that folders show first, then by file name.
+                        CompareAscending = (x, y) =>
+                        {
+                            if (x == null || y == null) return 0;
+                            var folderComparison = x.IsFile.CompareTo(y.IsFile);
+                            return folderComparison != 0 ? folderComparison : x.FileSize.CompareTo(y.FileSize);
+                        },
+
+                        CompareDescending = (x, y) =>
+                        {
+                            if (x == null || y == null) return 0;
+                            var folderComparison = x.IsFile.CompareTo(y.IsFile);
+                            return folderComparison != 0 ? folderComparison : y.FileSize.CompareTo(x.FileSize);
+                        },
+                    },
+                    width: new GridLength(100)
+                ),
+            }
+        };
     }
 }

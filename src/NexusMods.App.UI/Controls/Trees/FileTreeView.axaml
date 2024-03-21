@@ -1,4 +1,5 @@
-<reactiveUi:ReactiveUserControl x:TypeArguments="trees:IFileTreeViewModel" xmlns="https://github.com/avaloniaui"
+<reactiveUi:ReactiveUserControl x:TypeArguments="trees:IFileTreeViewModel"
+                                xmlns="https://github.com/avaloniaui"
                                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -7,6 +8,10 @@
                                 xmlns:files="clr-namespace:NexusMods.App.UI.Controls.Trees.Files"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="NexusMods.App.UI.Controls.Trees.FileTreeView">
+    <Design.DataContext>
+        <trees:ModFileTreeDesignViewModel />
+    </Design.DataContext>
+    
     <UserControl.Styles>
         <!-- Note: Can't use nth-child on textblock itself. Not even actual control source does that. -->
         <Style Selector="TreeDataGridColumnHeader:nth-child(1)">
@@ -15,7 +20,7 @@
             </Style>
         </Style>
     </UserControl.Styles>
-    
+
     <!-- Visual Tree -->
     <Grid HorizontalAlignment="Stretch">
 
@@ -26,14 +31,13 @@
                       Width="1">
             <!-- NOTE: we set TreeDataGrid.Width to 1 and then to double.NaN in the code behind to force a refresh of width -->
             <!-- That is a workaround for TreeDataGrid star columns collapsing to 0 width.  -->
-            
+
             <TreeDataGrid.Resources>
-                <DataTemplate x:Key="FileNameColumn" DataType="{x:Type files:IFileTreeNodeViewModel}">
+                <DataTemplate x:Key="FileNameColumnTemplate" DataType="{x:Type files:IFileTreeNodeViewModel}">
                     <files:FileTreeNodeView DataContext="{CompiledBinding}" />
                 </DataTemplate>
             </TreeDataGrid.Resources>
         </TreeDataGrid>
     </Grid>
-    
-</reactiveUi:ReactiveUserControl>
 
+</reactiveUi:ReactiveUserControl>
