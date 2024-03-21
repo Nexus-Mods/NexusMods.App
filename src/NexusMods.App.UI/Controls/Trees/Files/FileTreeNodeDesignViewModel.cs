@@ -1,12 +1,10 @@
-using System.Collections.ObjectModel;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.App.UI.Controls.Trees.Common;
-using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Controls.Trees.Files;
 
-public class FileTreeNodeDesignViewModel : AViewModel<IFileTreeNodeViewModel>, IFileTreeNodeViewModel
+public class FileTreeNodeDesignViewModel : FileTreeNodeViewModel, IFileTreeNodeViewModel
 {
     [UsedImplicitly] // Via designer, if uncommented.
     public static FileTreeNodeDesignViewModel SampleFile { get; } = new(true, new GamePath(LocationId.Game, "Sample File"), 0);
@@ -14,17 +12,9 @@ public class FileTreeNodeDesignViewModel : AViewModel<IFileTreeNodeViewModel>, I
     [UsedImplicitly] // Via designer, if uncommented.
     public static FileTreeNodeDesignViewModel SampleFolder { get; } = new(false, new GamePath(LocationId.Game, "Sample Folder"), 0);
 
-    [Reactive]
-    public FileTreeNodeIconType Icon { get; set; }
-    public bool IsFile { get; }
-    public string Name { get; }
-    public ulong FileSize { get; }
-    public GamePath Key { get; set; }
-    public GamePath ParentKey { get; }
-    public bool IsExpanded { get; set; }
-    public ReadOnlyObservableCollection<IFileTreeNodeViewModel>? Children { get; set; }
-    public IFileTreeNodeViewModel? Parent { get; set; }
+    public new string Name { get; }
     
+    [UsedImplicitly] // By designer.
     public FileTreeNodeDesignViewModel() : this(true, new GamePath(LocationId.Game, ""), "Design Folder Name")
     {
         
