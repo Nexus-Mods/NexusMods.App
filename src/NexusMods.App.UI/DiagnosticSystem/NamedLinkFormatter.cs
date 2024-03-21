@@ -1,4 +1,3 @@
-using System.Text;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Values;
 
@@ -6,9 +5,16 @@ namespace NexusMods.App.UI.DiagnosticSystem;
 
 internal sealed class NamedLinkFormatter : IValueFormatter<NamedLink>
 {
-    public void Format(IDiagnosticWriter writer, StringBuilder stringBuilder, NamedLink value)
+    public void Format(IDiagnosticWriter writer, ref DiagnosticWriterState state, NamedLink value)
     {
-        // TODO: markdown link
-        writer.Write(stringBuilder, value.Uri.ToString());
+        switch (state.Mode)
+        {
+            case DiagnosticWriterMode.PlainText:
+                writer.Write(ref state, value.Uri.ToString());
+                break;
+            case DiagnosticWriterMode.Markdown:
+                writer.Write(ref state, $"[{value.Name}]({value.Uri.ToString()})");
+                break;
+        }
     }
 }

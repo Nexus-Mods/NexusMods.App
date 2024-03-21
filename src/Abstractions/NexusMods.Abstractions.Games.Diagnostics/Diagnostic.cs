@@ -1,4 +1,3 @@
-using System.Text;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Diagnostics.References;
 
@@ -57,21 +56,21 @@ public record Diagnostic
     /// <summary>
     /// Formats <see cref="Summary"/> using <paramref name="writer"/>.
     /// </summary>
-    public virtual string FormatSummary(IDiagnosticWriter writer)
+    public virtual string FormatSummary(IDiagnosticWriter writer, DiagnosticWriterMode mode = DiagnosticWriterMode.PlainText)
     {
-        var sb = new StringBuilder();
-        writer.Write(sb, Summary.Value);
-        return sb.ToString();
+        var state = new DiagnosticWriterState(mode, capacity: Summary.Value.Length);
+        writer.Write(ref state, Summary.Value);
+        return state.ToOutput();
     }
 
     /// <summary>
     /// Formats <see cref="Details"/> using <paramref name="writer"/>.
     /// </summary>
-    public virtual string FormatDetails(IDiagnosticWriter writer)
+    public virtual string FormatDetails(IDiagnosticWriter writer, DiagnosticWriterMode mode = DiagnosticWriterMode.Markdown)
     {
-        var sb = new StringBuilder();
-        writer.Write(sb, Details.Value);
-        return sb.ToString();
+        var state = new DiagnosticWriterState(mode, capacity: Details.Value.Length);
+        writer.Write(ref state, Details.Value);
+        return state.ToOutput();
     }
 }
 
@@ -86,14 +85,18 @@ public record Diagnostic<TMessageData> : Diagnostic where TMessageData : struct,
     public required TMessageData MessageData { get; init; }
 
     /// <inheritdoc/>
-    public override string FormatSummary(IDiagnosticWriter writer)
+    public override string FormatSummary(IDiagnosticWriter writer, DiagnosticWriterMode mode = DiagnosticWriterMode.PlainText)
     {
-        return MessageData.Format(Summary, writer);
+        var state = new DiagnosticWriterState(mode, capacity: Summary.Value.Length);
+        MessageData.Format(writer, ref state, Summary);
+        return state.ToOutput();
     }
 
     /// <inheritdoc/>
-    public override string FormatDetails(IDiagnosticWriter writer)
+    public override string FormatDetails(IDiagnosticWriter writer, DiagnosticWriterMode mode = DiagnosticWriterMode.Markdown)
     {
-        return MessageData.Format(Details, writer);
+        var state = new DiagnosticWriterState(mode, capacity: Details.Value.Length);
+        MessageData.Format(writer, ref state, Details);
+        return state.ToOutput();
     }
 }
