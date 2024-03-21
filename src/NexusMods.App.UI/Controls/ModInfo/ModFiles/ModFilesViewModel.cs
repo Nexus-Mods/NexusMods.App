@@ -20,12 +20,8 @@ public class ModFilesViewModel : AViewModel<IModFilesViewModel>, IModFilesViewMo
     private readonly ILoadoutRegistry _registry;
     private readonly SourceCache<IFileTreeNodeViewModel, GamePath> _sourceCache;
     private ReadOnlyObservableCollection<IFileTreeNodeViewModel> _items;
-    private int _rootCount;
-    private string? _primaryRootLocation;
 
     public ReadOnlyObservableCollection<IFileTreeNodeViewModel> Items => _items;
-    public int RootCount => _rootCount;
-    public string? PrimaryRootLocation => _primaryRootLocation;
 
     public ModFilesViewModel(ILoadoutRegistry registry, IFileStore fileStore)
     {
@@ -36,20 +32,16 @@ public class ModFilesViewModel : AViewModel<IModFilesViewModel>, IModFilesViewMo
 
     public void Initialize(LoadoutId loadoutId, ModId modId)
     {
-        // Misc note (Sewer).
-        // I wish LocationId was an enum, there's a huge amount of perf being left on the table here by it being a string.
-        // Both with all dictionary accesses, and needing a HashSet in the first place.
-        // Aside from that however, this is pretty optimised, despite the given limitations.
         var availableLocations = new HashSet<LocationId>();
-        
+
         // Store GamePaths to dedupe the strings. No unsafe API in .NET to access the keys directly, but we need parent anyway, so it's ok.
-        var folderToSize = new Dictionary<GamePath, (ulong size, GamePath folder, GamePath parent, bool isLeaf)>(); 
+        var folderToSize = new Dictionary<GamePath, (ulong size, GamePath folder, GamePath parent, bool isLeaf)>();
         var mod = _registry.Get(loadoutId, modId)!; // <= suppressed because this throws on error, and we should always have valid mod if we made it here.
         var displayedItems = new List<IFileTreeNodeViewModel>();
 
         // TODO: Querying all of the files bottlenecks hard.
         // As this will be revised with EventSourcing, am not making a faster getter. 
-        foreach (var file in mod.Files.Values) 
+        foreach (var file in mod.Files.Values)
         {
             // TODO: Check for IStoredFile, IToFile interfaces if we ever have more types of files that get put to disk.
             if (file is not StoredFile storedFile)
@@ -64,9 +56,12 @@ public class ModFilesViewModel : AViewModel<IModFilesViewModel>, IModFilesViewMo
                 folderToSize.Add(folderName, (storedFile.Size.Value, folderName, folderName.Parent, true));
 
             availableLocations.Add(storedFile.To.LocationId);
-            displayedItems.Add(new FileTreeNodeViewModel(storedFile.To, folderName, true, storedFile.Size.Value));
+            displayedItems.Add(new FileTreeNodeViewModel(storedFile.To, folderName, true,
+                    storedFile.Size.Value
+                )
+            );
         }
-        
+
         // Make missing folders and update 'leaf' status.
         // It's possible that some folders only have subfolders, and not files, in which case they're missing from folderToSize.
         foreach (var existingItem in folderToSize.ToArray())
@@ -81,7 +76,10 @@ public class ModFilesViewModel : AViewModel<IModFilesViewModel>, IModFilesViewMo
                 {
                     // We don't have a parent, so add a non-leaf node.
                     folderToSize.Add(parent, (0, parent, parentParent, false));
-                    displayedItems.Add(new FileTreeNodeViewModel(parent, parent.Parent, false, 0));
+                    displayedItems.Add(new FileTreeNodeViewModel(parent, parent.Parent, false,
+                            0
+                        )
+                    );
                 }
                 else
                 {
@@ -91,13 +89,13 @@ public class ModFilesViewModel : AViewModel<IModFilesViewModel>, IModFilesViewMo
                 parent = parentParent;
             }
         }
-        
+
         // Calculate folder sizes. Basically bubble up sizes of all leaf folders.
         foreach (var existingItem in folderToSize)
         {
             if (!existingItem.Value.isLeaf)
                 continue;
-            
+
             var parent = existingItem.Value.parent;
             while (parent.Path != "")
             {
@@ -107,66 +105,58 @@ public class ModFilesViewModel : AViewModel<IModFilesViewModel>, IModFilesViewMo
                 parent = parent.Parent;
             }
         }
-        
+
         // Now add up all of the folders.
         foreach (var item in folderToSize)
         {
             // But don't add the 'root' node.
             if (item.Value.folder.Path != "")
-                displayedItems.Add(new FileTreeNodeViewModel(item.Value.folder, item.Value.parent, false, item.Value.size));
+                displayedItems.Add(new FileTreeNodeViewModel(item.Value.folder, item.Value.parent, false,
+                        item.Value.size
+                    )
+                );
         }
- 
+
         _sourceCache.Clear();
         _sourceCache.AddOrUpdate(displayedItems);
-        
+
         // Resolve folder locations.
         var namedLocations = new Dictionary<LocationId, string>();
         var loadout = _registry.Get(loadoutId);
         var register = loadout!.Installation.LocationsRegister;
         foreach (var location in availableLocations)
             namedLocations.Add(location, register[location].ToString());
-        
+
         // Flatten them with DynamicData
-        BindItems(_sourceCache, namedLocations, false, out _items, out _rootCount, out _primaryRootLocation);
+        BindItems(_sourceCache, namedLocations, out _items
+        );
     }
-    
+
     /// <summary>
     ///     Binds all items in the given cache.
-    ///     If the items have multiple roots (LocationIds), separate nodes are made for them.
+    ///     Root nodes are added for each locationId with children to show.
     /// </summary>
     internal static void BindItems(
-        SourceCache<IFileTreeNodeViewModel, GamePath> cache, 
-        Dictionary<LocationId, string> locations, 
-        bool alwaysRoot, 
-        out ReadOnlyObservableCollection<IFileTreeNodeViewModel> result,
-        out int rootCount,
-        out string? primaryRootLocation)
+        SourceCache<IFileTreeNodeViewModel, GamePath> cache,
+        Dictionary<LocationId, string> locations,
+        out ReadOnlyObservableCollection<IFileTreeNodeViewModel> result)
     {
-        // AlwaysRoot is left as a parameter because it may be a user preference in settings in the future.
-        // If there's more than 1 location, create dummy nodes.
-        rootCount = locations.Count;
-        var hasMultipleRoots = (alwaysRoot || locations.Count > 1); 
-        if (hasMultipleRoots)
+        // Add AbsolutePath root nodes for each locationId with children to show
+        foreach (var location in locations)
         {
-            foreach (var location in locations)
+            ulong totalSize = 0;
+            foreach (var item in cache.Items)
             {
-                ulong totalSize = 0;
-                foreach (var item in cache.Items)
-                {
-                    if (item.Key.LocationId == location.Key && item.IsFile)
-                        totalSize += item.FileSize;
-                }
-                
-                cache.AddOrUpdate(new FileTreeNodeDesignViewModel(false, new GamePath(location.Key, ""), location.Value, totalSize));
+                if (item.Key.LocationId == location.Key && item.IsFile)
+                    totalSize += item.FileSize;
             }
 
-            primaryRootLocation = null;
+            cache.AddOrUpdate(new FileTreeNodeDesignViewModel(false, new GamePath(location.Key, ""), location.Value,
+                    totalSize
+                )
+            );
         }
-        else
-        {
-            primaryRootLocation = locations.FirstOrDefault().Value;
-        }
-        
+
         cache.Connect()
             .TransformToTree(model => model.ParentKey)
             .Transform(node => node.Item.Initialize(node))

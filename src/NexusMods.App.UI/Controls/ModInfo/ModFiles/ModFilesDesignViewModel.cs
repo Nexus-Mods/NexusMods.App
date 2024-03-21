@@ -1,6 +1,5 @@
 using System.Collections.ObjectModel;
 using DynamicData;
-using JetBrains.Annotations;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.App.UI.Controls.Trees.Files;
 using NexusMods.Paths;
@@ -11,60 +10,28 @@ public class ModFilesDesignViewModel : AViewModel<IModFilesViewModel>,
     IModFilesViewModel
 {
     private ReadOnlyObservableCollection<IFileTreeNodeViewModel> _items;
-    private int _rootCount;
-
-    public int RootCount => _rootCount;
     
     public ReadOnlyObservableCollection<IFileTreeNodeViewModel> Items => _items;
 
-    private string? _primaryRootLocation;
-    public string? PrimaryRootLocation => _primaryRootLocation;
-
-    private bool _showMultipleRoots;
-    private bool _alwaysRootFolders;
-    
-    /// <summary>
-    ///     Adds a 'saves' folder.
-    /// </summary>
-    public bool ShowMultipleRoots
-    {
-        [UsedImplicitly]
-        get => _showMultipleRoots;
-        set
-        {
-            _showMultipleRoots = value;
-            RefreshData(_showMultipleRoots, _alwaysRootFolders);
-        }
-    }
-    
-    /// <summary>
-    ///     Always make 'saves', 'game' root nodes.
-    /// </summary>
-    public bool AlwaysRootFolders
-    {
-        [UsedImplicitly]
-        get => _alwaysRootFolders;
-        set
-        {
-            _alwaysRootFolders = value;
-            RefreshData(_showMultipleRoots, _alwaysRootFolders);
-        }
-    }
-    
     public ModFilesDesignViewModel()
     {
         _items = null!; // initialized in refresh
-        RefreshData(false, false);
+        RefreshData();
     }
 
-    private void RefreshData(bool showMultipleRoots, bool alwaysRootFolders)
+    private void RefreshData()
     {
         var cache = new SourceCache<IFileTreeNodeViewModel, GamePath>(x => x.Key);
         var locations = new Dictionary<LocationId, string>();
 
         // ReSharper disable once RedundantSuppressNullableWarningExpression
-        void SaveFile(string filePath, ulong fileSize) => CreateModFileNode(filePath, LocationId.Saves, cache!, fileSize);
-        void GameFile(string filePath, ulong fileSize) => CreateModFileNode(filePath, LocationId.Game, cache, fileSize);
+        void SaveFile(string filePath, ulong fileSize) => CreateModFileNode(filePath, LocationId.Saves, cache!,
+            fileSize
+        );
+
+        void GameFile(string filePath, ulong fileSize) => CreateModFileNode(filePath, LocationId.Game, cache,
+            fileSize
+        );
 
         // Root Files
         locations.Add(LocationId.Game, "GAME");
@@ -73,13 +40,13 @@ public class ModFilesDesignViewModel : AViewModel<IModFilesViewModel>,
         GameFile("installscript.vdf", 648);
         GameFile("Low.ini", 898);
         GameFile("Medium.ini", 898);
-        GameFile("Skyrim/SkyrimPrefs.ini", 3498); 
-        GameFile("Skyrim.ccc", 2035); 
+        GameFile("Skyrim/SkyrimPrefs.ini", 3498);
+        GameFile("Skyrim.ccc", 2035);
         GameFile("Skyrim_Default.ini", 1859);
-        GameFile("SkyrimSE.exe", 37157144); 
+        GameFile("SkyrimSE.exe", 37157144);
         GameFile("SkyrimSELauncher.exe", 4713472);
-        GameFile("steam_api64.dll", 298384); 
-        GameFile("Ultra.ini", 911); 
+        GameFile("steam_api64.dll", 298384);
+        GameFile("Ultra.ini", 911);
 
         // Data Folder
         GameFile("Data/ccBGSSSE001-Fish.bsa", 377675522);
@@ -119,27 +86,30 @@ public class ModFilesDesignViewModel : AViewModel<IModFilesViewModel>,
         // Video Folder
         GameFile("Video/BGS_Logo.bik", 13835808);
 
-        if (showMultipleRoots)
-        {
-            // Add some saves
-            locations.Add(LocationId.Saves, "SAVE");
 
-            // Core save file
-            SaveFile("Save 1 - Quicksave.ess", 4000000);
+        // Add some saves
+        locations.Add(LocationId.Saves, "SAVE");
 
-            // SKSE co-save (if applicable)
-            SaveFile("Save 1 - Quicksave.skse", 800000);
+        // Core save file
+        SaveFile("Save 1 - Quicksave.ess", 4000000);
 
-            // Configuration files
-            SaveFile("SkyrimPrefs.ini", 15000);
-            SaveFile("Skyrim.ini", 10000);
-        }
+        // SKSE co-save (if applicable)
+        SaveFile("Save 1 - Quicksave.skse", 800000);
+
+        // Configuration files
+        SaveFile("SkyrimPrefs.ini", 15000);
+        SaveFile("Skyrim.ini", 10000);
+
 
         // Assign
-        ModFilesViewModel.BindItems(cache, locations, alwaysRootFolders, out _items, out _rootCount, out _primaryRootLocation);
+        ModFilesViewModel.BindItems(cache, locations, out _items);
     }
 
-    private static void CreateModFileNode(RelativePath filePath, LocationId locationId, SourceCache<IFileTreeNodeViewModel, GamePath> cache, ulong fileSize)
+    private static void CreateModFileNode(
+        RelativePath filePath, 
+        LocationId locationId, 
+        SourceCache<IFileTreeNodeViewModel, GamePath> cache, 
+        ulong fileSize)
     {
         // Build the path, creating directories as needed
         var currentPath = new RelativePath();
@@ -157,6 +127,9 @@ public class ModFilesDesignViewModel : AViewModel<IModFilesViewModel>,
         }
 
         // Final part is the file
-        cache.AddOrUpdate(new FileTreeNodeDesignViewModel(true, new GamePath(locationId, currentPath.Join(parts[index])), fileSize));
+        cache.AddOrUpdate(new FileTreeNodeDesignViewModel(
+            true, 
+            new GamePath(locationId, currentPath.Join(parts[index])), 
+            fileSize));
     }
 }
