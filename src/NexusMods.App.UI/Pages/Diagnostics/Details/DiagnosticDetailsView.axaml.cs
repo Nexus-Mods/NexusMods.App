@@ -1,6 +1,7 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.ReactiveUI;
+using Markdown.Avalonia.Utils;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.App.UI.Resources;
 using ReactiveUI;
@@ -52,6 +53,7 @@ public partial class DiagnosticDetailsView : ReactiveUserControl<IDiagnosticDeta
                 break;
         }
 
+        MarkdownScrollViewer.Engine.HyperlinkCommand = vm.MarkdownOpenLinkCommand;
         MarkdownScrollViewer.Markdown = vm.Details;
     }
 }
