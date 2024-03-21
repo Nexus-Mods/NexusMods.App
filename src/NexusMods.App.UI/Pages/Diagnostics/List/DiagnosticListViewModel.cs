@@ -69,6 +69,7 @@ internal class DiagnosticListViewModel : APageViewModel<IDiagnosticListViewModel
             _sourceList
                 .Connect()
                 .MergeMany(entry => entry.SeeDetailsCommand)
+                .Where(diagnostic => diagnostic.Details != DiagnosticMessage.DefaultValue)
                 .SubscribeWithErrorLogging(diagnostic =>
                 {
                     var workspaceController = GetWorkspaceController();
