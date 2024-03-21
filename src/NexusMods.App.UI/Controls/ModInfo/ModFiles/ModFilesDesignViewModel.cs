@@ -6,17 +6,16 @@ using NexusMods.App.UI.Controls.Trees.Files;
 using NexusMods.Paths;
 
 namespace NexusMods.App.UI.Controls.ModInfo.ModFiles;
-using ModFileNode = TreeNodeVM<IFileTreeNodeViewModel, GamePath>;
 
 public class ModFilesDesignViewModel : AViewModel<IModFilesViewModel>,
     IModFilesViewModel
 {
-    private ReadOnlyObservableCollection<ModFileNode> _items;
+    private ReadOnlyObservableCollection<IFileTreeNodeViewModel> _items;
     private int _rootCount;
 
     public int RootCount => _rootCount;
     
-    public ReadOnlyObservableCollection<ModFileNode> Items => _items;
+    public ReadOnlyObservableCollection<IFileTreeNodeViewModel> Items => _items;
 
     private string? _primaryRootLocation;
     public string? PrimaryRootLocation => _primaryRootLocation;

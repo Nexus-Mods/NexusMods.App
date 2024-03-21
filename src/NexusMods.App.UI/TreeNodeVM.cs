@@ -1,11 +1,9 @@
 using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Kernel;
-using NexusMods.App.UI.Helpers;
+using NexusMods.App.UI.Helpers.TreeDataGrid;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI;
 
@@ -85,34 +83,6 @@ public class TreeNodeVM<TItem, TKey> : ReactiveObject, IActivatableViewModel
                 .Subscribe();
             return children;
         });
-    }
-
-    /// <summary>
-    /// Convenience constructor for creating Design time fake <see cref="TreeNodeVM{TItem,TKey}"/>
-    /// </summary>
-    /// <param name="item">Contained Item</param>
-    /// <param name="id">Contained Id</param>
-    public TreeNodeVM(TItem item, TKey id)
-    {
-        Item = item;
-        Id = id;
-        _children = new Lazy<ReadOnlyObservableCollection<TreeNodeVM<TItem, TKey>>>(new ReadOnlyObservableCollection<TreeNodeVM<TItem, TKey>>([]));
-    }
-
-    /// <summary>
-    /// Recursively search the tree for a node with the given Id.
-    /// </summary>
-    /// <param name="id">The Id of the node to find</param>
-    /// <returns>Null if not found</returns>
-    public  TreeNodeVM<TItem, TKey>? FindNode(TKey id)
-    {
-        if (Id.Equals(id))
-        {
-            return this;
-        }
-
-        return Children.Select(child => child.FindNode(id))
-            .FirstOrDefault(found => found != null);
     }
 
     /// <summary>
