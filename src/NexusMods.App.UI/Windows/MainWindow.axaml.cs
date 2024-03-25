@@ -14,7 +14,6 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         InitializeComponent();
 
         #if DEBUG
-        this.AttachDevTools();
         #endif
 
         this.WhenActivated(disposables =>

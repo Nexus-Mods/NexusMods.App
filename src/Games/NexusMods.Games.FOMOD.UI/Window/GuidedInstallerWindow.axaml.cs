@@ -14,7 +14,6 @@ public partial class GuidedInstallerWindow : ReactiveWindow<IGuidedInstallerWind
         InitializeComponent();
 
 #if DEBUG
-        this.AttachDevTools();
 #endif
 
         this.WhenActivated(disposables =>

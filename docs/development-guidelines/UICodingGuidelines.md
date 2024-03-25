@@ -1475,6 +1475,114 @@ this.WhenActivated(disposables =>
 });
 ```
 
+### Trees with Columns (TreeDataGrid)
+
+!!! info "Functional Example(s) available at [TreeDataGrid Examples][treedatagrid examples]"
+
+#### Basic TreeDataGrid
+
+
+
+#### Adding a Custom Column
+
+!!! info "Functional Example(s) available at [TreeDataGrid Examples][treedatagrid single column]"
+
+To add a custom column, you should first create a view for the column in question.
+
+##### ViewModel
+
+!!! note "Example ViewModel (for clarity)."
+
+`IYourViewModel.cs`
+```csharp
+public interface IFileTreeNodeViewModel : IViewModelInterface, IExpandableItem
+{
+    FileTreeNodeIconType Icon { get; protected set; }
+    string Name { get; }
+    // Unique keys used with DynamicData.
+    GamePath Key { get; } // a.k.a. Id
+    GamePath ParentKey { get; } // a.k.a. ParentId
+}
+```
+
+##### View
+
+`FileColumnView.axaml`
+
+```xml
+<!-- Omitted some code for clarity, see examples for full code -->
+<reactiveUi:ReactiveUserControl x:TypeArguments="ui1:IViewModelInterface"
+                                x:Class="Examples.TreeDataGrid.SingleColumn.FileColumn.FileColumnView"
+                                d:DataContext="{x:Static fileColumn:FileTreeNodeDesignViewModel.SampleFolder}">
+    <Grid Grid.Column="0" ClipToBounds="True" ColumnDefinitions="Auto,Auto" Name="FileElementGrid">
+        <!-- File / Directory Icon -->
+        <unifiedIcon:UnifiedIcon Grid.Column="0" Classes="FileTypeIcon" x:Name="EntryIcon" />
+        <!-- File Name -->
+        <TextBlock Grid.Column="1" Classes="BodyMDNormal" VerticalAlignment="Center"
+                   TextTrimming="CharacterEllipsis"
+                   x:Name="FileNameTextBlock" />
+    </Grid>
+</reactiveUi:ReactiveUserControl>
+```
+
+`FileColumnView.axaml.cs`
+
+```csharp
+public partial class FileColumnView : ReactiveUserControl<IFileTreeNodeViewModel>
+{
+    private FileTreeNodeIconType _lastType = FileTreeNodeIconType.File;
+    
+    public FileColumnView()
+    {
+        InitializeComponent();
+        this.WhenActivated(d =>
+            {
+                // Use `ViewModel.WhenAnyValue` if this stuff needs updating dynamically.
+                // There's a separate example for this in 'examples' 😉
+                
+                // Set the icon.
+                EntryIcon.Classes.Clear(); // Remove designer icon(s)
+                EntryIcon.Classes.Add(vm.Icon.GetIconClass()); // Get class name for desired icon.
+                
+                // Set the text.
+                FileNameTextBlock.Text = ViewModel!.Name;
+            }
+        );
+    }
+}
+```
+
+##### Using the Custom Column
+
+To use the custom column, update the `TreeDataGrid` in the View:
+
+```xml
+<TreeDataGrid Grid.Row="2" Classes="TreeWhiteCaret" ShowColumnHeaders="True">
+    <TreeDataGrid.Resources>
+        <!-- Specify the view for the custom column -->
+        <DataTemplate x:Key="CustomRow" DataType="{x:Type files:IFileTreeNodeViewModel}">
+            <files:FileTreeNodeView DataContext="{CompiledBinding}" />
+        </DataTemplate>
+    </TreeDataGrid.Resources>
+</TreeDataGrid>
+```
+
+And where you're creating the `HierarchicalTreeDataGridSource`.
+
+```csharp
+new HierarchicalExpanderColumn<IFileTreeNodeViewModel>(
+    new TemplateColumn<IFileTreeNodeViewModel>(
+        Language.Helpers_GenerateHeader_NAME, // column name
+        "CustomRow", // 👈 specify the custom column 'key'
+        // width etc. //
+    ),
+    node => node.Children,
+    null,
+    node => node.IsExpanded),
+```
+
+You use a `TemplateColumn` with your ViewModel.
+
 ## NexusMods.App.UI
 
 This section will be completely about the specifics of the project and the differences to a "normal" Avalonia UI project.
@@ -1939,3 +2047,5 @@ public ParentViewModel()
 [Extension Methods]: https://learn.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/extension-methods#orderby-example
 [observable design pattern]: https://learn.microsoft.com/en-us/dotnet/standard/events/observer-design-pattern
 [expression trees]: https://learn.microsoft.com/en-us/dotnet/csharp/advanced-topics/expression-trees/
+[treedatagrid examples]: https://github.com/Nexus-Mods/NexusMods.App/blob/main/src/Examples/TreeDataGrid/README.md
+[treedatagrid single column]: https://github.com/Nexus-Mods/NexusMods.App/blob/main/src/Examples/TreeDataGrid/SingleColumn

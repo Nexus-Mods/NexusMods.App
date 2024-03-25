@@ -8,4 +8,15 @@
       <ProjectReference Include="..\NexusMods.App.UI\NexusMods.App.UI.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Update="TreeDataGrid\SingleColumn\FileColumn\FileColumnView.axaml.cs">
+        <DependentUpon>FileTreeNodeView.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="TreeDataGrid\SimpleGrid\" />
+      <Folder Include="TreeDataGrid\MultipleColumns\" />
+    </ItemGroup>
 </Project>
