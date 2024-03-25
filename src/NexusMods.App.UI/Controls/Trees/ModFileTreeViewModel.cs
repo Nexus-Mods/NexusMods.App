@@ -95,12 +95,7 @@ public class ModFileTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeVie
             if (!rootExists)
             {
                 // Root folders have no parent, so we use an invalid GamePath
-                folderToSize.Add(parent, (storedFile.Size.Value,
-                        1,
-                        parent,
-                        IFileTreeViewModel.RootParentGamePath,
-                        false)
-                );
+                folderToSize.Add(parent, (storedFile.Size.Value, 1, parent, IFileTreeViewModel.RootParentGamePath, false));
             }
             else
             {
@@ -130,9 +125,9 @@ public class ModFileTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeVie
             else
             {
                 displayedItems.Add(new FileTreeNodeViewModel(
-                        folder, 
-                        parent, 
-                        isLeaf, 
+                        folder,
+                        parent,
+                        isLeaf,
                         size,
                         numChildren
                     )

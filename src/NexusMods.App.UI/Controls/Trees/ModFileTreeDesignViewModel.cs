@@ -14,7 +14,7 @@ public class ModFileTreeDesignViewModel : AViewModel<IFileTreeViewModel>, IFileT
     private SourceList<string> StatusBarStringCache { get; } = new();
 
     private readonly ReadOnlyObservableCollection<string> _statusBarStrings;
-    
+
     public ITreeDataGridSource<IFileTreeNodeViewModel> TreeSource { get; }
     public ReadOnlyObservableCollection<string> StatusBarStrings => _statusBarStrings;
 
@@ -24,23 +24,27 @@ public class ModFileTreeDesignViewModel : AViewModel<IFileTreeViewModel>, IFileT
         RefreshData();
         TreeSource = ModFileTreeViewModel.CreateTreeSource(_items);
         TreeSource.SortBy(TreeSource.Columns[0], ListSortDirection.Ascending);
-        
+
         StatusBarStringCache.Connect()
             .Bind(out _statusBarStrings)
             .Subscribe();
     }
-    
+
     private void RefreshData()
     {
         var cache = new SourceCache<IFileTreeNodeViewModel, GamePath>(x => x.Key);
         var locations = new Dictionary<LocationId, string>();
 
         // ReSharper disable once RedundantSuppressNullableWarningExpression
-        void SaveFile(string filePath, ulong fileSize) => CreateModFileNode(filePath, LocationId.Saves, cache!,
+        void SaveFile(string filePath, ulong fileSize) => CreateModFileNode(filePath,
+            LocationId.Saves,
+            cache!,
             fileSize
         );
 
-        void GameFile(string filePath, ulong fileSize) => CreateModFileNode(filePath, LocationId.Game, cache,
+        void GameFile(string filePath, ulong fileSize) => CreateModFileNode(filePath,
+            LocationId.Game,
+            cache,
             fileSize
         );
 
@@ -114,18 +118,19 @@ public class ModFileTreeDesignViewModel : AViewModel<IFileTreeViewModel>, IFileT
 
         // Assign
         ModFileTreeViewModel.BindItems(cache, out _items);
-        
+
         StatusBarStringCache.AddRange(new[]
-        {
-            $"Files: {cache.Items.Count(e => e.IsFile)} (12GB)",
-            "Total Files: 5, Total Size: 1.5 GB",
-        });
+            {
+                $"Files: {cache.Items.Count(e => e.IsFile)} (12GB)",
+                "Total Files: 5, Total Size: 1.5 GB",
+            }
+        );
     }
 
     private static void CreateModFileNode(
-        RelativePath filePath, 
-        LocationId locationId, 
-        SourceCache<IFileTreeNodeViewModel, GamePath> cache, 
+        RelativePath filePath,
+        LocationId locationId,
+        SourceCache<IFileTreeNodeViewModel, GamePath> cache,
         ulong fileSize)
     {
         // Build the path, creating directories as needed
@@ -145,8 +150,10 @@ public class ModFileTreeDesignViewModel : AViewModel<IFileTreeViewModel>, IFileT
 
         // Final part is the file
         cache.AddOrUpdate(new FileTreeNodeDesignViewModel(
-            true, 
-            new GamePath(locationId, currentPath.Join(parts[index])), 
-            fileSize));
+                true,
+                new GamePath(locationId, currentPath.Join(parts[index])),
+                fileSize
+            )
+        );
     }
 }
