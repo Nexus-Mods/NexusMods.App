@@ -204,7 +204,7 @@ public class ModFileTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeVie
 
                 // File Count column
                 new TextColumn<IFileTreeNodeViewModel, string?>(
-                    "File Count",
+                    Language.ModFileTreeViewModel_CreateTreeSource_File_Count,
                     x => x.FileCountString,
                     options: new TextColumnOptions<IFileTreeNodeViewModel>
                     {
