@@ -35,7 +35,7 @@ public class FileTreeNodeDesignViewModel : FileTreeNodeViewModel, IFileTreeNodeV
         ParentKey = new GamePath(LocationId.Unknown, "");
     }
     
-    public FileTreeNodeDesignViewModel(bool isFile, GamePath fullPath, string name, ulong fileSize) : this(isFile, fullPath, fileSize)
+    public FileTreeNodeDesignViewModel(bool isFile, GamePath fullPath, string name, ulong fileSize, uint numFiles) : this(isFile, fullPath, fileSize)
     {
         Name = name;
         ParentKey = new GamePath(LocationId.Unknown, "");

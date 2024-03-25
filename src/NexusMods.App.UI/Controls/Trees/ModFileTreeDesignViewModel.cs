@@ -113,7 +113,7 @@ public class ModFileTreeDesignViewModel : AViewModel<IFileTreeViewModel>, IFileT
 
 
         // Assign
-        ModFileTreeViewModel.BindItems(cache, locations, out _items);
+        ModFileTreeViewModel.BindItems(cache, out _items);
         
         StatusBarStringCache.AddRange(new[]
         {
