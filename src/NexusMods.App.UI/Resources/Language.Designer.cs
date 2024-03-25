@@ -680,5 +680,35 @@ namespace NexusMods.App.UI.Resources {
                 return ResourceManager.GetString("LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics", resourceCulture);
             }
         }
+        
+        public static string DiagnosticListView_DiagnosticListView_All {
+            get {
+                return ResourceManager.GetString("DiagnosticListView_DiagnosticListView_All", resourceCulture);
+            }
+        }
+        
+        public static string DiagnosticListView_DiagnosticListView_Critical {
+            get {
+                return ResourceManager.GetString("DiagnosticListView_DiagnosticListView_Critical", resourceCulture);
+            }
+        }
+        
+        public static string DiagnosticListView_DiagnosticListView_Warnings {
+            get {
+                return ResourceManager.GetString("DiagnosticListView_DiagnosticListView_Warnings", resourceCulture);
+            }
+        }
+        
+        public static string DiagnosticListView_DiagnosticListView_Suggestions {
+            get {
+                return ResourceManager.GetString("DiagnosticListView_DiagnosticListView_Suggestions", resourceCulture);
+            }
+        }
+        
+        public static string DiagnosticListView_DiagnosticListView_There_are_no_diagnostics {
+            get {
+                return ResourceManager.GetString("DiagnosticListView_DiagnosticListView_There_are_no_diagnostics", resourceCulture);
+            }
+        }
     }
 }

@@ -336,4 +336,23 @@
     <data name="LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics" xml:space="preserve">
         <value>Diagnostics</value>
     </data>
+    <data name="DiagnosticListView_DiagnosticListView_All" xml:space="preserve">
+        <value>All ({0})</value>
+        <comment>0 is placeholder for a number</comment>
+    </data>
+    <data name="DiagnosticListView_DiagnosticListView_Critical" xml:space="preserve">
+        <value>Critical ({0})</value>
+        <comment>0 is placeholder for a number</comment>
+    </data>
+    <data name="DiagnosticListView_DiagnosticListView_Warnings" xml:space="preserve">
+        <value>Warnings ({0})</value>
+        <comment>0 is placeholder for a number</comment>
+    </data>
+    <data name="DiagnosticListView_DiagnosticListView_Suggestions" xml:space="preserve">
+        <value>Suggestions ({0})</value>
+        <comment>0 is placeholder for a number</comment>
+    </data>
+    <data name="DiagnosticListView_DiagnosticListView_There_are_no_diagnostics" xml:space="preserve">
+        <value>There are no diagnostics</value>
+    </data>
 </root>

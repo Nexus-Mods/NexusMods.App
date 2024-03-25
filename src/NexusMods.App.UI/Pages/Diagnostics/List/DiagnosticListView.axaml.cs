@@ -4,6 +4,7 @@ using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.App.UI.Extensions;
+using NexusMods.App.UI.Resources;
 using ReactiveUI;
 using Reloaded.Memory.Extensions;
 
@@ -21,17 +22,24 @@ public partial class DiagnosticListView : ReactiveUserControl<IDiagnosticListVie
             this.OneWayBind(ViewModel, vm => vm.DiagnosticEntries, view => view.ItemsControl.ItemsSource)
                 .DisposeWith(disposable);
 
-            // set button text
+            // use counts
             this.WhenAnyValue(
                 view => view.ViewModel!.NumCritical,
                 view => view.ViewModel!.NumWarnings,
                 view => view.ViewModel!.NumSuggestions)
                 .Subscribe(counts =>
                 {
-                    AllDiagnosticsButtonText.Text = $"All ({counts.Item1 + counts.Item2 + counts.Item3})";
-                    CriticalDiagnosticsButtonText.Text = $"Critical ({counts.Item1})";
-                    WarningDiagnosticsButtonText.Text = $"Warnings ({counts.Item2})";
-                    SuggestionDiagnosticsButtonText.Text = $"Suggestions ({counts.Item3})";
+                    var (numCritical, numWarnings, numSuggestions) = counts;
+                    var total = numCritical + numWarnings + numSuggestions;
+
+                    // set button texts
+                    AllDiagnosticsButtonText.Text = string.Format(Language.DiagnosticListView_DiagnosticListView_All, total);
+                    CriticalDiagnosticsButtonText.Text = string.Format(Language.DiagnosticListView_DiagnosticListView_Critical, numCritical);
+                    WarningDiagnosticsButtonText.Text = string.Format(Language.DiagnosticListView_DiagnosticListView_Warnings, numWarnings);
+                    SuggestionDiagnosticsButtonText.Text = string.Format(Language.DiagnosticListView_DiagnosticListView_Suggestions, numSuggestions);
+
+                    NoDiagnosticsText.IsVisible = total == 0;
+                    ItemsControl.IsVisible = total != 0;
                 })
                 .DisposeWith(disposable);
 

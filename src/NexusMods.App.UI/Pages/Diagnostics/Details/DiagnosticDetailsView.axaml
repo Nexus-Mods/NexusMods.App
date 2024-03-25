@@ -36,6 +36,12 @@
 
             <Border x:Name="HorizontalLine" Height="1" />
 
+            <!--
+                NOTE(erri120): This control can only be styled directly, not through classes.
+                If this needs to be re-used, make a wrapper control out of it.
+
+                https://github.com/whistyun/Markdown.Avalonia/wiki/How-to-customise-style
+            -->
             <md:MarkdownScrollViewer x:Name="MarkdownScrollViewer">
                 <md:MarkdownScrollViewer.Styles>
                     <Style Selector="ctxt|CTextBlock">
