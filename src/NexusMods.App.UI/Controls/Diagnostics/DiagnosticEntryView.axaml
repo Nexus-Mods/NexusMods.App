@@ -11,8 +11,7 @@
         <diagnostics:DiagnosticEntryDesignViewModel />
     </Design.DataContext>
 
-    <Button x:Name="EntryButton"
-            HorizontalAlignment="Stretch">
+    <Button x:Name="EntryButton" HorizontalAlignment="Stretch">
 
         <StackPanel Orientation="Horizontal"
                     HorizontalAlignment="Stretch"
@@ -22,7 +21,7 @@
             <unifiedIcon:UnifiedIcon x:Name="SeverityIcon" Size="20" />
             <TextBlock x:Name="DescriptionText"
                        Classes="BodyMDBold"
-                       VerticalAlignment="Center" />
+                       VerticalAlignment="Center"/>
         </StackPanel>
     </Button>
 

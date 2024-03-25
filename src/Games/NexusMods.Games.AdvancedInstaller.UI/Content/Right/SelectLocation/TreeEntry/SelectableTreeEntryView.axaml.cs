@@ -97,6 +97,7 @@ public partial class SelectableTreeEntryView : ReactiveUserControl<ISelectableTr
                 // Add Create stuff
                 CreateFolderButton.IsVisible = true;
                 break;
+            default: break;
         }
     }
 

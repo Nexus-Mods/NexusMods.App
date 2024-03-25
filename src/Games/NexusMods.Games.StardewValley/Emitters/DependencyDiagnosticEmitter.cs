@@ -60,14 +60,51 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        var a = await DiagnoseMissingDependencies(loadout, gameVersion, smapiVersion, modIdToManifest, uniqueIdToModId, cancellationToken);
-        var b = await DiagnoseOutdatedDependencies(loadout, gameVersion, smapiVersion, modIdToManifest, uniqueIdToModId, cancellationToken);
-        var diagnostics = a.Concat(b).ToArray();
+        var a = DiagnoseDisabledDependencies(loadout, modIdToManifest, uniqueIdToModId);
+        var b = await DiagnoseMissingDependencies(loadout, gameVersion, smapiVersion, modIdToManifest, uniqueIdToModId, cancellationToken);
+        var c = await DiagnoseOutdatedDependencies(loadout, gameVersion, smapiVersion, modIdToManifest, uniqueIdToModId, cancellationToken);
+        var diagnostics = a.Concat(b).Concat(c).ToArray();
 
         foreach (var diagnostic in diagnostics)
         {
             yield return diagnostic;
         }
+    }
+
+    private static IEnumerable<Diagnostic> DiagnoseDisabledDependencies(
+        Loadout loadout,
+        Dictionary<ModId, SMAPIManifest> modIdToManifest,
+        ImmutableDictionary<string, ModId> uniqueIdToModId)
+    {
+        var collect = modIdToManifest
+            .Where(kv =>
+            {
+                var (modId, _) = kv;
+                return loadout.Mods[modId].Enabled;
+            })
+            .Select(kv =>
+            {
+                var (modId, manifest) = kv;
+
+                var requiredDependencies = GetRequiredDependencies(manifest);
+                var disabledDependencies = requiredDependencies
+                    .Select(uniqueIdToModId.GetValueOrDefault)
+                    .Where(id => id != default(ModId))
+                    .Where(id => !loadout.Mods[id].Enabled)
+                    .ToArray();
+
+                return (Id: modId, DisabledDependencies: disabledDependencies);
+            })
+            .ToArray();
+
+        return collect.SelectMany(tuple =>
+        {
+            var (modId, disabledDependencies) = tuple;
+            return disabledDependencies.Select(dependency => Diagnostics.CreateDisabledRequiredDependency(
+                Mod: loadout.Mods[modId].ToReference(loadout),
+                Dependency: loadout.Mods[dependency].ToReference(loadout)
+            ));
+        });
     }
 
     private async Task<IEnumerable<Diagnostic>> DiagnoseMissingDependencies(
@@ -78,21 +115,25 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
         ImmutableDictionary<string, ModId> uniqueIdToModId,
         CancellationToken cancellationToken)
     {
-        var collect = modIdToManifest.Select(kv =>
-        {
-            var (modId, manifest) = kv;
+        var collect = modIdToManifest
+            .Where(kv =>
+            {
+                var (modId, _) = kv;
+                return loadout.Mods[modId].Enabled;
+            })
+            .Select(kv =>
+            {
+                var (modId, manifest) = kv;
 
-            var requiredDependencies = manifest.Dependencies.Where(x => x.IsRequired).Select(x => x.UniqueID);
-            var missingDependencies = requiredDependencies.Where(x => !uniqueIdToModId.ContainsKey(x)).ToList();
+                var requiredDependencies = GetRequiredDependencies(manifest);
+                var missingDependencies = requiredDependencies
+                    .Where(x => !uniqueIdToModId.ContainsKey(x))
+                    .ToArray();
 
-            var contentPack = manifest.ContentPackFor?.UniqueID;
-            if (contentPack is not null && !uniqueIdToModId.ContainsKey(contentPack))
-                missingDependencies.Add(contentPack);
-
-            return (Id: modId, MissingDependencies: missingDependencies);
-        })
-        .Where(kv => kv.MissingDependencies.Count != 0)
-        .ToArray();
+                return (Id: modId, MissingDependencies: missingDependencies);
+            })
+            .Where(kv => kv.MissingDependencies.Length != 0)
+            .ToArray();
 
         var allMissingDependencies = collect
             .SelectMany(kv => kv.MissingDependencies)
@@ -189,6 +230,19 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
             CurrentVersion: tuple.CurrentVersion.ToString(),
             NexusModsDependencyUri: missingDependencyUris.GetValueOrDefault(tuple.DependencyId, NexusModsPage).WithName("Nexus Mods")
         ));
+    }
+
+    private static List<string> GetRequiredDependencies(SMAPIManifest manifest)
+    {
+        var requiredDependencies = manifest.Dependencies
+            .Where(x => x.IsRequired)
+            .Select(x => x.UniqueID)
+            .ToList();
+
+        var contentPack = manifest.ContentPackFor?.UniqueID;
+        if (contentPack is not null) requiredDependencies.Add(contentPack);
+
+        return requiredDependencies;
     }
 
     private async ValueTask<SMAPIManifest?> GetManifest(Mod mod, CancellationToken cancellationToken)

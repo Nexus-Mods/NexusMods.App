@@ -201,7 +201,7 @@ public class DiagnosticTemplateIncrementalSourceGenerator : IIncrementalGenerato
             }
 
             // Format method
-            cw.AppendLine($"public void Format({Constants.DiagnosticsNamespace}.DiagnosticMessage message, {Constants.DiagnosticsNamespace}.IDiagnosticWriter writer)");
+            cw.AppendLine($"public void Format({Constants.DiagnosticsNamespace}.IDiagnosticWriter writer, ref {Constants.DiagnosticsNamespace}.DiagnosticWriterState state, {Constants.DiagnosticsNamespace}.DiagnosticMessage message)");
             using (cw.AddBlock())
             {
                 cw.AppendLine("var value = message.Value;");
@@ -222,7 +222,7 @@ public class DiagnosticTemplateIncrementalSourceGenerator : IIncrementalGenerato
                         cw.AppendLine("bracesStartIndex = i;");
 
                         cw.AppendLine("var slice = span.Slice(bracesEndIndex + 1, i - bracesEndIndex - 1);");
-                        cw.AppendLine("writer.Write(slice);");
+                        cw.AppendLine("writer.Write(ref state, slice);");
                         cw.AppendLine("continue;");
                     }
 
@@ -238,11 +238,11 @@ public class DiagnosticTemplateIncrementalSourceGenerator : IIncrementalGenerato
                         {
                             if (field.TypeSymbol.IsValueType)
                             {
-                                cw.AppendLine($"writer.WriteValueType({field.Name});");
+                                cw.AppendLine($"writer.WriteValueType(ref state, {field.Name});");
                             }
                             else
                             {
-                                cw.AppendLine($"writer.Write({field.Name});");
+                                cw.AppendLine($"writer.Write(ref state, {field.Name});");
                             }
                         }
                     }
@@ -254,12 +254,20 @@ public class DiagnosticTemplateIncrementalSourceGenerator : IIncrementalGenerato
                     }
 
                     cw.AppendLine("bracesStartIndex = -1;");
-                    cw.AppendLine("bracesEndIndex = -1;");
+                    cw.AppendLine("bracesEndIndex = i;");
                 }
 
-                cw.AppendLine("if (bracesEndIndex == i) return;");
+                cw.AppendLine("if (bracesEndIndex == i - 1) return;");
+                cw.AppendLine("if (bracesEndIndex == -1)");
+                using (cw.AddBlock())
+                {
+                    cw.AppendLine("writer.Write(ref state, span);");
+                    cw.AppendLine("return;");
+                }
+
                 cw.AppendLine("var endSlice = span.Slice(bracesEndIndex + 1, i - bracesEndIndex - 1);");
-                cw.AppendLine("writer.Write(endSlice);");
+                cw.AppendLine("writer.Write(ref state, endSlice);");
+                cw.AppendLine("return;");
             }
         }
 

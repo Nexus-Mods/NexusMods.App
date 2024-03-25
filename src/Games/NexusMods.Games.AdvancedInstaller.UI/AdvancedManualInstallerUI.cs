@@ -3,6 +3,7 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.ReactiveUI;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.AdvancedInstaller.UI.Resources;
@@ -16,6 +17,7 @@ namespace NexusMods.Games.AdvancedInstaller.UI;
 public class AdvancedManualInstallerUI : IAdvancedInstallerHandler
 {
     private readonly Lazy<ILoadoutRegistry> _loadoutRegistry;
+    private ILogger<AdvancedManualInstallerUI> _logger;
 
     /// <summary>
     /// Construct the UI handler for the Advanced Manual Installer.
@@ -25,6 +27,7 @@ public class AdvancedManualInstallerUI : IAdvancedInstallerHandler
     {
         // Delay to avoid circular dependency.
         _loadoutRegistry = new Lazy<ILoadoutRegistry>(provider.GetRequiredService<ILoadoutRegistry>);
+        _logger = provider.GetRequiredService<ILogger<AdvancedManualInstallerUI>>();
     }
 
     /// <InheritDoc/>
@@ -66,11 +69,11 @@ public class AdvancedManualInstallerUI : IAdvancedInstallerHandler
     /// Creates a modal Dialog window and shows it, then awaits for it to close.
     /// </summary>
     /// <param name="dialogVM">The View Model of the dialog to create.</param>
-    private static async Task ShowAdvancedInstallerDialog(IAdvancedInstallerWindowViewModel dialogVM)
+    private async Task ShowAdvancedInstallerDialog(IAdvancedInstallerWindowViewModel dialogVM)
     {
         var tcs = new TaskCompletionSource();
 
-        OnUi((dialogVM, tcs), static async tuple =>
+        OnUi((dialogVM, tcs, _logger), static async tuple =>
         {
             var view = new AdvancedInstallerWindowView
             {
@@ -78,11 +81,24 @@ public class AdvancedManualInstallerUI : IAdvancedInstallerHandler
             };
 
             // Get the main window.
+            // TODO: This doesn't work with multi-window, this should get the Active window
             if (Application.Current?.ApplicationLifetime is
                 IClassicDesktopStyleApplicationLifetime { MainWindow: not null } desktop)
             {
                 // Create the modal dialog, parent window is required for modal.
                 await view.ShowDialog(desktop.MainWindow);
+            }
+            else
+            {
+                // Note: Temporary workaround for when the main window is not found
+                tuple._logger.LogError("Failed to find the main window for the Advanced Installer Dialog");
+                tuple._logger.LogInformation("Starting Advanced Installer Dialog without a parent window");
+                
+                // This is not an async method, so we need to subscribe to the close event to make this a task.
+                view.Show();
+                view.Closed += (_, _) => tuple.tcs.SetResult();
+                
+                return;
             }
 
             tuple.tcs.SetResult();

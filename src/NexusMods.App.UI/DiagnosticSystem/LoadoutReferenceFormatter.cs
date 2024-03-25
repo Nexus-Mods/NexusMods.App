@@ -13,10 +13,10 @@ internal sealed class LoadoutReferenceFormatter : IValueFormatter<LoadoutReferen
         _loadoutRegistry = loadoutRegistry;
     }
 
-    public void Format(LoadoutReference value, IDiagnosticWriter writer)
+    public void Format(IDiagnosticWriter writer, ref DiagnosticWriterState state, LoadoutReference value)
     {
         // TODO: custom markdown control
         var loadout = _loadoutRegistry.Get(value.DataId);
-        writer.Write(loadout?.Name ?? "MISSING LOADOUT");
+        writer.Write(ref state, loadout?.Name ?? "MISSING LOADOUT");
     }
 }

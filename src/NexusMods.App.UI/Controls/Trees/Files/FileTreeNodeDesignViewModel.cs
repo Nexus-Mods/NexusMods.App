@@ -1,10 +1,10 @@
 using JetBrains.Annotations;
 using NexusMods.Abstractions.GameLocators;
-using ReactiveUI.Fody.Helpers;
+using NexusMods.App.UI.Controls.Trees.Common;
 
 namespace NexusMods.App.UI.Controls.Trees.Files;
 
-public class FileTreeNodeDesignViewModel : AViewModel<IFileTreeNodeViewModel>, IFileTreeNodeViewModel
+public class FileTreeNodeDesignViewModel : FileTreeNodeViewModel, IFileTreeNodeViewModel
 {
     [UsedImplicitly] // Via designer, if uncommented.
     public static FileTreeNodeDesignViewModel SampleFile { get; } = new(true, new GamePath(LocationId.Game, "Sample File"), 0);
@@ -12,15 +12,9 @@ public class FileTreeNodeDesignViewModel : AViewModel<IFileTreeNodeViewModel>, I
     [UsedImplicitly] // Via designer, if uncommented.
     public static FileTreeNodeDesignViewModel SampleFolder { get; } = new(false, new GamePath(LocationId.Game, "Sample Folder"), 0);
 
-    [Reactive]
-    public FileTreeNodeIconType Icon { get; set; }
-    public bool IsFile { get; }
-    public string Name { get; }
-    public ulong FileSize { get; }
-    public GamePath Key { get; }
-    public GamePath ParentKey { get; }
-    public bool IsExpanded { get; set; }
+    public new string Name { get; }
     
+    [UsedImplicitly] // By designer.
     public FileTreeNodeDesignViewModel() : this(true, new GamePath(LocationId.Game, ""), "Design Folder Name")
     {
         
@@ -29,7 +23,7 @@ public class FileTreeNodeDesignViewModel : AViewModel<IFileTreeNodeViewModel>, I
     public FileTreeNodeDesignViewModel(bool isFile, GamePath fullPath, ulong fileSize)
     {
         IsFile = isFile;
-        Icon = IsFile ? FileTreeNodeIconType.File : FileTreeNodeIconType.ClosedFolder;
+        Icon = IsFile ? fullPath.Extension.GetIconType() : FileTreeNodeIconType.ClosedFolder;
         Name = fullPath.Path.FileName;
         Key = fullPath;
         ParentKey = fullPath.Parent;

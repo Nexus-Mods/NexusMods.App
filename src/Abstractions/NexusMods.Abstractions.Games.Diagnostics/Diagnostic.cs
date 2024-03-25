@@ -56,17 +56,21 @@ public record Diagnostic
     /// <summary>
     /// Formats <see cref="Summary"/> using <paramref name="writer"/>.
     /// </summary>
-    public virtual void FormatSummary(IDiagnosticWriter writer)
+    public virtual string FormatSummary(IDiagnosticWriter writer, DiagnosticWriterMode mode = DiagnosticWriterMode.PlainText)
     {
-        writer.Write(Summary.Value);
+        var state = new DiagnosticWriterState(mode, capacity: Summary.Value.Length);
+        writer.Write(ref state, Summary.Value);
+        return state.ToOutput();
     }
 
     /// <summary>
     /// Formats <see cref="Details"/> using <paramref name="writer"/>.
     /// </summary>
-    public virtual void FormatDetails(IDiagnosticWriter writer)
+    public virtual string FormatDetails(IDiagnosticWriter writer, DiagnosticWriterMode mode = DiagnosticWriterMode.Markdown)
     {
-        writer.Write(Details.Value);
+        var state = new DiagnosticWriterState(mode, capacity: Details.Value.Length);
+        writer.Write(ref state, Details.Value);
+        return state.ToOutput();
     }
 }
 
@@ -81,14 +85,18 @@ public record Diagnostic<TMessageData> : Diagnostic where TMessageData : struct,
     public required TMessageData MessageData { get; init; }
 
     /// <inheritdoc/>
-    public override void FormatSummary(IDiagnosticWriter writer)
+    public override string FormatSummary(IDiagnosticWriter writer, DiagnosticWriterMode mode = DiagnosticWriterMode.PlainText)
     {
-        MessageData.Format(Summary, writer);
+        var state = new DiagnosticWriterState(mode, capacity: Summary.Value.Length);
+        MessageData.Format(writer, ref state, Summary);
+        return state.ToOutput();
     }
 
     /// <inheritdoc/>
-    public override void FormatDetails(IDiagnosticWriter writer)
+    public override string FormatDetails(IDiagnosticWriter writer, DiagnosticWriterMode mode = DiagnosticWriterMode.Markdown)
     {
-        MessageData.Format(Details, writer);
+        var state = new DiagnosticWriterState(mode, capacity: Details.Value.Length);
+        MessageData.Format(writer, ref state, Details);
+        return state.ToOutput();
     }
 }

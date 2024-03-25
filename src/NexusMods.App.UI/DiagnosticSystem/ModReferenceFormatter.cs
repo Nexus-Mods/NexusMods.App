@@ -13,10 +13,10 @@ internal sealed class ModReferenceFormatter : IValueFormatter<ModReference>
         _loadoutRegistry = loadoutRegistry;
     }
 
-    public void Format(ModReference value, IDiagnosticWriter writer)
+    public void Format(IDiagnosticWriter writer, ref DiagnosticWriterState state, ModReference value)
     {
         // TODO: custom markdown control
         var mod = _loadoutRegistry.Get(value.DataId);
-        writer.Write(mod?.Name ?? "MISSING MOD");
+        writer.Write(ref state, mod?.Name ?? "MISSING MOD");
     }
 }

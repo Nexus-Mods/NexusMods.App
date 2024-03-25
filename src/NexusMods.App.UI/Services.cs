@@ -35,6 +35,7 @@ using NexusMods.App.UI.Overlays.Generic.MessageBox.OkCancel;
 using NexusMods.App.UI.Overlays.Login;
 using NexusMods.App.UI.Overlays.MetricsOptIn;
 using NexusMods.App.UI.Overlays.Updater;
+using NexusMods.App.UI.Pages.Diagnostics;
 using NexusMods.App.UI.Pages.Downloads;
 using NexusMods.App.UI.Pages.LoadoutGrid;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModCategory;
@@ -175,7 +176,13 @@ public static class Services
             .AddView<FileTreeNodeView, IFileTreeNodeViewModel>()
             .AddView<LoadingView, ILoadingViewModel>()
             .AddView<ErrorView, IErrorViewModel>()
+
             .AddView<DiagnosticEntryView, IDiagnosticEntryViewModel>()
+            .AddViewModel<DiagnosticEntryViewModel, IDiagnosticEntryViewModel>()
+            .AddView<DiagnosticListView, IDiagnosticListViewModel>()
+            .AddViewModel<DiagnosticListViewModel, IDiagnosticListViewModel>()
+            .AddView<DiagnosticDetailsView, IDiagnosticDetailsViewModel>()
+            .AddViewModel<DiagnosticDetailsViewModel, IDiagnosticDetailsViewModel>()
 
             // workspace system
             .AddSingleton<IWindowManager, WindowManager>()
@@ -201,6 +208,8 @@ public static class Services
             .AddSingleton<IPageFactory, LoadoutGridPageFactory>()
             .AddSingleton<IPageFactory, InProgressPageFactory>()
             .AddSingleton<IPageFactory, ModInfoPageFactory>()
+            .AddSingleton<IPageFactory, DiagnosticListPageFactory>()
+            .AddSingleton<IPageFactory, DiagnosticDetailsPageFactory>()
 
             // LeftMenu factories
             .AddSingleton<ILeftMenuFactory, DownloadsLeftMenuFactory>()
@@ -218,11 +227,10 @@ public static class Services
             .AddView<DummyView, IDummyViewModel>()
 
             // Diagnostics
-            .AddSingleton<ValueFormatterCache>()
             .AddSingleton<IValueFormatter, ModReferenceFormatter>()
             .AddSingleton<IValueFormatter, LoadoutReferenceFormatter>()
             .AddSingleton<IValueFormatter, NamedLinkFormatter>()
-            .AddTransient<IDiagnosticWriter, DiagnosticWriter>()
+            .AddSingleton<IDiagnosticWriter, DiagnosticWriter>()
 
             // Other
             .AddSingleton<InjectedViewLocator>()

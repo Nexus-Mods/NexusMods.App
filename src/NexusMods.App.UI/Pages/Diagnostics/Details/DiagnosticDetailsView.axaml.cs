@@ -1,6 +1,7 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.ReactiveUI;
+using Markdown.Avalonia.Utils;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.App.UI.Resources;
 using ReactiveUI;
@@ -33,18 +34,21 @@ public partial class DiagnosticDetailsView : ReactiveUserControl<IDiagnosticDeta
                 SeverityIcon.Classes.Add("ForegroundInfoStrong");
                 SeverityTitleTextBlock.Text = Language.DiagnosticDetailsView_SeverityTitle_SUGGESTION.ToUpperInvariant();
                 SeverityTitleTextBlock.Classes.Add("ForegroundInfoStrong");
+                HorizontalLine.Classes.Add("InfoStrong");
                 break;
             case DiagnosticSeverity.Warning:
                 SeverityIcon.Classes.Add("Alert");
                 SeverityIcon.Classes.Add("ForegroundWarningStrong");
                 SeverityTitleTextBlock.Text = Language.DiagnosticDetailsView_SeverityTitle_WARNING.ToUpperInvariant();
                 SeverityTitleTextBlock.Classes.Add("ForegroundWarningStrong");
+                HorizontalLine.Classes.Add("WarningStrong");
                 break;
             case DiagnosticSeverity.Critical:
                 SeverityIcon.Classes.Add("AlertOctagon");
                 SeverityIcon.Classes.Add("ForegroundDangerStrong");
                 SeverityTitleTextBlock.Text = Language.DiagnosticDetailsView_SeverityTitle_CRITICAL_ERROR.ToUpperInvariant();
                 SeverityTitleTextBlock.Classes.Add("ForegroundDangerStrong");
+                HorizontalLine.Classes.Add("DangerStrong");
                 break;
             default:
                 SeverityIcon.Classes.Add("Bell");
@@ -52,6 +56,7 @@ public partial class DiagnosticDetailsView : ReactiveUserControl<IDiagnosticDeta
                 break;
         }
 
-        DetailsTextBlock.Text = vm.Details;
+        MarkdownScrollViewer.Engine.HyperlinkCommand = vm.MarkdownOpenLinkCommand;
+        MarkdownScrollViewer.Markdown = vm.Details;
     }
 }

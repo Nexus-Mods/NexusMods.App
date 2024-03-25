@@ -45,7 +45,7 @@ partial class MyClass
 			this.Count = Count;
 		}
 
-		public void Format(global::NexusMods.Abstractions.Diagnostics.DiagnosticMessage message, global::NexusMods.Abstractions.Diagnostics.IDiagnosticWriter writer)
+		public void Format(global::NexusMods.Abstractions.Diagnostics.IDiagnosticWriter writer, ref global::NexusMods.Abstractions.Diagnostics.DiagnosticWriterState state, global::NexusMods.Abstractions.Diagnostics.DiagnosticMessage message)
 		{
 			var value = message.Value;
 			var span = value.AsSpan();
@@ -60,7 +60,7 @@ partial class MyClass
 					if (c != '{') continue;
 					bracesStartIndex = i;
 					var slice = span.Slice(bracesEndIndex + 1, i - bracesEndIndex - 1);
-					writer.Write(slice);
+					writer.Write(ref state, slice);
 					continue;
 				}
 
@@ -68,22 +68,22 @@ partial class MyClass
 				var fieldName = span.Slice(bracesStartIndex + 1, i - bracesStartIndex - 1);
 				if (fieldName.Equals(nameof(ModA), global::System.StringComparison.Ordinal))
 				{
-					writer.Write(ModA);
+					writer.Write(ref state, ModA);
 				}
 
 				 else if (fieldName.Equals(nameof(ModB), global::System.StringComparison.Ordinal))
 				{
-					writer.Write(ModB);
+					writer.Write(ref state, ModB);
 				}
 
 				 else if (fieldName.Equals(nameof(Something), global::System.StringComparison.Ordinal))
 				{
-					writer.Write(Something);
+					writer.Write(ref state, Something);
 				}
 
 				 else if (fieldName.Equals(nameof(Count), global::System.StringComparison.Ordinal))
 				{
-					writer.WriteValueType(Count);
+					writer.WriteValueType(ref state, Count);
 				}
 
 				else
@@ -92,12 +92,19 @@ partial class MyClass
 				}
 
 				bracesStartIndex = -1;
-				bracesEndIndex = -1;
+				bracesEndIndex = i;
 			}
 
-			if (bracesEndIndex == i) return;
+			if (bracesEndIndex == i - 1) return;
+			if (bracesEndIndex == -1)
+			{
+				writer.Write(ref state, span);
+				return;
+			}
+
 			var endSlice = span.Slice(bracesEndIndex + 1, i - bracesEndIndex - 1);
-			writer.Write(endSlice);
+			writer.Write(ref state, endSlice);
+			return;
 		}
 
 	}

@@ -3,6 +3,7 @@ using System.Reactive.Linq;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.NexusWebApi;
+using NexusMods.Abstractions.NexusWebApi.DTOs.OAuth;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.CrossPlatform.ProtocolRegistration;
@@ -102,7 +103,22 @@ public sealed class LoginManager : IDisposable, ILoginManager
         // temporary but if we want oauth to work we _have_ to be registered as the nxm handler
         await _protocolRegistration.RegisterSelf("nxm");
 
-        var jwtToken = await _oauth.AuthorizeRequest(token);
+        JwtTokenReply? jwtToken;
+        try
+        {
+            jwtToken = await _oauth.AuthorizeRequest(token);
+        }
+        catch (TaskCanceledException e)
+        {
+            _logger.LogError(e, "Unable to login: task was canceled");
+            return;
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Exception while logging in");
+            return;
+        }
+
         var newTokenEntity = JWTTokenEntity.From(jwtToken);
         if (newTokenEntity is null)
         {

@@ -13,14 +13,16 @@ public partial class DiagnosticEntryView : ReactiveUserControl<IDiagnosticEntryV
         InitializeComponent();
 
         this.WhenActivated(d =>
-            {
-                this.WhenAnyValue(view => view.ViewModel)
-                    .WhereNotNull()
-                    .Do(InitializeData)
-                    .Subscribe()
-                    .DisposeWith(d);
-            }
-        );
+        {
+            this.WhenAnyValue(view => view.ViewModel)
+                .WhereNotNull()
+                .Do(InitializeData)
+                .Subscribe()
+                .DisposeWith(d);
+
+            this.OneWayBind(ViewModel, vm => vm.SeeDetailsCommand, view => view.EntryButton.Command)
+                .DisposeWith(d);
+        });
     }
 
     private void InitializeData(IDiagnosticEntryViewModel vm)

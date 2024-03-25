@@ -17,8 +17,8 @@ internal static partial class Diagnostics
         .WithId(new DiagnosticId(Source, number: 1))
         .WithTitle("Missing required dependency")
         .WithSeverity(DiagnosticSeverity.Warning)
-        .WithSummary("Mod {Mod} is missing required dependency {MissingDependency}")
-        .WithDetails("You can download the latest version at {NexusModsDependencyUri}")
+        .WithSummary("Mod {Mod} is missing required dependency '{MissingDependency}'")
+        .WithDetails("You can download the latest version at {NexusModsDependencyUri}.")
         .WithMessageData(messageBuilder => messageBuilder
             .AddDataReference<ModReference>("Mod")
             .AddValue<string>("MissingDependency")
@@ -70,6 +70,21 @@ internal static partial class Diagnostics
         .WithoutDetails()
         .WithMessageData(messageBuilder => messageBuilder
             .AddValue<int>("ModCount")
+        )
+        .Finish();
+
+    [DiagnosticTemplate]
+    [UsedImplicitly]
+    internal static IDiagnosticTemplate DisabledRequiredDependencyTemplate = DiagnosticTemplateBuilder
+        .Start()
+        .WithId(new DiagnosticId(Source, number: 5))
+        .WithTitle("Required dependency is disabled")
+        .WithSeverity(DiagnosticSeverity.Warning)
+        .WithSummary("Mod {Mod} requires {Dependency} to be enabled")
+        .WithoutDetails()
+        .WithMessageData(messageBuilder => messageBuilder
+            .AddDataReference<ModReference>("Mod")
+            .AddDataReference<ModReference>("Dependency")
         )
         .Finish();
 }

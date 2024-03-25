@@ -9,14 +9,13 @@ public class DiagnosticEntryViewModel : AViewModel<IDiagnosticEntryViewModel>, I
     
     public DiagnosticEntryViewModel(Diagnostic diagnostic, IDiagnosticWriter writer)
     {
-        // Obtain plain text version of the diagnostic summary
-        diagnostic.FormatSummary(writer);
-        Summary = writer.ToOutput();
-        
+        Diagnostic = diagnostic;
+        Summary = diagnostic.FormatSummary(writer);
         Severity = diagnostic.Severity;
         SeeDetailsCommand = ReactiveCommand.Create(() => diagnostic);
     }
 
+    public Diagnostic Diagnostic { get; }
     public string Summary { get; }
     public DiagnosticSeverity Severity { get; }
     public ReactiveCommand<Unit, Diagnostic> SeeDetailsCommand { get; }
