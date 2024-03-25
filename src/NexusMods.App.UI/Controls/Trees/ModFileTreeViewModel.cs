@@ -37,7 +37,7 @@ public class ModFileTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeVie
          var availableLocations = new HashSet<LocationId>();
 
         // Store GamePaths to dedupe the strings. No unsafe API in .NET to access the keys directly, but we need parent anyway, so it's ok.
-        var folderToSize = new Dictionary<GamePath, (ulong size, GamePath folder, GamePath parent, bool isLeaf)>();
+        var folderToSize = new Dictionary<GamePath, (ulong size, uint numChildren, GamePath folder, GamePath parent, bool isLeaf)>();
         var mod = _registry.Get(loadoutId, modId)!; // <= suppressed because this throws on error, and we should always have valid mod if we made it here.
         var displayedItems = new List<IFileTreeNodeViewModel>();
 
@@ -53,9 +53,14 @@ public class ModFileTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeVie
             ref var item = ref CollectionsMarshal.GetValueRefOrNullRef(folderToSize, folderName);
             var exists = !Unsafe.IsNullRef(ref item);
             if (exists)
+            {
                 item.size += storedFile.Size.Value;
-            else
-                folderToSize.Add(folderName, (storedFile.Size.Value, folderName, folderName.Parent, true));
+                item.numChildren++;
+            }
+            else 
+            {
+                folderToSize.Add(folderName, (storedFile.Size.Value, 1, folderName, folderName.Parent, true));
+            }
 
             availableLocations.Add(storedFile.To.LocationId);
             displayedItems.Add(new FileTreeNodeViewModel(storedFile.To, folderName, true,

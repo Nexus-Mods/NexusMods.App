@@ -11,7 +11,7 @@
     <Design.DataContext>
         <trees:ModFileTreeDesignViewModel />
     </Design.DataContext>
-    
+
     <UserControl.Styles>
         <!-- Note: Can't use nth-child on textblock itself. Not even actual control source does that. -->
         <Style Selector="TreeDataGridColumnHeader:nth-child(1)">
@@ -38,6 +38,28 @@
                 </DataTemplate>
             </TreeDataGrid.Resources>
         </TreeDataGrid>
+
+        <Border Classes="Mid Rounded-b-lg"
+                VerticalAlignment="Bottom"
+                Padding="24, 8, 24, 8"
+                x:Name="StatusBarBorder">
+            <ItemsControl x:Name="StatusBarItemsControl">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate >
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Classes="BodyMDNormal" Text="{Binding}" />
+                            <Border Classes="OutlineWeak" BorderThickness="1,0,0,0" Width="1" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Border>
     </Grid>
 
 </reactiveUi:ReactiveUserControl>
