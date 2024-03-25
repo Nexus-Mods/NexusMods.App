@@ -473,6 +473,12 @@
         <Compile Update="Pages\Diagnostics\List\DiagnosticListViewModel.cs">
           <DependentUpon>IDiagnosticListViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Controls\Trees\ModFileTreeDesignViewModel.cs">
+          <DependentUpon>IFileTreeViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\Trees\ModFileTreeViewModel.cs">
+          <DependentUpon>IFileTreeViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
