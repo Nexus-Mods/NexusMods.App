@@ -25,6 +25,13 @@ public interface IFileTreeNodeViewModel : IViewModelInterface, IExpandableItem, 
     ///     The size of the file, in bytes.
     /// </summary>
     ulong FileSize { get; }
+    
+    /// <summary>
+    ///     Total number of files descending from this node.
+    /// </summary>
+    uint FileCount { get; }
+    
+    string FileCountString { get; }
 
     /// <summary>
     ///     The key to the parent of this node.

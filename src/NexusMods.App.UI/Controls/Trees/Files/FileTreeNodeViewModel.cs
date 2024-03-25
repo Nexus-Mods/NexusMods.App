@@ -16,6 +16,8 @@ public class FileTreeNodeViewModel : AViewModel<IFileTreeNodeViewModel>, IFileTr
     public bool IsFile { get; protected init; }
     public string Name { get; protected init; } = string.Empty;
     public ulong FileSize { get; protected init; }
+    public uint FileCount { get; protected init; }
+    public string FileCountString => FileCount > 0 ? $"{FileCount}" : string.Empty;
     public GamePath ParentKey { get; init; }
     public GamePath Key { get; set; }
     [Reactive] public bool IsExpanded { get; set; }
@@ -56,6 +58,7 @@ public class FileTreeNodeViewModel : AViewModel<IFileTreeNodeViewModel>, IFileTr
         FileSize = fileSize;
         IsFile = isFile;
         Icon = isFile ? fullPath.Extension.GetIconType() : FileTreeNodeIconType.ClosedFolder;
+        FileCount = numChildFiles;
 
         this.WhenActivated(d =>
             {
