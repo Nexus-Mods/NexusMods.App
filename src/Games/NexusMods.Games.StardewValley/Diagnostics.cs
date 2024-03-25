@@ -105,6 +105,7 @@ The compatability status was extracted from the internal SMAPI metadata file.
 """)
         .WithMessageData(messageBuilder => messageBuilder
             .AddDataReference<ModReference>("Mod")
+            .AddValue<string>("ModName")
             .AddValue<string>("ReasonPhrase")
         )
         .Finish();

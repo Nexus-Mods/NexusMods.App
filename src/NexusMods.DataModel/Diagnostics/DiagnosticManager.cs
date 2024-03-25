@@ -8,7 +8,6 @@ using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.DataModel.Extensions;
 using NexusMods.Extensions.BCL;
 
 namespace NexusMods.DataModel.Diagnostics;
@@ -69,22 +68,44 @@ internal sealed class DiagnosticManager : IDiagnosticManager
         }
     }
 
-    private static async Task<Diagnostic[]> GetLoadoutDiagnostics(Loadout loadout, CancellationToken cancellationToken)
+    private async Task<Diagnostic[]> GetLoadoutDiagnostics(Loadout loadout, CancellationToken cancellationToken)
     {
         var diagnosticEmitters = loadout.Installation.GetGame().DiagnosticEmitters;
 
         try
         {
-            var diagnostics = (
-                    await diagnosticEmitters
-                        .OfType<ILoadoutDiagnosticEmitter>()
-                        .SelectAsync(async emitter => await emitter.Diagnose(loadout, cancellationToken).ToArrayAsync())
-                        .ToArrayAsync()
-                )
-                .SelectMany(arr => arr)
+            var nested = await diagnosticEmitters
+                .OfType<ILoadoutDiagnosticEmitter>()
+                .SelectAsync(async emitter =>
+                {
+                    try
+                    {
+                        var res = await emitter
+                            .Diagnose(loadout, cancellationToken)
+                            .ToListAsync(cancellationToken);
+
+                        return (IList<Diagnostic>)res;
+                    }
+                    catch (TaskCanceledException)
+                    {
+                        // ignore
+                        return Array.Empty<Diagnostic>();
+                    }
+                    catch (Exception e)
+                    {
+                        _logger.LogError(e, "Exception in emitter {Emitter}", emitter.GetType());
+                        return Array.Empty<Diagnostic>();
+                    }
+                })
+                .ToListAsync(cancellationToken);
+
+            if (cancellationToken.IsCancellationRequested) return Array.Empty<Diagnostic>();
+
+            var flattened = nested
+                .SelectMany(many => many)
                 .ToArray();
 
-            return diagnostics;
+            return flattened;
         }
         catch (TaskCanceledException)
         {

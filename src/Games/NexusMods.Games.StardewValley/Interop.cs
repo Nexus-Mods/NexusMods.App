@@ -22,8 +22,17 @@ internal static class Interop
         using var sr = new StreamReader(stream, Encoding.UTF8);
         var json = await sr.ReadToEndAsync();
 
-        var manifest = SMAPIJsonHelper.Deserialize<T>(json);
-        return manifest;
+        var res = SMAPIJsonHelper.Deserialize<T>(json);
+        return res;
+    }
+
+    private static async ValueTask<T?> DeserializeWithDefaults<T>(Stream stream) where T : notnull
+    {
+        using var sr = new StreamReader(stream, Encoding.UTF8);
+        var json = await sr.ReadToEndAsync();
+
+        var res = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(json);
+        return res;
     }
 
     public static ValueTask<Manifest?> DeserializeManifest(Stream stream) => Deserialize<Manifest>(stream);
@@ -47,7 +56,7 @@ internal static class Interop
 
         // https://github.com/Pathoschild/SMAPI/blob/e8a86a0b98061d322c2af89af845ed9f5fd15468/src/SMAPI.Toolkit/ModToolkit.cs#L66-L71
         await using var stream = await fileStore.GetFileStream(storedFile.Hash, cancellationToken);
-        var metadata = await Deserialize<MetadataModel>(stream);
+        var metadata = await DeserializeWithDefaults<MetadataModel>(stream);
         if (metadata is null) return null;
 
         var records = metadata.ModData.Select(kv => new ModDataRecord(kv.Key, kv.Value)).ToArray();
