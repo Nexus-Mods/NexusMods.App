@@ -11,15 +11,23 @@ namespace NexusMods.App.UI.Controls.Trees;
 public class ModFileTreeDesignViewModel : AViewModel<IFileTreeViewModel>, IFileTreeViewModel
 {
     private ReadOnlyObservableCollection<IFileTreeNodeViewModel> _items;
+    private SourceList<string> StatusBarStringCache { get; } = new();
+
+    private readonly ReadOnlyObservableCollection<string> _statusBarStrings;
     
     public ITreeDataGridSource<IFileTreeNodeViewModel> TreeSource { get; }
-    
+    public ReadOnlyObservableCollection<string> StatusBarStrings => _statusBarStrings;
+
     public ModFileTreeDesignViewModel()
     {
         _items = null!; // initialized in refresh
         RefreshData();
         TreeSource = ModFileTreeViewModel.CreateTreeSource(_items);
         TreeSource.SortBy(TreeSource.Columns[0], ListSortDirection.Ascending);
+        
+        StatusBarStringCache.Connect()
+            .Bind(out _statusBarStrings)
+            .Subscribe();
     }
     
     private void RefreshData()
@@ -106,6 +114,12 @@ public class ModFileTreeDesignViewModel : AViewModel<IFileTreeViewModel>, IFileT
 
         // Assign
         ModFileTreeViewModel.BindItems(cache, locations, out _items);
+        
+        StatusBarStringCache.AddRange(new[]
+        {
+            $"Files: {cache.Items.Count(e => e.IsFile)} (12GB)",
+            "Total Files: 5, Total Size: 1.5 GB",
+        });
     }
 
     private static void CreateModFileNode(

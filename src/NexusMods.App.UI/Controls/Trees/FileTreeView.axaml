@@ -6,6 +6,7 @@
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:trees="clr-namespace:NexusMods.App.UI.Controls.Trees"
                                 xmlns:files="clr-namespace:NexusMods.App.UI.Controls.Trees.Files"
+                                xmlns:system="clr-namespace:System;assembly=System.Runtime"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="NexusMods.App.UI.Controls.Trees.FileTreeView">
     <Design.DataContext>
@@ -51,10 +52,11 @@
                 </ItemsControl.ItemsPanel>
 
                 <ItemsControl.ItemTemplate>
-                    <DataTemplate >
+                    <DataTemplate DataType="system:String">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Classes="BodyMDNormal" Text="{Binding}" />
-                            <Border Classes="OutlineWeak" BorderThickness="1,0,0,0" Width="1" />
+                            <TextBlock Classes="BodyMDNormal ForegroundTranslucentSubdued" Text="{CompiledBinding}" />
+                            <Border Classes="OutlineWeak" BorderThickness="1,0,0,0" Width="1"
+                                    Margin="8,0"/>
                         </StackPanel>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>

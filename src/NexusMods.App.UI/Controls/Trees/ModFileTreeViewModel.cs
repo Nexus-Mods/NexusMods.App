@@ -25,16 +25,20 @@ public class ModFileTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeVie
     private readonly ILoadoutRegistry _registry;
     private readonly SourceCache<IFileTreeNodeViewModel, GamePath> _sourceCache;
     private ReadOnlyObservableCollection<IFileTreeNodeViewModel> _items;
-    
+    private uint _totalNumFiles;
+
     public ITreeDataGridSource<IFileTreeNodeViewModel> TreeSource { get; }
-    
+    public ReadOnlyObservableCollection<string> StatusBarStrings { get; } = new([]);
+
     public ModFileTreeViewModel(LoadoutId loadoutId, ModId modId, ILoadoutRegistry registry)
     {
         _registry = registry;
         _items = new ReadOnlyObservableCollection<IFileTreeNodeViewModel>([]);
         _sourceCache = new SourceCache<IFileTreeNodeViewModel, GamePath>(x => x.Key);
-        
-         var availableLocations = new HashSet<LocationId>();
+        _totalNumFiles = 0;
+
+        var availableLocations = new HashSet<LocationId>();
+
 
         // Store GamePaths to dedupe the strings. No unsafe API in .NET to access the keys directly, but we need parent anyway, so it's ok.
         var folderToSize = new Dictionary<GamePath, (ulong size, uint numChildren, GamePath folder, GamePath parent, bool isLeaf)>();
@@ -48,6 +52,7 @@ public class ModFileTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeVie
             // TODO: Check for IStoredFile, IToFile interfaces if we ever have more types of files that get put to disk.
             if (file is not StoredFile storedFile)
                 continue;
+            _totalNumFiles++;
 
             var folderName = storedFile.To.Parent;
             ref var item = ref CollectionsMarshal.GetValueRefOrNullRef(folderToSize, folderName);
@@ -57,9 +62,9 @@ public class ModFileTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeVie
                 item.size += storedFile.Size.Value;
                 item.numChildren++;
             }
-            else 
+            else
             {
-                folderToSize.Add(folderName, (storedFile.Size.Value, 1, folderName, folderName.Parent, true));
+                folderToSize.Add(folderName, (storedFile.Size.Value, 1, folderName, folderName.Parent, false));
             }
 
             availableLocations.Add(storedFile.To.LocationId);
@@ -82,7 +87,7 @@ public class ModFileTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeVie
                 if (!exists)
                 {
                     // We don't have a parent, so add a non-leaf node.
-                    folderToSize.Add(parent, (0, parent, parentParent, false));
+                    folderToSize.Add(parent, (0, 0, parent, parentParent, false));
                     displayedItems.Add(new FileTreeNodeViewModel(parent, parent.Parent, false,
                             0
                         )
@@ -109,6 +114,7 @@ public class ModFileTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeVie
                 ref var item = ref CollectionsMarshal.GetValueRefOrNullRef(folderToSize, parent);
                 Debug.Assert(!Unsafe.IsNullRef(ref item));
                 item.size += existingItem.Value.size;
+                item.numChildren++;
                 parent = parent.Parent;
             }
         }
@@ -118,7 +124,9 @@ public class ModFileTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeVie
         {
             // But don't add the 'root' node.
             if (item.Value.folder.Path != "")
-                displayedItems.Add(new FileTreeNodeViewModel(item.Value.folder, item.Value.parent, false,
+                displayedItems.Add(new FileTreeNodeViewModel(item.Value.folder,
+                        item.Value.parent,
+                        false,
                         item.Value.size
                     )
                 );
@@ -135,14 +143,13 @@ public class ModFileTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeVie
             namedLocations.Add(location, register[location].ToString());
 
         // Flatten them with DynamicData
-        BindItems(_sourceCache, namedLocations, out _items
-        );
-        
-        
+        BindItems(_sourceCache, namedLocations, out _items);
+
+
         TreeSource = CreateTreeSource(_items);
         TreeSource.SortBy(TreeSource.Columns[0], ListSortDirection.Ascending);
     }
-    
+
     /// <summary>
     ///     Binds all items in the given cache.
     ///     Root nodes are added for each locationId with children to show.
@@ -162,7 +169,10 @@ public class ModFileTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeVie
                     totalSize += item.FileSize;
             }
 
-            cache.AddOrUpdate(new FileTreeNodeDesignViewModel(false, new GamePath(location.Key, ""), location.Value,
+            cache.AddOrUpdate(new FileTreeNodeDesignViewModel(
+                    false,
+                    new GamePath(location.Key, ""),
+                    location.Value,
                     totalSize
                 )
             );
@@ -174,7 +184,7 @@ public class ModFileTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeVie
             .Bind(out result)
             .Subscribe(); // force evaluation
     }
-    
+
     internal static HierarchicalTreeDataGridSource<IFileTreeNodeViewModel> CreateTreeSource(
         ReadOnlyObservableCollection<IFileTreeNodeViewModel> treeRoots)
     {
@@ -194,14 +204,18 @@ public class ModFileTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeVie
                             {
                                 if (x == null || y == null) return 0;
                                 var folderComparison = x.IsFile.CompareTo(y.IsFile);
-                                return folderComparison != 0 ? folderComparison : string.Compare(x.Name, y.Name, StringComparison.OrdinalIgnoreCase);
+                                return folderComparison != 0 
+                                    ? folderComparison 
+                                    : string.Compare(x.Name, y.Name, StringComparison.OrdinalIgnoreCase);
                             },
 
                             CompareDescending = (x, y) =>
                             {
                                 if (x == null || y == null) return 0;
                                 var folderComparison = x.IsFile.CompareTo(y.IsFile);
-                                return folderComparison != 0 ? folderComparison : string.Compare(y.Name, x.Name, StringComparison.OrdinalIgnoreCase);
+                                return folderComparison != 0 
+                                    ? folderComparison 
+                                    : string.Compare(y.Name, x.Name, StringComparison.OrdinalIgnoreCase);
                             },
                         }
                     ),

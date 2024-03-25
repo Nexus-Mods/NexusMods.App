@@ -17,7 +17,6 @@ public class FileTreeNodeDesignViewModel : FileTreeNodeViewModel, IFileTreeNodeV
     [UsedImplicitly] // By designer.
     public FileTreeNodeDesignViewModel() : this(true, new GamePath(LocationId.Game, ""), "Design Folder Name")
     {
-        
     }
     
     public FileTreeNodeDesignViewModel(bool isFile, GamePath fullPath, ulong fileSize)
