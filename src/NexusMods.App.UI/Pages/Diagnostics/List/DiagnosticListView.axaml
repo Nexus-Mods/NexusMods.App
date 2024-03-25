@@ -6,18 +6,47 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactive="http://reactiveui.net"
     xmlns:local="clr-namespace:NexusMods.App.UI.Pages.Diagnostics"
+    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="NexusMods.App.UI.Pages.Diagnostics.DiagnosticListView">
 
-    <Border Padding="24">
-        <ItemsControl x:Name="ItemsControl">
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <StackPanel Classes="Spacing-2"/>
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-        </ItemsControl>
-    </Border>
+    <Grid RowDefinitions="Auto, Auto, *">
+        <Border Grid.Row="0" Classes="OutlineWeak" BorderThickness="0 0 0 1" Padding="24 10">
+            <Border.Styles>
+                <Style Selector="Button.Selected">
+                    <Setter Property="Background" Value="{DynamicResource NeutralStrongBrush}" />
+                    <Setter Property="Foreground" Value="{DynamicResource NeutralInvertedBrush}" />
+                </Style>
+            </Border.Styles>
+
+            <StackPanel Orientation="Horizontal" Classes="Spacing-2">
+                <Button Classes="Rounded Primary" x:Name="AllDiagnosticsButton">
+                    <TextBlock x:Name="AllDiagnosticsButtonText"/>
+                </Button>
+                <Button Classes="Rounded Primary" x:Name="CriticalDiagnosticsButton">
+                    <TextBlock x:Name="CriticalDiagnosticsButtonText"/>
+                </Button>
+                <Button Classes="Rounded Primary" x:Name="WarningDiagnosticsButton">
+                    <TextBlock x:Name="WarningDiagnosticsButtonText"/>
+                </Button>
+                <Button Classes="Rounded Primary" x:Name="SuggestionDiagnosticsButton">
+                    <TextBlock x:Name="SuggestionDiagnosticsButtonText"/>
+                </Button>
+            </StackPanel>
+        </Border>
+
+        <TextBlock Grid.Row="1" Classes="HeadingSMSemi" HorizontalAlignment="Center" x:Name="NoDiagnosticsText" Text="{x:Static resources:Language.DiagnosticListView_DiagnosticListView_There_are_no_diagnostics}"/>
+
+        <Border Grid.Row="2" Padding="24">
+            <ItemsControl x:Name="ItemsControl">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Classes="Spacing-1"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        </Border>
+    </Grid>
 
 </reactive:ReactiveUserControl>
 
