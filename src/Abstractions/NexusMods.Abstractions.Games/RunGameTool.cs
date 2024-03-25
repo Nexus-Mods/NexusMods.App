@@ -116,7 +116,9 @@ public class RunGameTool<T> : IRunGameTool
     private async Task RunThroughSteam(uint appId, CancellationToken cancellationToken)
     {
         var existingReaperProcesses = Process.GetProcessesByName("reaper");
-        await _osInterop.OpenUrl(new Uri($"steam://rungameid//{appId.ToString(CultureInfo.InvariantCulture)}"), cancellationToken);
+
+        // https://developer.valvesoftware.com/wiki/Steam_browser_protocol
+        await _osInterop.OpenUrl(new Uri($"steam://rungameid/{appId.ToString(CultureInfo.InvariantCulture)}"), cancellationToken);
 
         if (OSInformation.Shared.IsWindows)
         {

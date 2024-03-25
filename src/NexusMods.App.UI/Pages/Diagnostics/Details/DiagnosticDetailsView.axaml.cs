@@ -34,18 +34,21 @@ public partial class DiagnosticDetailsView : ReactiveUserControl<IDiagnosticDeta
                 SeverityIcon.Classes.Add("ForegroundInfoStrong");
                 SeverityTitleTextBlock.Text = Language.DiagnosticDetailsView_SeverityTitle_SUGGESTION.ToUpperInvariant();
                 SeverityTitleTextBlock.Classes.Add("ForegroundInfoStrong");
+                HorizontalLine.Classes.Add("InfoStrong");
                 break;
             case DiagnosticSeverity.Warning:
                 SeverityIcon.Classes.Add("Alert");
                 SeverityIcon.Classes.Add("ForegroundWarningStrong");
                 SeverityTitleTextBlock.Text = Language.DiagnosticDetailsView_SeverityTitle_WARNING.ToUpperInvariant();
                 SeverityTitleTextBlock.Classes.Add("ForegroundWarningStrong");
+                HorizontalLine.Classes.Add("WarningStrong");
                 break;
             case DiagnosticSeverity.Critical:
                 SeverityIcon.Classes.Add("AlertOctagon");
                 SeverityIcon.Classes.Add("ForegroundDangerStrong");
                 SeverityTitleTextBlock.Text = Language.DiagnosticDetailsView_SeverityTitle_CRITICAL_ERROR.ToUpperInvariant();
                 SeverityTitleTextBlock.Classes.Add("ForegroundDangerStrong");
+                HorizontalLine.Classes.Add("DangerStrong");
                 break;
             default:
                 SeverityIcon.Classes.Add("Bell");

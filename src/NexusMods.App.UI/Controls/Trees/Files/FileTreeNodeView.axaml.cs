@@ -1,5 +1,6 @@
 using System.Reactive.Disposables;
 using Avalonia.ReactiveUI;
+using NexusMods.App.UI.Controls.Trees.Common;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Controls.Trees.Files;

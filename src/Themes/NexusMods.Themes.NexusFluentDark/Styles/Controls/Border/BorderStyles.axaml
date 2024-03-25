@@ -205,6 +205,14 @@
         <Setter Property="Background" Value="{StaticResource DangerStrongBrush}" />
     </Style>
 
+    <Style Selector="Border.WarningStrong">
+        <Setter Property="Background" Value="{StaticResource WarningStrongBrush}"/>
+    </Style>
+
+    <Style Selector="Border.InfoStrong">
+        <Setter Property="Background" Value="{StaticResource InfoStrongBrush}" />
+    </Style>
+
     <!-- Left Panel Title -->
     <Style Selector="Border.LeftPaneTitle">
         <Setter Property="Background" Value="{DynamicResource BrandSecondaryDarker}"/>

@@ -2,6 +2,7 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.ReactiveUI;
+using NexusMods.App.UI.Controls.Trees.Common;
 using NexusMods.Games.AdvancedInstaller.UI.Resources;
 using ReactiveUI;
 
@@ -74,7 +75,7 @@ public partial class
             }
             else
             {
-                EntryIcon.Classes.Add("File");
+                EntryIcon.Classes.Add(vm.FileName.GetIconClassFromFileName());
                 InstallRoundedButtonTextBlock.Text = Language.TreeEntryView_InstallRoundedButtonTextBlock_Install;
             }
         }

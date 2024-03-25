@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Disposables;
 using Avalonia.ReactiveUI;
+using NexusMods.App.UI.Controls.Trees.Common;
 using ReactiveUI;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Preview;
@@ -52,7 +53,7 @@ public partial class PreviewTreeEntryView : ReactiveUserControl<IPreviewTreeEntr
         }
         else
         {
-            EntryIcon.Classes.Add("File");
+            EntryIcon.Classes.Add(ViewModel.GamePath.Extension.GetIconClass());
         }
     }
 }

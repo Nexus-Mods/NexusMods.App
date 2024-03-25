@@ -22,7 +22,10 @@ public class DiagnosticDetailsViewModel : APageViewModel<IDiagnosticDetailsViewM
         Diagnostic diagnostic) : base(windowManager)
     {
         Severity = diagnostic.Severity;
-        Details = diagnostic.FormatDetails(diagnosticWriter);
+
+        var summary = diagnostic.FormatSummary(diagnosticWriter);
+        Details = $"## {summary}\n" +
+                  $"{diagnostic.FormatDetails(diagnosticWriter)}";
 
         // TODO: once we have custom elements and goto-links, this should be factored out into a singleton handler
         MarkdownOpenLinkCommand = ReactiveCommand.CreateFromTask<string>(async url =>
