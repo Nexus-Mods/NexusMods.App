@@ -360,6 +360,6 @@
         <comment>{0} Represents a number, {1} represents a formatted size (e.g. 12GB)</comment>
     </data>
     <data name="ModFileTreeViewModel_CreateTreeSource_File_Count" xml:space="preserve">
-        <value>File Count</value>
+        <value>FILE COUNT</value>
     </data>
 </root>

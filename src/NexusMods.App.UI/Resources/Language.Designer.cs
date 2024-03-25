@@ -811,7 +811,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to File Count.
+        ///   Looks up a localized string similar to FILE COUNT.
         /// </summary>
         public static string ModFileTreeViewModel_CreateTreeSource_File_Count {
             get {

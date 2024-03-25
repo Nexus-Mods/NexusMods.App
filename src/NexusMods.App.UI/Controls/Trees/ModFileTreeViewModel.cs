@@ -233,7 +233,7 @@ public class ModFileTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeVie
                                     : y.FileCount.CompareTo(x.FileCount);
                         },
                     },
-                    width: new GridLength(110)
+                    width: new GridLength(120)
                 ),
 
                 // Size column
