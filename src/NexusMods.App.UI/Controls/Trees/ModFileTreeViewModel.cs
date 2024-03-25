@@ -26,9 +26,12 @@ public class ModFileTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeVie
     private readonly SourceCache<IFileTreeNodeViewModel, GamePath> _sourceCache;
     private ReadOnlyObservableCollection<IFileTreeNodeViewModel> _items;
     private uint _totalNumFiles;
+    private ulong _totalSize;
+    private ReadOnlyObservableCollection<string> _statusBarStrings;
+    private SourceList<string> StatusBarStringCache { get; } = new();
 
     public ITreeDataGridSource<IFileTreeNodeViewModel> TreeSource { get; }
-    public ReadOnlyObservableCollection<string> StatusBarStrings { get; } = new([]);
+    public ReadOnlyObservableCollection<string> StatusBarStrings => _statusBarStrings;
 
     public ModFileTreeViewModel(LoadoutId loadoutId, ModId modId, ILoadoutRegistry registry)
     {
@@ -36,6 +39,7 @@ public class ModFileTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeVie
         _items = new ReadOnlyObservableCollection<IFileTreeNodeViewModel>([]);
         _sourceCache = new SourceCache<IFileTreeNodeViewModel, GamePath>(x => x.Key);
         _totalNumFiles = 0;
+        _totalSize = 0;
 
         var availableLocations = new HashSet<LocationId>();
 
@@ -53,6 +57,7 @@ public class ModFileTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeVie
             if (file is not StoredFile storedFile)
                 continue;
             _totalNumFiles++;
+            _totalSize += storedFile.Size.Value;
 
             var folderName = storedFile.To.Parent;
             ref var item = ref CollectionsMarshal.GetValueRefOrNullRef(folderToSize, folderName);
@@ -148,6 +153,19 @@ public class ModFileTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeVie
 
         TreeSource = CreateTreeSource(_items);
         TreeSource.SortBy(TreeSource.Columns[0], ListSortDirection.Ascending);
+        
+        StatusBarStringCache.Connect()
+            .Bind(out _statusBarStrings)
+            .Subscribe();
+        
+        StatusBarStringCache.AddRange(new[]
+            {
+                string.Format(Language.ModFileTreeViewModel_StatusBar_Files__0__1,
+                    _totalNumFiles,
+                    ByteSize.FromBytes(_totalSize).ToString()
+                ),
+            }
+        );
     }
 
     /// <summary>
@@ -204,8 +222,8 @@ public class ModFileTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeVie
                             {
                                 if (x == null || y == null) return 0;
                                 var folderComparison = x.IsFile.CompareTo(y.IsFile);
-                                return folderComparison != 0 
-                                    ? folderComparison 
+                                return folderComparison != 0
+                                    ? folderComparison
                                     : string.Compare(x.Name, y.Name, StringComparison.OrdinalIgnoreCase);
                             },
 
@@ -213,8 +231,8 @@ public class ModFileTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeVie
                             {
                                 if (x == null || y == null) return 0;
                                 var folderComparison = x.IsFile.CompareTo(y.IsFile);
-                                return folderComparison != 0 
-                                    ? folderComparison 
+                                return folderComparison != 0
+                                    ? folderComparison
                                     : string.Compare(y.Name, x.Name, StringComparison.OrdinalIgnoreCase);
                             },
                         }

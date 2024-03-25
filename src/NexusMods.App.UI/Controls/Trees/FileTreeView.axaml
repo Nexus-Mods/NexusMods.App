@@ -43,8 +43,10 @@
         <Border Classes="Mid Rounded-b-lg"
                 VerticalAlignment="Bottom"
                 Padding="24, 8, 24, 8"
-                x:Name="StatusBarBorder">
-            <ItemsControl x:Name="StatusBarItemsControl">
+                x:Name="StatusBarBorder"
+                Height="36">
+            <ItemsControl x:Name="StatusBarItemsControl"
+                          VerticalAlignment="Center">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel Orientation="Horizontal" />
@@ -54,8 +56,12 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="system:String">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Classes="BodyMDNormal ForegroundTranslucentSubdued" Text="{CompiledBinding}" />
-                            <Border Classes="OutlineWeak" BorderThickness="1,0,0,0" Width="1"
+                            <TextBlock Classes="BodyMDNormal ForegroundTranslucentSubdued" 
+                                       Text="{CompiledBinding}"
+                                       VerticalAlignment="Center"/>
+                            <Border Classes="OutlineWeak" 
+                                    BorderThickness="1,0,0,0" 
+                                    Width="1"
                                     Margin="8,0"/>
                         </StackPanel>
                     </DataTemplate>
