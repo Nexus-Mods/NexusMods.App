@@ -1,7 +1,7 @@
 using System.Runtime.CompilerServices;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.App.UI;
-using NexusMods.App.UI.Helpers;
+using NexusMods.App.UI.Helpers.TreeDataGrid;
 
 namespace Examples.TreeDataGrid.SingleColumn.FileColumn;
 
@@ -36,14 +36,9 @@ public enum FileTreeNodeIconType
     File,
     
     /// <summary>
-    ///     Show a 'closed folder' icon.
+    ///     Show a 'folder' icon.
     /// </summary>
-    ClosedFolder,
-    
-    /// <summary>
-    ///     Show an 'open folder' icon.
-    /// </summary>
-    OpenFolder,
+    Folder,
 }
 
 public static class FileTreeNodeIconTypeExtensions
@@ -52,8 +47,7 @@ public static class FileTreeNodeIconTypeExtensions
     public static string GetIconClass(this FileTreeNodeIconType iconType) => iconType switch
     {
         FileTreeNodeIconType.File => "File",
-        FileTreeNodeIconType.ClosedFolder => "FolderOutline",
-        FileTreeNodeIconType.OpenFolder => "FolderOpenOutline",
+        FileTreeNodeIconType.Folder => "FolderOutline",
         _ => ThrowArgumentOutOfRangeException(iconType),
     };
     

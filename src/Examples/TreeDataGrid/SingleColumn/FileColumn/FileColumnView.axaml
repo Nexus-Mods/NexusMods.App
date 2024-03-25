@@ -1,11 +1,11 @@
-<reactiveUi:ReactiveUserControl x:TypeArguments="ui1:IViewModelInterface"
+<reactiveUi:ReactiveUserControl x:TypeArguments="files:IFileTreeNodeViewModel"
                                 xmlns="https://github.com/avaloniaui"
                                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:fileColumn="clr-namespace:Examples.TreeDataGrid.SingleColumn.FileColumn"
-                                xmlns:ui1="clr-namespace:NexusMods.App.UI;assembly=NexusMods.App.UI"
                                 xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI"
+                                xmlns:files="clr-namespace:NexusMods.App.UI.Controls.Trees.Files;assembly=NexusMods.App.UI"
                                 x:Class="Examples.TreeDataGrid.SingleColumn.FileColumn.FileColumnView"
                                 d:DataContext="{x:Static fileColumn:FileTreeNodeDesignViewModel.SampleFolder}">
     <!-- You can switch 'SampleFolder' to 'SampleFile' to get preview of file -->

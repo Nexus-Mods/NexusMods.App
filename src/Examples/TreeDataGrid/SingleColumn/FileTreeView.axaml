@@ -1,0 +1,43 @@
+<reactiveUi:ReactiveUserControl x:TypeArguments="singleColumn:IFileTreeViewModel"
+                                xmlns="https://github.com/avaloniaui"
+                                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                                xmlns:reactiveUi="http://reactiveui.net"
+                                xmlns:singleColumn="clr-namespace:Examples.TreeDataGrid.SingleColumn"
+                                xmlns:fileColumn="clr-namespace:Examples.TreeDataGrid.SingleColumn.FileColumn"
+                                mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+                                x:Class="Examples.TreeDataGrid.SingleColumn.FileTreeView">
+    <Design.DataContext>
+        <singleColumn:FileTreeDesignViewModel />
+    </Design.DataContext>
+    
+    <UserControl.Styles>
+        <!-- Note: Can't use nth-child on textblock itself. Not even actual control source does that. -->
+        <Style Selector="TreeDataGridColumnHeader:nth-child(1)">
+            <Style Selector="^ TextBlock">
+                <Setter Property="Margin" Value="24,0,0,0" />
+            </Style>
+        </Style>
+    </UserControl.Styles>
+
+    <!-- Visual Tree -->
+    <Grid HorizontalAlignment="Stretch">
+
+        <TreeDataGrid Classes="TreeWhiteCaret"
+                      ShowColumnHeaders="True"
+                      x:Name="ModFilesTreeDataGrid"
+                      HorizontalAlignment="Stretch"
+                      Width="1">
+            <!-- NOTE: we set TreeDataGrid.Width to 1 and then to double.NaN in the code behind to force a refresh of width -->
+            <!-- That is a workaround for TreeDataGrid star columns collapsing to 0 width.  -->
+
+            <TreeDataGrid.Resources>
+                <DataTemplate x:Key="FileNameColumnTemplate" DataType="{x:Type fileColumn:IFileTreeNodeViewModel}">
+                    <fileColumn:FileColumnView DataContext="{CompiledBinding}" />
+                </DataTemplate>
+            </TreeDataGrid.Resources>
+        </TreeDataGrid>
+    </Grid>
+
+</reactiveUi:ReactiveUserControl>

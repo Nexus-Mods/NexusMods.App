@@ -22,6 +22,8 @@ public partial class FileColumnView : ReactiveUserControl<IFileTreeNodeViewModel
                         _lastType = iconType;
                     })
                     .DisposeWith(d);
+                
+                // Subscribe here if you need mutating.
                 FileNameTextBlock.Text = ViewModel!.Name;
             }
         );

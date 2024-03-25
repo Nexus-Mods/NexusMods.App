@@ -13,6 +13,16 @@
         <DependentUpon>FileTreeNodeView.axaml</DependentUpon>
         <SubType>Code</SubType>
       </Compile>
+      <Compile Update="TreeDataGrid\SingleColumn\FileTreeView.axaml.cs">
+        <DependentUpon>FileTreeView.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="TreeDataGrid\SingleColumn\FileTreeDesignViewModel.cs">
+        <DependentUpon>IFileTreeViewModel.cs</DependentUpon>
+      </Compile>
+      <Compile Update="TreeDataGrid\SingleColumn\FileTreeViewModel.cs">
+        <DependentUpon>IFileTreeViewModel.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
     <ItemGroup>

@@ -15,7 +15,7 @@ public class FileTreeNodeDesignViewModel : AViewModel<IFileTreeNodeViewModel>, I
 
     [Reactive]
     public FileTreeNodeIconType Icon { get; set; }
-    public bool IsFile { get; }
+    public bool IsFile { get; set; }
     public string Name { get; }
     public GamePath Key { get; }
     public GamePath ParentKey { get; }
@@ -30,7 +30,7 @@ public class FileTreeNodeDesignViewModel : AViewModel<IFileTreeNodeViewModel>, I
     public FileTreeNodeDesignViewModel(bool isFile, GamePath fullPath)
     {
         IsFile = isFile;
-        Icon = IsFile ? FileTreeNodeIconType.File : FileTreeNodeIconType.ClosedFolder;
+        Icon = IsFile ? FileTreeNodeIconType.File : FileTreeNodeIconType.Folder;
         Name = fullPath.Path.FileName;
         Key = fullPath;
         ParentKey = fullPath.Parent;

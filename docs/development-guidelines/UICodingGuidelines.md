@@ -1485,7 +1485,7 @@ this.WhenActivated(disposables =>
 
 #### Adding a Custom Column
 
-!!! info "Functional Example(s) available at [TreeDataGrid Examples][treedatagrid single column]"
+!!! info "Functional Example(s) available at [TreeDataGrid Examples][treedatagrid single column] as 'Single Column'"
 
 To add a custom column, you should first create a view for the column in question.
 
