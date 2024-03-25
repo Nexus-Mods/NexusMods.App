@@ -1,7 +1,9 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Reactive.Disposables;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.App.UI.Controls.Trees.Common;
+using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Controls.Trees.Files;
@@ -30,5 +32,16 @@ public class FileTreeNodeViewModel : AViewModel<IFileTreeNodeViewModel>, IFileTr
         FileSize = fileSize;
         IsFile = isFile;
         Icon = isFile ? fullPath.Extension.GetIconType() : FileTreeNodeIconType.ClosedFolder;
+        
+        this.WhenActivated(d =>
+        {
+            this.WhenAnyValue(x => x.IsExpanded)
+                .Subscribe(isExpanded =>
+                {
+                    if (IsFile) return;
+                    Icon = isExpanded ? FileTreeNodeIconType.OpenFolder : FileTreeNodeIconType.ClosedFolder;
+                })
+                .DisposeWith(d);
+        });
     }
 }
