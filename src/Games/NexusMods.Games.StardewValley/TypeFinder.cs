@@ -16,6 +16,7 @@ public class TypeFinder : ITypeFinder
         typeof(SMAPIMarker),
         typeof(SMAPIModMarker),
         typeof(SMAPIManifestMetadata),
+        typeof(SMAPIModDatabaseMarker),
         typeof(SMAPISorter),
     };
 }
