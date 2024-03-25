@@ -6,8 +6,9 @@
                                 xmlns:fileColumn="clr-namespace:Examples.TreeDataGrid.SingleColumn.FileColumn"
                                 xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI"
                                 xmlns:files="clr-namespace:NexusMods.App.UI.Controls.Trees.Files;assembly=NexusMods.App.UI"
+                                d:DesignWidth="400"
                                 x:Class="Examples.TreeDataGrid.SingleColumn.FileColumn.FileColumnView"
-                                d:DataContext="{x:Static fileColumn:FileTreeNodeDesignViewModel.SampleFolder}">
+                                d:DataContext="{x:Static fileColumn:FileColumnDesignViewModel.SampleFolder}">
     <!-- You can switch 'SampleFolder' to 'SampleFile' to get preview of file -->
     <Grid ColumnDefinitions="*, Auto" Margin="0,5,0,5">
         <Grid.Styles>

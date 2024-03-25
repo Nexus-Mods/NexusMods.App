@@ -1,11 +1,11 @@
 using System.Reactive.Disposables;
 using Avalonia.Controls;
 using Avalonia.ReactiveUI;
-using Examples.TreeDataGrid.SingleColumn.FileColumn;
+using Examples.TreeDataGrid.Basic.ViewModel;
 using JetBrains.Annotations;
 using ReactiveUI;
 
-namespace Examples.TreeDataGrid.SingleColumn;
+namespace Examples.TreeDataGrid.Basic;
 
 [UsedImplicitly] // Designer
 public partial class FileTreeView : ReactiveUserControl<IFileTreeViewModel>
@@ -16,7 +16,7 @@ public partial class FileTreeView : ReactiveUserControl<IFileTreeViewModel>
         
         this.WhenActivated(disposables =>
             {
-                this.OneWayBind<IFileTreeViewModel, FileTreeView, ITreeDataGridSource<IFileColumnViewModel>, ITreeDataGridSource>
+                this.OneWayBind<IFileTreeViewModel, FileTreeView, ITreeDataGridSource<IFileViewModel>, ITreeDataGridSource>
                     (ViewModel, vm => vm.TreeSource, v => v.ModFilesTreeDataGrid.Source!)
                     .DisposeWith(disposables);
                 

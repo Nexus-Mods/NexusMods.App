@@ -1,10 +1,10 @@
 using Avalonia.Controls;
+using Examples.TreeDataGrid.SingleColumn.FileColumn;
 using NexusMods.App.UI;
-using NexusMods.App.UI.Controls.Trees.Files;
 
 namespace Examples.TreeDataGrid.SingleColumn;
 
 public interface IFileTreeViewModel : IViewModelInterface
 {
-    ITreeDataGridSource<IFileTreeNodeViewModel> TreeSource { get; }
+    ITreeDataGridSource<IFileColumnViewModel>? TreeSource { get; }
 }

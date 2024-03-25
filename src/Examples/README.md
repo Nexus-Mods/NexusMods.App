@@ -13,5 +13,6 @@ and [Using Workspaces](https://nexus-mods.github.io/NexusMods.App/development-gu
     - [Creating a new Page](./Workspaces/003-creating-new-pages.cs)
 
 - [TreeDataGrid](./TreeDataGrid/README.md)
-  - [TreeDataGrid With Single Column](./TreeDataGrid/001-tree-data-grid-simple.cs)
-  - [TreeDataGrid With Sorting](./TreeDataGrid/002-tree-data-grid-sorting.cs)
+  - [Basic TreeDataGrid](./TreeDataGrid/Basic)
+  - [TreeDataGrid With Single Custom Column](./TreeDataGrid/SingleColumn)
+  - Further explained in [UI Coding Guidelines](../../docs/development-guidelines/UICodingGuidelines.md).

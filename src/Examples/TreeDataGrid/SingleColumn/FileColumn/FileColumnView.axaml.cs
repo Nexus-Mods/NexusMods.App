@@ -1,29 +1,18 @@
-using System.Reactive.Disposables;
-using Avalonia.Controls;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 
 namespace Examples.TreeDataGrid.SingleColumn.FileColumn;
 
-public partial class FileColumnView : ReactiveUserControl<IFileTreeNodeViewModel>
+public partial class FileColumnView : ReactiveUserControl<IFileColumnViewModel>
 {
-    private FileTreeNodeIconType _lastType = FileTreeNodeIconType.File;
-    
     public FileColumnView()
     {
         InitializeComponent();
-        this.WhenActivated(d =>
+
+        // Subscribe here if you need mutating.
+        this.WhenActivated(_ =>
             {
-                ViewModel.WhenAnyValue(vm => vm.Icon)
-                    .Subscribe(iconType =>
-                    {
-                        EntryIcon.Classes.Remove(_lastType.GetIconClass());
-                        EntryIcon.Classes.Add(iconType.GetIconClass());
-                        _lastType = iconType;
-                    })
-                    .DisposeWith(d);
-                
-                // Subscribe here if you need mutating.
+                EntryIcon.Classes.Add(ViewModel!.IsFile ? "File" : "FolderOutline");
                 FileNameTextBlock.Text = ViewModel!.Name;
             }
         );

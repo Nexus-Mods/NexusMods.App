@@ -19,17 +19,29 @@ public interface IDynamicDataTreeItem<TItem, TKey>
     ///     This is an observable collection so that the UI can be
     ///     notified of changes to the tree structure.
     /// </summary>
-    public ReadOnlyObservableCollection<TItem>? Children { get; internal set; }
+    /// <remarks>
+    ///     The setter is intended only for internal use.
+    ///     But needs to remain public for external classes to implement.
+    /// </remarks>
+    public ReadOnlyObservableCollection<TItem>? Children { get; set; }
 
     /// <summary>
     ///     The parent of the current node.
     /// </summary>
-    TItem? Parent { get; internal set; }
+    /// <remarks>
+    ///     The setter is intended only for internal use.
+    ///     But needs to remain public for external classes to implement.
+    /// </remarks>
+    TItem? Parent { get; set; }
 
     /// <summary>
     ///     The Id used in the <see cref="SourceCache{TObject,TKey}" /> for the original item.
     /// </summary>
-    TKey Key { get; internal set; }
+    /// <remarks>
+    ///     The setter is intended only for internal use.
+    ///     But needs to remain public for external classes to implement.
+    /// </remarks>
+    TKey Key { get; set; }
 }
 
 public static class DynamicDataTreeItemExtensions

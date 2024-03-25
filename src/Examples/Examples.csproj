@@ -2,10 +2,21 @@
 
     <PropertyGroup>
         <IsPackable>false</IsPackable>
+        <OutputType>Exe</OutputType>
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Avalonia"/>
+        <PackageReference Include="Avalonia.Themes.Fluent"/>
+        <PackageReference Include="Avalonia.Controls.TreeDataGrid" />
+        <PackageReference Include="Avalonia.Controls.DataGrid" />
+        <PackageReference Include="Avalonia.Svg.Skia" />
+        <PackageReference Include="Projektanker.Icons.Avalonia.MaterialDesign" />
+    </ItemGroup>
+    
+    <ItemGroup>
       <ProjectReference Include="..\NexusMods.App.UI\NexusMods.App.UI.csproj" />
+      <ProjectReference Include="..\NexusMods.App\NexusMods.App.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -23,10 +34,19 @@
       <Compile Update="TreeDataGrid\SingleColumn\FileTreeViewModel.cs">
         <DependentUpon>IFileTreeViewModel.cs</DependentUpon>
       </Compile>
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="TreeDataGrid\SimpleGrid\" />
-      <Folder Include="TreeDataGrid\MultipleColumns\" />
+      <Compile Update="TreeDataGrid\Basic\FileColumn\FileColumnView.axaml.cs">
+        <DependentUpon>FileColumnView.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="TreeDataGrid\Basic\FileTreeView.axaml.cs">
+        <DependentUpon>FileTreeView.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="TreeDataGrid\Basic\FileTreeDesignViewModel.cs">
+        <DependentUpon>IFileTreeViewModel.cs</DependentUpon>
+      </Compile>
+      <Compile Update="TreeDataGrid\Basic\ViewModel\FileDesignViewModel.cs">
+        <DependentUpon>IFileViewModel.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 </Project>

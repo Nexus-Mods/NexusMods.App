@@ -13,6 +13,7 @@
     </Design.DataContext>
     
     <UserControl.Styles>
+        <!-- This shifts the header text to the right. -->
         <!-- Note: Can't use nth-child on textblock itself. Not even actual control source does that. -->
         <Style Selector="TreeDataGridColumnHeader:nth-child(1)">
             <Style Selector="^ TextBlock">
@@ -33,7 +34,7 @@
             <!-- That is a workaround for TreeDataGrid star columns collapsing to 0 width.  -->
 
             <TreeDataGrid.Resources>
-                <DataTemplate x:Key="FileNameColumnTemplate" DataType="{x:Type fileColumn:IFileTreeNodeViewModel}">
+                <DataTemplate x:Key="FileNameColumnTemplate" DataType="{x:Type fileColumn:IFileColumnViewModel}">
                     <fileColumn:FileColumnView DataContext="{CompiledBinding}" />
                 </DataTemplate>
             </TreeDataGrid.Resources>
