@@ -29,7 +29,7 @@ public interface IDiagnosticListViewModel : IPageViewModelInterface
 public enum DiagnosticFilter
 {
     None = 0,
-    Critical = 1,
-    Warnings = 2 << 0,
-    Suggestions = 2 << 1,
+    Critical = 1 << 0,
+    Warnings = 1 << 1,
+    Suggestions = 1 << 2,
 }
