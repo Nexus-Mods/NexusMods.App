@@ -129,7 +129,7 @@ public class DiagnosticTemplateIncrementalSourceGenerator : IIncrementalGenerato
                 cw.Append("Title = ");
                 if (parsedData.TitleExpression is LiteralExpressionSyntax literalTitle)
                 {
-                    cw.Append($"\"{literalTitle.Token.ValueText}\"");
+                    cw.Append(literalTitle.Token.Text);
                 }
                 cw.AppendLine(",");
 
@@ -140,7 +140,7 @@ public class DiagnosticTemplateIncrementalSourceGenerator : IIncrementalGenerato
                 cw.Append($"Summary = {Constants.DiagnosticsNamespace}.DiagnosticMessage.From(");
                 if (parsedData.SummaryTemplateExpression is LiteralExpressionSyntax literalSummary)
                 {
-                    cw.Append($"\"{literalSummary.Token.ValueText}\"");
+                    cw.Append(literalSummary.Token.Text);
                 }
                 cw.AppendLine("),");
 
@@ -151,7 +151,7 @@ public class DiagnosticTemplateIncrementalSourceGenerator : IIncrementalGenerato
                     cw.AppendLine("DefaultValue,");
                 } else if (parsedData.DetailsTemplateExpression is LiteralExpressionSyntax literalDetails)
                 {
-                    cw.AppendLine($"From(\"{literalDetails.Token.ValueText}\"),");
+                    cw.AppendLine($"From({literalDetails.Token.Text}),");
                 }
 
                 // MessageData
