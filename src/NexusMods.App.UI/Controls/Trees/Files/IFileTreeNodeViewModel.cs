@@ -1,6 +1,5 @@
-using System.Runtime.CompilerServices;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.App.UI.Helpers;
+using NexusMods.App.UI.Controls.Trees.Common;
 using NexusMods.App.UI.Helpers.TreeDataGrid;
 
 namespace NexusMods.App.UI.Controls.Trees.Files;
@@ -10,7 +9,7 @@ public interface IFileTreeNodeViewModel : IViewModelInterface, IExpandableItem, 
     /// <summary>
     ///     The icon that's used to display this specific node.
     /// </summary>
-    FileTreeNodeIconType Icon { get; protected set; }
+    FileTreeNodeIconType Icon { get; set; }
     
     /// <summary>
     ///     True if this node represents a file.
@@ -31,49 +30,4 @@ public interface IFileTreeNodeViewModel : IViewModelInterface, IExpandableItem, 
     ///     The key to the parent of this node.
     /// </summary>
     GamePath ParentKey { get; }
-
-    /// <summary>
-    ///     A method called when the tree item is expanded, this by default changes the icon style.
-    /// </summary>
-    /// <param name="isExpanded">True if the item is expanded.</param>
-    void OnExpanded(bool isExpanded)
-    {
-        if (IsFile)
-            return;
-
-        Icon = isExpanded ? FileTreeNodeIconType.OpenFolder : FileTreeNodeIconType.ClosedFolder;
-    }
 }
-
-public enum FileTreeNodeIconType
-{
-    /// <summary>
-    ///     Shows a regular 'file' icon.
-    /// </summary>
-    File,
-    
-    /// <summary>
-    ///     Show a 'closed folder' icon.
-    /// </summary>
-    ClosedFolder,
-    
-    /// <summary>
-    ///     Show an 'open folder' icon.
-    /// </summary>
-    OpenFolder,
-}
-
-public static class FileTreeNodeIconTypeExtensions
-{
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string GetIconClass(this FileTreeNodeIconType iconType) => iconType switch
-    {
-        FileTreeNodeIconType.File => "File",
-        FileTreeNodeIconType.ClosedFolder => "FolderOutline",
-        FileTreeNodeIconType.OpenFolder => "FolderOpenOutline",
-        _ => ThrowArgumentOutOfRangeException(iconType),
-    };
-    
-    private static string ThrowArgumentOutOfRangeException(FileTreeNodeIconType iconType) => throw new ArgumentOutOfRangeException(nameof(iconType), iconType, null);
-}
-

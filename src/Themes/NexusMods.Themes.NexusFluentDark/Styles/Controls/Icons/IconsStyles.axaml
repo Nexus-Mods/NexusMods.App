@@ -1,4 +1,4 @@
-﻿<Styles
+<Styles
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI">
@@ -70,6 +70,9 @@
             <unifiedIcon:UnifiedIcon Classes="MonitorDiagnostics" />
             <unifiedIcon:UnifiedIcon Classes="DiagnosticPage"/>
             <unifiedIcon:UnifiedIcon Classes="ListBulleted" />
+            <unifiedIcon:UnifiedIcon Classes="FileDocumentOutline" />
+            <unifiedIcon:UnifiedIcon Classes="MusicNote" />
+            <unifiedIcon:UnifiedIcon Classes="VideoOutline" />
         </WrapPanel>
     </Design.PreviewWith>
 
@@ -457,6 +460,24 @@
     <Style Selector="unifiedIcon|UnifiedIcon.ListBulleted">
         <Setter Property="Value">
             <unifiedIcon:IconValue MdiValueSetter="mdi-format-list-bulleted" />
+        </Setter>
+    </Style>
+    
+    <Style Selector="unifiedIcon|UnifiedIcon.FileDocumentOutline">
+        <Setter Property="Value">
+            <unifiedIcon:IconValue MdiValueSetter="mdi-file-document-outline" />
+        </Setter>
+    </Style>
+    
+    <Style Selector="unifiedIcon|UnifiedIcon.MusicNote">
+        <Setter Property="Value">
+            <unifiedIcon:IconValue MdiValueSetter="mdi-music-note" />
+        </Setter>
+    </Style>
+
+    <Style Selector="unifiedIcon|UnifiedIcon.VideoOutline">
+        <Setter Property="Value">
+            <unifiedIcon:IconValue MdiValueSetter="mdi-video-outline" />
         </Setter>
     </Style>
 </Styles>
