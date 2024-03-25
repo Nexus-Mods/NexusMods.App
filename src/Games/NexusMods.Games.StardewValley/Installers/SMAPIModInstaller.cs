@@ -26,17 +26,10 @@ public class SMAPIModInstaller : AModInstaller
     /// DI Constructor
     /// </summary>
     /// <param name="serviceProvider"></param>
-    private SMAPIModInstaller(IServiceProvider serviceProvider) : base(serviceProvider)
+    public SMAPIModInstaller(IServiceProvider serviceProvider) : base(serviceProvider)
     {
         _logger = serviceProvider.GetRequiredService<ILogger<SMAPIModInstaller>>();
     }
-
-    /// <summary>
-    /// Creates a new instance of <see cref="SMAPIModInstaller"/>.
-    /// </summary>
-    /// <param name="serviceProvider"></param>
-    /// <returns></returns>
-    public static SMAPIModInstaller Create(IServiceProvider serviceProvider) => new(serviceProvider);
 
     private async ValueTask<List<(KeyedBox<RelativePath, ModFileTree>, SMAPIManifest)>> GetManifestFiles(
         KeyedBox<RelativePath, ModFileTree> files)

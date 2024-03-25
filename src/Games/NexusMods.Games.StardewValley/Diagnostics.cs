@@ -87,4 +87,25 @@ internal static partial class Diagnostics
             .AddDataReference<ModReference>("Dependency")
         )
         .Finish();
+
+    [DiagnosticTemplate]
+    [UsedImplicitly]
+    internal static IDiagnosticTemplate ModCompatabilityObsoleteTemplate = DiagnosticTemplateBuilder
+        .Start()
+        .WithId(new DiagnosticId(Source, number: 6))
+        .WithTitle("Mod is obsolete")
+        .WithSeverity(DiagnosticSeverity.Warning)
+        .WithSummary("Mod {Mod} is obsolete")
+        .WithDetails("""
+Mod {Mod} has been made obsolete:
+
+> {ModName} is obsolete because {ReasonPhrase}
+
+The compatability status was extracted from the internal SMAPI metadata file.
+""")
+        .WithMessageData(messageBuilder => messageBuilder
+            .AddDataReference<ModReference>("Mod")
+            .AddValue<string>("ReasonPhrase")
+        )
+        .Finish();
 }
