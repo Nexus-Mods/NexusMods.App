@@ -310,10 +310,10 @@
         <value>Modyfikacja, do której próbujesz uzyskać dostęp, została usunięta lub nie istnieje.</value>
     </data>
     <data name="ViewModInfoPage_NotFound_Title" xml:space="preserve">
-        <value>Mod nie znaleziony</value>
+        <value>Brak moda</value>
     </data>
     <data name="ErrorView_MissingMod_Subheader" xml:space="preserve">
-        <value>Modyfikacja nie została znaleziona</value>
+        <value>Mod nie został znaleziony</value>
     </data>
     <data name="DiagnosticDetailsView_SeverityTitle_SUGGESTION" xml:space="preserve">
         <value>SUGESTIA</value>
@@ -329,5 +329,24 @@
     </data>
     <data name="DiagnosticDetailsView_SeverityTitle_HIDDEN" xml:space="preserve">
         <value>UKRYTE</value>
+    </data>
+        <data name="DiagnosticListView_DiagnosticListView_All" xml:space="preserve">
+        <value>Wszystkie ({0})</value>
+        <comment>0 is placeholder for a number</comment>
+    </data>
+    <data name="DiagnosticListView_DiagnosticListView_Critical" xml:space="preserve">
+        <value>Krytyczne ({0})</value>
+        <comment>0 is placeholder for a number</comment>
+    </data>
+    <data name="DiagnosticListView_DiagnosticListView_Warnings" xml:space="preserve">
+        <value>Ostrzeżenia ({0})</value>
+        <comment>0 is placeholder for a number</comment>
+    </data>
+    <data name="DiagnosticListView_DiagnosticListView_Suggestions" xml:space="preserve">
+        <value>Sugestie ({0})</value>
+        <comment>0 is placeholder for a number</comment>
+    </data>
+    <data name="DiagnosticListView_DiagnosticListView_There_are_no_diagnostics" xml:space="preserve">
+        <value>Brak diagnostyki</value>
     </data>
 </root>
