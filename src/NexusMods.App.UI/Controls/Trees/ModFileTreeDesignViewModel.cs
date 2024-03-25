@@ -4,6 +4,7 @@ using Avalonia.Controls;
 using DynamicData;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.App.UI.Controls.Trees.Files;
+using NexusMods.App.UI.Helpers.TreeDataGrid;
 using NexusMods.Paths;
 
 namespace NexusMods.App.UI.Controls.Trees;
@@ -114,11 +115,16 @@ public class ModFileTreeDesignViewModel : AViewModel<IFileTreeViewModel>, IFileT
         // Configuration files
         SaveFile("SkyrimPrefs.ini", 15000);
         SaveFile("Skyrim.ini", 10000);
-
-
+        
+        
         // Assign
-        ModFileTreeViewModel.BindItems(cache, out _items);
-
+        cache.Connect()
+            .TransformToTree(model => model.ParentKey)
+            .Transform(node => node.Item.Initialize(node))
+            .Bind(out _items)
+            .Subscribe();
+        
+        // Update the status bar
         StatusBarStringCache.AddRange(new[]
             {
                 $"Files: {cache.Items.Count(e => e.IsFile)} (12GB)",

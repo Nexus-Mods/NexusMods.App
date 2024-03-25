@@ -105,10 +105,11 @@ public class ModFileTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeVie
             }
         }
 
-        // Add all the folders to the displayedItems list
+        // Add all the folders in folderToSize to the displayedItems list
         foreach (var (key, value) in folderToSize)
         {
             var (size, numChildren, folder, parent, isLeaf) = value;
+
             if (parent.Equals(IFileTreeViewModel.RootParentGamePath))
             {
                 // Add a root with full path as name
@@ -121,29 +122,32 @@ public class ModFileTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeVie
                         numChildren
                     )
                 );
+                continue;
             }
-            else
-            {
-                displayedItems.Add(new FileTreeNodeViewModel(
-                        folder,
-                        parent,
-                        isLeaf,
-                        size,
-                        numChildren
-                    )
-                );
-            }
+
+            displayedItems.Add(new FileTreeNodeViewModel(
+                    folder,
+                    parent,
+                    isLeaf,
+                    size,
+                    numChildren
+                )
+            );
         }
 
         _sourceCache.Clear();
         _sourceCache.AddOrUpdate(displayedItems);
 
-        // Flatten them with DynamicData
-        BindItems(_sourceCache, out _items);
+        _sourceCache.Connect()
+            .TransformToTree(model => model.ParentKey)
+            .Transform(node => node.Item.Initialize(node))
+            .Bind(out _items)
+            .Subscribe(); // force evaluation
 
         TreeSource = CreateTreeSource(_items);
         TreeSource.SortBy(TreeSource.Columns[0], ListSortDirection.Ascending);
 
+        // Populate the status bar
         StatusBarStringCache.Connect()
             .Bind(out _statusBarStrings)
             .Subscribe();
@@ -156,21 +160,6 @@ public class ModFileTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeVie
                 ),
             }
         );
-    }
-
-    /// <summary>
-    ///     Binds all items in the given cache.
-    ///     Root nodes are added for each locationId with children to show.
-    /// </summary>
-    internal static void BindItems(
-        SourceCache<IFileTreeNodeViewModel, GamePath> cache,
-        out ReadOnlyObservableCollection<IFileTreeNodeViewModel> result)
-    {
-        cache.Connect()
-            .TransformToTree(model => model.ParentKey)
-            .Transform(node => node.Item.Initialize(node))
-            .Bind(out result)
-            .Subscribe(); // force evaluation
     }
 
     internal static HierarchicalTreeDataGridSource<IFileTreeNodeViewModel> CreateTreeSource(
