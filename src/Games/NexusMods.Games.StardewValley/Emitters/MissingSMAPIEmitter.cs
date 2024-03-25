@@ -15,9 +15,11 @@ public class MissingSMAPIEmitter : ILoadoutDiagnosticEmitter
     {
         await Task.Yield();
 
-        var smapiModCount = loadout.Mods.Count(kv => kv.Value.Metadata.OfType<SMAPIModMarker>().Any());
-        if (smapiModCount == 0) yield break;
+        var smapiModCount = loadout.Mods
+            .Where(kv => kv.Value.Enabled)
+            .Count(kv => kv.Value.Metadata.OfType<SMAPIModMarker>().Any());
 
+        if (smapiModCount == 0) yield break;
         var smapiInstallations = loadout.Mods
             .Where(kv => kv.Value.Metadata.OfType<SMAPIMarker>().Any())
             .ToArray();
