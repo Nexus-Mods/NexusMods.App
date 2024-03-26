@@ -479,6 +479,9 @@
         <Compile Update="Controls\Trees\ModFileTreeViewModel.cs">
           <DependentUpon>IFileTreeViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="LeftMenu\Items\ApplyControlDesignViewModel.cs">
+          <DependentUpon>IApplyControlViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>

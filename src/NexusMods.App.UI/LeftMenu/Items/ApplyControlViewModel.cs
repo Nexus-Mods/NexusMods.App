@@ -21,6 +21,7 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
 
 
     private readonly ReactiveCommand<System.Reactive.Unit, System.Reactive.Unit> _applyReactiveCommand;
+    private readonly ReactiveCommand<System.Reactive.Unit, System.Reactive.Unit> _ingestReactiveCommand;
 
     private ObservableAsPropertyHelper<IId> _lastAppliedRevisionId;
     private IId LastAppliedRevisionId => _lastAppliedRevisionId.Value;
@@ -32,10 +33,13 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
 
 
     public ICommand ApplyCommand => _applyReactiveCommand;
+    public ICommand IngestCommand => _ingestReactiveCommand;
+
 
     [Reactive] public bool CanApply { get; private set; }
 
     [Reactive] public bool IsApplying { get; private set; }
+    [Reactive] public bool IsIngesting { get; private set; }
 
     [Reactive] public string ApplyButtonText { get; private set; } = Language.ApplyControlViewModel__APPLY;
 
@@ -64,6 +68,7 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
             .ToProperty(this, vm => vm.LastAppliedRevisionId, scheduler: RxApp.MainThreadScheduler);
 
         _applyReactiveCommand = ReactiveCommand.CreateFromTask(async () => await Apply());
+        _ingestReactiveCommand = ReactiveCommand.CreateFromTask(async () => await Ingest());
 
         this.WhenActivated(disposables =>
             {
@@ -96,6 +101,10 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
                     .Subscribe(isExecuting => IsApplying = isExecuting)
                     .DisposeWith(disposables);
 
+                _ingestReactiveCommand.IsExecuting
+                    .Subscribe(isExecuting => IsIngesting = isExecuting)
+                    .DisposeWith(disposables);
+
                 this.WhenAnyValue(vm => vm.LastAppliedLoadoutId,
                         vm => vm.NewestLoadout
                     )
@@ -112,7 +121,11 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
 
     private async Task Apply()
     {
-        await Task.Run(async () => { await _applyService.Apply(_loadoutId); }
-        );
+        await Task.Run(async () => { await _applyService.Apply(_loadoutId); });
+    }
+
+    private async Task Ingest()
+    {
+        await Task.Run(async () => { await _applyService.Ingest(_gameInstallation); });
     }
 }

@@ -32,7 +32,7 @@
                     <TextBlock Classes="TitleSMSemi"
                                x:Name="IngestButtonTextBlock" 
                                VerticalAlignment="Center"
-                               Text="REFRESH"/>
+                               Text="{x:Static resources:Language.IngestButtonTextBlock_Text}"/>
                 </StackPanel>
                 </Viewbox>
             </Button>

@@ -355,4 +355,7 @@
     <data name="DiagnosticListView_DiagnosticListView_There_are_no_diagnostics" xml:space="preserve">
         <value>There are no diagnostics</value>
     </data>
+    <data name="IngestButtonTextBlock_Text" xml:space="preserve">
+        <value>REFRESH</value>
+    </data>
 </root>
