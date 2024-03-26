@@ -205,7 +205,7 @@ public class ModFileTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeVie
                 // File Count column
                 new TextColumn<IFileTreeNodeViewModel, string?>(
                     Language.ModFileTreeViewModel_CreateTreeSource_File_Count,
-                    x => x.FileCountString,
+                    x => x.ToFormattedFileCount(),
                     options: new TextColumnOptions<IFileTreeNodeViewModel>
                     {
                         // Compares IsFile, to show folders first, then by file count for folders, and file name for files.

@@ -17,7 +17,6 @@ public class FileTreeNodeViewModel : AViewModel<IFileTreeNodeViewModel>, IFileTr
     public string Name { get; protected init; } = string.Empty;
     public ulong FileSize { get; protected init; }
     public uint FileCount { get; protected init; }
-    public string FileCountString => FileCount > 0 ? $"{FileCount}" : string.Empty;
     public GamePath ParentKey { get; init; }
     public GamePath Key { get; set; }
     [Reactive] public bool IsExpanded { get; set; }
