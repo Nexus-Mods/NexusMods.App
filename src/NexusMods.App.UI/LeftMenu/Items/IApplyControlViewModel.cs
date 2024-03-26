@@ -1,21 +1,16 @@
-﻿using System.Windows.Input;
+﻿using System.Reactive;
+using System.Windows.Input;
+using ReactiveUI;
 
 namespace NexusMods.App.UI.LeftMenu.Items;
 
 public interface IApplyControlViewModel : IViewModelInterface
 {
-    ICommand ApplyCommand { get; }
+    ReactiveCommand<Unit,Unit> ApplyCommand { get; }
     
-    ICommand IngestCommand { get; }
-
-    bool CanApply { get; }
+    ReactiveCommand<Unit,Unit> IngestCommand { get; }
     
-    bool CanIngest { get; }
-
-    bool IsApplying { get; }
     
-    bool IsIngesting { get; }
-
     ILaunchButtonViewModel LaunchButtonViewModel { get; }
     
     string ApplyButtonText { get; }

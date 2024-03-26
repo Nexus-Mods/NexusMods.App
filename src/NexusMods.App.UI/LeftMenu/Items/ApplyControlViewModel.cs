@@ -1,6 +1,6 @@
-﻿using System.Reactive.Disposables;
+﻿using System.Reactive;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Windows.Input;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
@@ -20,8 +20,8 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
     private readonly GameInstallation _gameInstallation;
 
 
-    private readonly ReactiveCommand<System.Reactive.Unit, System.Reactive.Unit> _applyReactiveCommand;
-    private readonly ReactiveCommand<System.Reactive.Unit, System.Reactive.Unit> _ingestReactiveCommand;
+    private readonly ReactiveCommand<Unit, Unit> _applyReactiveCommand;
+    private readonly ReactiveCommand<Unit, Unit> _ingestReactiveCommand;
 
     private ObservableAsPropertyHelper<IId> _lastAppliedRevisionId;
     private IId LastAppliedRevisionId => _lastAppliedRevisionId.Value;
@@ -32,15 +32,12 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
     private Abstractions.Loadouts.Loadout NewestLoadout => _newestLoadout.Value;
 
 
-    public ICommand ApplyCommand => _applyReactiveCommand;
-    public ICommand IngestCommand => _ingestReactiveCommand;
+    public ReactiveCommand<Unit, Unit> ApplyCommand => _applyReactiveCommand;
+    public ReactiveCommand<Unit, Unit> IngestCommand => _ingestReactiveCommand;
 
 
-    [Reactive] public bool CanApply { get; private set; }
-    [Reactive] public bool CanIngest { get; private set; }
-
-    [Reactive] public bool IsApplying { get; private set; }
-    [Reactive] public bool IsIngesting { get; private set; }
+    [Reactive] private bool CanApply { get; set; } = true;
+    [Reactive] private bool CanIngest { get; set; } = true;
 
     [Reactive] public string ApplyButtonText { get; private set; } = Language.ApplyControlViewModel__APPLY;
 
@@ -68,11 +65,12 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
         _lastAppliedRevisionId = _applyService.LastAppliedRevisionFor(_gameInstallation)
             .ToProperty(this, vm => vm.LastAppliedRevisionId, scheduler: RxApp.MainThreadScheduler);
 
-        _applyReactiveCommand = ReactiveCommand.CreateFromTask(async () => await Apply());
-        _ingestReactiveCommand = ReactiveCommand.CreateFromTask(async () => await Ingest());
+        _applyReactiveCommand = ReactiveCommand.CreateFromTask(async () => await Apply(), canExecute: this.WhenAnyValue(vm => vm.CanApply));
+        _ingestReactiveCommand = ReactiveCommand.CreateFromTask(async () => await Ingest(), canExecute: this.WhenAnyValue(vm => vm.CanIngest));
 
         this.WhenActivated(disposables =>
             {
+                // Last applied loadout id
                 this.WhenAnyValue(vm => vm.LastAppliedRevisionId)
                     .Select(revId =>
                         {
@@ -85,32 +83,26 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
                     .BindToVM(this, vm => vm.LastAppliedLoadoutId)
                     .DisposeWith(disposables);
 
-                this.WhenAnyValue(vm => vm.NewestLoadout,
-                        vm => vm.LastAppliedRevisionId,
-                        vm => vm.IsApplying,
-                        vm => vm.IsIngesting
-                    )
-                    .Subscribe(_ =>
-                    {
-                        CanApply = !IsApplying && !IsIngesting && 
-                                   (!LastAppliedLoadoutId.Equals(_loadoutId) || 
-                                    !NewestLoadout.DataStoreId.Equals(LastAppliedRevisionId));
-                    })
-                    .DisposeWith(disposables);
+                // Apply and Ingest button visibility
+                var loadoutOrLastAppliedStream = this.WhenAnyValue(vm => vm.NewestLoadout,
+                    vm => vm.LastAppliedRevisionId
+                );
 
-                _applyReactiveCommand.IsExecuting
-                    .Subscribe(isExecuting => IsApplying = isExecuting)
-                    .DisposeWith(disposables);
-
-                _ingestReactiveCommand.IsExecuting
-                    .Subscribe(isExecuting => IsIngesting = isExecuting)
-                    .DisposeWith(disposables);
+                loadoutOrLastAppliedStream.CombineLatest(_applyReactiveCommand.IsExecuting)
+                    .CombineLatest(_ingestReactiveCommand.IsExecuting)
+                    .Subscribe(data =>
+                        {
+                            var isApplying = data.First.Second;
+                            var isIngesting = data.Second;
+                            CanApply = !isApplying && !isIngesting &&
+                                       (!LastAppliedLoadoutId.Equals(_loadoutId) ||
+                                        !NewestLoadout.DataStoreId.Equals(LastAppliedRevisionId));
+                            CanIngest = !isApplying && !isIngesting &&
+                                        LastAppliedLoadoutId.Equals(_loadoutId);
+                        }
+                    ).DisposeWith(disposables);
                 
-                this.WhenAnyValue(vm => vm.IsApplying)
-                    .Select(isApplying => !isApplying)
-                    .BindToVM(this, vm => vm.CanIngest)
-                    .DisposeWith(disposables);
-
+                // Apply button text
                 this.WhenAnyValue(vm => vm.LastAppliedLoadoutId,
                         vm => vm.NewestLoadout
                     )
