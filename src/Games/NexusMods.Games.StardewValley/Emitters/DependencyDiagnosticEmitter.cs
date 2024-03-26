@@ -18,7 +18,7 @@ namespace NexusMods.Games.StardewValley.Emitters;
 
 public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
 {
-    private static readonly Uri NexusModsPage = new("https://nexusmods.com/stardewvalley");
+    private static readonly NamedLink NexusModsLink = new("Nexus Mods", new Uri("https://nexusmods.com/stardewvalley"));
 
     private readonly ILogger<DependencyDiagnosticEmitter> _logger;
     private readonly IFileStore _fileStore;
@@ -158,7 +158,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
                 return Diagnostics.CreateMissingRequiredDependency(
                     Mod: mod.ToReference(loadout),
                     MissingDependency: missingDependency,
-                    NexusModsDependencyUri: missingDependencyUris.GetValueOrDefault(missingDependency, NexusModsPage).WithName("Nexus Mods")
+                    NexusModsDependencyUri: missingDependencyUris.GetValueOrDefault(missingDependency, NexusModsLink)
                 );
             });
         });
@@ -228,7 +228,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
             Dependency: loadout.Mods[tuple.DependencyModId].ToReference(loadout),
             MinimumVersion: tuple.MinimumVersion.ToString(),
             CurrentVersion: tuple.CurrentVersion.ToString(),
-            NexusModsDependencyUri: missingDependencyUris.GetValueOrDefault(tuple.DependencyId, NexusModsPage).WithName("Nexus Mods")
+            NexusModsDependencyUri: missingDependencyUris.GetValueOrDefault(tuple.DependencyId, NexusModsLink)
         ));
     }
 
