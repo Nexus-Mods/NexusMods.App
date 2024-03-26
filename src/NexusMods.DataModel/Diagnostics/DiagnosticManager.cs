@@ -78,6 +78,8 @@ internal sealed class DiagnosticManager : IDiagnosticManager
                 .OfType<ILoadoutDiagnosticEmitter>()
                 .SelectAsync(async emitter =>
                 {
+                    var start = DateTimeOffset.UtcNow;
+
                     try
                     {
                         var res = await emitter
@@ -95,6 +97,12 @@ internal sealed class DiagnosticManager : IDiagnosticManager
                     {
                         _logger.LogError(e, "Exception in emitter {Emitter}", emitter.GetType());
                         return Array.Empty<Diagnostic>();
+                    }
+                    finally
+                    {
+                        var end = DateTimeOffset.UtcNow;
+                        var duration = end - start;
+                        _logger.LogTrace("Emitter {Emitter} took {Duration} ms", emitter.GetType(), duration.TotalMilliseconds);
                     }
                 })
                 .ToListAsync(cancellationToken);
