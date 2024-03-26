@@ -94,8 +94,20 @@ public class FileTreeDesignViewModel : AViewModel<IFileTreeViewModel>, IFileTree
         SaveFile("SkyrimPrefs.ini"); // Configuration file
         SaveFile("Skyrim.ini"); // Configuration file
 
-        // Assign
-        BindItems(cache, locations, out _items);
+        // Bind the Items out.
+        // Add AbsolutePath root nodes for each locationId with children to show
+        foreach (var location in locations)
+            cache.AddOrUpdate(new FileColumnDesignViewModel(false, new GamePath(location.Key, ""), location.Value));
+
+        // For 'root' nodes, we create a 'parent' at unknown location
+        // in order to insert nodes which contain the roots, i.e. 'GAME', 'SAVE'.
+        cache.Connect()
+            .TransformToTree(model => model.Key.Path != "" 
+                ? model.Key.Parent 
+                : new GamePath(LocationId.Unknown, ""))
+            .Transform(node => node.Item.Initialize(node))
+            .Bind(out _items)
+            .Subscribe(); // force evaluation
     }
 
     private static void CreateModFileNode(
@@ -120,30 +132,6 @@ public class FileTreeDesignViewModel : AViewModel<IFileTreeViewModel>, IFileTree
 
         // Final part is the file
         cache.AddOrUpdate(new FileColumnDesignViewModel(true, new GamePath(locationId, currentPath.Join(parts[index]))));
-    }
-    
-    /// <summary>
-    ///     Binds all items in the given cache.
-    ///     Root nodes are added for each locationId with children to show.
-    /// </summary>
-    private static void BindItems(
-        SourceCache<IFileColumnViewModel, GamePath> cache,
-        Dictionary<LocationId, string> locations,
-        out ReadOnlyObservableCollection<IFileColumnViewModel> result)
-    {
-        // Add AbsolutePath root nodes for each locationId with children to show
-        foreach (var location in locations)
-            cache.AddOrUpdate(new FileColumnDesignViewModel(false, new GamePath(location.Key, ""), location.Value));
-
-        // For 'root' nodes, we create a 'parent' at unknown location
-        // in order to insert nodes which contain the roots, i.e. 'GAME', 'SAVE'.
-        cache.Connect()
-            .TransformToTree(model => model.Key.Path != "" 
-                ? model.Key.Parent 
-                : new GamePath(LocationId.Unknown, ""))
-            .Transform(node => node.Item.Initialize(node))
-            .Bind(out result)
-            .Subscribe(); // force evaluation
     }
 
     private static HierarchicalTreeDataGridSource<IFileColumnViewModel> CreateTreeSource(
