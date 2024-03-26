@@ -151,10 +151,20 @@ internal class AppConfigManager : IAppConfigManager
     private readonly AbsolutePath _configPath;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
 
+    // TODO: this entire class should be removed once we have settings
+
     public AppConfigManager(AppConfig config, JsonSerializerOptions jsonSerializerOptions)
     {
         _config = config;
-        _configPath = FileSystem.Shared.GetKnownPath(KnownPath.EntryDirectory).Combine("AppConfig.json");
+
+        // On AppImage (Linux), 'OWD' should take precedence over the entry directory if it exists.
+        // https://docs.appimage.org/packaging-guide/environment-variables.html
+        var owd = Environment.GetEnvironmentVariable("OWD");
+
+        _configPath = string.IsNullOrEmpty(owd)
+            ? FileSystem.Shared.GetKnownPath(KnownPath.EntryDirectory).Combine("AppConfig.json")
+            : FileSystem.Shared.FromUnsanitizedFullPath(owd).Combine("AppConfig.json");
+
         _jsonSerializerOptions = jsonSerializerOptions;
     }
 
