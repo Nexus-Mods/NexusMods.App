@@ -20,6 +20,22 @@
         <StackPanel Orientation="Vertical"
                     Classes="Spacing-2"
                     HorizontalAlignment="Stretch">
+            
+            <Button Classes="Standard SecondaryOutlined"
+                    HorizontalAlignment="Stretch"
+                    x:Name="IngestButton">
+                <Viewbox StretchDirection="DownOnly">
+                <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Center"
+                            Spacing="Spacing-1">
+                    <unifiedIcon:UnifiedIcon Size="24" Classes="Refresh" />
+                    <TextBlock Classes="TitleSMSemi"
+                               x:Name="IngestButtonTextBlock" 
+                               VerticalAlignment="Center"
+                               Text="REFRESH"/>
+                </StackPanel>
+                </Viewbox>
+            </Button>
 
             <Button Classes="Standard SecondaryOutlined"
                     HorizontalAlignment="Stretch"

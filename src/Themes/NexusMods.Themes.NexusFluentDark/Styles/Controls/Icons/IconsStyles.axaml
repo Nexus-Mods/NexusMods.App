@@ -73,6 +73,7 @@
             <unifiedIcon:UnifiedIcon Classes="FileDocumentOutline" />
             <unifiedIcon:UnifiedIcon Classes="MusicNote" />
             <unifiedIcon:UnifiedIcon Classes="VideoOutline" />
+            <unifiedIcon:UnifiedIcon Classes="Refresh" />
         </WrapPanel>
     </Design.PreviewWith>
 
@@ -478,6 +479,12 @@
     <Style Selector="unifiedIcon|UnifiedIcon.VideoOutline">
         <Setter Property="Value">
             <unifiedIcon:IconValue MdiValueSetter="mdi-video-outline" />
+        </Setter>
+    </Style>
+    
+    <Style Selector="unifiedIcon|UnifiedIcon.Refresh">
+        <Setter Property="Value">
+            <unifiedIcon:IconValue MdiValueSetter="mdi-refresh" />
         </Setter>
     </Style>
 </Styles>
