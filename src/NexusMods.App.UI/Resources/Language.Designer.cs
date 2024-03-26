@@ -820,6 +820,24 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to FILE COUNT.
+        /// </summary>
+        public static string ModFileTreeViewModel_CreateTreeSource_File_Count {
+            get {
+                return ResourceManager.GetString("ModFileTreeViewModel_CreateTreeSource_File_Count", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Files: {0} ({1}).
+        /// </summary>
+        public static string ModFileTreeViewModel_StatusBar_Files__0__1 {
+            get {
+                return ResourceManager.GetString("ModFileTreeViewModel_StatusBar_Files__0__1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to My Games.
         /// </summary>
         public static string MyGames {

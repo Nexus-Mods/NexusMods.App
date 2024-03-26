@@ -25,6 +25,20 @@ public interface IFileTreeNodeViewModel : IViewModelInterface, IExpandableItem, 
     ///     The size of the file, in bytes.
     /// </summary>
     ulong FileSize { get; }
+    
+    /// <summary>
+    ///     Total number of files descending from this node.
+    /// </summary>
+    uint FileCount { get; }
+
+    /// <summary>
+    ///     The string representation of the file count, empty string if 0.
+    /// </summary>
+    /// <returns></returns>
+    string ToFormattedFileCount()
+    {
+        return FileCount > 0 ? FileCount.ToString() : string.Empty;
+    }
 
     /// <summary>
     ///     The key to the parent of this node.

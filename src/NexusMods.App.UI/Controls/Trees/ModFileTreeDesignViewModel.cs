@@ -4,6 +4,7 @@ using Avalonia.Controls;
 using DynamicData;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.App.UI.Controls.Trees.Files;
+using NexusMods.App.UI.Helpers.TreeDataGrid;
 using NexusMods.Paths;
 
 namespace NexusMods.App.UI.Controls.Trees;
@@ -11,28 +12,40 @@ namespace NexusMods.App.UI.Controls.Trees;
 public class ModFileTreeDesignViewModel : AViewModel<IFileTreeViewModel>, IFileTreeViewModel
 {
     private ReadOnlyObservableCollection<IFileTreeNodeViewModel> _items;
-    
+    private SourceList<string> StatusBarStringCache { get; } = new();
+
+    private readonly ReadOnlyObservableCollection<string> _statusBarStrings;
+
     public ITreeDataGridSource<IFileTreeNodeViewModel> TreeSource { get; }
-    
+    public ReadOnlyObservableCollection<string> StatusBarStrings => _statusBarStrings;
+
     public ModFileTreeDesignViewModel()
     {
         _items = null!; // initialized in refresh
         RefreshData();
         TreeSource = ModFileTreeViewModel.CreateTreeSource(_items);
         TreeSource.SortBy(TreeSource.Columns[0], ListSortDirection.Ascending);
+
+        StatusBarStringCache.Connect()
+            .Bind(out _statusBarStrings)
+            .Subscribe();
     }
-    
+
     private void RefreshData()
     {
         var cache = new SourceCache<IFileTreeNodeViewModel, GamePath>(x => x.Key);
         var locations = new Dictionary<LocationId, string>();
 
         // ReSharper disable once RedundantSuppressNullableWarningExpression
-        void SaveFile(string filePath, ulong fileSize) => CreateModFileNode(filePath, LocationId.Saves, cache!,
+        void SaveFile(string filePath, ulong fileSize) => CreateModFileNode(filePath,
+            LocationId.Saves,
+            cache!,
             fileSize
         );
 
-        void GameFile(string filePath, ulong fileSize) => CreateModFileNode(filePath, LocationId.Game, cache,
+        void GameFile(string filePath, ulong fileSize) => CreateModFileNode(filePath,
+            LocationId.Game,
+            cache,
             fileSize
         );
 
@@ -102,16 +115,28 @@ public class ModFileTreeDesignViewModel : AViewModel<IFileTreeViewModel>, IFileT
         // Configuration files
         SaveFile("SkyrimPrefs.ini", 15000);
         SaveFile("Skyrim.ini", 10000);
-
-
+        
+        
         // Assign
-        ModFileTreeViewModel.BindItems(cache, locations, out _items);
+        cache.Connect()
+            .TransformToTree(model => model.ParentKey)
+            .Transform(node => node.Item.Initialize(node))
+            .Bind(out _items)
+            .Subscribe();
+        
+        // Update the status bar
+        StatusBarStringCache.AddRange(new[]
+            {
+                $"Files: {cache.Items.Count(e => e.IsFile)} (12GB)",
+                "Total Files: 5, Total Size: 1.5 GB",
+            }
+        );
     }
 
     private static void CreateModFileNode(
-        RelativePath filePath, 
-        LocationId locationId, 
-        SourceCache<IFileTreeNodeViewModel, GamePath> cache, 
+        RelativePath filePath,
+        LocationId locationId,
+        SourceCache<IFileTreeNodeViewModel, GamePath> cache,
         ulong fileSize)
     {
         // Build the path, creating directories as needed
@@ -131,8 +156,10 @@ public class ModFileTreeDesignViewModel : AViewModel<IFileTreeViewModel>, IFileT
 
         // Final part is the file
         cache.AddOrUpdate(new FileTreeNodeDesignViewModel(
-            true, 
-            new GamePath(locationId, currentPath.Join(parts[index])), 
-            fileSize));
+                true,
+                new GamePath(locationId, currentPath.Join(parts[index])),
+                fileSize
+            )
+        );
     }
 }

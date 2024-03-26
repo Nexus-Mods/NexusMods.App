@@ -16,6 +16,10 @@ public partial class FileTreeView : ReactiveUserControl<IFileTreeViewModel>
                         vm.TreeSource, v => v.ModFilesTreeDataGrid.Source)
                     .DisposeWith(disposables);
                 
+                this.OneWayBind(ViewModel, vm => 
+                        vm.StatusBarStrings, v => v.StatusBarItemsControl.ItemsSource)
+                    .DisposeWith(disposables);
+                
                 // This is a workaround for TreeDataGrid collapsing Star sized columns.
                 // This forces a refresh of the width, fixing the issue.
                 ModFilesTreeDataGrid.Width = double.NaN;
