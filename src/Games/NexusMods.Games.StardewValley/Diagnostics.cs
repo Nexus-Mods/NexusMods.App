@@ -87,4 +87,51 @@ internal static partial class Diagnostics
             .AddDataReference<ModReference>("Dependency")
         )
         .Finish();
+
+    [DiagnosticTemplate]
+    [UsedImplicitly]
+    internal static IDiagnosticTemplate ModCompatabilityObsoleteTemplate = DiagnosticTemplateBuilder
+        .Start()
+        .WithId(new DiagnosticId(Source, number: 6))
+        .WithTitle("Mod is obsolete")
+        .WithSeverity(DiagnosticSeverity.Warning)
+        .WithSummary("Mod {Mod} is obsolete")
+        .WithDetails("""
+Mod {Mod} has been made obsolete:
+
+> {ModName} is obsolete because {ReasonPhrase}
+
+The compatibility status was extracted from the internal SMAPI metadata file.
+""")
+        .WithMessageData(messageBuilder => messageBuilder
+            .AddDataReference<ModReference>("Mod")
+            .AddValue<string>("ModName")
+            .AddValue<string>("ReasonPhrase")
+        )
+        .Finish();
+
+    [DiagnosticTemplate]
+    [UsedImplicitly]
+    internal static IDiagnosticTemplate ModCompatabilityAssumeBrokenTemplate = DiagnosticTemplateBuilder
+        .Start()
+        .WithId(new DiagnosticId(Source, number: 7))
+        .WithTitle("Mod is assumed broken")
+        .WithSeverity(DiagnosticSeverity.Warning)
+        .WithSummary("Mod {Mod} is assumed broken")
+        .WithDetails("""
+Mod {Mod} is marked as broken by SMAPI:
+
+> {ReasonPhrase}
+
+Please check for a version newer than {ModVersion} at {ModLink}.
+
+The compatibility status was extracted from the internal SMAPI metadata file.
+""")
+        .WithMessageData(messageBuilder => messageBuilder
+            .AddDataReference<ModReference>("Mod")
+            .AddValue<string>("ReasonPhrase")
+            .AddValue<NamedLink>("ModLink")
+            .AddValue<string>("ModVersion")
+        )
+        .Finish();
 }

@@ -1,4 +1,5 @@
 using JetBrains.Annotations;
+using NexusMods.Abstractions.Diagnostics.Values;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.StardewValley.WebAPI;
@@ -12,7 +13,7 @@ public interface ISMAPIWebApi : IDisposable
     /// <summary>
     /// Gets all mod page urls of the given mods.
     /// </summary>
-    public Task<IReadOnlyDictionary<string, Uri>> GetModPageUrls(
+    public Task<IReadOnlyDictionary<string, NamedLink>> GetModPageUrls(
         IOSInformation os,
         Version gameVersion,
         Version smapiVersion,

@@ -15,7 +15,9 @@ partial class MyClass
 			Id = new global::NexusMods.Abstractions.Diagnostics.DiagnosticId(source: Source, number: 1),
 			Title = "Diagnostic 1",
 			Severity = global::NexusMods.Abstractions.Diagnostics.DiagnosticSeverity.Warning,
-			Summary = global::NexusMods.Abstractions.Diagnostics.DiagnosticMessage.From("Mod '{ModA}' conflicts with '{ModB}' because it's missing '{Something}' and {Count} other stuff!"),
+			Summary = global::NexusMods.Abstractions.Diagnostics.DiagnosticMessage.From("""
+Mod '{ModA}' conflicts with '{ModB}' because it's missing '{Something}' and {Count} other stuff!
+"""),
 			Details = global::NexusMods.Abstractions.Diagnostics.DiagnosticMessage.DefaultValue,
 			MessageData = messageData,
 			DataReferences = new global::System.Collections.Generic.Dictionary<global::NexusMods.Abstractions.Diagnostics.References.DataReferenceDescription, global::NexusMods.Abstractions.Diagnostics.References.IDataReference>

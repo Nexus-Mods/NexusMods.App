@@ -1,7 +1,9 @@
+using System.Collections.Immutable;
 using NexusMods.Abstractions.FileStore.Trees;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.Loadouts.Mods;
+using NexusMods.Abstractions.Serialization;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees;
 
@@ -15,9 +17,6 @@ public static class Extensions
     /// <summary>
     /// Creates a StoredFile from a ModFileTreeSource.
     /// </summary>
-    /// <param name="input"></param>
-    /// <param name="to"></param>
-    /// <returns></returns>
     public static StoredFile ToStoredFile(this KeyedBox<RelativePath, ModFileTree> input, GamePath to)
     {
         return new StoredFile
@@ -25,8 +24,25 @@ public static class Extensions
             Id = ModFileId.NewId(),
             To = to,
             Hash = input.Item.Hash,
-            Size = input.Item.Size
+            Size = input.Item.Size,
         };
     }
 
+    /// <summary>
+    /// Creates a StoredFile from a ModFileTreeSource.
+    /// </summary>
+    public static StoredFile ToStoredFile(
+        this KeyedBox<RelativePath, ModFileTree> input,
+        GamePath to,
+        ImmutableList<IMetadata> metadata)
+    {
+        return new StoredFile
+        {
+            Id = ModFileId.NewId(),
+            To = to,
+            Hash = input.Item.Hash,
+            Size = input.Item.Size,
+            Metadata = metadata,
+        };
+    }
 }
