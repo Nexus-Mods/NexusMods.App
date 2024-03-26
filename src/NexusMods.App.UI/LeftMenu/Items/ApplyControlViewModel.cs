@@ -37,6 +37,7 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
 
 
     [Reactive] public bool CanApply { get; private set; }
+    [Reactive] public bool CanIngest { get; private set; }
 
     [Reactive] public bool IsApplying { get; private set; }
     [Reactive] public bool IsIngesting { get; private set; }
@@ -103,6 +104,11 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
 
                 _ingestReactiveCommand.IsExecuting
                     .Subscribe(isExecuting => IsIngesting = isExecuting)
+                    .DisposeWith(disposables);
+                
+                this.WhenAnyValue(vm => vm.IsApplying)
+                    .Select(isApplying => !isApplying)
+                    .BindToVM(this, vm => vm.CanIngest)
                     .DisposeWith(disposables);
 
                 this.WhenAnyValue(vm => vm.LastAppliedLoadoutId,

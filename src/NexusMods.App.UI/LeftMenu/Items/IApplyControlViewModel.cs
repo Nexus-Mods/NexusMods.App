@@ -9,6 +9,8 @@ public interface IApplyControlViewModel : IViewModelInterface
     ICommand IngestCommand { get; }
 
     bool CanApply { get; }
+    
+    bool CanIngest { get; }
 
     bool IsApplying { get; }
     
