@@ -86,15 +86,15 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
 
                 this.WhenAnyValue(vm => vm.NewestLoadout,
                         vm => vm.LastAppliedRevisionId,
-                        vm => vm.IsApplying
+                        vm => vm.IsApplying,
+                        vm => vm.IsIngesting
                     )
                     .Subscribe(_ =>
-                        {
-                            CanApply = !IsApplying && (
-                                !LastAppliedLoadoutId.Equals(_loadoutId) ||
-                                !NewestLoadout.DataStoreId.Equals(LastAppliedRevisionId));
-                        }
-                    )
+                    {
+                        CanApply = !IsApplying && !IsIngesting && 
+                                   (!LastAppliedLoadoutId.Equals(_loadoutId) || 
+                                    !NewestLoadout.DataStoreId.Equals(LastAppliedRevisionId));
+                    })
                     .DisposeWith(disposables);
 
                 _applyReactiveCommand.IsExecuting

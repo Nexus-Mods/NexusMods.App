@@ -618,7 +618,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to REFRESH.
+        ///   Looks up a localized string similar to INGEST.
         /// </summary>
         public static string IngestButtonTextBlock_Text {
             get {

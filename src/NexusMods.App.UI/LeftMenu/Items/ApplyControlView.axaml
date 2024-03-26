@@ -20,37 +20,41 @@
         <StackPanel Orientation="Vertical"
                     Classes="Spacing-2"
                     HorizontalAlignment="Stretch">
-            
+
+            <!-- Ingest button -->
             <Button Classes="Standard SecondaryOutlined"
                     HorizontalAlignment="Stretch"
                     x:Name="IngestButton">
                 <Viewbox StretchDirection="DownOnly">
-                <StackPanel Orientation="Horizontal"
-                            HorizontalAlignment="Center"
-                            Spacing="Spacing-1">
-                    <unifiedIcon:UnifiedIcon Size="24" Classes="Refresh" />
-                    <TextBlock Classes="TitleSMSemi"
-                               x:Name="IngestButtonTextBlock" 
-                               VerticalAlignment="Center"
-                               Text="{x:Static resources:Language.IngestButtonTextBlock_Text}"/>
-                </StackPanel>
+                    <StackPanel Orientation="Horizontal"
+                                HorizontalAlignment="Center"
+                                Classes="Spacing-1">
+                        <unifiedIcon:UnifiedIcon Size="24" Classes="Refresh" />
+                        <TextBlock Classes="TitleSMSemi"
+                                   x:Name="IngestButtonTextBlock"
+                                   VerticalAlignment="Center"
+                                   Text="{x:Static resources:Language.IngestButtonTextBlock_Text}" />
+                    </StackPanel>
                 </Viewbox>
             </Button>
 
+            <!-- Apply button -->
             <Button Classes="Standard SecondaryOutlined"
                     HorizontalAlignment="Stretch"
                     x:Name="ApplyButton">
                 <Viewbox StretchDirection="DownOnly">
                     <StackPanel Orientation="Horizontal"
-                                HorizontalAlignment="Center">
+                                HorizontalAlignment="Center"
+                                Classes="Spacing-1">
                         <unifiedIcon:UnifiedIcon Size="24" Classes="Check" />
                         <TextBlock Classes="TitleSMSemi"
-                                   x:Name="ApplyButtonTextBlock" 
-                                   VerticalAlignment="Center"/>
+                                   x:Name="ApplyButtonTextBlock"
+                                   VerticalAlignment="Center" />
                     </StackPanel>
                 </Viewbox>
             </Button>
 
+            <!-- In progress -->
             <Border Padding="12"
                     HorizontalAlignment="Stretch"
                     x:Name="InProgressBorder">
@@ -63,7 +67,8 @@
                                x:Name="ApplyingTextBlock" />
                 </StackPanel>
             </Border>
-
+            
+            <!-- Launch button -->
             <items:LaunchButtonView x:Name="LaunchButtonView"
                                     HorizontalAlignment="Stretch" />
         </StackPanel>
