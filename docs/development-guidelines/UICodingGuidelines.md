@@ -1552,11 +1552,14 @@ public class FileDesignViewModel(GamePath fullPath) // 👈 Constructor
 
     So we'll keep it simple.
 
+Now we will create a bunch of `IFileViewModel` objects and expose them as a 
+`ReadOnlyObservableCollection` the TreeDataGrid can bind to.
+
 ```csharp
 // Create the DynamicData container.
 var cache = new SourceCache<IFileViewModel, GamePath>(x => x.Key);
 
-// Add some elements here... //
+// Add some `IFileViewModel` elements here... e.g. from Database //
 
 // Convert to ReadOnlyObservableCollection.
 cache.Connect()
@@ -1657,6 +1660,10 @@ public partial class FileTreeView : ReactiveUserControl<IFileTreeViewModel>
     }
 }
 ```
+
+The final result should look something like:
+
+![](../images/simple-treedatagrid.png)
 
 #### TreeDataGrid with Custom Column
 
@@ -1767,6 +1774,13 @@ new HierarchicalExpanderColumn<IFileColumnViewModel>(
 ```
 
 You use a `TemplateColumn` with your ViewModel.
+
+![](../images/custom-column-treedatagrid.png)
+
+!!! note "Stock columns like `TextColumn` will have default sorting implementations"
+
+    In this scenario, the names/folders are sorted lexicographically 
+    (alphabetically, like in a dictionary).
 
 #### Tips & Tricks
 
