@@ -27,11 +27,6 @@ public partial class ApplyControlView : ReactiveUserControl<IApplyControlViewMod
                 .BindToView(this, view => view.ApplyButton.IsVisible)
                 .DisposeWith(disposables);
             
-            this.WhenAnyObservable(view => view.ViewModel!.IngestCommand.CanExecute)
-                .OnUI()
-                .BindToView(this, view => view.IngestButton.IsVisible)
-                .DisposeWith(disposables);
-            
             this.WhenAnyObservable(view => view.ViewModel!.ApplyCommand.IsExecuting)
                 .OnUI()
                 .BindToView(this, view => view.InProgressBorder.IsVisible)
