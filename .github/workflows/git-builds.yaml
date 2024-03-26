@@ -4,7 +4,7 @@ on:
   schedule:
     # At minute 17 past hour 8 and 14 (UTC) on every day-of-week from Monday through Thursday
     # https://crontab.guru
-    - cron: '17 08,14 * * 1-4'
+    - cron: '17 08,14 * * 1-5'
   workflow_dispatch:
 
 jobs:
