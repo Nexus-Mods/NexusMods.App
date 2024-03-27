@@ -55,7 +55,7 @@
 		<value>Zobacz dziennik zmian na GitHub</value>
 	</data>
 	<data name="LoadoutGridView_AddMod_FilePicker_Title" xml:space="preserve">
-		<value>Proszę wybrać plik modyfikacji do zainstalowania</value>
+		<value>Proszę wybrać plik moda do zainstalowania</value>
 	</data>
 	<data name="LoadoutGridView_AddMod_FileType_Archive" xml:space="preserve">
 		<value>Archiwum</value>
@@ -91,7 +91,7 @@
 		<value>ZAINSTALOWANE</value>
 	</data>
 	<data name="Helpers_GenerateHeader_MOD_NAME" xml:space="preserve">
-		<value>NAZWA MODYFIKACJI</value>
+		<value>NAZWA MODA</value>
 	</data>
 	<data name="Helpers_GenerateHeader_GAME" xml:space="preserve">
 		<value>GRA</value>
@@ -208,10 +208,10 @@
 		<value>Dodaj mod (Zaawansowane)</value>
 	</data>
 	<data name="MyGamesView__Ready_to_mod" xml:space="preserve">
-		<value>Gotowe do modowania</value>
+		<value>Dodane gry</value>
 	</data>
 	<data name="MyGamesView__Detected_games" xml:space="preserve">
-		<value>Wykryte gry</value>
+		<value>Wspierane gry</value>
 	</data>
 	<data name="Button_Manage" xml:space="preserve">
 		<value>Zarządzaj</value>
@@ -250,7 +250,7 @@
 		<value></value>
 	</data>
 	<data name="CancelDownloadOverlayView_Description_downloads" xml:space="preserve">
-		<value>modyfikacji</value>
+		<value>modów</value>
 	</data>
 	<data name="InProgress_NoDownloadsTextBlock" xml:space="preserve">
 		<value>Brak pobierań</value>
@@ -274,7 +274,7 @@
 		<value>Moje Mody</value>
 	</data>
 	<data name="Downloads_WorkspaceTitle" xml:space="preserve">
-		<value>Pobieranie</value>
+		<value>Pobierane</value>
 	</data>
 	<data name="HomeWorkspace_Title" xml:space="preserve">
 		<value>Strona główna</value>
@@ -307,13 +307,13 @@
         <value>Coś poszło nie tak</value>
     </data>
     <data name="ErrorView_MissingMod_Description" xml:space="preserve">
-        <value>Modyfikacja, do której próbujesz uzyskać dostęp, została usunięta lub nie istnieje.</value>
+        <value>Mod, do którego próbujesz uzyskać dostęp, został usunięty lub nie istnieje.</value>
     </data>
     <data name="ViewModInfoPage_NotFound_Title" xml:space="preserve">
         <value>Brak moda</value>
     </data>
     <data name="ErrorView_MissingMod_Subheader" xml:space="preserve">
-        <value>Mod nie został znaleziony</value>
+        <value>Nie znaleziono moda</value>
     </data>
     <data name="DiagnosticDetailsView_SeverityTitle_SUGGESTION" xml:space="preserve">
         <value>SUGESTIA</value>
@@ -358,5 +358,11 @@
     </data>
     <data name="IngestButtonTextBlock_Text" xml:space="preserve">
         <value>ODŚWIEŻ</value>
+    <data>
+    <data name="MyGamesView__NoGamesDetectedText" xml:space="preserve">
+        <value>Wszystkie wspierane gry zostały dodane. Nie wykryto żadnych nowych gier.</value>
+    </data>
+    <data name="MyGamesView__NoGamesManagedText" xml:space="preserve">
+        <value>Dodaj gry, by rozpocząć modowanie</value>
     </data>
 </root>
