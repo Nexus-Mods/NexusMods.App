@@ -618,6 +618,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to INGEST.
+        /// </summary>
+        public static string IngestButtonTextBlock_Text {
+            get {
+                return ResourceManager.GetString("IngestButtonTextBlock_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No Downloads.
         /// </summary>
         public static string InProgress_NoDownloadsTextBlock {

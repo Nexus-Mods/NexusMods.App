@@ -355,6 +355,9 @@
     <data name="DiagnosticListView_DiagnosticListView_There_are_no_diagnostics" xml:space="preserve">
         <value>There are no diagnostics</value>
     </data>
+    <data name="IngestButtonTextBlock_Text" xml:space="preserve">
+        <value>INGEST</value>
+    </data>
     <data name="ModFileTreeViewModel_StatusBar_Files__0__1" xml:space="preserve">
         <value>Files: {0} ({1})</value>
         <comment>{0} Represents a number, {1} represents a formatted size (e.g. 12GB)</comment>

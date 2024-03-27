@@ -38,7 +38,7 @@ public record Mod : Entity, IHasEntityId<ModId>
     /// <summary>
     /// Category used for 'Overrides'.
     /// </summary>
-    public const string OverridesCategory = "Overrides";
+    public const string OverridesCategory = "Outside Changes";
 
     /// <summary>
     /// A category used for 'Modding Metadata', that is files that contain metadata about mods, like plugins.txt files
