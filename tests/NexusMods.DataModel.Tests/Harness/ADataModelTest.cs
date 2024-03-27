@@ -94,17 +94,21 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
     protected async Task<DownloadId> RegisterDownload(params (string Name, string Data)[] files)
     {
         await using var tmpFile = TemporaryFileManager.CreateFile(KnownExtensions.Zip);
-        using (var zip = new ZipArchive(tmpFile.Path.Create(), ZipArchiveMode.Create, false))
+        using var memoryStream = new MemoryStream();
+        using (var zip = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
         {
             foreach (var (name, data) in files)
             {
-                var entry = zip.CreateEntry(name);
+                var entry = zip.CreateEntry(name, CompressionLevel.Fastest);
                 await using var stream = entry.Open();
                 await using var writer = new StreamWriter(stream);
                 await writer.WriteAsync(data);
             }
         }
 
+        memoryStream.Position = 0;
+        await using var fileStream = tmpFile.Path.Create();
+        await memoryStream.CopyToAsync(fileStream, Token);
         return await FileOriginRegistry.RegisterDownload(tmpFile.Path, new FilePathMetadata {OriginalName = tmpFile.Path.FileName, Quality = Quality.Low}, CancellationToken.None);
     }
 
