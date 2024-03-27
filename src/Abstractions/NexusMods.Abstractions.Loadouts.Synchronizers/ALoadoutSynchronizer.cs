@@ -92,8 +92,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     public async ValueTask<FlattenedLoadout> LoadoutToFlattenedLoadout(Loadout loadout)
     {
         var dict = new Dictionary<GamePath, ModFilePair>();
-
-        var sorted = (await SortMods(loadout)).ToList();
+        var sorted = await SortMods(loadout);
 
         foreach (var mod in sorted)
         {
