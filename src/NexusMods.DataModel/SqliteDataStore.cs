@@ -153,8 +153,11 @@ public class SqliteDataStore : IDataStore, IDisposable
             ids[x] = ContentHashId(values[x].Value, out var data);
             PutRawItem(ids[x], data, conn);
         }
-        
-        tx.Commit();
+
+        lock (_writerLock)
+        {
+            tx.Commit();
+        }
         
         foreach (var id in ids)
             NotifyOfUpdatedId(id);
@@ -175,7 +178,11 @@ public class SqliteDataStore : IDataStore, IDisposable
             PutRawItem(ids[x], data, conn);
         }
 
-        tx.Commit();
+        lock (_writerLock)
+        {
+            tx.Commit();
+        }
+
         foreach (var id in ids)
             NotifyOfUpdatedId(id);
 
@@ -193,7 +200,10 @@ public class SqliteDataStore : IDataStore, IDisposable
         foreach (var item in items)
             PutOneItem(item.id, item.value, conn);
 
-        tx.Commit();
+        lock (_writerLock)
+        {
+            tx.Commit();
+        }
 
         // We notify after DB has the item.
         foreach (var item in items)
@@ -211,7 +221,10 @@ public class SqliteDataStore : IDataStore, IDisposable
         foreach (var item in items)
             PutRawItem(item.id, item.value, conn);
 
-        tx.Commit();
+        lock (_writerLock)
+        {
+            tx.Commit();
+        }
 
         // We notify after DB has the item.
         foreach (var item in items)
