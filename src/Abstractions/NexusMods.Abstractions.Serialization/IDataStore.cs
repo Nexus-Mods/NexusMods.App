@@ -70,6 +70,12 @@ public interface IDataStore
     void PutRaw(IId key, ReadOnlySpan<byte> val);
 
     /// <summary>
+    /// Places all entities inside the data store.
+    /// </summary>
+    /// <param name="items">The items to place in the data store.</param>
+    public void PutAllRaw(Span<(IId id, byte[] value)> items);
+
+    /// <summary>
     /// Performs a compare and swap operation on the given key. If the expected
     /// value matches the current value, the new value is set, and the method
     /// returns true. If the expected value does not match the current value,

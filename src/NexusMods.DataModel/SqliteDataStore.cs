@@ -179,6 +179,24 @@ public class SqliteDataStore : IDataStore, IDisposable
     }
 
     /// <inheritdoc />
+    public void PutAllRaw(Span<(IId id, byte[] value)> items)
+    {
+        if (_isDisposed)
+            throw new ObjectDisposedException(nameof(SqliteDataStore));
+
+        using var conn = _pool.RentDisposable();
+        using var tx = conn.Value.BeginTransaction();
+        foreach (var item in items)
+            PutRawItem(item.id, item.value, conn);
+
+        tx.Commit();
+
+        // We notify after DB has the item.
+        foreach (var item in items)
+            NotifyOfUpdatedId(item.id);
+    }
+    
+    /// <inheritdoc />
     public void Put<T>(IId id, T value) where T : Entity
     {
         if (_isDisposed)
