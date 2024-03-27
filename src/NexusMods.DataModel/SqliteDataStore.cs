@@ -141,6 +141,24 @@ public class SqliteDataStore : IDataStore, IDisposable
         PutRaw(id, data);
         return id;
     }
+    
+    /// <inheritdoc />
+    public Id64[] PutAll<T>(Span<T> values) where T : Entity
+    {
+        using var conn = _pool.RentDisposable();
+        var ids = GC.AllocateUninitializedArray<Id64>(values.Length);
+        for (var x = 0; x < values.Length; x++)
+        {
+            var value = values[x];
+            ids[x] = ContentHashId(value, out var data);
+            PutRawItem(ids[x], data, conn);
+        }
+
+        foreach (var id in ids)
+            NotifyOfUpdatedId(id);
+
+        return ids;
+    }
 
     /// <inheritdoc />
     public void PutAll<T>(Span<(IId id, T value)> items)  where T : Entity
@@ -169,22 +187,6 @@ public class SqliteDataStore : IDataStore, IDisposable
         using var conn = _pool.RentDisposable();
         PutOneItem(id, value, conn);
         NotifyOfUpdatedId(id);
-    }
-
-    private void PutOneItem<T>(IId id, T value, ObjectPoolDisposable<SqliteConnection> conn) where T : Entity
-    {
-        using var cmd = conn.Value.CreateCommand();
-        cmd.CommandText = _putStatements[value.Category];
-
-        cmd.Parameters.AddWithValueUntagged("@id", id);
-        var ms = new MemoryStream();
-        JsonSerializer.Serialize(ms, value, _jsonOptions.Value);
-        ms.Position = 0;
-        cmd.Parameters.AddWithValue("@data", ms.ToArray());
-        lock (_writerLock)
-        {
-            cmd.ExecuteNonQuery();
-        }
     }
 
     private void NotifyOfUpdatedId(IId id)
@@ -278,16 +280,7 @@ public class SqliteDataStore : IDataStore, IDisposable
             throw new ObjectDisposedException(nameof(SqliteDataStore));
 
         using var conn = _pool.RentDisposable();
-        using var cmd = conn.Value.CreateCommand();
-        cmd.CommandText = _putStatements[id.Category];
-
-        cmd.Parameters.AddWithValueUntagged("@id", id);
-        cmd.Parameters.AddWithValue("@data", val.ToArray());
-        lock (_writerLock)
-        {
-            cmd.ExecuteNonQuery();
-        }
-
+        PutRawItem(id, val, conn);
         NotifyOfUpdatedId(id);
     }
 
@@ -446,5 +439,33 @@ public class SqliteDataStore : IDataStore, IDisposable
             _poolPolicy.Dispose();
         }
         _isDisposed = true;
+    }
+    
+    private void PutRawItem(IId id, ReadOnlySpan<byte> val, ObjectPoolDisposable<SqliteConnection> conn)
+    {
+        using var cmd = conn.Value.CreateCommand();
+        cmd.CommandText = _putStatements[id.Category];
+        cmd.Parameters.AddWithValueUntagged("@id", id);
+        cmd.Parameters.AddWithValue("@data", val.ToArray());
+        lock (_writerLock)
+        {
+            cmd.ExecuteNonQuery();
+        }
+    }
+
+    private void PutOneItem<T>(IId id, T value, ObjectPoolDisposable<SqliteConnection> conn) where T : Entity
+    {
+        using var cmd = conn.Value.CreateCommand();
+        cmd.CommandText = _putStatements[value.Category];
+
+        cmd.Parameters.AddWithValueUntagged("@id", id);
+        var ms = new MemoryStream();
+        JsonSerializer.Serialize(ms, value, _jsonOptions.Value);
+        ms.Position = 0;
+        cmd.Parameters.AddWithValue("@data", ms.ToArray());
+        lock (_writerLock)
+        {
+            cmd.ExecuteNonQuery();
+        }
     }
 }
