@@ -1,4 +1,5 @@
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 
@@ -19,6 +20,16 @@ public partial class MyGamesView : ReactiveUserControl<IMyGamesViewModel>
             
             this.WhenAnyValue(view => view.ViewModel!.DetectedGames)
                 .BindToView(this, view => view.DetectedGamesItemsControl.ItemsSource)
+                .DisposeWith(d);
+            
+            this.WhenAnyValue(view => view.ViewModel!.DetectedGames.Count)
+                .Select(count => count == 0)
+                .BindToView(this, view => view.NoGamesDetectedTextBlock.IsVisible)
+                .DisposeWith(d);
+            
+            this.WhenAnyValue(view => view.ViewModel!.ManagedGames.Count)
+                .Select(count => count == 0)
+                .BindToView(this, view => view.NoGamesManagedTextBlock.IsVisible)
                 .DisposeWith(d);
         });
     }

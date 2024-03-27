@@ -847,7 +847,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Detected Games.
+        ///   Looks up a localized string similar to Supported Games.
         /// </summary>
         public static string MyGamesView__Detected_games {
             get {
@@ -856,7 +856,25 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Ready to mod.
+        ///   Looks up a localized string similar to All supported games have been added. No new games detected..
+        /// </summary>
+        public static string MyGamesView__NoGamesDetectedText {
+            get {
+                return ResourceManager.GetString("MyGamesView__NoGamesDetectedText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add games to start modding.
+        /// </summary>
+        public static string MyGamesView__NoGamesManagedText {
+            get {
+                return ResourceManager.GetString("MyGamesView__NoGamesManagedText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Games Added.
         /// </summary>
         public static string MyGamesView__Ready_to_mod {
             get {

@@ -16,7 +16,8 @@ public class MyGamesDesignViewModel : APageViewModel<IMyGamesViewModel>, IMyGame
             .Select(_ => new GameWidgetDesignViewModel())
             .ToArray();
 
-        ManagedGames = new ReadOnlyObservableCollection<IGameWidgetViewModel>(new ObservableCollection<IGameWidgetViewModel>(games));
+        ManagedGames = new ReadOnlyObservableCollection<IGameWidgetViewModel>([]);
         DetectedGames = new ReadOnlyObservableCollection<IGameWidgetViewModel>(new ObservableCollection<IGameWidgetViewModel>(games));
+            
     }
 }
