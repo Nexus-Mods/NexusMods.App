@@ -1,0 +1,18 @@
+<reactiveUi:ReactiveUserControl x:TypeArguments="basic:IFileTreeViewModel"
+                                xmlns="https://github.com/avaloniaui"
+                                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                                xmlns:reactiveUi="http://reactiveui.net"
+                                xmlns:basic="clr-namespace:Examples.TreeDataGrid.Basic"
+                                mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+                                x:Class="Examples.TreeDataGrid.Basic.FileTreeView">
+    <Design.DataContext>
+        <basic:FileTreeDesignViewModel />
+    </Design.DataContext>
+
+    <!-- Visual Tree -->
+    <TreeDataGrid Classes="TreeWhiteCaret" ShowColumnHeaders="True"
+                  x:Name="ModFilesTreeDataGrid" Width="1"/>
+
+</reactiveUi:ReactiveUserControl>
