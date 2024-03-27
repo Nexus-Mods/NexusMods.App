@@ -1,5 +1,10 @@
 using System.Collections.ObjectModel;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using Avalonia.Threading;
+using DynamicData;
+using DynamicData.Alias;
+using DynamicData.Binding;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
@@ -21,9 +26,12 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
     private readonly ILoadoutRegistry _loadoutRegistry;
     private readonly IServiceProvider _provider;
     private readonly IWindowManager _windowManager;
+    private ReadOnlyObservableCollection<IGameWidgetViewModel> _managedGames = new([]);
+    public ReadOnlyObservableCollection<IGameWidgetViewModel> ManagedGames => _managedGames;
+
+    private ReadOnlyObservableCollection<IGameWidgetViewModel> _detectedGames;
     
-    [Reactive] public ReadOnlyObservableCollection<IGameWidgetViewModel> ManagedGames { get; private set; }
-    public ReadOnlyObservableCollection<IGameWidgetViewModel> DetectedGames { get; private set; }
+    public ReadOnlyObservableCollection<IGameWidgetViewModel> DetectedGames => _detectedGames;
 
     public MyGamesViewModel(
         IWindowManager windowManager,
@@ -36,15 +44,31 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
         _windowManager = windowManager;
         
         var gamesList = games.ToList();
-        DetectedGames = GetDetectedGames(gamesList);
-        // TODO: Implement ManagedGames
-        ManagedGames = GetDetectedGames(gamesList);
+        _detectedGames = GetDetectedGames(gamesList);
 
-        this.WhenActivated(() =>
+        this.WhenActivated(d =>
         {
             GetWorkspaceController().SetTabTitle(Language.MyGames, WorkspaceId, PanelId, TabId);
-
-            return Array.Empty<IDisposable>();
+            
+            _loadoutRegistry.LoadoutRootChanges
+                .Transform(loadoutId => (loadoutId, loadout: loadoutRegistry.Get(loadoutId)))
+                .Filter(tuple => tuple.loadout != null)
+                .DistinctValues(tuple => tuple.loadout!.Installation)
+                .Transform(install =>
+                {
+                    var vm = _provider.GetRequiredService<IGameWidgetViewModel>();
+                    vm.Installation = install;
+                    vm.PrimaryButton = ReactiveCommand.CreateFromTask(async () =>
+                    {
+                        await Task.Run(async () => await ManageGame(install));
+                    });
+                    return vm;
+                })
+                .Bind(out _managedGames)
+                .SubscribeWithErrorLogging()
+                .DisposeWith(d);
+            
+                
         });
     }
     
@@ -94,6 +118,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
             });
         return new ReadOnlyObservableCollection<IGameWidgetViewModel>(new ObservableCollection<IGameWidgetViewModel>(installed));
     }
+    
 
 
 }
