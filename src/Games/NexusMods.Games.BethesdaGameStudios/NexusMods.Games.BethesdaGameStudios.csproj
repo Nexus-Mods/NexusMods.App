@@ -18,5 +18,9 @@
         <EmbeddedResource Include="Resources\SkyrimLegendaryEdition\game_image.jpg" />
         <None Remove="Resources\SkyrimSpecialEdition\icon.png" />
         <EmbeddedResource Include="Resources\SkyrimSpecialEdition\icon.png" />
+        <None Remove="Resources\Fallout4\game_image.jpg" />
+        <EmbeddedResource Include="Resources\Fallout4\game_image.jpg" />
+        <None Remove="Resources\Fallout4\icon.png" />
+        <EmbeddedResource Include="Resources\Fallout4\icon.png" />
     </ItemGroup>
 </Project>
