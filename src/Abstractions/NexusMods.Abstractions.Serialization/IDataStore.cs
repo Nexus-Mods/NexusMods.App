@@ -36,6 +36,12 @@ public interface IDataStore
     /// Places all entities inside the data store (raw).
     /// </summary>
     /// <param name="values">The values to place in the data store.</param>
+    public Id64[] PutAll<TK, TV>(Span<KeyValuePair<TK, TV>> values) where TV : Entity;
+    
+    /// <summary>
+    /// Places all entities inside the data store (raw).
+    /// </summary>
+    /// <param name="values">The values to place in the data store.</param>
     public Id64[] PutAll<T>(Span<T> values) where T : Entity;
     
     /// <summary>
