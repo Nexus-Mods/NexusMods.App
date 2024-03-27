@@ -1,6 +1,8 @@
 // See https://aka.ms/new-console-template for more information
 
+using System.Diagnostics;
 using System.Reflection;
+using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Running;
 using NexusMods.Benchmarks;
 using NexusMods.Benchmarks.Interfaces;
@@ -17,7 +19,7 @@ if (args.Length > 0)
     foreach (var arg in args)
     {
         if (int.TryParse(arg, out var result) && (result >= 0 && result < benchmarks.Length))
-            BenchmarkRunner.Run(benchmarks[result].Type);
+            StartBenchmark(benchmarks, result);
     }
 
     return;
@@ -40,7 +42,7 @@ while (true)
     if (int.TryParse(line, out var result))
     {
         if (result >= 0 && result < benchmarks.Length)
-            BenchmarkRunner.Run(benchmarks[result].Type);
+            StartBenchmark(benchmarks, result);
         else
             return;
     }
@@ -52,4 +54,12 @@ void PrintOption(int x, SelectableBenchmark benchmark)
     Console.Write($"{x}. {benchmark.Name}: ");
     Console.ForegroundColor = ConsoleColor.Green;
     Console.WriteLine(benchmark.Description);
+}
+
+void StartBenchmark(SelectableBenchmark[] selectableBenchmarks, int benchmarkIndex)
+{
+    if (Debugger.IsAttached)
+        BenchmarkRunner.Run(selectableBenchmarks[benchmarkIndex].Type, new DebugInProcessConfig());
+    else
+        BenchmarkRunner.Run(selectableBenchmarks[benchmarkIndex].Type);
 }
