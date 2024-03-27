@@ -346,16 +346,6 @@
         <Compile Update="Controls\Spine\Buttons\Image\ImageButtonViewModel.cs">
           <DependentUpon>IImageButtonViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Controls\FoundGames\FoundGamesView.axaml.cs">
-          <DependentUpon>FoundGamesView.axaml</DependentUpon>
-          <SubType>Code</SubType>
-        </Compile>
-        <Compile Update="Controls\FoundGames\FoundGamesViewModel.cs">
-          <DependentUpon>IFoundGamesViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Controls\FoundGames\FoundGamesDesignViewModel.cs">
-          <DependentUpon>IFoundGamesViewModel.cs</DependentUpon>
-        </Compile>
         <Compile Update="LeftMenu\Loadout\LoadoutLeftMenuViewModel.cs">
           <DependentUpon>ILoadoutLeftMenuViewModel.cs</DependentUpon>
         </Compile>
@@ -481,6 +471,12 @@
         </Compile>
         <Compile Update="LeftMenu\Items\ApplyControlDesignViewModel.cs">
           <DependentUpon>IApplyControlViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\MyGames\MyGamesDesignViewModel.cs">
+          <DependentUpon>IMyGamesViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\MyGames\MyGamesViewModel.cs">
+          <DependentUpon>IMyGamesViewModel.cs</DependentUpon>
         </Compile>
     </ItemGroup>
 
