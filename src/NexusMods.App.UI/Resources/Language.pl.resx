@@ -357,6 +357,6 @@
         <value>ILOŚĆ PLIKÓW</value>
     </data>
     <data name="IngestButtonTextBlock_Text" xml:space="preserve">
-        <value>POZYSKUJ</value>
+        <value>ODŚWIEŻ</value>
     </data>
 </root>
