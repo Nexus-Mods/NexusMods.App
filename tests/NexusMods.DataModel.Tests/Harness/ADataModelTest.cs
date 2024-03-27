@@ -125,8 +125,11 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
         }
 
         memoryStream.Position = 0;
-        await using var fileStream = tmpFile.Path.Create();
-        await memoryStream.CopyToAsync(fileStream, Token);
+        await using (var fileStream = tmpFile.Path.Create())
+        {
+            await memoryStream.CopyToAsync(fileStream, Token);
+        }
+
         return await FileOriginRegistry.RegisterDownload(tmpFile.Path, new FilePathMetadata {OriginalName = tmpFile.Path.FileName, Quality = Quality.Low}, CancellationToken.None);
     }
 
