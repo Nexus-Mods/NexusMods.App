@@ -107,6 +107,12 @@ public class SqliteDataStore : IDataStore, IDisposable
             pragma.CommandText = "PRAGMA journal_mode = WAL";
             pragma.ExecuteNonQuery();
         }
+        
+        using (var pragma = conn.Value.CreateCommand())
+        {
+            pragma.CommandText = "PRAGMA synchronous = NORMAL";
+            pragma.ExecuteNonQuery();
+        }
 
         foreach (var table in EntityCategoryExtensions.GetValues())
         {
