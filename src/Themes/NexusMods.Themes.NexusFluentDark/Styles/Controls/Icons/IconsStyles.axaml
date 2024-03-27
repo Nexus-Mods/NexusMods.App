@@ -69,6 +69,7 @@
             <icons:UnifiedIcon Classes="MusicNote" />
             <icons:UnifiedIcon Classes="VideoOutline" />
             <icons:UnifiedIcon Classes="Refresh" />
+            <icons:UnifiedIcon Classes="Collections" />
         </WrapPanel>
     </Design.PreviewWith>
 
@@ -338,5 +339,9 @@
     
     <Style Selector="icons|UnifiedIcon.Refresh">
         <Setter Property="Value" Value="{x:Static icons:IconValues.Refresh}"/>
+    </Style>
+
+    <Style Selector="icons|UnifiedIcon.Collections">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.Collections}"/>
     </Style>
 </Styles>

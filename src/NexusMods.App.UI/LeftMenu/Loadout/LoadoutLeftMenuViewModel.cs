@@ -8,6 +8,7 @@ using NexusMods.App.UI.Pages.Diagnostics;
 using NexusMods.App.UI.Pages.LoadoutGrid;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.Icons;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.LeftMenu.Loadout;
@@ -33,6 +34,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
         var diagnosticItem = new IconViewModel
         {
             Name = Language.LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics,
+            Icon = IconValues.MonitorDiagnostics,
             Activate = ReactiveCommand.Create(() =>
             {
                 var pageData = new PageData
@@ -57,6 +59,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
             new IconViewModel
             {
                 Name = Language.LoadoutLeftMenuViewModel_LoadoutGridEntry,
+                Icon = IconValues.Collections,
                 Activate = ReactiveCommand.Create(() =>
                 {
                     var pageData = new PageData

@@ -211,6 +211,13 @@ public static class IconValues
     // https://pictogrammers.com/library/mdi/icon/alert-octagon/
     public static readonly IconValue Alert = new ProjektankerIcon("mdi-alert-octagon");
 
+    // From Design System "Custom Icons" section on Figma
+    public static readonly IconValue Collections = new AvaloniaPathIcon(
+        Geometry.Parse(
+            "M12.1979 15.4946L6.68644 11.2096L5.47498 12.1518L12.2053 17.3866L18.9357 12.1518L17.7167 11.2021L12.1979 15.4946ZM12.1979 19.2336L6.68644 14.9486L5.47498 15.8908L12.2053 21.1255L18.9357 15.8908L17.7167 14.9411L12.1979 19.2336ZM12.2053 13.5951L17.7093 9.31006L18.9357 8.36033L12.2053 3.12561L5.47498 8.36033L6.69392 9.31006L12.2053 13.5951Z"
+        )
+    );
+
     // https://pictogrammers.com/library/mdi/icon/star/
     public static readonly IconValue Downloading = new ProjektankerIcon("mdi-progress-download");
 

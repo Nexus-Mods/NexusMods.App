@@ -5,6 +5,7 @@ using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.Pages.Downloads;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.Icons;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.LeftMenu.Downloads;
@@ -25,6 +26,7 @@ public class DownloadsLeftMenuViewModel : AViewModel<IDownloadsLeftMenuViewModel
             new IconViewModel
             {
                 Name = Language.InProgressTitleTextBlock,
+                Icon = IconValues.Downloading,
                 Activate = ReactiveCommand.Create(() =>
                 {
                     var pageData = new PageData
