@@ -68,7 +68,7 @@ public static class IconValues
     public static readonly IconValue PauseCircleFilled = new ProjektankerIcon("mdi-pause-circle");
 
     // https://pictogrammers.com/library/mdi/icon/pause-circle-outline/
-    public static readonly IconValue PauseCircleOutline = new ProjektankerIcon("mdi-pause-outline");
+    public static readonly IconValue PauseCircleOutline = new ProjektankerIcon("mdi-pause-circle-outline");
 
     // https://pictogrammers.com/library/mdi/icon/play/
     public static readonly IconValue PlayArrow = new ProjektankerIcon("mdi-play");
