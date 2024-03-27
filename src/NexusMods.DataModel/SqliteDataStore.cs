@@ -143,6 +143,23 @@ public class SqliteDataStore : IDataStore, IDisposable
     }
     
     /// <inheritdoc />
+    public Id64[] PutAll<TK, TV>(Span<KeyValuePair<TK, TV>> values) where TV : Entity
+    {
+        using var conn = _pool.RentDisposable();
+        var ids = GC.AllocateUninitializedArray<Id64>(values.Length);
+        for (var x = 0; x < values.Length; x++)
+        {
+            ids[x] = ContentHashId(values[x].Value, out var data);
+            PutRawItem(ids[x], data, conn);
+        }
+
+        foreach (var id in ids)
+            NotifyOfUpdatedId(id);
+
+        return ids;
+    }
+    
+    /// <inheritdoc />
     public Id64[] PutAll<T>(Span<T> values) where T : Entity
     {
         using var conn = _pool.RentDisposable();
