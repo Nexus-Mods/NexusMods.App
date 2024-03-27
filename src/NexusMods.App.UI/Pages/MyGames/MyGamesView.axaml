@@ -16,11 +16,14 @@
         <myGames:MyGamesDesignViewModel />
     </Design.DataContext>
     <ScrollViewer>
-        <StackPanel Margin="24" Orientation="Vertical">
+        <StackPanel Margin="24" 
+                    Classes="Spacing-9"
+                    Orientation="Vertical">
+            
             <StackPanel x:Name="DetectedGamesSection"
+                        Classes="Spacing-4"
                         Orientation="Vertical">
                 <TextBlock Classes="HeadingXSSemi" Text="{x:Static resources:Language.MyGamesView__Detected_games}" />
-                <Border Classes="Rounded-lg" Padding="24">
                     <ItemsControl
                         x:Name="DetectedGamesItemsControl">
                         <ItemsControl.ItemsPanel>
@@ -38,17 +41,16 @@
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
-                </Border>
             </StackPanel>
 
             <StackPanel x:Name="ManagedGamesSection"
+                        Classes="Spacing-4"
                         Orientation="Vertical">
                 <TextBlock
                     Classes="HeadingXSSemi"
                     Margin="0,24,0,0"
                     Text="{x:Static resources:Language.MyGamesView__Ready_to_mod}" />
                 
-                <Border Classes="Rounded-lg" Padding="24">
                     <ItemsControl
                         x:Name="ManagedGamesItemsControl">
                         <ItemsControl.ItemsPanel>
@@ -66,9 +68,8 @@
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
-                </Border>
-                
             </StackPanel>
         </StackPanel>
+        
     </ScrollViewer>
 </reactiveUi:ReactiveUserControl>
