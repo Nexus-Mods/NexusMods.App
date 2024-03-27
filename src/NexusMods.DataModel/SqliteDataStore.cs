@@ -147,12 +147,15 @@ public class SqliteDataStore : IDataStore, IDisposable
     {
         using var conn = _pool.RentDisposable();
         var ids = GC.AllocateUninitializedArray<Id64>(values.Length);
+        using var tx = conn.Value.BeginTransaction();
         for (var x = 0; x < values.Length; x++)
         {
             ids[x] = ContentHashId(values[x].Value, out var data);
             PutRawItem(ids[x], data, conn);
         }
-
+        
+        tx.Commit();
+        
         foreach (var id in ids)
             NotifyOfUpdatedId(id);
 
@@ -164,6 +167,7 @@ public class SqliteDataStore : IDataStore, IDisposable
     {
         using var conn = _pool.RentDisposable();
         var ids = GC.AllocateUninitializedArray<Id64>(values.Length);
+        using var tx = conn.Value.BeginTransaction();
         for (var x = 0; x < values.Length; x++)
         {
             var value = values[x];
@@ -171,6 +175,7 @@ public class SqliteDataStore : IDataStore, IDisposable
             PutRawItem(ids[x], data, conn);
         }
 
+        tx.Commit();
         foreach (var id in ids)
             NotifyOfUpdatedId(id);
 
