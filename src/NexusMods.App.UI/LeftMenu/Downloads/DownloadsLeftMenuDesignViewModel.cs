@@ -1,5 +1,4 @@
 ﻿using System.Collections.ObjectModel;
-using NexusMods.App.UI.Icons;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -15,7 +14,7 @@ public class DownloadsLeftMenuDesignViewModel : AViewModel<IDownloadsLeftMenuVie
     {
         var items = new ILeftMenuItemViewModel[]
         {
-            new IconViewModel { Name = Language.InProgressTitleTextBlock, Icon = IconType.None },
+            new IconViewModel { Name = Language.InProgressTitleTextBlock },
         };
         Items = new ReadOnlyObservableCollection<ILeftMenuItemViewModel>(new ObservableCollection<ILeftMenuItemViewModel>(items));
     }

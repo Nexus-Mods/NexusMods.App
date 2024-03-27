@@ -3,7 +3,6 @@ using System.Reactive.Disposables;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics;
-using NexusMods.App.UI.Icons;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.Pages.Diagnostics;
 using NexusMods.App.UI.Pages.LoadoutGrid;
@@ -58,7 +57,6 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
             new IconViewModel
             {
                 Name = Language.LoadoutLeftMenuViewModel_LoadoutGridEntry,
-                Icon = IconType.None,
                 Activate = ReactiveCommand.Create(() =>
                 {
                     var pageData = new PageData

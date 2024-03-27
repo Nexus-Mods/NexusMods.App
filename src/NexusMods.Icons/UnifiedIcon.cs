@@ -4,7 +4,7 @@ using Avalonia.Controls;
 using Avalonia.Media;
 using JetBrains.Annotations;
 
-namespace NexusMods.App.UI.Controls.UnifiedIcon;
+namespace NexusMods.Icons;
 
 /// <summary>
 /// Unified icon class that supports <see cref="Projektanker.Icons.Avalonia.Icon"/>,
@@ -97,15 +97,15 @@ public sealed class UnifiedIcon : ContentControl
             f0: _ => null,
             f1: projektankerIcon => new Projektanker.Icons.Avalonia.Icon
             {
-                Value = projektankerIcon.Value ?? string.Empty
+                Value = projektankerIcon.Value ?? string.Empty,
             },
             f2: avaloniaImage => new Avalonia.Controls.Image
             {
-                Source = avaloniaImage.Image
+                Source = avaloniaImage.Image,
             },
             f3: avaloniaSvg => new Avalonia.Svg.Skia.Svg(baseUri: Default)
             {
-                Path = avaloniaSvg.Path
+                Path = avaloniaSvg.Path,
             },
             f4: avaloniaPathIcon => new Avalonia.Controls.PathIcon
             {
@@ -115,7 +115,7 @@ public sealed class UnifiedIcon : ContentControl
                 [HeightProperty] = this[HeightProperty],
                 [WidthProperty] = this[WidthProperty],
                 [MaxHeightProperty] = this[MaxHeightProperty],
-                [MaxWidthProperty] = this[MaxWidthProperty]
+                [MaxWidthProperty] = this[MaxWidthProperty],
             }
         );
 

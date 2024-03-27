@@ -1,6 +1,6 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI">
+        xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
     <Design.PreviewWith>
         <Border Padding="20">
             <WrapPanel Width="300">
@@ -18,7 +18,7 @@
     <!-- Add Styles Here -->
     <Style Selector="Button.PanelTitlebar">
 
-        <Style Selector="^ unifiedIcon|UnifiedIcon">
+        <Style Selector="^ icons|UnifiedIcon">
             <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
             <Setter Property="Size" Value="24" />
         </Style>
@@ -28,7 +28,7 @@
             <Setter Property="CornerRadius" Value="{StaticResource Rounded-lg}" />
         </Style>
 
-        <Style Selector="^:pointerover unifiedIcon|UnifiedIcon">
+        <Style Selector="^:pointerover icons|UnifiedIcon">
             <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
         </Style>
 
@@ -40,11 +40,11 @@
             <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
         </Style>
 
-        <Style Selector="^:disabled unifiedIcon|UnifiedIcon">
+        <Style Selector="^:disabled icons|UnifiedIcon">
             <Setter Property="Opacity" Value="{StaticResource OpacityDisabledElement}" />
         </Style>
 
-        <Style Selector="^.Active unifiedIcon|UnifiedIcon">
+        <Style Selector="^.Active icons|UnifiedIcon">
             <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
         </Style>
 
@@ -52,7 +52,7 @@
             <Setter Property="Template">
                 <ControlTemplate>
                     <Border>
-                        <unifiedIcon:UnifiedIcon Classes="Close" />
+                        <icons:UnifiedIcon Classes="Close" />
                     </Border>
                 </ControlTemplate>
             </Setter>
@@ -62,7 +62,7 @@
             <Setter Property="Template">
                 <ControlTemplate>
                     <Border>
-                        <unifiedIcon:UnifiedIcon Classes="OpenInNew" />
+                        <icons:UnifiedIcon Classes="OpenInNew" />
                     </Border>
                 </ControlTemplate>
             </Setter>
@@ -72,7 +72,7 @@
             <Setter Property="Template">
                 <ControlTemplate>
                     <Border>
-                        <unifiedIcon:UnifiedIcon Classes="Plus" />
+                        <icons:UnifiedIcon Classes="Plus" />
                     </Border>
                 </ControlTemplate>
             </Setter>
@@ -82,7 +82,7 @@
             <Setter Property="Template">
                 <ControlTemplate>
                     <Border>
-                        <unifiedIcon:UnifiedIcon Classes="ChevronRight" />
+                        <icons:UnifiedIcon Classes="ChevronRight" />
                     </Border>
                 </ControlTemplate>
             </Setter>
@@ -92,7 +92,7 @@
             <Setter Property="Template">
                 <ControlTemplate>
                     <Border>
-                        <unifiedIcon:UnifiedIcon Classes="ChevronLeft" />
+                        <icons:UnifiedIcon Classes="ChevronLeft" />
                     </Border>
                 </ControlTemplate>
             </Setter>

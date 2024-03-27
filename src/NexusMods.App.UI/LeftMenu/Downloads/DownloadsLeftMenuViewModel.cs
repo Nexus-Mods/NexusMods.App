@@ -1,7 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
-using NexusMods.App.UI.Icons;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.Pages.Downloads;
 using NexusMods.App.UI.Resources;
@@ -25,7 +24,7 @@ public class DownloadsLeftMenuViewModel : AViewModel<IDownloadsLeftMenuViewModel
         {
             new IconViewModel
             {
-                Name = Language.InProgressTitleTextBlock, Icon = IconType.None,
+                Name = Language.InProgressTitleTextBlock,
                 Activate = ReactiveCommand.Create(() =>
                 {
                     var pageData = new PageData

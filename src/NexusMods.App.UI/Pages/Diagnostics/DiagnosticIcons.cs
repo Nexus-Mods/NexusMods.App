@@ -1,5 +1,5 @@
 using Avalonia.Media;
-using NexusMods.App.UI.Controls.UnifiedIcon;
+using NexusMods.Icons;
 
 namespace NexusMods.App.UI.Pages.Diagnostics;
 
