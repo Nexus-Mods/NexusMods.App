@@ -9,7 +9,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI"
+    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
     xmlns:loadoutGrid="clr-namespace:NexusMods.App.UI.Pages.LoadoutGrid">
     <Design.DataContext>
@@ -21,25 +21,25 @@
                 <StackPanel Grid.Column="1">
                     <Button x:Name="DeleteModsButton">
                         <StackPanel>
-                            <unifiedIcon:UnifiedIcon Classes="TrashCanOutline" />
+                            <icons:UnifiedIcon Classes="TrashCanOutline" />
                         </StackPanel>
                     </Button>
                     <Button x:Name="ViewModFilesButton">
                         <StackPanel>
-                            <unifiedIcon:UnifiedIcon Classes="FolderOutline" />
+                            <icons:UnifiedIcon Classes="FolderOutline" />
                             <TextBlock Text="{x:Static resources:Language.LoadoutGridView__View_Files}"/>
                         </StackPanel>
                     </Button>
                     <Line/>
                     <Button x:Name="AddModButton">
                         <StackPanel>
-                            <unifiedIcon:UnifiedIcon Classes="PlusCircleOutline" />
+                            <icons:UnifiedIcon Classes="PlusCircleOutline" />
                             <TextBlock Text="{x:Static resources:Language.LoadoutGridView__Add_Mod}"/>
                         </StackPanel>
                     </Button>
                     <Button x:Name="AddModAdvancedButton">
                         <StackPanel>
-                            <unifiedIcon:UnifiedIcon Classes="PlusCircleOutline" />
+                            <icons:UnifiedIcon Classes="PlusCircleOutline" />
                             <TextBlock Text="{x:Static resources:Language.LoadoutGridView__Add_Mod_Advanced}"/>
                         </StackPanel>
                     </Button>

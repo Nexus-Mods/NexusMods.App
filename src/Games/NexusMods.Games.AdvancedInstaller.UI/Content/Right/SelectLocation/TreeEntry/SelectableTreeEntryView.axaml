@@ -4,7 +4,7 @@
                                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                                 xmlns:reactiveUi="http://reactiveui.net"
-                                xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI"
+                                xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
                                 xmlns:resources="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Resources"
                                 xmlns:selectLocation="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.SelectLocation"
                                 mc:Ignorable="d" d:DesignWidth="710" d:DesignHeight="44"
@@ -16,7 +16,7 @@
 
     <Grid ColumnDefinitions="*, Auto" Margin="0,5,0,5">
         <Grid.Styles>
-            <Style Selector="unifiedIcon|UnifiedIcon.FileTypeIcon">
+            <Style Selector="icons|UnifiedIcon.FileTypeIcon">
                 <Setter Property="Size" Value="18" />
                 <Setter Property="Margin" Value="8, 0, 8, 0" />
             </Style>
@@ -40,7 +40,7 @@
             <!-- Create Folder Button -->
             <Button Classes="Rounded Primary" HorizontalAlignment="Left" IsVisible="False" x:Name="CreateFolderButton">
                 <StackPanel Orientation="Horizontal">
-                    <unifiedIcon:UnifiedIcon Classes="Plus" x:Name="CreateFolderPlusIcon" />
+                    <icons:UnifiedIcon Classes="Plus" x:Name="CreateFolderPlusIcon" />
                     <TextBlock Text="{x:Static resources:Language.CreateFolderButton_Create_new_folder}" />
                 </StackPanel>
             </Button>
@@ -49,7 +49,7 @@
             <StackPanel IsVisible="False" Orientation="Horizontal" x:Name="FileElementGrid">
 
                 <!-- File / Directory Icon -->
-                <unifiedIcon:UnifiedIcon Classes="FolderOutline FileTypeIcon" IsVisible="False" x:Name="FolderEntryIcon" />
+                <icons:UnifiedIcon Classes="FolderOutline FileTypeIcon" IsVisible="False" x:Name="FolderEntryIcon" />
 
                 <!-- File Name -->
                 <TextBlock Classes="BodyMDNormal"
@@ -73,7 +73,7 @@
             <Button Classes="Rounded Primary RightElements" HorizontalAlignment="Right" IsVisible="False"
                     x:Name="DeleteCreatedFolderButton">
                 <StackPanel Orientation="Horizontal">
-                    <unifiedIcon:UnifiedIcon Classes="DeleteOutline" x:Name="DeleteCreatedFolderDeleteIcon" />
+                    <icons:UnifiedIcon Classes="DeleteOutline" x:Name="DeleteCreatedFolderDeleteIcon" />
                     <TextBlock Text="{x:Static resources:Language.DeleteCreatedFolderButton_Delete}" />
                 </StackPanel>
             </Button>

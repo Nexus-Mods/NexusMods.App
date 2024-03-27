@@ -6,7 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactive="http://reactiveui.net"
     xmlns:workspace="clr-namespace:NexusMods.App.UI.WorkspaceSystem"
-    xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon"
+    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
     mc:Ignorable="d" d:DesignWidth="232" d:DesignHeight="52"
     x:Class="NexusMods.App.UI.WorkspaceSystem.PanelTabHeaderView">
 
@@ -23,7 +23,7 @@
                 <StackPanel Orientation="Horizontal"
                             Classes="Spacing-1_5"
                             VerticalAlignment="Center">
-                    <unifiedIcon:UnifiedIcon MaxSize="24" Size="24" x:Name="Icon"/>
+                    <icons:UnifiedIcon MaxSize="24" Size="24" x:Name="Icon"/>
                     <TextBlock x:Name="TitleTextBlock"
                                Padding="0 6 0 0"
                                Classes="BodyLGBold"

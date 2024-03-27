@@ -2,7 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:ui="clr-namespace:NexusMods.App.UI.Controls.GameWidget;assembly=NexusMods.App.UI"
         xmlns:extensions="clr-namespace:NexusMods.Themes.NexusFluentDark.Extensions"
-        xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI">
+        xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
     <Design.PreviewWith>
         <Border Classes="Mid" Padding="20">
             <ui:GameWidget>
@@ -39,7 +39,7 @@
             <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
         </Style>
 
-        <Style Selector="^ Button.FirstButton unifiedIcon|UnifiedIcon">
+        <Style Selector="^ Button.FirstButton icons|UnifiedIcon">
             <Setter Property="Size" Value="20" />
             <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
         </Style>

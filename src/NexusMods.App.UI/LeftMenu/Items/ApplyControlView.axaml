@@ -4,7 +4,7 @@
                                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:items="clr-namespace:NexusMods.App.UI.LeftMenu.Items"
-                                xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI"
+                                xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
                                 xmlns:progressRing="clr-namespace:NexusMods.App.UI.Controls.ProgressRing"
                                 xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
                                 mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="100"
@@ -29,7 +29,7 @@
                     <StackPanel Orientation="Horizontal"
                                 HorizontalAlignment="Center"
                                 Classes="Spacing-1">
-                        <unifiedIcon:UnifiedIcon Size="24" Classes="Refresh" />
+                        <icons:UnifiedIcon Size="24" Classes="Refresh" />
                         <TextBlock Classes="TitleSMSemi"
                                    x:Name="IngestButtonTextBlock"
                                    VerticalAlignment="Center"
@@ -46,7 +46,7 @@
                     <StackPanel Orientation="Horizontal"
                                 HorizontalAlignment="Center"
                                 Classes="Spacing-1">
-                        <unifiedIcon:UnifiedIcon Size="24" Classes="Check" />
+                        <icons:UnifiedIcon Size="24" Classes="Check" />
                         <TextBlock Classes="TitleSMSemi"
                                    x:Name="ApplyButtonTextBlock"
                                    VerticalAlignment="Center" />

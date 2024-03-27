@@ -1,6 +1,6 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI">
+        xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
 
     <!-- Preview -->
     <Design.PreviewWith>
@@ -36,13 +36,13 @@
                     <TextBlock>Standard Primary + Icon</TextBlock>
                     <Button Classes="Standard Primary">
                         <StackPanel>
-                            <unifiedIcon:UnifiedIcon Classes="Play" />
+                            <icons:UnifiedIcon Classes="Play" />
                             <TextBlock Text="BUTTON" />
                         </StackPanel>
                     </Button>
                     <Button Classes="Standard Primary" IsEnabled="False">
                         <StackPanel>
-                            <unifiedIcon:UnifiedIcon Classes="Play" />
+                            <icons:UnifiedIcon Classes="Play" />
                             <TextBlock Text="BUTTON" />
                         </StackPanel>
                     </Button>
@@ -52,21 +52,21 @@
                     <TextBlock>Standard Primary + Image</TextBlock>
                     <Button Classes="Standard Primary">
                         <StackPanel>
-                            <unifiedIcon:UnifiedIcon>
-                                <unifiedIcon:UnifiedIcon.Value>
-                                    <unifiedIcon:IconValue ImageSetter="avares://NexusMods.Themes.NexusFluentDark/Assets/DesignTime/cyberpunk_game.png"/>
-                                </unifiedIcon:UnifiedIcon.Value>
-                            </unifiedIcon:UnifiedIcon>
+                            <icons:UnifiedIcon>
+                                <icons:UnifiedIcon.Value>
+                                    <icons:IconValue ImageSetter="avares://NexusMods.Themes.NexusFluentDark/Assets/DesignTime/cyberpunk_game.png"/>
+                                </icons:UnifiedIcon.Value>
+                            </icons:UnifiedIcon>
                             <TextBlock Text="BUTTON" />
                         </StackPanel>
                     </Button>
                     <Button Classes="Standard Primary" IsEnabled="False">
                         <StackPanel>
-                            <unifiedIcon:UnifiedIcon>
-                                <unifiedIcon:UnifiedIcon.Value>
-                                    <unifiedIcon:IconValue ImageSetter="avares://NexusMods.Themes.NexusFluentDark/Assets/DesignTime/cyberpunk_game.png"/>
-                                </unifiedIcon:UnifiedIcon.Value>
-                            </unifiedIcon:UnifiedIcon>
+                            <icons:UnifiedIcon>
+                                <icons:UnifiedIcon.Value>
+                                    <icons:IconValue ImageSetter="avares://NexusMods.Themes.NexusFluentDark/Assets/DesignTime/cyberpunk_game.png"/>
+                                </icons:UnifiedIcon.Value>
+                            </icons:UnifiedIcon>
                             <TextBlock Text="BUTTON" />
                         </StackPanel>
                     </Button>
@@ -87,13 +87,13 @@
                     <TextBlock>Standard Primary Outline</TextBlock>
                     <Button Classes="Standard PrimaryOutlined">
                         <StackPanel>
-                            <unifiedIcon:UnifiedIcon Classes="Play" />
+                            <icons:UnifiedIcon Classes="Play" />
                             <TextBlock Text="BUTTON" />
                         </StackPanel>
                     </Button>
                     <Button Classes="Standard PrimaryOutlined" IsEnabled="False">
                         <StackPanel>
-                            <unifiedIcon:UnifiedIcon Classes="Play" />
+                            <icons:UnifiedIcon Classes="Play" />
                             <TextBlock Text="BUTTON" />
                         </StackPanel>
                     </Button>
@@ -104,13 +104,13 @@
                     <TextBlock>Standard Secondary</TextBlock>
                     <Button Classes="Standard Secondary">
                         <StackPanel>
-                            <unifiedIcon:UnifiedIcon Classes="Play" />
+                            <icons:UnifiedIcon Classes="Play" />
                             <TextBlock Text="BUTTON" />
                         </StackPanel>
                     </Button>
                     <Button Classes="Standard Secondary" IsEnabled="False">
                         <StackPanel>
-                            <unifiedIcon:UnifiedIcon Classes="Play" />
+                            <icons:UnifiedIcon Classes="Play" />
                             <TextBlock Text="BUTTON" />
                         </StackPanel>
                     </Button>
@@ -121,13 +121,13 @@
                     <TextBlock>Standard Secondary Outline</TextBlock>
                     <Button Classes="Standard SecondaryOutlined">
                         <StackPanel>
-                            <unifiedIcon:UnifiedIcon Classes="Play" />
+                            <icons:UnifiedIcon Classes="Play" />
                             <TextBlock Text="BUTTON" />
                         </StackPanel>
                     </Button>
                     <Button Classes="Standard SecondaryOutlined" IsEnabled="False">
                         <StackPanel>
-                            <unifiedIcon:UnifiedIcon Classes="Play" />
+                            <icons:UnifiedIcon Classes="Play" />
                             <TextBlock Text="BUTTON" />
                         </StackPanel>
                     </Button>
@@ -138,13 +138,13 @@
                     <TextBlock>Standard Tertiary</TextBlock>
                     <Button Classes="Standard Tertiary">
                         <StackPanel>
-                            <unifiedIcon:UnifiedIcon Classes="Play" />
+                            <icons:UnifiedIcon Classes="Play" />
                             <TextBlock Text="BUTTON" />
                         </StackPanel>
                     </Button>
                     <Button Classes="Standard Tertiary" IsEnabled="False">
                         <StackPanel>
-                            <unifiedIcon:UnifiedIcon Classes="Play" />
+                            <icons:UnifiedIcon Classes="Play" />
                             <TextBlock Text="BUTTON" />
                         </StackPanel>
                     </Button>
@@ -156,13 +156,13 @@
                     <TextBlock>Standard Success</TextBlock>
                     <Button Classes="Standard Success">
                         <StackPanel>
-                            <unifiedIcon:UnifiedIcon Classes="Play" />
+                            <icons:UnifiedIcon Classes="Play" />
                             <TextBlock Text="BUTTON" />
                         </StackPanel>
                     </Button>
                     <Button Classes="Standard Success" IsEnabled="False">
                         <StackPanel>
-                            <unifiedIcon:UnifiedIcon Classes="Play" />
+                            <icons:UnifiedIcon Classes="Play" />
                             <TextBlock Text="BUTTON" />
                         </StackPanel>
                     </Button>
@@ -211,7 +211,7 @@
             <!-- NOTE: Spacing is handled through margin of icon and images as icons seem to behave strangely -->
         </Style>
 
-        <Style Selector="^ > StackPanel > unifiedIcon|UnifiedIcon">
+        <Style Selector="^ > StackPanel > icons|UnifiedIcon">
             <Setter Property="Size" Value="24" />
             <Setter Property="Margin" Value="0,0,8,0" />
         </Style>

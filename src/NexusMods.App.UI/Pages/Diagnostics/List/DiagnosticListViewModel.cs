@@ -10,6 +10,7 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Controls.Diagnostics;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.Icons;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Reloaded.Memory.Extensions;
@@ -69,7 +70,7 @@ internal class DiagnosticListViewModel : APageViewModel<IDiagnosticListViewModel
             {
                 var workspaceController = GetWorkspaceController();
                 workspaceController.SetTabTitle("Diagnostics", WorkspaceId, PanelId, TabId);
-                workspaceController.SetIcon(DiagnosticIcons.DiagnosticIcon1, WorkspaceId, PanelId, TabId);
+                workspaceController.SetIcon(IconValues.MonitorDiagnostics, WorkspaceId, PanelId, TabId);
             }
 
             Filter = AllFilter;

@@ -1,8 +1,5 @@
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using Avalonia.ReactiveUI;
-using NexusMods.App.UI.Controls.UnifiedIcon;
-using NexusMods.App.UI.Icons;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.LeftMenu.Items;
@@ -19,12 +16,10 @@ public partial class IconView : ReactiveUserControl<IIconViewModel>
                 .DisposeWith(d);
 
             this.WhenAnyValue(view => view.ViewModel!.Icon)
-                .Select(v => new IconValue(new ProjektankerIcon(v.ToMaterialUiName())))
                 .BindTo(this, view => view.LeftIcon.Value)
                 .DisposeWith(d);
 
-            this.BindCommand(ViewModel, vm => vm.Activate,
-                    view => view.ItemButton)
+            this.BindCommand(ViewModel, vm => vm.Activate, view => view.ItemButton)
                 .DisposeWith(d);
         });
     }

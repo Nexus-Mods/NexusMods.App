@@ -56,5 +56,6 @@
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=hardcoding/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=Loadout/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=Loadouts/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=Projektanker/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=Resizers/@EntryIndexedValue">True</s:Boolean>
 	</wpf:ResourceDictionary>

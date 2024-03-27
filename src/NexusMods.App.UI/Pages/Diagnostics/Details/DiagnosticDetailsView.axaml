@@ -6,7 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:diagnostics="clr-namespace:NexusMods.App.UI.Pages.Diagnostics"
-    xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon"
+    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
     xmlns:md="clr-namespace:Markdown.Avalonia;assembly=Markdown.Avalonia"
     xmlns:ctxt="clr-namespace:ColorTextBlock.Avalonia;assembly=ColorTextBlock.Avalonia"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
@@ -25,7 +25,7 @@
                         Orientation="Horizontal"
                         Classes="Spacing-1">
                 
-                <unifiedIcon:UnifiedIcon x:Name="SeverityIcon" 
+                <icons:UnifiedIcon x:Name="SeverityIcon"
                                          Size="20"
                                          VerticalAlignment="Center"/>
                 

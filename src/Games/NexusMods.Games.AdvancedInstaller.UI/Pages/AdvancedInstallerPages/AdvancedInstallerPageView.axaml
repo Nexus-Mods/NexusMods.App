@@ -5,7 +5,7 @@
                                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:ui="clr-namespace:NexusMods.Games.AdvancedInstaller.UI"
-                                xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI"
+                                xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
                                 xmlns:resources="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Resources"
                                 mc:Ignorable="d" d:DesignWidth="1232" d:DesignHeight="672"
                                 x:Class="NexusMods.Games.AdvancedInstaller.UI.AdvancedInstallerPageView">
@@ -24,7 +24,7 @@
                 <Setter Property="Margin" Value="0,0,0,16" />
             </Style>
 
-            <Style Selector="unifiedIcon|UnifiedIcon#OverlayHeaderMultiOptionIcon">
+            <Style Selector="icons|UnifiedIcon#OverlayHeaderMultiOptionIcon">
                 <Setter Property="Size" Value="20" />
                 <Setter Property="Margin" Value="0,0,8,8" />
             </Style>
@@ -38,7 +38,7 @@
                     <Border Grid.Row="0" Classes="OverlayHeaderSection" x:Name="OverlayHeaderBorder">
                         <Grid x:Name="OverlayHeaderGrid" ColumnDefinitions="Auto, *, Auto">
 
-                            <unifiedIcon:UnifiedIcon Grid.Column="0" x:Name="OverlayHeaderMultiOptionIcon" Classes="Tune" />
+                            <icons:UnifiedIcon Grid.Column="0" x:Name="OverlayHeaderMultiOptionIcon" Classes="Tune" />
 
                             <TextBlock Grid.Column="1" x:Name="OverlayHeaderTextBlock" Classes="BodyLGBold"
                                        Text="{x:Static resources:Language.OverlayHeaderText_Advanced_Installer}" />

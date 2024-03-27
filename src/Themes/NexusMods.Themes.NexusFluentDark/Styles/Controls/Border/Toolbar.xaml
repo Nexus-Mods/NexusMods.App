@@ -1,7 +1,7 @@
 ﻿<Styles
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI">
+    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
 
     <Design.PreviewWith >
         <StackPanel Width="920">
@@ -11,20 +11,20 @@
                     <StackPanel Grid.Column="1">
                         <Button>
                             <StackPanel>
-                                <unifiedIcon:UnifiedIcon Classes="RemoveCircleOutline"/>
+                                <icons:UnifiedIcon Classes="RemoveCircleOutline"/>
                                 <TextBlock Text="Remove"/>
                             </StackPanel>
                         </Button>
                         <Line Classes="Separator"/>
                         <Button>
                             <StackPanel>
-                                <unifiedIcon:UnifiedIcon Classes="RemoveCircleOutline"/>
+                                <icons:UnifiedIcon Classes="RemoveCircleOutline"/>
                                 <TextBlock Text="Remove All"/>
                             </StackPanel>
                         </Button>
                         <Button IsEnabled="False">
                             <StackPanel>
-                                <unifiedIcon:UnifiedIcon Classes="RemoveCircleOutline"/>
+                                <icons:UnifiedIcon Classes="RemoveCircleOutline"/>
                                 <TextBlock Text="Remove All"/>
                             </StackPanel>
                         </Button>
@@ -90,7 +90,7 @@
         <Setter Property="Margin" Value="6" />
     </Style>
 
-    <Style Selector="Border.Toolbar Button unifiedIcon|UnifiedIcon">
+    <Style Selector="Border.Toolbar Button icons|UnifiedIcon">
         <Setter Property="Size" Value="20" />
     </Style>
 

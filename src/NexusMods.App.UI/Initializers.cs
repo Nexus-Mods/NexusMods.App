@@ -24,8 +24,6 @@ public static class Initializers
     public static readonly ReactiveCommand<Unit, Unit> EnabledReactiveCommand = ReactiveCommand.Create(() => { }, Observable.Return(true));
     public static readonly ReactiveCommand<Unit, Unit> DisabledReactiveCommand = ReactiveCommand.Create(() => { }, Observable.Return(false));
 
-    public static readonly ModCursor ModCursor = new(LoadoutId, ModId.From(new Guid("00000000-0000-0000-0000-000000000002")));
-
     public static readonly LoadoutId LoadoutId = LoadoutId.From(new Guid("00000000-0000-0000-0000-000000000001"));
-    
+    public static readonly ModCursor ModCursor = new(LoadoutId, ModId.From(new Guid("00000000-0000-0000-0000-000000000002")));
 }

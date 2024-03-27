@@ -6,19 +6,19 @@
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:ui="clr-namespace:NexusMods.App.UI"
                                 xmlns:files="clr-namespace:NexusMods.App.UI.Controls.Trees.Files"
-                                xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon"
+                                xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
                                 mc:Ignorable="d" d:DesignWidth="710" d:DesignHeight="44"
                                 x:Class="NexusMods.App.UI.Controls.Trees.Files.FileTreeNodeView"
                                 d:DataContext="{x:Static files:FileTreeNodeDesignViewModel.SampleFolder}">
     <!-- You can switch 'SampleFolder' to 'SampleFile' to get preview of file -->
     <Grid ColumnDefinitions="*, Auto" Margin="0,5,0,5">
         <Grid.Styles>
-            <Style Selector="unifiedIcon|UnifiedIcon.FileTypeIcon">
+            <Style Selector="icons|UnifiedIcon.FileTypeIcon">
                 <Setter Property="Size" Value="18" />
                 <Setter Property="Margin" Value="8, 0, 0, 0" />
             </Style>
 
-            <Style Selector="unifiedIcon|UnifiedIcon.View">
+            <Style Selector="icons|UnifiedIcon.View">
                 <Setter Property="Size" Value="20" />
             </Style>
 
@@ -35,7 +35,7 @@
         <Grid Grid.Column="0" ClipToBounds="True" ColumnDefinitions="Auto,Auto" Name="FileElementGrid">
             
             <!-- File / Directory Icon -->
-            <unifiedIcon:UnifiedIcon Grid.Column="0" Classes="FileTypeIcon" x:Name="EntryIcon" />
+            <icons:UnifiedIcon Grid.Column="0" Classes="FileTypeIcon" x:Name="EntryIcon" />
 
             <!-- File Name -->
             <TextBlock Grid.Column="1" Classes="BodyMDNormal" VerticalAlignment="Center"

@@ -511,9 +511,9 @@ The class should set the `Value` property of the `UnifiedIcon` control to an `Ic
 with the `MdiValueSetter` property set to the mdi-code of the icon.
 
 ```xml
-<Style Selector="unifiedIcon|UnifiedIcon.Close">
+<Style Selector="icons|UnifiedIcon.Close">
     <Setter Property="Value">
-        <unifiedIcon:IconValue MdiValueSetter="mdi-close"/>
+        <icons:IconValue MdiValueSetter="mdi-close"/>
     </Setter>
 </Style>
 ```
@@ -524,7 +524,7 @@ The UI projects can then use this Style `Class` to set the icon without having t
 
 ```xml
 <!--                 👇 -->
-<unifiedIcon:UnifiedIcon Classes="Close" />
+<icons:UnifiedIcon Classes="Close" />
 ```
 
 This way all icons used in the app can easily be found in the `IconsStyles.axaml` file,

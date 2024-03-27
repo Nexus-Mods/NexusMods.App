@@ -2,7 +2,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
-using NexusMods.App.UI.Controls.UnifiedIcon;
+using NexusMods.Icons;
 using NexusMods.App.UI.Windows;
 
 namespace NexusMods.App.UI.WorkspaceSystem;

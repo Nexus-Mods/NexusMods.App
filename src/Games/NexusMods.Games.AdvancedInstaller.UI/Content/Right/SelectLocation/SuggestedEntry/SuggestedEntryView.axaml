@@ -5,7 +5,7 @@
                                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:resources="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Resources"
-                                xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI"
+                                xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
                                 xmlns:selectLocation="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.SelectLocation"
                                 mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="60"
                                 x:Class="NexusMods.Games.AdvancedInstaller.UI.SelectLocation.SuggestedEntryView">
@@ -15,7 +15,7 @@
 
     <Grid ColumnDefinitions="Auto, *, Auto">
         <Grid.Styles>
-            <Style Selector="unifiedIcon|UnifiedIcon.FileTypeIcon">
+            <Style Selector="icons|UnifiedIcon.FileTypeIcon">
                 <Setter Property="Size" Value="18" />
                 <Setter Property="Margin" Value="8, 0, 8, 0" />
             </Style>
@@ -30,7 +30,7 @@
         </Grid.Styles>
 
         <!-- Directory Icon -->
-        <unifiedIcon:UnifiedIcon Grid.Column="0" Classes="FolderOutline FileTypeIcon"
+        <icons:UnifiedIcon Grid.Column="0" Classes="FolderOutline FileTypeIcon"
                     x:Name="FolderEntryIcon" />
 
         <StackPanel Grid.Column="1" VerticalAlignment="Center">

@@ -1,0 +1,10 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <ItemGroup>
+        <PackageReference Include="OneOf"/>
+        <PackageReference Include="Avalonia"/>
+        <PackageReference Include="Avalonia.Svg.Skia"/>
+        <PackageReference Include="Projektanker.Icons.Avalonia.MaterialDesign"/>
+    </ItemGroup>
+
+</Project>

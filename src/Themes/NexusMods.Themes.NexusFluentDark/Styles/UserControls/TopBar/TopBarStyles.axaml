@@ -1,7 +1,7 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:ui="clr-namespace:NexusMods.App.UI.Controls.TopBar;assembly=NexusMods.App.UI"
-        xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI">
+        xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
     <Design.PreviewWith>
         <Border Width="720" Height="56">
             <ui:TopBarView />
@@ -22,7 +22,7 @@
                 <Setter Property="Foreground" Value="{StaticResource NeutralWeakBrush}" />
             </Style>
 
-            <Style Selector="^ unifiedIcon|UnifiedIcon">
+            <Style Selector="^ icons|UnifiedIcon">
                 <Setter Property="Foreground" Value="{StaticResource NeutralWeakBrush}" />
             </Style>
         </Style>

@@ -1,25 +1,25 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI">
+        xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
     <Design.PreviewWith>
         <Border Padding="20">
             <StackPanel Classes="Spacing-5">
                 <Button Classes="Action" HorizontalAlignment="Center">
-                    <unifiedIcon:UnifiedIcon Classes="Help" />
+                    <icons:UnifiedIcon Classes="Help" />
                 </Button>
                 <Button Classes="Action" HorizontalAlignment="Center" IsEnabled="False">
-                    <unifiedIcon:UnifiedIcon Classes="Help" />
+                    <icons:UnifiedIcon Classes="Help" />
                 </Button>
                 <Button Classes="Avatar" HorizontalAlignment="Center">
-                    <unifiedIcon:UnifiedIcon>
-                        <unifiedIcon:UnifiedIcon.Value>
-                            <unifiedIcon:IconValue ImageSetter="avares://NexusMods.Themes.NexusFluentDark/Assets/DesignTime/cyberpunk_game.png"/>
-                        </unifiedIcon:UnifiedIcon.Value>
-                    </unifiedIcon:UnifiedIcon>
+                    <icons:UnifiedIcon>
+                        <icons:UnifiedIcon.Value>
+                            <icons:IconValue ImageSetter="avares://NexusMods.Themes.NexusFluentDark/Assets/DesignTime/cyberpunk_game.png"/>
+                        </icons:UnifiedIcon.Value>
+                    </icons:UnifiedIcon>
                 </Button>
                 <Button Classes="LeftMenuItem" HorizontalAlignment="Center">
                     <StackPanel>
-                        <unifiedIcon:UnifiedIcon Classes="Home" />
+                        <icons:UnifiedIcon Classes="Home" />
                         <TextBlock Text="Left Menu Item" />
                     </StackPanel>
                 </Button>
@@ -39,7 +39,7 @@
         <Setter Property="Height" Value="40" />
         <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
 
-        <Style Selector="^ unifiedIcon|UnifiedIcon">
+        <Style Selector="^ icons|UnifiedIcon">
             <Setter Property="Size" Value="20" />
         </Style>
 
@@ -62,7 +62,7 @@
         <Setter Property="Padding" Value="0" />
         <Setter Property="CornerRadius" Value="{StaticResource Rounded-2xl}" />
 
-        <Style Selector="^ unifiedIcon|UnifiedIcon">
+        <Style Selector="^ icons|UnifiedIcon">
             <Setter Property="Size" Value="30" />
             <Setter Property="Clip">
                 <EllipseGeometry Rect="0, 0, 30, 30" />
@@ -85,7 +85,7 @@
             <Setter Property="Margin" Value="9, 12" />
         </Style>
 
-        <Style Selector="^.LeftMenuItem unifiedIcon|UnifiedIcon">
+        <Style Selector="^.LeftMenuItem icons|UnifiedIcon">
             <Setter Property="Size" Value="20" />
         </Style>
 

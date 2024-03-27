@@ -1,6 +1,6 @@
 ﻿<Styles
     xmlns="https://github.com/avaloniaui"
-    xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI"
+    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <!-- Preview -->
@@ -44,7 +44,7 @@
 
                     <Button Classes="Pill StandardPill Label">
                         <StackPanel>
-                            <unifiedIcon:UnifiedIcon Classes="Star" />
+                            <icons:UnifiedIcon Classes="Star" />
                             <TextBlock Text="LABEL" />
                         </StackPanel>
                     </Button>
@@ -63,21 +63,21 @@
                     <TextBlock Text="Pill Light" />
                     <Button Classes="Pill Light">
                         <StackPanel>
-                            <unifiedIcon:UnifiedIcon Classes="Star" />
+                            <icons:UnifiedIcon Classes="Star" />
                             <TextBlock Text="BUTTON" />
                         </StackPanel>
                     </Button>
 
                     <Button Classes="Pill Light Label">
                         <StackPanel>
-                            <unifiedIcon:UnifiedIcon Classes="Star" />
+                            <icons:UnifiedIcon Classes="Star" />
                             <TextBlock Text="LABEL" />
                         </StackPanel>
                     </Button>
 
                     <Button Classes="Pill Light" IsEnabled="False">
                         <StackPanel>
-                            <unifiedIcon:UnifiedIcon Classes="Star" />
+                            <icons:UnifiedIcon Classes="Star" />
                             <TextBlock Text="DISABLED" />
                         </StackPanel>
                     </Button>
@@ -88,21 +88,21 @@
                     <TextBlock Text="Pill Accent" />
                     <Button Classes="Pill Accent">
                         <StackPanel>
-                            <unifiedIcon:UnifiedIcon Classes="Star" />
+                            <icons:UnifiedIcon Classes="Star" />
                             <TextBlock Text="BUTTON" />
                         </StackPanel>
                     </Button>
 
                     <Button Classes="Pill Accent Label">
                         <StackPanel>
-                            <unifiedIcon:UnifiedIcon Classes="Star" />
+                            <icons:UnifiedIcon Classes="Star" />
                             <TextBlock Text="LABEL" />
                         </StackPanel>
                     </Button>
 
                     <Button Classes="Pill Accent" IsEnabled="False">
                         <StackPanel>
-                            <unifiedIcon:UnifiedIcon Classes="Star" />
+                            <icons:UnifiedIcon Classes="Star" />
                             <TextBlock Text="DISABLED" />
                         </StackPanel>
                     </Button>
@@ -118,21 +118,21 @@
 
                     <Button Classes="Pill StandardPillOutline">
                         <StackPanel>
-                            <unifiedIcon:UnifiedIcon Classes="Star" />
+                            <icons:UnifiedIcon Classes="Star" />
                             <TextBlock Text="BUTTON" />
                         </StackPanel>
                     </Button>
 
                     <Button Classes="Pill StandardPillOutline Label">
                         <StackPanel>
-                            <unifiedIcon:UnifiedIcon Classes="Star" />
+                            <icons:UnifiedIcon Classes="Star" />
                             <TextBlock Text="LABEL" />
                         </StackPanel>
                     </Button>
 
                     <Button Classes="Pill StandardPillOutline" IsEnabled="False">
                         <StackPanel>
-                            <unifiedIcon:UnifiedIcon Classes="Star" />
+                            <icons:UnifiedIcon Classes="Star" />
                             <TextBlock Text="DISABLED" />
                         </StackPanel>
                     </Button>
@@ -154,14 +154,14 @@
 
                     <Button Classes="Pill StandardPill Label LG">
                         <StackPanel>
-                            <unifiedIcon:UnifiedIcon Classes="Star" />
+                            <icons:UnifiedIcon Classes="Star" />
                             <TextBlock Text="LABEL" />
                         </StackPanel>
                     </Button>
 
                     <Button Classes="Pill StandardPill LG" IsEnabled="False">
                         <StackPanel>
-                            <unifiedIcon:UnifiedIcon Classes="Star" />
+                            <icons:UnifiedIcon Classes="Star" />
                             <TextBlock Text="DISABLED" />
                         </StackPanel>
                     </Button>
@@ -201,7 +201,7 @@
             <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
 
-        <Style Selector="^ unifiedIcon|UnifiedIcon">
+        <Style Selector="^ icons|UnifiedIcon">
             <Setter Property="Size" Value="12" />
         </Style>
 

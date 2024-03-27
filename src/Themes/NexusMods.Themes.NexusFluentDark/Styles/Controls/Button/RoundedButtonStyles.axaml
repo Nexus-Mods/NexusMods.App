@@ -1,6 +1,6 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI">
+        xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
 
     <!-- Preview -->
     <Design.PreviewWith>
@@ -36,7 +36,7 @@
                     <TextBlock>Rounded Primary</TextBlock>
                     <Button Classes="Rounded Primary">
                         <StackPanel>
-                            <unifiedIcon:UnifiedIcon Classes="Play" />
+                            <icons:UnifiedIcon Classes="Play" />
                             <TextBlock Text="Button" />
                             <Button Classes="Pill StandardPill Label">
                                 <StackPanel>
@@ -47,7 +47,7 @@
                     </Button>
                     <Button Classes="Rounded Primary" IsEnabled="False">
                         <StackPanel>
-                            <unifiedIcon:UnifiedIcon Classes="Play" />
+                            <icons:UnifiedIcon Classes="Play" />
                             <TextBlock Text="Button" />
                             <Button Classes="Pill StandardPill Label">
                                 <StackPanel>
@@ -63,7 +63,7 @@
                     <TextBlock>Rounded Primary Active</TextBlock>
                     <Button Classes="Rounded Primary Active">
                         <StackPanel>
-                            <unifiedIcon:UnifiedIcon Classes="Play" />
+                            <icons:UnifiedIcon Classes="Play" />
                             <TextBlock Text="Button" />
                             <Button Classes="Pill StandardPill Label">
                                 <StackPanel>
@@ -74,7 +74,7 @@
                     </Button>
                     <Button Classes="Rounded Primary Active" IsEnabled="False">
                         <StackPanel>
-                            <unifiedIcon:UnifiedIcon Classes="Play" />
+                            <icons:UnifiedIcon Classes="Play" />
                             <TextBlock Text="Button" />
                             <Button Classes="Pill StandardPill Label">
                                 <StackPanel>
@@ -91,7 +91,7 @@
                     <TextBlock>Rounded Primary SemiActive</TextBlock>
                     <Button Classes="Rounded Primary SemiActive">
                         <StackPanel>
-                            <unifiedIcon:UnifiedIcon Classes="Play" />
+                            <icons:UnifiedIcon Classes="Play" />
                             <TextBlock Text="Button" />
                             <Button Classes="Pill StandardPill Label">
                                 <StackPanel>
@@ -102,7 +102,7 @@
                     </Button>
                     <Button Classes="Rounded Primary SemiActive" IsEnabled="False">
                         <StackPanel>
-                            <unifiedIcon:UnifiedIcon Classes="Play" />
+                            <icons:UnifiedIcon Classes="Play" />
                             <TextBlock Text="Button" />
                             <Button Classes="Pill StandardPill Label">
                                 <StackPanel>
@@ -118,7 +118,7 @@
                     <TextBlock>Rounded Accent</TextBlock>
                     <Button Classes="Rounded Accent">
                         <StackPanel>
-                            <unifiedIcon:UnifiedIcon Classes="Play" />
+                            <icons:UnifiedIcon Classes="Play" />
                             <TextBlock Text="Button" />
                             <Button Classes="Pill StandardPill Label">
                                 <StackPanel>
@@ -129,7 +129,7 @@
                     </Button>
                     <Button Classes="Rounded Accent" IsEnabled="False">
                         <StackPanel>
-                            <unifiedIcon:UnifiedIcon Classes="Play" />
+                            <icons:UnifiedIcon Classes="Play" />
                             <TextBlock Text="Button" />
                             <Button Classes="Pill StandardPill Label">
                                 <StackPanel>
@@ -145,7 +145,7 @@
                     <TextBlock>Rounded Accent SemiActive</TextBlock>
                     <Button Classes="Rounded Accent SemiActive">
                         <StackPanel>
-                            <unifiedIcon:UnifiedIcon Classes="Play" />
+                            <icons:UnifiedIcon Classes="Play" />
                             <TextBlock Text="Button" />
                             <Button Classes="Pill StandardPill Label">
                                 <StackPanel>
@@ -156,7 +156,7 @@
                     </Button>
                     <Button Classes="Rounded Accent SemiActive" IsEnabled="False">
                         <StackPanel>
-                            <unifiedIcon:UnifiedIcon Classes="Play" />
+                            <icons:UnifiedIcon Classes="Play" />
                             <TextBlock Text="Button" />
                             <Button Classes="Pill StandardPill Label">
                                 <StackPanel>
@@ -214,7 +214,7 @@
             <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
 
-        <Style Selector="^ > StackPanel > unifiedIcon|UnifiedIcon">
+        <Style Selector="^ > StackPanel > icons|UnifiedIcon">
             <Setter Property="Size" Value="24" />
         </Style>
 

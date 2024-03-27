@@ -4,7 +4,7 @@
                                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:diagnostics="clr-namespace:NexusMods.App.UI.Controls.Diagnostics"
-                                xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon"
+                                xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
                                 mc:Ignorable="d" d:DesignWidth="980" d:DesignHeight="60"
                                 x:Class="NexusMods.App.UI.Controls.Diagnostics.DiagnosticEntryView">
     <Design.DataContext>
@@ -18,7 +18,7 @@
                     Classes="Spacing-2"
                     VerticalAlignment="Center">
 
-            <unifiedIcon:UnifiedIcon x:Name="SeverityIcon" Size="20" />
+            <icons:UnifiedIcon x:Name="SeverityIcon" Size="20" />
             <TextBlock x:Name="DescriptionText"
                        Classes="BodyMDBold"
                        VerticalAlignment="Center"/>

@@ -5,7 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
-    xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI"
+    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
     xmlns:downloads="clr-namespace:NexusMods.App.UI.Pages.Downloads"
     mc:Ignorable="d" d:DesignWidth="920" d:DesignHeight="664"
@@ -20,39 +20,39 @@
                 <StackPanel Grid.Column="1">
                     <Button x:Name="CancelButton">
                         <StackPanel>
-                            <unifiedIcon:UnifiedIcon Classes="RemoveCircleOutline" />
+                            <icons:UnifiedIcon Classes="RemoveCircleOutline" />
                             <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Cancel}"/>
                         </StackPanel>
                     </Button>
                     <Button x:Name="PauseButton">
                         <StackPanel>
-                            <unifiedIcon:UnifiedIcon Classes="PauseCircleOutline" />
+                            <icons:UnifiedIcon Classes="PauseCircleOutline" />
                             <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Pause}"/>
                         </StackPanel>
                     </Button>
                     <Button x:Name="ResumeButton">
                         <StackPanel>
-                            <unifiedIcon:UnifiedIcon Classes="PlayCircleOutline" />
+                            <icons:UnifiedIcon Classes="PlayCircleOutline" />
                             <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Resume}"/>
                         </StackPanel>
                     </Button>
                     <Line />
                     <Button x:Name="ResumeAllButton">
                         <StackPanel>
-                            <unifiedIcon:UnifiedIcon Classes="PlayCircleFilled" />
+                            <icons:UnifiedIcon Classes="PlayCircleFilled" />
                             <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Resume_All}"/>
                         </StackPanel>
                     </Button>
                     <Button x:Name="PauseAllButton">
                         <StackPanel>
-                            <unifiedIcon:UnifiedIcon Classes="PauseCircleFilled" />
+                            <icons:UnifiedIcon Classes="PauseCircleFilled" />
                             <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Pause_All}"/>
                         </StackPanel>
                     </Button>
                     <Line />
                     <Button x:Name="SettingsButton">
                         <StackPanel>
-                            <unifiedIcon:UnifiedIcon Classes="Cog" />
+                            <icons:UnifiedIcon Classes="Cog" />
                         </StackPanel>
                     </Button>
                 </StackPanel>

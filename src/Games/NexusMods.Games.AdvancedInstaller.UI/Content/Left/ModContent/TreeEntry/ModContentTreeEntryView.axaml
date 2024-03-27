@@ -6,7 +6,7 @@
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:resources="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Resources"
                                 xmlns:modContent="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.ModContent"
-                                xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI"
+                                xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
                                 mc:Ignorable="d" d:DesignWidth="710" d:DesignHeight="44"
                                 x:Class="NexusMods.Games.AdvancedInstaller.UI.ModContent.ModContentTreeEntryView">
     <Design.DataContext>
@@ -15,12 +15,12 @@
 
     <Grid ColumnDefinitions="*, Auto" Margin="0,5,0,5">
         <Grid.Styles>
-            <Style Selector="unifiedIcon|UnifiedIcon.FileTypeIcon">
+            <Style Selector="icons|UnifiedIcon.FileTypeIcon">
                 <Setter Property="Size" Value="18" />
                 <Setter Property="Margin" Value="8, 0, 0, 0" />
             </Style>
 
-            <Style Selector="unifiedIcon|UnifiedIcon.Close">
+            <Style Selector="icons|UnifiedIcon.Close">
                 <Setter Property="Size" Value="20" />
             </Style>
 
@@ -36,7 +36,7 @@
         <!-- Left Elements -->
         <StackPanel Grid.Column="0" Orientation="Horizontal" Name="FileElementPanel">
             <!-- File / Directory Icon -->
-            <unifiedIcon:UnifiedIcon Classes="FileTypeIcon" x:Name="EntryIcon" />
+            <icons:UnifiedIcon Classes="FileTypeIcon" x:Name="EntryIcon" />
 
             <!-- File Name -->
             <TextBlock Classes="BodyMDNormal" VerticalAlignment="Center"
@@ -59,7 +59,7 @@
             <Button Classes="Rounded Primary Active RightElements" HorizontalAlignment="Right" IsVisible="False"
                     x:Name="SelectLocationRoundedButton">
                 <StackPanel Orientation="Horizontal">
-                    <unifiedIcon:UnifiedIcon Classes="Close" x:Name="SelectLocationCloseIcon" />
+                    <icons:UnifiedIcon Classes="Close" x:Name="SelectLocationCloseIcon" />
                     <TextBlock Text="{x:Static resources:Language.SelectLocationButton_Select_location}"
                                x:Name="SelectLocationRoundedButtonTextBlock" />
                 </StackPanel>
@@ -69,7 +69,7 @@
             <Button Classes="Rounded Accent RightElements" HorizontalAlignment="Right" IsVisible="False"
                     x:Name="RemoveFromLocationButton">
                 <StackPanel Orientation="Horizontal">
-                    <unifiedIcon:UnifiedIcon Classes="Close" x:Name="RemoveFromLocationCloseIcon" />
+                    <icons:UnifiedIcon Classes="Close" x:Name="RemoveFromLocationCloseIcon" />
                     <TextBlock Text="temp Loc" x:Name="RemoveFromLocationButtonTextBlock" />
                 </StackPanel>
             </Button>
@@ -78,7 +78,7 @@
             <Button Classes="Rounded Primary SemiActive RightElements" HorizontalAlignment="Right" IsVisible="False"
                     x:Name="IncludeTransitionButton">
                 <StackPanel Orientation="Horizontal">
-                    <unifiedIcon:UnifiedIcon Classes="Close" x:Name="IncludeTransitionCloseIcon" />
+                    <icons:UnifiedIcon Classes="Close" x:Name="IncludeTransitionCloseIcon" />
                     <TextBlock Text="Include temp text" x:Name="IncludeTransitionButtonTextBlock" />
                 </StackPanel>
             </Button>
@@ -87,7 +87,7 @@
             <Button Classes="Rounded Accent SemiActive RightElements" HorizontalAlignment="Right" IsVisible="False"
                     x:Name="IncludedRemoveButton">
                 <StackPanel Orientation="Horizontal">
-                    <unifiedIcon:UnifiedIcon Classes="Close" x:Name="IncludedRemoveButtonCloseIcon" />
+                    <icons:UnifiedIcon Classes="Close" x:Name="IncludedRemoveButtonCloseIcon" />
                     <TextBlock Text="Included temp text" x:Name="IncludedRemoveButtonTextBlock" />
                 </StackPanel>
             </Button>

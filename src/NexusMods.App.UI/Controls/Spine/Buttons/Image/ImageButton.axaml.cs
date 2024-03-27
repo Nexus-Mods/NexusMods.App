@@ -1,7 +1,7 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.ReactiveUI;
-using NexusMods.App.UI.Controls.UnifiedIcon;
+using NexusMods.Icons;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Controls.Spine.Buttons.Image;

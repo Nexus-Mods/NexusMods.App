@@ -1,7 +1,7 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:fomod="clr-namespace:NexusMods.Games.FOMOD.UI;assembly=NexusMods.Games.FOMOD.UI"
-        xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI">
+        xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
     <Design.PreviewWith>
         <Border Padding="20">
             <fomod:GuidedInstallerStepView MinHeight="672" MinWidth="1232" MaxHeight="818" MaxWidth="1500"/>
@@ -19,7 +19,7 @@
             <Style Selector="^ Border#MultiOptionHeaderBorder">
                 <Setter Property="Padding" Value="0,0,0,16" />
             </Style>
-            <Style Selector="^ unifiedIcon|UnifiedIcon#MultiOptionHeaderIcon">
+            <Style Selector="^ icons|UnifiedIcon#MultiOptionHeaderIcon">
                 <Setter Property="Size" Value="20" />
                 <Setter Property="Margin" Value="0,0,8,8" />
             </Style>
@@ -38,7 +38,7 @@
                 <Setter Property="Padding" Value="16,12,16,12" />
                 <Setter Property="CornerRadius" Value="{StaticResource Rounded-t-lg}" />
             </Style>
-            <Style Selector="^ unifiedIcon|UnifiedIcon.PreviewIcon">
+            <Style Selector="^ icons|UnifiedIcon.PreviewIcon">
                 <Setter Property="Size" Value="18"/>
                 <Setter Property="Margin" Value="8,0,0,0" />
             </Style>
