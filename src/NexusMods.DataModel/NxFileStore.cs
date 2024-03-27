@@ -98,10 +98,13 @@ public class NxFileStore : IFileStore
     private unsafe void UpdateIndexes(NxUnpacker unpacker, Guid guid,
         AbsolutePath finalPath)
     {
+        var entries = unpacker.GetPathedFileEntries();
+        var items = GC.AllocateUninitializedArray<(IId, ArchivedFiles)>(entries.Length);
         Span<byte> buffer = stackalloc byte[sizeof(NativeFileEntryV1)];
 
-        foreach (var entry in unpacker.GetPathedFileEntries())
+        for (var x = 0; x < entries.Length; x++)
         {
+            var entry = entries[x];
             fixed (byte* ptr = buffer)
             {
                 var writer = new LittleEndianWriter(ptr);
@@ -116,9 +119,11 @@ public class NxFileStore : IFileStore
                 };
 
                 // TODO: Consider a bulk-put operation here
-                _store.Put(dbId, dbEntry);
+                items[x] = (dbId, dbEntry);
             }
         }
+
+        _store.PutAll(items.AsSpan());
     }
 
     [SkipLocalsInit]

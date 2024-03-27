@@ -26,6 +26,13 @@ public interface IDataStore
     public void Put<T>(IId id, T value) where T : Entity;
 
     /// <summary>
+    /// Places all entities inside the data store.
+    /// </summary>
+    /// <param name="items">The items to place in the data store.</param>
+    /// <typeparam name="T"></typeparam>
+    public void PutAll<T>(Span<(IId id, T value)> items) where T : Entity;
+
+    /// <summary>
     /// Retrieves an individual item with a specified ID from the data store.
     /// </summary>
     /// <param name="id">Unique identifier for the item.</param>
