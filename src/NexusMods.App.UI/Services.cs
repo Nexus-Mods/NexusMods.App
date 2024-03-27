@@ -12,7 +12,6 @@ using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadName;
 using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadSize;
 using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadStatus;
 using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadVersion;
-using NexusMods.App.UI.Controls.FoundGames;
 using NexusMods.App.UI.Controls.GameWidget;
 using NexusMods.App.UI.Controls.ModInfo.Error;
 using NexusMods.App.UI.Controls.ModInfo.Loading;
@@ -55,7 +54,6 @@ using DownloadNameView = NexusMods.App.UI.Controls.DownloadGrid.Columns.Download
 using DownloadSizeView = NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadSize.DownloadSizeView;
 using DownloadStatusView = NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadStatus.DownloadStatusView;
 using DownloadVersionView = NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadVersion.DownloadVersionView;
-using FoundGamesView = NexusMods.App.UI.Controls.FoundGames.FoundGamesView;
 using ImageButton = NexusMods.App.UI.Controls.Spine.Buttons.Image.ImageButton;
 using LoadingView = NexusMods.App.UI.Controls.ModInfo.Loading.LoadingView;
 using ModCategoryView = NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModCategory.ModCategoryView;
@@ -101,7 +99,6 @@ public static class Services
 
             .AddViewModel<DevelopmentBuildBannerViewModel, IDevelopmentBuildBannerViewModel>()
             .AddViewModel<DownloadsLeftMenuViewModel, IDownloadsLeftMenuViewModel>()
-            .AddViewModel<FoundGamesViewModel, IFoundGamesViewModel>()
             .AddViewModel<GameWidgetViewModel, IGameWidgetViewModel>()
             .AddViewModel<HomeLeftMenuViewModel, IHomeLeftMenuViewModel>()
             .AddViewModel<IconButtonViewModel, IIconButtonViewModel>()
@@ -140,7 +137,6 @@ public static class Services
             // Views
             .AddView<DevelopmentBuildBannerView, IDevelopmentBuildBannerViewModel>()
             .AddView<DownloadsLeftMenuView, IDownloadsLeftMenuViewModel>()
-            .AddView<FoundGamesView, IFoundGamesViewModel>()
             .AddView<GameWidget, IGameWidgetViewModel>()
             .AddView<HomeLeftMenuView, IHomeLeftMenuViewModel>()
             .AddView<IconButton, IIconButtonViewModel>()
