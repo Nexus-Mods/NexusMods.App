@@ -121,6 +121,7 @@ public class NxFileStore : IFileStore
         }
     }
 
+    [SkipLocalsInit]
     private IId IdFor(Hash hash, Guid guid)
     {
         Span<byte> buffer = stackalloc byte[24];
