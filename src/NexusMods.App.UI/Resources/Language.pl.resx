@@ -358,7 +358,7 @@
     </data>
     <data name="IngestButtonTextBlock_Text" xml:space="preserve">
         <value>ODŚWIEŻ</value>
-    <data>
+    </data>
     <data name="MyGamesView__NoGamesDetectedText" xml:space="preserve">
         <value>Wszystkie wspierane gry zostały dodane. Nie wykryto żadnych nowych gier.</value>
     </data>
