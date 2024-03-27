@@ -99,7 +99,6 @@ public class SqliteDataStore : IDataStore, IDisposable
 
     private void EnsureTables()
     {
-
         using var conn = _pool.RentDisposable();
 
         using (var pragma = conn.Value.CreateCommand())
@@ -144,12 +143,36 @@ public class SqliteDataStore : IDataStore, IDisposable
     }
 
     /// <inheritdoc />
+    public void PutAll<T>(Span<(IId id, T value)> items)  where T : Entity
+    {
+        if (_isDisposed)
+            throw new ObjectDisposedException(nameof(SqliteDataStore));
+
+        using var conn = _pool.RentDisposable();
+        using var tx = conn.Value.BeginTransaction();
+        foreach (var item in items)
+            PutOneItem(item.id, item.value, conn);
+
+        tx.Commit();
+
+        // We notify after DB has the item.
+        foreach (var item in items)
+            NotifyOfUpdatedId(item.id);
+    }
+
+    /// <inheritdoc />
     public void Put<T>(IId id, T value) where T : Entity
     {
         if (_isDisposed)
             throw new ObjectDisposedException(nameof(SqliteDataStore));
 
         using var conn = _pool.RentDisposable();
+        PutOneItem(id, value, conn);
+        NotifyOfUpdatedId(id);
+    }
+
+    private void PutOneItem<T>(IId id, T value, ObjectPoolDisposable<SqliteConnection> conn) where T : Entity
+    {
         using var cmd = conn.Value.CreateCommand();
         cmd.CommandText = _putStatements[value.Category];
 
@@ -162,8 +185,6 @@ public class SqliteDataStore : IDataStore, IDisposable
         {
             cmd.ExecuteNonQuery();
         }
-
-        NotifyOfUpdatedId(id);
     }
 
     private void NotifyOfUpdatedId(IId id)
