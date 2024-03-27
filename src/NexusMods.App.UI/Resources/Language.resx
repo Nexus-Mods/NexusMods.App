@@ -214,10 +214,10 @@
         <value>Add Mod (Advanced)</value>
     </data>
     <data name="MyGamesView__Ready_to_mod" xml:space="preserve">
-        <value>Ready to mod</value>
+        <value>Games Added</value>
     </data>
     <data name="MyGamesView__Detected_games" xml:space="preserve">
-        <value>Detected games</value>
+        <value>Detected Games</value>
     </data>
     <data name="Button_Manage" xml:space="preserve">
         <value>Manage</value>

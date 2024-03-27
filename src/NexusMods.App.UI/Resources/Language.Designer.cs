@@ -847,7 +847,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Detected games.
+        ///   Looks up a localized string similar to Detected Games.
         /// </summary>
         public static string MyGamesView__Detected_games {
             get {

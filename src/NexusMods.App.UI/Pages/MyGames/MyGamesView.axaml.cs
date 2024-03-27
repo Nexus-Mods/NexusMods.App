@@ -12,12 +12,13 @@ public partial class MyGamesView : ReactiveUserControl<IMyGamesViewModel>
 
         this.WhenActivated(d =>
         {
-            this.WhenAnyValue(view => view.ViewModel!.FoundGames)
-                .BindTo(this, view => view.FoundGamesViewHost.ViewModel)
+            
+            this.WhenAnyValue(view => view.ViewModel!.ManagedGames)
+                .BindToView(this, view => view.ManagedGamesItemsControl.ItemsSource)
                 .DisposeWith(d);
-
-            this.WhenAnyValue(view => view.ViewModel!.AllGames)
-                .BindTo(this, view => view.AllGamesViewHost.ViewModel)
+            
+            this.WhenAnyValue(view => view.ViewModel!.DetectedGames)
+                .BindToView(this, view => view.DetectedGamesItemsControl.ItemsSource)
                 .DisposeWith(d);
         });
     }
