@@ -377,4 +377,7 @@
     <data name="GameWidget__View" xml:space="preserve">
         <value>View</value>
     </data>
+    <data name="GameWidget__Removing_game" xml:space="preserve">
+        <value>Removing game</value>
+    </data>
 </root>

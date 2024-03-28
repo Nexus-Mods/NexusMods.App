@@ -68,4 +68,7 @@ public class GameWidgetViewModel : AViewModel<IGameWidgetViewModel>, IGameWidget
 
     [Reactive]
     public ICommand? SecondaryButton { get; set; }
+
+    [Reactive]
+    public GameWidgetState State { get; set; }
 }

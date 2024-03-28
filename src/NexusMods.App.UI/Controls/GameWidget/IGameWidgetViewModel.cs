@@ -11,4 +11,15 @@ public interface IGameWidgetViewModel : IViewModelInterface
     public Bitmap Image { get; }
     public ICommand PrimaryButton { get; set; }
     public ICommand? SecondaryButton { get; set; }
+
+    public GameWidgetState State { get; set; }
 }
+
+public enum GameWidgetState : byte
+{
+    DetectedGame,
+    AddingGame,
+    ManagedGame,
+    RemovingGame,
+}
+

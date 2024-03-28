@@ -510,6 +510,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Removing game.
+        /// </summary>
+        public static string GameWidget__Removing_game {
+            get {
+                return ResourceManager.GetString("GameWidget__Removing_game", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to View.
         /// </summary>
         public static string GameWidget__View {

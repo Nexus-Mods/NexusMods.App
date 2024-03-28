@@ -14,7 +14,7 @@
     <Style Selector="ui|GameWidget">
         <Setter Property="ClipToBounds" Value="False" />
 
-        <Style Selector="^ Border#DropShadow1Border">
+        <Style Selector="^ Border#GameWidgetBorder">
             <Setter Property="CornerRadius" Value="{StaticResource Rounded-3xl}" />
             <Setter Property="BoxShadow">
                 <extensions:BoxShadow

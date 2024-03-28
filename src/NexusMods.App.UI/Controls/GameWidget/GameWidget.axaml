@@ -21,7 +21,7 @@
     <Border
         Height="228"
         Width="180"
-        x:Name="DropShadow1Border">
+        x:Name="GameWidgetBorder">
         <Border x:Name="MainBorder"
             Height="228"
             Width="180">
@@ -56,8 +56,8 @@
                             Margin="0"
                             x:Name="SeparationLine"/>
                         
-                        <!-- Add game -->
-                        <StackPanel x:Name="AddGameStackPanel"
+                        <!-- DetectedGame -->
+                        <StackPanel x:Name="DetectedGameStackPanel"
                             Grid.Row="2"
                             Margin="0,16,0,0"
                             Orientation="Horizontal"
@@ -65,15 +65,15 @@
                             IsVisible="False">
                             <Button Classes="Rounded Primary" x:Name="AddGameButton">
                                 <StackPanel Orientation="Horizontal">
-                                    <icons:UnifiedIcon Size="20" Classes="AddCircle" />
+                                    <icons:UnifiedIcon Size="20" Classes="Add" />
                                     <TextBlock Classes="BodyMDNormal" 
                                                Text="{x:Static resources:Language.GameWidget__Add_game}"/>
                                 </StackPanel>
                             </Button>
                         </StackPanel>
                         
-                        <!-- Adding game spinner -->
-                        <StackPanel x:Name="AddingGameSpinnerStackPanel"
+                        <!-- AddingGame -->
+                        <StackPanel x:Name="AddingGameStackPanel"
                             Grid.Row="2"
                             Margin="0,16,0,0"
                             Orientation="Horizontal"
@@ -87,28 +87,52 @@
                                        Text="{x:Static resources:Language.GameWidget__Adding_game}"/>
                         </StackPanel>
                         
-                        <StackPanel x:Name="ViewGameStackPanel"
+                        <!-- ManagedGame -->
+                        <Grid x:Name="ManagedGameStackPanel"
+                                    Grid.Row="2"
+                                    Margin="0,16,0,0"
+                                    VerticalAlignment="Center"
+                                    IsVisible="False"
+                                    RowDefinitions="*">
+                            <Button Classes="Rounded Primary" x:Name="ViewGameButton" Margin="-6,0,4,0">
+                                <StackPanel Orientation="Horizontal">
+                                    <icons:UnifiedIcon Size="20" Classes="Check" />
+                                    <TextBlock Classes="BodyMDNormal" 
+                                               Text="{x:Static resources:Language.GameWidget__View}"/>
+                                </StackPanel>
+                            </Button>
+                            <StackPanel Orientation="Horizontal"
+                                        HorizontalAlignment="Right"
+                                        Classes="Spacing-1"
+                                        Margin="4,0,-6,0">
+                                <Button Classes="Rounded Primary"
+                                        HorizontalAlignment="Right"
+                                        x:Name="AddLoadoutButton"
+                                        IsVisible="True">
+                                    <icons:UnifiedIcon Classes="Add" />
+                                </Button>
+                                <Button Classes="Rounded Primary" 
+                                        HorizontalAlignment="Right"
+                                        x:Name="RemoveGameButton">
+                                    <icons:UnifiedIcon Classes="DeleteForever" />
+                                </Button>
+                            </StackPanel>
+                        </Grid>
+                        
+                        <!-- RemovingGame -->
+                        <StackPanel x:Name="RemovingGameStackPanel"
                                     Grid.Row="2"
                                     Margin="0,16,0,0"
                                     Orientation="Horizontal"
                                     VerticalAlignment="Center"
-                                    IsVisible="True">
-                            <StackPanel Orientation="Horizontal"
-                                        Classes="Spacing-2">
-                                <Button Classes="Rounded Primary" x:Name="ViewGameButton">
-                                    <StackPanel Orientation="Horizontal">
-                                        <icons:UnifiedIcon Size="20" Classes="Check" />
-                                        <TextBlock Classes="BodyMDNormal" 
-                                                   Text="{x:Static resources:Language.GameWidget__View}"/>
-                                    </StackPanel>
-                                </Button>
-                                <Button Classes="Rounded Primary" x:Name="AddLoadoutButton">
-                                        <icons:UnifiedIcon Classes="AddCircle" />
-                                </Button>
-                            </StackPanel>
+                                    Classes="Spacing-1"
+                                    IsVisible="False">
+                            <progressRing:ProgressRing Height="24" Width="24"
+                                                       VerticalAlignment="Center"/>
+                            <TextBlock Classes="BodyMDNormal" 
+                                       VerticalAlignment="Center"
+                                       Text="{x:Static resources:Language.GameWidget__Removing_game}"/>
                         </StackPanel>
-                        
-                        
                         
                     </Grid>
                 </Border>

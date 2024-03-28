@@ -15,10 +15,14 @@ public class GameWidgetDesignViewModel : AViewModel<IGameWidgetViewModel>, IGame
     public Bitmap Image { get; }
     public ICommand PrimaryButton { get; set; } = Initializers.ICommand;
     public ICommand? SecondaryButton { get; set; }
+    
+    [Reactive]
+    public GameWidgetState State { get; set; }
 
     public GameWidgetDesignViewModel()
     {
         Image = new Bitmap(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/cyberpunk_game.png")));
         SecondaryButton = ReactiveCommand.Create(() => { });
+        State = GameWidgetState.DetectedGame;
     }
 }
