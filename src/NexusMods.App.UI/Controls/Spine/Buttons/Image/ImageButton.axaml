@@ -10,7 +10,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon">
+    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
     <Design.DataContext>
         <buttons:ImageButtonDesignViewModel />
     </Design.DataContext>
@@ -25,13 +25,13 @@
         </ToolTip.Tip>
 
         <Grid>
-            <unifiedIcon:UnifiedIcon
+            <icons:UnifiedIcon
                 Size="50"
                 x:Name="Image">
-                <unifiedIcon:UnifiedIcon.Clip>
+                <icons:UnifiedIcon.Clip>
                     <EllipseGeometry Rect="0, 0, 50, 50" />
-                </unifiedIcon:UnifiedIcon.Clip>
-            </unifiedIcon:UnifiedIcon>
+                </icons:UnifiedIcon.Clip>
+            </icons:UnifiedIcon>
             <Border
                 Height="50"
                 Width="50" />

@@ -7,7 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:download="clr-namespace:NexusMods.App.UI.Controls.Spine.Buttons.Download"
-    xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI"
+    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
     mc:Ignorable="d" d:DesignWidth="64" d:DesignHeight="64"
     x:Class="NexusMods.App.UI.Controls.Spine.Buttons.Download.SpineDownloadButtonView">
     <Design.DataContext>
@@ -20,7 +20,7 @@
         <Grid>
             <Border></Border>
             <Arc x:Name="ProgressArc"></Arc>
-            <unifiedIcon:UnifiedIcon Size="24" Classes="Download"/>
+            <icons:UnifiedIcon Size="24" Classes="Download"/>
             <StackPanel>
                 <TextBlock Classes="Number" x:Name="NumberTextBlock"/>
                 <TextBlock Classes="Units" x:Name="UnitsTextBlock"/>

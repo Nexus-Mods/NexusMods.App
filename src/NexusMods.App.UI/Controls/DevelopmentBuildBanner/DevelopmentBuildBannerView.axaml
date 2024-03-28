@@ -10,13 +10,13 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:developmentBuildBanner="clr-namespace:NexusMods.App.UI.Controls.DevelopmentBuildBanner"
-    xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon">
+    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
     <Design.DataContext>
         <developmentBuildBanner:DevelopmentBuildBannerViewModel />
     </Design.DataContext>
     <Border Classes="DangerWeak">
         <StackPanel Orientation="Horizontal">
-            <unifiedIcon:UnifiedIcon
+            <icons:UnifiedIcon
                 Classes="Alert"
                 Size="20"
                 Margin="30 2 8 2"

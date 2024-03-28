@@ -4,7 +4,7 @@
                                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                                 xmlns:reactiveUi="http://reactiveui.net"
-                                xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI"
+                                xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
                                 xmlns:resources="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Resources"
                                 xmlns:preview="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Preview"
                                 mc:Ignorable="d" d:DesignWidth="710" d:DesignHeight="44"
@@ -15,12 +15,12 @@
 
     <Grid ColumnDefinitions="*, Auto" Margin="0,5,0,5">
         <Grid.Styles>
-            <Style Selector="unifiedIcon|UnifiedIcon.FileTypeIcon">
+            <Style Selector="icons|UnifiedIcon.FileTypeIcon">
                 <Setter Property="Size" Value="18" />
                 <Setter Property="Margin" Value="8, 0, 8, 0" />
             </Style>
 
-            <Style Selector="unifiedIcon|UnifiedIcon.Close">
+            <Style Selector="icons|UnifiedIcon.Close">
                 <Setter Property="Size" Value="20" />
             </Style>
 
@@ -41,7 +41,7 @@
         <StackPanel Grid.Column="0" Orientation="Horizontal" x:Name="FileElementGrid">
 
             <!-- File / Directory Icon -->
-            <unifiedIcon:UnifiedIcon Classes="FileTypeIcon" x:Name="EntryIcon" />
+            <icons:UnifiedIcon Classes="FileTypeIcon" x:Name="EntryIcon" />
 
             <!-- File Name -->
             <TextBlock Classes="BodyMDNormal" VerticalAlignment="Center"
@@ -62,7 +62,7 @@
                 <!-- Dupe Folder Pill Label -->
                 <Button Classes="Pill Light Label Hug PillElement" IsVisible="False" x:Name="DupeFolderPill">
                     <StackPanel>
-                        <unifiedIcon:UnifiedIcon Classes="Alert" />
+                        <icons:UnifiedIcon Classes="Alert" />
                         <TextBlock Text="{x:Static resources:Language.Pill_DUPE_FOLDER}" />
                     </StackPanel>
                 </Button>
@@ -70,7 +70,7 @@
                 <!-- Folder Merged Pill Label -->
                 <Button Classes="Pill Light Label Hug PillElement" IsVisible="False" x:Name="FolderMergedPill">
                     <StackPanel>
-                        <unifiedIcon:UnifiedIcon Classes="Check" />
+                        <icons:UnifiedIcon Classes="Check" />
                         <TextBlock Text="{x:Static resources:Language.Pill_FOLDER_MERGED}" />
                     </StackPanel>
                 </Button>
@@ -83,7 +83,7 @@
         <!-- X Button -->
         <Button Grid.Column="1" Classes="Rounded Primary RightElements" HorizontalAlignment="Right"
                 x:Name="XRoundedButton">
-            <unifiedIcon:UnifiedIcon Classes="Close" x:Name="StandaloneCloseIcon" />
+            <icons:UnifiedIcon Classes="Close" x:Name="StandaloneCloseIcon" />
         </Button>
     </Grid>
 
