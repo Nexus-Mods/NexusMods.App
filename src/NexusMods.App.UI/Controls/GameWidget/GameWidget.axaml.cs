@@ -18,28 +18,14 @@ public partial class GameWidget : ReactiveUserControl<IGameWidgetViewModel>
         this.WhenActivated(d =>
             {
                 this.WhenAnyValue(view => view.ViewModel!.State)
-                    .Select(state => state == GameWidgetState.DetectedGame)
-                    .BindToView(this, view => view.DetectedGameStackPanel.IsVisible)
-                    .DisposeWith(d);
-                
-                this.WhenAnyValue(view => view.ViewModel!.State)
-                    .Select(state => state == GameWidgetState.AddingGame)
-                    .BindToView(this, view => view.AddingGameStackPanel.IsVisible)
-                    .DisposeWith(d);
-                
-                this.WhenAnyValue(view => view.ViewModel!.State)
-                    .Select(state => state == GameWidgetState.ManagedGame)
-                    .BindToView(this, view => view.ManagedGameStackPanel.IsVisible)
-                    .DisposeWith(d);
-                
-                this.WhenAnyValue(view => view.ViewModel!.State)
-                    .Select(state => state == GameWidgetState.RemovingGame)
-                    .BindToView(this, view => view.RemovingGameStackPanel.IsVisible)
-                    .DisposeWith(d);
-                
-                this.WhenAnyValue(view => view.ViewModel!.State)
-                    .Select(state => state is GameWidgetState.AddingGame or GameWidgetState.RemovingGame)
-                    .BindToClasses(GameWidgetBorder, "Disabled")
+                    .Subscribe(state =>
+                    {
+                        DetectedGameStackPanel.IsVisible = state == GameWidgetState.DetectedGame;
+                        AddingGameStackPanel.IsVisible = state == GameWidgetState.AddingGame;
+                        ManagedGameStackPanel.IsVisible = state == GameWidgetState.ManagedGame;
+                        RemovingGameStackPanel.IsVisible = state == GameWidgetState.RemovingGame;
+                        GameWidgetBorder.Classes.ToggleIf("Disabled", state is GameWidgetState.AddingGame or GameWidgetState.RemovingGame);
+                    })
                     .DisposeWith(d);
 
                 this.OneWayBind(ViewModel, vm => vm.Image, v => v.GameImage.Source)
