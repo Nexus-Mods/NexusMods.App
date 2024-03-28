@@ -5,7 +5,7 @@
     x:Class="NexusMods.App.UI.LeftMenu.Items.LaunchButtonView"
     x:TypeArguments="items:ILaunchButtonViewModel"
     xmlns="https://github.com/avaloniaui"
-    xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI"
+    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:items="clr-namespace:NexusMods.App.UI.LeftMenu.Items"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -22,7 +22,7 @@
             ClipToBounds="False"
             x:Name="LaunchButton">
             <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
-                <unifiedIcon:UnifiedIcon Classes="Play" x:Name="LaunchIcon" />
+                <icons:UnifiedIcon Classes="Play" x:Name="LaunchIcon" />
                 <TextBlock x:Name="LaunchText" />
             </StackPanel>
         </Button>

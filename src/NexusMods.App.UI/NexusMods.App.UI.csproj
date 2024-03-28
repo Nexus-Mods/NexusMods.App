@@ -82,6 +82,7 @@
         <ProjectReference Include="..\Extensions\NexusMods.Extensions.DynamicData\NexusMods.Extensions.DynamicData.csproj" />
         <ProjectReference Include="..\Networking\NexusMods.Networking.Downloaders\NexusMods.Networking.Downloaders.csproj" />
         <ProjectReference Include="..\NexusMods.App.BuildInfo\NexusMods.App.BuildInfo.csproj" />
+        <ProjectReference Include="..\NexusMods.Icons\NexusMods.Icons.csproj" />
     </ItemGroup>
 
     <ItemGroup>

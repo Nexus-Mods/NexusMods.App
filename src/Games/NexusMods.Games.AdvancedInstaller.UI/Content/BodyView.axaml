@@ -5,7 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
-    xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI"
+    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
     xmlns:resources="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Resources"
     xmlns:ui="clr-namespace:NexusMods.Games.AdvancedInstaller.UI"
     mc:Ignorable="d" d:DesignWidth="1184" d:DesignHeight="492"
@@ -30,7 +30,7 @@
                 <Setter Property="Margin" Value="0,16,0,0" />
             </Style>
 
-            <Style Selector="unifiedIcon|UnifiedIcon.CentralIcon">
+            <Style Selector="icons|UnifiedIcon.CentralIcon">
                 <Setter Property="Margin" Value="16,0,16,0" />
                 <Setter Property="Size" Value="24" />
             </Style>
@@ -66,7 +66,7 @@
                 </Border>
 
                 <!-- Arrow to Install Location Preview -->
-                <unifiedIcon:UnifiedIcon Classes="Play ForegroundSubdued CentralIcon" Grid.Column="1" x:Name="PlayArrowIcon" />
+                <icons:UnifiedIcon Classes="Play ForegroundSubdued CentralIcon" Grid.Column="1" x:Name="PlayArrowIcon" />
 
                 <!-- Install Location Preview -->
                 <Border Classes="Rounded-lg" Grid.Column="2" x:Name="ResultsBorder">

@@ -11,7 +11,7 @@
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
-    xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon"
+    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
     xmlns:progressRing="clr-namespace:NexusMods.App.UI.Controls.ProgressRing">
 
     <Design.DataContext>
@@ -65,7 +65,7 @@
                             IsVisible="False">
                             <Button Classes="Rounded Primary" x:Name="AddGameButton">
                                 <StackPanel Orientation="Horizontal">
-                                    <unifiedIcon:UnifiedIcon Size="20" Classes="AddCircle" />
+                                    <icons:UnifiedIcon Size="20" Classes="AddCircle" />
                                     <TextBlock Classes="BodyMDNormal" 
                                                Text="{x:Static resources:Language.GameWidget__Add_game}"/>
                                 </StackPanel>
@@ -97,13 +97,13 @@
                                         Classes="Spacing-2">
                                 <Button Classes="Rounded Primary" x:Name="ViewGameButton">
                                     <StackPanel Orientation="Horizontal">
-                                        <unifiedIcon:UnifiedIcon Size="20" Classes="Check" />
+                                        <icons:UnifiedIcon Size="20" Classes="Check" />
                                         <TextBlock Classes="BodyMDNormal" 
                                                    Text="{x:Static resources:Language.GameWidget__View}"/>
                                     </StackPanel>
                                 </Button>
                                 <Button Classes="Rounded Primary" x:Name="AddLoadoutButton">
-                                        <unifiedIcon:UnifiedIcon Classes="AddCircle" />
+                                        <icons:UnifiedIcon Classes="AddCircle" />
                                 </Button>
                             </StackPanel>
                         </StackPanel>

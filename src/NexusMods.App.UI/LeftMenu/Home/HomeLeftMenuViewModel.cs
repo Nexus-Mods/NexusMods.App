@@ -1,11 +1,11 @@
 using System.Collections.ObjectModel;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
-using NexusMods.App.UI.Icons;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.Pages.MyGames;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.Icons;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.LeftMenu.Home;
@@ -26,7 +26,9 @@ public class HomeLeftMenuViewModel : AViewModel<IHomeLeftMenuViewModel>, IHomeLe
         {
             new IconViewModel
             {
-                Name = Language.MyGames, Icon = IconType.Bookmark, Activate = ReactiveCommand.Create(() =>
+                Name = Language.MyGames,
+                Icon = IconValues.Game,
+                Activate = ReactiveCommand.Create(() =>
                 {
                     var pageData = new PageData
                     {

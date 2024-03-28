@@ -5,7 +5,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:ui="clr-namespace:NexusMods.Games.FOMOD.UI"
-    xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI"
+    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
     xmlns:resources="clr-namespace:NexusMods.Games.FOMOD.UI.Resources"
     mc:Ignorable="d" d:DesignWidth="1232" d:DesignHeight="672"
     x:Class="NexusMods.Games.FOMOD.UI.GuidedInstallerStepView">
@@ -20,7 +20,7 @@
                 <Border Grid.Row="0" x:Name="MultiOptionHeaderBorder">
                     <StackPanel x:Name="MultiOptionHeaderStackPanel" Orientation="Horizontal">
 
-                        <unifiedIcon:UnifiedIcon x:Name="MultiOptionHeaderIcon" Classes="Tune"/>
+                        <icons:UnifiedIcon x:Name="MultiOptionHeaderIcon" Classes="Tune"/>
                         <TextBlock x:Name="MultiOptionHeaderTextBlock" Classes="BodyLGBold"
                                    Text="{x:Static resources:Language.MultiOptionHeader_Multi_Otion_Mod}" />
 
@@ -63,9 +63,9 @@
 
                                         <TextBlock Grid.Column="0" x:Name="PreviewTitleTextBox" Classes="BodyXLBold"
                                                    VerticalAlignment="Center"/>
-                                        <unifiedIcon:UnifiedIcon Grid.Column="2" x:Name="PreviewHeaderDescriptionIcon"
+                                        <icons:UnifiedIcon Grid.Column="2" x:Name="PreviewHeaderDescriptionIcon"
                                                     Classes="Description PreviewIcon" VerticalAlignment="Center" />
-                                        <unifiedIcon:UnifiedIcon Grid.Column="1" x:Name="PreviewHeaderImageIcon"
+                                        <icons:UnifiedIcon Grid.Column="1" x:Name="PreviewHeaderImageIcon"
                                                     Classes="Image PreviewIcon" VerticalAlignment="Center" />
 
                                     </Grid>

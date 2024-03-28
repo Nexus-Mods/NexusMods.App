@@ -1,6 +1,6 @@
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
-using NexusMods.App.UI.Controls.UnifiedIcon;
+using NexusMods.Icons;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 

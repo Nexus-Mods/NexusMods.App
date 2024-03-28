@@ -10,7 +10,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI">
+    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
     <Design.DataContext>
         <icon:IconButtonDesignViewModel />
     </Design.DataContext>
@@ -26,7 +26,7 @@
         <Button.Template>
             <ControlTemplate>
                 <Grid>
-                    <unifiedIcon:UnifiedIcon
+                    <icons:UnifiedIcon
                         Classes="HelpCircle"
                         Size="20"
                         HorizontalAlignment="Center"
