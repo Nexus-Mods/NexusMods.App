@@ -64,9 +64,10 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                         {
                             var vm = _provider.GetRequiredService<IGameWidgetViewModel>();
                             vm.Installation = install;
-                            vm.PrimaryButton = ReactiveCommand.CreateFromTask(
+                            vm.AddGameCommand = ReactiveCommand.CreateFromTask(
                                 async () => { await Task.Run(async () => await ManageGame(install)); }
                             );
+                            vm.State = GameWidgetState.ManagedGame;
                             return vm;
                         }
                     )
@@ -80,9 +81,10 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                         {
                             var vm = _provider.GetRequiredService<IGameWidgetViewModel>();
                             vm.Installation = install;
-                            vm.PrimaryButton = ReactiveCommand.CreateFromTask(
+                            vm.AddGameCommand = ReactiveCommand.CreateFromTask(
                                 async () => { await Task.Run(async () => await ManageGame(install)); }
                             );
+                            vm.State = GameWidgetState.DetectedGame;
                             return vm;
                         }
                     )
