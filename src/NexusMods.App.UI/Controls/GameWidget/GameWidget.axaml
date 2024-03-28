@@ -1,5 +1,4 @@
 ﻿<reactiveUi:ReactiveUserControl
-    Classes="AddGame"
     d:DesignHeight="240"
     d:DesignWidth="200"
     mc:Ignorable="d"
@@ -12,7 +11,8 @@
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
-    xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon">
+    xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon"
+    xmlns:progressRing="clr-namespace:NexusMods.App.UI.Controls.ProgressRing">
 
     <Design.DataContext>
         <gameWidget:GameWidgetDesignViewModel />
@@ -22,8 +22,7 @@
         Height="228"
         Width="180"
         x:Name="DropShadow1Border">
-        <Border
-            Classes="MainBorder"
+        <Border x:Name="MainBorder"
             Height="228"
             Width="180">
             <Grid RowDefinitions="106, *">
@@ -38,7 +37,7 @@
                     Grid.Row="0"
                     Width="180"
                     x:Name="GameImage" />
-                <Border Classes="Background" Grid.Row="1">
+                <Border Grid.Row="1">
                     <Grid RowDefinitions="Auto, 1,  *"
                           Margin="16,0,16,0"
                           VerticalAlignment="Top"
@@ -56,20 +55,61 @@
                             Grid.Row="1"
                             Margin="0"
                             x:Name="SeparationLine"/>
-                        <StackPanel
+                        
+                        <!-- Add game -->
+                        <StackPanel x:Name="AddGameStackPanel"
                             Grid.Row="2"
                             Margin="0,16,0,0"
                             Orientation="Horizontal"
-                            VerticalAlignment="Center">
-                            <Button Classes="Rounded Primary" x:Name="PrimaryButton">
+                            VerticalAlignment="Center"
+                            IsVisible="False">
+                            <Button Classes="Rounded Primary" x:Name="AddGameButton">
                                 <StackPanel Orientation="Horizontal">
                                     <unifiedIcon:UnifiedIcon Size="20" Classes="AddCircle" />
-                                    <TextBlock
-                                        Text="{x:Static resources:Language.GameWidget__Add_game}">
-                                    </TextBlock>
+                                    <TextBlock Classes="BodyMDNormal" 
+                                               Text="{x:Static resources:Language.GameWidget__Add_game}"/>
                                 </StackPanel>
                             </Button>
                         </StackPanel>
+                        
+                        <!-- Adding game spinner -->
+                        <StackPanel x:Name="AddingGameSpinnerStackPanel"
+                            Grid.Row="2"
+                            Margin="0,16,0,0"
+                            Orientation="Horizontal"
+                            VerticalAlignment="Center"
+                            Classes="Spacing-1"
+                            IsVisible="False">
+                            <progressRing:ProgressRing Height="24" Width="24"
+                                                       VerticalAlignment="Center"/>
+                            <TextBlock Classes="BodyMDNormal" 
+                                       VerticalAlignment="Center"
+                                       Text="{x:Static resources:Language.GameWidget__Adding_game}"/>
+                        </StackPanel>
+                        
+                        <StackPanel x:Name="ViewGameStackPanel"
+                                    Grid.Row="2"
+                                    Margin="0,16,0,0"
+                                    Orientation="Horizontal"
+                                    VerticalAlignment="Center"
+                                    IsVisible="True">
+                            <StackPanel Orientation="Horizontal"
+                                        Classes="Spacing-2">
+                                <Button Classes="Rounded Primary" x:Name="ViewGameButton">
+                                    <StackPanel Orientation="Horizontal">
+                                        <unifiedIcon:UnifiedIcon Size="20" Classes="Check" />
+                                        <TextBlock Classes="BodyMDNormal" 
+                                                   Text="{x:Static resources:Language.GameWidget__View}"/>
+                                    </StackPanel>
+                                </Button>
+                                <Button Classes="Rounded Primary" x:Name="AddLoadoutButton">
+                                        <unifiedIcon:UnifiedIcon Classes="AddCircle" />
+                                </Button>
+                            </StackPanel>
+                        </StackPanel>
+                        
+                        
+                        
                     </Grid>
                 </Border>
             </Grid>

@@ -14,7 +14,7 @@
     <Style Selector="ui|GameWidget">
         <Setter Property="ClipToBounds" Value="False" />
 
-        <Style Selector="^ > Border">
+        <Style Selector="^ Border#DropShadow1Border">
             <Setter Property="CornerRadius" Value="{StaticResource Rounded-3xl}" />
             <Setter Property="BoxShadow">
                 <extensions:BoxShadow
@@ -24,7 +24,7 @@
             </Setter>
         </Style>
 
-        <Style Selector="^ Border.MainBorder">
+        <Style Selector="^ Border#MainBorder">
             <Setter Property="CornerRadius" Value="{StaticResource Rounded-3xl}" />
             <Setter Property="ClipToBounds" Value="True" />
         </Style>
@@ -39,7 +39,7 @@
             <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
         </Style>
 
-        <Style Selector="^ Button.FirstButton unifiedIcon|UnifiedIcon">
+        <Style Selector="^ Button#AddGameButton unifiedIcon|UnifiedIcon">
             <Setter Property="Size" Value="20" />
             <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
         </Style>
