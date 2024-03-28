@@ -1,4 +1,4 @@
-using System.Windows.Input;
+using System.Reactive;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using NexusMods.Abstractions.GameLocators;
@@ -13,16 +13,15 @@ public class GameWidgetDesignViewModel : AViewModel<IGameWidgetViewModel>, IGame
     public GameInstallation Installation { get; set; } = GameInstallation.Empty;
     public string Name { get; } = "SOME CYBERPUNK GAME WITH A LONG NAME";
     public Bitmap Image { get; }
-    public ICommand PrimaryButton { get; set; } = Initializers.ICommand;
-    public ICommand? SecondaryButton { get; set; }
-    
+    public ReactiveCommand<Unit,Unit> AddGameCommand { get; set; } = ReactiveCommand.Create(() => { });
+    public ReactiveCommand<Unit, Unit> ViewGameCommand { get; set; } = ReactiveCommand.Create(() => { });
+
     [Reactive]
     public GameWidgetState State { get; set; }
 
     public GameWidgetDesignViewModel()
     {
         Image = new Bitmap(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/cyberpunk_game.png")));
-        SecondaryButton = ReactiveCommand.Create(() => { });
         State = GameWidgetState.DetectedGame;
     }
 }

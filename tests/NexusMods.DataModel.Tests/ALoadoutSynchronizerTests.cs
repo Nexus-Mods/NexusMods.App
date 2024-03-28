@@ -501,7 +501,7 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
 
         flattenedAgain[deletedFile].Should().BeNull("the file should have been deleted");
 
-        await _synchronizer.BackupNewFiles(loadout, fileTree);
+        await _synchronizer.BackupNewFiles(loadout.Installation, fileTree);
 
         (await FileStore.HaveFile(new byte[] { 0x04, 0x05, 0x06 }.XxHash64()))
             .Should().BeTrue("the file should have been backed up");

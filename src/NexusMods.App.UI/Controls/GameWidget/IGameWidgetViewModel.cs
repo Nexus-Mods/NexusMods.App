@@ -1,6 +1,7 @@
-using System.Windows.Input;
+using System.Reactive;
 using Avalonia.Media.Imaging;
 using NexusMods.Abstractions.GameLocators;
+using ReactiveUI;
 
 namespace NexusMods.App.UI.Controls.GameWidget;
 
@@ -9,8 +10,9 @@ public interface IGameWidgetViewModel : IViewModelInterface
     public GameInstallation Installation { get; set; }
     public string Name { get; }
     public Bitmap Image { get; }
-    public ICommand PrimaryButton { get; set; }
-    public ICommand? SecondaryButton { get; set; }
+    public ReactiveCommand<Unit,Unit> AddGameCommand { get; set; }
+    public ReactiveCommand<Unit,Unit> ViewGameCommand { get; set; }
+    
 
     public GameWidgetState State { get; set; }
 }

@@ -42,9 +42,15 @@ public partial class GameWidget : ReactiveUserControl<IGameWidgetViewModel>
                 this.OneWayBind(ViewModel, vm => vm.Name, v => v.NameTextBlock.Text)
                     .DisposeWith(d);
 
-                this.BindCommand(ViewModel, vm => vm.PrimaryButton, v => v.AddGameButton)
+                this.BindCommand(ViewModel, vm => vm.AddGameCommand, v => v.AddGameButton)
                     .DisposeWith(d);
                 
+                this.BindCommand(ViewModel, vm => vm.ViewGameCommand, v => v.ViewGameButton)
+                    .DisposeWith(d);
+                
+                // Adding a game is same as adding a loadout for now
+                this.BindCommand(ViewModel, vm => vm.AddGameCommand, v => v.AddLoadoutButton)
+                    .DisposeWith(d);
             }
         );
     }
