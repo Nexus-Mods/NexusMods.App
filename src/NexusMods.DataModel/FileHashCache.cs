@@ -1,4 +1,6 @@
+using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.DiskState;
@@ -82,6 +84,7 @@ public class FileHashCache : IFileHashCache
 
         activity.SetMax(allFiles.Sum(f => f.Size));
 
+        var toPersist = new List<(IId, byte[] vSpan)>();
         var results = await allFiles.ParallelForEach(async (info, innerToken) =>
         {
             if (TryGetCached(info.Path, out var found))
@@ -92,11 +95,16 @@ public class FileHashCache : IFileHashCache
                 }
             }
             var hashed = await info.Path.XxHash64Async(activity, innerToken);
-            PutCached(info.Path, new FileHashCacheEntry(info.LastWriteTimeUtc, hashed, info.Size));
-            return new HashedEntry(info, hashed);
+            lock (toPersist)
+            {
+                toPersist.Add(GetDbEntryToWrite(info.Path, new FileHashCacheEntry(info.LastWriteTimeUtc, hashed, info.Size)));
+            }
 
+            return new HashedEntry(info, hashed);
         });
 
+        // Insert all cached items into the DB.
+        PutAllCached(toPersist); // <= required because this is async method
         foreach (var itm in results)
             yield return itm;
     }
@@ -141,5 +149,22 @@ public class FileHashCache : IFileHashCache
         entry.ToSpan(vSpan);
 
         _store.PutRaw(IId.FromSpan(EntityCategory.FileHashes, kSpan), vSpan);
+    }
+    
+    private (IId, byte[] vSpan) GetDbEntryToWrite(AbsolutePath path, FileHashCacheEntry entry)
+    {
+        var normalized = path.ToString();
+        var keyBytes = GC.AllocateUninitializedArray<byte>(Encoding.UTF8.GetByteCount(normalized));
+        Encoding.UTF8.GetBytes(normalized, keyBytes);
+        var valueBytes = GC.AllocateUninitializedArray<byte>(24);
+        entry.ToSpan(valueBytes);
+
+        return (IId.FromSpan(EntityCategory.FileHashes, keyBytes), valueBytes);
+    }
+
+    private void PutAllCached(List<(IId, byte[] vSpan)> toPersist)
+    {
+        var newItems = CollectionsMarshal.AsSpan(toPersist);
+        _store.PutAllRaw(newItems);
     }
 }

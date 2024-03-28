@@ -113,8 +113,10 @@ public readonly struct EntityDictionary<TK, TV> :
     public EntityDictionary<TK, TV> With(IEnumerable<TV> val, Func<TV, TK> keyFn)
     {
         var builder = _coll.ToBuilder();
-        foreach (var v in val)
-            builder[keyFn(v)] = v.WithPersist(_store).DataStoreId;
+        var valArr = val.ToArray();
+        var dataStoreIds = _store.PutAll(valArr.AsSpan());
+        for (var x = 0; x < valArr.Length; x++)
+            builder[keyFn(valArr[x])] = dataStoreIds[x];
 
         return new EntityDictionary<TK, TV>(_store, builder.ToImmutable());
     }
@@ -127,8 +129,12 @@ public readonly struct EntityDictionary<TK, TV> :
     public EntityDictionary<TK, TV> With(IEnumerable<KeyValuePair<TK, TV>> items)
     {
         var builder = _coll.ToBuilder();
-        foreach (var (k, v) in items)
-            builder[k] = v.WithPersist(_store).DataStoreId;
+        
+        var kv = items.ToArray();
+        var dataStoreIds = _store.PutAll(kv.AsSpan());
+        for (var x = 0; x < kv.Length; x++)
+            builder[kv[x].Key] = dataStoreIds[x];
+
         return new EntityDictionary<TK, TV>(_store, builder.ToImmutable());
     }
 
