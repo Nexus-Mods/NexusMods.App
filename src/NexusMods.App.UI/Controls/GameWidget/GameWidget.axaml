@@ -1,5 +1,4 @@
 ﻿<reactiveUi:ReactiveUserControl
-    Classes="AddGame"
     d:DesignHeight="240"
     d:DesignWidth="200"
     mc:Ignorable="d"
@@ -12,7 +11,8 @@
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
-    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
+    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+    xmlns:progressRing="clr-namespace:NexusMods.App.UI.Controls.ProgressRing">
 
     <Design.DataContext>
         <gameWidget:GameWidgetDesignViewModel />
@@ -21,9 +21,8 @@
     <Border
         Height="228"
         Width="180"
-        x:Name="DropShadow1Border">
-        <Border
-            Classes="MainBorder"
+        x:Name="GameWidgetBorder">
+        <Border x:Name="MainBorder"
             Height="228"
             Width="180">
             <Grid RowDefinitions="106, *">
@@ -38,7 +37,7 @@
                     Grid.Row="0"
                     Width="180"
                     x:Name="GameImage" />
-                <Border Classes="Background" Grid.Row="1">
+                <Border Grid.Row="1">
                     <Grid RowDefinitions="Auto, 1,  *"
                           Margin="16,0,16,0"
                           VerticalAlignment="Top"
@@ -56,20 +55,85 @@
                             Grid.Row="1"
                             Margin="0"
                             x:Name="SeparationLine"/>
-                        <StackPanel
+                        
+                        <!-- DetectedGame -->
+                        <StackPanel x:Name="DetectedGameStackPanel"
                             Grid.Row="2"
                             Margin="0,16,0,0"
                             Orientation="Horizontal"
-                            VerticalAlignment="Center">
-                            <Button Classes="Rounded Primary" x:Name="PrimaryButton">
+                            VerticalAlignment="Center"
+                            IsVisible="False">
+                            <Button Classes="Rounded Primary" x:Name="AddGameButton">
                                 <StackPanel Orientation="Horizontal">
-                                    <icons:UnifiedIcon Size="20" Classes="AddCircle" />
-                                    <TextBlock
-                                        Text="{x:Static resources:Language.GameWidget__Add_game}">
-                                    </TextBlock>
+                                    <icons:UnifiedIcon Size="20" Classes="Add" />
+                                    <TextBlock Classes="BodyMDNormal" 
+                                               Text="{x:Static resources:Language.GameWidget__Add_game}"/>
                                 </StackPanel>
                             </Button>
                         </StackPanel>
+                        
+                        <!-- AddingGame -->
+                        <StackPanel x:Name="AddingGameStackPanel"
+                            Grid.Row="2"
+                            Margin="0,16,0,0"
+                            Orientation="Horizontal"
+                            VerticalAlignment="Center"
+                            Classes="Spacing-1"
+                            IsVisible="False">
+                            <progressRing:ProgressRing Height="24" Width="24"
+                                                       VerticalAlignment="Center"/>
+                            <TextBlock Classes="BodyMDNormal" 
+                                       VerticalAlignment="Center"
+                                       Text="{x:Static resources:Language.GameWidget__Adding_game}"/>
+                        </StackPanel>
+                        
+                        <!-- ManagedGame -->
+                        <Grid x:Name="ManagedGameStackPanel"
+                                    Grid.Row="2"
+                                    Margin="0,16,0,0"
+                                    VerticalAlignment="Center"
+                                    IsVisible="False"
+                                    RowDefinitions="*">
+                            <Button Classes="Rounded Primary" x:Name="ViewGameButton" Margin="-6,0,4,0">
+                                <StackPanel Orientation="Horizontal">
+                                    <icons:UnifiedIcon Size="20" Classes="Check" />
+                                    <TextBlock Classes="BodyMDNormal" 
+                                               Text="{x:Static resources:Language.GameWidget__View}"/>
+                                </StackPanel>
+                            </Button>
+                            <StackPanel Orientation="Horizontal"
+                                        HorizontalAlignment="Right"
+                                        Classes="Spacing-1"
+                                        Margin="4,0,-6,0">
+                                <Button Classes="Rounded Primary"
+                                        HorizontalAlignment="Right"
+                                        x:Name="AddLoadoutButton"
+                                        IsVisible="True">
+                                    <icons:UnifiedIcon Classes="Add" />
+                                </Button>
+                                <Button Classes="Rounded Primary" 
+                                        HorizontalAlignment="Right"
+                                        x:Name="RemoveGameButton">
+                                    <icons:UnifiedIcon Classes="DeleteForever" />
+                                </Button>
+                            </StackPanel>
+                        </Grid>
+                        
+                        <!-- RemovingGame -->
+                        <StackPanel x:Name="RemovingGameStackPanel"
+                                    Grid.Row="2"
+                                    Margin="0,16,0,0"
+                                    Orientation="Horizontal"
+                                    VerticalAlignment="Center"
+                                    Classes="Spacing-1"
+                                    IsVisible="False">
+                            <progressRing:ProgressRing Height="24" Width="24"
+                                                       VerticalAlignment="Center"/>
+                            <TextBlock Classes="BodyMDNormal" 
+                                       VerticalAlignment="Center"
+                                       Text="{x:Static resources:Language.GameWidget__Removing_game}"/>
+                        </StackPanel>
+                        
                     </Grid>
                 </Border>
             </Grid>

@@ -55,6 +55,9 @@
             <Border Classes="LeftPaneTitle" Padding="16">
                 <TextBlock Text="LEFT PANEL TITLE" />
             </Border>
+            <Border Classes="Rounded-lg Mid Disabled" Padding="16">
+                <TextBlock Text="MID disabled" />
+            </Border>
         </WrapPanel>
     </Design.PreviewWith>
 
@@ -129,7 +132,11 @@
     <Style Selector="Border.Rounded-br-lg">
         <Setter Property="CornerRadius" Value="{StaticResource Rounded-br-lg}" />
     </Style>
-
+    
+    <!-- Disabled opacity -->
+    <Style Selector="Border.Disabled">
+        <Setter Property="Opacity" Value="{StaticResource OpacityDisabledElement}" />
+    </Style>
     <!-- Border Brushes -->
 
     <Style Selector="Border.OutlineStrong">

@@ -501,6 +501,33 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Adding game.
+        /// </summary>
+        public static string GameWidget__Adding_game {
+            get {
+                return ResourceManager.GetString("GameWidget__Adding_game", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Removing game.
+        /// </summary>
+        public static string GameWidget__Removing_game {
+            get {
+                return ResourceManager.GetString("GameWidget__Removing_game", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to View.
+        /// </summary>
+        public static string GameWidget__View {
+            get {
+                return ResourceManager.GetString("GameWidget__View", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to ERROR.
         /// </summary>
         public static string Helpers_ERROR {

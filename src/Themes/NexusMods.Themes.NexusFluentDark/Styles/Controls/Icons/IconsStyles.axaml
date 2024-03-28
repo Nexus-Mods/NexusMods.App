@@ -70,6 +70,8 @@
             <icons:UnifiedIcon Classes="VideoOutline" />
             <icons:UnifiedIcon Classes="Refresh" />
             <icons:UnifiedIcon Classes="Collections" />
+            <icons:UnifiedIcon Classes="Add" />
+            <icons:UnifiedIcon Classes="DeleteForever" />
         </WrapPanel>
     </Design.PreviewWith>
 
@@ -343,5 +345,13 @@
 
     <Style Selector="icons|UnifiedIcon.Collections">
         <Setter Property="Value" Value="{x:Static icons:IconValues.Collections}"/>
+    </Style>
+    
+    <Style Selector="icons|UnifiedIcon.Add">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.Add}"/>
+    </Style>
+    
+    <Style Selector="icons|UnifiedIcon.DeleteForever">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.DeleteForever}"/>
     </Style>
 </Styles>
