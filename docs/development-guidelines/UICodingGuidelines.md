@@ -1354,6 +1354,8 @@ It automatically handles subscriptions for items being added and removed. This c
 
 ### Trees
 
+!!! tip "If you need to make trees which could potentially have many items, use [TreeDataGrid](#trees-with-columns-treedatagrid) instead."
+
 Dynamic Data also supports trees without tree structures. The data internally is flat. As an example, we'll create a `PersonViewModel`:
 
 ```csharp
