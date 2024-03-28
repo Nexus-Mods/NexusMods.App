@@ -11,6 +11,8 @@ public interface IGameWidgetViewModel : IViewModelInterface
     public string Name { get; }
     public Bitmap Image { get; }
     public ReactiveCommand<Unit,Unit> AddGameCommand { get; set; }
+    public ReactiveCommand<Unit,Unit> ViewGameCommand { get; set; }
+    
 
     public GameWidgetState State { get; set; }
 }

@@ -19,6 +19,7 @@ public class GameWidgetViewModel : AViewModel<IGameWidgetViewModel>, IGameWidget
         _logger = logger;
 
         AddGameCommand = ReactiveCommand.Create(() => { });
+        ViewGameCommand = ReactiveCommand.Create(() => { });
 
         _image = this
             .WhenAnyValue(vm => vm.Installation)
@@ -64,7 +65,10 @@ public class GameWidgetViewModel : AViewModel<IGameWidgetViewModel>, IGameWidget
 
     [Reactive]
     public ReactiveCommand<Unit,Unit> AddGameCommand { get; set; }
-    
+
+    [Reactive]
+    public ReactiveCommand<Unit, Unit> ViewGameCommand { get; set; }
+
 
     [Reactive]
     public GameWidgetState State { get; set; }

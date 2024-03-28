@@ -14,7 +14,8 @@ public class GameWidgetDesignViewModel : AViewModel<IGameWidgetViewModel>, IGame
     public string Name { get; } = "SOME CYBERPUNK GAME WITH A LONG NAME";
     public Bitmap Image { get; }
     public ReactiveCommand<Unit,Unit> AddGameCommand { get; set; } = ReactiveCommand.Create(() => { });
-    
+    public ReactiveCommand<Unit, Unit> ViewGameCommand { get; set; } = ReactiveCommand.Create(() => { });
+
     [Reactive]
     public GameWidgetState State { get; set; }
 
