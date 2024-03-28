@@ -117,13 +117,16 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
         {
             foreach (var (name, data) in files)
             {
-                var entry = zip.CreateEntry(name);
+                var entry = zip.CreateEntry(name, CompressionLevel.Fastest);
                 await using var stream = entry.Open();
                 await using var writer = new StreamWriter(stream);
                 await writer.WriteAsync(data);
             }
         }
 
+        memoryStream.Position = 0;
+        await using var fileStream = tmpFile.Path.Create();
+        await memoryStream.CopyToAsync(fileStream, Token);
         return await FileOriginRegistry.RegisterDownload(tmpFile.Path, new FilePathMetadata {OriginalName = tmpFile.Path.FileName, Quality = Quality.Low}, CancellationToken.None);
     }
 
