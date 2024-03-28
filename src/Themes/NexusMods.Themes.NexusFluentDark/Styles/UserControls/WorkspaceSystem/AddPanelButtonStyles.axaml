@@ -1,7 +1,7 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:ui="clr-namespace:NexusMods.App.UI.WorkspaceSystem;assembly=NexusMods.App.UI"
-        xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI">
+        xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
     <Design.PreviewWith>
         <Border Padding="20">
             <ui:AddPanelButtonView />
@@ -30,11 +30,11 @@
             <Setter Property="Spacing" Value="{StaticResource Spacing-none}" />
         </Style>
 
-        <Style Selector="^ unifiedIcon|UnifiedIcon#ButtonImage">
+        <Style Selector="^ icons|UnifiedIcon#ButtonImage">
             <Setter Property="Size" Value="18" />
         </Style>
 
-        <Style Selector="^ unifiedIcon|UnifiedIcon#PlusIcon">
+        <Style Selector="^ icons|UnifiedIcon#PlusIcon">
             <Setter Property="Size" Value="10" />
             <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
         </Style>

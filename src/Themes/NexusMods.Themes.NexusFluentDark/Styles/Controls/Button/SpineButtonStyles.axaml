@@ -1,6 +1,6 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI"
+        xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
         xmlns:extensions="clr-namespace:NexusMods.Themes.NexusFluentDark.Extensions">
     <Design.PreviewWith>
         <WrapPanel Width="500">
@@ -117,7 +117,7 @@
                 <Setter Property="Template">
                     <ControlTemplate>
                         <Grid>
-                            <unifiedIcon:UnifiedIcon
+                            <icons:UnifiedIcon
                                 Classes="HelpCircle"
                                 Size="20"
                                 HorizontalAlignment="Center"
@@ -132,23 +132,23 @@
                 </Setter>
             </Style>
 
-            <Style Selector="^.Add /template/ unifiedIcon|UnifiedIcon">
+            <Style Selector="^.Add /template/ icons|UnifiedIcon">
                 <Setter Property="Value">
-                    <unifiedIcon:IconValue MdiValueSetter="mdi-plus"/>
+                    <icons:IconValue MdiValueSetter="mdi-plus"/>
                 </Setter>
             </Style>
 
-            <Style Selector="^.Home /template/ unifiedIcon|UnifiedIcon">
+            <Style Selector="^.Home /template/ icons|UnifiedIcon">
                 <Setter Property="Value">
-                    <unifiedIcon:IconValue MdiValueSetter="mdi-home"/>
+                    <icons:IconValue MdiValueSetter="mdi-home"/>
                 </Setter>
             </Style>
 
-            <Style Selector="^.Inactive unifiedIcon|UnifiedIcon">
+            <Style Selector="^.Inactive icons|UnifiedIcon">
                 <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
             </Style>
 
-            <Style Selector="^.Active unifiedIcon|UnifiedIcon">
+            <Style Selector="^.Active icons|UnifiedIcon">
                 <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
             </Style>
 

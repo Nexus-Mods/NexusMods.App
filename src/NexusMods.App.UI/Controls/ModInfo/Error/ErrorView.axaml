@@ -12,12 +12,12 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:loading="clr-namespace:NexusMods.App.UI.Controls.ModInfo.Loading"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
-    xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon">
+    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
     
     <StackPanel Orientation="Vertical" Margin="24">
         <StackPanel Orientation="Vertical">
             <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
-                <unifiedIcon:UnifiedIcon Classes="AlertCircle ForegroundModerate" Size="25" x:Name="SelectLocationCloseIcon"
+                <icons:UnifiedIcon Classes="AlertCircle ForegroundModerate" Size="25" x:Name="SelectLocationCloseIcon"
                                          Margin="0,0,8,0" />
                 <TextBlock Classes="HeadingSMSemi ForegroundModerate"
                            Text="{x:Static resources:Language.ErrorView_Title}" />

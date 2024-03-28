@@ -1,7 +1,7 @@
 using System.Reactive.Disposables;
 using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
-using NexusMods.App.UI.Controls.UnifiedIcon;
+using NexusMods.Icons;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.WorkspaceSystem;

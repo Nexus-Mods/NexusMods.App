@@ -4,6 +4,7 @@ using NexusMods.Abstractions.Diagnostics;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.CrossPlatform.Process;
+using NexusMods.Icons;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Pages.Diagnostics;
@@ -42,7 +43,7 @@ public class DiagnosticDetailsViewModel : APageViewModel<IDiagnosticDetailsViewM
             {
                 var workspaceController = GetWorkspaceController();
                 workspaceController.SetTabTitle(diagnostic.Title, WorkspaceId, PanelId, TabId);
-                workspaceController.SetIcon(DiagnosticIcons.DiagnosticIcon2, WorkspaceId, PanelId, TabId);
+                workspaceController.SetIcon(IconValues.DiagnosticPage, WorkspaceId, PanelId, TabId);
             }
 
             Disposable.Empty.DisposeWith(disposable);
