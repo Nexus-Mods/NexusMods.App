@@ -1,4 +1,5 @@
 using BenchmarkDotNet.Attributes;
+using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Benchmarks.Benchmarks.Loadouts.Harness;
 using NexusMods.Benchmarks.Interfaces;
 
@@ -18,9 +19,7 @@ public class LoadoutToFlattenedLoadout : ASynchronizerBenchmark, IBenchmark
     {
         Assets.Loadouts.FileLists.SkyrimFileList,
         Assets.Loadouts.FileLists.StardewValleyFileList,
-        // Assets.Loadouts.FileLists.NPC3DFileList,
-        // TODO:
-        // The last one takes too long to even start up test, due to current mod install bottlenecks
+        Assets.Loadouts.FileLists.NPC3DFileList,
     };
 
     [GlobalSetup]
@@ -30,8 +29,8 @@ public class LoadoutToFlattenedLoadout : ASynchronizerBenchmark, IBenchmark
     }
 
     [Benchmark]
-    public async Task FlattenLoadout()
+    public async Task<FlattenedLoadout> FlattenLoadout()
     {
-        await _defaultSynchronizer.LoadoutToFlattenedLoadout(_datamodel.BaseList.Value);
+        return await _defaultSynchronizer.LoadoutToFlattenedLoadout(_datamodel.BaseList.Value);
     }
 }
