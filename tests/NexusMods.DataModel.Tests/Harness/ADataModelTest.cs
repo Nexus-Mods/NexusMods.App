@@ -113,7 +113,8 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
     protected async Task<DownloadId> RegisterDownload(params (string Name, string Data)[] files)
     {
         await using var tmpFile = TemporaryFileManager.CreateFile();
-        using (var zip = new ZipArchive(tmpFile.Path.Create(), ZipArchiveMode.Create, false))
+        using var memoryStream = new MemoryStream();
+        using (var zip = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
         {
             foreach (var (name, data) in files)
             {
