@@ -1494,6 +1494,8 @@ To create a TreeDataGrid, we will take the following steps:
 
 ##### Update Your ViewModel
 
+!!! tip "[Full Example File (Basic/ViewModel/IFileViewModel.cs)][treedatagrid basic vm]"
+
 Suppose you have a ViewModel in which you want to display the name of a file:
 
 ```csharp
@@ -1550,6 +1552,8 @@ public class FileDesignViewModel(GamePath fullPath) // 👈 Constructor
 
 ##### Prepare The Data
 
+!!! tip "[Full Example File (Basic/FileTreeDesignViewModel.cs)][treedatagrid basic vm impl]"
+
 !!! info "This is almost identical to previous [Trees](#trees) section."
 
     So we'll keep it simple.
@@ -1584,6 +1588,8 @@ extension method which unwraps the `DynamicData`'s `Node` type, and basically
 initializes the elements inherited from `IDynamicDataTreeItem`.
 
 ##### Create the Columns
+
+!!! tip "[Full Example File (Basic/FileTreeDesignViewModel.cs)][treedatagrid basic vm impl]"
 
 !!! info "We take the items created from `TransformToTree` and create a `TreeDataGridSource`."
 
@@ -1621,6 +1627,8 @@ private static HierarchicalTreeDataGridSource<IFileViewModel> CreateTreeSource(
 ```
 
 ##### Add The TreeDataGrid
+
+!!! tip "[Full Example File (Basic/FileTreeView.axaml)][treedatagrid basic view]"
 
 Add the `TreeDataGrid` to your View:
 
@@ -1681,9 +1689,10 @@ To add a custom column, we will take the following steps:
 
 ##### ViewModel
 
+!!! tip "[Full Example File (SingleColumn/FileColumn/IFileColumnViewModel.cs)][treedatagrid single column vm]"
+
 !!! note "We extended the ViewModel to include a flag to toggle folder/file icon."
 
-`IYourViewModel.cs`
 ```csharp
 public interface IFileColumnViewModel : IViewModelInterface, 
     IExpandableItem, IDynamicDataTreeItem<IFileColumnViewModel, GamePath>
@@ -1696,7 +1705,7 @@ public interface IFileColumnViewModel : IViewModelInterface,
 
 ##### View
 
-`FileColumnView.axaml`
+!!! tip "[Full Example File (SingleColumn/FileColumn/FileColumnView.axaml)][treedatagrid single column column view]"
 
 We can now create a custom view for our column.
 
@@ -1742,6 +1751,8 @@ public partial class FileColumnView : ReactiveUserControl<IFileTreeNodeViewModel
 ```
 
 ##### Using the Custom Column with `TreeDataGrid`
+
+!!! tip "[Full Example File (SingleColumn/FileTreeView.axaml)][treedatagrid single column view]"
 
 To use the custom column, update `TreeDataGrid.Resources` in the View:
 
@@ -2346,5 +2357,11 @@ public ParentViewModel()
 [expression trees]: https://learn.microsoft.com/en-us/dotnet/csharp/advanced-topics/expression-trees/
 [treedatagrid examples]: https://github.com/Nexus-Mods/NexusMods.App/blob/main/src/Examples/TreeDataGrid/README.md
 [treedatagrid basic]: https://github.com/Nexus-Mods/NexusMods.App/blob/main/src/Examples/TreeDataGrid/Basic
+[treedatagrid basic view]: https://github.com/Nexus-Mods/NexusMods.App/blob/main/src/Examples/TreeDataGrid/Basic/FileTreeView.axaml
+[treedatagrid basic vm]: https://github.com/Nexus-Mods/NexusMods.App/blob/main/src/Examples/TreeDataGrid/Basic/ViewModel/IFileViewModel.cs
+[treedatagrid basic vm impl]: https://github.com/Nexus-Mods/NexusMods.App/blob/main/src/Examples/TreeDataGrid/Basic/FileTreeDesignViewModel.cs
 [treedatagrid single column]: https://github.com/Nexus-Mods/NexusMods.App/blob/main/src/Examples/TreeDataGrid/SingleColumn
+[treedatagrid single column view]: https://github.com/Nexus-Mods/NexusMods.App/blob/main/src/Examples/TreeDataGrid/SingleColumn/FileTreeView.axaml
+[treedatagrid single column column view]: https://github.com/Nexus-Mods/NexusMods.App/blob/main/src/Examples/TreeDataGrid/SingleColumn/FileColumn/FileColumnView.axaml
+[treedatagrid single column vm]: https://github.com/Nexus-Mods/NexusMods.App/blob/main/src/Examples/TreeDataGrid/SingleColumn/FileColumn/IFileColumnViewModel.cs
 [treedatagrid column bug]: https://github.com/AvaloniaUI/Avalonia.Controls.TreeDataGrid/issues/221
