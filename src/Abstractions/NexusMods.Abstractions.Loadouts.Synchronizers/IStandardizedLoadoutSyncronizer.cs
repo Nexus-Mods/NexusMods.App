@@ -80,9 +80,6 @@ public interface IStandardizedLoadoutSynchronizer : ILoadoutSynchronizer
     /// <summary>
     /// Backs up any new files in the file tree.
     /// </summary>
-    /// <param name="loadout"></param>
-    /// <param name="fileTree"></param>
-    /// <returns></returns>
-    Task BackupNewFiles(Loadout loadout, FileTree fileTree);
+    Task BackupNewFiles(GameInstallation installation, FileTree fileTree);
     #endregion
 }
