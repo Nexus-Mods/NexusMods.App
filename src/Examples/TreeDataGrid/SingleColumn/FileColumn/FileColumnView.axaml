@@ -4,20 +4,20 @@
                                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:fileColumn="clr-namespace:Examples.TreeDataGrid.SingleColumn.FileColumn"
-                                xmlns:unifiedIcon="clr-namespace:NexusMods.App.UI.Controls.UnifiedIcon;assembly=NexusMods.App.UI"
                                 xmlns:files="clr-namespace:NexusMods.App.UI.Controls.Trees.Files;assembly=NexusMods.App.UI"
+                                xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
                                 d:DesignWidth="400"
                                 x:Class="Examples.TreeDataGrid.SingleColumn.FileColumn.FileColumnView"
                                 d:DataContext="{x:Static fileColumn:FileColumnDesignViewModel.SampleFolder}">
     <!-- You can switch 'SampleFolder' to 'SampleFile' to get preview of file -->
     <Grid ColumnDefinitions="*, Auto" Margin="0,5,0,5">
         <Grid.Styles>
-            <Style Selector="unifiedIcon|UnifiedIcon.FileTypeIcon">
+            <Style Selector="icons|UnifiedIcon.FileTypeIcon">
                 <Setter Property="Size" Value="18" />
                 <Setter Property="Margin" Value="8, 0, 0, 0" />
             </Style>
 
-            <Style Selector="unifiedIcon|UnifiedIcon.View">
+            <Style Selector="icons|UnifiedIcon.View">
                 <Setter Property="Size" Value="20" />
             </Style>
 
@@ -34,7 +34,7 @@
         <Grid Grid.Column="0" ClipToBounds="True" ColumnDefinitions="Auto,Auto" Name="FileElementGrid">
             
             <!-- File / Directory Icon -->
-            <unifiedIcon:UnifiedIcon Grid.Column="0" Classes="FileTypeIcon" x:Name="EntryIcon" />
+            <icons:UnifiedIcon Grid.Column="0" Classes="FileTypeIcon" x:Name="EntryIcon" />
 
             <!-- File Name -->
             <TextBlock Grid.Column="1" Classes="BodyMDNormal" VerticalAlignment="Center"
