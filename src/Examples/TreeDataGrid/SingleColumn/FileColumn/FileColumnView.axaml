@@ -1,0 +1,46 @@
+<reactiveUi:ReactiveUserControl x:TypeArguments="files:IFileTreeNodeViewModel"
+                                xmlns="https://github.com/avaloniaui"
+                                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                                xmlns:reactiveUi="http://reactiveui.net"
+                                xmlns:fileColumn="clr-namespace:Examples.TreeDataGrid.SingleColumn.FileColumn"
+                                xmlns:files="clr-namespace:NexusMods.App.UI.Controls.Trees.Files;assembly=NexusMods.App.UI"
+                                xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+                                d:DesignWidth="400"
+                                x:Class="Examples.TreeDataGrid.SingleColumn.FileColumn.FileColumnView"
+                                d:DataContext="{x:Static fileColumn:FileColumnDesignViewModel.SampleFolder}">
+    <!-- You can switch 'SampleFolder' to 'SampleFile' to get preview of file -->
+    <Grid ColumnDefinitions="*, Auto" Margin="0,5,0,5">
+        <Grid.Styles>
+            <Style Selector="icons|UnifiedIcon.FileTypeIcon">
+                <Setter Property="Size" Value="18" />
+                <Setter Property="Margin" Value="8, 0, 0, 0" />
+            </Style>
+
+            <Style Selector="icons|UnifiedIcon.View">
+                <Setter Property="Size" Value="20" />
+            </Style>
+
+            <Style Selector="Button.RightElements">
+                <Setter Property="Margin" Value="0,0,8,0" />
+            </Style>
+
+            <Style Selector="TextBlock#FileNameTextBlock">
+                <Setter Property="Margin" Value="4,0,8,0" />
+            </Style>
+        </Grid.Styles>
+
+        <!-- Left Elements -->
+        <Grid Grid.Column="0" ClipToBounds="True" ColumnDefinitions="Auto,Auto" Name="FileElementGrid">
+            
+            <!-- File / Directory Icon -->
+            <icons:UnifiedIcon Grid.Column="0" Classes="FileTypeIcon" x:Name="EntryIcon" />
+
+            <!-- File Name -->
+            <TextBlock Grid.Column="1" Classes="BodyMDNormal" VerticalAlignment="Center"
+                       TextTrimming="CharacterEllipsis"
+                       x:Name="FileNameTextBlock" />
+        </Grid>
+    </Grid>
+
+</reactiveUi:ReactiveUserControl>

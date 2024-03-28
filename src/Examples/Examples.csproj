@@ -1,12 +1,53 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <IsPackable>false</IsPackable>
+        <OutputType>Exe</OutputType>
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Avalonia"/>
+        <PackageReference Include="Avalonia.Themes.Fluent"/>
+        <PackageReference Include="Avalonia.Controls.TreeDataGrid" />
+        <PackageReference Include="Avalonia.Controls.DataGrid" />
+        <PackageReference Include="Avalonia.Svg.Skia" />
+        <PackageReference Include="Projektanker.Icons.Avalonia.MaterialDesign" />
+    </ItemGroup>
+    
+    <ItemGroup>
         <ProjectReference Include="..\NexusMods.App.UI\NexusMods.App.UI.csproj" />
+        <ProjectReference Include="..\NexusMods.App\NexusMods.App.csproj" />
         <ProjectReference Include="..\NexusMods.App.Generators.Diagnostics\NexusMods.App.Generators.Diagnostics\NexusMods.App.Generators.Diagnostics.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Update="TreeDataGrid\SingleColumn\FileColumn\FileColumnView.axaml.cs">
+        <DependentUpon>FileTreeNodeView.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="TreeDataGrid\SingleColumn\FileTreeView.axaml.cs">
+        <DependentUpon>FileTreeView.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="TreeDataGrid\SingleColumn\FileTreeDesignViewModel.cs">
+        <DependentUpon>IFileTreeViewModel.cs</DependentUpon>
+      </Compile>
+      <Compile Update="TreeDataGrid\SingleColumn\FileTreeViewModel.cs">
+        <DependentUpon>IFileTreeViewModel.cs</DependentUpon>
+      </Compile>
+      <Compile Update="TreeDataGrid\Basic\FileColumn\FileColumnView.axaml.cs">
+        <DependentUpon>FileColumnView.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="TreeDataGrid\Basic\FileTreeView.axaml.cs">
+        <DependentUpon>FileTreeView.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="TreeDataGrid\Basic\FileTreeDesignViewModel.cs">
+        <DependentUpon>IFileTreeViewModel.cs</DependentUpon>
+      </Compile>
+      <Compile Update="TreeDataGrid\Basic\ViewModel\FileDesignViewModel.cs">
+        <DependentUpon>IFileViewModel.cs</DependentUpon>
+      </Compile>
+    </ItemGroup>
 </Project>

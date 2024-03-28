@@ -1354,6 +1354,8 @@ It automatically handles subscriptions for items being added and removed. This c
 
 ### Trees
 
+!!! tip "If you need to make trees which could potentially have many items, use [TreeDataGrid](#trees-with-columns-treedatagrid) instead."
+
 Dynamic Data also supports trees without tree structures. The data internally is flat. As an example, we'll create a `PersonViewModel`:
 
 ```csharp
@@ -1474,6 +1476,420 @@ this.WhenActivated(disposables =>
         .DisposeWith(disposables);
 });
 ```
+
+### Trees with Columns (TreeDataGrid)
+
+!!! info "Functional Example(s) available at [TreeDataGrid Examples][treedatagrid examples]"
+
+#### Basic TreeDataGrid
+
+!!! info "Functional Example(s) available at [TreeDataGrid Examples][treedatagrid basic] as 'Basic'"
+
+To create a TreeDataGrid, we will take the following steps:
+
+- [**Update your ViewModel**](#update-your-viewmodel): To Support TreeDataGrid Features.
+- [**Prepare the Data**](#prepare-the-data): Use DynamicData to create the tree.
+- [**Create the Columns**](#create-the-columns): Reference the key for custom view.
+- [**Add the TreeDataGrid**](#add-the-treedatagrid): Use the custom view, and give it a key.
+
+##### Update Your ViewModel
+
+!!! tip "[Full Example File (Basic/ViewModel/IFileViewModel.cs)][treedatagrid basic vm]"
+
+Suppose you have a ViewModel in which you want to display the name of a file:
+
+```csharp
+// Something like this.
+public interface IFileViewModel : IViewModelInterface
+{
+    public string Name { get; }
+}
+```
+
+In order to use your ViewModel with the `TreeDataGrid`, you need to implement a 
+few additional interfaces:
+
+```csharp
+public interface IFileViewModel : 
+    IViewModelInterface, // For INotifyPropertyChanged and Reactive.
+    IExpandableItem, // For ability to expand. (IsExpanded)
+    
+    // For child/parent creation via DynamicData.
+    // Pass 'self' and 'unique key 'as generic types.
+    // This key can be a GUID, auto incremented int, or something else unique.
+    // In this example, we use a file/folder path.
+    IDynamicDataTreeItem<IFileViewModel, GamePath> 
+{
+    // Name of the file
+    public string Name { get; }
+}
+```
+
+| Interface Name         | Purpose                                     |
+|------------------------|---------------------------------------------|
+| `IExpandableItem`      | Provides `IsExpanded`, for expanding nodes. |
+| `IDynamicDataTreeItem` | Simplifies tree creation with Dynamic Data. |
+
+You can now implement this interface as such:
+
+```csharp
+// FullPath: Contains File Path
+public class FileDesignViewModel(GamePath fullPath) // 👈 Constructor
+    : AViewModel<IFileViewModel>, IFileViewModel
+{
+    // Name of the file
+    public string Name => Key.Name;
+
+    // IDynamicDataTreeItem
+    public ReadOnlyObservableCollection<IFileViewModel>? Children { get; set; }
+    public IFileViewModel? Parent { get; set; }
+    public GamePath Key { get; set; } = fullPath;
+
+    // IExpandableViewModel
+    [Reactive] public bool IsExpanded { get; set; }
+}
+```
+
+##### Prepare The Data
+
+!!! tip "[Full Example File (Basic/FileTreeDesignViewModel.cs)][treedatagrid basic vm impl]"
+
+!!! info "This is almost identical to previous [Trees](#trees) section."
+
+    So we'll keep it simple.
+
+Now we will create a bunch of `IFileViewModel` objects and expose them as a 
+`ReadOnlyObservableCollection` the TreeDataGrid can bind to.
+
+```csharp
+// Create the DynamicData container.
+var cache = new SourceCache<IFileViewModel, GamePath>(x => x.Key);
+
+// Add some `IFileViewModel` elements here... e.g. from Database //
+
+// Convert to ReadOnlyObservableCollection.
+cache.Connect()
+    .TransformToTree(model => model.Key.Parent)
+    .Transform(node => node.Item.Initialize(node))
+    .Bind(out var items)
+    .Subscribe(); // force evaluation
+```
+
+We are operating under the assumption that no 2 files/folders can have the
+same name.
+
+Here we use `x => x.Key` as the key selector, where `Key` is the unique
+identifier for the item. This `Key` in our example is the file/folder path, 
+which is guaranteed to be unique in a file tree. To identify the parent, 
+we use `model.Key.Parent`.
+
+Lastly, we do `.Transform(node => node.Item.Initialize(node))`. This is a 
+extension method which unwraps the `DynamicData`'s `Node` type, and basically
+initializes the elements inherited from `IDynamicDataTreeItem`.
+
+##### Create the Columns
+
+!!! tip "[Full Example File (Basic/FileTreeDesignViewModel.cs)][treedatagrid basic vm impl]"
+
+!!! info "We take the items created from `TransformToTree` and create a `TreeDataGridSource`."
+
+Create a `TreeDataGridSource` using the `items` from `TransformToTree` (previous step):
+
+```csharp
+TreeSource = CreateTreeSource(items);
+```
+
+In the source, we define a single column:
+```csharp
+private static HierarchicalTreeDataGridSource<IFileViewModel> CreateTreeSource(
+    ReadOnlyObservableCollection<IFileViewModel> treeRoots)
+{
+    return new HierarchicalTreeDataGridSource<IFileViewModel>(treeRoots)
+    {
+        Columns =
+        {
+            new HierarchicalExpanderColumn<IFileViewModel>( // For expanding
+                // Our column. 
+                // First generic parameter is Input (IFileViewModel)
+                // Second generic parameter is Output (something with ToString)
+                new TextColumn<IFileViewModel,string>(
+                        "Name", // Header name
+                        x => x.Name, // Method to return string
+                        width: new GridLength(1, GridUnitType.Star)
+                    ),
+                    node => node.Children, // Getter for children
+                    null,
+                    node => node.IsExpanded
+                ),
+        },
+    };
+}
+```
+
+##### Add The TreeDataGrid
+
+!!! tip "[Full Example File (Basic/FileTreeView.axaml)][treedatagrid basic view]"
+
+Add the `TreeDataGrid` to your View:
+
+```xml
+<!-- Some elements omitted for clarity -->
+<reactiveUi:ReactiveUserControl x:TypeArguments="basic:IFileTreeViewModel"
+                                x:Class="Examples.TreeDataGrid.Basic.FileTreeView">
+    <Design.DataContext>
+        <basic:FileTreeDesignViewModel /> <!-- Preview Data -->
+    </Design.DataContext>
+
+    <!-- Visual Tree -->
+    <TreeDataGrid Classes="TreeWhiteCaret" ShowColumnHeaders="True"
+                  x:Name="ModFilesTreeDataGrid" Width="1"/>
+
+</reactiveUi:ReactiveUserControl>
+```
+
+And bind to the `HierarchicalTreeDataGridSource` (TreeSource) in code-behind:
+
+```csharp
+public partial class FileTreeView : ReactiveUserControl<IFileTreeViewModel>
+{
+    public FileTreeView()
+    {
+        InitializeComponent();
+        
+        this.WhenActivated(disposables =>
+        {
+            // Bind `TreeSource` from previous step to control.
+            this.OneWayBind<IFileTreeViewModel, FileTreeView, ITreeDataGridSource<IFileViewModel>, ITreeDataGridSource>
+                (ViewModel, vm => vm.TreeSource, v => v.ModFilesTreeDataGrid.Source!)
+                .DisposeWith(disposables);
+            
+            // This is a workaround for TreeDataGrid collapsing Star sized columns.
+            // This forces a refresh of the width, fixing the issue.
+            ModFilesTreeDataGrid.Width = double.NaN;
+        });
+    }
+}
+```
+
+The final result should look something like:
+
+![](../images/simple-treedatagrid.png)
+
+#### TreeDataGrid with Custom Column
+
+!!! info "Functional Example(s) available at [TreeDataGrid Examples][treedatagrid single column] as 'Single Column'"
+
+!!! note "This example is stripped down as much as possible, use the examples for full example."
+
+To add a custom column, we will take the following steps:
+
+- [**Create a View**](#view): `FileColumnView.axaml` & `FileColumnView.axaml.cs`
+- [**Update the TreeDataGrid**](#using-the-custom-column): Use the custom view, and give it a key.
+- [**Modify the Column Definition**](#using-the-custom-column): Reference the key for custom view.
+
+##### ViewModel
+
+!!! tip "[Full Example File (SingleColumn/FileColumn/IFileColumnViewModel.cs)][treedatagrid single column vm]"
+
+!!! note "We extended the ViewModel to include a flag to toggle folder/file icon."
+
+```csharp
+public interface IFileColumnViewModel : IViewModelInterface, 
+    IExpandableItem, IDynamicDataTreeItem<IFileColumnViewModel, GamePath>
+{
+    // New: IsFile dictates whether to show folder or file icon.
+    bool IsFile { get; }
+    string Name { get; }
+}
+```
+
+##### View
+
+!!! tip "[Full Example File (SingleColumn/FileColumn/FileColumnView.axaml)][treedatagrid single column column view]"
+
+We can now create a custom view for our column.
+
+```xml
+<!-- Omitted some code for clarity, see examples for full code -->
+<reactiveUi:ReactiveUserControl 
+    x:TypeArguments="fc:IFileColumnViewModel"
+    x:Class="Examples.TreeDataGrid.SingleColumn.FileColumn.FileColumnView"
+    d:DataContext="{x:Static fc:FileColumnDesignViewModel.SampleFolder}">
+    <Grid Grid.Column="0" ClipToBounds="True" ColumnDefinitions="Auto,Auto" 
+          Name="FileElementGrid">
+        <!-- File / Directory Icon -->
+        <unifiedIcon:UnifiedIcon Grid.Column="0" x:Name="EntryIcon" />
+        <!-- File Name -->
+        <TextBlock Grid.Column="1" x:Name="FileNameTextBlock" />
+    </Grid>
+</reactiveUi:ReactiveUserControl>
+```
+
+`FileColumnView.axaml.cs`
+
+```csharp
+public partial class FileColumnView : ReactiveUserControl<IFileTreeNodeViewModel>
+{
+    public FileColumnView()
+    {
+        InitializeComponent();
+        
+        // Use `ViewModel.WhenAnyValue` in here if this stuff needs updating 
+        // dynamically. There's a separate example for this in 'examples' 😉
+        this.WhenActivated(d =>
+        {
+            // Set the icon.
+            // `File` or `FolderOutline` are defined as 'icon styles'
+            // (IconsStyles.xaml)
+            EntryIcon.Classes.Add(ViewModel!.IsFile ? "File" : "FolderOutline");
+            
+            // Set the text.
+            FileNameTextBlock.Text = ViewModel!.Name;
+        });
+    }
+}
+```
+
+##### Using the Custom Column with `TreeDataGrid`
+
+!!! tip "[Full Example File (SingleColumn/FileTreeView.axaml)][treedatagrid single column view]"
+
+To use the custom column, update `TreeDataGrid.Resources` in the View:
+
+```xml
+<TreeDataGrid Grid.Row="2" Classes="TreeWhiteCaret" ShowColumnHeaders="True">
+    <TreeDataGrid.Resources>
+        <!-- Specify the following:
+            1. View for Custom Columns (`FileColumnView`).
+                - The custom view you created just now.
+            2. Key for the Custom Column (`CustomRow`).
+                - We will reference this in code behind.
+        -->
+        <DataTemplate x:Key="CustomRow" DataType="{x:Type files:IFileColumnViewModel}">
+            <files:FileColumnView DataContext="{CompiledBinding}" />
+        </DataTemplate>
+    </TreeDataGrid.Resources>
+</TreeDataGrid>
+```
+
+And where you're creating the `HierarchicalTreeDataGridSource` (in `CreateTreeSource`).
+
+```csharp
+new HierarchicalExpanderColumn<IFileColumnViewModel>(
+    new TemplateColumn<IFileColumnViewModel>(
+        Language.Helpers_GenerateHeader_NAME, // column name
+        "CustomRow", // 👈 specify the custom column 'key'
+        // width etc. //
+    ),
+    node => node.Children,
+    null,
+    node => node.IsExpanded),
+```
+
+You use a `TemplateColumn` with your ViewModel.
+
+![](../images/custom-column-treedatagrid.png)
+
+!!! note "Stock columns like `TextColumn` will have default sorting implementations"
+
+    In this scenario, the names/folders are sorted lexicographically 
+    (alphabetically, like in a dictionary).
+
+#### Tips & Tricks
+
+##### Bug: Columns Are Incorrectly Sized
+
+!!! info "When placed in certain containers, columns of the `TreeDataGrid` may be incorrectly sized when using `*` width."
+
+![](../images/too-small-width-example.png)
+
+This is a [bug in the TreeDataGrid control][treedatagrid column bug], which is mostly common in single column
+setups (although can happen in multi column). This bug is fixed by triggering a forced column size recalculation.
+
+An easy way to do so is the following...
+
+1. Give your grid a positive width in the XAML:
+
+    ```xml
+    <TreeDataGrid x:Name="ModFilesTreeDataGrid" Width="1"> <!-- 👈 Set a width to positive number -->
+    ```
+
+2. Reset the width in the code-behind after assigning a source:
+
+    ```csharp
+    public YourViewWithGrid()
+    {
+        InitializeComponent();
+        this.WhenActivated(disposables =>
+        {
+            // Do something to update the TreeDataGrid Source
+            this.WhenAnyValue(view => view.ViewModel)
+                .WhereNotNull()
+                .Do(PopulateFromViewModel)
+                .Subscribe()
+                .DisposeWith(disposables);
+            
+            // Reset the control width back to NaN, to default it back as if no
+            // width was specified.
+            ModFilesTreeDataGrid.Width = double.NaN;
+        });
+    }
+    ```
+
+When the width is reset, columns are recalculated.
+
+##### Custom Sorting Rules
+
+!!! tip "Custom sorting can be specified as part of the column definition."
+
+```csharp
+new HierarchicalExpanderColumn<IFileColumnViewModel>(
+    new TemplateColumn<IFileColumnViewModel>(
+        "NAME",
+        "FileNameColumnTemplate",
+        width: new GridLength(1, GridUnitType.Star),
+        // 👇 Right here
+        options: new TemplateColumnOptions<IFileColumnViewModel>
+        {
+            // Compares if folder first, such that folders show first, then by file name.
+            CompareAscending = (x, y) =>
+            {
+                if (x == null || y == null) return 0;
+                var folderComparison = x.IsFile.CompareTo(y.IsFile);
+                return folderComparison != 0 ? folderComparison : string.Compare(x.Name, y.Name, StringComparison.OrdinalIgnoreCase);
+            },
+
+            CompareDescending = (x, y) =>
+            {
+                if (x == null || y == null) return 0;
+                var folderComparison = x.IsFile.CompareTo(y.IsFile);
+                return folderComparison != 0 ? folderComparison : string.Compare(y.Name, x.Name, StringComparison.OrdinalIgnoreCase);
+            },
+        }
+    ),
+    node => node.Children,
+    null,
+    node => node.IsExpanded
+)
+```
+
+The example sort above gives you the `File Explorer` sort. 
+Folders first, then files. Each group is sorted by name.
+
+##### Sorting Out of the Box
+
+!!! tip "Sometimes you might want to have your tree sorted out of the box."
+
+    For example, if you are making a 'file explorer' you want to have the 
+    folders on top and files on the bottom by default.
+
+```csharp
+// TreeSource is `HierarchicalTreeDataGridSource`
+TreeSource = CreateTreeSource(_items);
+TreeSource.SortBy(TreeSource.Columns[0], ListSortDirection.Ascending);
+```
+
+This API isn't easy to discover, so there you go :P
 
 ## NexusMods.App.UI
 
@@ -1939,3 +2355,13 @@ public ParentViewModel()
 [Extension Methods]: https://learn.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/extension-methods#orderby-example
 [observable design pattern]: https://learn.microsoft.com/en-us/dotnet/standard/events/observer-design-pattern
 [expression trees]: https://learn.microsoft.com/en-us/dotnet/csharp/advanced-topics/expression-trees/
+[treedatagrid examples]: https://github.com/Nexus-Mods/NexusMods.App/blob/main/src/Examples/TreeDataGrid/README.md
+[treedatagrid basic]: https://github.com/Nexus-Mods/NexusMods.App/blob/main/src/Examples/TreeDataGrid/Basic
+[treedatagrid basic view]: https://github.com/Nexus-Mods/NexusMods.App/blob/main/src/Examples/TreeDataGrid/Basic/FileTreeView.axaml
+[treedatagrid basic vm]: https://github.com/Nexus-Mods/NexusMods.App/blob/main/src/Examples/TreeDataGrid/Basic/ViewModel/IFileViewModel.cs
+[treedatagrid basic vm impl]: https://github.com/Nexus-Mods/NexusMods.App/blob/main/src/Examples/TreeDataGrid/Basic/FileTreeDesignViewModel.cs
+[treedatagrid single column]: https://github.com/Nexus-Mods/NexusMods.App/blob/main/src/Examples/TreeDataGrid/SingleColumn
+[treedatagrid single column view]: https://github.com/Nexus-Mods/NexusMods.App/blob/main/src/Examples/TreeDataGrid/SingleColumn/FileTreeView.axaml
+[treedatagrid single column column view]: https://github.com/Nexus-Mods/NexusMods.App/blob/main/src/Examples/TreeDataGrid/SingleColumn/FileColumn/FileColumnView.axaml
+[treedatagrid single column vm]: https://github.com/Nexus-Mods/NexusMods.App/blob/main/src/Examples/TreeDataGrid/SingleColumn/FileColumn/IFileColumnViewModel.cs
+[treedatagrid column bug]: https://github.com/AvaloniaUI/Avalonia.Controls.TreeDataGrid/issues/221
