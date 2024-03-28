@@ -74,6 +74,10 @@
                         Padding="2">
                     <TextBlock Classes="BodyMDNormal ForegroundInverted" Text="Sample Text ForegroundInverted" />
                 </Border>
+                <Border BorderThickness="1" BorderBrush="White" Padding="2">
+                    <TextBlock Classes="BodyMDNormal ForegroundTranslucentSubdued" 
+                               Text="Sample Text ForegroundTranslucentSubdued" />
+                </Border>
             </StackPanel>
         </Border>
     </Design.PreviewWith>
@@ -167,6 +171,10 @@
 
     <Style Selector="TextBlock.ForegroundInverted">
         <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
+    </Style>
+    
+    <Style Selector="TextBlock.ForegroundTranslucentSubdued">
+        <Setter Property="Foreground" Value="{StaticResource NeutralTranslucentSubduedBrush}" />
     </Style>
 
     <Style Selector="TextBlock.ForegroundInfoStrong">

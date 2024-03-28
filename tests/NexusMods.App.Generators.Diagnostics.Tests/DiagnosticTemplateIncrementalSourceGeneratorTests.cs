@@ -8,7 +8,7 @@ namespace NexusMods.App.Generators.Diagnostics.Tests;
 public class DiagnosticTemplateIncrementalSourceGeneratorTests
 {
     [LanguageInjection("csharp")]
-    private const string SourceText = """
+    private const string SourceText = """"
 using NexusMods.Generators.Diagnostics;
 using NexusMods.Abstractions.Diagnostic;
 using NexusMods.Abstractions.Diagnostics.References;
@@ -25,7 +25,10 @@ internal partial class MyClass
         .WithId(new DiagnosticId(source: Source, number: 1))
         .WithTitle("Diagnostic 1")
         .WithSeverity(DiagnosticSeverity.Warning)
-        .WithSummary("Mod '{ModA}' conflicts with '{ModB}' because it's missing '{Something}' and {Count} other stuff!")
+        .WithSummary(
+"""
+Mod '{ModA}' conflicts with '{ModB}' because it's missing '{Something}' and {Count} other stuff!
+""")
         .WithoutDetails()
         .WithMessageData(messageBuilder => messageBuilder
             .AddDataReference<ModReference>("ModA")
@@ -35,7 +38,7 @@ internal partial class MyClass
         )
         .Finish();
 }
-""";
+"""";
 
     [Fact]
     public Task TestGenerator()

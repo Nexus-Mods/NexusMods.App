@@ -17,6 +17,16 @@ public static class EntityExtensions
         entity.EnsurePersisted(store);
         return entity;
     }
+    
+    /// <summary>
+    /// Ensures this item is stored in the database.
+    /// </summary>
+    public static void EnsureAllPersisted<T>(this Span<T> values, IDataStore store) where T : Entity
+    {
+        var ids = store.PutAll(values);
+        for (var x = 0; x < ids.Length; x++)
+            values[x].DataStoreId = ids[x];
+    }
 
     /// <summary>
     /// Persists a collection of entities to the store if they haven't already been persisted, and returns them.
@@ -27,10 +37,30 @@ public static class EntityExtensions
     /// <returns></returns>
     public static IEnumerable<T> WithPersist<T>(this IEnumerable<T> entities, IDataStore store) where T : Entity
     {
-        foreach (var entity in entities)
+        // TODO: Perf could be improved here by not using enumerables,
+        // but bulk persist is a good starting point.
+        var allEntities = entities.ToArray();
+
+        var numUnpersisted = 0;
+        var allUnpersisted = GC.AllocateUninitializedArray<T>(allEntities.Length);
+        for (var x = 0; x < allUnpersisted.Length; x++)
         {
-            entity.EnsurePersisted(store);
-            yield return entity;
+            // ReSharper disable once InvertIf , hot path
+            if (!allEntities[x].IsPersisted)
+            {
+                allUnpersisted[x] = allEntities[x];
+                numUnpersisted++;
+            }
+            else
+            {
+                // Yield the persistent elements first
+                yield return allEntities[x];
+            }
         }
+
+        var itemsToPersist = allUnpersisted.AsSpan(0, numUnpersisted);
+        itemsToPersist.EnsureAllPersisted(store);
+        foreach (var entity in allUnpersisted)
+            yield return entity;
     }
 }

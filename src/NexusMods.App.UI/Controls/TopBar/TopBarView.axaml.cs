@@ -1,6 +1,6 @@
 using System.Reactive.Disposables;
 using Avalonia.ReactiveUI;
-using NexusMods.App.UI.Controls.UnifiedIcon;
+using NexusMods.Icons;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Controls.TopBar;

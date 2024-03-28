@@ -146,13 +146,16 @@ public class SMAPIInstaller : AModInstaller
         foreach (var kv in archiveContents.GetFiles())
         {
             var to = new GamePath(LocationId.Game, kv.Path());
+            var item = kv.Item;
 
-            if (kv.Item.FileName.Equals("StardewModdingAPI.dll"))
+            // NOTE(erri120): this approach is much more reliable for getting
+            // the current SMAPI version than using external metadata.
+            if (item.FileName.Equals("StardewModdingAPI.dll"))
             {
                 try
                 {
                     await using var tempFile = _temporaryFileManager.CreateFile(new Extension(".dll"));
-                    await using (var stream = await kv.Item.OpenAsync())
+                    await using (var stream = await item.OpenAsync())
                     {
                         await using var fs = tempFile.Path.Open(FileMode.Create, FileAccess.ReadWrite, FileShare.None);
                         await stream.CopyToAsync(fs, cancellationToken);
@@ -162,13 +165,13 @@ public class SMAPIInstaller : AModInstaller
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError(e, "Exception while getting version of {Path}", kv.Item.Path);
+                    _logger.LogError(e, "Exception while getting version of {Path}", item.Path);
                 }
             }
 
             // For Linux & macOS: replace the game launcher executable "StardewValley" with "unix-launcher.sh"
             // https://github.com/Pathoschild/SMAPI/blob/5919337236650c6a0d7755863d35b2923a94775c/src/SMAPI.Installer/InteractiveInstaller.cs#L395-L425
-            if (isUnix && kv.Item.FileName.Equals("unix-launcher.sh"))
+            if (isUnix && item.FileName.Equals("unix-launcher.sh"))
             {
                 to = new GamePath(LocationId.Game, unixLauncherPath);
             }
@@ -177,9 +180,18 @@ public class SMAPIInstaller : AModInstaller
             // "StardewModdingAPI.exe" to allow players to run the vanilla game without having
             // to uninstall SMAPI. However, we don't need this behavior.
             // https://github.com/Nexus-Mods/NexusMods.App/issues/1012#issuecomment-1971039971
-            if (kv.Item.FileName.Equals("StardewModdingAPI.exe"))
+            if (item.FileName.Equals("StardewModdingAPI.exe"))
             {
                 to = new GamePath(LocationId.Game, "Stardew Valley.exe");
+            }
+
+            if (item.FileName.Equals("metadata.json")
+                && item.Parent is not null
+                && item.Parent.Item.FileName.Equals("smapi-internal"))
+            {
+                var storedFile = kv.ToStoredFile(to, [new SMAPIModDatabaseMarker()]);
+                modFiles.Add(storedFile);
+                continue;
             }
 
             modFiles.Add(kv.ToStoredFile(to));

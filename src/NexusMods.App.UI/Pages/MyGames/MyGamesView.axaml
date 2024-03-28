@@ -10,20 +10,86 @@
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
-    xmlns:myGames="clr-namespace:NexusMods.App.UI.Pages.MyGames">
+    xmlns:myGames="clr-namespace:NexusMods.App.UI.Pages.MyGames"
+    xmlns:gameWidget="clr-namespace:NexusMods.App.UI.Controls.GameWidget">
     <Design.DataContext>
         <myGames:MyGamesDesignViewModel />
     </Design.DataContext>
     <ScrollViewer>
-        <StackPanel Margin="24" Orientation="Vertical">
-            <TextBlock Classes="HeadingSMSemi" Text="{x:Static resources:Language.MyGamesView__Ready_to_mod}" />
-            <reactiveUi:ViewModelViewHost Margin="0,12,0,0" x:Name="FoundGamesViewHost" />
+        <StackPanel Margin="24"
+                    Classes="Spacing-9"
+                    Orientation="Vertical">
 
-            <TextBlock
-                Classes="HeadingSMSemi"
-                Margin="0,24,0,0"
-                Text="{x:Static resources:Language.MyGamesView__Detected_games}" />
-            <reactiveUi:ViewModelViewHost Margin="0,12,0,0" x:Name="AllGamesViewHost" />
+            <!-- Detected Games -->
+            <StackPanel x:Name="DetectedGamesSection"
+                        Classes="Spacing-4"
+                        Orientation="Vertical">
+                <!-- Title section -->
+                <StackPanel Orientation="Vertical"
+                            Classes="Spacing-2">
+                    <TextBlock Classes="HeadingXSSemi" Text="{x:Static resources:Language.MyGamesView__Detected_games}" />
+                    <TextBlock x:Name="NoGamesDetectedTextBlock"
+                               Classes="BodyLGNormal ForegroundWeak"
+                               Text="{x:Static resources:Language.MyGamesView__NoGamesDetectedText}" />
+                </StackPanel>
+
+                <ItemsControl
+                    x:Name="DetectedGamesItemsControl">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="gameWidget:IGameWidgetViewModel">
+                            <reactiveUi:ViewModelViewHost
+                                Height="238"
+                                Margin="0,0,0,24"
+                                ViewModel="{CompiledBinding .}"
+                                Width="192" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+
+            <!-- Managed Games -->
+            <StackPanel x:Name="ManagedGamesSection"
+                        Classes="Spacing-4"
+                        Orientation="Vertical">
+
+                <!-- Title section -->
+                <StackPanel Orientation="Vertical"
+                            Classes="Spacing-2">
+                    <TextBlock
+                        Classes="HeadingXSSemi"
+                        Margin="0,24,0,0"
+                        Text="{x:Static resources:Language.MyGamesView__Ready_to_mod}" />
+
+                    <TextBlock x:Name="NoGamesManagedTextBlock"
+                               Classes="BodyLGNormal ForegroundWeak"
+                               Text="{x:Static resources:Language.MyGamesView__NoGamesManagedText}" />
+                </StackPanel>
+
+                <!-- Games -->
+                <ItemsControl
+                    x:Name="ManagedGamesItemsControl">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="gameWidget:IGameWidgetViewModel">
+                            <reactiveUi:ViewModelViewHost
+                                Height="238"
+                                Margin="0,0,0,24"
+                                ViewModel="{CompiledBinding .}"
+                                Width="192" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
         </StackPanel>
+
     </ScrollViewer>
 </reactiveUi:ReactiveUserControl>

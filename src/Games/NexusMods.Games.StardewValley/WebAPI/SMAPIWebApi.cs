@@ -1,5 +1,7 @@
 using System.Collections.Immutable;
+using DynamicData.Kernel;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.Diagnostics.Values;
 using NexusMods.Paths;
 using StardewModdingAPI.Toolkit;
 using StardewModdingAPI.Toolkit.Framework.Clients.WebApi;
@@ -20,14 +22,14 @@ internal sealed class SMAPIWebApi : ISMAPIWebApi
     private bool _isDisposed;
     private WebApiClient? _client;
 
-    private ImmutableDictionary<string, Uri> _knownModPageUrls = ImmutableDictionary<string, Uri>.Empty.WithComparers(StringComparer.OrdinalIgnoreCase);
+    private ImmutableDictionary<string, NamedLink> _knownModPageUrls = ImmutableDictionary<string, NamedLink>.Empty.WithComparers(StringComparer.OrdinalIgnoreCase);
 
     public SMAPIWebApi(ILogger<SMAPIWebApi> logger)
     {
         _logger = logger;
     }
 
-    public async Task<IReadOnlyDictionary<string, Uri>> GetModPageUrls(
+    public async Task<IReadOnlyDictionary<string, NamedLink>> GetModPageUrls(
         IOSInformation os,
         Version gameVersion,
         Version smapiVersion,
@@ -76,22 +78,22 @@ internal sealed class SMAPIWebApi : ISMAPIWebApi
             if (apiResult is not null)
             {
                 var tmp = apiResult
-                    .Select<KeyValuePair<string, ModEntryModel>, ValueTuple<string?, Uri?>>(kv =>
+                    .Select<KeyValuePair<string, ModEntryModel>, ValueTuple<string?, Optional<NamedLink>>>(kv =>
                     {
                         var (id, model) = kv;
                         var metadata = model.Metadata;
 
                         var nexusId = metadata?.NexusID;
-                        if (nexusId is null) return (null, null);
+                        if (nexusId is null) return (null, Optional<NamedLink>.None);
 
                         var uri = new Uri($"{NexusModsBaseUrl}/{nexusId.Value}");
-                        return (id, uri);
+                        return (id, uri.WithName("Nexus Mods"));
                     })
                     .Where(kv => kv.Item1 is not null)
-                    .Select(tuple => new KeyValuePair<string, Uri>(tuple.Item1!, tuple.Item2!))
+                    .Select(tuple => new KeyValuePair<string, NamedLink>(tuple.Item1!, tuple.Item2.Value))
                     .ToDictionary();
 
-                ImmutableDictionary<string, Uri> initial, updated;
+                ImmutableDictionary<string, NamedLink> initial, updated;
                 do
                 {
                     initial = _knownModPageUrls;
@@ -101,9 +103,9 @@ internal sealed class SMAPIWebApi : ISMAPIWebApi
         }
 
         return smapiIDs
-            .Select(id => (Id: id, Uri: _knownModPageUrls.GetValueOrDefault(id)))
-            .Where(tuple => tuple.Uri is not null)
-            .Select(tuple => new KeyValuePair<string, Uri>(tuple.Id, tuple.Uri!))
+            .Select(id => (Id: id, Link: _knownModPageUrls.GetValueOrDefault(id)))
+            .Where(tuple => tuple.Link != default(NamedLink))
+            .Select(tuple => new KeyValuePair<string, NamedLink>(tuple.Id, tuple.Link))
             .ToDictionary(StringComparer.OrdinalIgnoreCase);
     }
 

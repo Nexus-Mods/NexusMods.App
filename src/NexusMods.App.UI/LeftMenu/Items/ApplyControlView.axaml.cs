@@ -15,20 +15,27 @@ public partial class ApplyControlView : ReactiveUserControl<IApplyControlViewMod
         {
             this.BindCommand(ViewModel, vm => vm.ApplyCommand, v => v.ApplyButton)
                 .DisposeWith(disposables);
+            
+            this.BindCommand(ViewModel, vm => vm.IngestCommand, v => v.IngestButton)
+                .DisposeWith(disposables);
 
             this.OneWayBind(ViewModel, vm => vm.LaunchButtonViewModel, v => v.LaunchButtonView.ViewModel)
                 .DisposeWith(disposables);
             
-            this.OneWayBind(ViewModel, vm => vm.CanApply, v => v.ApplyButton.IsVisible)
+            this.WhenAnyObservable(view => view.ViewModel!.ApplyCommand.CanExecute)
+                .OnUI()
+                .BindToView(this, view => view.ApplyButton.IsVisible)
                 .DisposeWith(disposables);
             
-            this.OneWayBind(ViewModel, vm => vm.IsApplying, v => v.InProgressBorder.IsVisible)
+            this.WhenAnyObservable(view => view.ViewModel!.ApplyCommand.IsExecuting)
+                .OnUI()
+                .BindToView(this, view => view.InProgressBorder.IsVisible)
                 .DisposeWith(disposables);
             
             this.OneWayBind(ViewModel, vm => vm.ApplyButtonText, v => v.ApplyButtonTextBlock.Text)
                 .DisposeWith(disposables);
 
-            this.WhenAnyValue(view => view.ViewModel!.IsApplying)
+            this.WhenAnyObservable(view => view.ViewModel!.ApplyCommand.IsExecuting)
                 .Select(isApplying => !isApplying)
                 .OnUI()
                 .BindToView(this, view => view.LaunchButtonView.IsVisible)

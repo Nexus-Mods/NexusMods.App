@@ -17,11 +17,19 @@ public static class Services
         services
             .AddGame<StardewValley>()
             .AddSingleton<ITool, RunGameTool<StardewValley>>()
+
+            // Installers
+            .AddSingleton<SMAPIInstaller>()
+            .AddSingleton<SMAPIModInstaller>()
+
+            // Diagnostics
             .AddSingleton<DependencyDiagnosticEmitter>()
             .AddSingleton<MissingSMAPIEmitter>()
+            .AddSingleton<SMAPIModDatabaseCompatibilityDiagnosticEmitter>()
+
+            // Misc
             .AddSingleton<ISMAPIWebApi, SMAPIWebApi>()
-            .AddSingleton<ITypeFinder, TypeFinder>()
-            .AddSingleton<SMAPIInstaller>();
+            .AddSingleton<ITypeFinder, TypeFinder>();
 
         return services;
     }
