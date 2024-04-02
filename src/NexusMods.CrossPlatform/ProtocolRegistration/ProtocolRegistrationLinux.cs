@@ -31,13 +31,13 @@ public class ProtocolRegistrationLinux : IProtocolRegistration
     /// <inheritdoc/>
     public async Task<string?> RegisterSelf(string protocol)
     {
-        var executable = System.Diagnostics.Process.GetCurrentProcess().MainModule!.FileName;
+        var executable = Environment.ProcessPath;
 
         return await Register(
             protocol,
             $"{BaseId}-{protocol}.desktop",
             Path.GetDirectoryName(executable)!,
-            $"{executable} protocol-invoke --url %u");
+            $"\"{executable}\" protocol-invoke --url %u");
     }
 
     /// <inheritdoc/>
@@ -55,7 +55,7 @@ public class ProtocolRegistrationLinux : IProtocolRegistration
         sb.AppendLine($"Name=NexusMods.App {protocol.ToUpper()} Handler");
         sb.AppendLine("Terminal=false");
         sb.AppendLine("Type=Application");
-        sb.AppendLine($"Path={workingDirectory}");
+        sb.AppendLine($"Path=\"{workingDirectory}\"");
         sb.AppendLine($"Exec={commandLine}");
         sb.AppendLine($"MimeType=x-scheme-handler/{protocol}");
         sb.AppendLine("NoDisplay=true");
