@@ -35,9 +35,10 @@ public class ProtocolRegistrationLinux : IProtocolRegistration
 
         return await Register(
             protocol,
-            $"{BaseId}-{protocol}.desktop",
-            Path.GetDirectoryName(executable)!,
-            $"\"{executable}\" protocol-invoke --url %u");
+            friendlyName: $"{BaseId}-{protocol}.desktop",
+            workingDirectory: FixWhitespace(Path.GetDirectoryName(executable)),
+            commandLine: $"{FixWhitespace(executable)} protocol-invoke --url %u"
+        );
     }
 
     /// <inheritdoc/>
@@ -55,7 +56,7 @@ public class ProtocolRegistrationLinux : IProtocolRegistration
         sb.AppendLine($"Name=NexusMods.App {protocol.ToUpper()} Handler");
         sb.AppendLine("Terminal=false");
         sb.AppendLine("Type=Application");
-        sb.AppendLine($"Path=\"{workingDirectory}\"");
+        sb.AppendLine($"Path={workingDirectory}");
         sb.AppendLine($"Exec={commandLine}");
         sb.AppendLine($"MimeType=x-scheme-handler/{protocol}");
         sb.AppendLine("NoDisplay=true");
@@ -85,5 +86,11 @@ public class ProtocolRegistrationLinux : IProtocolRegistration
 
         // might end with 0xA (LF)
         return stdOut.StartsWith("yes", StringComparison.InvariantCultureIgnoreCase);
+    }
+
+    private static string FixWhitespace(string? input)
+    {
+        if (input is null) return string.Empty;
+        return input.Replace(" ", @"\ ");
     }
 }
