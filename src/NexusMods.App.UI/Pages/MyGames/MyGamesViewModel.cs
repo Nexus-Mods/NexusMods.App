@@ -67,47 +67,48 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                     .DistinctValues(tuple => tuple.loadout!.Installation);
 
                 // Managed games widgets
-                managedInstallations.Transform(install =>
+                managedInstallations
+                    .OnUI()
+                    .Transform(install =>
+                    {
+                        var vm = _provider.GetRequiredService<IGameWidgetViewModel>();
+                        vm.Installation = install;
+                        vm.AddGameCommand = ReactiveCommand.CreateFromTask(async () =>
                         {
-                            var vm = _provider.GetRequiredService<IGameWidgetViewModel>();
-                            vm.Installation = install;
-                            vm.AddGameCommand = ReactiveCommand.CreateFromTask(
-                                async () =>
-                                {
-                                    vm.State = GameWidgetState.AddingGame;
-                                    await Task.Run(async () => await ManageGame(install));
-                                    vm.State = GameWidgetState.ManagedGame;
-                                }
-                            );
-                            vm.ViewGameCommand = ReactiveCommand.Create(
-                                () => { NavigateToLoadout(install); }
-                            );
+                            vm.State = GameWidgetState.AddingGame;
+                            await Task.Run(async () => await ManageGame(install));
                             vm.State = GameWidgetState.ManagedGame;
-                            return vm;
-                        }
-                    )
+                        });
+
+                        vm.ViewGameCommand = ReactiveCommand.Create(
+                            () => { NavigateToLoadout(install); }
+                        );
+
+                        vm.State = GameWidgetState.ManagedGame;
+                        return vm;
+                    })
                     .Bind(out _managedGames)
                     .SubscribeWithErrorLogging()
                     .DisposeWith(d);
 
                 // Detected games widgets, except already managed games
-                installations.Except(managedInstallations)
+                installations
+                    .Except(managedInstallations)
+                    .OnUI()
                     .Transform(install =>
+                    {
+                        var vm = _provider.GetRequiredService<IGameWidgetViewModel>();
+                        vm.Installation = install;
+                        vm.AddGameCommand = ReactiveCommand.CreateFromTask(async () =>
                         {
-                            var vm = _provider.GetRequiredService<IGameWidgetViewModel>();
-                            vm.Installation = install;
-                            vm.AddGameCommand = ReactiveCommand.CreateFromTask(
-                                async () =>
-                                {
-                                    vm.State = GameWidgetState.AddingGame;
-                                    await Task.Run(async () => await ManageGame(install));
-                                    vm.State = GameWidgetState.ManagedGame;
-                                }
-                            );
-                            vm.State = GameWidgetState.DetectedGame;
-                            return vm;
-                        }
-                    )
+                            vm.State = GameWidgetState.AddingGame;
+                            await Task.Run(async () => await ManageGame(install));
+                            vm.State = GameWidgetState.ManagedGame;
+                        });
+
+                        vm.State = GameWidgetState.DetectedGame;
+                        return vm;
+                    })
                     .Bind(out _detectedGames)
                     .SubscribeWithErrorLogging()
                     .DisposeWith(d);
