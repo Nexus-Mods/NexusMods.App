@@ -31,13 +31,17 @@ public class ProtocolRegistrationLinux : IProtocolRegistration
     /// <inheritdoc/>
     public async Task<string?> RegisterSelf(string protocol)
     {
-        var executable = System.Diagnostics.Process.GetCurrentProcess().MainModule!.FileName;
+        // https://docs.appimage.org/packaging-guide/environment-variables.html#type-2-appimage-runtime
+        // APPIMAGE: (Absolute) path to AppImage file (with symlinks resolved)
+        var appImagePath = Environment.GetEnvironmentVariable("APPIMAGE", EnvironmentVariableTarget.Process);
+        var executable = appImagePath ?? Environment.ProcessPath;
 
         return await Register(
             protocol,
-            $"{BaseId}-{protocol}.desktop",
-            Path.GetDirectoryName(executable)!,
-            $"{executable} protocol-invoke --url %u");
+            friendlyName: $"{BaseId}-{protocol}.desktop",
+            workingDirectory: FixWhitespace(Path.GetDirectoryName(executable)),
+            commandLine: $"{FixWhitespace(executable)} protocol-invoke --url %u"
+        );
     }
 
     /// <inheritdoc/>
@@ -85,5 +89,11 @@ public class ProtocolRegistrationLinux : IProtocolRegistration
 
         // might end with 0xA (LF)
         return stdOut.StartsWith("yes", StringComparison.InvariantCultureIgnoreCase);
+    }
+
+    private static string FixWhitespace(string? input)
+    {
+        if (input is null) return string.Empty;
+        return input.Replace(" ", @"\ ");
     }
 }
