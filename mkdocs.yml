@@ -58,6 +58,7 @@ nav:
       - UI Coding Guidelines: development-guidelines/UICodingGuidelines.md
       - UI Styling Guidelines: development-guidelines/UIStylingGuidelines.md
       - Using Workspaces: development-guidelines/UsingWorkspaces.md
+      - Diagnostics: development-guidelines/Diagnostics.md
 
   - Decisions:
       - Backend:

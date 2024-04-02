@@ -40,6 +40,6 @@ public interface ILoadoutSynchronizer
     /// </summary>
     /// <param name="installation"></param>
     /// <returns></returns>
-    Task<Loadout> Manage(GameInstallation installation);
+    Task<Loadout> Manage(GameInstallation installation, string? suggestedName=null);
     #endregion
 }

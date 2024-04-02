@@ -1,6 +1,6 @@
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Windows.Input;
 using Avalonia.Media.Imaging;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
@@ -18,8 +18,8 @@ public class GameWidgetViewModel : AViewModel<IGameWidgetViewModel>, IGameWidget
     {
         _logger = logger;
 
-        PrimaryButton = ReactiveCommand.Create(() => { });
-        SecondaryButton = ReactiveCommand.Create(() => { });
+        AddGameCommand = ReactiveCommand.Create(() => { });
+        ViewGameCommand = ReactiveCommand.Create(() => { });
 
         _image = this
             .WhenAnyValue(vm => vm.Installation)
@@ -64,8 +64,12 @@ public class GameWidgetViewModel : AViewModel<IGameWidgetViewModel>, IGameWidget
     public Bitmap Image => _image.Value;
 
     [Reactive]
-    public ICommand PrimaryButton { get; set; }
+    public ReactiveCommand<Unit,Unit> AddGameCommand { get; set; }
 
     [Reactive]
-    public ICommand? SecondaryButton { get; set; }
+    public ReactiveCommand<Unit, Unit> ViewGameCommand { get; set; }
+
+
+    [Reactive]
+    public GameWidgetState State { get; set; }
 }

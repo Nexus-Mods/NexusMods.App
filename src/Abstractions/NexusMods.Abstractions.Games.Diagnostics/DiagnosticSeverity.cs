@@ -18,7 +18,7 @@ public enum DiagnosticSeverity : byte
     /// Something that doesn't indicate a problem, and offers improvements to the user.
     /// </summary>
     /// <remarks>
-    /// This severity can be used to provide helpful advises to the user. Applying these
+    /// This severity can be used to provide helpful advices to the user. Applying these
     /// suggestions MUST NOT introduce further diagnostics of a higher severity. Furthermore,
     /// analysis and deduction MUST BE objective and based on facts. Suggestions have to
     /// be documented, and their improvements must be justifiable. Don't offer improvements

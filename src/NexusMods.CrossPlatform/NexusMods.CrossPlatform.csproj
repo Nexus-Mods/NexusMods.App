@@ -5,6 +5,7 @@
     <ItemGroup>
         <PackageReference Include="CliWrap" />
         <PackageReference Include="NexusMods.Paths" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions"/>
     </ItemGroup>
 
     <ItemGroup>

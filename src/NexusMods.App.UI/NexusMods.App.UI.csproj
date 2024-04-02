@@ -9,7 +9,6 @@
         <None Remove=".gitignore" />
         <None Remove="Theme\BareIcons.xaml" />
         <None Remove="Controls\GameWidget\GameWidgetStyles.xaml" />
-        <AvaloniaResource Include="Controls\GameWidget\GameWidgetStyles.xaml" />
         <None Remove="Theme\Borders.xaml" />
         <None Remove="Fonts\Montserrat\static\Montserrat-Black.ttf" />
         <None Remove="Fonts\Montserrat\static\Montserrat-BlackItalic.ttf" />

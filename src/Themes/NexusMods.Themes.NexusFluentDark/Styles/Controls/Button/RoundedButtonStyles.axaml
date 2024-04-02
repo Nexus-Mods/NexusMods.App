@@ -180,6 +180,7 @@
     <Style Selector="Button.Rounded">
         <Setter Property="CornerRadius" Value="{StaticResource Rounded-full}" />
         <Setter Property="Height" Value="32" />
+        <Setter Property="Padding" Value="7,0" />
 
         <!-- Set an invisible border thickness to 1 to avoid size differences with outlined variants. -->
         <Setter Property="BorderThickness" Value="1" />

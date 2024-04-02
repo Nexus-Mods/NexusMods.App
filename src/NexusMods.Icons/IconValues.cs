@@ -10,6 +10,9 @@ public static class IconValues
 
     // https://pictogrammers.com/library/mdi/icon/delete-outline/
     public static readonly IconValue DeleteOutline = new ProjektankerIcon("mdi-delete-outline");
+    
+    // https://pictogrammers.com/library/mdi/icon/delete-forever/
+    public static readonly IconValue DeleteForever = new ProjektankerIcon("mdi-delete-forever");
 
     // exported from Figma because there wasn't a fitting Material Design Icon
     public static readonly IconValue Description = new AvaloniaPathIcon(Geometry.Parse(

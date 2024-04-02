@@ -4,6 +4,7 @@ using Avalonia.Threading;
 using DynamicData;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
@@ -23,6 +24,8 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
     private readonly ILoadoutRegistry _loadoutRegistry;
     private readonly IServiceProvider _provider;
     private readonly IWindowManager _windowManager;
+    private readonly ILogger<MyGamesViewModel> _logger;
+    private readonly IApplyService _applyService;
     private ReadOnlyObservableCollection<IGameWidgetViewModel> _managedGames = new([]);
     private ReadOnlyObservableCollection<IGameWidgetViewModel> _detectedGames = new([]);
 
@@ -33,11 +36,15 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
         IWindowManager windowManager,
         IServiceProvider serviceProvider,
         ILoadoutRegistry loadoutRegistry,
+        ILogger<MyGamesViewModel> logger,
+        IApplyService applyService,
         IEnumerable<IGame> games) : base(windowManager)
     {
         _provider = serviceProvider;
         _loadoutRegistry = loadoutRegistry;
+        _applyService = applyService;
         _windowManager = windowManager;
+        _logger = logger;
 
         var gamesList = games.ToList();
         var installations = gamesList
@@ -60,32 +67,48 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                     .DistinctValues(tuple => tuple.loadout!.Installation);
 
                 // Managed games widgets
-                managedInstallations.Transform(install =>
+                managedInstallations
+                    .OnUI()
+                    .Transform(install =>
+                    {
+                        var vm = _provider.GetRequiredService<IGameWidgetViewModel>();
+                        vm.Installation = install;
+                        vm.AddGameCommand = ReactiveCommand.CreateFromTask(async () =>
                         {
-                            var vm = _provider.GetRequiredService<IGameWidgetViewModel>();
-                            vm.Installation = install;
-                            vm.PrimaryButton = ReactiveCommand.CreateFromTask(
-                                async () => { await Task.Run(async () => await ManageGame(install)); }
-                            );
-                            return vm;
-                        }
-                    )
+                            vm.State = GameWidgetState.AddingGame;
+                            await Task.Run(async () => await ManageGame(install));
+                            vm.State = GameWidgetState.ManagedGame;
+                        });
+
+                        vm.ViewGameCommand = ReactiveCommand.Create(
+                            () => { NavigateToLoadout(install); }
+                        );
+
+                        vm.State = GameWidgetState.ManagedGame;
+                        return vm;
+                    })
                     .Bind(out _managedGames)
                     .SubscribeWithErrorLogging()
                     .DisposeWith(d);
 
                 // Detected games widgets, except already managed games
-                installations.Except(managedInstallations)
+                installations
+                    .Except(managedInstallations)
+                    .OnUI()
                     .Transform(install =>
+                    {
+                        var vm = _provider.GetRequiredService<IGameWidgetViewModel>();
+                        vm.Installation = install;
+                        vm.AddGameCommand = ReactiveCommand.CreateFromTask(async () =>
                         {
-                            var vm = _provider.GetRequiredService<IGameWidgetViewModel>();
-                            vm.Installation = install;
-                            vm.PrimaryButton = ReactiveCommand.CreateFromTask(
-                                async () => { await Task.Run(async () => await ManageGame(install)); }
-                            );
-                            return vm;
-                        }
-                    )
+                            vm.State = GameWidgetState.AddingGame;
+                            await Task.Run(async () => await ManageGame(install));
+                            vm.State = GameWidgetState.ManagedGame;
+                        });
+
+                        vm.State = GameWidgetState.DetectedGame;
+                        return vm;
+                    })
                     .Bind(out _detectedGames)
                     .SubscribeWithErrorLogging()
                     .DisposeWith(d);
@@ -99,6 +122,51 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
         var marker = await _loadoutRegistry.Manage(installation, name);
 
         var loadoutId = marker.Id;
+
+        Dispatcher.UIThread.Invoke(() =>
+            {
+                if (!_windowManager.TryGetActiveWindow(out var window)) return;
+                var workspaceController = window.WorkspaceController;
+
+                workspaceController.ChangeOrCreateWorkspaceByContext(
+                    context => context.LoadoutId == loadoutId,
+                    () => new PageData
+                    {
+                        FactoryId = LoadoutGridPageFactory.StaticId,
+                        Context = new LoadoutGridContext
+                        {
+                            LoadoutId = loadoutId
+                        }
+                    },
+                    () => new LoadoutContext
+                    {
+                        LoadoutId = loadoutId
+                    }
+                );
+            }
+        );
+    }
+
+    private void NavigateToLoadout(GameInstallation installation)
+    {
+        var revId = _applyService.GetLastAppliedLoadout(installation);
+        if (revId is null)
+        {
+            _logger.LogError("Unable to find active loadout for  {GameName} : {InstallPath}",
+                installation.Game.Name,
+                installation.LocationsRegister[LocationId.Game]
+            );
+            return;
+        }
+
+        var loadout = _loadoutRegistry.GetLoadout(revId);
+        if (loadout is null)
+        {
+            _logger.LogError("Unable to find loadout for revision {RevId}", revId);
+            return;
+        }
+
+        var loadoutId = loadout.LoadoutId;
 
         Dispatcher.UIThread.Invoke(() =>
             {

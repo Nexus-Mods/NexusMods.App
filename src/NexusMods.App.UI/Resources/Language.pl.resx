@@ -365,4 +365,13 @@
     <data name="MyGamesView__NoGamesManagedText" xml:space="preserve">
         <value>Dodaj gry, by rozpocząć modowanie</value>
     </data>
+    <data name="GameWidget__Adding_game" xml:space="preserve">
+        <value>Dodawanie gry</value>
+    </data>
+    <data name="GameWidget__View" xml:space="preserve">
+        <value>Zobacz</value>
+    </data>
+    <data name="GameWidget__Removing_game" xml:space="preserve">
+        <value>Usuwanie gry</value>
+    </data>
 </root>
