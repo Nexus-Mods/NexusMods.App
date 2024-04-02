@@ -1,8 +1,10 @@
 // See https://aka.ms/new-console-template for more information
 
 using System.Diagnostics;
+using System.Globalization;
 using System.Reflection;
 using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Reports;
 using BenchmarkDotNet.Running;
 using NexusMods.Benchmarks;
 using NexusMods.Benchmarks.Interfaces;
@@ -59,7 +61,15 @@ void PrintOption(int x, SelectableBenchmark benchmark)
 void StartBenchmark(SelectableBenchmark[] selectableBenchmarks, int benchmarkIndex)
 {
     if (Debugger.IsAttached)
+    {
         BenchmarkRunner.Run(selectableBenchmarks[benchmarkIndex].Type, new DebugInProcessConfig());
+    }
     else
-        BenchmarkRunner.Run(selectableBenchmarks[benchmarkIndex].Type);
+    {
+        // Ensure our parameters don't get trimmed.
+        var summaryStyle = new SummaryStyle(CultureInfo.CurrentCulture, printUnitsInHeader: false, printUnitsInContent: true,
+            printZeroValuesInContent: false, sizeUnit: null, timeUnit: null, maxParameterColumnWidth: 40);
+        var config = ManualConfig.Create(DefaultConfig.Instance).WithSummaryStyle(summaryStyle);
+        BenchmarkRunner.Run(selectableBenchmarks[benchmarkIndex].Type, config);
+    }
 }

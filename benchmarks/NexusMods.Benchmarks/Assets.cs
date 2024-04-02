@@ -43,6 +43,11 @@ public class Assets
             public static string SkyrimFileList => Path.Combine(FileListsFolder, "skyrimse-47paths.br");
 
             /// <summary>
+            ///     Retrieves the path of the file list by file name.
+            /// </summary>
+            public static string GetFileListPathByFileName(string fileName) => Path.Combine(FileListsFolder, fileName);
+
+            /// <summary>
             ///     Retrieves the contents of a file list
             /// </summary>
             public static string[] GetFileList(string file)
