@@ -31,7 +31,10 @@ public class ProtocolRegistrationLinux : IProtocolRegistration
     /// <inheritdoc/>
     public async Task<string?> RegisterSelf(string protocol)
     {
-        var executable = Environment.ProcessPath;
+        // https://docs.appimage.org/packaging-guide/environment-variables.html#type-2-appimage-runtime
+        // APPIMAGE: (Absolute) path to AppImage file (with symlinks resolved)
+        var appImagePath = Environment.GetEnvironmentVariable("APPIMAGE", EnvironmentVariableTarget.Process);
+        var executable = appImagePath ?? Environment.ProcessPath;
 
         return await Register(
             protocol,
