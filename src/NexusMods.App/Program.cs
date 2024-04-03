@@ -129,8 +129,8 @@ public class Program
         // to ConfigureLogging; since the DI container isn't built until the host is.
         var config = ReadAppConfig(new AppConfig());
         var host = new HostBuilder()
-            .ConfigureServices(services => services.AddApp(config, slimMode:slimMode).Validate())
-            .ConfigureLogging((_, builder) => AddLogging(builder, config.LoggingSettings))
+            .ConfigureServices(services => services.AddApp(config, slimMode: slimMode).Validate())
+            .ConfigureLogging((_, builder) => AddLogging(builder, config.LoggingSettings, isMainProcess: !slimMode))
             .Build();
 
         return host;
@@ -206,19 +206,35 @@ public class Program
         return null;
     }
 
-    static void AddLogging(ILoggingBuilder loggingBuilder, ILoggingSettings settings)
+    private static void AddLogging(ILoggingBuilder loggingBuilder, ILoggingSettings settings, bool isMainProcess)
     {
         var config = new NLog.Config.LoggingConfiguration();
 
-        var fileTarget = new FileTarget("file")
+        const string defaultLayout = "${processtime} [${level:uppercase=true}] (${logger}) ${message:withexception=true}";
+        const string defaultHeader = "############ Nexus Mods App log file - ${longdate} ############";
+
+        FileTarget fileTarget;
+        if (isMainProcess)
         {
-            FileName = settings.FilePath.GetFullPath(),
-            ArchiveFileName = settings.ArchiveFilePath.GetFullPath(),
-            ArchiveOldFileOnStartup = true,
-            MaxArchiveFiles = settings.MaxArchivedFiles,
-            Layout = "${processtime} [${level:uppercase=true}] (${logger}) ${message:withexception=true}",
-            Header = "############ Nexus Mods App log file - ${longdate} ############"
-        };
+            fileTarget = new FileTarget("file")
+            {
+                FileName = settings.MainProcessLogFilePath.GetFullPath(),
+                ArchiveFileName = settings.MainProcessArchiveFilePath.GetFullPath(),
+            };
+        }
+        else
+        {
+            fileTarget = new FileTarget("file")
+            {
+                FileName = settings.SlimProcessLogFilePath.GetFullPath(),
+                ArchiveFileName = settings.SlimProcessArchiveFilePath.GetFullPath(),
+            };
+        }
+
+        fileTarget.ArchiveOldFileOnStartup = true;
+        fileTarget.MaxArchiveDays = settings.MaxArchivedFiles;
+        fileTarget.Layout = defaultLayout;
+        fileTarget.Header = defaultHeader;
 
         var consoleTarget = new ConsoleTarget("console")
         {
@@ -233,7 +249,7 @@ public class Program
         // https://github.com/Nexus-Mods/NexusMods.App/issues/250
         var options = new NLogProviderOptions
         {
-            RemoveLoggerFactoryFilter = false
+            RemoveLoggerFactoryFilter = false,
         };
 
         loggingBuilder.ClearProviders();
