@@ -109,7 +109,7 @@ public class NxFileStore : IFileStore
                 var writer = new LittleEndianWriter(ptr);
                 entry.Entry.WriteAsV1(ref writer);
 
-                var hash = Hash.FromHex(entry.FileName);
+                var hash = Hash.From(entry.Entry.Hash);
                 var dbId = IdFor(hash);
                 var dbEntry = new ArchivedFiles
                 {
