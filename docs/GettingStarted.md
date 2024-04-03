@@ -5,7 +5,7 @@ The Nexus Mods App is programmed in C# with latest .NET Runtime. Setup should be
 
 ## Prerequisites
 
-- Download the Latest [.NET SDK](https://dotnet.microsoft.com/en-us/download/dotnet/7.0).
+- Download the Latest [.NET SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0).
 - Download an IDE, recommended options below:
     - [Visual Studio](https://visualstudio.microsoft.com/downloads/)
     - [JetBrains Rider](https://www.jetbrains.com/rider/)
