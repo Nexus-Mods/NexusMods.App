@@ -64,12 +64,30 @@ public class AppConfig
 
 public interface ILoggingSettings
 {
+    /// <summary>
+    /// Gets the path to the current log file for the main process.
+    /// </summary>
     public ConfigurationPath MainProcessLogFilePath { get; }
 
+    /// <summary>
+    /// Gets the template path to the archive log file for the main process.
+    /// </summary>
+    /// <remarks>
+    /// For details, see https://nlog-project.org/documentation/v5.0.0/html/P_NLog_Targets_FileTarget_ArchiveFileName.htm
+    /// </remarks>
     public ConfigurationPath MainProcessArchiveFilePath { get; }
 
+    /// <summary>
+    /// Gets the path to the current log file for the slim process.
+    /// </summary>
     public ConfigurationPath SlimProcessLogFilePath { get; }
 
+    /// <summary>
+    /// Gets the template path to the archive log file for the slim process.
+    /// </summary>
+    /// <remarks>
+    /// For details, see https://nlog-project.org/documentation/v5.0.0/html/P_NLog_Targets_FileTarget_ArchiveFileName.htm
+    /// </remarks>
     public ConfigurationPath SlimProcessArchiveFilePath { get; }
 
     /// <summary>
