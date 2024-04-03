@@ -92,11 +92,10 @@ public class NxFileStore : IFileStore
         await outputPath.MoveToAsync(finalPath, token: token);
         await using var os = finalPath.Read();
         var unpacker = new NxUnpacker(new FromStreamProvider(os));
-        UpdateIndexes(unpacker, guid, finalPath);
+        UpdateIndexes(unpacker, finalPath);
     }
 
-    private unsafe void UpdateIndexes(NxUnpacker unpacker, Guid guid,
-        AbsolutePath finalPath)
+    private unsafe void UpdateIndexes(NxUnpacker unpacker, AbsolutePath finalPath)
     {
         var entries = unpacker.GetPathedFileEntries();
         var items = GC.AllocateUninitializedArray<(IId, ArchivedFiles)>(entries.Length);
@@ -111,7 +110,7 @@ public class NxFileStore : IFileStore
                 entry.Entry.WriteAsV1(ref writer);
 
                 var hash = Hash.FromHex(entry.FileName);
-                var dbId = IdFor(hash, guid);
+                var dbId = IdFor(hash);
                 var dbEntry = new ArchivedFiles
                 {
                     File = finalPath.FileName,
@@ -127,11 +126,10 @@ public class NxFileStore : IFileStore
     }
 
     [SkipLocalsInit]
-    private IId IdFor(Hash hash, Guid guid)
+    private IId IdFor(Hash hash)
     {
-        Span<byte> buffer = stackalloc byte[24];
+        Span<byte> buffer = stackalloc byte[8];
         BinaryPrimitives.WriteUInt64BigEndian(buffer, hash.Value);
-        guid.TryWriteBytes(buffer.SliceFast(8));
         return IId.FromSpan(EntityCategory.ArchivedFiles, buffer);
     }
 
@@ -424,16 +422,17 @@ public class NxFileStore : IFileStore
     private unsafe bool TryGetLocation(Hash hash, out AbsolutePath archivePath, out FileEntry fileEntry)
     {
         var prefix = new Id64(EntityCategory.ArchivedFiles, (ulong)hash);
-        foreach (var entry in _store.GetByPrefix<ArchivedFiles>(prefix))
+        var item = _store.Get<ArchivedFiles>(prefix);
+        if (item != null)
         {
             foreach (var location in _archiveLocations)
             {
-                var path = location.Combine(entry.File);
+                var path = location.Combine(item.File);
                 if (!path.FileExists) continue;
 
                 archivePath = path;
 
-                fixed (byte* ptr = entry.FileEntryData.AsSpan())
+                fixed (byte* ptr = item.FileEntryData.AsSpan())
                 {
                     var reader = new LittleEndianReader(ptr);
                     FileEntry tmpEntry = default;
@@ -445,8 +444,8 @@ public class NxFileStore : IFileStore
             }
         }
 
-        archivePath = default;
-        fileEntry = default;
+        archivePath = default(AbsolutePath);
+        fileEntry = default(FileEntry);
         return false;
     }
 }
