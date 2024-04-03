@@ -13,7 +13,7 @@
     <Grid RowDefinitions="*,Auto"
         Margin="16,16">
 
-        <ItemsControl Grid.Row="0" Margin="16,36" x:Name="MenuItemsControl">
+        <ItemsControl Grid.Row="0"  x:Name="MenuItemsControl">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <StackPanel />
