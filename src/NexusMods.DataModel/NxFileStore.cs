@@ -177,11 +177,11 @@ public class NxFileStore : IFileStore
 
             // Make all output providers.
             var toExtract = GC.AllocateUninitializedArray<IOutputDataProvider>(group.Value.Count);
-            for (var x = 0; x < group.Value.Count; x++)
+            Parallel.For(0, group.Value.Count, x =>
             {
                 var entry = group.Value[x];
                 toExtract[x] = new OutputFileProvider(entry.Dest.Parent.GetFullPath(), entry.Dest.FileName, entry.FileEntry);
-            }
+            });
 
             try
             {
