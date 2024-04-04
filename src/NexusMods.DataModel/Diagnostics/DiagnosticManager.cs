@@ -111,6 +111,8 @@ internal sealed class DiagnosticManager : IDiagnosticManager
 
             var flattened = nested
                 .SelectMany(many => many)
+                .OrderByDescending(x => x.Severity)
+                .ThenBy(x => x.Id)
                 .ToArray();
 
             return flattened;
