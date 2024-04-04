@@ -72,7 +72,7 @@ public class Assets
                 var decompressedText = reader.ReadToEnd();
 
                 // Split the decompressed text into an array of strings
-                return decompressedText.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
+                return decompressedText.Split("\n", StringSplitOptions.RemoveEmptyEntries);
             }
         }
     }
