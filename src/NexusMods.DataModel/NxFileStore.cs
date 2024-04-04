@@ -140,6 +140,7 @@ public class NxFileStore : IFileStore
         // In almost all cases, everything will go in one archive, except for cases
         // of duplicate files between different mods.
         var groupedFiles = new Dictionary<AbsolutePath, List<(Hash Hash, FileEntry FileEntry, AbsolutePath Dest)>>(1);
+        var destDirectories = new HashSet<AbsolutePath>();
         foreach (var file in files)
         {
             if (TryGetLocation(file.Src, out var archivePath, out var fileEntry))
@@ -150,6 +151,15 @@ public class NxFileStore : IFileStore
                     groupedFiles[archivePath] = group;
                 }
                 group.Add((file.Src, fileEntry, file.Dest));
+
+                // Create the directory, this will speed up extraction in Nx
+                // down the road. Usually the difference is negligible, but in
+                // extra special with 100s of directories scenarios, it can
+                // save a second or two.
+                var containingDir = file.Dest.Parent;
+                var isAdded = destDirectories.Add(containingDir);
+                if (isAdded)
+                    containingDir.CreateDirectory();
             }
             else
             {
