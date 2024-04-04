@@ -51,15 +51,68 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
         if (smapiMod is null) yield break;
         var smapiMarker = smapiMod.Metadata.OfType<SMAPIMarker>().First();
+
+        // var smapiVersion = SimplifyVersion(new Version("3.18.6"));
         var smapiVersion = SimplifyVersion(smapiMarker.Version!);
+
+        if (!smapiToGameMappings.TryGetValue(smapiVersion, out var supportedGameVersions))
+        {
+            // ReSharper disable once InconsistentLogPropertyNaming
+            _logger.LogWarning("Found no game version information for SMAPI version {SMAPIVersion}", smapiVersion);
+            yield break;
+        }
 
         var diagnostic1 = GameVersionOlderThanMinimumGameVersion(
             smapiToGameMappings, gameToSMAPIMappings,
             loadout, smapiMod,
-            gameVersion, smapiVersion
+            gameVersion, smapiVersion, supportedGameVersions
+        );
+
+        var diagnostic2 = GameVersionNewerThanMaximumGameVersion(
+            smapiToGameMappings, gameToSMAPIMappings,
+            loadout, smapiMod,
+            gameVersion, smapiVersion, supportedGameVersions
         );
 
         if (diagnostic1 is not null) yield return diagnostic1;
+        if (diagnostic2 is not null) yield return diagnostic2;
+    }
+
+    private Diagnostic? GameVersionNewerThanMaximumGameVersion(
+        SMAPIToGameMapping smapiToGameMappings,
+        GameToSMAPIMapping gameToSMAPIMappings,
+        Loadout loadout,
+        Mod smapiMod,
+        Version gameVersion,
+        Version smapiVersion,
+        GameVersions supportedGameVersions)
+    {
+        var (_, maximumGameVersion) = supportedGameVersions;
+        if (maximumGameVersion is null) return null;
+
+        if (maximumGameVersion > gameVersion) return null;
+
+        var nextGameVersionKey = gameToSMAPIMappings
+            .Keys
+            .OrderDescending()
+            .FirstOrDefault(x => x <= gameVersion);
+
+        if (nextGameVersionKey is null)
+        {
+            _logger.LogWarning("Found no info for game version {GameVersion}", gameVersion);
+            return null;
+        }
+
+        var supportedSMAPIVersion = gameToSMAPIMappings[nextGameVersionKey];
+
+        return Diagnostics.CreateGameVersionNewerThanMaximumGameVersion(
+            SMAPIMod: smapiMod.ToReference(loadout),
+            SMAPIVersion: smapiVersion.ToString(),
+            MaximumGameVersion: maximumGameVersion.ToString(),
+            CurrentGameVersion: gameVersion.ToString(),
+            NewestSupportedSMAPIVersionForCurrentGameVersion: supportedSMAPIVersion.ToString(),
+            SMAPINexusModsLink: NexusModsSMAPILink
+        );
     }
 
     private Diagnostic? GameVersionOlderThanMinimumGameVersion(
@@ -68,15 +121,9 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
         Loadout loadout,
         Mod smapiMod,
         Version gameVersion,
-        Version smapiVersion)
+        Version smapiVersion,
+        GameVersions supportedGameVersions)
     {
-        if (!smapiToGameMappings.TryGetValue(smapiVersion, out var supportedGameVersions))
-        {
-            // ReSharper disable once InconsistentLogPropertyNaming
-            _logger.LogWarning("Found no game version information for SMAPI version {SMAPIVersion}", smapiVersion);
-            return null;
-        }
-
         var (minimumGameVersion, _) = supportedGameVersions;
         if (minimumGameVersion is null) return null;
 

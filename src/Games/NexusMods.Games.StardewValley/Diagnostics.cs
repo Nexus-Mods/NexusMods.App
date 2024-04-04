@@ -162,4 +162,32 @@ You can download this SMAPI version from {SMAPINexusModsLink}.
             .AddValue<NamedLink>("SMAPINexusModsLink")
         )
         .Finish();
+
+    [DiagnosticTemplate]
+    [UsedImplicitly]
+    internal static IDiagnosticTemplate GameVersionNewerThanMaximumGameVersionTemplate = DiagnosticTemplateBuilder
+        .Start()
+        .WithId(new DiagnosticId(Source, number: 9))
+        .WithTitle("Game Version newer than supported by SMAPI")
+        .WithSeverity(DiagnosticSeverity.Critical)
+        .WithSummary("The maximum supported game version of SMAPI {SMAPIVersion} is {MaximumGameVersion}")
+        .WithDetails("""
+SMAPI version {SMAPIVersion} requires the game version to be lower than {MaximumGameVersion}.
+The current game version is {CurrentGameVersion}.
+
+Due to this version mismatch, the game will **crash** on startup.
+You can solve this issue by either downgrading your game to {MaximumGameVersion} or updating SMAPI.
+
+The newest supported SMAPI version for game version {CurrentGameVersion} is {NewestSupportedSMAPIVersionForCurrentGameVersion}.
+You can download this SMAPI version from {SMAPINexusModsLink}.
+""")
+        .WithMessageData(messageBuilder => messageBuilder
+            .AddDataReference<ModReference>("SMAPIMod")
+            .AddValue<string>("SMAPIVersion")
+            .AddValue<string>("MaximumGameVersion")
+            .AddValue<string>("CurrentGameVersion")
+            .AddValue<string>("NewestSupportedSMAPIVersionForCurrentGameVersion")
+            .AddValue<NamedLink>("SMAPINexusModsLink")
+        )
+        .Finish();
 }
