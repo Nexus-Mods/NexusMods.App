@@ -1,5 +1,4 @@
 using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Columns;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Benchmarks.Benchmarks.Loadouts.Harness;
@@ -8,7 +7,7 @@ using NexusMods.Benchmarks.Interfaces;
 namespace NexusMods.Benchmarks.Benchmarks.Loadouts;
 
 [MemoryDiagnoser]
-[BenchmarkInfo("LoadoutSynchronizer: FlattenedLoadoutToFileTree", "Converts a flattened loadout to a file tree. (Second Step of Apply Process)")]
+[BenchmarkInfo("LoadoutSynchronizer: FlattenedLoadoutToFileTree", "[Apply Step 2/5] Converts a flattened loadout to a file tree.")]
 public class FlattenedLoadoutToFileTree : ASynchronizerBenchmark, IBenchmark
 {
     [ParamsSource(nameof(ValuesForFilePath))]

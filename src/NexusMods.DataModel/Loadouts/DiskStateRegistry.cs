@@ -75,6 +75,7 @@ public class DiskStateRegistry : IDiskStateRegistry
         var data = _dataStore.GetRaw(iid);
         if (data == null) return null;
         using var ms = new MemoryStream(data);
+        // TODO: Use something better here. ZStd or Brotli ideally.
         using var compressed = new GZipStream(ms, CompressionMode.Decompress);
         return JsonSerializer.Deserialize<DiskStateTree>(compressed, _jsonSerializerOptions);
     }

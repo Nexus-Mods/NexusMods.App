@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.DataModel.Entities.Sorting;
@@ -34,9 +35,9 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     private readonly IDataStore _store;
     private readonly ILoadoutRegistry _loadoutRegistry;
     private readonly IDiskStateRegistry _diskStateRegistry;
-    private readonly IFileStore _fileStore;
     private readonly ISorter _sorter;
     private readonly IOSInformation _os;
+    private IFileStore _fileStore;
 
     /// <summary>
     /// Loadout synchronizer base constructor.
@@ -121,6 +122,13 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
 
     /// <inheritdoc />
     public async Task<DiskStateTree> FileTreeToDisk(FileTree fileTree, Loadout loadout, FlattenedLoadout flattenedLoadout, DiskStateTree prevState, GameInstallation installation)
+    {
+        // Return the new tree
+        return await FileTreeToDiskImpl(fileTree, loadout, flattenedLoadout, prevState, installation, true);
+    }
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal async Task<DiskStateTree> FileTreeToDiskImpl(FileTree fileTree, Loadout loadout, FlattenedLoadout flattenedLoadout, DiskStateTree prevState, GameInstallation installation, bool fixFileMode)
     {
         List<KeyValuePair<GamePath, HashedEntry>> toDelete = new();
         List<KeyValuePair<AbsolutePath, IGeneratedFile>> toWrite = new();
@@ -236,7 +244,6 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             };
         }
 
-
         // Extract all the files that need extracting in one batch.
         await _fileStore.ExtractFiles(toExtract
             .Select(f => (f.Value.Hash, f.Key)));
@@ -253,7 +260,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             };
 
             // And mark them as executable if necessary, on Unix
-            if (!isUnix)
+            if (!isUnix || !fixFileMode)
                 continue;
 
             var ext = path.Extension.ToString();
@@ -664,7 +671,16 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     {
         return _hashCache.IndexDiskState(installation);
     }
+    #endregion
 
-
+    #region Internal Helper Functions
+    /// <summary>
+    /// Overrides the <see cref="IFileStore"/> used.
+    /// </summary>
+    [Obsolete("Intended for Benchmark Use Only")] // produce warning in IDE
+    internal void SetFileStore(IFileStore fs)
+    {
+        _fileStore = fs;
+    }
     #endregion
 }
