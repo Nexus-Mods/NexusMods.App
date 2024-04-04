@@ -190,4 +190,25 @@ You can download this SMAPI version from {SMAPINexusModsLink}.
             .AddValue<NamedLink>("SMAPINexusModsLink")
         )
         .Finish();
+
+    [DiagnosticTemplate]
+    [UsedImplicitly]
+    internal static IDiagnosticTemplate SuggestSMAPIVersionTemplate = DiagnosticTemplateBuilder
+        .Start()
+        .WithId(new DiagnosticId(Source, number: 10))
+        .WithTitle("Install SMAPI to get started with modding Stardew Valley")
+        .WithSeverity(DiagnosticSeverity.Suggestion)
+        .WithSummary("Install SMAPI to get started with modding Stardew Valley")
+        .WithDetails("""
+SMAPI is the mod loader for Stardew Valley. The majority of mods require SMAPI to be installed.
+
+You can download the latest supported SMAPI version {LatestSMAPIVersion} for your game version
+{CurrentGameVersion} from {SMAPINexusModsLink}.
+""")
+        .WithMessageData(messageBuilder => messageBuilder
+            .AddValue<string>("LatestSMAPIVersion")
+            .AddValue<string>("CurrentGameVersion")
+            .AddValue<NamedLink>("SMAPINexusModsLink")
+        )
+        .Finish();
 }

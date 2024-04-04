@@ -49,7 +49,21 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
             .Select(kv => kv.Value)
             .FirstOrDefault(mod => mod.Metadata.OfType<SMAPIMarker>().Any());
 
-        if (smapiMod is null) yield break;
+        if (smapiMod is null)
+        {
+            var smapiModCount = loadout.Mods
+                .Where(kv => kv.Value.Enabled)
+                .Count(kv => kv.Value.Metadata.OfType<SMAPIModMarker>().Any());
+
+            // NOTE(erri120): The MissingSMAPIEmitter will warn the user if SMAPI is required.
+            // This emitter will suggest SMAPI if there are no mods yet.
+            if (smapiModCount != 0) yield break;
+
+            var suggestion = SuggestSMAPI(gameToSMAPIMappings, gameVersion);
+            if (suggestion is not null) yield return suggestion;
+            yield break;
+        }
+
         var smapiMarker = smapiMod.Metadata.OfType<SMAPIMarker>().First();
 
         // var smapiVersion = SimplifyVersion(new Version("3.18.6"));
@@ -63,13 +77,13 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
         }
 
         var diagnostic1 = GameVersionOlderThanMinimumGameVersion(
-            smapiToGameMappings, gameToSMAPIMappings,
+            gameToSMAPIMappings,
             loadout, smapiMod,
             gameVersion, smapiVersion, supportedGameVersions
         );
 
         var diagnostic2 = GameVersionNewerThanMaximumGameVersion(
-            smapiToGameMappings, gameToSMAPIMappings,
+            gameToSMAPIMappings,
             loadout, smapiMod,
             gameVersion, smapiVersion, supportedGameVersions
         );
@@ -78,8 +92,19 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
         if (diagnostic2 is not null) yield return diagnostic2;
     }
 
+    private Diagnostic? SuggestSMAPI(GameToSMAPIMapping gameToSMAPIMappings, Version gameVersion)
+    {
+        var supportedSMAPIVersion = GetSuggestedSMAPIVersion(gameToSMAPIMappings, gameVersion);
+        if (supportedSMAPIVersion is null) return null;
+
+        return Diagnostics.CreateSuggestSMAPIVersion(
+            LatestSMAPIVersion: supportedSMAPIVersion.ToString(),
+            CurrentGameVersion: gameVersion.ToString(),
+            SMAPINexusModsLink: NexusModsSMAPILink
+        );
+    }
+
     private Diagnostic? GameVersionNewerThanMaximumGameVersion(
-        SMAPIToGameMapping smapiToGameMappings,
         GameToSMAPIMapping gameToSMAPIMappings,
         Loadout loadout,
         Mod smapiMod,
@@ -92,18 +117,8 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
         if (maximumGameVersion > gameVersion) return null;
 
-        var nextGameVersionKey = gameToSMAPIMappings
-            .Keys
-            .OrderDescending()
-            .FirstOrDefault(x => x <= gameVersion);
-
-        if (nextGameVersionKey is null)
-        {
-            _logger.LogWarning("Found no info for game version {GameVersion}", gameVersion);
-            return null;
-        }
-
-        var supportedSMAPIVersion = gameToSMAPIMappings[nextGameVersionKey];
+        var supportedSMAPIVersion = GetSuggestedSMAPIVersion(gameToSMAPIMappings, gameVersion);
+        if (supportedSMAPIVersion is null) return null;
 
         return Diagnostics.CreateGameVersionNewerThanMaximumGameVersion(
             SMAPIMod: smapiMod.ToReference(loadout),
@@ -116,7 +131,6 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
     }
 
     private Diagnostic? GameVersionOlderThanMinimumGameVersion(
-        SMAPIToGameMapping smapiToGameMappings,
         GameToSMAPIMapping gameToSMAPIMappings,
         Loadout loadout,
         Mod smapiMod,
@@ -143,6 +157,23 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
             LastSupportedSMAPIVersionForCurrentGameVersion: supportedSMAPIVersion.ToString(),
             SMAPINexusModsLink: NexusModsSMAPILink
         );
+    }
+
+    private Version? GetSuggestedSMAPIVersion( GameToSMAPIMapping gameToSMAPIMappings, Version gameVersion)
+    {
+        var nextGameVersionKey = gameToSMAPIMappings
+            .Keys
+            .OrderDescending()
+            .FirstOrDefault(x => x <= gameVersion);
+
+        if (nextGameVersionKey is null)
+        {
+            _logger.LogWarning("Found no info for game version {GameVersion}", gameVersion);
+            return null;
+        }
+
+        var supportedSMAPIVersion = gameToSMAPIMappings[nextGameVersionKey];
+        return supportedSMAPIVersion;
     }
 
     private static readonly Uri SMAPIToGameMappingsDataUri = new("https://github.com/erri120/smapi-versions/raw/main/data/smapi-game-versions.json");
