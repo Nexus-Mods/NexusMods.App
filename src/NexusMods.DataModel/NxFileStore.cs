@@ -134,31 +134,44 @@ public class NxFileStore : IFileStore
     }
 
     /// <inheritdoc />
-    public async Task ExtractFiles(IEnumerable<(Hash Src, AbsolutePath Dest)> files, CancellationToken token = default)
+    public async Task ExtractFiles((Hash Src, AbsolutePath Dest)[] files, CancellationToken token = default)
     {
-        var grouped = files.Distinct()
-            .Select(input => TryGetLocation(input.Src, out var archivePath, out var fileEntry)
-                ? (true, Hash: input.Src, ArchivePath: archivePath, FileEntry: fileEntry, input.Dest)
-                : default)
-            .Where(x => x.Item1)
-            .ToLookup(l => l.ArchivePath, l => (l.Hash, l.FileEntry, l.Dest));
-
-        if (grouped[default].Any())
-            throw new Exception($"Missing archive for {grouped[default].First().Hash.ToHex()}");
+        // Group the files by archive.
+        // In almost all cases, everything will go in one archive, except for cases
+        // of duplicate files between different mods.
+        var groupedFiles = new Dictionary<AbsolutePath, List<(Hash Hash, FileEntry FileEntry, AbsolutePath Dest)>>(1);
+        foreach (var file in files)
+        {
+            if (TryGetLocation(file.Src, out var archivePath, out var fileEntry))
+            {
+                if (!groupedFiles.TryGetValue(archivePath, out var group))
+                {
+                    group = new List<(Hash, FileEntry, AbsolutePath)>();
+                    groupedFiles[archivePath] = group;
+                }
+                group.Add((file.Src, fileEntry, file.Dest));
+            }
+            else
+            {
+                throw new Exception($"Missing archive for {file.Src.ToHex()}");
+            }
+        }
 
         var settings = new UnpackerSettings();
 
-        foreach (var group in grouped)
+        foreach (var group in groupedFiles)
         {
             await using var file = group.Key.Read();
             var provider = new FromStreamProvider(file);
             var unpacker = new NxUnpacker(provider);
 
-            var toExtract = group
-                .Select(entry =>
-                    (IOutputDataProvider)new OutputFileProvider(entry.Dest.Parent.GetFullPath(), entry.Dest.FileName,
-                        entry.FileEntry))
-                .ToArray();
+            // Make all output providers.
+            var toExtract = GC.AllocateUninitializedArray<IOutputDataProvider>(group.Value.Count);
+            for (var x = 0; x < group.Value.Count; x++)
+            {
+                var entry = group.Value[x];
+                toExtract[x] = new OutputFileProvider(entry.Dest.Parent.GetFullPath(), entry.Dest.FileName, entry.FileEntry);
+            }
 
             try
             {
