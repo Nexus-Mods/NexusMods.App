@@ -18,8 +18,10 @@
     "CancelSpeedFraction": 0.66
   },
   "LoggingSettings": {
-    "FilePath": "",
-    "ArchiveFilePath": "",
+    "MainProcessLogFilePath": "",
+    "MainProcessArchiveFilePath": "",
+    "SlimProcessLogFilePath": "",
+    "SlimProcessArchiveFilePath": "",
     "MaxArchivedFiles": 10
   },
   "LauncherSettings": {
