@@ -66,7 +66,7 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
                 Extracted[entry.Src] = new NativeFileStreamFactory(entry.Dest);
         }
 
-        public Task<IDictionary<Hash, byte[]>> ExtractFiles(IEnumerable<Hash> files, CancellationToken token = default)
+        public Task<Dictionary<Hash, byte[]>> ExtractFiles(IEnumerable<Hash> files, CancellationToken token = default)
         {
             throw new NotImplementedException();
         }

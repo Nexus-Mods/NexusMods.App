@@ -21,9 +21,9 @@ public class DummyFileStore : IFileStore
         return Task.CompletedTask;
     }
 
-    public Task<IDictionary<Hash, byte[]>> ExtractFiles(IEnumerable<Hash> files, CancellationToken token = default)
+    public Task<Dictionary<Hash, byte[]>> ExtractFiles(IEnumerable<Hash> files, CancellationToken token = default)
     {
-        return Task.FromResult((IDictionary<Hash, byte[]>)new Dictionary<Hash, byte[]>());
+        return Task.FromResult(new Dictionary<Hash, byte[]>());
     }
 
     public Task<Stream> GetFileStream(Hash hash, CancellationToken token = default)

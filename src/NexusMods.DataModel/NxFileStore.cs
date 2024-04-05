@@ -19,7 +19,6 @@ using NexusMods.DataModel.ChunkedStreams;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
-using Reloaded.Memory.Extensions;
 
 namespace NexusMods.DataModel;
 
@@ -200,7 +199,7 @@ public class NxFileStore : IFileStore
     }
 
     /// <inheritdoc />
-    public Task<IDictionary<Hash, byte[]>> ExtractFiles(IEnumerable<Hash> files, CancellationToken token = default)
+    public Task<Dictionary<Hash, byte[]>> ExtractFiles(IEnumerable<Hash> files, CancellationToken token = default)
     {
         // Group the files by archive.
         // In almost all cases, everything will go in one archive, except for cases
@@ -247,7 +246,7 @@ public class NxFileStore : IFileStore
             }
         }
 
-        return Task.FromResult<IDictionary<Hash, byte[]>>(results);
+        return Task.FromResult(results);
     }
 
     /// <inheritdoc />
