@@ -167,8 +167,7 @@ public class NxFileStore : IFileStore
             }
         }
 
-        var settings = new UnpackerSettings();
-
+        // Extract from all source archives.
         foreach (var group in groupedFiles)
         {
             await using var file = group.Key.Read();
@@ -185,7 +184,7 @@ public class NxFileStore : IFileStore
 
             try
             {
-                unpacker.ExtractFiles(toExtract, settings);
+                unpacker.ExtractFiles(toExtract, new UnpackerSettings());
             }
             catch (Exception e)
             {
@@ -203,35 +202,48 @@ public class NxFileStore : IFileStore
     /// <inheritdoc />
     public Task<IDictionary<Hash, byte[]>> ExtractFiles(IEnumerable<Hash> files, CancellationToken token = default)
     {
+        // Group the files by archive.
+        // In almost all cases, everything will go in one archive, except for cases
+        // of duplicate files between different mods.
         var results = new Dictionary<Hash, byte[]>();
-
-        var grouped = files.Distinct()
-            .Select(hash => TryGetLocation(hash, out var archivePath, out var fileEntry)
-                ? (true, Hash: hash, ArchivePath: archivePath, FileEntry: fileEntry)
-                : default)
-            .Where(x => x.Item1)
-            .ToLookup(l => l.ArchivePath, l => (l.Hash, l.FileEntry));
-
-        if (grouped[default].Any())
-            throw new Exception($"Missing archive for {grouped[default].First().Hash.ToHex()}");
-
-        var settings = new UnpackerSettings
+        var groupedFiles = new Dictionary<AbsolutePath, List<(Hash Hash, FileEntry FileEntry)>>();
+        foreach (var hash in files.Distinct())
         {
-            MaxNumThreads = 1
-        };
-        foreach (var group in grouped)
+            if (TryGetLocation(hash, out var archivePath, out var fileEntry))
+            {
+                if (!groupedFiles.TryGetValue(archivePath, out var group))
+                {
+                    group = new List<(Hash, FileEntry)>();
+                    groupedFiles[archivePath] = group;
+                }
+                group.Add((hash, fileEntry));
+            }
+            else
+            {
+                throw new Exception($"Missing archive for {hash.ToHex()}");
+            }
+        }
+
+        // Extract from all source archives.
+        foreach (var group in groupedFiles)
         {
             var file = group.Key.Read();
             var provider = new FromStreamProvider(file);
             var unpacker = new NxUnpacker(provider);
 
-            var infos = group.Select(entry => (entry.Hash, new OutputArrayProvider("", entry.FileEntry),
-                entry.FileEntry.DecompressedSize)).ToList();
-
-            unpacker.ExtractFiles(infos.Select(o => (IOutputDataProvider)o.Item2).ToArray(), settings);
-            foreach (var (hash, output, size) in infos)
+            var toExtract = new IOutputDataProvider[group.Value.Count];
+            for (var i = 0; i < group.Value.Count; i++)
             {
-                results.Add(hash, output.Data[..(int)size]);
+                var entry = group.Value[i];
+                toExtract[i] = new OutputArrayProvider("", entry.FileEntry);
+            }
+
+            unpacker.ExtractFiles(toExtract, new UnpackerSettings());
+            for (var i = 0; i < group.Value.Count; i++)
+            {
+                var hash = group.Value[i].Hash;
+                var output = (OutputArrayProvider)toExtract[i];
+                results.Add(hash, output.Data);
             }
         }
 
