@@ -128,7 +128,7 @@ public class ZipFileStore : IFileStore
     }
 
     /// <inheritdoc/>
-    public async Task<IDictionary<Hash, byte[]>> ExtractFiles(IEnumerable<Hash> files, CancellationToken token = default)
+    public async Task<Dictionary<Hash, byte[]>> ExtractFiles(IEnumerable<Hash> files, CancellationToken token = default)
     {
         var results = new Dictionary<Hash, byte[]>();
 
