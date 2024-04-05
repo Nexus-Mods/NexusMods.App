@@ -55,7 +55,7 @@ public class ArchiveManagerTests
 
         // Extract some of the files
         var extractionCount = Random.Shared.Next(fileCount);
-        var extractionIdxs = Enumerable.Range(1, extractionCount).Select(_ => Random.Shared.Next(fileCount)).ToArray();
+        var extractionIdxs = Enumerable.Range(1, extractionCount).Select(_ => Random.Shared.Next(fileCount)).Distinct().ToArray();
 
         // Extract the files via the in-memory method
         var extracted = await _manager.ExtractFiles(extractionIdxs.Select(idx => hashes[idx]));

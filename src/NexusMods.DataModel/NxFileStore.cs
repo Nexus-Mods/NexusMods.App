@@ -140,6 +140,11 @@ public class NxFileStore : IFileStore
         // of duplicate files between different mods.
         var groupedFiles = new Dictionary<AbsolutePath, List<(Hash Hash, FileEntry FileEntry, AbsolutePath Dest)>>(1);
         var destDirectories = new HashSet<AbsolutePath>();
+        
+        #if DEBUG
+        var destPaths = new HashSet<AbsolutePath>(); // Sanity test. Test code had this issue.
+        #endif
+        
         foreach (var file in files)
         {
             if (TryGetLocation(file.Src, out var archivePath, out var fileEntry))
@@ -159,6 +164,11 @@ public class NxFileStore : IFileStore
                 var isAdded = destDirectories.Add(containingDir);
                 if (isAdded)
                     containingDir.CreateDirectory();
+                
+                #if DEBUG
+                if (!destPaths.Add(file.Dest))
+                    throw new Exception($"Duplicate destination path: {file.Dest}. Should not happen.");
+                #endif
             }
             else
             {
