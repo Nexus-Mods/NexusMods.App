@@ -529,6 +529,8 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         var flattenedLoadout = await FileTreeToFlattenedLoadout(fileTree, loadout, prevFlattenedLoadout);
         var newLoadout = await FlattenedLoadoutToLoadout(flattenedLoadout, loadout, prevFlattenedLoadout);
 
+        // TODO: Make a diff here of the trees (compared to previous tree).
+        // Otherwise we'll suffer a lot on checking existing files.
         await BackupNewFiles(loadout.Installation, fileTree);
         newLoadout.EnsurePersisted(_store);
         diskState.LoadoutRevision = newLoadout.DataStoreId;
@@ -554,7 +556,8 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         // If a game wants other types of files to be backed up, they could do so with their own logic. But backing up a
         // IGeneratedFile is pointless, since when it comes time to restore that file we'll call file.Generate on it since
         // it's a generated file.
-
+        
+        // TODO: This may be slow for very large games when other games/mods already exist.
         // Backup the files that are new or changed
         await _fileStore.BackupFiles(await fileTree.GetAllDescendentFiles()
             .Select(n => n.Item.Value)
