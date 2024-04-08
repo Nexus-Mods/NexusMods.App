@@ -1,7 +1,6 @@
 ﻿using System.Buffers;
 using System.Buffers.Binary;
 using System.Collections.Concurrent;
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.IO;
@@ -115,7 +114,7 @@ public class NxFileStore : IFileStore
                 var dbEntry = new ArchivedFile
                 {
                     File = finalPath.FileName,
-                    FileEntryData = buffer.ToArray()
+                    FileEntryData = buffer.ToArray(),
                 };
 
                 // TODO: Consider a bulk-put operation here
@@ -144,10 +143,10 @@ public class NxFileStore : IFileStore
         var createdDirectories = new ConcurrentDictionary<AbsolutePath, byte>();
     
 #if DEBUG
-    var destPaths = new ConcurrentDictionary<AbsolutePath, byte>(); // Sanity test. Test code had this issue.
+        var destPaths = new ConcurrentDictionary<AbsolutePath, byte>(); // Sanity test. Test code had this issue.
 #endif
 
-        var fileExistsCache = new ConcurrentDictionary<AbsolutePath, bool>();
+        var fileExistsCache = new ConcurrentDictionary<AbsolutePath, bool>(Environment.ProcessorCount, files.Length);
         Parallel.ForEach(files, file =>
         {
             if (TryGetLocation(file.Hash, fileExistsCache, out var archivePath, out var fileEntry))
@@ -164,13 +163,10 @@ public class NxFileStore : IFileStore
                 // save a second or two.
                 var containingDir = file.Dest.Parent;
                 if (createdDirectories.TryAdd(containingDir, 0))
-                {
                     containingDir.CreateDirectory();
-                }
-            
 #if DEBUG
-            if (!destPaths.TryAdd(file.Dest, 0))
-                throw new Exception($"Duplicate destination path: {file.Dest}. Should not happen.");
+                if (!destPaths.TryAdd(file.Dest, 0))
+                    throw new Exception($"Duplicate destination path: {file.Dest}. Should not happen.");
 #endif
             }
             else
@@ -217,28 +213,38 @@ public class NxFileStore : IFileStore
         // Group the files by archive.
         // In almost all cases, everything will go in one archive, except for cases
         // of duplicate files between different mods.
-        var results = new Dictionary<Hash, byte[]>();
-        var groupedFiles = new Dictionary<AbsolutePath, List<(Hash Hash, FileEntry FileEntry)>>();
-        var fileExistsCache = new ConcurrentDictionary<AbsolutePath, bool>();
-        foreach (var hash in files.Distinct())
+        var filesArr = files.ToArray();
+        var results = new ConcurrentDictionary<Hash, byte[]>(Environment.ProcessorCount, filesArr.Length);
+        var groupedFiles = new ConcurrentDictionary<AbsolutePath, List<(Hash Hash, FileEntry FileEntry)>>(Environment.ProcessorCount, 1);
+        var fileExistsCache = new ConcurrentDictionary<AbsolutePath, bool>(Environment.ProcessorCount, filesArr.Length);
+        
+#if DEBUG
+        var processedHashes = new ConcurrentDictionary<Hash, byte>();
+#endif
+
+        Parallel.ForEach(filesArr, hash =>
         {
+            #if DEBUG
+            if (!processedHashes.TryAdd(hash, 0))
+                throw new Exception($"Duplicate hash found: {hash.ToHex()}");
+            #endif
+
             if (TryGetLocation(hash, fileExistsCache, out var archivePath, out var fileEntry))
             {
-                if (!groupedFiles.TryGetValue(archivePath, out var group))
+                var group = groupedFiles.GetOrAdd(archivePath, _ => new List<(Hash, FileEntry)>());
+                lock (group)
                 {
-                    group = new List<(Hash, FileEntry)>();
-                    groupedFiles[archivePath] = group;
+                    group.Add((hash, fileEntry));
                 }
-                group.Add((hash, fileEntry));
             }
             else
             {
                 throw new Exception($"Missing archive for {hash.ToHex()}");
             }
-        }
+        });
 
         // Extract from all source archives.
-        foreach (var group in groupedFiles)
+        Parallel.ForEach(groupedFiles, group =>
         {
             var file = group.Key.Read();
             var provider = new FromStreamProvider(file);
@@ -256,11 +262,11 @@ public class NxFileStore : IFileStore
             {
                 var hash = group.Value[i].Hash;
                 var output = (OutputArrayProvider)toExtract[i];
-                results.Add(hash, output.Data);
+                results.TryAdd(hash, output.Data);
             }
-        }
+        });
 
-        return Task.FromResult(results);
+        return Task.FromResult(new Dictionary<Hash, byte[]>(results));
     }
 
     /// <inheritdoc />
