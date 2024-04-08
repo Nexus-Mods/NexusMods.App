@@ -1,5 +1,7 @@
 ﻿using System.Buffers;
 using System.Buffers.Binary;
+using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.IO;
@@ -53,7 +55,7 @@ public class NxFileStore : IFileStore
     /// <inheritdoc />
     public ValueTask<bool> HaveFile(Hash hash)
     {
-        return ValueTask.FromResult(TryGetLocation(hash, out _, out _));
+        return ValueTask.FromResult(TryGetLocation(hash, null, out _, out _));
     }
 
     /// <inheritdoc />
@@ -133,48 +135,49 @@ public class NxFileStore : IFileStore
     }
 
     /// <inheritdoc />
-    public async Task ExtractFiles((Hash Src, AbsolutePath Dest)[] files, CancellationToken token = default)
+    public async Task ExtractFiles((Hash Hash, AbsolutePath Dest)[] files, CancellationToken token = default)
     {
         // Group the files by archive.
         // In almost all cases, everything will go in one archive, except for cases
         // of duplicate files between different mods.
-        var groupedFiles = new Dictionary<AbsolutePath, List<(Hash Hash, FileEntry FileEntry, AbsolutePath Dest)>>(1);
-        var destDirectories = new HashSet<AbsolutePath>();
-        
-        #if DEBUG
-        var destPaths = new HashSet<AbsolutePath>(); // Sanity test. Test code had this issue.
-        #endif
-        
-        foreach (var file in files)
+        var groupedFiles = new ConcurrentDictionary<AbsolutePath, List<(Hash Hash, FileEntry FileEntry, AbsolutePath Dest)>>(Environment.ProcessorCount, 1);
+        var createdDirectories = new ConcurrentDictionary<AbsolutePath, byte>();
+    
+#if DEBUG
+    var destPaths = new ConcurrentDictionary<AbsolutePath, byte>(); // Sanity test. Test code had this issue.
+#endif
+
+        var fileExistsCache = new ConcurrentDictionary<AbsolutePath, bool>();
+        Parallel.ForEach(files, file =>
         {
-            if (TryGetLocation(file.Src, out var archivePath, out var fileEntry))
+            if (TryGetLocation(file.Hash, fileExistsCache, out var archivePath, out var fileEntry))
             {
-                if (!groupedFiles.TryGetValue(archivePath, out var group))
+                var group = groupedFiles.GetOrAdd(archivePath, _ => new List<(Hash, FileEntry, AbsolutePath)>());
+                lock (group)
                 {
-                    group = new List<(Hash, FileEntry, AbsolutePath)>();
-                    groupedFiles[archivePath] = group;
+                    group.Add((file.Hash, fileEntry, file.Dest));
                 }
-                group.Add((file.Src, fileEntry, file.Dest));
 
                 // Create the directory, this will speed up extraction in Nx
                 // down the road. Usually the difference is negligible, but in
                 // extra special with 100s of directories scenarios, it can
                 // save a second or two.
                 var containingDir = file.Dest.Parent;
-                var isAdded = destDirectories.Add(containingDir);
-                if (isAdded)
+                if (createdDirectories.TryAdd(containingDir, 0))
+                {
                     containingDir.CreateDirectory();
-                
-                #if DEBUG
-                if (!destPaths.Add(file.Dest))
-                    throw new Exception($"Duplicate destination path: {file.Dest}. Should not happen.");
-                #endif
+                }
+            
+#if DEBUG
+            if (!destPaths.TryAdd(file.Dest, 0))
+                throw new Exception($"Duplicate destination path: {file.Dest}. Should not happen.");
+#endif
             }
             else
             {
-                throw new Exception($"Missing archive for {file.Src.ToHex()}");
+                throw new Exception($"Missing archive for {file.Hash.ToHex()}");
             }
-        }
+        });
 
         // Extract from all source archives.
         foreach (var group in groupedFiles)
@@ -216,9 +219,10 @@ public class NxFileStore : IFileStore
         // of duplicate files between different mods.
         var results = new Dictionary<Hash, byte[]>();
         var groupedFiles = new Dictionary<AbsolutePath, List<(Hash Hash, FileEntry FileEntry)>>();
+        var fileExistsCache = new ConcurrentDictionary<AbsolutePath, bool>();
         foreach (var hash in files.Distinct())
         {
-            if (TryGetLocation(hash, out var archivePath, out var fileEntry))
+            if (TryGetLocation(hash, fileExistsCache, out var archivePath, out var fileEntry))
             {
                 if (!groupedFiles.TryGetValue(archivePath, out var group))
                 {
@@ -264,7 +268,7 @@ public class NxFileStore : IFileStore
     {
         if (hash == Hash.Zero)
             throw new ArgumentNullException(nameof(hash));
-        if (!TryGetLocation(hash, out var archivePath, out var entry))
+        if (!TryGetLocation(hash, null, out var archivePath, out var entry))
             throw new Exception($"Missing archive for {hash.ToHex()}");
 
         var file = archivePath.Read();
@@ -463,7 +467,7 @@ public class NxFileStore : IFileStore
         public required int DecompressSize { get; set; }
     }
 
-    private unsafe bool TryGetLocation(Hash hash, out AbsolutePath archivePath, out FileEntry fileEntry)
+    private unsafe bool TryGetLocation(Hash hash, ConcurrentDictionary<AbsolutePath, bool>? existsCache, out AbsolutePath archivePath, out FileEntry fileEntry)
     {
         var key = new Id64(EntityCategory.ArchivedFiles, (ulong)hash);
         var item = _store.Get<ArchivedFile>(key);
@@ -472,7 +476,9 @@ public class NxFileStore : IFileStore
             foreach (var location in _archiveLocations)
             {
                 var path = location.Combine(item.File);
-                if (!path.FileExists) continue;
+                var exists = existsCache?.GetOrAdd(path, path.FileExists) ?? path.FileExists;
+                if (!exists) 
+                    continue;
 
                 archivePath = path;
 

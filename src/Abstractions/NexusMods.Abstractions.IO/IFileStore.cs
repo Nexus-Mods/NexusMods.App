@@ -31,7 +31,7 @@ public interface IFileStore
     /// <param name="files"></param>
     /// <param name="token"></param>
     /// <returns></returns>
-    Task ExtractFiles((Hash Src, AbsolutePath Dest)[] files, CancellationToken token = default);
+    Task ExtractFiles((Hash Hash, AbsolutePath Dest)[] files, CancellationToken token = default);
 
     /// <summary>
     /// Extract the given files from archives.
