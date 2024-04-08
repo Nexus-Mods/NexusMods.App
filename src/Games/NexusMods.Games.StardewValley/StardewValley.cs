@@ -101,6 +101,7 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
 
     public override IDiagnosticEmitter[] DiagnosticEmitters =>
     [
+        _serviceProvider.GetRequiredService<SMAPIGameVersionDiagnosticEmitter>(),
         _serviceProvider.GetRequiredService<DependencyDiagnosticEmitter>(),
         _serviceProvider.GetRequiredService<MissingSMAPIEmitter>(),
         _serviceProvider.GetRequiredService<SMAPIModDatabaseCompatibilityDiagnosticEmitter>(),

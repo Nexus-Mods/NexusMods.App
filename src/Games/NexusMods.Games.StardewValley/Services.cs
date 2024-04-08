@@ -26,6 +26,7 @@ public static class Services
             .AddSingleton<DependencyDiagnosticEmitter>()
             .AddSingleton<MissingSMAPIEmitter>()
             .AddSingleton<SMAPIModDatabaseCompatibilityDiagnosticEmitter>()
+            .AddSingleton<SMAPIGameVersionDiagnosticEmitter>()
 
             // Misc
             .AddSingleton<ISMAPIWebApi, SMAPIWebApi>()
