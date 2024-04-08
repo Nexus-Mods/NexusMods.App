@@ -97,7 +97,7 @@ public class NxFileStore : IFileStore
     private unsafe void UpdateIndexes(NxUnpacker unpacker, AbsolutePath finalPath)
     {
         var entries = unpacker.GetPathedFileEntries();
-        var items = GC.AllocateUninitializedArray<(IId, ArchivedFiles)>(entries.Length);
+        var items = GC.AllocateUninitializedArray<(IId, ArchivedFile)>(entries.Length);
         Span<byte> buffer = stackalloc byte[sizeof(NativeFileEntryV1)];
 
         for (var x = 0; x < entries.Length; x++)
@@ -110,7 +110,7 @@ public class NxFileStore : IFileStore
 
                 var hash = Hash.From(entry.Entry.Hash);
                 var dbId = IdFor(hash);
-                var dbEntry = new ArchivedFiles
+                var dbEntry = new ArchivedFile
                 {
                     File = finalPath.FileName,
                     FileEntryData = buffer.ToArray()
@@ -281,7 +281,7 @@ public class NxFileStore : IFileStore
     {
         // Build a Hash Table of all currently known files. We do this to deduplicate files between downloads.
         var fileHashes = new HashSet<ulong>();
-        foreach (var arcFile in _store.GetAll<ArchivedFiles>(EntityCategory.ArchivedFiles)!)
+        foreach (var arcFile in _store.GetAll<ArchivedFile>(EntityCategory.ArchivedFiles)!)
         {
             fixed (byte* ptr = arcFile.FileEntryData.AsSpan())
             {
@@ -465,8 +465,8 @@ public class NxFileStore : IFileStore
 
     private unsafe bool TryGetLocation(Hash hash, out AbsolutePath archivePath, out FileEntry fileEntry)
     {
-        var prefix = new Id64(EntityCategory.ArchivedFiles, (ulong)hash);
-        var item = _store.Get<ArchivedFiles>(prefix);
+        var key = new Id64(EntityCategory.ArchivedFiles, (ulong)hash);
+        var item = _store.Get<ArchivedFile>(key);
         if (item != null)
         {
             foreach (var location in _archiveLocations)
