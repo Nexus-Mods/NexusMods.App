@@ -16,7 +16,7 @@ public class DummyFileStore : IFileStore
         return Task.CompletedTask;
     }
 
-    public Task ExtractFiles((Hash Src, AbsolutePath Dest)[] files, CancellationToken token = default)
+    public Task ExtractFiles((Hash Hash, AbsolutePath Dest)[] files, CancellationToken token = default)
     {
         return Task.CompletedTask;
     }

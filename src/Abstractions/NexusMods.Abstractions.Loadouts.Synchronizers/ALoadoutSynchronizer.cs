@@ -274,9 +274,9 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         // Quick convert function such that to not be LINQ bottlenecked.
         // Needed as separate method because parent method is async.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static (Hash Src, AbsolutePath Dest)[] GetFilesToExtract(List<KeyValuePair<AbsolutePath, StoredFile>> toExtract) 
+        static (Hash Hash, AbsolutePath Dest)[] GetFilesToExtract(List<KeyValuePair<AbsolutePath, StoredFile>> toExtract) 
         {
-            var entries = GC.AllocateUninitializedArray<(Hash Src, AbsolutePath Dest)>(toExtract.Count);
+            (Hash Hash, AbsolutePath Dest)[] entries = GC.AllocateUninitializedArray<(Hash Src, AbsolutePath Dest)>(toExtract.Count);
             var toExtractSpan = CollectionsMarshal.AsSpan(toExtract);
             for (var x = 0; x < toExtract.Count; x++)
             {
