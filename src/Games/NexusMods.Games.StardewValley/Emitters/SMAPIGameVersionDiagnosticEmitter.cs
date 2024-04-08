@@ -11,6 +11,7 @@ using NexusMods.Abstractions.Diagnostics.Values;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Games.StardewValley.Models;
+using StardewModdingAPI;
 
 namespace NexusMods.Games.StardewValley.Emitters;
 
@@ -307,6 +308,12 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
     {
         public static readonly VersionComparer Instance = new();
 
+        public int GetHashCode(Version version)
+        {
+            // NOTE(erri120): used by dictionary lookups
+            return version.GetHashCode();
+        }
+
         public bool Equals(Version? x, Version? y)
         {
             if (ReferenceEquals(x, y)) return true;
@@ -316,15 +323,12 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
             if (x.Major != y.Major) return false;
             if (x.Minor != y.Minor) return false;
 
+            // NOTE(erri120): normalize Version and replace -1 with 0
             var xBuild = x.Build == -1 ? 0 : x.Build;
             var yBuild = y.Build == -1 ? 0 : y.Build;
 
-            return x.Build == yBuild;
-        }
-
-        public int GetHashCode(Version version)
-        {
-            return version.GetHashCode();
+            // NOTE(erri120): skipping revision because it's not part of a "semantic version"
+            return xBuild == yBuild;
         }
 
         public int Compare(Version? x, Version? y)
@@ -339,9 +343,11 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
             var minorComparison = x.Minor.CompareTo(y.Minor);
             if (minorComparison != 0) return minorComparison;
 
+            // NOTE(erri120): normalize Version and replace -1 with 0
             var xBuild = x.Build == -1 ? 0 : x.Build;
             var yBuild = y.Build == -1 ? 0 : y.Build;
 
+            // NOTE(erri120): skipping revision because it's not part of a "semantic version"
             return xBuild.CompareTo(yBuild);
         }
     }
