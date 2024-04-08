@@ -150,7 +150,7 @@ The current game version is {CurrentGameVersion}.
 Due to this version mismatch, the game will **crash** on startup.
 You can solve this issue by either updating your game or downgrading SMAPI.
 
-The last supported SMAPI version for game version {CurrentGameVersion} is {LastSupportedSMAPIVersionForCurrentGameVersion}.
+The newest supported SMAPI version for game version {CurrentGameVersion} is {LastSupportedSMAPIVersionForCurrentGameVersion}.
 You can download this SMAPI version from {SMAPINexusModsLink}.
 """)
         .WithMessageData(messageBuilder => messageBuilder
