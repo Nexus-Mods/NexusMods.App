@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -559,24 +560,27 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         
         // TODO: This may be slow for very large games when other games/mods already exist.
         // Backup the files that are new or changed
-        await _fileStore.BackupFiles(await fileTree.GetAllDescendentFiles()
-            .Select(n => n.Item.Value)
-            .OfType<StoredFile>()
-            .SelectAsync(async f =>
+        var archivedFiles = new ConcurrentBag<ArchivedFileEntry>();
+        await Parallel.ForEachAsync(fileTree.GetAllDescendentFiles(), async (file, cancellationToken) =>
+        {
+            if (file.Item.Value is StoredFile storedFile)
             {
-                var path = installation.LocationsRegister.GetResolvedPath(f.To);
-                if (await _fileStore.HaveFile(f.Hash))
-                    return null;
-                return new ArchivedFileEntry
+                var path = installation.LocationsRegister.GetResolvedPath(storedFile.To);
+                if (await _fileStore.HaveFile(storedFile.Hash))
+                    return;
+
+                var archivedFile = new ArchivedFileEntry
                 {
-                    Size = f.Size,
-                    Hash = f.Hash,
+                    Size = storedFile.Size,
+                    Hash = storedFile.Hash,
                     StreamFactory = new NativeFileStreamFactory(path),
-                } as ArchivedFileEntry?;
-            })
-            .Where(f => f != null)
-            .Select(f => f!.Value)
-            .ToListAsync());
+                };
+
+                archivedFiles.Add(archivedFile);
+            }
+        });
+
+        await _fileStore.BackupFiles(archivedFiles);
     }
 
     /// <inheritdoc />
