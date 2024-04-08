@@ -115,7 +115,7 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
         var (_, maximumGameVersion) = supportedGameVersions;
         if (maximumGameVersion is null) return null;
 
-        if (maximumGameVersion > gameVersion) return null;
+        if (maximumGameVersion >= gameVersion) return null;
 
         var supportedSMAPIVersion = GetSuggestedSMAPIVersion(gameToSMAPIMappings, gameVersion);
         if (supportedSMAPIVersion is null) return null;
