@@ -96,7 +96,7 @@ public class ZipFileStore : IFileStore
         {
             var dbId = IdFor(entry.Hash, archiveId);
 
-            var dbEntry = new ArchivedFiles
+            var dbEntry = new ArchivedFile
             {
                 File = finalPath.FileName,
                 FileEntryData = Array.Empty<byte>()
@@ -192,7 +192,7 @@ public class ZipFileStore : IFileStore
     private bool TryGetLocation(Hash hash, out AbsolutePath archivePath)
     {
         var prefix = new Id64(EntityCategory.ArchivedFiles, (ulong)hash);
-        foreach (var entry in _store.GetByPrefix<ArchivedFiles>(prefix))
+        foreach (var entry in _store.GetByPrefix<ArchivedFile>(prefix))
         {
             foreach (var location in _archiveLocations)
             {

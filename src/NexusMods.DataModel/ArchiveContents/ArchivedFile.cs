@@ -5,10 +5,10 @@ using NexusMods.Paths;
 namespace NexusMods.DataModel.ArchiveContents;
 
 /// <summary>
-/// Information about what archives a file is contained in, so this is a back-index of the <see cref="AnalyzedArchive"/> entity.
+/// Information about a file in an individual archive.
 /// </summary>
-[JsonName("NexusMods.DataModel.ArchiveContents.ArchivedFiles")]
-public record ArchivedFiles : Entity
+[JsonName("NexusMods.DataModel.ArchiveContents.ArchivedFile")]
+public record ArchivedFile : Entity
 {
     /// <inheritdoc />
     public override EntityCategory Category => EntityCategory.ArchivedFiles;
