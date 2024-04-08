@@ -41,7 +41,7 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
         var gameToSMAPIMappings = await FetchGameToSMAPIMappings(cancellationToken);
         if (gameToSMAPIMappings is null) yield break;
 
-        // var gameVersion = SimplifyVersion(new Version("1.5.6"));
+        // var gameVersion = SimplifyVersion(new Version("1.5.6.22018"));
         var gameVersion = SimplifyVersion(loadout.Installation.Version);
 
         var smapiMod = loadout.Mods
@@ -66,10 +66,10 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
         var smapiMarker = smapiMod.Metadata.OfType<SMAPIMarker>().First();
 
-        // var smapiVersion = SimplifyVersion(new Version("3.18.6"));
+        // var smapiVersion = SimplifyVersion(new Version("4.0.6.1254"));
         var smapiVersion = SimplifyVersion(smapiMarker.Version!);
 
-        if (!smapiToGameMappings.TryGetValue(smapiVersion, out var supportedGameVersions))
+        if (!TryGetValue(smapiToGameMappings, smapiVersion, useEquals: true, out var supportedGameVersions))
         {
             // ReSharper disable once InconsistentLogPropertyNaming
             _logger.LogWarning("Found no game version information for SMAPI version {SMAPIVersion}", smapiVersion);
@@ -94,8 +94,11 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
     private Diagnostic? SuggestSMAPI(GameToSMAPIMapping gameToSMAPIMappings, Version gameVersion)
     {
-        var supportedSMAPIVersion = GetSuggestedSMAPIVersion(gameToSMAPIMappings, gameVersion);
-        if (supportedSMAPIVersion is null) return null;
+        if (!TryGetValue(gameToSMAPIMappings, gameVersion, useEquals: false, out var supportedSMAPIVersion))
+        {
+            _logger.LogWarning("Found details for game version {GameVersion}", gameVersion);
+            return null;
+        }
 
         return Diagnostics.CreateSuggestSMAPIVersion(
             LatestSMAPIVersion: supportedSMAPIVersion.ToString(),
@@ -115,10 +118,14 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
         var (_, maximumGameVersion) = supportedGameVersions;
         if (maximumGameVersion is null) return null;
 
-        if (maximumGameVersion >= gameVersion) return null;
+        var comparison = VersionComparer.Instance.Compare(maximumGameVersion, gameVersion);
+        if (comparison >= 0) return null;
 
-        var supportedSMAPIVersion = GetSuggestedSMAPIVersion(gameToSMAPIMappings, gameVersion);
-        if (supportedSMAPIVersion is null) return null;
+        if (!TryGetValue(gameToSMAPIMappings, gameVersion, useEquals: false, out var supportedSMAPIVersion))
+        {
+            _logger.LogWarning("Found details for game version {GameVersion}", gameVersion);
+            return null;
+        }
 
         return Diagnostics.CreateGameVersionNewerThanMaximumGameVersion(
             SMAPIMod: smapiMod.ToReference(loadout),
@@ -141,11 +148,12 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
         var (minimumGameVersion, _) = supportedGameVersions;
         if (minimumGameVersion is null) return null;
 
-        if (minimumGameVersion <= gameVersion) return null;
+        var comparison = VersionComparer.Instance.Compare(minimumGameVersion, gameVersion);
+        if (comparison <= 0) return null;
 
-        if (!gameToSMAPIMappings.TryGetValue(gameVersion, out var supportedSMAPIVersion))
+        if (!TryGetValue(gameToSMAPIMappings, gameVersion, useEquals: true, out var supportedSMAPIVersion))
         {
-            _logger.LogWarning("Found no supported SMAPI versions for game version {GameVersion}", gameVersion);
+            _logger.LogWarning("Found details for game version {GameVersion}", gameVersion);
             return null;
         }
 
@@ -154,26 +162,41 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
             SMAPIVersion: smapiVersion.ToString(),
             MinimumGameVersion: minimumGameVersion.ToString(),
             CurrentGameVersion: gameVersion.ToString(),
-            LastSupportedSMAPIVersionForCurrentGameVersion: supportedSMAPIVersion.ToString(),
+            NewestSupportedSMAPIVersionForCurrentGameVersion: supportedSMAPIVersion.ToString(),
             SMAPINexusModsLink: NexusModsSMAPILink
         );
     }
 
-    private Version? GetSuggestedSMAPIVersion( GameToSMAPIMapping gameToSMAPIMappings, Version gameVersion)
+    private static bool TryGetValue<T>(
+        ImmutableDictionary<Version, T> dictionary,
+        Version input,
+        bool useEquals,
+        [NotNullWhen(true)] out T? value) where T : class
     {
-        var nextGameVersionKey = gameToSMAPIMappings
+        var actualKey = dictionary
             .Keys
-            .OrderDescending()
-            .FirstOrDefault(x => x <= gameVersion);
+            .OrderDescending(VersionComparer.Instance)
+            .FirstOrDefault(x => useEquals
+                ? EqualityPredicate(x, input)
+                : ComparisonPredicate(x, input)
+            );
 
-        if (nextGameVersionKey is null)
+        value = null;
+        if (actualKey is null) return false;
+
+        value = dictionary[actualKey];
+        return true;
+
+        static bool EqualityPredicate(Version x, Version y)
         {
-            _logger.LogWarning("Found no info for game version {GameVersion}", gameVersion);
-            return null;
+            return VersionComparer.Instance.Equals(x, y);
         }
 
-        var supportedSMAPIVersion = gameToSMAPIMappings[nextGameVersionKey];
-        return supportedSMAPIVersion;
+        static bool ComparisonPredicate(Version x, Version y)
+        {
+            var comparison = VersionComparer.Instance.Compare(x, y);
+            return comparison <= 0;
+        }
     }
 
     private static readonly Uri SMAPIToGameMappingsDataUri = new("https://github.com/erri120/smapi-versions/raw/main/data/smapi-game-versions.json");
@@ -280,21 +303,46 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
         }
     }
 
-    private class VersionComparer : IEqualityComparer<Version>
+    private class VersionComparer : IEqualityComparer<Version>, IComparer<Version>
     {
-        public static readonly IEqualityComparer<Version> Instance = new VersionComparer();
+        public static readonly VersionComparer Instance = new();
 
         public bool Equals(Version? x, Version? y)
         {
             if (ReferenceEquals(x, y)) return true;
             if (ReferenceEquals(x, null)) return false;
             if (ReferenceEquals(y, null)) return false;
-            return x.Equals(y);
+
+            if (x.Major != y.Major) return false;
+            if (x.Minor != y.Minor) return false;
+
+            var xBuild = x.Build == -1 ? 0 : x.Build;
+            var yBuild = y.Build == -1 ? 0 : y.Build;
+
+            return x.Build == yBuild;
         }
 
         public int GetHashCode(Version version)
         {
             return version.GetHashCode();
+        }
+
+        public int Compare(Version? x, Version? y)
+        {
+            if (ReferenceEquals(x, y)) return 0;
+            if (ReferenceEquals(null, y)) return 1;
+            if (ReferenceEquals(null, x)) return -1;
+
+            var majorComparison = x.Major.CompareTo(y.Major);
+            if (majorComparison != 0) return majorComparison;
+
+            var minorComparison = x.Minor.CompareTo(y.Minor);
+            if (minorComparison != 0) return minorComparison;
+
+            var xBuild = x.Build == -1 ? 0 : x.Build;
+            var yBuild = y.Build == -1 ? 0 : y.Build;
+
+            return xBuild.CompareTo(yBuild);
         }
     }
 
