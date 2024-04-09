@@ -1,13 +1,26 @@
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Settings;
 
 namespace NexusMods.Settings;
 
 internal class SettingsManager : ISettingsManager
 {
+    private readonly ILogger _logger;
+
     private readonly Subject<(Type, object)> _subject = new();
     private readonly Dictionary<Type, object> _values = new();
+
+    public SettingsManager(IServiceProvider serviceProvider)
+    {
+        _logger = serviceProvider.GetRequiredService<ILogger<SettingsManager>>();
+
+        var typeInformation = serviceProvider
+            .GetServices<SettingsTypeInformation>()
+            .ToArray();
+    }
 
     public void Set<T>(T value) where T : class, ISettings, new()
     {
