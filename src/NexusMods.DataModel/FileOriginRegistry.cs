@@ -118,10 +118,10 @@ public class FileOriginRegistry : IFileOriginRegistry
         // so doing this on one thread would be a waste.
 
         var allFiles = path.EnumerateFiles().ToArray(); // enables better work stealing.
-        await Parallel.ForEachAsync(allFiles, token, async (file, ct) =>
+        Parallel.ForEach(allFiles, file =>
         {
             // TODO: report this as progress
-            var hash = await file.XxHash64Async(token: ct);
+            var hash = file.XxHash64MemoryMapped();
             var archivedEntry = new ArchivedFileEntry
             {
                 Hash = hash,
