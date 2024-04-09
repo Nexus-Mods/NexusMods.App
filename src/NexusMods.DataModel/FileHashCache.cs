@@ -85,23 +85,27 @@ public class FileHashCache : IFileHashCache
         activity.SetMax(allFiles.Sum(f => f.Size));
 
         var toPersist = new List<(IId, byte[] vSpan)>();
-        var results = await allFiles.ParallelForEach(async (info, innerToken) =>
+        var results = new ConcurrentBag<HashedEntry>();
+        Parallel.ForEach(allFiles, info =>
         {
             if (TryGetCached(info.Path, out var found))
             {
                 if (found.Size == info.Size && found.LastModified == info.LastWriteTimeUtc)
                 {
-                    return new HashedEntry(info, found.Hash);
+                    results.Add(new HashedEntry(info, found.Hash));
+                    return;
                 }
             }
-            var hashed = await info.Path.XxHash64Async(activity, innerToken);
+            // ReSharper disable once AccessToDisposedClosure
+            var hashed = info.Path.XxHash64MemoryMapped(activity);
             lock (toPersist)
             {
                 toPersist.Add(GetDbEntryToWrite(info.Path, new FileHashCacheEntry(info.LastWriteTimeUtc, hashed, info.Size)));
             }
 
-            return new HashedEntry(info, hashed);
-        });
+            results.Add(new HashedEntry(info, hashed));
+        }
+        );
 
         // Insert all cached items into the DB.
         PutAllCached(toPersist); // <= required because this is async method

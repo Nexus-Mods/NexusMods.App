@@ -30,19 +30,20 @@ public static class AbsolutePathExtensions
                 job.AddProgress(Size.FromLong(m.Length));
             });
     }
-    
+
     /// <summary>
-    /// Calculates the xxHash64 of a file by memory mapping it.
+    /// Calculates the xxHash64 of a file by memory mapping it and reports progress upon completion.
     /// </summary>
     /// <param name="input">The path to the file.</param>
+    /// <param name="job">The job to report progress to.</param>
     /// <returns>The xxHash64 hash of the file.</returns>
-    public static unsafe Hash XxHash64MemoryMapped(this AbsolutePath input)
+    public static unsafe Hash XxHash64MemoryMapped(this AbsolutePath input, IActivitySource<Size>? job = null)
     {
         using var memoryMappedFile = MemoryMappedFile.CreateFromFile(input.GetFullPath(), FileMode.Open);
         using var accessor = memoryMappedFile.CreateViewAccessor(0, 0, MemoryMappedFileAccess.Read);
         var ptrData = (byte*)accessor.SafeMemoryMappedViewHandle.DangerousGetHandle();
         var hashValue = XxHash64Algorithm.HashBytes(new ReadOnlySpan<byte>(ptrData, (int)accessor.Capacity));
+        job?.AddProgress(Size.FromLong(accessor.Capacity));
         return Hash.From(hashValue);
     }
-
 }
