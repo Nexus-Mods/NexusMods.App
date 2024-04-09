@@ -19,6 +19,18 @@ public interface ILoadoutSynchronizer
     Loadout MergeLoadouts(Loadout loadoutA, Loadout loadoutB);
 
     #endregion
+    
+    #region Diff Methods
+    
+    /// <summary>
+    /// Computes the difference between a loadout and a disk state, assuming the loadout to be the newer state.
+    /// </summary>
+    /// <param name="loadout">Newer state, e.g. unapplied loadout</param>
+    /// <param name="diskState">The old state, e.g. last applied DiskState</param>
+    /// <returns>A tree of all the files with associated <see cref="FileChangeType"/></returns>
+    ValueTask<FileDiffTree> LoadoutToDiskDiff(Loadout loadout, DiskStateTree diskState);
+    
+    #endregion
 
     #region High Level Methods
     /// <summary>

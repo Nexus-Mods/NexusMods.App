@@ -380,4 +380,7 @@
     <data name="GameWidget__Removing_game" xml:space="preserve">
         <value>Removing game</value>
     </data>
+    <data name="ApplyDiff_Refresh" xml:space="preserve">
+        <value>Refresh</value>
+    </data>
 </root>

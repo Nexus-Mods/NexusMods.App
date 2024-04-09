@@ -5,6 +5,7 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Serialization.DataModel.Ids;
 using NexusMods.DataModel.Loadouts.Extensions;
 
@@ -83,6 +84,21 @@ public class ApplyService : IApplyService
         }
 
         return loadout;
+    }
+
+
+    /// <inheritdoc />
+    public ValueTask<FileDiffTree> GetApplyDiffTree(LoadoutId loadoutId)
+    {
+        var loadout = _loadoutRegistry.Get(loadoutId);
+        if (loadout is null)
+            throw new ArgumentException("Loadout not found", nameof(loadoutId));
+
+        var prevDiskState = _diskStateRegistry.GetState(loadout.Installation)!;
+            
+        var syncrhonizer = loadout.Installation.GetGame().Synchronizer;
+        
+        return syncrhonizer.LoadoutToDiskDiff(loadout, prevDiskState);
     }
 
     /// <inheritdoc />

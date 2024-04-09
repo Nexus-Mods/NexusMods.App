@@ -87,6 +87,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Refresh.
+        /// </summary>
+        public static string ApplyDiff_Refresh {
+            get {
+                return ResourceManager.GetString("ApplyDiff_Refresh", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Applying....
         /// </summary>
         public static string ApplyingControlView__ApplyingText {
