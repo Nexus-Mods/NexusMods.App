@@ -116,7 +116,7 @@ public class ZipFileStore : IFileStore
     }
 
     /// <inheritdoc/>
-    public async Task ExtractFiles(IEnumerable<(Hash Src, AbsolutePath Dest)> files, CancellationToken token = default)
+    public async Task ExtractFiles((Hash Src, AbsolutePath Dest)[] files, CancellationToken token = default)
     {
         foreach (var (src, dest) in files)
         {

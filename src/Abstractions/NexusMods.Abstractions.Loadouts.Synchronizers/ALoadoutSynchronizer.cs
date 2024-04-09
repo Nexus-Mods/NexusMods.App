@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.DataModel.Entities.Sorting;
@@ -239,8 +241,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
 
 
         // Extract all the files that need extracting in one batch.
-        await _fileStore.ExtractFiles(toExtract
-            .Select(f => (f.Value.Hash, f.Key)));
+        await _fileStore.ExtractFiles(GetFilesToExtract(toExtract));
 
         // Update the resulting items with the new file times
         var isUnix = _os.IsUnix();
@@ -269,6 +270,22 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
 
         // Return the new tree
         return DiskStateTree.Create(resultingItems);
+
+        // Quick convert function such that to not be LINQ bottlenecked.
+        // Needed as separate method because parent method is async.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static (Hash Src, AbsolutePath Dest)[] GetFilesToExtract(List<KeyValuePair<AbsolutePath, StoredFile>> toExtract) 
+        {
+            var entries = GC.AllocateUninitializedArray<(Hash Src, AbsolutePath Dest)>(toExtract.Count);
+            var toExtractSpan = CollectionsMarshal.AsSpan(toExtract);
+            for (var x = 0; x < toExtract.Count; x++)
+            {
+                ref var item = ref toExtractSpan[x];
+                entries[x] = (item.Value.Hash, item.Key);
+            }
+
+            return entries;
+        }
     }
 
     /// <inheritdoc />

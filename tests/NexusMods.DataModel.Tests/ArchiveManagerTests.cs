@@ -75,7 +75,8 @@ public class ArchiveManagerTests
 
         var fullPaths = extractionIdxs.Distinct().ToDictionary(idx => idx, idx => tempFolder.Path.Combine($"{idx}.dat"));
 
-        await _manager.ExtractFiles(extractionIdxs.Select(idx => (hashes[idx], fullPaths[idx])));
+        var files = extractionIdxs.Select(idx => (hashes[idx], fullPaths[idx])).ToArray();
+        await _manager.ExtractFiles(files);
 
         // Verify the extracted files are correct
         foreach (var idx in extractionIdxs)
