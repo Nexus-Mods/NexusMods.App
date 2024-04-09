@@ -20,6 +20,10 @@
       </None>
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Verify.Xunit" />
+    </ItemGroup>
+
     <Target Name="CopyResources" AfterTargets="PostBuildEvent">
         <ItemGroup>
             <_Resources Include="Resources\**" />
