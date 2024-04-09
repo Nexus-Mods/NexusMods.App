@@ -6,7 +6,11 @@ namespace NexusMods.App.UI.Pages.Diff.ApplyDiff;
 
 public interface IApplyDiffViewModel : IPageViewModelInterface
 {
-    public LoadoutId LoadoutId { get; set; }
+    public LoadoutId LoadoutId { get; }
+    
+    public void Initialize(LoadoutId loadoutId);
     
     public IFileTreeViewModel? FileTreeViewModel { get; }
+    
+    public IViewModelInterface BodyViewModel { get; set; }
 }

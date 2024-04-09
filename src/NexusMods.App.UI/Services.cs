@@ -21,6 +21,7 @@ using NexusMods.App.UI.Controls.Spine.Buttons.Download;
 using NexusMods.App.UI.Controls.Spine.Buttons.Icon;
 using NexusMods.App.UI.Controls.Spine.Buttons.Image;
 using NexusMods.App.UI.Controls.TopBar;
+using NexusMods.App.UI.Controls.Trees;
 using NexusMods.App.UI.Controls.Trees.Files;
 using NexusMods.App.UI.DiagnosticSystem;
 using NexusMods.App.UI.LeftMenu;
@@ -175,6 +176,7 @@ public static class Services
             .AddView<LoadingView, ILoadingViewModel>()
             .AddView<ErrorView, IErrorViewModel>()
             .AddView<ApplyDiffView, IApplyDiffViewModel>()
+            .AddView<FileTreeView, IFileTreeViewModel>()
 
             .AddView<DiagnosticEntryView, IDiagnosticEntryViewModel>()
             .AddViewModel<DiagnosticEntryViewModel, IDiagnosticEntryViewModel>()

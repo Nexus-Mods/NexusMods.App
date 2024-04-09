@@ -40,7 +40,7 @@ public class DiffTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeViewMo
         _applyService = applyService;
         _loadoutRegistry = loadoutRegistry;
         
-        _treeSourceCache = new SourceCache<IFileTreeNodeViewModel, GamePath>(_ => throw new NotImplementedException());
+        _treeSourceCache = new SourceCache<IFileTreeNodeViewModel, GamePath>(entry => entry.Key);
         _statusBarSourceList = new SourceList<string>();
         
         _treeSourceCache.Connect()
@@ -56,7 +56,7 @@ public class DiffTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeViewMo
         TreeSource = ModFileTreeViewModel.CreateTreeSource(_items);
     }
 
-    private async void Refresh()
+    public async void Refresh()
     {
         var loadout = _loadoutRegistry.Get(_loadoutId);
         if (loadout is null)

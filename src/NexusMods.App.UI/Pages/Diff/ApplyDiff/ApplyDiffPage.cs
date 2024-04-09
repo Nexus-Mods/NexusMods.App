@@ -1,11 +1,12 @@
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.App.UI.WorkspaceSystem;
 
 namespace NexusMods.App.UI.Pages.Diff.ApplyDiff;
 
-
+[JsonName("NexusMods.App.UI.Page.ApplyDiffPageContext")]
 public record ApplyDiffPageContext : IPageFactoryContext
 {
     public required LoadoutId LoadoutId { get; init; }
@@ -26,7 +27,7 @@ public class ApplyDiffPageFactory : APageFactory<IApplyDiffViewModel, ApplyDiffP
     public override IApplyDiffViewModel CreateViewModel(ApplyDiffPageContext context)
     {
         var vm = ServiceProvider.GetRequiredService<IApplyDiffViewModel>();
-        vm.LoadoutId = context.LoadoutId;
+        vm.Initialize(context.LoadoutId);
         return vm;
     }
 
