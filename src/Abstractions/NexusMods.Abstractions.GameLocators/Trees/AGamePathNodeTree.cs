@@ -53,6 +53,14 @@ public abstract class AGamePathNodeTree<TValue>
     {
         return _trees.Values.SelectMany(e => e.GetChildrenRecursive());
     }
+    
+    /// <summary>
+    /// Enumerates all the the root nodes in the tree (usually correspond to game top level locations) 
+    /// </summary>
+    public IEnumerable<KeyedBox<RelativePath, GamePathNode<TValue>>> GetRoots()
+    {
+        return _trees.Values;
+    }
 
     /// <summary>
     /// Returns all the files in a specific location
