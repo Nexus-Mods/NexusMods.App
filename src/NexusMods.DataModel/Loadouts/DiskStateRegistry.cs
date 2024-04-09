@@ -1,15 +1,12 @@
 using System.Diagnostics;
-using System.IO.Compression;
 using System.Reactive.Subjects;
-using System.Text;
-using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Serialization;
-using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.Abstractions.Serialization.DataModel.Ids;
-using Reloaded.Memory.Extensions;
+using NexusMods.DataModel.Models;
+using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Paths;
 
 namespace NexusMods.DataModel.Loadouts;
 
@@ -19,10 +16,9 @@ namespace NexusMods.DataModel.Loadouts;
 public class DiskStateRegistry : IDiskStateRegistry
 {
     private readonly ILogger<DiskStateRegistry> _logger;
-    private readonly IDataStore _dataStore;
     private readonly IDictionary<GameInstallation, IId> _lastAppliedRevisionDictionary = new Dictionary<GameInstallation, IId>();
     private readonly Subject<(GameInstallation gameInstallation, IId loadoutRevision)> _lastAppliedRevisionSubject = new();
-    private readonly JsonSerializerOptions _jsonSerializerOptions;
+    private readonly IConnection _connection;
 
     /// <inheritdoc />
     public IObservable<(GameInstallation gameInstallation, IId loadoutRevision)> LastAppliedRevisionObservable => _lastAppliedRevisionSubject;
@@ -30,11 +26,10 @@ public class DiskStateRegistry : IDiskStateRegistry
     /// <summary>
     /// DI Constructor
     /// </summary>
-    public DiskStateRegistry(ILogger<DiskStateRegistry> logger, IDataStore dataStore, JsonSerializerOptions jsonSerializerOptions)
+    public DiskStateRegistry(ILogger<DiskStateRegistry> logger, IConnection connection)
     {
         _logger = logger;
-        _dataStore = dataStore;
-        _jsonSerializerOptions = jsonSerializerOptions;
+        _connection = connection;
     }
 
     /// <summary>
@@ -44,26 +39,21 @@ public class DiskStateRegistry : IDiskStateRegistry
     public void SaveState(GameInstallation installation, DiskStateTree diskState)
     {
         Debug.Assert(!diskState.LoadoutRevision.Equals(IdEmpty.Empty), "diskState.LoadoutRevision must be set");
-        var iid = MakeId(installation);
-        using var ms = new MemoryStream();
+        
+        var tx = _connection.BeginTransaction();
+        _ = new SavedDiskState(tx)
         {
-            using var compressed = new GZipStream(ms, CompressionMode.Compress, leaveOpen: true);
-            JsonSerializer.Serialize(compressed, diskState, _jsonSerializerOptions);
-        }
-        _dataStore.PutRaw(iid, ms.GetBuffer().AsSpan().SliceFast(0, (int)ms.Length));
-        // TODO: this might need to be made thread safe
+            Game = installation.Game.Domain,
+            Root = installation.LocationsRegister[LocationId.Game],
+            LoadoutRevision = diskState.LoadoutRevision,
+            DiskState = diskState,
+        };
+        tx.Commit();
+
         _lastAppliedRevisionDictionary[installation] = diskState.LoadoutRevision;
         _lastAppliedRevisionSubject.OnNext((installation, diskState.LoadoutRevision));
     }
-
-    private IId MakeId(GameInstallation installation)
-    {
-        var str = $"{installation.Game.GetType()}|{installation.LocationsRegister[LocationId.Game]}";
-
-        var bytes = Encoding.UTF8.GetBytes(str);
-        return IId.FromSpan(EntityCategory.DiskState, bytes);
-    }
-
+    
     /// <summary>
     /// Gets the disk state associated with a specific version of a loadout (if any)
     /// </summary>
@@ -71,12 +61,13 @@ public class DiskStateRegistry : IDiskStateRegistry
     /// <returns></returns>
     public DiskStateTree? GetState(GameInstallation gameInstallation)
     {
-        var iid = MakeId(gameInstallation);
-        var data = _dataStore.GetRaw(iid);
-        if (data == null) return null;
-        using var ms = new MemoryStream(data);
-        using var compressed = new GZipStream(ms, CompressionMode.Decompress);
-        return JsonSerializer.Deserialize<DiskStateTree>(compressed, _jsonSerializerOptions);
+        var db = _connection.Db;
+        return db
+            .FindIndexed<Attributes.DiskStateTree.Root, AbsolutePath>(gameInstallation.LocationsRegister[LocationId.Game])
+            .Select(id => db.Get<SavedDiskState>(id))
+            .Where(state => state.Game == gameInstallation.Game.Domain)
+            .Select(state => state.DiskState)
+            .FirstOrDefault();
     }
 
     /// <inheritdoc />

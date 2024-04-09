@@ -1,3 +1,5 @@
+using NexusMods.Abstractions.Games.DTO;
+
 namespace NexusMods.DataModel.Attributes;
 
 /// <summary>
@@ -7,5 +9,6 @@ namespace NexusMods.DataModel.Attributes;
 [AttributeUsage(AttributeTargets.Field)]
 public class ImmutableAttribute : Attribute
 {
+
 
 }

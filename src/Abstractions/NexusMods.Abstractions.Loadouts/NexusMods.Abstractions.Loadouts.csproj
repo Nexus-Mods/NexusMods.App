@@ -8,6 +8,12 @@
       <ProjectReference Include="..\NexusMods.Abstractions.FileStore\NexusMods.Abstractions.FileStore.csproj" />
       <ProjectReference Include="..\NexusMods.Abstractions.GameLocators\NexusMods.Abstractions.GameLocators.csproj" />
       <ProjectReference Include="..\NexusMods.Abstractions.Serialization\NexusMods.Abstractions.Serialization.csproj" />
+      <PackageReference Include="FlatSharp.Compiler">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+      <PackageReference Include="FlatSharp.Runtime" />
+      <PackageReference Include="NexusMods.MnemonicDB.Abstractions" />
       <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
       <ProjectReference Include="..\NexusMods.Abstractions.Triggers\NexusMods.Abstractions.Triggers.csproj" />
     </ItemGroup>

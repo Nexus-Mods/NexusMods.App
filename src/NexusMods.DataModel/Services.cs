@@ -16,9 +16,15 @@ using NexusMods.DataModel.Diagnostics;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Messaging;
+using NexusMods.DataModel.Serializers;
 using NexusMods.DataModel.Sorting;
 using NexusMods.DataModel.TriggerFilter;
 using NexusMods.Extensions.DependencyInjection;
+using NexusMods.MnemonicDB;
+using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Storage;
+using NexusMods.MnemonicDB.Storage.Abstractions;
+using DiskStateTree = NexusMods.DataModel.Attributes.DiskStateTree;
 
 namespace NexusMods.DataModel;
 
@@ -36,6 +42,32 @@ public static class Services
             coll.AddSingleton<IDataModelSettings, DataModelSettings>();
         else
             coll.AddSingleton(settings);
+
+        coll.AddMnemonicDB();
+        coll.AddMnemonicDBStorage();
+        
+        coll.AddSingleton<IConnection>(sp =>
+            {
+                var conn = Task.Run(() => Connection.Start(sp));
+                conn.Wait();
+                return conn.Result;
+            }
+        );
+        
+        if (settings?.UseInMemoryDataModel == true)
+        {
+            coll.AddSingleton<DatomStoreSettings>();
+            coll.AddSingleton<IStoreBackend, MnemonicDB.Storage.InMemoryBackend.Backend>();
+        }
+        else
+        {
+            coll.AddSingleton(new DatomStoreSettings
+                {
+                    Path = settings!.MnemonicDBPath.ToAbsolutePath(),
+                }
+            );
+            coll.AddAllSingleton<IStoreBackend, MnemonicDB.Storage.RocksDbBackend.Backend>();
+        }
 
         coll.AddSingleton<MessageBus>();
         coll.AddSingleton(typeof(IMessageConsumer<>), typeof(MessageConsumer<>));
@@ -59,7 +91,11 @@ public static class Services
         coll.AddAllSingleton<IFileHashCache, FileHashCache>();
         coll.AddAllSingleton<IArchiveInstaller, ArchiveInstaller>();
         coll.AddAllSingleton<IToolManager, ToolManager>();
+        
+        // Disk State Registry
         coll.AddAllSingleton<IDiskStateRegistry, DiskStateRegistry>();
+        coll.AddAttributeCollection<DiskStateTree>();
+        
         coll.AddAllSingleton<IApplyService, ApplyService>();
 
         coll.AddSingleton<ITypeFinder>(_ => new AssemblyTypeFinder(typeof(Services).Assembly));
@@ -68,6 +104,13 @@ public static class Services
         // Diagnostics
         coll.AddAllSingleton<IDiagnosticManager, DiagnosticManager>();
         coll.AddOptions<DiagnosticOptions>();
+        
+        // Value Serializers
+        coll.AddValueSerializer<AbsolutePathSerializer>();
+        coll.AddValueSerializer<LocationIdSerializer>();
+        coll.AddValueSerializer<DiskStateTreeSerializer>();
+        coll.AddValueSerializer<GameDomainSerializer>();
+        coll.AddValueSerializer<IIdSerializer>();
 
         // Verbs
         coll.AddLoadoutManagementVerbs()

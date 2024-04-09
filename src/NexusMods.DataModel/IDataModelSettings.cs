@@ -18,6 +18,12 @@ public interface IDataModelSettings
     /// Path of the file which contains the backing data store or database.
     /// </summary>
     public ConfigurationPath DataStoreFilePath { get; }
+    
+    
+    /// <summary>
+    /// Path of the file which contains the backing data store for MnemonicDB
+    /// </summary>
+    public ConfigurationPath MnemonicDBPath { get; }
 
     /// <summary>
     /// Path of the file which contains the backing data store or database
@@ -59,6 +65,7 @@ public class DataModelSettings : IDataModelSettings
 
     private const string DataModelFileName = "DataModel.sqlite";
     private const string DataModelIpcFileName = "DataModel_IPC.sqlite";
+    private const string MnemonicDBFileName = "MnemonicDB";
     private const string ArchivesFileName = "Archives";
 
     /// <inheritdoc />
@@ -66,6 +73,9 @@ public class DataModelSettings : IDataModelSettings
 
     /// <inheritdoc />
     public ConfigurationPath DataStoreFilePath { get; set; }
+    
+    /// <inheritdoc />
+    public ConfigurationPath MnemonicDBPath { get; set; }
 
     /// <inheritdoc />
     public ConfigurationPath IpcDataStoreFilePath { get; set; }
@@ -99,6 +109,7 @@ public class DataModelSettings : IDataModelSettings
     public DataModelSettings(AbsolutePath baseDirectory)
     {
         DataStoreFilePath = GetDefaultDataStoreFilePath(baseDirectory);
+        MnemonicDBPath = GetDefaultMnemonicDBPath(baseDirectory);
         IpcDataStoreFilePath = GetDefaultIpcFilePath(baseDirectory);
         ArchiveLocations = GetDefaultArchiveLocations(baseDirectory);
     }
@@ -125,6 +136,9 @@ public class DataModelSettings : IDataModelSettings
 
         if (string.IsNullOrEmpty(DataStoreFilePath.RawPath))
             DataStoreFilePath = GetDefaultDataStoreFilePath(baseDir);
+        
+        if (string.IsNullOrEmpty(DataStoreFilePath.RawPath))
+            MnemonicDBPath = GetDefaultMnemonicDBPath(baseDir);
 
         if (string.IsNullOrEmpty(IpcDataStoreFilePath.RawPath))
             IpcDataStoreFilePath = GetDefaultIpcFilePath(baseDir);
@@ -148,6 +162,9 @@ public class DataModelSettings : IDataModelSettings
 
     private static ConfigurationPath GetDefaultDataStoreFilePath(AbsolutePath baseDirectory) =>
         new(baseDirectory.Combine(DataModelFileName));
+    
+    private static ConfigurationPath GetDefaultMnemonicDBPath(AbsolutePath baseDirectory) =>
+        new(baseDirectory.Combine(MnemonicDBFileName));
 
     private static ConfigurationPath GetDefaultIpcFilePath(AbsolutePath baseDirectory) =>
         new(baseDirectory.Combine(DataModelIpcFileName));
