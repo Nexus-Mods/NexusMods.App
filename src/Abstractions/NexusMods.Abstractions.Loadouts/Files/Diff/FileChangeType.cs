@@ -3,7 +3,7 @@ namespace NexusMods.Abstractions.Loadouts.Synchronizers;
 /// <summary>
 /// The type of change of a file at a specific path
 /// </summary>
-public enum FileChangeType
+public enum FileChangeType : byte
 {
     /// <summary>
     /// No change

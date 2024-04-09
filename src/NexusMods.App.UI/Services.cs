@@ -134,6 +134,7 @@ public static class Services
             .AddViewModel<FileTreeNodeViewModel, IFileTreeNodeViewModel>()
             .AddViewModel<DummyLoadingViewModel, ILoadingViewModel>()
             .AddViewModel<DummyErrorViewModel, IErrorViewModel>()
+            .AddViewModel<ApplyDiffViewModel, IApplyDiffViewModel>()
 
             // Views
             .AddView<DevelopmentBuildBannerView, IDevelopmentBuildBannerViewModel>()

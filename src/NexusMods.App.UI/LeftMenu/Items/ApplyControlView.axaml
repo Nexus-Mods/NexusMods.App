@@ -7,7 +7,7 @@
                                 xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
                                 xmlns:progressRing="clr-namespace:NexusMods.App.UI.Controls.ProgressRing"
                                 xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
-                                mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="100"
+                                mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="200"
                                 x:Class="NexusMods.App.UI.LeftMenu.Items.ApplyControlView">
     <Design.DataContext>
         <items:ApplyControlDesignViewModel />
@@ -36,6 +36,11 @@
                                    Text="{x:Static resources:Language.IngestButtonTextBlock_Text}" />
                     </StackPanel>
                 </Viewbox>
+            </Button>
+            
+            <Button Classes="Hyperlink Secondary" HorizontalAlignment="Right" x:Name="ApplyDiffButton" >
+                <TextBlock Classes="ForegroundModerate"
+                           Text="View changes"/>
             </Button>
 
             <!-- Apply button -->

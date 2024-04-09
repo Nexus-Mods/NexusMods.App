@@ -20,7 +20,7 @@ public class ApplyDiffPageFactory : APageFactory<IApplyDiffViewModel, ApplyDiffP
         _loadoutRegistry = serviceProvider.GetRequiredService<ILoadoutRegistry>();
     }
 
-    public static readonly PageFactoryId StaticId = PageFactoryId.From(Guid.Parse("db77a8c2-61ad-4d59-8e95-4bebbba9ea5f"));
+    public static readonly PageFactoryId StaticId = PageFactoryId.From(Guid.Parse("CA9E8FFE-02E0-4123-9CA2-F68D07D44583"));
     public override PageFactoryId Id => StaticId;
 
     public override IApplyDiffViewModel CreateViewModel(ApplyDiffPageContext context)

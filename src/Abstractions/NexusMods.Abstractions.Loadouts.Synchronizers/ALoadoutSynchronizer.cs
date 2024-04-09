@@ -529,10 +529,11 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
 
     private static ValueTask<FileDiffTree> FlattenedLoadoutToDiskDiff(FlattenedLoadout flattenedLoadout, DiskStateTree diskState)
     {
-        var loadoutFiles = flattenedLoadout.GetAllDescendentFiles();
-        var diskStateEntries = diskState.GetAllDescendentFiles();
+        var loadoutFiles = flattenedLoadout.GetAllDescendentFiles().ToArray();
+        var diskStateEntries = diskState.GetAllDescendentFiles().ToArray();
 
-        Dictionary<GamePath, DiskDiffEntry> resultingItems = new();
+        // With both deletions and additions it might be more than Max, but it's a starting point
+        Dictionary<GamePath, DiskDiffEntry> resultingItems = new(Math.Max(loadoutFiles.Length, diskStateEntries.Length));
 
         // Add all the disk state entries to the result, checking for changes
         foreach (var diskItem in diskStateEntries)

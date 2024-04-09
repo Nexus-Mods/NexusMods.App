@@ -18,6 +18,9 @@ public partial class ApplyControlView : ReactiveUserControl<IApplyControlViewMod
             
             this.BindCommand(ViewModel, vm => vm.IngestCommand, v => v.IngestButton)
                 .DisposeWith(disposables);
+            
+            this.BindCommand(ViewModel, vm => vm.ShowApplyDiffCommand, v => v.ApplyDiffButton)
+                .DisposeWith(disposables);
 
             this.OneWayBind(ViewModel, vm => vm.LaunchButtonViewModel, v => v.LaunchButtonView.ViewModel)
                 .DisposeWith(disposables);
