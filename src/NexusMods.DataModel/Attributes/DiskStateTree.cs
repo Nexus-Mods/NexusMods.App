@@ -14,17 +14,17 @@ public class DiskStateTree
     /// <summary>
     /// The associated game id.
     /// </summary>
-    public class Game() : Attribute<Game, GameDomain>(isIndexed: true);
+    public class Game() : Attribute<Game, GameDomain>(isIndexed: true, noHistory: true);
     
     /// <summary>
     /// The game's root folder
     /// </summary>
-    public class Root() : Attribute<Root, AbsolutePath>(isIndexed: true);
+    public class Root() : Attribute<Root, AbsolutePath>(isIndexed: true, noHistory: true);
     
     /// <summary>
     /// The associated loadout id.
     /// </summary>
-    public class LoadoutRevision() : Attribute<LoadoutRevision, IId>(isIndexed: true);
+    public class LoadoutRevision() : Attribute<LoadoutRevision, IId>(isIndexed: true, noHistory: true);
 
     /// <summary>
     /// The state of the disk.

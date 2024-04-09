@@ -15,7 +15,6 @@ namespace NexusMods.DataModel.Loadouts;
 /// </summary>
 public class DiskStateRegistry : IDiskStateRegistry
 {
-    private readonly ILogger<DiskStateRegistry> _logger;
     private readonly IDictionary<GameInstallation, IId> _lastAppliedRevisionDictionary = new Dictionary<GameInstallation, IId>();
     private readonly Subject<(GameInstallation gameInstallation, IId loadoutRevision)> _lastAppliedRevisionSubject = new();
     private readonly IConnection _connection;
@@ -26,9 +25,8 @@ public class DiskStateRegistry : IDiskStateRegistry
     /// <summary>
     /// DI Constructor
     /// </summary>
-    public DiskStateRegistry(ILogger<DiskStateRegistry> logger, IConnection connection)
+    public DiskStateRegistry(IConnection connection)
     {
-        _logger = logger;
         _connection = connection;
     }
 
@@ -88,7 +86,7 @@ public class DiskStateRegistry : IDiskStateRegistry
     {
         return db
             .FindIndexed<Attributes.DiskStateTree.Root, AbsolutePath>(gameInstallation.LocationsRegister[LocationId.Game])
-            .Select(id => db.Get<SavedDiskState>(id))
+            .Select(db.Get<SavedDiskState>)
             .FirstOrDefault(state => state.Game == gameInstallation.Game.Domain);
     }
 
