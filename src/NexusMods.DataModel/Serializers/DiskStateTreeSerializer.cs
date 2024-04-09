@@ -1,12 +1,17 @@
 using System.Buffers;
+using System.Runtime.InteropServices;
 using FlatSharp;
 using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Archives.Nx.Enums;
+using NexusMods.Archives.Nx.Utilities;
 using NexusMods.DataModel.Serializers.DiskStateTreeSchema;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Storage;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees.Traits;
+using Reloaded.Memory.Extensions;
 using File = NexusMods.DataModel.Serializers.DiskStateTreeSchema.File;
 
 namespace NexusMods.DataModel.Serializers;
@@ -32,7 +37,21 @@ internal class DiskStateTreeSerializer : IValueSerializer<DiskStateTree>
     
     public DiskStateTree Read(ReadOnlySpan<byte> buffer)
     {
-        var kvs = Files.Serializer.Parse(buffer.ToArray()).All
+        var decompressedSize = MemoryMarshal.Read<uint>(buffer);
+        var compressedData = buffer.SliceFast(sizeof(uint));
+        
+        var decompressed = new byte[decompressedSize];
+        unsafe
+        {
+            fixed (byte* src = compressedData)
+            fixed (byte* dest = decompressed)
+            {
+                Compression.Decompress(CompressionPreference.ZStandard, src, compressedData.Length, dest, (int)decompressedSize);
+            }
+        }
+        
+        var parsed = Files.Serializer.Parse(decompressed);
+        var kvs = parsed.All
             .Select(f => new KeyValuePair<GamePath, DiskStateEntry>(new GamePath(LocationId.From(f.LocationId), f.Path),
                 new DiskStateEntry
                 {
@@ -47,6 +66,7 @@ internal class DiskStateTreeSerializer : IValueSerializer<DiskStateTree>
 
     public void Serialize<TWriter>(DiskStateTree tree, TWriter buffer) where TWriter : IBufferWriter<byte>
     {
+        using var tmpWriter = new PooledMemoryBufferWriter();
         var toSerialize = new Files
         {
             All = tree.GetAllDescendentFiles()
@@ -60,6 +80,24 @@ internal class DiskStateTreeSerializer : IValueSerializer<DiskStateTree>
                     }
                 ).ToList()
         };
-        Files.Serializer.Write(buffer, toSerialize);
+        
+        Files.Serializer.Write(tmpWriter, toSerialize);
+        
+        var sizeSpan = buffer.GetSpan(sizeof(uint));
+        MemoryMarshal.Write(sizeSpan, (uint)tmpWriter.Length);
+        buffer.Advance(sizeof(uint));
+
+        var span = buffer.GetSpan(Compression.MaxAllocForCompressSize(tmpWriter.Length));
+        unsafe
+        {
+            fixed (byte* src = tmpWriter.GetWrittenSpan())
+            fixed (byte* dest = span)
+            {
+                var compressed = Compression.Compress(CompressionPreference.ZStandard, 9, 
+                    src, tmpWriter.Length, 
+                    dest, span.Length, out _);
+                buffer.Advance(compressed);
+            }    
+        }
     }
 }
