@@ -5,7 +5,7 @@
     <PackageVersion Include="NexusMods.Hashing.xxHash64" Version="2.0.0" />
     <PackageVersion Include="NexusMods.Paths" Version="0.9.0" />
     <PackageVersion Include="NexusMods.Paths.TestingHelpers" Version="0.8.0" />
-    <PackageVersion Include="NexusMods.Archives.Nx" Version="0.3.8" />
+    <PackageVersion Include="NexusMods.Archives.Nx" Version="0.4.0" />
     <PackageVersion Include="NexusMods.ProxyConsole.Abstractions" Version="0.6.0" />
     <PackageVersion Include="NexusMods.SingleProcess" Version="0.6.0" />
     <PackageVersion Include="NexusMods.Telemetry.OpenTelemetry" Version="1.0.0" />
@@ -37,9 +37,8 @@
     <PackageVersion Include="Avalonia.Themes.Fluent" Version="11.0.10" />
     <PackageVersion Include="Projektanker.Icons.Avalonia.MaterialDesign" Version="9.1.2" />
     <PackageVersion Include="Avalonia.Svg.Skia" Version="11.0.0.14" />
-
-      <!-- keep this version in sync with Avalonia (https://github.com/whistyun/Markdown.Avalonia?tab=readme-ov-file#nuget) -->
-      <PackageVersion Include="Markdown.Avalonia.Tight" Version="11.0.2" />
+    <!-- keep this version in sync with Avalonia (https://github.com/whistyun/Markdown.Avalonia?tab=readme-ov-file#nuget) -->
+    <PackageVersion Include="Markdown.Avalonia.Tight" Version="11.0.2" />
   </ItemGroup>
   <ItemGroup>
     <!-- System -->
