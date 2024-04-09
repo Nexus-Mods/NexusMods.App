@@ -20,6 +20,9 @@ using NexusMods.DataModel.ChunkedStreams;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
+#if DEBUG
+using System.Diagnostics;
+#endif
 
 namespace NexusMods.DataModel;
 
@@ -165,8 +168,7 @@ public class NxFileStore : IFileStore
                 if (createdDirectories.TryAdd(containingDir, 0))
                     containingDir.CreateDirectory();
 #if DEBUG
-                if (!destPaths.TryAdd(file.Dest, 0))
-                    throw new Exception($"Duplicate destination path: {file.Dest}. Should not happen.");
+                Debug.Assert(!destPaths.TryAdd(file.Dest, 0), $"Duplicate destination path: {file.Dest}. Should not happen.");
 #endif
             }
             else
