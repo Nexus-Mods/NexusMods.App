@@ -47,8 +47,8 @@ public partial class FileTreeNodeView : ReactiveUserControl<IFileTreeNodeViewMod
                 EntryIcon.Classes.Add("ForegroundSuccessStrong");
                 break;
             case FileChangeType.Modified:
-                FileNameTextBlock.Classes.Add("ForegroundWarningStrong");
-                EntryIcon.Classes.Add("ForegroundWarningStrong");
+                FileNameTextBlock.Classes.Add("ForegroundInfoStrong");
+                EntryIcon.Classes.Add("ForegroundInfoStrong");
                 break;
             case FileChangeType.Removed:
                 FileNameTextBlock.Classes.Add("ForegroundDangerStrong");

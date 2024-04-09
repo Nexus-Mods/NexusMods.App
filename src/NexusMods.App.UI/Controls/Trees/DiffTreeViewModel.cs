@@ -110,7 +110,8 @@ public class DiffTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeViewMo
                 parentPath,
                 isFile,
                 fileSize,
-                (uint)numChildFiles
+                (uint)numChildFiles,
+                diffEntry.Item.Value.ChangeType
             );
             fileViewModelNodes.Add(model);
         }
