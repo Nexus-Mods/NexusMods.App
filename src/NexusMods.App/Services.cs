@@ -32,6 +32,7 @@ using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
 using NexusMods.ProxyConsole;
+using NexusMods.Settings;
 using NexusMods.SingleProcess;
 using NexusMods.StandardGameLocators;
 using NexusMods.Telemetry;
@@ -63,6 +64,7 @@ public static class Services
                 .AddSingleton<CommandLineConfigurator>()
                 .AddCLI()
                 .AddUI(config.LauncherSettings)
+                .AddSettings()
                 .AddSingleton<App>()
                 .AddGuidedInstallerUi()
                 .AddAdvancedInstaller()

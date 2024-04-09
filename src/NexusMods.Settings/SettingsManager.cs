@@ -17,9 +17,12 @@ internal class SettingsManager : ISettingsManager
     {
         _logger = serviceProvider.GetRequiredService<ILogger<SettingsManager>>();
 
+        // TODO:
         var typeInformation = serviceProvider
             .GetServices<SettingsTypeInformation>()
             .ToArray();
+
+        _logger.LogDebug("Found {Count} registered settings", typeInformation.Length);
     }
 
     public void Set<T>(T value) where T : class, ISettings, new()
