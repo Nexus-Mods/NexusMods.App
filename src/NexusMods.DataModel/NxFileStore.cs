@@ -171,7 +171,7 @@ public class NxFileStore : IFileStore
             }
             else
             {
-                throw new Exception($"Missing archive for {file.Hash.ToHex()}");
+                throw new FileNotFoundException($"Missing archive for {file.Hash.ToHex()}");
             }
         });
 
