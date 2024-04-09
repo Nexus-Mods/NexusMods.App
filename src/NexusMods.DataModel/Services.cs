@@ -44,14 +44,6 @@ public static class Services
         coll.AddMnemonicDB();
         coll.AddMnemonicDBStorage();
         
-        coll.AddSingleton<IConnection>(sp =>
-            {
-                var conn = Task.Run(() => Connection.Start(sp));
-                conn.Wait();
-                return conn.Result;
-            }
-        );
-        
         if (settings?.UseInMemoryDataModel == true)
         {
             coll.AddSingleton<DatomStoreSettings>();
