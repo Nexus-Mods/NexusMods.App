@@ -7,7 +7,8 @@ namespace NexusMods.DataModel.Attributes;
 
 /// <summary>
 /// MnemonicDB attributes for the DiskStateTree registry.
-/// </summary>
+/// </summary>b
+/// 
 public class DiskStateTree
 {
     /// <summary>

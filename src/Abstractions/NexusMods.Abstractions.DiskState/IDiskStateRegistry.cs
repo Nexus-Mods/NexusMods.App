@@ -11,8 +11,7 @@ public interface IDiskStateRegistry
     /// <summary>
     /// Saves a disk state to the data store for the given game installation
     /// </summary>
-    /// <returns></returns>
-    void SaveState(GameInstallation installation, DiskStateTree diskState);
+    Task SaveState(GameInstallation installation, DiskStateTree diskState);
 
     /// <summary>
     /// Gets the disk state associated with a specific game installation, returns false if no state is found

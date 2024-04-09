@@ -38,11 +38,9 @@ public static class Services
     public static IServiceCollection AddDataModel(this IServiceCollection coll,
         IDataModelSettings? settings = null)
     {
-        if (settings == null)
-            coll.AddSingleton<IDataModelSettings, DataModelSettings>();
-        else
-            coll.AddSingleton(settings);
-
+        settings ??= new DataModelSettings();
+        coll.AddSingleton<IDataModelSettings>(_ => settings);
+        
         coll.AddMnemonicDB();
         coll.AddMnemonicDBStorage();
         

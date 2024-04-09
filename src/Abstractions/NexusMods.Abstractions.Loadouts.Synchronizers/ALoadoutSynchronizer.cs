@@ -494,7 +494,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         var prevState = _diskStateRegistry.GetState(loadout.Installation)!;
         var diskState = await FileTreeToDisk(fileTree, loadout, flattened, prevState, loadout.Installation);
         diskState.LoadoutRevision = loadout.DataStoreId;
-        _diskStateRegistry.SaveState(loadout.Installation, diskState);
+        await _diskStateRegistry.SaveState(loadout.Installation, diskState);
         return diskState;
     }
 
@@ -515,7 +515,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         await BackupNewFiles(loadout.Installation, fileTree);
         newLoadout.EnsurePersisted(_store);
         diskState.LoadoutRevision = newLoadout.DataStoreId;
-        _diskStateRegistry.SaveState(loadout.Installation, diskState);
+        await _diskStateRegistry.SaveState(loadout.Installation, diskState);
 
         return newLoadout;
     }
@@ -601,7 +601,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             });
         
         initialState.LoadoutRevision = loadout.DataStoreId;
-        _diskStateRegistry.SaveState(loadout.Installation, initialState);
+        await _diskStateRegistry.SaveState(loadout.Installation, initialState);
 
         return loadout;
     }

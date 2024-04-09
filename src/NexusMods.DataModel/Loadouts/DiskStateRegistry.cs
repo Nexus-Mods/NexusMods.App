@@ -35,20 +35,32 @@ public class DiskStateRegistry : IDiskStateRegistry
     /// <summary>
     /// Saves a disk state to the data store
     /// </summary>
-    /// <returns></returns>
-    public void SaveState(GameInstallation installation, DiskStateTree diskState)
+    public async Task SaveState(GameInstallation installation, DiskStateTree diskState)
     {
         Debug.Assert(!diskState.LoadoutRevision.Equals(IdEmpty.Empty), "diskState.LoadoutRevision must be set");
         
+        var db = _connection.Db;
         var tx = _connection.BeginTransaction();
-        _ = new SavedDiskState(tx)
+
+        var previous = PreviousStateEntity(db, installation); 
+        
+        // If we have a previous state, update it
+        if (previous is not null)
         {
-            Game = installation.Game.Domain,
-            Root = installation.LocationsRegister[LocationId.Game],
-            LoadoutRevision = diskState.LoadoutRevision,
-            DiskState = diskState,
-        };
-        tx.Commit();
+            Attributes.DiskStateTree.LoadoutRevision.Add(tx, previous.Id, diskState.LoadoutRevision);
+            Attributes.DiskStateTree.DiskState.Add(tx, previous.Id, diskState);
+        }
+        else
+        {
+            _ = new SavedDiskState(tx)
+            {
+                Game = installation.Game.Domain,
+                Root = installation.LocationsRegister[LocationId.Game],
+                LoadoutRevision = diskState.LoadoutRevision,
+                DiskState = diskState,
+            };
+        }
+        await tx.Commit();
 
         _lastAppliedRevisionDictionary[installation] = diskState.LoadoutRevision;
         _lastAppliedRevisionSubject.OnNext((installation, diskState.LoadoutRevision));
@@ -62,12 +74,22 @@ public class DiskStateRegistry : IDiskStateRegistry
     public DiskStateTree? GetState(GameInstallation gameInstallation)
     {
         var db = _connection.Db;
+        var result = PreviousStateEntity(db, gameInstallation);
+        
+        if (result is null) 
+            return null;
+        
+        var state = result.DiskState;
+        state.LoadoutRevision = result.LoadoutRevision;
+        return state;
+    }
+
+    private static SavedDiskState? PreviousStateEntity(IDb db, GameInstallation gameInstallation)
+    {
         return db
             .FindIndexed<Attributes.DiskStateTree.Root, AbsolutePath>(gameInstallation.LocationsRegister[LocationId.Game])
             .Select(id => db.Get<SavedDiskState>(id))
-            .Where(state => state.Game == gameInstallation.Game.Domain)
-            .Select(state => state.DiskState)
-            .FirstOrDefault();
+            .FirstOrDefault(state => state.Game == gameInstallation.Game.Domain);
     }
 
     /// <inheritdoc />
