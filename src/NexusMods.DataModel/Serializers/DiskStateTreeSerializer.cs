@@ -39,19 +39,30 @@ internal class DiskStateTreeSerializer : IValueSerializer<DiskStateTree>
     {
         var decompressedSize = MemoryMarshal.Read<uint>(buffer);
         var compressedData = buffer.SliceFast(sizeof(uint));
-        
-        var decompressed = new byte[decompressedSize];
-        unsafe
+
+        Files files;
+
+        if (decompressedSize == buffer.Length - sizeof(uint))
         {
-            fixed (byte* src = compressedData)
-            fixed (byte* dest = decompressed)
+            files = Files.Serializer.Parse(compressedData.ToArray());
+        }
+        else
+        {
+            var decompressed = new byte[decompressedSize];
+            unsafe
             {
-                Compression.Decompress(CompressionPreference.ZStandard, src, compressedData.Length, dest, (int)decompressedSize);
+                fixed (byte* src = compressedData)
+                fixed (byte* dest = decompressed)
+                {
+                    Compression.Decompress(CompressionPreference.ZStandard, src, compressedData.Length,
+                        dest, (int)decompressedSize
+                    );
+                }
             }
+            files = Files.Serializer.Parse(decompressed);
         }
         
-        var parsed = Files.Serializer.Parse(decompressed);
-        var kvs = parsed.All
+        var kvs = files.All
             .Select(f => new KeyValuePair<GamePath, DiskStateEntry>(new GamePath(LocationId.From(f.LocationId), f.Path),
                 new DiskStateEntry
                 {
@@ -87,16 +98,16 @@ internal class DiskStateTreeSerializer : IValueSerializer<DiskStateTree>
         MemoryMarshal.Write(sizeSpan, (uint)tmpWriter.Length);
         buffer.Advance(sizeof(uint));
 
-        var span = buffer.GetSpan(Compression.MaxAllocForCompressSize(tmpWriter.Length));
+        var destSpan = buffer.GetSpan(Compression.MaxAllocForCompressSize(tmpWriter.Length));
         unsafe
         {
             fixed (byte* src = tmpWriter.GetWrittenSpan())
-            fixed (byte* dest = span)
+            fixed (byte* dest = destSpan)
             {
-                var compressed = Compression.Compress(CompressionPreference.ZStandard, 9, 
+                var compressedSize = Compression.Compress(CompressionPreference.ZStandard, 9, 
                     src, tmpWriter.Length, 
-                    dest, span.Length, out _);
-                buffer.Advance(compressed);
+                    dest, destSpan.Length, out var _);
+                buffer.Advance(compressedSize);
             }    
         }
     }
