@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Reactive.Disposables;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.App.UI.Controls.Trees.Common;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -22,6 +23,8 @@ public class FileTreeNodeViewModel : AViewModel<IFileTreeNodeViewModel>, IFileTr
     [Reactive] public bool IsExpanded { get; set; }
     public ReadOnlyObservableCollection<IFileTreeNodeViewModel>? Children { get; set; }
     public IFileTreeNodeViewModel? Parent { get; set; }
+    
+    public FileChangeType ChangeType { get; set; } = FileChangeType.None;
 
     protected FileTreeNodeViewModel()
     {
@@ -41,6 +44,24 @@ public class FileTreeNodeViewModel : AViewModel<IFileTreeNodeViewModel>, IFileTr
             numChildFiles
         )
     {
+    }
+    
+    public FileTreeNodeViewModel(
+        GamePath fullPath,
+        GamePath parentPath,
+        bool isFile,
+        ulong fileSize,
+        uint numChildFiles,
+        FileChangeType changeType)
+        : this(fullPath.FileName,
+            fullPath,
+            parentPath,
+            isFile,
+            fileSize,
+            numChildFiles
+        )
+    {
+        ChangeType = changeType;
     }
 
     public FileTreeNodeViewModel(

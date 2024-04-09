@@ -1,4 +1,5 @@
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.App.UI.Controls.Trees.Common;
 using NexusMods.App.UI.Helpers.TreeDataGrid;
 
@@ -30,6 +31,11 @@ public interface IFileTreeNodeViewModel : IViewModelInterface, IExpandableItem, 
     ///     Total number of files descending from this node.
     /// </summary>
     uint FileCount { get; }
+    
+    /// <summary>
+    ///     The change status of the file (for diff views).
+    /// </summary>
+    FileChangeType ChangeType { get; }
 
     /// <summary>
     ///     The string representation of the file count, empty string if 0.
