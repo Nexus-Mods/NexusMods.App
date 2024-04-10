@@ -30,7 +30,8 @@ public static class ServiceExtensions
         Func<T, T> overrideMethod)
         where T : class, ISettings, new()
     {
-        var hack = (Func<object, object>)overrideMethod;
-        return serviceCollection.AddSingleton(new SettingsOverrideInformation(typeof(T), hack));
+        return serviceCollection.AddSingleton(new SettingsOverrideInformation(typeof(T), Hack));
+
+        object Hack(object obj) => overrideMethod((T)obj);
     }
 }
