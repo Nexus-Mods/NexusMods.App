@@ -44,7 +44,7 @@
 
     <ItemGroup>
       <Folder Include="LoadoutSynchronizer\Exceptions\" />
-      <Folder Include="Loadouts\Markers\" />
+      <Folder Include="Models\" />
     </ItemGroup>
 
     <ItemGroup>

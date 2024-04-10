@@ -1,12 +1,10 @@
 using System.Diagnostics;
 using System.Reactive.Subjects;
-using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Serialization.DataModel.Ids;
-using NexusMods.DataModel.Models;
+using NexusMods.DataModel.Attributes;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.Paths;
 
 namespace NexusMods.DataModel.Loadouts;
 
@@ -45,12 +43,12 @@ public class DiskStateRegistry : IDiskStateRegistry
         // If we have a previous state, update it
         if (previous is not null)
         {
-            Attributes.DiskStateTree.LoadoutRevision.Add(tx, previous.Id, diskState.LoadoutRevision);
-            Attributes.DiskStateTree.DiskState.Add(tx, previous.Id, diskState);
+            DiskState.LoadoutRevision.Add(tx, previous.Id, diskState.LoadoutRevision);
+            DiskState.State.Add(tx, previous.Id, diskState);
         }
         else
         {
-            _ = new SavedDiskState(tx)
+            _ = new DiskState.Model(tx)
             {
                 Game = installation.Game.Domain,
                 Root = installation.LocationsRegister[LocationId.Game],
@@ -82,11 +80,11 @@ public class DiskStateRegistry : IDiskStateRegistry
         return state;
     }
 
-    private static SavedDiskState? PreviousStateEntity(IDb db, GameInstallation gameInstallation)
+    private static DiskState.Model? PreviousStateEntity(IDb db, GameInstallation gameInstallation)
     {
         return db
-            .FindIndexed<Attributes.DiskStateTree.Root, AbsolutePath>(gameInstallation.LocationsRegister[LocationId.Game])
-            .Select(db.Get<SavedDiskState>)
+            .FindIndexed(gameInstallation.LocationsRegister[LocationId.Game], DiskState.Root)
+            .Select(db.Get<DiskState.Model>)
             .FirstOrDefault(state => state.Game == gameInstallation.Game.Domain);
     }
 

@@ -65,7 +65,7 @@ public class DataModelSettings : IDataModelSettings
 
     private const string DataModelFileName = "DataModel.sqlite";
     private const string DataModelIpcFileName = "DataModel_IPC.sqlite";
-    private const string MnemonicDBFileName = "MnemonicDB";
+    private const string MnemonicDBFolderName = "MnemonicDB.rocksdb";
     private const string ArchivesFileName = "Archives";
 
     /// <inheritdoc />
@@ -164,7 +164,7 @@ public class DataModelSettings : IDataModelSettings
         new(baseDirectory.Combine(DataModelFileName));
     
     private static ConfigurationPath GetDefaultMnemonicDBPath(AbsolutePath baseDirectory) =>
-        new(baseDirectory.Combine(MnemonicDBFileName));
+        new(baseDirectory.Combine(MnemonicDBFolderName));
 
     private static ConfigurationPath GetDefaultIpcFilePath(AbsolutePath baseDirectory) =>
         new(baseDirectory.Combine(DataModelIpcFileName));

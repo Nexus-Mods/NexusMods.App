@@ -48,7 +48,7 @@ internal class DiskStateTreeSerializer : IValueSerializer<DiskStateTree>
         }
         else
         {
-            var decompressed = new byte[decompressedSize];
+            var decompressed = GC.AllocateUninitializedArray<byte>((int)decompressedSize);
             unsafe
             {
                 fixed (byte* src = compressedData)
@@ -62,17 +62,23 @@ internal class DiskStateTreeSerializer : IValueSerializer<DiskStateTree>
             files = Files.Serializer.Parse(decompressed);
         }
         
-        var kvs = files.All
-            .Select(f => new KeyValuePair<GamePath, DiskStateEntry>(new GamePath(LocationId.From(f.LocationId), f.Path),
+        
+        var res = GC.AllocateUninitializedArray<KeyValuePair<GamePath, DiskStateEntry>>(files.All.Count);
+        
+        for (var i = 0; i < files.All.Count; i++)
+        {
+            var f = files.All[i];
+            res[i] = new KeyValuePair<GamePath, DiskStateEntry>(new GamePath(LocationId.From(f.LocationId), f.Path),
                 new DiskStateEntry
                 {
                     Size = Size.From(f.Size),
                     Hash = Hash.From(f.Hash),
                     LastModified = DateTime.FromFileTimeUtc(f.LastWriteTime)
                 }
-            ));
+            );
+        }
         
-        return DiskStateTree.Create(kvs);
+        return DiskStateTree.Create(res);
     }
 
     public void Serialize<TWriter>(DiskStateTree tree, TWriter buffer) where TWriter : IBufferWriter<byte>

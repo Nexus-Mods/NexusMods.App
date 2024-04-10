@@ -11,6 +11,7 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Messaging;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
+using NexusMods.DataModel.Attributes;
 using NexusMods.DataModel.CommandLine.Verbs;
 using NexusMods.DataModel.Diagnostics;
 using NexusMods.DataModel.JsonConverters;
@@ -24,7 +25,6 @@ using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Storage;
 using NexusMods.MnemonicDB.Storage.Abstractions;
-using DiskStateTree = NexusMods.DataModel.Attributes.DiskStateTree;
 
 namespace NexusMods.DataModel;
 
@@ -84,7 +84,7 @@ public static class Services
         
         // Disk State Registry
         coll.AddAllSingleton<IDiskStateRegistry, DiskStateRegistry>();
-        coll.AddAttributeCollection<DiskStateTree>();
+        coll.AddAttributeCollection(typeof(DiskState));
         
         coll.AddAllSingleton<IApplyService, ApplyService>();
 

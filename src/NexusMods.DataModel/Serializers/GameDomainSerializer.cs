@@ -7,7 +7,7 @@ namespace NexusMods.DataModel.Serializers;
 
 internal class GameDomainSerializer : IValueSerializer<GameDomain>
 {
-    private static readonly Encoding _encoding = Encoding.UTF8;
+    private static readonly Encoding _encoding = Encoding.ASCII;
     
     public int Compare(in ReadOnlySpan<byte> a, in ReadOnlySpan<byte> b)
     {
@@ -19,7 +19,7 @@ internal class GameDomainSerializer : IValueSerializer<GameDomain>
     
     public GameDomain Read(ReadOnlySpan<byte> buffer)
     {
-        return GameDomain.From(Encoding.UTF8.GetString(buffer));
+        return GameDomain.From(_encoding.GetString(buffer));
     }
 
     public void Serialize<TWriter>(GameDomain value, TWriter buffer) where TWriter : IBufferWriter<byte>
