@@ -11,12 +11,5 @@
   },
   "FileExtractorSettings": {
     "TempFolderLocation": ""
-  },
-  "LoggingSettings": {
-    "MainProcessLogFilePath": "",
-    "MainProcessArchiveFilePath": "",
-    "SlimProcessLogFilePath": "",
-    "SlimProcessArchiveFilePath": "",
-    "MaxArchivedFiles": 10
   }
 }

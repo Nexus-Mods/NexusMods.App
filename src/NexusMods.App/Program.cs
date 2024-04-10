@@ -130,7 +130,7 @@ public class Program
         var config = ReadAppConfig(new AppConfig());
         var host = new HostBuilder()
             .ConfigureServices(services => services.AddApp(config, slimMode: slimMode).Validate())
-            .ConfigureLogging((_, builder) => AddLogging(builder, config.LoggingSettings, isMainProcess: !slimMode))
+            .ConfigureLogging((_, builder) => AddLogging(builder, isMainProcess: !slimMode))
             .Build();
 
         return host;
@@ -206,8 +206,11 @@ public class Program
         return null;
     }
 
-    private static void AddLogging(ILoggingBuilder loggingBuilder, ILoggingSettings settings, bool isMainProcess)
+    private static void AddLogging(ILoggingBuilder loggingBuilder, bool isMainProcess)
     {
+        var fs = FileSystem.Shared;
+        var settings = LoggingSettings.CreateDefault(fs.OS);
+
         var config = new NLog.Config.LoggingConfiguration();
 
         const string defaultLayout = "${processtime} [${level:uppercase=true}] (${logger}) ${message:withexception=true}";
@@ -218,16 +221,16 @@ public class Program
         {
             fileTarget = new FileTarget("file")
             {
-                FileName = settings.MainProcessLogFilePath.GetFullPath(),
-                ArchiveFileName = settings.MainProcessArchiveFilePath.GetFullPath(),
+                FileName = settings.MainProcessLogFilePath.ToPath(fs).GetFullPath(),
+                ArchiveFileName = settings.MainProcessArchiveFilePath.ToPath(fs).GetFullPath(),
             };
         }
         else
         {
             fileTarget = new FileTarget("file")
             {
-                FileName = settings.SlimProcessLogFilePath.GetFullPath(),
-                ArchiveFileName = settings.SlimProcessArchiveFilePath.GetFullPath(),
+                FileName = settings.SlimProcessLogFilePath.ToPath(fs).GetFullPath(),
+                ArchiveFileName = settings.SlimProcessArchiveFilePath.ToPath(fs).GetFullPath(),
             };
         }
 
@@ -253,14 +256,7 @@ public class Program
         };
 
         loggingBuilder.ClearProviders();
-#if DEBUG
-        loggingBuilder.SetMinimumLevel(LogLevel.Debug);
-#elif TRACE
-        loggingBuilder.SetMinimumLevel(LogLevel.Trace);
-#else
-        loggingBuilder.SetMinimumLevel(LogLevel.Information);
-#endif
-
+        loggingBuilder.SetMinimumLevel(settings.MinimumLevel);
         loggingBuilder.AddNLog(config, options);
     }
 
