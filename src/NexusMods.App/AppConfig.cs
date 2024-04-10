@@ -1,6 +1,5 @@
 using NexusMods.Abstractions.FileExtractor;
 using NexusMods.Abstractions.HttpDownloader;
-using NexusMods.App.UI;
 using NexusMods.DataModel;
 using NexusMods.Paths;
 
@@ -45,7 +44,6 @@ public class AppConfig
     public FileExtractorSettings FileExtractorSettings { get; set; }
     public HttpDownloaderSettings HttpDownloaderSettings { get; set; } = new();
     public LoggingSettings LoggingSettings { get; set; }
-    public LauncherSettings LauncherSettings { get; set; } = new();
     public bool? EnableTelemetry { get; set; }
 
     /// <summary>

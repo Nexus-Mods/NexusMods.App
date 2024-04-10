@@ -70,13 +70,8 @@ namespace NexusMods.App.UI;
 public static class Services
 {
     // ReSharper disable once InconsistentNaming
-    public static IServiceCollection AddUI(this IServiceCollection c, ILauncherSettings? settings)
+    public static IServiceCollection AddUI(this IServiceCollection c)
     {
-        if (settings == null)
-            c.AddSingleton<ILauncherSettings, LauncherSettings>();
-        else
-            c.AddSingleton(settings);
-
         return c
             // JSON converters
             .AddSingleton<JsonConverter, RectJsonConverter>()
@@ -231,6 +226,7 @@ public static class Services
             .AddSingleton<IDiagnosticWriter, DiagnosticWriter>()
 
             // Settings
+            .AddSettings<LanguageSettings>()
             .AddSettings<TelemetrySettings>()
 
             // Other
