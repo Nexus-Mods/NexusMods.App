@@ -139,7 +139,7 @@
 		<value>Dodaj grę</value>
 	</data>
 	<data name="DownloadsView__DOWNLOADS" xml:space="preserve">
-		<value>POBIERANIE</value>
+		<value>POBRANE</value>
 	</data>
 	<data name="DownloadsView__In_Progress" xml:space="preserve">
 		<value>Pobierane</value>
