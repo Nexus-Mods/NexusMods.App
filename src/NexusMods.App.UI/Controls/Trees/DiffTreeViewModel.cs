@@ -21,15 +21,6 @@ public class DiffTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeViewMo
     private readonly SourceCache<IFileTreeNodeViewModel, GamePath> _treeSourceCache;
     private readonly ReadOnlyObservableCollection<IFileTreeNodeViewModel> _items;
 
-    private uint _loadoutFileCount;
-    private ulong _loadoutFileSize;
-    private uint _diskFileCount;
-    private ulong _diskFileSize;
-    private uint _addedFileCount;
-    private uint _modifiedFileCount;
-    private uint _deletedFileCount;
-    private ulong _operationSize;
-
     private readonly ReadOnlyObservableCollection<string> _statusBarStrings;
     private readonly SourceList<string> _statusBarSourceList;
 
@@ -59,7 +50,7 @@ public class DiffTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeViewMo
         TreeSource = CreateTreeSource(_items);
     }
 
-    public async void Refresh()
+    public async Task Refresh()
     {
         var loadout = _loadoutRegistry.Get(_loadoutId);
         if (loadout is null)
@@ -70,6 +61,15 @@ public class DiffTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeViewMo
         var diffTree = await _applyService.GetApplyDiffTree(_loadoutId);
 
         Dictionary<GamePath, IFileTreeNodeViewModel> fileViewModelNodes = [];
+
+        uint loadoutFileCount = 0;
+        ulong loadoutFileSize = 0;
+        uint diskFileCount = 0;
+        ulong diskFileSize = 0;
+        uint addedFileCount = 0;
+        uint modifiedFileCount = 0;
+        uint deletedFileCount = 0;
+        ulong operationSize = 0;
 
 
         var locationsRegister = loadout.Installation.LocationsRegister;
@@ -141,23 +141,23 @@ public class DiffTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeViewMo
             if (changeType != FileChangeType.Removed)
             {
                 // File is part of loadout
-                _loadoutFileCount++;
-                _loadoutFileSize += fileSize;
+                loadoutFileCount++;
+                loadoutFileSize += fileSize;
             }
 
             if (changeType != FileChangeType.Added)
             {
                 // File is part of disk
-                _diskFileCount++;
-                _diskFileSize += fileSize;
+                diskFileCount++;
+                diskFileSize += fileSize;
             }
 
             if (changeType != FileChangeType.None)
-                _operationSize += fileSize;
+                operationSize += fileSize;
 
-            _addedFileCount += changeType == FileChangeType.Added ? 1u : 0u;
-            _modifiedFileCount += changeType == FileChangeType.Modified ? 1u : 0u;
-            _deletedFileCount += changeType == FileChangeType.Removed ? 1u : 0u;
+            addedFileCount += changeType == FileChangeType.Added ? 1u : 0u;
+            modifiedFileCount += changeType == FileChangeType.Modified ? 1u : 0u;
+            deletedFileCount += changeType == FileChangeType.Removed ? 1u : 0u;
 
             fileViewModelNodes.Add(gamePath, model);
         }
@@ -173,20 +173,20 @@ public class DiffTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeViewMo
             {
                 innerList.Clear();
                 innerList.Add(string.Format(Language.DiffTreeViewModel_StatusBar__File_Loadout_Disk,
-                        _loadoutFileCount,
-                        ByteSize.FromBytes(_loadoutFileSize).ToString(),
-                        _diskFileCount,
-                        ByteSize.FromBytes(_diskFileSize).ToString()
+                        loadoutFileCount,
+                        ByteSize.FromBytes(loadoutFileSize).ToString(),
+                        diskFileCount,
+                        ByteSize.FromBytes(diskFileSize).ToString()
                     )
                 );
                 innerList.Add(string.Format(Language.DiffTreeViewModel_StatusBar__Apply_changes,
-                        _addedFileCount,
-                        _modifiedFileCount,
-                        _deletedFileCount
+                        addedFileCount,
+                        modifiedFileCount,
+                        deletedFileCount
                     )
                 );
                 innerList.Add(string.Format(Language.DiffTreeViewModel_StatusBar__Data_to_process___0_,
-                        ByteSize.FromBytes(_operationSize).ToString()
+                        ByteSize.FromBytes(operationSize).ToString()
                     )
                 );
             }
