@@ -101,7 +101,10 @@ public class DiffTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeViewMo
                 diffEntry.Item.Value.Size.Value,
                 0u,
                 diffEntry.Item.Value.ChangeType
-            );
+            )
+            {
+                IsExpanded = diffEntry.Item.Value.ChangeType != FileChangeType.None,
+            };
             fileViewModelNodes.Add(diffEntry.GamePath(), model);
         }
 
@@ -131,6 +134,7 @@ public class DiffTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeViewMo
                 if (changeType == FileChangeType.None || parentNode.ChangeType != FileChangeType.None)
                     continue;
                 parentNode.ChangeType = FileChangeType.Modified;
+                parentNode.IsExpanded = true;
             }
 
             // Update the counters
