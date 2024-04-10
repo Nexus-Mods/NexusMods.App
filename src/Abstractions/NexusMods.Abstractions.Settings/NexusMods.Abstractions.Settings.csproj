@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+        <PackageReference Include="OneOf" />
+        <PackageReference Include="System.Reactive" />
+        <PackageReference Include="DynamicData" />
+
+        <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="NexusMods.Settings" />
+    </ItemGroup>
+</Project>

@@ -30,6 +30,7 @@
         <ProjectReference Include="..\NexusMods.App.UI\NexusMods.App.UI.csproj" />
         <ProjectReference Include="..\NexusMods.App.Cli\NexusMods.App.Cli.csproj" />
         <ProjectReference Include="..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
+        <ProjectReference Include="..\NexusMods.Settings\NexusMods.Settings.csproj" />
         <ProjectReference Include="..\Themes\NexusMods.Themes.NexusFluentDark\NexusMods.Themes.NexusFluentDark.csproj" />
     </ItemGroup>
 
