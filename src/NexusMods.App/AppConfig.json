@@ -12,19 +12,11 @@
   "FileExtractorSettings": {
     "TempFolderLocation": ""
   },
-  "HttpDownloaderSettings": {
-    "WriteQueueLength": 16,
-    "MinCancelAge": 500,
-    "CancelSpeedFraction": 0.66
-  },
   "LoggingSettings": {
     "MainProcessLogFilePath": "",
     "MainProcessArchiveFilePath": "",
     "SlimProcessLogFilePath": "",
     "SlimProcessArchiveFilePath": "",
     "MaxArchivedFiles": 10
-  },
-  "LauncherSettings": {
-    "LocaleOverride": ""
   }
 }

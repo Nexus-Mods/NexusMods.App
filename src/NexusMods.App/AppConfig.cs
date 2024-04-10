@@ -1,5 +1,4 @@
 using NexusMods.Abstractions.FileExtractor;
-using NexusMods.Abstractions.HttpDownloader;
 using NexusMods.DataModel;
 using NexusMods.Paths;
 
@@ -42,7 +41,6 @@ public class AppConfig
 
     public DataModelSettings DataModelSettings { get; set; }
     public FileExtractorSettings FileExtractorSettings { get; set; }
-    public HttpDownloaderSettings HttpDownloaderSettings { get; set; } = new();
     public LoggingSettings LoggingSettings { get; set; }
     public bool? EnableTelemetry { get; set; }
 
@@ -53,7 +51,6 @@ public class AppConfig
     {
         DataModelSettings.Sanitize(fs);
         FileExtractorSettings.Sanitize(fs);
-        HttpDownloaderSettings.Sanitize();
         LoggingSettings.Sanitize(fs);
     }
 }

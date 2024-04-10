@@ -7,6 +7,7 @@ using System.Threading.Channels;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.HttpDownloader;
+using NexusMods.Abstractions.Settings;
 using NexusMods.Extensions.Hashing;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Networking.HttpDownloader.DTOs;
@@ -67,16 +68,23 @@ namespace NexusMods.Networking.HttpDownloader
         /// <summary>
         /// Constructor
         /// </summary>
-        public AdvancedHttpDownloader(ILogger<AdvancedHttpDownloader> logger, HttpClient client,
+        public AdvancedHttpDownloader(
+            ILogger<AdvancedHttpDownloader> logger,
+            HttpClient client,
             IActivityFactory activityFactory,
-            IHttpDownloaderSettings settings)
+            ISettingsManager settingsManager)
         {
             _logger = logger;
             _client = client;
             _activityFactory = activityFactory;
+
+            // TODO: consider subscribing to settings changes
+            var settings = settingsManager.Get<HttpDownloaderSettings>();
+
             _writeQueueLength = settings.WriteQueueLength;
             _minCancelAge = settings.MinCancelAge;
             _cancelSpeedFraction = settings.CancelSpeedFraction;
+
             _memoryPool = MemoryPool<byte>.Shared;
         }
 

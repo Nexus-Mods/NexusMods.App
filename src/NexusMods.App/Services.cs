@@ -85,7 +85,7 @@ public static class Services
                 .AddStardewValley()
                 .AddMountAndBladeBannerlord()
                 .AddNexusWebApi()
-                .AddAdvancedHttpDownloader(config.HttpDownloaderSettings)
+                .AddAdvancedHttpDownloader()
                 .AddTestHarness()
                 .AddSingleton<HttpClient>()
                 .AddListeners()
