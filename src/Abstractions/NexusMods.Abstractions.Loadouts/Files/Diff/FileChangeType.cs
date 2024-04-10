@@ -3,17 +3,12 @@ namespace NexusMods.Abstractions.Loadouts.Synchronizers;
 /// <summary>
 /// The type of change of a file at a specific path
 /// </summary>
-public enum FileChangeType
+public enum FileChangeType : byte
 {
     /// <summary>
     /// No change
     /// </summary>
     None,
-    
-    /// <summary>
-    /// This file path was added and was not present before
-    /// </summary>
-    Added,
     
     /// <summary>
     /// This file path was removed and was present before
@@ -27,4 +22,9 @@ public enum FileChangeType
     /// A renamed file is not considered modified, but rather a Removed and an Added file
     /// </remarks>
     Modified,
+    
+    /// <summary>
+    /// This file path was added and was not present before
+    /// </summary>
+    Added,
 }

@@ -7,7 +7,7 @@ namespace NexusMods.Abstractions.Loadouts.Synchronizers;
 /// <summary>
 /// A file diff entry
 /// </summary>
-public record struct DiskDiffEntry
+public record DiskDiffEntry
 {
     /// <summary>
     /// The game path of the file
