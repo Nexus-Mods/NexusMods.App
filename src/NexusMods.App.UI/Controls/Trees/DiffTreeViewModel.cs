@@ -4,6 +4,7 @@ using DynamicData;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.Trees;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.App.UI.Controls.Trees.Files;
 using NexusMods.App.UI.Helpers.TreeDataGrid;
 using NexusMods.Paths.Trees.Traits;
@@ -66,55 +67,72 @@ public class DiffTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeViewMo
 
         var diffTree = await _applyService.GetApplyDiffTree(_loadoutId);
 
-        List<IFileTreeNodeViewModel> fileViewModelNodes = [];
+        Dictionary<GamePath, IFileTreeNodeViewModel> fileViewModelNodes = [];
 
-        // Get the root nodes:
+        
         var locationsRegister = loadout.Installation.LocationsRegister;
-        var rootNodes = diffTree.GetRoots();
-        foreach (var rootNode in rootNodes)
+        
+        // Add the root directories
+        foreach (var rootNode in diffTree.GetRoots())
         {
-            var gamePath = rootNode.GamePath();
-            var fullPath = locationsRegister.GetResolvedPath(gamePath);
-            var isFile = rootNode.IsFile();
-            var fileSize = rootNode.IsFile()
-                ? rootNode.Item.Value.Size.Value
-                : rootNode.GetFiles()
-                    .Aggregate(0ul,
-                        (sum, file) => { return sum += file.Item.Value.Size.Value; }
-                    );
-            var numChildFiles = rootNode.IsFile() ? 0 : rootNode.CountFiles();
-            var model = new FileTreeNodeViewModel(fullPath.ToString(),
-                gamePath,
+            var model = new FileTreeNodeViewModel(
+                locationsRegister.GetResolvedPath(rootNode.GamePath()).ToString(),
+                rootNode.GamePath(),
                 IFileTreeViewModel.RootParentGamePath,
-                isFile,
-                fileSize,
-                (uint)numChildFiles
+                false,
+                0ul,
+                0u
+            )
+            {
+                ChangeType = FileChangeType.None,
+            };
+            fileViewModelNodes.Add(rootNode.GamePath(), model);
+        }
+        
+        // Add all the sub directories recursively
+        foreach (var diffEntry in diffTree.GetAllDescendentDirectories())
+        {
+            var model = new FileTreeNodeViewModel(
+                diffEntry.GamePath(),
+                diffEntry.Parent()?.GamePath() ?? IFileTreeViewModel.RootParentGamePath,
+                diffEntry.IsFile(),
+                diffEntry.Item.Value.Size.Value,
+                0u,
+                diffEntry.Item.Value.ChangeType
             );
-            fileViewModelNodes.Add(model);
+            fileViewModelNodes.Add(diffEntry.GamePath(), model);
         }
 
 
-        // Convert the diff tree to a list of FileTreeNodeViewModels
-        foreach (var diffEntry in diffTree.GetAllDescendents())
+        // Add all files 
+        foreach (var diffEntry in diffTree.GetAllDescendentFiles())
         {
             var gamePath = diffEntry.GamePath();
             var parentPath = diffEntry.Parent()?.GamePath() ?? IFileTreeViewModel.RootParentGamePath;
-            var isFile = diffEntry.IsFile();
-            var fileSize = diffEntry.IsFile()
-                ? diffEntry.Item.Value.Size.Value
-                : diffEntry.GetFiles()
-                    .Aggregate(0ul,
-                        (sum, file) => { return sum += file.Item.Value.Size.Value; }
-                    );
-            var numChildFiles = diffEntry.IsFile() ? 0 : diffEntry.CountFiles();
+            var fileSize = diffEntry.Item.Value.Size.Value;
+            var changeType = diffEntry.Item.Value.ChangeType;
             var model = new FileTreeNodeViewModel(gamePath,
                 parentPath,
-                isFile,
+                diffEntry.IsFile(),
                 fileSize,
-                (uint)numChildFiles,
-                diffEntry.Item.Value.ChangeType
+                0u,
+                changeType
             );
-            fileViewModelNodes.Add(model);
+            
+            // Update all parent folders with the file size and file count
+            foreach (var parent in gamePath.GetAllParents().Skip(1))
+            {
+                var parentNode = fileViewModelNodes[parent];
+                parentNode.FileSize += fileSize;
+                parentNode.FileCount++;
+                
+                // If file is changed and parent is not changed, mark parent as modified
+                if (changeType == FileChangeType.None || parentNode.ChangeType != FileChangeType.None)
+                    continue;
+                parentNode.ChangeType = FileChangeType.Modified;
+            }
+            
+            fileViewModelNodes.Add(gamePath, model);
         }
 
         _treeSourceCache.Edit(innerList =>

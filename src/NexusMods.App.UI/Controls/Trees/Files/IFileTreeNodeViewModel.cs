@@ -28,17 +28,17 @@ public interface IFileTreeNodeViewModel : IViewModelInterface, IExpandableItem, 
     /// <summary>
     ///     The size of the file, in bytes.
     /// </summary>
-    ulong FileSize { get; }
+    ulong FileSize { get; internal set; }
 
     /// <summary>
     ///     Total number of files descending from this node.
     /// </summary>
-    uint FileCount { get; }
+    uint FileCount { get; internal set; }
 
     /// <summary>
     ///     The change status of the file (for diff views).
     /// </summary>
-    FileChangeType ChangeType { get; }
+    FileChangeType ChangeType { get; internal set; }
 
     /// <summary>
     ///     The string representation of the file count, empty string if 0.
