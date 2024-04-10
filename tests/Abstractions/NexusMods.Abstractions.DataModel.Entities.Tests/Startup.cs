@@ -5,6 +5,7 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization;
+using NexusMods.Abstractions.Settings;
 using NexusMods.Activities;
 using NexusMods.CrossPlatform;
 using NexusMods.DataModel;
@@ -20,7 +21,12 @@ public class Startup
     public void ConfigureServices(IServiceCollection container)
     {
         container
-            .AddDataModel(isTest: true)
+            .AddDataModel()
+            .OverrideSettings<DataModelSettings>(settings => settings with
+            {
+                UseInMemoryDataModel = true,
+            })
+
             .AddActivityMonitor()
             .AddFileExtractors()
             .AddFileSystem()

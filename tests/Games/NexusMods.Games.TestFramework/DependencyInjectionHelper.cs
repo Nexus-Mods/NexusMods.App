@@ -3,6 +3,7 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.HttpDownloader;
+using NexusMods.Abstractions.Settings;
 using NexusMods.DataModel;
 using NexusMods.FileExtractor;
 using NexusMods.Networking.HttpDownloader;
@@ -48,7 +49,11 @@ public static class DependencyInjectionHelper
             .AddSingleton<TestModDownloader>()
             .AddNexusWebApi(true)
             .AddHttpDownloader()
-            .AddDataModel(isTest: true)
+            .AddDataModel()
+            .OverrideSettings<DataModelSettings>(settings => settings with
+            {
+                UseInMemoryDataModel = true,
+            })
             .AddFileExtractors();
     }
 

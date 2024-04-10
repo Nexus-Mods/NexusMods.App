@@ -15,6 +15,7 @@ internal class SettingsManager : ISettingsManager
     private readonly Subject<(Type, object)> _subject = new();
     private readonly Dictionary<Type, object> _values = new();
     private readonly ImmutableDictionary<Type,ObjectCreationInformation> _objectCreationDict;
+    private readonly ImmutableDictionary<Type,Func<object,object>> _overrides;
 
     public SettingsManager(IServiceProvider serviceProvider)
     {
@@ -22,6 +23,10 @@ internal class SettingsManager : ISettingsManager
         _logger = serviceProvider.GetRequiredService<ILogger<SettingsManager>>();
 
         var builder = new SettingsBuilder();
+
+        _overrides = serviceProvider
+            .GetServices<SettingsOverrideInformation>()
+            .ToImmutableDictionary(x => x.Type, x => x.OverrideMethod);
 
         _objectCreationDict = serviceProvider
             .GetServices<SettingsTypeInformation>()
@@ -50,14 +55,27 @@ internal class SettingsManager : ISettingsManager
         _subject.OnNext((typeof(T), value));
     }
 
+    private T GetDefaultValue<T>() where T : class, ISettings, new()
+    {
+        if (!_objectCreationDict.TryGetValue(typeof(T), out var objectCreationInformation))
+            throw new KeyNotFoundException($"Unknown settings type '{typeof(T)}'. Did you forget to register the setting with DI?");
+
+        var value = objectCreationInformation.GetOrCreateDefaultValue(_serviceProvider);
+
+        if (_overrides.TryGetValue(typeof(T), out var overrideMethod))
+        {
+            value = overrideMethod.Invoke(value);
+        }
+
+        var res = (value as T)!;
+        return res;
+    }
+
     public T Get<T>() where T : class, ISettings, new()
     {
         if (_values.TryGetValue(typeof(T), out var obj)) return (obj as T)!;
 
-        if (!_objectCreationDict.TryGetValue(typeof(T), out var objectCreationInformation))
-            throw new KeyNotFoundException($"Unknown settings type '{typeof(T)}'. Did you forget to register the setting with DI?");
-
-        var value = (objectCreationInformation.GetOrCreateDefaultValue(_serviceProvider) as T)!;
+        var value = GetDefaultValue<T>();
         Set(value);
 
         return value;

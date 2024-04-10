@@ -5,6 +5,7 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization;
+using NexusMods.Abstractions.Settings;
 using NexusMods.Activities;
 using NexusMods.App.BuildInfo;
 using NexusMods.CrossPlatform;
@@ -28,7 +29,11 @@ public class Startup
                 .AddStubbedGameLocators()
                 .AddSingleton<CommandLineConfigurator>()
                 .AddFileSystem()
-                .AddDataModel(isTest: true)
+                .AddDataModel()
+                .OverrideSettings<DataModelSettings>(settings => settings with
+                {
+                    UseInMemoryDataModel = true,
+                })
                 .AddFileExtractors()
                 .AddCLI()
                 .AddSingleton<HttpClient>()

@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.Settings;
 using NexusMods.App.BuildInfo;
 using NexusMods.DataModel;
 using NexusMods.Paths;
@@ -12,7 +13,11 @@ public class Startup
     public void ConfigureServices(IServiceCollection container)
     {
         container
-            .AddDataModel(isTest: true)
+            .AddDataModel()
+            .OverrideSettings<DataModelSettings>(settings => settings with
+            {
+                UseInMemoryDataModel = true,
+            })
             .AddStandardGameLocators(false)
             .AddSingleton<IFileSystem, InMemoryFileSystem>()
             .AddSingleton<TemporaryFileManager>()

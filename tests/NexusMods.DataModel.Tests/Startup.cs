@@ -7,6 +7,7 @@ using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
+using NexusMods.Abstractions.Settings;
 using NexusMods.Activities;
 using NexusMods.App.BuildInfo;
 using NexusMods.CrossPlatform;
@@ -22,16 +23,27 @@ public class Startup
 {
     public void ConfigureServices(IServiceCollection container)
     {
+        const KnownPath baseKnownPath = KnownPath.EntryDirectory;
+        var baseDirectory = $"NexusMods.DataModel.Tests-{Guid.NewGuid()}";
+
         var prefix = FileSystem.Shared
-            .GetKnownPath(KnownPath.EntryDirectory)
-            .Combine($"NexusMods.DataModel.Tests-{Guid.NewGuid()}");
+            .GetKnownPath(baseKnownPath)
+            .Combine(baseDirectory);
 
         container
             .AddSingleton<IGuidedInstaller, NullGuidedInstaller>()
             .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug))
             .AddFileSystem()
             .AddSingleton(new TemporaryFileManager(FileSystem.Shared, prefix))
-            .AddDataModel(isTest: true)
+            .AddDataModel()
+            .OverrideSettings<DataModelSettings>(settings => settings with
+            {
+                UseInMemoryDataModel = true,
+                DataStoreFilePath = new ConfigurablePath(baseKnownPath, $"{prefix}/DataStore.sqlite"),
+                ArchiveLocations = [
+                    new ConfigurablePath(baseKnownPath, $"{prefix}/Archives"),
+                ],
+            })
             .AddGames()
             .AddStandardGameLocators(false)
             .AddFileExtractors()

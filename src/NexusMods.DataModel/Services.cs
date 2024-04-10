@@ -29,9 +29,8 @@ public static class Services
     /// Adds all services related to the <see cref="DataModel"/> to your dependency
     /// injection container.
     /// </summary>
-    public static IServiceCollection AddDataModel(this IServiceCollection coll, bool isTest = false)
+    public static IServiceCollection AddDataModel(this IServiceCollection coll)
     {
-        if (isTest) coll.AddSingleton<DataModelSettingsOverwritesForTests>();
         coll.AddSettings<DataModelSettings>();
 
         coll.AddSingleton<MessageBus>();

@@ -38,7 +38,6 @@ public record DataModelSettings : ISettings
     /// </summary>
     public static DataModelSettings CreateDefault(IServiceProvider serviceProvider)
     {
-        var overwrites = serviceProvider.GetService<DataModelSettingsOverwritesForTests>();
         var os = serviceProvider.GetRequiredService<IOSInformation>();
 
         var baseKnownPath = os.MatchPlatform(
@@ -56,14 +55,6 @@ public record DataModelSettings : ISettings
             ArchiveLocations = [
                 new ConfigurablePath(baseKnownPath, $"{baseDirectoryName}/Archives"),
             ],
-
-            // for tests:
-            UseInMemoryDataModel = overwrites?.UseInMemoryDataModel ?? false,
         };
     }
-}
-
-internal record DataModelSettingsOverwritesForTests
-{
-    public bool UseInMemoryDataModel { get; set; } = true;
 }
