@@ -1,5 +1,5 @@
-using System.Collections;
 using System.Reactive;
+using System.Reactive.Concurrency;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Controls.ModInfo.Loading;
@@ -31,7 +31,7 @@ public class ApplyDiffViewModel : APageViewModel<IApplyDiffViewModel>, IApplyDif
         BodyViewModel = _dummyLoadingViewModel;
         _serviceProvider = serviceProvider;
 
-        RefreshCommand = ReactiveCommand.Create(() =>
+        RefreshCommand = ReactiveCommand.Create( () =>
             {
                 if (_fileTreeViewModel is null)
                 {
@@ -39,8 +39,7 @@ public class ApplyDiffViewModel : APageViewModel<IApplyDiffViewModel>, IApplyDif
                 }
 
                 BodyViewModel = _dummyLoadingViewModel;
-                _fileTreeViewModel?.Refresh();
-                BodyViewModel = _fileTreeViewModel!;
+                Refresh(_fileTreeViewModel);
             }
         );
 
@@ -66,7 +65,18 @@ public class ApplyDiffViewModel : APageViewModel<IApplyDiffViewModel>, IApplyDif
             _serviceProvider.GetRequiredService<IApplyService>(),
             _serviceProvider.GetRequiredService<ILoadoutRegistry>()
         );
-        _fileTreeViewModel.Refresh();
-        BodyViewModel = _fileTreeViewModel;
+
+        Refresh(_fileTreeViewModel);
+    }
+    
+    private void Refresh(DiffTreeViewModel diffTreeViewModel)
+    {
+        Task.Run(async () =>
+            {
+                await diffTreeViewModel.Refresh();
+
+                RxApp.MainThreadScheduler.Schedule(() => { BodyViewModel = diffTreeViewModel; });
+            }
+        );
     }
 }
