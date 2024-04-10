@@ -555,6 +555,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to FILE COUNT.
+        /// </summary>
+        public static string Helpers_GenerateHeader_File_Count {
+            get {
+                return ResourceManager.GetString("Helpers_GenerateHeader_File_Count", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to GAME.
         /// </summary>
         public static string Helpers_GenerateHeader_GAME {
@@ -596,6 +605,15 @@ namespace NexusMods.App.UI.Resources {
         public static string Helpers_GenerateHeader_SIZE {
             get {
                 return ResourceManager.GetString("Helpers_GenerateHeader_SIZE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to STATE.
+        /// </summary>
+        public static string Helpers_GenerateHeader_State {
+            get {
+                return ResourceManager.GetString("Helpers_GenerateHeader_State", resourceCulture);
             }
         }
         
@@ -650,6 +668,42 @@ namespace NexusMods.App.UI.Resources {
         public static string HomeWorkspace_Title {
             get {
                 return ResourceManager.GetString("HomeWorkspace_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Added.
+        /// </summary>
+        public static string IFileTreeNodeViewModel_ToFormattedChangeState_Added {
+            get {
+                return ResourceManager.GetString("IFileTreeNodeViewModel_ToFormattedChangeState_Added", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Contents modified.
+        /// </summary>
+        public static string IFileTreeNodeViewModel_ToFormattedChangeState_Contents_modified {
+            get {
+                return ResourceManager.GetString("IFileTreeNodeViewModel_ToFormattedChangeState_Contents_modified", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Modified.
+        /// </summary>
+        public static string IFileTreeNodeViewModel_ToFormattedChangeState_Modified {
+            get {
+                return ResourceManager.GetString("IFileTreeNodeViewModel_ToFormattedChangeState_Modified", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Removed.
+        /// </summary>
+        public static string IFileTreeNodeViewModel_ToFormattedChangeState_Removed {
+            get {
+                return ResourceManager.GetString("IFileTreeNodeViewModel_ToFormattedChangeState_Removed", resourceCulture);
             }
         }
         
@@ -852,15 +906,6 @@ namespace NexusMods.App.UI.Resources {
         public static string MinutesRemainingTextBlock {
             get {
                 return ResourceManager.GetString("MinutesRemainingTextBlock", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to FILE COUNT.
-        /// </summary>
-        public static string ModFileTreeViewModel_CreateTreeSource_File_Count {
-            get {
-                return ResourceManager.GetString("ModFileTreeViewModel_CreateTreeSource_File_Count", resourceCulture);
             }
         }
         

@@ -11,11 +11,6 @@ public enum FileChangeType : byte
     None,
     
     /// <summary>
-    /// This file path was added and was not present before
-    /// </summary>
-    Added,
-    
-    /// <summary>
     /// This file path was removed and was present before
     /// </summary>
     Removed,
@@ -27,4 +22,9 @@ public enum FileChangeType : byte
     /// A renamed file is not considered modified, but rather a Removed and an Added file
     /// </remarks>
     Modified,
+    
+    /// <summary>
+    /// This file path was added and was not present before
+    /// </summary>
+    Added,
 }

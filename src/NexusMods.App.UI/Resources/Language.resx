@@ -362,7 +362,7 @@
         <value>Files: {0} ({1})</value>
         <comment>{0} Represents a number, {1} represents a formatted size (e.g. 12GB)</comment>
     </data>
-    <data name="ModFileTreeViewModel_CreateTreeSource_File_Count" xml:space="preserve">
+    <data name="Helpers_GenerateHeader_File_Count" xml:space="preserve">
         <value>FILE COUNT</value>
     </data>
     <data name="MyGamesView__NoGamesDetectedText" xml:space="preserve">
@@ -382,5 +382,20 @@
     </data>
     <data name="ApplyDiff_Refresh" xml:space="preserve">
         <value>Refresh</value>
+    </data>
+    <data name="Helpers_GenerateHeader_State" xml:space="preserve">
+        <value>STATE</value>
+    </data>
+    <data name="IFileTreeNodeViewModel_ToFormattedChangeState_Added" xml:space="preserve">
+        <value>Added</value>
+    </data>
+    <data name="IFileTreeNodeViewModel_ToFormattedChangeState_Modified" xml:space="preserve">
+        <value>Modified</value>
+    </data>
+    <data name="IFileTreeNodeViewModel_ToFormattedChangeState_Contents_modified" xml:space="preserve">
+        <value>Contents modified</value>
+    </data>
+    <data name="IFileTreeNodeViewModel_ToFormattedChangeState_Removed" xml:space="preserve">
+        <value>Removed</value>
     </data>
 </root>

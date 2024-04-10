@@ -53,7 +53,7 @@ public class DiffTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeViewMo
             .Bind(out _statusBarStrings)
             .Subscribe();
 
-        TreeSource = ModFileTreeViewModel.CreateTreeSource(_items);
+        TreeSource = CreateTreeSource(_items);
     }
 
     public async void Refresh()
@@ -67,7 +67,7 @@ public class DiffTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeViewMo
         var diffTree = await _applyService.GetApplyDiffTree(_loadoutId);
 
         List<IFileTreeNodeViewModel> fileViewModelNodes = [];
-        
+
         // Get the root nodes:
         var locationsRegister = loadout.Installation.LocationsRegister;
         var rootNodes = diffTree.GetRoots();
@@ -83,7 +83,8 @@ public class DiffTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeViewMo
                         (sum, file) => { return sum += file.Item.Value.Size.Value; }
                     );
             var numChildFiles = rootNode.IsFile() ? 0 : rootNode.CountFiles();
-            var model = new FileTreeNodeViewModel(fullPath.ToString(),gamePath,
+            var model = new FileTreeNodeViewModel(fullPath.ToString(),
+                gamePath,
                 IFileTreeViewModel.RootParentGamePath,
                 isFile,
                 fileSize,
@@ -91,7 +92,7 @@ public class DiffTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeViewMo
             );
             fileViewModelNodes.Add(model);
         }
-        
+
 
         // Convert the diff tree to a list of FileTreeNodeViewModels
         foreach (var diffEntry in diffTree.GetAllDescendents())
@@ -122,5 +123,20 @@ public class DiffTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeViewMo
                 innerList.AddOrUpdate(fileViewModelNodes);
             }
         );
+    }
+
+    internal static HierarchicalTreeDataGridSource<IFileTreeNodeViewModel> CreateTreeSource(
+        ReadOnlyObservableCollection<IFileTreeNodeViewModel> treeRoots)
+    {
+        return new HierarchicalTreeDataGridSource<IFileTreeNodeViewModel>(treeRoots)
+        {
+            Columns =
+            {
+                FileTreeNodeViewModel.CreateTreeSourceNameColumn(),
+                FileTreeNodeViewModel.CreateTreeSourceStateColumn(),
+                FileTreeNodeViewModel.CreateTreeSourceFileCountColumn(),
+                FileTreeNodeViewModel.CreateTreeSourceSizeColumn(),
+            },
+        };
     }
 }
