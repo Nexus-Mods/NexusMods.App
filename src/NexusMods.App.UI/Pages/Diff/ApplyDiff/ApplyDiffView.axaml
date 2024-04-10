@@ -9,6 +9,10 @@
                                 xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="NexusMods.App.UI.Pages.Diff.ApplyDiff.ApplyDiffView">
+    <Design.DataContext>
+        <applyDiff:ApplyDiffDesignViewModel />
+    </Design.DataContext>
+    
     <Grid RowDefinitions="Auto, *">
         <Border Classes="Toolbar" Grid.Row="0">
             <Grid ColumnDefinitions="Auto, *">

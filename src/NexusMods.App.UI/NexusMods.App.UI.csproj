@@ -481,6 +481,12 @@
         <Compile Update="Pages\Diff\ApplyDiff\ApplyDiffViewModel.cs">
           <DependentUpon>IApplyDiffViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Controls\Trees\DiffTreeViewModel.cs">
+          <DependentUpon>IFileTreeViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\Diff\ApplyDiff\ApplyDiffDesignViewModel.cs">
+          <DependentUpon>IApplyDiffViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
