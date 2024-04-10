@@ -11,6 +11,7 @@ using NexusMods.CrossPlatform;
 using NexusMods.DataModel;
 using NexusMods.FileExtractor;
 using NexusMods.Paths;
+using NexusMods.Settings;
 using NexusMods.StandardGameLocators;
 using NexusMods.StandardGameLocators.TestHelpers;
 
@@ -21,6 +22,7 @@ public class Startup
     public void ConfigureServices(IServiceCollection container)
     {
         container
+            .AddSettingsManager()
             .AddDataModel()
             .OverrideSettings<DataModelSettings>(settings => settings with
             {

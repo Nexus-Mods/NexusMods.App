@@ -9,6 +9,7 @@ using NexusMods.FileExtractor;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
+using NexusMods.Settings;
 using NexusMods.StandardGameLocators;
 
 namespace NexusMods.Games.TestFramework;
@@ -54,6 +55,7 @@ public static class DependencyInjectionHelper
             {
                 UseInMemoryDataModel = true,
             })
+            .AddSettingsManager()
             .AddFileExtractors();
     }
 

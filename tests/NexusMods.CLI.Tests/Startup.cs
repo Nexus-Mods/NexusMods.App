@@ -15,6 +15,7 @@ using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.HttpDownloader.Tests;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
+using NexusMods.Settings;
 using NexusMods.SingleProcess;
 using NexusMods.StandardGameLocators;
 using NexusMods.StandardGameLocators.TestHelpers;
@@ -29,6 +30,7 @@ public class Startup
                 .AddStubbedGameLocators()
                 .AddSingleton<CommandLineConfigurator>()
                 .AddFileSystem()
+                .AddSettingsManager()
                 .AddDataModel()
                 .OverrideSettings<DataModelSettings>(settings => settings with
                 {

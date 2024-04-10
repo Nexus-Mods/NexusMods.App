@@ -4,6 +4,7 @@ using NexusMods.Abstractions.Settings;
 using NexusMods.App.BuildInfo;
 using NexusMods.DataModel;
 using NexusMods.Paths;
+using NexusMods.Settings;
 using NexusMods.StandardGameLocators.TestHelpers;
 
 namespace NexusMods.StandardGameLocators.Tests;
@@ -14,6 +15,8 @@ public class Startup
     {
         container
             .AddDataModel()
+            .AddSettingsManager()
+            .AddSingleton(OSInformation.Shared)
             .OverrideSettings<DataModelSettings>(settings => settings with
             {
                 UseInMemoryDataModel = true,

@@ -57,7 +57,7 @@ public static class Services
                 .AddSingleton<CommandLineConfigurator>()
                 .AddCLI()
                 .AddUI()
-                .AddSettings()
+                .AddSettingsManager()
                 .AddSingleton<App>()
                 .AddGuidedInstallerUi()
                 .AddAdvancedInstaller()

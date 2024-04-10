@@ -13,6 +13,7 @@ using NexusMods.App.BuildInfo;
 using NexusMods.CrossPlatform;
 using NexusMods.FileExtractor;
 using NexusMods.Paths;
+using NexusMods.Settings;
 using NexusMods.StandardGameLocators;
 using NexusMods.StandardGameLocators.TestHelpers;
 using Xunit.DependencyInjection.Logging;
@@ -35,6 +36,7 @@ public class Startup
             .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug))
             .AddFileSystem()
             .AddSingleton(new TemporaryFileManager(FileSystem.Shared, prefix))
+            .AddSettingsManager()
             .AddDataModel()
             .OverrideSettings<DataModelSettings>(settings => settings with
             {

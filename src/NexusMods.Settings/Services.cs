@@ -5,7 +5,7 @@ namespace NexusMods.Settings;
 
 public static class Services
 {
-    public static IServiceCollection AddSettings(this IServiceCollection serviceCollection)
+    public static IServiceCollection AddSettingsManager(this IServiceCollection serviceCollection)
     {
         return serviceCollection
             .AddSingleton<ISettingsManager, SettingsManager>();
