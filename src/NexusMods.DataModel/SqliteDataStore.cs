@@ -73,8 +73,8 @@ public class SqliteDataStore : IDataStore, IDisposable
             if (!path.Parent.DirectoryExists())
                 path.Parent.CreateDirectory();
 
-            connectionString = string.Intern($"Data Source={settings.DataStoreFilePath}");
-            _logger.LogDebug("Using sqlite data store at {DataSource}", settings.DataStoreFilePath);
+            connectionString = string.Intern($"Data Source={path}");
+            _logger.LogDebug("Using sqlite data store at {DataSource}", path);
         }
 
         connectionString = string.Intern(connectionString);
