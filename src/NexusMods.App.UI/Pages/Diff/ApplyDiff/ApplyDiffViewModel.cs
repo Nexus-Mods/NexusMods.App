@@ -1,5 +1,6 @@
 using System.Reactive;
 using System.Reactive.Concurrency;
+using System.Reactive.Disposables;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Controls.ModInfo.Loading;
@@ -42,18 +43,17 @@ public class ApplyDiffViewModel : APageViewModel<IApplyDiffViewModel>, IApplyDif
             }
         );
 
-        this.WhenActivated(() =>
-            {
-                GetWorkspaceController()
-                    .SetTabTitle(
-                        Language.ApplyDiffViewModel_PageTitle,
-                        WorkspaceId,
-                        PanelId,
-                        TabId
-                    );
-                return Enumerable.Empty<IDisposable>();
-            }
-        );
+        this.WhenActivated(disposable =>
+        {
+            GetWorkspaceController().SetTabTitle(
+                Language.ApplyDiffViewModel_PageTitle,
+                WorkspaceId,
+                PanelId,
+                TabId
+            );
+
+            Disposable.Empty.DisposeWith(disposable);
+        });
     }
 
 
