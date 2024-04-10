@@ -37,10 +37,11 @@
                     </StackPanel>
                 </Viewbox>
             </Button>
-            
-            <Button Classes="Hyperlink Secondary" HorizontalAlignment="Right" x:Name="ApplyDiffButton" >
-                <TextBlock Classes="ForegroundModerate"
-                           Text="{x:Static resources:Language.ApplyControlView_ViewApplyChanges}"/>
+
+            <Button Classes="Hyperlink Secondary" HorizontalAlignment="Right" x:Name="ApplyDiffButton">
+                <TextBlock x:Name="ViewApplyChangesButton"
+                           Classes="ForegroundModerate"
+                           Text="{x:Static resources:Language.ApplyControlView_ViewApplyChanges}" />
             </Button>
 
             <!-- Apply button -->
@@ -72,7 +73,7 @@
                                x:Name="ApplyingTextBlock" />
                 </StackPanel>
             </Border>
-            
+
             <!-- Launch button -->
             <items:LaunchButtonView x:Name="LaunchButtonView"
                                     HorizontalAlignment="Stretch" />
