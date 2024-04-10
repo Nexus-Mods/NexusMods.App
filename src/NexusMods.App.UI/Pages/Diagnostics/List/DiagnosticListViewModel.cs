@@ -1,12 +1,10 @@
-using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using DynamicData;
 using JetBrains.Annotations;
-using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Settings;
 using NexusMods.App.UI.Controls.Diagnostics;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -20,9 +18,9 @@ namespace NexusMods.App.UI.Pages.Diagnostics;
 [UsedImplicitly]
 internal class DiagnosticListViewModel : APageViewModel<IDiagnosticListViewModel>, IDiagnosticListViewModel
 {
-    private readonly SourceList<IDiagnosticEntryViewModel> _sourceList = new();
-    private readonly ReadOnlyObservableCollection<IDiagnosticEntryViewModel> _entries;
-    public ReadOnlyObservableCollection<IDiagnosticEntryViewModel> DiagnosticEntries => _entries;
+    [Reactive] private Diagnostic[] Diagnostics { get; set; } = Array.Empty<Diagnostic>();
+
+    [Reactive] public IDiagnosticEntryViewModel[] DiagnosticEntries { get; private set; } = Array.Empty<IDiagnosticEntryViewModel>();
 
     [Reactive] public LoadoutId LoadoutId { get; set; }
 
@@ -38,17 +36,17 @@ internal class DiagnosticListViewModel : APageViewModel<IDiagnosticListViewModel
 
     private const DiagnosticFilter AllFilter = DiagnosticFilter.Critical | DiagnosticFilter.Warnings | DiagnosticFilter.Suggestions;
 
+    [Reactive] private DiagnosticSettings Settings { get; set; }
+
     public DiagnosticListViewModel(
         IServiceProvider serviceProvider,
         IWindowManager windowManager,
-        IDiagnosticManager diagnosticManager) : base(windowManager)
+        IDiagnosticManager diagnosticManager,
+        IDiagnosticWriter diagnosticWriter,
+        ISettingsManager settingsManager) : base(windowManager)
     {
-        _sourceList
-            .Connect()
-            .AutoRefreshOnObservable(_ => this.WhenAnyValue(vm => vm.Filter))
-            .Filter(entry => Filter.HasFlagFast(SeverityToFilter(entry.Severity)))
-            .Bind(out _entries)
-            .Subscribe();
+        Settings = settingsManager.Get<DiagnosticSettings>();
+        settingsManager.GetChanges<DiagnosticSettings>().OnUI().BindToVM(this, vm => vm.Settings);
 
         ToggleSeverityCommand = ReactiveCommand.Create<DiagnosticSeverity>(severity =>
         {
@@ -78,73 +76,108 @@ internal class DiagnosticListViewModel : APageViewModel<IDiagnosticListViewModel
             var serialDisposable = new SerialDisposable();
             serialDisposable.DisposeWith(disposable);
 
-            // diagnostics to entry view models
+            // get diagnostics from the manager
             this.WhenAnyValue(vm => vm.LoadoutId)
                 .Do(loadoutId =>
                 {
                     serialDisposable.Disposable = diagnosticManager
                         .GetLoadoutDiagnostics(loadoutId)
-                        .Select(diagnostics => diagnostics
-                            .Select(diagnostic => new DiagnosticEntryViewModel(diagnostic, serviceProvider.GetRequiredService<IDiagnosticWriter>()))
-                            .ToArray()
-                        )
                         .OnUI()
-                        .SubscribeWithErrorLogging(entries =>
-                        {
-                            int numSuggestions = 0, numWarnings = 0, numCritical = 0;
-                            foreach (var entry in entries)
-                            {
-                                switch (entry.Severity)
-                                {
-                                    case DiagnosticSeverity.Suggestion:
-                                        numSuggestions += 1;
-                                        break;
-                                    case DiagnosticSeverity.Warning:
-                                        numWarnings += 1;
-                                        break;
-                                    case DiagnosticSeverity.Critical:
-                                        numCritical += 1;
-                                        break;
-                                    default: break;
-                                }
-                            }
-
-                            _sourceList.Edit(updater =>
-                            {
-                                updater.Clear();
-                                updater.AddRange(entries);
-                            });
-
-                            NumSuggestions = numSuggestions;
-                            NumWarnings = numWarnings;
-                            NumCritical = numCritical;
-                        });
+                        .BindToVM(this, vm => vm.Diagnostics);
                 })
                 .SubscribeWithErrorLogging()
                 .DisposeWith(disposable);
 
-            // see details command
-            _sourceList
-                .Connect()
-                .MergeMany(entry => entry.SeeDetailsCommand)
-                .SubscribeWithErrorLogging(diagnostic =>
+            // filter diagnostics
+            var filteredDiagnostics = this.WhenAnyValue(
+                    vm => vm.Diagnostics,
+                    vm => vm.Filter,
+                    vm => vm.Settings)
+                .Select(tuple =>
                 {
-                    var workspaceController = GetWorkspaceController();
+                    var (diagnostics, filter, settings) = tuple;
 
-                    var pageData = new PageData
+                    return diagnostics
+                        .Where(diagnostic => filter.HasFlagFast(SeverityToFilter(diagnostic.Severity)))
+                        .Where(diagnostic => diagnostic.Severity >= settings.MinimumSeverity)
+                        .ToArray();
+                })
+                .Replay(bufferSize: 1);
+
+            filteredDiagnostics.Connect().DisposeWith(disposable);
+
+            // diagnostics to entries
+            filteredDiagnostics
+                .Select(diagnostics => diagnostics
+                    .Select(diagnostic => (IDiagnosticEntryViewModel)new DiagnosticEntryViewModel(diagnostic, diagnosticWriter))
+                    .ToArray()
+                )
+                .BindToVM(this, vm => vm.DiagnosticEntries)
+                .DisposeWith(disposable);
+
+            var severityCountObservable = filteredDiagnostics
+                .Select(diagnostics => diagnostics
+                    .Select(diagnostic => diagnostic.Severity)
+                    .GroupBy(x => x)
+                    .ToDictionary(group => group.Key, group => group.Count())
+                )
+                .Replay(bufferSize: 1);
+
+            severityCountObservable.Connect().DisposeWith(disposable);
+
+            // diagnostic counts
+            severityCountObservable
+                .Select(dict => dict.GetValueOrDefault(DiagnosticSeverity.Suggestion, defaultValue: 0))
+                .BindToVM(this, vm => vm.NumSuggestions)
+                .DisposeWith(disposable);
+
+            severityCountObservable
+                .Select(dict => dict.GetValueOrDefault(DiagnosticSeverity.Warning, defaultValue: 0))
+                .BindToVM(this, vm => vm.NumWarnings)
+                .DisposeWith(disposable);
+
+            severityCountObservable
+                .Select(dict => dict.GetValueOrDefault(DiagnosticSeverity.Critical, defaultValue: 0))
+                .BindToVM(this, vm => vm.NumCritical)
+                .DisposeWith(disposable);
+
+            var entriesSerialDisposable = new SerialDisposable();
+            entriesSerialDisposable.DisposeWith(disposable);
+
+            // see details command
+            this.WhenAnyValue(vm => vm.DiagnosticEntries)
+                .SubscribeWithErrorLogging(entries =>
+                {
+                    entriesSerialDisposable.Disposable = null;
+                    var compositeDisposable = new CompositeDisposable();
+
+                    foreach (var entry in entries)
                     {
-                        FactoryId = DiagnosticDetailsPageFactory.StaticId,
-                        Context = new DiagnosticDetailsPageContext
-                        {
-                            Diagnostic = diagnostic,
-                        },
-                    };
+                        entry
+                            .WhenAnyObservable(x => x.SeeDetailsCommand)
+                            .SubscribeWithErrorLogging(diagnostic =>
+                            {
+                                var workspaceController = GetWorkspaceController();
 
-                    // TODO: use https://github.com/Nexus-Mods/NexusMods.App/issues/942
-                    var input = NavigationInput.Default;
+                                var pageData = new PageData
+                                {
+                                    FactoryId = DiagnosticDetailsPageFactory.StaticId,
+                                    Context = new DiagnosticDetailsPageContext
+                                    {
+                                        Diagnostic = diagnostic,
+                                    },
+                                };
 
-                    var behavior = workspaceController.GetDefaultOpenPageBehavior(pageData, input, IdBundle);
-                    workspaceController.OpenPage(WorkspaceId, pageData, behavior);
+                                // TODO: use https://github.com/Nexus-Mods/NexusMods.App/issues/942
+                                var input = NavigationInput.Default;
+
+                                var behavior = workspaceController.GetDefaultOpenPageBehavior(pageData, input, IdBundle);
+                                workspaceController.OpenPage(WorkspaceId, pageData, behavior);
+                            })
+                            .DisposeWith(compositeDisposable);
+                    }
+
+                    entriesSerialDisposable.Disposable = compositeDisposable;
                 })
                 .DisposeWith(disposable);
         });

@@ -11,6 +11,7 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Messaging;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
+using NexusMods.Abstractions.Settings;
 using NexusMods.DataModel.CommandLine.Verbs;
 using NexusMods.DataModel.Diagnostics;
 using NexusMods.DataModel.JsonConverters;
@@ -67,7 +68,7 @@ public static class Services
 
         // Diagnostics
         coll.AddAllSingleton<IDiagnosticManager, DiagnosticManager>();
-        coll.AddOptions<DiagnosticOptions>();
+        coll.AddSettings<DiagnosticSettings>();
 
         // Verbs
         coll.AddLoadoutManagementVerbs()

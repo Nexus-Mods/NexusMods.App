@@ -1,4 +1,8 @@
-﻿using Avalonia;
+﻿using System.Linq.Expressions;
+using System.Reactive.Linq;
+using Avalonia;
+using DynamicData;
+using DynamicData.Alias;
 
 namespace NexusMods.App.UI.Extensions;
 
@@ -68,5 +72,17 @@ public static class ReactiveExtensions
         TTarget target) where TTarget : StyledElement
     {
         return obs.BindToClasses(target, "Active");
+    }
+
+    public static IDisposable BindLast<TTarget, TValue>(
+        this IObservable<IChangeSet<TValue>> source,
+        TTarget target,
+        Expression<Func<TTarget, TValue?>> property)
+        where TTarget : class, IViewModel
+        where TValue : notnull
+    {
+        return source
+            .Select(x => x.First().Item.Current)
+            .BindToVM(target, property);
     }
 }
