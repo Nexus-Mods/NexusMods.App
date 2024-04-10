@@ -34,6 +34,9 @@ public readonly struct ConfigurablePath
     /// </summary>
     public AbsolutePath ToPath(IFileSystem fileSystem)
     {
+        if (BaseDirectory == default(KnownPath) && File == default(RelativePath))
+            throw new InvalidOperationException($"This {nameof(ConfigurablePath)} contains only default values!");
+
         return fileSystem.GetKnownPath(BaseDirectory).Combine(File);
     }
 
