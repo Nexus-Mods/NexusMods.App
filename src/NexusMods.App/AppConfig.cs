@@ -1,5 +1,3 @@
-using System.Text.Json;
-using NexusMods.Abstractions.App.Settings;
 using NexusMods.Abstractions.FileExtractor;
 using NexusMods.Abstractions.HttpDownloader;
 using NexusMods.App.UI;
@@ -193,39 +191,4 @@ public class LoggingSettings : ILoggingSettings
             : "nexusmods.app.slim.{##}.log";
         return new ConfigurationPath(baseFolder.Combine(logFileNameTemplate));
     }
-}
-
-internal class AppConfigManager : IAppConfigManager
-{
-    private readonly AppConfig _config;
-    private readonly AbsolutePath _configPath;
-    private readonly JsonSerializerOptions _jsonSerializerOptions;
-
-    // TODO: this entire class should be removed once we have settings
-
-    public AppConfigManager(AppConfig config, JsonSerializerOptions jsonSerializerOptions)
-    {
-        _config = config;
-
-        // On AppImage (Linux), 'OWD' should take precedence over the entry directory if it exists.
-        // https://docs.appimage.org/packaging-guide/environment-variables.html
-        var owd = Environment.GetEnvironmentVariable("OWD");
-
-        _configPath = string.IsNullOrEmpty(owd)
-            ? FileSystem.Shared.GetKnownPath(KnownPath.EntryDirectory).Combine("AppConfig.json")
-            : FileSystem.Shared.FromUnsanitizedFullPath(owd).Combine("AppConfig.json");
-
-        _jsonSerializerOptions = jsonSerializerOptions;
-    }
-
-    public bool GetMetricsOptIn() => _config.EnableTelemetry ?? false;
-
-    public void SetMetricsOptIn(bool value)
-    {
-        _config.EnableTelemetry = value;
-        var res = JsonSerializer.SerializeToUtf8Bytes(_config, _jsonSerializerOptions);
-        _configPath.WriteAllBytesAsync(res);
-    }
-
-    public bool IsMetricsOptInSet() => _config.EnableTelemetry.HasValue;
 }

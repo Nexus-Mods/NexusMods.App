@@ -1,6 +1,4 @@
-using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.App.Settings;
 using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Installers;
@@ -59,8 +57,6 @@ public static class Services
         if (!slimMode)
         {
             services
-                .AddSingleton<IAppConfigManager, AppConfigManager>(provider =>
-                    new AppConfigManager(config, provider.GetRequiredService<JsonSerializerOptions>()))
                 .AddSingleton<CommandLineConfigurator>()
                 .AddCLI()
                 .AddUI(config.LauncherSettings)
