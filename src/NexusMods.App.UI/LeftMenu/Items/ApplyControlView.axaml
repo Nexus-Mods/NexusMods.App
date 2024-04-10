@@ -40,7 +40,7 @@
             
             <Button Classes="Hyperlink Secondary" HorizontalAlignment="Right" x:Name="ApplyDiffButton" >
                 <TextBlock Classes="ForegroundModerate"
-                           Text="View changes"/>
+                           Text="{x:Static resources:Language.ApplyControlView_ViewApplyChanges}"/>
             </Button>
 
             <!-- Apply button -->

@@ -398,4 +398,22 @@
     <data name="IFileTreeNodeViewModel_ToFormattedChangeState_Removed" xml:space="preserve">
         <value>Removed</value>
     </data>
+    <data name="DiffTreeViewModel_StatusBar__File_Loadout_Disk" xml:space="preserve">
+        <value>Files: Loadout {0} ({1})  Disk {2} ({3})</value>
+        <comment>{0} and {2} are file counts, {1} and {3} are formatted file sizes </comment>
+    </data>
+    <data name="DiffTreeViewModel_StatusBar__Apply_changes" xml:space="preserve">
+        <value>Apply changes: Adding {0} Modifying {1} Removing {2}</value>
+        <comment>{0}, {1} and {2} are integer representing the file counts</comment>
+    </data>
+    <data name="DiffTreeViewModel_StatusBar__Data_to_process___0_" xml:space="preserve">
+        <value>Data to process: {0}</value>
+        <comment>{0} is a formatted file size, representing the data to be processed </comment>
+    </data>
+    <data name="ApplyControlView_ViewApplyChanges" xml:space="preserve">
+        <value>View apply changes</value>
+    </data>
+    <data name="ApplyDiffViewModel_PageTitle" xml:space="preserve">
+        <value>Preview changes</value>
+    </data>
 </root>

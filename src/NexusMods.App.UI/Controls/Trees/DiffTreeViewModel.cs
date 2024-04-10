@@ -1,23 +1,25 @@
 using System.Collections.ObjectModel;
 using Avalonia.Controls;
 using DynamicData;
+using Humanizer.Bytes;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.Trees;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.App.UI.Controls.Trees.Files;
 using NexusMods.App.UI.Helpers.TreeDataGrid;
+using NexusMods.App.UI.Resources;
 using NexusMods.Paths.Trees.Traits;
 
 namespace NexusMods.App.UI.Controls.Trees;
 
 public class DiffTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeViewModel
 {
-    private LoadoutId _loadoutId;
-    private IApplyService _applyService;
-    private ILoadoutRegistry _loadoutRegistry;
+    private readonly LoadoutId _loadoutId;
+    private readonly IApplyService _applyService;
+    private readonly ILoadoutRegistry _loadoutRegistry;
     private readonly SourceCache<IFileTreeNodeViewModel, GamePath> _treeSourceCache;
-    private ReadOnlyObservableCollection<IFileTreeNodeViewModel> _items;
+    private readonly ReadOnlyObservableCollection<IFileTreeNodeViewModel> _items;
 
     private uint _loadoutFileCount;
     private ulong _loadoutFileSize;
@@ -29,7 +31,7 @@ public class DiffTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeViewMo
     private ulong _operationSize;
 
     private readonly ReadOnlyObservableCollection<string> _statusBarStrings;
-    private SourceList<string> _statusBarSourceList;
+    private readonly SourceList<string> _statusBarSourceList;
 
     public ITreeDataGridSource<IFileTreeNodeViewModel> TreeSource { get; }
     public ReadOnlyObservableCollection<string> StatusBarStrings => _statusBarStrings;
@@ -69,9 +71,9 @@ public class DiffTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeViewMo
 
         Dictionary<GamePath, IFileTreeNodeViewModel> fileViewModelNodes = [];
 
-        
+
         var locationsRegister = loadout.Installation.LocationsRegister;
-        
+
         // Add the root directories
         foreach (var rootNode in diffTree.GetRoots())
         {
@@ -88,7 +90,7 @@ public class DiffTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeViewMo
             };
             fileViewModelNodes.Add(rootNode.GamePath(), model);
         }
-        
+
         // Add all the sub directories recursively
         foreach (var diffEntry in diffTree.GetAllDescendentDirectories())
         {
@@ -102,7 +104,6 @@ public class DiffTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeViewMo
             );
             fileViewModelNodes.Add(diffEntry.GamePath(), model);
         }
-
 
         // Add all files 
         foreach (var diffEntry in diffTree.GetAllDescendentFiles())
@@ -118,20 +119,42 @@ public class DiffTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeViewMo
                 0u,
                 changeType
             );
-            
+
             // Update all parent folders with the file size and file count
             foreach (var parent in gamePath.GetAllParents().Skip(1))
             {
                 var parentNode = fileViewModelNodes[parent];
                 parentNode.FileSize += fileSize;
                 parentNode.FileCount++;
-                
+
                 // If file is changed and parent is not changed, mark parent as modified
                 if (changeType == FileChangeType.None || parentNode.ChangeType != FileChangeType.None)
                     continue;
                 parentNode.ChangeType = FileChangeType.Modified;
             }
-            
+
+            // Update the counters
+            if (changeType != FileChangeType.Removed)
+            {
+                // File is part of loadout
+                _loadoutFileCount++;
+                _loadoutFileSize += fileSize;
+            }
+
+            if (changeType != FileChangeType.Added)
+            {
+                // File is part of disk
+                _diskFileCount++;
+                _diskFileSize += fileSize;
+            }
+
+            if (changeType != FileChangeType.None)
+                _operationSize += fileSize;
+
+            _addedFileCount += changeType == FileChangeType.Added ? 1u : 0u;
+            _modifiedFileCount += changeType == FileChangeType.Modified ? 1u : 0u;
+            _deletedFileCount += changeType == FileChangeType.Removed ? 1u : 0u;
+
             fileViewModelNodes.Add(gamePath, model);
         }
 
@@ -139,6 +162,29 @@ public class DiffTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeViewMo
             {
                 innerList.Clear();
                 innerList.AddOrUpdate(fileViewModelNodes);
+            }
+        );
+
+        _statusBarSourceList.Edit(innerList =>
+            {
+                innerList.Clear();
+                innerList.Add(string.Format(Language.DiffTreeViewModel_StatusBar__File_Loadout_Disk,
+                        _loadoutFileCount,
+                        ByteSize.FromBytes(_loadoutFileSize).ToString(),
+                        _diskFileCount,
+                        ByteSize.FromBytes(_diskFileSize).ToString()
+                    )
+                );
+                innerList.Add(string.Format(Language.DiffTreeViewModel_StatusBar__Apply_changes,
+                        _addedFileCount,
+                        _modifiedFileCount,
+                        _deletedFileCount
+                    )
+                );
+                innerList.Add(string.Format(Language.DiffTreeViewModel_StatusBar__Data_to_process___0_,
+                        ByteSize.FromBytes(_operationSize).ToString()
+                    )
+                );
             }
         );
     }

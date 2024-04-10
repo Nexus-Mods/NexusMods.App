@@ -60,6 +60,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to View apply changes.
+        /// </summary>
+        public static string ApplyControlView_ViewApplyChanges {
+            get {
+                return ResourceManager.GetString("ApplyControlView_ViewApplyChanges", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to ACTIVATE &amp; APPLY.
         /// </summary>
         public static string ApplyControlViewModel__ACTIVATE_AND_APPLY {
@@ -92,6 +101,15 @@ namespace NexusMods.App.UI.Resources {
         public static string ApplyDiff_Refresh {
             get {
                 return ResourceManager.GetString("ApplyDiff_Refresh", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Preview changes.
+        /// </summary>
+        public static string ApplyDiffViewModel_PageTitle {
+            get {
+                return ResourceManager.GetString("ApplyDiffViewModel_PageTitle", resourceCulture);
             }
         }
         
@@ -245,6 +263,33 @@ namespace NexusMods.App.UI.Resources {
         public static string DiagnosticListView_DiagnosticListView_Warnings {
             get {
                 return ResourceManager.GetString("DiagnosticListView_DiagnosticListView_Warnings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Apply changes: Adding {0} Modifying {1} Removing {2}.
+        /// </summary>
+        public static string DiffTreeViewModel_StatusBar__Apply_changes {
+            get {
+                return ResourceManager.GetString("DiffTreeViewModel_StatusBar__Apply_changes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Data to process: {0}.
+        /// </summary>
+        public static string DiffTreeViewModel_StatusBar__Data_to_process___0_ {
+            get {
+                return ResourceManager.GetString("DiffTreeViewModel_StatusBar__Data_to_process___0_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Files: Loadout {0} ({1})  Disk {2} ({3}).
+        /// </summary>
+        public static string DiffTreeViewModel_StatusBar__File_Loadout_Disk {
+            get {
+                return ResourceManager.GetString("DiffTreeViewModel_StatusBar__File_Loadout_Disk", resourceCulture);
             }
         }
         

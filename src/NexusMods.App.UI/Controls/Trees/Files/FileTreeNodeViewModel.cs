@@ -229,7 +229,7 @@ public class FileTreeNodeViewModel : AViewModel<IFileTreeNodeViewModel>, IFileTr
                         : string.Compare(y.Name, x.Name, StringComparison.OrdinalIgnoreCase);
                 },
             },
-            width: new GridLength(100)
+            width: new GridLength(125)
         );
     }
 }
