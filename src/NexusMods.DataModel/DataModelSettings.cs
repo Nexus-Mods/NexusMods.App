@@ -22,33 +22,9 @@ public record DataModelSettings : ISettings
     public ConfigurablePath DataStoreFilePath { get; set; }
 
     /// <summary>
-    /// Path of the file which contains the backing data store or database
-    /// used for inter process communication.
-    /// </summary>
-    public ConfigurablePath IpcDataStoreFilePath { get; set; }
-
-    /// <summary>
     /// Preconfigured locations [full paths] where mod archives can/will be stored.
     /// </summary>
     public ConfigurablePath[] ArchiveLocations { get; set; } = [];
-
-    /// <summary>
-    /// Maximum number of simultaneous hashing jobs.
-    /// Each job basically corresponds to CPU core.
-    /// </summary>
-    public int MaxHashingJobs { get; set; } = Environment.ProcessorCount;
-
-    /// <summary>
-    /// Maximum number of simultaneous loadout deployment jobs.
-    /// Each job basically corresponds to CPU core.
-    /// </summary>
-    public int LoadoutDeploymentJobs { get; set; } = Environment.ProcessorCount;
-
-    /// <summary>
-    /// Maximum throughput for the hashing operations in bytes per second.
-    /// Value of 0 represents no cap.
-    /// </summary>
-    public long MaxHashingThroughputBytesPerSecond { get; set; }
 
     /// <inheritdoc/>
     public static ISettingsBuilder Configure(ISettingsBuilder settingsBuilder)
@@ -76,7 +52,6 @@ public record DataModelSettings : ISettings
         return new DataModelSettings
         {
             DataStoreFilePath = new ConfigurablePath(baseKnownPath, $"{baseDirectoryName}/DataModel.sqlite"),
-            IpcDataStoreFilePath = new ConfigurablePath(baseKnownPath, $"{baseDirectoryName}/DataModel_IPC.sqlite"),
             ArchiveLocations = [
                 new ConfigurablePath(baseKnownPath, $"{baseDirectoryName}/Archives"),
             ],
