@@ -48,12 +48,9 @@ public static class Services
     }
 
     public static IServiceCollection AddApp(this IServiceCollection services,
-        AppConfig? config = null,
         bool addStandardGameLocators = true,
         bool slimMode = false)
     {
-        config ??= new AppConfig();
-
         if (!slimMode)
         {
             services
@@ -66,7 +63,7 @@ public static class Services
                 .AddAdvancedInstaller()
                 .AddAdvancedInstallerUi()
                 .AddFileExtractors()
-                .AddDataModel(config.DataModelSettings)
+                .AddDataModel()
                 .AddSerializationAbstractions()
                 .AddInstallerTypes()
                 .AddGames()

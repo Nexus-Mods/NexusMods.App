@@ -15,16 +15,9 @@ public class Startup
     {
         var path = FileSystem.Shared.GetKnownPath(KnownPath.EntryDirectory).Combine("temp").Combine(Guid.NewGuid().ToString());
         path.CreateDirectory();
-        var config = new AppConfig
-        {
-            DataModelSettings =
-            {
-                UseInMemoryDataModel = true
-            }
-        };
 
         services.AddUniversalGameLocator<Cyberpunk2077>(new Version("1.61"))
-                .AddApp(config: config)
+                .AddApp()
                 .AddStubbedGameLocators()
                 .AddSingleton<AvaloniaApp>()
                 .AddLogging(builder => builder.AddXUnit())

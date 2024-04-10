@@ -28,10 +28,7 @@ public class Startup
                 .AddStubbedGameLocators()
                 .AddSingleton<CommandLineConfigurator>()
                 .AddFileSystem()
-                .AddDataModel(new DataModelSettings
-                {
-                    UseInMemoryDataModel = true
-                })
+                .AddDataModel()
                 .AddFileExtractors()
                 .AddCLI()
                 .AddSingleton<HttpClient>()

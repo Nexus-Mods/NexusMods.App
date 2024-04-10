@@ -31,7 +31,7 @@ public class Startup
             .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug))
             .AddFileSystem()
             .AddSingleton(new TemporaryFileManager(FileSystem.Shared, prefix))
-            .AddDataModel(new DataModelSettings(prefix))
+            .AddDataModel()
             .AddGames()
             .AddStandardGameLocators(false)
             .AddFileExtractors()

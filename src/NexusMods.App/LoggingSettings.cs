@@ -60,7 +60,8 @@ public record LoggingSettings : ISettings
             onOSX: () => KnownPath.LocalApplicationDataDirectory
         );
 
-        const string baseDirectoryName = "NexusMods.App/Logs";
+        // NOTE: OSX ".App" is apparently special, using _ instead of . to prevent weirdness
+        var baseDirectoryName = os.IsOSX ? "NexusMods_App/Logs" : "NexusMods.App/Logs";
 
         return new LoggingSettings
         {
