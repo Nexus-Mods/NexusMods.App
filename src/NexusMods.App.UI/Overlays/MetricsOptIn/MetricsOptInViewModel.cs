@@ -1,4 +1,6 @@
 ﻿using System.Windows.Input;
+using NexusMods.Abstractions.Settings;
+using NexusMods.App.UI.Settings;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -10,6 +12,7 @@ namespace NexusMods.App.UI.Overlays.MetricsOptIn;
 public class MetricsOptInViewModel : AViewModel<IMetricsOptInViewModel>, IMetricsOptInViewModel
 {
     private readonly IOverlayController _overlayController;
+    private readonly ISettingsManager _settingsManager;
 
     [Reactive]
     public bool IsActive { get; set; }
@@ -19,29 +22,41 @@ public class MetricsOptInViewModel : AViewModel<IMetricsOptInViewModel>, IMetric
     /// <summary>
     /// DI Constructor
     /// </summary>
-    public MetricsOptInViewModel(IOverlayController overlayController)
+    public MetricsOptInViewModel(ISettingsManager settingsManager, IOverlayController overlayController)
     {
         _overlayController = overlayController;
-        // _globalSettingsManager = globalSettingsManager;
+        _settingsManager = settingsManager;
+
         Allow = ReactiveCommand.Create(() =>
         {
-            // TODO:
-            // globalSettingsManager.SetMetricsOptIn(true);
+            var current = _settingsManager.Get<TelemetrySettings>();
+            var updated = current with
+            {
+                EnableTelemetry = true,
+                HasShownPrompt = true,
+            };
+
+            _settingsManager.Set(updated);
             IsActive = false;
         });
 
         Deny = ReactiveCommand.Create(() =>
         {
-            // globalSettingsManager.SetMetricsOptIn(false);
+            var current = _settingsManager.Get<TelemetrySettings>();
+            var updated = current with
+            {
+                EnableTelemetry = false,
+                HasShownPrompt = true,
+            };
+
+            _settingsManager.Set(updated);
             IsActive = false;
         });
     }
 
     public bool MaybeShow()
     {
-        // TODO:
-        // if (_globalSettingsManager.IsMetricsOptInSet())
-        //     return false;
+        if (_settingsManager.Get<TelemetrySettings>().HasShownPrompt) return false;
 
         _overlayController.SetOverlayContent(new SetOverlayItem(this));
         return true;
