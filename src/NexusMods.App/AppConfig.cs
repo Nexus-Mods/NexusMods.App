@@ -13,12 +13,9 @@ public class AppConfig
     {
         var fileSystem = FileSystem.Shared;
         DataModelSettings = new DataModelSettings(fileSystem);
-        FileExtractorSettings = new FileExtractorSettings(fileSystem);
     }
 
     public DataModelSettings DataModelSettings { get; set; }
-    public FileExtractorSettings FileExtractorSettings { get; set; }
-    public bool? EnableTelemetry { get; set; }
 
     /// <summary>
     /// Sanitizes the config; e.g.
@@ -26,7 +23,6 @@ public class AppConfig
     public void Sanitize(IFileSystem fs)
     {
         DataModelSettings.Sanitize(fs);
-        FileExtractorSettings.Sanitize(fs);
     }
 }
 

@@ -8,8 +8,5 @@
     "MaxHashingJobs": -1,
     "LoadoutDeploymentJobs": -1,
     "MaxHashingThroughputBytesPerSecond": -1
-  },
-  "FileExtractorSettings": {
-    "TempFolderLocation": ""
   }
 }

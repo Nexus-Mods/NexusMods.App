@@ -65,7 +65,7 @@ public static class Services
                 .AddGuidedInstallerUi()
                 .AddAdvancedInstaller()
                 .AddAdvancedInstallerUi()
-                .AddFileExtractors(config.FileExtractorSettings)
+                .AddFileExtractors()
                 .AddDataModel(config.DataModelSettings)
                 .AddSerializationAbstractions()
                 .AddInstallerTypes()
@@ -93,7 +93,9 @@ public static class Services
 
             services = OpenTelemetryRegistration.AddTelemetry(services, new OpenTelemetrySettings
             {
-                IsEnabled = config.EnableTelemetry ?? false,
+                // TODO: pull from settings
+                // IsEnabled = config.EnableTelemetry ?? false,
+                IsEnabled = false,
 
                 EnableMetrics = true,
                 EnableTracing = true,
@@ -103,7 +105,7 @@ public static class Services
 
                 ExporterProtocol = OtlpExportProtocol.HttpProtobuf,
                 ExporterMetricsEndpoint = new Uri("https://collector.nexusmods.com/v1/metrics"),
-                ExporterTracesEndpoint = new Uri("https://collector.nexusmods.com/v1/traces")
+                ExporterTracesEndpoint = new Uri("https://collector.nexusmods.com/v1/traces"),
             }).ConfigureTelemetry(Telemetry.LibraryInfo, configureMetrics: Telemetry.SetupTelemetry);
 
 

@@ -55,9 +55,9 @@ public record LoggingSettings : ISettings
     public static LoggingSettings CreateDefault(IOSInformation os)
     {
         var baseKnownPath = os.MatchPlatform(
-            () => KnownPath.LocalApplicationDataDirectory,
-            () => KnownPath.XDG_STATE_HOME,
-            () => KnownPath.LocalApplicationDataDirectory
+            onWindows: () => KnownPath.LocalApplicationDataDirectory,
+            onLinux: () => KnownPath.XDG_STATE_HOME,
+            onOSX: () => KnownPath.LocalApplicationDataDirectory
         );
 
         const string baseDirectoryName = "NexusMods.App/Logs";
