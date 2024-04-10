@@ -20,7 +20,7 @@ public class Startup
     public void ConfigureServices(IServiceCollection container)
     {
         container
-            .AddDataModel()
+            .AddDataModel(isTest: true)
             .AddActivityMonitor()
             .AddFileExtractors()
             .AddFileSystem()

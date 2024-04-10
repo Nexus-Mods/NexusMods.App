@@ -12,7 +12,7 @@ public class Startup
     public void ConfigureServices(IServiceCollection container)
     {
         container
-            .AddDataModel()
+            .AddDataModel(isTest: true)
             .AddStandardGameLocators(false)
             .AddSingleton<IFileSystem, InMemoryFileSystem>()
             .AddSingleton<TemporaryFileManager>()

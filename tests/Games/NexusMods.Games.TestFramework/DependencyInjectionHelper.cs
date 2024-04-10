@@ -48,7 +48,7 @@ public static class DependencyInjectionHelper
             .AddSingleton<TestModDownloader>()
             .AddNexusWebApi(true)
             .AddHttpDownloader()
-            .AddDataModel()
+            .AddDataModel(isTest: true)
             .AddFileExtractors();
     }
 
