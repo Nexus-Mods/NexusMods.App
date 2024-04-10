@@ -23,7 +23,6 @@ public class Startup
     {
         // Dummy: We're not injecting anything yet; this is for a time we will need to.
         services
-            .AddSettingsManager()
             .AddSingleton<IGuidedInstaller, NullGuidedInstaller>()
             .AddDefaultServicesForTesting()
             .AddUniversalGameLocator<Cyberpunk2077>(new Version("1.61"))
