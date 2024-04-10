@@ -19,7 +19,6 @@ public class ApplyDiffViewModel : APageViewModel<IApplyDiffViewModel>, IApplyDif
     private LoadoutId _loadoutId;
     private DummyLoadingViewModel _dummyLoadingViewModel;
 
-    public IFileTreeViewModel? FileTreeViewModel => _fileTreeViewModel;
     [Reactive] public IViewModelInterface BodyViewModel { get; set; }
 
     public ReactiveCommand<Unit, Unit> RefreshCommand { get; }
