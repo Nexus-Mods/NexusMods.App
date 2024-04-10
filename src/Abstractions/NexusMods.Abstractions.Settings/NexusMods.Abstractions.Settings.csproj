@@ -4,6 +4,7 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+        <PackageReference Include="NexusMods.Paths" />
         <PackageReference Include="OneOf" />
         <PackageReference Include="System.Reactive" />
         <PackageReference Include="DynamicData" />
