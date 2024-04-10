@@ -10,7 +10,6 @@ public class Startup
     public void ConfigureServices(IServiceCollection container)
     {
         container.AddFileSystem()
-            .AddSingleton(OSInformation.Shared)
             .AddSettingsManager()
             .AddActivityMonitor()
             .AddFileExtractors();

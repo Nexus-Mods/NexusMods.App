@@ -16,7 +16,6 @@ public class Startup
         container
             .AddDataModel()
             .AddSettingsManager()
-            .AddSingleton(OSInformation.Shared)
             .OverrideSettings<DataModelSettings>(settings => settings with
             {
                 UseInMemoryDataModel = true,

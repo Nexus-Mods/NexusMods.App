@@ -38,7 +38,7 @@ public record DataModelSettings : ISettings
     /// </summary>
     public static DataModelSettings CreateDefault(IServiceProvider serviceProvider)
     {
-        var os = serviceProvider.GetRequiredService<IOSInformation>();
+        var os = serviceProvider.GetRequiredService<IFileSystem>().OS;
 
         var baseKnownPath = os.MatchPlatform(
             onWindows: () => KnownPath.LocalApplicationDataDirectory,

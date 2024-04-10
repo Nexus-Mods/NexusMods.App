@@ -41,9 +41,9 @@ public class Startup
             .OverrideSettings<DataModelSettings>(settings => settings with
             {
                 UseInMemoryDataModel = true,
-                DataStoreFilePath = new ConfigurablePath(baseKnownPath, $"{prefix}/DataStore.sqlite"),
+                DataStoreFilePath = new ConfigurablePath(baseKnownPath, $"{baseDirectory}/DataStore.sqlite"),
                 ArchiveLocations = [
-                    new ConfigurablePath(baseKnownPath, $"{prefix}/Archives"),
+                    new ConfigurablePath(baseKnownPath, $"{baseDirectory}/Archives"),
                 ],
             })
             .AddGames()

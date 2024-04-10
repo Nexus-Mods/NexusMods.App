@@ -27,7 +27,7 @@ public record FileExtractorSettings : ISettings
     /// </summary>
     public static FileExtractorSettings CreateDefault(IServiceProvider serviceProvider)
     {
-        var os = serviceProvider.GetRequiredService<IOSInformation>();
+        var os = serviceProvider.GetRequiredService<IFileSystem>().OS;
 
         // Note: The idiomatic place for this is Temporary Directory (/tmp on Linux, %TEMP% on Windows)
         //       however this can be dangerous to do on Linux, as /tmp is often a RAM disk, and can be
