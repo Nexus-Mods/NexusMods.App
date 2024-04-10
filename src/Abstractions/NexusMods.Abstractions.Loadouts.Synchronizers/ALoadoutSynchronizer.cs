@@ -173,7 +173,8 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                             toWrite.Add(KeyValuePair.Create(entry.Path, gf));
                             continue;
                         default:
-                            throw new UnreachableException("No way to handle this file");
+                            _logger.LogError("Unknown file type: {Type}", newEntry.Item.Value!.GetType());
+                            break;
                     }
                 }
 
