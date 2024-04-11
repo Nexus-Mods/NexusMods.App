@@ -29,27 +29,23 @@ public class MetricsOptInViewModel : AViewModel<IMetricsOptInViewModel>, IMetric
 
         Allow = ReactiveCommand.Create(() =>
         {
-            var current = _settingsManager.Get<TelemetrySettings>();
-            var updated = current with
+            _settingsManager.Update<TelemetrySettings>(current => current with
             {
                 EnableTelemetry = true,
                 HasShownPrompt = true,
-            };
+            });
 
-            _settingsManager.Set(updated);
             IsActive = false;
         });
 
         Deny = ReactiveCommand.Create(() =>
         {
-            var current = _settingsManager.Get<TelemetrySettings>();
-            var updated = current with
+            _settingsManager.Update<TelemetrySettings>(current => current with
             {
                 EnableTelemetry = false,
                 HasShownPrompt = true,
-            };
+            });
 
-            _settingsManager.Set(updated);
             IsActive = false;
         });
     }

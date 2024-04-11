@@ -81,6 +81,15 @@ internal class SettingsManager : ISettingsManager
         return value;
     }
 
+    public T Update<T>(Func<T, T> updater) where T : class, ISettings, new()
+    {
+        var currentValue = Get<T>();
+        var newValue = updater(currentValue);
+        Set(newValue);
+
+        return newValue;
+    }
+
     public IObservable<T> GetChanges<T>() where T : class, ISettings, new()
     {
         return _subject
