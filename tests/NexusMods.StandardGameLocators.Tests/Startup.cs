@@ -16,7 +16,7 @@ public class Startup
         container
             .AddDataModel()
             .AddSettingsManager()
-            .OverrideSettings<DataModelSettings>(settings => settings with
+            .OverrideSettingsForTests<DataModelSettings>(settings => settings with
             {
                 UseInMemoryDataModel = true,
             })

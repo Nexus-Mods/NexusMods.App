@@ -51,7 +51,7 @@ public static class DependencyInjectionHelper
             .AddNexusWebApi(true)
             .AddHttpDownloader()
             .AddDataModel()
-            .OverrideSettings<DataModelSettings>(settings => settings with
+            .OverrideSettingsForTests<DataModelSettings>(settings => settings with
             {
                 UseInMemoryDataModel = true,
             })

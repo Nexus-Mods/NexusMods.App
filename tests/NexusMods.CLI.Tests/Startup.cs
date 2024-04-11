@@ -32,7 +32,7 @@ public class Startup
                 .AddFileSystem()
                 .AddSettingsManager()
                 .AddDataModel()
-                .OverrideSettings<DataModelSettings>(settings => settings with
+                .OverrideSettingsForTests<DataModelSettings>(settings => settings with
                 {
                     UseInMemoryDataModel = true,
                 })

@@ -38,7 +38,7 @@ public class Startup
             .AddSingleton(new TemporaryFileManager(FileSystem.Shared, prefix))
             .AddSettingsManager()
             .AddDataModel()
-            .OverrideSettings<DataModelSettings>(settings => settings with
+            .OverrideSettingsForTests<DataModelSettings>(settings => settings with
             {
                 UseInMemoryDataModel = true,
                 DataStoreFilePath = new ConfigurablePath(baseKnownPath, $"{baseDirectory}/DataStore.sqlite"),
