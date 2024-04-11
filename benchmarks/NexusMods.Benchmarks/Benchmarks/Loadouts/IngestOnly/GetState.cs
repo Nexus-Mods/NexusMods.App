@@ -6,10 +6,9 @@ using NexusMods.Benchmarks.Interfaces;
 namespace NexusMods.Benchmarks.Benchmarks.Loadouts.IngestOnly;
 
 [MemoryDiagnoser]
-[BenchmarkInfo("LoadoutSynchronizer: GetDiskState (With Cache)", 
-    "[Ingest 4/9] Get the current state of the game on disk. " +
-    "In this test, the entire previous state is cached, so this is more of an overhead test rather than actually indexing new data.")]
-public class GetDiskState : ASynchronizerBenchmark, IBenchmark
+[BenchmarkInfo("LoadoutSynchronizer: GetExpectedDiskState", 
+    "[Ingest 3/9] Get the serialized expected state of the game on disk.")]
+public class GetState : ASynchronizerBenchmark, IBenchmark
 {
     [ParamsSource(nameof(ValuesForFilePath))]
     // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
@@ -20,8 +19,6 @@ public class GetDiskState : ASynchronizerBenchmark, IBenchmark
     public IEnumerable<string> ValuesForFilePath => new[]
     {
         Path.GetFileName(Assets.Loadouts.FileLists.SkyrimFileList),
-        Path.GetFileName(Assets.Loadouts.FileLists.StardewValleyFileList),
-        Path.GetFileName(Assets.Loadouts.FileLists.NPC3DFileList),
     };
 
     [GlobalSetup]
@@ -33,10 +30,8 @@ public class GetDiskState : ASynchronizerBenchmark, IBenchmark
     }
 
     [Benchmark]
-    public async Task<DiskStateTree> GetCurrentDiskState_WithCachedHashes()
+    public DiskStateTree GetCachedDiskState()
     {
-        // Note: This benchmark has a 'cache' of previous index, so it's not a real-world scenario.
-        // So this is purely an overhead test.
-        return await _defaultSynchronizer.GetDiskState(_installation);
+        return _diskStateRegistry.GetState(_installation)!;
     }
 }
