@@ -40,7 +40,6 @@ public class Startup
             .AddDataModel()
             .OverrideSettingsForTests<DataModelSettings>(settings => settings with
             {
-                UseInMemoryDataModel = true,
                 DataStoreFilePath = new ConfigurablePath(baseKnownPath, $"{baseDirectory}/DataStore.sqlite"),
                 ArchiveLocations = [
                     new ConfigurablePath(baseKnownPath, $"{baseDirectory}/Archives"),
