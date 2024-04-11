@@ -118,7 +118,7 @@ public class RunGameTool<T> : IRunGameTool
     {
         if (!OSInformation.Shared.IsLinux) throw OSInformation.Shared.CreatePlatformNotSupportedException();
 
-        var timeout = TimeSpan.FromMinutes(1);
+        var timeout = TimeSpan.FromMinutes(5);
 
         // NOTE(erri120): This should be empty for most of the time. We want to wait until the reaper process for
         // the current starts, so we ignore every reaper process that already exists.

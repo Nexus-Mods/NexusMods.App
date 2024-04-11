@@ -24,14 +24,6 @@ public class OSInteropWindows : IOSInterop
         // cmd /c start "" "https://google.com"
         var command = Cli.Wrap("cmd.exe").WithArguments($@"/c start """" ""{url}""");
         var task = _processFactory.ExecuteAsync(command, cancellationToken);
-
-        if (fireAndForget)
-        {
-            task.Start(TaskScheduler.Default);
-        }
-        else
-        {
-            await task;
-        }
+        await task.AwaitOrForget(fireAndForget: fireAndForget, cancellationToken: cancellationToken);
     }
 }

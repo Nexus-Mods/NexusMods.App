@@ -23,14 +23,6 @@ public class OSInteropOSX : IOSInterop
     {
         var command = Cli.Wrap("open").WithArguments(url.ToString());
         var task = _processFactory.ExecuteAsync(command, cancellationToken);
-
-        if (fireAndForget)
-        {
-            task.Start(TaskScheduler.Default);
-        }
-        else
-        {
-            await task;
-        }
+        await task.AwaitOrForget(fireAndForget: fireAndForget, cancellationToken: cancellationToken);
     }
 }
