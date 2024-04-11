@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Reactive;
 using System.Runtime.InteropServices;
 using System.Text.Json;
@@ -24,6 +25,7 @@ public class Program
     {
         MainThreadData.SetMainThread();
 
+        Debugger.Launch();
         var isMain = IsMainProcess(args);
         var host = BuildHost(slimMode: !isMain);
 

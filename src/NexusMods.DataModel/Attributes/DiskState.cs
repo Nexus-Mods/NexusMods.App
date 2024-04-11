@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+using JetBrains.Annotations;
 using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Serialization.DataModel.Ids;
 using NexusMods.MnemonicDB.Abstractions;
@@ -12,28 +14,32 @@ namespace NexusMods.DataModel.Attributes;
 /// 
 public static class DiskState
 {
+    private static readonly string Namespace = "NexusMods.DataModel.DiskStateRegistry";
+    
     
     /// <summary>
     /// The associated game id.
     /// </summary>
-    public static readonly Attribute<GameDomain> Game = new("NexusMods.DataModel.DiskStateRegistry/Game", isIndexed: true, noHistory: true);
+    public static readonly Attribute<GameDomain> Game = new($"{Namespace}/{nameof(Game)}", isIndexed: true, noHistory: true);
     
     /// <summary>
     /// The game's root folder
     /// </summary>
-    public static readonly Attribute<AbsolutePath> Root = new("NexusMods.DataModel.DiskStateRegistry/Root", isIndexed: true, noHistory: true);
+    public static readonly Attribute<AbsolutePath> Root = new($"{Namespace}/{nameof(Root)}", isIndexed: true, noHistory: true);
     
     /// <summary>
     /// The associated loadout id.
     /// </summary>
-    public static readonly Attribute<IId> LoadoutRevision = new("NexusMods.DataModel.DiskStateRegistry/LoadoutRevision", isIndexed: true, noHistory: true);
+    public static readonly Attribute<IId> LoadoutRevision = new($"{Namespace}/{nameof(LoadoutRevision)}", isIndexed: true, noHistory: true);
 
     /// <summary>
     /// The state of the disk.
     /// </summary>
-    public static readonly Attribute<NexusMods.Abstractions.DiskState.DiskStateTree> State = new("NexusMods.DataModel.DiskStateRegistry/State", noHistory: true);
+    public static readonly Attribute<NexusMods.Abstractions.DiskState.DiskStateTree> State = new($"{Namespace}/{nameof(State)}", noHistory: true);
     
     
+    [PublicAPI]
+    [SuppressMessage("ReSharper", "MemberHidesStaticFromOuterClass")]
     internal class Model(ITransaction tx) : AEntity(tx)
     {
         /// <summary>
