@@ -29,23 +29,43 @@ public class ProcessFactory : IProcessFactory
     /// <inheritdoc />
     public Task ExecuteProcessAsync(System.Diagnostics.Process process, CancellationToken cancellationToken = default)
     {
-        var tcs = new TaskCompletionSource(TaskCreationOptions.LongRunning);
+        var tcs = new TaskCompletionSource();
+        
+        process.EnableRaisingEvents = true;
+        var hasExited = false;
 
         process.Exited += (sender, args) =>
         {
+            hasExited = true;
             tcs.SetResult();
             process.Dispose();
         };
         
         cancellationToken.Register(() =>
         {
-            if (!process.HasExited)
+            if (hasExited) return;
+            try
             {
+                _logger.LogInformation("Killing process `{Process}`", process.StartInfo.FileName);
                 process.Kill();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Failed to kill process `{Process}`", process.StartInfo.FileName);
+                tcs.SetException(e);
             }
         });
 
-        process.Start();
+        try
+        {
+            _logger.LogInformation("Executing process `{Process}`", process.StartInfo.FileName);
+            process.Start();
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Failed to start process `{Process}`", process.StartInfo.FileName);
+            tcs.SetException(e);
+        }
 
         return tcs.Task; 
     }

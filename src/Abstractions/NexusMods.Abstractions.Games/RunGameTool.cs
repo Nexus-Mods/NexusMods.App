@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Text;
 using CliWrap;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.DTO;
@@ -38,16 +39,17 @@ public class RunGameTool<T> : IRunGameTool
     /// This allows tools to start their own console, allowing users to interact with it.
     /// </summary>
     public virtual bool UseShell { get; set; } = false;
-
+    
+    
     /// <summary>
-    /// Constructor.
+    /// Constructor
     /// </summary>
-    public RunGameTool(ILogger<RunGameTool<T>> logger, T game, IProcessFactory processFactory, IOSInterop osInterop)
+    public RunGameTool(IServiceProvider serviceProvider, T game)
     {
-        _processFactory = processFactory;
-        _osInterop = osInterop;
         _game = game;
-        _logger = logger;
+        _logger = serviceProvider.GetRequiredService<ILogger<RunGameTool<T>>>();
+        _processFactory = serviceProvider.GetRequiredService<IProcessFactory>();
+        _osInterop = serviceProvider.GetRequiredService<IOSInterop>();
     }
 
     /// <inheritdoc />
@@ -148,7 +150,15 @@ public class RunGameTool<T> : IRunGameTool
             EnableRaisingEvents = true,
         };
         
-        await _processFactory.ExecuteProcessAsync(process, cancellationToken);
+        try
+        {
+            await _processFactory.ExecuteProcessAsync(process, cancellationToken);
+        }
+        catch (Exception e)
+        {
+            if (!cancellationToken.IsCancellationRequested)
+                _logger.LogError(e, "While Running {Filename}", program);
+        }
         
         if (process.ExitCode != 0)
             _logger.LogError("While Running {Filename}", program);

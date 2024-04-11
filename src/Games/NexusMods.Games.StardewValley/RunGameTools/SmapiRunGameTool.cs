@@ -1,6 +1,4 @@
-using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Games;
-using NexusMods.CrossPlatform.Process;
 
 namespace NexusMods.Games.StardewValley.RunGameTools;
 
@@ -10,18 +8,10 @@ namespace NexusMods.Games.StardewValley.RunGameTools;
 /// </summary>
 public class SmapiRunGameTool : RunGameTool<StardewValley>
 {
-    public SmapiRunGameTool(
-        ILogger<RunGameTool<StardewValley>> logger,
-        StardewValley game,
-        IProcessFactory processFactory,
-        IOSInterop osInterop)
-        : base(
-            logger,
-            game,
-            processFactory,
-            osInterop
-        )
+    public SmapiRunGameTool(IServiceProvider serviceProvider, StardewValley game)
+        : base(serviceProvider, game)
     {
     }
+
     public override bool UseShell { get; set; } = true;
 }
