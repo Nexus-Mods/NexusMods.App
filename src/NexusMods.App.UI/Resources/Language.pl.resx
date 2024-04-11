@@ -181,7 +181,7 @@
 		<value>Wstrzymaj wszystko</value>
 	</data>
 	<data name="InProgressTitleTextBlock" xml:space="preserve">
-		<value>Pobrane</value>
+		<value>Pobieralnia</value>
 	</data>
 	<data name="BoldMinutesRemainingTextBlock" xml:space="preserve">
 		<value>0 min</value>
