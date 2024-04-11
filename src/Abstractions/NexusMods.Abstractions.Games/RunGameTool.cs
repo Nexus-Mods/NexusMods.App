@@ -1,5 +1,7 @@
 using System.Diagnostics;
 using System.Globalization;
+using System.Text;
+using CliWrap;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.DTO;
@@ -16,7 +18,7 @@ namespace NexusMods.Abstractions.Games;
 /// </summary>
 public interface IRunGameTool : ITool
 {
-
+    
 }
 
 /// <summary>
@@ -30,6 +32,12 @@ public class RunGameTool<T> : IRunGameTool
     private readonly T _game;
     private readonly IProcessFactory _processFactory;
     private readonly IOSInterop _osInterop;
+    
+    /// <summary>
+    /// Whether this tool should be started through the shell instead of directly.
+    /// This allows tools to start their own console, allowing users to interact with it.
+    /// </summary>
+    public virtual bool UseShell { get; set; } = false;
 
     /// <summary>
     /// Constructor.
@@ -79,23 +87,16 @@ public class RunGameTool<T> : IRunGameTool
         // notice that SkyrimSE.exe is running and wait for that to exit.
 
         var existing = FindMatchingProcesses(names).Select(p => p.Id).ToHashSet();
-
-        var process = new Process
+            
+        if (UseShell)
         {
-            StartInfo = new ProcessStartInfo
-            {
-                FileName = program.ToString(),
-                WorkingDirectory = program.Parent.ToString(),
-                UseShellExecute = true,
-                CreateNoWindow = false,
-            },
-            EnableRaisingEvents = true,
-        };
-        
-        await RunProcessAsync(process);
-        
-        if (process.ExitCode != 0)
-            _logger.LogError("While Running {Filename}", program);
+            _logger.LogInformation("Running {Program} through shell", program);
+            await RunWithShell(cancellationToken, program);
+        }
+        else
+        {
+            var result = await RunCommand(cancellationToken, program);
+        }
 
         // Check if the process has spawned any new processes that we need to wait for (e.g. Launcher -> Game)
         var newProcesses = FindMatchingProcesses(names)
@@ -117,19 +118,41 @@ public class RunGameTool<T> : IRunGameTool
         _logger.LogInformation("Finished running {Program}", program);
     }
 
-    private Task RunProcessAsync(Process process)
+    private async Task<CommandResult> RunCommand(CancellationToken cancellationToken, AbsolutePath program)
     {
-        var tcs = new TaskCompletionSource<object>();
+        var stdOut = new StringBuilder();
+        var stdErr = new StringBuilder();
+        var command = new Command(program.ToString())
+            .WithStandardOutputPipe(PipeTarget.ToStringBuilder(stdOut))
+            .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdErr))
+            .WithValidation(CommandResultValidation.None)
+            .WithWorkingDirectory(program.Parent.ToString());
 
-        process.Exited += (sender, args) =>
+        var result = await _processFactory.ExecuteAsync(command, cancellationToken);
+        if (result.ExitCode != 0)
+            _logger.LogError("While Running {Filename} : {Error} {Output}", program, stdErr, stdOut);
+        return result;
+    }
+
+    private async Task<Process> RunWithShell(CancellationToken cancellationToken, AbsolutePath program)
+    {
+        var process = new Process
         {
-            tcs.SetResult(0);
-            process.Dispose();
+            StartInfo = new ProcessStartInfo
+            {
+                FileName = program.ToString(),
+                WorkingDirectory = program.Parent.ToString(),
+                UseShellExecute = true,
+                CreateNoWindow = false,
+            },
+            EnableRaisingEvents = true,
         };
-
-        process.Start();
-
-        return tcs.Task; 
+        
+        await _processFactory.ExecuteProcessAsync(process, cancellationToken);
+        
+        if (process.ExitCode != 0)
+            _logger.LogError("While Running {Filename}", program);
+        return process;
     }
 
     private async Task RunThroughSteam(uint appId, CancellationToken cancellationToken)
