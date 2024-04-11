@@ -19,10 +19,19 @@ public class OSInteropWindows : IOSInterop
     }
 
     /// <inheritdoc/>
-    public async Task OpenUrl(Uri url, CancellationToken cancellationToken = default)
+    public async Task OpenUrl(Uri url, bool fireAndForget = false, CancellationToken cancellationToken = default)
     {
         // cmd /c start "" "https://google.com"
         var command = Cli.Wrap("cmd.exe").WithArguments($@"/c start """" ""{url}""");
-        await _processFactory.ExecuteAsync(command, cancellationToken);
+        var task = _processFactory.ExecuteAsync(command, cancellationToken);
+
+        if (fireAndForget)
+        {
+            task.Start(TaskScheduler.Default);
+        }
+        else
+        {
+            await task;
+        }
     }
 }

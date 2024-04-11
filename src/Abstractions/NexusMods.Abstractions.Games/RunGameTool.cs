@@ -125,7 +125,7 @@ public class RunGameTool<T> : IRunGameTool
         var existingReaperProcesses = Process.GetProcessesByName("reaper").Select(x => x.Id).ToHashSet();
 
         // https://developer.valvesoftware.com/wiki/Steam_browser_protocol
-        await _osInterop.OpenUrl(new Uri($"steam://rungameid/{appId.ToString(CultureInfo.InvariantCulture)}"), cancellationToken);
+        await _osInterop.OpenUrl(new Uri($"steam://rungameid/{appId.ToString(CultureInfo.InvariantCulture)}"), fireAndForget: true, cancellationToken: cancellationToken);
 
         var steam = await WaitForProcessToStart("steam", timeout, existingProcesses: null, cancellationToken);
         if (steam is null) return;

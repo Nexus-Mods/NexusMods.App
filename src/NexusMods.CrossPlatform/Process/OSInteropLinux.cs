@@ -19,9 +19,18 @@ public class OSInteropLinux : IOSInterop
     }
 
     /// <inheritdoc/>
-    public async Task OpenUrl(Uri url, CancellationToken cancellationToken = default)
+    public async Task OpenUrl(Uri url, bool fireAndForget = false, CancellationToken cancellationToken = default)
     {
         var command = Cli.Wrap("xdg-open").WithArguments(new[] { url.ToString() }, escape: true);
-        await _processFactory.ExecuteAsync(command, cancellationToken);
+        var task = _processFactory.ExecuteAsync(command, cancellationToken);
+
+        if (fireAndForget)
+        {
+            task.Start(TaskScheduler.Default);
+        }
+        else
+        {
+            await task;
+        }
     }
 }
