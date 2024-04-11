@@ -49,7 +49,7 @@ internal class FakeProcessFactory : IProcessFactory
 
     public Task ExecuteProcessAsync(System.Diagnostics.Process process, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        return Task.CompletedTask;
     }
 
     private static async Task WriteStringToPipe(string text, PipeTarget pipe, CancellationToken cancellationToken = default)
