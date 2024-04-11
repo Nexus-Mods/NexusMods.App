@@ -66,10 +66,7 @@ public static class AbsolutePathExtensions
             if (new FileInfo(fullFilePath).Length != 0) 
                 throw;
 
-            // JIT turns this to a constant.
-            // xxh64sum --little-endian "empty"
-            var emptyFileHash = BitConverter.IsLittleEndian ? 0x99e9d85137db46ef : 0xef46db3751d8e999;
-            return Hash.From(emptyFileHash);
+            return Hash.From(XxHash64Algorithm.HashOfEmptyFile);
         }
     }
 }
