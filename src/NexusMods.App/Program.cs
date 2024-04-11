@@ -25,7 +25,6 @@ public class Program
     {
         MainThreadData.SetMainThread();
 
-        Debugger.Launch();
         var isMain = IsMainProcess(args);
         var host = BuildHost(slimMode: !isMain);
 
