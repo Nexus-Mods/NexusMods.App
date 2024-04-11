@@ -1,6 +1,4 @@
-using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.App.Settings;
 using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Installers;
@@ -50,27 +48,22 @@ public static class Services
     }
 
     public static IServiceCollection AddApp(this IServiceCollection services,
-        AppConfig? config = null,
         bool addStandardGameLocators = true,
         bool slimMode = false)
     {
-        config ??= new AppConfig();
-
         if (!slimMode)
         {
             services
-                .AddSingleton<IAppConfigManager, AppConfigManager>(provider =>
-                    new AppConfigManager(config, provider.GetRequiredService<JsonSerializerOptions>()))
                 .AddSingleton<CommandLineConfigurator>()
                 .AddCLI()
-                .AddUI(config.LauncherSettings)
-                .AddSettings()
+                .AddUI()
+                .AddSettingsManager()
                 .AddSingleton<App>()
                 .AddGuidedInstallerUi()
                 .AddAdvancedInstaller()
                 .AddAdvancedInstallerUi()
-                .AddFileExtractors(config.FileExtractorSettings)
-                .AddDataModel(config.DataModelSettings)
+                .AddFileExtractors()
+                .AddDataModel()
                 .AddSerializationAbstractions()
                 .AddInstallerTypes()
                 .AddGames()
@@ -89,7 +82,7 @@ public static class Services
                 .AddStardewValley()
                 .AddMountAndBladeBannerlord()
                 .AddNexusWebApi()
-                .AddAdvancedHttpDownloader(config.HttpDownloaderSettings)
+                .AddAdvancedHttpDownloader()
                 .AddTestHarness()
                 .AddSingleton<HttpClient>()
                 .AddListeners()
@@ -97,7 +90,9 @@ public static class Services
 
             services = OpenTelemetryRegistration.AddTelemetry(services, new OpenTelemetrySettings
             {
-                IsEnabled = config.EnableTelemetry ?? false,
+                // TODO: pull from settings
+                // IsEnabled = config.EnableTelemetry ?? false,
+                IsEnabled = false,
 
                 EnableMetrics = true,
                 EnableTracing = true,
@@ -107,7 +102,7 @@ public static class Services
 
                 ExporterProtocol = OtlpExportProtocol.HttpProtobuf,
                 ExporterMetricsEndpoint = new Uri("https://collector.nexusmods.com/v1/metrics"),
-                ExporterTracesEndpoint = new Uri("https://collector.nexusmods.com/v1/traces")
+                ExporterTracesEndpoint = new Uri("https://collector.nexusmods.com/v1/traces"),
             }).ConfigureTelemetry(Telemetry.LibraryInfo, configureMetrics: Telemetry.SetupTelemetry);
 
 

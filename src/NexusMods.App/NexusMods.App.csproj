@@ -44,12 +44,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Update="AppConfig.json">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-    </ItemGroup>
-
-    <ItemGroup>
       <Compile Update="App.axaml.cs">
         <DependentUpon>App.axaml</DependentUpon>
         <SubType>Code</SubType>

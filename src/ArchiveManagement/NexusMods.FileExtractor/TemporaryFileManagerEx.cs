@@ -1,4 +1,5 @@
 ﻿using NexusMods.Abstractions.FileExtractor;
+using NexusMods.Abstractions.Settings;
 using NexusMods.Paths;
 
 namespace NexusMods.FileExtractor;
@@ -8,6 +9,9 @@ namespace NexusMods.FileExtractor;
 /// </summary>
 internal class TemporaryFileManagerEx : TemporaryFileManager
 {
-    public TemporaryFileManagerEx(IFileSystem fileSystem, IFileExtractorSettings settings) : 
-        base(fileSystem, settings.TempFolderLocation.ToAbsolutePath()) { }
+    public TemporaryFileManagerEx(IFileSystem fileSystem, ISettingsManager settingsManager)
+        : base(
+            fileSystem,
+            basePath: settingsManager.Get<FileExtractorSettings>().TempFolderLocation.ToPath(fileSystem)
+        ) { }
 }

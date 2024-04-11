@@ -6,6 +6,7 @@ using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.Abstractions.Serialization.DataModel.Ids;
+using NexusMods.Abstractions.Settings;
 using NexusMods.Archives.Nx.FileProviders;
 using NexusMods.Archives.Nx.Headers;
 using NexusMods.Archives.Nx.Headers.Managed;
@@ -33,14 +34,17 @@ public class NxFileStore : IFileStore
     private readonly ILogger<NxFileStore> _logger;
 
     /// <summary>
-    /// DI Constructor
+    /// Constructor
     /// </summary>
-    /// <param name="logger"></param>
-    /// <param name="store"></param>
-    /// <param name="settings"></param>
-    public NxFileStore(ILogger<NxFileStore> logger, IDataStore store, IDataModelSettings settings)
+    public NxFileStore(
+        ILogger<NxFileStore> logger,
+        IDataStore store,
+        ISettingsManager settingsManager,
+        IFileSystem fileSystem)
     {
-        _archiveLocations = settings.ArchiveLocations.Select(f => f.ToAbsolutePath()).ToArray();
+        var settings = settingsManager.Get<DataModelSettings>();
+
+        _archiveLocations = settings.ArchiveLocations.Select(f => f.ToPath(fileSystem)).ToArray();
         foreach (var location in _archiveLocations)
         {
             if (!location.DirectoryExists())

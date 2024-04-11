@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.Abstractions.Serialization.Json;
+using NexusMods.Abstractions.Settings;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.Controls.DevelopmentBuildBanner;
@@ -46,6 +47,7 @@ using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModName;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModVersion;
 using NexusMods.App.UI.Pages.ModInfo;
 using NexusMods.App.UI.Pages.MyGames;
+using NexusMods.App.UI.Settings;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceAttachments;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -70,13 +72,8 @@ namespace NexusMods.App.UI;
 public static class Services
 {
     // ReSharper disable once InconsistentNaming
-    public static IServiceCollection AddUI(this IServiceCollection c, ILauncherSettings? settings)
+    public static IServiceCollection AddUI(this IServiceCollection c)
     {
-        if (settings == null)
-            c.AddSingleton<ILauncherSettings, LauncherSettings>();
-        else
-            c.AddSingleton(settings);
-
         return c
             // JSON converters
             .AddSingleton<JsonConverter, RectJsonConverter>()
@@ -233,6 +230,10 @@ public static class Services
             .AddSingleton<IValueFormatter, LoadoutReferenceFormatter>()
             .AddSingleton<IValueFormatter, NamedLinkFormatter>()
             .AddSingleton<IDiagnosticWriter, DiagnosticWriter>()
+
+            // Settings
+            .AddSettings<LanguageSettings>()
+            .AddSettings<TelemetrySettings>()
 
             // Other
             .AddSingleton<InjectedViewLocator>()

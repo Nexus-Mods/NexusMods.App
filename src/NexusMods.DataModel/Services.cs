@@ -1,6 +1,5 @@
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.App.Settings;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.Games.Loadouts;
@@ -11,6 +10,7 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Messaging;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
+using NexusMods.Abstractions.Settings;
 using NexusMods.DataModel.CommandLine.Verbs;
 using NexusMods.DataModel.Diagnostics;
 using NexusMods.DataModel.JsonConverters;
@@ -29,13 +29,9 @@ public static class Services
     /// Adds all services related to the <see cref="DataModel"/> to your dependency
     /// injection container.
     /// </summary>
-    public static IServiceCollection AddDataModel(this IServiceCollection coll,
-        IDataModelSettings? settings = null)
+    public static IServiceCollection AddDataModel(this IServiceCollection coll)
     {
-        if (settings == null)
-            coll.AddSingleton<IDataModelSettings, DataModelSettings>();
-        else
-            coll.AddSingleton(settings);
+        coll.AddSettings<DataModelSettings>();
 
         coll.AddSingleton<MessageBus>();
         coll.AddSingleton(typeof(IMessageConsumer<>), typeof(MessageConsumer<>));
@@ -53,7 +49,6 @@ public static class Services
 
         coll.AddSingleton(typeof(IFingerprintCache<,>), typeof(DataStoreFingerprintCache<,>));
 
-        coll.AddDataModelSettings();
         coll.AddAllSingleton<ILoadoutRegistry, LoadoutRegistry>();
         coll.AddAllSingleton<IFileOriginRegistry, FileOriginRegistry>();
         coll.AddAllSingleton<IFileHashCache, FileHashCache>();
@@ -67,7 +62,7 @@ public static class Services
 
         // Diagnostics
         coll.AddAllSingleton<IDiagnosticManager, DiagnosticManager>();
-        coll.AddOptions<DiagnosticOptions>();
+        coll.AddSettings<DiagnosticSettings>();
 
         // Verbs
         coll.AddLoadoutManagementVerbs()

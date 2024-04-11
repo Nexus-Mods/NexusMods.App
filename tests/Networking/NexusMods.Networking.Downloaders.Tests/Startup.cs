@@ -12,6 +12,7 @@ using NexusMods.Games.Generic;
 using NexusMods.Games.RedEngine;
 using NexusMods.Games.TestFramework;
 using NexusMods.Networking.HttpDownloader.Tests;
+using NexusMods.Settings;
 using NexusMods.StandardGameLocators.TestHelpers;
 
 namespace NexusMods.Networking.Downloaders.Tests;
