@@ -1,11 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
-using NexusMods.Extensions.DependencyInjection;
 using NexusMods.Games.StardewValley.Emitters;
 using NexusMods.Games.StardewValley.Installers;
+using NexusMods.Games.StardewValley.RunGameTools;
 using NexusMods.Games.StardewValley.WebAPI;
 
 namespace NexusMods.Games.StardewValley;
@@ -16,7 +15,7 @@ public static class Services
     {
         services
             .AddGame<StardewValley>()
-            .AddSingleton<ITool, RunGameTool<StardewValley>>()
+            .AddSingleton<ITool, SmapiRunGameTool>()
 
             // Installers
             .AddSingleton<SMAPIInstaller>()

@@ -7,8 +7,8 @@ namespace NexusMods.Games.BethesdaGameStudios.SkyrimLegendaryEdition;
 
 public class SkyrimLegendaryEditionGameTool : RunGameWithScriptExtender<SkyrimLegendaryEdition>
 {
-    // ReSharper disable once ContextualLoggerProblem
-    public SkyrimLegendaryEditionGameTool(ILogger<RunGameTool<SkyrimLegendaryEdition>> logger, SkyrimLegendaryEdition game, IProcessFactory processFactory, IOSInterop osInterop)
-        : base(logger, game, processFactory, osInterop) { }
+    public SkyrimLegendaryEditionGameTool(IServiceProvider serviceProvider, SkyrimLegendaryEdition game)
+        : base(serviceProvider, game) { }
+    
     protected override GamePath ScriptLoaderPath => new(LocationId.Game, "skse_loader.exe");
 }
