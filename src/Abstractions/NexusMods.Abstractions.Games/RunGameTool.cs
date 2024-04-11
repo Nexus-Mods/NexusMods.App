@@ -1,7 +1,5 @@
 using System.Diagnostics;
 using System.Globalization;
-using System.Text;
-using CliWrap;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.DTO;
@@ -82,18 +80,24 @@ public class RunGameTool<T> : IRunGameTool
 
         var existing = FindMatchingProcesses(names).Select(p => p.Id).ToHashSet();
 
-        var stdOut = new StringBuilder();
-        var stdErr = new StringBuilder();
-        var command = new Command(program.ToString())
-            .WithStandardOutputPipe(PipeTarget.ToStringBuilder(stdOut))
-            .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdErr))
-            .WithValidation(CommandResultValidation.None)
-            .WithWorkingDirectory(program.Parent.ToString());
+        var process = new Process
+        {
+            StartInfo = new ProcessStartInfo
+            {
+                FileName = program.ToString(),
+                WorkingDirectory = program.Parent.ToString(),
+                UseShellExecute = true,
+                CreateNoWindow = false,
+            },
+            EnableRaisingEvents = true,
+        };
+        
+        await RunProcessAsync(process);
+        
+        if (process.ExitCode != 0)
+            _logger.LogError("While Running {Filename}", program);
 
-        var result = await _processFactory.ExecuteAsync(command, cancellationToken);
-        if (result.ExitCode != 0)
-            _logger.LogError("While Running {Filename} : {Error} {Output}", program, stdErr, stdOut);
-
+        // Check if the process has spawned any new processes that we need to wait for (e.g. Launcher -> Game)
         var newProcesses = FindMatchingProcesses(names)
             .Where(p => !existing.Contains(p.Id))
             .ToHashSet();
@@ -111,6 +115,21 @@ public class RunGameTool<T> : IRunGameTool
         }
 
         _logger.LogInformation("Finished running {Program}", program);
+    }
+
+    private Task RunProcessAsync(Process process)
+    {
+        var tcs = new TaskCompletionSource<object>();
+
+        process.Exited += (sender, args) =>
+        {
+            tcs.SetResult(0);
+            process.Dispose();
+        };
+
+        process.Start();
+
+        return tcs.Task; 
     }
 
     private async Task RunThroughSteam(uint appId, CancellationToken cancellationToken)
