@@ -60,6 +60,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to View apply changes.
+        /// </summary>
+        public static string ApplyControlView_ViewApplyChanges {
+            get {
+                return ResourceManager.GetString("ApplyControlView_ViewApplyChanges", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to ACTIVATE &amp; APPLY.
         /// </summary>
         public static string ApplyControlViewModel__ACTIVATE_AND_APPLY {
@@ -83,6 +92,24 @@ namespace NexusMods.App.UI.Resources {
         public static string ApplyControlViewModel__APPLY {
             get {
                 return ResourceManager.GetString("ApplyControlViewModel__APPLY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Refresh.
+        /// </summary>
+        public static string ApplyDiff_Refresh {
+            get {
+                return ResourceManager.GetString("ApplyDiff_Refresh", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Preview changes.
+        /// </summary>
+        public static string ApplyDiffViewModel_PageTitle {
+            get {
+                return ResourceManager.GetString("ApplyDiffViewModel_PageTitle", resourceCulture);
             }
         }
         
@@ -236,6 +263,33 @@ namespace NexusMods.App.UI.Resources {
         public static string DiagnosticListView_DiagnosticListView_Warnings {
             get {
                 return ResourceManager.GetString("DiagnosticListView_DiagnosticListView_Warnings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Apply changes: Adding {0} Modifying {1} Removing {2}.
+        /// </summary>
+        public static string DiffTreeViewModel_StatusBar__Apply_changes {
+            get {
+                return ResourceManager.GetString("DiffTreeViewModel_StatusBar__Apply_changes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Data to process: {0}.
+        /// </summary>
+        public static string DiffTreeViewModel_StatusBar__Data_to_process___0_ {
+            get {
+                return ResourceManager.GetString("DiffTreeViewModel_StatusBar__Data_to_process___0_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Files: Loadout {0} ({1})  Disk {2} ({3}).
+        /// </summary>
+        public static string DiffTreeViewModel_StatusBar__File_Loadout_Disk {
+            get {
+                return ResourceManager.GetString("DiffTreeViewModel_StatusBar__File_Loadout_Disk", resourceCulture);
             }
         }
         
@@ -546,6 +600,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to FILE COUNT.
+        /// </summary>
+        public static string Helpers_GenerateHeader_File_Count {
+            get {
+                return ResourceManager.GetString("Helpers_GenerateHeader_File_Count", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to GAME.
         /// </summary>
         public static string Helpers_GenerateHeader_GAME {
@@ -587,6 +650,15 @@ namespace NexusMods.App.UI.Resources {
         public static string Helpers_GenerateHeader_SIZE {
             get {
                 return ResourceManager.GetString("Helpers_GenerateHeader_SIZE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to STATE.
+        /// </summary>
+        public static string Helpers_GenerateHeader_State {
+            get {
+                return ResourceManager.GetString("Helpers_GenerateHeader_State", resourceCulture);
             }
         }
         
@@ -641,6 +713,42 @@ namespace NexusMods.App.UI.Resources {
         public static string HomeWorkspace_Title {
             get {
                 return ResourceManager.GetString("HomeWorkspace_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Added.
+        /// </summary>
+        public static string IFileTreeNodeViewModel_ToFormattedChangeState_Added {
+            get {
+                return ResourceManager.GetString("IFileTreeNodeViewModel_ToFormattedChangeState_Added", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Contents modified.
+        /// </summary>
+        public static string IFileTreeNodeViewModel_ToFormattedChangeState_Contents_modified {
+            get {
+                return ResourceManager.GetString("IFileTreeNodeViewModel_ToFormattedChangeState_Contents_modified", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Modified.
+        /// </summary>
+        public static string IFileTreeNodeViewModel_ToFormattedChangeState_Modified {
+            get {
+                return ResourceManager.GetString("IFileTreeNodeViewModel_ToFormattedChangeState_Modified", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Removed.
+        /// </summary>
+        public static string IFileTreeNodeViewModel_ToFormattedChangeState_Removed {
+            get {
+                return ResourceManager.GetString("IFileTreeNodeViewModel_ToFormattedChangeState_Removed", resourceCulture);
             }
         }
         
@@ -843,15 +951,6 @@ namespace NexusMods.App.UI.Resources {
         public static string MinutesRemainingTextBlock {
             get {
                 return ResourceManager.GetString("MinutesRemainingTextBlock", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to FILE COUNT.
-        /// </summary>
-        public static string ModFileTreeViewModel_CreateTreeSource_File_Count {
-            get {
-                return ResourceManager.GetString("ModFileTreeViewModel_CreateTreeSource_File_Count", resourceCulture);
             }
         }
         

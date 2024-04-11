@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.Abstractions.Serialization.Json;
+using NexusMods.Abstractions.Settings;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.Controls.DevelopmentBuildBanner;
@@ -21,6 +22,7 @@ using NexusMods.App.UI.Controls.Spine.Buttons.Download;
 using NexusMods.App.UI.Controls.Spine.Buttons.Icon;
 using NexusMods.App.UI.Controls.Spine.Buttons.Image;
 using NexusMods.App.UI.Controls.TopBar;
+using NexusMods.App.UI.Controls.Trees;
 using NexusMods.App.UI.Controls.Trees.Files;
 using NexusMods.App.UI.DiagnosticSystem;
 using NexusMods.App.UI.LeftMenu;
@@ -35,6 +37,7 @@ using NexusMods.App.UI.Overlays.Login;
 using NexusMods.App.UI.Overlays.MetricsOptIn;
 using NexusMods.App.UI.Overlays.Updater;
 using NexusMods.App.UI.Pages.Diagnostics;
+using NexusMods.App.UI.Pages.Diff.ApplyDiff;
 using NexusMods.App.UI.Pages.Downloads;
 using NexusMods.App.UI.Pages.LoadoutGrid;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModCategory;
@@ -44,6 +47,7 @@ using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModName;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModVersion;
 using NexusMods.App.UI.Pages.ModInfo;
 using NexusMods.App.UI.Pages.MyGames;
+using NexusMods.App.UI.Settings;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceAttachments;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -68,13 +72,8 @@ namespace NexusMods.App.UI;
 public static class Services
 {
     // ReSharper disable once InconsistentNaming
-    public static IServiceCollection AddUI(this IServiceCollection c, ILauncherSettings? settings)
+    public static IServiceCollection AddUI(this IServiceCollection c)
     {
-        if (settings == null)
-            c.AddSingleton<ILauncherSettings, LauncherSettings>();
-        else
-            c.AddSingleton(settings);
-
         return c
             // JSON converters
             .AddSingleton<JsonConverter, RectJsonConverter>()
@@ -133,6 +132,7 @@ public static class Services
             .AddViewModel<FileTreeNodeViewModel, IFileTreeNodeViewModel>()
             .AddViewModel<DummyLoadingViewModel, ILoadingViewModel>()
             .AddViewModel<DummyErrorViewModel, IErrorViewModel>()
+            .AddViewModel<ApplyDiffViewModel, IApplyDiffViewModel>()
 
             // Views
             .AddView<DevelopmentBuildBannerView, IDevelopmentBuildBannerViewModel>()
@@ -172,6 +172,8 @@ public static class Services
             .AddView<FileTreeNodeView, IFileTreeNodeViewModel>()
             .AddView<LoadingView, ILoadingViewModel>()
             .AddView<ErrorView, IErrorViewModel>()
+            .AddView<ApplyDiffView, IApplyDiffViewModel>()
+            .AddView<FileTreeView, IFileTreeViewModel>()
 
             .AddView<DiagnosticEntryView, IDiagnosticEntryViewModel>()
             .AddViewModel<DiagnosticEntryViewModel, IDiagnosticEntryViewModel>()
@@ -206,6 +208,7 @@ public static class Services
             .AddSingleton<IPageFactory, ModInfoPageFactory>()
             .AddSingleton<IPageFactory, DiagnosticListPageFactory>()
             .AddSingleton<IPageFactory, DiagnosticDetailsPageFactory>()
+            .AddSingleton<IPageFactory, ApplyDiffPageFactory>()
 
             // LeftMenu factories
             .AddSingleton<ILeftMenuFactory, DownloadsLeftMenuFactory>()
@@ -227,6 +230,10 @@ public static class Services
             .AddSingleton<IValueFormatter, LoadoutReferenceFormatter>()
             .AddSingleton<IValueFormatter, NamedLinkFormatter>()
             .AddSingleton<IDiagnosticWriter, DiagnosticWriter>()
+
+            // Settings
+            .AddSettings<LanguageSettings>()
+            .AddSettings<TelemetrySettings>()
 
             // Other
             .AddSingleton<InjectedViewLocator>()

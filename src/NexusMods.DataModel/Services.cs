@@ -11,7 +11,6 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Messaging;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
-using NexusMods.DataModel.Attributes;
 using NexusMods.DataModel.CommandLine.Verbs;
 using NexusMods.DataModel.Diagnostics;
 using NexusMods.DataModel.JsonConverters;
@@ -21,10 +20,7 @@ using NexusMods.DataModel.Serializers;
 using NexusMods.DataModel.Sorting;
 using NexusMods.DataModel.TriggerFilter;
 using NexusMods.Extensions.DependencyInjection;
-using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Storage;
-using NexusMods.MnemonicDB.Storage.Abstractions;
 
 namespace NexusMods.DataModel;
 
@@ -35,8 +31,7 @@ public static class Services
     /// Adds all services related to the <see cref="DataModel"/> to your dependency
     /// injection container.
     /// </summary>
-    public static IServiceCollection AddDataModel(this IServiceCollection coll,
-        IDataModelSettings? settings = null)
+    public static IServiceCollection AddDataModel(this IServiceCollection coll)
     {
         settings ??= new DataModelSettings();
         coll.AddSingleton<IDataModelSettings>(_ => settings);
@@ -58,6 +53,7 @@ public static class Services
             );
             coll.AddAllSingleton<IStoreBackend, MnemonicDB.Storage.RocksDbBackend.Backend>();
         }
+        coll.AddSettings<DataModelSettings>();
 
         coll.AddSingleton<MessageBus>();
         coll.AddSingleton(typeof(IMessageConsumer<>), typeof(MessageConsumer<>));
@@ -75,7 +71,6 @@ public static class Services
 
         coll.AddSingleton(typeof(IFingerprintCache<,>), typeof(DataStoreFingerprintCache<,>));
 
-        coll.AddDataModelSettings();
         coll.AddAllSingleton<ILoadoutRegistry, LoadoutRegistry>();
         coll.AddAllSingleton<IFileOriginRegistry, FileOriginRegistry>();
         coll.AddAllSingleton<IFileHashCache, FileHashCache>();

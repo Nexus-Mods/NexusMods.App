@@ -47,6 +47,11 @@ internal class FakeProcessFactory : IProcessFactory
             DateTimeOffset.Now));
     }
 
+    public Task ExecuteProcessAsync(System.Diagnostics.Process process, CancellationToken cancellationToken = default)
+    {
+        return Task.CompletedTask;
+    }
+
     private static async Task WriteStringToPipe(string text, PipeTarget pipe, CancellationToken cancellationToken = default)
     {
         var bytes = ArrayPool<byte>.Shared.Rent(Encoding.UTF8.GetMaxByteCount(text.Length));

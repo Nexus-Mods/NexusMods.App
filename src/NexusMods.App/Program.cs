@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using System.Reactive;
 using System.Runtime.InteropServices;
-using System.Text.Json;
 using Avalonia;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -126,89 +125,19 @@ public class Program
     /// <returns></returns>
     public static IHost BuildHost(bool slimMode = false)
     {
-        // I'm not 100% sure how to wire this up to cleanly pass settings
-        // to ConfigureLogging; since the DI container isn't built until the host is.
-        var config = ReadAppConfig(new AppConfig());
         var host = new HostBuilder()
-            .ConfigureServices(services => services.AddApp(config, slimMode: slimMode).Validate())
-            .ConfigureLogging((_, builder) => AddLogging(builder, config.LoggingSettings, isMainProcess: !slimMode))
+            .ConfigureServices(services => services.AddApp(slimMode: slimMode).Validate())
+            .ConfigureLogging((_, builder) => AddLogging(builder, isMainProcess: !slimMode))
             .Build();
 
         return host;
     }
 
-    private static AppConfig ReadAppConfig(AppConfig existingConfig)
+    private static void AddLogging(ILoggingBuilder loggingBuilder, bool isMainProcess)
     {
-        // Read an App Config from the entry directory and sanitize if it exists.
-        var configJson = TryReadConfig();
-
-        if (configJson != null)
-        {
-            // If we can't deserialize, use default.
-            try
-            {
-                existingConfig = JsonSerializer.Deserialize<AppConfig>(configJson)!;
-            }
-            catch (Exception)
-            {
-                /* Ignored */
-            }
-
-            existingConfig.Sanitize(FileSystem.Shared);
-        }
-        else
-        {
-            // No custom config so use default.
-            existingConfig.Sanitize(FileSystem.Shared);
-        }
-
-        return existingConfig;
-    }
-
-    private static string? TryReadConfig()
-    {
-        // Try to read an `AppConfig.json` from the entry directory
-        const string configFileName = "AppConfig.json";
-
-        // TODO: NexusMods.Paths needs ReadAllText API. For now we delegate to standard library because source is `FileSystem.Shared`.
-
         var fs = FileSystem.Shared;
-        if (fs.OS.IsLinux)
-        {
-            // On AppImage (Linux), 'OWD' should take precedence over the entry directory if it exists.
-            // https://docs.appimage.org/packaging-guide/environment-variables.html
-            var owd = Environment.GetEnvironmentVariable("OWD");
-            if (!string.IsNullOrEmpty(owd))
-            {
-                try
-                {
-                    return File.ReadAllText(fs.FromUnsanitizedFullPath(owd).Combine(configFileName)
-                        .GetFullPath());
-                }
-                catch (Exception)
-                {
-                    /* Ignored */
-                }
-            }
-        }
+        var settings = LoggingSettings.CreateDefault(fs.OS);
 
-        // Try App Folder
-        var appFolder = fs.GetKnownPath(KnownPath.EntryDirectory);
-        try
-        {
-            return File.ReadAllText(appFolder.Combine(configFileName).GetFullPath());
-        }
-        catch (Exception)
-        {
-            /* Ignored */
-        }
-
-        // Config doesn't exist.
-        return null;
-    }
-
-    private static void AddLogging(ILoggingBuilder loggingBuilder, ILoggingSettings settings, bool isMainProcess)
-    {
         var config = new NLog.Config.LoggingConfiguration();
 
         const string defaultLayout = "${processtime} [${level:uppercase=true}] (${logger}) ${message:withexception=true}";
@@ -219,16 +148,16 @@ public class Program
         {
             fileTarget = new FileTarget("file")
             {
-                FileName = settings.MainProcessLogFilePath.GetFullPath(),
-                ArchiveFileName = settings.MainProcessArchiveFilePath.GetFullPath(),
+                FileName = settings.MainProcessLogFilePath.ToPath(fs).GetFullPath(),
+                ArchiveFileName = settings.MainProcessArchiveFilePath.ToPath(fs).GetFullPath(),
             };
         }
         else
         {
             fileTarget = new FileTarget("file")
             {
-                FileName = settings.SlimProcessLogFilePath.GetFullPath(),
-                ArchiveFileName = settings.SlimProcessArchiveFilePath.GetFullPath(),
+                FileName = settings.SlimProcessLogFilePath.ToPath(fs).GetFullPath(),
+                ArchiveFileName = settings.SlimProcessArchiveFilePath.ToPath(fs).GetFullPath(),
             };
         }
 
@@ -254,14 +183,7 @@ public class Program
         };
 
         loggingBuilder.ClearProviders();
-#if DEBUG
-        loggingBuilder.SetMinimumLevel(LogLevel.Debug);
-#elif TRACE
-        loggingBuilder.SetMinimumLevel(LogLevel.Trace);
-#else
-        loggingBuilder.SetMinimumLevel(LogLevel.Information);
-#endif
-
+        loggingBuilder.SetMinimumLevel(settings.MinimumLevel);
         loggingBuilder.AddNLog(config, options);
     }
 

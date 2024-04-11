@@ -68,7 +68,7 @@ public class OAuthTests
         #region Verification
 
         _ = idGen.Received(2).UUIDv4();
-        _ = os.Received(1).OpenUrl(ExpectedAuthURL, Arg.Any<CancellationToken>());
+        _ = os.Received(1).OpenUrl(ExpectedAuthURL, cancellationToken: Arg.Any<CancellationToken>());
         result.Should().BeEquivalentTo(ReplyToken);
         #endregion
     }
@@ -104,7 +104,7 @@ public class OAuthTests
         #region Verification
 
         _ = idGen.DidNotReceive().UUIDv4();
-        _ = os.DidNotReceive().OpenUrl(Arg.Any<Uri>(), Arg.Any<CancellationToken>());
+        _ = os.DidNotReceive().OpenUrl(Arg.Any<Uri>(), cancellationToken: Arg.Any<CancellationToken>());
         token.Should().BeEquivalentTo(ReplyToken);
 
         #endregion

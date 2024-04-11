@@ -1,4 +1,5 @@
 ﻿using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Serialization.DataModel.Ids;
 
 namespace NexusMods.Abstractions.Loadouts;
@@ -15,6 +16,11 @@ public interface IApplyService
     /// <param name="loadoutId"></param>
     /// <returns></returns>
     public Task<Loadout> Apply(LoadoutId loadoutId);
+    
+    /// <summary>
+    /// Get the diff tree of the unapplied changes of a loadout.
+    /// </summary>
+    public ValueTask<FileDiffTree> GetApplyDiffTree(LoadoutId loadoutId);
 
     
     /// <summary>

@@ -10,6 +10,8 @@ public class ApplyControlDesignViewModel : AViewModel<IApplyControlViewModel>, I
 {
     public ReactiveCommand<Unit,Unit> ApplyCommand { get; }
     public ReactiveCommand<Unit,Unit> IngestCommand { get; }
+    
+    public ReactiveCommand<Unit,Unit> ShowApplyDiffCommand { get; }
     [Reactive] public bool CanApply { get; private set; } = true;
     [Reactive] public bool IsApplying { get; private set; } = false;
     public bool IsIngesting { get; private set; }
@@ -19,6 +21,9 @@ public class ApplyControlDesignViewModel : AViewModel<IApplyControlViewModel>, I
 
     public ApplyControlDesignViewModel()
     {
+        
+        ShowApplyDiffCommand = ReactiveCommand.CreateFromTask(async () => { });
+        
         ApplyCommand = ReactiveCommand.CreateFromTask( async () =>
         {
             IsApplying = true;

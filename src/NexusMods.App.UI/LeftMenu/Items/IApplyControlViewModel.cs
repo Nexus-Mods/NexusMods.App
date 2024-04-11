@@ -10,6 +10,8 @@ public interface IApplyControlViewModel : IViewModelInterface
     
     ReactiveCommand<Unit,Unit> IngestCommand { get; }
     
+    ReactiveCommand<Unit,Unit> ShowApplyDiffCommand { get; }
+    
     ILaunchButtonViewModel LaunchButtonViewModel { get; }
     
     string ApplyButtonText { get; }

@@ -173,7 +173,8 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                             toWrite.Add(KeyValuePair.Create(entry.Path, gf));
                             continue;
                         default:
-                            throw new UnreachableException("No way to handle this file");
+                            _logger.LogError("Unknown file type: {Type}", newEntry.Item.Value!.GetType());
+                            break;
                     }
                 }
 
@@ -518,6 +519,109 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         await _diskStateRegistry.SaveState(loadout.Installation, diskState);
 
         return newLoadout;
+    }
+    
+    /// <inheritdoc />
+    public async ValueTask<FileDiffTree> LoadoutToDiskDiff(Loadout loadout, DiskStateTree diskState)
+    {
+        var flattenedLoadout = await LoadoutToFlattenedLoadout(loadout);
+        return await FlattenedLoadoutToDiskDiff(flattenedLoadout, diskState);
+    }
+
+    private static ValueTask<FileDiffTree> FlattenedLoadoutToDiskDiff(FlattenedLoadout flattenedLoadout, DiskStateTree diskState)
+    {
+        var loadoutFiles = flattenedLoadout.GetAllDescendentFiles().ToArray();
+        var diskStateEntries = diskState.GetAllDescendentFiles().ToArray();
+
+        // With both deletions and additions it might be more than Max, but it's a starting point
+        Dictionary<GamePath, DiskDiffEntry> resultingItems = new(Math.Max(loadoutFiles.Length, diskStateEntries.Length));
+
+        // Add all the disk state entries to the result, checking for changes
+        foreach (var diskItem in diskStateEntries)
+        {
+            var gamePath = diskItem.GamePath();
+            if (flattenedLoadout.TryGetValue(gamePath, out var loadoutFileEntry))
+            {
+                switch (loadoutFileEntry.Item.Value.File)
+                {
+                    case StoredFile sf:
+                        if (sf.Hash != diskItem.Item.Value.Hash)
+                        {
+                            resultingItems.Add(gamePath,
+                                new DiskDiffEntry
+                                {
+                                    GamePath = gamePath,
+                                    Hash = sf.Hash,
+                                    Size = sf.Size,
+                                    ChangeType = FileChangeType.Modified,
+                                }
+                            );
+                        }
+                        else
+                        {
+                            resultingItems.Add(gamePath,
+                                new DiskDiffEntry
+                                {
+                                    GamePath = gamePath,
+                                    Hash = sf.Hash,
+                                    Size = sf.Size,
+                                    ChangeType = FileChangeType.None,
+                                }
+                            );
+                        }
+
+                        break;
+                    case IGeneratedFile gf and IToFile:
+                        // TODO: Implement change detection for generated files
+                        break;
+                    default:
+                        throw new UnreachableException("No way to handle this file");
+                }
+            }
+            else
+            {
+                resultingItems.Add(gamePath,
+                    new DiskDiffEntry
+                    {
+                        GamePath = gamePath,
+                        Hash = diskItem.Item.Value.Hash,
+                        Size = diskItem.Item.Value.Size,
+                        ChangeType = FileChangeType.Removed,
+                    }
+                );
+            }
+        }
+
+        // Add all the new files to the result
+        foreach (var loadoutFile in loadoutFiles)
+        {
+            var gamePath = loadoutFile.GamePath();
+            switch (loadoutFile.Item.Value.File)
+            {
+                case StoredFile sf:
+                    if (!resultingItems.TryGetValue(gamePath, out _))
+                    {
+                        resultingItems.Add(gamePath,
+                            new DiskDiffEntry
+                            {
+                                GamePath = gamePath,
+                                Hash = sf.Hash,
+                                Size = sf.Size,
+                                ChangeType = FileChangeType.Added,
+                            }
+                        );
+                    }
+
+                    break;
+                case IGeneratedFile gf and IToFile:
+                    // TODO: Implement change detection for generated files
+                    break;
+                default:
+                    throw new UnreachableException("No way to handle this file");
+            }
+        }
+
+        return ValueTask.FromResult(FileDiffTree.Create(resultingItems));
     }
 
     /// <summary>

@@ -5,6 +5,7 @@ using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.Abstractions.Serialization.DataModel.Ids;
+using NexusMods.Abstractions.Settings;
 using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.ChunkedStreams;
 using NexusMods.Hashing.xxHash64;
@@ -28,11 +29,11 @@ public class ZipFileStore : IFileStore
     /// <summary>
     /// Constructor.
     /// </summary>
-    /// <param name="store"></param>
-    /// <param name="settings"></param>
-    public ZipFileStore(IDataStore store, IDataModelSettings settings)
+    public ZipFileStore(IDataStore store, ISettingsManager settingsManager, IFileSystem fileSystem)
     {
-        _archiveLocations = settings.ArchiveLocations.Select(f => f.ToAbsolutePath()).ToArray();
+        var settings = settingsManager.Get<DataModelSettings>();
+
+        _archiveLocations = settings.ArchiveLocations.Select(f => f.ToPath(fileSystem)).ToArray();
         foreach (var location in _archiveLocations)
         {
             if (!location.DirectoryExists())

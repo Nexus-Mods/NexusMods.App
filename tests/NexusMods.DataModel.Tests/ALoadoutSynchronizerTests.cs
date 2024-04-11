@@ -20,7 +20,7 @@ namespace NexusMods.DataModel.Tests;
 
 public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTests>
 {
-    private readonly IStandardizedLoadoutSynchronizer _synchronizer;
+    protected readonly IStandardizedLoadoutSynchronizer _synchronizer;
     private readonly Dictionary<ModId, string> _modNames = new();
     private readonly Dictionary<string, ModId> _modIdForName = new();
     private readonly Dictionary<ModFileId, ModFilePair> _pairs = new();
@@ -31,6 +31,8 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
     private static GamePath _meshPath = new(LocationId.Game, "meshes/b.nif");
     private static GamePath _prefsPath = new(LocationId.Preferences, "preferences/prefs.dat");
     private static GamePath _savePath = new(LocationId.Saves, "saves/save.dat");
+    private static GamePath _configPath = new(LocationId.Game, "config.ini");
+    private static GamePath _imagePath = new(LocationId.Game, "Data/image.dds");
 
     private static GamePath[] _allPaths = {_texturePath , _meshPath, _prefsPath, _savePath};
     private Loadout _originalLoadout;
@@ -250,6 +252,27 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
         var executeFlags = UnixFileMode.UserExecute | UnixFileMode.GroupExecute | UnixFileMode.OtherExecute;
         scriptPath.GetUnixFileMode().Should().HaveFlag(executeFlags);
         binaryPath.GetUnixFileMode().Should().HaveFlag(executeFlags);
+    }
+    
+    [Fact]
+    public async Task CanLoadoutToDiskDiff()
+    {
+        var prevDiskState = DiskStateRegistry.GetState(BaseList.Value.Installation)!;
+        
+        await AddMod("ReplacingConfigMod",
+            // This replaces the config file without changing the contents
+            (_configPath.Path, "config.ini"),
+            // This replaces the image file with a new one
+            (_imagePath.Path, "modifiedImage.dds")
+            );
+        
+        var diffTree = await _synchronizer.LoadoutToDiskDiff(BaseList.Value, prevDiskState );
+        var res = diffTree.GetAllDescendentFiles()
+            .Select(node => VerifiableFile.From(node.Item.Value))
+            .OrderByDescending(mod => mod.GamePath)
+            .ToArray();
+        
+        await Verify(res);
     }
 
     [Fact]

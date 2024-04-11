@@ -1,0 +1,33 @@
+<reactiveUi:ReactiveUserControl x:TypeArguments="applyDiff:IApplyDiffViewModel" xmlns="https://github.com/avaloniaui"
+                                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                                xmlns:reactiveUi="http://reactiveui.net"
+                                xmlns:applyDiff="clr-namespace:NexusMods.App.UI.Pages.Diff.ApplyDiff"
+                                xmlns:trees="clr-namespace:NexusMods.App.UI.Controls.Trees"
+                                xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+                                xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
+                                mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+                                x:Class="NexusMods.App.UI.Pages.Diff.ApplyDiff.ApplyDiffView">
+    <Design.DataContext>
+        <applyDiff:ApplyDiffDesignViewModel />
+    </Design.DataContext>
+    
+    <Grid RowDefinitions="Auto, *">
+        <Border Classes="Toolbar" Grid.Row="0">
+            <Grid ColumnDefinitions="Auto, *">
+                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                    <Button x:Name="RefreshButton">
+                        <StackPanel>
+                            <icons:UnifiedIcon Classes="Refresh" />
+                            <TextBlock Text="{x:Static resources:Language.ApplyDiff_Refresh}" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
+        
+        <reactiveUi:ViewModelViewHost Grid.Row="1" x:Name="TreeViewHost"/>
+    </Grid>
+</reactiveUi:ReactiveUserControl>
+

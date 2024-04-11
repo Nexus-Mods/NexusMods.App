@@ -112,6 +112,10 @@
     <Style Selector="icons|UnifiedIcon.ForegroundDangerStrong">
         <Setter Property="Foreground" Value="{StaticResource DangerStrongBrush}" />
     </Style>
+    
+    <Style Selector="icons|UnifiedIcon.ForegroundSuccessStrong">
+        <Setter Property="Foreground" Value="{StaticResource SuccessStrongBrush}" />
+    </Style>
 
     <!-- Icon Selection -->
 
