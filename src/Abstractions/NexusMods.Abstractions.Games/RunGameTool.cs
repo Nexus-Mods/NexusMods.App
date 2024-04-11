@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Globalization;
 using System.Text;
@@ -115,50 +116,52 @@ public class RunGameTool<T> : IRunGameTool
 
     private async Task RunThroughSteam(uint appId, CancellationToken cancellationToken)
     {
-        var existingReaperProcesses = Process.GetProcessesByName("reaper");
+        if (!OSInformation.Shared.IsLinux) throw OSInformation.Shared.CreatePlatformNotSupportedException();
+
+        var timeout = TimeSpan.FromMinutes(1);
+
+        // NOTE(erri120): This should be empty for most of the time. We want to wait until the reaper process for
+        // the current starts, so we ignore every reaper process that already exists.
+        var existingReaperProcesses = Process.GetProcessesByName("reaper").Select(x => x.Id).ToHashSet();
 
         // https://developer.valvesoftware.com/wiki/Steam_browser_protocol
         await _osInterop.OpenUrl(new Uri($"steam://rungameid/{appId.ToString(CultureInfo.InvariantCulture)}"), cancellationToken);
 
-        if (OSInformation.Shared.IsWindows)
-        {
-            // TODO:
-        } else if (OSInformation.Shared.IsLinux)
-        {
-            var steam = await WaitForProcessToStart("steam", Array.Empty<Process>(), TimeSpan.FromMinutes(1), cancellationToken);
-            if (steam is null) return;
+        var steam = await WaitForProcessToStart("steam", timeout, existingProcesses: null, cancellationToken);
+        if (steam is null) return;
 
-            // NOTE(erri120): Reaper is a custom tool for cleaning up child processes
-            // See https://github.com/sonic2kk/steamtinkerlaunch/wiki/Steam-Reaper for details.
-            var reaper = await WaitForProcessToStart("reaper", existingReaperProcesses, TimeSpan.FromMinutes(1), cancellationToken);
-            if (reaper is null) return;
+        // NOTE(erri120): Reaper is a custom tool for cleaning up child processes
+        // See https://github.com/sonic2kk/steamtinkerlaunch/wiki/Steam-Reaper for details.
+        var reaper = await WaitForProcessToStart("reaper", timeout, existingReaperProcesses, cancellationToken);
+        if (reaper is null) return;
 
-            await reaper.WaitForExitAsync(cancellationToken);
-        }
-        else
-        {
-            throw OSInformation.Shared.CreatePlatformNotSupportedException();
-        }
+        await reaper.WaitForExitAsync(cancellationToken);
     }
 
     private async ValueTask<Process?> WaitForProcessToStart(
         string processName,
-        Process[] existingProcesses,
         TimeSpan timeout,
+        HashSet<int>? existingProcesses,
         CancellationToken cancellationToken = default)
     {
+        _logger.LogDebug("Waiting for process `{ProcessName}` to start within `{Timeout:g}` second(s)", processName, timeout);
+
         try
         {
             var start = DateTime.UtcNow;
             while (!cancellationToken.IsCancellationRequested && start + timeout > DateTime.UtcNow)
             {
                 var processes = Process.GetProcessesByName(processName);
-                var target = processes.FirstOrDefault(x => existingProcesses.All(p => p.Id != x.Id));
+                var target = existingProcesses is not null
+                    ? processes.FirstOrDefault(x => !existingProcesses.Contains(x.Id))
+                    : processes.FirstOrDefault();
+
                 if (target is not null) return target;
 
                 await Task.Delay(TimeSpan.FromMilliseconds(300), cancellationToken);
             }
 
+            _logger.LogWarning("Process `{ProcessName}` failed to start within `{Timeout:g}` second(s)", processName, timeout);
             return null;
         }
         catch (TaskCanceledException)
@@ -167,7 +170,7 @@ public class RunGameTool<T> : IRunGameTool
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Exception while waiting for process \"{Process}\" to start", processName);
+            _logger.LogError(e, "Exception while waiting for process `{Process}` to start", processName);
             return null;
         }
     }
