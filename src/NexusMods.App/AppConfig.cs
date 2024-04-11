@@ -65,14 +65,30 @@ public class AppConfig
 public interface ILoggingSettings
 {
     /// <summary>
-    /// Path where the log files will be saved to.
+    /// Gets the path to the current log file for the main process.
     /// </summary>
-    public ConfigurationPath FilePath { get; }
+    public ConfigurationPath MainProcessLogFilePath { get; }
 
     /// <summary>
-    /// Path to historical log files, with templated element e.g. 'PATH_TO_FILE/nexusmods.app.{##}.log'
+    /// Gets the template path to the archive log file for the main process.
     /// </summary>
-    public ConfigurationPath ArchiveFilePath { get; }
+    /// <remarks>
+    /// For details, see https://nlog-project.org/documentation/v5.0.0/html/P_NLog_Targets_FileTarget_ArchiveFileName.htm
+    /// </remarks>
+    public ConfigurationPath MainProcessArchiveFilePath { get; }
+
+    /// <summary>
+    /// Gets the path to the current log file for the slim process.
+    /// </summary>
+    public ConfigurationPath SlimProcessLogFilePath { get; }
+
+    /// <summary>
+    /// Gets the template path to the archive log file for the slim process.
+    /// </summary>
+    /// <remarks>
+    /// For details, see https://nlog-project.org/documentation/v5.0.0/html/P_NLog_Targets_FileTarget_ArchiveFileName.htm
+    /// </remarks>
+    public ConfigurationPath SlimProcessArchiveFilePath { get; }
 
     /// <summary>
     /// Number of previous log files to store.
@@ -82,14 +98,16 @@ public interface ILoggingSettings
 
 public class LoggingSettings : ILoggingSettings
 {
-    private const string LogFileName = "nexusmods.app.current.log";
-    private const string LogFileNameTemplate = "nexusmods.app.{##}.log";
+    /// <inheritdoc/>
+    public ConfigurationPath MainProcessLogFilePath { get; private set; }
 
     /// <inheritdoc/>
-    public ConfigurationPath FilePath { get; set; }
+    public ConfigurationPath MainProcessArchiveFilePath { get; private set; }
+    /// <inheritdoc/>
+    public ConfigurationPath SlimProcessLogFilePath { get; private set; }
 
     /// <inheritdoc/>
-    public ConfigurationPath ArchiveFilePath { get; set; }
+    public ConfigurationPath SlimProcessArchiveFilePath { get; private set; }
 
     /// <inheritdoc/>
     public int MaxArchivedFiles { get; set; }
@@ -106,8 +124,10 @@ public class LoggingSettings : ILoggingSettings
     public LoggingSettings(IFileSystem fileSystem)
     {
         var baseFolder = GetDefaultBaseDirectory(fileSystem);
-        FilePath = GetFilePath(baseFolder);
-        ArchiveFilePath = GetArchiveFilePath(baseFolder);
+        MainProcessLogFilePath = GetFilePath(baseFolder, forMainProcess: true);
+        MainProcessArchiveFilePath = GetArchiveFilePath(baseFolder, forMainProcess: true);
+        SlimProcessLogFilePath = GetFilePath(baseFolder, forMainProcess: false);
+        SlimProcessArchiveFilePath = GetArchiveFilePath(baseFolder, forMainProcess: false);
         MaxArchivedFiles = 10;
     }
 
@@ -120,14 +140,30 @@ public class LoggingSettings : ILoggingSettings
 
         // Set default locations if none are provided.
         var baseFolder = GetDefaultBaseDirectory(fs);
-        if (string.IsNullOrEmpty(FilePath.RawPath))
-            FilePath = GetFilePath(baseFolder);
+        if (string.IsNullOrEmpty(MainProcessLogFilePath.RawPath))
+        {
+            MainProcessLogFilePath = GetFilePath(baseFolder, forMainProcess: true);
+        }
 
-        if (string.IsNullOrEmpty(ArchiveFilePath.RawPath))
-            ArchiveFilePath = GetArchiveFilePath(baseFolder);
+        if (string.IsNullOrEmpty(MainProcessArchiveFilePath.RawPath))
+        {
+            MainProcessArchiveFilePath = GetArchiveFilePath(baseFolder, forMainProcess: true);
+        }
 
-        FilePath.ToAbsolutePath().Parent.CreateDirectory();
-        ArchiveFilePath.ToAbsolutePath().Parent.CreateDirectory();
+        if (string.IsNullOrEmpty(SlimProcessLogFilePath.RawPath))
+        {
+            SlimProcessLogFilePath = GetFilePath(baseFolder, forMainProcess: false);
+        }
+
+        if (string.IsNullOrEmpty(SlimProcessArchiveFilePath.RawPath))
+        {
+            SlimProcessArchiveFilePath = GetArchiveFilePath(baseFolder, forMainProcess: false);
+        }
+
+        MainProcessLogFilePath.ToAbsolutePath().Parent.CreateDirectory();
+        MainProcessArchiveFilePath.ToAbsolutePath().Parent.CreateDirectory();
+        SlimProcessLogFilePath.ToAbsolutePath().Parent.CreateDirectory();
+        SlimProcessArchiveFilePath.ToAbsolutePath().Parent.CreateDirectory();
     }
 
     private static AbsolutePath GetDefaultBaseDirectory(IFileSystem fs)
@@ -136,13 +172,27 @@ public class LoggingSettings : ILoggingSettings
             () => fs.GetKnownPath(KnownPath.LocalApplicationDataDirectory).Combine("NexusMods.App/Logs"),
             () => fs.GetKnownPath(KnownPath.XDG_STATE_HOME).Combine("NexusMods.App/Logs"),
             // Using _ instead of . So OSX doesn't think that the folder is an app 🙄
-            () => fs.GetKnownPath(KnownPath.LocalApplicationDataDirectory).Combine("NexusMods_App/Logs"));
+            () => fs.GetKnownPath(KnownPath.LocalApplicationDataDirectory).Combine("NexusMods_App/Logs")
+        );
     }
 
-    private static ConfigurationPath GetFilePath(AbsolutePath baseFolder) => new(baseFolder.Combine(LogFileName));
 
-    private static ConfigurationPath GetArchiveFilePath(AbsolutePath baseFolder) =>
-        new(baseFolder.Combine(LogFileNameTemplate));
+    private static ConfigurationPath GetFilePath(AbsolutePath baseFolder, bool forMainProcess)
+    {
+        var logFileName = forMainProcess
+            ? "nexusmods.app.main.current.log"
+            : "nexusmods.app.slim.current.log";
+
+        return new ConfigurationPath(baseFolder.Combine(logFileName));
+    }
+
+    private static ConfigurationPath GetArchiveFilePath(AbsolutePath baseFolder, bool forMainProcess)
+    {
+        var logFileNameTemplate = forMainProcess
+            ? "nexusmods.app.main.{##}.log"
+            : "nexusmods.app.slim.{##}.log";
+        return new ConfigurationPath(baseFolder.Combine(logFileNameTemplate));
+    }
 }
 
 internal class AppConfigManager : IAppConfigManager

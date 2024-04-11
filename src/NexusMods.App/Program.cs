@@ -1,5 +1,5 @@
-using System.Diagnostics;
 using System.Reactive;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using Avalonia;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,52 +25,67 @@ public class Program
         MainThreadData.SetMainThread();
 
         var isMain = IsMainProcess(args);
-
-        var host = BuildHost(slimMode:!isMain);
+        var host = BuildHost(slimMode: !isMain);
 
         _logger = host.Services.GetRequiredService<ILogger<Program>>();
-        TaskScheduler.UnobservedTaskException += (_, e) =>
+        LogMessages.RuntimeInformation(_logger, RuntimeInformation.OSDescription, RuntimeInformation.FrameworkDescription);
+        LogMessages.StartingProcess(_logger, Environment.ProcessPath, Environment.ProcessId, args.Length, args);
+
+        TaskScheduler.UnobservedTaskException += (sender, eventArgs) =>
         {
-            _logger.LogError(e.Exception, "Unobserved task exception");
-            e.SetObserved();
+            LogMessages.UnobservedTaskException(_logger, eventArgs.Exception, sender, sender?.GetType());
+            eventArgs.SetObserved();
         };
 
         RxApp.DefaultExceptionHandler = Observer.Create<Exception>(ex =>
         {
-            _logger.LogError(ex, "Unhandled exception");
+            LogMessages.UnobservedReactiveThrownException(_logger, ex);
         });
 
+        if (MainThreadData.IsDebugMode)
+        {
+            _logger.LogInformation("Starting the application in single-process mode with an attached debugger");
+        }
+        else
+        {
+            _logger.LogInformation("Starting the application in release mode without an attached debugger");
+        }
 
-        _logger.LogDebug("Application starting in {Mode} mode", MainThreadData.IsDebugMode ? "debug" : "release");
         var startup = host.Services.GetRequiredService<StartupDirector>();
-        _logger.LogDebug("Calling startup handler");
+
         var managerTask = Task.Run(async () =>
+        {
+            try
+            {
+                _logger.LogTrace("Calling startup handler");
+                return await startup.Start(args, MainThreadData.IsDebugMode);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogCritical(ex, "Exception in startup handler");
+                Environment.Exit(-1);
+                throw;
+            }
+            finally
             {
                 try
                 {
-                    return await startup.Start(args, MainThreadData.IsDebugMode);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Error in startup handler");
-                    Environment.Exit(-1);
-                    throw;
-                }
-                finally
-                {
-                    try
+                    if (!MainThreadData.IsDebugMode)
                     {
-                        if (!MainThreadData.IsDebugMode) 
-                            MainThreadData.Shutdown();
+                        _logger.LogTrace("Shutting down main thread in release mode");
+                        MainThreadData.Shutdown();
                     }
-                    catch (Exception e)
+                    else
                     {
-                        _logger.LogError(e, "Error shutting down main thread");
+                        _logger.LogInformation("The main thread won't be shutdown in debug mode");
                     }
+                }
+                catch (Exception e)
+                {
+                    _logger.LogCritical(e, "Error shutting down main thread");
                 }
             }
-        );
-
+        });
 
         // The UI *must* be started on the main thread, according to the Avalonia docs, although it
         // seems to work fine on some platforms (this behavior is not guaranteed). So when we need to open a new
@@ -85,14 +100,14 @@ public class Program
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError(e, "Error running main thread action");
+                    _logger.LogError(e, "Exception running main thread action");
                 }
                 continue;
             }
             Thread.Sleep(250);
         }
 
-        _logger.LogDebug("Startup handler returned {Result}", managerTask.Result);
+        _logger.LogInformation("Startup handler returned {Result}", managerTask.Result);
         return managerTask.Result;
     }
 
@@ -114,8 +129,8 @@ public class Program
         // to ConfigureLogging; since the DI container isn't built until the host is.
         var config = ReadAppConfig(new AppConfig());
         var host = new HostBuilder()
-            .ConfigureServices(services => services.AddApp(config, slimMode:slimMode).Validate())
-            .ConfigureLogging((_, builder) => AddLogging(builder, config.LoggingSettings))
+            .ConfigureServices(services => services.AddApp(config, slimMode: slimMode).Validate())
+            .ConfigureLogging((_, builder) => AddLogging(builder, config.LoggingSettings, isMainProcess: !slimMode))
             .Build();
 
         return host;
@@ -191,19 +206,35 @@ public class Program
         return null;
     }
 
-    static void AddLogging(ILoggingBuilder loggingBuilder, ILoggingSettings settings)
+    private static void AddLogging(ILoggingBuilder loggingBuilder, ILoggingSettings settings, bool isMainProcess)
     {
         var config = new NLog.Config.LoggingConfiguration();
 
-        var fileTarget = new FileTarget("file")
+        const string defaultLayout = "${processtime} [${level:uppercase=true}] (${logger}) ${message:withexception=true}";
+        const string defaultHeader = "############ Nexus Mods App log file - ${longdate} ############";
+
+        FileTarget fileTarget;
+        if (isMainProcess)
         {
-            FileName = settings.FilePath.GetFullPath(),
-            ArchiveFileName = settings.ArchiveFilePath.GetFullPath(),
-            ArchiveOldFileOnStartup = true,
-            MaxArchiveFiles = settings.MaxArchivedFiles,
-            Layout = "${processtime} [${level:uppercase=true}] (${logger}) ${message:withexception=true}",
-            Header = "############ Nexus Mods App log file - ${longdate} ############"
-        };
+            fileTarget = new FileTarget("file")
+            {
+                FileName = settings.MainProcessLogFilePath.GetFullPath(),
+                ArchiveFileName = settings.MainProcessArchiveFilePath.GetFullPath(),
+            };
+        }
+        else
+        {
+            fileTarget = new FileTarget("file")
+            {
+                FileName = settings.SlimProcessLogFilePath.GetFullPath(),
+                ArchiveFileName = settings.SlimProcessArchiveFilePath.GetFullPath(),
+            };
+        }
+
+        fileTarget.ArchiveOldFileOnStartup = true;
+        fileTarget.MaxArchiveDays = settings.MaxArchivedFiles;
+        fileTarget.Layout = defaultLayout;
+        fileTarget.Header = defaultHeader;
 
         var consoleTarget = new ConsoleTarget("console")
         {
@@ -218,7 +249,7 @@ public class Program
         // https://github.com/Nexus-Mods/NexusMods.App/issues/250
         var options = new NLogProviderOptions
         {
-            RemoveLoggerFactoryFilter = false
+            RemoveLoggerFactoryFilter = false,
         };
 
         loggingBuilder.ClearProviders();
