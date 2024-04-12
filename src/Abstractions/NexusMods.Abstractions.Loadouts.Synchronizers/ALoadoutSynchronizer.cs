@@ -427,7 +427,6 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             return newMod;
         }
 
-
         // Find all the files, and try to find a match in the previous state
         foreach (var item in fileTree.GetAllDescendentFiles())
         {

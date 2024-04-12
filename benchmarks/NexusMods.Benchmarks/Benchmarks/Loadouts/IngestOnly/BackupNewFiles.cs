@@ -8,12 +8,11 @@ using NexusMods.Benchmarks.Interfaces;
 namespace NexusMods.Benchmarks.Benchmarks.Loadouts.IngestOnly;
 
 [MemoryDiagnoser]
-[BenchmarkInfo("LoadoutSynchronizer: DiskToFileTree", 
-    "[Ingest 5/9] Create new file tree from the current disk state and the previous file tree.")]
-[SimpleJob(1,3,3,1)]
+[BenchmarkInfo("LoadoutSynchronizer: BackupNewFiles", 
+    "[Ingest 8/9] Backs up any new files in the loadout. [LoadoutSynchronizer Overhead only test].")]
 // Needed because DB keeps growing between runs, and DB perf can be inconsistent enough that it'll run all 100 runs,
 // taking forever.
-public class DiskToFileTree : ASynchronizerBenchmark, IBenchmark
+public class BackupNewFiles : ASynchronizerBenchmark, IBenchmark
 {
     [ParamsSource(nameof(ValuesForFilePath))]
     // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
@@ -24,7 +23,9 @@ public class DiskToFileTree : ASynchronizerBenchmark, IBenchmark
     private FileTree _prevFileTree = null!;
     private DiskStateTree _prevDiskState = null!;
     private DiskStateTree _diskState = null!;
-    
+    private FileTree _fileTree = null!;
+    private FlattenedLoadout _flattenedLoadout = null!;
+
     public IEnumerable<string> ValuesForFilePath => new[]
     {
         Path.GetFileName(Assets.Loadouts.FileLists.SkyrimFileList),
@@ -49,12 +50,19 @@ public class DiskToFileTree : ASynchronizerBenchmark, IBenchmark
 
             // Get the new disk state
             _diskState = await _defaultSynchronizer.GetDiskState(_installation);
+            _fileTree = await _defaultSynchronizer.DiskToFileTree(_diskState, loadout, _prevFileTree, _prevDiskState);
+            _flattenedLoadout = await _defaultSynchronizer.FileTreeToFlattenedLoadout(_fileTree, loadout, _prevFlattenedLoadout);
+            await _defaultSynchronizer.FlattenedLoadoutToLoadout(_flattenedLoadout, loadout, _prevFlattenedLoadout);
         }).Wait();
+        
+#pragma warning disable CS0618 // Type or member is obsolete
+        _defaultSynchronizer.SetFileStore(new DummyFileStore());
+#pragma warning restore CS0618 // Type or member is obsolete
     }
 
     [Benchmark]
-    public async Task<FileTree> DiskToFileTreee()
+    public async Task BackupNewFiles_OverheadOnly()
     {
-        return await _defaultSynchronizer.DiskToFileTree(_diskState, _datamodel.BaseList.Value, _prevFileTree, _prevDiskState);
+        await _defaultSynchronizer.BackupNewFiles(_installation, _fileTree);
     }
 }

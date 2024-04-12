@@ -8,12 +8,12 @@ using NexusMods.Benchmarks.Interfaces;
 namespace NexusMods.Benchmarks.Benchmarks.Loadouts.IngestOnly;
 
 [MemoryDiagnoser]
-[BenchmarkInfo("LoadoutSynchronizer: DiskToFileTree", 
-    "[Ingest 5/9] Create new file tree from the current disk state and the previous file tree.")]
-[SimpleJob(1,3,3,1)]
+[BenchmarkInfo("LoadoutSynchronizer: FileTreeToFlattenedLoadout", 
+    "[Ingest 6/9] Converts a file tree into a flattened loadout by assigning files to mods, " +
+    "reusing previous assignments when possible, and creating new mods for unassigned files.")]
 // Needed because DB keeps growing between runs, and DB perf can be inconsistent enough that it'll run all 100 runs,
 // taking forever.
-public class DiskToFileTree : ASynchronizerBenchmark, IBenchmark
+public class FileTreeToFlattenedLoadout : ASynchronizerBenchmark, IBenchmark
 {
     [ParamsSource(nameof(ValuesForFilePath))]
     // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
@@ -24,6 +24,7 @@ public class DiskToFileTree : ASynchronizerBenchmark, IBenchmark
     private FileTree _prevFileTree = null!;
     private DiskStateTree _prevDiskState = null!;
     private DiskStateTree _diskState = null!;
+    private FileTree _fileTree = null!;
     
     public IEnumerable<string> ValuesForFilePath => new[]
     {
@@ -49,12 +50,13 @@ public class DiskToFileTree : ASynchronizerBenchmark, IBenchmark
 
             // Get the new disk state
             _diskState = await _defaultSynchronizer.GetDiskState(_installation);
+            _fileTree = await _defaultSynchronizer.DiskToFileTree(_diskState, loadout, _prevFileTree, _prevDiskState);
         }).Wait();
     }
 
     [Benchmark]
-    public async Task<FileTree> DiskToFileTreee()
+    public async Task<FlattenedLoadout> FileTreeToFlattenedLoadouto()
     {
-        return await _defaultSynchronizer.DiskToFileTree(_diskState, _datamodel.BaseList.Value, _prevFileTree, _prevDiskState);
+        return await _defaultSynchronizer.FileTreeToFlattenedLoadout(_fileTree, _datamodel.BaseList.Value, _prevFlattenedLoadout);
     }
 }
