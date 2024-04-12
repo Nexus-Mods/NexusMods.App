@@ -11,6 +11,9 @@ namespace NexusMods.Benchmarks.Benchmarks.Loadouts.IngestOnly;
 [MemoryDiagnoser]
 [BenchmarkInfo("LoadoutSynchronizer: DiskToFileTree", 
     "[Ingest 5/9] Create new file tree from the current disk state and the previous file tree.")]
+[SimpleJob(1,3,3,1)]
+// Needed because DB keeps growing between runs, and DB perf can be inconsistent enough that it'll run all 100 runs,
+// taking forever.
 public class DiskToFileTree : ASynchronizerBenchmark, IBenchmark
 {
     [ParamsSource(nameof(ValuesForFilePath))]
