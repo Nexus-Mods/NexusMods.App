@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Runtime.InteropServices;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.DataModel.Entities.Sorting;
@@ -291,6 +292,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     public async ValueTask<FileTree> DiskToFileTree(DiskStateTree diskState, Loadout prevLoadout, FileTree prevFileTree, DiskStateTree prevDiskState)
     {
         List<KeyValuePair<GamePath, AModFile>> results = new();
+        var file = new List<AModFile>();
         foreach (var item in diskState.GetAllDescendentFiles())
         {
             var gamePath = item.GamePath();
@@ -307,15 +309,19 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
 
                 // Else, the file has changed, so we need to update it.
                 var newFile = await HandleChangedFile(prevFile, prevEntry.Item.Value, item.Item.Value, gamePath, absPath);
+                file.Add(newFile);
                 results.Add(KeyValuePair.Create(gamePath, newFile));
             }
             else
             {
                 // Else, the file is new, so we need to add it.
                 var newFile = await HandleNewFile(item.Item.Value, gamePath, absPath);
+                file.Add(newFile);
                 results.Add(KeyValuePair.Create(gamePath, newFile));
             }
         }
+
+        CollectionsMarshal.AsSpan(file).EnsureAllPersisted(_store);
 
         // Deletes are handled implicitly as we only return files that exist in the new state.
         return FileTree.Create(results);
@@ -330,6 +336,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// <param name="absolutePath"></param>
     /// <returns></returns>
     /// <exception cref="NotImplementedException"></exception>
+    /// <returns>An unpersisted new file. This file needs to be persisted.</returns>
     protected virtual ValueTask<AModFile> HandleNewFile(DiskStateEntry newEntry, GamePath gamePath, AbsolutePath absolutePath)
     {
         var newFile = new StoredFile
@@ -339,7 +346,6 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             Size = newEntry.Size,
             To = gamePath
         };
-        newFile.EnsurePersisted(_store);
         return ValueTask.FromResult<AModFile>(newFile);
     }
 
@@ -353,14 +359,13 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// <param name="newEntry"></param>
     /// <param name="gamePath"></param>
     /// <param name="absolutePath"></param>
-    /// <returns></returns>
+    /// <returns>An unpersisted changed file. This file needs to be persisted.</returns>
     protected virtual async ValueTask<AModFile> HandleChangedFile(AModFile prevFile, DiskStateEntry prevEntry, DiskStateEntry newEntry, GamePath gamePath, AbsolutePath absolutePath)
     {
         if (prevFile is IGeneratedFile gf)
         {
             await using var stream = absolutePath.Read();
             var entity = await gf.Update(newEntry, stream);
-            entity.EnsurePersisted(_store);
             return entity;
         }
 
@@ -371,7 +376,6 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             Size = newEntry.Size,
             To = gamePath
         };
-        newFile.EnsurePersisted(_store);
         return newFile;
     }
 
