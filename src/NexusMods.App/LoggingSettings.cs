@@ -43,7 +43,8 @@ public record LoggingSettings : ISettings
 #elif TRACE
         LogLevel.Trace;
 #else
-        LogLevel.Information;
+        // TODO: Until this value can be changed through the UI, we'll use Debug by default even for Releases.
+        LogLevel.Debug;
 #endif
 
     public static ISettingsBuilder Configure(ISettingsBuilder settingsBuilder)

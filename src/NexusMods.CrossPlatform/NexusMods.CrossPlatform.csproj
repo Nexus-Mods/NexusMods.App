@@ -12,4 +12,34 @@
         <InternalsVisibleTo Include="NexusMods.CrossPlatform.Tests" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Update="Process\AOSInterop.cs">
+        <DependentUpon>IOSInterop.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Process\OSInteropLinux.cs">
+        <DependentUpon>IOSInterop.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Process\OSInteropOSX.cs">
+        <DependentUpon>IOSInterop.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Process\OSInteropWindows.cs">
+        <DependentUpon>IOSInterop.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Process\ProcessFactory.cs">
+        <DependentUpon>IProcessFactory.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Process\FakeProcessFactory.cs">
+        <DependentUpon>IProcessFactory.cs</DependentUpon>
+      </Compile>
+      <Compile Update="ProtocolRegistration\ProtocolRegistrationLinux.cs">
+        <DependentUpon>IProtocolRegistration.cs</DependentUpon>
+      </Compile>
+      <Compile Update="ProtocolRegistration\ProtocolRegistrationOSX.cs">
+        <DependentUpon>IProtocolRegistration.cs</DependentUpon>
+      </Compile>
+      <Compile Update="ProtocolRegistration\ProtocolRegistrationWindows.cs">
+        <DependentUpon>IProtocolRegistration.cs</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
 </Project>
