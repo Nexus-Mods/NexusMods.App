@@ -1,4 +1,3 @@
-using NexusMods.Abstractions.Serialization.Settings;
 using NexusMods.Abstractions.Settings;
 
 namespace NexusMods.App.UI.Settings;
@@ -12,7 +11,6 @@ public record TelemetrySettings : ISettings
     public static ISettingsBuilder Configure(ISettingsBuilder settingsBuilder)
     {
         // TODO: show in UI
-        return settingsBuilder
-            .ConfigureStorageBackend<TelemetrySettings>(builder => builder.UseDataStore());
+        return settingsBuilder;
     }
 }

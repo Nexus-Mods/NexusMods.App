@@ -47,6 +47,7 @@ internal interface IStorageBackendBuilderValues
 {
     public SettingsStorageBackendId BackendId { get; }
     public Type? BackendType { get; }
+    public bool IsDisabled { get; }
 }
 
 internal class SettingsStorageBackendBuilder<T> : IStorageBackendBuilderValues, ISettingsStorageBackendBuilder<T>
@@ -54,16 +55,20 @@ internal class SettingsStorageBackendBuilder<T> : IStorageBackendBuilderValues, 
 {
     public SettingsStorageBackendId BackendId { get; private set; } = SettingsStorageBackendId.DefaultValue;
     public Type? BackendType { get; private set; } = null;
+    public bool IsDisabled { get; private set; } = false;
 
-    public ISettingsStorageBackendBuilder<T> UseStorageBackend(SettingsStorageBackendId id)
+    public void Disable()
     {
-        BackendId = id;
-        return this;
+        IsDisabled = true;
     }
 
-    public ISettingsStorageBackendBuilder<T> UseStorageBackend<TBackend>() where TBackend : IBaseSettingsStorageBackend
+    public void UseStorageBackend(SettingsStorageBackendId id)
+    {
+        BackendId = id;
+    }
+
+    public void UseStorageBackend<TBackend>() where TBackend : IBaseSettingsStorageBackend
     {
         BackendType = typeof(TBackend);
-        return this;
     }
 }

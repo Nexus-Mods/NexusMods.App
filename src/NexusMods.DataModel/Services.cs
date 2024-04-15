@@ -33,7 +33,7 @@ public static class Services
     public static IServiceCollection AddDataModel(this IServiceCollection coll)
     {
         coll.AddSettings<DataModelSettings>();
-        coll.AddSettingsStorageBackend<DataStoreSettingsBackend>();
+        coll.AddSettingsStorageBackend<DataStoreSettingsBackend>(isDefault: true);
 
         coll.AddSingleton<MessageBus>();
         coll.AddSingleton(typeof(IMessageConsumer<>), typeof(MessageConsumer<>));

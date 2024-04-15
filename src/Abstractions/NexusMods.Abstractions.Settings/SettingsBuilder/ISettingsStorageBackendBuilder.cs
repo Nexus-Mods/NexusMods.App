@@ -9,12 +9,18 @@ namespace NexusMods.Abstractions.Settings;
 public interface ISettingsStorageBackendBuilder<TSettings> where TSettings : class, ISettings, new()
 {
     /// <summary>
+    /// Don't assign this settings to any storage backend. This disables
+    /// the storing and loading of values for this type.
+    /// </summary>
+    void Disable();
+
+    /// <summary>
     /// Use the storage backend with the provided ID.
     /// </summary>
-    ISettingsStorageBackendBuilder<TSettings> UseStorageBackend(SettingsStorageBackendId id);
+    void UseStorageBackend(SettingsStorageBackendId id);
 
     /// <summary>
     /// Use the provided storage backend.
     /// </summary>
-    ISettingsStorageBackendBuilder<TSettings> UseStorageBackend<TBackend>() where TBackend : IBaseSettingsStorageBackend;
+    void UseStorageBackend<TBackend>() where TBackend : IBaseSettingsStorageBackend;
 }

@@ -1,3 +1,4 @@
+using System.Text;
 using System.Text.Json;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
@@ -6,6 +7,8 @@ using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.Abstractions.Serialization.DataModel.Ids;
 using NexusMods.Abstractions.Settings;
+using NexusMods.Hashing.xxHash64;
+using Reloaded.Memory.Extensions;
 
 namespace NexusMods.DataModel.Settings;
 
@@ -78,7 +81,16 @@ internal sealed class DataStoreSettingsBackend : ISettingsStorageBackend
         return value;
     }
 
-    private static Id64 GetId<T>() => new(EntityCategory.GlobalSettings, (ulong)typeof(T).GetHashCode());
+    private static Id64 GetId<T>()
+    {
+        var s = typeof(T).FullName ?? typeof(T).Name;
+
+        Span<byte> bytes = stackalloc byte[s.Length];
+        var count = Encoding.ASCII.GetBytes(s, bytes);
+
+        var hash = XxHash64Algorithm.HashBytes(bytes.SliceFast(0, count));
+        return new Id64(EntityCategory.GlobalSettings, hash);
+    }
 
     public void Dispose() { }
 }

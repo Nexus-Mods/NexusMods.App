@@ -10,7 +10,8 @@ internal partial class SettingsManager
     private static BuilderOutput Setup(
         ILogger logger,
         SettingsTypeInformation[] settingsTypeInformationArray,
-        IBaseSettingsStorageBackend[] baseStorageBackendArray)
+        IBaseSettingsStorageBackend[] baseStorageBackendArray,
+        IBaseSettingsStorageBackend defaultBaseStorageBackend)
     {
         var builder = new SettingsBuilder();
 
@@ -45,21 +46,19 @@ internal partial class SettingsManager
                 {
                     backend = baseStorageBackendArray.FirstOrDefault(x => x.GetType().IsAssignableTo(storageBackendValues.BackendType));
                 }
+                else if (!storageBackendValues.IsDisabled)
+                {
+                    backend = defaultBaseStorageBackend;
+                }
 
                 if (backend is not null)
                 {
-                    switch (backend)
-                    {
-                        case ISettingsStorageBackend settingsStorageBackend:
-                            storageBackendMappings[objectType] = settingsStorageBackend;
-                            break;
-                        case IAsyncSettingsStorageBackend asyncSettingsStorageBackend:
-                            asyncStorageBackendMappings[objectType] = asyncSettingsStorageBackend;
-                            break;
-                        default:
-                            throw new UnreachableException();
-                    }
+                    AddBackend(objectType, backend);
                 }
+            }
+            else
+            {
+                AddBackend(objectType, defaultBaseStorageBackend);
             }
 
             builder.Reset();
@@ -73,6 +72,21 @@ internal partial class SettingsManager
             StorageBackendMappings = storageBackendMappings.ToImmutableDictionary(),
             AsyncStorageBackendMappings = asyncStorageBackendMappings.ToImmutableDictionary(),
         };
+
+        void AddBackend(Type objectType, IBaseSettingsStorageBackend backend)
+        {
+            switch (backend)
+            {
+                case ISettingsStorageBackend settingsStorageBackend:
+                    storageBackendMappings[objectType] = settingsStorageBackend;
+                    break;
+                case IAsyncSettingsStorageBackend asyncSettingsStorageBackend:
+                    asyncStorageBackendMappings[objectType] = asyncSettingsStorageBackend;
+                    break;
+                default:
+                    throw new UnreachableException();
+            }
+        }
     }
 
     internal record BuilderOutput
