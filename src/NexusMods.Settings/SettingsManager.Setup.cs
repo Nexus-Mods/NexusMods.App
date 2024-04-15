@@ -11,7 +11,7 @@ internal partial class SettingsManager
         ILogger logger,
         SettingsTypeInformation[] settingsTypeInformationArray,
         IBaseSettingsStorageBackend[] baseStorageBackendArray,
-        IBaseSettingsStorageBackend defaultBaseStorageBackend)
+        IBaseSettingsStorageBackend? defaultBaseStorageBackend)
     {
         var builder = new SettingsBuilder();
 
@@ -56,7 +56,7 @@ internal partial class SettingsManager
                     AddBackend(objectType, backend);
                 }
             }
-            else
+            else if (defaultBaseStorageBackend is not null)
             {
                 AddBackend(objectType, defaultBaseStorageBackend);
             }

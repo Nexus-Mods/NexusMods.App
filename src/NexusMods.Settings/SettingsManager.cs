@@ -35,7 +35,7 @@ internal partial class SettingsManager : ISettingsManager
 
         var baseStorageBackendArray = serviceProvider.GetServices<IBaseSettingsStorageBackend>().ToArray();
         var settingsTypeInformationArray = serviceProvider.GetServices<SettingsTypeInformation>().ToArray();
-        var defaultBaseStorageBackend = serviceProvider.GetRequiredService<DefaultSettingsStorageBackend>().Backend;
+        var defaultBaseStorageBackend = serviceProvider.GetService<DefaultSettingsStorageBackend>()?.Backend;
 
         var builderOutput = Setup(_logger, settingsTypeInformationArray, baseStorageBackendArray, defaultBaseStorageBackend);
         _objectCreationMappings = builderOutput.ObjectCreationMappings;
