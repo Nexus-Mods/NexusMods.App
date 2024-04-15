@@ -43,24 +43,33 @@ internal partial class SettingsManager : ISettingsManager
         _asyncStorageBackendMappings = builderOutput.AsyncStorageBackendMappings;
     }
 
-    public void Set<T>(T value) where T : class, ISettings, new()
+    private void CoreSet<T>(T value, bool notify) where T : class, ISettings, new()
     {
         var type = typeof(T);
-
         _values[type] = value;
-        _subject.OnNext((type, value));
+        if (!notify) return;
 
+        _subject.OnNext((type, value));
         Save(value);
     }
+
+    public void Set<T>(T value) where T : class, ISettings, new() => CoreSet(value, notify: true);
 
     public T Get<T>() where T : class, ISettings, new()
     {
         if (_values.TryGetValue(typeof(T), out var obj)) return (obj as T)!;
 
-        var value = Load<T>() ?? GetDefaultValue<T>();
-        Set(value);
+        var savedValue = Load<T>();
+        if (savedValue is not null)
+        {
+            CoreSet(savedValue, notify: false);
+            return savedValue;
+        }
 
-        return value;
+        var defaultValue = GetDefaultValue<T>();
+        Set(defaultValue);
+
+        return defaultValue;
     }
 
     public T Update<T>(Func<T, T> updater) where T : class, ISettings, new()
