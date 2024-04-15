@@ -6,4 +6,12 @@
         <PackageReference Include="NetEscapades.EnumGenerators" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\NexusMods.Abstractions.Settings\NexusMods.Abstractions.Settings.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="NexusMods.DataModel" />
+    </ItemGroup>
 </Project>

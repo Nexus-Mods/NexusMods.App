@@ -16,6 +16,7 @@ using NexusMods.DataModel.Diagnostics;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Messaging;
+using NexusMods.DataModel.Settings;
 using NexusMods.DataModel.Sorting;
 using NexusMods.DataModel.TriggerFilter;
 using NexusMods.Extensions.DependencyInjection;
@@ -32,6 +33,7 @@ public static class Services
     public static IServiceCollection AddDataModel(this IServiceCollection coll)
     {
         coll.AddSettings<DataModelSettings>();
+        coll.AddSettingsStorageBackend<DataStoreSettingsBackend>();
 
         coll.AddSingleton<MessageBus>();
         coll.AddSingleton(typeof(IMessageConsumer<>), typeof(MessageConsumer<>));
