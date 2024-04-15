@@ -12,10 +12,9 @@ public static class Extensions
     /// <summary>
     /// Use the data store as a storage backend for this setting.
     /// </summary>
-    public static ISettingsStorageBackendBuilder<T> UseDataStore<T>(
-        this ISettingsStorageBackendBuilder<T> builder)
+    public static void UseDataStore<T>(this ISettingsStorageBackendBuilder<T> builder)
         where T : class, ISettings, new()
     {
-        return builder.UseStorageBackend(StorageBackendId);
+        builder.UseStorageBackend(StorageBackendId);
     }
 }
