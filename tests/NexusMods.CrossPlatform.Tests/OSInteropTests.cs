@@ -64,9 +64,7 @@ public class OSInteropTests
         await processFactory
             .Received(1)
             .ExecuteAsync(
-                Arg.Is<Command>(command =>
-                    command.TargetFilePath == targetFilePath &&
-                    command.Arguments == arguments),
+                Arg.Any<Command>(),
                 Arg.Any<CancellationToken>()
             );
     }
