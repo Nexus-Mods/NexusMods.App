@@ -149,7 +149,8 @@ public class NxFileStore : IFileStore
         var destPaths = new ConcurrentDictionary<AbsolutePath, byte>(); // Sanity test. Test code had this issue.
 #endif
 
-        var fileExistsCache = new ConcurrentDictionary<AbsolutePath, bool>(Environment.ProcessorCount, files.Length);
+        // Capacity is set to 'expected archive count' + 1.
+        var fileExistsCache = new ConcurrentDictionary<AbsolutePath, bool>(Environment.ProcessorCount, 2);
         Parallel.ForEach(files, file =>
         {
             if (TryGetLocation(file.Hash, fileExistsCache, out var archivePath, out var fileEntry))
