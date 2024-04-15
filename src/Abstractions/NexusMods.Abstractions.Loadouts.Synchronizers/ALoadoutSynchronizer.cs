@@ -292,7 +292,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     public async ValueTask<FileTree> DiskToFileTree(DiskStateTree diskState, Loadout prevLoadout, FileTree prevFileTree, DiskStateTree prevDiskState)
     {
         List<KeyValuePair<GamePath, AModFile>> results = new();
-        var file = new List<AModFile>();
+        var newFiles = new List<AModFile>();
         foreach (var item in diskState.GetAllDescendentFiles())
         {
             var gamePath = item.GamePath();
@@ -309,19 +309,19 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
 
                 // Else, the file has changed, so we need to update it.
                 var newFile = await HandleChangedFile(prevFile, prevEntry.Item.Value, item.Item.Value, gamePath, absPath);
-                file.Add(newFile);
+                newFiles.Add(newFile);
                 results.Add(KeyValuePair.Create(gamePath, newFile));
             }
             else
             {
                 // Else, the file is new, so we need to add it.
                 var newFile = await HandleNewFile(item.Item.Value, gamePath, absPath);
-                file.Add(newFile);
+                newFiles.Add(newFile);
                 results.Add(KeyValuePair.Create(gamePath, newFile));
             }
         }
 
-        CollectionsMarshal.AsSpan(file).EnsureAllPersisted(_store);
+        CollectionsMarshal.AsSpan(newFiles).EnsureAllPersisted(_store);
 
         // Deletes are handled implicitly as we only return files that exist in the new state.
         return FileTree.Create(results);
