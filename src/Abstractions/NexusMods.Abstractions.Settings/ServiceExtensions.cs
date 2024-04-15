@@ -23,6 +23,15 @@ public static class ServiceExtensions
     }
 
     /// <summary>
+    /// Registers a settings storage backend in DI.
+    /// </summary>
+    public static IServiceCollection AddSettingsStorageBackend<T>(this IServiceCollection serviceCollection)
+        where T : class, IBaseSettingsStorageBackend
+    {
+        return serviceCollection.AddSingleton<IBaseSettingsStorageBackend, T>();
+    }
+
+    /// <summary>
     /// Registers an override for <typeparamref name="T"/>.
     /// </summary>
     /// <remarks>
