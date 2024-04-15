@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,75 +8,55 @@ using NexusMods.Abstractions.Settings;
 
 namespace NexusMods.Settings;
 
-internal class SettingsManager : ISettingsManager
+internal partial class SettingsManager : ISettingsManager
 {
+    private static readonly IScheduler Scheduler = TaskPoolScheduler.Default;
+
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger _logger;
 
     private readonly Subject<(Type, object)> _subject = new();
     private readonly Dictionary<Type, object> _values = new();
-    private readonly ImmutableDictionary<Type,ObjectCreationInformation> _objectCreationDict;
-    private readonly ImmutableDictionary<Type,Func<object,object>> _overrides;
+    private readonly ImmutableDictionary<Type, ObjectCreationInformation> _objectCreationMappings;
+    private readonly ImmutableDictionary<Type, Func<object,object>> _overrides;
+
+    private readonly ImmutableDictionary<Type, ISettingsStorageBackend> _storageBackendMappings;
+    private readonly ImmutableDictionary<Type, IAsyncSettingsStorageBackend> _asyncStorageBackendMappings;
 
     public SettingsManager(IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
         _logger = serviceProvider.GetRequiredService<ILogger<SettingsManager>>();
 
-        var builder = new SettingsBuilder();
-
+        // overrides for tests
         _overrides = serviceProvider
             .GetServices<SettingsOverrideInformation>()
             .ToImmutableDictionary(x => x.Type, x => x.OverrideMethod);
 
-        _objectCreationDict = serviceProvider
-            .GetServices<SettingsTypeInformation>()
-            .Select(information =>
-            {
-                try
-                {
-                    information.ConfigureLambda.Invoke(builder);
-                }
-                catch (Exception e)
-                {
-                    _logger.LogError(e, "Exception while configuring {Type}", information.ObjectType);
-                }
+        var baseStorageBackendArray = serviceProvider.GetServices<IBaseSettingsStorageBackend>().ToArray();
+        var settingsTypeInformationArray = serviceProvider.GetServices<SettingsTypeInformation>().ToArray();
 
-                var defaultValueFactory = builder.DefaultValueFactory;
-                builder.Reset();
-
-                return new ObjectCreationInformation(information.ObjectType, information.DefaultValue, defaultValueFactory);
-            })
-            .ToImmutableDictionary(x => x.ObjectType, x => x);
+        var builderOutput = Setup(_logger, settingsTypeInformationArray, baseStorageBackendArray);
+        _objectCreationMappings = builderOutput.ObjectCreationMappings;
+        _storageBackendMappings = builderOutput.StorageBackendMappings;
+        _asyncStorageBackendMappings = builderOutput.AsyncStorageBackendMappings;
     }
 
     public void Set<T>(T value) where T : class, ISettings, new()
     {
-        _values[typeof(T)] = value;
-        _subject.OnNext((typeof(T), value));
-    }
+        var type = typeof(T);
 
-    private T GetDefaultValue<T>() where T : class, ISettings, new()
-    {
-        if (!_objectCreationDict.TryGetValue(typeof(T), out var objectCreationInformation))
-            throw new KeyNotFoundException($"Unknown settings type '{typeof(T)}'. Did you forget to register the setting with DI?");
+        _values[type] = value;
+        _subject.OnNext((type, value));
 
-        var value = objectCreationInformation.GetOrCreateDefaultValue(_serviceProvider);
-
-        if (_overrides.TryGetValue(typeof(T), out var overrideMethod))
-        {
-            value = overrideMethod.Invoke(value);
-        }
-
-        var res = (value as T)!;
-        return res;
+        Save(value);
     }
 
     public T Get<T>() where T : class, ISettings, new()
     {
         if (_values.TryGetValue(typeof(T), out var obj)) return (obj as T)!;
 
-        var value = GetDefaultValue<T>();
+        var value = Load<T>() ?? GetDefaultValue<T>();
         Set(value);
 
         return value;
@@ -95,5 +76,105 @@ internal class SettingsManager : ISettingsManager
         return _subject
             .Where(tuple => tuple.Item1 == typeof(T))
             .Select(tuple => (tuple.Item2 as T)!);
+    }
+
+    private T GetDefaultValue<T>() where T : class, ISettings, new()
+    {
+        if (!_objectCreationMappings.TryGetValue(typeof(T), out var objectCreationInformation))
+            throw new KeyNotFoundException($"Unknown settings type '{typeof(T)}'. Did you forget to register the setting with DI?");
+
+        var value = objectCreationInformation.GetOrCreateDefaultValue(_serviceProvider);
+
+        if (_overrides.TryGetValue(typeof(T), out var overrideMethod))
+        {
+            value = overrideMethod.Invoke(value);
+        }
+
+        var res = (value as T)!;
+        return res;
+    }
+
+    private void Save<T>(T value) where T : class, ISettings, new()
+    {
+        var type = typeof(T);
+
+        if (_storageBackendMappings.TryGetValue(type, out var storageBackend))
+        {
+            try
+            {
+                storageBackend.Save(value);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Exception while saving settings type `{Type}` with storage backend `{StorageBackendType}`", type, storageBackend.GetType());
+            }
+        } else if (_asyncStorageBackendMappings.TryGetValue(type, out var asyncStorageBackend))
+        {
+            Scheduler.ScheduleAsync((value, asyncStorageBackend, _logger), TimeSpan.Zero, async static (scheduler, state, cancellationToken) =>
+            {
+                var (valueToSave, backend, logger) = state;
+
+                try
+                {
+                    await backend.Save(valueToSave, cancellationToken);
+                }
+                catch (Exception e)
+                {
+                    logger.LogError(e, "Exception while saving settings type `{Type}` with async storage backend `{AsyncStorageBackendType}`", valueToSave.GetType(), backend.GetType());
+                }
+            });
+        }
+    }
+
+    private T? Load<T>() where T : class, ISettings, new()
+    {
+        var type = typeof(T);
+
+        if (_storageBackendMappings.TryGetValue(type, out var storageBackend))
+        {
+            try
+            {
+                return storageBackend.Load<T>();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Exception while loading settings type `{Type}` with storage backend `{StorageBackendType}`", type, storageBackend.GetType());
+            }
+        } else if (_asyncStorageBackendMappings.TryGetValue(type, out var asyncStorageBackend))
+        {
+            var waitHandle = new ManualResetEventSlim(initialState: false);
+            T? res = null;
+
+            var cts = new CancellationTokenSource(delay: TimeSpan.FromSeconds(10));
+
+            var proxy = Task.Run(async () =>
+            {
+                try
+                {
+                    res = await asyncStorageBackend.Load<T>(cts.Token);
+                    waitHandle.Set();
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e, "Exception while loading settings type `{Type}` with async storage backend `{AsyncStorageBackendType}`", type, asyncStorageBackend.GetType());
+                }
+            }, cts.Token);
+
+            try
+            {
+                if (!waitHandle.Wait(TimeSpan.FromSeconds(15), cts.Token))
+                {
+                    _logger.LogWarning("WaitHandle wasn't set after timout!");
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Exception while waiting for task to complete");
+            }
+
+            return res;
+        }
+
+        return null;
     }
 }
