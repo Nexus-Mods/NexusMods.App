@@ -43,7 +43,7 @@ internal partial class SettingsManager
                     backend = baseStorageBackendArray.FirstOrDefault(x => x.Id == storageBackendValues.BackendId);
                 } else if (storageBackendValues.BackendType is not null)
                 {
-                    backend = baseStorageBackendArray.FirstOrDefault(x => x.Id == storageBackendValues.BackendId);
+                    backend = baseStorageBackendArray.FirstOrDefault(x => x.GetType().IsAssignableTo(storageBackendValues.BackendType));
                 }
 
                 if (backend is not null)
