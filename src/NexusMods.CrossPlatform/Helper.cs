@@ -1,22 +1,40 @@
+using Microsoft.Extensions.Logging;
+
 namespace NexusMods.CrossPlatform;
 
 internal static class Helper
 {
-    private static void FireAndForget(this Task task, CancellationToken cancellationToken = default)
+    private static void FireAndForget(
+        this Task task,
+        ILogger logger,
+        CancellationToken cancellationToken = default)
     {
-        _ = Task.Run(async () => await task, cancellationToken: cancellationToken);
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                await task;
+            }
+            catch (TaskCanceledException)
+            {
+                // ignored
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e, "Exception in fire-and-forget task");
+            }
+        }, cancellationToken: cancellationToken);
     }
 
-    public static Task AwaitOrForget(this Task task, bool fireAndForget, CancellationToken cancellationToken = default)
+    public static Task AwaitOrForget(
+        this Task task,
+        ILogger logger,
+        bool fireAndForget,
+        CancellationToken cancellationToken = default)
     {
-        if (fireAndForget)
-        {
-            task.FireAndForget(cancellationToken: cancellationToken);
-            return Task.CompletedTask;
-        }
-        else
-        {
-            return task;
-        }
+        if (!fireAndForget) return task;
+
+        task.FireAndForget(logger, cancellationToken: cancellationToken);
+        return Task.CompletedTask;
     }
 }
