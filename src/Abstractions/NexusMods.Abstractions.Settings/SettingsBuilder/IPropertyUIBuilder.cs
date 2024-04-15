@@ -2,6 +2,9 @@ using JetBrains.Annotations;
 
 namespace NexusMods.Abstractions.Settings;
 
+/// <summary>
+/// Configuration builder for properties are exposed on the UI.
+/// </summary>
 [PublicAPI]
 public interface IPropertyUIBuilder<TSettings, TProperty>
     where TSettings : class, ISettings, new()
@@ -14,6 +17,9 @@ public interface IPropertyUIBuilder<TSettings, TProperty>
     /// </remarks>
     IWithDescriptionStep WithDisplayName(string displayName);
 
+    /// <summary>
+    /// Step for adding the description.
+    /// </summary>
     [PublicAPI]
     public interface IWithDescriptionStep
     {
@@ -26,6 +32,9 @@ public interface IPropertyUIBuilder<TSettings, TProperty>
         IOptionalStep WithDescription(string description);
     }
 
+    /// <summary>
+    /// Optional steps.
+    /// </summary>
     [PublicAPI]
     public interface IOptionalStep : IFinishedStep
     {
@@ -54,6 +63,9 @@ public interface IPropertyUIBuilder<TSettings, TProperty>
         IOptionalStep RequiresRestart();
     }
 
+    /// <summary>
+    /// Finished step.
+    /// </summary>
     [PublicAPI]
     public interface IFinishedStep;
 }
