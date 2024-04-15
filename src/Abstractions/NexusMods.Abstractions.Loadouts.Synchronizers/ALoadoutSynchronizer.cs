@@ -137,50 +137,55 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             await foreach (var entry in _hashCache.IndexFolderAsync(location))
             {
                 var gamePath = installation.LocationsRegister.ToGamePath(entry.Path);
-                if (prevState.TryGetValue(gamePath, out var prevEntry))
+
+                // Does the file exist in the previous state?
+                if (!prevState.TryGetValue(gamePath, out var prevEntry))
                 {
-                    // If the file has been modified outside of the app since the last apply, we need to ingest it.
-                    if (prevEntry.Item.Value.Hash != entry.Hash)
-                    {
-                        HandleNeedIngest(entry);
-                        throw new UnreachableException("HandleNeedIngest should have thrown");
-                    }
-
-                    // Does the file exist in the new tree?
-                    if (!fileTree.TryGetValue(gamePath, out var newEntry))
-                    {
-                        // Don't update the results here as we'll delete the file in a bit
-                        toDelete.Add(KeyValuePair.Create(gamePath, entry));
-                        continue;
-                    }
-
-                    resultingItems.Add(newEntry.GamePath(), prevEntry.Item.Value);
-                    switch (newEntry.Item.Value!)
-                    {
-                        case StoredFile fa:
-                            // StoredFile files are special cased so we can batch them up and extract them all at once.
-                            // Don't add toExtract to the results yet as we'll need to get the modified file times
-                            // after we extract them
-
-                            // If both hashes are the same, we can skip this file
-                            if (fa.Hash == entry.Hash)
-                                continue;
-
-                            toExtract.Add(KeyValuePair.Create(entry.Path, fa));
-                            continue;
-                        case IGeneratedFile gf and IToFile:
-                            // Hash for these files is generated on the fly, so we need to update it after we write it.
-                            toWrite.Add(KeyValuePair.Create(entry.Path, gf));
-                            continue;
-                        default:
-                            _logger.LogError("Unknown file type: {Type}", newEntry.Item.Value!.GetType());
-                            break;
-                    }
+                    // File is new, and not in the previous state, so we need to abort and do an ingest
+                    HandleNeedIngest(entry);
+                    throw new UnreachableException("HandleNeedIngest should have thrown");
                 }
 
-                // If we get here, the file is new, and not in the previous state, so we need to abort and do an ingest
-                HandleNeedIngest(entry);
-                throw new UnreachableException("HandleNeedIngest should have thrown");
+                // If the file has been modified outside the app since the last apply, we need to ingest it.
+                if (prevEntry.Item.Value.Hash != entry.Hash)
+                {
+                    HandleNeedIngest(entry);
+                    throw new UnreachableException("HandleNeedIngest should have thrown");
+                }
+
+                // Does the file exist in the new tree?
+                if (!fileTree.TryGetValue(gamePath, out var newEntry))
+                {
+                    // File doesn't exist in new tree, so we need to delete it
+                    // We don't remove it from the results yet, as we'll do that in a bit
+                    toDelete.Add(KeyValuePair.Create(gamePath, entry));
+                    continue;
+                }
+                
+                // File exists in the new tree, so we'll add it to the results
+                resultingItems.Add(newEntry.GamePath(), prevEntry.Item.Value);
+                
+                switch (newEntry.Item.Value!)
+                {
+                    case StoredFile fa:
+                        // StoredFile files are special cased so we can batch them up and extract them all at once.
+                        // Don't add toExtract to the results yet as we'll need to get the modified file times
+                        // after we extract them
+
+                        // If both hashes are the same, we can skip this file
+                        if (fa.Hash == entry.Hash)
+                            continue;
+
+                        toExtract.Add(KeyValuePair.Create(entry.Path, fa));
+                        continue;
+                    case IGeneratedFile gf and IToFile:
+                        // Hash for these files is generated on the fly, so we need to update it after we write it.
+                        toWrite.Add(KeyValuePair.Create(entry.Path, gf));
+                        continue;
+                    default:
+                        _logger.LogError("Unknown file type: {Type}", newEntry.Item.Value!.GetType());
+                        break;
+                }
             }
         }
 
