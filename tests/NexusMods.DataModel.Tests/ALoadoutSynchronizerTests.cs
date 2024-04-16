@@ -107,6 +107,36 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
     }
 
     [Fact]
+    public async Task ApplyingDeletesCleansUpEmptyDirectories()
+    {
+        var originalMods = BaseList.Value.Mods;
+        await _synchronizer.Apply(BaseList.Value);
+        
+        var file = new GamePath(LocationId.Game, "DeleteMeDir/deleteMeFile");
+        var path = Install.LocationsRegister.GetResolvedPath(file);
+        
+        // Add mod that will be deleted
+        await AddMod("DeleteMe",
+            (_texturePath.Path, "texture.dds"),
+            (file.Path, "deleteMeContents"));
+        
+        await _synchronizer.Apply(BaseList.Value);
+        
+        path.FileExists.Should().BeTrue("the file should exist");
+        
+        // Delete the mod
+        BaseList.Alter("Delete the mod", l => l with { Mods = originalMods });
+        
+        await _synchronizer.Apply(BaseList.Value);
+        
+        path.FileExists.Should().BeFalse("the file should not exist");
+        path.Parent.DirectoryExists().Should().BeFalse("the directory should not exist");
+        
+        var textureAbsPath = Install.LocationsRegister.GetResolvedPath(_texturePath.Parent);
+        textureAbsPath.DirectoryExists().Should().BeTrue("the texture folder should still exist");
+    }
+
+    [Fact]
     public async Task CanFlattenLoadout()
     {
         var flattened = await _synchronizer.LoadoutToFlattenedLoadout(BaseList.Value);
