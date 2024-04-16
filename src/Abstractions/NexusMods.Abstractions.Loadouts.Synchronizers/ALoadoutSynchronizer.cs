@@ -186,7 +186,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             }
         }
 
-        // Now we look for completely new files
+        // Now we look for completely new files or files that were deleted on disk
         foreach (var item in fileTree.GetAllDescendentFiles())
         {
             var path = item.GamePath();
@@ -196,6 +196,14 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                 continue;
 
             var absolutePath = installation.LocationsRegister.GetResolvedPath(path);
+            
+            if (prevState.TryGetValue(path, out var prevEntry))
+            {
+                // File is in new tree, was in prev disk state, but wasn't found on disk
+                HandleNeedIngest(prevEntry.Item.Value.ToHashedEntry(absolutePath));
+                throw new UnreachableException("HandleNeedIngest should have thrown");
+            }
+
             switch (item.Item.Value!)
             {
                 case StoredFile fa:
