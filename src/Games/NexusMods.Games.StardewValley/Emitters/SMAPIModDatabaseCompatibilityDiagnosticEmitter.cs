@@ -1,5 +1,4 @@
 using System.Runtime.CompilerServices;
-using DynamicData.Kernel;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
@@ -7,6 +6,7 @@ using NexusMods.Abstractions.Diagnostics.References;
 using NexusMods.Abstractions.Diagnostics.Values;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Extensions.BCL;
 using NexusMods.Games.StardewValley.Models;
@@ -56,23 +56,17 @@ public class SMAPIModDatabaseCompatibilityDiagnosticEmitter : ILoadoutDiagnostic
     public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         var gameVersion = loadout.Installation.Version;
-        var optionalSMAPIMod = loadout.Mods
-            .Where(kv => kv.Value.Enabled)
-            .FirstOrOptional(kv => kv.Value.Metadata
-                .OfType<SMAPIMarker>()
-                .Any()
-            );
+        var optionalSMAPIMod = loadout.GetFirstModWithMetadata<SMAPIMarker>();
 
         if (!optionalSMAPIMod.HasValue) yield break;
-        var smapiMod = optionalSMAPIMod.Value.Value;
-        var smapiVersion = smapiMod.Metadata.OfType<SMAPIMarker>().First().Version!;
+        var (smapiMod, smapiMarker) = optionalSMAPIMod.Value;
+        var smapiVersion = smapiMarker.Version!;
 
         var modDatabase = await GetModDatabase(smapiMod, cancellationToken);
         if (modDatabase is null) yield break;
 
-        var smapiMods = await loadout.Mods
-            .Where(kv => kv.Value.Enabled)
-            .Select(kv => kv.Value)
+        var smapiMods = await loadout
+            .GetEnabledMods()
             .SelectAsync(async mod => (Mod: mod, Manifest: await GetManifest(mod, cancellationToken)))
             .Where(tuple => tuple.Manifest is not null)
             .ToListAsync(cancellationToken);
