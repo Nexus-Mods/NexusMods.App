@@ -3,6 +3,7 @@ using JetBrains.Annotations;
 using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Serialization.DataModel.Ids;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.Paths;
 
@@ -15,22 +16,22 @@ namespace NexusMods.DataModel.Attributes;
 public static class DiskState
 {
     private static readonly string Namespace = "NexusMods.DataModel.DiskStateRegistry";
-    
-    
+
+
     /// <summary>
     /// The associated game id.
     /// </summary>
-    public static readonly Attribute<GameDomain> Game = new($"{Namespace}/{nameof(Game)}", isIndexed: true, noHistory: true);
+    public static readonly StringAttribute Game = new(Namespace, nameof(Game)) { IsIndexed = true, NoHistory = true };
     
     /// <summary>
     /// The game's root folder
     /// </summary>
-    public static readonly Attribute<AbsolutePath> Root = new($"{Namespace}/{nameof(Root)}", isIndexed: true, noHistory: true);
+    public static readonly StringAttribute Root = new(Namespace, nameof(Root)) { IsIndexed = true, NoHistory = true };
     
     /// <summary>
     /// The associated loadout id.
     /// </summary>
-    public static readonly Attribute<IId> LoadoutRevision = new($"{Namespace}/{nameof(LoadoutRevision)}", isIndexed: true, noHistory: true);
+    public static readonly IIdAttribute LoadoutRevision = new(Namespace, nameof(LoadoutRevision)) { IsIndexed = true, NoHistory = true };
 
     /// <summary>
     /// The state of the disk.
