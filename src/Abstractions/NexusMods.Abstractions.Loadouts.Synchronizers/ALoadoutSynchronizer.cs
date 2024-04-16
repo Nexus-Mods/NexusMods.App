@@ -138,31 +138,29 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             {
                 var gamePath = installation.LocationsRegister.ToGamePath(entry.Path);
 
-                // Does the file exist in the previous state?
                 if (!prevState.TryGetValue(gamePath, out var prevEntry))
                 {
                     // File is new, and not in the previous state, so we need to abort and do an ingest
                     HandleNeedIngest(entry);
                     throw new UnreachableException("HandleNeedIngest should have thrown");
                 }
-
-                // If the file has been modified outside the app since the last apply, we need to ingest it.
+                
                 if (prevEntry.Item.Value.Hash != entry.Hash)
                 {
+                    // File has changed, so we need to abort and do an ingest
                     HandleNeedIngest(entry);
                     throw new UnreachableException("HandleNeedIngest should have thrown");
                 }
 
-                // Does the file exist in the new tree?
                 if (!fileTree.TryGetValue(gamePath, out var newEntry))
                 {
-                    // File doesn't exist in new tree, so we need to delete it
-                    // We don't remove it from the results yet, as we'll do that in a bit
+                    // File is unchanged, but is not present in the new tree, so it needs to be deleted
+                    // We don't remove it from the results yet, will do during batch delete
                     toDelete.Add(KeyValuePair.Create(gamePath, entry));
                     continue;
                 }
                 
-                // File exists in the new tree, so we'll add it to the results
+                // File didn't change on disk and is present in new tree
                 resultingItems.Add(newEntry.GamePath(), prevEntry.Item.Value);
                 
                 switch (newEntry.Item.Value!)
@@ -171,8 +169,6 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                         // StoredFile files are special cased so we can batch them up and extract them all at once.
                         // Don't add toExtract to the results yet as we'll need to get the modified file times
                         // after we extract them
-
-                        // If both hashes are the same, we can skip this file
                         if (fa.Hash == entry.Hash)
                             continue;
 
@@ -272,7 +268,6 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             path.SetUnixFileMode(currentMode | UnixFileMode.UserExecute | UnixFileMode.GroupExecute | UnixFileMode.OtherExecute);
         }
         
-        // Create a new tree with the resulting items
         var newTree = DiskStateTree.Create(resultingItems);
         
         // We need to delete any empty directory structures that were left behind
@@ -284,14 +279,13 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             GamePath? emptyStructureRoot = null;
             while (parentPath != entry.Key.GetRootComponent)
             {
-                // We handled this folder structure already
                 if (seenDirectories.Contains(parentPath))
                 {
                     emptyStructureRoot = null;
                     break;
                 }
                 
-                // The dir is still in the tree, so we can't delete this folder
+                // newTree was build from files, so if the parent is in the new tree, it's not empty
                 if (newTree.ContainsKey(parentPath))
                 {
                     break;
