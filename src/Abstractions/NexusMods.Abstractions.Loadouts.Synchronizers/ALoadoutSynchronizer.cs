@@ -215,7 +215,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                     throw new UnreachableException("No way to handle this file");
             }
         }
-
+        
         // Now delete all the files that need deleting in one batch.
         foreach (var entry in toDelete)
         {
@@ -242,7 +242,6 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                 LastModified = entry.Key.FileInfo.LastWriteTimeUtc
             };
         }
-
 
         // Extract all the files that need extracting in one batch.
         await _fileStore.ExtractFiles(toExtract
@@ -272,9 +271,36 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             var currentMode = path.GetUnixFileMode();
             path.SetUnixFileMode(currentMode | UnixFileMode.UserExecute | UnixFileMode.GroupExecute | UnixFileMode.OtherExecute);
         }
+        
+        // Create a new tree with the resulting items
+        var newTree = DiskStateTree.Create(resultingItems);
+        // Optimization to avoid deleting the same directory structure multiple of times in case of multiple deletions
+        var deletedDirectories = new HashSet<GamePath>();
+        
+        // Delete any empty folders that were left behind after deleting files
+        foreach (var entry in toDelete)
+        {
+            var parentPath = entry.Key.Parent;
+            while (parentPath != entry.Key.GetRootComponent)
+            {
+                // We already deleted this directory
+                if (deletedDirectories.Contains(parentPath))
+                    break;
+                
+                // If the folder exists in the tree, it means it has children, we don't delete it
+                if (newTree.TryGetValue(parentPath, out _))
+                    break;
+                
+                // Folder doesn't exist in the tree, it has no children, we delete it
+                installation.LocationsRegister.GetResolvedPath(parentPath).DeleteDirectory();
+                deletedDirectories.Add(parentPath);
+                
+                parentPath = parentPath.Parent;
+            }
+        }
 
         // Return the new tree
-        return DiskStateTree.Create(resultingItems);
+        return newTree;
     }
 
     /// <inheritdoc />
