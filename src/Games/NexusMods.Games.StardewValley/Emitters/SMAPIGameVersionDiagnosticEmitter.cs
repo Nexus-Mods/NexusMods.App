@@ -49,9 +49,7 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
         if (!optionalSmapiMod.HasValue)
         {
-            var smapiModCount = loadout
-                .GetModsWithMetadata<SMAPIMarker>()
-                .Count();
+            var smapiModCount = loadout.CountModsWithMetadata<SMAPIMarker>();
 
             // NOTE(erri120): The MissingSMAPIEmitter will warn the user if SMAPI is required.
             // This emitter will suggest SMAPI if there are no mods yet.
