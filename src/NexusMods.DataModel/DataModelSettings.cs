@@ -29,8 +29,9 @@ public record DataModelSettings : ISettings
     /// <inheritdoc/>
     public static ISettingsBuilder Configure(ISettingsBuilder settingsBuilder)
     {
-        // TODO: consider adding some properties to the UI?
-        return settingsBuilder.ConfigureDefault(CreateDefault);
+        return settingsBuilder
+            .ConfigureDefault(CreateDefault)
+            .ConfigureStorageBackend<DataModelSettings>(builder => builder.Disable());
     }
 
     /// <summary>

@@ -6,4 +6,9 @@
   <ItemGroup>
     <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Settings\NexusMods.Abstractions.Settings.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Update="SettingsManager.Setup.cs">
+      <DependentUpon>SettingsManager.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
 </Project>

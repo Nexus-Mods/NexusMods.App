@@ -19,7 +19,9 @@ public record FileExtractorSettings : ISettings
     /// <inheritdoc/>
     public static ISettingsBuilder Configure(ISettingsBuilder settingsBuilder)
     {
-        return settingsBuilder.ConfigureDefault(CreateDefault);
+        return settingsBuilder
+            .ConfigureDefault(CreateDefault)
+            .ConfigureStorageBackend<FileExtractorSettings>(builder => builder.Disable());
     }
 
     /// <summary>
