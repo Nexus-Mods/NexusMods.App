@@ -112,25 +112,32 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
         var originalMods = BaseList.Value.Mods;
         await _synchronizer.Apply(BaseList.Value);
         
-        var file = new GamePath(LocationId.Game, "DeleteMeDir/deleteMeFile");
-        var path = Install.LocationsRegister.GetResolvedPath(file);
+        var file1 = new GamePath(LocationId.Game, "deleteMeMod/deleteMeDir1/deleteMeFile.txt");
+        var path1 = Install.LocationsRegister.GetResolvedPath(file1);
+        var file2 = new GamePath(LocationId.Game, "deleteMeMod/deleteMeDir2/deleteMeFile.txt");
+        var path2 = Install.LocationsRegister.GetResolvedPath(file2);
         
         // Add mod that will be deleted
         await AddMod("DeleteMe",
             (_texturePath.Path, "texture.dds"),
-            (file.Path, "deleteMeContents"));
+            (file1.Path, "deleteMeContents"),
+            (file2.Path, "deleteMeContents"));
         
         await _synchronizer.Apply(BaseList.Value);
         
-        path.FileExists.Should().BeTrue("the file should exist");
+        path1.FileExists.Should().BeTrue("the file should exist");
         
         // Delete the mod
         BaseList.Alter("Delete the mod", l => l with { Mods = originalMods });
         
         await _synchronizer.Apply(BaseList.Value);
         
-        path.FileExists.Should().BeFalse("the file should not exist");
-        path.Parent.DirectoryExists().Should().BeFalse("the directory should not exist");
+        path1.FileExists.Should().BeFalse("the file should not exist");
+        path1.Parent.DirectoryExists().Should().BeFalse("the directory should not exist");
+        path1.Parent.Parent.DirectoryExists().Should().BeFalse("the directory should not exist");
+        
+        path2.FileExists.Should().BeFalse("the file should not exist");
+        path2.Parent.DirectoryExists().Should().BeFalse("the directory should not exist");
         
         var textureAbsPath = Install.LocationsRegister.GetResolvedPath(_texturePath.Parent);
         textureAbsPath.DirectoryExists().Should().BeTrue("the texture folder should still exist");

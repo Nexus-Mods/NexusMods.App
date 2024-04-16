@@ -274,17 +274,16 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         
         // Create a new tree with the resulting items
         var newTree = DiskStateTree.Create(resultingItems);
-        // Optimization to avoid deleting the same directory structure multiple of times in case of multiple deletions
-        var deletedDirectories = new HashSet<GamePath>();
         
-        // Delete any empty folders that were left behind after deleting files
+        var directoriesToDelete = new HashSet<GamePath>();
+        // Find all the directories that had all their children deleted
         foreach (var entry in toDelete)
         {
             var parentPath = entry.Key.Parent;
             while (parentPath != entry.Key.GetRootComponent)
             {
                 // We already deleted this directory
-                if (deletedDirectories.Contains(parentPath))
+                if (directoriesToDelete.Contains(parentPath))
                     break;
                 
                 // If the folder exists in the tree, it means it has children, we don't delete it
@@ -292,11 +291,17 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                     break;
                 
                 // Folder doesn't exist in the tree, it has no children, we delete it
-                installation.LocationsRegister.GetResolvedPath(parentPath).DeleteDirectory();
-                deletedDirectories.Add(parentPath);
+                directoriesToDelete.Add(parentPath);
                 
                 parentPath = parentPath.Parent;
             }
+        }
+        
+        // Delete all the orphaned directories
+        foreach (var dir in directoriesToDelete)
+        {
+            // There can be entire directory structures that are orphaned, so we need to delete them recursively
+            installation.LocationsRegister.GetResolvedPath(dir).DeleteDirectory(recursive: true);
         }
 
         // Return the new tree
