@@ -2,6 +2,7 @@ name: Validate Changelog Assets
 
 on:
   push:
+    branches: [ main ]
     paths:
       - "docs/changelog-assets/**"
   workflow_dispatch:
