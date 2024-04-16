@@ -276,19 +276,34 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         var newTree = DiskStateTree.Create(resultingItems);
         
         // We need to delete any empty directory structures that were left behind
+        var seenDirectories = new HashSet<GamePath>();
         var directoriesToDelete = new HashSet<GamePath>();
         foreach (var entry in toDelete)
         {
             var parentPath = entry.Key.Parent;
+            GamePath? emptyStructureRoot = null;
             while (parentPath != entry.Key.GetRootComponent)
             {
-                // We handled the dir already, or it's in the new tree, so we can stop
-                if (directoriesToDelete.Contains(parentPath) || newTree.TryGetValue(parentPath, out _))
+                // We handled this folder structure already
+                if (seenDirectories.Contains(parentPath))
+                {
+                    emptyStructureRoot = null;
                     break;
+                }
                 
-                directoriesToDelete.Add(parentPath);
+                // The dir is still in the tree, so we can't delete this folder
+                if (newTree.ContainsKey(parentPath))
+                {
+                    break;
+                }
+                
+                seenDirectories.Add(parentPath);
+                emptyStructureRoot = parentPath;
                 parentPath = parentPath.Parent;
             }
+            
+            if (emptyStructureRoot != null)
+                directoriesToDelete.Add(emptyStructureRoot.Value);
         }
         
         foreach (var dir in directoriesToDelete)
