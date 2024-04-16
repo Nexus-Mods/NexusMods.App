@@ -1,0 +1,16 @@
+name: Validate Changelog Assets
+
+on:
+  push:
+    paths:
+      - "docs/changelog-assets/**"
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: "ubuntu-latest"
+
+    steps:
+      - name: Validate
+        shell: bash
+        run: ./scripts/changelog-prepare-assets.sh verify
