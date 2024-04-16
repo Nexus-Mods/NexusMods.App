@@ -17,7 +17,7 @@ using NexusMods.DataModel.Diagnostics;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Messaging;
-using NexusMods.DataModel.Serializers;
+using NexusMods.DataModel.Settings;
 using NexusMods.DataModel.Sorting;
 using NexusMods.DataModel.TriggerFilter;
 using NexusMods.Extensions.DependencyInjection;
@@ -43,6 +43,7 @@ public static class Services
         coll.AddMnemonicDBStorage();
 
         coll.AddSettings<DataModelSettings>();
+        coll.AddSettingsStorageBackend<DataStoreSettingsBackend>(isDefault: true);
 
         coll.AddSingleton<MnemonicDB.Storage.InMemoryBackend.Backend>();
         coll.AddSingleton<MnemonicDB.Storage.RocksDbBackend.Backend>();

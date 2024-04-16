@@ -25,4 +25,11 @@ public interface ISettingsBuilder
     ISettingsBuilder ConfigureDefault<TSettings>(
         Func<IServiceProvider, TSettings> defaultValueFactory
     ) where TSettings : class, ISettings, new();
+
+    /// <summary>
+    /// Configures the storage backend for this setting.
+    /// </summary>
+    ISettingsBuilder ConfigureStorageBackend<TSettings>(
+        Action<ISettingsStorageBackendBuilder<TSettings>> configureStorageBackend
+    ) where TSettings : class, ISettings, new();
 }

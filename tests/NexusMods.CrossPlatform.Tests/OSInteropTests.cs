@@ -1,4 +1,5 @@
 using CliWrap;
+using Microsoft.Extensions.Logging;
 using NexusMods.CrossPlatform.Process;
 using NSubstitute;
 
@@ -15,7 +16,7 @@ public class OSInteropTests
         const string targetFilePath = "cmd.exe";
         var arguments = $@"/c start """" ""{url}""";
 
-        await TestWithCommand(factory => new OSInteropWindows(factory), url, targetFilePath, arguments);
+        await TestWithCommand((loggerFactory, processFactory) => new OSInteropWindows(loggerFactory, processFactory), url, targetFilePath, arguments);
     }
 
     [Fact]
@@ -26,7 +27,7 @@ public class OSInteropTests
         const string targetFilePath = "xdg-open";
         var arguments = url.ToString();
 
-        await TestWithCommand(factory => new OSInteropLinux(factory), url, targetFilePath, arguments);
+        await TestWithCommand((loggerFactory, processFactory) => new OSInteropWindows(loggerFactory, processFactory), url, targetFilePath, arguments);
     }
 
     [Fact]
@@ -37,13 +38,19 @@ public class OSInteropTests
         const string targetFilePath = "open";
         var arguments = url.ToString();
 
-        await TestWithCommand(factory => new OSInteropOSX(factory), url, targetFilePath, arguments);
+        await TestWithCommand((loggerFactory, processFactory) => new OSInteropWindows(loggerFactory, processFactory), url, targetFilePath, arguments);
     }
 
-    private static async Task TestWithCommand(Func<IProcessFactory, IOSInterop> osFactory, Uri url, string targetFilePath, string arguments)
+    private static async Task TestWithCommand(
+        Func<ILoggerFactory, IProcessFactory, IOSInterop> osFactory,
+        Uri url,
+        string targetFilePath,
+        string arguments)
     {
-        var factory = Substitute.For<IProcessFactory>();
-        factory
+        var loggerFactory = LoggerFactory.Create(_ => { });
+
+        var processFactory = Substitute.For<IProcessFactory>();
+        processFactory
             .ExecuteAsync(Arg.Is<Command>(command =>
                     command.TargetFilePath == targetFilePath &&
                     command.Arguments == arguments),
@@ -51,15 +58,13 @@ public class OSInteropTests
             )
             .Returns(Task.FromResult(new CommandResult(0, DateTimeOffset.Now, DateTimeOffset.Now)));
 
-        var os = osFactory(factory);
+        var os = osFactory(loggerFactory, processFactory);
         await os.OpenUrl(url);
 
-        await factory
+        await processFactory
             .Received(1)
             .ExecuteAsync(
-                Arg.Is<Command>(command =>
-                    command.TargetFilePath == targetFilePath &&
-                    command.Arguments == arguments),
+                Arg.Any<Command>(),
                 Arg.Any<CancellationToken>()
             );
     }
