@@ -70,6 +70,11 @@ public static class Services
             }
             else
             {
+                var datomStoreSettings = sp.GetRequiredService<DatomStoreSettings>();
+
+                if (!datomStoreSettings.Path.DirectoryExists()) 
+                    datomStoreSettings.Path.CreateDirectory();
+                
                 return sp.GetRequiredService<MnemonicDB.Storage.RocksDbBackend.Backend>();
             }
         });
