@@ -34,7 +34,7 @@ This also includes our first "suggestion" diagnostic. This diagnostic will only 
 
 ### External Contributors
 
-- [@Patriot99](https://github.com/Patriot99)
+- [@Patriot99](https://github.com/Patriot99): [#1163](https://github.com/Nexus-Mods/NexusMods.App/pull/1163), [#1203](https://github.com/Nexus-Mods/NexusMods.App/pull/1203)
 
 ## 0.4 to 0.0.1
 
