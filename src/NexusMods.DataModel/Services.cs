@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.App.Settings;
+using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.Games.Loadouts;
@@ -11,6 +11,7 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Messaging;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
+using NexusMods.DataModel.Attributes;
 using NexusMods.DataModel.CommandLine.Verbs;
 using NexusMods.DataModel.Diagnostics;
 using NexusMods.DataModel.JsonConverters;
@@ -20,7 +21,11 @@ using NexusMods.DataModel.Serializers;
 using NexusMods.DataModel.Sorting;
 using NexusMods.DataModel.TriggerFilter;
 using NexusMods.Extensions.DependencyInjection;
+using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Storage;
+using NexusMods.MnemonicDB.Storage.Abstractions;
+using NexusMods.Paths;
 
 namespace NexusMods.DataModel;
 
@@ -33,28 +38,41 @@ public static class Services
     /// </summary>
     public static IServiceCollection AddDataModel(this IServiceCollection coll)
     {
-        settings ??= new DataModelSettings();
-        coll.AddSingleton<IDataModelSettings>(_ => settings);
-        
+
         coll.AddMnemonicDB();
         coll.AddMnemonicDBStorage();
-        
-        if (settings?.UseInMemoryDataModel == true)
-        {
-            coll.AddSingleton<DatomStoreSettings>();
-            coll.AddSingleton<IStoreBackend, MnemonicDB.Storage.InMemoryBackend.Backend>();
-        }
-        else
-        {
-            coll.AddSingleton(new DatomStoreSettings
-                {
-                    Path = settings!.MnemonicDBPath.ToAbsolutePath(),
-                }
-            );
-            coll.AddAllSingleton<IStoreBackend, MnemonicDB.Storage.RocksDbBackend.Backend>();
-        }
+
         coll.AddSettings<DataModelSettings>();
 
+        coll.AddSingleton<MnemonicDB.Storage.InMemoryBackend.Backend>();
+        coll.AddSingleton<MnemonicDB.Storage.RocksDbBackend.Backend>();
+
+        coll.AddSingleton<DatomStoreSettings>(sp =>
+            {
+                var fileSystem = sp.GetRequiredService<IFileSystem>();
+                var settingsManager = sp.GetRequiredService<ISettingsManager>();
+                var settings = settingsManager.Get<DataModelSettings>();
+                return new DatomStoreSettings
+                {
+                    Path = settings.MnemonicDBPath.ToPath(fileSystem),
+                };
+            }
+        );
+        
+        coll.AddSingleton<IStoreBackend>(sp =>
+        {
+            var settingsManager = sp.GetRequiredService<ISettingsManager>();
+            var settings = settingsManager.Get<DataModelSettings>();
+            if (settings.UseInMemoryDataModel)
+            {
+                return sp.GetRequiredService<MnemonicDB.Storage.InMemoryBackend.Backend>();
+            }
+            else
+            {
+                return sp.GetRequiredService<MnemonicDB.Storage.RocksDbBackend.Backend>();
+            }
+        });
+        
         coll.AddSingleton<MessageBus>();
         coll.AddSingleton(typeof(IMessageConsumer<>), typeof(MessageConsumer<>));
         coll.AddSingleton(typeof(IMessageProducer<>), typeof(MessageProducer<>));
@@ -88,15 +106,7 @@ public static class Services
 
         // Diagnostics
         coll.AddAllSingleton<IDiagnosticManager, DiagnosticManager>();
-        coll.AddOptions<DiagnosticOptions>();
         
-        // Value Serializers
-        coll.AddValueSerializer<AbsolutePathSerializer>();
-        coll.AddValueSerializer<LocationIdSerializer>();
-        coll.AddValueSerializer<DiskStateTreeSerializer>();
-        coll.AddValueSerializer<GameDomainSerializer>();
-        coll.AddValueSerializer<IIdSerializer>();
-
         // Verbs
         coll.AddLoadoutManagementVerbs()
             .AddToolVerbs()

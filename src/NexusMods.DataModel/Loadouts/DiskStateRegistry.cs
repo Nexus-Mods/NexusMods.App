@@ -43,15 +43,15 @@ public class DiskStateRegistry : IDiskStateRegistry
         // If we have a previous state, update it
         if (previous is not null)
         {
-            DiskState.LoadoutRevision.Add(tx, previous.Id, diskState.LoadoutRevision);
-            DiskState.State.Add(tx, previous.Id, diskState);
+            tx.Add(previous.Id, DiskState.LoadoutRevision, diskState.LoadoutRevision);
+            tx.Add(previous.Id, DiskState.State, diskState);
         }
         else
         {
             _ = new DiskState.Model(tx)
             {
                 Game = installation.Game.Domain,
-                Root = installation.LocationsRegister[LocationId.Game],
+                Root = installation.LocationsRegister[LocationId.Game].ToString(),
                 LoadoutRevision = diskState.LoadoutRevision,
                 DiskState = diskState,
             };
@@ -83,7 +83,7 @@ public class DiskStateRegistry : IDiskStateRegistry
     private static DiskState.Model? PreviousStateEntity(IDb db, GameInstallation gameInstallation)
     {
         return db
-            .FindIndexed(gameInstallation.LocationsRegister[LocationId.Game], DiskState.Root)
+            .FindIndexed(gameInstallation.LocationsRegister[LocationId.Game].ToString(), DiskState.Root)
             .Select(db.Get<DiskState.Model>)
             .FirstOrDefault(state => state.Game == gameInstallation.Game.Domain);
     }

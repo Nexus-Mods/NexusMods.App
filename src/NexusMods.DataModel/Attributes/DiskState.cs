@@ -16,12 +16,11 @@ namespace NexusMods.DataModel.Attributes;
 public static class DiskState
 {
     private static readonly string Namespace = "NexusMods.DataModel.DiskStateRegistry";
-
-
+    
     /// <summary>
     /// The associated game id.
     /// </summary>
-    public static readonly StringAttribute Game = new(Namespace, nameof(Game)) { IsIndexed = true, NoHistory = true };
+    public static readonly GameDomainAttribute Game = new(Namespace, nameof(Game)) { IsIndexed = true, NoHistory = true };
     
     /// <summary>
     /// The game's root folder
@@ -36,7 +35,7 @@ public static class DiskState
     /// <summary>
     /// The state of the disk.
     /// </summary>
-    public static readonly Attribute<NexusMods.Abstractions.DiskState.DiskStateTree> State = new($"{Namespace}/{nameof(State)}", noHistory: true);
+    public static readonly DiskStateAttribute State = new(Namespace, nameof(State)) { NoHistory = true };
     
     
     [PublicAPI]
@@ -55,7 +54,7 @@ public static class DiskState
         /// <summary>
         /// The associated game root folder
         /// </summary>
-        public AbsolutePath Root
+        public string Root
         {
             get => Attributes.DiskState.Root.Get(this);
             set => Attributes.DiskState.Root.Add(this, value);
