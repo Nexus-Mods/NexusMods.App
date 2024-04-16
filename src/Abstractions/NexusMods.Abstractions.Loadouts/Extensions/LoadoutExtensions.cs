@@ -19,15 +19,22 @@ public static class LoadoutExtensions
     }
 
     /// <summary>
+    /// Gets all mods that have metadata of type <typeparamref name="T"/>.
+    /// </summary>
+    public static IEnumerable<ValueTuple<Mod, T>> GetModsWithMetadata<T>(this Loadout loadout) where T : AModMetadata
+    {
+        return loadout
+            .GetEnabledMods()
+            .Where(mod => mod.HasMetadata<T>())
+            .Select(mod => (mod, mod.GetMetadata<T>().Value));
+    }
+
+    /// <summary>
     /// Gets the first mod that has metadata of type <typeparamref name="T"/>.
     /// </summary>
     public static Optional<ValueTuple<Mod, T>> GetFirstModWithMetadata<T>(
         this Loadout loadout) where T : AModMetadata
     {
-        var optionalMod = loadout
-            .GetEnabledMods()
-            .FirstOrOptional(mod => mod.HasMetadata<T>());
-
-        return optionalMod.Convert(mod => (mod, mod.GetMetadata<T>().Value));
+        return loadout.GetModsWithMetadata<T>().FirstOrDefault();
     }
 }
