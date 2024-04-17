@@ -22,6 +22,7 @@ public class ImageCacheTests : AUiTest
     }
 
     [Fact]
+    [Trait("RequiresNetworking", "True")]
     public async Task Test_LoadAndCache_RemoteImage()
     {
         const string url = "https://http.cat/418.jpg";
