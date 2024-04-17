@@ -1,7 +1,6 @@
 # Changelog
 
-## Unreleased
-
+## v0.4.1
 ### New Features
 
 The highlight of this PR is the new Apply Diff View ([#1202](https://github.com/Nexus-Mods/NexusMods.App/pull/1202)). You can now preview the changes made to disk before applying the Loadout:
