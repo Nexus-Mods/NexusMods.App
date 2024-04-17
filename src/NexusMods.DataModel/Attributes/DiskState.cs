@@ -23,7 +23,8 @@ public static class DiskState
     public static readonly GameDomainAttribute Game = new(Namespace, nameof(Game)) { IsIndexed = true, NoHistory = true };
     
     /// <summary>
-    /// The game's root folder
+    /// The game's root folder. Stored as a string, since AbsolutePaths require an IFileSystem, and we don't know or care
+    /// what filesystem is being used when reading/writing the data from the database.
     /// </summary>
     public static readonly StringAttribute Root = new(Namespace, nameof(Root)) { IsIndexed = true, NoHistory = true };
     
