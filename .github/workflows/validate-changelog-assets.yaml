@@ -6,6 +6,11 @@ on:
     paths:
       - "docs/changelog-assets/**"
       - ".github/workflows/validate-changelog-assets.yaml"
+  pull_request:
+    branches: [ main ]
+    paths:
+      - "docs/changelog-assets/**"
+      - ".github/workflows/validate-changelog-assets.yaml"
   workflow_dispatch:
 
 jobs:
