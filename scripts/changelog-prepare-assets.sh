@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 current_dir="$(dirname -- "$(readlink -f -- "$0";)";)"
-assets_dir="$(dirname $current_dir)/docs/changelog-assets"
+assets_dir="$(dirname "$current_dir")/docs/changelog-assets"
 
 echo "assets dir: $assets_dir"
 
@@ -26,7 +26,7 @@ for file in $FILES; do
   filename="${filename%.*}"
 
   echo "$file: hashing"
-  filehash=$(cksum -a blake2b --untagged --length=128 $file | awk '{print $1}')
+  filehash=$(cksum -a blake2b --untagged --length=128 "$file" | awk '{print $1}')
 
   if [[ "$filename" == "$filehash" ]]; then
     echo "$file: valid"
@@ -39,7 +39,7 @@ for file in $FILES; do
     continue
   fi
 
-  fixed_file="$(dirname $file)/$filehash.$extension"
+  fixed_file="$(dirname "$file")/$filehash.$extension"
   echo "$file: moving to $fixed_file"
 
   mv "$file" "$fixed_file"
