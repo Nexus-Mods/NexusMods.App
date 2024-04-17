@@ -47,11 +47,27 @@ public abstract class AGamePathNodeTree<TValue>
     }
     
     /// <summary>
+    /// Enumerates all the directories recursively in this tree.
+    /// </summary>
+    public IEnumerable<KeyedBox<RelativePath, GamePathNode<TValue>>> GetAllDescendentDirectories()
+    {
+        return _trees.Values.SelectMany(e => e.GetDirectories());
+    }
+    
+    /// <summary>
     /// Enumerates all the descendants in the tree. (files and directories)
     /// </summary>
     public IEnumerable<KeyedBox<RelativePath, GamePathNode<TValue>>> GetAllDescendents()
     {
         return _trees.Values.SelectMany(e => e.GetChildrenRecursive());
+    }
+    
+    /// <summary>
+    /// Enumerates all the the root nodes in the tree (usually correspond to game top level locations) 
+    /// </summary>
+    public IEnumerable<KeyedBox<RelativePath, GamePathNode<TValue>>> GetRoots()
+    {
+        return _trees.Values;
     }
 
     /// <summary>

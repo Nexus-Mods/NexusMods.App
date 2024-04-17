@@ -12,7 +12,7 @@ public interface IDiagnosticListViewModel : IPageViewModelInterface
 {
     public LoadoutId LoadoutId { get; set; }
 
-    public ReadOnlyObservableCollection<IDiagnosticEntryViewModel> DiagnosticEntries { get; }
+    public IDiagnosticEntryViewModel[] DiagnosticEntries { get; }
 
     public int NumCritical { get; }
     public int NumWarnings { get; }

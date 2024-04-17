@@ -9,9 +9,11 @@ using Microsoft.Extensions.ObjectPool;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.Abstractions.Serialization.DataModel.Ids;
+using NexusMods.Abstractions.Settings;
 using NexusMods.DataModel.Attributes;
 using NexusMods.DataModel.Extensions;
 using NexusMods.Hashing.xxHash64;
+using NexusMods.Paths;
 
 namespace NexusMods.DataModel;
 
@@ -40,20 +42,22 @@ public class SqliteDataStore : IDataStore, IDisposable
 
     private readonly ConcurrentLru<IId, Entity> _cache;
     private readonly ILogger<SqliteDataStore> _logger;
-    private readonly Dictionary<EntityCategory, bool> _immutableFields;
     private readonly ObjectPool<SqliteConnection> _pool;
     private readonly ConnectionPoolPolicy _poolPolicy;
     private readonly ObjectPoolDisposable<SqliteConnection> _globalHandle;
     private readonly Subject<IId> _updatedIds;
 
     /// <summary/>
-    /// <param name="logger">Logs events.</param>
-    /// <param name="settings">Datamodel settings</param>
-    /// <param name="provider">Dependency injection container.</param>
-    public SqliteDataStore(ILogger<SqliteDataStore> logger, IDataModelSettings settings, IServiceProvider provider)
+    public SqliteDataStore(
+        IServiceProvider serviceProvider,
+        ILogger<SqliteDataStore> logger,
+        ISettingsManager settingsManager,
+        IFileSystem fileSystem)
     {
         _logger = logger;
         _writerLock = new object();
+
+        var settings = settingsManager.Get<DataModelSettings>();
 
         string connectionString;
         if (settings.UseInMemoryDataModel)
@@ -64,12 +68,12 @@ public class SqliteDataStore : IDataStore, IDisposable
         }
         else
         {
-            var path = settings.DataStoreFilePath.ToAbsolutePath();
+            var path = settings.DataStoreFilePath.ToPath(fileSystem);
             if (!path.Parent.DirectoryExists())
                 path.Parent.CreateDirectory();
 
-            connectionString = string.Intern($"Data Source={settings.DataStoreFilePath}");
-            _logger.LogDebug("Using sqlite data store at {DataSource}", settings.DataStoreFilePath);
+            connectionString = string.Intern($"Data Source={path}");
+            _logger.LogDebug("Using sqlite data store at {DataSource}", path);
         }
 
         connectionString = string.Intern(connectionString);
@@ -88,10 +92,9 @@ public class SqliteDataStore : IDataStore, IDisposable
         _casStatements = new Dictionary<EntityCategory, string>();
         _prefixStatements = new Dictionary<EntityCategory, string>();
         _deleteStatements = new Dictionary<EntityCategory, string>();
-        _immutableFields = new Dictionary<EntityCategory, bool>();
         EnsureTables();
 
-        _jsonOptions = new Lazy<JsonSerializerOptions>(provider.GetRequiredService<JsonSerializerOptions>);
+        _jsonOptions = new Lazy<JsonSerializerOptions>(serviceProvider.GetRequiredService<JsonSerializerOptions>);
         _cache = new ConcurrentLru<IId, Entity>(10000);
 
         _updatedIds = new Subject<IId>();
@@ -128,9 +131,6 @@ public class SqliteDataStore : IDataStore, IDisposable
             _casStatements[table] = $"UPDATE [{tableName}] SET Data = @newData WHERE Data = @oldData AND Id = @id RETURNING *;";
             _prefixStatements[table] = $"SELECT Id, Data FROM [{tableName}] WHERE Id >= @prefix ORDER BY Id ASC";
             _deleteStatements[table] = $"DELETE FROM [{tableName}] WHERE Id = @id";
-
-            var memberInfo = typeof(EntityCategory).GetField(Enum.GetName(table)!)!;
-            _immutableFields[table] = memberInfo.CustomAttributes.Any(x => x.AttributeType == typeof(ImmutableAttribute));
         }
     }
 
@@ -246,8 +246,7 @@ public class SqliteDataStore : IDataStore, IDisposable
     {
         try
         {
-            if (!_immutableFields[id.Category])
-                _updatedIds.OnNext(id);
+            _updatedIds.OnNext(id);
         }
         catch (Exception e)
         {

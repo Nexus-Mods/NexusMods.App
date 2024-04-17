@@ -1,9 +1,8 @@
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics;
-using NexusMods.App.UI.Windows;
+using NexusMods.App.UI.Controls.MarkdownRenderer;
 using NexusMods.App.UI.WorkspaceSystem;
-using NexusMods.CrossPlatform.Process;
 
 namespace NexusMods.App.UI.Pages.Diagnostics;
 
@@ -24,9 +23,10 @@ public class DiagnosticDetailsPageFactory : APageFactory<IDiagnosticDetailsViewM
     public override IDiagnosticDetailsViewModel CreateViewModel(DiagnosticDetailsPageContext context)
     {
         return new DiagnosticDetailsViewModel(
-            ServiceProvider.GetRequiredService<IOSInterop>(),
-            WindowManager, 
-            ServiceProvider.GetRequiredService<IDiagnosticWriter>(), 
-            context.Diagnostic);
+            WindowManager,
+            ServiceProvider.GetRequiredService<IDiagnosticWriter>(),
+            ServiceProvider.GetRequiredService<IMarkdownRendererViewModel>(),
+            context.Diagnostic
+        );
     }
 }

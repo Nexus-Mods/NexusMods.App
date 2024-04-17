@@ -1,4 +1,5 @@
 using CliWrap;
+using Microsoft.Extensions.Logging;
 
 namespace NexusMods.CrossPlatform.Process;
 
@@ -6,23 +7,18 @@ namespace NexusMods.CrossPlatform.Process;
 /// OS interoperation for windows
 /// </summary>
 // ReSharper disable once InconsistentNaming
-public class OSInteropWindows : IOSInterop
+public class OSInteropWindows : AOSInterop
 {
-    private readonly IProcessFactory _processFactory;
     /// <summary>
-    /// constructor
+    /// Constructor.
     /// </summary>
-    /// <param name="processFactory"></param>
-    public OSInteropWindows(IProcessFactory processFactory)
-    {
-        _processFactory = processFactory;
-    }
+    public OSInteropWindows(ILoggerFactory loggerFactory, IProcessFactory processFactory)
+        : base(loggerFactory, processFactory) { }
 
     /// <inheritdoc/>
-    public async Task OpenUrl(Uri url, CancellationToken cancellationToken = default)
+    protected override Command CreateCommand(Uri uri)
     {
         // cmd /c start "" "https://google.com"
-        var command = Cli.Wrap("cmd.exe").WithArguments($@"/c start """" ""{url}""");
-        await _processFactory.ExecuteAsync(command, cancellationToken);
+        return Cli.Wrap("cmd.exe").WithArguments($@"/c start """" ""{uri}""");
     }
 }

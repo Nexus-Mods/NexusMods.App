@@ -35,7 +35,7 @@
         <Grid Grid.Column="0" ClipToBounds="True" ColumnDefinitions="Auto,Auto" Name="FileElementGrid">
             
             <!-- File / Directory Icon -->
-            <icons:UnifiedIcon Grid.Column="0" Classes="FileTypeIcon" x:Name="EntryIcon" />
+            <icons:UnifiedIcon Grid.Column="0" Classes="FileTypeIcon" x:Name="EntryIcon" VerticalAlignment="Center" />
 
             <!-- File Name -->
             <TextBlock Grid.Column="1" Classes="BodyMDNormal" VerticalAlignment="Center"

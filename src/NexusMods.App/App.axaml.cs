@@ -1,11 +1,13 @@
 using System.Diagnostics;
-using System.Globalization;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.Settings;
 using NexusMods.App.UI;
+using NexusMods.App.UI.Settings;
 using NexusMods.App.UI.Windows;
 using ReactiveUI;
 using Splat;
@@ -16,12 +18,13 @@ namespace NexusMods.App;
 public class App : Application
 {
     private readonly IServiceProvider _provider;
-    private readonly ILauncherSettings _launcherSettings;
+    private readonly ISettingsManager _settingsManager;
 
-    public App(IServiceProvider provider, ILauncherSettings launcherSettings)
+    [UsedImplicitly]
+    public App(IServiceProvider provider)
     {
         _provider = provider;
-        _launcherSettings = launcherSettings;
+        _settingsManager = provider.GetRequiredService<ISettingsManager>();
     }
 
     public App()
@@ -36,13 +39,17 @@ public class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
-        if (!string.IsNullOrEmpty(_launcherSettings.LocaleOverride))
-            Thread.CurrentThread.CurrentUICulture = new CultureInfo(_launcherSettings.LocaleOverride);
+        var loggerFactory = _provider.GetRequiredService<ILoggerFactory>();
+        var logger = loggerFactory.CreateLogger<App>();
+
+        var uiCulture = _settingsManager.Get<LanguageSettings>().UICulture;
+        logger.LogInformation("Using UI Culture {Culture}", uiCulture.Name);
+
+        Thread.CurrentThread.CurrentUICulture = uiCulture;
 
         Locator.CurrentMutable.UnregisterCurrent(typeof(IViewLocator));
         Locator.CurrentMutable.Register(() => _provider.GetRequiredService<InjectedViewLocator>(), typeof(IViewLocator));
 
-        var loggerFactory = _provider.GetRequiredService<ILoggerFactory>();
         Locator.CurrentMutable.UseMicrosoftExtensionsLoggingWithWrappingFullLogger(loggerFactory);
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)

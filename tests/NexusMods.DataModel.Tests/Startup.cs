@@ -7,11 +7,13 @@ using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
+using NexusMods.Abstractions.Settings;
 using NexusMods.Activities;
 using NexusMods.App.BuildInfo;
 using NexusMods.CrossPlatform;
 using NexusMods.FileExtractor;
 using NexusMods.Paths;
+using NexusMods.Settings;
 using NexusMods.StandardGameLocators;
 using NexusMods.StandardGameLocators.TestHelpers;
 using Xunit.DependencyInjection.Logging;
@@ -28,16 +30,27 @@ public static class Startup
     
     public static void ConfigureTestedServices(IServiceCollection container)
     {
+        const KnownPath baseKnownPath = KnownPath.EntryDirectory;
+        var baseDirectory = $"NexusMods.DataModel.Tests-{Guid.NewGuid()}";
+
         var prefix = FileSystem.Shared
-            .GetKnownPath(KnownPath.EntryDirectory)
-            .Combine($"NexusMods.DataModel.Tests-{Guid.NewGuid()}");
+            .GetKnownPath(baseKnownPath)
+            .Combine(baseDirectory);
 
         container
             .AddSingleton<IGuidedInstaller, NullGuidedInstaller>()
             .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug))
             .AddFileSystem()
             .AddSingleton(new TemporaryFileManager(FileSystem.Shared, prefix))
-            .AddDataModel(new DataModelSettings(prefix))
+            .AddSettingsManager()
+            .AddDataModel()
+            .OverrideSettingsForTests<DataModelSettings>(settings => settings with
+            {
+                DataStoreFilePath = new ConfigurablePath(baseKnownPath, $"{baseDirectory}/DataStore.sqlite"),
+                ArchiveLocations = [
+                    new ConfigurablePath(baseKnownPath, $"{baseDirectory}/Archives"),
+                ],
+            })
             .AddGames()
             .AddStandardGameLocators(false)
             .AddFileExtractors()

@@ -3,6 +3,7 @@ using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Diagnostics.Values;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Games.StardewValley.Models;
 
 namespace NexusMods.Games.StardewValley.Emitters;
@@ -15,17 +16,11 @@ public class MissingSMAPIEmitter : ILoadoutDiagnosticEmitter
     {
         await Task.Yield();
 
-        var smapiModCount = loadout.Mods
-            .Where(kv => kv.Value.Enabled)
-            .Count(kv => kv.Value.Metadata.OfType<SMAPIModMarker>().Any());
-
+        var smapiModCount = loadout.CountModsWithMetadata<SMAPIModMarker>();
         if (smapiModCount == 0) yield break;
-        var smapiInstallations = loadout.Mods
-            .Where(kv => kv.Value.Metadata.OfType<SMAPIMarker>().Any())
-            .ToArray();
 
-        var hasSMAPI = smapiInstallations.Length != 0;
-        if (!hasSMAPI)
+        var optionalSmapiMod = loadout.GetFirstModWithMetadata<SMAPIMarker>(onlyEnabledMods: false);
+        if (!optionalSmapiMod.HasValue)
         {
             yield return Diagnostics.CreateSMAPIRequiredButNotInstalled(
                 ModCount: smapiModCount,
@@ -35,8 +30,8 @@ public class MissingSMAPIEmitter : ILoadoutDiagnosticEmitter
             yield break;
         }
 
-        var hasSMAPIEnabled = smapiInstallations.Any(kv => kv.Value.Enabled);
-        if (!hasSMAPIEnabled)
+        var smapiMod = optionalSmapiMod.Value.Item1;
+        if (!smapiMod.Enabled)
         {
             yield return Diagnostics.CreateSMAPIRequiredButDisabled(
                 ModCount: smapiModCount

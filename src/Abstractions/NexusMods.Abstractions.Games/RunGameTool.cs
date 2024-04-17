@@ -1,7 +1,9 @@
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Globalization;
 using System.Text;
 using CliWrap;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.DTO;
@@ -18,7 +20,7 @@ namespace NexusMods.Abstractions.Games;
 /// </summary>
 public interface IRunGameTool : ITool
 {
-
+    
 }
 
 /// <summary>
@@ -32,16 +34,23 @@ public class RunGameTool<T> : IRunGameTool
     private readonly T _game;
     private readonly IProcessFactory _processFactory;
     private readonly IOSInterop _osInterop;
-
+    
     /// <summary>
-    /// Constructor.
+    /// Whether this tool should be started through the shell instead of directly.
+    /// This allows tools to start their own console, allowing users to interact with it.
     /// </summary>
-    public RunGameTool(ILogger<RunGameTool<T>> logger, T game, IProcessFactory processFactory, IOSInterop osInterop)
+    public virtual bool UseShell { get; set; } = false;
+    
+    
+    /// <summary>
+    /// Constructor
+    /// </summary>
+    public RunGameTool(IServiceProvider serviceProvider, T game)
     {
-        _processFactory = processFactory;
-        _osInterop = osInterop;
         _game = game;
-        _logger = logger;
+        _logger = serviceProvider.GetRequiredService<ILogger<RunGameTool<T>>>();
+        _processFactory = serviceProvider.GetRequiredService<IProcessFactory>();
+        _osInterop = serviceProvider.GetRequiredService<IOSInterop>();
     }
 
     /// <inheritdoc />
@@ -81,19 +90,18 @@ public class RunGameTool<T> : IRunGameTool
         // notice that SkyrimSE.exe is running and wait for that to exit.
 
         var existing = FindMatchingProcesses(names).Select(p => p.Id).ToHashSet();
+            
+        if (UseShell)
+        {
+            _logger.LogInformation("Running {Program} through shell", program);
+            await RunWithShell(cancellationToken, program);
+        }
+        else
+        {
+            var result = await RunCommand(cancellationToken, program);
+        }
 
-        var stdOut = new StringBuilder();
-        var stdErr = new StringBuilder();
-        var command = new Command(program.ToString())
-            .WithStandardOutputPipe(PipeTarget.ToStringBuilder(stdOut))
-            .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdErr))
-            .WithValidation(CommandResultValidation.None)
-            .WithWorkingDirectory(program.Parent.ToString());
-
-        var result = await _processFactory.ExecuteAsync(command, cancellationToken);
-        if (result.ExitCode != 0)
-            _logger.LogError("While Running {Filename} : {Error} {Output}", program, stdErr, stdOut);
-
+        // Check if the process has spawned any new processes that we need to wait for (e.g. Launcher -> Game)
         var newProcesses = FindMatchingProcesses(names)
             .Where(p => !existing.Contains(p.Id))
             .ToHashSet();
@@ -113,52 +121,99 @@ public class RunGameTool<T> : IRunGameTool
         _logger.LogInformation("Finished running {Program}", program);
     }
 
+    private async Task<CommandResult> RunCommand(CancellationToken cancellationToken, AbsolutePath program)
+    {
+        var stdOut = new StringBuilder();
+        var stdErr = new StringBuilder();
+        var command = new Command(program.ToString())
+            .WithStandardOutputPipe(PipeTarget.ToStringBuilder(stdOut))
+            .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdErr))
+            .WithValidation(CommandResultValidation.None)
+            .WithWorkingDirectory(program.Parent.ToString());
+
+        var result = await _processFactory.ExecuteAsync(command, cancellationToken);
+        if (result.ExitCode != 0)
+            _logger.LogError("While Running {Filename} : {Error} {Output}", program, stdErr, stdOut);
+        return result;
+    }
+
+    private async Task<Process> RunWithShell(CancellationToken cancellationToken, AbsolutePath program)
+    {
+        var process = new Process
+        {
+            StartInfo = new ProcessStartInfo
+            {
+                FileName = program.ToString(),
+                WorkingDirectory = program.Parent.ToString(),
+                UseShellExecute = true,
+                CreateNoWindow = false,
+            },
+            EnableRaisingEvents = true,
+        };
+        
+        try
+        {
+            await _processFactory.ExecuteProcessAsync(process, cancellationToken);
+        }
+        catch (Exception e)
+        {
+            if (!cancellationToken.IsCancellationRequested)
+                _logger.LogError(e, "While Running {Filename}", program);
+        }
+        
+        if (process.ExitCode != 0)
+            _logger.LogError("While Running {Filename}", program);
+        return process;
+    }
+
     private async Task RunThroughSteam(uint appId, CancellationToken cancellationToken)
     {
-        var existingReaperProcesses = Process.GetProcessesByName("reaper");
+        if (!OSInformation.Shared.IsLinux) throw OSInformation.Shared.CreatePlatformNotSupportedException();
+
+        var timeout = TimeSpan.FromMinutes(5);
+
+        // NOTE(erri120): This should be empty for most of the time. We want to wait until the reaper process for
+        // the current starts, so we ignore every reaper process that already exists.
+        var existingReaperProcesses = Process.GetProcessesByName("reaper").Select(x => x.Id).ToHashSet();
 
         // https://developer.valvesoftware.com/wiki/Steam_browser_protocol
-        await _osInterop.OpenUrl(new Uri($"steam://rungameid/{appId.ToString(CultureInfo.InvariantCulture)}"), cancellationToken);
+        await _osInterop.OpenUrl(new Uri($"steam://rungameid/{appId.ToString(CultureInfo.InvariantCulture)}"), fireAndForget: true, cancellationToken: cancellationToken);
 
-        if (OSInformation.Shared.IsWindows)
-        {
-            // TODO:
-        } else if (OSInformation.Shared.IsLinux)
-        {
-            var steam = await WaitForProcessToStart("steam", Array.Empty<Process>(), TimeSpan.FromMinutes(1), cancellationToken);
-            if (steam is null) return;
+        var steam = await WaitForProcessToStart("steam", timeout, existingProcesses: null, cancellationToken);
+        if (steam is null) return;
 
-            // NOTE(erri120): Reaper is a custom tool for cleaning up child processes
-            // See https://github.com/sonic2kk/steamtinkerlaunch/wiki/Steam-Reaper for details.
-            var reaper = await WaitForProcessToStart("reaper", existingReaperProcesses, TimeSpan.FromMinutes(1), cancellationToken);
-            if (reaper is null) return;
+        // NOTE(erri120): Reaper is a custom tool for cleaning up child processes
+        // See https://github.com/sonic2kk/steamtinkerlaunch/wiki/Steam-Reaper for details.
+        var reaper = await WaitForProcessToStart("reaper", timeout, existingReaperProcesses, cancellationToken);
+        if (reaper is null) return;
 
-            await reaper.WaitForExitAsync(cancellationToken);
-        }
-        else
-        {
-            throw OSInformation.Shared.CreatePlatformNotSupportedException();
-        }
+        await reaper.WaitForExitAsync(cancellationToken);
     }
 
     private async ValueTask<Process?> WaitForProcessToStart(
         string processName,
-        Process[] existingProcesses,
         TimeSpan timeout,
+        HashSet<int>? existingProcesses,
         CancellationToken cancellationToken = default)
     {
+        _logger.LogDebug("Waiting for process `{ProcessName}` to start within `{Timeout:g}` second(s)", processName, timeout);
+
         try
         {
             var start = DateTime.UtcNow;
             while (!cancellationToken.IsCancellationRequested && start + timeout > DateTime.UtcNow)
             {
                 var processes = Process.GetProcessesByName(processName);
-                var target = processes.FirstOrDefault(x => existingProcesses.All(p => p.Id != x.Id));
+                var target = existingProcesses is not null
+                    ? processes.FirstOrDefault(x => !existingProcesses.Contains(x.Id))
+                    : processes.FirstOrDefault();
+
                 if (target is not null) return target;
 
                 await Task.Delay(TimeSpan.FromMilliseconds(300), cancellationToken);
             }
 
+            _logger.LogWarning("Process `{ProcessName}` failed to start within `{Timeout:g}` second(s)", processName, timeout);
             return null;
         }
         catch (TaskCanceledException)
@@ -167,7 +222,7 @@ public class RunGameTool<T> : IRunGameTool
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Exception while waiting for process \"{Process}\" to start", processName);
+            _logger.LogError(e, "Exception while waiting for process `{Process}` to start", processName);
             return null;
         }
     }

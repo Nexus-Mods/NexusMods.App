@@ -1,27 +1,22 @@
 using CliWrap;
+using Microsoft.Extensions.Logging;
 
 namespace NexusMods.CrossPlatform.Process;
 
 /// <summary>
 /// OS interoperation for linux
 /// </summary>
-// ReSharper disable once InconsistentNaming
-public class OSInteropLinux : IOSInterop
+public class OSInteropLinux : AOSInterop
 {
-    private readonly IProcessFactory _processFactory;
     /// <summary>
-    /// constructor
+    /// Constructor.
     /// </summary>
-    /// <param name="processFactory"></param>
-    public OSInteropLinux(IProcessFactory processFactory)
-    {
-        _processFactory = processFactory;
-    }
+    public OSInteropLinux(ILoggerFactory loggerFactory, IProcessFactory processFactory)
+        : base(loggerFactory, processFactory) { }
 
     /// <inheritdoc/>
-    public async Task OpenUrl(Uri url, CancellationToken cancellationToken = default)
+    protected override Command CreateCommand(Uri uri)
     {
-        var command = Cli.Wrap("xdg-open").WithArguments(new[] { url.ToString() }, escape: true);
-        await _processFactory.ExecuteAsync(command, cancellationToken);
+        return Cli.Wrap("xdg-open").WithArguments(new[] { uri.ToString() }, escape: true);
     }
 }

@@ -9,7 +9,8 @@ public interface IOSInterop
     /// <summary>
     /// open a url in the default application based on the protocol
     /// </summary>
-    /// <param name="url">url to open</param>
+    /// <param name="url">URI to open</param>
+    /// <param name="fireAndForget">Start the process but don't wait for the completion</param>
     /// <param name="cancellationToken">Cancellation token</param>
-    Task OpenUrl(Uri url, CancellationToken cancellationToken = default);
+    Task OpenUrl(Uri url, bool fireAndForget = false, CancellationToken cancellationToken = default);
 }

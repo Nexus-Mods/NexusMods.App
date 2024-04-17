@@ -87,7 +87,7 @@ public class OAuth
         using var job = CreateJob(url);
 
         // see https://www.rfc-editor.org/rfc/rfc7636#section-4.3
-        await _os.OpenUrl(url, cancellationToken);
+        await _os.OpenUrl(url, cancellationToken: cancellationToken);
 
         cts.CancelAfter(TimeSpan.FromMinutes(3));
         var code = await codeTask;

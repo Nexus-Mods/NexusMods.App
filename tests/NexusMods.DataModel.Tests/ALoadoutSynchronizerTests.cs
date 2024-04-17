@@ -20,7 +20,7 @@ namespace NexusMods.DataModel.Tests;
 
 public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTests>
 {
-    private readonly IStandardizedLoadoutSynchronizer _synchronizer;
+    protected readonly IStandardizedLoadoutSynchronizer _synchronizer;
     private readonly Dictionary<ModId, string> _modNames = new();
     private readonly Dictionary<string, ModId> _modIdForName = new();
     private readonly Dictionary<ModFileId, ModFilePair> _pairs = new();
@@ -31,6 +31,8 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
     private static GamePath _meshPath = new(LocationId.Game, "meshes/b.nif");
     private static GamePath _prefsPath = new(LocationId.Preferences, "preferences/prefs.dat");
     private static GamePath _savePath = new(LocationId.Saves, "saves/save.dat");
+    private static GamePath _configPath = new(LocationId.Game, "config.ini");
+    private static GamePath _imagePath = new(LocationId.Game, "Data/image.dds");
 
     private static GamePath[] _allPaths = {_texturePath , _meshPath, _prefsPath, _savePath};
     private Loadout _originalLoadout;
@@ -102,6 +104,43 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
         // This should not throw as the disk state should be in sync
         BaseList.Alter("Changing the name", l => l with { Name = "Changed Name"});
         await _synchronizer.Apply(BaseList.Value);
+    }
+
+    [Fact]
+    public async Task ApplyingDeletesCleansUpEmptyDirectories()
+    {
+        var originalMods = BaseList.Value.Mods;
+        await _synchronizer.Apply(BaseList.Value);
+        
+        var file1 = new GamePath(LocationId.Game, "deleteMeMod/deleteMeDir1/deleteMeFile.txt");
+        var path1 = Install.LocationsRegister.GetResolvedPath(file1);
+        var file2 = new GamePath(LocationId.Game, "deleteMeMod/deleteMeDir2/deleteMeFile.txt");
+        var path2 = Install.LocationsRegister.GetResolvedPath(file2);
+        
+        // Add mod that will be deleted
+        await AddMod("DeleteMe",
+            (_texturePath.Path, "texture.dds"),
+            (file1.Path, "deleteMeContents"),
+            (file2.Path, "deleteMeContents"));
+        
+        await _synchronizer.Apply(BaseList.Value);
+        
+        path1.FileExists.Should().BeTrue("the file should exist");
+        
+        // Delete the mod
+        BaseList.Alter("Delete the mod", l => l with { Mods = originalMods });
+        
+        await _synchronizer.Apply(BaseList.Value);
+        
+        path1.FileExists.Should().BeFalse("the file should not exist");
+        path1.Parent.DirectoryExists().Should().BeFalse("the directory should not exist");
+        path1.Parent.Parent.DirectoryExists().Should().BeFalse("the directory should not exist");
+        
+        path2.FileExists.Should().BeFalse("the file should not exist");
+        path2.Parent.DirectoryExists().Should().BeFalse("the directory should not exist");
+        
+        var textureAbsPath = Install.LocationsRegister.GetResolvedPath(_texturePath.Parent);
+        textureAbsPath.DirectoryExists().Should().BeTrue("the texture folder should still exist");
     }
 
     [Fact]
@@ -250,6 +289,27 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
         var executeFlags = UnixFileMode.UserExecute | UnixFileMode.GroupExecute | UnixFileMode.OtherExecute;
         scriptPath.GetUnixFileMode().Should().HaveFlag(executeFlags);
         binaryPath.GetUnixFileMode().Should().HaveFlag(executeFlags);
+    }
+    
+    [Fact]
+    public async Task CanLoadoutToDiskDiff()
+    {
+        var prevDiskState = DiskStateRegistry.GetState(BaseList.Value.Installation)!;
+        
+        await AddMod("ReplacingConfigMod",
+            // This replaces the config file without changing the contents
+            (_configPath.Path, "config.ini"),
+            // This replaces the image file with a new one
+            (_imagePath.Path, "modifiedImage.dds")
+            );
+        
+        var diffTree = await _synchronizer.LoadoutToDiskDiff(BaseList.Value, prevDiskState );
+        var res = diffTree.GetAllDescendentFiles()
+            .Select(node => VerifiableFile.From(node.Item.Value))
+            .OrderByDescending(mod => mod.GamePath)
+            .ToArray();
+        
+        await Verify(res);
     }
 
     [Fact]

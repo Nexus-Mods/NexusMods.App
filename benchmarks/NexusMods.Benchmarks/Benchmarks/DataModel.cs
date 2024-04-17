@@ -8,6 +8,7 @@ using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.Abstractions.Serialization.DataModel.Ids;
+using NexusMods.Abstractions.Settings;
 using NexusMods.App.BuildInfo;
 using NexusMods.Benchmarks.Interfaces;
 using NexusMods.DataModel;
@@ -40,8 +41,10 @@ public class DataStoreBenchmark : IBenchmark, IDisposable
 
         var provider = host.Services.GetRequiredService<IServiceProvider>();
         _dataStore = new SqliteDataStore(
-            provider.GetRequiredService<ILogger<SqliteDataStore>>(),
-            new DataModelSettings(FileSystem.Shared), provider);
+            provider,
+            logger: provider.GetRequiredService<ILogger<SqliteDataStore>>(),
+            settingsManager: provider.GetRequiredService<ISettingsManager>(),
+            fileSystem: FileSystem.Shared);
 
         _rawData = new byte[1024];
         Random.Shared.NextBytes(_rawData);

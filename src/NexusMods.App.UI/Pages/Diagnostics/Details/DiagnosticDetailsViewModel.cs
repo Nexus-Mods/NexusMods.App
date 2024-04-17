@@ -1,9 +1,8 @@
-using System.Reactive;
 using System.Reactive.Disposables;
 using NexusMods.Abstractions.Diagnostics;
+using NexusMods.App.UI.Controls.MarkdownRenderer;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
-using NexusMods.CrossPlatform.Process;
 using NexusMods.Icons;
 using ReactiveUI;
 
@@ -11,32 +10,24 @@ namespace NexusMods.App.UI.Pages.Diagnostics;
 
 public class DiagnosticDetailsViewModel : APageViewModel<IDiagnosticDetailsViewModel>, IDiagnosticDetailsViewModel
 {
-    public string Details { get; }
     public DiagnosticSeverity Severity { get; }
 
-    public ReactiveCommand<string, Unit> MarkdownOpenLinkCommand { get; }
+    public IMarkdownRendererViewModel MarkdownRendererViewModel { get; }
 
     public DiagnosticDetailsViewModel(
-        IOSInterop osInterop,
         IWindowManager windowManager,
-        IDiagnosticWriter diagnosticWriter, 
+        IDiagnosticWriter diagnosticWriter,
+        IMarkdownRendererViewModel markdownRendererViewModel,
         Diagnostic diagnostic) : base(windowManager)
     {
         Severity = diagnostic.Severity;
 
         var summary = diagnostic.FormatSummary(diagnosticWriter);
-        Details = $"## {summary}\n" +
+        var details = $"## {summary}\n" +
                   $"{diagnostic.FormatDetails(diagnosticWriter)}";
 
-        // TODO: once we have custom elements and goto-links, this should be factored out into a singleton handler
-        MarkdownOpenLinkCommand = ReactiveCommand.CreateFromTask<string>(async url =>
-        {
-            if (!Uri.TryCreate(url, UriKind.Absolute, out var uri)) return;
-            await Task.Run(() =>
-            {
-                osInterop.OpenUrl(uri);
-            });
-        });
+        MarkdownRendererViewModel = markdownRendererViewModel;
+        MarkdownRendererViewModel.Contents = details;
 
         this.WhenActivated(disposable =>
         {
