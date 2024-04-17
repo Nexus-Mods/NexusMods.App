@@ -14,10 +14,16 @@ Files should be hashed and named after their hash (`{hash}.{ext}`). This has mul
 
 The files in this directory aren't going to be looked up manually. They will be referenced by the CHANGELOG. As such, craming information into the file name is useless and will just lead to weird names and a complete mess.
 
-For hashing, we'll use Blake2b with a length of 128. This hash can be computed using the [`cksum`](https://www.gnu.org/software/coreutils/manual/html_node/cksum-invocation.html#cksum-invocation) coreutils program:
+For hashing, we'll use Blake2b with a length of 128. This hash can be computed using the [`cksum`](https://www.gnu.org/software/coreutils/manual/html_node/cksum-invocation.html#cksum-invocation) coreutils program (requires coreutils 9 or greater):
 
 ```bash
 cksum -a blake2b --untagged --length=128 filename
+```
+
+Alternatively, `b2sum` can be used directly for distros that have coreutils 8:
+
+```bash
+b2sum --length=128 filename
 ```
 
 ### Images

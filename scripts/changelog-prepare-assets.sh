@@ -26,7 +26,7 @@ for file in $FILES; do
   filename="${filename%.*}"
 
   echo "$file: hashing"
-  filehash=$(cksum -a blake2b --untagged --length=128 "$file" | awk '{print $1}')
+  filehash=$(b2sum --length=128 "$file" | awk '{print $1}')
 
   if [[ "$filename" == "$filehash" ]]; then
     echo "$file: valid"
