@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -323,6 +324,22 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
 
         // Return the new tree
         return newTree;
+
+        // Quick convert function such that to not be LINQ bottlenecked.
+        // Needed as separate method because parent method is async.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static (Hash Hash, AbsolutePath Dest)[] GetFilesToExtract(List<KeyValuePair<AbsolutePath, StoredFile>> toExtract) 
+        {
+            (Hash Hash, AbsolutePath Dest)[] entries = GC.AllocateUninitializedArray<(Hash Src, AbsolutePath Dest)>(toExtract.Count);
+            var toExtractSpan = CollectionsMarshal.AsSpan(toExtract);
+            for (var x = 0; x < toExtract.Count; x++)
+            {
+                ref var item = ref toExtractSpan[x];
+                entries[x] = (item.Value.Hash, item.Key);
+            }
+
+            return entries;
+        }
     }
 
     /// <inheritdoc />
