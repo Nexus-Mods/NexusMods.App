@@ -18,6 +18,7 @@ using NexusMods.Archives.Nx.Utilities;
 using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.ChunkedStreams;
 using NexusMods.Hashing.xxHash64;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
 using Reloaded.Memory.Extensions;
@@ -30,7 +31,7 @@ namespace NexusMods.DataModel;
 public class NxFileStore : IFileStore
 {
     private readonly AbsolutePath[] _archiveLocations;
-    private readonly IDataStore _store;
+    private readonly IConnection _conn;
     private readonly ILogger<NxFileStore> _logger;
 
     /// <summary>
@@ -38,7 +39,7 @@ public class NxFileStore : IFileStore
     /// </summary>
     public NxFileStore(
         ILogger<NxFileStore> logger,
-        IDataStore store,
+        IConnection conn,
         ISettingsManager settingsManager,
         IFileSystem fileSystem)
     {
@@ -52,13 +53,14 @@ public class NxFileStore : IFileStore
         }
 
         _logger = logger;
-        _store = store;
+        _conn = conn;
     }
 
     /// <inheritdoc />
     public ValueTask<bool> HaveFile(Hash hash)
     {
-        return ValueTask.FromResult(TryGetLocation(hash, out _, out _));
+        var db = _conn.Db;
+        return ValueTask.FromResult(TryGetLocation(db, hash, out _, out _));
     }
 
     /// <inheritdoc />
@@ -96,54 +98,39 @@ public class NxFileStore : IFileStore
         await outputPath.MoveToAsync(finalPath, token: token);
         await using var os = finalPath.Read();
         var unpacker = new NxUnpacker(new FromStreamProvider(os));
-        UpdateIndexes(unpacker, guid, finalPath);
+        await UpdateIndexes(unpacker, finalPath);
     }
 
-    private unsafe void UpdateIndexes(NxUnpacker unpacker, Guid guid,
-        AbsolutePath finalPath)
+    private async Task UpdateIndexes(NxUnpacker unpacker, AbsolutePath finalPath)
     {
-        var entries = unpacker.GetPathedFileEntries();
-        var items = GC.AllocateUninitializedArray<(IId, ArchivedFiles)>(entries.Length);
-        Span<byte> buffer = stackalloc byte[sizeof(NativeFileEntryV1)];
+        using var tx = _conn.BeginTransaction();
 
-        for (var x = 0; x < entries.Length; x++)
+        var container = new ArchivedFileContainer.Model(tx)
         {
-            var entry = entries[x];
-            fixed (byte* ptr = buffer)
+            Path = finalPath.Name,
+        };
+        
+        var entries = unpacker.GetPathedFileEntries();
+
+        foreach (var entry in entries)
+        {
+            _ = new ArchivedFile.Model(tx)
             {
-                var writer = new LittleEndianWriter(ptr);
-                entry.Entry.WriteAsV1(ref writer);
-
-                var hash = Hash.FromHex(entry.FileName);
-                var dbId = IdFor(hash, guid);
-                var dbEntry = new ArchivedFiles
-                {
-                    File = finalPath.FileName,
-                    FileEntryData = buffer.ToArray()
-                };
-
-                // TODO: Consider a bulk-put operation here
-                items[x] = (dbId, dbEntry);
-            }
+                Hash = Hash.FromHex(entry.FileName),
+                NxFileEntry = entry.Entry,
+                Container = container,
+            };
         }
 
-        _store.PutAll(items.AsSpan());
+        await tx.Commit();
     }
-
-    [SkipLocalsInit]
-    private IId IdFor(Hash hash, Guid guid)
-    {
-        Span<byte> buffer = stackalloc byte[24];
-        BinaryPrimitives.WriteUInt64BigEndian(buffer, hash.Value);
-        guid.TryWriteBytes(buffer.SliceFast(8));
-        return IId.FromSpan(EntityCategory.ArchivedFiles, buffer);
-    }
-
+    
     /// <inheritdoc />
     public async Task ExtractFiles(IEnumerable<(Hash Src, AbsolutePath Dest)> files, CancellationToken token = default)
     {
+        var db = _conn.Db;
         var grouped = files.Distinct()
-            .Select(input => TryGetLocation(input.Src, out var archivePath, out var fileEntry)
+            .Select(input => TryGetLocation(db, input.Src, out var archivePath, out var fileEntry)
                 ? (true, Hash: input.Src, ArchivePath: archivePath, FileEntry: fileEntry, input.Dest)
                 : default)
             .Where(x => x.Item1)
@@ -186,10 +173,11 @@ public class NxFileStore : IFileStore
     /// <inheritdoc />
     public Task<IDictionary<Hash, byte[]>> ExtractFiles(IEnumerable<Hash> files, CancellationToken token = default)
     {
+        var db = _conn.Db;
         var results = new Dictionary<Hash, byte[]>();
 
         var grouped = files.Distinct()
-            .Select(hash => TryGetLocation(hash, out var archivePath, out var fileEntry)
+            .Select(hash => TryGetLocation(db, hash, out var archivePath, out var fileEntry)
                 ? (true, Hash: hash, ArchivePath: archivePath, FileEntry: fileEntry)
                 : default)
             .Where(x => x.Item1)
@@ -226,7 +214,7 @@ public class NxFileStore : IFileStore
     {
         if (hash == Hash.Zero)
             throw new ArgumentNullException(nameof(hash));
-        if (!TryGetLocation(hash, out var archivePath, out var entry))
+        if (!TryGetLocation(_conn.Db, hash, out var archivePath, out var entry))
             throw new Exception($"Missing archive for {hash.ToHex()}");
 
         var file = archivePath.Read();
@@ -239,19 +227,14 @@ public class NxFileStore : IFileStore
     }
 
     /// <inheritdoc />
-    public unsafe HashSet<ulong> GetFileHashes()
+    public HashSet<ulong> GetFileHashes()
     {
         // Build a Hash Table of all currently known files. We do this to deduplicate files between downloads.
         var fileHashes = new HashSet<ulong>();
-        foreach (var arcFile in _store.GetAll<ArchivedFiles>(EntityCategory.ArchivedFiles)!)
-        {
-            fixed (byte* ptr = arcFile.FileEntryData.AsSpan())
-            {
-                var reader = new LittleEndianReader(ptr);
-                fileHashes.Add(reader.ReadUlongAtOffset(8)); // Hash. Offset 8 in V1 header, per spec.
-            }
-        }
-
+        
+        // TODO: replace this with a use of IndexSegment
+        fileHashes.AddRange(_conn.Db.Find(ArchivedFile.Hash).Select(f => f.Value));
+        
         return fileHashes;
     }
 
@@ -425,32 +408,17 @@ public class NxFileStore : IFileStore
         public required int DecompressSize { get; set; }
     }
 
-    private unsafe bool TryGetLocation(Hash hash, out AbsolutePath archivePath, out FileEntry fileEntry)
+    private bool TryGetLocation(IDb db, Hash hash, out AbsolutePath archivePath, out FileEntry fileEntry)
     {
-        var prefix = new Id64(EntityCategory.ArchivedFiles, (ulong)hash);
-        foreach (var entry in _store.GetByPrefix<ArchivedFiles>(prefix))
-        {
-            foreach (var location in _archiveLocations)
-            {
-                var path = location.Combine(entry.File);
-                if (!path.FileExists) continue;
-
-                archivePath = path;
-
-                fixed (byte* ptr = entry.FileEntryData.AsSpan())
-                {
-                    var reader = new LittleEndianReader(ptr);
-                    FileEntry tmpEntry = default;
-
-                    tmpEntry.FromReaderV1(ref reader);
-                    fileEntry = tmpEntry;
-                    return true;
-                }
-            }
-        }
-
-        archivePath = default;
-        fileEntry = default;
-        return false;
+        var result = false;
+        var entries = from id in db.FindIndexed(hash, ArchivedFile.Hash)
+            let entry = db.Get<ArchivedFile.Model>(id)
+            from location in _archiveLocations
+            let combined = location.Combine(entry.Container.Path)
+            where combined.FileExists        
+            select (combined, entry.NxFileEntry, true);
+        
+        (archivePath, fileEntry, result) = entries.FirstOrDefault();
+        return result;
     }
 }

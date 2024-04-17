@@ -16,7 +16,7 @@ public static class ArchivedFileContainer
     /// <summary>
     /// The name of the container on-disk. This will be relative to some archive root path.
     /// </summary>
-    public static RelativePathAttribute Path => new(Namespace, nameof(Path));
+    public static readonly RelativePathAttribute Path = new(Namespace, nameof(Path));
 
     /// <summary>
     /// Model for the archived file container.

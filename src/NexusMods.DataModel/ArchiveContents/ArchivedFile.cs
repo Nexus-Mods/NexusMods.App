@@ -21,17 +21,17 @@ public static class ArchivedFile
     /// The compressed container (.nx archive) that contains the file, the entity referenced
     /// here should have the relative path to the file.
     /// </summary>
-    public static ReferenceAttribute Container => new(Namespace, nameof(Container));
+    public static readonly ReferenceAttribute Container = new(Namespace, nameof(Container));
     
     /// <summary>
     /// The hash of the file entry
     /// </summary>
-    public static HashAttribute Hash => new(Namespace, nameof(Hash)) {IsIndexed = true};
+    public static readonly HashAttribute Hash = new(Namespace, nameof(Hash)) {IsIndexed = true};
     
     /// <summary>
     /// The file entry data for the NX block offset data
     /// </summary>
-    public static NxFileEntryAttribute NxFileEntry => new(Namespace, nameof(NxFileEntry));
+    public static readonly NxFileEntryAttribute NxFileEntry = new(Namespace, nameof(NxFileEntry));
 
 
     /// <summary>
