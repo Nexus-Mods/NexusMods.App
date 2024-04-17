@@ -6,9 +6,16 @@ namespace NexusMods.App.UI.Controls.MarkdownRenderer;
 
 public class MarkdownRendererDesignViewModel : AViewModel<IMarkdownRendererViewModel>, IMarkdownRendererViewModel
 {
-    public string Contents { get; set; } = DefaultContents;
+    public string Contents { get; set; }
 
     public ReactiveCommand<string, Unit> OpenLinkCommand { get; } = ReactiveCommand.Create<string>(_ => { });
+
+    public MarkdownRendererDesignViewModel() : this(DefaultContents) { }
+
+    public MarkdownRendererDesignViewModel(string contents)
+    {
+        Contents = contents;
+    }
 
     // From https://jaspervdj.be/lorem-markdownum/
     [LanguageInjection("markdown")]
