@@ -232,7 +232,7 @@ public class NxFileStore : IFileStore
         // Build a Hash Table of all currently known files. We do this to deduplicate files between downloads.
         var fileHashes = new HashSet<ulong>();
         
-        // TODO: replace this with a use of IndexSegment
+        // Replace this once we redo the IFileStore. Instead that can likely query MneumonicDB directly.
         fileHashes.AddRange(_conn.Db.Find(ArchivedFile.Hash).Select(f => f.Value));
         
         return fileHashes;
