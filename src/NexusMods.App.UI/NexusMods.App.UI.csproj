@@ -487,6 +487,12 @@
         <Compile Update="Pages\Diff\ApplyDiff\ApplyDiffDesignViewModel.cs">
           <DependentUpon>IApplyDiffViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Controls\MarkdownRenderer\MarkdownRendererViewModel.cs">
+          <DependentUpon>IMarkdownRendererViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\MarkdownRenderer\MarkdownRendererDesignViewModel.cs">
+          <DependentUpon>IMarkdownRendererViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>

@@ -14,6 +14,7 @@ using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadSize;
 using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadStatus;
 using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadVersion;
 using NexusMods.App.UI.Controls.GameWidget;
+using NexusMods.App.UI.Controls.MarkdownRenderer;
 using NexusMods.App.UI.Controls.ModInfo.Error;
 using NexusMods.App.UI.Controls.ModInfo.Loading;
 using NexusMods.App.UI.Controls.ModInfo.ModFiles;
@@ -181,6 +182,9 @@ public static class Services
             .AddViewModel<DiagnosticListViewModel, IDiagnosticListViewModel>()
             .AddView<DiagnosticDetailsView, IDiagnosticDetailsViewModel>()
             .AddViewModel<DiagnosticDetailsViewModel, IDiagnosticDetailsViewModel>()
+
+            .AddView<MarkdownRendererView, IMarkdownRendererViewModel>()
+            .AddViewModel<MarkdownRendererViewModel, IMarkdownRendererViewModel>()
 
             // workspace system
             .AddSingleton<IWindowManager, WindowManager>()
