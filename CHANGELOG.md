@@ -20,6 +20,7 @@ This also includes our first "suggestion" diagnostic. This diagnostic will only 
 ### Other Changes
 
 - A new settings backend was added in preparation for a settings UI. See [#1182](https://github.com/Nexus-Mods/NexusMods.App/issues/1182) for more details.
+- Parts of the backend has been reworked to use our new database. See [#1194](https://github.com/Nexus-Mods/NexusMods.App/pull/1194) for details.
 - The App will now use two logging files, `nexusmods.app.main.log` and `nexusmods.app.slim.log`, instead of one `nexusmods.app.log` to prevent log collisions between processes ([#1167](https://github.com/Nexus-Mods/NexusMods.App/pull/1167)).
 - The default logging level has been changed from `Information` to `Debug` for Release builds to make it easier to debug issues ([#1209](https://github.com/Nexus-Mods/NexusMods.App/pull/1209)).
 

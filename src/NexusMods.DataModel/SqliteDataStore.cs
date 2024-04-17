@@ -42,7 +42,6 @@ public class SqliteDataStore : IDataStore, IDisposable
 
     private readonly ConcurrentLru<IId, Entity> _cache;
     private readonly ILogger<SqliteDataStore> _logger;
-    private readonly Dictionary<EntityCategory, bool> _immutableFields;
     private readonly ObjectPool<SqliteConnection> _pool;
     private readonly ConnectionPoolPolicy _poolPolicy;
     private readonly ObjectPoolDisposable<SqliteConnection> _globalHandle;
@@ -93,7 +92,6 @@ public class SqliteDataStore : IDataStore, IDisposable
         _casStatements = new Dictionary<EntityCategory, string>();
         _prefixStatements = new Dictionary<EntityCategory, string>();
         _deleteStatements = new Dictionary<EntityCategory, string>();
-        _immutableFields = new Dictionary<EntityCategory, bool>();
         EnsureTables();
 
         _jsonOptions = new Lazy<JsonSerializerOptions>(serviceProvider.GetRequiredService<JsonSerializerOptions>);
@@ -133,9 +131,6 @@ public class SqliteDataStore : IDataStore, IDisposable
             _casStatements[table] = $"UPDATE [{tableName}] SET Data = @newData WHERE Data = @oldData AND Id = @id RETURNING *;";
             _prefixStatements[table] = $"SELECT Id, Data FROM [{tableName}] WHERE Id >= @prefix ORDER BY Id ASC";
             _deleteStatements[table] = $"DELETE FROM [{tableName}] WHERE Id = @id";
-
-            var memberInfo = typeof(EntityCategory).GetField(Enum.GetName(table)!)!;
-            _immutableFields[table] = memberInfo.CustomAttributes.Any(x => x.AttributeType == typeof(ImmutableAttribute));
         }
     }
 
@@ -251,8 +246,7 @@ public class SqliteDataStore : IDataStore, IDisposable
     {
         try
         {
-            if (!_immutableFields[id.Category])
-                _updatedIds.OnNext(id);
+            _updatedIds.OnNext(id);
         }
         catch (Exception e)
         {

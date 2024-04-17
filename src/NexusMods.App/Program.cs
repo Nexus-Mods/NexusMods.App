@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Reactive;
 using System.Runtime.InteropServices;
 using Avalonia;
