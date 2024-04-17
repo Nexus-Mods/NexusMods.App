@@ -1,13 +1,14 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.ReactiveUI;
-using Markdown.Avalonia.Utils;
+using JetBrains.Annotations;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.App.UI.Resources;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Pages.Diagnostics;
 
+[UsedImplicitly]
 public partial class DiagnosticDetailsView : ReactiveUserControl<IDiagnosticDetailsViewModel>
 {
     public DiagnosticDetailsView()
@@ -27,6 +28,8 @@ public partial class DiagnosticDetailsView : ReactiveUserControl<IDiagnosticDeta
 
     private void InitializeData(IDiagnosticDetailsViewModel vm)
     {
+        MarkdownRendererViewModelViewHost.ViewModel = vm.MarkdownRendererViewModel;
+
         switch (vm.Severity)
         {
             case DiagnosticSeverity.Suggestion:
@@ -55,8 +58,5 @@ public partial class DiagnosticDetailsView : ReactiveUserControl<IDiagnosticDeta
                 SeverityTitleTextBlock.Text = Language.DiagnosticDetailsView_SeverityTitle_HIDDEN.ToUpperInvariant();
                 break;
         }
-
-        MarkdownScrollViewer.Engine.HyperlinkCommand = vm.MarkdownOpenLinkCommand;
-        MarkdownScrollViewer.Markdown = vm.Details;
     }
 }
