@@ -1,6 +1,15 @@
 # Changelog
 
-## v0.4.1
+## Unreleased
+
+### New Features
+
+### Other Changes
+
+### Fixes
+
+## [v0.4.1](https://github.com/Nexus-Mods/NexusMods.App/releases/tag/v0.4.1) - 2024-04-17
+
 ### New Features
 
 The highlight of this PR is the new Apply Diff View ([#1202](https://github.com/Nexus-Mods/NexusMods.App/pull/1202)). You can now preview the changes made to disk before applying the Loadout:
@@ -20,7 +29,6 @@ This also includes our first "suggestion" diagnostic. This diagnostic will only 
 ### Other Changes
 
 - A new settings backend was added in preparation for a settings UI. See [#1182](https://github.com/Nexus-Mods/NexusMods.App/issues/1182) for more details.
-- Parts of the backend has been reworked to use our new database. See [#1194](https://github.com/Nexus-Mods/NexusMods.App/pull/1194) for details.
 - The App will now use two logging files, `nexusmods.app.main.log` and `nexusmods.app.slim.log`, instead of one `nexusmods.app.log` to prevent log collisions between processes ([#1167](https://github.com/Nexus-Mods/NexusMods.App/pull/1167)).
 - The default logging level has been changed from `Information` to `Debug` for Release builds to make it easier to debug issues ([#1209](https://github.com/Nexus-Mods/NexusMods.App/pull/1209)).
 
