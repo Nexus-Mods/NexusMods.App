@@ -112,6 +112,7 @@ public static class Services
 
         // Diagnostics
         coll.AddAllSingleton<IDiagnosticManager, DiagnosticManager>();
+        coll.AddSettings<DiagnosticSettings>();
         
         // Verbs
         coll.AddLoadoutManagementVerbs()
