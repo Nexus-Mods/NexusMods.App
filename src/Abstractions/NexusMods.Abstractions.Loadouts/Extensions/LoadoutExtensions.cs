@@ -57,6 +57,6 @@ public static class LoadoutExtensions
         this Loadout loadout,
         bool onlyEnabledMods = true) where T : AModMetadata
     {
-        return loadout.GetModsWithMetadata<T>(onlyEnabledMods).FirstOrDefault();
+        return loadout.GetModsWithMetadata<T>(onlyEnabledMods).FirstOrOptional(_ => true);
     }
 }
