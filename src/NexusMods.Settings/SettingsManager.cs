@@ -129,7 +129,7 @@ internal partial class SettingsManager : ISettingsManager
             }
         } else if (_asyncStorageBackendMappings.TryGetValue(type, out var asyncStorageBackend))
         {
-            Scheduler.ScheduleAsync((value, asyncStorageBackend, _logger), TimeSpan.Zero, async static (scheduler, state, cancellationToken) =>
+            Scheduler.ScheduleAsync((value, asyncStorageBackend, _logger), TimeSpan.Zero, async static (_, state, cancellationToken) =>
             {
                 var (valueToSave, backend, logger) = state;
 
@@ -166,7 +166,7 @@ internal partial class SettingsManager : ISettingsManager
 
             var cts = new CancellationTokenSource(delay: TimeSpan.FromSeconds(10));
 
-            var proxy = Task.Run(async () =>
+            _ = Task.Run(async () =>
             {
                 try
                 {
