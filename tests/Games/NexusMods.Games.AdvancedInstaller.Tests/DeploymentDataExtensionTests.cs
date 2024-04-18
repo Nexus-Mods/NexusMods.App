@@ -1,4 +1,5 @@
 using FluentAssertions;
+using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.Downloads;
 using NexusMods.Hashing.xxHash64;

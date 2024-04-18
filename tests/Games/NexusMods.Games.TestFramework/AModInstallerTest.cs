@@ -5,6 +5,7 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.FileStore.ArchiveMetadata;
+using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.FileStore.Trees;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;

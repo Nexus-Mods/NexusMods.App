@@ -1,3 +1,4 @@
+using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Archives.Nx.Headers.Managed;
 using NexusMods.DataModel.Attributes;
 using NexusMods.Hashing.xxHash64;

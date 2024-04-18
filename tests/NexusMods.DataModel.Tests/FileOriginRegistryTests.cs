@@ -6,6 +6,7 @@ using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.FileExtractor;
 using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.FileStore.ArchiveMetadata;
+using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.Games.Downloads;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Serialization.Attributes;

@@ -3,6 +3,7 @@ using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.DataModel.Entities.Sorting;
+using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.Downloads;
 using NexusMods.Abstractions.Games.Loadouts;

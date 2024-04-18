@@ -1,67 +1,64 @@
-﻿using NexusMods.Abstractions.FileStore.ArchiveMetadata;
-using NexusMods.Abstractions.FileStore.Trees;
+﻿using NexusMods.Abstractions.FileStore.Trees;
 using NexusMods.Abstractions.IO;
-using NexusMods.Abstractions.Serialization;
-using NexusMods.Abstractions.Serialization.Attributes;
-using NexusMods.Abstractions.Serialization.DataModel;
-using NexusMods.Abstractions.Serialization.DataModel.Ids;
+using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Hashing.xxHash64;
+using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.Attributes;
+using NexusMods.MnemonicDB.Abstractions.IndexSegments;
+using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.Paths;
 using ModFileTreeNode = NexusMods.Paths.Trees.KeyedBox<NexusMods.Paths.RelativePath, NexusMods.Abstractions.FileStore.Trees.ModFileTree>;
 
-namespace NexusMods.Abstractions.Games.Downloads;
+namespace NexusMods.Abstractions.FileStore.Downloads;
 
 /// <summary>
-/// Analysis of the contents of a download
+/// Attributes for the analysis data for a downloaded file
 /// </summary>
-[JsonName("NexusMods.Abstractions.Games.Downloads.DownloadAnalysis")]
-public record DownloadAnalysis : Entity
+public static class DownloadAnalysis
 {
-    /// <summary>
-    /// The id of the download
-    /// </summary>
-    public required DownloadId DownloadId { get; init; }
-
+    private const string Namespace = "NexusMods.Abstractions.FileStore.Downloads.DownloadAnalysis";
     /// <summary>
     /// The hash of the downloaded archive from which this download is sourced from.
     /// </summary>
     /// <remarks>
-    ///     If installed directly from folder (for dev purposes etc.), this is 0.
+    ///     If installed directly from folder (for dev purposes etc.), this may not exist
     /// </remarks>
-    public required Hash Hash { get; init; }
+    public static readonly HashAttribute Hash = new(Namespace, nameof(Hash)) {IsIndexed = true};
 
     /// <summary>
     /// Size of the downloaded archive from which this download is sourced from.
     /// </summary>
     /// <remarks>
-    ///     If installed directly from folder (for dev purposes etc.), this is 0.
+    ///     If installed directly from folder (for dev purposes etc.), this may not exist
     /// </remarks>
-    public required Size Size { get; init; }
-
-    /// <summary>
-    /// The files contained in the download
-    /// </summary>
-    public required IReadOnlyCollection<DownloadContentEntry> Contents { get; init; }
-
-    /// <summary>
-    /// Returns a file tree of the contents of the download
-    /// </summary>
-    public ModFileTreeNode GetFileTree(IFileStore? fileStore) => TreeCreator.Create(Contents, fileStore);
-
-    /// <summary>
-    /// Meta data for the download
-    /// </summary>
-    public AArchiveMetaData? MetaData { get; init; }
-
-    /// <inheritdoc />
-    public override EntityCategory Category => EntityCategory.DownloadMetadata;
-
-    /// <inheritdoc />
-    protected override IId Persist(IDataStore store)
+    public static readonly SizeAttribute Size = new(Namespace, nameof(Size));
+    
+    public class Model(ITransaction tx) : AEntity(tx)
     {
-        var id = IId.From(EntityCategory.DownloadMetadata, DownloadId.Value);
-        store.Put(id, this);
-        return id;
+        
+        /// <summary>
+        /// The hash of the downloaded archive from which this download is sourced from.
+        /// </summary>
+        public Hash Hash
+        {
+            get => DownloadAnalysis.Hash.Get(this);
+            set => DownloadAnalysis.Hash.Add(this, value);
+        } 
+        
+        /// <summary>
+        /// Size of the downloaded archive from which this download is sourced from.
+        /// </summary>
+        public Size Size
+        {
+            get => DownloadAnalysis.Size.Get(this);
+            set => DownloadAnalysis.Size.Add(this, value);
+        }
+
+        /// <summary>
+        /// The contents of the download
+        /// </summary>
+        public Entities<EntityIds, DownloadContentEntry.Model> Content
+            => GetReverse<DownloadContentEntry.Model>(DownloadContentEntry.DownloadAnalysis);
     }
 }
 
@@ -69,22 +66,61 @@ public record DownloadAnalysis : Entity
 /// <summary>
 /// A single entry in the download analysis, this is a file that is contained in the download
 /// </summary>
-public record DownloadContentEntry
+public static class DownloadContentEntry
 {
+    private const string Namespace = "NexusMods.Abstractions.FileStore.Downloads.DownloadContentEntry";
+    
     /// <summary>
     /// Hash of the file
     /// </summary>
-    public required Hash Hash { get; init; }
+    public static readonly HashAttribute Hash = new(Namespace, nameof(Hash)) {IsIndexed = true};
 
     /// <summary>
     /// Size of the file
     /// </summary>
-    public required Size Size { get; init; }
+    public static readonly SizeAttribute Size = new(Namespace, nameof(Size));
 
     /// <summary>
     /// Path of the file
     /// </summary>
-    public required RelativePath Path { get; init; }
+    public static readonly RelativePathAttribute Path = new(Namespace, nameof(Path));
+    
+    /// <summary>
+    /// The DownloadAnalysis that this entry is a part of
+    /// </summary>
+    public static readonly ReferenceAttribute DownloadAnalysis = new(Namespace, nameof(DownloadAnalysis));
+    
+    public class Model(ITransaction tx) : AEntity(tx)
+    {
+        
+        /// <summary>
+        /// Hash of the file
+        /// </summary>
+        public Hash Hash
+        {
+            get => DownloadContentEntry.Hash.Get(this);
+            set => DownloadContentEntry.Hash.Add(this, value);
+        } 
+        
+        /// <summary>
+        /// Size of the file
+        /// </summary>
+        public Size Size
+        {
+            get => DownloadContentEntry.Size.Get(this);
+            set => DownloadContentEntry.Size.Add(this, value);
+        }
+        
+        /// <summary>
+        /// Path of the file
+        /// </summary>
+        public RelativePath Path
+        {
+            get => DownloadContentEntry.Path.Get(this);
+            set => DownloadContentEntry.Path.Add(this, value);
+        }
+    }
+    
 }
 
 /// <summary>
@@ -97,7 +133,7 @@ public class TreeCreator
     /// </summary>
     /// <param name="downloads">Downloads from the download registry.</param>
     /// <param name="fs">FileStore to read the files from.</param>
-    public static ModFileTreeNode Create(IReadOnlyCollection<DownloadContentEntry> downloads, IFileStore? fs = null)
+    public static ModFileTreeNode Create(IReadOnlyCollection<DownloadContentEntry.Model> downloads, IFileStore? fs = null)
     {
         var entries = GC.AllocateUninitializedArray<ModFileTreeSource>(downloads.Count);
         var entryIndex = 0;
@@ -112,7 +148,7 @@ public class TreeCreator
     /// </summary>
     /// <param name="entry">Entry for the individual file.</param>
     /// <param name="factory">Factory used to provide access to the file.</param>
-    public static ModFileTreeSource CreateSource(DownloadContentEntry entry, IStreamFactory? factory)
+    public static ModFileTreeSource CreateSource(DownloadContentEntry.Model entry, IStreamFactory? factory)
     {
         return new ModFileTreeSource()
         {

@@ -1,3 +1,4 @@
+using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.DataModel.Attributes;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;

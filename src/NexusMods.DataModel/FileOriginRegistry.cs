@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.FileExtractor;
 using NexusMods.Abstractions.FileStore.ArchiveMetadata;
+using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.Games.Downloads;
 using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.IO;
