@@ -1,8 +1,7 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <!-- Add Styles Here -->
-
-
+    
+    <!-- Preview -->
     <Design.PreviewWith>
         <StackPanel Margin="20" Width="300">
 
@@ -24,6 +23,7 @@
         </StackPanel>
     </Design.PreviewWith>
 
+    <!-- Add Styles Here -->
     <Style Selector="Border.Footer">
         <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
         <Setter Property="CornerRadius" Value="{StaticResource Rounded-b-lg}" />
@@ -35,6 +35,5 @@
             <Setter Property="Spacing" Value="{StaticResource Spacing-2}" />
         </Style>
     </Style>
-
-
+    
 </Styles>
