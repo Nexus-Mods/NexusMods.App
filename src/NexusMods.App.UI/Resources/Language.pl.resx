@@ -52,7 +52,7 @@
 		<value>Wygląda na to, że twoja aplikacja została zainstalowana za pośrednictwem systemu zarządzania pakietami. Proszę zaktualizować aplikację za pośrednictwem systemowej aplikacji do aktualizacji.</value>
 	</data>
 	<data name="Updater_ViewChangelog" xml:space="preserve">
-		<value>Zobacz dziennik zmian na GitHub</value>
+		<value>Pokaż dziennik zmian na GitHub</value>
 	</data>
 	<data name="LoadoutGridView_AddMod_FilePicker_Title" xml:space="preserve">
 		<value>Proszę wybrać plik moda do zainstalowania</value>
@@ -142,7 +142,7 @@
 		<value>POBRANE</value>
 	</data>
 	<data name="DownloadsView__In_Progress" xml:space="preserve">
-		<value>Postęp pobierania</value>
+		<value>Pobierane</value>
 	</data>
 	<data name="DownloadsView__Completed" xml:space="preserve">
 		<value>Ukończone</value>
@@ -181,7 +181,7 @@
 		<value>Wstrzymaj wszystko</value>
 	</data>
 	<data name="InProgressTitleTextBlock" xml:space="preserve">
-		<value>Pobierane</value>
+		<value>Pobieralnia</value>
 	</data>
 	<data name="BoldMinutesRemainingTextBlock" xml:space="preserve">
 		<value>0 min</value>
@@ -256,7 +256,7 @@
 		<value>Brak pobierań</value>
 	</data>
 	<data name="SpineDownloadButton_ToolTip" xml:space="preserve">
-		<value>Pobieranie</value>
+		<value>Pobrane</value>
 	</data>
 	<data name="SpineHomeButton_ToolTip_Home" xml:space="preserve">
 		<value>Strona główna</value>
@@ -265,7 +265,7 @@
         <value>Pokaż pliki moda</value>
     </data>
     <data name="FileTreeNodeView__View" xml:space="preserve">
-        <value>Zobacz</value>
+        <value>Pokaż</value>
     </data>
     <data name="ViewModInfoPage_Title" xml:space="preserve">
         <value>Informacje moda</value>
@@ -274,13 +274,13 @@
 		<value>Moje Mody</value>
 	</data>
 	<data name="Downloads_WorkspaceTitle" xml:space="preserve">
-		<value>Pobierane</value>
+		<value>Pobrane</value>
 	</data>
 	<data name="HomeWorkspace_Title" xml:space="preserve">
 		<value>Strona główna</value>
 	</data>
 	<data name="InProgressDownloadsPage_Title" xml:space="preserve">
-		<value>Pobieranie</value>
+		<value>Pobrane</value>
     </data>
     <data name="ApplyControlViewModel__ACTIVATE_LOADOUT" xml:space="preserve">
         <value>AKTYWUJ ZESTAW</value>
@@ -353,11 +353,11 @@
         <value>Pliki: {0} ({1})</value>
         <comment>{0} Represents a number, {1} represents a formatted size (e.g. 12GB)</comment>
     </data>
-    <data name="ModFileTreeViewModel_CreateTreeSource_File_Count" xml:space="preserve">
+    <data name="Helpers_GenerateHeader_File_Count" xml:space="preserve">
         <value>ILOŚĆ PLIKÓW</value>
     </data>
     <data name="IngestButtonTextBlock_Text" xml:space="preserve">
-        <value>ODŚWIEŻ</value>
+        <value>POZYSKAJ</value>
     </data>
     <data name="MyGamesView__NoGamesDetectedText" xml:space="preserve">
         <value>Wszystkie wspierane gry zostały dodane. Nie wykryto żadnych nowych gier.</value>
@@ -369,9 +369,45 @@
         <value>Dodawanie gry</value>
     </data>
     <data name="GameWidget__View" xml:space="preserve">
-        <value>Zobacz</value>
+        <value>Pokaż</value>
     </data>
     <data name="GameWidget__Removing_game" xml:space="preserve">
         <value>Usuwanie gry</value>
+    </data>
+    <data name="ApplyDiff_Refresh" xml:space="preserve">
+        <value>Odśwież</value>
+    </data>
+    <data name="Helpers_GenerateHeader_State" xml:space="preserve">
+        <value>STAN</value>
+    </data>
+    <data name="IFileTreeNodeViewModel_ToFormattedChangeState_Added" xml:space="preserve">
+        <value>Dodane</value>
+    </data>
+    <data name="IFileTreeNodeViewModel_ToFormattedChangeState_Modified" xml:space="preserve">
+        <value>Zmodyfikowane</value>
+    </data>
+    <data name="IFileTreeNodeViewModel_ToFormattedChangeState_Contents_modified" xml:space="preserve">
+        <value>Zmodyfikowana zawartość</value>
+    </data>
+    <data name="IFileTreeNodeViewModel_ToFormattedChangeState_Removed" xml:space="preserve">
+        <value>Usunięte</value>
+    </data>
+    <data name="DiffTreeViewModel_StatusBar__File_Loadout_Disk" xml:space="preserve">
+        <value>Pliki: Zestaw {0} ({1})  Dysk {2} ({3})</value>
+        <comment>{0} and {2} are file counts, {1} and {3} are formatted file sizes </comment>
+    </data>
+    <data name="DiffTreeViewModel_StatusBar__Apply_changes" xml:space="preserve">
+        <value>Zastosowane zmiany: Dodane {0} Zmodyfikowane {1} Usunięte {2}</value>
+        <comment>{0}, {1} and {2} are integer representing the file counts</comment>
+    </data>
+    <data name="DiffTreeViewModel_StatusBar__Data_to_process___0_" xml:space="preserve">
+        <value>Dane do przetworzenia: {0}</value>
+        <comment>{0} is a formatted file size, representing the data to be processed </comment>
+    </data>
+    <data name="ApplyControlView_ViewApplyChanges" xml:space="preserve">
+        <value>Pokaż dodane zmiany</value>
+    </data>
+    <data name="ApplyDiffViewModel_PageTitle" xml:space="preserve">
+        <value>Podgląd zmian</value>
     </data>
 </root>

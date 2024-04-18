@@ -1,0 +1,16 @@
+attribute "fs_serializer";
+
+namespace NexusMods.DataModel.Serializers.DiskStateTreeSchema;
+
+
+table File {
+   LocationId : string (required);
+   Path : string (required);
+   Hash : ulong;
+   Size : ulong;
+   LastWriteTime : long;
+}
+
+table Files(fs_serializer) {
+   All : [File] (required);
+}

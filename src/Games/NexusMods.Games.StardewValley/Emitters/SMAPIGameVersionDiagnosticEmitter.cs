@@ -9,9 +9,9 @@ using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Diagnostics.References;
 using NexusMods.Abstractions.Diagnostics.Values;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Games.StardewValley.Models;
-using StardewModdingAPI;
 
 namespace NexusMods.Games.StardewValley.Emitters;
 
@@ -45,16 +45,11 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
         // var gameVersion = SimplifyVersion(new Version("1.5.6.22018"));
         var gameVersion = SimplifyVersion(loadout.Installation.Version);
 
-        var smapiMod = loadout.Mods
-            .Where(kv => kv.Value.Enabled)
-            .Select(kv => kv.Value)
-            .FirstOrDefault(mod => mod.Metadata.OfType<SMAPIMarker>().Any());
+        var optionalSmapiMod = loadout.GetFirstModWithMetadata<SMAPIMarker>();
 
-        if (smapiMod is null)
+        if (!optionalSmapiMod.HasValue)
         {
-            var smapiModCount = loadout.Mods
-                .Where(kv => kv.Value.Enabled)
-                .Count(kv => kv.Value.Metadata.OfType<SMAPIModMarker>().Any());
+            var smapiModCount = loadout.CountModsWithMetadata<SMAPIMarker>();
 
             // NOTE(erri120): The MissingSMAPIEmitter will warn the user if SMAPI is required.
             // This emitter will suggest SMAPI if there are no mods yet.
@@ -65,7 +60,7 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
             yield break;
         }
 
-        var smapiMarker = smapiMod.Metadata.OfType<SMAPIMarker>().First();
+        var (smapiMod, smapiMarker) = optionalSmapiMod.Value;
 
         // var smapiVersion = SimplifyVersion(new Version("4.0.6.1254"));
         var smapiVersion = SimplifyVersion(smapiMarker.Version!);

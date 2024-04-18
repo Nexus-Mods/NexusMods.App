@@ -40,10 +40,6 @@
         </None>
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="StreamFactories\" />
-    </ItemGroup>
-
     <!-- Non-NuGet Only -->
     <Import Project="build\NexusMods.FileExtractor.targets" />
 </Project>

@@ -1,6 +1,7 @@
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Pages.Diagnostics;
+using NexusMods.App.UI.Pages.Diff.ApplyDiff;
 using NexusMods.App.UI.Pages.Downloads;
 using NexusMods.App.UI.Pages.LoadoutGrid;
 using NexusMods.App.UI.Pages.ModInfo;
@@ -26,6 +27,7 @@ internal class TypeFinder : ITypeFinder
         typeof(MyGamesPageContext),
         typeof(ModInfoPageContext),
         typeof(DiagnosticListPageContext),
+        typeof(ApplyDiffPageContext),
 
         // workspace context
         typeof(EmptyContext),

@@ -1,11 +1,15 @@
 ﻿using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization.DataModel.Ids;
+using NexusMods.App.UI.Pages.Diff.ApplyDiff;
 using NexusMods.App.UI.Resources;
+using NexusMods.App.UI.Windows;
+using NexusMods.App.UI.WorkspaceSystem;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -22,6 +26,7 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
 
     private readonly ReactiveCommand<Unit, Unit> _applyReactiveCommand;
     private readonly ReactiveCommand<Unit, Unit> _ingestReactiveCommand;
+    private readonly ReactiveCommand<Unit, Unit> _showApplyDiffReactiveCommand;
 
     private ObservableAsPropertyHelper<IId> _lastAppliedRevisionId;
     private IId LastAppliedRevisionId => _lastAppliedRevisionId.Value;
@@ -34,6 +39,7 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
 
     public ReactiveCommand<Unit, Unit> ApplyCommand => _applyReactiveCommand;
     public ReactiveCommand<Unit, Unit> IngestCommand => _ingestReactiveCommand;
+    public ReactiveCommand<Unit, Unit> ShowApplyDiffCommand => _showApplyDiffReactiveCommand;
 
 
     [Reactive] private bool CanApply { get; set; } = true;
@@ -50,6 +56,7 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
         _loadoutRegistry = serviceProvider.GetRequiredService<ILoadoutRegistry>();
         _applyService = serviceProvider.GetRequiredService<IApplyService>();
         LaunchButtonViewModel = serviceProvider.GetRequiredService<ILaunchButtonViewModel>();
+        var windowManager = serviceProvider.GetRequiredService<IWindowManager>();
         LaunchButtonViewModel.LoadoutId = loadoutId;
 
         var currentLoadout = _loadoutRegistry.Get(loadoutId);
@@ -65,8 +72,31 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
         _lastAppliedRevisionId = _applyService.LastAppliedRevisionFor(_gameInstallation)
             .ToProperty(this, vm => vm.LastAppliedRevisionId, scheduler: RxApp.MainThreadScheduler);
 
-        _applyReactiveCommand = ReactiveCommand.CreateFromTask(async () => await Apply(), canExecute: this.WhenAnyValue(vm => vm.CanApply));
-        _ingestReactiveCommand = ReactiveCommand.CreateFromTask(async () => await Ingest(), canExecute: this.WhenAnyValue(vm => vm.CanIngest));
+        _applyReactiveCommand = ReactiveCommand.CreateFromTask(async () => await Apply(), 
+            canExecute: this.WhenAnyValue(vm => vm.CanApply));
+        _ingestReactiveCommand = ReactiveCommand.CreateFromTask(async () => await Ingest(), 
+            canExecute: this.WhenAnyValue(vm => vm.CanIngest));
+        
+        _showApplyDiffReactiveCommand = ReactiveCommand.Create(() =>
+        {
+            var pageData = new PageData
+            {
+                FactoryId = ApplyDiffPageFactory.StaticId,
+                Context = new ApplyDiffPageContext
+                {
+                    LoadoutId = _loadoutId,
+                },
+            };
+
+            // TODO: use https://github.com/Nexus-Mods/NexusMods.App/issues/942
+            var input = NavigationInput.Default;
+            if (!windowManager.TryGetActiveWindow(out var activeWindow)) return;
+            var workspaceController = activeWindow.WorkspaceController;
+            
+            var behavior = workspaceController.GetDefaultOpenPageBehavior(pageData, input, Optional<PageIdBundle>.None);
+            var workspaceId = workspaceController.ActiveWorkspace!.Id;
+            workspaceController.OpenPage(workspaceId, pageData, behavior);
+        });
 
         this.WhenActivated(disposables =>
             {

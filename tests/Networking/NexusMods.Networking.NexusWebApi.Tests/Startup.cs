@@ -7,6 +7,7 @@ using NexusMods.DataModel;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.HttpDownloader.Tests;
 using NexusMods.Paths;
+using NexusMods.Settings;
 
 namespace NexusMods.Networking.NexusWebApi.Tests;
 
@@ -16,6 +17,7 @@ public class Startup
     {
         services
             .AddFileSystem()
+            .AddSettingsManager()
             .AddSingleton<HttpClient>()
             .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug))
             .AddHttpDownloader()

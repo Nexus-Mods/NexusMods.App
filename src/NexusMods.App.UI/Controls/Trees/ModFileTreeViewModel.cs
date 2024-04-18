@@ -162,6 +162,7 @@ public class ModFileTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeVie
         );
     }
 
+
     internal static HierarchicalTreeDataGridSource<IFileTreeNodeViewModel> CreateTreeSource(
         ReadOnlyObservableCollection<IFileTreeNodeViewModel> treeRoots)
     {
@@ -169,97 +170,12 @@ public class ModFileTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeVie
         {
             Columns =
             {
-                // Name column
-                new HierarchicalExpanderColumn<IFileTreeNodeViewModel>(
-                    new TemplateColumn<IFileTreeNodeViewModel>(
-                        Language.Helpers_GenerateHeader_NAME,
-                        "FileNameColumnTemplate",
-                        width: new GridLength(1, GridUnitType.Star),
-                        options: new TemplateColumnOptions<IFileTreeNodeViewModel>
-                        {
-                            // Compares IsFile, to show folders first, then by file name.
-                            CompareAscending = (x, y) =>
-                            {
-                                if (x == null || y == null) return 0;
-                                var folderComparison = x.IsFile.CompareTo(y.IsFile);
-                                return folderComparison != 0
-                                    ? folderComparison
-                                    : string.Compare(x.Name, y.Name, StringComparison.OrdinalIgnoreCase);
-                            },
-
-                            CompareDescending = (x, y) =>
-                            {
-                                if (x == null || y == null) return 0;
-                                var folderComparison = x.IsFile.CompareTo(y.IsFile);
-                                return folderComparison != 0
-                                    ? folderComparison
-                                    : string.Compare(y.Name, x.Name, StringComparison.OrdinalIgnoreCase);
-                            },
-                        }
-                    ),
-                    node => node.Children,
-                    null,
-                    node => node.IsExpanded
-                ),
-
-                // File Count column
-                new TextColumn<IFileTreeNodeViewModel, string?>(
-                    Language.ModFileTreeViewModel_CreateTreeSource_File_Count,
-                    x => x.ToFormattedFileCount(),
-                    options: new TextColumnOptions<IFileTreeNodeViewModel>
-                    {
-                        // Compares IsFile, to show folders first, then by file count for folders, and file name for files.
-                        CompareAscending = (x, y) =>
-                        {
-                            if (x == null || y == null) return 0;
-                            var folderComparison = x.IsFile.CompareTo(y.IsFile);
-                            if (folderComparison != 0)
-                                return folderComparison;
-                            
-                            return x.IsFile 
-                                    ? string.Compare(x.Name, y.Name, StringComparison.OrdinalIgnoreCase)
-                                    : x.FileCount.CompareTo(y.FileCount);
-                        },
-
-                        CompareDescending = (x, y) =>
-                        {
-                            if (x == null || y == null) return 0;
-                            var folderComparison = x.IsFile.CompareTo(y.IsFile);
-                            if (folderComparison != 0)
-                                return folderComparison;
-                            // Always ascending for names, descending for file count.
-                            return x.IsFile 
-                                    ? string.Compare(x.Name, y.Name, StringComparison.OrdinalIgnoreCase)
-                                    : y.FileCount.CompareTo(x.FileCount);
-                        },
-                    },
-                    width: new GridLength(120)
-                ),
-
-                // Size column
-                new TextColumn<IFileTreeNodeViewModel, string?>(
-                    Language.Helpers_GenerateHeader_SIZE,
-                    x => ByteSize.FromBytes(x.FileSize).ToString(),
-                    options: new TextColumnOptions<IFileTreeNodeViewModel>
-                    {
-                        // Compares if folder first, such that folders show first, then by file size.
-                        CompareAscending = (x, y) =>
-                        {
-                            if (x == null || y == null) return 0;
-                            var folderComparison = x.IsFile.CompareTo(y.IsFile);
-                            return folderComparison != 0 ? folderComparison : x.FileSize.CompareTo(y.FileSize);
-                        },
-
-                        CompareDescending = (x, y) =>
-                        {
-                            if (x == null || y == null) return 0;
-                            var folderComparison = x.IsFile.CompareTo(y.IsFile);
-                            return folderComparison != 0 ? folderComparison : y.FileSize.CompareTo(x.FileSize);
-                        },
-                    },
-                    width: new GridLength(100)
-                ),
-            }
+                FileTreeNodeViewModel.CreateTreeSourceNameColumn(),
+                FileTreeNodeViewModel.CreateTreeSourceFileCountColumn(),
+                FileTreeNodeViewModel.CreateTreeSourceSizeColumn(),
+            },
         };
     }
+
+
 }

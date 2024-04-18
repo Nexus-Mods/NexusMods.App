@@ -362,7 +362,7 @@
         <value>Files: {0} ({1})</value>
         <comment>{0} Represents a number, {1} represents a formatted size (e.g. 12GB)</comment>
     </data>
-    <data name="ModFileTreeViewModel_CreateTreeSource_File_Count" xml:space="preserve">
+    <data name="Helpers_GenerateHeader_File_Count" xml:space="preserve">
         <value>FILE COUNT</value>
     </data>
     <data name="MyGamesView__NoGamesDetectedText" xml:space="preserve">
@@ -379,5 +379,41 @@
     </data>
     <data name="GameWidget__Removing_game" xml:space="preserve">
         <value>Removing game</value>
+    </data>
+    <data name="ApplyDiff_Refresh" xml:space="preserve">
+        <value>Refresh</value>
+    </data>
+    <data name="Helpers_GenerateHeader_State" xml:space="preserve">
+        <value>STATE</value>
+    </data>
+    <data name="IFileTreeNodeViewModel_ToFormattedChangeState_Added" xml:space="preserve">
+        <value>Added</value>
+    </data>
+    <data name="IFileTreeNodeViewModel_ToFormattedChangeState_Modified" xml:space="preserve">
+        <value>Modified</value>
+    </data>
+    <data name="IFileTreeNodeViewModel_ToFormattedChangeState_Contents_modified" xml:space="preserve">
+        <value>Contents modified</value>
+    </data>
+    <data name="IFileTreeNodeViewModel_ToFormattedChangeState_Removed" xml:space="preserve">
+        <value>Removed</value>
+    </data>
+    <data name="DiffTreeViewModel_StatusBar__File_Loadout_Disk" xml:space="preserve">
+        <value>Files: Loadout {0} ({1})  Disk {2} ({3})</value>
+        <comment>{0} and {2} are file counts, {1} and {3} are formatted file sizes </comment>
+    </data>
+    <data name="DiffTreeViewModel_StatusBar__Apply_changes" xml:space="preserve">
+        <value>Apply changes: Adding {0} Modifying {1} Removing {2}</value>
+        <comment>{0}, {1} and {2} are integer representing the file counts</comment>
+    </data>
+    <data name="DiffTreeViewModel_StatusBar__Data_to_process___0_" xml:space="preserve">
+        <value>Data to process: {0}</value>
+        <comment>{0} is a formatted file size, representing the data to be processed </comment>
+    </data>
+    <data name="ApplyControlView_ViewApplyChanges" xml:space="preserve">
+        <value>View apply changes</value>
+    </data>
+    <data name="ApplyDiffViewModel_PageTitle" xml:space="preserve">
+        <value>Preview changes</value>
     </data>
 </root>

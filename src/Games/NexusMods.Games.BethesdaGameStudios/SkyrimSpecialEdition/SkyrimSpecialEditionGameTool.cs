@@ -7,8 +7,9 @@ namespace NexusMods.Games.BethesdaGameStudios.SkyrimSpecialEdition;
 
 public class SkyrimSpecialEditionGameTool : RunGameWithScriptExtender<SkyrimSpecialEdition>
 {
-    // ReSharper disable once ContextualLoggerProblem
-    public SkyrimSpecialEditionGameTool(ILogger<RunGameTool<SkyrimSpecialEdition>> logger, SkyrimSpecialEdition game, IProcessFactory processFactory, IOSInterop osInterop)
-        : base(logger, game, processFactory, osInterop) { }
+    public SkyrimSpecialEditionGameTool(IServiceProvider serviceProvider, SkyrimSpecialEdition game)
+        : base(serviceProvider, game)
+    {
+    }
     protected override GamePath ScriptLoaderPath => new(LocationId.Game, "skse64_loader.exe");
 }

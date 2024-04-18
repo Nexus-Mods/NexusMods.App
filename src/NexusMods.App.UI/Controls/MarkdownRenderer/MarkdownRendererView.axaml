@@ -1,0 +1,67 @@
+<reactive:ReactiveUserControl
+    x:TypeArguments="local:IMarkdownRendererViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactive="http://reactiveui.net"
+    xmlns:local="clr-namespace:NexusMods.App.UI.Controls.MarkdownRenderer"
+    xmlns:md="clr-namespace:Markdown.Avalonia;assembly=Markdown.Avalonia"
+    xmlns:ctxt="clr-namespace:ColorTextBlock.Avalonia;assembly=ColorTextBlock.Avalonia"
+    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    x:Class="NexusMods.App.UI.Controls.MarkdownRenderer.MarkdownRendererView">
+
+    <Design.DataContext>
+        <local:MarkdownRendererDesignViewModel />
+    </Design.DataContext>
+
+    <!--
+        NOTE(erri120): This control can only be styled directly, not through classes.
+        https://github.com/whistyun/Markdown.Avalonia/wiki/How-to-customise-style
+    -->
+    <md:MarkdownScrollViewer x:Name="MarkdownScrollViewer">
+        <md:MarkdownScrollViewer.Styles>
+            <Style Selector="ctxt|CTextBlock">
+                <Setter Property="FontFamily" Value="{StaticResource FontBodyRegular}" />
+                <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
+            </Style>
+
+            <Style Selector="ctxt|CHyperlink">
+                <Setter Property="FontFamily" Value="{StaticResource FontBodyRegular}" />
+                <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
+            </Style>
+
+            <Style Selector="ctxt|CTextBlock.Heading1">
+                <Setter Property="FontFamily" Value="{StaticResource FontHeadlinesSemiBold}" />
+                <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
+            </Style>
+
+            <Style Selector="ctxt|CTextBlock.Heading2">
+                <Setter Property="FontFamily" Value="{StaticResource FontHeadlinesSemiBold}" />
+                <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
+            </Style>
+
+            <Style Selector="ctxt|CTextBlock.Heading3">
+                <Setter Property="FontFamily" Value="{StaticResource FontHeadlinesSemiBold}" />
+                <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
+            </Style>
+
+            <Style Selector="ctxt|CTextBlock.Heading4">
+                <Setter Property="FontFamily" Value="{StaticResource FontHeadlinesSemiBold}" />
+                <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
+            </Style>
+
+            <Style Selector="ctxt|CTextBlock.Heading5">
+                <Setter Property="FontFamily" Value="{StaticResource FontHeadlinesSemiBold}" />
+                <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
+            </Style>
+
+            <Style Selector="ctxt|CTextBlock.Heading6">
+                <Setter Property="FontFamily" Value="{StaticResource FontHeadlinesSemiBold}" />
+                <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
+            </Style>
+        </md:MarkdownScrollViewer.Styles>
+    </md:MarkdownScrollViewer>
+
+</reactive:ReactiveUserControl>
+

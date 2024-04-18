@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.HttpDownloader;
+using NexusMods.Abstractions.Settings;
 
 namespace NexusMods.Networking.HttpDownloader;
 
@@ -22,12 +23,10 @@ public static class Services
     /// Adds the <see cref="AdvancedHttpDownloader"/> to your dependency injection container
     /// as the default <see cref="IHttpDownloader"/> implementation.
     /// </summary>
-    /// <param name="services">Your DI container collection builder.</param>
-    /// <param name="settings">Settings for the HTTP downloader.</param>
-    public static IServiceCollection AddAdvancedHttpDownloader(this IServiceCollection services, IHttpDownloaderSettings? settings = null)
+    public static IServiceCollection AddAdvancedHttpDownloader(this IServiceCollection services)
     {
-        settings ??= new HttpDownloaderSettings();
-        return services.AddSingleton(settings)
+        return services
+            .AddSettings<HttpDownloaderSettings>()
             .AddSingleton<IHttpDownloader, AdvancedHttpDownloader>();
     }
 }

@@ -1,4 +1,6 @@
 ﻿using JetBrains.Annotations;
+using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Settings;
 using NexusMods.Paths;
 
 namespace NexusMods.Abstractions.FileExtractor;
@@ -7,58 +9,40 @@ namespace NexusMods.Abstractions.FileExtractor;
 /// Settings for the file extractor.
 /// </summary>
 [PublicAPI]
-public interface IFileExtractorSettings
+public record FileExtractorSettings : ISettings
 {
     /// <summary>
-    /// Location of where the temporary folder will be stored.
+    /// Location where the temporary folder will be stored.
     /// </summary>
-    public ConfigurationPath TempFolderLocation { get; }
-}
+    public ConfigurablePath TempFolderLocation { get; init; }
 
-/// <summary>
-/// Default implementation of <see cref="IFileExtractorSettings"/> for reference.
-/// </summary>
-[PublicAPI]
-public class FileExtractorSettings : IFileExtractorSettings
-{
-    /// <inheritdoc />
-    public ConfigurationPath TempFolderLocation { get; set; }
-
-    /// <summary>
-    /// Default constructor for serialization.
-    /// </summary>
-    public FileExtractorSettings() : this(FileSystem.Shared) { }
-
-    /// <summary>
-    /// Creates a default new instance of <see cref="FileExtractorSettings"/>.
-    /// </summary>
-    /// <param name="fileSystem"></param>
-    public FileExtractorSettings(IFileSystem fileSystem)
+    /// <inheritdoc/>
+    public static ISettingsBuilder Configure(ISettingsBuilder settingsBuilder)
     {
-        TempFolderLocation = new ConfigurationPath(GetDefaultBaseDirectory(fileSystem));
+        return settingsBuilder
+            .ConfigureDefault(CreateDefault)
+            .ConfigureStorageBackend<FileExtractorSettings>(builder => builder.Disable());
     }
 
-    private static AbsolutePath GetDefaultBaseDirectory(IFileSystem fs)
+    /// <summary>
+    /// Create default.
+    /// </summary>
+    public static FileExtractorSettings CreateDefault(IServiceProvider serviceProvider)
     {
+        var os = serviceProvider.GetRequiredService<IFileSystem>().OS;
+
         // Note: The idiomatic place for this is Temporary Directory (/tmp on Linux, %TEMP% on Windows)
         //       however this can be dangerous to do on Linux, as /tmp is often a RAM disk, and can be
         //       too small to handle large files.
-        return fs.OS.MatchPlatform(
-            () => fs.GetKnownPath(KnownPath.TempDirectory).Combine("NexusMods.App/Temp"),
-            () => fs.GetKnownPath(KnownPath.XDG_STATE_HOME).Combine("NexusMods.App/Temp"),
-            // Use _App vs .App so as not to confuse OSX into thinking this is an app bundle
-            () => fs.GetKnownPath(KnownPath.TempDirectory).Combine("NexusMods_App/Temp"));
-    }
+        var baseKnownPath = os.MatchPlatform(
+            onWindows: () => KnownPath.TempDirectory,
+            onLinux: () => KnownPath.XDG_STATE_HOME,
+            onOSX: () => KnownPath.TempDirectory
+        );
 
-    /// <summary>
-    /// Ensures default settings in case of placeholders of undefined/invalid settings.
-    /// </summary>
-    public void Sanitize(IFileSystem fs)
-    {
-        // Set default locations if none are provided.
-        if (string.IsNullOrEmpty(TempFolderLocation.RawPath))
-            TempFolderLocation = new ConfigurationPath(GetDefaultBaseDirectory(fs));
-
-        TempFolderLocation.ToAbsolutePath().CreateDirectory();
+        return new FileExtractorSettings
+        {
+            TempFolderLocation = new ConfigurablePath(baseKnownPath, "NexusMods.App/Temp"),
+        };
     }
 }

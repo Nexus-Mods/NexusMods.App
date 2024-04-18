@@ -1,7 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.Settings;
 using NexusMods.App;
 using NexusMods.App.BuildInfo;
+using NexusMods.DataModel;
 using NexusMods.Games.RedEngine;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators.TestHelpers;
@@ -15,16 +17,13 @@ public class Startup
     {
         var path = FileSystem.Shared.GetKnownPath(KnownPath.EntryDirectory).Combine("temp").Combine(Guid.NewGuid().ToString());
         path.CreateDirectory();
-        var config = new AppConfig
-        {
-            DataModelSettings =
-            {
-                UseInMemoryDataModel = true
-            }
-        };
 
         services.AddUniversalGameLocator<Cyberpunk2077>(new Version("1.61"))
-                .AddApp(config: config)
+                .AddApp()
+                .OverrideSettingsForTests<DataModelSettings>(settings => settings with
+                {
+                    UseInMemoryDataModel = true,
+                })
                 .AddStubbedGameLocators()
                 .AddSingleton<AvaloniaApp>()
                 .AddLogging(builder => builder.AddXUnit())

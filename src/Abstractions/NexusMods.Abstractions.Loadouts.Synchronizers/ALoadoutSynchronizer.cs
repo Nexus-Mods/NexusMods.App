@@ -1,6 +1,7 @@
-﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -140,53 +141,55 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             await foreach (var entry in _hashCache.IndexFolderAsync(location))
             {
                 var gamePath = installation.LocationsRegister.ToGamePath(entry.Path);
-                if (prevState.TryGetValue(gamePath, out var prevEntry))
+
+                if (!prevState.TryGetValue(gamePath, out var prevEntry))
                 {
-                    // If the file has been modified outside of the app since the last apply, we need to ingest it.
-                    if (prevEntry.Item.Value.Hash != entry.Hash)
-                    {
-                        HandleNeedIngest(entry);
-                        throw new UnreachableException("HandleNeedIngest should have thrown");
-                    }
-
-                    // Does the file exist in the new tree?
-                    if (!fileTree.TryGetValue(gamePath, out var newEntry))
-                    {
-                        // Don't update the results here as we'll delete the file in a bit
-                        toDelete.Add(KeyValuePair.Create(gamePath, entry));
-                        continue;
-                    }
-
-                    resultingItems.Add(newEntry.GamePath(), prevEntry.Item.Value);
-                    switch (newEntry.Item.Value!)
-                    {
-                        case StoredFile fa:
-                            // StoredFile files are special cased so we can batch them up and extract them all at once.
-                            // Don't add toExtract to the results yet as we'll need to get the modified file times
-                            // after we extract them
-
-                            // If both hashes are the same, we can skip this file
-                            if (fa.Hash == entry.Hash)
-                                continue;
-
-                            toExtract.Add(KeyValuePair.Create(entry.Path, fa));
-                            continue;
-                        case IGeneratedFile gf and IToFile:
-                            // Hash for these files is generated on the fly, so we need to update it after we write it.
-                            toWrite.Add(KeyValuePair.Create(entry.Path, gf));
-                            continue;
-                        default:
-                            throw new UnreachableException("No way to handle this file");
-                    }
+                    // File is new, and not in the previous state, so we need to abort and do an ingest
+                    HandleNeedIngest(entry);
+                    throw new UnreachableException("HandleNeedIngest should have thrown");
+                }
+                
+                if (prevEntry.Item.Value.Hash != entry.Hash)
+                {
+                    // File has changed, so we need to abort and do an ingest
+                    HandleNeedIngest(entry);
+                    throw new UnreachableException("HandleNeedIngest should have thrown");
                 }
 
-                // If we get here, the file is new, and not in the previous state, so we need to abort and do an ingest
-                HandleNeedIngest(entry);
-                throw new UnreachableException("HandleNeedIngest should have thrown");
+                if (!fileTree.TryGetValue(gamePath, out var newEntry))
+                {
+                    // File is unchanged, but is not present in the new tree, so it needs to be deleted
+                    // We don't remove it from the results yet, will do during batch delete
+                    toDelete.Add(KeyValuePair.Create(gamePath, entry));
+                    continue;
+                }
+                
+                // File didn't change on disk and is present in new tree
+                resultingItems.Add(newEntry.GamePath(), prevEntry.Item.Value);
+                
+                switch (newEntry.Item.Value!)
+                {
+                    case StoredFile fa:
+                        // StoredFile files are special cased so we can batch them up and extract them all at once.
+                        // Don't add toExtract to the results yet as we'll need to get the modified file times
+                        // after we extract them
+                        if (fa.Hash == entry.Hash)
+                            continue;
+
+                        toExtract.Add(KeyValuePair.Create(entry.Path, fa));
+                        continue;
+                    case IGeneratedFile gf and IToFile:
+                        // Hash for these files is generated on the fly, so we need to update it after we write it.
+                        toWrite.Add(KeyValuePair.Create(entry.Path, gf));
+                        continue;
+                    default:
+                        _logger.LogError("Unknown file type: {Type}", newEntry.Item.Value!.GetType());
+                        break;
+                }
             }
         }
 
-        // Now we look for completely new files
+        // Now we look for completely new files or files that were deleted on disk
         foreach (var item in fileTree.GetAllDescendentFiles())
         {
             var path = item.GamePath();
@@ -196,6 +199,14 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                 continue;
 
             var absolutePath = installation.LocationsRegister.GetResolvedPath(path);
+            
+            if (prevState.TryGetValue(path, out var prevEntry))
+            {
+                // File is in new tree, was in prev disk state, but wasn't found on disk
+                HandleNeedIngest(prevEntry.Item.Value.ToHashedEntry(absolutePath));
+                throw new UnreachableException("HandleNeedIngest should have thrown");
+            }
+
             switch (item.Item.Value!)
             {
                 case StoredFile fa:
@@ -212,7 +223,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                     throw new UnreachableException("No way to handle this file");
             }
         }
-
+        
         // Now delete all the files that need deleting in one batch.
         foreach (var entry in toDelete)
         {
@@ -239,7 +250,6 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                 LastModified = entry.Key.FileInfo.LastWriteTimeUtc
             };
         }
-
 
         // Extract all the files that need extracting in one batch.
         await _fileStore.ExtractFiles(GetFilesToExtract(toExtract));
@@ -268,10 +278,48 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             var currentMode = path.GetUnixFileMode();
             path.SetUnixFileMode(currentMode | UnixFileMode.UserExecute | UnixFileMode.GroupExecute | UnixFileMode.OtherExecute);
         }
+        
+        var newTree = DiskStateTree.Create(resultingItems);
+        
+        // We need to delete any empty directory structures that were left behind
+        var seenDirectories = new HashSet<GamePath>();
+        var directoriesToDelete = new HashSet<GamePath>();
+        foreach (var entry in toDelete)
+        {
+            var parentPath = entry.Key.Parent;
+            GamePath? emptyStructureRoot = null;
+            while (parentPath != entry.Key.GetRootComponent)
+            {
+                if (seenDirectories.Contains(parentPath))
+                {
+                    emptyStructureRoot = null;
+                    break;
+                }
+                
+                // newTree was build from files, so if the parent is in the new tree, it's not empty
+                if (newTree.ContainsKey(parentPath))
+                {
+                    break;
+                }
+                
+                seenDirectories.Add(parentPath);
+                emptyStructureRoot = parentPath;
+                parentPath = parentPath.Parent;
+            }
+            
+            if (emptyStructureRoot != null)
+                directoriesToDelete.Add(emptyStructureRoot.Value);
+        }
+        
+        foreach (var dir in directoriesToDelete)
+        {
+            // Could have other empty directories as children, so we need to delete recursively
+            installation.LocationsRegister.GetResolvedPath(dir).DeleteDirectory(recursive: true);
+        }
+
+        return newTree;
 
         // Return the new tree
-        return DiskStateTree.Create(resultingItems);
-
         // Quick convert function such that to not be LINQ bottlenecked.
         // Needed as separate method because parent method is async.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -308,6 +356,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     public async ValueTask<FileTree> DiskToFileTree(DiskStateTree diskState, Loadout prevLoadout, FileTree prevFileTree, DiskStateTree prevDiskState)
     {
         List<KeyValuePair<GamePath, AModFile>> results = new();
+        var newFiles = new List<AModFile>();
         foreach (var item in diskState.GetAllDescendentFiles())
         {
             var gamePath = item.GamePath();
@@ -324,15 +373,19 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
 
                 // Else, the file has changed, so we need to update it.
                 var newFile = await HandleChangedFile(prevFile, prevEntry.Item.Value, item.Item.Value, gamePath, absPath);
+                newFiles.Add(newFile);
                 results.Add(KeyValuePair.Create(gamePath, newFile));
             }
             else
             {
                 // Else, the file is new, so we need to add it.
                 var newFile = await HandleNewFile(item.Item.Value, gamePath, absPath);
+                newFiles.Add(newFile);
                 results.Add(KeyValuePair.Create(gamePath, newFile));
             }
         }
+
+        CollectionsMarshal.AsSpan(newFiles).EnsureAllPersisted(_store);
 
         // Deletes are handled implicitly as we only return files that exist in the new state.
         return FileTree.Create(results);
@@ -347,6 +400,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// <param name="absolutePath"></param>
     /// <returns></returns>
     /// <exception cref="NotImplementedException"></exception>
+    /// <returns>An unpersisted new file. This file needs to be persisted.</returns>
     protected virtual ValueTask<AModFile> HandleNewFile(DiskStateEntry newEntry, GamePath gamePath, AbsolutePath absolutePath)
     {
         var newFile = new StoredFile
@@ -356,7 +410,6 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             Size = newEntry.Size,
             To = gamePath
         };
-        newFile.EnsurePersisted(_store);
         return ValueTask.FromResult<AModFile>(newFile);
     }
 
@@ -370,14 +423,13 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// <param name="newEntry"></param>
     /// <param name="gamePath"></param>
     /// <param name="absolutePath"></param>
-    /// <returns></returns>
+    /// <returns>An unpersisted changed file. This file needs to be persisted.</returns>
     protected virtual async ValueTask<AModFile> HandleChangedFile(AModFile prevFile, DiskStateEntry prevEntry, DiskStateEntry newEntry, GamePath gamePath, AbsolutePath absolutePath)
     {
         if (prevFile is IGeneratedFile gf)
         {
             await using var stream = absolutePath.Read();
             var entity = await gf.Update(newEntry, stream);
-            entity.EnsurePersisted(_store);
             return entity;
         }
 
@@ -388,7 +440,6 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             Size = newEntry.Size,
             To = gamePath
         };
-        newFile.EnsurePersisted(_store);
         return newFile;
     }
 
@@ -512,7 +563,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         var prevState = _diskStateRegistry.GetState(loadout.Installation)!;
         var diskState = await FileTreeToDisk(fileTree, loadout, flattened, prevState, loadout.Installation);
         diskState.LoadoutRevision = loadout.DataStoreId;
-        _diskStateRegistry.SaveState(loadout.Installation, diskState);
+        await _diskStateRegistry.SaveState(loadout.Installation, diskState);
         return diskState;
     }
 
@@ -535,9 +586,112 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         await BackupNewFiles(loadout.Installation, fileTree);
         newLoadout.EnsurePersisted(_store);
         diskState.LoadoutRevision = newLoadout.DataStoreId;
-        _diskStateRegistry.SaveState(loadout.Installation, diskState);
+        await _diskStateRegistry.SaveState(loadout.Installation, diskState);
 
         return newLoadout;
+    }
+    
+    /// <inheritdoc />
+    public async ValueTask<FileDiffTree> LoadoutToDiskDiff(Loadout loadout, DiskStateTree diskState)
+    {
+        var flattenedLoadout = await LoadoutToFlattenedLoadout(loadout);
+        return await FlattenedLoadoutToDiskDiff(flattenedLoadout, diskState);
+    }
+
+    private static ValueTask<FileDiffTree> FlattenedLoadoutToDiskDiff(FlattenedLoadout flattenedLoadout, DiskStateTree diskState)
+    {
+        var loadoutFiles = flattenedLoadout.GetAllDescendentFiles().ToArray();
+        var diskStateEntries = diskState.GetAllDescendentFiles().ToArray();
+
+        // With both deletions and additions it might be more than Max, but it's a starting point
+        Dictionary<GamePath, DiskDiffEntry> resultingItems = new(Math.Max(loadoutFiles.Length, diskStateEntries.Length));
+
+        // Add all the disk state entries to the result, checking for changes
+        foreach (var diskItem in diskStateEntries)
+        {
+            var gamePath = diskItem.GamePath();
+            if (flattenedLoadout.TryGetValue(gamePath, out var loadoutFileEntry))
+            {
+                switch (loadoutFileEntry.Item.Value.File)
+                {
+                    case StoredFile sf:
+                        if (sf.Hash != diskItem.Item.Value.Hash)
+                        {
+                            resultingItems.Add(gamePath,
+                                new DiskDiffEntry
+                                {
+                                    GamePath = gamePath,
+                                    Hash = sf.Hash,
+                                    Size = sf.Size,
+                                    ChangeType = FileChangeType.Modified,
+                                }
+                            );
+                        }
+                        else
+                        {
+                            resultingItems.Add(gamePath,
+                                new DiskDiffEntry
+                                {
+                                    GamePath = gamePath,
+                                    Hash = sf.Hash,
+                                    Size = sf.Size,
+                                    ChangeType = FileChangeType.None,
+                                }
+                            );
+                        }
+
+                        break;
+                    case IGeneratedFile gf and IToFile:
+                        // TODO: Implement change detection for generated files
+                        break;
+                    default:
+                        throw new UnreachableException("No way to handle this file");
+                }
+            }
+            else
+            {
+                resultingItems.Add(gamePath,
+                    new DiskDiffEntry
+                    {
+                        GamePath = gamePath,
+                        Hash = diskItem.Item.Value.Hash,
+                        Size = diskItem.Item.Value.Size,
+                        ChangeType = FileChangeType.Removed,
+                    }
+                );
+            }
+        }
+
+        // Add all the new files to the result
+        foreach (var loadoutFile in loadoutFiles)
+        {
+            var gamePath = loadoutFile.GamePath();
+            switch (loadoutFile.Item.Value.File)
+            {
+                case StoredFile sf:
+                    if (!resultingItems.TryGetValue(gamePath, out _))
+                    {
+                        resultingItems.Add(gamePath,
+                            new DiskDiffEntry
+                            {
+                                GamePath = gamePath,
+                                Hash = sf.Hash,
+                                Size = sf.Size,
+                                ChangeType = FileChangeType.Added,
+                            }
+                        );
+                    }
+
+                    break;
+                case IGeneratedFile gf and IToFile:
+                    // TODO: Implement change detection for generated files
+                    break;
+                default:
+                    throw new UnreachableException("No way to handle this file");
+            }
+        }
+
+        return ValueTask.FromResult(FileDiffTree.Create(resultingItems));
     }
 
     /// <summary>
@@ -624,7 +778,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             });
         
         initialState.LoadoutRevision = loadout.DataStoreId;
-        _diskStateRegistry.SaveState(loadout.Installation, initialState);
+        await _diskStateRegistry.SaveState(loadout.Installation, initialState);
 
         return loadout;
     }

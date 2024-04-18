@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.App.Settings;
 using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.FileStore.ArchiveMetadata;
 using NexusMods.Abstractions.GameLocators;
@@ -34,8 +33,6 @@ where TVm : IViewModelInterface
     protected IArchiveInstaller ArchiveInstaller { get; }
 
     protected IFileOriginRegistry FileOriginRegistry { get; }
-    protected GlobalSettingsManager GlobalSettingsManager { get; }
-
 
     private LoadoutMarker? _loadout;
     protected LoadoutMarker Loadout => _loadout!;
@@ -50,9 +47,7 @@ where TVm : IViewModelInterface
         FileSystem = provider.GetRequiredService<IFileSystem>();
         ArchiveInstaller = provider.GetRequiredService<IArchiveInstaller>();
         FileOriginRegistry = provider.GetRequiredService<IFileOriginRegistry>();
-        GlobalSettingsManager = provider.GetRequiredService<GlobalSettingsManager>();
     }
-
 
     protected TVm Vm => _vmWrapper.VM;
 

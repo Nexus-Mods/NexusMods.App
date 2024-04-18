@@ -1,4 +1,8 @@
-﻿using Avalonia;
+﻿using System.Linq.Expressions;
+using System.Reactive.Linq;
+using Avalonia;
+using DynamicData;
+using DynamicData.Alias;
 
 namespace NexusMods.App.UI.Extensions;
 

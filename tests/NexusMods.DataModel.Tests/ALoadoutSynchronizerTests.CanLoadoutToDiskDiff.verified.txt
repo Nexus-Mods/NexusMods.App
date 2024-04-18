@@ -1,0 +1,121 @@
+﻿[
+  {
+    GamePath: {Saves}/saves/save.dat,
+    Size: 9,
+    Hash: 7255076076215846327,
+    ChangeType: Added
+  },
+  {
+    GamePath: {Preferences}/preferences/prefs.dat,
+    Size: 10,
+    Hash: 7911229197178386601,
+    ChangeType: Added
+  },
+  {
+    GamePath: {Game}/textures/a.dds,
+    Size: 12,
+    Hash: 12717109700637925136,
+    ChangeType: Added
+  },
+  {
+    GamePath: {Game}/StubbedGame.exe,
+    Size: 15,
+    Hash: 6574561706971262377,
+    ChangeType: Removed
+  },
+  {
+    GamePath: {Game}/perMod/9.dat,
+    Size: 11,
+    Hash: 15866111760882168537,
+    ChangeType: Added
+  },
+  {
+    GamePath: {Game}/perMod/8.dat,
+    Size: 11,
+    Hash: 5713662867142214122,
+    ChangeType: Added
+  },
+  {
+    GamePath: {Game}/perMod/7.dat,
+    Size: 11,
+    Hash: 13572409453822864702,
+    ChangeType: Added
+  },
+  {
+    GamePath: {Game}/perMod/6.dat,
+    Size: 11,
+    Hash: 17066504409269385112,
+    ChangeType: Added
+  },
+  {
+    GamePath: {Game}/perMod/5.dat,
+    Size: 11,
+    Hash: 16516738792654349155,
+    ChangeType: Added
+  },
+  {
+    GamePath: {Game}/perMod/4.dat,
+    Size: 11,
+    Hash: 16561016665659418969,
+    ChangeType: Added
+  },
+  {
+    GamePath: {Game}/perMod/3.dat,
+    Size: 11,
+    Hash: 623130015850055267,
+    ChangeType: Added
+  },
+  {
+    GamePath: {Game}/perMod/2.dat,
+    Size: 11,
+    Hash: 6818945102336093139,
+    ChangeType: Added
+  },
+  {
+    GamePath: {Game}/perMod/1.dat,
+    Size: 11,
+    Hash: 8370123012883808105,
+    ChangeType: Added
+  },
+  {
+    GamePath: {Game}/perMod/0.dat,
+    Size: 11,
+    Hash: 3438294227629774439,
+    ChangeType: Added
+  },
+  {
+    GamePath: {Game}/Models/model.3ds,
+    Size: 9,
+    Hash: 13553311955458940840,
+    ChangeType: Removed
+  },
+  {
+    GamePath: {Game}/meshes/b.nif,
+    Size: 9,
+    Hash: 1881667485528595586,
+    ChangeType: Added
+  },
+  {
+    GamePath: {Game}/Data/image.dds,
+    Size: 17,
+    Hash: 14634740297144163787,
+    ChangeType: Modified
+  },
+  {
+    GamePath: {Game}/config.ini,
+    Size: 10,
+    Hash: 13606612902462422414
+  },
+  {
+    GamePath: {Game}/bin/script.sh,
+    Size: 10,
+    Hash: 1449236998273414814,
+    ChangeType: Added
+  },
+  {
+    GamePath: {Game}/bin/binary,
+    Size: 7,
+    Hash: 3566539263998845450,
+    ChangeType: Added
+  }
+]
