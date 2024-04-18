@@ -21,6 +21,7 @@ file record MySettings : ISettings
                 .AddToSection(SectionId.DefaultValue)
                 .WithDisplayName("Cool Name")
                 .WithDescription("This is a very cool name that you can change!")
+                // TODO: update this
                 .UseBooleanContainer()
                 // Optionally, you can mark a property to require a restart if it changes.
                 // Example for this is changing the language or other major changes that

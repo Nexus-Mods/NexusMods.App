@@ -28,5 +28,9 @@ public sealed class SingleValueMultipleChoiceContainer : APropertyValueContainer
         _keyToValue = keyToValue;
         _allowedValues = allowedValues;
         _valueToTranslation = valueToTranslation;
+
+        KeysWithTranslations = _allowedValues.Select(v => new KeyValuePair<object, string>(_valueToKey(v), valueToTranslation(v))).ToArray();
     }
+
+    public KeyValuePair<object, string>[] KeysWithTranslations { get; }
 }
