@@ -38,5 +38,5 @@ public interface ISettingsManager
     /// <summary>
     /// Gets an array containing all properties to be exposed to the UI.
     /// </summary>
-    IUIProperty[] GetAllUIProperties();
+    ISettingsPropertyUIDescriptor[] GetAllUIProperties();
 }

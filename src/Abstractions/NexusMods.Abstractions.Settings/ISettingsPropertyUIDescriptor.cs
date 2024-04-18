@@ -3,10 +3,10 @@ using JetBrains.Annotations;
 namespace NexusMods.Abstractions.Settings;
 
 /// <summary>
-/// Represents data about a property exposed to the UI.
+/// Represents a descriptor for settings properties exposed to the UI.
 /// </summary>
 [PublicAPI]
-public interface IUIProperty
+public interface ISettingsPropertyUIDescriptor
 {
     /// <summary>
     /// Gets the Section ID.
@@ -37,7 +37,7 @@ public interface IUIProperty
     public string? RestartMessage { get; }
 
     /// <summary>
-    /// Updates the property of the underlying settings type with <paramref name="newValue"/>.
+    /// Gets the value container for the settings property.
     /// </summary>
-    public void UpdateSettings(ISettingsManager settingsManager, object newValue);
+    public SettingsPropertyValueContainer SettingsPropertyValueContainer { get; }
 }

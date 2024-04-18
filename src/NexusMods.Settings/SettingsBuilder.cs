@@ -4,19 +4,18 @@ namespace NexusMods.Settings;
 
 internal class SettingsBuilder : ISettingsBuilder
 {
-    public Func<IServiceProvider, object>? DefaultValueFactory { get; set; }
-    public IStorageBackendBuilderValues? StorageBackendBuilderValues { get; set; }
+    public Func<IServiceProvider, object>? DefaultValueFactory { get; private set; }
+    public IStorageBackendBuilderValues? StorageBackendBuilderValues { get; private set; }
+    public List<PropertyBuilderOutput> PropertyBuilderOutputs { get; private set; } = [];
 
     public ISettingsBuilder AddToUI<TSettings>(
         Func<ISettingsUIBuilder<TSettings>, ISettingsUIBuilder<TSettings>> configureUI
     ) where TSettings : class, ISettings, new()
     {
-        // TODO:
         var builder = new SettingsUIBuilder<TSettings>();
-        var done = configureUI(builder);
+        _ = configureUI(builder);
 
-        var propertyBuilderOutputs = builder.PropertyBuilderOutputs;
-
+        PropertyBuilderOutputs = builder.PropertyBuilderOutputs;
         return this;
     }
 
@@ -45,6 +44,7 @@ internal class SettingsBuilder : ISettingsBuilder
     {
         DefaultValueFactory = null;
         StorageBackendBuilderValues = null;
+        PropertyBuilderOutputs = [];
     }
 }
 
@@ -59,8 +59,8 @@ internal class SettingsStorageBackendBuilder<T> : IStorageBackendBuilderValues, 
     where T : class, ISettings, new()
 {
     public SettingsStorageBackendId BackendId { get; private set; } = SettingsStorageBackendId.DefaultValue;
-    public Type? BackendType { get; private set; } = null;
-    public bool IsDisabled { get; private set; } = false;
+    public Type? BackendType { get; private set; }
+    public bool IsDisabled { get; private set; }
 
     public void Disable()
     {

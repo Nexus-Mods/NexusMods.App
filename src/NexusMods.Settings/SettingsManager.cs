@@ -88,11 +88,10 @@ internal partial class SettingsManager : ISettingsManager
             .Select(tuple => (tuple.Item2 as T)!);
     }
 
-    public IUIProperty[] GetAllUIProperties()
+    public ISettingsPropertyUIDescriptor[] GetAllUIProperties()
     {
         // TODO:
-
-        return Array.Empty<IUIProperty>();
+        return Array.Empty<ISettingsPropertyUIDescriptor>();
     }
 
     private T GetDefaultValue<T>() where T : class, ISettings, new()

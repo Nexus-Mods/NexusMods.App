@@ -8,7 +8,7 @@ namespace NexusMods.App.UI.Settings;
 public record LanguageSettings : ISettings
 {
     [JsonConverter(typeof(CultureInfoConverter))]
-    public CultureInfo UICulture { get; init; } = CultureInfo.CurrentUICulture;
+    public CultureInfo UICulture { get; set; } = CultureInfo.CurrentUICulture;
 
     public static ISettingsBuilder Configure(ISettingsBuilder settingsBuilder)
     {
