@@ -35,4 +35,9 @@ public interface IUIProperty
     /// If this is <c>null</c>, use a default message.
     /// </remarks>
     public string? RestartMessage { get; }
+
+    /// <summary>
+    /// Updates the property of the underlying settings type with <paramref name="newValue"/>.
+    /// </summary>
+    public void UpdateSettings(ISettingsManager settingsManager, object newValue);
 }
