@@ -41,7 +41,20 @@ public interface IPropertyUIBuilder<TSettings, TProperty>
         /// <remarks>
         /// This property allows for Markdown.
         /// </remarks>
-        IRequiresRestartStep WithDescription(string description);
+        IConfigureValueContainerStep WithDescription(string description);
+    }
+
+    public interface IConfigureValueContainerStep
+    {
+        IRequiresRestartStep UseBooleanContainer();
+
+        IRequiresRestartStep UseSingleValueMultipleChoiceContainer<TKey>(
+            Func<TProperty, TKey> valueToKey,
+            Func<TKey, TProperty> keyToValue,
+            IEqualityComparer<TKey> keyComparer,
+            TProperty[] allowedValues,
+            Func<TProperty, string> valueToTranslation
+        );
     }
 
     /// <summary>

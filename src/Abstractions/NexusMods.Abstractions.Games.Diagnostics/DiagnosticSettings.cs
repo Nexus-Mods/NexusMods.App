@@ -25,6 +25,24 @@ public class DiagnosticSettings : ISettings
                 .AddToSection(sectionId)
                 .WithDisplayName("Minimum Severity")
                 .WithDescription("Set the minimum Severity for Diagnostics. Any diagnostic with a lower Severity will not appear in the UI.")
+                .UseSingleValueMultipleChoiceContainer(
+                    valueToKey: static severity => (byte)severity,
+                    keyToValue: static key => (DiagnosticSeverity)key,
+                    keyComparer: EqualityComparer<byte>.Default,
+                    allowedValues: [
+                        DiagnosticSeverity.Suggestion,
+                        DiagnosticSeverity.Warning,
+                        DiagnosticSeverity.Critical,
+                    ],
+                    valueToTranslation: static severity => severity switch
+                    {
+                        // TODO: translate
+                        DiagnosticSeverity.Suggestion => "Suggestion",
+                        DiagnosticSeverity.Warning => "Warning",
+                        DiagnosticSeverity.Critical => "Critical",
+                        _ => throw new ArgumentOutOfRangeException(nameof(severity), severity, null),
+                    }
+                )
                 .RequiresRestart()
             )
         );

@@ -94,12 +94,11 @@ internal partial class SettingsManager : ISettingsManager
 
     public ISettingsPropertyUIDescriptor[] GetAllUIProperties()
     {
+        // ReSharper disable once CoVariantArrayConversion
         return _propertyBuilderOutputs.Select(output =>
         {
             var value = output.GetValueFunc.Invoke(this);
-
-            // TODO:
-            var valueContainer = new SettingsPropertyValueContainer();
+            var valueContainer = output.Factory.Create(value);
             return SettingsPropertyUIDescriptor.From(output, valueContainer);
         }).ToArray();
     }

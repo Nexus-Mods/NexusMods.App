@@ -20,6 +20,18 @@ public record LanguageSettings : ISettings
                 .AddToSection(sectionId)
                 .WithDisplayName("Language")
                 .WithDescription("Set the language for the application.")
+                .UseSingleValueMultipleChoiceContainer(
+                    valueToKey: static culture => culture.Name,
+                    keyToValue: static key => CultureInfo.GetCultureInfo(key),
+                    keyComparer: StringComparer.OrdinalIgnoreCase,
+                    allowedValues: [
+                        // TODO: dynamically get allowed values
+                        new CultureInfo("en"),
+                        new CultureInfo("de"),
+                        new CultureInfo("pl"),
+                    ],
+                    valueToTranslation: static cultureInfo => cultureInfo.DisplayName
+                )
                 .RequiresRestart()
             )
         );

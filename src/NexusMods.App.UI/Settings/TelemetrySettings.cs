@@ -18,6 +18,7 @@ public record TelemetrySettings : ISettings
                 .AddToSection(sectionId)
                 .WithDisplayName("Enable Telemetry")
                 .WithDescription("Send anonymous analytics information and usage data to Nexus Mods.")
+                .UseBooleanContainer()
                 .RequiresRestart()
             )
         );
