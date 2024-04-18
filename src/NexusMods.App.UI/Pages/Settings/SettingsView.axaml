@@ -10,36 +10,45 @@
         <settings:SettingsDesignViewModel />
     </Design.DataContext>
 
-    <Grid RowDefinitions="*, Auto">
+    <Border Classes="Rounded-lg">
+        <Grid RowDefinitions="*, Auto">
 
-        <Border Grid.Row="0"
-                x:Name="TopSectionBorder"
-                Classes="Base">
+            <Border Grid.Row="0"
+                    x:Name="TopSectionBorder"
+                    Classes="Low Rounded-t-lg">
 
-            <Grid ColumnDefinitions="Auto, *">
-                <Border Grid.Column="0"
-                        x:Name="SideBarBorder">
-                </Border>
+                <Grid ColumnDefinitions="Auto, *">
+                    <Border Grid.Column="0"
+                            x:Name="SideBarBorder"
+                            Classes="Top"
+                            Width="216">
+                    </Border>
 
-                <Border Grid.Column="1"
-                        x:Name="ContentBorder">
-                </Border>
+                    <Border Grid.Column="1"
+                            x:Name="ContentBorder">
+                    </Border>
 
-            </Grid>
-        </Border>
+                </Grid>
+            </Border>
 
 
-        <Border Grid.Row="1"
-                x:Name="FooterBorder"
-                Classes="Mid">
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Classes="Standard Tertiary">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="CANCEL" />
-                    </StackPanel>
-                </Button>
-            </StackPanel>
-        </Border>
-    </Grid>
+            <Border Grid.Row="1"
+                    x:Name="FooterBorder"
+                    Classes="Footer">
+                <StackPanel>
+                    <Button Classes="Standard Tertiary">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="CANCEL" />
+                        </StackPanel>
+                    </Button>
+                    <Button Classes="Standard Primary">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="SAVE" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Border>
 
 </reactiveUi:ReactiveUserControl>
