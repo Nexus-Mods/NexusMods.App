@@ -31,7 +31,7 @@ public class ASynchronizerBenchmark
         if (_defaultSynchronizer == null)
             throw new Exception($"Can't cast synchronizer to {typeof(DefaultSynchronizer)}. Did the test StubbedGame code change?");
 
-        _installation = _datamodel.Game.Installations.First();
+        _installation = _datamodel.BaseList.Value.Installation;
         _diskStateRegistry = _serviceProvider.GetRequiredService<IDiskStateRegistry>();
     }
     
