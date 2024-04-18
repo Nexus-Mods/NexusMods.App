@@ -90,4 +90,3 @@ internal record PropertyData(
     bool RequiresRestart,
     string? RestartMessage
 );
-
