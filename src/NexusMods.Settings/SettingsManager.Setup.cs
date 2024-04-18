@@ -18,6 +18,7 @@ internal partial class SettingsManager
         var objectCreationInformationList = new List<ObjectCreationInformation>();
         var storageBackendMappings = new Dictionary<Type, ISettingsStorageBackend>();
         var asyncStorageBackendMappings = new Dictionary<Type, IAsyncSettingsStorageBackend>();
+        var propertyBuilderOutputs = new List<PropertyBuilderOutput>();
 
         foreach (var settingsTypeInformation in settingsTypeInformationArray)
         {
@@ -32,6 +33,7 @@ internal partial class SettingsManager
                 logger.LogError(e, "Exception while configuring {Type}", objectType);
             }
 
+            propertyBuilderOutputs.AddRange(builder.PropertyBuilderOutputs);
             var defaultValueFactory = builder.DefaultValueFactory;
             var storageBackendValues = builder.StorageBackendBuilderValues;
 
@@ -71,6 +73,7 @@ internal partial class SettingsManager
             ObjectCreationMappings = objectCreationMappings,
             StorageBackendMappings = storageBackendMappings.ToImmutableDictionary(),
             AsyncStorageBackendMappings = asyncStorageBackendMappings.ToImmutableDictionary(),
+            PropertyBuilderOutputs = propertyBuilderOutputs.ToArray(),
         };
 
         void AddBackend(Type objectType, IBaseSettingsStorageBackend backend)
@@ -94,5 +97,6 @@ internal partial class SettingsManager
         public required ImmutableDictionary<Type, ObjectCreationInformation> ObjectCreationMappings { get; init; }
         public required ImmutableDictionary<Type, ISettingsStorageBackend> StorageBackendMappings { get; init; }
         public required ImmutableDictionary<Type, IAsyncSettingsStorageBackend> AsyncStorageBackendMappings { get; init; }
+        public required PropertyBuilderOutput[] PropertyBuilderOutputs { get; init; }
     }
 }

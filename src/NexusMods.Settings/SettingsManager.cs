@@ -17,11 +17,14 @@ internal partial class SettingsManager : ISettingsManager
 
     private readonly Subject<(Type, object)> _subject = new();
     private readonly Dictionary<Type, object> _values = new();
+
     private readonly ImmutableDictionary<Type, ObjectCreationInformation> _objectCreationMappings;
     private readonly ImmutableDictionary<Type, Func<object,object>> _overrides;
 
     private readonly ImmutableDictionary<Type, ISettingsStorageBackend> _storageBackendMappings;
     private readonly ImmutableDictionary<Type, IAsyncSettingsStorageBackend> _asyncStorageBackendMappings;
+
+    private readonly PropertyBuilderOutput[] _propertyBuilderOutputs;
 
     public SettingsManager(IServiceProvider serviceProvider)
     {
@@ -41,6 +44,7 @@ internal partial class SettingsManager : ISettingsManager
         _objectCreationMappings = builderOutput.ObjectCreationMappings;
         _storageBackendMappings = builderOutput.StorageBackendMappings;
         _asyncStorageBackendMappings = builderOutput.AsyncStorageBackendMappings;
+        _propertyBuilderOutputs = builderOutput.PropertyBuilderOutputs;
     }
 
     private void CoreSet<T>(T value, bool notify) where T : class, ISettings, new()
@@ -90,8 +94,12 @@ internal partial class SettingsManager : ISettingsManager
 
     public ISettingsPropertyUIDescriptor[] GetAllUIProperties()
     {
-        // TODO:
-        return Array.Empty<ISettingsPropertyUIDescriptor>();
+        return _propertyBuilderOutputs.Select(output =>
+        {
+            // TODO:
+            var valueContainer = new SettingsPropertyValueContainer(default);
+            return SettingsPropertyUIDescriptor.From(output, valueContainer);
+        }).ToArray();
     }
 
     private T GetDefaultValue<T>() where T : class, ISettings, new()
