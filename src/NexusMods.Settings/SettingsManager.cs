@@ -96,8 +96,10 @@ internal partial class SettingsManager : ISettingsManager
     {
         return _propertyBuilderOutputs.Select(output =>
         {
+            var value = output.GetValueFunc.Invoke(this);
+
             // TODO:
-            var valueContainer = new SettingsPropertyValueContainer(default);
+            var valueContainer = new SettingsPropertyValueContainer();
             return SettingsPropertyUIDescriptor.From(output, valueContainer);
         }).ToArray();
     }

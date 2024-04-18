@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Reflection;
 using NexusMods.Abstractions.Settings;
@@ -6,13 +7,15 @@ namespace NexusMods.Settings;
 using UpdateAction = Action<Delegate, ISettingsManager, object>;
 
 internal record PropertyBuilderOutput(
+    Type SettingsType,
     SectionId SectionId,
     string DisplayName,
     string Description,
     bool RequiresRestart,
     string? RestartMessage,
     Delegate PropertySetterDelegate,
-    UpdateAction UpdateAction
+    UpdateAction UpdateAction,
+    Func<ISettingsManager, object> GetValueFunc
 );
 
 internal class SettingsUIBuilder<TSettings> : ISettingsUIBuilder<TSettings>
@@ -35,13 +38,14 @@ internal class SettingsUIBuilder<TSettings> : ISettingsUIBuilder<TSettings>
             throw new ArgumentException($"Method `{propertyInfo.GetSetMethod()}` is null!");
 
         // void Set_Property(TSettings this, TProperty newValue)
-        var delegateType = Expression.GetDelegateType([typeof(TSettings), typeof(TProperty), typeof(void)]);
-        // type erasure into Delegate
-        var @delegate = methodInfo.CreateDelegate(delegateType);
+        var setDelegateType = Expression.GetDelegateType([typeof(TSettings), typeof(TProperty), typeof(void)]);
 
-        var updater = CreateUpdateAction<TProperty>();
+        var setDelegate = methodInfo.CreateDelegate(setDelegateType);
+        var updateAction = CreateUpdateAction<TProperty>();
 
-        var output = builder.ToOutput(@delegate, updater);
+        var getValueFunc = CreateGetValueFunc(selectProperty);
+
+        var output = builder.ToOutput(setDelegate, updateAction, getValueFunc);
         PropertyBuilderOutputs.Add(output);
 
         return this;
@@ -51,14 +55,29 @@ internal class SettingsUIBuilder<TSettings> : ISettingsUIBuilder<TSettings>
     {
         return (propertySetterDelegate, settingsManager, newValue) =>
         {
-            if (newValue.GetType() != typeof(TProperty))
-                throw new ArgumentException($"Type mismatch: `{newValue.GetType()}` != `{typeof(TProperty)}`");
+            Debug.Assert(newValue.GetType() == typeof(TProperty));
 
             settingsManager.Update<TSettings>(settings =>
             {
+                Debug.Assert(settings.GetType() == typeof(TSettings));
+
                 propertySetterDelegate.DynamicInvoke([settings, newValue]);
                 return settings;
             });
+        };
+    }
+
+    private static Func<ISettingsManager, object> CreateGetValueFunc<TProperty>(
+        Expression<Func<TSettings, TProperty>> selectProperty)
+    {
+        var func = selectProperty.Compile();
+
+        return settingsManager =>
+        {
+            var settings = settingsManager.Get<TSettings>();
+
+            var value = func.Invoke(settings);
+            return value!;
         };
     }
 }
@@ -78,14 +97,17 @@ internal class PropertyUIBuilder<TSettings, TProperty> :
 
     internal PropertyBuilderOutput ToOutput(
         Delegate propertySetterDelegate,
-        UpdateAction updateAction) => new(
+        UpdateAction updateAction,
+        Func<ISettingsManager, object> getValueFunc) => new(
+        typeof(TSettings),
         _sectionId,
         _displayName,
         _description,
         _requiresRestart,
         _restartMessage,
         propertySetterDelegate,
-        updateAction
+        updateAction,
+        getValueFunc
     );
 
     public IPropertyUIBuilder<TSettings, TProperty>.IWithDisplayNameStep AddToSection(SectionId id)
