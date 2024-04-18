@@ -1,0 +1,45 @@
+<reactiveUi:ReactiveUserControl x:TypeArguments="settings:ISettingsViewModel" xmlns="https://github.com/avaloniaui"
+                                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                                xmlns:reactiveUi="http://reactiveui.net"
+                                xmlns:settings="clr-namespace:NexusMods.App.UI.Pages.Settings"
+                                mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+                                x:Class="NexusMods.App.UI.Pages.Settings.SettingsView">
+    <Design.DataContext>
+        <settings:SettingsDesignViewModel />
+    </Design.DataContext>
+
+    <Grid RowDefinitions="*, Auto">
+
+        <Border Grid.Row="0"
+                x:Name="TopSectionBorder"
+                Classes="Base">
+
+            <Grid ColumnDefinitions="Auto, *">
+                <Border Grid.Column="0"
+                        x:Name="SideBarBorder">
+                </Border>
+
+                <Border Grid.Column="1"
+                        x:Name="ContentBorder">
+                </Border>
+
+            </Grid>
+        </Border>
+
+
+        <Border Grid.Row="1"
+                x:Name="FooterBorder"
+                Classes="Mid">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Classes="Standard Tertiary">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="CANCEL" />
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </Border>
+    </Grid>
+
+</reactiveUi:ReactiveUserControl>

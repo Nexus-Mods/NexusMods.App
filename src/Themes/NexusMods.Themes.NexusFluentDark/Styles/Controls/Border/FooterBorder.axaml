@@ -1,0 +1,40 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Add Styles Here -->
+
+
+    <Design.PreviewWith>
+        <StackPanel Margin="20" Width="300">
+
+            <Border Classes="Footer">
+                <StackPanel>
+                    <Button Classes="Standard Tertiary">
+                        <StackPanel>
+                            <TextBlock Text="CANCEL" />
+                        </StackPanel>
+                    </Button>
+                    <Button Classes="Standard Primary">
+                        <StackPanel>
+                            <TextBlock Text="SAVE" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </Design.PreviewWith>
+
+    <Style Selector="Border.Footer">
+        <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-b-lg}" />
+
+        <Style Selector="^ > StackPanel">
+            <Setter Property="Orientation" Value="Horizontal" />
+            <Setter Property="HorizontalAlignment" Value="Right" />
+            <Setter Property="Margin" Value="24, 24, 24, 24" />
+            <Setter Property="Spacing" Value="{StaticResource Spacing-2}" />
+        </Style>
+    </Style>
+
+
+</Styles>

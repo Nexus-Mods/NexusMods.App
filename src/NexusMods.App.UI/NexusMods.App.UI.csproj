@@ -493,6 +493,9 @@
         <Compile Update="Controls\MarkdownRenderer\MarkdownRendererDesignViewModel.cs">
           <DependentUpon>IMarkdownRendererViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Pages\Settings\SettingsDesignViewModel.cs">
+          <DependentUpon>ISettingsViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
