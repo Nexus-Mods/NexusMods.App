@@ -4,35 +4,67 @@
                                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:settings="clr-namespace:NexusMods.App.UI.Pages.Settings"
+                                xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="NexusMods.App.UI.Pages.Settings.SettingsView">
     <Design.DataContext>
         <settings:SettingsDesignViewModel />
     </Design.DataContext>
 
-    <Border Classes="Rounded-lg">
-        <Grid RowDefinitions="*, Auto">
-
+    <Border Classes="Rounded-lg Low">
+        <Grid RowDefinitions="Auto, *, Auto">
             <Border Grid.Row="0"
-                    x:Name="TopSectionBorder"
-                    Classes="Low Rounded-t-lg">
+                    x:Name="HeaderSectionBorder"
+                    Padding="24"
+                    HorizontalAlignment="Stretch">
+
+                <Grid ColumnDefinitions="Auto, *, Auto">
+
+                    <StackPanel Grid.Column="0"
+                                Orientation="Horizontal"
+                                Spacing="{StaticResource Spacing-2}">
+
+                        <icons:UnifiedIcon Classes="Cog" />
+                        <TextBlock Text="Settings"
+                                   Classes="Header" />
+
+                    </StackPanel>
+
+                    <Button Grid.Column="2"
+                            Classes="BareIcon WindowClose ForegroundSubdued">
+                    </Button>
+                </Grid>
+
+
+            </Border>
+
+
+            <Border Grid.Row="1"
+                    x:Name="BodySectionBorder"
+                    Classes="Rounded-t-lg">
 
                 <Grid ColumnDefinitions="Auto, *">
                     <Border Grid.Column="0"
                             x:Name="SideBarBorder"
-                            Classes="Top"
                             Width="216">
+
+                        <!-- Add Filter Box here -->
+                        <ScrollViewer>
+                            <!-- Add category items here -->
+                        </ScrollViewer>
                     </Border>
 
                     <Border Grid.Column="1"
                             x:Name="ContentBorder">
+                        
+                        
                     </Border>
 
                 </Grid>
             </Border>
 
 
-            <Border Grid.Row="1"
+            <Border Grid.Row="2"
                     x:Name="FooterBorder"
                     Classes="Footer">
                 <StackPanel>

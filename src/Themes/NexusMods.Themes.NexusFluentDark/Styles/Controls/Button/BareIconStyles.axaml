@@ -51,6 +51,11 @@
         <Style Selector="^:disabled">
             <Setter Property="Opacity" Value="{StaticResource OpacityDisabledElement}" />
         </Style>
+        
+        <Style Selector="^.ForegroundSubdued">
+            <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
+        </Style>
+        
     </Style>
 
     <!-- Small version -->
