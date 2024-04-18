@@ -1,7 +1,16 @@
 using System.Linq.Expressions;
+using System.Reflection;
 using NexusMods.Abstractions.Settings;
 
 namespace NexusMods.Settings;
+
+internal record PropertyBuilderOutput(
+    SectionId SectionId,
+    string DisplayName,
+    string Description,
+    bool RequiresRestart,
+    string? RestartMessage
+);
 
 internal class SettingsUIBuilder<TSettings> : ISettingsUIBuilder<TSettings>
     where TSettings : class, ISettings, new()
@@ -12,9 +21,32 @@ internal class SettingsUIBuilder<TSettings> : ISettingsUIBuilder<TSettings>
         Expression<Func<TSettings, TProperty>> selectProperty,
         Func<IPropertyUIBuilder<TSettings, TProperty>, IPropertyUIBuilder<TSettings, TProperty>.IFinishedStep> configureProperty)
     {
-        // TODO:
         var builder = new PropertyUIBuilder<TSettings, TProperty>();
-        var done = configureProperty(builder);
+        _ = configureProperty(builder);
+
+        if (selectProperty.Body is not MemberExpression memberExpression)
+            throw new ArgumentException($"Expression `{selectProperty.Body}` is not a {nameof(MemberExpression)}");
+        if (memberExpression.Member is not PropertyInfo propertyInfo)
+            throw new ArgumentException($"Member `{memberExpression.Member}` is not a {nameof(PropertyInfo)}");
+        if (propertyInfo.GetSetMethod() is not { } methodInfo)
+            throw new ArgumentException($"Method `{propertyInfo.GetSetMethod()}` is null!");
+
+        // void Set_Property(TSettings this, TProperty newValue)
+        var delegateType = Expression.GetDelegateType([typeof(TSettings), typeof(TProperty), typeof(void)]);
+        // type erasure into Delegate
+        var dynamicDelegate = methodInfo.CreateDelegate(delegateType);
+
+        Action<ISettingsManager, object> updater = (settingsManager, newValue) =>
+        {
+            if (newValue.GetType() != typeof(TProperty))
+                throw new ArgumentException($"Type mismatch: `{newValue.GetType()}` != `{typeof(TProperty)}`");
+
+            settingsManager.Update<TSettings>(settings =>
+            {
+                dynamicDelegate.DynamicInvoke([settings, newValue]);
+                return settings;
+            });
+        };
 
         var output = builder.GetOutput();
         PropertyBuilderOutputs.Add(output);
@@ -76,11 +108,3 @@ internal class PropertyUIBuilder<TSettings, TProperty> :
         return this;
     }
 }
-
-internal record PropertyBuilderOutput(
-    SectionId SectionId,
-    string DisplayName,
-    string Description,
-    bool RequiresRestart,
-    string? RestartMessage
-);
