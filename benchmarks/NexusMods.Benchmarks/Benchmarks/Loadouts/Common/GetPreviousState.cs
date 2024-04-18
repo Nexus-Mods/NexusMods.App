@@ -28,7 +28,7 @@ public class GetPreviousState : ASynchronizerBenchmark, IBenchmark
     public void Setup()
     {
         var filePath = Assets.Loadouts.FileLists.GetFileListPathByFileName(FileName);
-        Init("Game Files", filePath);
+        Init("Benchmark Mod Files", filePath);
         _flattenedLoadout = Task.Run(() => _defaultSynchronizer.LoadoutToFlattenedLoadout(_datamodel.BaseList.Value)).Result.Result;
     }
 

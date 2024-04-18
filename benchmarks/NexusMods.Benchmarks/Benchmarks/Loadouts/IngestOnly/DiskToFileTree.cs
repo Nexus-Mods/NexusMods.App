@@ -36,7 +36,7 @@ public class DiskToFileTree : ASynchronizerBenchmark, IBenchmark
     public void Setup()
     {
         var filePath = Assets.Loadouts.FileLists.GetFileListPathByFileName(FileName);
-        Init("Game Files", filePath);
+        Init("Benchmark Mod Files", filePath);
         InitForIngest();
         var loadout = _datamodel.BaseList.Value;
         

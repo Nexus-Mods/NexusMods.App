@@ -32,7 +32,7 @@ public class FileTreeToDisk : ASynchronizerBenchmark, IBenchmark
     public void Setup()
     {
         var filePath = Assets.Loadouts.FileLists.GetFileListPathByFileName(FileName);
-        Init("Game Files", filePath);
+        Init("Benchmark Mod Files", filePath);
         Task.Run(async () =>
         {
             _flattenedLoadout = await _defaultSynchronizer.LoadoutToFlattenedLoadout(_datamodel.BaseList.Value);

@@ -25,7 +25,7 @@ public class LoadoutToFlattenedLoadout : ASynchronizerBenchmark, IBenchmark
     [GlobalSetup]
     public void Setup()
     {
-        Init("Game Files", Assets.Loadouts.FileLists.GetFileListPathByFileName(FileName));
+        Init("Benchmark Mod Files", Assets.Loadouts.FileLists.GetFileListPathByFileName(FileName));
     }
 
     [Benchmark]
