@@ -27,7 +27,7 @@ internal class PropertyUIBuilder<TSettings, TProperty> :
     IPropertyUIBuilder<TSettings, TProperty>,
     IPropertyUIBuilder<TSettings, TProperty>.IWithDisplayNameStep,
     IPropertyUIBuilder<TSettings, TProperty>.IWithDescriptionStep,
-    IPropertyUIBuilder<TSettings, TProperty>.IOptionalStep
+    IPropertyUIBuilder<TSettings, TProperty>.IRequiresRestartStep
     where TSettings : class, ISettings, new()
 {
     private SectionId _sectionId = SectionId.DefaultValue;
@@ -56,29 +56,23 @@ internal class PropertyUIBuilder<TSettings, TProperty> :
         return this;
     }
 
-    public IPropertyUIBuilder<TSettings, TProperty>.IOptionalStep WithDescription(string description)
+    public IPropertyUIBuilder<TSettings, TProperty>.IRequiresRestartStep WithDescription(string description)
     {
         _description = description;
         return this;
     }
 
-    public IPropertyUIBuilder<TSettings, TProperty>.IOptionalStep RequiresRestart(string message)
+    public IPropertyUIBuilder<TSettings, TProperty>.IFinishedStep RequiresRestart(string message)
     {
         _requiresRestart = true;
         _restartMessage = message;
         return this;
     }
 
-    public IPropertyUIBuilder<TSettings, TProperty>.IOptionalStep RequiresRestart()
+    public IPropertyUIBuilder<TSettings, TProperty>.IFinishedStep RequiresRestart()
     {
         _requiresRestart = true;
         _restartMessage = null;
-        return this;
-    }
-
-    public IPropertyUIBuilder<TSettings, TProperty>.IOptionalStep WithValidation(Func<TProperty, ValidationResult> validator)
-    {
-        // TODO:
         return this;
     }
 }
