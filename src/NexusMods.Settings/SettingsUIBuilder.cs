@@ -6,7 +6,7 @@ namespace NexusMods.Settings;
 internal class SettingsUIBuilder<TSettings> : ISettingsUIBuilder<TSettings>
     where TSettings : class, ISettings, new()
 {
-    public List<PropertyData> PropertyDataList { get; } = new();
+    public List<PropertyBuilderOutput> PropertyBuilderOutputs { get; } = new();
 
     public ISettingsUIBuilder<TSettings> AddPropertyToUI<TProperty>(
         Expression<Func<TSettings, TProperty>> selectProperty,
@@ -16,8 +16,8 @@ internal class SettingsUIBuilder<TSettings> : ISettingsUIBuilder<TSettings>
         var builder = new PropertyUIBuilder<TSettings, TProperty>();
         var done = configureProperty(builder);
 
-        var data = builder.ToData();
-        PropertyDataList.Add(data);
+        var output = builder.GetOutput();
+        PropertyBuilderOutputs.Add(output);
 
         return this;
     }
@@ -36,7 +36,7 @@ internal class PropertyUIBuilder<TSettings, TProperty> :
     private bool _requiresRestart;
     private string? _restartMessage;
 
-    internal PropertyData ToData() => new(
+    internal PropertyBuilderOutput GetOutput() => new(
         _sectionId,
         _displayName,
         _description,
@@ -83,7 +83,7 @@ internal class PropertyUIBuilder<TSettings, TProperty> :
     }
 }
 
-internal record PropertyData(
+internal record PropertyBuilderOutput(
     SectionId SectionId,
     string DisplayName,
     string Description,

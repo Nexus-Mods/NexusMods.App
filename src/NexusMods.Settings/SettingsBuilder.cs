@@ -15,7 +15,7 @@ internal class SettingsBuilder : ISettingsBuilder
         var builder = new SettingsUIBuilder<TSettings>();
         var done = configureUI(builder);
 
-        var propertyDataList = builder.PropertyDataList;
+        var propertyBuilderOutputs = builder.PropertyBuilderOutputs;
 
         return this;
     }

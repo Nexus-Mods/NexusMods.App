@@ -10,7 +10,7 @@ public interface IPropertyUIBuilder<TSettings, TProperty>
     where TSettings : class, ISettings, new()
 {
     /// <summary>
-    /// Ads the property to a section.
+    /// Adds the property to a section.
     /// </summary>
     IWithDisplayNameStep AddToSection(SectionId id);
 
