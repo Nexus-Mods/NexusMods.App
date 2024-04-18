@@ -19,7 +19,6 @@ public class FileTreeToDisk : ASynchronizerBenchmark, IBenchmark
     private FlattenedLoadout _flattenedLoadout = null!;
     private FileTree _fileTree = null!;
     private DiskStateTree _prevState = null!;
-    private GameInstallation _installation = null!;
     
     public IEnumerable<string> ValuesForFilePath => new[]
     {
@@ -37,7 +36,6 @@ public class FileTreeToDisk : ASynchronizerBenchmark, IBenchmark
         {
             _flattenedLoadout = await _defaultSynchronizer.LoadoutToFlattenedLoadout(_datamodel.BaseList.Value);
             _fileTree = await _defaultSynchronizer.FlattenedLoadoutToFileTree(_flattenedLoadout, _datamodel.BaseList.Value);
-            _installation = _datamodel.Game.Installations.First();
             _prevState = _datamodel.DiskStateRegistry.GetState(_installation)!;
         }).Wait();
 #pragma warning disable CS0618 // Type or member is obsolete
