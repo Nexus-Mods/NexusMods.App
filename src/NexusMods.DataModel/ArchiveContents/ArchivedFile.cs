@@ -1,25 +1,80 @@
-﻿using NexusMods.Abstractions.Serialization.Attributes;
-using NexusMods.Abstractions.Serialization.DataModel;
-using NexusMods.Paths;
+﻿using NexusMods.Archives.Nx.Headers.Managed;
+using NexusMods.DataModel.Attributes;
+using NexusMods.Hashing.xxHash64;
+using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.Attributes;
+using NexusMods.MnemonicDB.Abstractions.Models;
+// ReSharper disable MemberHidesStaticFromOuterClass
 
 namespace NexusMods.DataModel.ArchiveContents;
 
 /// <summary>
-/// Information about a file in an individual archive.
+/// A metadata entry for an archived file entry. These are the items stored inside the .nx archives. Each
+/// entry contains the hash, the decompressed size, and a reference to the container. In the case of Nx containers
+/// it also contains the Nx internal header data for the entry so that we can do point lookups, of files.
 /// </summary>
-[JsonName("NexusMods.DataModel.ArchiveContents.ArchivedFile")]
-public record ArchivedFile : Entity
+public static class ArchivedFile
 {
-    /// <inheritdoc />
-    public override EntityCategory Category => EntityCategory.ArchivedFiles;
+    private const string Namespace = "NexusMods.DataModel.ArchivedFile";
+    
+    /// <summary>
+    /// The compressed container (.nx archive) that contains the file, the entity referenced
+    /// here should have the relative path to the file.
+    /// </summary>
+    public static readonly ReferenceAttribute Container = new(Namespace, nameof(Container));
+    
+    /// <summary>
+    /// The hash of the file entry
+    /// </summary>
+    public static readonly HashAttribute Hash = new(Namespace, nameof(Hash)) {IsIndexed = true};
+    
+    /// <summary>
+    /// The file entry data for the NX block offset data
+    /// </summary>
+    public static readonly NxFileEntryAttribute NxFileEntry = new(Namespace, nameof(NxFileEntry));
+
 
     /// <summary>
-    /// Name of the archive this file is contained in.
+    /// Model for the archived file entry.
     /// </summary>
-    public required RelativePath File { get; init; }
-
-    /// <summary>
-    /// The file entry data for the NX block offset
-    /// </summary>
-    public required byte[] FileEntryData { get; init; }
+    public class Model(ITransaction tx) : AEntity(tx)
+    {
+        
+        /// <summary>
+        /// Id of the containing archive.
+        /// </summary>
+        public EntityId ContainerId
+        {
+            get => ArchivedFile.Container.Get(this);
+            set => ArchivedFile.Container.Add(this, value);
+        } 
+        
+        /// <summary>
+        /// The container that contains this file.
+        /// </summary>
+        public ArchivedFileContainer.Model Container
+        {
+            get => Db.Get<ArchivedFileContainer.Model>(ContainerId);
+            set => ContainerId = value.Id;
+        }
+        
+        /// <summary>
+        /// Hash of the file entry
+        /// </summary>
+        public Hash Hash
+        {
+            get => ArchivedFile.Hash.Get(this);
+            set => ArchivedFile.Hash.Add(this, value);
+        }
+        
+        /// <summary>
+        /// The Nx file entry data for the NX block offset data
+        /// </summary>
+        public FileEntry NxFileEntry
+        {
+            get => ArchivedFile.NxFileEntry.Get(this);
+            set => ArchivedFile.NxFileEntry.Add(this, value);
+        }
+    }
+    
 }

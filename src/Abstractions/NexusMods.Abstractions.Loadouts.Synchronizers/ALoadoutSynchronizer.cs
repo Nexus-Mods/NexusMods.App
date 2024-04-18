@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.DataModel.Entities.Sorting;
@@ -322,9 +323,9 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             installation.LocationsRegister.GetResolvedPath(dir).DeleteDirectory(recursive: true);
         }
 
-        // Return the new tree
         return newTree;
 
+        // Return the new tree
         // Quick convert function such that to not be LINQ bottlenecked.
         // Needed as separate method because parent method is async.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
