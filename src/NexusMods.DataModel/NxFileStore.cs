@@ -173,7 +173,7 @@ public class NxFileStore : IFileStore
                 if (createdDirectories.TryAdd(containingDir, 0))
                     containingDir.CreateDirectory();
 #if DEBUG
-                Debug.Assert(!destPaths.TryAdd(file.Dest, 0), $"Duplicate destination path: {file.Dest}. Should not happen.");
+                Debug.Assert(destPaths.TryAdd(file.Dest, 0), $"Duplicate destination path: {file.Dest}. Should not happen.");
 #endif
             }
             else
