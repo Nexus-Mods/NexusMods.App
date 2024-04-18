@@ -44,13 +44,13 @@ public interface IFileOriginRegistry
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public ValueTask<DownloadAnalysis> Get(DownloadId id);
+    public ValueTask<DownloadAnalysis.Model> Get(DownloadId id);
 
     /// <summary>
     /// Get the analysis of all downloads
     /// </summary>
     /// <returns></returns>
-    public IEnumerable<DownloadAnalysis> GetAll();
+    public IEnumerable<DownloadAnalysis.Model> GetAll();
 
     /// <summary>
     /// Finds all downloads that have the given hash

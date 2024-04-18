@@ -15,6 +15,7 @@ using NexusMods.Abstractions.Serialization.DataModel.Ids;
 using NexusMods.DataModel.ArchiveContents;
 using NexusMods.Extensions.Hashing;
 using NexusMods.Hashing.xxHash64;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 
 namespace NexusMods.DataModel;
@@ -28,7 +29,7 @@ public class FileOriginRegistry : IFileOriginRegistry
     private readonly IFileExtractor _extractor;
     private readonly IFileStore _fileStore;
     private readonly TemporaryFileManager _temporaryFileManager;
-    private readonly IDataStore _dataStore;
+    private readonly IConnection _conn;
     private readonly IFileHashCache _fileHashCache;
 
     /// <summary>
@@ -40,13 +41,13 @@ public class FileOriginRegistry : IFileOriginRegistry
     /// <param name="temporaryFileManager"></param>
     /// <param name="store"></param>
     public FileOriginRegistry(ILogger<FileOriginRegistry> logger, IFileExtractor extractor,
-        IFileStore fileStore, TemporaryFileManager temporaryFileManager, IDataStore store, IFileHashCache fileHashCache)
+        IFileStore fileStore, TemporaryFileManager temporaryFileManager, IConnection conn, IFileHashCache fileHashCache)
     {
         _logger = logger;
         _extractor = extractor;
         _fileStore = fileStore;
         _temporaryFileManager = temporaryFileManager;
-        _dataStore = store;
+        _conn = conn;
         _fileHashCache = fileHashCache;
     }
 
@@ -88,15 +89,17 @@ public class FileOriginRegistry : IFileOriginRegistry
     }
 
     /// <inheritdoc />
-    public async ValueTask<DownloadAnalysis> Get(DownloadId id)
+    public async ValueTask<DownloadAnalysis.Model> Get(DownloadId id)
     {
         return _dataStore.Get<DownloadAnalysis>(IId.From(EntityCategory.DownloadMetadata, id.Value))!;
     }
 
     /// <inheritdoc />
-    public IEnumerable<DownloadAnalysis> GetAll()
+    public IEnumerable<EntityId> GetAll()
     {
-        return _dataStore.GetByPrefix<DownloadAnalysis>(new Id64(EntityCategory.DownloadMetadata, 0));
+        var db = _conn.Db;
+        return db.Find(DownloadAnalysis.NumberOfEntries)
+\            .Select(id => db.Get<DownloadAnalysis.Model>(id));
     }
 
     /// <inheritdoc />

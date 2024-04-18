@@ -33,6 +33,13 @@ public static class DownloadAnalysis
     /// </remarks>
     public static readonly SizeAttribute Size = new(Namespace, nameof(Size));
     
+    
+    /// <summary>
+    /// Number of entries in the download
+    /// </summary>
+    public static readonly ULongAttribute NumberOfEntries = new(Namespace, nameof(NumberOfEntries));
+    
+    
     public class Model(ITransaction tx) : AEntity(tx)
     {
         
