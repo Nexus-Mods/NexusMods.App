@@ -13,7 +13,7 @@ public interface ISettingsBuilder
     /// exposed in the UI.
     /// </summary>
     ISettingsBuilder AddToUI<TSettings>(
-        Func<ISettingsUIBuilder<TSettings>, ISettingsUIBuilder<TSettings>.IFinishedStep> configureUI
+        Func<ISettingsUIBuilder<TSettings>, ISettingsUIBuilder<TSettings>> configureUI
     ) where TSettings : class, ISettings, new();
 
     /// <summary>

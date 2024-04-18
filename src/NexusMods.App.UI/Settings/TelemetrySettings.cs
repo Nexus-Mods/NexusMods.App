@@ -14,8 +14,8 @@ public record TelemetrySettings : ISettings
         var sectionId = SectionId.DefaultValue;
 
         return settingsBuilder.AddToUI<TelemetrySettings>(builder => builder
-            .AddToSection(sectionId)
             .AddPropertyToUI(x => x.EnableTelemetry, propertyBuilder => propertyBuilder
+                .AddToSection(sectionId)
                 .WithDisplayName("Enable Telemetry")
                 .WithDescription("Send anonymous analytics information and usage data to Nexus Mods.")
                 .RequiresRestart()

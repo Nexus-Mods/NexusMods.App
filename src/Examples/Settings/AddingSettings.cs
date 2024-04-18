@@ -15,10 +15,10 @@ file record MySettings : ISettings
         // You can use the ISettingsBuilder to expose the properties defined in
         // this class in the UI.
         return settingsBuilder.AddToUI<MySettings>(uiBuilder => uiBuilder
-             // TODO: define sections
-            .AddToSection(SectionId.DefaultValue)
              // You have to configure every property that you want to add to the UI individually.
             .AddPropertyToUI(x => x.Name, propertyBuilder => propertyBuilder
+                // TODO: Sections
+                .AddToSection(SectionId.DefaultValue)
                 .WithDisplayName("Cool Name")
                 .WithDescription("This is a very cool name that you can change!")
                 // Optionally, you can have validation to prevent users from inputting weird stuff:

@@ -8,10 +8,15 @@ internal class SettingsBuilder : ISettingsBuilder
     public IStorageBackendBuilderValues? StorageBackendBuilderValues { get; set; }
 
     public ISettingsBuilder AddToUI<TSettings>(
-        Func<ISettingsUIBuilder<TSettings>, ISettingsUIBuilder<TSettings>.IFinishedStep> configureUI
+        Func<ISettingsUIBuilder<TSettings>, ISettingsUIBuilder<TSettings>> configureUI
     ) where TSettings : class, ISettings, new()
     {
-        // TODO: implement this
+        // TODO:
+        var builder = new SettingsUIBuilder<TSettings>();
+        var done = configureUI(builder);
+
+        var propertyDataList = builder.PropertyDataList;
+
         return this;
     }
 

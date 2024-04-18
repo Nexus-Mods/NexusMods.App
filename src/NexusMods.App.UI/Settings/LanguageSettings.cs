@@ -16,8 +16,8 @@ public record LanguageSettings : ISettings
         var sectionId = SectionId.DefaultValue;
 
         return settingsBuilder.AddToUI<LanguageSettings>(builder => builder
-            .AddToSection(sectionId)
             .AddPropertyToUI(x => x.UICulture, propertyBuilder => propertyBuilder
+                .AddToSection(sectionId)
                 .WithDisplayName("Language")
                 .WithDescription("Set the language for the application.")
                 .RequiresRestart()

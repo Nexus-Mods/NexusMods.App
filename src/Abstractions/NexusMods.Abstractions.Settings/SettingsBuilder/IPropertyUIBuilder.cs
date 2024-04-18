@@ -10,12 +10,24 @@ public interface IPropertyUIBuilder<TSettings, TProperty>
     where TSettings : class, ISettings, new()
 {
     /// <summary>
-    /// Sets the display name of the property.
+    /// Ads the property to a section.
     /// </summary>
-    /// <remarks>
-    /// This property does not allow for Markdown.
-    /// </remarks>
-    IWithDescriptionStep WithDisplayName(string displayName);
+    IWithDisplayNameStep AddToSection(SectionId id);
+
+    /// <summary>
+    /// Step for adding the display name.
+    /// </summary>
+    [PublicAPI]
+    public interface IWithDisplayNameStep
+    {
+        /// <summary>
+        /// Sets the display name of the property.
+        /// </summary>
+        /// <remarks>
+        /// This property does not allow for Markdown.
+        /// </remarks>
+        IWithDescriptionStep WithDisplayName(string displayName);
+    }
 
     /// <summary>
     /// Step for adding the description.

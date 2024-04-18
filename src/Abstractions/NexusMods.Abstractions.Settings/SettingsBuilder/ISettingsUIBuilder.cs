@@ -10,20 +10,11 @@ namespace NexusMods.Abstractions.Settings;
 public interface ISettingsUIBuilder<TSettings>
     where TSettings : class, ISettings, new()
 {
-    IAddPropertyToUIStep AddToSection(SectionId id);
-
-    [PublicAPI]
-    public interface IAddPropertyToUIStep : IFinishedStep
-    {
-        /// <summary>
-        /// Adds the selected property to the UI.
-        /// </summary>
-        IAddPropertyToUIStep AddPropertyToUI<TProperty>(
-            Expression<Func<TSettings, TProperty>> selectProperty,
-            Func<IPropertyUIBuilder<TSettings, TProperty>, IPropertyUIBuilder<TSettings, TProperty>.IFinishedStep> configureProperty
-        );
-    }
-
-    [PublicAPI]
-    public interface IFinishedStep;
+    /// <summary>
+    /// Adds the selected property to the UI.
+    /// </summary>
+    ISettingsUIBuilder<TSettings> AddPropertyToUI<TProperty>(
+        Expression<Func<TSettings, TProperty>> selectProperty,
+        Func<IPropertyUIBuilder<TSettings, TProperty>, IPropertyUIBuilder<TSettings, TProperty>.IFinishedStep> configureProperty
+    );
 }
