@@ -12,8 +12,17 @@ public record LanguageSettings : ISettings
 
     public static ISettingsBuilder Configure(ISettingsBuilder settingsBuilder)
     {
-        // TODO: show in UI
-        return settingsBuilder;
+        // TODO: put in some section
+        var sectionId = SectionId.DefaultValue;
+
+        return settingsBuilder.AddToUI<LanguageSettings>(builder => builder
+            .AddToSection(sectionId)
+            .AddPropertyToUI(x => x.UICulture, propertyBuilder => propertyBuilder
+                .WithDisplayName("Language")
+                .WithDescription("Set the language for the application.")
+                .RequiresRestart()
+            )
+        );
     }
 }
 

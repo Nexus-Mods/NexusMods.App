@@ -10,7 +10,16 @@ public record TelemetrySettings : ISettings
 
     public static ISettingsBuilder Configure(ISettingsBuilder settingsBuilder)
     {
-        // TODO: show in UI
-        return settingsBuilder;
+        // TODO: put in some section
+        var sectionId = SectionId.DefaultValue;
+
+        return settingsBuilder.AddToUI<TelemetrySettings>(builder => builder
+            .AddToSection(sectionId)
+            .AddPropertyToUI(x => x.EnableTelemetry, propertyBuilder => propertyBuilder
+                .WithDisplayName("Enable Telemetry")
+                .WithDescription("Send anonymous analytics information and usage data to Nexus Mods.")
+                .RequiresRestart()
+            )
+        );
     }
 }
