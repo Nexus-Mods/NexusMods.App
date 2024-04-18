@@ -88,6 +88,13 @@ internal partial class SettingsManager : ISettingsManager
             .Select(tuple => (tuple.Item2 as T)!);
     }
 
+    public IUIProperty[] GetAllUIProperties()
+    {
+        // TODO:
+
+        return Array.Empty<IUIProperty>();
+    }
+
     private T GetDefaultValue<T>() where T : class, ISettings, new()
     {
         if (!_objectCreationMappings.TryGetValue(typeof(T), out var objectCreationInformation))
@@ -103,6 +110,8 @@ internal partial class SettingsManager : ISettingsManager
         var res = (value as T)!;
         return res;
     }
+
+#region Save/Load
 
     private void Save<T>(T value) where T : class, ISettings, new()
     {
@@ -187,4 +196,5 @@ internal partial class SettingsManager : ISettingsManager
 
         return null;
     }
+#endregion
 }

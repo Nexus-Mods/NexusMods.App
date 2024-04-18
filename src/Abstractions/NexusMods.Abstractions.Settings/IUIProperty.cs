@@ -6,7 +6,7 @@ namespace NexusMods.Abstractions.Settings;
 /// Represents data about a property exposed to the UI.
 /// </summary>
 [PublicAPI]
-public interface IUIPropertyData
+public interface IUIProperty
 {
     /// <summary>
     /// Gets the Section ID.
