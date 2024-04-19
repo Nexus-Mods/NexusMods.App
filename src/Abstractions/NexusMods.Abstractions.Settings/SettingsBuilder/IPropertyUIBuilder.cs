@@ -48,10 +48,8 @@ public interface IPropertyUIBuilder<TSettings, TProperty>
     {
         IRequiresRestartStep UseBooleanContainer();
 
-        IRequiresRestartStep UseSingleValueMultipleChoiceContainer<TKey>(
-            Func<TProperty, TKey> valueToKey,
-            Func<TKey, TProperty> keyToValue,
-            IEqualityComparer<TKey> keyComparer,
+        IRequiresRestartStep UseSingleValueMultipleChoiceContainer(
+            IEqualityComparer<TProperty> valueComparer,
             TProperty[] allowedValues,
             Func<TProperty, string> valueToTranslation
         );

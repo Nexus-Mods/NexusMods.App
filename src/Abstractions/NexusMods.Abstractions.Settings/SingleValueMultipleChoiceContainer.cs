@@ -8,8 +8,6 @@ namespace NexusMods.Abstractions.Settings;
 [PublicAPI]
 public sealed class SingleValueMultipleChoiceContainer : APropertyValueContainer<object>
 {
-    private readonly Func<object, object> _valueToKey;
-    private readonly Func<object, object> _keyToValue;
     private readonly object[] _allowedValues;
     private readonly Func<object, string> _valueToTranslation;
 
@@ -17,20 +15,16 @@ public sealed class SingleValueMultipleChoiceContainer : APropertyValueContainer
     /// Constructor.
     /// </summary>
     public SingleValueMultipleChoiceContainer(
-        object key,
-        Func<object, object> valueToKey,
-        Func<object, object> keyToValue,
-        IEqualityComparer<object> keyComparer,
+        object value,
+        IEqualityComparer<object> valueComparer,
         object[] allowedValues,
-        Func<object, string> valueToTranslation) : base(key, keyComparer)
+        Func<object, string> valueToTranslation) : base(value, valueComparer)
     {
-        _valueToKey = valueToKey;
-        _keyToValue = keyToValue;
         _allowedValues = allowedValues;
         _valueToTranslation = valueToTranslation;
 
-        KeysWithTranslations = _allowedValues.Select(v => new KeyValuePair<object, string>(_valueToKey(v), valueToTranslation(v))).ToArray();
+        Values = _allowedValues.Select(x => new KeyValuePair<object, string>(x, _valueToTranslation(x))).ToArray();
     }
 
-    public KeyValuePair<object, string>[] KeysWithTranslations { get; }
+    public KeyValuePair<object, string>[] Values { get; }
 }

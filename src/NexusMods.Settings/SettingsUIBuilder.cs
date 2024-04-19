@@ -160,22 +160,18 @@ internal class PropertyUIBuilder<TSettings, TProperty> :
         }
     }
 
-    public IPropertyUIBuilder<TSettings, TProperty>.IRequiresRestartStep UseSingleValueMultipleChoiceContainer<TKey>(
-        Func<TProperty, TKey> valueToKey,
-        Func<TKey, TProperty> keyToValue,
-        IEqualityComparer<TKey> keyComparer,
+    public IPropertyUIBuilder<TSettings, TProperty>.IRequiresRestartStep UseSingleValueMultipleChoiceContainer(
+        IEqualityComparer<TProperty> valueComparer,
         TProperty[] allowedValues,
         Func<TProperty, string> valueToTranslation)
     {
         _factory = new SingleValueMultipleChoiceContainerFactory(
-            valueToKey: p => valueToKey(p)!,
-            keyToValue: k => keyToValue((TKey)k),
-            keyComparer: EqualityComparer<object>.Create((a, b) =>
+            valueComparer: EqualityComparer<object>.Create((a, b) =>
             {
-                Debug.Assert(a is TKey);
-                Debug.Assert(b is TKey);
+                Debug.Assert(a is TProperty);
+                Debug.Assert(b is TProperty);
 
-                return keyComparer.Equals((TKey)a, (TKey)b);
+                return valueComparer.Equals((TProperty)a, (TProperty)b);
             }),
             allowedValues,
             valueToTranslation
@@ -186,22 +182,16 @@ internal class PropertyUIBuilder<TSettings, TProperty> :
 
     private class SingleValueMultipleChoiceContainerFactory : ISettingsPropertyValueContainerFactory
     {
-        private readonly Func<TProperty, object> _valueToKey;
-        private readonly Func<object, TProperty> _keyToValue;
-        private readonly IEqualityComparer<object> _keyComparer;
+        private readonly IEqualityComparer<object> _valueComparer;
         private readonly TProperty[] _allowedValues;
         private readonly Func<TProperty, string> _valueToTranslation;
 
         public SingleValueMultipleChoiceContainerFactory(
-            Func<TProperty, object> valueToKey,
-            Func<object, TProperty> keyToValue,
-            IEqualityComparer<object> keyComparer,
+            IEqualityComparer<object> valueComparer,
             TProperty[] allowedValues,
             Func<TProperty, string> valueToTranslation)
         {
-            _valueToKey = valueToKey;
-            _keyToValue = keyToValue;
-            _keyComparer = keyComparer;
+            _valueComparer = valueComparer;
             _allowedValues = allowedValues;
             _valueToTranslation = valueToTranslation;
         }
@@ -213,21 +203,11 @@ internal class PropertyUIBuilder<TSettings, TProperty> :
             var allowedValues = _allowedValues.Cast<object>().ToArray();
 
             return new SettingsPropertyValueContainer(new SingleValueMultipleChoiceContainer(
-                ValueToKey(currentValue),
-                ValueToKey,
-                KeyToValue,
-                _keyComparer,
+                currentValue,
+                _valueComparer,
                 allowedValues,
                 ValueToTranslation
             ));
-
-            object ValueToKey(object obj)
-            {
-                Debug.Assert(obj is TProperty);
-                return _valueToKey((TProperty)obj);
-            }
-
-            object KeyToValue(object key) => _keyToValue(key)!;
 
             string ValueToTranslation(object obj)
             {

@@ -21,9 +21,7 @@ public record LanguageSettings : ISettings
                 .WithDisplayName("Language")
                 .WithDescription("Set the language for the application.")
                 .UseSingleValueMultipleChoiceContainer(
-                    valueToKey: static culture => culture.Name,
-                    keyToValue: static key => CultureInfo.GetCultureInfo(key),
-                    keyComparer: StringComparer.OrdinalIgnoreCase,
+                    valueComparer: EqualityComparer<CultureInfo>.Create((a,b) => a?.Equals(b) ?? false),
                     allowedValues: [
                         // TODO: dynamically get allowed values
                         new CultureInfo("en"),

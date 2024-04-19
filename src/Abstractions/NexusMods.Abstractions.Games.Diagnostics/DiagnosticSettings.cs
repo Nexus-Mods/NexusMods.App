@@ -26,9 +26,7 @@ public class DiagnosticSettings : ISettings
                 .WithDisplayName("Minimum Severity")
                 .WithDescription("Set the minimum Severity for Diagnostics. Any diagnostic with a lower Severity will not appear in the UI.")
                 .UseSingleValueMultipleChoiceContainer(
-                    valueToKey: static severity => (byte)severity,
-                    keyToValue: static key => (DiagnosticSeverity)key,
-                    keyComparer: EqualityComparer<byte>.Default,
+                    valueComparer: EqualityComparer<DiagnosticSeverity>.Default,
                     allowedValues: [
                         DiagnosticSeverity.Suggestion,
                         DiagnosticSeverity.Warning,
