@@ -55,7 +55,7 @@ public class ArchiveManagerTests
 
         // Extract some of the files
         var extractionCount = Random.Shared.Next(fileCount);
-        var extractionIdxs = Enumerable.Range(1, extractionCount).Select(_ => Random.Shared.Next(fileCount)).ToArray();
+        var extractionIdxs = Enumerable.Range(1, extractionCount).Select(_ => Random.Shared.Next(fileCount)).Distinct().ToArray();
 
         // Extract the files via the in-memory method
         var extracted = await _manager.ExtractFiles(extractionIdxs.Select(idx => hashes[idx]));
@@ -75,7 +75,8 @@ public class ArchiveManagerTests
 
         var fullPaths = extractionIdxs.Distinct().ToDictionary(idx => idx, idx => tempFolder.Path.Combine($"{idx}.dat"));
 
-        await _manager.ExtractFiles(extractionIdxs.Select(idx => (hashes[idx], fullPaths[idx])));
+        var files = extractionIdxs.Select(idx => (hashes[idx], fullPaths[idx])).ToArray();
+        await _manager.ExtractFiles(files);
 
         // Verify the extracted files are correct
         foreach (var idx in extractionIdxs)

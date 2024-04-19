@@ -1,4 +1,7 @@
-﻿using System.Diagnostics;
+using System.Collections.Concurrent;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -249,8 +252,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         }
 
         // Extract all the files that need extracting in one batch.
-        await _fileStore.ExtractFiles(toExtract
-            .Select(f => (f.Value.Hash, f.Key)));
+        await _fileStore.ExtractFiles(GetFilesToExtract(toExtract));
 
         // Update the resulting items with the new file times
         var isUnix = _os.IsUnix();
@@ -315,8 +317,24 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             installation.LocationsRegister.GetResolvedPath(dir).DeleteDirectory(recursive: true);
         }
 
-        // Return the new tree
         return newTree;
+
+        // Return the new tree
+        // Quick convert function such that to not be LINQ bottlenecked.
+        // Needed as separate method because parent method is async.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static (Hash Hash, AbsolutePath Dest)[] GetFilesToExtract(List<KeyValuePair<AbsolutePath, StoredFile>> toExtract) 
+        {
+            (Hash Hash, AbsolutePath Dest)[] entries = GC.AllocateUninitializedArray<(Hash Src, AbsolutePath Dest)>(toExtract.Count);
+            var toExtractSpan = CollectionsMarshal.AsSpan(toExtract);
+            for (var x = 0; x < toExtract.Count; x++)
+            {
+                ref var item = ref toExtractSpan[x];
+                entries[x] = (item.Value.Hash, item.Key);
+            }
+
+            return entries;
+        }
     }
 
     /// <inheritdoc />
@@ -563,6 +581,8 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         var flattenedLoadout = await FileTreeToFlattenedLoadout(fileTree, loadout, prevFlattenedLoadout);
         var newLoadout = await FlattenedLoadoutToLoadout(flattenedLoadout, loadout, prevFlattenedLoadout);
 
+        // TODO: Make a diff here of the trees (compared to previous tree).
+        // Otherwise we'll suffer a lot on checking existing files.
         await BackupNewFiles(loadout.Installation, fileTree);
         newLoadout.EnsurePersisted(_store);
         diskState.LoadoutRevision = newLoadout.DataStoreId;
@@ -693,24 +713,27 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         // it's a generated file.
 
         // Backup the files that are new or changed
-        await _fileStore.BackupFiles(await fileTree.GetAllDescendentFiles()
-            .Select(n => n.Item.Value)
-            .OfType<StoredFile>()
-            .SelectAsync(async f =>
+        var archivedFiles = new ConcurrentBag<ArchivedFileEntry>();
+        await Parallel.ForEachAsync(fileTree.GetAllDescendentFiles(), async (file, cancellationToken) =>
+        {
+            if (file.Item.Value is StoredFile storedFile)
             {
-                var path = installation.LocationsRegister.GetResolvedPath(f.To);
-                if (await _fileStore.HaveFile(f.Hash))
-                    return null;
-                return new ArchivedFileEntry
+                var path = installation.LocationsRegister.GetResolvedPath(storedFile.To);
+                if (await _fileStore.HaveFile(storedFile.Hash))
+                    return;
+
+                var archivedFile = new ArchivedFileEntry
                 {
-                    Size = f.Size,
-                    Hash = f.Hash,
+                    Size = storedFile.Size,
+                    Hash = storedFile.Hash,
                     StreamFactory = new NativeFileStreamFactory(path),
-                } as ArchivedFileEntry?;
-            })
-            .Where(f => f != null)
-            .Select(f => f!.Value)
-            .ToListAsync());
+                };
+
+                archivedFiles.Add(archivedFile);
+            }
+        });
+
+        await _fileStore.BackupFiles(archivedFiles);
     }
 
     /// <inheritdoc />

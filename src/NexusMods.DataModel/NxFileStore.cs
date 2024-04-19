@@ -1,4 +1,6 @@
-﻿using System.Buffers;
+using System.Buffers;
+using System.Buffers.Binary;
+using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.IO;
@@ -16,6 +18,9 @@ using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
+#if DEBUG
+using System.Diagnostics;
+#endif
 
 namespace NexusMods.DataModel;
 
@@ -54,7 +59,7 @@ public class NxFileStore : IFileStore
     public ValueTask<bool> HaveFile(Hash hash)
     {
         var db = _conn.Db;
-        return ValueTask.FromResult(TryGetLocation(db, hash, out _, out _));
+        return ValueTask.FromResult(TryGetLocation(db, hash, null, out _, out _));
     }
 
     /// <inheritdoc />
@@ -120,36 +125,65 @@ public class NxFileStore : IFileStore
     }
     
     /// <inheritdoc />
-    public async Task ExtractFiles(IEnumerable<(Hash Src, AbsolutePath Dest)> files, CancellationToken token = default)
+    public async Task ExtractFiles((Hash Hash, AbsolutePath Dest)[] files, CancellationToken token = default)
     {
-        var db = _conn.Db;
-        var grouped = files.Distinct()
-            .Select(input => TryGetLocation(db, input.Src, out var archivePath, out var fileEntry)
-                ? (true, Hash: input.Src, ArchivePath: archivePath, FileEntry: fileEntry, input.Dest)
-                : default)
-            .Where(x => x.Item1)
-            .ToLookup(l => l.ArchivePath, l => (l.Hash, l.FileEntry, l.Dest));
+        // Group the files by archive.
+        // In almost all cases, everything will go in one archive, except for cases
+        // of duplicate files between different mods.
+        var groupedFiles = new ConcurrentDictionary<AbsolutePath, List<(Hash Hash, FileEntry FileEntry, AbsolutePath Dest)>>(Environment.ProcessorCount, 1);
+        var createdDirectories = new ConcurrentDictionary<AbsolutePath, byte>();
+    
+#if DEBUG
+        var destPaths = new ConcurrentDictionary<AbsolutePath, byte>(); // Sanity test. Test code had this issue.
+#endif
 
-        if (grouped[default].Any())
-            throw new Exception($"Missing archive for {grouped[default].First().Hash.ToHex()}");
+        // Capacity is set to 'expected archive count' + 1.
+        var fileExistsCache = new ConcurrentDictionary<AbsolutePath, bool>(Environment.ProcessorCount, 2);
+        Parallel.ForEach(files, file =>
+        {
+            if (TryGetLocation(_conn.Db, file.Hash, fileExistsCache, out var archivePath, out var fileEntry))
+            {
+                var group = groupedFiles.GetOrAdd(archivePath, _ => new List<(Hash, FileEntry, AbsolutePath)>());
+                lock (group)
+                {
+                    group.Add((file.Hash, fileEntry, file.Dest));
+                }
 
-        var settings = new UnpackerSettings();
+                // Create the directory, this will speed up extraction in Nx
+                // down the road. Usually the difference is negligible, but in
+                // extra special with 100s of directories scenarios, it can
+                // save a second or two.
+                var containingDir = file.Dest.Parent;
+                if (createdDirectories.TryAdd(containingDir, 0))
+                    containingDir.CreateDirectory();
+#if DEBUG
+                Debug.Assert(destPaths.TryAdd(file.Dest, 0), $"Duplicate destination path: {file.Dest}. Should not happen.");
+#endif
+            }
+            else
+            {
+                throw new FileNotFoundException($"Missing archive for {file.Hash.ToHex()}");
+            }
+        });
 
-        foreach (var group in grouped)
+        // Extract from all source archives.
+        foreach (var group in groupedFiles)
         {
             await using var file = group.Key.Read();
             var provider = new FromStreamProvider(file);
             var unpacker = new NxUnpacker(provider);
 
-            var toExtract = group
-                .Select(entry =>
-                    (IOutputDataProvider)new OutputFileProvider(entry.Dest.Parent.GetFullPath(), entry.Dest.FileName,
-                        entry.FileEntry))
-                .ToArray();
+            // Make all output providers.
+            var toExtract = GC.AllocateUninitializedArray<IOutputDataProvider>(group.Value.Count);
+            Parallel.For(0, group.Value.Count, x =>
+            {
+                var entry = group.Value[x];
+                toExtract[x] = new OutputFileProvider(entry.Dest.Parent.GetFullPath(), entry.Dest.FileName, entry.FileEntry);
+            });
 
             try
             {
-                unpacker.ExtractFiles(toExtract, settings);
+                unpacker.ExtractFiles(toExtract, new UnpackerSettings());
             }
             catch (Exception e)
             {
@@ -165,42 +199,65 @@ public class NxFileStore : IFileStore
     }
 
     /// <inheritdoc />
-    public Task<IDictionary<Hash, byte[]>> ExtractFiles(IEnumerable<Hash> files, CancellationToken token = default)
+    public Task<Dictionary<Hash, byte[]>> ExtractFiles(IEnumerable<Hash> files, CancellationToken token = default)
     {
-        var db = _conn.Db;
-        var results = new Dictionary<Hash, byte[]>();
+        // Group the files by archive.
+        // In almost all cases, everything will go in one archive, except for cases
+        // of duplicate files between different mods.
+        var filesArr = files.ToArray();
+        var results = new ConcurrentDictionary<Hash, byte[]>(Environment.ProcessorCount, filesArr.Length);
+        var groupedFiles = new ConcurrentDictionary<AbsolutePath, List<(Hash Hash, FileEntry FileEntry)>>(Environment.ProcessorCount, 1);
+        var fileExistsCache = new ConcurrentDictionary<AbsolutePath, bool>(Environment.ProcessorCount, filesArr.Length);
+        
+#if DEBUG
+        var processedHashes = new ConcurrentDictionary<Hash, byte>();
+#endif
 
-        var grouped = files.Distinct()
-            .Select(hash => TryGetLocation(db, hash, out var archivePath, out var fileEntry)
-                ? (true, Hash: hash, ArchivePath: archivePath, FileEntry: fileEntry)
-                : default)
-            .Where(x => x.Item1)
-            .ToLookup(l => l.ArchivePath, l => (l.Hash, l.FileEntry));
-
-        if (grouped[default].Any())
-            throw new Exception($"Missing archive for {grouped[default].First().Hash.ToHex()}");
-
-        var settings = new UnpackerSettings
+        Parallel.ForEach(filesArr, hash =>
         {
-            MaxNumThreads = 1
-        };
-        foreach (var group in grouped)
+            #if DEBUG
+            if (!processedHashes.TryAdd(hash, 0))
+                throw new Exception($"Duplicate hash found: {hash.ToHex()}");
+            #endif
+
+            if (TryGetLocation(_conn.Db, hash, fileExistsCache, out var archivePath, out var fileEntry))
+            {
+                var group = groupedFiles.GetOrAdd(archivePath, _ => new List<(Hash, FileEntry)>());
+                lock (group)
+                {
+                    group.Add((hash, fileEntry));
+                }
+            }
+            else
+            {
+                throw new Exception($"Missing archive for {hash.ToHex()}");
+            }
+        });
+
+        // Extract from all source archives.
+        Parallel.ForEach(groupedFiles, group =>
         {
             var file = group.Key.Read();
             var provider = new FromStreamProvider(file);
             var unpacker = new NxUnpacker(provider);
 
-            var infos = group.Select(entry => (entry.Hash, new OutputArrayProvider("", entry.FileEntry),
-                entry.FileEntry.DecompressedSize)).ToList();
-
-            unpacker.ExtractFiles(infos.Select(o => (IOutputDataProvider)o.Item2).ToArray(), settings);
-            foreach (var (hash, output, size) in infos)
+            var toExtract = new IOutputDataProvider[group.Value.Count];
+            for (var i = 0; i < group.Value.Count; i++)
             {
-                results.Add(hash, output.Data[..(int)size]);
+                var entry = group.Value[i];
+                toExtract[i] = new OutputArrayProvider("", entry.FileEntry);
             }
-        }
 
-        return Task.FromResult<IDictionary<Hash, byte[]>>(results);
+            unpacker.ExtractFiles(toExtract, new UnpackerSettings());
+            for (var i = 0; i < group.Value.Count; i++)
+            {
+                var hash = group.Value[i].Hash;
+                var output = (OutputArrayProvider)toExtract[i];
+                results.TryAdd(hash, output.Data);
+            }
+        });
+
+        return Task.FromResult(new Dictionary<Hash, byte[]>(results));
     }
 
     /// <inheritdoc />
@@ -208,7 +265,7 @@ public class NxFileStore : IFileStore
     {
         if (hash == Hash.Zero)
             throw new ArgumentNullException(nameof(hash));
-        if (!TryGetLocation(_conn.Db, hash, out var archivePath, out var entry))
+        if (!TryGetLocation(_conn.Db, hash, null, out var archivePath, out var entry))
             throw new Exception($"Missing archive for {hash.ToHex()}");
 
         var file = archivePath.Read();
@@ -401,17 +458,17 @@ public class NxFileStore : IFileStore
         /// </summary>
         public required int DecompressSize { get; set; }
     }
-
-    private bool TryGetLocation(IDb db, Hash hash, out AbsolutePath archivePath, out FileEntry fileEntry)
+    
+    private bool TryGetLocation(IDb db, Hash hash, ConcurrentDictionary<AbsolutePath, bool>? existsCache, out AbsolutePath archivePath, out FileEntry fileEntry)
     {
         var result = false;
         var entries = from id in db.FindIndexed(hash, ArchivedFile.Hash)
             let entry = db.Get<ArchivedFile.Model>(id)
             from location in _archiveLocations
             let combined = location.Combine(entry.Container.Path)
-            where combined.FileExists        
+            where existsCache?.GetOrAdd(combined, combined.FileExists) ?? combined.FileExists
             select (combined, entry.NxFileEntry, true);
-        
+
         (archivePath, fileEntry, result) = entries.FirstOrDefault();
         return result;
     }
