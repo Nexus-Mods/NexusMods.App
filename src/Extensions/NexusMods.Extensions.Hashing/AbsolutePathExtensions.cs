@@ -37,11 +37,11 @@ public static class AbsolutePathExtensions
     /// <param name="input">The path to the file.</param>
     /// <param name="job">The job to report progress to.</param>
     /// <returns>The xxHash64 hash of the file.</returns>
-    public static unsafe Hash XxHash64MemoryMapped(this AbsolutePath input, IActivitySource<Size>? job = null)
+    public static Hash XxHash64MemoryMapped(this AbsolutePath input, IActivitySource<Size>? job = null)
     {
         try
         {
-            using var mmf =  input.FileSystem.CreateMemoryMappedFile(input, FileMode.Open, MemoryMappedFileAccess.Read);
+            using var mmf = input.FileSystem.CreateMemoryMappedFile(input, FileMode.Open, MemoryMappedFileAccess.Read);
             var hashValue = XxHash64Algorithm.HashBytes(mmf.AsSpan());
             job?.AddProgress(Size.FromLong((long)mmf.Length));
             return Hash.From(hashValue);
