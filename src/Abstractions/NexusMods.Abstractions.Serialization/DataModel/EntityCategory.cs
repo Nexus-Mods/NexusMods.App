@@ -121,5 +121,11 @@ public enum EntityCategory : byte
     /// <summary>
     /// Persisted workspaces.
     /// </summary>
-    Workspaces = 19
+    Workspaces = 19,
+    
+    /// <summary>
+    /// Initial disk states for games.
+    /// Stored separately from <see cref="LoadoutRoots"/> to avoid conflicts.
+    /// </summary>
+    InitialDiskStates = 20,
 }

@@ -2,8 +2,12 @@ using System.Diagnostics;
 using System.Reactive.Subjects;
 using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.Abstractions.Serialization.DataModel.Ids;
 using NexusMods.DataModel.Attributes;
+using NexusMods.Extensions.Hashing;
+using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.DataModel.Loadouts;
@@ -77,25 +81,28 @@ public class DiskStateRegistry : IDiskStateRegistry
     /// <inheritdoc />
     public async Task SaveInitialState(GameInstallation installation, DiskStateTree diskState)
     {
-        // Initial state is identified by an empty LoadoutRevision
+        // I looked for a 'clean' way to do this.
+        // I originally considered special casing this to `IdEmpty.Empty`, or a
+        // equivalent 'null'/default ID.
 
-        // I looked for a 'clean' way to do this, and I found that it's
-        // not possible for us to create an `IdEmpty.Empty` with actual
-        // IDs, so the loadoutrevision of Empty for a game is reserved for
-        // the very first initial state.
-        
-        // Actual loadouts at time of writing use Id64, composed of category and hash.
-        // As is standard for our data model; there's no special casing there.
+        // Although putting it in the `LayoutRoots` table should be ok, as the
+        // probability of a collision is very low (the chances of something
+        // hashing to '0' are very low), I figured, that for cleanliness,
+        // maintainability and logical consistency, it would be better to
+        // put the initial states in a separate table, so here we are.
 
         // - Sewer
-        
-        var tx = _connection.BeginTransaction();
 
+        // TODO: This implementation does not support multiple installs of the same game,
+        // e.g. a GOG version alongside Steam version.
+        // But our app currently does not handle that well either.
+        var tx = _connection.BeginTransaction();
+        var domain = installation.Game.Domain;
         _ = new DiskState.Model(tx)
         {
-            Game = installation.Game.Domain,
+            Game = domain,
             Root = installation.LocationsRegister[LocationId.Game].ToString(),
-            LoadoutRevision = IdEmpty.Empty, 
+            LoadoutRevision = GetDiskStateIdForDomain(domain),
             DiskState = diskState,
         };
 
@@ -107,12 +114,21 @@ public class DiskStateRegistry : IDiskStateRegistry
     {
         // Initial state is identified by an empty LoadoutRevision
         var db = _connection.Db;
+        
+        var domain = installation.Game.Domain;
+        var domainId = GetDiskStateIdForDomain(domain);
+        
         var result = db
             .FindIndexed(installation.LocationsRegister[LocationId.Game].ToString(), DiskState.Root)
             .Select(db.Get<DiskState.Model>)
-            .FirstOrDefault(state => state.Game == installation.Game.Domain && state.LoadoutRevision.Equals(IdEmpty.Empty));
+            .FirstOrDefault(state => state.Game == installation.Game.Domain && state.LoadoutRevision.Equals(domainId));
 
         return result?.DiskState;
+    }
+
+    private static Id64 GetDiskStateIdForDomain(GameDomain domain)
+    {
+        return new Id64(EntityCategory.InitialDiskStates, domain.GetStableHash());
     }
 
     /// <inheritdoc />
