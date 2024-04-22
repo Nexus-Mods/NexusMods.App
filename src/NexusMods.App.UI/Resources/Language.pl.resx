@@ -410,4 +410,16 @@
     <data name="ApplyDiffViewModel_PageTitle" xml:space="preserve">
         <value>Podgląd zmian</value>
     </data>
+   <data name="SettingsView_Title" xml:space="preserve">
+        <value>Ustawienia</value>
+    </data>
+    <data name="DialogButton_CANCEL" xml:space="preserve">
+        <value>ANULUJ</value>
+    </data>
+    <data name="DialogButton_SAVE" xml:space="preserve">
+        <value>ZAPISZ</value>
+    </data>
+    <data name="SettingEntryView_NeedRestartMessage" xml:space="preserve">
+        <value>Uruchom ponownie aplikację, aby zastosować ustawienia języka</value>
+    </data>
 </root>
