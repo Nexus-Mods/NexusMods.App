@@ -4,7 +4,6 @@ using System.Reflection;
 using NexusMods.Abstractions.Settings;
 
 namespace NexusMods.Settings;
-using UpdateAction = Action<Delegate, ISettingsManager, object>;
 
 internal class SettingsUIBuilder<TSettings> : ISettingsUIBuilder<TSettings>
     where TSettings : class, ISettings, new()
@@ -30,30 +29,12 @@ internal class SettingsUIBuilder<TSettings> : ISettingsUIBuilder<TSettings>
         var setDelegateType = Expression.GetDelegateType([typeof(TSettings), typeof(TProperty), typeof(void)]);
 
         var setDelegate = methodInfo.CreateDelegate(setDelegateType);
-        var updateAction = CreateUpdateAction<TProperty>();
-
         var compiledFunc = selectProperty.Compile();
 
-        var output = builder.ToOutput(setDelegate, updateAction, compiledFunc);
+        var output = builder.ToOutput(setDelegate, compiledFunc);
         PropertyBuilderOutputs.Add(output);
 
         return this;
-    }
-
-    private static UpdateAction CreateUpdateAction<TProperty>()
-    {
-        return (propertySetterDelegate, settingsManager, newValue) =>
-        {
-            Debug.Assert(newValue.GetType() == typeof(TProperty));
-
-            settingsManager.Update<TSettings>(settings =>
-            {
-                Debug.Assert(settings.GetType() == typeof(TSettings));
-
-                propertySetterDelegate.DynamicInvoke([settings, newValue]);
-                return settings;
-            });
-        };
     }
 }
 
@@ -76,7 +57,6 @@ internal class PropertyUIBuilder<TSettings, TProperty> :
 
     internal IPropertyBuilderOutput ToOutput(
         Delegate propertySetterDelegate,
-        UpdateAction updateAction,
         Func<TSettings, TProperty> selectorFunc) => new PropertyBuilderOutput<TSettings, TProperty>(
         _sectionId,
         _displayName,
@@ -84,7 +64,8 @@ internal class PropertyUIBuilder<TSettings, TProperty> :
         _requiresRestart,
         _restartMessage,
         _factory!,
-        selectorFunc
+        selectorFunc,
+        propertySetterDelegate
     );
 
     public IPropertyUIBuilder<TSettings, TProperty>.IWithDisplayNameStep AddToSection(SectionId id)
