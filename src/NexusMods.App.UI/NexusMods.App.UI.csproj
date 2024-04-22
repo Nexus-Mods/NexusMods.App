@@ -493,6 +493,15 @@
         <Compile Update="Controls\MarkdownRenderer\MarkdownRendererDesignViewModel.cs">
           <DependentUpon>IMarkdownRendererViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Pages\Settings\SettingsDesignViewModel.cs">
+          <DependentUpon>ISettingsViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\Settings\SettingEntries\SettingEntryDesignViewModel.cs">
+          <DependentUpon>ISettingEntryViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\Settings\SettingEntries\SettingInteractionControls\SettingToggleViewModel.cs">
+          <DependentUpon>ISettingToggleViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>

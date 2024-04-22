@@ -50,7 +50,10 @@
                 <TextBlock Text="DANGER moderate" />
             </Border>
             <Border Classes="Rounded-lg DangerStrong" Padding="16">
-                <TextBlock Text="DANGER strong" />
+                <TextBlock Text="DANGER strong"/>
+            </Border>
+            <Border Classes="Rounded-lg WarningStrong" Padding="16">
+                <TextBlock Text="WARNING strong" />
             </Border>
             <Border Classes="LeftPaneTitle" Padding="16">
                 <TextBlock Text="LEFT PANEL TITLE" />

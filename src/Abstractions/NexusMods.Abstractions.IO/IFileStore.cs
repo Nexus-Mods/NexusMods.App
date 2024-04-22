@@ -9,7 +9,6 @@ namespace NexusMods.Abstractions.IO;
 /// </summary>
 public interface IFileStore
 {
-
     /// <summary>
     /// Returns true if there is an archive that has the specified file.
     /// </summary>
@@ -25,7 +24,6 @@ public interface IFileStore
     /// <param name="token"></param>
     Task BackupFiles(IEnumerable<ArchivedFileEntry> backups, CancellationToken token = default);
 
-
     /// <summary>
     /// Extract the given files to the given disk locations, provide as a less-abstract interface incase
     /// the extractor needs more direct access (such as memory mapping).
@@ -33,7 +31,7 @@ public interface IFileStore
     /// <param name="files"></param>
     /// <param name="token"></param>
     /// <returns></returns>
-    Task ExtractFiles(IEnumerable<(Hash Src, AbsolutePath Dest)> files, CancellationToken token = default);
+    Task ExtractFiles((Hash Hash, AbsolutePath Dest)[] files, CancellationToken token = default);
 
     /// <summary>
     /// Extract the given files from archives.
@@ -41,7 +39,7 @@ public interface IFileStore
     /// <param name="files"></param>
     /// <param name="token"></param>
     /// <returns></returns>
-    Task<IDictionary<Hash, byte[]>> ExtractFiles(IEnumerable<Hash> files, CancellationToken token = default);
+    Task<Dictionary<Hash, byte[]>> ExtractFiles(IEnumerable<Hash> files, CancellationToken token = default);
 
     /// <summary>
     /// Gets a read-only seekable stream for the given file.

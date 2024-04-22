@@ -116,24 +116,34 @@ public class FileOriginRegistry : IFileOriginRegistry
         List<ArchivedFileEntry> files = [];
         List<RelativePath> paths = [];
 
-        _logger.LogInformation("Analyzing archive: {Name}", originalPath);
-        foreach (var file in originalPath.EnumerateFiles())
+        _logger.LogInformation("Analyzing archive: {Name}", path);
+        
+        // Note: We exploit Async I/O here. Modern storage can munch files in parallel,
+        // so doing this on one thread would be a waste.
+
+        var allFiles = path.EnumerateFiles().ToArray(); // enables better work stealing.
+        Parallel.ForEach(allFiles, file =>
         {
             // TODO: report this as progress
-            var hash = await file.XxHash64Async(token: token);
+            var hash = file.XxHash64MemoryMapped();
             var archivedEntry = new ArchivedFileEntry
             {
                 Hash = hash,
                 Size = file.FileInfo.Size,
-                StreamFactory = new NativeFileStreamFactory(file)
+                StreamFactory = new NativeFileStreamFactory(file),
             };
 
             // If the hash isn't known, we should back it up.
-            paths.Add(file.RelativeTo(originalPath));
-            files.Add(archivedEntry);
-            if (!knownHashes.Contains(hash.Value))
-                filesToBackup.Add(archivedEntry);
+            var relativePath = file.RelativeTo(path);
+            lock (paths)
+            {
+                paths.Add(relativePath);
+                files.Add(archivedEntry);
+                if (!knownHashes.Contains(hash.Value))
+                    filesToBackup.Add(archivedEntry);
+            }
         }
+        );
 
         // We don't want to risk creating an empty archive depending on underlying implementation if
         // it's all duplicates.

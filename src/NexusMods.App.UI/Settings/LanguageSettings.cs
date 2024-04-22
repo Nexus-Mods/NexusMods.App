@@ -8,12 +8,31 @@ namespace NexusMods.App.UI.Settings;
 public record LanguageSettings : ISettings
 {
     [JsonConverter(typeof(CultureInfoConverter))]
-    public CultureInfo UICulture { get; init; } = CultureInfo.CurrentUICulture;
+    public CultureInfo UICulture { get; set; } = CultureInfo.CurrentUICulture;
 
     public static ISettingsBuilder Configure(ISettingsBuilder settingsBuilder)
     {
-        // TODO: show in UI
-        return settingsBuilder;
+        // TODO: put in some section
+        var sectionId = SectionId.DefaultValue;
+
+        return settingsBuilder.AddToUI<LanguageSettings>(builder => builder
+            .AddPropertyToUI(x => x.UICulture, propertyBuilder => propertyBuilder
+                .AddToSection(sectionId)
+                .WithDisplayName("Language")
+                .WithDescription("Set the language for the application.")
+                .UseSingleValueMultipleChoiceContainer(
+                    valueComparer: EqualityComparer<CultureInfo>.Create((a,b) => a?.Equals(b) ?? false),
+                    allowedValues: [
+                        // TODO: dynamically get allowed values
+                        new CultureInfo("en"),
+                        new CultureInfo("de"),
+                        new CultureInfo("pl"),
+                    ],
+                    valueToDisplayString: static cultureInfo => cultureInfo.DisplayName
+                )
+                .RequiresRestart()
+            )
+        );
     }
 }
 

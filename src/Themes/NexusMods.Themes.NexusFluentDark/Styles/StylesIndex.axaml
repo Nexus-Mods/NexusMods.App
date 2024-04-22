@@ -7,6 +7,7 @@
     <StyleInclude Source="/Styles/Controls/RadioButton/RadioButtonStyles.axaml"/>
     <StyleInclude Source="/Styles/Controls/Border/BorderStyles.axaml"/>
     <StyleInclude Source="/Styles/Controls/Border/Toolbar.xaml"/>
+    <StyleInclude Source="/Styles/Controls/Border/FooterBorder.axaml"/>
     <StyleInclude Source="/Styles/Controls/Button/ButtonStyles.axaml"/>
     <StyleInclude Source="/Styles/Controls/Button/PillStyles.xaml"/>
     <StyleInclude Source="/Styles/Controls/Button/StandardButtonStyles.axaml"/>

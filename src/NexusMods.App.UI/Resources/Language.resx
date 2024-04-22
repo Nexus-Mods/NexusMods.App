@@ -416,4 +416,16 @@
     <data name="ApplyDiffViewModel_PageTitle" xml:space="preserve">
         <value>Preview changes</value>
     </data>
+    <data name="SettingsView_Title" xml:space="preserve">
+        <value>Settings</value>
+    </data>
+    <data name="DialogButton_CANCEL" xml:space="preserve">
+        <value>CANCEL</value>
+    </data>
+    <data name="DialogButton_SAVE" xml:space="preserve">
+        <value>SAVE</value>
+    </data>
+    <data name="SettingEntryView_NeedRestartMessage" xml:space="preserve">
+        <value>The app will need to restart to apply this setting</value>
+    </data>
 </root>

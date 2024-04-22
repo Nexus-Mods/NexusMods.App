@@ -15,4 +15,16 @@
     <ItemGroup>
         <InternalsVisibleTo Include="NexusMods.Settings" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="BooleanContainer.cs">
+        <DependentUpon>SettingsPropertyValueContainer.cs</DependentUpon>
+      </Compile>
+      <Compile Update="SingleValueMultipleChoiceContainer.cs">
+        <DependentUpon>SettingsPropertyValueContainer.cs</DependentUpon>
+      </Compile>
+      <Compile Update="APropertyValueContainer.cs">
+        <DependentUpon>SettingsPropertyValueContainer.cs</DependentUpon>
+      </Compile>
+    </ItemGroup>
 </Project>

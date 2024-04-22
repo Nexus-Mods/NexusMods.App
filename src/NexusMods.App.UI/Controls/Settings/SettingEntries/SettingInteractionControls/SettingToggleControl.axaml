@@ -1,0 +1,18 @@
+<reactiveUi:ReactiveUserControl x:TypeArguments="settingInteractionControls:ISettingToggleViewModel" xmlns="https://github.com/avaloniaui"
+                                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                                xmlns:reactiveUi="http://reactiveui.net"
+                                xmlns:settingInteractionControls="clr-namespace:NexusMods.App.UI.Controls.Settings.SettingEntries.SettingInteractionControls"
+                                mc:Ignorable="d"
+                                x:Class="NexusMods.App.UI.Controls.Settings.SettingEntries.SettingInteractionControls.SettingToggleControl">
+    <ToggleSwitch HorizontalAlignment="Center" x:Name="ToggleSwitch">
+        <ToggleSwitch.OnContent>
+            <ContentControl />
+        </ToggleSwitch.OnContent>
+        <ToggleSwitch.OffContent>
+            <ContentControl />
+        </ToggleSwitch.OffContent>
+    </ToggleSwitch>
+</reactiveUi:ReactiveUserControl>
+

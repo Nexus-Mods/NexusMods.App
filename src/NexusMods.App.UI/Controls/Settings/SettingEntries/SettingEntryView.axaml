@@ -1,0 +1,55 @@
+<reactiveUi:ReactiveUserControl x:TypeArguments="settingEntries:ISettingEntryViewModel" xmlns="https://github.com/avaloniaui"
+                                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                                xmlns:reactiveUi="http://reactiveui.net"
+                                xmlns:settingEntries="clr-namespace:NexusMods.App.UI.Controls.Settings.SettingEntries"
+                                xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+                                xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
+                                mc:Ignorable="d" d:DesignWidth="1232" 
+                                x:Class="NexusMods.App.UI.Controls.Settings.SettingEntries.SettingEntryView">
+    <Design.DataContext>
+        <settingEntries:SettingEntryDesignViewModel />
+    </Design.DataContext>
+
+    <Border Classes="Mid Rounded-lg"
+            Padding="24,12">
+        <Grid RowDefinitions="Auto, Auto">
+            <Grid Grid.Row="0" 
+                ColumnDefinitions="*, Auto">
+                <StackPanel Grid.Column="0"
+                            Orientation="Vertical">
+                    <TextBlock x:Name="EntryName"
+                               Classes="BodyXLNormal" />
+                    <TextBlock x:Name="EntryDescription"
+                               Classes="BodyMDNormal ForegroundSubdued" />
+                </StackPanel>
+
+                <Border Grid.Column="1"
+                        Margin="8,0,0,0">
+                    <reactiveUi:ViewModelViewHost x:Name="InteractionControl" />
+                </Border>
+            </Grid>
+
+            <Border Grid.Row="1" 
+                    Classes="Rounded-lg"
+                    x:Name="RequiresRestartBanner"
+                    Padding="12"
+                    Margin="0,6,0,0">
+                <Border.Background>
+                    <SolidColorBrush Color="{StaticResource WarningStrong}"
+                                     Opacity="{StaticResource OpacityWeak}" />
+                </Border.Background>
+
+                <StackPanel Orientation="Horizontal"
+                            Classes="Spacing-2">
+
+                    <icons:UnifiedIcon Classes="Alert ForegroundWarningStrong" />
+                    <TextBlock Classes="BodyMDBold ForegroundWarningStrong"
+                               Text="{x:Static resources:Language.SettingEntryView_NeedRestartMessage}" />
+                </StackPanel>
+
+            </Border>
+        </Grid>
+    </Border>
+</reactiveUi:ReactiveUserControl>
