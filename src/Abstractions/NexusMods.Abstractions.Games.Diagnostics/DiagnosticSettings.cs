@@ -32,7 +32,7 @@ public class DiagnosticSettings : ISettings
                         DiagnosticSeverity.Warning,
                         DiagnosticSeverity.Critical,
                     ],
-                    valueToTranslation: static severity => severity switch
+                    valueToDisplayString: static severity => severity switch
                     {
                         // TODO: translate
                         DiagnosticSeverity.Suggestion => "Suggestion",

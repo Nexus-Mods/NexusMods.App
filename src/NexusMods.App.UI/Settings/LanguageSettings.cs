@@ -28,7 +28,7 @@ public record LanguageSettings : ISettings
                         new CultureInfo("de"),
                         new CultureInfo("pl"),
                     ],
-                    valueToTranslation: static cultureInfo => cultureInfo.DisplayName
+                    valueToDisplayString: static cultureInfo => cultureInfo.DisplayName
                 )
                 .RequiresRestart()
             )

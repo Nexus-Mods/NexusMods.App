@@ -118,7 +118,7 @@ internal class PropertyUIBuilder<TSettings, TProperty> :
     public IPropertyUIBuilder<TSettings, TProperty>.IRequiresRestartStep UseSingleValueMultipleChoiceContainer(
         IEqualityComparer<TProperty> valueComparer,
         TProperty[] allowedValues,
-        Func<TProperty, string> valueToTranslation)
+        Func<TProperty, string> valueToDisplayString)
     {
         _factory = new SingleValueMultipleChoiceContainerFactory(
             valueComparer: EqualityComparer<object>.Create((a, b) =>
@@ -129,7 +129,7 @@ internal class PropertyUIBuilder<TSettings, TProperty> :
                 return valueComparer.Equals((TProperty)a, (TProperty)b);
             }),
             allowedValues,
-            valueToTranslation
+            valueToDisplayString
         );
 
         return this;
@@ -139,16 +139,16 @@ internal class PropertyUIBuilder<TSettings, TProperty> :
     {
         private readonly IEqualityComparer<object> _valueComparer;
         private readonly TProperty[] _allowedValues;
-        private readonly Func<TProperty, string> _valueToTranslation;
+        private readonly Func<TProperty, string> _valueToDisplayString;
 
         public SingleValueMultipleChoiceContainerFactory(
             IEqualityComparer<object> valueComparer,
             TProperty[] allowedValues,
-            Func<TProperty, string> valueToTranslation)
+            Func<TProperty, string> valueToDisplayString)
         {
             _valueComparer = valueComparer;
             _allowedValues = allowedValues;
-            _valueToTranslation = valueToTranslation;
+            _valueToDisplayString = valueToDisplayString;
         }
 
         public SettingsPropertyValueContainer Create(object currentValue, object defaultValue)
@@ -162,13 +162,13 @@ internal class PropertyUIBuilder<TSettings, TProperty> :
                 defaultValue,
                 _valueComparer,
                 allowedValues,
-                ValueToTranslation
+                ValueToDisplayString
             ));
 
-            string ValueToTranslation(object obj)
+            string ValueToDisplayString(object obj)
             {
                 Debug.Assert(obj is TProperty);
-                return _valueToTranslation((TProperty)obj);
+                return _valueToDisplayString((TProperty)obj);
             }
         }
     }

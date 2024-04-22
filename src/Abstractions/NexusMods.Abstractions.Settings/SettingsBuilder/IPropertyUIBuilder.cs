@@ -52,7 +52,7 @@ public interface IPropertyUIBuilder<TSettings, TProperty>
         IRequiresRestartStep UseSingleValueMultipleChoiceContainer(
             IEqualityComparer<TProperty> valueComparer,
             TProperty[] allowedValues,
-            Func<TProperty, string> valueToTranslation
+            Func<TProperty, string> valueToDisplayString
         );
     }
 
