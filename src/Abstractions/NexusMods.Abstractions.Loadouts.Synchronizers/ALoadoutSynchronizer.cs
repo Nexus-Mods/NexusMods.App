@@ -133,7 +133,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal async Task<DiskStateTree> FileTreeToDiskImpl(FileTree fileTree, Loadout loadout, FlattenedLoadout flattenedLoadout, DiskStateTree prevState, GameInstallation installation, bool fixFileMode)
     {
-        List<KeyValuePair<GamePath, HashedEntry>> toDelete = new();
+        List<KeyValuePair<GamePath, HashedEntryWithName>> toDelete = new();
         List<KeyValuePair<AbsolutePath, IGeneratedFile>> toWrite = new();
         List<KeyValuePair<AbsolutePath, StoredFile>> toExtract = new();
 
@@ -353,7 +353,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// Called when a file has changed during an apply operation, and a ingest is required.
     /// </summary>
     /// <param name="entry"></param>
-    public virtual void HandleNeedIngest(HashedEntry entry)
+    public virtual void HandleNeedIngest(HashedEntryWithName entry)
     {
         throw new NeedsIngestException();
     }
