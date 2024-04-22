@@ -25,7 +25,7 @@ internal partial class SettingsManager : ISettingsManager
     private readonly ImmutableDictionary<Type, ISettingsStorageBackend> _storageBackendMappings;
     private readonly ImmutableDictionary<Type, IAsyncSettingsStorageBackend> _asyncStorageBackendMappings;
 
-    private readonly PropertyBuilderOutput[] _propertyBuilderOutputs;
+    private readonly IPropertyBuilderOutput[] _propertyBuilderOutputs;
 
     public SettingsManager(IServiceProvider serviceProvider)
     {
@@ -98,8 +98,8 @@ internal partial class SettingsManager : ISettingsManager
         // ReSharper disable once CoVariantArrayConversion
         return _propertyBuilderOutputs.Select(output =>
         {
-            var value = output.GetValueFunc.Invoke(this);
-            var defaultValue = output.GetDefaultValueFunc.Invoke(this);
+            var value = output.GetValue(this);
+            var defaultValue = output.GetDefaultValue(this);
 
             var valueContainer = output.Factory.Create(value, defaultValue);
             return SettingsPropertyUIDescriptor.From(output, valueContainer);

@@ -6,7 +6,7 @@ internal class SettingsBuilder : ISettingsBuilder
 {
     public Func<IServiceProvider, object>? DefaultValueFactory { get; private set; }
     public IStorageBackendBuilderValues? StorageBackendBuilderValues { get; private set; }
-    public List<PropertyBuilderOutput> PropertyBuilderOutputs { get; private set; } = [];
+    public List<IPropertyBuilderOutput> PropertyBuilderOutputs { get; private set; } = [];
 
     public ISettingsBuilder AddToUI<TSettings>(
         Func<ISettingsUIBuilder<TSettings>, ISettingsUIBuilder<TSettings>> configureUI

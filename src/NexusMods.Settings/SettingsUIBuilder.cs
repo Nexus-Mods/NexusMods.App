@@ -6,23 +6,10 @@ using NexusMods.Abstractions.Settings;
 namespace NexusMods.Settings;
 using UpdateAction = Action<Delegate, ISettingsManager, object>;
 
-internal record PropertyBuilderOutput(
-    SectionId SectionId,
-    string DisplayName,
-    string Description,
-    bool RequiresRestart,
-    string? RestartMessage,
-    Delegate PropertySetterDelegate,
-    UpdateAction UpdateAction,
-    Func<ISettingsManager, object> GetValueFunc,
-    Func<SettingsManager, object> GetDefaultValueFunc,
-    ISettingsPropertyValueContainerFactory Factory
-);
-
 internal class SettingsUIBuilder<TSettings> : ISettingsUIBuilder<TSettings>
     where TSettings : class, ISettings, new()
 {
-    public List<PropertyBuilderOutput> PropertyBuilderOutputs { get; } = [];
+    public List<IPropertyBuilderOutput> PropertyBuilderOutputs { get; } = [];
 
     public ISettingsUIBuilder<TSettings> AddPropertyToUI<TProperty>(
         Expression<Func<TSettings, TProperty>> selectProperty,
@@ -45,10 +32,8 @@ internal class SettingsUIBuilder<TSettings> : ISettingsUIBuilder<TSettings>
         var updateAction = CreateUpdateAction<TProperty>();
 
         var compiledFunc = selectProperty.Compile();
-        var getValueFunc = CreateGetValueFunc(compiledFunc);
-        var getDefaultValueFunc = CreateGetDefaultValueFunc(compiledFunc);
 
-        var output = builder.ToOutput(setDelegate, updateAction, getValueFunc, getDefaultValueFunc);
+        var output = builder.ToOutput(setDelegate, updateAction, compiledFunc);
         PropertyBuilderOutputs.Add(output);
 
         return this;
@@ -69,27 +54,6 @@ internal class SettingsUIBuilder<TSettings> : ISettingsUIBuilder<TSettings>
             });
         };
     }
-
-    private static Func<ISettingsManager, object> CreateGetValueFunc<TProperty>(Func<TSettings, TProperty> compiledFunc)
-    {
-        return settingsManager =>
-        {
-            var settings = settingsManager.Get<TSettings>();
-
-            var value = compiledFunc.Invoke(settings);
-            return value!;
-        };
-    }
-
-    private static Func<SettingsManager, object> CreateGetDefaultValueFunc<TProperty>(Func<TSettings, TProperty> compiledFunc)
-    {
-        return settingsManager =>
-        {
-            var defaultValue = settingsManager.GetDefaultValue<TSettings>();
-            var value = compiledFunc.Invoke(defaultValue);
-            return value!;
-        };
-    }
 }
 
 internal class PropertyUIBuilder<TSettings, TProperty> :
@@ -108,21 +72,17 @@ internal class PropertyUIBuilder<TSettings, TProperty> :
 
     private ISettingsPropertyValueContainerFactory? _factory;
 
-    internal PropertyBuilderOutput ToOutput(
+    internal IPropertyBuilderOutput ToOutput(
         Delegate propertySetterDelegate,
         UpdateAction updateAction,
-        Func<ISettingsManager, object> getValueFunc,
-        Func<SettingsManager, object> getDefaultValueFunc) => new(
+        Func<TSettings, TProperty> selectorFunc) => new PropertyBuilderOutput<TSettings, TProperty>(
         _sectionId,
         _displayName,
         _description,
         _requiresRestart,
         _restartMessage,
-        propertySetterDelegate,
-        updateAction,
-        getValueFunc,
-        getDefaultValueFunc,
-        _factory!
+        _factory!,
+        selectorFunc
     );
 
     public IPropertyUIBuilder<TSettings, TProperty>.IWithDisplayNameStep AddToSection(SectionId id)

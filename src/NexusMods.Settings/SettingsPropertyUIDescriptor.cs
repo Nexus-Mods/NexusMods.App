@@ -11,7 +11,7 @@ internal record SettingsPropertyUIDescriptor : ISettingsPropertyUIDescriptor
     public required string? RestartMessage { get; init; }
     public required SettingsPropertyValueContainer SettingsPropertyValueContainer { get; init; }
 
-    public static SettingsPropertyUIDescriptor From(PropertyBuilderOutput output, SettingsPropertyValueContainer valueContainer)
+    public static SettingsPropertyUIDescriptor From(IPropertyBuilderOutput output, SettingsPropertyValueContainer valueContainer)
     {
         return new SettingsPropertyUIDescriptor
         {

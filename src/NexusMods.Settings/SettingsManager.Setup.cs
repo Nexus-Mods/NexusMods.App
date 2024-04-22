@@ -18,7 +18,7 @@ internal partial class SettingsManager
         var objectCreationInformationList = new List<ObjectCreationInformation>();
         var storageBackendMappings = new Dictionary<Type, ISettingsStorageBackend>();
         var asyncStorageBackendMappings = new Dictionary<Type, IAsyncSettingsStorageBackend>();
-        var propertyBuilderOutputs = new List<PropertyBuilderOutput>();
+        var propertyBuilderOutputs = new List<IPropertyBuilderOutput>();
 
         foreach (var settingsTypeInformation in settingsTypeInformationArray)
         {
@@ -97,6 +97,6 @@ internal partial class SettingsManager
         public required ImmutableDictionary<Type, ObjectCreationInformation> ObjectCreationMappings { get; init; }
         public required ImmutableDictionary<Type, ISettingsStorageBackend> StorageBackendMappings { get; init; }
         public required ImmutableDictionary<Type, IAsyncSettingsStorageBackend> AsyncStorageBackendMappings { get; init; }
-        public required PropertyBuilderOutput[] PropertyBuilderOutputs { get; init; }
+        public required IPropertyBuilderOutput[] PropertyBuilderOutputs { get; init; }
     }
 }
