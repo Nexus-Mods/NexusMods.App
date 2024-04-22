@@ -140,7 +140,7 @@ public class SMAPIInstaller : AModInstaller
             ? "Contents/MacOS/StardewValley"
             : "StardewValley";
 
-        Version? version = null;
+        string? version = null;
 
         // add all files from the archive
         foreach (var kv in archiveContents.GetFiles())
@@ -161,7 +161,7 @@ public class SMAPIInstaller : AModInstaller
                         await stream.CopyToAsync(fs, cancellationToken);
                     }
 
-                    version = tempFile.Path.FileInfo.GetFileVersionInfo().GetBestVersion();
+                    version = tempFile.Path.FileInfo.GetFileVersionInfo().GetVersionString();
                 }
                 catch (Exception e)
                 {
@@ -216,6 +216,8 @@ public class SMAPIInstaller : AModInstaller
             _logger.LogError("Unable to find {Path} in the game folder. Your installation might be broken!", gameDepsFilePath);
         }
 
+        version ??= "0.0.0";
+
         return new[]
         {
             new ModInstallerResult
@@ -234,7 +236,7 @@ public class SMAPIInstaller : AModInstaller
                         Version = version,
                     },
                 ],
-                Version = version?.ToString(),
+                Version = version,
             },
         };
     }

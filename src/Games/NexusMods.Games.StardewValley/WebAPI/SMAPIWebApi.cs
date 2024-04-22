@@ -3,7 +3,7 @@ using DynamicData.Kernel;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Diagnostics.Values;
 using NexusMods.Paths;
-using StardewModdingAPI.Toolkit;
+using StardewModdingAPI;
 using StardewModdingAPI.Toolkit.Framework.Clients.WebApi;
 using StardewModdingAPI.Toolkit.Utilities;
 
@@ -31,19 +31,17 @@ internal sealed class SMAPIWebApi : ISMAPIWebApi
 
     public async Task<IReadOnlyDictionary<string, NamedLink>> GetModPageUrls(
         IOSInformation os,
-        Version gameVersion,
-        Version smapiVersion,
+        ISemanticVersion gameVersion,
+        ISemanticVersion smapiVersion,
         string[] smapiIDs)
     {
         ObjectDisposedException.ThrowIf(_isDisposed, typeof(SMAPIWebApi));
 
-        var semanticGameVersion = new SemanticVersion(gameVersion);
-        var semanticSMAPIVersion = new SemanticVersion(smapiVersion);
         var platform = ToPlatform(os);
 
         _client ??= new WebApiClient(
             baseUrl: ApiBaseUrl,
-            version: semanticSMAPIVersion
+            version: smapiVersion
         );
 
         var mods = smapiIDs
@@ -64,8 +62,8 @@ internal sealed class SMAPIWebApi : ISMAPIWebApi
             {
                 apiResult = await _client.GetModInfoAsync(
                     mods: mods,
-                    apiVersion: semanticSMAPIVersion,
-                    gameVersion: semanticGameVersion,
+                    apiVersion: smapiVersion,
+                    gameVersion: gameVersion,
                     platform: platform,
                     includeExtendedMetadata: true
                 );
