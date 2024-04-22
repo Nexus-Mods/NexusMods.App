@@ -6,5 +6,5 @@ namespace NexusMods.Games.StardewValley.Models;
 [JsonName("NexusMods.Games.StardewValley.Models.SMAPIMarker")]
 public record SMAPIMarker : AModMetadata
 {
-    public required Version? Version { get; init; }
+    public required string Version { get; init; }
 }
