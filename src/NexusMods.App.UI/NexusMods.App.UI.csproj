@@ -502,6 +502,9 @@
         <Compile Update="Controls\Settings\SettingEntries\SettingInteractionControls\SettingToggleViewModel.cs">
           <DependentUpon>ISettingToggleViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Controls\Settings\SettingEntries\ASettingEntryViewModel.cs">
+          <DependentUpon>ISettingEntryViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>

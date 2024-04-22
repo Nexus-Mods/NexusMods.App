@@ -6,5 +6,5 @@ public interface ISettingEntryViewModel : IViewModelInterface
     string Description { get; }
     bool RequiresRestart { get; }
     
-    IViewModelInterface InteractionControlViewModel { get; }
+    IViewModelInterface? InteractionControlViewModel { get; }
 }

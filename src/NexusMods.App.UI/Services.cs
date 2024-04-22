@@ -19,7 +19,6 @@ using NexusMods.App.UI.Controls.ModInfo.Error;
 using NexusMods.App.UI.Controls.ModInfo.Loading;
 using NexusMods.App.UI.Controls.ModInfo.ModFiles;
 using NexusMods.App.UI.Controls.Settings.SettingEntries;
-using NexusMods.App.UI.Controls.Settings.SettingEntries.SettingInteractionControls;
 using NexusMods.App.UI.Controls.Spine;
 using NexusMods.App.UI.Controls.Spine.Buttons.Download;
 using NexusMods.App.UI.Controls.Spine.Buttons.Icon;
@@ -139,7 +138,7 @@ public static class Services
             .AddViewModel<ApplyDiffViewModel, IApplyDiffViewModel>()
             
             
-            .AddViewModel<SettingToggleViewModel, ISettingToggleViewModel>()
+            .AddViewModel<SettingToggleControlViewModel, ISettingToggleControlViewModel>()
 
             // Views
             .AddView<DevelopmentBuildBannerView, IDevelopmentBuildBannerViewModel>()
@@ -184,7 +183,7 @@ public static class Services
             
             .AddView<SettingsView, ISettingsViewModel>()
             .AddView<SettingEntryView, ISettingEntryViewModel>()
-            .AddView<SettingToggleControl, ISettingToggleViewModel>()
+            .AddView<SettingToggleControl, ISettingToggleControlViewModel>()
 
             .AddView<DiagnosticEntryView, IDiagnosticEntryViewModel>()
             .AddViewModel<DiagnosticEntryViewModel, IDiagnosticEntryViewModel>()
