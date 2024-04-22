@@ -12,6 +12,7 @@ using NexusMods.Extensions.BCL;
 using NexusMods.Games.StardewValley.Models;
 using NexusMods.Games.StardewValley.WebAPI;
 using NexusMods.Paths;
+using StardewModdingAPI.Toolkit;
 using StardewModdingAPI.Toolkit.Framework.ModData;
 using ModStatus = StardewModdingAPI.Toolkit.Framework.ModData.ModStatus;
 using SMAPIManifest = StardewModdingAPI.Toolkit.Serialization.Models.Manifest;
@@ -55,12 +56,12 @@ public class SMAPIModDatabaseCompatibilityDiagnosticEmitter : ILoadoutDiagnostic
 
     public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        var gameVersion = loadout.Installation.Version;
+        var gameVersion = new SemanticVersion(loadout.Installation.Version);
         var optionalSMAPIMod = loadout.GetFirstModWithMetadata<SMAPIMarker>();
 
         if (!optionalSMAPIMod.HasValue) yield break;
         var (smapiMod, smapiMarker) = optionalSMAPIMod.Value;
-        var smapiVersion = smapiMarker.Version!;
+        if (!smapiMarker.TryParse(out var smapiVersion)) yield break;
 
         var modDatabase = await GetModDatabase(smapiMod, cancellationToken);
         if (modDatabase is null) yield break;
