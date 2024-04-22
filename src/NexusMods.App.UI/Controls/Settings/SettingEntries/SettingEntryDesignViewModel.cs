@@ -1,5 +1,4 @@
 using NexusMods.Abstractions.Settings;
-using NexusMods.App.UI.Controls.Settings.SettingEntries.SettingInteractionControls;
 
 namespace NexusMods.App.UI.Controls.Settings.SettingEntries;
 
@@ -19,7 +18,7 @@ public class SettingEntryDesignViewModel : SettingEntryViewModel
         };
     }
 
-    private static IViewModelInterface CreateInteractionControlViewModel()
+    private static ISettingInteractionControl CreateInteractionControlViewModel()
     {
         return new SettingToggleViewModel(new BooleanContainer(value: false, defaultValue: true));
     }

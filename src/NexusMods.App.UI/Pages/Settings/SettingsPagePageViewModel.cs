@@ -3,7 +3,6 @@ using System.Reactive;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Settings;
 using NexusMods.App.UI.Controls.Settings.SettingEntries;
-using NexusMods.App.UI.Controls.Settings.SettingEntries.SettingInteractionControls;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using ReactiveUI;
@@ -35,7 +34,7 @@ public class SettingsPageViewModel : APageViewModel<ISettingsPageViewModel>, ISe
     private ISettingEntryViewModel CreateEntryViewModel(ISettingsPropertyUIDescriptor descriptor)
     {
         var valueContainer = descriptor.SettingsPropertyValueContainer;
-        var interactionControl = valueContainer.Match<IViewModelInterface>(
+        var interactionControl = valueContainer.Match<ISettingInteractionControl>(
             f0: booleanContainer => new SettingToggleViewModel(booleanContainer),
             // TODO:
             f1: singleValueMultipleChoiceContainer => new SettingToggleViewModel(new BooleanContainer(value: true, defaultValue: false))

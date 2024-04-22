@@ -6,5 +6,5 @@ public interface ISettingEntryViewModel : IViewModelInterface
 {
     ISettingsPropertyUIDescriptor PropertyUIDescriptor { get; }
 
-    IViewModelInterface InteractionControlViewModel { get; }
+    ISettingInteractionControl InteractionControlViewModel { get; }
 }

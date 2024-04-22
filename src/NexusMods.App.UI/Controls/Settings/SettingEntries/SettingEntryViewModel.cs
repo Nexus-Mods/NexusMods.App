@@ -6,11 +6,11 @@ public class SettingEntryViewModel : AViewModel<ISettingEntryViewModel>, ISettin
 {
     public ISettingsPropertyUIDescriptor PropertyUIDescriptor { get; }
 
-    public IViewModelInterface InteractionControlViewModel { get; }
+    public ISettingInteractionControl InteractionControlViewModel { get; }
 
     public SettingEntryViewModel(
         ISettingsPropertyUIDescriptor propertyUIDescriptor,
-        IViewModelInterface interactionControlViewModel)
+        ISettingInteractionControl interactionControlViewModel)
     {
         PropertyUIDescriptor = propertyUIDescriptor;
         InteractionControlViewModel = interactionControlViewModel;

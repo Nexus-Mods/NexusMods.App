@@ -499,14 +499,18 @@
         <Compile Update="Controls\Settings\SettingEntries\SettingEntryDesignViewModel.cs">
           <DependentUpon>ISettingEntryViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Controls\Settings\SettingEntries\SettingInteractionControls\SettingToggleViewModel.cs">
-          <DependentUpon>ISettingToggleViewModel.cs</DependentUpon>
-        </Compile>
         <Compile Update="Pages\Settings\SettingsPagePageViewModel.cs">
           <DependentUpon>ISettingsPageViewModel.cs</DependentUpon>
         </Compile>
         <Compile Update="Controls\Settings\SettingEntries\SettingEntryViewModel.cs">
           <DependentUpon>ISettingEntryViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\Settings\SettingEntries\SettingInteractionControls\Toggle\SettingToggleControl.axaml.cs">
+          <DependentUpon>SettingToggleControl.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Controls\Settings\SettingEntries\SettingInteractionControls\Toggle\SettingToggleViewModel.cs">
+          <DependentUpon>ISettingToggleViewModel.cs</DependentUpon>
         </Compile>
     </ItemGroup>
 
