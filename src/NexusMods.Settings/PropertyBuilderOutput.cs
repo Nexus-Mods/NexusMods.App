@@ -19,10 +19,10 @@ internal interface IPropertyBuilderOutput
     // TODO: Action<Delegate, ISettingsManager, object> UpdateAction,
 }
 
-internal interface IPropertyBuilderOutput<out TProperty> : IPropertyBuilderOutput
+internal interface IPropertyBuilderOutput<out TProperty> : IPropertyBuilderOutput where TProperty : notnull
 {
-    object IPropertyBuilderOutput.GetValue(SettingsManager manager) => CoreGetValue(manager)!;
-    object IPropertyBuilderOutput.GetDefaultValue(SettingsManager manager) => CoreGetDefaultValue(manager)!;
+    object IPropertyBuilderOutput.GetValue(SettingsManager manager) => CoreGetValue(manager);
+    object IPropertyBuilderOutput.GetDefaultValue(SettingsManager manager) => CoreGetDefaultValue(manager);
 
     TProperty CoreGetValue(SettingsManager settingsManager);
     TProperty CoreGetDefaultValue(SettingsManager settingsManager);
@@ -37,6 +37,7 @@ internal record PropertyBuilderOutput<TSettings, TProperty>(
     ISettingsPropertyValueContainerFactory Factory,
     Func<TSettings, TProperty> SelectorFunc) : IPropertyBuilderOutput<TProperty>
     where TSettings : class, ISettings, new()
+    where TProperty : notnull
 {
     public TProperty CoreGetValue(SettingsManager settingsManager)
     {

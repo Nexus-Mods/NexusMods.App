@@ -14,6 +14,7 @@ internal class SettingsUIBuilder<TSettings> : ISettingsUIBuilder<TSettings>
     public ISettingsUIBuilder<TSettings> AddPropertyToUI<TProperty>(
         Expression<Func<TSettings, TProperty>> selectProperty,
         Func<IPropertyUIBuilder<TSettings, TProperty>, IPropertyUIBuilder<TSettings, TProperty>.IFinishedStep> configureProperty)
+        where TProperty : notnull
     {
         var builder = new PropertyUIBuilder<TSettings, TProperty>();
         _ = configureProperty(builder);
@@ -63,6 +64,7 @@ internal class PropertyUIBuilder<TSettings, TProperty> :
     IPropertyUIBuilder<TSettings, TProperty>.IConfigureValueContainerStep,
     IPropertyUIBuilder<TSettings, TProperty>.IRequiresRestartStep
     where TSettings : class, ISettings, new()
+    where TProperty : notnull
 {
     private SectionId _sectionId = SectionId.DefaultValue;
     private string _displayName = string.Empty;

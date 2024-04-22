@@ -8,6 +8,7 @@ namespace NexusMods.Abstractions.Settings;
 [PublicAPI]
 public interface IPropertyUIBuilder<TSettings, TProperty>
     where TSettings : class, ISettings, new()
+    where TProperty : notnull
 {
     /// <summary>
     /// Adds the property to a section.

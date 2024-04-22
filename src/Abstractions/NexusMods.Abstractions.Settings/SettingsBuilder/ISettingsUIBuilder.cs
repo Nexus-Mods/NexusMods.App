@@ -16,5 +16,5 @@ public interface ISettingsUIBuilder<TSettings>
     ISettingsUIBuilder<TSettings> AddPropertyToUI<TProperty>(
         Expression<Func<TSettings, TProperty>> selectProperty,
         Func<IPropertyUIBuilder<TSettings, TProperty>, IPropertyUIBuilder<TSettings, TProperty>.IFinishedStep> configureProperty
-    );
+    ) where TProperty : notnull;
 }
