@@ -9,15 +9,33 @@ namespace NexusMods.App.UI.Pages.Settings;
 public record SettingsPageContext : IPageFactoryContext;
 
 [UsedImplicitly]
-public class SettingsPageFactory : APageFactory<ISettingsViewModel, SettingsPageContext>
+public class SettingsPageFactory : APageFactory<ISettingsPageViewModel, SettingsPageContext>
 {
     public SettingsPageFactory(IServiceProvider serviceProvider) : base(serviceProvider) { }
 
     public static readonly PageFactoryId StaticId = PageFactoryId.From(Guid.Parse("3DE311A0-0AB0-4191-9CA5-5CE8EA76C393"));
     public override PageFactoryId Id => StaticId;
 
-    public override ISettingsViewModel CreateViewModel(SettingsPageContext context)
+    public override ISettingsPageViewModel CreateViewModel(SettingsPageContext context)
     {
-        return ServiceProvider.GetRequiredService<ISettingsViewModel>();
+        return ServiceProvider.GetRequiredService<ISettingsPageViewModel>();
+    }
+
+    public override IEnumerable<PageDiscoveryDetails?> GetDiscoveryDetails(IWorkspaceContext workspaceContext)
+    {
+        return new[]
+        {
+            new PageDiscoveryDetails
+            {
+                // TODO:
+                SectionName = "TODO",
+                ItemName = "Settings",
+                PageData = new PageData
+                {
+                    FactoryId = StaticId,
+                    Context = new SettingsPageContext(),
+                },
+            },
+        };
     }
 }

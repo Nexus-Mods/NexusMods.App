@@ -137,9 +137,6 @@ public static class Services
             .AddViewModel<DummyLoadingViewModel, ILoadingViewModel>()
             .AddViewModel<DummyErrorViewModel, IErrorViewModel>()
             .AddViewModel<ApplyDiffViewModel, IApplyDiffViewModel>()
-            
-            
-            .AddViewModel<SettingToggleViewModel, ISettingToggleViewModel>()
 
             // Views
             .AddView<DevelopmentBuildBannerView, IDevelopmentBuildBannerViewModel>()
@@ -182,9 +179,12 @@ public static class Services
             .AddView<ApplyDiffView, IApplyDiffViewModel>()
             .AddView<FileTreeView, IFileTreeViewModel>()
             
-            .AddView<SettingsView, ISettingsViewModel>()
+            .AddView<SettingsView, ISettingsPageViewModel>()
+            .AddViewModel<SettingsPageViewModel, ISettingsPageViewModel>()
             .AddView<SettingEntryView, ISettingEntryViewModel>()
+            .AddViewModel<SettingEntryViewModel, ISettingEntryViewModel>()
             .AddView<SettingToggleControl, ISettingToggleViewModel>()
+            .AddViewModel<SettingToggleViewModel, ISettingToggleViewModel>()
 
             .AddView<DiagnosticEntryView, IDiagnosticEntryViewModel>()
             .AddViewModel<DiagnosticEntryViewModel, IDiagnosticEntryViewModel>()
@@ -223,6 +223,7 @@ public static class Services
             .AddSingleton<IPageFactory, DiagnosticListPageFactory>()
             .AddSingleton<IPageFactory, DiagnosticDetailsPageFactory>()
             .AddSingleton<IPageFactory, ApplyDiffPageFactory>()
+            .AddSingleton<IPageFactory, SettingsPageFactory>()
 
             // LeftMenu factories
             .AddSingleton<ILeftMenuFactory, DownloadsLeftMenuFactory>()
