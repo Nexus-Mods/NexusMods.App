@@ -6,11 +6,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.FileStore.ArchiveMetadata;
+using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Games.Downloads;
 using NexusMods.Abstractions.Games.DTO;
-using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.HttpDownloader;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
@@ -20,7 +19,9 @@ using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.Games.TestFramework.Downloader;
 using NexusMods.Hashing.xxHash64;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.Extensions;
 using NexusMods.Paths;
@@ -44,6 +45,8 @@ public abstract class AGameTest<TGame> where TGame : AGame
     protected readonly IFileOriginRegistry FileOriginRegistry;
     protected readonly LoadoutRegistry LoadoutRegistry;
     protected readonly IDataStore DataStore;
+
+    protected readonly IConnection Connection;
 
     protected readonly NexusApiClient NexusNexusApiClient;
     protected readonly IHttpDownloader HttpDownloader;
@@ -72,6 +75,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
         TemporaryFileManager = serviceProvider.GetRequiredService<TemporaryFileManager>();
         LoadoutRegistry = serviceProvider.GetRequiredService<LoadoutRegistry>();
         DataStore = serviceProvider.GetRequiredService<IDataStore>();
+        Connection = serviceProvider.GetRequiredService<IConnection>();
 
         NexusNexusApiClient = serviceProvider.GetRequiredService<NexusApiClient>();
         HttpDownloader = serviceProvider.GetRequiredService<IHttpDownloader>();
@@ -130,13 +134,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
             file
         );
 
-        var id = await FileOriginRegistry.RegisterDownload(file.Path, new NexusModsArchiveMetadata
-        {
-            GameDomain = gameDomain,
-            ModId = modId,
-            FileId = fileId,
-            Quality = Quality.High
-        });
+        var id = await FileOriginRegistry.RegisterDownload(file.Path);
 
         return id;
     }
@@ -154,12 +152,15 @@ public abstract class AGameTest<TGame> where TGame : AGame
     /// <returns></returns>
     public async Task<DownloadId> DownloadAndCacheMod(GameDomain gameDomain, ModId modId, FileId fileId, Hash hash)
     {
-        var metaDatas = FileOriginRegistry.GetAll()
-            .FirstOrDefault(g => g.MetaData is NexusModsArchiveMetadata na
-                        && na.GameDomain == gameDomain && na.ModId == modId && na.FileId == fileId);
+        var db = Connection.Db;
+        var metaDatas = db
+            .FindIndexed(fileId, NexusModsArchiveMetadata.FileId)
+            .Select(id => db.Get<DownloadAnalysis.Model>(id))
+            .Where(ent => ent.Get(NexusModsArchiveMetadata.ModId) == modId)
+            .FirstOrDefault(ent => ent.Get(NexusModsArchiveMetadata.GameId) == gameDomain);
 
         if (metaDatas != null)
-            return metaDatas.DownloadId;
+            return DownloadId.From(metaDatas.Id);
 
         var id = await DownloadMod(gameDomain, modId, fileId);
 
@@ -225,8 +226,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
         string? defaultModName = null,
         CancellationToken cancellationToken = default)
     {
-        var downloadId = await FileOriginRegistry.RegisterDownload(path, new FilePathMetadata
-            { OriginalName = path.FileName, Quality = Quality.Low }, cancellationToken);
+        var downloadId = await FileOriginRegistry.RegisterDownload(path, cancellationToken);
 
         var mods = await InstallModsStoredFileIntoLoadout(
             loadout,

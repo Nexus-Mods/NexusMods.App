@@ -5,49 +5,34 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.FileExtractor;
 using NexusMods.Abstractions.FileStore;
-using NexusMods.Abstractions.FileStore.ArchiveMetadata;
-using NexusMods.Abstractions.FileStore.Downloads;
-using NexusMods.Abstractions.Games.Downloads;
 using NexusMods.Abstractions.IO;
-using NexusMods.Abstractions.Serialization.Attributes;
-using NexusMods.Abstractions.Serialization.DataModel;
-using NexusMods.Abstractions.Serialization.DataModel.Ids;
 using NexusMods.DataModel.Tests.Harness;
 using NexusMods.Hashing.xxHash64;
 using NSubstitute;
 
 namespace NexusMods.DataModel.Tests;
 
-public class FileOriginRegistryTests : ADataModelTest<FileOriginRegistryTests>
+public class FileOriginRegistryTests(IServiceProvider provider)
+    : ADataModelTest<FileOriginRegistryTests>(provider)
 {
-    public FileOriginRegistryTests(IServiceProvider provider) : base(provider)
-    {
-
-    }
-
     [Fact]
     public async Task RegisterFolder_ShouldRegisterCorrectly()
     {
         // Arrange
-        var sut = new FileOriginRegistry(
+        IFileOriginRegistry sut = new FileOriginRegistry(
             ServiceProvider.GetRequiredService<ILogger<FileOriginRegistry>>(),
             ServiceProvider.GetRequiredService<IFileExtractor>(),
             FileStore,
             TemporaryFileManager,
-            DataStore,
+            Connection,
             ServiceProvider.GetRequiredService<IFileHashCache>());
-
-        var metaData = new MockArchiveMetadata
-        {
-            Name = "MockArchive",
-            Quality = Quality.Highest
-        };
-
+        
         // Act
-        var result = await sut.RegisterDownload(DataZipLzma, metaData, CancellationToken.None);
+        var result = await sut.RegisterDownload(DataZipLzma, CancellationToken.None);
 
         // Assert
-        var analysis = DataStore.Get<DownloadAnalysis>(IId.From(EntityCategory.DownloadMetadata, result.Value));
+        var analysis = FileOriginRegistry.Get(result);
+        analysis.Hash.Should().Be(Hash.From(0x706F72D12A82892D));
         analysis!.Contents.Should().ContainSingle(x => x.Hash == Hash.From(3737353793016823850));
         analysis.Contents.Should().ContainSingle(x => x.Hash == Hash.From(14547888027026727014));
         analysis.Contents.Should().ContainSingle(x => x.Hash == Hash.From(16430723325827464675));
@@ -65,23 +50,19 @@ public class FileOriginRegistryTests : ADataModelTest<FileOriginRegistryTests>
         fileStore.BackupFiles(Arg.Any<IEnumerable<ArchivedFileEntry>>(), Arg.Any<CancellationToken>())
             .Returns(Task.CompletedTask);
         fileStore.GetFileHashes().Returns(new HashSet<ulong>()); // not needed here
-        var sut = new FileOriginRegistry(
+        IFileOriginRegistry sut = new FileOriginRegistry(
             ServiceProvider.GetRequiredService<ILogger<FileOriginRegistry>>(),
             ServiceProvider.GetRequiredService<IFileExtractor>(),
             fileStore,
             TemporaryFileManager,
-            DataStore,
+            Connection,
             ServiceProvider.GetRequiredService<IFileHashCache>());
 
-        var metaData = new MockArchiveMetadata
-        {
-            Name = "MockArchive",
-            Quality = Quality.Highest
-        };
 
+        
         // Act
-        await sut.RegisterDownload(DataZipLzma, metaData, CancellationToken.None);
-        await sut.RegisterDownload(DataZipLzma, metaData, CancellationToken.None);
+        await sut.RegisterDownload(DataZipLzma, CancellationToken.None);
+        await sut.RegisterDownload(DataZipLzma, CancellationToken.None);
 
         // BackupFiles should only have been called once if all files were duplicate.
         await fileStore.Received(1)
@@ -95,21 +76,15 @@ public class FileOriginRegistryTests : ADataModelTest<FileOriginRegistryTests>
         // Arrange
         var fileStore = Substitute.For<IFileStore>();
 
-        var sut = new FileOriginRegistry(
+        IFileOriginRegistry sut = new FileOriginRegistry(
             ServiceProvider.GetRequiredService<ILogger<FileOriginRegistry>>(),
             ServiceProvider.GetRequiredService<IFileExtractor>(),
             fileStore,
             TemporaryFileManager,
-            DataStore,
+            Connection,
             ServiceProvider.GetRequiredService<IFileHashCache>());
 
         // Act
-        var metaData = new MockArchiveMetadata
-        {
-            Name = "MockArchive",
-            Quality = Quality.Highest
-        };
-
         var capturedCalls = new List<IEnumerable<ArchivedFileEntry>>();
         var hashSet = new HashSet<ulong>(); // stores hashes of files we backed up 'so far'.
 
@@ -124,16 +99,10 @@ public class FileOriginRegistryTests : ADataModelTest<FileOriginRegistryTests>
             }),
             Arg.Any<CancellationToken>());
 
-        await sut.RegisterDownload(DataZipLzma, metaData, CancellationToken.None);
+        await sut.RegisterDownload(DataZipLzma, CancellationToken.None);
 
         // Act: We now add Mod V2
-        var metaData2 = new MockArchiveMetadata
-        {
-            Name = "MockArchive v2",
-            Quality = Quality.Highest
-        };
-
-        await sut.RegisterDownload(DataZipLzmaWithExtraFile, metaData2, CancellationToken.None);
+        await sut.RegisterDownload(DataZipLzmaWithExtraFile, CancellationToken.None);
 
         // Assert
         // Ensure there were at least two calls
@@ -145,7 +114,4 @@ public class FileOriginRegistryTests : ADataModelTest<FileOriginRegistryTests>
         secondCallEntries.Should().Contain(entry => entry.Hash == Hash.From(2001900376554900883),
             "the second call to BackupFiles should include an ArchivedFileEntry with the specified hash.");
     }
-
-    [JsonName("NexusMods.DataModel.Tests.FileOriginRegistryTests.MockArchiveMetadta")]
-    public record MockArchiveMetadata : AArchiveMetaData { }
 }

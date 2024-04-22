@@ -1,8 +1,8 @@
 using FluentAssertions;
 using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Games.Downloads;
 using NexusMods.Hashing.xxHash64;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees.Traits;
 
@@ -52,15 +52,22 @@ public partial class DeploymentDataTests
     }
 
     private static GamePath MakeGamePath(string path) => new(LocationId.Game, path);
-
-    private static DownloadContentEntry[] CreateExtensionTestFileTree()
+    
+    public record DownloadContentEntryMock : TreeCreator.ITreeCreatorNode
     {
-        return new DownloadContentEntry[]
-        {
+        public Hash Hash { get; init; }
+        public Size Size { get; init; }
+        public RelativePath Path { get; init; }
+    }
+
+    private static DownloadContentEntryMock[] CreateExtensionTestFileTree()
+    {
+        return
+        [
             new () { Hash = Hash.From(1), Size = Size.From(1), Path = "folder/file1.txt" },
             new () { Hash = Hash.From(2), Size = Size.From(2), Path = "folder/file2.txt" },
-            new () { Hash = Hash.From(3), Size = Size.From(3), Path = "folder/subfolder/file3.txt" }
-        };
+            new () { Hash = Hash.From(3), Size = Size.From(3), Path = "folder/subfolder/file3.txt" },
+        ];
     }
 
     private void AssertMapping(DeploymentData data, string archivePath, GamePath expectedOutputPath)

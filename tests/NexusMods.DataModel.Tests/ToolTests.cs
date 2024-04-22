@@ -12,12 +12,8 @@ namespace NexusMods.DataModel.Tests;
 
 public class ToolTests : ADataModelTest<ToolTests>
 {
-    private IApplyService _applyService;
-    private ILoadoutRegistry _loadoutRegistry;
     public ToolTests(IServiceProvider provider) : base(provider)
     {
-        _applyService = provider.GetRequiredService<IApplyService>();
-        _loadoutRegistry = provider.GetRequiredService<ILoadoutRegistry>();
     }
 
     [Fact]
@@ -47,7 +43,7 @@ public class ToolTests : ADataModelTest<ToolTests>
         BaseList.Value.Mods.Values.Where(m => m.ModCategory == Mod.OverridesCategory)
             .Should().HaveCount(1, "the generated file should be in a generated mod");
         
-        var latestLoadout = _loadoutRegistry.Get(result.LoadoutId);
+        var latestLoadout = LoadoutRegistry.Get(result.LoadoutId);
         latestLoadout.Should().NotBeNull();
         latestLoadout!.DataStoreId.Should().BeEquivalentTo(result.DataStoreId, "the result should be the active loadout");
     }

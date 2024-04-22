@@ -7,8 +7,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.FileStore.ArchiveMetadata;
-using NexusMods.Abstractions.Games.Downloads;
-using NexusMods.Abstractions.Games.Loadouts;
+using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.HttpDownloader;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
@@ -215,13 +214,12 @@ public class DownloadService : IDownloadService
 
         try
         {
-            // TODO: Fix this
-            var downloadId = await _fileOriginRegistry.RegisterDownload(path.Path, new FilePathMetadata
-            {
-                Name = modName,
-                OriginalName = path.Path.FileName,
-                Quality = Quality.Low
-            });
+            // TODO: Fix this so we properly log NexusMods info with Nexus metadata.
+            var downloadId = await _fileOriginRegistry.RegisterDownload(path.Path,
+                (tx, id) =>
+                {
+                    tx.Add(id, FilePathMetadata.OriginalName, path.Path.Name);
+                });
             _analyzed.OnNext((task, downloadId, modName));
         }
         catch (Exception e)

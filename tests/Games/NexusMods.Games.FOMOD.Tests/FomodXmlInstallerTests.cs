@@ -3,14 +3,12 @@ using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.FileStore.ArchiveMetadata;
 using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Games.Downloads;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Games.BethesdaGameStudios.SkyrimSpecialEdition;
 using NexusMods.Games.TestFramework;
 using NexusMods.Paths;
-using Xunit;
 
 namespace NexusMods.Games.FOMOD.Tests;
 
@@ -23,11 +21,9 @@ public class FomodXmlInstallerTests : AModInstallerTest<SkyrimSpecialEdition, Fo
         var relativePath = $"TestCasesPacked/{testCase}.fomod";
         var fullPath = FileSystem.GetKnownPath(KnownPath.EntryDirectory)
             .Combine(relativePath);
-        var downloadId = await FileOriginRegistry.RegisterDownload(fullPath, new FilePathMetadata {
-            OriginalName = fullPath.FileName,
-            Quality = Quality.Low});
+        var downloadId = await FileOriginRegistry.RegisterDownload(fullPath);
 
-        var analysis = await FileOriginRegistry.Get(downloadId);
+        var analysis = FileOriginRegistry.Get(downloadId);
         var installer = FomodXmlInstaller.Create(ServiceProvider, new GamePath(LocationId.Game, ""));
         var tree = TreeCreator.Create(analysis.Contents, FileStore);
 
@@ -41,7 +37,7 @@ public class FomodXmlInstallerTests : AModInstallerTest<SkyrimSpecialEdition, Fo
             Store = install.Store,
             Version = install.Version,
             ModName = "",
-            ArchiveMetaData = null
+            Source = analysis,
         };
         return await installer.GetModsAsync(info);
     }

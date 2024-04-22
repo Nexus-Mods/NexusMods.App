@@ -143,11 +143,9 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
         var _ = Task.Run(async () =>
         {
             var downloadId = await _fileOriginRegistry.RegisterDownload(file,
-                new FilePathMetadata
+                (tx, id) =>
                 {
-                    OriginalName = file.FileName,
-                    Quality = Quality.Low,
-                    Name = file.FileName
+                    tx.Add(id, FilePathMetadata.OriginalName, file.FileName);
                 });
             await _archiveInstaller.AddMods(LoadoutId, downloadId, token: CancellationToken.None);
         });
@@ -174,11 +172,9 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
         var _ = Task.Run(async () =>
         {
             var downloadId = await _fileOriginRegistry.RegisterDownload(file,
-                new FilePathMetadata
+                (tx, id) =>
                 {
-                    OriginalName = file.FileName,
-                    Quality = Quality.Low,
-                    Name = file.FileName
+                    tx.Add(id, FilePathMetadata.OriginalName, file.FileName);
                 });
             await _archiveInstaller.AddMods(LoadoutId, downloadId, token: CancellationToken.None, installer: installer);
         });

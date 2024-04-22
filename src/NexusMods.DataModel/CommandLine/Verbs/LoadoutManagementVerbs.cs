@@ -120,12 +120,8 @@ public static class LoadoutManagementVerbs
     {
         return await renderer.WithProgress(token, async () =>
         {
-            var downloadId = await fileOriginRegistry.RegisterDownload(file, new FilePathMetadata
-            {
-                OriginalName = file.Name,
-                Quality = Quality.Low,
-                Name = name
-            }, token);
+            var downloadId = await fileOriginRegistry.RegisterDownload(file, 
+            (tx, id) => tx.Add(id, FilePathMetadata.OriginalName, file.FileName), token);
 
             await archiveInstaller.AddMods(loadout.Value.LoadoutId, downloadId, name, token: token);
             return 0;

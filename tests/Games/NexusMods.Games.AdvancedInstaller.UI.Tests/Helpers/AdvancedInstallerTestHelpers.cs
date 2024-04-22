@@ -1,6 +1,6 @@
 using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.FileStore.Trees;
-using NexusMods.Abstractions.Games.Downloads;
+using NexusMods.Games.AdvancedInstaller.Tests;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees;
@@ -13,7 +13,7 @@ internal static class AdvancedInstallerTestHelpers
 
     internal static KeyedBox<RelativePath, ModFileTree> CreateTestFileTree()
     {
-        var fileEntries = new DownloadContentEntry[]
+        var fileEntries = new DeploymentDataTests.DownloadContentEntryMock[]
         {
             new() { Hash = Hash.From(1), Size = Size.From(1), Path = "Blue Version/Data/file1.txt" },
             new() { Hash = Hash.From(2), Size = Size.From(2), Path = "Blue Version/Data/file2.txt" },

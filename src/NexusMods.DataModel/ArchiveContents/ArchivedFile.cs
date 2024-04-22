@@ -38,7 +38,7 @@ public static class ArchivedFile
     /// <summary>
     /// Model for the archived file entry.
     /// </summary>
-    public class Model(ITransaction tx) : AEntity(tx)
+    public class Model(ITransaction tx) : Entity(tx)
     {
         
         /// <summary>

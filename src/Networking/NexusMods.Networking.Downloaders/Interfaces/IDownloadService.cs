@@ -1,7 +1,7 @@
 using DynamicData;
 using DynamicData.Kernel;
 using NexusMods.Abstractions.Activities;
-using NexusMods.Abstractions.Games.Downloads;
+using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Paths;
 

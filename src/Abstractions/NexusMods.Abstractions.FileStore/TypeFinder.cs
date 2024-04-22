@@ -1,6 +1,5 @@
 using NexusMods.Abstractions.FileStore.ArchiveMetadata;
 using NexusMods.Abstractions.FileStore.Downloads;
-using NexusMods.Abstractions.Games.Downloads;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 
 namespace NexusMods.Abstractions.FileStore;
