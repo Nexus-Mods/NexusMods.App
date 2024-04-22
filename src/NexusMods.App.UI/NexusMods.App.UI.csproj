@@ -505,6 +505,9 @@
         <Compile Update="Controls\Settings\SettingEntries\ASettingEntryViewModel.cs">
           <DependentUpon>ISettingEntryViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Controls\Settings\SettingEntries\SettingsComboBoxEntry\SettingComboBoxControlViewModel.cs">
+          <DependentUpon>ISettingComboBoxControlViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
