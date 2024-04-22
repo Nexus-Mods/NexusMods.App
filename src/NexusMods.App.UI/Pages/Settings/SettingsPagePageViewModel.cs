@@ -36,8 +36,7 @@ public class SettingsPageViewModel : APageViewModel<ISettingsPageViewModel>, ISe
         var valueContainer = descriptor.SettingsPropertyValueContainer;
         var interactionControl = valueContainer.Match<ISettingInteractionControl>(
             f0: booleanContainer => new SettingToggleViewModel(booleanContainer),
-            // TODO:
-            f1: singleValueMultipleChoiceContainer => new SettingToggleViewModel(new BooleanContainer(value: true, defaultValue: false))
+            f1: singleValueMultipleChoiceContainer => new SettingComboBoxViewModel(singleValueMultipleChoiceContainer)
         );
 
         var res = new SettingEntryViewModel(descriptor, interactionControl);

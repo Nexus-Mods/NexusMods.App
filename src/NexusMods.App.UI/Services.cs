@@ -185,6 +185,8 @@ public static class Services
             .AddViewModel<SettingEntryViewModel, ISettingEntryViewModel>()
             .AddView<SettingToggleControl, ISettingToggleViewModel>()
             .AddViewModel<SettingToggleViewModel, ISettingToggleViewModel>()
+            .AddView<SettingComboBoxView, ISettingComboBoxViewModel>()
+            .AddViewModel<SettingComboBoxViewModel, ISettingComboBoxViewModel>()
 
             .AddView<DiagnosticEntryView, IDiagnosticEntryViewModel>()
             .AddViewModel<DiagnosticEntryViewModel, IDiagnosticEntryViewModel>()

@@ -13,7 +13,10 @@ public abstract class APropertyValueContainer<T> : AbstractNotifyPropertyChanged
     private bool _hasChanged;
     private bool _isDefault;
 
-    private IEqualityComparer<T> _equalityComparer;
+    /// <summary>
+    /// Gets the equality comparer.
+    /// </summary>
+    public IEqualityComparer<T> EqualityComparer { get; }
 
     /// <summary>
     /// Constructor.
@@ -24,10 +27,10 @@ public abstract class APropertyValueContainer<T> : AbstractNotifyPropertyChanged
         DefaultValue = defaultValue;
 
         _currentValue = value;
-        _equalityComparer = equalityComparer ?? EqualityComparer<T>.Default;
+        EqualityComparer = equalityComparer ?? EqualityComparer<T>.Default;
 
         _hasChanged = false;
-        _isDefault = _equalityComparer.Equals(value, defaultValue);
+        _isDefault = EqualityComparer.Equals(value, defaultValue);
     }
 
     /// <summary>
@@ -46,7 +49,7 @@ public abstract class APropertyValueContainer<T> : AbstractNotifyPropertyChanged
     public T CurrentValue
     {
         get => _currentValue;
-        set => SetAndRaise(ref _currentValue, value, _equalityComparer);
+        set => SetAndRaise(ref _currentValue, value, EqualityComparer);
     }
 
     /// <summary>
@@ -72,8 +75,8 @@ public abstract class APropertyValueContainer<T> : AbstractNotifyPropertyChanged
     {
         if (propertyName == nameof(CurrentValue))
         {
-            HasChanged = _equalityComparer.Equals(PreviousValue, CurrentValue);
-            IsDefault = _equalityComparer.Equals(CurrentValue, DefaultValue);
+            HasChanged = EqualityComparer.Equals(PreviousValue, CurrentValue);
+            IsDefault = EqualityComparer.Equals(CurrentValue, DefaultValue);
         }
 
         base.OnPropertyChanged(propertyName);
