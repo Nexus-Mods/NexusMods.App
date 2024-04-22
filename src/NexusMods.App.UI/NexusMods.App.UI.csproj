@@ -515,6 +515,12 @@
         <Compile Update="Controls\Settings\SettingEntries\SettingInteractionControls\ComboBox\SettingComboBoxViewModel.cs">
           <DependentUpon>ISettingComboBoxViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Pages\Changelog\ChangelogPageView.cs">
+          <DependentUpon>ChangelogPageView.axaml</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\Changelog\ChangelogPageViewModel.cs">
+          <DependentUpon>IChangelogPageViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
