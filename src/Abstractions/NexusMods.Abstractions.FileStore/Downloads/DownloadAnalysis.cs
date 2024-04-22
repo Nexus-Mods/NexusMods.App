@@ -90,8 +90,7 @@ public static class DownloadAnalysis
         /// </summary>
         public ModFileTreeNode GetFileTree(IFileStore? fs = null)
         {
-            // Todo: remove .ToArray() when we make Entities<,> a IReadOnlyCollection
-            return TreeCreator.Create(Contents.ToArray(), fs);
+            return TreeCreator.Create(Contents, fs);
         }
     }
 }

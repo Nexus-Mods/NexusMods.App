@@ -215,11 +215,7 @@ public class DownloadService : IDownloadService
         try
         {
             // TODO: Fix this so we properly log NexusMods info with Nexus metadata.
-            var downloadId = await _fileOriginRegistry.RegisterDownload(path.Path,
-                (tx, id) =>
-                {
-                    tx.Add(id, FilePathMetadata.OriginalName, path.Path.Name);
-                });
+            var downloadId = await _fileOriginRegistry.RegisterDownload(path.Path);
             _analyzed.OnNext((task, downloadId, modName));
         }
         catch (Exception e)
