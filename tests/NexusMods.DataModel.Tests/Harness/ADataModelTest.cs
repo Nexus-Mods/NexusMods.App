@@ -1,5 +1,6 @@
 using System.IO.Compression;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.FileStore.ArchiveMetadata;
@@ -54,6 +55,8 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
     protected LoadoutMarker BaseList; // set via InitializeAsync
 
     protected CancellationToken Token = CancellationToken.None;
+    private readonly IHost _host;
+    protected readonly ILogger<T> Logger;
 
     protected ADataModelTest(IServiceProvider _)
     {
