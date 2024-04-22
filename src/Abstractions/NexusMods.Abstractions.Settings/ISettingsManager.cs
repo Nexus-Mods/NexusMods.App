@@ -34,4 +34,9 @@ public interface ISettingsManager
     /// Gets an observable stream to be notified about changes to <typeparamref name="T"/>.
     /// </summary>
     IObservable<T> GetChanges<T>() where T : class, ISettings, new();
+
+    /// <summary>
+    /// Gets an array containing all properties to be exposed to the UI.
+    /// </summary>
+    ISettingsPropertyUIDescriptor[] GetAllUIProperties();
 }
