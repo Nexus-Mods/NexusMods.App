@@ -6,8 +6,6 @@ using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.Abstractions.Serialization.DataModel.Ids;
 using NexusMods.DataModel.Attributes;
-using NexusMods.Extensions.Hashing;
-using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.DataModel.Loadouts;
@@ -119,16 +117,11 @@ public class DiskStateRegistry : IDiskStateRegistry
         var domainId = GetDiskStateIdForDomain(domain);
         
         var result = db
-            .FindIndexed(installation.LocationsRegister[LocationId.Game].ToString(), DiskState.Root)
+            .FindIndexed(domainId, DiskState.LoadoutRevision)
             .Select(db.Get<DiskState.Model>)
-            .FirstOrDefault(state => state.Game == installation.Game.Domain && state.LoadoutRevision.Equals(domainId));
+            .FirstOrDefault();
 
         return result?.DiskState;
-    }
-
-    private static Id64 GetDiskStateIdForDomain(GameDomain domain)
-    {
-        return new Id64(EntityCategory.InitialDiskStates, domain.GetStableHash());
     }
 
     /// <inheritdoc />
@@ -153,5 +146,10 @@ public class DiskStateRegistry : IDiskStateRegistry
             .FindIndexed(gameInstallation.LocationsRegister[LocationId.Game].ToString(), DiskState.Root)
             .Select(db.Get<DiskState.Model>)
             .FirstOrDefault(state => state.Game == gameInstallation.Game.Domain);
+    }
+
+    private static Id64 GetDiskStateIdForDomain(GameDomain domain)
+    {
+        return new Id64(EntityCategory.InitialDiskStates, domain.GetStableHash());
     }
 }

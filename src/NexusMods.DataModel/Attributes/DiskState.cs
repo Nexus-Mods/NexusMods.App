@@ -31,7 +31,7 @@ public static class DiskState
     /// <summary>
     /// The associated loadout id.
     /// </summary>
-    public static readonly IIdAttribute LoadoutRevision = new(Namespace, nameof(LoadoutRevision)) { IsIndexed = true, NoHistory = true };
+    public static readonly IIdAttribute LoadoutRevision = new(Namespace, nameof(LoadoutRevision)) { IsIndexed = true };
 
     /// <summary>
     /// The state of the disk.
