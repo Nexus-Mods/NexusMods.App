@@ -11,5 +11,8 @@
       <PackageReference Include="System.Linq" />
       <PackageReference Include="System.Linq.Async" />
     </ItemGroup>
+    <ItemGroup>
+      <InternalsVisibleTo Include="NexusMods.Benchmarks" />
+    </ItemGroup>
 
 </Project>

@@ -20,9 +20,15 @@ using Xunit.DependencyInjection.Logging;
 
 namespace NexusMods.DataModel.Tests;
 
-public class Startup
+public static class Startup
 {
-    public void ConfigureServices(IServiceCollection container)
+    public static void ConfigureServices(IServiceCollection container)
+    {
+        ConfigureTestedServices(container);
+        container.AddLogging(builder => builder.AddXunitOutput());
+    }
+    
+    public static void ConfigureTestedServices(IServiceCollection container)
     {
         AddServices(container);
     }
@@ -62,7 +68,6 @@ public class Startup
             .AddInstallerTypes()
             .AddCrossPlatform()
             .AddSingleton<ITypeFinder>(_ => new AssemblyTypeFinder(typeof(Startup).Assembly))
-            .AddLogging(builder => builder.AddXunitOutput())
             .Validate();
     }
 }

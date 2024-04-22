@@ -1,6 +1,5 @@
 using System.IO.Compression;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.FileStore.ArchiveMetadata;
@@ -18,7 +17,7 @@ using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
-using NexusMods.Paths.Extensions;
+using NexusMods.Paths.Utilities;
 using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 using Xunit.DependencyInjection;
 using DownloadId = NexusMods.Abstractions.FileStore.Downloads.DownloadId;
@@ -34,20 +33,6 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
     public Hash DataZipLzmaHash => Hash.From(0x706F72D12A82892D);
     public AbsolutePath DataZipLzmaWithExtraFile => FileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine("Resources/data_zip_lzma_withextraFile.zip");
     public AbsolutePath Data7ZLzma2 => FileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine("Resources/data_7zip_lzma2.7z");
-
-    public AbsolutePath DataTest =>
-        FileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine("Resources/data.test");
-
-    public static readonly RelativePath[] DataNames = new[]
-    {
-        "rootFile.txt",
-        "folder1/folder1file.txt",
-        "deepFolder/deepFolder2/deepFolder3/deepFolder4/deepFile.txt"
-    }.Select(t => t.ToRelativePath()).ToArray();
-
-    public static readonly Dictionary<RelativePath, (Hash Hash, Size Size)> DataContents = DataNames
-        .ToDictionary(d => d,
-            d => (d.FileName.ToString().XxHash64AsUtf8(), Size.FromLong(d.FileName.ToString().Length)));
 
     protected readonly TemporaryFileManager TemporaryFileManager;
     protected readonly IServiceProvider ServiceProvider;
@@ -67,8 +52,6 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
     protected readonly IGame Game;
     protected readonly GameInstallation Install;
     protected LoadoutMarker BaseList; // set via InitializeAsync
-    protected readonly ILogger<T> Logger;
-    private readonly IHost _host;
 
     protected CancellationToken Token = CancellationToken.None;
 
@@ -128,7 +111,7 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
     /// <returns></returns>
     protected async Task<DownloadId> RegisterDownload(params (string Name, string Data)[] files)
     {
-        await using var tmpFile = TemporaryFileManager.CreateFile();
+        await using var tmpFile = TemporaryFileManager.CreateFile(KnownExtensions.Zip);
         using var memoryStream = new MemoryStream();
         using (var zip = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
         {
@@ -153,9 +136,6 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
     /// <summary>
     /// Adds a mod to the given loadout, with the given files (saved as UTF-8 strings), and returns the mod id.
     /// </summary>
-    /// <param name="modName"></param>
-    /// <param name="files"></param>
-    /// <returns></returns>
     protected async Task<ModId> AddMod(string modName, params (string Name, string Data)[] files)
     {
         var downloadId = await RegisterDownload(files);
