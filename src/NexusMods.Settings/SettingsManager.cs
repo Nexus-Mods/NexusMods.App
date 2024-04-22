@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -98,22 +99,32 @@ internal partial class SettingsManager : ISettingsManager
         return _propertyBuilderOutputs.Select(output =>
         {
             var value = output.GetValueFunc.Invoke(this);
-            var valueContainer = output.Factory.Create(value);
+            var defaultValue = output.GetDefaultValueFunc.Invoke(this);
+
+            var valueContainer = output.Factory.Create(value, defaultValue);
             return SettingsPropertyUIDescriptor.From(output, valueContainer);
         }).ToArray();
     }
 
-    private T GetDefaultValue<T>() where T : class, ISettings, new()
+    private object GetDefaultValue(Type settingsType)
     {
-        if (!_objectCreationMappings.TryGetValue(typeof(T), out var objectCreationInformation))
-            throw new KeyNotFoundException($"Unknown settings type '{typeof(T)}'. Did you forget to register the setting with DI?");
+        if (!_objectCreationMappings.TryGetValue(settingsType, out var objectCreationInformation))
+            throw new KeyNotFoundException($"Unknown settings type '{settingsType}'. Did you forget to register the setting with DI?");
 
         var value = objectCreationInformation.GetOrCreateDefaultValue(_serviceProvider);
 
-        if (_overrides.TryGetValue(typeof(T), out var overrideMethod))
+        if (_overrides.TryGetValue(settingsType, out var overrideMethod))
         {
             value = overrideMethod.Invoke(value);
         }
+
+        return value;
+    }
+
+    internal T GetDefaultValue<T>() where T : class, ISettings, new()
+    {
+        var value = GetDefaultValue(typeof(T));
+        Debug.Assert(value.GetType() == typeof(T));
 
         var res = (value as T)!;
         return res;

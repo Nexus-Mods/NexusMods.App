@@ -11,5 +11,5 @@ public sealed class BooleanContainer : APropertyValueContainer<bool>
     /// <summary>
     /// Constructor.
     /// </summary>
-    public BooleanContainer(bool value) : base(value) { }
+    public BooleanContainer(bool value, bool defaultValue) : base(value, defaultValue) { }
 }

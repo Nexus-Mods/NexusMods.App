@@ -15,6 +15,7 @@ internal record PropertyBuilderOutput(
     Delegate PropertySetterDelegate,
     UpdateAction UpdateAction,
     Func<ISettingsManager, object> GetValueFunc,
+    Func<SettingsManager, object> GetDefaultValueFunc,
     ISettingsPropertyValueContainerFactory Factory
 );
 
@@ -43,9 +44,11 @@ internal class SettingsUIBuilder<TSettings> : ISettingsUIBuilder<TSettings>
         var setDelegate = methodInfo.CreateDelegate(setDelegateType);
         var updateAction = CreateUpdateAction<TProperty>();
 
-        var getValueFunc = CreateGetValueFunc(selectProperty);
+        var compiledFunc = selectProperty.Compile();
+        var getValueFunc = CreateGetValueFunc(compiledFunc);
+        var getDefaultValueFunc = CreateGetDefaultValueFunc(compiledFunc);
 
-        var output = builder.ToOutput(setDelegate, updateAction, getValueFunc);
+        var output = builder.ToOutput(setDelegate, updateAction, getValueFunc, getDefaultValueFunc);
         PropertyBuilderOutputs.Add(output);
 
         return this;
@@ -67,16 +70,23 @@ internal class SettingsUIBuilder<TSettings> : ISettingsUIBuilder<TSettings>
         };
     }
 
-    private static Func<ISettingsManager, object> CreateGetValueFunc<TProperty>(
-        Expression<Func<TSettings, TProperty>> selectProperty)
+    private static Func<ISettingsManager, object> CreateGetValueFunc<TProperty>(Func<TSettings, TProperty> compiledFunc)
     {
-        var func = selectProperty.Compile();
-
         return settingsManager =>
         {
             var settings = settingsManager.Get<TSettings>();
 
-            var value = func.Invoke(settings);
+            var value = compiledFunc.Invoke(settings);
+            return value!;
+        };
+    }
+
+    private static Func<SettingsManager, object> CreateGetDefaultValueFunc<TProperty>(Func<TSettings, TProperty> compiledFunc)
+    {
+        return settingsManager =>
+        {
+            var defaultValue = settingsManager.GetDefaultValue<TSettings>();
+            var value = compiledFunc.Invoke(defaultValue);
             return value!;
         };
     }
@@ -101,7 +111,8 @@ internal class PropertyUIBuilder<TSettings, TProperty> :
     internal PropertyBuilderOutput ToOutput(
         Delegate propertySetterDelegate,
         UpdateAction updateAction,
-        Func<ISettingsManager, object> getValueFunc) => new(
+        Func<ISettingsManager, object> getValueFunc,
+        Func<SettingsManager, object> getDefaultValueFunc) => new(
         _sectionId,
         _displayName,
         _description,
@@ -110,6 +121,7 @@ internal class PropertyUIBuilder<TSettings, TProperty> :
         propertySetterDelegate,
         updateAction,
         getValueFunc,
+        getDefaultValueFunc,
         _factory!
     );
 
@@ -153,10 +165,10 @@ internal class PropertyUIBuilder<TSettings, TProperty> :
 
     private class BooleanContainerFactory : ISettingsPropertyValueContainerFactory
     {
-        public SettingsPropertyValueContainer Create(object currentValue)
+        public SettingsPropertyValueContainer Create(object currentValue, object defaultValue)
         {
             Debug.Assert(currentValue is bool);
-            return new SettingsPropertyValueContainer(new BooleanContainer((bool)currentValue));
+            return new SettingsPropertyValueContainer(new BooleanContainer((bool)currentValue, (bool)defaultValue));
         }
     }
 
@@ -196,7 +208,7 @@ internal class PropertyUIBuilder<TSettings, TProperty> :
             _valueToTranslation = valueToTranslation;
         }
 
-        public SettingsPropertyValueContainer Create(object currentValue)
+        public SettingsPropertyValueContainer Create(object currentValue, object defaultValue)
         {
             Debug.Assert(currentValue is TProperty);
 
@@ -204,6 +216,7 @@ internal class PropertyUIBuilder<TSettings, TProperty> :
 
             return new SettingsPropertyValueContainer(new SingleValueMultipleChoiceContainer(
                 currentValue,
+                defaultValue,
                 _valueComparer,
                 allowedValues,
                 ValueToTranslation
@@ -220,5 +233,5 @@ internal class PropertyUIBuilder<TSettings, TProperty> :
 
 internal interface ISettingsPropertyValueContainerFactory
 {
-    SettingsPropertyValueContainer Create(object currentValue);
+    SettingsPropertyValueContainer Create(object currentValue, object defaultValue);
 }
