@@ -18,6 +18,7 @@ using NexusMods.App.UI.Controls.MarkdownRenderer;
 using NexusMods.App.UI.Controls.ModInfo.Error;
 using NexusMods.App.UI.Controls.ModInfo.Loading;
 using NexusMods.App.UI.Controls.ModInfo.ModFiles;
+using NexusMods.App.UI.Controls.Settings.SettingEntries.SettingInteractionControls;
 using NexusMods.App.UI.Controls.Spine;
 using NexusMods.App.UI.Controls.Spine.Buttons.Download;
 using NexusMods.App.UI.Controls.Spine.Buttons.Icon;
@@ -48,6 +49,7 @@ using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModName;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModVersion;
 using NexusMods.App.UI.Pages.ModInfo;
 using NexusMods.App.UI.Pages.MyGames;
+using NexusMods.App.UI.Pages.Settings;
 using NexusMods.App.UI.Settings;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceAttachments;
@@ -134,6 +136,9 @@ public static class Services
             .AddViewModel<DummyLoadingViewModel, ILoadingViewModel>()
             .AddViewModel<DummyErrorViewModel, IErrorViewModel>()
             .AddViewModel<ApplyDiffViewModel, IApplyDiffViewModel>()
+            
+            
+            .AddViewModel<SettingToggleViewModel, ISettingToggleViewModel>()
 
             // Views
             .AddView<DevelopmentBuildBannerView, IDevelopmentBuildBannerViewModel>()
@@ -175,6 +180,9 @@ public static class Services
             .AddView<ErrorView, IErrorViewModel>()
             .AddView<ApplyDiffView, IApplyDiffViewModel>()
             .AddView<FileTreeView, IFileTreeViewModel>()
+            
+            .AddView<SettingsView, ISettingsViewModel>()
+            .AddView<SettingToggleControl, ISettingToggleViewModel>()
 
             .AddView<DiagnosticEntryView, IDiagnosticEntryViewModel>()
             .AddViewModel<DiagnosticEntryViewModel, IDiagnosticEntryViewModel>()

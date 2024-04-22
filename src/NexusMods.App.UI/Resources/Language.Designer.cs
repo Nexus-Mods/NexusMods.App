@@ -1099,6 +1099,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The app will need to restart to apply this setting.
+        /// </summary>
+        public static string SettingEntryView_NeedRestartMessage {
+            get {
+                return ResourceManager.GetString("SettingEntryView_NeedRestartMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Settings.
         /// </summary>
         public static string SettingsView_Title {
