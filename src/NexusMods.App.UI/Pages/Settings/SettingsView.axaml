@@ -5,6 +5,7 @@
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:settings="clr-namespace:NexusMods.App.UI.Pages.Settings"
                                 xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+                                xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="NexusMods.App.UI.Pages.Settings.SettingsView">
     <Design.DataContext>
@@ -24,9 +25,9 @@
                                 Orientation="Horizontal"
                                 Spacing="{StaticResource Spacing-2}">
 
-                        <icons:UnifiedIcon Classes="Cog" />
-                        <TextBlock Text="Settings"
-                                   Classes="Header" />
+                        <icons:UnifiedIcon Classes="Cog ForegroundSubdued" Size="24" />
+                        <TextBlock Classes="BodyLGBold ForegroundSubdued"
+                                   Text="{x:Static resources:Language.SettingsView_Title}"/>
 
                     </StackPanel>
 
@@ -34,8 +35,6 @@
                             Classes="BareIcon WindowClose ForegroundSubdued">
                     </Button>
                 </Grid>
-
-
             </Border>
 
 
@@ -56,10 +55,10 @@
 
                     <Border Grid.Column="1"
                             x:Name="ContentBorder">
-                        
-                        
+                        <ScrollViewer>
+                            <!-- Add setting items here -->
+                        </ScrollViewer>
                     </Border>
-
                 </Grid>
             </Border>
 
@@ -70,12 +69,12 @@
                 <StackPanel>
                     <Button Classes="Standard Tertiary">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="CANCEL" />
+                            <TextBlock Text="{x:Static resources:Language.DialogButton_CANCEL}" />
                         </StackPanel>
                     </Button>
                     <Button Classes="Standard Primary">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="SAVE" />
+                            <TextBlock Text="{x:Static resources:Language.DialogButton_SAVE}" />
                         </StackPanel>
                     </Button>
                 </StackPanel>

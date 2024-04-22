@@ -267,6 +267,24 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to CANCEL.
+        /// </summary>
+        public static string DialogButton_CANCEL {
+            get {
+                return ResourceManager.GetString("DialogButton_CANCEL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SAVE.
+        /// </summary>
+        public static string DialogButton_SAVE {
+            get {
+                return ResourceManager.GetString("DialogButton_SAVE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Apply changes: Adding {0} Modifying {1} Removing {2}.
         /// </summary>
         public static string DiffTreeViewModel_StatusBar__Apply_changes {
@@ -1077,6 +1095,15 @@ namespace NexusMods.App.UI.Resources {
         public static string SearchBox__Search {
             get {
                 return ResourceManager.GetString("SearchBox__Search", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Settings.
+        /// </summary>
+        public static string SettingsView_Title {
+            get {
+                return ResourceManager.GetString("SettingsView_Title", resourceCulture);
             }
         }
         

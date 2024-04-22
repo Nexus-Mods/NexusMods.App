@@ -416,4 +416,13 @@
     <data name="ApplyDiffViewModel_PageTitle" xml:space="preserve">
         <value>Preview changes</value>
     </data>
+    <data name="SettingsView_Title" xml:space="preserve">
+        <value>Settings</value>
+    </data>
+    <data name="DialogButton_CANCEL" xml:space="preserve">
+        <value>CANCEL</value>
+    </data>
+    <data name="DialogButton_SAVE" xml:space="preserve">
+        <value>SAVE</value>
+    </data>
 </root>
