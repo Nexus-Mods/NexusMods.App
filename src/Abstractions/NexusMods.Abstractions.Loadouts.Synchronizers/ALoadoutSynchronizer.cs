@@ -838,11 +838,15 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// </summary>
     /// <param name="installation"></param>
     /// <returns></returns>
-    public virtual ValueTask<DiskStateTree> GetInitialDiskState(GameInstallation installation)
+    public virtual async ValueTask<DiskStateTree> GetInitialDiskState(GameInstallation installation)
     {
-        return _hashCache.IndexDiskState(installation);
+        var initialState = _diskStateRegistry.GetInitialState(installation);
+        if (initialState != null)
+            return initialState;
+
+        var indexedState = await _hashCache.IndexDiskState(installation);
+        await _diskStateRegistry.SaveInitialState(installation, indexedState);
+        return indexedState;
     }
-
-
     #endregion
 }

@@ -28,9 +28,7 @@ public class DiskStateRegistry : IDiskStateRegistry
         _connection = connection;
     }
 
-    /// <summary>
-    /// Saves a disk state to the data store
-    /// </summary>
+    /// <inheritdoc />
     public async Task SaveState(GameInstallation installation, DiskStateTree diskState)
     {
         Debug.Assert(!diskState.LoadoutRevision.Equals(IdEmpty.Empty), "diskState.LoadoutRevision must be set");
@@ -61,12 +59,8 @@ public class DiskStateRegistry : IDiskStateRegistry
         _lastAppliedRevisionDictionary[installation] = diskState.LoadoutRevision;
         _lastAppliedRevisionSubject.OnNext((installation, diskState.LoadoutRevision));
     }
-    
-    /// <summary>
-    /// Gets the disk state associated with a specific version of a loadout (if any)
-    /// </summary>
-    /// <param name="gameInstallation"></param>
-    /// <returns></returns>
+
+    /// <inheritdoc />
     public DiskStateTree? GetState(GameInstallation gameInstallation)
     {
         var db = _connection.Db;
@@ -80,12 +74,45 @@ public class DiskStateRegistry : IDiskStateRegistry
         return state;
     }
 
-    private static DiskState.Model? PreviousStateEntity(IDb db, GameInstallation gameInstallation)
+    /// <inheritdoc />
+    public async Task SaveInitialState(GameInstallation installation, DiskStateTree diskState)
     {
-        return db
-            .FindIndexed(gameInstallation.LocationsRegister[LocationId.Game].ToString(), DiskState.Root)
+        // Initial state is identified by an empty LoadoutRevision
+
+        // I looked for a 'clean' way to do this, and I found that it's
+        // not possible for us to create an `IdEmpty.Empty` with actual
+        // IDs, so the loadoutrevision of Empty for a game is reserved for
+        // the very first initial state.
+        
+        // Actual loadouts at time of writing use Id64, composed of category and hash.
+        // As is standard for our data model; there's no special casing there.
+
+        // - Sewer
+        
+        var tx = _connection.BeginTransaction();
+
+        _ = new DiskState.Model(tx)
+        {
+            Game = installation.Game.Domain,
+            Root = installation.LocationsRegister[LocationId.Game].ToString(),
+            LoadoutRevision = IdEmpty.Empty, 
+            DiskState = diskState,
+        };
+
+        await tx.Commit();
+    }
+
+    /// <inheritdoc />
+    public DiskStateTree? GetInitialState(GameInstallation installation)
+    {
+        // Initial state is identified by an empty LoadoutRevision
+        var db = _connection.Db;
+        var result = db
+            .FindIndexed(installation.LocationsRegister[LocationId.Game].ToString(), DiskState.Root)
             .Select(db.Get<DiskState.Model>)
-            .FirstOrDefault(state => state.Game == gameInstallation.Game.Domain);
+            .FirstOrDefault(state => state.Game == installation.Game.Domain && state.LoadoutRevision.Equals(IdEmpty.Empty));
+
+        return result?.DiskState;
     }
 
     /// <inheritdoc />
@@ -102,5 +129,13 @@ public class DiskStateRegistry : IDiskStateRegistry
 
         _lastAppliedRevisionDictionary[gameInstallation] = diskStateTree.LoadoutRevision;
         return diskStateTree.LoadoutRevision;
+    }
+    
+    private static DiskState.Model? PreviousStateEntity(IDb db, GameInstallation gameInstallation)
+    {
+        return db
+            .FindIndexed(gameInstallation.LocationsRegister[LocationId.Game].ToString(), DiskState.Root)
+            .Select(db.Get<DiskState.Model>)
+            .FirstOrDefault(state => state.Game == gameInstallation.Game.Domain);
     }
 }
