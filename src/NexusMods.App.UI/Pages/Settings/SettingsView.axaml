@@ -6,7 +6,8 @@
                                 xmlns:settings="clr-namespace:NexusMods.App.UI.Pages.Settings"
                                 xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
                                 xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
-                                mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+                                xmlns:settingEntries="clr-namespace:NexusMods.App.UI.Controls.Settings.SettingEntries"
+                                mc:Ignorable="d" d:DesignWidth="1232" d:DesignHeight="550"
                                 x:Class="NexusMods.App.UI.Pages.Settings.SettingsView">
     <Design.DataContext>
         <settings:SettingsDesignViewModel />
@@ -27,12 +28,13 @@
 
                         <icons:UnifiedIcon Classes="Cog ForegroundSubdued" Size="24" />
                         <TextBlock Classes="BodyLGBold ForegroundSubdued"
-                                   Text="{x:Static resources:Language.SettingsView_Title}"/>
+                                   Text="{x:Static resources:Language.SettingsView_Title}" />
 
                     </StackPanel>
 
                     <Button Grid.Column="2"
-                            Classes="BareIcon WindowClose ForegroundSubdued">
+                            Classes="BareIcon WindowClose ForegroundSubdued"
+                            x:Name="CloseButton">
                     </Button>
                 </Grid>
             </Border>
@@ -40,7 +42,8 @@
 
             <Border Grid.Row="1"
                     x:Name="BodySectionBorder"
-                    Classes="Rounded-t-lg">
+                    Classes="Rounded-t-lg"
+                    Margin="0,0,12,0">
 
                 <Grid ColumnDefinitions="Auto, *">
                     <Border Grid.Column="0"
@@ -55,8 +58,22 @@
 
                     <Border Grid.Column="1"
                             x:Name="ContentBorder">
+                        
                         <ScrollViewer>
-                            <!-- Add setting items here -->
+                            <ItemsControl x:Name="SettingEntriesItemsControl"
+                                          Margin="0,0,12,0">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Classes="Spacing-1_5" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="{x:Type settingEntries:ISettingEntryViewModel}">
+                                        <reactiveUi:ViewModelViewHost ViewModel="{CompiledBinding .}"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
                         </ScrollViewer>
                     </Border>
                 </Grid>
@@ -67,12 +84,14 @@
                     x:Name="FooterBorder"
                     Classes="Footer">
                 <StackPanel>
-                    <Button Classes="Standard Tertiary">
+                    <Button Classes="Standard Tertiary"
+                            x:Name="CancelButton">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="{x:Static resources:Language.DialogButton_CANCEL}" />
                         </StackPanel>
                     </Button>
-                    <Button Classes="Standard Primary">
+                    <Button Classes="Standard Primary"
+                            x:Name="SaveButton">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="{x:Static resources:Language.DialogButton_SAVE}" />
                         </StackPanel>

@@ -18,6 +18,7 @@ using NexusMods.App.UI.Controls.MarkdownRenderer;
 using NexusMods.App.UI.Controls.ModInfo.Error;
 using NexusMods.App.UI.Controls.ModInfo.Loading;
 using NexusMods.App.UI.Controls.ModInfo.ModFiles;
+using NexusMods.App.UI.Controls.Settings.SettingEntries;
 using NexusMods.App.UI.Controls.Settings.SettingEntries.SettingInteractionControls;
 using NexusMods.App.UI.Controls.Spine;
 using NexusMods.App.UI.Controls.Spine.Buttons.Download;
@@ -182,6 +183,7 @@ public static class Services
             .AddView<FileTreeView, IFileTreeViewModel>()
             
             .AddView<SettingsView, ISettingsViewModel>()
+            .AddView<SettingEntryView, ISettingEntryViewModel>()
             .AddView<SettingToggleControl, ISettingToggleViewModel>()
 
             .AddView<DiagnosticEntryView, IDiagnosticEntryViewModel>()
