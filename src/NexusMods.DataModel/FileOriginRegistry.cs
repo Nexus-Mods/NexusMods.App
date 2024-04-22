@@ -116,12 +116,12 @@ public class FileOriginRegistry : IFileOriginRegistry
         List<ArchivedFileEntry> files = [];
         List<RelativePath> paths = [];
 
-        _logger.LogInformation("Analyzing archive: {Name}", path);
+        _logger.LogInformation("Analyzing archive: {Name}", originalPath);
         
         // Note: We exploit Async I/O here. Modern storage can munch files in parallel,
         // so doing this on one thread would be a waste.
 
-        var allFiles = path.EnumerateFiles().ToArray(); // enables better work stealing.
+        var allFiles = originalPath.EnumerateFiles().ToArray(); // enables better work stealing.
         Parallel.ForEach(allFiles, file =>
         {
             // TODO: report this as progress
@@ -134,7 +134,7 @@ public class FileOriginRegistry : IFileOriginRegistry
             };
 
             // If the hash isn't known, we should back it up.
-            var relativePath = file.RelativeTo(path);
+            var relativePath = file.RelativeTo(originalPath);
             lock (paths)
             {
                 paths.Add(relativePath);
