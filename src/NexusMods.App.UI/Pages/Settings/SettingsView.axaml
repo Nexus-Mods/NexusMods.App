@@ -82,7 +82,7 @@
 
             <Border Grid.Row="2"
                     x:Name="FooterBorder"
-                    Classes="Footer">
+                    Classes="Footer OutlineWeak">
                 <StackPanel>
                     <Button Classes="Standard Tertiary"
                             x:Name="CancelButton">
