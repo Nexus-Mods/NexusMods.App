@@ -40,6 +40,5 @@ internal class TypeFinder : ITypeFinder
 
         // other
         typeof(WindowData),
-        typeof(DataReferenceDescription),
     };
 }
