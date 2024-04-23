@@ -1,9 +1,13 @@
-﻿using TransparentValueObjects;
+﻿using NexusMods.MnemonicDB.Abstractions;
+using TransparentValueObjects;
 
-namespace NexusMods.Abstractions.Games.Downloads;
+namespace NexusMods.Abstractions.FileStore.Downloads;
 
 /// <summary>
 /// Id for a registered download
 /// </summary>
-[ValueObject<Guid>]
-public readonly partial struct DownloadId : IAugmentWith<JsonAugment> { }
+[ValueObject<EntityId>]
+public readonly partial struct DownloadId : ITypedEntityId
+{
+    EntityId ITypedEntityId.Value => Value;
+}

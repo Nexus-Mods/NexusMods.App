@@ -30,6 +30,11 @@ public static class Startup
     
     public static void ConfigureTestedServices(IServiceCollection container)
     {
+        AddServices(container);
+    }
+    
+    public static IServiceCollection AddServices(IServiceCollection container)
+    {
         const KnownPath baseKnownPath = KnownPath.EntryDirectory;
         var baseDirectory = $"NexusMods.DataModel.Tests-{Guid.NewGuid()}";
 
@@ -37,7 +42,7 @@ public static class Startup
             .GetKnownPath(baseKnownPath)
             .Combine(baseDirectory);
 
-        container
+        return container
             .AddSingleton<IGuidedInstaller, NullGuidedInstaller>()
             .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug))
             .AddFileSystem()
@@ -47,6 +52,7 @@ public static class Startup
             .OverrideSettingsForTests<DataModelSettings>(settings => settings with
             {
                 DataStoreFilePath = new ConfigurablePath(baseKnownPath, $"{baseDirectory}/DataStore.sqlite"),
+                MnemonicDBPath = new ConfigurablePath(baseKnownPath, $"{baseDirectory}/MnemonicDB.rocksdb"),
                 ArchiveLocations = [
                     new ConfigurablePath(baseKnownPath, $"{baseDirectory}/Archives"),
                 ],

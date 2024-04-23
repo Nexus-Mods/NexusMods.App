@@ -1,5 +1,6 @@
 using JetBrains.Annotations;
 using NexusMods.Abstractions.FileStore.ArchiveMetadata;
+using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts.Mods;
 using ModFileTreeNode = NexusMods.Paths.Trees.KeyedBox<NexusMods.Paths.RelativePath, NexusMods.Abstractions.FileStore.Trees.ModFileTree>;
@@ -50,5 +51,5 @@ public record ModInstallerInfo
     /// <summary>
     /// Gets the metadata attached to the downloaded archive.
     /// </summary>
-    public required AArchiveMetaData? ArchiveMetaData { get; init; }
+    public required DownloadAnalysis.Model Source { get; init; }
 }

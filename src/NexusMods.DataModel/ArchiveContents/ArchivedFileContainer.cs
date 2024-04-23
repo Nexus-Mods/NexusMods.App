@@ -1,3 +1,4 @@
+using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.DataModel.Attributes;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
@@ -22,7 +23,7 @@ public static class ArchivedFileContainer
     /// Model for the archived file container.
     /// </summary>
     /// <param name="tx"></param>
-    public class Model(ITransaction tx) : AEntity(tx)
+    public class Model(ITransaction tx) : Entity(tx)
     {
         /// <summary>
         /// The name of the container on-disk. This will be relative to some archive root path.

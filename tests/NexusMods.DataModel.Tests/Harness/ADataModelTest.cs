@@ -1,5 +1,6 @@
 using System.IO.Compression;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.FileStore.ArchiveMetadata;
@@ -13,10 +14,14 @@ using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.Hashing.xxHash64;
+using NexusMods.MnemonicDB;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
 using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
-using DownloadId = NexusMods.Abstractions.Games.Downloads.DownloadId;
+using Xunit.DependencyInjection;
+using DownloadId = NexusMods.Abstractions.FileStore.Downloads.DownloadId;
 using IGame = NexusMods.Abstractions.Games.IGame;
 
 // ReSharper disable StaticMemberInGenericType
@@ -26,6 +31,7 @@ namespace NexusMods.DataModel.Tests.Harness;
 public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
 {
     public AbsolutePath DataZipLzma => FileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine("Resources/data_zip_lzma.zip");
+    public Hash DataZipLzmaHash => Hash.From(0x706F72D12A82892D);
     public AbsolutePath DataZipLzmaWithExtraFile => FileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine("Resources/data_zip_lzma_withextraFile.zip");
     public AbsolutePath Data7ZLzma2 => FileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine("Resources/data_7zip_lzma2.7z");
 
@@ -35,9 +41,11 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
     protected readonly IArchiveInstaller ArchiveInstaller;
 
     protected readonly LoadoutRegistry LoadoutRegistry;
+    protected readonly IApplyService ApplyService;
     protected readonly FileHashCache FileHashCache;
     protected readonly IFileSystem FileSystem;
     protected readonly IDataStore DataStore;
+    protected readonly IConnection Connection;
     protected readonly IFileOriginRegistry FileOriginRegistry;
     protected readonly DiskStateRegistry DiskStateRegistry;
     protected readonly IToolManager ToolManager;
@@ -47,41 +55,54 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
     protected LoadoutMarker BaseList; // set via InitializeAsync
 
     protected CancellationToken Token = CancellationToken.None;
+    private readonly IHost _host;
+    protected readonly ILogger<T> Logger;
 
-    protected ADataModelTest(IServiceProvider provider)
+    protected ADataModelTest(IServiceProvider _)
     {
-        var provider1 = provider;
-        FileStore = provider1.GetRequiredService<IFileStore>();
-        ArchiveInstaller = provider1.GetRequiredService<IArchiveInstaller>();
-        LoadoutRegistry = provider1.GetRequiredService<LoadoutRegistry>();
-        FileHashCache = provider1.GetRequiredService<FileHashCache>();
-        FileSystem = provider1.GetRequiredService<IFileSystem>();
-        DataStore = provider1.GetRequiredService<IDataStore>();
-        FileOriginRegistry = provider1.GetRequiredService<IFileOriginRegistry>();
-        DiskStateRegistry = provider1.GetRequiredService<DiskStateRegistry>();
-        TemporaryFileManager = provider1.GetRequiredService<TemporaryFileManager>();
-        ToolManager = provider1.GetRequiredService<IToolManager>();
+        var host = new HostBuilder();
+        host.ConfigureServices(services =>
+        {
+            services.AddSingleton<ITestOutputHelperAccessor>
+                (s => _.GetRequiredService<ITestOutputHelperAccessor>());
+            Startup.AddServices(services);
+            
+        });
+        
+        _host = host.Build();
+        var provider = _host.Services;
+        FileStore = provider.GetRequiredService<IFileStore>();
+        ArchiveInstaller = provider.GetRequiredService<IArchiveInstaller>();
+        LoadoutRegistry = provider.GetRequiredService<LoadoutRegistry>();
+        ApplyService = provider.GetRequiredService<IApplyService>();
+        FileHashCache = provider.GetRequiredService<FileHashCache>();
+        FileSystem = provider.GetRequiredService<IFileSystem>();
+        DataStore = provider.GetRequiredService<IDataStore>();
+        Connection = provider.GetRequiredService<IConnection>();
+        FileOriginRegistry = provider.GetRequiredService<IFileOriginRegistry>();
+        DiskStateRegistry = provider.GetRequiredService<DiskStateRegistry>();
+        Logger = provider.GetRequiredService<ILogger<T>>();
+        TemporaryFileManager = provider.GetRequiredService<TemporaryFileManager>();
+        ToolManager = provider.GetRequiredService<IToolManager>();
         ServiceProvider = provider;
 
-        Game = provider1.GetRequiredService<StubbedGame>();
+        Game = provider.GetRequiredService<StubbedGame>();
         Install = Game.Installations.First();
-        ClearDataStore();
     }
 
     public void Dispose()
     {
+        _host.Dispose();
     }
 
     public virtual async Task InitializeAsync()
     {
-        ((StubbedGame)Game).ResetGameFolders();
         BaseList = LoadoutRegistry.GetMarker((await Install.GetGame().Synchronizer.Manage(Install)).LoadoutId);
     }
 
     protected async Task<ModId[]> AddMods(LoadoutMarker mainList, AbsolutePath path, string? name = null)
     {
-        var downloadId = await FileOriginRegistry.RegisterDownload(path,
-            new FilePathMetadata {OriginalName = path.FileName, Quality = Quality.Low}, CancellationToken.None);
+        var downloadId = await FileOriginRegistry.RegisterDownload(path, Token);
         return await ArchiveInstaller.AddMods(mainList.Value.LoadoutId, downloadId, name, token: Token);
     }
 
@@ -112,7 +133,7 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
             await memoryStream.CopyToAsync(fileStream, Token);
         }
 
-        return await FileOriginRegistry.RegisterDownload(tmpFile.Path, new FilePathMetadata {OriginalName = tmpFile.Path.FileName, Quality = Quality.Low}, CancellationToken.None);
+        return await FileOriginRegistry.RegisterDownload(tmpFile.Path, Token);
     }
 
     /// <summary>

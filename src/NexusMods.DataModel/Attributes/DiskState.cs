@@ -41,7 +41,7 @@ public static class DiskState
     
     [PublicAPI]
     [SuppressMessage("ReSharper", "MemberHidesStaticFromOuterClass")]
-    internal class Model(ITransaction tx) : AEntity(tx)
+    internal class Model(ITransaction tx) : Entity(tx)
     {
         /// <summary>
         /// The associated game type

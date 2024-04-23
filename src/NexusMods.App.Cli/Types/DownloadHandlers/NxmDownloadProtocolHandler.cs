@@ -7,6 +7,7 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.DTOs;
 using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 
 namespace NexusMods.CLI.Types.DownloadHandlers;
@@ -55,11 +56,10 @@ public class NxmDownloadProtocolHandler : IDownloadProtocolHandler
         var downloadUris = links.Data.Select(u => new HttpRequestMessage(HttpMethod.Get, u.Uri)).ToArray();
 
         await _downloader.DownloadAsync(downloadUris, tempPath, null, null, token);
-        var downloadId = await _downloaderRegistry.RegisterDownload(tempPath.Path, new FilePathMetadata
+        var downloadId = await _downloaderRegistry.RegisterDownload(tempPath.Path,
+            (tx, id) =>
             {
-                OriginalName = tempPath.Path.Name,
-                Quality = Quality.Low,
-                Name = tempPath.Path.Name
+                tx.Add(id, FilePathMetadata.OriginalName, tempPath.Path.Name);
             }, token);
         await _archiveInstaller.AddMods(loadout.Value.LoadoutId, downloadId, modName, token:token);
     }

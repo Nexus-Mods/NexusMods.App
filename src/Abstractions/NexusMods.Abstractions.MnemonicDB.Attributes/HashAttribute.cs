@@ -2,7 +2,7 @@ using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 
-namespace NexusMods.DataModel.Attributes;
+namespace NexusMods.Abstractions.MnemonicDB.Attributes;
 
 /// <summary>
 /// Stores a <see cref="Hash"/> as a <see cref="ulong"/>.

@@ -1,20 +1,17 @@
-﻿using System.Buffers.Binary;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.FileExtractor;
-using NexusMods.Abstractions.FileStore.ArchiveMetadata;
-using NexusMods.Abstractions.Games.Downloads;
-using NexusMods.Abstractions.Games.Loadouts;
+using NexusMods.Abstractions.FileStore;
+using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
-using NexusMods.Abstractions.Serialization;
-using NexusMods.Abstractions.Serialization.DataModel;
-using NexusMods.Abstractions.Serialization.DataModel.Ids;
-using NexusMods.DataModel.ArchiveContents;
 using NexusMods.Extensions.Hashing;
 using NexusMods.Hashing.xxHash64;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
+
+using MetadataFn = System.Action<NexusMods.MnemonicDB.Abstractions.ITransaction, NexusMods.MnemonicDB.Abstractions.EntityId>;
 
 namespace NexusMods.DataModel;
 
@@ -27,7 +24,7 @@ public class FileOriginRegistry : IFileOriginRegistry
     private readonly IFileExtractor _extractor;
     private readonly IFileStore _fileStore;
     private readonly TemporaryFileManager _temporaryFileManager;
-    private readonly IDataStore _dataStore;
+    private readonly IConnection _conn;
     private readonly IFileHashCache _fileHashCache;
 
     /// <summary>
@@ -39,25 +36,26 @@ public class FileOriginRegistry : IFileOriginRegistry
     /// <param name="temporaryFileManager"></param>
     /// <param name="store"></param>
     public FileOriginRegistry(ILogger<FileOriginRegistry> logger, IFileExtractor extractor,
-        IFileStore fileStore, TemporaryFileManager temporaryFileManager, IDataStore store, IFileHashCache fileHashCache)
+        IFileStore fileStore, TemporaryFileManager temporaryFileManager, IConnection conn, IFileHashCache fileHashCache)
     {
         _logger = logger;
         _extractor = extractor;
         _fileStore = fileStore;
         _temporaryFileManager = temporaryFileManager;
-        _dataStore = store;
+        _conn = conn;
         _fileHashCache = fileHashCache;
     }
 
     /// <inheritdoc />
-    public async ValueTask<DownloadId> RegisterDownload(IStreamFactory factory, AArchiveMetaData metaData, CancellationToken token = default)
+    public async ValueTask<DownloadId> RegisterDownload(IStreamFactory factory, MetadataFn metaData, CancellationToken token = default)
     {
+        var db = _conn.Db;
         // WARNING !! Cannot access hash cache.
         var archiveSize = (ulong) factory.Size;
         var archiveHash = await (await factory.GetStreamAsync()).XxHash64Async(token: token);
 
         // Note: Folders have a hash of 0, so in unlikely event an archive hashes to 0, we can't dedupe by archive.
-        if (archiveHash != 0 && TryGetDownloadIdForHash(archiveHash.Value, out var downloadId))
+        if (archiveHash != 0 && TryGetDownloadIdForHash(db, archiveHash, out var downloadId))
             return downloadId.Value;
 
         await using var tmpFolder = _temporaryFileManager.CreateFolder();
@@ -66,58 +64,64 @@ public class FileOriginRegistry : IFileOriginRegistry
     }
 
     /// <inheritdoc />
-    public async ValueTask<DownloadId> RegisterDownload(AbsolutePath path, AArchiveMetaData metaData, CancellationToken token = default)
+    public async ValueTask<DownloadId> RegisterDownload(AbsolutePath path, MetadataFn metaDataFn, CancellationToken token = default)
     {
+        var db = _conn.Db;
         var archiveSize = (ulong) path.FileInfo.Size;
         var archiveHash = (await _fileHashCache.IndexFileAsync(path, token)).Hash;
 
         // Note: Folders have a hash of 0, so in unlikely event an archive hashes to 0, we can't dedupe by archive.
-        if (archiveHash != 0 && TryGetDownloadIdForHash(archiveHash.Value, out var downloadId))
+        if (archiveHash != 0 && TryGetDownloadIdForHash(db, archiveHash, out var downloadId))
             return downloadId.Value;
 
         await using var tmpFolder = _temporaryFileManager.CreateFolder();
         await _extractor.ExtractAllAsync(path, tmpFolder.Path, token);
-        return await RegisterFolderInternal(tmpFolder.Path, metaData, _fileStore.GetFileHashes(), archiveHash.Value, archiveSize, token);
+        return await RegisterFolderInternal(tmpFolder.Path, metaDataFn, _fileStore.GetFileHashes(), archiveHash.Value, archiveSize, token);
     }
 
     /// <inheritdoc />
-    public async ValueTask<DownloadId> RegisterFolder(AbsolutePath path, AArchiveMetaData metaData, CancellationToken token = default)
+    public async ValueTask<DownloadId> RegisterFolder(AbsolutePath path, Action<ITransaction, EntityId> metaDataFn,
+        CancellationToken token = default)
     {
-        return await RegisterFolderInternal(path, metaData, _fileStore.GetFileHashes(), 0, 0, token);
+        return await RegisterFolderInternal(path, metaDataFn, _fileStore.GetFileHashes(), 0, 0, token);
     }
 
     /// <inheritdoc />
-    public async ValueTask<DownloadAnalysis> Get(DownloadId id)
+    public DownloadAnalysis.Model Get(DownloadId id)
     {
-        return _dataStore.Get<DownloadAnalysis>(IId.From(EntityCategory.DownloadMetadata, id.Value))!;
+        var db = _conn.Db;
+        return db.Get<DownloadAnalysis.Model>(id.Value);
     }
 
     /// <inheritdoc />
-    public IEnumerable<DownloadAnalysis> GetAll()
+    public IEnumerable<DownloadAnalysis.Model> GetAll()
     {
-        return _dataStore.GetByPrefix<DownloadAnalysis>(new Id64(EntityCategory.DownloadMetadata, 0));
+        var db = _conn.Db;
+        return db.Find(DownloadAnalysis.NumberOfEntries)
+                 .Select(id => db.Get<DownloadAnalysis.Model>(id));
     }
 
     /// <inheritdoc />
-    public IEnumerable<DownloadId> GetByHash(Hash hash)
+    public IEnumerable<DownloadAnalysis.Model> GetBy(Hash hash)
     {
-        return GetAll()
-            .Where(d => d.Hash == hash)
-            .Select(d => d.DownloadId);
+        var db = _conn.Db;
+        return db.FindIndexed(hash, DownloadAnalysis.Hash)
+                 .Select(id => db.Get<DownloadAnalysis.Model>(id));
     }
 
-    private async ValueTask<DownloadId> RegisterFolderInternal(AbsolutePath path, AArchiveMetaData metaData, HashSet<ulong> knownHashes, ulong archiveHash, ulong archiveSize, CancellationToken token = default)
+    private async ValueTask<DownloadId> RegisterFolderInternal(AbsolutePath originalPath, Action<ITransaction, EntityId> metaDataFn, 
+        HashSet<ulong> knownHashes, ulong archiveHash, ulong archiveSize, CancellationToken token = default)
     {
-        List<ArchivedFileEntry> filesToBackup = new();
-        List<ArchivedFileEntry> files = new();
-        List<RelativePath> paths = new();
+        List<ArchivedFileEntry> filesToBackup = [];
+        List<ArchivedFileEntry> files = [];
+        List<RelativePath> paths = [];
 
-        _logger.LogInformation("Analyzing archive: {Name}", path);
+        _logger.LogInformation("Analyzing archive: {Name}", originalPath);
         
         // Note: We exploit Async I/O here. Modern storage can munch files in parallel,
         // so doing this on one thread would be a waste.
 
-        var allFiles = path.EnumerateFiles().ToArray(); // enables better work stealing.
+        var allFiles = originalPath.EnumerateFiles().ToArray(); // enables better work stealing.
         Parallel.ForEach(allFiles, file =>
         {
             // TODO: report this as progress
@@ -130,7 +134,7 @@ public class FileOriginRegistry : IFileOriginRegistry
             };
 
             // If the hash isn't known, we should back it up.
-            var relativePath = file.RelativeTo(path);
+            var relativePath = file.RelativeTo(originalPath);
             lock (paths)
             {
                 paths.Add(relativePath);
@@ -154,41 +158,45 @@ public class FileOriginRegistry : IFileOriginRegistry
         }
 
         _logger.LogInformation("Calculating metadata");
-        var analysis = new DownloadAnalysis()
+        using var tx = _conn.BeginTransaction();
+        var analysis = new DownloadAnalysis.Model(tx)
         {
-            DownloadId = DownloadId.NewId(),
             Hash = Hash.From(archiveHash),
             Size = Size.From(archiveSize),
-            Contents = paths.Zip(files).Select(pair =>
-                new DownloadContentEntry
-                {
-                    Size = pair.Second.Size,
-                    Hash = pair.Second.Hash,
-                    Path = pair.First
-                }).ToList(),
-            MetaData = metaData
+            Count = (ulong) files.Count,
         };
+        metaDataFn(tx, analysis.Id);
+        
+        foreach (var (path, file) in paths.Zip(files))
+        {
+            _ = new DownloadContentEntry.Model(tx)
+            {
+                Size = file.Size,
+                Hash = file.Hash,
+                Path = path,
+                DownloadAnalysisId = DownloadId.From(analysis.Id),
+            };
+        }
 
-        _dataStore.AllIds(EntityCategory.DownloadMetadata);
-        analysis.EnsurePersisted(_dataStore);
-        return analysis.DownloadId;
+        var id = (await tx.Commit())[analysis.Id];
+        
+        return DownloadId.From(id);
     }
 
     /// <summary>
     ///     Gets a <see cref="DownloadId"/> with a given hash.
     /// </summary>
-    private bool TryGetDownloadIdForHash(ulong expectedHash, [NotNullWhen(true)] out DownloadId? analysis)
+    private bool TryGetDownloadIdForHash(IDb? db, Hash expectedHash, [NotNullWhen(true)] out DownloadId? analysis)
     {
-        foreach (var ent in _dataStore.GetAll<DownloadAnalysis>(EntityCategory.DownloadMetadata)!)
-        {
-            if (ent.Hash != expectedHash)
-                continue;
+        db ??= _conn.Db;
 
-            analysis = ent.DownloadId;
+        foreach (var found in db.FindIndexed(expectedHash, DownloadAnalysis.Hash))
+        {
+            analysis = DownloadId.From(found);
             return true;
         }
-
-        analysis = default;
+        
+        analysis = null;
         return false;
     }
 }
