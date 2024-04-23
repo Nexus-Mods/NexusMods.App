@@ -130,7 +130,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal async Task<DiskStateTree> FileTreeToDiskImpl(FileTree fileTree, Loadout loadout, FlattenedLoadout flattenedLoadout, DiskStateTree prevState, GameInstallation installation, bool fixFileMode)
+    internal async Task<DiskStateTree> FileTreeToDiskImpl(FileTree fileTree, Loadout loadout, FlattenedLoadout flattenedLoadout, DiskStateTree prevState, GameInstallation installation, bool fixFileMode, bool skipIngest = false)
     {
         List<KeyValuePair<GamePath, HashedEntryWithName>> toDelete = new();
         List<KeyValuePair<AbsolutePath, IGeneratedFile>> toWrite = new();
