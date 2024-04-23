@@ -29,6 +29,11 @@ public class SettingComboBoxViewModel : AViewModel<ISettingComboBoxViewModel>, I
                 .Select(GetValue)
                 .BindToVM(this, vm => vm.SingleValueMultipleChoiceContainer.CurrentValue)
                 .DisposeWith(disposables);
+
+            this.WhenAnyValue(x => x.SingleValueMultipleChoiceContainer.CurrentValue)
+                .Select(GetIndex)
+                .BindToVM(this, vm => vm.SelectedItemIndex)
+                .DisposeWith(disposables);
         });
     }
 
