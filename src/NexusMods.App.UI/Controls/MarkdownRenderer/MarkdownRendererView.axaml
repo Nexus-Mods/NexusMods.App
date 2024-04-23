@@ -11,10 +11,6 @@
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="NexusMods.App.UI.Controls.MarkdownRenderer.MarkdownRendererView">
 
-    <Design.DataContext>
-        <local:MarkdownRendererDesignViewModel />
-    </Design.DataContext>
-
     <!--
         NOTE(erri120): This control can only be styled directly, not through classes.
         https://github.com/whistyun/Markdown.Avalonia/wiki/How-to-customise-style
