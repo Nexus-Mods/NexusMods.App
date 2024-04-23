@@ -7,6 +7,8 @@ using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.Abstractions.Serialization.DataModel.Ids;
 using NexusMods.DataModel.Attributes;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.DatomIterators;
+using NexusMods.MnemonicDB.Abstractions.Internals;
 
 namespace NexusMods.DataModel.Loadouts;
 
@@ -114,11 +116,14 @@ public class DiskStateRegistry : IDiskStateRegistry
         var db = _connection.Db;
         var domain = installation.Game.Domain;
         var domainId = GetDiskStateIdForDomain(domain);
-        var result = FindHistoryIndexed(db, domainId, DiskState.LoadoutRevision)
-            .Select(db.Get<DiskState.Model>)
-            .FirstOrDefault();
-
-        return result?.DiskState;
+        
+        // Find the datom which holds the disk state for the given domain
+        var domainDatom = GetHistoryDatoms(db, domainId, DiskState.LoadoutRevision).FirstOrDefault();
+        if (!domainDatom.Valid)
+            return null;
+        
+        // Extract the disk state from the transaction ID.
+        return GetAttributeAtTransactionId(db, domainDatom.T, DiskState.State);
     }
 
     /// <inheritdoc />
@@ -150,12 +155,11 @@ public class DiskStateRegistry : IDiskStateRegistry
         return new Id64(EntityCategory.InitialDiskStates, domain.GetStableHash());
     }
     
-    // Gets all entities in the history index that match a given attribute.
-    private IEnumerable<EntityId> FindHistoryIndexed<TValue, TLowLevel>(IDb db, TValue value, Attribute<TValue, TLowLevel> attribute)
+    // Gets all Datoms in the history index that match a given attribute.
+    private IEnumerable<Datom> GetHistoryDatoms<TValue, TLowLevel>(IDb db, TValue value, Attribute<TValue, TLowLevel> attribute)
     {
         // TODO: Discuss and move this to MneumonicDB or an extension
         //       method library.
-        attribute.GetDbId(db.Registry.Id);
         if (!attribute.IsIndexed)
             throw new InvalidOperationException($"Attribute {attribute.Id} is not indexed");
 
@@ -166,9 +170,24 @@ public class DiskStateRegistry : IDiskStateRegistry
         attribute.Write(EntityId.MaxValueNoPartition, db.Registry.Id, value, TxId.MinValue, false, end);
 
         var results = db.Snapshot
-            .Datoms(IndexType.AVETHistory, start.GetWrittenSpan(), end.GetWrittenSpan())
-            .Select(d => d.E);
+            .Datoms(IndexType.AVETHistory, start.GetWrittenSpan(), end.GetWrittenSpan());
 
         return results;
+    }
+    
+    // Gets an attribute as of a specific Transaction ID
+    private TValue? GetAttributeAtTransactionId<TValue, TLowLevel>(IDb db, TxId txId, Attribute<TValue, TLowLevel> attribute)
+    {
+        // TODO: Discuss and move this to MneumonicDB or an extension
+        //       method library.
+        foreach (var datom in db.Datoms(txId))
+        {
+            if (datom.A != attribute)
+                continue;
+
+            return (TValue)datom.ObjectValue;
+        }
+
+        return default(TValue);
     }
 }
