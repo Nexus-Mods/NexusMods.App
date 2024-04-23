@@ -1,11 +1,15 @@
 using System.Collections.ObjectModel;
 using System.Reactive;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
+using DynamicData;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Settings;
 using NexusMods.App.UI.Controls.Settings.SettingEntries;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Pages.Settings;
 
@@ -16,6 +20,9 @@ public class SettingsPageViewModel : APageViewModel<ISettingsPageViewModel>, ISe
     public ReactiveCommand<Unit, Unit> CancelCommand { get; }
     public ReactiveCommand<Unit, Unit> CloseCommand { get; }
     public ReadOnlyObservableCollection<ISettingEntryViewModel> SettingEntries { get; }
+
+    [Reactive]
+    public bool HasAnyValueChanged { get; private set; }
 
     public SettingsPageViewModel(ISettingsManager settingsManager, IWindowManager windowManager) : base(windowManager)
     {
@@ -40,6 +47,18 @@ public class SettingsPageViewModel : APageViewModel<ISettingsPageViewModel>, ISe
             {
                 viewModel.InteractionControlViewModel.ValueContainer.Update(settingsManager);
             }
+        }, this.WhenAnyValue(vm => vm.HasAnyValueChanged));
+
+        this.WhenActivated(disposables =>
+        {
+            SettingEntries
+                .Select(vm => vm.WhenAnyValue(x => x.InteractionControlViewModel.ValueContainer.HasChanged))
+                .Merge()
+                .SubscribeWithErrorLogging(_ =>
+                {
+                    HasAnyValueChanged = SettingEntries.Any(x => x.InteractionControlViewModel.ValueContainer.HasChanged);
+                })
+                .DisposeWith(disposables);
         });
     }
 
