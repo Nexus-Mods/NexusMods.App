@@ -428,4 +428,7 @@
     <data name="SettingEntryView_NeedRestartMessage" xml:space="preserve">
         <value>The app will need to restart to apply this setting</value>
     </data>
+    <data name="DialogButton_Discard" xml:space="preserve">
+        <value>DISCARD</value>
+    </data>
 </root>

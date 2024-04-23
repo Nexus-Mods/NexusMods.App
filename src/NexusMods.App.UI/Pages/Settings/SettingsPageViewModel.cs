@@ -55,11 +55,7 @@ public class SettingsPageViewModel : APageViewModel<ISettingsPageViewModel>, ISe
             }
         }, this.WhenAnyValue(vm => vm.HasAnyValueChanged));
 
-        CloseCommand = ReactiveCommand.Create(() =>
-        {
-            // TODO: check if any values have changed and ask for confirmation to close
-            GetWorkspaceController().ClosePanel(WorkspaceId, PanelId);
-        });
+        CloseCommand = ReactiveCommand.Create(() => {});
 
         this.WhenActivated(disposables =>
         {
