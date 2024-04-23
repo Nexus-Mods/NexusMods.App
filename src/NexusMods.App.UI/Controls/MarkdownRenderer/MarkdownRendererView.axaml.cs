@@ -1,5 +1,4 @@
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
 using ReactiveUI;
