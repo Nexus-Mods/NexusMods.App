@@ -20,7 +20,7 @@ public class SettingEntryDesignViewModel : SettingEntryViewModel
 
     private static ISettingInteractionControl CreateInteractionControlViewModel()
     {
-        return new SettingToggleViewModel(new BooleanContainer(value: false, defaultValue: true));
+        return new SettingToggleViewModel(new BooleanContainer(value: false, defaultValue: true, (_, _) => {}));
     }
 
     private record SettingsPropertyUIDescriptor : ISettingsPropertyUIDescriptor

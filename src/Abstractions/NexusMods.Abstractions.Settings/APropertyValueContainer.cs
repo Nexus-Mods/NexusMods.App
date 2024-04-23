@@ -8,10 +8,12 @@ namespace NexusMods.Abstractions.Settings;
 /// </summary>
 [PublicAPI]
 public abstract class APropertyValueContainer<T> : AbstractNotifyPropertyChanged, IValueContainer
+    where T : notnull
 {
     private T _currentValue;
     private bool _hasChanged;
     private bool _isDefault;
+    private readonly Action<ISettingsManager, T> _updaterFunc;
 
     /// <summary>
     /// Gets the equality comparer.
@@ -21,12 +23,17 @@ public abstract class APropertyValueContainer<T> : AbstractNotifyPropertyChanged
     /// <summary>
     /// Constructor.
     /// </summary>
-    protected APropertyValueContainer(T value, T defaultValue, IEqualityComparer<T>? equalityComparer = null)
+    protected APropertyValueContainer(
+        T value,
+        T defaultValue,
+        Action<ISettingsManager, T> updaterFunc,
+        IEqualityComparer<T>? equalityComparer = null)
     {
         PreviousValue = value;
         DefaultValue = defaultValue;
 
         _currentValue = value;
+        _updaterFunc = updaterFunc;
         EqualityComparer = equalityComparer ?? EqualityComparer<T>.Default;
 
         _hasChanged = false;
@@ -80,5 +87,11 @@ public abstract class APropertyValueContainer<T> : AbstractNotifyPropertyChanged
         }
 
         base.OnPropertyChanged(propertyName);
+    }
+
+    /// <inheritdoc/>
+    public void Update(ISettingsManager settingsManager)
+    {
+        _updaterFunc(settingsManager, _currentValue);
     }
 }

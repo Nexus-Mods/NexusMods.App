@@ -19,7 +19,6 @@ public class SettingsPageViewModel : APageViewModel<ISettingsPageViewModel>, ISe
 
     public SettingsPageViewModel(ISettingsManager settingsManager, IWindowManager windowManager) : base(windowManager)
     {
-        SaveCommand = ReactiveCommand.Create(() => { });
         CancelCommand = ReactiveCommand.Create(() => { });
         CloseCommand = ReactiveCommand.Create(() => { });
 
@@ -29,6 +28,19 @@ public class SettingsPageViewModel : APageViewModel<ISettingsPageViewModel>, ISe
         // ReSharper disable ArrangeObjectCreationWhenTypeNotEvident
         SettingEntries = new(new(entryViewModels));
         // ReSharper restore ArrangeObjectCreationWhenTypeNotEvident
+
+        SaveCommand = ReactiveCommand.Create(() =>
+        {
+            var changedEntries = SettingEntries
+                .Where(vm => vm.InteractionControlViewModel.ValueContainer.HasChanged)
+                .ToArray();
+
+            if (changedEntries.Length == 0) return;
+            foreach (var viewModel in changedEntries)
+            {
+                viewModel.InteractionControlViewModel.ValueContainer.Update(settingsManager);
+            }
+        });
     }
 
     private ISettingEntryViewModel CreateEntryViewModel(ISettingsPropertyUIDescriptor descriptor)
