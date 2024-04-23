@@ -2,9 +2,6 @@
 
 namespace NexusMods.DataModel.Tests;
 
-public class ArchiveInstallerTests : ADataModelTest<ArchiveInstallerTests>
+public class ArchiveInstallerTests(IServiceProvider provider) : ADataModelTest<ArchiveInstallerTests>(provider)
 {
-    public ArchiveInstallerTests(IServiceProvider provider) : base(provider)
-    {
-    }
 }

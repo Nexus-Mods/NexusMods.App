@@ -2,27 +2,29 @@
 using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.Serialization.Attributes;
+using NexusMods.MnemonicDB.Abstractions.Attributes;
 
 namespace NexusMods.Abstractions.NexusWebApi;
 
 /// <summary>
 /// Archive metadata for a download that was installed from a NexusMods mod.
 /// </summary>
-[JsonName("NexusMods.Abstractions.Games.ArchiveMetadata.NexusModsArchiveMetadata")]
-public record NexusModsArchiveMetadata : AArchiveMetaData
+public static class NexusModsArchiveMetadata
 {
+    private const string Namespace = "NexusMods.Abstractions.NexusWebApi.NexusModsArchiveMetadata";
+    
     /// <summary>
     /// The NexusMods API game ID.
     /// </summary>
-    public required GameDomain GameDomain { get; init; }
+    public static readonly StringAttribute GameId = new(Namespace, nameof(GameId)) {IsIndexed = true};
 
     /// <summary>
     /// Mod ID corresponding to the Nexus API.
     /// </summary>
-    public required ModId ModId { get; init; }
+    public static readonly ModIdAttribute ModId = new(Namespace, nameof(ModId)) { IsIndexed = true };
 
     /// <summary>
     /// File ID corresponding to the Nexus API.
     /// </summary>
-    public required FileId FileId { get; init; }
+    public static readonly FileIdAttribute FileId = new(Namespace, nameof(FileId)) { IsIndexed = true };
 }

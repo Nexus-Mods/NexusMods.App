@@ -1,16 +1,16 @@
-﻿using NexusMods.Abstractions.Serialization.Attributes;
-using NexusMods.Paths;
+﻿using NexusMods.Abstractions.MnemonicDB.Attributes;
 
 namespace NexusMods.Abstractions.FileStore.ArchiveMetadata;
 
 /// <summary>
 /// Archive metadata for a download that was installed from a file path.
 /// </summary>
-[JsonName("NexusMods.Abstractions.Games.ArchiveMetadata.FilePathMetadata")]
-public record FilePathMetadata : AArchiveMetaData
+public static class FilePathMetadata
 {
+    private const string Namespace = "NexusMods.Abstractions.FileStore.ArchiveMetadata";
+    
     /// <summary>
-    /// The filename portion of the path.
+    /// The original name of the file, e.g. "mod_v134.zip".
     /// </summary>
-    public RelativePath OriginalName { get; init; } = RelativePath.Empty;
+    public static readonly RelativePathAttribute OriginalName = new (Namespace, nameof(OriginalName));
 }

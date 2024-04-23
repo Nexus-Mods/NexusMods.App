@@ -1,6 +1,7 @@
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Diagnostics.Values;
 using NexusMods.Paths;
+using StardewModdingAPI;
 
 namespace NexusMods.Games.StardewValley.WebAPI;
 
@@ -15,8 +16,8 @@ public interface ISMAPIWebApi : IDisposable
     /// </summary>
     public Task<IReadOnlyDictionary<string, NamedLink>> GetModPageUrls(
         IOSInformation os,
-        Version gameVersion,
-        Version smapiVersion,
+        ISemanticVersion gameVersion,
+        ISemanticVersion smapiVersion,
         string[] smapiIDs
     );
 }

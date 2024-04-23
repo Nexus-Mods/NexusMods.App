@@ -2,10 +2,9 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.FileStore.ArchiveMetadata;
+using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.FileStore.Trees;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Games.Downloads;
-using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts.Files;
@@ -85,11 +84,12 @@ public class SMAPIInstaller : AModInstaller
         var modFiles = new List<AModFile>();
 
         var isSMAPI = false;
-        if (info.ArchiveMetaData is NexusModsArchiveMetadata nexusMetadata)
+        if (info.Source.Contains(NexusModsArchiveMetadata.GameId))
         {
             // https://www.nexusmods.com/stardewvalley/mods/2400
-            isSMAPI = nexusMetadata.GameDomain == StardewValley.GameDomain &&
-                      nexusMetadata.ModId == Abstractions.NexusWebApi.Types.ModId.From(2400);
+            var source = info.Source;
+            isSMAPI = source.Get(NexusModsArchiveMetadata.GameId) == StardewValley.GameDomain &&
+                      source.Get(NexusModsArchiveMetadata.ModId) == Abstractions.NexusWebApi.Types.ModId.From(2400);
         }
 
         var installDataFiles = GetInstallDataFiles(info.ArchiveFiles);
@@ -111,24 +111,24 @@ public class SMAPIInstaller : AModInstaller
         );
 
         // get the archive contents of the "install.dat" file which is an archive in an archive
-        var found = _fileOriginRegistry.GetByHash(installDataFile.Item.Hash).ToArray();
+        var found = _fileOriginRegistry.GetBy(installDataFile.Item.Hash).ToArray();
 
         DownloadId downloadId;
         if (found.Length == 0)
         {
             downloadId = await _fileOriginRegistry.RegisterDownload(
                 installDataFile.Item.StreamFactory!,
-                new FilePathMetadata { OriginalName = installDataFile.Item.FileName, Quality = Quality.Low },
-                cancellationToken
-            );
+                (tx, id) => 
+                    tx.Add(id, FilePathMetadata.OriginalName, installDataFile.Item.FileName),
+                cancellationToken);
         }
         else
         {
-            downloadId = found[0];
+            downloadId = DownloadId.From(found[0].Id);
         }
 
         var gameFolderPath = info.Locations[LocationId.Game];
-        var archiveContents = (await _fileOriginRegistry.Get(downloadId)).GetFileTree(_fileStore);
+        var archiveContents = _fileOriginRegistry.Get(downloadId).GetFileTree(_fileStore);
 
         // see original installer:
         // https://github.com/Pathoschild/SMAPI/blob/5919337236650c6a0d7755863d35b2923a94775c/src/SMAPI.Installer/InteractiveInstaller.cs#L384
@@ -140,7 +140,7 @@ public class SMAPIInstaller : AModInstaller
             ? "Contents/MacOS/StardewValley"
             : "StardewValley";
 
-        Version? version = null;
+        string? version = null;
 
         // add all files from the archive
         foreach (var kv in archiveContents.GetFiles())
@@ -161,7 +161,7 @@ public class SMAPIInstaller : AModInstaller
                         await stream.CopyToAsync(fs, cancellationToken);
                     }
 
-                    version = tempFile.Path.FileInfo.GetFileVersionInfo().GetBestVersion();
+                    version = tempFile.Path.FileInfo.GetFileVersionInfo().GetVersionString();
                 }
                 catch (Exception e)
                 {
@@ -216,6 +216,8 @@ public class SMAPIInstaller : AModInstaller
             _logger.LogError("Unable to find {Path} in the game folder. Your installation might be broken!", gameDepsFilePath);
         }
 
+        version ??= "0.0.0";
+
         return new[]
         {
             new ModInstallerResult
@@ -234,7 +236,7 @@ public class SMAPIInstaller : AModInstaller
                         Version = version,
                     },
                 ],
-                Version = version?.ToString(),
+                Version = version,
             },
         };
     }

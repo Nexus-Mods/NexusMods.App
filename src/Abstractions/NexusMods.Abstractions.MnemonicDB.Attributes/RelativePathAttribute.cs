@@ -2,7 +2,7 @@ using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.Paths;
 
-namespace NexusMods.DataModel.Attributes;
+namespace NexusMods.Abstractions.MnemonicDB.Attributes;
 
 /// <summary>
 /// Represents a relative path.

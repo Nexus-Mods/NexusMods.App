@@ -22,18 +22,17 @@ internal static class ArchiveVerbs
     {
         var results = await renderer.WithProgress(token, async () =>
         {
-            var downloadId = await fileOriginRegistry.RegisterDownload(inputFile, new FilePathMetadata
-            {
-                OriginalName = inputFile.Name,
-                Quality = Quality.Low,
-                Name = inputFile.Name
-            }, token);
-            var metadata = await fileOriginRegistry.Get(downloadId);
+            var downloadId = await fileOriginRegistry.RegisterDownload(inputFile,
+                (tx, id) =>
+                {
+                    tx.Add(id, FilePathMetadata.OriginalName, inputFile.Name);
+                }, token);
+            var metadata = fileOriginRegistry.Get(downloadId);
             return metadata.Contents.Select(kv =>
             {
                 return new object[]
                 {
-                    kv.Path, kv.Size, kv.Hash
+                    kv.Path, kv.Size, kv.Hash,
                 };
             });
         });
