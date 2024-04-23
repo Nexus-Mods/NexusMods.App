@@ -105,13 +105,17 @@ public static class Services
         coll.AddSingleton(typeof(IFingerprintCache<,>), typeof(DataStoreFingerprintCache<,>));
 
         coll.AddAllSingleton<ILoadoutRegistry, LoadoutRegistry>();
-        coll.AddAllSingleton<IFileHashCache, FileHashCache>();
+
         coll.AddAllSingleton<IArchiveInstaller, ArchiveInstaller>();
         coll.AddAllSingleton<IToolManager, ToolManager>();
         
         // Disk State Registry
         coll.AddAllSingleton<IDiskStateRegistry, DiskStateRegistry>();
         coll.AddAttributeCollection(typeof(DiskState));
+
+        // File Hash Cache
+        coll.AddAllSingleton<IFileHashCache, FileHashCache>();
+        coll.AddAttributeCollection(typeof(HashCacheEntry));
         
         coll.AddAllSingleton<IApplyService, ApplyService>();
 
