@@ -1,3 +1,4 @@
+using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -8,7 +9,7 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
 {
     public FileOriginsPageViewModel(
         ILoadoutRegistry loadoutRegistry,
-        
+        IFileOriginRegistry fileOriginRegistry,
         IWindowManager windowManager) : base(windowManager)
     {
         
