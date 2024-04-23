@@ -773,13 +773,15 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                     });
                 }))
         };
-        
-        
-        await BackupNewFiles(installation, FileTree.Create(gameFiles.Files.Select(kv =>
-        {
-            var storedFile = (kv.Value as StoredFile)!;
-            return KeyValuePair.Create(storedFile.To, kv.Value);
-        } )));
+
+        var fileTree = FileTree.Create(gameFiles.Files.Select(kv =>
+                {
+                    var storedFile = (kv.Value as StoredFile)!;
+                    return KeyValuePair.Create(storedFile.To, kv.Value);
+                }
+            )
+        );
+        await BackupNewFiles(installation, fileTree);
 
         var loadout = _loadoutRegistry.Alter(loadoutId, "Initial loadout",  loadout => loadout
             with
@@ -794,8 +796,17 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         // Reset the game folder to initial state if making a new loadout.
         // We must do this before saving state, as Apply does a diff against
         // the last state. Which will be a state from previous loadout.
-        if (isCached) 
-            await Apply(loadout, true);
+        if (isCached)
+        {
+            // This is a 'fast apply' operation, that avoids recomputing the file tree.
+            // And avoids a double save-state.
+            var flattened = await LoadoutToFlattenedLoadout(loadout);
+            var prevState = _diskStateRegistry.GetState(loadout.Installation)!;
+            await FileTreeToDisk(fileTree, loadout, flattened, prevState, loadout.Installation, true);
+            
+            // Note: DiskState returned from `FileTreeToDisk` and `initialState`
+            // are the same in terms of content!!
+        }
         
         await _diskStateRegistry.SaveState(loadout.Installation, initialState);
         return loadout;
