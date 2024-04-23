@@ -6,6 +6,17 @@
                                 xmlns:modLibrary="clr-namespace:NexusMods.App.UI.Pages.ModLibrary"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="NexusMods.App.UI.Pages.ModLibrary.DownloadsLibraryView">
-    Welcome to Avalonia!
-</reactiveUi:ReactiveUserControl>
+    <Grid RowDefinitions="Auto, *">
+        <Border Grid.Row="0" Classes="Toolbar">
+        </Border>
 
+        <DataGrid Grid.Row="1"
+                  CanUserReorderColumns="True"
+                  CanUserResizeColumns="True"
+                  CanUserSortColumns="True"
+                  x:Name="DataGrid">
+
+        </DataGrid>
+    </Grid>
+
+</reactiveUi:ReactiveUserControl>
