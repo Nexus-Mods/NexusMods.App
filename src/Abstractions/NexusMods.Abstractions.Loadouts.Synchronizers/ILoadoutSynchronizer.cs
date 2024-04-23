@@ -37,8 +37,12 @@ public interface ILoadoutSynchronizer
     /// Applies a loadout to the game folder.
     /// </summary>
     /// <param name="loadout"></param>
+    /// <param name="forceSkipIngest">
+    ///     Skips checking if an ingest is needed.
+    ///     Force overrides current locations to intended tree
+    /// </param>
     /// <returns>The new DiskState after the files were applied</returns>
-    Task<DiskStateTree> Apply(Loadout loadout);
+    Task<DiskStateTree> Apply(Loadout loadout, bool forceSkipIngest = false);
 
     /// <summary>
     /// Ingests changes from the game folder into the loadout.

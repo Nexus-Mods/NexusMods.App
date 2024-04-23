@@ -35,8 +35,12 @@ public interface IStandardizedLoadoutSynchronizer : ILoadoutSynchronizer
     /// <param name="flattenedLoadout"></param>
     /// <param name="prevState"></param>
     /// <param name="installation"></param>
+    /// <param name="skipIngest">
+    ///     Skips checking if an ingest is needed.
+    ///     Force overrides current locations to intended tree.
+    /// </param>
     Task<DiskStateTree> FileTreeToDisk(FileTree fileTree, Loadout loadout, FlattenedLoadout flattenedLoadout,
-        DiskStateTree prevState, GameInstallation installation);
+        DiskStateTree prevState, GameInstallation installation, bool skipIngest = false);
 
     #endregion
 
