@@ -161,7 +161,8 @@ public class SMAPIInstaller : AModInstaller
                         await stream.CopyToAsync(fs, cancellationToken);
                     }
 
-                    version = tempFile.Path.FileInfo.GetFileVersionInfo().GetVersionString();
+                    var fvi = tempFile.Path.FileInfo.GetFileVersionInfo();
+                    version = fvi.FileVersionString;
                 }
                 catch (Exception e)
                 {
