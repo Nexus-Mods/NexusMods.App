@@ -82,6 +82,7 @@
 
             <Border Grid.Row="2"
                     x:Name="FooterBorder"
+                    BorderThickness="0,1,0,0"
                     Classes="Footer OutlineWeak">
                 <StackPanel>
                     <Button Classes="Standard Tertiary"
