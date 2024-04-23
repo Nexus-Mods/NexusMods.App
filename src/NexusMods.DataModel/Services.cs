@@ -112,6 +112,7 @@ public static class Services
         // Disk State Registry
         coll.AddAllSingleton<IDiskStateRegistry, DiskStateRegistry>();
         coll.AddAttributeCollection(typeof(DiskState));
+        coll.AddAttributeCollection(typeof(InitialDiskState));
 
         // File Hash Cache
         coll.AddAllSingleton<IFileHashCache, FileHashCache>();
