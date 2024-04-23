@@ -6,7 +6,10 @@ using NexusMods.App.UI.WorkspaceSystem;
 namespace NexusMods.App.UI.Pages.Changelog;
 
 [JsonName("NexusMods.App.UI.Pages.Changelog.ChangelogPageContext")]
-public record ChangelogPageContext(Version? TargetVersion) : IPageFactoryContext;
+public record ChangelogPageContext : IPageFactoryContext
+{
+    public required Version? TargetVersion { get; init; }
+}
 
 [UsedImplicitly]
 public class ChangelogPageFactory : APageFactory<IChangelogPageViewModel, ChangelogPageContext>
@@ -36,7 +39,10 @@ public class ChangelogPageFactory : APageFactory<IChangelogPageViewModel, Change
                 PageData = new PageData
                 {
                     // TODO: get current version
-                    Context = new ChangelogPageContext(TargetVersion: null),
+                    Context = new ChangelogPageContext
+                    {
+                        TargetVersion = null,
+                    },
                     FactoryId = StaticId,
                 },
             },

@@ -10,6 +10,6 @@
     x:Class="NexusMods.App.UI.Pages.Changelog.ChangelogPageView"
     Width="0" Height="0">
 
-    This is the View
+    <reactive:ViewModelViewHost x:Name="ViewModelViewHost"/>
 
 </reactive:ReactiveUserControl>
