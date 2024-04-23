@@ -47,7 +47,7 @@ public class FileHashCache : IFileHashCache
     /// <inheritdoc/>
     public bool TryGetCached(AbsolutePath path, out HashCacheEntry.Model entry)
     {
-        var nameHash = path.ToString().XxHash64AsUtf8();
+        var nameHash = path.ToString().GetStableHash();
         var db = _conn.Db;
         var id = db
             .FindIndexed(nameHash, HashCacheEntry.NameHash)
@@ -157,7 +157,7 @@ public class FileHashCache : IFileHashCache
     
     private static void AddOrReplace(HashedEntryWithName entry, IDb db, string nameString, ITransaction tx)
     {
-        var existing = db.FindIndexed(nameString.XxHash64AsUtf8(), HashCacheEntry.NameHash)
+        var existing = db.FindIndexed(nameString.GetStableHash(), HashCacheEntry.NameHash)
             .FirstOrDefault(EntityId.MinValue);
 
         if (existing != EntityId.MinValue)
