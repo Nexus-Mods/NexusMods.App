@@ -1,4 +1,3 @@
-using NexusMods.Abstractions.Diagnostics.References;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Pages.Diagnostics;

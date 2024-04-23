@@ -1,7 +1,6 @@
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics;
-using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.App.UI.Controls.MarkdownRenderer;
 using NexusMods.App.UI.WorkspaceSystem;
 
