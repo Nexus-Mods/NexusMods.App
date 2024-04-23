@@ -1,5 +1,6 @@
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.Serialization.Attributes;
+using NexusMods.Abstractions.Serialization.DataModel;
 
 namespace NexusMods.Networking.Downloaders.Tasks.State;
 
@@ -8,8 +9,11 @@ namespace NexusMods.Networking.Downloaders.Tasks.State;
 /// </summary>
 /// <param name="Query">Converts to/from NXMUrl</param>
 [JsonName("NexusMods.Networking.Downloaders.Tasks.State.NxmDownloadState")]
-public record NxmDownloadState(string Query) : ITypeSpecificState
+public record NxmDownloadState(string Query) : DownloaderState.Model
 {
+
+    bool IsThis(Entity e) => e.Contains(NxmDownloadState.Query);
+    
     // ReSharper disable once UnusedMember.Global - Required for serialization
     public NxmDownloadState() : this(string.Empty) { }
 

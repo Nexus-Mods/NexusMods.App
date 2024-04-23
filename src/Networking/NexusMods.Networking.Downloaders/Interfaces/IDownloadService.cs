@@ -77,25 +77,25 @@ public interface IDownloadService : IDisposable
     /// This is a callback fired by individual implementations of <see cref="IDownloadTask"/>.
     /// Fires off the necessary events.
     /// </summary>
-    void OnComplete(IDownloadTask task);
+    Task OnComplete(IDownloadTask task);
 
     /// <summary>
     /// This is a callback fired by individual implementations of <see cref="IDownloadTask"/>.
     /// Fires off the necessary events.
     /// </summary>
-    void OnCancelled(IDownloadTask task);
+    Task OnCancelled(IDownloadTask task);
 
     /// <summary>
     /// This is a callback fired by individual implementations of <see cref="IDownloadTask"/>.
     /// Fires off the necessary events.
     /// </summary>
-    void OnPaused(IDownloadTask task);
+    Task OnPaused(IDownloadTask task);
 
     /// <summary>
     /// This is a callback fired by individual implementations of <see cref="IDownloadTask"/>.
     /// Fires off the necessary events.
     /// </summary>
-    void OnResumed(IDownloadTask task);
+    Task OnResumed(IDownloadTask task);
 
     /// <summary>
     /// Gets the total throughput of all download operations in bytes per second.
@@ -116,7 +116,7 @@ public interface IDownloadService : IDisposable
     ///    This should be called by the individual tasks right before they start downloading, such that the absolute
     ///    latest state is persisted in the case user kills the app.
     /// </remarks>
-    void UpdatePersistedState(IDownloadTask task);
+    Task UpdatePersistedState(IDownloadTask task);
 
     /// <summary>
     /// Finishes the download process.

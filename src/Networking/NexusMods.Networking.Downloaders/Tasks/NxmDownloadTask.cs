@@ -58,6 +58,8 @@ public class NxmDownloadTask : IDownloadTask, IHaveDownloadVersion, IHaveFileSiz
     /// <inheritdoc />
     public DownloadTaskStatus Status { get; set; } = DownloadTaskStatus.Idle;
 
+    private DownloaderState.Model _downloaderState = null!;
+
     /// <inheritdoc />
     public string FriendlyName { get; private set; } = "Unknown NXM Mod";
 
@@ -101,21 +103,17 @@ public class NxmDownloadTask : IDownloadTask, IHaveDownloadVersion, IHaveFileSiz
     /// Initializes this download from suspended state (after rebooting application or pausing).
     /// After this method is called, please call <see cref="Resume"/>.
     /// </summary>
-    public void RestoreFromSuspend(DownloaderState state)
-    {
+    public void RestoreFromSuspend(DownloaderState.Model state)
+    { 
+        _downloaderState = state;
+
         if (state.TypeSpecificData is not NxmDownloadState data)
             throw new ArgumentException("Invalid state provided.", nameof(state));
 
         var absPath = FileSystem.Shared.FromUnsanitizedFullPath(state.DownloadPath);
         _downloadLocation = new TemporaryPath(FileSystem.Shared, absPath);
         FriendlyName = state.FriendlyName;
-        GameName = state.GameName!;
-        GameDomain = state.GameDomain!;
-        SizeBytes = state.SizeBytes!.Value;
-        _defaultDownloadedSize = state.DownloadedBytes;
-
-        Version = state.Version!;
-        Status = DownloadTaskStatus.Paused;
+        _defaultDownloadedSize = (long)state.DownloadedBytes.Value;
         _url = NXMUrl.Parse(new Uri(data.Query));
     }
 
@@ -155,7 +153,7 @@ public class NxmDownloadTask : IDownloadTask, IHaveDownloadVersion, IHaveFileSiz
         Version = file.Version;
         SizeBytes = file.SizeInBytes.GetValueOrDefault(-1);
         GameName = _url.Mod.Game;
-        Owner.UpdatePersistedState(this);
+        await Owner.UpdatePersistedState(this);
     }
 
     private async Task<HttpRequestMessage[]> InitDownloadLinks(CancellationToken token)

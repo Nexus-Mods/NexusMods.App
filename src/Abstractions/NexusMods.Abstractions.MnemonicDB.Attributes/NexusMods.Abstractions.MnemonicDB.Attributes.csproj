@@ -7,4 +7,8 @@
       <PackageReference Include="NexusMods.MnemonicDB.Abstractions" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\NexusMods.Abstractions.GameLocators\NexusMods.Abstractions.GameLocators.csproj" />
+    </ItemGroup>
+
 </Project>

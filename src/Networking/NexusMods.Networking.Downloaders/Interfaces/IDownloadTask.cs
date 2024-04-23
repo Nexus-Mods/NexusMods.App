@@ -1,4 +1,6 @@
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.Downloaders.Tasks.State;
+using NexusMods.Paths;
 
 namespace NexusMods.Networking.Downloaders.Interfaces;
 
@@ -7,12 +9,12 @@ namespace NexusMods.Networking.Downloaders.Interfaces;
 /// </summary>
 public interface IDownloadTask
 {
-    /// <summary>
-    /// Total size of items currently downloaded.
-    /// </summary>
-    /// <returns>0 if unknown.</returns>
-    long DownloadedSizeBytes { get; }
 
+    /// <summary>
+    /// The DownloaderState of the task.
+    /// </summary>
+    DownloaderState.Model State { get; }
+    
     /// <summary>
     /// Calculates the download speed of the current job.
     /// </summary>
@@ -24,18 +26,7 @@ public interface IDownloadTask
     /// </summary>
     IDownloadService Owner { get; }
 
-    /// <summary>
-    /// Status of the current task.
-    /// </summary>
-    DownloadTaskStatus Status { get; set; }
 
-    /// <summary>
-    /// Friendly name for the task.
-    /// </summary>
-    /// <remarks>
-    ///     Only available after download has started.
-    /// </remarks>
-    public string FriendlyName { get; }
 
     /// <summary>
     /// Starts executing the task.
@@ -56,12 +47,6 @@ public interface IDownloadTask
     /// Resumes a download task.
     /// </summary>
     Task Resume();
-
-    /// <summary>
-    /// Exports state for performing a suspend operation.
-    /// </summary>
-    /// <remarks>Suspend means 'pause download by terminating it, leaving partial download intact'.</remarks>
-    DownloaderState ExportState();
 }
 
 // TODO: These statuses need unit tests for individual downloaders.
@@ -69,7 +54,7 @@ public interface IDownloadTask
 /// <summary>
 /// Current status of the task.
 /// </summary>
-public enum DownloadTaskStatus
+public enum DownloadTaskStatus : byte
 {
     /// <summary>
     /// The task is not yet initialized.
@@ -94,5 +79,10 @@ public enum DownloadTaskStatus
     /// <summary>
     /// The task has ran to completion.
     /// </summary>
-    Completed
+    Completed,
+    
+    /// <summary>
+    /// The download was canceled.
+    /// </summary>
+    Cancelled
 }

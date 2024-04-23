@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.HttpDownloader;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Networking.Downloaders.Interfaces.Traits;
 using NexusMods.Networking.Downloaders.Tasks.State;
@@ -14,7 +15,7 @@ namespace NexusMods.Networking.Downloaders.Tasks;
 /// <remarks>
 ///     This task is usually created via <see cref="DownloadService.AddNxmTask"/>.
 /// </remarks>
-public class HttpDownloadTask : IDownloadTask, IHaveFileSize
+public class HttpDownloadTask : ADownloadTask, IHaveFileSize
 {
     private string _url = null!;
     private readonly ILogger<HttpDownloadTask> _logger;
@@ -23,13 +24,19 @@ public class HttpDownloadTask : IDownloadTask, IHaveFileSize
     private readonly IHttpDownloader _downloader;
     private readonly HttpDownloaderState _state;
 
+    private DownloaderState.Model _downloaderState = null!;
+
     private TemporaryPath _downloadLocation; // for resume
     private CancellationTokenSource _tokenSource;
     private Task? _task;
-    private long _defaultDownloadedSize;
+    private Size _defaultDownloadedSize;
+    private readonly IConnection _conn;
 
     /// <inheritdoc />
-    public long DownloadedSizeBytes => (long)(_state.ActivityStatus?.MakeTypedReport().Current.Value.Value ?? (ulong)_defaultDownloadedSize);
+    public Size DownloadedSizeBytes => _state.ActivityStatus?.MakeTypedReport().Current.Value ?? _defaultDownloadedSize;
+
+    /// <inheritdoc />
+    public EntityId TaskId => _downloaderState.Id;
 
     /// <inheritdoc />
     public long CalculateThroughput()
@@ -45,22 +52,23 @@ public class HttpDownloadTask : IDownloadTask, IHaveFileSize
     public IDownloadService Owner { get; }
 
     /// <inheritdoc />
-    public DownloadTaskStatus Status { get; set; } = DownloadTaskStatus.Idle;
+    public DownloadTaskStatus Status => _downloaderState.Status;
 
     /// <inheritdoc />
-    public string FriendlyName { get; private set; } = "Unknown HTTP Download";
+    public string FriendlyName => _downloaderState.FriendlyName;
 
     /// <inheritdoc />
-    public long SizeBytes { get; private set; } = -1;
+    public Size SizeBytes => _downloaderState.Size;
 
     /// <summary/>
     /// <remarks>
     ///     This constructor is intended to be called from Dependency Injector.
     ///     After running this constructor, you will need to run
     /// </remarks>
-    public HttpDownloadTask(ILogger<HttpDownloadTask> logger, TemporaryFileManager temp, HttpClient client, IHttpDownloader downloader, IDownloadService owner)
+    public HttpDownloadTask(IServiceProvider provider) : base(provider)
     {
         _logger = logger;
+        _conn = connection;
         _temp = temp;
         _client = client;
         _downloader = downloader;
@@ -72,28 +80,33 @@ public class HttpDownloadTask : IDownloadTask, IHaveFileSize
     /// <summary>
     /// Initializes components of this task that cannot be DI Injected.
     /// </summary>
-    public void Init(string url)
+    public async Task Init(Uri url)
     {
-        _url = url;
-        _downloadLocation = _temp.CreateFile();
+        using var tx = _conn.BeginTransaction();
+        var task = new DownloaderState.Model(tx)
+        {
+            Status = DownloadTaskStatus.Idle,
+            DownloadPath = _temp.CreateFile().ToString(),
+            FriendlyName = "Unknown HTTP Download",
+            DownloadedBytes = Size.Zero,
+        };
+        tx.Add(task.Id, HttpDownloadState.Uri, url);
+        var result = await tx.Commit();
+        _downloaderState = result.Remap(task);
     }
 
     /// <summary>
     /// Initializes this download from suspended state (after rebooting application or pausing).
     /// After this method is called, please call <see cref="Resume"/>.
     /// </summary>
-    public void RestoreFromSuspend(DownloaderState state)
+    public void RestoreFromSuspend(DownloaderState.Model state)
     {
-        if (state.TypeSpecificData is not HttpDownloadState data)
+        if (!state.Contains(HttpDownloadState.Uri))
             throw new ArgumentException("Invalid state provided.", nameof(state));
 
         var absPath = FileSystem.Shared.FromUnsanitizedFullPath(state.DownloadPath);
         _downloadLocation = new TemporaryPath(FileSystem.Shared, absPath);
-        FriendlyName = state.FriendlyName;
-        SizeBytes = state.SizeBytes!.Value;
-        Status = DownloadTaskStatus.Paused;
         _defaultDownloadedSize = state.DownloadedBytes;
-        _url = data.Url!;
     }
 
     public Task StartAsync()
@@ -119,15 +132,15 @@ public class HttpDownloadTask : IDownloadTask, IHaveFileSize
     {
         var nameSize = await GetNameAndSize();
         FriendlyName = nameSize.FileName;
-        SizeBytes = nameSize.FileSize;
-        Owner.UpdatePersistedState(this);
+        SizeBytes = Size.FromLong(nameSize.FileSize);
+        await Owner.UpdatePersistedState(this);
     }
 
     private async Task StartOrResumeDownload(TemporaryPath tempPath, CancellationToken token)
     {
         Status = DownloadTaskStatus.Downloading;
         var request = new HttpRequestMessage(HttpMethod.Get, _url);
-        await _downloader.DownloadAsync(new[] { request }, tempPath, _state, Size.FromLong(SizeBytes <= 0 ? 0 : SizeBytes), token);
+        await _downloader.DownloadAsync(new[] { request }, tempPath, _state, SizeBytes <= Size.Zero ? Size.Zero : SizeBytes, token);
     }
 
     private async Task<GetNameAndSizeResult> GetNameAndSize()
@@ -177,8 +190,7 @@ public class HttpDownloadTask : IDownloadTask, IHaveFileSize
         Owner.OnResumed(this);
         return _task;
     }
-
-    public DownloaderState ExportState() => DownloaderState.Create(this, new HttpDownloadState(_url), _downloadLocation.ToString());
+    
     private record GetNameAndSizeResult(string FileName, long FileSize);
 
     #region Test Only

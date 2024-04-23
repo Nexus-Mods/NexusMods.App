@@ -1,3 +1,5 @@
+using NexusMods.Paths;
+
 namespace NexusMods.Networking.Downloaders.Interfaces.Traits;
 
 /// <summary>
@@ -8,5 +10,5 @@ public interface IHaveFileSize
     /// <summary>
     /// Size of the file being downloaded in bytes. A value of less than 0 means size is unknown.
     /// </summary>
-    public long SizeBytes { get; }
+    public Size SizeBytes { get; }
 }
