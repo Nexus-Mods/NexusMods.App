@@ -15,21 +15,14 @@ public partial class MarkdownRendererView : ReactiveUserControl<IMarkdownRendere
 
         this.WhenActivated(disposables =>
         {
-            this.WhenAnyValue(x => x.ViewModel)
-                .WhereNotNull()
-                .Do(PopulateFromViewModel)
-                .Subscribe()
-                .DisposeWith(disposables);
+            var viewModel = ViewModel!;
+
+            MarkdownScrollViewer.Engine.HyperlinkCommand = viewModel.OpenLinkCommand;
+            MarkdownScrollViewer.Engine.Plugins.PathResolver = viewModel.PathResolver;
+            MarkdownScrollViewer.Engine.Plugins.Plugins.Add(viewModel.ImageResolverPlugin);
 
             this.OneWayBind(ViewModel, vm => vm.Contents, view => view.MarkdownScrollViewer.Markdown)
                 .DisposeWith(disposables);
         });
-    }
-
-    private void PopulateFromViewModel(IMarkdownRendererViewModel viewModel)
-    {
-        MarkdownScrollViewer.Engine.HyperlinkCommand = viewModel.OpenLinkCommand;
-        MarkdownScrollViewer.Engine.Plugins.PathResolver = viewModel.PathResolver;
-        MarkdownScrollViewer.Engine.Plugins.Info.Register(viewModel.ImageResolver);
     }
 }

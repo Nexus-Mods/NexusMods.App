@@ -1,6 +1,6 @@
 using System.Reactive;
-using Avalonia.Media;
 using JetBrains.Annotations;
+using Markdown.Avalonia.Plugins;
 using Markdown.Avalonia.Utils;
 using ReactiveUI;
 
@@ -9,11 +9,12 @@ namespace NexusMods.App.UI.Controls.MarkdownRenderer;
 public class MarkdownRendererDesignViewModel : AViewModel<IMarkdownRendererViewModel>, IMarkdownRendererViewModel
 {
     public string Contents { get; set; }
+    public Uri? MarkdownUri { get; set; }
+
+    public IMdAvPlugin ImageResolverPlugin => null!;
+    public IPathResolver PathResolver => null!;
 
     public ReactiveCommand<string, Unit> OpenLinkCommand { get; } = ReactiveCommand.Create<string>(_ => { });
-
-    public IImageResolver ImageResolver => new ImageResolverImpl();
-    public IPathResolver PathResolver => new PathResolverImpl();
 
     [UsedImplicitly]
     public MarkdownRendererDesignViewModel() : this(DefaultContents) { }
@@ -21,25 +22,6 @@ public class MarkdownRendererDesignViewModel : AViewModel<IMarkdownRendererViewM
     public MarkdownRendererDesignViewModel(string contents)
     {
         Contents = contents;
-    }
-
-    private class PathResolverImpl : IPathResolver
-    {
-        public string? AssetPathRoot { get; set; }
-        public IEnumerable<string>? CallerAssemblyNames { get; set; }
-
-        public Task<Stream?>? ResolveImageResource(string relativeOrAbsolutePath)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    private class ImageResolverImpl : IImageResolver
-    {
-        public Task<IImage?> Load(Stream stream)
-        {
-            throw new NotImplementedException();
-        }
     }
 
     // From https://jaspervdj.be/lorem-markdownum/
