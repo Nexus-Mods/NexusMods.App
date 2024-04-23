@@ -29,7 +29,6 @@ internal class TypeFinder : ITypeFinder
         typeof(MyGamesPageContext),
         typeof(ModInfoPageContext),
         typeof(DiagnosticListPageContext),
-        typeof(DiagnosticDetailsPageContext),
         typeof(ApplyDiffPageContext),
         typeof(SettingsPageContext),
 
