@@ -431,4 +431,7 @@
     <data name="DialogButton_Discard" xml:space="preserve">
         <value>DISCARD</value>
     </data>
+    <data name="ChangelogPageViewModel_ChangelogPageViewModel_Changelog" xml:space="preserve">
+        <value>Changelog</value>
+    </data>
 </root>
