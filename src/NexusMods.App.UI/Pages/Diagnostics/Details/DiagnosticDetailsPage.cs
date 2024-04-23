@@ -1,11 +1,13 @@
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics;
+using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.App.UI.Controls.MarkdownRenderer;
 using NexusMods.App.UI.WorkspaceSystem;
 
 namespace NexusMods.App.UI.Pages.Diagnostics;
 
+[JsonName("NexusMods.App.UI.Pages.Diagnostics.DiagnosticDetailsPageContext")]
 public record DiagnosticDetailsPageContext : IPageFactoryContext
 {
     public required Diagnostic Diagnostic { get; init; }
