@@ -6,26 +6,26 @@ using NexusMods.App.UI.WorkspaceSystem;
 
 namespace NexusMods.App.UI.Pages.ModLibrary;
 
-[JsonName("NexusMods.App.UI.Pages.ModLibrary.DownloadsLibrary.DownloadsLibraryPageContext")]
-public record DownloadsLibraryPageContext : IPageFactoryContext
+[JsonName("NexusMods.App.UI.Pages.ModLibrary.FileOrigins.FileOriginsPageContext")]
+public record FileOriginsPageContext : IPageFactoryContext
 {
     public required LoadoutId LoadoutId { get; init; }
 }
 
 
 [UsedImplicitly]
-public class DownloadsLibraryPageFactory : APageFactory<IDownloadsLibraryViewModel, DownloadsLibraryPageContext>
+public class FileOriginsPageFactory : APageFactory<IFileOriginsPageViewModel, FileOriginsPageContext>
 {
-    public DownloadsLibraryPageFactory(IServiceProvider serviceProvider) : base(serviceProvider)
+    public FileOriginsPageFactory(IServiceProvider serviceProvider) : base(serviceProvider)
     {
     }
 
     public static readonly PageFactoryId StaticId = PageFactoryId.From(Guid.Parse("B7E092D2-DF06-4329-ABEB-6FEE9373F238"));
     public override PageFactoryId Id => StaticId;
 
-    public override IDownloadsLibraryViewModel CreateViewModel(DownloadsLibraryPageContext context)
+    public override IFileOriginsPageViewModel CreateViewModel(FileOriginsPageContext context)
     {
-        return ServiceProvider.GetRequiredService<IDownloadsLibraryViewModel>();
+        return ServiceProvider.GetRequiredService<IFileOriginsPageViewModel>();
     }
 
     public override IEnumerable<PageDiscoveryDetails?> GetDiscoveryDetails(IWorkspaceContext workspaceContext)
@@ -39,7 +39,7 @@ public class DownloadsLibraryPageFactory : APageFactory<IDownloadsLibraryViewMod
             PageData = new PageData
             {
                 FactoryId = Id,
-                Context = new DownloadsLibraryPageContext
+                Context = new FileOriginsPageContext
                 {
                     LoadoutId = loadoutContext.LoadoutId
                 }

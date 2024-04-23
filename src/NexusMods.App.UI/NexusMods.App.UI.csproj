@@ -511,6 +511,9 @@
         <Compile Update="Pages\ModLibrary\DownloadsLibrary\DownloadsLibraryViewModel.cs">
           <DependentUpon>IDownloadsLibraryViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Pages\ModLibrary\FileOrigins\FileOriginsPageViewModel.cs">
+          <DependentUpon>IFileOriginsPageViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>

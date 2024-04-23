@@ -1,11 +1,11 @@
-<reactiveUi:ReactiveUserControl x:TypeArguments="modLibrary:IDownloadsLibraryViewModel" xmlns="https://github.com/avaloniaui"
+<reactiveUi:ReactiveUserControl x:TypeArguments="modLibrary:IFileOriginsPageViewModel" xmlns="https://github.com/avaloniaui"
                                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:modLibrary="clr-namespace:NexusMods.App.UI.Pages.ModLibrary"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-                                x:Class="NexusMods.App.UI.Pages.ModLibrary.DownloadsLibraryView">
+                                x:Class="NexusMods.App.UI.Pages.ModLibrary.FileOriginsPageView">
     <Grid RowDefinitions="Auto, *">
         <Border Grid.Row="0" Classes="Toolbar">
         </Border>
