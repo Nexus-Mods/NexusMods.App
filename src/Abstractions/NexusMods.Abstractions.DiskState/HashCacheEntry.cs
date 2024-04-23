@@ -35,7 +35,7 @@ public static class HashCacheEntry
     public static readonly SizeAttribute Size = new(Namespace, nameof(Size)) { NoHistory = true };
 
 
-    public class Model(ITransaction tx) : Entity(tx)
+    public class Model(ITransaction tx) : Entity(tx, (byte)IdPartitions.HashCache)
     {
         /// <summary>
         /// The xxHash64 of the name
