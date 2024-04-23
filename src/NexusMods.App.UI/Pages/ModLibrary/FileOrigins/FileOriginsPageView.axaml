@@ -15,8 +15,16 @@
                   CanUserResizeColumns="True"
                   CanUserSortColumns="True"
                   x:Name="DataGrid">
-
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="NAME"  />
+                <DataGridTextColumn Header="VERSION"  />
+                <DataGridTextColumn Header="SIZE"  />
+                <DataGridTextColumn Header="DATE"  />
+                <DataGridTemplateColumn Header="ACTIONS" />
+                
+            </DataGrid.Columns>
         </DataGrid>
+        
     </Grid>
 
 </reactiveUi:ReactiveUserControl>
