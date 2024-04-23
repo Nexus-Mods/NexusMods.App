@@ -21,18 +21,40 @@ public record LanguageSettings : ISettings
                 .WithDisplayName("Language")
                 .WithDescription("Set the language for the application.")
                 .UseSingleValueMultipleChoiceContainer(
-                    valueComparer: EqualityComparer<CultureInfo>.Create((a,b) => a?.Equals(b) ?? false),
+                    valueComparer: CultureInfoComparer.Instance,
                     allowedValues: [
                         // TODO: dynamically get allowed values
                         new CultureInfo("en"),
-                        new CultureInfo("de"),
                         new CultureInfo("pl"),
+                        new CultureInfo("de"),
+                        new CultureInfo("it"),
                     ],
-                    valueToDisplayString: static cultureInfo => cultureInfo.DisplayName
+                    valueToDisplayString: static cultureInfo => cultureInfo.NativeName
                 )
                 .RequiresRestart()
             )
         );
+    }
+
+    private class CultureInfoComparer : IEqualityComparer<CultureInfo>
+    {
+        public static readonly IEqualityComparer<CultureInfo> Instance = new CultureInfoComparer();
+
+        public bool Equals(CultureInfo? x, CultureInfo? y)
+        {
+            if (x is null && y is null) return true;
+            if (x is null || y is null) return false;
+
+            if (x.Equals(y)) return true;
+
+            // en_US should equal en
+            if (x.Parent.Equals(y)) return true;
+            if (y.Parent.Equals(x)) return true;
+
+            return false;
+        }
+
+        public int GetHashCode(CultureInfo obj) => throw new NotSupportedException();
     }
 }
 

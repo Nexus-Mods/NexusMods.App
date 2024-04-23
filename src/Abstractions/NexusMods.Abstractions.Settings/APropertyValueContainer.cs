@@ -7,27 +7,39 @@ namespace NexusMods.Abstractions.Settings;
 /// Helper abstract class for <see cref="SettingsPropertyValueContainer"/>.
 /// </summary>
 [PublicAPI]
-public abstract class APropertyValueContainer<T> : AbstractNotifyPropertyChanged
+public abstract class APropertyValueContainer<T> : AbstractNotifyPropertyChanged, IValueContainer
+    where T : notnull
 {
+    private T _previousValue;
     private T _currentValue;
     private bool _hasChanged;
     private bool _isDefault;
+    private readonly Action<ISettingsManager, T> _updaterFunc;
 
-    private IEqualityComparer<T> _equalityComparer;
+    /// <summary>
+    /// Gets the equality comparer.
+    /// </summary>
+    public IEqualityComparer<T> EqualityComparer { get; }
 
     /// <summary>
     /// Constructor.
     /// </summary>
-    protected APropertyValueContainer(T value, T defaultValue, IEqualityComparer<T>? equalityComparer = null)
+    protected APropertyValueContainer(
+        T value,
+        T defaultValue,
+        Action<ISettingsManager, T> updaterFunc,
+        IEqualityComparer<T>? equalityComparer = null)
     {
-        PreviousValue = value;
         DefaultValue = defaultValue;
 
+        _previousValue = value;
         _currentValue = value;
-        _equalityComparer = equalityComparer ?? EqualityComparer<T>.Default;
+
+        _updaterFunc = updaterFunc;
+        EqualityComparer = equalityComparer ?? EqualityComparer<T>.Default;
 
         _hasChanged = false;
-        _isDefault = _equalityComparer.Equals(value, defaultValue);
+        _isDefault = EqualityComparer.Equals(value, defaultValue);
     }
 
     /// <summary>
@@ -38,7 +50,11 @@ public abstract class APropertyValueContainer<T> : AbstractNotifyPropertyChanged
     /// <summary>
     /// Gets the previous value.
     /// </summary>
-    public T PreviousValue { get; }
+    public T PreviousValue
+    {
+        get => _previousValue;
+        set => SetAndRaise(ref _previousValue, value, EqualityComparer);
+    }
 
     /// <summary>
     /// Gets or sets the current value.
@@ -46,7 +62,7 @@ public abstract class APropertyValueContainer<T> : AbstractNotifyPropertyChanged
     public T CurrentValue
     {
         get => _currentValue;
-        set => SetAndRaise(ref _currentValue, value, _equalityComparer);
+        set => SetAndRaise(ref _currentValue, value, EqualityComparer);
     }
 
     /// <summary>
@@ -70,12 +86,35 @@ public abstract class APropertyValueContainer<T> : AbstractNotifyPropertyChanged
     /// <inheritdoc/>
     protected override void OnPropertyChanged(string? propertyName = null)
     {
-        if (propertyName == nameof(CurrentValue))
+        if (propertyName is nameof(CurrentValue) or nameof(PreviousValue))
         {
-            HasChanged = _equalityComparer.Equals(PreviousValue, CurrentValue);
-            IsDefault = _equalityComparer.Equals(CurrentValue, DefaultValue);
+            HasChanged = !EqualityComparer.Equals(PreviousValue, CurrentValue);
+        }
+
+        if (propertyName is nameof(CurrentValue) or nameof(DefaultValue))
+        {
+            IsDefault = EqualityComparer.Equals(CurrentValue, DefaultValue);
         }
 
         base.OnPropertyChanged(propertyName);
+    }
+
+    /// <inheritdoc/>
+    public void Update(ISettingsManager settingsManager)
+    {
+        _updaterFunc(settingsManager, CurrentValue);
+        PreviousValue = CurrentValue;
+    }
+
+    /// <inheritdoc/>
+    public void ResetToPrevious()
+    {
+        CurrentValue = PreviousValue;
+    }
+
+    /// <inheritdoc/>
+    public void ResetToDefault()
+    {
+        CurrentValue = DefaultValue;
     }
 }
