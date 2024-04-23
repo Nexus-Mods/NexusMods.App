@@ -36,7 +36,7 @@ public static class DiskState
     /// <summary>
     /// The state of the disk.
     /// </summary>
-    public static readonly DiskStateAttribute State = new(Namespace, nameof(State)) { NoHistory = true };
+    public static readonly DiskStateAttribute State = new(Namespace, nameof(State)) {  };
     
     
     [PublicAPI]

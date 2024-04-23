@@ -112,12 +112,9 @@ public class DiskStateRegistry : IDiskStateRegistry
     {
         // Initial state is identified by an empty LoadoutRevision
         var db = _connection.Db;
-        
         var domain = installation.Game.Domain;
         var domainId = GetDiskStateIdForDomain(domain);
-        
-        var result = db
-            .FindIndexed(domainId, DiskState.LoadoutRevision)
+        var result = FindHistoryIndexed(db, domainId, DiskState.LoadoutRevision)
             .Select(db.Get<DiskState.Model>)
             .FirstOrDefault();
 
@@ -151,5 +148,27 @@ public class DiskStateRegistry : IDiskStateRegistry
     private static Id64 GetDiskStateIdForDomain(GameDomain domain)
     {
         return new Id64(EntityCategory.InitialDiskStates, domain.GetStableHash());
+    }
+    
+    // Gets all entities in the history index that match a given attribute.
+    private IEnumerable<EntityId> FindHistoryIndexed<TValue, TLowLevel>(IDb db, TValue value, Attribute<TValue, TLowLevel> attribute)
+    {
+        // TODO: Discuss and move this to MneumonicDB or an extension
+        //       method library.
+        attribute.GetDbId(db.Registry.Id);
+        if (!attribute.IsIndexed)
+            throw new InvalidOperationException($"Attribute {attribute.Id} is not indexed");
+
+        using var start = new PooledMemoryBufferWriter(64);
+        attribute.Write(EntityId.MinValueNoPartition, db.Registry.Id, value, TxId.MinValue, false, start);
+
+        using var end = new PooledMemoryBufferWriter(64);
+        attribute.Write(EntityId.MaxValueNoPartition, db.Registry.Id, value, TxId.MinValue, false, end);
+
+        var results = db.Snapshot
+            .Datoms(IndexType.AVETHistory, start.GetWrittenSpan(), end.GetWrittenSpan())
+            .Select(d => d.E);
+
+        return results;
     }
 }
