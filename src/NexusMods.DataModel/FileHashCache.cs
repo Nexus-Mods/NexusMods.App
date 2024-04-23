@@ -157,7 +157,8 @@ public class FileHashCache : IFileHashCache
     
     private static void AddOrReplace(HashedEntryWithName entry, IDb db, string nameString, ITransaction tx)
     {
-        var existing = db.FindIndexed(Hash.From(nameString.AsSpan().GetStableHash()), HashCacheEntry.NameHash)
+        var hash = Hash.From(nameString.AsSpan().GetStableHash());
+        var existing = db.FindIndexed(hash, HashCacheEntry.NameHash)
             .FirstOrDefault(EntityId.MinValue);
 
         if (existing != EntityId.MinValue)
@@ -169,7 +170,7 @@ public class FileHashCache : IFileHashCache
         else
         {
             var newId = tx.TempId();
-            tx.Add(newId, HashCacheEntry.NameHash, nameString.XxHash64AsUtf8());
+            tx.Add(newId, HashCacheEntry.NameHash, hash);
             tx.Add(newId, HashCacheEntry.LastModified, entry.LastModified);
             tx.Add(newId, HashCacheEntry.Hash, entry.Hash);
             tx.Add(newId, HashCacheEntry.Size, entry.Size);
