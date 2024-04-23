@@ -12,11 +12,13 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Games.StardewValley.Models;
+using StardewModdingAPI;
+using StardewModdingAPI.Toolkit;
 
 namespace NexusMods.Games.StardewValley.Emitters;
 
-using SMAPIToGameMapping = ImmutableDictionary<Version, SMAPIGameVersionDiagnosticEmitter.GameVersions>;
-using GameToSMAPIMapping = ImmutableDictionary<Version, Version>;
+using SMAPIToGameMapping = ImmutableDictionary<ISemanticVersion, SMAPIGameVersionDiagnosticEmitter.GameVersions>;
+using GameToSMAPIMapping = ImmutableDictionary<ISemanticVersion, ISemanticVersion>;
 
 [UsedImplicitly]
 public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
@@ -43,7 +45,7 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
         if (gameToSMAPIMappings is null) yield break;
 
         // var gameVersion = SimplifyVersion(new Version("1.5.6.22018"));
-        var gameVersion = SimplifyVersion(loadout.Installation.Version);
+        var gameVersion = new SemanticVersion(loadout.Installation.Version);
 
         var optionalSmapiMod = loadout.GetFirstModWithMetadata<SMAPIMarker>();
 
@@ -61,9 +63,9 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
         }
 
         var (smapiMod, smapiMarker) = optionalSmapiMod.Value;
+        if (!smapiMarker.TryParse(out var smapiVersion)) yield break;
 
         // var smapiVersion = SimplifyVersion(new Version("4.0.6.1254"));
-        var smapiVersion = SimplifyVersion(smapiMarker.Version!);
 
         if (!TryGetValue(smapiToGameMappings, smapiVersion, useEquals: true, out var supportedGameVersions))
         {
@@ -88,7 +90,7 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
         if (diagnostic2 is not null) yield return diagnostic2;
     }
 
-    private Diagnostic? SuggestSMAPI(GameToSMAPIMapping gameToSMAPIMappings, Version gameVersion)
+    private Diagnostic? SuggestSMAPI(GameToSMAPIMapping gameToSMAPIMappings, ISemanticVersion gameVersion)
     {
         if (!TryGetValue(gameToSMAPIMappings, gameVersion, useEquals: false, out var supportedSMAPIVersion))
         {
@@ -107,14 +109,14 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
         GameToSMAPIMapping gameToSMAPIMappings,
         Loadout loadout,
         Mod smapiMod,
-        Version gameVersion,
-        Version smapiVersion,
+        ISemanticVersion gameVersion,
+        ISemanticVersion smapiVersion,
         GameVersions supportedGameVersions)
     {
         var (_, maximumGameVersion) = supportedGameVersions;
         if (maximumGameVersion is null) return null;
 
-        var comparison = VersionComparer.Instance.Compare(maximumGameVersion, gameVersion);
+        var comparison = maximumGameVersion.CompareTo(gameVersion);
         if (comparison >= 0) return null;
 
         if (!TryGetValue(gameToSMAPIMappings, gameVersion, useEquals: false, out var supportedSMAPIVersion))
@@ -137,14 +139,14 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
         GameToSMAPIMapping gameToSMAPIMappings,
         Loadout loadout,
         Mod smapiMod,
-        Version gameVersion,
-        Version smapiVersion,
+        ISemanticVersion gameVersion,
+        ISemanticVersion smapiVersion,
         GameVersions supportedGameVersions)
     {
         var (minimumGameVersion, _) = supportedGameVersions;
         if (minimumGameVersion is null) return null;
 
-        var comparison = VersionComparer.Instance.Compare(minimumGameVersion, gameVersion);
+        var comparison = minimumGameVersion.CompareTo(gameVersion);
         if (comparison <= 0) return null;
 
         if (!TryGetValue(gameToSMAPIMappings, gameVersion, useEquals: true, out var supportedSMAPIVersion))
@@ -164,14 +166,14 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
     }
 
     private static bool TryGetValue<T>(
-        ImmutableDictionary<Version, T> dictionary,
-        Version input,
+        ImmutableDictionary<ISemanticVersion, T> dictionary,
+        ISemanticVersion input,
         bool useEquals,
         [NotNullWhen(true)] out T? value) where T : class
     {
         var actualKey = dictionary
             .Keys
-            .OrderDescending(VersionComparer.Instance)
+            .OrderDescending()
             .FirstOrDefault(x => useEquals
                 ? EqualityPredicate(x, input)
                 : ComparisonPredicate(x, input)
@@ -183,14 +185,14 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
         value = dictionary[actualKey];
         return true;
 
-        static bool EqualityPredicate(Version x, Version y)
+        static bool EqualityPredicate(ISemanticVersion x, ISemanticVersion y)
         {
-            return VersionComparer.Instance.Equals(x, y);
+            return x.Equals(y);
         }
 
-        static bool ComparisonPredicate(Version x, Version y)
+        static bool ComparisonPredicate(ISemanticVersion x, ISemanticVersion y)
         {
-            var comparison = VersionComparer.Instance.Compare(x, y);
+            var comparison = x.CompareTo(y);
             return comparison <= 0;
         }
     }
@@ -208,7 +210,7 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
         var data = await FetchData<Dictionary<string, GameVersionsDTO>>(SMAPIToGameMappingsDataUri, cancellationToken);
         if (data is null) return null;
 
-        var res = new Dictionary<Version, GameVersions>();
+        var res = new Dictionary<ISemanticVersion, GameVersions>();
         foreach (var kv in data)
         {
             var (sVersion, gameVersions) = kv;
@@ -216,7 +218,7 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
             if (!TryParseVersion(sVersion, out var version)) continue;
 
-            Version? minimumGameVersion = null, maximumGameVersion = null;
+            ISemanticVersion? minimumGameVersion = null, maximumGameVersion = null;
             if (sMinimumGameVersion is not null) if (!TryParseVersion(sMinimumGameVersion, out minimumGameVersion)) continue;
             if (sMaximumGameVersion is not null) if (!TryParseVersion(sMaximumGameVersion, out maximumGameVersion)) continue;
 
@@ -227,7 +229,7 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
             };
         }
 
-        _smapiToGameMappings = res.ToImmutableDictionary(keyComparer: VersionComparer.Instance);
+        _smapiToGameMappings = res.ToImmutableDictionary();
         return _smapiToGameMappings;
 
     }
@@ -239,7 +241,7 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
         var data = await FetchData<Dictionary<string, string[]>>(GameToSMAPIMappingsDataUri, cancellationToken);
         if (data is null) return null;
 
-        var res = new Dictionary<Version, Version>();
+        var res = new Dictionary<ISemanticVersion, ISemanticVersion>();
         foreach (var kv in data)
         {
             var (sGameVersion, smapiVersions) = kv;
@@ -253,32 +255,17 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
             res[gameVersion] = smapiVersion;
         }
 
-        _gameToSMAPIMappings = res.ToImmutableDictionary(keyComparer: VersionComparer.Instance);
+        _gameToSMAPIMappings = res.ToImmutableDictionary();
         return _gameToSMAPIMappings;
     }
 
-    private bool TryParseVersion(string input, [NotNullWhen(true)] out Version? version)
+    private bool TryParseVersion(string input, [NotNullWhen(true)] out ISemanticVersion? version)
     {
         version = null;
-        if (Version.TryParse(input, out var tmp))
-        {
-            version = SimplifyVersion(tmp);
-            return true;
-        }
+        if (SemanticVersion.TryParse(input, out version)) return true;
 
-        _logger.LogWarning("Unable to parse string `{Input}` as a Version", input);
+        _logger.LogWarning("Unable to parse string `{Input}` as a SemanticVersion", input);
         return false;
-    }
-
-    private static Version SimplifyVersion(Version input)
-    {
-        var major = input.Major;
-        var minor = input.Minor;
-        var build = input.Build == -1 ? 0 : input.Build;
-        var revision = input.Revision == 0 ? -1 : input.Revision;
-
-        if (revision != -1) return new Version(major, minor, build, revision);
-        return new Version(major, minor, build);
     }
 
     private async Task<T?> FetchData<T>(Uri dataUri, CancellationToken cancellationToken) where T : class
@@ -299,62 +286,14 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
         }
     }
 
-    private class VersionComparer : IEqualityComparer<Version>, IComparer<Version>
-    {
-        public static readonly VersionComparer Instance = new();
-
-        public int GetHashCode(Version version)
-        {
-            // NOTE(erri120): used by dictionary lookups
-            return version.GetHashCode();
-        }
-
-        public bool Equals(Version? x, Version? y)
-        {
-            if (ReferenceEquals(x, y)) return true;
-            if (ReferenceEquals(x, null)) return false;
-            if (ReferenceEquals(y, null)) return false;
-
-            if (x.Major != y.Major) return false;
-            if (x.Minor != y.Minor) return false;
-
-            // NOTE(erri120): normalize Version and replace -1 with 0
-            var xBuild = x.Build == -1 ? 0 : x.Build;
-            var yBuild = y.Build == -1 ? 0 : y.Build;
-
-            // NOTE(erri120): skipping revision because it's not part of a "semantic version"
-            return xBuild == yBuild;
-        }
-
-        public int Compare(Version? x, Version? y)
-        {
-            if (ReferenceEquals(x, y)) return 0;
-            if (ReferenceEquals(null, y)) return 1;
-            if (ReferenceEquals(null, x)) return -1;
-
-            var majorComparison = x.Major.CompareTo(y.Major);
-            if (majorComparison != 0) return majorComparison;
-
-            var minorComparison = x.Minor.CompareTo(y.Minor);
-            if (minorComparison != 0) return minorComparison;
-
-            // NOTE(erri120): normalize Version and replace -1 with 0
-            var xBuild = x.Build == -1 ? 0 : x.Build;
-            var yBuild = y.Build == -1 ? 0 : y.Build;
-
-            // NOTE(erri120): skipping revision because it's not part of a "semantic version"
-            return xBuild.CompareTo(yBuild);
-        }
-    }
-
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     public record GameVersions
     {
-        public required Version? MinimumGameVersion { get; init; }
+        public required ISemanticVersion? MinimumGameVersion { get; init; }
 
-        public required Version? MaximumGameVersion { get; init; }
+        public required ISemanticVersion? MaximumGameVersion { get; init; }
 
-        public void Deconstruct(out Version? minimumGameVersion, out Version? maximumGameVersion)
+        public void Deconstruct(out ISemanticVersion? minimumGameVersion, out ISemanticVersion? maximumGameVersion)
         {
             minimumGameVersion = MinimumGameVersion;
             maximumGameVersion = MaximumGameVersion;

@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.Serialization.DataModel.Ids;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
@@ -38,7 +39,7 @@ public static class DiskState
 
     [PublicAPI]
     [SuppressMessage("ReSharper", "MemberHidesStaticFromOuterClass")]
-    internal class Model(ITransaction tx) : AEntity(tx)
+    internal class Model(ITransaction tx) : Entity(tx, (byte)IdPartitions.DiskState)
     {
         /// <summary>
         /// The associated game type

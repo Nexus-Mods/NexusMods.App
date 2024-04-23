@@ -59,7 +59,10 @@ where TVm : IViewModelInterface
     protected async Task<ModId[]> InstallMod(AbsolutePath path)
     {
         var downloadId = await FileOriginRegistry.RegisterDownload(path,
-            new FilePathMetadata() { OriginalName = path.FileName, Quality = Quality.Normal });
+            (tx, id) =>
+            {
+                tx.Add(id, FilePathMetadata.OriginalName, path.FileName);
+            });
         return await ArchiveInstaller.AddMods(Loadout.Value.LoadoutId, downloadId);
     }
 

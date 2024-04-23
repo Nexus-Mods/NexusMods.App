@@ -1,4 +1,4 @@
-﻿using System.IO.MemoryMappedFiles;
+using System.IO.MemoryMappedFiles;
 using NexusMods.Abstractions.Activities;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;

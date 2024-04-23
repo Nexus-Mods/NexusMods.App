@@ -1,5 +1,5 @@
 ﻿using NexusMods.Abstractions.Activities;
-using NexusMods.Abstractions.Games.Downloads;
+using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Mods;
 

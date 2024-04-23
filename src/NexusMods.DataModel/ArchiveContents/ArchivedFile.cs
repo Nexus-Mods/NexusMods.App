@@ -1,3 +1,4 @@
+using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Archives.Nx.Headers.Managed;
 using NexusMods.DataModel.Attributes;
 using NexusMods.Hashing.xxHash64;
@@ -37,7 +38,7 @@ public static class ArchivedFile
     /// <summary>
     /// Model for the archived file entry.
     /// </summary>
-    public class Model(ITransaction tx) : AEntity(tx)
+    public class Model(ITransaction tx) : Entity(tx)
     {
         
         /// <summary>

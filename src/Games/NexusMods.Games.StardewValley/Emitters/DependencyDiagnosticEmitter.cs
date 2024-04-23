@@ -12,6 +12,8 @@ using NexusMods.Extensions.BCL;
 using NexusMods.Games.StardewValley.Models;
 using NexusMods.Games.StardewValley.WebAPI;
 using NexusMods.Paths;
+using StardewModdingAPI;
+using StardewModdingAPI.Toolkit;
 using SMAPIManifest = StardewModdingAPI.Toolkit.Serialization.Models.Manifest;
 
 namespace NexusMods.Games.StardewValley.Emitters;
@@ -39,15 +41,15 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
     public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        var gameVersion = loadout.Installation.Version;
+        var gameVersion = new SemanticVersion(loadout.Installation.Version);
         var smapiMarker = loadout.Mods
             .Where(kv => kv.Value.Enabled)
             .Select(kv => kv.Value.Metadata)
             .Select(metadata => metadata.OfType<SMAPIMarker>().FirstOrDefault())
             .FirstOrDefault(marker => marker is not null);
 
-        if (smapiMarker?.Version is null) yield break;
-        var smapiVersion = smapiMarker.Version!;
+        if (smapiMarker is null) yield break;
+        if (!smapiMarker.TryParse(out var smapiVersion)) yield break;
 
         var modIdToManifest = await loadout.Mods
             .SelectAsync(async kv => (Id: kv.Key, Manifest: await GetManifest(kv.Value, cancellationToken)))
@@ -109,8 +111,8 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
     private async Task<IEnumerable<Diagnostic>> DiagnoseMissingDependencies(
         Loadout loadout,
-        Version gameVersion,
-        Version smapiVersion,
+        ISemanticVersion gameVersion,
+        ISemanticVersion smapiVersion,
         Dictionary<ModId, SMAPIManifest> modIdToManifest,
         ImmutableDictionary<string, ModId> uniqueIdToModId,
         CancellationToken cancellationToken)
@@ -166,8 +168,8 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
     private async Task<IEnumerable<Diagnostic>> DiagnoseOutdatedDependencies(
         Loadout loadout,
-        Version gameVersion,
-        Version smapiVersion,
+        ISemanticVersion gameVersion,
+        ISemanticVersion smapiVersion,
         Dictionary<ModId, SMAPIManifest> modIdToManifest,
         ImmutableDictionary<string, ModId> uniqueIdToModId,
         CancellationToken cancellationToken)

@@ -11,5 +11,6 @@ public sealed class BooleanContainer : APropertyValueContainer<bool>
     /// <summary>
     /// Constructor.
     /// </summary>
-    public BooleanContainer(bool value, bool defaultValue) : base(value, defaultValue) { }
+    public BooleanContainer(bool value, bool defaultValue, Action<ISettingsManager, bool> updaterFunc)
+        : base(value, defaultValue, updaterFunc) { }
 }

@@ -3,6 +3,9 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.DiskState;
+using NexusMods.Abstractions.FileStore;
+using NexusMods.Abstractions.FileStore.ArchiveMetadata;
+using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Games.Loadouts.Sorting;
 using NexusMods.Abstractions.Installers;
@@ -17,6 +20,7 @@ using NexusMods.DataModel.CommandLine.Verbs;
 using NexusMods.DataModel.Diagnostics;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.Loadouts.LoadoutSynchronizerDTOs;
 using NexusMods.DataModel.Messaging;
 using NexusMods.DataModel.Settings;
 using NexusMods.DataModel.Sorting;
@@ -101,8 +105,7 @@ public static class Services
         coll.AddSingleton(typeof(IFingerprintCache<,>), typeof(DataStoreFingerprintCache<,>));
 
         coll.AddAllSingleton<ILoadoutRegistry, LoadoutRegistry>();
-        coll.AddAllSingleton<IFileOriginRegistry, FileOriginRegistry>();
-        coll.AddAllSingleton<IFileHashCache, FileHashCache>();
+
         coll.AddAllSingleton<IArchiveInstaller, ArchiveInstaller>();
         coll.AddAllSingleton<IToolManager, ToolManager>();
         
@@ -110,11 +113,22 @@ public static class Services
         coll.AddAllSingleton<IDiskStateRegistry, DiskStateRegistry>();
         coll.AddAttributeCollection(typeof(DiskState));
         coll.AddAttributeCollection(typeof(InitialDiskState));
+
+        // File Hash Cache
+        coll.AddAllSingleton<IFileHashCache, FileHashCache>();
+        coll.AddAttributeCollection(typeof(HashCacheEntry));
         
         coll.AddAllSingleton<IApplyService, ApplyService>();
 
         coll.AddSingleton<ITypeFinder>(_ => new AssemblyTypeFinder(typeof(Services).Assembly));
         coll.AddAllSingleton<ISorter, Sorter>();
+        
+        // Download Analyzer
+        coll.AddAttributeCollection(typeof(DownloadAnalysis));
+        coll.AddAttributeCollection(typeof(DownloadContentEntry));
+        coll.AddAttributeCollection(typeof(FilePathMetadata));
+        coll.AddAllSingleton<IFileOriginRegistry, FileOriginRegistry>();
+
 
         // Diagnostics
         coll.AddAllSingleton<IDiagnosticManager, DiagnosticManager>();

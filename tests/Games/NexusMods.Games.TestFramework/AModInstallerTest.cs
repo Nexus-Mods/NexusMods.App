@@ -1,14 +1,13 @@
 using System.Runtime.CompilerServices;
-using System.Text.Json;
 using FluentAssertions;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.FileStore.ArchiveMetadata;
+using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.FileStore.Trees;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Games.Downloads;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
@@ -17,6 +16,7 @@ using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.DataModel.Extensions;
 using NexusMods.Games.TestFramework.Verifiers;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 
@@ -76,13 +76,9 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
         AbsolutePath archivePath,
         CancellationToken cancellationToken = default)
     {
-        var downloadId = await FileOriginRegistry.RegisterDownload(archivePath, new FilePathMetadata
-        {
-            OriginalName = archivePath.FileName,
-            Quality = Quality.Low
-        }, cancellationToken);
+        var downloadId = await FileOriginRegistry.RegisterDownload(archivePath, cancellationToken);
 
-        var contents = await FileOriginRegistry.Get(downloadId);
+        var contents = FileOriginRegistry.Get(downloadId);
         var tree = TreeCreator.Create(contents.Contents, FileStore);
 
         var install = GameInstallation;
@@ -95,7 +91,7 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
             Store = install.Store,
             Version = install.Version,
             ModName = "",
-            ArchiveMetaData = null,
+            Source = FileOriginRegistry.Get(downloadId),
         };
 
         var results = await ModInstaller.GetModsAsync(info, cancellationToken);
@@ -230,7 +226,8 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
     /// </summary>
     /// <param name="files"></param>
     /// <returns></returns>
-    protected async Task<IEnumerable<(ulong Hash, LocationId LocationId, string Path)>> BuildAndInstall(IEnumerable<ModInstallerExampleFile> files)
+    protected async Task<IEnumerable<(ulong Hash, LocationId LocationId, string Path)>> 
+        BuildAndInstall(IEnumerable<ModInstallerExampleFile> files)
     {
         ModInstallerResult[] mods;
         var sources = files
@@ -239,7 +236,7 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
 
         var tree = ModFileTree.Create(sources);
         var install = GameInstallation;
-        var info = new ModInstallerInfo()
+        var info = new ModInstallerInfo
         {
             ArchiveFiles = tree,
             BaseModId = ModId.NewId(),
@@ -248,7 +245,7 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
             Store = install.Store,
             Version = install.Version,
             ModName = "",
-            ArchiveMetaData = null
+            Source = Connection.Db.Get<DownloadAnalysis.Model>(EntityId.From(0))
         };
 
         mods = (await ModInstaller.GetModsAsync(info)).ToArray();

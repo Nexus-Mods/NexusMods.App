@@ -37,9 +37,9 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     private readonly IDataStore _store;
     private readonly ILoadoutRegistry _loadoutRegistry;
     private readonly IDiskStateRegistry _diskStateRegistry;
-    private readonly IFileStore _fileStore;
     private readonly ISorter _sorter;
     private readonly IOSInformation _os;
+    private IFileStore _fileStore;
 
     /// <summary>
     /// Loadout synchronizer base constructor.
@@ -95,8 +95,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     public async ValueTask<FlattenedLoadout> LoadoutToFlattenedLoadout(Loadout loadout)
     {
         var dict = new Dictionary<GamePath, ModFilePair>();
-
-        var sorted = (await SortMods(loadout)).ToList();
+        var sorted = await SortMods(loadout);
 
         foreach (var mod in sorted)
         {
@@ -126,7 +125,14 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// <inheritdoc />
     public async Task<DiskStateTree> FileTreeToDisk(FileTree fileTree, Loadout loadout, FlattenedLoadout flattenedLoadout, DiskStateTree prevState, GameInstallation installation, bool skipIngest = false)
     {
-        List<KeyValuePair<GamePath, HashedEntry>> toDelete = new();
+        // Return the new tree
+        return await FileTreeToDiskImpl(fileTree, loadout, flattenedLoadout, prevState, installation, true);
+    }
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal async Task<DiskStateTree> FileTreeToDiskImpl(FileTree fileTree, Loadout loadout, FlattenedLoadout flattenedLoadout, DiskStateTree prevState, GameInstallation installation, bool fixFileMode)
+    {
+        List<KeyValuePair<GamePath, HashedEntryWithName>> toDelete = new();
         List<KeyValuePair<AbsolutePath, IGeneratedFile>> toWrite = new();
         List<KeyValuePair<AbsolutePath, StoredFile>> toExtract = new();
 
@@ -274,7 +280,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             };
 
             // And mark them as executable if necessary, on Unix
-            if (!isUnix)
+            if (!isUnix || !fixFileMode)
                 continue;
 
             var ext = path.Extension.ToString();
@@ -355,7 +361,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// Called when a file has changed during an apply operation, and a ingest is required.
     /// </summary>
     /// <param name="entry"></param>
-    public virtual void HandleNeedIngest(HashedEntry entry)
+    public virtual void HandleNeedIngest(HashedEntryWithName entry)
     {
         throw new NeedsIngestException();
     }
@@ -477,7 +483,6 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             mods.Add(name, newMod);
             return newMod;
         }
-
 
         // Find all the files, and try to find a match in the previous state
         foreach (var item in fileTree.GetAllDescendentFiles())
@@ -723,7 +728,8 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         // If a game wants other types of files to be backed up, they could do so with their own logic. But backing up a
         // IGeneratedFile is pointless, since when it comes time to restore that file we'll call file.Generate on it since
         // it's a generated file.
-
+        
+        // TODO: This may be slow for very large games when other games/mods already exist.
         // Backup the files that are new or changed
         var archivedFiles = new ConcurrentBag<ArchivedFileEntry>();
         await Parallel.ForEachAsync(fileTree.GetAllDescendentFiles(), async (file, cancellationToken) =>
@@ -876,6 +882,17 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         var indexedState = await _hashCache.IndexDiskState(installation);
         await _diskStateRegistry.SaveInitialState(installation, indexedState);
         return (false, indexedState);
+    }
+    #endregion
+
+    #region Internal Helper Functions
+    /// <summary>
+    /// Overrides the <see cref="IFileStore"/> used.
+    /// </summary>
+    [Obsolete("Intended for Benchmark Use Only")] // produce warning in IDE
+    internal void SetFileStore(IFileStore fs)
+    {
+        _fileStore = fs;
     }
     #endregion
 }

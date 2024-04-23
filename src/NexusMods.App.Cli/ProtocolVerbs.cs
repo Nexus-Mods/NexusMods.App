@@ -66,12 +66,10 @@ public static class ProtocolVerbs
                 temporaryPath, null, null, token);
 
             var downloadId = await fileOriginRegistry.RegisterDownload(temporaryPath,
-                new FilePathMetadata
-                {
-                    OriginalName = temporaryPath.Path.Name,
-                    Quality = Quality.Low,
-                    Name = name
-                }, token);
+                (tx, id) =>
+            {
+                tx.Add(id, FilePathMetadata.OriginalName, temporaryPath.Path.Name);
+            }, token);
             await archiveInstaller.AddMods(loadout.Value.LoadoutId, downloadId,
                 string.IsNullOrWhiteSpace(modName) ? null : modName, token: token);
             return 0;

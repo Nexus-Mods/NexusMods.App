@@ -1,5 +1,7 @@
 using System.Reactive;
 using JetBrains.Annotations;
+using Markdown.Avalonia.Plugins;
+using Markdown.Avalonia.Utils;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Controls.MarkdownRenderer;
@@ -7,9 +9,14 @@ namespace NexusMods.App.UI.Controls.MarkdownRenderer;
 public class MarkdownRendererDesignViewModel : AViewModel<IMarkdownRendererViewModel>, IMarkdownRendererViewModel
 {
     public string Contents { get; set; }
+    public Uri? MarkdownUri { get; set; }
+
+    public IMdAvPlugin ImageResolverPlugin => null!;
+    public IPathResolver PathResolver => null!;
 
     public ReactiveCommand<string, Unit> OpenLinkCommand { get; } = ReactiveCommand.Create<string>(_ => { });
 
+    [UsedImplicitly]
     public MarkdownRendererDesignViewModel() : this(DefaultContents) { }
 
     public MarkdownRendererDesignViewModel(string contents)

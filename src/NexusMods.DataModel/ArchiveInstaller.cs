@@ -3,9 +3,9 @@ using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.DataModel.Entities.Sorting;
+using NexusMods.Abstractions.FileStore;
+using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Games.Downloads;
-using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
@@ -49,17 +49,18 @@ public class ArchiveInstaller : IArchiveInstaller
     }
 
     /// <inheritdoc />
-    public async Task<ModId[]> AddMods(LoadoutId loadoutId, DownloadId downloadId, string? defaultModName = null, IModInstaller? installer = null, CancellationToken token = default)
+    public async Task<ModId[]> AddMods(LoadoutId loadoutId, DownloadId downloadId, string? defaultModName = null, 
+        IModInstaller? installer = null, CancellationToken token = default)
     {
         // Get the loadout and create the mod so we can use it in the job.
         var loadout = _registry.GetMarker(loadoutId);
         var useCustomInstaller = installer != null;
 
-        var download = await _fileOriginRegistry.Get(downloadId);
+        var download = _fileOriginRegistry.Get(downloadId);
         var archiveName = "<unknown>";
-        if (download.MetaData is not null && defaultModName == null)
+        if (download.Contains(DownloadAnalysis.SuggestedName))
         {
-            archiveName = download.MetaData.Name;
+            archiveName = download.Get(DownloadAnalysis.SuggestedName);
         }
 
         var baseMod = new Mod
@@ -79,7 +80,7 @@ public class ArchiveInstaller : IArchiveInstaller
             using var job = _activityFactory.Create(IArchiveInstaller.Group, "Adding mod files to {Name}", baseMod.Name);
 
             // Create a tree so installers can find the file easily.
-            var tree = TreeCreator.Create(download.Contents, _fileStore);
+            var tree = download.GetFileTree(_fileStore);
 
             // Step 3: Run the archive through the installers.
             var installers = loadout.Value.Installation.GetGame().Installers;
@@ -103,7 +104,7 @@ public class ArchiveInstaller : IArchiveInstaller
                             Store = install.Store,
                             Version = install.Version,
                             ModName = baseMod.Name,
-                            ArchiveMetaData = download.MetaData,
+                            Source = download,
                         };
 
                         var modResults = (await modInstaller.GetModsAsync(info, token)).ToArray();
