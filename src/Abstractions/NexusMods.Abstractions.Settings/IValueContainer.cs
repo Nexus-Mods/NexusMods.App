@@ -13,5 +13,8 @@ public interface IValueContainer
     /// </summary>
     bool HasChanged { get; }
 
+    /// <summary>
+    /// Updates the value in the settings manager.
+    /// </summary>
     void Update(ISettingsManager settingsManager);
 }

@@ -1,6 +1,7 @@
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Serialization.Attributes;
+using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.WorkspaceSystem;
 
 namespace NexusMods.App.UI.Pages.Settings;
@@ -27,9 +28,8 @@ public class SettingsPageFactory : APageFactory<ISettingsPageViewModel, Settings
         {
             new PageDiscoveryDetails
             {
-                // TODO:
-                SectionName = "TODO",
-                ItemName = "Settings",
+                SectionName = Language.SettingsView_Title,
+                ItemName = Language.SettingsView_Title,
                 PageData = new PageData
                 {
                     FactoryId = StaticId,
