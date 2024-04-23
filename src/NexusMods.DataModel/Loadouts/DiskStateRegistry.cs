@@ -2,13 +2,9 @@ using System.Diagnostics;
 using System.Reactive.Subjects;
 using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Games.DTO;
-using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.Abstractions.Serialization.DataModel.Ids;
 using NexusMods.DataModel.Attributes;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.DatomIterators;
-using NexusMods.MnemonicDB.Abstractions.Internals;
 
 namespace NexusMods.DataModel.Loadouts;
 
@@ -98,11 +94,10 @@ public class DiskStateRegistry : IDiskStateRegistry
         // But our app currently does not handle that well either.
         var tx = _connection.BeginTransaction();
         var domain = installation.Game.Domain;
-        _ = new DiskState.Model(tx)
+        _ = new InitialDiskState.Model(tx)
         {
             Game = domain,
             Root = installation.LocationsRegister[LocationId.Game].ToString(),
-            LoadoutRevision = GetDiskStateIdForDomain(domain),
             DiskState = diskState,
         };
 
@@ -112,18 +107,17 @@ public class DiskStateRegistry : IDiskStateRegistry
     /// <inheritdoc />
     public DiskStateTree? GetInitialState(GameInstallation installation)
     {
-        // Initial state is identified by an empty LoadoutRevision
         var db = _connection.Db;
         var domain = installation.Game.Domain;
-        var domainId = GetDiskStateIdForDomain(domain);
         
-        // Find the datom which holds the disk state for the given domain
-        var domainDatom = GetHistoryDatoms(db, domainId, DiskState.LoadoutRevision).FirstOrDefault();
-        if (!domainDatom.Valid)
-            return null;
-        
-        // Extract the disk state from the transaction ID.
-        return GetAttributeAtTransactionId(db, domainDatom.T, DiskState.State);
+        // Find item with matching domain and root.
+        // In practice it's unlikely you'd ever install more than one game at one
+        // location, but since doing this check is virtually free, we might as well.
+        return db.FindIndexed(installation.LocationsRegister[LocationId.Game].ToString(), InitialDiskState.Root)
+            .Select(db.Get<InitialDiskState.Model>)
+            .Where(x => x.Game == domain)
+            .Select(x => x.DiskState)
+            .FirstOrDefault();
     }
 
     /// <inheritdoc />
@@ -148,46 +142,5 @@ public class DiskStateRegistry : IDiskStateRegistry
             .FindIndexed(gameInstallation.LocationsRegister[LocationId.Game].ToString(), DiskState.Root)
             .Select(db.Get<DiskState.Model>)
             .FirstOrDefault(state => state.Game == gameInstallation.Game.Domain);
-    }
-
-    private static Id64 GetDiskStateIdForDomain(GameDomain domain)
-    {
-        return new Id64(EntityCategory.InitialDiskStates, domain.GetStableHash());
-    }
-    
-    // Gets all Datoms in the history index that match a given attribute.
-    private IEnumerable<Datom> GetHistoryDatoms<TValue, TLowLevel>(IDb db, TValue value, Attribute<TValue, TLowLevel> attribute)
-    {
-        // TODO: Discuss and move this to MneumonicDB or an extension
-        //       method library.
-        if (!attribute.IsIndexed)
-            throw new InvalidOperationException($"Attribute {attribute.Id} is not indexed");
-
-        using var start = new PooledMemoryBufferWriter(64);
-        attribute.Write(EntityId.MinValueNoPartition, db.Registry.Id, value, TxId.MinValue, false, start);
-
-        using var end = new PooledMemoryBufferWriter(64);
-        attribute.Write(EntityId.MaxValueNoPartition, db.Registry.Id, value, TxId.MinValue, false, end);
-
-        var results = db.Snapshot
-            .Datoms(IndexType.AVETHistory, start.GetWrittenSpan(), end.GetWrittenSpan());
-
-        return results;
-    }
-    
-    // Gets an attribute as of a specific Transaction ID
-    private TValue? GetAttributeAtTransactionId<TValue, TLowLevel>(IDb db, TxId txId, Attribute<TValue, TLowLevel> attribute)
-    {
-        // TODO: Discuss and move this to MneumonicDB or an extension
-        //       method library.
-        foreach (var datom in db.Datoms(txId))
-        {
-            if (datom.A != attribute)
-                continue;
-
-            return (TValue)datom.ObjectValue;
-        }
-
-        return default(TValue);
     }
 }
