@@ -854,7 +854,7 @@ namespace NexusMods.App.UI.Resources {
                 return ResourceManager.GetString("DialogButton_Discard", resourceCulture);
             }
         }
-
+        
         public static string ChangelogPageViewModel_ChangelogPageViewModel_Changelog {
             get {
                 return ResourceManager.GetString("ChangelogPageViewModel_ChangelogPageViewModel_Changelog", resourceCulture);
