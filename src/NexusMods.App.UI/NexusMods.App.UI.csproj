@@ -508,6 +508,9 @@
         <Compile Update="Pages\Downloads\InProgressViewModel.cs">
           <DependentUpon>IInProgressViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Pages\ModLibrary\DownloadsLibrary\DownloadsLibraryViewModel.cs">
+          <DependentUpon>IDownloadsLibraryViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
