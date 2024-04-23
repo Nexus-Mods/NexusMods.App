@@ -422,7 +422,10 @@
     <data name="SettingEntryView_NeedRestartMessage" xml:space="preserve">
         <value>Uruchom ponownie aplikację, aby zastosować ustawienia języka</value>
     </data>
-<data name="DialogButton_Discard" xml:space="preserve">
+    <data name="DialogButton_Discard" xml:space="preserve">
         <value>ODRZUĆ</value>
+    </data>
+    <data name="ChangelogPageViewModel_ChangelogPageViewModel_Changelog" xml:space="preserve">
+        <value>Dziennik zmian</value>
     </data>
 </root>
