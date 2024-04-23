@@ -6,8 +6,10 @@ using DynamicData;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Settings;
 using NexusMods.App.UI.Controls.Settings.SettingEntries;
+using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.Icons;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -59,6 +61,10 @@ public class SettingsPageViewModel : APageViewModel<ISettingsPageViewModel>, ISe
 
         this.WhenActivated(disposables =>
         {
+            var workspaceController = GetWorkspaceController();
+            workspaceController.SetTabTitle(Language.SettingsView_Title, WorkspaceId, PanelId, TabId);
+            workspaceController.SetIcon(IconValues.Settings, WorkspaceId, PanelId, TabId);
+
             SettingEntries
                 .Select(vm => vm.WhenAnyValue(x => x.InteractionControlViewModel.ValueContainer.HasChanged))
                 .Merge()
