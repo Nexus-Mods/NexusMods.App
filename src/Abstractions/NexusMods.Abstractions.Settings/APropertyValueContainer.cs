@@ -10,6 +10,7 @@ namespace NexusMods.Abstractions.Settings;
 public abstract class APropertyValueContainer<T> : AbstractNotifyPropertyChanged, IValueContainer
     where T : notnull
 {
+    private T _previousValue;
     private T _currentValue;
     private bool _hasChanged;
     private bool _isDefault;
@@ -29,10 +30,11 @@ public abstract class APropertyValueContainer<T> : AbstractNotifyPropertyChanged
         Action<ISettingsManager, T> updaterFunc,
         IEqualityComparer<T>? equalityComparer = null)
     {
-        PreviousValue = value;
         DefaultValue = defaultValue;
 
+        _previousValue = value;
         _currentValue = value;
+
         _updaterFunc = updaterFunc;
         EqualityComparer = equalityComparer ?? EqualityComparer<T>.Default;
 
@@ -48,7 +50,11 @@ public abstract class APropertyValueContainer<T> : AbstractNotifyPropertyChanged
     /// <summary>
     /// Gets the previous value.
     /// </summary>
-    public T PreviousValue { get; }
+    public T PreviousValue
+    {
+        get => _previousValue;
+        set => SetAndRaise(ref _previousValue, value, EqualityComparer);
+    }
 
     /// <summary>
     /// Gets or sets the current value.
@@ -80,9 +86,13 @@ public abstract class APropertyValueContainer<T> : AbstractNotifyPropertyChanged
     /// <inheritdoc/>
     protected override void OnPropertyChanged(string? propertyName = null)
     {
-        if (propertyName == nameof(CurrentValue))
+        if (propertyName is nameof(CurrentValue) or nameof(PreviousValue))
         {
             HasChanged = !EqualityComparer.Equals(PreviousValue, CurrentValue);
+        }
+
+        if (propertyName is nameof(CurrentValue) or nameof(DefaultValue))
+        {
             IsDefault = EqualityComparer.Equals(CurrentValue, DefaultValue);
         }
 
@@ -92,6 +102,19 @@ public abstract class APropertyValueContainer<T> : AbstractNotifyPropertyChanged
     /// <inheritdoc/>
     public void Update(ISettingsManager settingsManager)
     {
-        _updaterFunc(settingsManager, _currentValue);
+        _updaterFunc(settingsManager, CurrentValue);
+        PreviousValue = CurrentValue;
+    }
+
+    /// <inheritdoc/>
+    public void ResetToPrevious()
+    {
+        CurrentValue = PreviousValue;
+    }
+
+    /// <inheritdoc/>
+    public void ResetToDefault()
+    {
+        CurrentValue = DefaultValue;
     }
 }

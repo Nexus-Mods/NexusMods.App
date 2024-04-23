@@ -26,9 +26,6 @@ public class SettingsPageViewModel : APageViewModel<ISettingsPageViewModel>, ISe
 
     public SettingsPageViewModel(ISettingsManager settingsManager, IWindowManager windowManager) : base(windowManager)
     {
-        CancelCommand = ReactiveCommand.Create(() => { });
-        CloseCommand = ReactiveCommand.Create(() => { });
-
         var descriptors = settingsManager.GetAllUIProperties();
         var entryViewModels = descriptors.Select(CreateEntryViewModel).ToArray();
 
@@ -48,6 +45,21 @@ public class SettingsPageViewModel : APageViewModel<ISettingsPageViewModel>, ISe
                 viewModel.InteractionControlViewModel.ValueContainer.Update(settingsManager);
             }
         }, this.WhenAnyValue(vm => vm.HasAnyValueChanged));
+
+        CancelCommand = ReactiveCommand.Create(() =>
+        {
+            // TODO: ask to discard current values
+            foreach (var viewModel in SettingEntries)
+            {
+                viewModel.InteractionControlViewModel.ValueContainer.ResetToPrevious();
+            }
+        }, this.WhenAnyValue(vm => vm.HasAnyValueChanged));
+
+        CloseCommand = ReactiveCommand.Create(() =>
+        {
+            // TODO: check if any values have changed and ask for confirmation to close
+            GetWorkspaceController().ClosePanel(WorkspaceId, PanelId);
+        });
 
         this.WhenActivated(disposables =>
         {
