@@ -77,21 +77,6 @@ public class DiskStateRegistry : IDiskStateRegistry
     /// <inheritdoc />
     public async Task SaveInitialState(GameInstallation installation, DiskStateTree diskState)
     {
-        // I looked for a 'clean' way to do this.
-        // I originally considered special casing this to `IdEmpty.Empty`, or a
-        // equivalent 'null'/default ID.
-
-        // Although putting it in the `LayoutRoots` table should be ok, as the
-        // probability of a collision is very low (the chances of something
-        // hashing to '0' are very low), I figured, that for cleanliness,
-        // maintainability and logical consistency, it would be better to
-        // put the initial states in a separate table, so here we are.
-
-        // - Sewer
-
-        // TODO: This implementation does not support multiple installs of the same game,
-        // e.g. a GOG version alongside Steam version.
-        // But our app currently does not handle that well either.
         var tx = _connection.BeginTransaction();
         var domain = installation.Game.Domain;
         _ = new InitialDiskState.Model(tx)
