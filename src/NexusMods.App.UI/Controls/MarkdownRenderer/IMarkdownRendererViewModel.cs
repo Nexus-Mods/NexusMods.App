@@ -1,4 +1,6 @@
 using System.Reactive;
+using Markdown.Avalonia.Plugins;
+using Markdown.Avalonia.Utils;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Controls.MarkdownRenderer;
@@ -11,7 +13,14 @@ public interface IMarkdownRendererViewModel : IViewModelInterface
     public string Contents { get; set; }
 
     /// <summary>
-    /// Gets the command used for opening links from Markdown.
+    /// Gets or sets the Uri of the contents.
     /// </summary>
+    /// <remarks>
+    /// This will fetch the markdown and set <see cref="Contents"/>.
+    /// </remarks>
+    public Uri? MarkdownUri { get; set; }
+
+    public IMdAvPlugin ImageResolverPlugin { get; }
+    public IPathResolver PathResolver { get; }
     public ReactiveCommand<string, Unit> OpenLinkCommand { get; }
 }

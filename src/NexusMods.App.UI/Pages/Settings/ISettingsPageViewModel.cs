@@ -6,7 +6,7 @@ using ReactiveUI;
 
 namespace NexusMods.App.UI.Pages.Settings;
 
-public interface ISettingsViewModel : IPageViewModelInterface
+public interface ISettingsPageViewModel : IPageViewModelInterface
 {
     ReactiveCommand<Unit, Unit> SaveCommand { get; }
     ReactiveCommand<Unit, Unit> CancelCommand { get; }

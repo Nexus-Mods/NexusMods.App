@@ -1,0 +1,22 @@
+<reactive:ReactiveUserControl
+    x:TypeArguments="local:ISettingComboBoxViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactive="http://reactiveui.net"
+    xmlns:local="clr-namespace:NexusMods.App.UI.Controls.Settings.SettingEntries"
+    xmlns:system="clr-namespace:System;assembly=System.Runtime"
+    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    x:Class="NexusMods.App.UI.Controls.Settings.SettingEntries.SettingComboBoxView">
+
+    <ComboBox HorizontalAlignment="Center" x:Name="ComboBox">
+        <ComboBox.DataTemplates>
+            <DataTemplate DataType="{x:Type system:String}">
+                <TextBlock Text="{CompiledBinding}"/>
+            </DataTemplate>
+        </ComboBox.DataTemplates>
+    </ComboBox>
+
+</reactive:ReactiveUserControl>
+

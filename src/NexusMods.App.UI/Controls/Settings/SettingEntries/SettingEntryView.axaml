@@ -45,8 +45,7 @@
                             Classes="Spacing-2">
 
                     <icons:UnifiedIcon Classes="Alert ForegroundWarningStrong" />
-                    <TextBlock Classes="BodyMDBold ForegroundWarningStrong"
-                               Text="{x:Static resources:Language.SettingEntryView_NeedRestartMessage}" />
+                    <TextBlock Classes="BodyMDBold ForegroundWarningStrong" x:Name="RequiresRestartMessage" />
                 </StackPanel>
 
             </Border>

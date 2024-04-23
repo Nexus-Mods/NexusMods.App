@@ -7,14 +7,14 @@ using ReactiveUI;
 
 namespace NexusMods.App.UI.Pages.Settings;
 
-public class SettingsDesignViewModel : APageViewModel<ISettingsViewModel>, ISettingsViewModel
+public class SettingsPageDesignViewModel : APageViewModel<ISettingsPageViewModel>, ISettingsPageViewModel
 {
     public ReactiveCommand<Unit, Unit> SaveCommand { get; } = ReactiveCommand.Create(() => { });
     public ReactiveCommand<Unit, Unit> CancelCommand { get; } = ReactiveCommand.Create(() => { });
     public ReactiveCommand<Unit, Unit> CloseCommand { get; } = ReactiveCommand.Create(() => { });
     public ReadOnlyObservableCollection<ISettingEntryViewModel> SettingEntries { get; }
 
-    public SettingsDesignViewModel() : base(new DesignWindowManager())
+    public SettingsPageDesignViewModel() : base(new DesignWindowManager())
     {
         SettingEntries = new ReadOnlyObservableCollection<ISettingEntryViewModel>([
                 new SettingEntryDesignViewModel(),
