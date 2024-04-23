@@ -20,11 +20,6 @@ public static class HashCacheEntry
     public static readonly HashAttribute NameHash = new(Namespace, nameof(NameHash)) { IsIndexed = true, NoHistory = true };
     
     /// <summary>
-    /// The name of the file
-    /// </summary>
-    public static readonly StringAttribute Name = new(Namespace, nameof(Name)) { IsIndexed = false, NoHistory = true };
-    
-    /// <summary>
     /// The last time the file was modified
     /// </summary>
     public static readonly TimestampAttribute LastModified = new(Namespace, nameof(LastModified)) { NoHistory = true };
@@ -50,15 +45,6 @@ public static class HashCacheEntry
             get => HashCacheEntry.NameHash.Get(this);
             set => HashCacheEntry.NameHash.Add(this, value);
         }
-
-        /// <summary>
-        /// Setter for setting the xxHash64 of the name
-        /// </summary>
-        public string Name
-        {
-            set => NameHash = value.XxHash64AsUtf8();
-        }
-        
         
         /// <summary>
         /// The xxHash64 hash of the file

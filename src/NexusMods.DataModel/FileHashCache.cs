@@ -153,7 +153,6 @@ public class FileHashCache : IFileHashCache
         _ = new HashCacheEntry.Model(tx)
         {
             NameHash = nameString.XxHash64AsUtf8(),
-            Name = nameString,
             LastModified = entry.LastModified,
             Hash = entry.Hash,
             Size = entry.Size,
@@ -171,10 +170,9 @@ public class FileHashCache : IFileHashCache
             _ = new HashCacheEntry.Model(tx)
             {
                 NameHash = stringName.XxHash64AsUtf8(),
-                Name = stringName,
                 LastModified = itm.LastModified,
                 Hash = itm.Hash,
-                Size = itm.Size
+                Size = itm.Size,
             };
         }
 
