@@ -108,10 +108,12 @@ internal class PropertyUIBuilder<TSettings, TProperty> :
 
     private class BooleanContainerFactory : ISettingsPropertyValueContainerFactory
     {
-        public SettingsPropertyValueContainer Create(object currentValue, object defaultValue)
+        public SettingsPropertyValueContainer Create(object currentValue, object defaultValue, IPropertyBuilderOutput propertyBuilderOutput)
         {
             Debug.Assert(currentValue is bool);
-            return new SettingsPropertyValueContainer(new BooleanContainer((bool)currentValue, (bool)defaultValue));
+
+            return new SettingsPropertyValueContainer(new BooleanContainer((bool)currentValue, (bool)defaultValue, Update));
+            void Update(ISettingsManager settingsManager, bool value) => propertyBuilderOutput.Update(settingsManager, value);
         }
     }
 
@@ -151,7 +153,7 @@ internal class PropertyUIBuilder<TSettings, TProperty> :
             _valueToDisplayString = valueToDisplayString;
         }
 
-        public SettingsPropertyValueContainer Create(object currentValue, object defaultValue)
+        public SettingsPropertyValueContainer Create(object currentValue, object defaultValue, IPropertyBuilderOutput propertyBuilderOutput)
         {
             Debug.Assert(currentValue is TProperty);
 
@@ -160,6 +162,7 @@ internal class PropertyUIBuilder<TSettings, TProperty> :
             return new SettingsPropertyValueContainer(new SingleValueMultipleChoiceContainer(
                 currentValue,
                 defaultValue,
+                propertyBuilderOutput.Update,
                 _valueComparer,
                 allowedValues,
                 ValueToDisplayString
@@ -176,5 +179,5 @@ internal class PropertyUIBuilder<TSettings, TProperty> :
 
 internal interface ISettingsPropertyValueContainerFactory
 {
-    SettingsPropertyValueContainer Create(object currentValue, object defaultValue);
+    SettingsPropertyValueContainer Create(object currentValue, object defaultValue, IPropertyBuilderOutput propertyBuilderOutput);
 }

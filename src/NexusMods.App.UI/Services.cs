@@ -19,7 +19,6 @@ using NexusMods.App.UI.Controls.ModInfo.Error;
 using NexusMods.App.UI.Controls.ModInfo.Loading;
 using NexusMods.App.UI.Controls.ModInfo.ModFiles;
 using NexusMods.App.UI.Controls.Settings.SettingEntries;
-using NexusMods.App.UI.Controls.Settings.SettingEntries.SettingInteractionControls;
 using NexusMods.App.UI.Controls.Spine;
 using NexusMods.App.UI.Controls.Spine.Buttons.Download;
 using NexusMods.App.UI.Controls.Spine.Buttons.Icon;
@@ -70,6 +69,7 @@ using ModInstalledView = NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModInstalled
 using ModNameView = NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModName.ModNameView;
 using ModVersionView = NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModVersion.ModVersionView;
 using NexusLoginOverlayView = NexusMods.App.UI.Overlays.Login.NexusLoginOverlayView;
+using SettingToggleControl = NexusMods.App.UI.Controls.Settings.SettingEntries.SettingToggleControl;
 
 namespace NexusMods.App.UI;
 
@@ -137,9 +137,6 @@ public static class Services
             .AddViewModel<DummyLoadingViewModel, ILoadingViewModel>()
             .AddViewModel<DummyErrorViewModel, IErrorViewModel>()
             .AddViewModel<ApplyDiffViewModel, IApplyDiffViewModel>()
-            
-            
-            .AddViewModel<SettingToggleViewModel, ISettingToggleViewModel>()
 
             // Views
             .AddView<DevelopmentBuildBannerView, IDevelopmentBuildBannerViewModel>()
@@ -182,9 +179,14 @@ public static class Services
             .AddView<ApplyDiffView, IApplyDiffViewModel>()
             .AddView<FileTreeView, IFileTreeViewModel>()
             
-            .AddView<SettingsView, ISettingsViewModel>()
+            .AddView<SettingsView, ISettingsPageViewModel>()
+            .AddViewModel<SettingsPageViewModel, ISettingsPageViewModel>()
             .AddView<SettingEntryView, ISettingEntryViewModel>()
+            .AddViewModel<SettingEntryViewModel, ISettingEntryViewModel>()
             .AddView<SettingToggleControl, ISettingToggleViewModel>()
+            .AddViewModel<SettingToggleViewModel, ISettingToggleViewModel>()
+            .AddView<SettingComboBoxView, ISettingComboBoxViewModel>()
+            .AddViewModel<SettingComboBoxViewModel, ISettingComboBoxViewModel>()
 
             .AddView<DiagnosticEntryView, IDiagnosticEntryViewModel>()
             .AddViewModel<DiagnosticEntryViewModel, IDiagnosticEntryViewModel>()
@@ -223,6 +225,7 @@ public static class Services
             .AddSingleton<IPageFactory, DiagnosticListPageFactory>()
             .AddSingleton<IPageFactory, DiagnosticDetailsPageFactory>()
             .AddSingleton<IPageFactory, ApplyDiffPageFactory>()
+            .AddSingleton<IPageFactory, SettingsPageFactory>()
 
             // LeftMenu factories
             .AddSingleton<ILeftMenuFactory, DownloadsLeftMenuFactory>()

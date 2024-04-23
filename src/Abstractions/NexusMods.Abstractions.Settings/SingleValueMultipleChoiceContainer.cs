@@ -17,9 +17,10 @@ public sealed class SingleValueMultipleChoiceContainer : APropertyValueContainer
     public SingleValueMultipleChoiceContainer(
         object value,
         object defaultValue,
+        Action<ISettingsManager, object> updaterFunc,
         IEqualityComparer<object> valueComparer,
         object[] allowedValues,
-        Func<object, string> valueToTranslation) : base(value, defaultValue, valueComparer)
+        Func<object, string> valueToTranslation) : base(value, defaultValue, updaterFunc, valueComparer)
     {
         _allowedValues = allowedValues;
         _valueToTranslation = valueToTranslation;

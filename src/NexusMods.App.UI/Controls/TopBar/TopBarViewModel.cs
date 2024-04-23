@@ -3,9 +3,11 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
+using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.NexusWebApi;
+using NexusMods.App.UI.Pages.Settings;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using ReactiveUI;
@@ -30,6 +32,15 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
         }
 
         var workspaceController = window.WorkspaceController;
+
+        SettingsActionCommand = ReactiveCommand.Create(() =>
+        {
+            workspaceController.OpenPage(workspaceController.ActiveWorkspace!.Id, new PageData
+            {
+                Context = new SettingsPageContext(),
+                FactoryId = SettingsPageFactory.StaticId
+            }, new OpenPageBehavior.NewTab(Optional<PanelId>.None));
+        });
 
         this.WhenActivated(d =>
         {
@@ -126,6 +137,5 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
     public ReactiveCommand<Unit, Unit> HelpActionCommand { get; } =
         ReactiveCommand.Create(() => { }, Observable.Return(false));
 
-    public ReactiveCommand<Unit, Unit> SettingsActionCommand { get; } =
-        ReactiveCommand.Create(() => { }, Observable.Return(false));
+    public ReactiveCommand<Unit, Unit> SettingsActionCommand { get; }
 }
