@@ -1,13 +1,8 @@
 using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Text;
 using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Serialization;
-using NexusMods.Abstractions.Serialization.DataModel;
-using NexusMods.Abstractions.Serialization.DataModel.Ids;
 using NexusMods.Extensions.Hashing;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions;
@@ -110,7 +105,7 @@ public class FileHashCache : IFileHashCache
         );
 
         // Insert all cached items into the DB.
-        await PutAllCached(toPersist); // <= required because this is async method
+        await PutCached(toPersist);
         foreach (var itm in results)
             yield return itm;
     }
@@ -132,7 +127,7 @@ public class FileHashCache : IFileHashCache
         job.SetMax(info.Size);
         var hashed = await file.XxHash64Async(job, token);
         var result = new HashedEntryWithName(file, hashed, info.LastWriteTimeUtc, size);
-        await PutCached(file, result);
+        await PutCached([result]);
         return result;
     }
 
@@ -145,37 +140,39 @@ public class FileHashCache : IFileHashCache
         return DiskStateTree.Create(hashed.Select(h => KeyValuePair.Create(installation.LocationsRegister.ToGamePath(h.Path),
             DiskStateEntry.From(h))));
     }
-    
-    private async ValueTask PutCached(AbsolutePath path, HashedEntryWithName entry)
+
+    /// <inheritdoc />
+    public async Task PutCached(IReadOnlyCollection<HashedEntryWithName> toPersist)
     {
+        if (toPersist.Count == 0) return;
+        var db = _conn.Db;
         using var tx = _conn.BeginTransaction();
-        var nameString = path.ToString();
-        _ = new HashCacheEntry.Model(tx)
+        foreach (var entry in toPersist)
         {
-            NameHash = nameString.XxHash64AsUtf8(),
-            LastModified = entry.LastModified,
-            Hash = entry.Hash,
-            Size = entry.Size,
-        };
+            var stringName = entry.Path.ToString();
+            AddOrReplace(entry, db, stringName, tx);
+        }
         await tx.Commit();
     }
     
-    private async Task PutAllCached(ConcurrentBag<HashedEntryWithName> toPersist)
+    private static void AddOrReplace(HashedEntryWithName entry, IDb db, string nameString, ITransaction tx)
     {
-        if (toPersist.Count == 0) return;
-        using var tx = _conn.BeginTransaction();
-        foreach (var itm in toPersist)
-        {
-            var stringName = itm.Path.ToString();
-            _ = new HashCacheEntry.Model(tx)
-            {
-                NameHash = stringName.XxHash64AsUtf8(),
-                LastModified = itm.LastModified,
-                Hash = itm.Hash,
-                Size = itm.Size,
-            };
-        }
+        var existing = db.FindIndexed(nameString.XxHash64AsUtf8(), HashCacheEntry.NameHash)
+            .FirstOrDefault(EntityId.MinValue);
 
-        await tx.Commit();
+        if (existing != EntityId.MinValue)
+        {
+            tx.Add(existing,HashCacheEntry.LastModified, entry.LastModified);
+            tx.Add(existing,HashCacheEntry.Hash, entry.Hash);
+            tx.Add(existing,HashCacheEntry.Size, entry.Size);
+        }
+        else
+        {
+            var newId = tx.TempId();
+            tx.Add(newId, HashCacheEntry.NameHash, nameString.XxHash64AsUtf8());
+            tx.Add(newId, HashCacheEntry.LastModified, entry.LastModified);
+            tx.Add(newId, HashCacheEntry.Hash, entry.Hash);
+            tx.Add(newId, HashCacheEntry.Size, entry.Size);
+        }
     }
 }

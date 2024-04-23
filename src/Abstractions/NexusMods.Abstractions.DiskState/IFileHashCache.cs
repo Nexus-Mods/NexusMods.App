@@ -13,9 +13,6 @@ public interface IFileHashCache
     /// <summary>
     ///     Tries to find a hash for the file from the cache.
     /// </summary>
-    /// <param name="path">Path to the file to obtain from the cache.</param>
-    /// <param name="entry">The obtained entry from the cache.</param>
-    /// <returns></returns>
     /// <remarks>
     ///     When calling this code, you must ensure yourself that the returned cache
     ///     element is valid, by comparing last modified date and size with the actual
@@ -28,9 +25,6 @@ public interface IFileHashCache
     /// <summary>
     ///     Asynchronously indexes the folder specified by <paramref name="path" />; putting it in the cache.
     /// </summary>
-    /// <param name="path">Path of the folder to hash.</param>
-    /// <param name="token">Allows you to cancel the operation.</param>
-    /// <returns>Enumerator for all of the completed hash operations as they are available.</returns>
     /// <remarks>
     ///     Entries are pulled from cache if they already exist and we
     ///     can verify cached entry is accurate.
@@ -40,9 +34,6 @@ public interface IFileHashCache
     /// <summary>
     ///     Asynchronously indexes the folders specified by <paramref name="paths" />; putting them in the cache.
     /// </summary>
-    /// <param name="paths">Paths of the folders to hash.</param>
-    /// <param name="token">Allows you to cancel the operation.</param>
-    /// <returns>Enumerator for all of the completed hash operations as they are available.</returns>
     /// <remarks>
     ///     Entries are pulled from cache if they already exist and we
     ///     can verify cached entry is accurate.
@@ -53,9 +44,6 @@ public interface IFileHashCache
     /// <summary>
     ///     Asynchronously indexes the file specified by <paramref name="file" />; putting them in the cache.
     /// </summary>
-    /// <param name="file">Path of the file to be hashed.</param>
-    /// <param name="token">Token to cancel the operation.</param>
-    /// <returns>The individual hashed entry.</returns>
     /// <remarks>
     ///     Entry is pulled from cache if it already exists in the cache and we
     ///     can verify cached entry is accurate.
@@ -65,9 +53,13 @@ public interface IFileHashCache
     /// <summary>
     ///     Indexes the folders a game installation and returns the disk state tree.
     /// </summary>
-    /// <param name="installation"></param>
-    /// <returns></returns>
     ValueTask<DiskStateTree> IndexDiskState(GameInstallation installation);
+
+
+    /// <summary>
+    ///     Puts the entries into the cache, replacing any existing entries.
+    /// </summary>
+    public Task PutCached(IReadOnlyCollection<HashedEntryWithName> entries);
 }
 
 /// <summary>
