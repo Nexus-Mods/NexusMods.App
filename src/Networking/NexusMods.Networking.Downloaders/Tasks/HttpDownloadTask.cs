@@ -3,7 +3,6 @@ using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.HttpDownloader;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.Downloaders.Interfaces;
-using NexusMods.Networking.Downloaders.Interfaces.Traits;
 using NexusMods.Networking.Downloaders.Tasks.State;
 using NexusMods.Paths;
 
@@ -15,23 +14,8 @@ namespace NexusMods.Networking.Downloaders.Tasks;
 /// <remarks>
 ///     This task is usually created via <see cref="DownloadService.AddNxmTask"/>.
 /// </remarks>
-public class HttpDownloadTask : ADownloadTask, IHaveFileSize
+public class HttpDownloadTask : ADownloadTask
 {
-    private string _url = null!;
-    private readonly ILogger<HttpDownloadTask> _logger;
-    private readonly TemporaryFileManager _temp;
-    private readonly HttpClient _client;
-    private readonly IHttpDownloader _downloader;
-    private readonly HttpDownloaderState _state;
-
-    private DownloaderState.Model _downloaderState = null!;
-
-    private TemporaryPath _downloadLocation; // for resume
-    private CancellationTokenSource _tokenSource;
-    private Task? _task;
-    private Size _defaultDownloadedSize;
-    private readonly IConnection _conn;
-
     /// <inheritdoc />
     public Size DownloadedSizeBytes => _state.ActivityStatus?.MakeTypedReport().Current.Value ?? _defaultDownloadedSize;
 
@@ -143,26 +127,7 @@ public class HttpDownloadTask : ADownloadTask, IHaveFileSize
         await _downloader.DownloadAsync(new[] { request }, tempPath, _state, SizeBytes <= Size.Zero ? Size.Zero : SizeBytes, token);
     }
 
-    private async Task<GetNameAndSizeResult> GetNameAndSize()
-    {
-        var uri = new Uri(_url);
-        if (uri.IsFile)
-            return new GetNameAndSizeResult(string.Empty, -1);
 
-        var response = await _client.GetAsync(_url, HttpCompletionOption.ResponseHeadersRead);
-        if (!response.IsSuccessStatusCode)
-        {
-            _logger.LogWarning("HTTP request {Url} failed with status {ResponseStatusCode}", _url, response.StatusCode);
-            return new GetNameAndSizeResult(string.Empty, -1);
-        }
-
-        // Get the filename from the Content-Disposition header, or default to a temporary file name.
-        var contentDispositionHeader = response.Content.Headers.ContentDisposition?.FileNameStar
-                                       ?? response.Content.Headers.ContentDisposition?.FileName
-                                       ?? Path.GetTempFileName();
-
-        return new GetNameAndSizeResult(contentDispositionHeader.Trim('"'), response.Content.Headers.ContentLength.GetValueOrDefault(0));
-    }
 
     public void Cancel()
     {
@@ -191,8 +156,6 @@ public class HttpDownloadTask : ADownloadTask, IHaveFileSize
         return _task;
     }
     
-    private record GetNameAndSizeResult(string FileName, long FileSize);
-
     #region Test Only
     internal Task StartSuspended()
     {
