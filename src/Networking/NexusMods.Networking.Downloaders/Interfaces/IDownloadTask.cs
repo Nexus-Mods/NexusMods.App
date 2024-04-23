@@ -1,4 +1,4 @@
-using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Abstractions.Activities;
 using NexusMods.Networking.Downloaders.Tasks.State;
 using NexusMods.Paths;
 
@@ -9,7 +9,6 @@ namespace NexusMods.Networking.Downloaders.Interfaces;
 /// </summary>
 public interface IDownloadTask
 {
-
     /// <summary>
     /// The DownloaderState of the task.
     /// </summary>
@@ -19,22 +18,25 @@ public interface IDownloadTask
     /// Calculates the download speed of the current job.
     /// </summary>
     /// <returns>Current speed in terms of bytes per second.</returns>
-    long CalculateThroughput();
-
+    Bandwidth CalculateThroughput();
+    
     /// <summary>
-    /// Service this task is associated with.
+    /// The amount of data downloaded so far.
     /// </summary>
-    IDownloadService Owner { get; }
-
-
-
+    Size Downloaded { get; }
+    
+    /// <summary>
+    /// The percent completion of the task.
+    /// </summary>
+    Percent Progress { get; }
+    
     /// <summary>
     /// Starts executing the task.
     /// </summary>
     Task StartAsync();
 
     /// <summary>
-    /// Cancels a download task.
+    /// Cancels a download task, this is a one-way operation.
     /// </summary>
     void Cancel();
 
@@ -48,8 +50,6 @@ public interface IDownloadTask
     /// </summary>
     Task Resume();
 }
-
-// TODO: These statuses need unit tests for individual downloaders.
 
 /// <summary>
 /// Current status of the task.

@@ -1,3 +1,4 @@
+using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.HttpDownloader;
@@ -36,9 +37,23 @@ public abstract class ADownloadTask : IDownloadTask
         
         await tx.Commit();
     }
+    
+    /// <inheritdoc />
+    public Bandwidth CalculateThroughput()
+    {
+        if (_downloadState!.Activity == null)
+            return Bandwidth.From(0);
+
+        var report = _downloadState.ActivityStatus?.GetReport() 
+            as ActivityReport<Size>;
+        var size = report?
+            .Throughput
+            .ValueOr(() => Size.Zero) ?? Size.Zero;
+
+        return Bandwidth.From(size.Value);
+    }
 
     public DownloaderState.Model State => _state!;
-    public abstract long CalculateThroughput();
     public IDownloadService Owner { get; }
 
     public abstract Task StartAsync();

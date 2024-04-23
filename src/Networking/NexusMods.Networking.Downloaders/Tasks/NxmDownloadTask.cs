@@ -38,19 +38,7 @@ public class NxmDownloadTask : IDownloadTask, IHaveDownloadVersion, IHaveFileSiz
                    .ValueOr(() => Size.Zero)
                    .Value ?? (ulong)_defaultDownloadedSize);
 
-    /// <inheritdoc />
-    public long CalculateThroughput()
-    {
-        if (_state.Activity == null)
-            return 0;
 
-        var report = _state.ActivityStatus?.GetReport() as ActivityReport<Size>;
-        var size = report?
-            .Throughput
-            .ValueOr(() => Size.Zero) ?? Size.Zero;
-
-        return (long)size.Value;
-    }
 
     /// <inheritdoc />
     public IDownloadService Owner { get; }
