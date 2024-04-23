@@ -7,13 +7,15 @@ namespace NexusMods.App.UI.Controls.Settings.SettingEntries;
 
 public class SettingToggleViewModel : AViewModel<ISettingToggleViewModel>, ISettingToggleViewModel
 {
-    public BooleanContainer ValueContainer { get; }
+    public BooleanContainer BooleanContainer { get; }
+
+    public IValueContainer ValueContainer => BooleanContainer;
 
     [Reactive] public bool HasChanged { get; private set;  }
 
     public SettingToggleViewModel(BooleanContainer booleanContainer)
     {
-        ValueContainer = booleanContainer;
+        BooleanContainer = booleanContainer;
 
         this.WhenActivated(disposables =>
         {

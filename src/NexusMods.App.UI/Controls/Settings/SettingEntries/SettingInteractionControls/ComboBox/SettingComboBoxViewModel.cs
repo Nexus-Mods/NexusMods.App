@@ -8,7 +8,9 @@ namespace NexusMods.App.UI.Controls.Settings.SettingEntries;
 
 public class SettingComboBoxViewModel : AViewModel<ISettingComboBoxViewModel>, ISettingComboBoxViewModel
 {
-    public SingleValueMultipleChoiceContainer ValueContainer { get; }
+    public IValueContainer ValueContainer => SingleValueMultipleChoiceContainer;
+
+    public SingleValueMultipleChoiceContainer SingleValueMultipleChoiceContainer { get; }
 
     public string[] DisplayItems { get; }
 
@@ -16,7 +18,7 @@ public class SettingComboBoxViewModel : AViewModel<ISettingComboBoxViewModel>, I
 
     public SettingComboBoxViewModel(SingleValueMultipleChoiceContainer valueContainer)
     {
-        ValueContainer = valueContainer;
+        SingleValueMultipleChoiceContainer = valueContainer;
 
         DisplayItems = valueContainer.Values.Select(x => x.Value).ToArray();
         SelectedItemIndex = GetIndex(valueContainer.CurrentValue);
@@ -25,14 +27,14 @@ public class SettingComboBoxViewModel : AViewModel<ISettingComboBoxViewModel>, I
         {
             this.WhenAnyValue(x => x.SelectedItemIndex)
                 .Select(GetValue)
-                .BindToVM(this, vm => vm.ValueContainer.CurrentValue)
+                .BindToVM(this, vm => vm.SingleValueMultipleChoiceContainer.CurrentValue)
                 .DisposeWith(disposables);
         });
     }
 
     private object GetValue(int index)
     {
-        var values = ValueContainer.Values;
+        var values = SingleValueMultipleChoiceContainer.Values;
         if (index == -1) return values.First().Key;
         if (index >= values.Length) return values.Last().Key;
         return values[index].Key;
@@ -40,10 +42,10 @@ public class SettingComboBoxViewModel : AViewModel<ISettingComboBoxViewModel>, I
 
     private int GetIndex(object value)
     {
-        for (var i = 0; i < ValueContainer.Values.Length; i++)
+        for (var i = 0; i < SingleValueMultipleChoiceContainer.Values.Length; i++)
         {
-            var other = ValueContainer.Values[i];
-            if (ValueContainer.EqualityComparer.Equals(other.Key, value))
+            var other = SingleValueMultipleChoiceContainer.Values[i];
+            if (SingleValueMultipleChoiceContainer.EqualityComparer.Equals(other.Key, value))
                 return i;
         }
 

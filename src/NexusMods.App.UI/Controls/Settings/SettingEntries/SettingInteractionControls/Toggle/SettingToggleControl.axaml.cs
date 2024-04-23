@@ -14,7 +14,7 @@ public partial class SettingToggleControl : ReactiveUserControl<ISettingToggleVi
 
         this.WhenActivated(disposables =>
         {
-            this.Bind(ViewModel, vm => vm.ValueContainer.CurrentValue, view => view.ToggleSwitch.IsChecked)
+            this.Bind(ViewModel, vm => vm.BooleanContainer.CurrentValue, view => view.ToggleSwitch.IsChecked)
                 .DisposeWith(disposables);
         });
     }

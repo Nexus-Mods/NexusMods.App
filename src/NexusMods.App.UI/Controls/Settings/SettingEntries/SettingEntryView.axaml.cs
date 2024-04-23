@@ -2,6 +2,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
+using NexusMods.App.UI.Resources;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Controls.Settings.SettingEntries;
@@ -20,6 +21,14 @@ public partial class SettingEntryView : ReactiveUserControl<ISettingEntryViewMod
                 .Do(PopulateFromViewModel)
                 .Subscribe()
                 .DisposeWith(disposables);
+
+            this.WhenAnyValue(x =>
+                    x.ViewModel!.InteractionControlViewModel.ValueContainer.HasChanged,
+                    x => x.ViewModel!.PropertyUIDescriptor.RequiresRestart,
+                    (hasChanged, requiresRestart) => requiresRestart && hasChanged
+                )
+                .BindToView(this, view => view.RequiresRestartBanner.IsVisible)
+                .DisposeWith(disposables);
         });
     }
 
@@ -32,7 +41,6 @@ public partial class SettingEntryView : ReactiveUserControl<ISettingEntryViewMod
         EntryName.Text = descriptor.DisplayName;
         EntryDescription.Text = descriptor.Description;
 
-        // TODO: make this reactive
-        RequiresRestartBanner.IsVisible = descriptor.RequiresRestart;
+        RequiresRestartMessage.Text = descriptor.RestartMessage ?? Language.SettingEntryView_NeedRestartMessage;
     }
 }

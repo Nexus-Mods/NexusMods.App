@@ -7,7 +7,7 @@ namespace NexusMods.Abstractions.Settings;
 /// Helper abstract class for <see cref="SettingsPropertyValueContainer"/>.
 /// </summary>
 [PublicAPI]
-public abstract class APropertyValueContainer<T> : AbstractNotifyPropertyChanged
+public abstract class APropertyValueContainer<T> : AbstractNotifyPropertyChanged, IValueContainer
 {
     private T _currentValue;
     private bool _hasChanged;
@@ -75,7 +75,7 @@ public abstract class APropertyValueContainer<T> : AbstractNotifyPropertyChanged
     {
         if (propertyName == nameof(CurrentValue))
         {
-            HasChanged = EqualityComparer.Equals(PreviousValue, CurrentValue);
+            HasChanged = !EqualityComparer.Equals(PreviousValue, CurrentValue);
             IsDefault = EqualityComparer.Equals(CurrentValue, DefaultValue);
         }
 
