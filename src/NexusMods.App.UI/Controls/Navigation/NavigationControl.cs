@@ -62,6 +62,34 @@ public class NavigationControl : Button
     /// <inheritdoc/>
     protected override void OnPointerPressed(PointerPressedEventArgs e)
     {
+        var input = ToNavigationInput(e);
+        NavigationInput = input;
+
+        base.OnPointerPressed(e);
+
+        // NOTE(erri120): Button.OnPointerPressed only calls OnClick if the
+        // button used was the left mouse button, but we also want OnClick
+        // to trigger on the middle mouse button.
+        if (e.Handled) return;
+        if (ClickMode == ClickMode.Press) OnClick();
+    }
+
+    protected override void OnPointerReleased(PointerReleasedEventArgs e)
+    {
+        var input = ToNavigationInput(e);
+        NavigationInput = input;
+
+        base.OnPointerReleased(e);
+
+        // NOTE(erri120): Button.OnPointerReleased only calls OnClick if the
+        // button used was the left mouse button, but we also want OnClick
+        // to trigger on the middle mouse button.
+        if (e.Handled) return;
+        if (ClickMode == ClickMode.Release) OnClick();
+    }
+
+    private NavigationInput ToNavigationInput(PointerEventArgs e)
+    {
         var keyModifiers = e.KeyModifiers;
         var properties = e.GetCurrentPoint(this).Properties;
 
@@ -71,7 +99,6 @@ public class NavigationControl : Button
                 ? MouseButton.Middle
                 : MouseButton.None;
 
-        NavigationInput = new NavigationInput(keyType, keyModifiers);
-        base.OnPointerPressed(e);
+        return new NavigationInput(keyType, keyModifiers);
     }
 }
