@@ -555,6 +555,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add.
+        /// </summary>
+        public static string FileOriginsPage_AddButtonText {
+            get {
+                return ResourceManager.GetString("FileOriginsPage_AddButtonText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to View.
         /// </summary>
         public static string FileTreeNodeView__View {

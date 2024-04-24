@@ -4,6 +4,8 @@
                                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:modLibrary="clr-namespace:NexusMods.App.UI.Pages.ModLibrary"
+                                xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+                                xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="NexusMods.App.UI.Pages.ModLibrary.FileOriginsPageView">
     <Grid RowDefinitions="Auto, *">
@@ -16,15 +18,27 @@
                   CanUserSortColumns="True"
                   x:Name="DataGrid">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="NAME"  />
-                <DataGridTextColumn Header="VERSION"  />
-                <DataGridTextColumn Header="SIZE"  />
-                <DataGridTextColumn Header="DATE"  />
-                <DataGridTemplateColumn Header="ACTIONS" />
-                
+                <DataGridTextColumn Header="NAME" Width="*" />
+                <DataGridTextColumn Header="VERSION" />
+                <DataGridTextColumn Header="SIZE" />
+                <DataGridTextColumn Header="DATE" />
+                <DataGridTemplateColumn Header="ACTIONS" Width="*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button x:Name="AddButton"
+                                    Classes="Rounded Primary">
+                                <StackPanel>
+                                    <icons:UnifiedIcon Classes="Plus" />
+                                    <TextBlock Text="{x:Static resources:Language.FileOriginsPage_AddButtonText}" />
+                                </StackPanel>
+                            </Button>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
             </DataGrid.Columns>
         </DataGrid>
-        
+
     </Grid>
 
 </reactiveUi:ReactiveUserControl>

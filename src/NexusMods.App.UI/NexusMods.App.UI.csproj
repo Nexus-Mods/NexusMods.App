@@ -514,6 +514,9 @@
         <Compile Update="Pages\ModLibrary\FileOrigins\FileOriginsPageViewModel.cs">
           <DependentUpon>IFileOriginsPageViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Pages\ModLibrary\FileOrigins\FileOriginEntry\FileOriginEntryViewModel.cs">
+          <DependentUpon>IFileOriginEntryViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
