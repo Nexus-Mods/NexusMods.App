@@ -24,6 +24,7 @@ using NexusMods.App.UI.Pages.ModInfo.Types;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Extensions.DynamicData;
+using NexusMods.Icons;
 using NexusMods.Paths;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -126,7 +127,7 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
                 .SubscribeWithErrorLogging(logger)
                 .DisposeWith(d);
 
-
+            GetWorkspaceController().SetIcon(IconValues.Collections, WorkspaceId, PanelId, TabId);
         });
     }
 

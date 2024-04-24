@@ -27,7 +27,7 @@ public class HomeLeftMenuViewModel : AViewModel<IHomeLeftMenuViewModel>, IHomeLe
             new IconViewModel
             {
                 Name = Language.MyGames,
-                Icon = IconValues.Game,
+                Icon = IconValues.JoystickGameFilled,
                 Activate = ReactiveCommand.Create(() =>
                 {
                     var pageData = new PageData

@@ -19,6 +19,7 @@ using NexusMods.App.UI.Pages.Downloads.ViewModels;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.Icons;
 using NexusMods.Networking.Downloaders.Interfaces;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -90,7 +91,9 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
 
         this.WhenActivated(d =>
         {
-            GetWorkspaceController().SetTabTitle(Language.InProgressDownloadsPage_Title, WorkspaceId, PanelId, TabId);
+            var workspaceController = GetWorkspaceController();
+            workspaceController.SetTabTitle(Language.InProgressDownloadsPage_Title, WorkspaceId, PanelId, TabId);
+            workspaceController.SetIcon(IconValues.Downloading, WorkspaceId, PanelId, TabId);
 
             ShowCancelDialogCommand = ReactiveCommand.Create(async () =>
                 {

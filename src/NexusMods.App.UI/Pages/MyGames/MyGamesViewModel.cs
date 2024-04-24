@@ -14,6 +14,7 @@ using NexusMods.App.UI.Pages.LoadoutGrid;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.Icons;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Pages.MyGames;
@@ -54,12 +55,10 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
 
         this.WhenActivated(d =>
             {
-                GetWorkspaceController()
-                    .SetTabTitle(Language.MyGames,
-                        WorkspaceId,
-                        PanelId,
-                        TabId
-                    );
+                var workspaceController = GetWorkspaceController();
+                workspaceController.SetTabTitle(Language.MyGames, WorkspaceId, PanelId, TabId);
+                workspaceController.SetIcon(IconValues.JoystickGameFilled, WorkspaceId, PanelId, TabId);
+                
 
                 var managedInstallations = _loadoutRegistry.LoadoutRootChanges
                     .Transform(loadoutId => (loadoutId, loadout: loadoutRegistry.Get(loadoutId)))
