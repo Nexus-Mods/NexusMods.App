@@ -8,7 +8,8 @@
                                 xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
                                 xmlns:fileOriginEntry="clr-namespace:NexusMods.App.UI.Pages.ModLibrary.FileOriginEntry"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-                                x:Class="NexusMods.App.UI.Pages.ModLibrary.FileOriginsPageView">
+                                x:Class="NexusMods.App.UI.Pages.ModLibrary.FileOriginsPageView"
+                                x:CompileBindings="True">
     <Grid RowDefinitions="Auto, *">
         <Border Grid.Row="0" Classes="Toolbar">
         </Border>
@@ -20,16 +21,16 @@
                   x:Name="DataGrid"
                   x:DataType="fileOriginEntry:IFileOriginEntryViewModel">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="NAME" Width="*" Binding="{CompiledBinding .Name}" />
-                <DataGridTextColumn Header="VERSION" Binding="{CompiledBinding .Version}"/>
-                <DataGridTextColumn Header="SIZE" Binding="{CompiledBinding .Size}"/>
-                <DataGridTextColumn Header="DATE" Binding="{CompiledBinding .Date}"/>
+                <DataGridTextColumn Header="NAME" Width="*" Binding="{CompiledBinding Name}" />
+                <DataGridTextColumn Header="VERSION" Binding="{CompiledBinding Version}"/>
+                <DataGridTextColumn Header="SIZE" Binding="{CompiledBinding Size}"/>
+                <DataGridTextColumn Header="DATE" Binding="{CompiledBinding Date}"/>
                 <DataGridTemplateColumn Header="ACTIONS" Width="*">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate DataType="fileOriginEntry:IFileOriginEntryViewModel">
                             <Button x:Name="AddButton"
                                     Classes="Rounded Primary"
-                                    Command="{CompiledBinding .AddToLoadoutCommand}">
+                                    Command="{CompiledBinding AddToLoadoutCommand}">
                                 
                                 <StackPanel>
                                     <icons:UnifiedIcon Classes="Plus" />
