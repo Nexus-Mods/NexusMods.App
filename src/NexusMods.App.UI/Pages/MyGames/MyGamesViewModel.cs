@@ -79,6 +79,12 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                             await Task.Run(async () => await ManageGame(install));
                             vm.State = GameWidgetState.ManagedGame;
                         });
+                        vm.RemoveAllLoadoutsCommand = ReactiveCommand.CreateFromTask(async () => 
+                        {
+                            vm.State = GameWidgetState.RemovingGame;
+                            await RemoveAllLoadouts(install);
+                            vm.State = GameWidgetState.ManagedGame;
+                        });
 
                         vm.ViewGameCommand = ReactiveCommand.Create(
                             () => { NavigateToLoadout(install); }
@@ -105,6 +111,12 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                             await Task.Run(async () => await ManageGame(install));
                             vm.State = GameWidgetState.ManagedGame;
                         });
+                        vm.RemoveAllLoadoutsCommand = ReactiveCommand.CreateFromTask(async () => 
+                        {
+                            vm.State = GameWidgetState.RemovingGame;
+                            await RemoveAllLoadouts(install);
+                            vm.State = GameWidgetState.ManagedGame;
+                        });
 
                         vm.State = GameWidgetState.DetectedGame;
                         return vm;
@@ -114,6 +126,12 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                     .DisposeWith(d);
             }
         );
+    }
+
+    private async Task RemoveAllLoadouts(GameInstallation install)
+    {
+        var synchronizer = install.GetGame().Synchronizer;
+        await synchronizer.UnManage(install);
     }
 
     private async Task ManageGame(GameInstallation installation)

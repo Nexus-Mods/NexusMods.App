@@ -755,7 +755,7 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
         absPath.FileExists.Should().BeFalse("the file should have been removed from disk");
         
         
-        var listCValue = await _synchronizer.Manage(Install);
+        var listCValue = await _synchronizer.CreateLoadout(Install);
         
         var listC = LoadoutRegistry.GetMarker(listCValue.LoadoutId);
         await _synchronizer.Ingest(listC.Value);

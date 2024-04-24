@@ -52,10 +52,22 @@ public interface ILoadoutSynchronizer
     Task<Loadout> Ingest(Loadout loadout);
 
     /// <summary>
-    /// Manage a game, creating the initial loadout
+    /// Creates a loadout for a game, managing the game if it has not previously
+    /// been managed.
     /// </summary>
     /// <param name="installation"></param>
+    /// <param name="suggestedName">Suggested friendly name for the 'Game Files' mod.</param>
     /// <returns></returns>
-    Task<Loadout> Manage(GameInstallation installation, string? suggestedName=null);
-    #endregion
+    /// <remarks>
+    ///     This was formerly called 'Manage'.
+    /// </remarks>
+    Task<Loadout> CreateLoadout(GameInstallation installation, string? suggestedName=null);
+
+    /// <summary>
+    /// Removes all of the loadouts for a game, an resets the game folder to its
+    /// initial state.
+    /// </summary>
+    /// <param name="installation">Game installation which should be unmanaged.</param>
+    Task UnManage(GameInstallation installation);
+#endregion
 }

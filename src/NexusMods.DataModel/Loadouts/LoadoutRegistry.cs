@@ -442,7 +442,7 @@ public class LoadoutRegistry : IDisposable, ILoadoutRegistry
         if (string.IsNullOrWhiteSpace(name))
             name = SuggestName(installation);
 
-        var result = await installation.GetGame().Synchronizer.Manage(installation, name);
+        var result = await installation.GetGame().Synchronizer.CreateLoadout(installation, name);
 
         return GetMarker(result.LoadoutId);
     }
@@ -455,5 +455,20 @@ public class LoadoutRegistry : IDisposable, ILoadoutRegistry
     public bool Contains(LoadoutId loadoutId)
     {
         return GetId(loadoutId) != null;
+    }
+
+    /// <inheritdoc />
+    public void Delete(LoadoutId loadoutId)
+    {
+        if (_isDisposed)
+            throw new ObjectDisposedException(nameof(LoadoutRegistry));
+
+        var dbId = loadoutId.ToEntityId(EntityCategory.LoadoutRoots);
+        _store.Delete(dbId);
+        _logger.LogInformation("Loadout {LoadoutId} deleted", loadoutId);
+
+        _markers.TryRemove(loadoutId, out _);
+        _loadoutsIds.Remove(loadoutId);
+        _cache.Edit(x => x.Remove(GetId(loadoutId)!));
     }
 }

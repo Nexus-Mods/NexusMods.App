@@ -20,6 +20,7 @@ using NexusMods.Abstractions.Loadouts.Synchronizers.Transformer;
 using NexusMods.Abstractions.Loadouts.Visitors;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Serialization.DataModel;
+using NexusMods.Abstractions.Serialization.DataModel.Ids;
 using NexusMods.Extensions.BCL;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
@@ -250,7 +251,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         {
             entry.Key.Parent.CreateDirectory();
             await using var outputStream = entry.Key.Create();
-            var hash = await entry.Value.Write(outputStream, loadout, flattenedLoadout, fileTree);
+            var hash = await entry.Value.Write(outputStream, loadout!, flattenedLoadout, fileTree);
             if (hash == null)
             {
                 outputStream.Position = 0;
@@ -755,38 +756,13 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     }
 
     /// <inheritdoc />
-    public virtual async Task<Loadout> Manage(GameInstallation installation, string? suggestedName = null)
+    public virtual async Task<Loadout> CreateLoadout(GameInstallation installation, string? suggestedName = null)
     {
         var (isCached, initialState) = await GetOrCreateInitialDiskState(installation);
         
         var loadoutId = LoadoutId.Create();
-        var gameFiles = new Mod()
-        {
-            Name = "Game Files",
-            ModCategory = Mod.GameFilesCategory,
-            Id = ModId.NewId(),
-            Enabled = true,
-            Files = EntityDictionary<ModFileId, AModFile>.Empty(_store).With(initialState.GetAllDescendentFiles()
-                .Select(f =>
-                {
-                    var id = ModFileId.NewId();
-                    return KeyValuePair.Create(id, (AModFile)new StoredFile
-                    {
-                        Id = id,
-                        Hash = f.Item.Value.Hash,
-                        Size = f.Item.Value.Size,
-                        To = f.GamePath()
-                    });
-                }))
-        };
-
-        var fileTree = FileTree.Create(gameFiles.Files.Select(kv =>
-                {
-                    var storedFile = (kv.Value as StoredFile)!;
-                    return KeyValuePair.Create(storedFile.To, kv.Value);
-                }
-            )
-        );
+        var gameFiles = CreateGameFilesMod(initialState);
+        var fileTree = CreateFileTreeFromMod(gameFiles);
         await BackupNewFiles(installation, fileTree);
 
         var loadout = _loadoutRegistry.Alter(loadoutId, "Initial loadout",  loadout => loadout
@@ -817,8 +793,94 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         await _diskStateRegistry.SaveState(loadout.Installation, initialState);
         return loadout;
     }
+    
+    private static FileTree CreateFileTreeFromMod(Mod gameFiles)
+    {
+        return FileTree.Create(gameFiles.Files.Select(kv =>
+                {
+                    var storedFile = (kv.Value as StoredFile)!;
+                    return KeyValuePair.Create(storedFile.To, kv.Value);
+                }
+            )
+        );
+    }
 
-    #endregion
+    private Mod CreateGameFilesMod(DiskStateTree initialState)
+    {
+        return new Mod()
+        {
+            Name = "Game Files",
+            ModCategory = Mod.GameFilesCategory,
+            Id = ModId.NewId(),
+            Enabled = true,
+            Files = EntityDictionary<ModFileId, AModFile>.Empty(_store).With(initialState.GetAllDescendentFiles()
+                .Select(f =>
+                {
+                    var id = ModFileId.NewId();
+                    return KeyValuePair.Create(id, (AModFile)new StoredFile
+                    {
+                        Id = id,
+                        Hash = f.Item.Value.Hash,
+                        Size = f.Item.Value.Size,
+                        To = f.GamePath()
+                    });
+                }))
+        };
+    }
+
+    /// <inheritdoc />
+    public async Task UnManage(GameInstallation installation)
+    {
+        // Apply initial disk state.
+        var (isCached, initialState) = await GetOrCreateInitialDiskState(installation);
+        if (!isCached)
+            throw new InvalidOperationException("Something is very wrong with the DataStore.\n" +
+                                                "We don't have an initial disk state for the game folder, but we should have.\n" +
+                                                "Because this disk state should only ever be deleted when unmanaging a game.");
+
+        /*
+            Note (Sewer)
+
+            Below we create a temporary unpersisted loadout instance.
+            Normally we could navigate to the very first revision of a loadout
+            to get the 'vanilla' state of the game folder, however...
+
+            In the future we will support rollbacks for loadouts.
+            
+            That means the user will be able to update the 'starting'
+            state of a given loadout, deleting previous history to save space.
+            
+            In order to keep future code 'simpler', where we won't have to make
+            special exceptions/logic. We just make a temporary loadout instance
+            and use existing APIs.
+        */
+
+        // Create a temporary loadout instance.
+        // Note: We recreate 'Game Files' mod because 
+        var gameFiles = CreateGameFilesMod(initialState);
+        var fileTree = CreateFileTreeFromMod(gameFiles);
+        var loadout = new Loadout
+        {
+            Installation = installation,
+            ChangeMessage = "Unmanaging game folder",
+            Mods = new EntityDictionary<ModId, Mod>(),
+            LoadoutId = LoadoutId.DefaultValue,
+            Name = "Unmanage Folder Loadout",
+            LastModified = DateTime.Now,
+            PreviousVersion = new EntityLink<Loadout>(IdEmpty.Empty, _store),
+        };
+        
+        // Apply temporary loadout.
+        // The loadout is only used as a parameter for generated files.
+        var flattened = await LoadoutToFlattenedLoadout(loadout);
+        var prevState = _diskStateRegistry.GetState(loadout.Installation)!;
+        await FileTreeToDisk(fileTree, null!, flattened, prevState, installation, true);
+        
+        foreach (var loadoutId in _loadoutRegistry.AllLoadoutIds())
+            _loadoutRegistry.Delete(loadoutId);
+    }
+
+#endregion
 
     #region FlattenLoadoutToTree Methods
 

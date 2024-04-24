@@ -208,4 +208,10 @@ public interface ILoadoutRegistry
     /// <param name="loadoutId"></param>
     /// <returns></returns>
     bool Contains(LoadoutId loadoutId);
+
+    /// <summary>
+    /// Deletes a loadout with the given ID.
+    /// </summary>
+    /// <param name="loadoutId">The ID associated with the loadout.</param>
+    void Delete(LoadoutId loadoutId);
 }
