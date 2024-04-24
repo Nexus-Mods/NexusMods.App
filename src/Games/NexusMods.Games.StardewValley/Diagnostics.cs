@@ -223,7 +223,7 @@ You can download the latest supported SMAPI version {LatestSMAPIVersion} for you
         .WithSummary("The minimum supported SMAPI version of {ModName} is {MinimumAPIVersion}")
         .WithDetails("""
 Mod {Mod} requires the SMAPI version to be at least {MinimumAPIVersion}.
-The current game version is {CurrentSMAPIVersion}.
+The current SMAPI version is {CurrentSMAPIVersion}.
 
 You can solve this issue by either updating SMAPI or download an older version
 of the mod from {NexusModsLink}.
