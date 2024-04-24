@@ -87,6 +87,7 @@ public class DownloadService : IDownloadService, IAsyncDisposable
     /// <inheritdoc />
     public async Task<IDownloadTask> AddTask(NXMUrl url)
     {
+        _logger.LogInformation("Adding task for {Url}", url);
         throw new NotImplementedException();
     }
 

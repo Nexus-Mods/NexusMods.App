@@ -115,27 +115,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
         // of the VM because the MainWindowViewModel gets disposed last, after its contents.
         _windowManager.SaveWindowState(this);
     }
-
-    private async Task HandleDownloadedAnalyzedArchive(IDownloadTask task, DownloadId downloadId, string modName)
-    {
-        var loadouts = Array.Empty<LoadoutId>();
-        if (task is IHaveGameDomain gameDomain)
-            loadouts = _registry.AllLoadouts().Where(x => x.Installation.Game.Domain == gameDomain.GameDomain)
-                .Select(x => x.LoadoutId).ToArray();
-
-        // Insert code here to invoke loadout picker and get results for final loadouts to install to.
-        // ...
-
-        // Install in the background, to avoid blocking UI.
-        await Task.Run(async () =>
-        {
-            if (loadouts.Length > 0)
-                await _archiveInstaller.AddMods(loadouts[0], downloadId, modName);
-            else
-                await _archiveInstaller.AddMods(_registry.AllLoadouts().First().LoadoutId, downloadId, modName);
-        });
-    }
-
+    
     public WindowId WindowId { get; } = WindowId.NewId();
 
     /// <inheritdoc/>

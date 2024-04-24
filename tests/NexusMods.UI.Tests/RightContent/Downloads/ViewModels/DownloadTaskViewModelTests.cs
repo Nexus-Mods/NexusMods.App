@@ -1,7 +1,6 @@
 using FluentAssertions;
 using NexusMods.App.UI.Pages.Downloads.ViewModels;
 using NexusMods.Networking.Downloaders.Interfaces;
-using NexusMods.Networking.Downloaders.Interfaces.Traits;
 using NSubstitute;
 
 namespace NexusMods.UI.Tests.RightContent.Downloads.ViewModels;
@@ -13,7 +12,7 @@ public class DownloadTaskViewModelTests
     {
         // Arrange
         var task = Substitute.For<IDownloadTask>();
-        task.FriendlyName.Returns("TestName");
+        task.PersistentState.FriendlyName!.Returns("TestName");
         var viewModel = new DownloadTaskViewModel(task);
 
         // Act

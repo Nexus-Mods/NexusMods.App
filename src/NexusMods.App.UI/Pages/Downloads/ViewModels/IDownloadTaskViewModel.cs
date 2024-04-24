@@ -7,11 +7,7 @@ namespace NexusMods.App.UI.Pages.Downloads.ViewModels;
 /// </summary>
 public interface IDownloadTaskViewModel : IViewModelInterface
 {
-    /// <summary>
-    /// The underlying task.
-    /// </summary>
-    public IDownloadTask Task { get; }
-
+    
     /// <summary>
     /// e.g. 'My Cool Mod'
     /// </summary>
