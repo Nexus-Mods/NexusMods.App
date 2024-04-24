@@ -44,7 +44,7 @@ public class NxmRpcListener : IDisposable
             // the service keeps running rather than terminated.
             try
             {
-                _ = _downloadService.AddNxmTask(item.Value);
+                _ = _downloadService.AddTask(item.Value);
             }
             catch (Exception e)
             {

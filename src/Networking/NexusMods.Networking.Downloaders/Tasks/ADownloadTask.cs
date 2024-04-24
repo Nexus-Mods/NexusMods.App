@@ -14,8 +14,13 @@ namespace NexusMods.Networking.Downloaders.Tasks;
 
 public abstract class ADownloadTask : IDownloadTask
 {
-    private readonly IConnection _conn;
-    protected DownloaderState.Model? PersistentState = null;
+    protected readonly IConnection Connection;
+    protected readonly IActivityFactory ActivityFactory;
+    /// <summary>
+    /// The state of the download task, persisted to the database, will never
+    /// be null after the .Create() method is called.
+    /// </summary>
+    protected DownloaderState.Model PersistentState = null!;
     protected HttpDownloaderState? TransientState = null!;
     protected ILogger<ADownloadTask> Logger;
     protected TemporaryFileManager TemporaryFileManager;
@@ -26,12 +31,31 @@ public abstract class ADownloadTask : IDownloadTask
     
     protected ADownloadTask(IServiceProvider provider)
     {
-        _conn = provider.GetRequiredService<IConnection>();
+        Connection = provider.GetRequiredService<IConnection>();
         Logger = provider.GetRequiredService<ILogger<ADownloadTask>>();
         TemporaryFileManager = provider.GetRequiredService<TemporaryFileManager>();
         HttpClient = provider.GetRequiredService<HttpClient>();
         HttpDownloader = provider.GetRequiredService<IHttpDownloader>();
         CancellationTokenSource = new CancellationTokenSource();
+        ActivityFactory = provider.GetRequiredService<IActivityFactory>();
+    }
+
+
+    /// <summary>
+    /// Sets up the inital state of the download task, creates the persistent state
+    /// and then returns for the parent class to fill out the source information.  
+    /// </summary>
+    protected async Task Create()
+    {
+        using var tx = Connection.BeginTransaction();
+        var state = new DownloaderState.Model(tx)
+        {
+            Status = DownloadTaskStatus.Idle,
+            Downloaded = Size.Zero,
+            Size = Size.Zero,
+        };
+        var result = await tx.Commit();
+        PersistentState = result.Remap(state);
     }
     
     protected async Task<(string Name, Size Size)> GetNameAndSizeAsync(Uri uri)
@@ -58,7 +82,7 @@ public abstract class ADownloadTask : IDownloadTask
     
     protected async Task SetStatus(DownloadTaskStatus status)
     {
-        using var tx = _conn.BeginTransaction();
+        using var tx = Connection.BeginTransaction();
         tx.Add(State!.Id, DownloaderState.Status, (byte)status);
         
         if (TransientState != null)
@@ -102,7 +126,6 @@ public abstract class ADownloadTask : IDownloadTask
     /// <inheritdoc />
     public async Task StartAsync()
     {
-        await AddInitData();
         await Resume();
     }
 
@@ -128,15 +151,13 @@ public abstract class ADownloadTask : IDownloadTask
     /// <inheritdoc />
     public async Task Resume()
     {
+        TransientState = new HttpDownloaderState
+        {
+            Activity = ActivityFactory.Create<Size>(IHttpDownloader.Group, "Downloading {FileName}", DownloadLocation),
+        };
         await Download(DownloadLocation, CancellationTokenSource.Token);
         await SetStatus(DownloadTaskStatus.Completed);
     }
-    
-    /// <summary>
-    /// Called to fill out the PersistentState with any extra data needed for the download,
-    /// such as size, name, the author of the download, etc.
-    /// </summary>
-    protected abstract Task AddInitData();
     
     /// <summary>
     /// Begin the process of downloading a file to the specified destination, should
