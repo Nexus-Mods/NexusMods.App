@@ -440,4 +440,22 @@
     <data name="FileOriginsPageTitle" xml:space="preserve">
         <value>My mods</value>
     </data>
+    <data name="FileOriginsPageView_NameHeader" xml:space="preserve">
+        <value>NAME</value>
+    </data>
+    <data name="FileOriginsPageView_VersionHeader" xml:space="preserve">
+        <value>VERSION</value>
+    </data>
+    <data name="FileOriginsPageView_SizeHeader" xml:space="preserve">
+        <value>SIZE</value>
+    </data>
+    <data name="FileOriginsPageView_DownloadedHeader" xml:space="preserve">
+        <value>DOWNLOADED</value>
+    </data>
+    <data name="FileOriginsPageView_AddedHeader" xml:space="preserve">
+        <value>ADDED</value>
+    </data>
+    <data name="FileOriginsPageView_ActionHeader" xml:space="preserve">
+        <value>ACTIONS</value>
+    </data>
 </root>

@@ -591,6 +591,60 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to ACTIONS.
+        /// </summary>
+        public static string FileOriginsPageView_ActionHeader {
+            get {
+                return ResourceManager.GetString("FileOriginsPageView_ActionHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ADDED.
+        /// </summary>
+        public static string FileOriginsPageView_AddedHeader {
+            get {
+                return ResourceManager.GetString("FileOriginsPageView_AddedHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DOWNLOADED.
+        /// </summary>
+        public static string FileOriginsPageView_DownloadedHeader {
+            get {
+                return ResourceManager.GetString("FileOriginsPageView_DownloadedHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to NAME.
+        /// </summary>
+        public static string FileOriginsPageView_NameHeader {
+            get {
+                return ResourceManager.GetString("FileOriginsPageView_NameHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SIZE.
+        /// </summary>
+        public static string FileOriginsPageView_SizeHeader {
+            get {
+                return ResourceManager.GetString("FileOriginsPageView_SizeHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to VERSION.
+        /// </summary>
+        public static string FileOriginsPageView_VersionHeader {
+            get {
+                return ResourceManager.GetString("FileOriginsPageView_VersionHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to View.
         /// </summary>
         public static string FileTreeNodeView__View {

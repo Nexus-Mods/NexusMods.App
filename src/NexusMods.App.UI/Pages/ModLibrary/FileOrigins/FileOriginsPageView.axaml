@@ -22,11 +22,18 @@
                   x:DataType="fileOriginEntry:IFileOriginEntryViewModel"
                   Width="1">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="NAME" Width="*" Binding="{CompiledBinding Name}" />
-                <!-- <DataGridTextColumn Header="VERSION" Binding="{CompiledBinding Version}"/> -->
-                <DataGridTextColumn Header="SIZE" Binding="{CompiledBinding Size}"/>
-                <!-- <DataGridTextColumn Header="DATE" Binding="{CompiledBinding Date}"/> -->
-                <DataGridTemplateColumn Header="ACTIONS">
+                <DataGridTextColumn Header="{x:Static resources:Language.FileOriginsPageView_NameHeader}" 
+                                    Binding="{CompiledBinding Name}"
+                                    Width="*" />
+                <DataGridTextColumn Header="{x:Static resources:Language.FileOriginsPageView_VersionHeader}" 
+                                    Binding="{CompiledBinding Version}"/>
+                <DataGridTextColumn Header="{x:Static resources:Language.FileOriginsPageView_SizeHeader}" 
+                                    Binding="{CompiledBinding Size}"/>
+                <DataGridTextColumn Header="{x:Static resources:Language.FileOriginsPageView_DownloadedHeader}" 
+                                    Binding="{CompiledBinding Date}"/>
+                <DataGridTextColumn Header="{x:Static resources:Language.FileOriginsPageView_AddedHeader}" 
+                                    Binding="{CompiledBinding Date}"/>
+                <DataGridTemplateColumn Header="{x:Static resources:Language.FileOriginsPageView_ActionHeader}">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate DataType="fileOriginEntry:IFileOriginEntryViewModel">
                             <Button x:Name="AddButton"
