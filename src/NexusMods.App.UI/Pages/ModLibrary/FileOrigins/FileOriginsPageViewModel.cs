@@ -10,12 +10,13 @@ using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Paths;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Pages.ModLibrary;
 
 public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel>, IFileOriginsPageViewModel
 {
-    public LoadoutId LoadoutId { get; set; }
+    [Reactive] public LoadoutId LoadoutId { get; set; }
 
     public ReadOnlyObservableCollection<IFileOriginEntryViewModel> FileOrigins { get; }
 

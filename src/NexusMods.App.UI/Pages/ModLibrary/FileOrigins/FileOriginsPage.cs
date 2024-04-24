@@ -27,7 +27,7 @@ public class FileOriginsPageFactory : APageFactory<IFileOriginsPageViewModel, Fi
     {
         var vm = ServiceProvider.GetRequiredService<IFileOriginsPageViewModel>();
         vm.LoadoutId = context.LoadoutId;
-        return ServiceProvider.GetRequiredService<IFileOriginsPageViewModel>();
+        return vm;
     }
 
     public override IEnumerable<PageDiscoveryDetails?> GetDiscoveryDetails(IWorkspaceContext workspaceContext)
