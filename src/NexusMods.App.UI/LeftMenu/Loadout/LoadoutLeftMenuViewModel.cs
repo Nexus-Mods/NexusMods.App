@@ -35,7 +35,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
         {
             Name = Language.LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics,
             Icon = IconValues.MonitorDiagnostics,
-            Activate = ReactiveCommand.Create(() =>
+            NavigateCommand = ReactiveCommand.Create<NavigationInput>(input =>
             {
                 var pageData = new PageData
                 {
@@ -45,9 +45,6 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                         LoadoutId = loadoutContext.LoadoutId,
                     },
                 };
-
-                // TODO: use https://github.com/Nexus-Mods/NexusMods.App/issues/942
-                var input = NavigationInput.Default;
 
                 var behavior = workspaceController.GetDefaultOpenPageBehavior(pageData, input, Optional<PageIdBundle>.None);
                 workspaceController.OpenPage(WorkspaceId, pageData, behavior);
@@ -60,16 +57,13 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
             {
                 Name = Language.LoadoutLeftMenuViewModel_LoadoutGridEntry,
                 Icon = IconValues.Collections,
-                Activate = ReactiveCommand.Create(() =>
+                NavigateCommand = ReactiveCommand.Create<NavigationInput>(input =>
                 {
                     var pageData = new PageData
                     {
                         FactoryId = LoadoutGridPageFactory.StaticId,
                         Context = new LoadoutGridContext { LoadoutId = loadoutContext.LoadoutId },
                     };
-
-                    // TODO: use https://github.com/Nexus-Mods/NexusMods.App/issues/942
-                    var input = NavigationInput.Default;
 
                     var behavior = workspaceController.GetDefaultOpenPageBehavior(pageData, input, Optional<PageIdBundle>.None);
                     workspaceController.OpenPage(WorkspaceId, pageData, behavior);

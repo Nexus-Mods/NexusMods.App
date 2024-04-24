@@ -28,16 +28,13 @@ public class HomeLeftMenuViewModel : AViewModel<IHomeLeftMenuViewModel>, IHomeLe
             {
                 Name = Language.MyGames,
                 Icon = IconValues.Game,
-                Activate = ReactiveCommand.Create(() =>
+                NavigateCommand = ReactiveCommand.Create<NavigationInput>(input =>
                 {
                     var pageData = new PageData
                     {
                         FactoryId = MyGamesPageFactory.StaticId,
                         Context = new MyGamesPageContext(),
                     };
-
-                    // TODO: use https://github.com/Nexus-Mods/NexusMods.App/issues/942
-                    var input = NavigationInput.Default;
 
                     var behavior = workspaceController.GetDefaultOpenPageBehavior(pageData, input, Optional<PageIdBundle>.None);
                     workspaceController.OpenPage(WorkspaceId, pageData, behavior);
