@@ -11,21 +11,24 @@ namespace NexusMods.Networking.Downloaders.Tasks;
 /// </remarks>
 public class HttpDownloadTask(IServiceProvider provider) : ADownloadTask(provider)
 {
+    /// <summary>
+    /// Creates a new download task for the given URI.
+    /// </summary>
+    /// <param name="uri"></param>
     public async Task Create(Uri uri)
     {
-        await base.Create();
         using var tx = Connection.BeginTransaction();
+        var id = base.Create(tx);
         
         // Try to divine the name and size of the download, via HTTP headers
         var (name, size) = await GetNameAndSizeAsync(uri);
         if (!string.IsNullOrEmpty(name))
         {
-            tx.Add(PersistentState.Id, DownloaderState.FriendlyName, name);
-            tx.Add(PersistentState.Id, DownloaderState.Size, size);
+            tx.Add(id, DownloaderState.FriendlyName, name);
+            tx.Add(id, DownloaderState.Size, size);
         }
-        tx.Add(PersistentState.Id, HttpDownloadState.Uri, uri);
-        var result = await tx.Commit();
-        PersistentState = result.Remap(PersistentState);
+        tx.Add(id, HttpDownloadState.Uri, uri);
+        await Init(tx, id);
     }
     
     protected override async Task Download(AbsolutePath destination, CancellationToken token)

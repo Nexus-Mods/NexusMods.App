@@ -4,8 +4,8 @@
     <PackageVersion Include="FlatSharp.Compiler" Version="7.6.0" />
     <PackageVersion Include="FlatSharp.Runtime" Version="7.6.0" />
     <PackageVersion Include="LinqGen" Version="0.3.1" />
-    <PackageVersion Include="NexusMods.MnemonicDB" Version="0.9.14" />
-    <PackageVersion Include="NexusMods.MnemonicDB.Abstractions" Version="0.9.14" />
+    <PackageVersion Include="NexusMods.MnemonicDB" Version="0.9.15" />
+    <PackageVersion Include="NexusMods.MnemonicDB.Abstractions" Version="0.9.15" />
     <PackageVersion Include="NexusMods.Paths" Version="0.9.3" />
     <PackageVersion Include="NexusMods.Hashing.xxHash64" Version="2.0.1" />
     <PackageVersion Include="NexusMods.Paths.TestingHelpers" Version="0.8.0" />
@@ -18,6 +18,7 @@
     <!-- Bannerlord -->
     <PackageVersion Include="Bannerlord.LauncherManager" Version="1.0.76" />
     <PackageVersion Include="FetchBannerlordVersion" Version="1.0.6.45" />
+    <PackageVersion Include="Noggog.CSharpExt" Version="2.60.0" />
     <PackageVersion Include="System.Linq" Version="4.3.0" />
     <PackageVersion Include="System.Text.Json" Version="8.0.3" />
   </ItemGroup>

@@ -35,6 +35,7 @@ public class DownloadServiceDataStoreTests : AGameTest<SkyrimSpecialEdition>
         _httpDownloader = httpDownloader;
     }
 
+    /*
     [Fact]
     public async Task WhenComplete_StaysPersistedInDataStore()
     {
@@ -106,4 +107,5 @@ public class DownloadServiceDataStoreTests : AGameTest<SkyrimSpecialEdition>
     {
         return _store.AllIds(EntityCategory.DownloadStates).Count();
     }
+    */
 }

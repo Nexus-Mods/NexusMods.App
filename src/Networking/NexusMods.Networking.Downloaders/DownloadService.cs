@@ -1,38 +1,63 @@
 using System.Collections.ObjectModel;
-using System.Reactive.Subjects;
 using DynamicData;
-using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.Activities;
-using NexusMods.Abstractions.FileStore;
-using NexusMods.Abstractions.FileStore.Downloads;
+using NexusMods.Abstractions.HttpDownloader;
+using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Networking.Downloaders.Tasks;
 using NexusMods.Networking.Downloaders.Tasks.State;
-using NexusMods.Paths;
+using System.Reactive.Disposables;
 
 namespace NexusMods.Networking.Downloaders;
 
 /// <inheritdoc />
-public class DownloadService : IDownloadService
+public class DownloadService : IDownloadService, IAsyncDisposable
 {
     /// <inheritdoc />
-    public IObservable<IChangeSet<IDownloadTask>> Downloads => throw new NotImplementedException();
+    public ReadOnlyObservableCollection<IDownloadTask> Downloads => _downloadsCollection;
+    private readonly ReadOnlyObservableCollection<IDownloadTask> _downloadsCollection;
 
-    private readonly SourceCache<IDownloadTask, EntityId> _currentDownloads = new(t => t.State.Id);
+    private readonly SourceCache<IDownloadTask, EntityId> _downloads = new(t => t.PersistentState.Id);
     private readonly ILogger<DownloadService> _logger;
     private readonly IServiceProvider _provider;
     private readonly IConnection _conn;
     private bool _isDisposed;
+    private readonly CompositeDisposable _disposables;
 
     public DownloadService(ILogger<DownloadService> logger, IServiceProvider provider, IConnection conn)
     {
         _logger = logger;
         _provider = provider;
         _conn = conn;
+        _disposables = new CompositeDisposable();
+
+        _conn.UpdatesFor(DownloaderState.Status)
+            .Subscribe(x =>
+            {
+                var (db, id) = x;
+                _downloads.Edit(e =>
+                {
+                    var found = e.Lookup(id);
+                    if (found.HasValue) 
+                        found.Value.ResetState(db);
+                    else
+                    {
+                        var task = GetTaskFromState(db.Get<DownloaderState.Model>(id));
+                        if (task == null)
+                            return;
+                        e.AddOrUpdate(task);
+                    }
+                });
+            })
+            .DisposeWith(_disposables);
+
+        _downloads.Connect()
+            .Bind(out _downloadsCollection)
+            .Subscribe()
+            .DisposeWith(_disposables);
     }
 
     internal IEnumerable<IDownloadTask> GetItemsToResume()
@@ -51,41 +76,38 @@ public class DownloadService : IDownloadService
 
     internal IDownloadTask? GetTaskFromState(DownloaderState.Model state)
     {
-        throw new NotImplementedException();
+        var httpState = _provider.GetRequiredService<HttpDownloadTask>();
+        httpState.Init(state);
+        return httpState;
     }
     
     /// <inheritdoc />
-    public async Task AddTask(NXMUrl url)
+    public async Task<IDownloadTask> AddTask(NXMUrl url)
     {
         throw new NotImplementedException();
     }
 
     /// <inheritdoc />
-    public async Task AddTask(Uri url)
+    public async Task<IDownloadTask> AddTask(Uri url)
     {
         var task = _provider.GetRequiredService<HttpDownloadTask>();
         await task.Create(url);
-        await AddTask(task);
+        await Task.Delay(100);
+        return _downloads.Lookup(task.PersistentState.Id).Value;
     }
-
-    /// <inheritdoc />
-    public async Task AddTask(IDownloadTask task)
-    {
-        await AddTaskWithoutStarting(task);
-        var item = await task.StartAsync();
-        return item;
-    }
-
-  
-    public void Dispose()
+    
+    public async ValueTask DisposeAsync()
     {
         if (_isDisposed)
             return;
-
-        // Pause all tasks, which persists them to datastore.
-        foreach (var task in _currentDownloads)
-            task.Suspend();
-
+        
+        _disposables.Dispose();
+        
+        foreach (var download in _downloads.Items)
+        {
+            if (download.PersistentState.Status == DownloadTaskStatus.Downloading)
+                await download.Cancel();
+        }
         _isDisposed = true;
     }
 }

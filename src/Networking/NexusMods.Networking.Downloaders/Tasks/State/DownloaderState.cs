@@ -1,10 +1,8 @@
 using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
-using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.Networking.Downloaders.Interfaces;
-using NexusMods.Networking.Downloaders.Interfaces.Traits;
 using NexusMods.Paths;
 using Entity = NexusMods.MnemonicDB.Abstractions.Models.Entity;
 
@@ -26,11 +24,6 @@ public static class DownloaderState
 {
     private const string Namespace = "NexusMods.Networking.Downloaders.Tasks.DownloaderState";
     
-    /// <summary>
-    /// Data tied to the type that created this state snapshot.
-    /// </summary>
-    public required ITypeSpecificState? TypeSpecificData { get; init; }
-
     /// <summary>
     /// Status of the task associated with this state.
     /// </summary>
@@ -145,39 +138,4 @@ public static class DownloaderState
             set => DownloaderState.Version.Add(this, value);
         }
     }
-
-    // Unused, but required for serialization.
-
-    /// <summary>
-    /// Creates the downloader state given the item to serialize
-    /// </summary>
-    /// <param name="item">Item to deserialize.</param>
-    /// <param name="typeSpecificState">State specific to this type being serialized.</param>
-    /// <param name="downloadLocation">Location of the download in FileSystem.</param>
-    /// <typeparam name="TItem">Type of download task whose state is to be serialized.</typeparam>
-    public static DownloaderState Create<TItem>(TItem item, ITypeSpecificState typeSpecificState, string downloadLocation)
-        where TItem : IDownloadTask
-    {
-        return new DownloaderState
-        {
-            TypeSpecificData = typeSpecificState,
-            FriendlyName = item.FriendlyName,
-            DownloadPath = downloadLocation,
-            Status = item.Status,
-            Downloaded = item.DownloadedSizeBytes,
-            
-            // Conditionals
-            GameName = item is IHaveGameName gameName ? gameName.GameName : null,
-            GameDomain = item is IHaveGameDomain gameDomain ? gameDomain.GameDomain : null,
-            SizeBytes = item is IHaveFileSize fileSize ? fileSize.SizeBytes : null,
-            Version = item is IHaveDownloadVersion downloadVersion ? downloadVersion.Version : null
-        };
-    }
-
-    // Download path is a temporary path, thus should be unique.
-    // ReSharper disable once NonReadonlyMemberInGetHashCode
-    public override int GetHashCode() => DownloadPath.GetHashCode(StringComparison.OrdinalIgnoreCase);
-
-    /// <inheritdoc />
-    public override EntityCategory Category => EntityCategory.DownloadStates;
 }

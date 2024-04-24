@@ -9,10 +9,12 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Networking.Downloaders.Tasks.State;
 using NexusMods.Paths;
+using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.Networking.Downloaders.Tasks;
 
-public abstract class ADownloadTask : IDownloadTask
+public abstract class ADownloadTask : ReactiveObject, IDownloadTask
 {
     protected readonly IConnection Connection;
     protected readonly IActivityFactory ActivityFactory;
@@ -20,7 +22,6 @@ public abstract class ADownloadTask : IDownloadTask
     /// The state of the download task, persisted to the database, will never
     /// be null after the .Create() method is called.
     /// </summary>
-    protected DownloaderState.Model PersistentState = null!;
     protected HttpDownloaderState? TransientState = null!;
     protected ILogger<ADownloadTask> Logger;
     protected TemporaryFileManager TemporaryFileManager;
@@ -28,7 +29,9 @@ public abstract class ADownloadTask : IDownloadTask
     protected IHttpDownloader HttpDownloader;
     protected CancellationTokenSource CancellationTokenSource;
     protected TemporaryPath DownloadLocation;
-    
+    protected IFileSystem FileSystem;
+    private DownloaderState.Model _persistentState = null!;
+
     protected ADownloadTask(IServiceProvider provider)
     {
         Connection = provider.GetRequiredService<IConnection>();
@@ -38,6 +41,13 @@ public abstract class ADownloadTask : IDownloadTask
         HttpDownloader = provider.GetRequiredService<IHttpDownloader>();
         CancellationTokenSource = new CancellationTokenSource();
         ActivityFactory = provider.GetRequiredService<IActivityFactory>();
+        FileSystem = provider.GetRequiredService<IFileSystem>();
+    }
+    
+    public void Init(DownloaderState.Model state)
+    {
+        PersistentState = state;
+        DownloadLocation = new TemporaryPath(FileSystem, FileSystem.FromUnsanitizedFullPath(state.DownloadPath), false);
     }
 
 
@@ -45,17 +55,26 @@ public abstract class ADownloadTask : IDownloadTask
     /// Sets up the inital state of the download task, creates the persistent state
     /// and then returns for the parent class to fill out the source information.  
     /// </summary>
-    protected async Task Create()
+    protected EntityId Create(ITransaction tx)
     {
-        using var tx = Connection.BeginTransaction();
+        DownloadLocation = TemporaryFileManager.CreateFile();
         var state = new DownloaderState.Model(tx)
         {
             Status = DownloadTaskStatus.Idle,
             Downloaded = Size.Zero,
-            Size = Size.Zero,
+            DownloadPath = DownloadLocation.ToString(),
         };
+        return state.Id;
+    }
+
+    /// <summary>
+    /// Perform the initialisation of the task, this should be called after the
+    /// additional metadata has been added to the transaction.
+    /// </summary>
+    protected async Task Init(ITransaction tx, EntityId id)
+    {
         var result = await tx.Commit();
-        PersistentState = result.Remap(state);
+        PersistentState = result.Db.Get<DownloaderState.Model>(result[id]);
     }
     
     protected async Task<(string Name, Size Size)> GetNameAndSizeAsync(Uri uri)
@@ -83,15 +102,16 @@ public abstract class ADownloadTask : IDownloadTask
     protected async Task SetStatus(DownloadTaskStatus status)
     {
         using var tx = Connection.BeginTransaction();
-        tx.Add(State!.Id, DownloaderState.Status, (byte)status);
+        tx.Add(PersistentState.Id, DownloaderState.Status, (byte)status);
         
         if (TransientState != null)
         {
             var downloaded = TransientState.ActivityStatus?.MakeTypedReport().Current.Value ?? Size.Zero;
-            tx.Add(State.Id, DownloaderState.Downloaded, downloaded);
+            tx.Add(PersistentState.Id, DownloaderState.Downloaded, downloaded);
         }
         
-        await tx.Commit();
+        var result = await tx.Commit();
+        PersistentState = result.Remap(PersistentState);
     }
     
     /// <inheritdoc />
@@ -108,20 +128,16 @@ public abstract class ADownloadTask : IDownloadTask
 
         return Bandwidth.From(size.Value);
     }
-    
-    public Size Downloaded => State!.Downloaded;
-    
-    public Percent Progress
-    {
-        get
-        {
-            if (State!.Size == Size.Zero || Downloaded == Size.Zero)
-                return Percent.Zero;
-            return Percent.CreateClamped((long)Downloaded.Value, (long)State.Size.Value);
-        }
-    }
 
-    public DownloaderState.Model State => PersistentState!;
+    [Reactive]
+    public DownloaderState.Model PersistentState { get; set; } = null!;
+
+    public Bandwidth Bandwidth { get; set; }
+    
+    public Size Downloaded { get; set; }
+    
+    public Percent Progress { get; set; }
+
     
     /// <inheritdoc />
     public async Task StartAsync()
@@ -151,6 +167,7 @@ public abstract class ADownloadTask : IDownloadTask
     /// <inheritdoc />
     public async Task Resume()
     {
+        await SetStatus(DownloadTaskStatus.Downloading);
         TransientState = new HttpDownloaderState
         {
             Activity = ActivityFactory.Create<Size>(IHttpDownloader.Group, "Downloading {FileName}", DownloadLocation),
@@ -158,7 +175,13 @@ public abstract class ADownloadTask : IDownloadTask
         await Download(DownloadLocation, CancellationTokenSource.Token);
         await SetStatus(DownloadTaskStatus.Completed);
     }
-    
+
+    /// <inheritdoc />
+    public void ResetState(IDb db)
+    {
+        PersistentState = db.Get<DownloaderState.Model>(PersistentState.Id);
+    }
+
     /// <summary>
     /// Begin the process of downloading a file to the specified destination, should
     /// terminate when the download is complete or cancelled. The destination may have

@@ -21,7 +21,6 @@ public class Startup
 {
     public void ConfigureServices(IServiceCollection services)
     {
-        // Dummy: We're not injecting anything yet; this is for a time we will need to.
         services
             .AddSingleton<IGuidedInstaller, NullGuidedInstaller>()
             .AddDefaultServicesForTesting()
@@ -35,7 +34,6 @@ public class Startup
             .AddSerializationAbstractions()
             .AddFomod()
             .AddDownloaders()
-            .AddAllSingleton<ITypeFinder, TypeFinder>()
             .AddSingleton<LocalHttpServer>()
             .Validate();
     }

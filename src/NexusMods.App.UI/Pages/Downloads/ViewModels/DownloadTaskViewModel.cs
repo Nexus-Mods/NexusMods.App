@@ -1,6 +1,5 @@
 using NexusMods.App.UI.Resources;
 using NexusMods.Networking.Downloaders.Interfaces;
-using NexusMods.Networking.Downloaders.Interfaces.Traits;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Pages.Downloads.ViewModels;

@@ -1,4 +1,6 @@
+using System.ComponentModel;
 using NexusMods.Abstractions.Activities;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.Downloaders.Tasks.State;
 using NexusMods.Paths;
 
@@ -12,13 +14,13 @@ public interface IDownloadTask
     /// <summary>
     /// The DownloaderState of the task.
     /// </summary>
-    DownloaderState.Model State { get; }
+    DownloaderState.Model PersistentState { get; }
     
     /// <summary>
     /// Calculates the download speed of the current job.
     /// </summary>
     /// <returns>Current speed in terms of bytes per second.</returns>
-    Bandwidth CalculateThroughput();
+    Bandwidth Bandwidth { get; }
     
     /// <summary>
     /// The amount of data downloaded so far.
@@ -49,6 +51,12 @@ public interface IDownloadTask
     /// Resumes a download task.
     /// </summary>
     Task Resume();
+
+    /// <summary>
+    /// Reset (reload) the persistent state of the task from the database.
+    /// </summary>
+    /// <param name="db"></param>
+    void ResetState(IDb db);
 }
 
 /// <summary>

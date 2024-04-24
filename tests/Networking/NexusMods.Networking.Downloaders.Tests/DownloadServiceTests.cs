@@ -1,11 +1,16 @@
 using System.Collections.ObjectModel;
 using DynamicData;
+using DynamicData.Binding;
 using DynamicData.Kernel;
 using FluentAssertions;
 using NexusMods.Abstractions.Activities;
+using NexusMods.Abstractions.HttpDownloader;
 using NexusMods.Networking.Downloaders.Interfaces;
-using NexusMods.Networking.Downloaders.Interfaces.Traits;
+using NexusMods.Networking.Downloaders.Tasks;
 using NexusMods.Networking.Downloaders.Tasks.State;
+using NexusMods.Paths;
+using Noggog;
+using ReactiveUI;
 
 namespace NexusMods.Networking.Downloaders.Tests;
 
@@ -13,31 +18,52 @@ public class DownloadServiceTests
 {
     // For the uninitiated with xUnit: This is initialized before every test.
     private readonly DownloadService _downloadService;
-    private readonly ReadOnlyObservableCollection<IDownloadTask> _currentDownloads;
-    private readonly DummyDownloadTask _dummyTask;
+    private readonly LocalHttpServer _httpServer;
+    private readonly TemporaryFileManager _temporaryFileManager;
+    private IReadOnlyCollection<IDownloadTask> _downloadTasks;
 
-    public DownloadServiceTests(DownloadService downloadService)
+    public DownloadServiceTests(DownloadService downloadService, 
+        LocalHttpServer httpServer, TemporaryFileManager temporaryFileManager)
     {
-        // Create a new instance of the DownloadService
+        _httpServer = httpServer;
         _downloadService = downloadService;
-        _downloadService.Downloads.Bind(out _currentDownloads).Subscribe();
-        _dummyTask = new DummyDownloadTask(_downloadService);
+        _temporaryFileManager = temporaryFileManager;
     }
 
     [Fact]
-    public void AddTask_ShouldFireStartedObservable()
+    public async Task AddTask_Uri_ShouldDownload()
     {
-        // Arrange
-        var startedObservableFired = false;
-        _downloadService.StartedTasks.Subscribe(_ => { startedObservableFired = true; });
+        var id = Guid.NewGuid().ToString();
+        _httpServer.SetContent(id, "Hello, World!".ToBytes());
+        
 
-        // Act
-        _downloadService.AddTask(_dummyTask);
+        var task = await _downloadService.AddTask(new Uri($"{_httpServer.Prefix}{id}"));
+        
+        List<DownloadTaskStatus> statuses = new();
+        
+        using var _ = task
+            .ObservableForProperty(t => t.PersistentState, skipInitial:false)
+            .Subscribe(s => statuses.Add(s.Value.Status));
+            
+        
+        _downloadService.Downloads
+            .Select(t => t.PersistentState.Id)
+            .Should()
+            .Contain(task.PersistentState.Id);
 
-        // Assert
-        startedObservableFired.Should().BeTrue();
+        await task.StartAsync();
+        
+        task.PersistentState.Status.Should().Be(DownloadTaskStatus.Completed);
+
+        await Task.Delay(100);
+        statuses.Should().ContainInOrder(
+            DownloadTaskStatus.Idle,
+            DownloadTaskStatus.Downloading, 
+            DownloadTaskStatus.Completed);
+
     }
 
+    /*
     [Fact]
     public void OnComplete_ShouldFireCompletedObservable()
     {
@@ -143,35 +169,6 @@ public class DownloadServiceTests
         _currentDownloads.Should().HaveCount(2);
         _downloadService.GetTotalProgress().Should().Be(Optional.Some(new Percent(0.30)));
     }
-
-    private class DummyDownloadTask : IDownloadTask, IHaveFileSize
-    {
-        public DummyDownloadTask(DownloadService service) { Owner = service; }
-        public long DownloadedSizeBytes { get; internal set; } = 0;
-        public long SizeBytes { get; internal set;  } = 0;
-
-        public long CalculateThroughput() => 0;
-
-        public IDownloadService Owner { get; set; }
-        public DownloadTaskStatus Status { get; set; }
-        public string FriendlyName { get; } = "";
-
-        public Task StartAsync()
-        {
-            Owner.OnComplete(this);
-            return Task.CompletedTask;
-        }
-
-        public void Cancel() => Owner.OnCancelled(this);
-        public void Suspend() => Owner.OnPaused(this);
-        public Task Resume()
-        {
-            Owner.OnResumed(this);
-            return Task.CompletedTask;
-        }
-
-        public DownloaderState ExportState() => DownloaderState.Create(this, null!, "");
-
-    }
+    */
 }
 

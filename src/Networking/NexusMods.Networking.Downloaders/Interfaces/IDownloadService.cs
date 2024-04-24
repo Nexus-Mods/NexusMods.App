@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using DynamicData;
 using NexusMods.Abstractions.NexusWebApi.Types;
 
@@ -9,22 +10,22 @@ namespace NexusMods.Networking.Downloaders.Interfaces;
 ///
 /// This service only tracks the states and passes messages on behalf of currently live downloads.
 /// </summary>
-public interface IDownloadService : IDisposable
+public interface IDownloadService
 {
     /// <summary>
     /// Contains all downloads managed by the application.
     /// </summary>
-    IObservable<IChangeSet<IDownloadTask>> Downloads { get; }
+    ReadOnlyObservableCollection<IDownloadTask> Downloads { get; }
     
     /// <summary>
     /// Adds a task that will download from a NXM link.
     /// </summary>
     /// <param name="url">Url to download from.</param>
-    Task AddTask(NXMUrl url);
+    Task<IDownloadTask> AddTask(NXMUrl url);
 
     /// <summary>
     /// Adds a task that will download from a HTTP link.
     /// </summary>
     /// <param name="url">Url to download from.</param>
-    Task AddTask(Uri url);
+    Task<IDownloadTask> AddTask(Uri url);
 }
