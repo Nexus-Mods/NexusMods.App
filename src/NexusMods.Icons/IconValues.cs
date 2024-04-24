@@ -10,7 +10,7 @@ public static class IconValues
 
     // https://pictogrammers.com/library/mdi/icon/delete-outline/
     public static readonly IconValue DeleteOutline = new ProjektankerIcon("mdi-delete-outline");
-    
+
     // https://pictogrammers.com/library/mdi/icon/delete-forever/
     public static readonly IconValue DeleteForever = new ProjektankerIcon("mdi-delete-forever");
 
@@ -213,6 +213,12 @@ public static class IconValues
 
     // https://pictogrammers.com/library/mdi/icon/alert-octagon/
     public static readonly IconValue Alert = new ProjektankerIcon("mdi-alert-octagon");
+
+    public static readonly IconValue Mods = new AvaloniaPathIcon(
+        Geometry.Parse(
+            "M12.46 17.9912L18.1722 13.5441L19.445 12.5584L12.46 7.12561L5.47498 12.5584L6.74004 13.5441L12.46 17.9912Z"
+        )
+    );
 
     // From Design System "Custom Icons" section on Figma
     public static readonly IconValue Collections = new AvaloniaPathIcon(

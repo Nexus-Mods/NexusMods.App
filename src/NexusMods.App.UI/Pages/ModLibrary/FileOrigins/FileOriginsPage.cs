@@ -2,6 +2,7 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization.Attributes;
+using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.WorkspaceSystem;
 
 namespace NexusMods.App.UI.Pages.ModLibrary;
@@ -37,7 +38,7 @@ public class FileOriginsPageFactory : APageFactory<IFileOriginsPageViewModel, Fi
         yield return new PageDiscoveryDetails
         {
             SectionName = "Downloads",
-            ItemName = "My mods",
+            ItemName = Language.FileOriginsPageTitle,
             PageData = new PageData
             {
                 FactoryId = Id,

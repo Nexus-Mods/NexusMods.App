@@ -72,6 +72,7 @@
             <icons:UnifiedIcon Classes="Collections" />
             <icons:UnifiedIcon Classes="Add" />
             <icons:UnifiedIcon Classes="DeleteForever" />
+            <icons:UnifiedIcon Classes="Mods" />
         </WrapPanel>
     </Design.PreviewWith>
 
@@ -357,5 +358,9 @@
     
     <Style Selector="icons|UnifiedIcon.DeleteForever">
         <Setter Property="Value" Value="{x:Static icons:IconValues.DeleteForever}"/>
+    </Style>
+    
+    <Style Selector="icons|UnifiedIcon.Mods">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.Mods}"/>
     </Style>
 </Styles>
