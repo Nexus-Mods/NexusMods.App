@@ -109,6 +109,11 @@ public static class InitialDiskState
     /// </summary>
     public static readonly DiskStateAttribute State = new(Namespace, nameof(State)) { NoHistory = true };
 
+    /// <summary>
+    /// TODO: This is a hack around the inability to currently delete items in MneumonicDB.
+    /// </summary>
+    public static readonly BoolAttribute IsValid = new(Namespace, nameof(IsValid)) { NoHistory = true };
+
     [PublicAPI]
     [SuppressMessage("ReSharper", "MemberHidesStaticFromOuterClass")]
     internal class Model(ITransaction tx) : Entity(tx)
@@ -138,6 +143,19 @@ public static class InitialDiskState
         {
             get => State.Get(this);
             set => State.Add(this, value);
+        }
+        
+        /// <summary>
+        /// Whether the current item is valid.
+        /// If the item is not valid, it was retracted (deleted).
+        /// </summary>
+        /// <remarks>
+        ///     TODO: This is a hack around the inability to currently delete items in MneumonicDB.
+        /// </remarks>
+        public bool IsValid
+        {
+            get => Attributes.InitialDiskState.IsValid.Get(this);
+            set => Attributes.InitialDiskState.IsValid.Add(this, value);
         }
     }
 }

@@ -84,6 +84,7 @@ public class DiskStateRegistry : IDiskStateRegistry
             Game = domain,
             Root = installation.LocationsRegister[LocationId.Game].ToString(),
             DiskState = diskState,
+            IsValid = true,
         };
 
         await tx.Commit();
@@ -100,9 +101,28 @@ public class DiskStateRegistry : IDiskStateRegistry
         // location, but since doing this check is virtually free, we might as well.
         return db.FindIndexed(installation.LocationsRegister[LocationId.Game].ToString(), InitialDiskState.Root)
             .Select(db.Get<InitialDiskState.Model>)
-            .Where(x => x.Game == domain)
+            .Where(x => x.Game == domain && x.IsValid)
             .Select(x => x.DiskState)
             .FirstOrDefault();
+    }
+
+    /// <inheritdoc />
+    public async Task ClearInitialState(GameInstallation installation)
+    {
+        // TODO: Implement deletion in MneumonicDB
+        // it is currently not possible using the public API.
+        // Therefore we just write a dummy value with `IsValid` == false.
+        var tx = _connection.BeginTransaction();
+        var domain = installation.Game.Domain;
+        _ = new InitialDiskState.Model(tx)
+        {
+            Game = domain,
+            Root = installation.LocationsRegister[LocationId.Game].ToString(),
+            DiskState = DiskStateTree.Create(Array.Empty<KeyValuePair<GamePath, DiskStateEntry>>()),
+            IsValid = false,
+        };
+
+        await tx.Commit();
     }
 
     /// <inheritdoc />

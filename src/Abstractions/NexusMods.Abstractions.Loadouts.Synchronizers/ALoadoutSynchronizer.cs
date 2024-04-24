@@ -95,10 +95,16 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// <inheritdoc />
     public async ValueTask<FlattenedLoadout> LoadoutToFlattenedLoadout(Loadout loadout)
     {
-        var dict = new Dictionary<GamePath, ModFilePair>();
         var sorted = await SortMods(loadout);
+        return ModsToFlattenedLoadout(sorted);
+    }
 
-        foreach (var mod in sorted)
+    private static FlattenedLoadout ModsToFlattenedLoadout(IEnumerable<Mod> sorted)
+    {
+        var modArray = sorted.ToArray();
+        var numItems = modArray.Sum(mod => mod.Files.Count);
+        var dict = new Dictionary<GamePath, ModFilePair>(numItems);
+        foreach (var mod in modArray)
         {
             if (!mod.Enabled)
                 continue;
@@ -124,14 +130,14 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
 
 
     /// <inheritdoc />
-    public async Task<DiskStateTree> FileTreeToDisk(FileTree fileTree, Loadout loadout, FlattenedLoadout flattenedLoadout, DiskStateTree prevState, GameInstallation installation, bool skipIngest = false)
+    public async Task<DiskStateTree> FileTreeToDisk(FileTree fileTree, Loadout? loadout, FlattenedLoadout flattenedLoadout, DiskStateTree prevState, GameInstallation installation, bool skipIngest = false)
     {
         // Return the new tree
         return await FileTreeToDiskImpl(fileTree, loadout, flattenedLoadout, prevState, installation, true);
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal async Task<DiskStateTree> FileTreeToDiskImpl(FileTree fileTree, Loadout loadout, FlattenedLoadout flattenedLoadout, DiskStateTree prevState, GameInstallation installation, bool fixFileMode, bool skipIngest = false)
+    internal async Task<DiskStateTree> FileTreeToDiskImpl(FileTree fileTree, Loadout? loadout, FlattenedLoadout flattenedLoadout, DiskStateTree prevState, GameInstallation installation, bool fixFileMode, bool skipIngest = false)
     {
         List<KeyValuePair<GamePath, HashedEntryWithName>> toDelete = new();
         List<KeyValuePair<AbsolutePath, IGeneratedFile>> toWrite = new();
@@ -247,6 +253,9 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         }
 
         // Write the generated files (could be done in parallel)
+        if (toWrite.Count > 0 && loadout == null)
+            throw new InvalidOperationException("A valid loadout is required for creating generated files");
+        
         foreach (var entry in toWrite)
         {
             entry.Key.Parent.CreateDirectory();
@@ -841,9 +850,8 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         /*
             Note (Sewer)
 
-            Below we create a temporary unpersisted loadout instance.
             Normally we could navigate to the very first revision of a loadout
-            to get the 'vanilla' state of the game folder, however...
+            to get the 'vanilla' state of the game folder and apply that, however...
 
             In the future we will support rollbacks for loadouts.
             
@@ -851,33 +859,27 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             state of a given loadout, deleting previous history to save space.
             
             In order to keep future code 'simpler', where we won't have to make
-            special exceptions/logic. We just make a temporary loadout instance
-            and use existing APIs.
+            special exceptions/logic. We just perform a stripped down apply
+            with the original file tree here.
         */
 
         // Create a temporary loadout instance.
         // Note: We recreate 'Game Files' mod because 
-        var gameFiles = CreateGameFilesMod(initialState);
-        var fileTree = CreateFileTreeFromMod(gameFiles);
-        var loadout = new Loadout
-        {
-            Installation = installation,
-            ChangeMessage = "Unmanaging game folder",
-            Mods = new EntityDictionary<ModId, Mod>(),
-            LoadoutId = LoadoutId.DefaultValue,
-            Name = "Unmanage Folder Loadout",
-            LastModified = DateTime.Now,
-            PreviousVersion = new EntityLink<Loadout>(IdEmpty.Empty, _store),
-        };
-        
+        var gameFilesMod = CreateGameFilesMod(initialState);
+        var fileTree = CreateFileTreeFromMod(gameFilesMod);
+
         // Apply temporary loadout.
         // The loadout is only used as a parameter for generated files.
-        var flattened = await LoadoutToFlattenedLoadout(loadout);
-        var prevState = _diskStateRegistry.GetState(loadout.Installation)!;
-        await FileTreeToDisk(fileTree, null!, flattened, prevState, installation, true);
+        var flattened = ModsToFlattenedLoadout([gameFilesMod]);
+        var prevState = _diskStateRegistry.GetState(installation)!;
+        await FileTreeToDisk(fileTree, null, flattened, prevState, installation, true);
         
         foreach (var loadoutId in _loadoutRegistry.AllLoadoutIds())
             _loadoutRegistry.Delete(loadoutId);
+        
+        // Now clear the vanilla game state.
+        // We don't want the user's folder to reset.
+        await _diskStateRegistry.ClearInitialState(installation);
     }
 
 #endregion
