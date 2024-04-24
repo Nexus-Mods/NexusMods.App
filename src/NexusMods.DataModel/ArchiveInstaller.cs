@@ -47,22 +47,20 @@ public class ArchiveInstaller : IArchiveInstaller
         _fileStore = fileStore;
         _activityFactory = activityFactory;
     }
-
+    
     /// <inheritdoc />
-    public async Task<ModId[]> AddMods(LoadoutId loadoutId, DownloadId downloadId, string? defaultModName = null, 
-        IModInstaller? installer = null, CancellationToken token = default)
+    public async Task<ModId[]> AddMods(LoadoutId loadoutId, DownloadAnalysis.Model download, string? defaultModName = null, IModInstaller? installer = null, CancellationToken token = default)
     {
-        // Get the loadout and create the mod so we can use it in the job.
+        // Get the loadout and create the mod, so we can use it in the job.
         var loadout = _registry.GetMarker(loadoutId);
         var useCustomInstaller = installer != null;
-
-        var download = _fileOriginRegistry.Get(downloadId);
+        
         var archiveName = "<unknown>";
         if (download.Contains(DownloadAnalysis.SuggestedName))
         {
             archiveName = download.Get(DownloadAnalysis.SuggestedName);
         }
-
+        
         var baseMod = new Mod
         {
             Id = ModId.NewId(),
@@ -221,4 +219,14 @@ public class ArchiveInstaller : IArchiveInstaller
             throw;
         }
     }
+
+    /// <inheritdoc />
+    public async Task<ModId[]> AddMods(LoadoutId loadoutId, DownloadId downloadId, string? defaultModName = null, 
+        IModInstaller? installer = null, CancellationToken token = default)
+    {
+        var download = _fileOriginRegistry.Get(downloadId);
+        
+        return await AddMods(loadoutId, download, defaultModName, installer, token);
+    }
+
 }
