@@ -10,6 +10,9 @@ using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Networking.Downloaders.Tasks;
 using NexusMods.Networking.Downloaders.Tasks.State;
 using System.Reactive.Disposables;
+using DynamicData.Kernel;
+using NexusMods.Abstractions.Activities;
+using NexusMods.Paths;
 
 namespace NexusMods.Networking.Downloaders;
 
@@ -94,7 +97,29 @@ public class DownloadService : IDownloadService, IAsyncDisposable
         await task.Create(url);
         return _downloads.Lookup(task.PersistentState.Id).Value;
     }
-    
+
+    /// <inheritdoc />
+    public Size GetThroughput()
+    {
+        return _downloads.Items
+            .Aggregate(Size.Zero, (acc, x) => acc + Size.From(x.Bandwidth.Value));
+    }
+
+    /// <inheritdoc />
+    public Optional<Percent> GetTotalProgress()
+    {
+        var tasks = _downloads.Items
+            .Where(i => i.PersistentState.Status == DownloadTaskStatus.Downloading)
+            .ToArray();
+        
+        if (tasks.Length == 0)
+            return Optional<Percent>.None;
+        
+        var total = tasks
+            .Aggregate(0.0, (acc, x) => acc + x.Progress.Value);
+        return Optional<Percent>.Create(Percent.CreateClamped(total / tasks.Length));
+    }
+
     public async ValueTask DisposeAsync()
     {
         if (_isDisposed)

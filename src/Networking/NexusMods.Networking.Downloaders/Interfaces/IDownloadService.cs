@@ -1,6 +1,9 @@
 using System.Collections.ObjectModel;
 using DynamicData;
+using DynamicData.Kernel;
+using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.Paths;
 
 namespace NexusMods.Networking.Downloaders.Interfaces;
 
@@ -28,4 +31,14 @@ public interface IDownloadService
     /// </summary>
     /// <param name="url">Url to download from.</param>
     Task<IDownloadTask> AddTask(Uri url);
+    
+    /// <summary>
+    /// Gets the total throughput of all downloads.
+    /// </summary>
+    Size GetThroughput();
+    
+    /// <summary>
+    /// Gets the total progress of all downloads.
+    /// </summary>
+    Optional<Percent> GetTotalProgress();
 }

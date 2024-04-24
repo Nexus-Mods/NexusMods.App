@@ -14,7 +14,6 @@ using NexusMods.App.UI.Overlays.MetricsOptIn;
 using NexusMods.App.UI.Overlays.Updater;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Networking.Downloaders.Interfaces;
-using NexusMods.Networking.Downloaders.Interfaces.Traits;
 using NexusMods.Paths;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -64,16 +63,6 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
 
         this.WhenActivated(d =>
         {
-            downloadService.AnalyzedArchives.Subscribe(tuple =>
-            {
-                // Because HandleDownloadedAnalyzedArchive is an async task, it begins automatically.
-                HandleDownloadedAnalyzedArchive(tuple.task, tuple.downloadId, tuple.modName).ContinueWith(t =>
-                {
-                    if (t.Exception != null)
-                        logger.LogError(t.Exception, "Error while installing downloaded analyzed archive");
-                });
-            }).DisposeWith(d);
-
             controller.ApplyNextOverlay.Subscribe(item =>
                 {
                     if (item == null)

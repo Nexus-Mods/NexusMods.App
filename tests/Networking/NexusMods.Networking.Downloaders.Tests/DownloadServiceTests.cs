@@ -1,13 +1,5 @@
-using System.Collections.ObjectModel;
-using DynamicData;
-using DynamicData.Binding;
-using DynamicData.Kernel;
 using FluentAssertions;
-using NexusMods.Abstractions.Activities;
-using NexusMods.Abstractions.HttpDownloader;
 using NexusMods.Networking.Downloaders.Interfaces;
-using NexusMods.Networking.Downloaders.Tasks;
-using NexusMods.Networking.Downloaders.Tasks.State;
 using NexusMods.Paths;
 using Noggog;
 using ReactiveUI;
@@ -59,7 +51,11 @@ public class DownloadServiceTests
             DownloadTaskStatus.Idle,
             DownloadTaskStatus.Downloading, 
             DownloadTaskStatus.Completed);
-
+        
+        task.DownloadLocation.FileExists.Should().BeTrue();
+        (await task.DownloadLocation.ReadAllTextAsync()).Should().Be("Hello, World!");
+        
+        task.Downloaded.Value.Should().BeGreaterThan(0);
     }
 
     /*

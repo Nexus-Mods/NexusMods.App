@@ -17,6 +17,11 @@ public interface IDownloadTask
     DownloaderState.Model PersistentState { get; }
     
     /// <summary>
+    /// The download location of the task.
+    /// </summary>
+    public AbsolutePath DownloadLocation { get; }
+    
+    /// <summary>
     /// Calculates the download speed of the current job.
     /// </summary>
     /// <returns>Current speed in terms of bytes per second.</returns>

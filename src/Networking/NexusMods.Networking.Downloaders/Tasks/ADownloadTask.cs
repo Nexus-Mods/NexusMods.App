@@ -16,6 +16,8 @@ namespace NexusMods.Networking.Downloaders.Tasks;
 
 public abstract class ADownloadTask : ReactiveObject, IDownloadTask
 {
+    private const int PollTimeMilliseconds = 100;
+    
     protected readonly IConnection Connection;
     protected readonly IActivityFactory ActivityFactory;
     /// <summary>
@@ -28,7 +30,7 @@ public abstract class ADownloadTask : ReactiveObject, IDownloadTask
     protected HttpClient HttpClient;
     protected IHttpDownloader HttpDownloader;
     protected CancellationTokenSource CancellationTokenSource;
-    protected TemporaryPath DownloadLocation;
+    protected TemporaryPath _downloadLocation = default!;
     protected IFileSystem FileSystem;
     private DownloaderState.Model _persistentState = null!;
 
@@ -47,7 +49,7 @@ public abstract class ADownloadTask : ReactiveObject, IDownloadTask
     public void Init(DownloaderState.Model state)
     {
         PersistentState = state;
-        DownloadLocation = new TemporaryPath(FileSystem, FileSystem.FromUnsanitizedFullPath(state.DownloadPath), false);
+        _downloadLocation = new TemporaryPath(FileSystem, FileSystem.FromUnsanitizedFullPath(state.DownloadPath), false);
     }
 
 
@@ -57,7 +59,7 @@ public abstract class ADownloadTask : ReactiveObject, IDownloadTask
     /// </summary>
     protected EntityId Create(ITransaction tx)
     {
-        DownloadLocation = TemporaryFileManager.CreateFile();
+        _downloadLocation = TemporaryFileManager.CreateFile();
         var state = new DownloaderState.Model(tx)
         {
             Status = DownloadTaskStatus.Idle,
@@ -114,29 +116,17 @@ public abstract class ADownloadTask : ReactiveObject, IDownloadTask
         PersistentState = result.Remap(PersistentState);
     }
     
-    /// <inheritdoc />
-    public Bandwidth CalculateThroughput()
-    {
-        if (TransientState!.Activity == null)
-            return Bandwidth.From(0);
-
-        var report = TransientState.ActivityStatus?.GetReport() 
-            as ActivityReport<Size>;
-        var size = report?
-            .Throughput
-            .ValueOr(() => Size.Zero) ?? Size.Zero;
-
-        return Bandwidth.From(size.Value);
-    }
-
     [Reactive]
     public DownloaderState.Model PersistentState { get; set; } = null!;
+    
+    public AbsolutePath DownloadLocation => _downloadLocation;
 
-    public Bandwidth Bandwidth { get; set; }
-    
-    public Size Downloaded { get; set; }
-    
-    public Percent Progress { get; set; }
+
+    [Reactive] public Bandwidth Bandwidth { get; set; } = Bandwidth.From(0);
+
+    [Reactive] public Size Downloaded { get; set; } = Size.From(0);
+
+    [Reactive] public Percent Progress { get; set; } = Percent.Zero;
 
     
     /// <inheritdoc />
@@ -172,8 +162,40 @@ public abstract class ADownloadTask : ReactiveObject, IDownloadTask
         {
             Activity = ActivityFactory.Create<Size>(IHttpDownloader.Group, "Downloading {FileName}", DownloadLocation),
         };
+        _ = StartActivityUpdater();
+        
         await Download(DownloadLocation, CancellationTokenSource.Token);
+        UpdateActivity();
         await SetStatus(DownloadTaskStatus.Completed);
+    }
+
+    private async Task StartActivityUpdater()
+    {
+        while (PersistentState.Status == DownloadTaskStatus.Downloading)
+        {
+            UpdateActivity();
+            await Task.Delay(PollTimeMilliseconds);
+        }
+    }
+
+    private void UpdateActivity()
+    {
+        try
+        {
+            var report = TransientState!.ActivityStatus?.MakeTypedReport();
+            if (report is { Current.HasValue: true })
+            {
+                Downloaded = report.Current.Value;
+                if (PersistentState.TryGet(DownloaderState.Size, out var size) && size != Size.Zero)
+                    Progress = Percent.CreateClamped((long)Downloaded.Value, (long)size.Value);
+                if (report.Throughput.HasValue)
+                    Bandwidth = Bandwidth.From(report.Throughput.Value.Value);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to update activity status");
+        }
     }
 
     /// <inheritdoc />
