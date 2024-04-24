@@ -2,7 +2,6 @@ using System.Reactive;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
-using DynamicData.Kernel;
 using JetBrains.Annotations;
 using NexusMods.App.UI.WorkspaceSystem;
 using ReactiveUI;
@@ -25,7 +24,7 @@ public class NavigationControl : Button
         set => SetValue(CommandProperty, value);
     }
 
-    private Optional<NavigationInput> NavigationInput
+    private NavigationInput NavigationInput
     {
         set => CommandParameter = value;
     }
@@ -74,18 +73,5 @@ public class NavigationControl : Button
 
         NavigationInput = new NavigationInput(keyType, keyModifiers);
         base.OnPointerPressed(e);
-    }
-
-    protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
-    {
-        base.OnPropertyChanged(change);
-
-        if (change.Property == IsPressedProperty)
-        {
-            if (!change.GetNewValue<bool>())
-            {
-                NavigationInput = Optional<NavigationInput>.None;
-            }
-        }
     }
 }
