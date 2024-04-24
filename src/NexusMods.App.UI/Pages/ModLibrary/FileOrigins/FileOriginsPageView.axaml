@@ -19,17 +19,19 @@
                   CanUserResizeColumns="True"
                   CanUserSortColumns="True"
                   x:Name="DataGrid"
-                  x:DataType="fileOriginEntry:IFileOriginEntryViewModel">
+                  x:DataType="fileOriginEntry:IFileOriginEntryViewModel"
+                  Width="1">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="NAME" Width="*" Binding="{CompiledBinding Name}" />
-                <DataGridTextColumn Header="VERSION" Binding="{CompiledBinding Version}"/>
+                <!-- <DataGridTextColumn Header="VERSION" Binding="{CompiledBinding Version}"/> -->
                 <DataGridTextColumn Header="SIZE" Binding="{CompiledBinding Size}"/>
-                <DataGridTextColumn Header="DATE" Binding="{CompiledBinding Date}"/>
-                <DataGridTemplateColumn Header="ACTIONS" Width="*">
+                <!-- <DataGridTextColumn Header="DATE" Binding="{CompiledBinding Date}"/> -->
+                <DataGridTemplateColumn Header="ACTIONS">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate DataType="fileOriginEntry:IFileOriginEntryViewModel">
                             <Button x:Name="AddButton"
                                     Classes="Rounded Primary"
+                                    Margin="0,0,24,0"
                                     Command="{CompiledBinding AddToLoadoutCommand}">
                                 
                                 <StackPanel>

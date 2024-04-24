@@ -16,6 +16,8 @@ public partial class FileOriginsPageView : ReactiveUserControl<IFileOriginsPageV
                     vm => vm.FileOrigins,
                     v => v.DataGrid.ItemsSource)
                 .DisposeWith(d);
+            
+            DataGrid.Width = Double.NaN;
         });
     }
 }
