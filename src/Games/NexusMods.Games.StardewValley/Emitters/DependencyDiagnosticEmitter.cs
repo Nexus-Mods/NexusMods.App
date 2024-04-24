@@ -7,8 +7,8 @@ using NexusMods.Abstractions.Diagnostics.References;
 using NexusMods.Abstractions.Diagnostics.Values;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.Loadouts.Mods;
-using NexusMods.Extensions.BCL;
 using NexusMods.Games.StardewValley.Models;
 using NexusMods.Games.StardewValley.WebAPI;
 using NexusMods.Paths;
@@ -20,8 +20,6 @@ namespace NexusMods.Games.StardewValley.Emitters;
 
 public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
 {
-    private static readonly NamedLink NexusModsLink = new("Nexus Mods", new Uri("https://nexusmods.com/stardewvalley"));
-
     private readonly ILogger<DependencyDiagnosticEmitter> _logger;
     private readonly IFileStore _fileStore;
     private readonly IOSInformation _os;
@@ -42,19 +40,15 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
     public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         var gameVersion = new SemanticVersion(loadout.Installation.Version);
-        var smapiMarker = loadout.Mods
-            .Where(kv => kv.Value.Enabled)
-            .Select(kv => kv.Value.Metadata)
-            .Select(metadata => metadata.OfType<SMAPIMarker>().FirstOrDefault())
-            .FirstOrDefault(marker => marker is not null);
+        var optionalSMAPIMod = loadout.GetFirstModWithMetadata<SMAPIMarker>();
+        if (!optionalSMAPIMod.HasValue) yield break;
 
-        if (smapiMarker is null) yield break;
+        var (_, smapiMarker) = optionalSMAPIMod.Value;
         if (!smapiMarker.TryParse(out var smapiVersion)) yield break;
 
-        var modIdToManifest = await loadout.Mods
-            .SelectAsync(async kv => (Id: kv.Key, Manifest: await GetManifest(kv.Value, cancellationToken)))
-            .Where(tuple => tuple.Manifest is not null)
-            .ToDictionaryAsync(x => x.Id, x => x.Manifest!, cancellationToken);
+        var modIdToManifest = await Helpers
+            .GetAllManifestsAsync(_logger, _fileStore, loadout, onlyEnabledMods: false, cancellationToken)
+            .ToDictionaryAsync(tuple => tuple.Item1.Id, tuple => tuple.Item2, cancellationToken);
 
         var uniqueIdToModId = modIdToManifest
             .Select(kv => (UniqueId: kv.Value.UniqueID, ModId: kv.Key))
@@ -160,7 +154,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
                 return Diagnostics.CreateMissingRequiredDependency(
                     Mod: mod.ToReference(loadout),
                     MissingDependency: missingDependency,
-                    NexusModsDependencyUri: missingDependencyUris.GetValueOrDefault(missingDependency, NexusModsLink)
+                    NexusModsDependencyUri: missingDependencyUris.GetValueOrDefault(missingDependency, Helpers.NexusModsLink)
                 );
             });
         });
@@ -230,7 +224,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
             Dependency: loadout.Mods[tuple.DependencyModId].ToReference(loadout),
             MinimumVersion: tuple.MinimumVersion.ToString(),
             CurrentVersion: tuple.CurrentVersion.ToString(),
-            NexusModsDependencyUri: missingDependencyUris.GetValueOrDefault(tuple.DependencyId, NexusModsLink)
+            NexusModsDependencyUri: missingDependencyUris.GetValueOrDefault(tuple.DependencyId, Helpers.NexusModsLink)
         ));
     }
 
@@ -245,23 +239,5 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
         if (contentPack is not null) requiredDependencies.Add(contentPack);
 
         return requiredDependencies;
-    }
-
-    private async ValueTask<SMAPIManifest?> GetManifest(Mod mod, CancellationToken cancellationToken)
-    {
-        try
-        {
-            return await Interop.GetManifest(_fileStore, mod, cancellationToken);
-        }
-        catch (TaskCanceledException)
-        {
-            // ignored
-            return null;
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, "Exception trying to get manifest for mod {Mod}", mod.Name);
-            return null;
-        }
     }
 }

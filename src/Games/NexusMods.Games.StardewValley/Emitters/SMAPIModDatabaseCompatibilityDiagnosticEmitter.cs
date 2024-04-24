@@ -8,7 +8,6 @@ using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.Loadouts.Mods;
-using NexusMods.Extensions.BCL;
 using NexusMods.Games.StardewValley.Models;
 using NexusMods.Games.StardewValley.WebAPI;
 using NexusMods.Paths;
@@ -66,18 +65,16 @@ public class SMAPIModDatabaseCompatibilityDiagnosticEmitter : ILoadoutDiagnostic
         var modDatabase = await GetModDatabase(smapiMod, cancellationToken);
         if (modDatabase is null) yield break;
 
-        var smapiMods = await loadout
-            .GetEnabledMods()
-            .SelectAsync(async mod => (Mod: mod, Manifest: await GetManifest(mod, cancellationToken)))
-            .Where(tuple => tuple.Manifest is not null)
-            .ToListAsync(cancellationToken);
+        var smapiMods = await Helpers
+            .GetAllManifestsAsync(_logger, _fileStore, loadout, onlyEnabledMods: true, cancellationToken)
+            .ToArrayAsync(cancellationToken);
 
         var list = new List<(Mod mod, SMAPIManifest manifest, ModDataRecordVersionedFields versionedFields)>();
 
         foreach (var tuple in smapiMods)
         {
             var (mod, manifest) = tuple;
-            var uniqueId = manifest!.UniqueID;
+            var uniqueId = manifest.UniqueID;
 
             var dataRecord = modDatabase.Get(uniqueId);
             if (dataRecord is null) continue;
@@ -140,24 +137,6 @@ public class SMAPIModDatabaseCompatibilityDiagnosticEmitter : ILoadoutDiagnostic
         catch (Exception e)
         {
             _logger.LogError(e, "Exception trying to get mod database of SMAPI");
-            return null;
-        }
-    }
-
-    private async ValueTask<SMAPIManifest?> GetManifest(Mod mod, CancellationToken cancellationToken)
-    {
-        try
-        {
-            return await Interop.GetManifest(_fileStore, mod, cancellationToken);
-        }
-        catch (TaskCanceledException)
-        {
-            // ignored
-            return null;
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, "Exception trying to get manifest for mod {Mod}", mod.Name);
             return null;
         }
     }

@@ -204,11 +204,62 @@ SMAPI is the mod loader for Stardew Valley. The majority of mods require SMAPI t
 
 You can download the latest supported SMAPI version {LatestSMAPIVersion} for your game version
 {CurrentGameVersion} from {SMAPINexusModsLink}.
-""")
+"""
+        )
         .WithMessageData(messageBuilder => messageBuilder
             .AddValue<string>("LatestSMAPIVersion")
             .AddValue<string>("CurrentGameVersion")
             .AddValue<NamedLink>("SMAPINexusModsLink")
+        )
+        .Finish();
+
+    [DiagnosticTemplate]
+    [UsedImplicitly]
+    internal static IDiagnosticTemplate SMAPIVersionOlderThanMinimumAPIVersion = DiagnosticTemplateBuilder
+        .Start()
+        .WithId(new DiagnosticId(Source, number: 11))
+        .WithTitle("SMAPI Version newer than supported Mod")
+        .WithSeverity(DiagnosticSeverity.Warning)
+        .WithSummary("The minimum supported SMAPI version of {ModName} is {MinimumAPIVersion}")
+        .WithDetails("""
+Mod {Mod} requires the SMAPI version to be at least {MinimumAPIVersion}.
+The current SMAPI version is {CurrentSMAPIVersion}.
+
+You can solve this issue by either updating SMAPI or download an older version
+of the mod from {NexusModsLink}. The latest SMAPI version can be downloaded
+from {SMAPINexusModsLink}.
+""")
+        .WithMessageData(messageBuilder => messageBuilder
+            .AddDataReference<ModReference>("Mod")
+            .AddValue<string>("ModName")
+            .AddValue<string>("MinimumAPIVersion")
+            .AddValue<string>("CurrentSMAPIVersion")
+            .AddValue<NamedLink>("NexusModsLink")
+            .AddValue<NamedLink>("SMAPINexusModsLink")
+        )
+        .Finish();
+
+    [DiagnosticTemplate]
+    [UsedImplicitly]
+    internal static IDiagnosticTemplate GameVersionOlderThanModMinimumGameVersionTemplate = DiagnosticTemplateBuilder
+        .Start()
+        .WithId(new DiagnosticId(Source, number: 12))
+        .WithTitle("Game Version newer than supported by Mod")
+        .WithSeverity(DiagnosticSeverity.Warning)
+        .WithSummary("The minimum supported game version of {ModName} is {MinimumGameVersion}")
+        .WithDetails("""
+Mod {Mod} requires the game version to be at least {MinimumGameVersion}.
+The current game version is {CurrentGameVersion}.
+
+You can solve this issue by either updating your game or download an older version
+of the mod from {NexusModsLink}.
+""")
+        .WithMessageData(messageBuilder => messageBuilder
+            .AddDataReference<ModReference>("Mod")
+            .AddValue<string>("ModName")
+            .AddValue<string>("MinimumGameVersion")
+            .AddValue<string>("CurrentGameVersion")
+            .AddValue<NamedLink>("NexusModsLink")
         )
         .Finish();
 }
