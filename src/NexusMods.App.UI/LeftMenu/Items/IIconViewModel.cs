@@ -1,6 +1,5 @@
 using System.Reactive;
-using System.Windows.Input;
-using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.Icons;
 using ReactiveUI;
 
@@ -10,5 +9,5 @@ public interface IIconViewModel : ILeftMenuItemViewModel
 {
     public string Name { get; set; }
     public IconValue Icon { get; set; }
-    public ReactiveCommand<NavigationInput, Unit> NavigateCommand { get; set; }
+    public ReactiveCommand<NavigationInformation, Unit> NavigateCommand { get; set; }
 }

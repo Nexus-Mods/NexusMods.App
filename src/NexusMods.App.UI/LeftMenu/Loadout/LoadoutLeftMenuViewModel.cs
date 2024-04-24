@@ -3,6 +3,7 @@ using System.Reactive.Disposables;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics;
+using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.Pages.Diagnostics;
 using NexusMods.App.UI.Pages.LoadoutGrid;
@@ -35,7 +36,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
         {
             Name = Language.LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics,
             Icon = IconValues.MonitorDiagnostics,
-            NavigateCommand = ReactiveCommand.Create<NavigationInput>(input =>
+            NavigateCommand = ReactiveCommand.Create<NavigationInformation>(info =>
             {
                 var pageData = new PageData
                 {
@@ -46,7 +47,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                     },
                 };
 
-                var behavior = workspaceController.GetDefaultOpenPageBehavior(pageData, input, Optional<PageIdBundle>.None);
+                var behavior = workspaceController.GetOpenPageBehavior(pageData, info, Optional<PageIdBundle>.None);
                 workspaceController.OpenPage(WorkspaceId, pageData, behavior);
             }),
         };
@@ -57,7 +58,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
             {
                 Name = Language.LoadoutLeftMenuViewModel_LoadoutGridEntry,
                 Icon = IconValues.Collections,
-                NavigateCommand = ReactiveCommand.Create<NavigationInput>(input =>
+                NavigateCommand = ReactiveCommand.Create<NavigationInformation>(info =>
                 {
                     var pageData = new PageData
                     {
@@ -65,7 +66,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                         Context = new LoadoutGridContext { LoadoutId = loadoutContext.LoadoutId },
                     };
 
-                    var behavior = workspaceController.GetDefaultOpenPageBehavior(pageData, input, Optional<PageIdBundle>.None);
+                    var behavior = workspaceController.GetOpenPageBehavior(pageData, info, Optional<PageIdBundle>.None);
                     workspaceController.OpenPage(WorkspaceId, pageData, behavior);
                 }),
             },

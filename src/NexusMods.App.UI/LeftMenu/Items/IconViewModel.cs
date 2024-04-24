@@ -1,7 +1,6 @@
 using System.Reactive;
 using System.Reactive.Linq;
-using System.Windows.Input;
-using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.Icons;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -14,6 +13,6 @@ public class IconViewModel : AViewModel<IIconViewModel>, IIconViewModel
 
     [Reactive] public IconValue Icon { get; set; } = new();
 
-    [Reactive] public ReactiveCommand<NavigationInput, Unit> NavigateCommand { get; set; } =
-        ReactiveCommand.Create<NavigationInput>(_ => { }, Observable.Return(false));
+    [Reactive] public ReactiveCommand<NavigationInformation, Unit> NavigateCommand { get; set; } =
+        ReactiveCommand.Create<NavigationInformation>(_ => { }, Observable.Return(false));
 }

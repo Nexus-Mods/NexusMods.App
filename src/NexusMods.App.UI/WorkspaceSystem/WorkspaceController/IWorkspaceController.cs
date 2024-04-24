@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
+using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.Icons;
 using NexusMods.App.UI.Windows;
 
@@ -111,6 +112,11 @@ public interface IWorkspaceController
     /// Sets the icon of a tab.
     /// </summary>
     public void SetIcon(IconValue? icon, WorkspaceId workspaceId, PanelId panelId, PanelTabId tabId);
+
+    public OpenPageBehavior GetOpenPageBehavior(
+        PageData requestedPage,
+        NavigationInformation navigationInformation,
+        Optional<PageIdBundle> currentPage);
 
     /// <summary>
     /// Returns the default <see cref="OpenPageBehavior"/> for the inputs.

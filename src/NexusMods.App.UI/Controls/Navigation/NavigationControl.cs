@@ -14,26 +14,32 @@ public class NavigationControl : Button
     public static readonly StyledProperty<ReactiveCommand<NavigationInput, Unit>?> NavigateCommandProperty =
         AvaloniaProperty.Register<NavigationControl, ReactiveCommand<NavigationInput, Unit>?>(nameof(NavigationCommand));
 
-    public ReactiveCommand<NavigationInput, Unit>? NavigationCommand
+    public ReactiveCommand<NavigationInformation, Unit>? NavigationCommand
     {
         get
         {
             var value = GetValue(CommandProperty);
-            return value as ReactiveCommand<NavigationInput, Unit>;
+            return value as ReactiveCommand<NavigationInformation, Unit>;
         }
         set => SetValue(CommandProperty, value);
     }
 
-    private NavigationInput NavigationInput
+    private NavigationInformation NavigationInformation
     {
+        get => (NavigationInformation)CommandParameter!;
         set => CommandParameter = value;
     }
 
+    private readonly ReactiveCommand<OpenPageBehaviorType, Unit> _contextMenuCommand;
+
     public NavigationControl()
     {
-        // TODO: design this context menu and decide what goes in it
-        // NOTE: we'll also want consumers to disable/enable certain items
-        // TODO: implement click handlers for these items
+        _contextMenuCommand = ReactiveCommand.Create<OpenPageBehaviorType>(openPageBehaviorType =>
+        {
+            if (NavigationCommand is null) return;
+            NavigationCommand.Execute(NavigationInformation.From(openPageBehaviorType)).Subscribe();
+        });
+
         var contextMenu = new ContextMenu
         {
             Items =
@@ -41,14 +47,14 @@ public class NavigationControl : Button
                 new MenuItem
                 {
                     Header = "Open in new tab",
+                    Command = _contextMenuCommand,
+                    CommandParameter = OpenPageBehaviorType.NewTab,
                 },
                 new MenuItem
                 {
                     Header = "Open in new panel",
-                },
-                new MenuItem
-                {
-                    Header = "Open in new window",
+                    Command = _contextMenuCommand,
+                    CommandParameter = OpenPageBehaviorType.NewPanel,
                 },
             },
         };
@@ -63,7 +69,7 @@ public class NavigationControl : Button
     protected override void OnPointerPressed(PointerPressedEventArgs e)
     {
         var input = ToNavigationInput(e);
-        NavigationInput = input;
+        NavigationInformation = NavigationInformation.From(input);
 
         base.OnPointerPressed(e);
 
@@ -76,9 +82,6 @@ public class NavigationControl : Button
 
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
     {
-        var input = ToNavigationInput(e);
-        NavigationInput = input;
-
         base.OnPointerReleased(e);
 
         // NOTE(erri120): Button.OnPointerReleased only calls OnClick if the
@@ -97,7 +100,7 @@ public class NavigationControl : Button
             ? MouseButton.Left
             : properties.IsMiddleButtonPressed
                 ? MouseButton.Middle
-                : MouseButton.None;
+                : MouseButton.Left;
 
         return new NavigationInput(keyType, keyModifiers);
     }
