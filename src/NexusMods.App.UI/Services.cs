@@ -38,6 +38,7 @@ using NexusMods.App.UI.Overlays.Generic.MessageBox.OkCancel;
 using NexusMods.App.UI.Overlays.Login;
 using NexusMods.App.UI.Overlays.MetricsOptIn;
 using NexusMods.App.UI.Overlays.Updater;
+using NexusMods.App.UI.Pages.Changelog;
 using NexusMods.App.UI.Pages.Diagnostics;
 using NexusMods.App.UI.Pages.Diff.ApplyDiff;
 using NexusMods.App.UI.Pages.Downloads;
@@ -197,6 +198,8 @@ public static class Services
 
             .AddView<MarkdownRendererView, IMarkdownRendererViewModel>()
             .AddViewModel<MarkdownRendererViewModel, IMarkdownRendererViewModel>()
+            .AddView<ChangelogPageView, IChangelogPageViewModel>()
+            .AddViewModel<ChangelogPageViewModel, IChangelogPageViewModel>()
 
             // workspace system
             .AddSingleton<IWindowManager, WindowManager>()
@@ -226,6 +229,7 @@ public static class Services
             .AddSingleton<IPageFactory, DiagnosticDetailsPageFactory>()
             .AddSingleton<IPageFactory, ApplyDiffPageFactory>()
             .AddSingleton<IPageFactory, SettingsPageFactory>()
+            .AddSingleton<IPageFactory, ChangelogPageFactory>()
 
             // LeftMenu factories
             .AddSingleton<ILeftMenuFactory, DownloadsLeftMenuFactory>()

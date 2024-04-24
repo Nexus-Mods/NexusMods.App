@@ -1,3 +1,4 @@
+using NexusMods.Extensions.Hashing;
 using TransparentValueObjects;
 
 namespace NexusMods.Abstractions.Games.DTO;
@@ -18,4 +19,10 @@ public readonly partial struct GameDomain : IAugmentWith<DefaultValueAugment, Js
     /// Unknown.
     /// </summary>
     public static GameDomain DefaultValue { get; } = From("Unknown");
+    
+    /// <summary>
+    /// Retrieves the 'stable' hash of a domain.
+    /// One that does not change between application runs.
+    /// </summary>
+    public ulong GetStableHash() => Value.AsSpan().GetStableHash();
 }

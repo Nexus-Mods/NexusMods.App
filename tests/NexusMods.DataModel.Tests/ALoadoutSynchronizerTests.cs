@@ -765,9 +765,49 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
         await _synchronizer.Apply(listA.Value);
         await _synchronizer.Apply(listB.Value);
         await _synchronizer.Apply(listC.Value);
+    }
+    
+    [Fact]
+    public async Task ManageGame_SecondLoadout_UsesInitialDiskState()
+    {
+        // Arrange
+        // Get our initial game disk state
+        var initialLoadout = BaseList.Value;
+        var initialDiskState = await _synchronizer.GetDiskState(initialLoadout.Installation);
 
+        // Add a mod to the initial loadout
+        await AddMod("TestMod",
+            (_texturePath.Path, "texture.dds"),
+            (_meshPath.Path, "mesh.nif"));
 
+        // Apply the initial loadout
+        await _synchronizer.Apply(initialLoadout);
 
+        // Assert that the new files were deployed to disk after the first apply
+        var textureAbsPath = initialLoadout.Installation.LocationsRegister.GetResolvedPath(_texturePath);
+        var meshAbsPath = initialLoadout.Installation.LocationsRegister.GetResolvedPath(_meshPath);
+        textureAbsPath.FileExists.Should().BeTrue("The texture file should exist after applying the initial loadout");
+        meshAbsPath.FileExists.Should().BeTrue("The mesh file should exist after applying the initial loadout");
 
+        // Act
+        // Manage the game again to create a second loadout
+        // This should reset our game folder to the initial state.
+        var secondLoadoutMarker = await LoadoutRegistry.Manage(Install, "Second Loadout");
+        var secondLoadout = secondLoadoutMarker.Value;
+
+        // Assert
+        var secondLoadoutDiskState = await _synchronizer.GetDiskState(secondLoadout.Installation);
+
+        // Check that the second loadout's initial disk state matches the original initial disk state
+        secondLoadoutDiskState.Should().BeEquivalentTo(initialDiskState);
+
+        // Check that the second loadout only contains the original game files
+        var secondLoadoutFileTree = await _synchronizer.LoadoutToFlattenedLoadout(secondLoadout);
+        secondLoadoutFileTree.GetAllDescendentFiles()
+            .Select(f => f.GamePath().ToString())
+            .Should()
+            .NotContain(_texturePath.ToString())
+            .And
+            .NotContain(_meshPath.ToString());
     }
 }

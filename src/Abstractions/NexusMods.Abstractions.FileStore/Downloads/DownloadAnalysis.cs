@@ -47,7 +47,7 @@ public static class DownloadAnalysis
     public static readonly StringAttribute SuggestedName = new(Namespace, nameof(SuggestedName));
     
     
-    public class Model(ITransaction tx) : Entity(tx)
+    public class Model(ITransaction tx) : Entity(tx, (byte)IdPartitions.DownloadAnalysis)
     {
         
         /// <summary>
@@ -123,7 +123,7 @@ public static class DownloadContentEntry
     /// </summary>
     public static readonly ReferenceAttribute DownloadAnalysis = new(Namespace, nameof(DownloadAnalysis));
     
-    public class Model(ITransaction tx) : Entity(tx), TreeCreator.ITreeCreatorNode
+    public class Model(ITransaction tx) : Entity(tx, (byte)IdPartitions.DownloadAnalysis), TreeCreator.ITreeCreatorNode
     {
         
         /// <summary>
