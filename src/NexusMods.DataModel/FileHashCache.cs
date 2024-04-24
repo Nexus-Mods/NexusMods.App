@@ -1,15 +1,11 @@
 using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Text;
 using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Serialization;
-using NexusMods.Abstractions.Serialization.DataModel;
-using NexusMods.Abstractions.Serialization.DataModel.Ids;
-using NexusMods.Extensions.BCL;
 using NexusMods.Extensions.Hashing;
+using NexusMods.Hashing.xxHash64;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 
 namespace NexusMods.DataModel;
@@ -34,7 +30,7 @@ public class FileHashCache : IFileHashCache
     public static readonly ActivityGroup Group = ActivityGroup.From("FileHashCache");
 
     private readonly IActivityFactory _activityFactory;
-    private readonly IDataStore _store;
+    private readonly IConnection _conn;
 
     /// <summary/>
     /// <param name="activityFactory">Limits CPU utilization where possible.</param>
@@ -42,36 +38,38 @@ public class FileHashCache : IFileHashCache
     /// <remarks>
     ///    This constructor is usually called from DI.
     /// </remarks>
-    public FileHashCache(IActivityFactory activityFactory, IDataStore store)
+    public FileHashCache(IActivityFactory activityFactory, IConnection conn)
     {
         _activityFactory = activityFactory;
-        _store = store;
+        _conn = conn;
     }
 
     /// <inheritdoc/>
-    public bool TryGetCached(AbsolutePath path, out FileHashCacheEntry entry)
+    public bool TryGetCached(AbsolutePath path, out HashCacheEntry.Model entry)
     {
-        var normalized = path.ToString();
-        Span<byte> span = stackalloc byte[Encoding.UTF8.GetByteCount(normalized)];
-        Encoding.UTF8.GetBytes(normalized, span);
-        var found = _store.GetRaw(IId.FromSpan(EntityCategory.FileHashes, span));
-        if (found != null && found is not { Length: 0 })
+        var nameHash = Hash.From(path.ToString().AsSpan().GetStableHash());
+        var db = _conn.Db;
+        var id = db
+            .FindIndexed(nameHash, HashCacheEntry.NameHash)
+            .FirstOrDefault(EntityId.MinValue);
+        if (id == EntityId.MinValue)
         {
-            entry = FileHashCacheEntry.FromSpan(found);
-            return true;
+            entry = null!;
+            return false;
         }
-        entry = default;
-        return false;
+
+        entry = db.Get<HashCacheEntry.Model>(id);
+        return true;
     }
 
     /// <inheritdoc/>
-    public IAsyncEnumerable<HashedEntry> IndexFolderAsync(AbsolutePath path, CancellationToken token = default)
+    public IAsyncEnumerable<HashedEntryWithName> IndexFolderAsync(AbsolutePath path, CancellationToken token = default)
     {
         return IndexFoldersAsync(new[] { path }, token);
     }
 
     /// <inheritdoc/>
-    public async IAsyncEnumerable<HashedEntry> IndexFoldersAsync(IEnumerable<AbsolutePath> paths, [EnumeratorCancellation] CancellationToken token = default)
+    public async IAsyncEnumerable<HashedEntryWithName> IndexFoldersAsync(IEnumerable<AbsolutePath> paths, [EnumeratorCancellation] CancellationToken token = default)
     {
         // Don't want to error via a empty folder
         var validPaths = paths.Where(p => p.DirectoryExists()).ToList();
@@ -84,37 +82,36 @@ public class FileHashCache : IFileHashCache
 
         activity.SetMax(allFiles.Sum(f => f.Size));
 
-        var toPersist = new List<(IId, byte[] vSpan)>();
-        var results = new ConcurrentBag<HashedEntry>();
-        Parallel.ForEach(allFiles, info =>
+        var toPersist = new ConcurrentBag<HashedEntryWithName>();
+        var results = new ConcurrentBag<HashedEntryWithName>();
+        await Parallel.ForEachAsync(allFiles, (info, _) =>
         {
             if (TryGetCached(info.Path, out var found))
             {
                 if (found.Size == info.Size && found.LastModified == info.LastWriteTimeUtc)
                 {
-                    results.Add(new HashedEntry(info, found.Hash));
-                    return;
+                    results.Add(new HashedEntryWithName(info, found.Hash));
+                    return ValueTask.CompletedTask;
                 }
             }
             // ReSharper disable once AccessToDisposedClosure
             var hashed = info.Path.XxHash64MemoryMapped(activity);
-            lock (toPersist)
-            {
-                toPersist.Add(GetDbEntryToWrite(info.Path, new FileHashCacheEntry(info.LastWriteTimeUtc, hashed, info.Size)));
-            }
-
-            results.Add(new HashedEntry(info, hashed));
+            var result = new HashedEntryWithName(info, hashed);
+            
+            toPersist.Add(result);
+            results.Add(result);
+            return ValueTask.CompletedTask;
         }
         );
 
         // Insert all cached items into the DB.
-        PutAllCached(toPersist); // <= required because this is async method
+        await PutCached(toPersist);
         foreach (var itm in results)
             yield return itm;
     }
 
     /// <inheritdoc/>
-    public async ValueTask<HashedEntry> IndexFileAsync(AbsolutePath file, CancellationToken token = default)
+    public async ValueTask<HashedEntryWithName> IndexFileAsync(AbsolutePath file, CancellationToken token = default)
     {
         var info = file.FileInfo;
         var size = info.Size;
@@ -122,15 +119,16 @@ public class FileHashCache : IFileHashCache
         {
             if (found.Size == size && found.LastModified == info.LastWriteTimeUtc)
             {
-                return new HashedEntry(file, found.Hash, info.LastWriteTimeUtc, size);
+                return new HashedEntryWithName(file, found.Hash, info.LastWriteTimeUtc, size);
             }
         }
 
         using var job = _activityFactory.Create<Size>(Group, "Hashing {FileName}", file.FileName);
         job.SetMax(info.Size);
         var hashed = await file.XxHash64Async(job, token);
-        PutCached(file, new FileHashCacheEntry(info.LastWriteTimeUtc, hashed, size));
-        return new HashedEntry(file, hashed, info.LastWriteTimeUtc, size);
+        var result = new HashedEntryWithName(file, hashed, info.LastWriteTimeUtc, size);
+        await PutCached([result]);
+        return result;
     }
 
     /// <inheritdoc/>
@@ -143,32 +141,39 @@ public class FileHashCache : IFileHashCache
             DiskStateEntry.From(h))));
     }
 
-    [SkipLocalsInit] // We don't need to zero the memory here
-    private void PutCached(AbsolutePath path, FileHashCacheEntry entry)
+    /// <inheritdoc />
+    public async Task PutCached(IReadOnlyCollection<HashedEntryWithName> toPersist)
     {
-        var normalized = path.ToString();
-        Span<byte> kSpan = stackalloc byte[Encoding.UTF8.GetByteCount(normalized)];
-        Encoding.UTF8.GetBytes(normalized, kSpan);
-        Span<byte> vSpan = stackalloc byte[24];
-        entry.ToSpan(vSpan);
-
-        _store.PutRaw(IId.FromSpan(EntityCategory.FileHashes, kSpan), vSpan);
+        if (toPersist.Count == 0) return;
+        var db = _conn.Db;
+        using var tx = _conn.BeginTransaction();
+        foreach (var entry in toPersist)
+        {
+            var stringName = entry.Path.ToString();
+            AddOrReplace(entry, db, stringName, tx);
+        }
+        await tx.Commit();
     }
     
-    private (IId, byte[] vSpan) GetDbEntryToWrite(AbsolutePath path, FileHashCacheEntry entry)
+    private static void AddOrReplace(HashedEntryWithName entry, IDb db, string nameString, ITransaction tx)
     {
-        var normalized = path.ToString();
-        var keyBytes = GC.AllocateUninitializedArray<byte>(Encoding.UTF8.GetByteCount(normalized));
-        Encoding.UTF8.GetBytes(normalized, keyBytes);
-        var valueBytes = GC.AllocateUninitializedArray<byte>(24);
-        entry.ToSpan(valueBytes);
+        var hash = Hash.From(nameString.AsSpan().GetStableHash());
+        var existing = db.FindIndexed(hash, HashCacheEntry.NameHash)
+            .FirstOrDefault(EntityId.MinValue);
 
-        return (IId.FromSpan(EntityCategory.FileHashes, keyBytes), valueBytes);
-    }
-
-    private void PutAllCached(List<(IId, byte[] vSpan)> toPersist)
-    {
-        var newItems = CollectionsMarshal.AsSpan(toPersist);
-        _store.PutAllRaw(newItems);
+        if (existing != EntityId.MinValue)
+        {
+            tx.Add(existing,HashCacheEntry.LastModified, entry.LastModified);
+            tx.Add(existing,HashCacheEntry.Hash, entry.Hash);
+            tx.Add(existing,HashCacheEntry.Size, entry.Size);
+        }
+        else
+        {
+            var newId = tx.TempId();
+            tx.Add(newId, HashCacheEntry.NameHash, hash);
+            tx.Add(newId, HashCacheEntry.LastModified, entry.LastModified);
+            tx.Add(newId, HashCacheEntry.Hash, entry.Hash);
+            tx.Add(newId, HashCacheEntry.Size, entry.Size);
+        }
     }
 }

@@ -493,13 +493,23 @@
         <Compile Update="Controls\MarkdownRenderer\MarkdownRendererDesignViewModel.cs">
           <DependentUpon>IMarkdownRendererViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Pages\Settings\SettingsDesignViewModel.cs">
-          <DependentUpon>ISettingsViewModel.cs</DependentUpon>
+        <Compile Update="Pages\Settings\SettingsPageDesignViewModel.cs">
+          <DependentUpon>ISettingsPageViewModel.cs</DependentUpon>
         </Compile>
         <Compile Update="Controls\Settings\SettingEntries\SettingEntryDesignViewModel.cs">
           <DependentUpon>ISettingEntryViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Controls\Settings\SettingEntries\SettingInteractionControls\SettingToggleViewModel.cs">
+        <Compile Update="Pages\Settings\SettingsPageViewModel.cs">
+          <DependentUpon>ISettingsPageViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\Settings\SettingEntries\SettingEntryViewModel.cs">
+          <DependentUpon>ISettingEntryViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\Settings\SettingEntries\SettingInteractionControls\Toggle\SettingToggleControl.axaml.cs">
+          <DependentUpon>SettingToggleControl.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Controls\Settings\SettingEntries\SettingInteractionControls\Toggle\SettingToggleViewModel.cs">
           <DependentUpon>ISettingToggleViewModel.cs</DependentUpon>
         </Compile>
         <Compile Update="Pages\Downloads\InProgressDesignViewModel.cs">
@@ -516,6 +526,15 @@
         </Compile>
         <Compile Update="Pages\ModLibrary\FileOrigins\FileOriginEntry\FileOriginEntryViewModel.cs">
           <DependentUpon>IFileOriginEntryViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\Settings\SettingEntries\SettingInteractionControls\ComboBox\SettingComboBoxViewModel.cs">
+          <DependentUpon>ISettingComboBoxViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\Changelog\ChangelogPageView.cs">
+          <DependentUpon>ChangelogPageView.axaml</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\Changelog\ChangelogPageViewModel.cs">
+          <DependentUpon>IChangelogPageViewModel.cs</DependentUpon>
         </Compile>
     </ItemGroup>
 

@@ -28,7 +28,7 @@ public readonly struct DiskStateEntry
     /// </summary>
     /// <param name="hashedEntry"></param>
     /// <returns></returns>
-    public static DiskStateEntry From(HashedEntry hashedEntry)
+    public static DiskStateEntry From(HashedEntryWithName hashedEntry)
     {
         return new()
         {
@@ -43,7 +43,7 @@ public readonly struct DiskStateEntry
     /// </summary>
     /// <param name="path"></param>
     /// <returns></returns>
-    public HashedEntry ToHashedEntry(AbsolutePath path)
+    public HashedEntryWithName ToHashedEntry(AbsolutePath path)
     {
         return new(path, Hash, LastModified, Size);
     }

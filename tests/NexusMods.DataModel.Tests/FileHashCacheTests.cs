@@ -1,4 +1,5 @@
 using FluentAssertions;
+using NexusMods.Abstractions.DiskState;
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Tests.Harness;
 using NexusMods.Hashing.xxHash64;
@@ -26,6 +27,26 @@ public class FileHashCacheTests : ADataModelTest<FileHashCacheTests>
         FileHashCache.TryGetCached(file, out var found).Should().BeTrue();
         found.Hash.Should().Be(hash.Hash);
         file.Delete();
+    }
+
+    [Fact]
+    public async Task UpdatingHashesReturnsTheUpdate()
+    {
+        var tmpName = FileSystem.GetKnownPath(KnownPath.CurrentDirectory)
+            .Combine(Guid.NewGuid().ToString()).AppendExtension(KnownExtensions.Tmp);
+
+        // If putting a hash into the cache creates a *new* entry instead of replacing
+        // an existing entry, this will fail.
+        for (var i = 0; i < 10; i++)
+        {
+            await FileHashCache.PutCached([ 
+                new HashedEntryWithName(tmpName, Hash.From(0xDEADBEEF+(ulong)i), 
+                    DateTime.UtcNow, Size.From((ulong)i))]);
+            
+            FileHashCache.TryGetCached(tmpName, out var found).Should().BeTrue();
+            found.Hash.Should().Be(Hash.From(0xDEADBEEF+(ulong)i));
+            found.Size.Should().Be(Size.From((ulong)i));
+        }
     }
 
     [Fact]

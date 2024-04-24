@@ -7,6 +7,7 @@ using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.Abstractions.Serialization.DataModel.Ids;
 using NexusMods.Abstractions.Settings;
+using NexusMods.Extensions.Hashing;
 using NexusMods.Hashing.xxHash64;
 using Reloaded.Memory.Extensions;
 
@@ -84,11 +85,7 @@ internal sealed class DataStoreSettingsBackend : ISettingsStorageBackend
     private static Id64 GetId<T>()
     {
         var s = typeof(T).FullName ?? typeof(T).Name;
-
-        Span<byte> bytes = stackalloc byte[s.Length];
-        var count = Encoding.ASCII.GetBytes(s, bytes);
-
-        var hash = XxHash64Algorithm.HashBytes(bytes.SliceFast(0, count));
+        var hash = s.AsSpan().GetStableHash();
         return new Id64(EntityCategory.GlobalSettings, hash);
     }
 

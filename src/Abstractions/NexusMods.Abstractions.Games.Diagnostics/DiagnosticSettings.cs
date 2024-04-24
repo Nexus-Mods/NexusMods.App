@@ -41,7 +41,6 @@ public class DiagnosticSettings : ISettings
                         _ => throw new ArgumentOutOfRangeException(nameof(severity), severity, null),
                     }
                 )
-                .RequiresRestart()
             )
         );
     }

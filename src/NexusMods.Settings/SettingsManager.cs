@@ -101,7 +101,7 @@ internal partial class SettingsManager : ISettingsManager
             var value = output.GetValue(this);
             var defaultValue = output.GetDefaultValue(this);
 
-            var valueContainer = output.Factory.Create(value, defaultValue);
+            var valueContainer = output.Factory.Create(value, defaultValue, output);
             return SettingsPropertyUIDescriptor.From(output, valueContainer);
         }).ToArray();
     }

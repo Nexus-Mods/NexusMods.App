@@ -7,4 +7,8 @@
       <PackageReference Include="NexusMods.MnemonicDB.Abstractions" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\..\Extensions\NexusMods.Extensions.Hashing\NexusMods.Extensions.Hashing.csproj" />
+    </ItemGroup>
+
 </Project>

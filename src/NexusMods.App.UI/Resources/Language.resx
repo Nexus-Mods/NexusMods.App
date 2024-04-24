@@ -431,4 +431,10 @@
     <data name="FileOriginsPage_AddButtonText" xml:space="preserve">
         <value>Add</value>
     </data>
+    <data name="DialogButton_Discard" xml:space="preserve">
+        <value>DISCARD</value>
+    </data>
+    <data name="ChangelogPageViewModel_ChangelogPageViewModel_Changelog" xml:space="preserve">
+        <value>Changelog</value>
+    </data>
 </root>

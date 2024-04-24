@@ -28,9 +28,7 @@ public class DiskStateRegistry : IDiskStateRegistry
         _connection = connection;
     }
 
-    /// <summary>
-    /// Saves a disk state to the data store
-    /// </summary>
+    /// <inheritdoc />
     public async Task SaveState(GameInstallation installation, DiskStateTree diskState)
     {
         Debug.Assert(!diskState.LoadoutRevision.Equals(IdEmpty.Empty), "diskState.LoadoutRevision must be set");
@@ -61,12 +59,8 @@ public class DiskStateRegistry : IDiskStateRegistry
         _lastAppliedRevisionDictionary[installation] = diskState.LoadoutRevision;
         _lastAppliedRevisionSubject.OnNext((installation, diskState.LoadoutRevision));
     }
-    
-    /// <summary>
-    /// Gets the disk state associated with a specific version of a loadout (if any)
-    /// </summary>
-    /// <param name="gameInstallation"></param>
-    /// <returns></returns>
+
+    /// <inheritdoc />
     public DiskStateTree? GetState(GameInstallation gameInstallation)
     {
         var db = _connection.Db;
@@ -80,12 +74,35 @@ public class DiskStateRegistry : IDiskStateRegistry
         return state;
     }
 
-    private static DiskState.Model? PreviousStateEntity(IDb db, GameInstallation gameInstallation)
+    /// <inheritdoc />
+    public async Task SaveInitialState(GameInstallation installation, DiskStateTree diskState)
     {
-        return db
-            .FindIndexed(gameInstallation.LocationsRegister[LocationId.Game].ToString(), DiskState.Root)
-            .Select(db.Get<DiskState.Model>)
-            .FirstOrDefault(state => state.Game == gameInstallation.Game.Domain);
+        var tx = _connection.BeginTransaction();
+        var domain = installation.Game.Domain;
+        _ = new InitialDiskState.Model(tx)
+        {
+            Game = domain,
+            Root = installation.LocationsRegister[LocationId.Game].ToString(),
+            DiskState = diskState,
+        };
+
+        await tx.Commit();
+    }
+
+    /// <inheritdoc />
+    public DiskStateTree? GetInitialState(GameInstallation installation)
+    {
+        var db = _connection.Db;
+        var domain = installation.Game.Domain;
+        
+        // Find item with matching domain and root.
+        // In practice it's unlikely you'd ever install more than one game at one
+        // location, but since doing this check is virtually free, we might as well.
+        return db.FindIndexed(installation.LocationsRegister[LocationId.Game].ToString(), InitialDiskState.Root)
+            .Select(db.Get<InitialDiskState.Model>)
+            .Where(x => x.Game == domain)
+            .Select(x => x.DiskState)
+            .FirstOrDefault();
     }
 
     /// <inheritdoc />
@@ -102,5 +119,13 @@ public class DiskStateRegistry : IDiskStateRegistry
 
         _lastAppliedRevisionDictionary[gameInstallation] = diskStateTree.LoadoutRevision;
         return diskStateTree.LoadoutRevision;
+    }
+    
+    private static DiskState.Model? PreviousStateEntity(IDb db, GameInstallation gameInstallation)
+    {
+        return db
+            .FindIndexed(gameInstallation.LocationsRegister[LocationId.Game].ToString(), DiskState.Root)
+            .Select(db.Get<DiskState.Model>)
+            .FirstOrDefault(state => state.Game == gameInstallation.Game.Domain);
     }
 }

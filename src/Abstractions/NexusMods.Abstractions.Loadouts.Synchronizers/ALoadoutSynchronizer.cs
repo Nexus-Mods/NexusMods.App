@@ -2,7 +2,6 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Runtime.InteropServices;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.DataModel.Entities.Sorting;
@@ -124,16 +123,16 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
 
 
     /// <inheritdoc />
-    public async Task<DiskStateTree> FileTreeToDisk(FileTree fileTree, Loadout loadout, FlattenedLoadout flattenedLoadout, DiskStateTree prevState, GameInstallation installation)
+    public async Task<DiskStateTree> FileTreeToDisk(FileTree fileTree, Loadout loadout, FlattenedLoadout flattenedLoadout, DiskStateTree prevState, GameInstallation installation, bool skipIngest = false)
     {
         // Return the new tree
         return await FileTreeToDiskImpl(fileTree, loadout, flattenedLoadout, prevState, installation, true);
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal async Task<DiskStateTree> FileTreeToDiskImpl(FileTree fileTree, Loadout loadout, FlattenedLoadout flattenedLoadout, DiskStateTree prevState, GameInstallation installation, bool fixFileMode)
+    internal async Task<DiskStateTree> FileTreeToDiskImpl(FileTree fileTree, Loadout loadout, FlattenedLoadout flattenedLoadout, DiskStateTree prevState, GameInstallation installation, bool fixFileMode, bool skipIngest = false)
     {
-        List<KeyValuePair<GamePath, HashedEntry>> toDelete = new();
+        List<KeyValuePair<GamePath, HashedEntryWithName>> toDelete = new();
         List<KeyValuePair<AbsolutePath, IGeneratedFile>> toWrite = new();
         List<KeyValuePair<AbsolutePath, StoredFile>> toExtract = new();
 
@@ -151,6 +150,9 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                 if (!prevState.TryGetValue(gamePath, out var prevEntry))
                 {
                     // File is new, and not in the previous state, so we need to abort and do an ingest
+                    if (skipIngest)
+                        continue;
+                        
                     HandleNeedIngest(entry);
                     throw new UnreachableException("HandleNeedIngest should have thrown");
                 }
@@ -158,6 +160,9 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                 if (prevEntry.Item.Value.Hash != entry.Hash)
                 {
                     // File has changed, so we need to abort and do an ingest
+                    if (skipIngest)
+                        continue;
+                    
                     HandleNeedIngest(entry);
                     throw new UnreachableException("HandleNeedIngest should have thrown");
                 }
@@ -209,6 +214,9 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             if (prevState.TryGetValue(path, out var prevEntry))
             {
                 // File is in new tree, was in prev disk state, but wasn't found on disk
+                if (skipIngest)
+                    continue;
+                
                 HandleNeedIngest(prevEntry.Item.Value.ToHashedEntry(absolutePath));
                 throw new UnreachableException("HandleNeedIngest should have thrown");
             }
@@ -353,7 +361,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// Called when a file has changed during an apply operation, and a ingest is required.
     /// </summary>
     /// <param name="entry"></param>
-    public virtual void HandleNeedIngest(HashedEntry entry)
+    public virtual void HandleNeedIngest(HashedEntryWithName entry)
     {
         throw new NeedsIngestException();
     }
@@ -560,13 +568,17 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// Applies a loadout to the game folder.
     /// </summary>
     /// <param name="loadout"></param>
+    /// <param name="forceSkipIngest">
+    ///     Skips checking if an ingest is needed.
+    ///     Force overrides current locations to intended tree
+    /// </param>
     /// <returns></returns>
-    public virtual async Task<DiskStateTree> Apply(Loadout loadout)
+    public virtual async Task<DiskStateTree> Apply(Loadout loadout, bool forceSkipIngest = false)
     {
         var flattened = await LoadoutToFlattenedLoadout(loadout);
         var fileTree = await FlattenedLoadoutToFileTree(flattened, loadout);
         var prevState = _diskStateRegistry.GetState(loadout.Installation)!;
-        var diskState = await FileTreeToDisk(fileTree, loadout, flattened, prevState, loadout.Installation);
+        var diskState = await FileTreeToDisk(fileTree, loadout, flattened, prevState, loadout.Installation, forceSkipIngest);
         diskState.LoadoutRevision = loadout.DataStoreId;
         await _diskStateRegistry.SaveState(loadout.Installation, diskState);
         return diskState;
@@ -745,8 +757,8 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// <inheritdoc />
     public virtual async Task<Loadout> Manage(GameInstallation installation, string? suggestedName = null)
     {
-        var initialState = await GetInitialDiskState(installation);
-
+        var (isCached, initialState) = await GetOrCreateInitialDiskState(installation);
+        
         var loadoutId = LoadoutId.Create();
         var gameFiles = new Mod()
         {
@@ -767,13 +779,15 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                     });
                 }))
         };
-        
-        
-        await BackupNewFiles(installation, FileTree.Create(gameFiles.Files.Select(kv =>
-        {
-            var storedFile = (kv.Value as StoredFile)!;
-            return KeyValuePair.Create(storedFile.To, kv.Value);
-        } )));
+
+        var fileTree = FileTree.Create(gameFiles.Files.Select(kv =>
+                {
+                    var storedFile = (kv.Value as StoredFile)!;
+                    return KeyValuePair.Create(storedFile.To, kv.Value);
+                }
+            )
+        );
+        await BackupNewFiles(installation, fileTree);
 
         var loadout = _loadoutRegistry.Alter(loadoutId, "Initial loadout",  loadout => loadout
             with
@@ -784,8 +798,23 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             });
         
         initialState.LoadoutRevision = loadout.DataStoreId;
+        
+        // Reset the game folder to initial state if making a new loadout.
+        // We must do this before saving state, as Apply does a diff against
+        // the last state. Which will be a state from previous loadout.
+        if (isCached)
+        {
+            // This is a 'fast apply' operation, that avoids recomputing the file tree.
+            // And avoids a double save-state.
+            var flattened = await LoadoutToFlattenedLoadout(loadout);
+            var prevState = _diskStateRegistry.GetState(loadout.Installation)!;
+            await FileTreeToDisk(fileTree, loadout, flattened, prevState, loadout.Installation, true);
+            
+            // Note: DiskState returned from `FileTreeToDisk` and `initialState`
+            // are the same in terms of content!!
+        }
+        
         await _diskStateRegistry.SaveState(loadout.Installation, initialState);
-
         return loadout;
     }
 
@@ -844,9 +873,15 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// </summary>
     /// <param name="installation"></param>
     /// <returns></returns>
-    public virtual ValueTask<DiskStateTree> GetInitialDiskState(GameInstallation installation)
+    public virtual async ValueTask<(bool isCachedState, DiskStateTree tree)> GetOrCreateInitialDiskState(GameInstallation installation)
     {
-        return _hashCache.IndexDiskState(installation);
+        var initialState = _diskStateRegistry.GetInitialState(installation);
+        if (initialState != null)
+            return (true, initialState);
+
+        var indexedState = await _hashCache.IndexDiskState(installation);
+        await _diskStateRegistry.SaveInitialState(installation, indexedState);
+        return (false, indexedState);
     }
     #endregion
 
