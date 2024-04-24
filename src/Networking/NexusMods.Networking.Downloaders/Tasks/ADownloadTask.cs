@@ -23,19 +23,7 @@ public abstract class ADownloadTask : IDownloadTask
     protected IHttpDownloader HttpDownloader;
     protected CancellationTokenSource CancellationTokenSource;
     protected TemporaryPath DownloadLocation;
-
-    public Size Downloaded => State!.Downloaded;
     
-    public Percent Progress
-    {
-        get
-        {
-            if (State!.Size == Size.Zero || Downloaded == Size.Zero)
-                return Percent.Zero;
-            return Percent.CreateClamped((long)Downloaded.Value, (long)State.Size.Value);
-        }
-    }
-
     protected ADownloadTask(IServiceProvider provider)
     {
         _conn = provider.GetRequiredService<IConnection>();
@@ -49,7 +37,7 @@ public abstract class ADownloadTask : IDownloadTask
     protected async Task<(string Name, Size Size)> GetNameAndSizeAsync(Uri uri)
     {
         if (uri.IsFile)
-            return (uri.FileName, uri.FileName.Size);
+            return default;
 
         var response = await HttpClient.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead);
         if (!response.IsSuccessStatusCode)
@@ -96,12 +84,66 @@ public abstract class ADownloadTask : IDownloadTask
 
         return Bandwidth.From(size.Value);
     }
+    
+    public Size Downloaded => State!.Downloaded;
+    
+    public Percent Progress
+    {
+        get
+        {
+            if (State!.Size == Size.Zero || Downloaded == Size.Zero)
+                return Percent.Zero;
+            return Percent.CreateClamped((long)Downloaded.Value, (long)State.Size.Value);
+        }
+    }
 
     public DownloaderState.Model State => PersistentState!;
     
-    public abstract Task StartAsync();
-    public abstract void Cancel();
-    public abstract void Suspend();
-    public abstract Task Resume();
-    public abstract Task AddInitData(ITransaction tx, DownloaderState.Model state);
+    /// <inheritdoc />
+    public async Task StartAsync()
+    {
+        await AddInitData();
+        await Resume();
+    }
+
+    /// <inheritdoc />
+    public async Task Cancel()
+    {
+        try { await CancellationTokenSource.CancelAsync(); }
+        catch (Exception) { /* ignored */ }
+        await SetStatus(DownloadTaskStatus.Cancelled);
+    }
+
+    /// <inheritdoc />
+    public async Task Suspend()
+    {
+        await SetStatus(DownloadTaskStatus.Paused);
+        try { await CancellationTokenSource.CancelAsync(); }
+        catch (Exception) { /* ignored */ }
+        
+        // Replace the token source.
+        CancellationTokenSource = new CancellationTokenSource();
+    }
+    
+    /// <inheritdoc />
+    public async Task Resume()
+    {
+        await Download(DownloadLocation, CancellationTokenSource.Token);
+        await SetStatus(DownloadTaskStatus.Completed);
+    }
+    
+    /// <summary>
+    /// Called to fill out the PersistentState with any extra data needed for the download,
+    /// such as size, name, the author of the download, etc.
+    /// </summary>
+    protected abstract Task AddInitData();
+    
+    /// <summary>
+    /// Begin the process of downloading a file to the specified destination, should
+    /// terminate when the download is complete or cancelled. The destination may have
+    /// vestigial data from a previous download attempt, if the downloader can resume
+    /// using this data it should do so. The method should not return until the download
+    /// has completed or been cancelled.
+    /// </summary>
+    protected abstract Task Download(AbsolutePath destination, CancellationToken token);
 }

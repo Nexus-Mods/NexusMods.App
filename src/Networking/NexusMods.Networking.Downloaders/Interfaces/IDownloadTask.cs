@@ -38,12 +38,12 @@ public interface IDownloadTask
     /// <summary>
     /// Cancels a download task, this is a one-way operation.
     /// </summary>
-    void Cancel();
+    Task Cancel();
 
     /// <summary>
     /// Pauses a download task, by saving the current state and temporarily cancelling it.
     /// </summary>
-    void Suspend();
+    Task Suspend();
 
     /// <summary>
     /// Resumes a download task.
