@@ -55,7 +55,6 @@ public class DownloadServiceTests
         
         task.PersistentState.Status.Should().Be(DownloadTaskStatus.Completed);
 
-        await Task.Delay(100);
         statuses.Should().ContainInOrder(
             DownloadTaskStatus.Idle,
             DownloadTaskStatus.Downloading, 

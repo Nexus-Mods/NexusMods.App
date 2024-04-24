@@ -92,7 +92,6 @@ public class DownloadService : IDownloadService, IAsyncDisposable
     {
         var task = _provider.GetRequiredService<HttpDownloadTask>();
         await task.Create(url);
-        await Task.Delay(100);
         return _downloads.Lookup(task.PersistentState.Id).Value;
     }
     
