@@ -70,7 +70,8 @@ public class VersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
                     ModName: mod.Name,
                     MinimumAPIVersion: minimumApiVersion.ToString(),
                     CurrentSMAPIVersion: smapiVersion.ToString(),
-                    NexusModsLink: modPageUrls.GetValueOrDefault(manifest.UniqueID, Helpers.NexusModsLink)
+                    NexusModsLink: modPageUrls.GetValueOrDefault(manifest.UniqueID, Helpers.NexusModsLink),
+                    SMAPINexusModsLink: Helpers.SMAPILink
                 );
             }
 

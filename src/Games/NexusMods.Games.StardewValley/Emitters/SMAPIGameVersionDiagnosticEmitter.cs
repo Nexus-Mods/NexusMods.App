@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Diagnostics.References;
-using NexusMods.Abstractions.Diagnostics.Values;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.Loadouts.Mods;
@@ -25,8 +24,6 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
 {
     private readonly ILogger _logger;
     private readonly HttpClient _client;
-
-    private static readonly NamedLink NexusModsSMAPILink = new("Nexus Mods", new Uri("https://nexusmods.com/stardewvalley/mods/2400"));
 
     public SMAPIGameVersionDiagnosticEmitter(
         ILogger<SMAPIGameVersionDiagnosticEmitter> logger,
@@ -101,7 +98,7 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
         return Diagnostics.CreateSuggestSMAPIVersion(
             LatestSMAPIVersion: supportedSMAPIVersion.ToString(),
             CurrentGameVersion: gameVersion.ToString(),
-            SMAPINexusModsLink: NexusModsSMAPILink
+            SMAPINexusModsLink: Helpers.SMAPILink
         );
     }
 
@@ -131,7 +128,7 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
             MaximumGameVersion: maximumGameVersion.ToString(),
             CurrentGameVersion: gameVersion.ToString(),
             NewestSupportedSMAPIVersionForCurrentGameVersion: supportedSMAPIVersion.ToString(),
-            SMAPINexusModsLink: NexusModsSMAPILink
+            SMAPINexusModsLink: Helpers.SMAPILink
         );
     }
 
@@ -161,7 +158,7 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
             MinimumGameVersion: minimumGameVersion.ToString(),
             CurrentGameVersion: gameVersion.ToString(),
             NewestSupportedSMAPIVersionForCurrentGameVersion: supportedSMAPIVersion.ToString(),
-            SMAPINexusModsLink: NexusModsSMAPILink
+            SMAPINexusModsLink: Helpers.SMAPILink
         );
     }
 

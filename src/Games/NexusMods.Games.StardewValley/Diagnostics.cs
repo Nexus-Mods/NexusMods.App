@@ -226,7 +226,8 @@ Mod {Mod} requires the SMAPI version to be at least {MinimumAPIVersion}.
 The current SMAPI version is {CurrentSMAPIVersion}.
 
 You can solve this issue by either updating SMAPI or download an older version
-of the mod from {NexusModsLink}.
+of the mod from {NexusModsLink}. The latest SMAPI version can be downloaded
+from {SMAPINexusModsLink}.
 """)
         .WithMessageData(messageBuilder => messageBuilder
             .AddDataReference<ModReference>("Mod")
@@ -234,6 +235,7 @@ of the mod from {NexusModsLink}.
             .AddValue<string>("MinimumAPIVersion")
             .AddValue<string>("CurrentSMAPIVersion")
             .AddValue<NamedLink>("NexusModsLink")
+            .AddValue<NamedLink>("SMAPINexusModsLink")
         )
         .Finish();
 
