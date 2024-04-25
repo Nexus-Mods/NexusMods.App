@@ -14,24 +14,47 @@ public class DownloadTaskViewModel : AViewModel<IDownloadTaskViewModel>, IDownlo
     public DownloadTaskViewModel(IDownloadTask task)
     {
         _task = task;
-
-        _task.WhenAnyValue(t => t.PersistentState.FriendlyName)
-            .Select(t => t)
-            .BindTo(this, x => x.Name);
         
         this.WhenActivated(d =>
         {
             _task.WhenAnyValue(t => t.PersistentState.FriendlyName)
+                .OnUI()
                 .Select(t => t)
                 .BindTo(this, x => x.Name)
                 .DisposeWith(d);
             
             _task.WhenAnyValue(t => t.PersistentState.Version)
+                .OnUI()
                 .BindTo(this, x => x.Version)
                 .DisposeWith(d);
 
             _task.WhenAnyValue(t => t.PersistentState.Status)
+                .OnUI()
                 .BindTo(this, x => x.Status)
+                .DisposeWith(d);
+
+            _task.WhenAnyValue(t => t.Downloaded)
+                .OnUI()
+                .Select(s => s.Value)
+                .BindTo(this, x => x.DownloadedBytes)
+                .DisposeWith(d);
+
+            _task.WhenAnyValue(t => t.PersistentState.Size)
+                .OnUI()
+                .Select(s => s.Value)
+                .BindTo(this, x => x.SizeBytes)
+                .DisposeWith(d);
+            
+            _task.WhenAnyValue(t => t.PersistentState.GameDomain)
+                .OnUI()
+                .Select(g => g.ToString())
+                .BindTo(this, x => x.Game)
+                .DisposeWith(d);
+
+            _task.WhenAnyValue(t => t.Bandwidth)
+                .OnUI()
+                .Select(b => b.Value)
+                .BindTo(this, x => x.Throughput)
                 .DisposeWith(d);
 
         });

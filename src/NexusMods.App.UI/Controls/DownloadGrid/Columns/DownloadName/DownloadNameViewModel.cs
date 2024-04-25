@@ -24,5 +24,6 @@ public class DownloadNameViewModel : AViewModel<IDownloadNameViewModel>, IDownlo
         });
     }
 
-    public int Compare(IDownloadTaskViewModel a, IDownloadTaskViewModel b) => String.Compare(a.Name, b.Name, StringComparison.Ordinal);
+    public int Compare(IDownloadTaskViewModel a, IDownloadTaskViewModel b) => 
+        string.Compare(a.Name, b.Name, StringComparison.Ordinal);
 }

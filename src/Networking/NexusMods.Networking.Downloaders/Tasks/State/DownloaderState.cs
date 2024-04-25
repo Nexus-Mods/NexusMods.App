@@ -98,7 +98,7 @@ public static class DownloaderState
         /// </summary>
         public string FriendlyName
         {
-            get => DownloaderState.FriendlyName.Get(this);
+            get => DownloaderState.FriendlyName.Get(this, "Unknown");
             set => DownloaderState.FriendlyName.Add(this, value);
         }
         
@@ -107,7 +107,7 @@ public static class DownloaderState
         /// </summary>
         public Size Downloaded
         {
-            get => DownloaderState.Downloaded.Get(this);
+            get => DownloaderState.Downloaded.Get(this, Size.Zero);
             set => DownloaderState.Downloaded.Add(this, value);
         }
 
@@ -116,7 +116,7 @@ public static class DownloaderState
         /// </summary>
         public Size Size
         {
-            get => DownloaderState.Size.Get(this);
+            get => DownloaderState.Size.Get(this, Size.Zero);
             set => DownloaderState.Size.Add(this, value);
         }
         
@@ -125,7 +125,7 @@ public static class DownloaderState
         /// </summary>
         public GameDomain GameDomain
         {
-            get => DownloaderState.GameDomain.Get(this);
+            get => DownloaderState.GameDomain.Get(this, GameDomain.From("Unknown"));
             set => DownloaderState.GameDomain.Add(this, value);
         }
         
@@ -134,7 +134,7 @@ public static class DownloaderState
         /// </summary>
         public string Version
         {
-            get => DownloaderState.Version.Get(this);
+            get => DownloaderState.Version.Get(this, "Unknown");
             set => DownloaderState.Version.Add(this, value);
         }
     }

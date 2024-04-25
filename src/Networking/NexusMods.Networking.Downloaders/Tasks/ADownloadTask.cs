@@ -49,6 +49,7 @@ public abstract class ADownloadTask : ReactiveObject, IDownloadTask
     public void Init(DownloaderState.Model state)
     {
         PersistentState = state;
+        Downloaded = state.Downloaded;
         _downloadLocation = new TemporaryPath(FileSystem, FileSystem.FromUnsanitizedFullPath(state.DownloadPath), false);
     }
 
@@ -190,6 +191,7 @@ public abstract class ADownloadTask : ReactiveObject, IDownloadTask
             if (report is { Current.HasValue: true })
             {
                 Downloaded = report.Current.Value;
+                Logger.LogInformation("Updating activity status for {Name} {Downloaded}", PersistentState.FriendlyName, Downloaded);
                 if (PersistentState.TryGet(DownloaderState.Size, out var size) && size != Size.Zero)
                     Progress = Percent.CreateClamped((long)Downloaded.Value, (long)size.Value);
                 if (report.Throughput.HasValue)
