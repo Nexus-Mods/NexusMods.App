@@ -217,4 +217,15 @@ public interface ILoadoutRegistry
     /// </summary>
     /// <param name="loadoutId">The ID associated with the loadout.</param>
     void Delete(LoadoutId loadoutId);
+
+    /// <summary>
+    /// Returns true if any revision of this <see cref="LoadoutId"/> is currently active.
+    /// </summary>
+    /// <param name="installation">The game installation with the id.</param>
+    /// <param name="id">The ID to check for activeness.</param>
+    /// <param name="lastAppliedId">
+    ///     DataStore ID of the last applied state.
+    ///     You can get this from the DiskStateRegistry.
+    /// </param>
+    bool IsActive(GameInstallation installation, LoadoutId id, IId? lastAppliedId);
 }

@@ -854,31 +854,12 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     {
         // Clear Initial State if this is the only loadout for the game.
         // We use folder location for this.
-        var insallLocation = installation.LocationsRegister[LocationId.Game].ToString();
+        var installLocation = installation.LocationsRegister[LocationId.Game].ToString();
         var clearInitialState = _loadoutRegistry
             .AllLoadouts()
-            .Count(x => x.Installation.LocationsRegister[LocationId.Game].ToString() == insallLocation) <= 1;
-        
-        var lastAppliedLoadoutId = _diskStateRegistry.GetLastAppliedLoadout(installation);
-        var loadout = _loadoutRegistry.Get(id);
-        if (loadout == null)
-            throw new ArgumentException("Loadout not found", nameof(id));
-
-        // Gather all versions of the loadout
-        var versions = new List<IId> { loadout.DataStoreId };
-        var currentVersion = loadout.PreviousVersion;
-        while (!currentVersion.Id.Equals(IdEmpty.Empty))
-        {
-            versions.Add(currentVersion.Id);
-            var value = currentVersion.Value;
-            if (value == null)
-                break;
-
-            currentVersion = value.PreviousVersion;
-        }
-
-        // Check if any of the loadout versions is the currently active loadout
-        if (lastAppliedLoadoutId != null && versions.Contains(lastAppliedLoadoutId))
+            .Count(x => x.Installation.LocationsRegister[LocationId.Game].ToString() == installLocation) <= 1;
+    
+        if (_loadoutRegistry.IsActive(installation, id, _diskStateRegistry.GetLastAppliedLoadout(installation)))
         {
             /*
                 Note(Sewer)

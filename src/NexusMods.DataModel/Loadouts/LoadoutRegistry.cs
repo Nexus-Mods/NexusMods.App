@@ -5,6 +5,7 @@ using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Binding;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
@@ -464,12 +465,58 @@ public class LoadoutRegistry : IDisposable, ILoadoutRegistry
         if (_isDisposed)
             throw new ObjectDisposedException(nameof(LoadoutRegistry));
 
+        // Get all revisions 
+        var loadout = Get(loadoutId);
+        if (loadout == null)
+            throw new ArgumentException("Loadout not found", nameof(loadoutId));
+
+        // Remove LoadoutId
         var dbId = loadoutId.ToEntityId(EntityCategory.LoadoutRoots);
         _store.Delete(dbId);
         _logger.LogInformation("Loadout {LoadoutId} deleted", loadoutId);
 
+        // Remove all previous revisions.
+        var currentVersion = loadout.PreviousVersion;
+        while (true)
+        {
+            var previousLoadout = currentVersion.Value;
+            if (previousLoadout == null)
+                break;
+
+            _store.Delete(previousLoadout.DataStoreId);
+            currentVersion = previousLoadout.PreviousVersion;
+        }
+        
         _markers.TryRemove(loadoutId, out _);
         _loadoutsIds.Remove(loadoutId);
         _cache.Edit(x => x.Remove(loadoutId));
+    }
+
+    /// <inheritdoc />
+    public bool IsActive(GameInstallation installation, LoadoutId id, IId? lastAppliedId)
+    {
+        var loadout = Get(id);
+        if (loadout == null)
+            throw new ArgumentException("Loadout not found", nameof(id));
+
+        // Check if any of the loadout versions is the currently active loadout
+        var isActiveLoadout = loadout.DataStoreId.Equals(lastAppliedId);
+        var currentVersion = loadout.PreviousVersion;
+        while (!currentVersion.Id.Equals(IdEmpty.Empty))
+        {
+            if (currentVersion.Id.Equals(lastAppliedId))
+            {
+                isActiveLoadout = true;
+                break;
+            }
+
+            var value = currentVersion.Value;
+            if (value == null)
+                break;
+
+            currentVersion = value.PreviousVersion;
+        }
+
+        return isActiveLoadout;
     }
 }
