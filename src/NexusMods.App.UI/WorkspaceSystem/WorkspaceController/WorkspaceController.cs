@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using Avalonia.Threading;
 using DynamicData;
 using DynamicData.Kernel;
+using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.App.UI.Controls.Navigation;
@@ -17,6 +18,7 @@ using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
+[UsedImplicitly]
 internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
 {
     private readonly IWorkspaceWindow _window;
