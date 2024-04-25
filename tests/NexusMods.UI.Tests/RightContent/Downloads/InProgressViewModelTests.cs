@@ -3,6 +3,7 @@ using FluentAssertions;
 using NexusMods.App.UI.Helpers;
 using NexusMods.App.UI.Pages.Downloads;
 using NexusMods.App.UI.Pages.Downloads.ViewModels;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.Downloaders.Interfaces;
 using Noggog;
 using ReactiveUI;
@@ -47,6 +48,7 @@ public class InProgressViewModelTests : AViewTest<InProgressView, InProgressDesi
 
             // Add an item.
             var download = new DownloadTaskDesignViewModel();
+            download.TaskId = EntityId.From(2048);
             Host.ViewModel.AddDownload(download);
 
             // Because this runs on the UI thread, results should be instant, provided some deliberate cross
