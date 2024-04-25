@@ -1,4 +1,5 @@
 ﻿using System.Reactive;
+using NexusMods.App.UI.Controls.Navigation;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.LeftMenu.Items;
@@ -9,7 +10,7 @@ public interface IApplyControlViewModel : IViewModelInterface
     
     ReactiveCommand<Unit,Unit> IngestCommand { get; }
     
-    ReactiveCommand<Unit,Unit> ShowApplyDiffCommand { get; }
+    ReactiveCommand<NavigationInformation, Unit> ShowApplyDiffCommand { get; }
     
     ILaunchButtonViewModel LaunchButtonViewModel { get; }
     

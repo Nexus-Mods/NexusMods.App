@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization.DataModel.Ids;
+using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Pages.Diff.ApplyDiff;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
@@ -26,7 +27,6 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
 
     private readonly ReactiveCommand<Unit, Unit> _applyReactiveCommand;
     private readonly ReactiveCommand<Unit, Unit> _ingestReactiveCommand;
-    private readonly ReactiveCommand<Unit, Unit> _showApplyDiffReactiveCommand;
 
     private ObservableAsPropertyHelper<IId> _lastAppliedRevisionId;
     private IId LastAppliedRevisionId => _lastAppliedRevisionId.Value;
@@ -39,7 +39,7 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
 
     public ReactiveCommand<Unit, Unit> ApplyCommand => _applyReactiveCommand;
     public ReactiveCommand<Unit, Unit> IngestCommand => _ingestReactiveCommand;
-    public ReactiveCommand<Unit, Unit> ShowApplyDiffCommand => _showApplyDiffReactiveCommand;
+    public ReactiveCommand<NavigationInformation, Unit> ShowApplyDiffCommand { get; }
 
 
     [Reactive] private bool CanApply { get; set; } = true;
@@ -77,7 +77,7 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
         _ingestReactiveCommand = ReactiveCommand.CreateFromTask(async () => await Ingest(), 
             canExecute: this.WhenAnyValue(vm => vm.CanIngest));
         
-        _showApplyDiffReactiveCommand = ReactiveCommand.Create(() =>
+        ShowApplyDiffCommand = ReactiveCommand.Create<NavigationInformation>(info =>
         {
             var pageData = new PageData
             {
@@ -88,12 +88,10 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
                 },
             };
 
-            // TODO: use https://github.com/Nexus-Mods/NexusMods.App/issues/942
-            var input = NavigationInput.Default;
             if (!windowManager.TryGetActiveWindow(out var activeWindow)) return;
             var workspaceController = activeWindow.WorkspaceController;
-            
-            var behavior = workspaceController.GetDefaultOpenPageBehavior(pageData, input, Optional<PageIdBundle>.None);
+
+            var behavior = workspaceController.GetOpenPageBehavior(pageData, info, Optional<PageIdBundle>.None);
             var workspaceId = workspaceController.ActiveWorkspace!.Id;
             workspaceController.OpenPage(workspaceId, pageData, behavior);
         });

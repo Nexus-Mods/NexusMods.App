@@ -113,6 +113,9 @@ public interface IWorkspaceController
     /// </summary>
     public void SetIcon(IconValue? icon, WorkspaceId workspaceId, PanelId panelId, PanelTabId tabId);
 
+    /// <summary>
+    /// Returns the <see cref="OpenPageBehavior"/> based on the provided <paramref name="navigationInformation"/>.
+    /// </summary>
     public OpenPageBehavior GetOpenPageBehavior(
         PageData requestedPage,
         NavigationInformation navigationInformation,
