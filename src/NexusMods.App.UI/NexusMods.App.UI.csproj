@@ -521,6 +521,12 @@
         <Compile Update="Pages\Changelog\ChangelogPageViewModel.cs">
           <DependentUpon>IChangelogPageViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="WorkspaceSystem\NewTabPage\NewTabPageSectionItemViewModel.cs">
+          <DependentUpon>INewTabPageSectionItemViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="WorkspaceSystem\NewTabPage\NewTabPageSectionViewModel.cs">
+          <DependentUpon>INewTabPageSectionViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>

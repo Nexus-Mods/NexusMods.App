@@ -35,9 +35,23 @@ public class NewTabPageViewModel : APageViewModel<INewTabPageViewModel>, INewTab
             _itemSource
                 .Connect()
                 .MergeMany(item => item.SelectItemCommand)
-                .SubscribeWithErrorLogging(pageData =>
+                .SubscribeWithErrorLogging(tuple =>
                 {
-                    GetWorkspaceController().OpenPage(WorkspaceId, pageData, new OpenPageBehavior.ReplaceTab(PanelId, TabId));
+                    var (pageData, info) = tuple;
+                    var workspaceController = GetWorkspaceController();
+
+                    OpenPageBehavior behavior;
+                    if (!info.OpenPageBehaviorType.HasValue && info.Input.IsPrimaryInput())
+                    {
+                        // NOTE(erri120): default should be replacing this tab
+                        behavior = new OpenPageBehavior.ReplaceTab(PanelId, TabId);
+                    }
+                    else
+                    {
+                        behavior = workspaceController.GetOpenPageBehavior(pageData, info, IdBundle);
+                    }
+
+                    workspaceController.OpenPage(WorkspaceId, pageData, behavior);
                 })
                 .DisposeWith(disposables);
         });
