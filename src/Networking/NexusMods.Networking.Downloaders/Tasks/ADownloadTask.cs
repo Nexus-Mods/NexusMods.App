@@ -81,6 +81,7 @@ public abstract class ADownloadTask : ReactiveObject, IDownloadTask
     
     protected async Task<(string Name, Size Size)> GetNameAndSizeAsync(Uri uri)
     {
+        Logger.LogDebug("Getting name and size for {Url}", uri);
         if (uri.IsFile)
             return default;
 
@@ -157,6 +158,7 @@ public abstract class ADownloadTask : ReactiveObject, IDownloadTask
     /// <inheritdoc />
     public async Task Resume()
     {
+        Logger.LogInformation("Starting download of {Name}", PersistentState.FriendlyName);
         await SetStatus(DownloadTaskStatus.Downloading);
         TransientState = new HttpDownloaderState
         {
@@ -164,9 +166,11 @@ public abstract class ADownloadTask : ReactiveObject, IDownloadTask
         };
         _ = StartActivityUpdater();
         
+        Logger.LogDebug("Dispatching download task for {Name}", PersistentState.FriendlyName);
         await Download(DownloadLocation, CancellationTokenSource.Token);
         UpdateActivity();
         await SetStatus(DownloadTaskStatus.Completed);
+        Logger.LogInformation("Finished download of {Name}", PersistentState.FriendlyName);
     }
 
     private async Task StartActivityUpdater()

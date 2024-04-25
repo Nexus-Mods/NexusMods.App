@@ -79,16 +79,31 @@ public class DownloadService : IDownloadService, IAsyncDisposable
 
     internal IDownloadTask? GetTaskFromState(DownloaderState.Model state)
     {
-        var httpState = _provider.GetRequiredService<HttpDownloadTask>();
-        httpState.Init(state);
-        return httpState;
+        if (state.Contains(HttpDownloadState.Uri))
+        {
+            var httpState = _provider.GetRequiredService<HttpDownloadTask>();
+            httpState.Init(state);
+            return httpState;
+        }
+        else if (state.Contains(NxmDownloadState.ModId))
+        {
+            var nxmState = _provider.GetRequiredService<NxmDownloadTask>();
+            nxmState.Init(state);
+            return nxmState;
+        }
+        else
+        {
+            throw new InvalidOperationException("Unknown download task type: " + state);
+        }
     }
     
     /// <inheritdoc />
-    public async Task<IDownloadTask> AddTask(NXMUrl url)
+    public async Task<IDownloadTask> AddTask(NXMModUrl url)
     {
         _logger.LogInformation("Adding task for {Url}", url);
-        throw new NotImplementedException();
+        var task = _provider.GetRequiredService<NxmDownloadTask>();
+        await task.Create(url);
+        return _downloads.Lookup(task.PersistentState.Id).Value;
     }
 
     /// <inheritdoc />

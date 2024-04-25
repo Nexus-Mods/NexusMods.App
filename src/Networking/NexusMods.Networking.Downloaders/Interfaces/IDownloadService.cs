@@ -24,7 +24,7 @@ public interface IDownloadService
     /// Adds a task that will download from a NXM link.
     /// </summary>
     /// <param name="url">Url to download from.</param>
-    Task<IDownloadTask> AddTask(NXMUrl url);
+    Task<IDownloadTask> AddTask(NXMModUrl url);
 
     /// <summary>
     /// Adds a task that will download from a HTTP link.
