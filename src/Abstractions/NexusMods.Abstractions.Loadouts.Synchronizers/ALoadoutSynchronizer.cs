@@ -852,6 +852,13 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// <inheritdoc />
     public async Task DeleteLoadout(GameInstallation installation, LoadoutId id)
     {
+        // Clear Initial State if this is the only loadout for the game.
+        // We use folder location for this.
+        var insallLocation = installation.LocationsRegister[LocationId.Game].ToString();
+        var clearInitialState = _loadoutRegistry
+            .AllLoadouts()
+            .Count(x => x.Installation.LocationsRegister[LocationId.Game].ToString() == insallLocation) <= 1;
+        
         var lastAppliedLoadoutId = _diskStateRegistry.GetLastAppliedLoadout(installation);
         var loadout = _loadoutRegistry.Get(id);
         if (loadout == null)
@@ -892,6 +899,10 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
 
         // Delete the loadout from the LoadoutRegistry
         _loadoutRegistry.Delete(id);
+        
+        // If this is the last loadout, remove persisted disk state.
+        if (clearInitialState)
+            await _diskStateRegistry.ClearInitialState(installation);
     }
 
     private async Task ResetToInitialState(GameInstallation installation)

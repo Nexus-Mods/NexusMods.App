@@ -44,6 +44,13 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
     public ALoadoutSynchronizerTests(IServiceProvider provider) : base(provider)
     {
         _synchronizer = (IStandardizedLoadoutSynchronizer)Game.Synchronizer;
+        
+        // Ensure we have an initial disk state in stubbed synchronizer.
+        // We have asserts in the code to ensure correctness at runtime,
+        // i.e. can't unmanage if we don't have an initial state.
+        
+        // So this line creates an initial state.
+        Task.Run(async () => await ((ALoadoutSynchronizer)_synchronizer).GetOrCreateInitialDiskState(Install)).Wait();
     }
 
     public override async Task InitializeAsync()
