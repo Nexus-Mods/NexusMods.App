@@ -31,18 +31,18 @@
   </ItemGroup>
   <ItemGroup>
     <!-- Avalonia -->
-    <PackageVersion Include="Avalonia" Version="11.0.10" />
-    <PackageVersion Include="Avalonia.Controls.DataGrid" Version="11.0.10" />
+    <PackageVersion Include="Avalonia" Version="11.1.0-beta2" />
+    <PackageVersion Include="Avalonia.Controls.DataGrid" Version="11.1.0-beta2" />
     <PackageVersion Include="Avalonia.Controls.TreeDataGrid" Version="11.0.2" />
-    <PackageVersion Include="Avalonia.Desktop" Version="11.0.10" />
-    <PackageVersion Include="Avalonia.Diagnostics" Version="11.0.10" />
-    <PackageVersion Include="Avalonia.Headless" Version="11.0.10" />
-    <PackageVersion Include="Avalonia.ReactiveUI" Version="11.0.10" />
-    <PackageVersion Include="Avalonia.Themes.Fluent" Version="11.0.10" />
+    <PackageVersion Include="Avalonia.Desktop" Version="11.1.0-beta2" />
+    <PackageVersion Include="Avalonia.Diagnostics" Version="11.1.0-beta2" />
+    <PackageVersion Include="Avalonia.Headless" Version="11.1.0-beta2" />
+    <PackageVersion Include="Avalonia.ReactiveUI" Version="11.1.0-beta2" />
+    <PackageVersion Include="Avalonia.Themes.Fluent" Version="11.1.0-beta2" />
     <PackageVersion Include="Projektanker.Icons.Avalonia.MaterialDesign" Version="9.1.2" />
-    <PackageVersion Include="Avalonia.Svg.Skia" Version="11.0.0.14" />
+    <PackageVersion Include="Avalonia.Svg.Skia" Version="11.1.0-beta1" />
     <!-- keep this version in sync with Avalonia (https://github.com/whistyun/Markdown.Avalonia?tab=readme-ov-file#nuget) -->
-    <PackageVersion Include="Markdown.Avalonia.Tight" Version="11.0.2" />
+    <PackageVersion Include="Markdown.Avalonia.Tight" Version="11.0.3-a1" />
   </ItemGroup>
   <ItemGroup>
     <!-- System -->
