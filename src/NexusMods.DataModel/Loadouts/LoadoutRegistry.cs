@@ -244,8 +244,9 @@ public class LoadoutRegistry : IDisposable, ILoadoutRegistry
     public Loadout? Get(LoadoutId id)
     {
         var databaseId = GetId(id)!;
+        // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
         if (databaseId == null)
-            throw new InvalidOperationException($"Loadout {id} does not exist");
+            return null;
         return _store.Get<Loadout>(databaseId, true);
     }
 
