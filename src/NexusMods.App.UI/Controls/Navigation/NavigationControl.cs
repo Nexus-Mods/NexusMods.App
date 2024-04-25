@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Reactive;
 using Avalonia;
 using Avalonia.Controls;
@@ -36,8 +37,8 @@ public class NavigationControl : Button
     {
         _contextMenuCommand = ReactiveCommand.Create<OpenPageBehaviorType>(openPageBehaviorType =>
         {
-            if (NavigationCommand is null) return;
-            NavigationCommand.Execute(NavigationInformation.From(openPageBehaviorType)).Subscribe();
+            NavigationInformation = NavigationInformation.From(openPageBehaviorType);
+            OnClick();
         });
 
         var contextMenu = new ContextMenu
@@ -65,9 +66,13 @@ public class NavigationControl : Button
     /// <inheritdoc/>
     protected override Type StyleKeyOverride => typeof(Button);
 
+    private bool _wasOnPointerPressedCalled;
+
     /// <inheritdoc/>
     protected override void OnPointerPressed(PointerPressedEventArgs e)
     {
+        _wasOnPointerPressedCalled = true;
+
         var input = ToNavigationInput(e);
         NavigationInformation = NavigationInformation.From(input);
 
@@ -82,6 +87,12 @@ public class NavigationControl : Button
 
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
     {
+        // NOTE(erri120): Can't get the input in this event, we'll just re-use
+        // the value set in OnPointerPressed. This assumes that OnPointerPressed
+        // always gets called before OnPointerReleased.
+        Debug.Assert(_wasOnPointerPressedCalled);
+        _wasOnPointerPressedCalled = false;
+
         base.OnPointerReleased(e);
 
         // NOTE(erri120): Button.OnPointerReleased only calls OnClick if the
