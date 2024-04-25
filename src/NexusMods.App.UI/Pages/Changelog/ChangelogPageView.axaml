@@ -6,9 +6,20 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactive="http://reactiveui.net"
     xmlns:local="using:NexusMods.App.UI.Pages.Changelog"
+    xmlns:system="clr-namespace:System;assembly=System.Runtime"
     mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="400"
     x:Class="NexusMods.App.UI.Pages.Changelog.ChangelogPageView">
 
-    <reactive:ViewModelViewHost Margin="24" x:Name="ViewModelViewHost"/>
+    <Grid RowDefinitions="Auto, *">
+        <ComboBox Grid.Row="0" HorizontalAlignment="Right" x:Name="ComboBox">
+            <ComboBox.DataTemplates>
+                <DataTemplate DataType="{x:Type system:String}">
+                    <TextBlock Text="{CompiledBinding}"/>
+                </DataTemplate>
+            </ComboBox.DataTemplates>
+        </ComboBox>
+
+        <reactive:ViewModelViewHost Grid.Row="1" Margin="24" x:Name="ViewModelViewHost" />
+    </Grid>
 
 </reactive:ReactiveUserControl>
