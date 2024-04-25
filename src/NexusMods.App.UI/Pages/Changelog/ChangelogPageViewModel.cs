@@ -1,5 +1,6 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using DynamicData;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.UI.Controls.MarkdownRenderer;
@@ -22,6 +23,7 @@ public class ChangelogPageViewModel : APageViewModel<IChangelogPageViewModel>, I
 
     [Reactive] public Version? TargetVersion { get; set; }
     [Reactive] public ParsedChangelog? ParsedChangelog { get; set; }
+    [Reactive] public int SelectedIndex { get; set; }
 
     private string? _fullChangelog;
 
@@ -64,7 +66,25 @@ public class ChangelogPageViewModel : APageViewModel<IChangelogPageViewModel>, I
                     }
 
                     MarkdownRendererViewModel.Contents = contents ?? _fullChangelog!;
+
+                    var index = targetVersion is null ? 0 : parsedChangelog.Versions
+                        .Select(kv => kv.Key)
+                        .IndexOf(targetVersion) + 1;
+                    SelectedIndex = index;
                 })
+                .DisposeWith(disposables);
+
+            this.WhenAnyValue(vm => vm.SelectedIndex)
+                .Where(_ => ParsedChangelog is not null)
+                .Select(index =>
+                {
+                    // "ALL" is at index 0
+                    var actualIndex = index - 1;
+                    if (actualIndex < 0) return null;
+
+                    return ParsedChangelog!.Versions[actualIndex].Key;
+                })
+                .BindToVM(this, vm => vm.TargetVersion)
                 .DisposeWith(disposables);
 
             MarkdownRendererViewModel.MarkdownUri = _changelogUri;
