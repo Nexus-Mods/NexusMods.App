@@ -10,15 +10,18 @@ internal sealed class ImageCache : IImageCache
 {
     private readonly ILogger<ImageCache> _logger;
     private readonly IFileStore _fileStore;
+    private readonly HttpClient _client;
 
     private readonly Dictionary<Hash, Bitmap> _cache = new();
 
     public ImageCache(
         ILogger<ImageCache> logger,
-        IFileStore fileStore)
+        IFileStore fileStore,
+        HttpClient client)
     {
         _logger = logger;
         _fileStore = fileStore;
+        _client = client;
     }
 
     public async Task<IImage?> GetImage(ImageIdentifier imageIdentifier, CancellationToken cancellationToken)
@@ -61,8 +64,8 @@ internal sealed class ImageCache : IImageCache
     {
         try
         {
-            var client = new HttpClient();
-            var stream = await client.GetByteArrayAsync(uri, cancellationToken);
+            _logger.LogDebug("Fetching image from {Uri}", uri);
+            var stream = await _client.GetByteArrayAsync(uri, cancellationToken);
             return new Bitmap(new MemoryStream(stream));
         }
         catch (Exception e)
