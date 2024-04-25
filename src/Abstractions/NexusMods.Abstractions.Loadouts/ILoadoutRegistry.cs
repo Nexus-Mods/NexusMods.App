@@ -211,6 +211,9 @@ public interface ILoadoutRegistry
 
     /// <summary>
     /// Deletes a loadout with the given ID.
+    ///
+    /// [WARNING] Calling this directly is discouraged as it may lead to inconsistencies
+    /// in other parts of the App. Instead consider using the `Loadout Synchronizer`.
     /// </summary>
     /// <param name="loadoutId">The ID associated with the loadout.</param>
     void Delete(LoadoutId loadoutId);

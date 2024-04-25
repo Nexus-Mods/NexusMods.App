@@ -129,7 +129,7 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
                         LastModified = thisGame._modifiedTimes[installation.LocationsRegister.GetResolvedPath(gamePath)]
                     });
             });
-            return ValueTask.FromResult((false, DiskStateTree.Create(results)));
+            return ValueTask.FromResult((true, DiskStateTree.Create(results)));
         }
     }
 

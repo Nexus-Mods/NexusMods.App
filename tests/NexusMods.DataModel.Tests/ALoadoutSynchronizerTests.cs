@@ -810,4 +810,36 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
             .And
             .NotContain(_meshPath.ToString());
     }
+    
+    [Fact]
+    public async Task DeleteLoadout_LoadoutIsDeletedAndGameRevertedToInitialState()
+    {
+        // Arrange
+        var initialLoadout = BaseList.Value;
+        var initialDiskState = await _synchronizer.GetDiskState(initialLoadout.Installation);
+
+        // Add a mod to the initial loadout
+        await AddMod("TestMod",
+            (_texturePath.Path, "texture.dds"),
+            (_meshPath.Path, "mesh.nif"));
+
+        await _synchronizer.Apply(initialLoadout);
+
+        var textureAbsPath = initialLoadout.Installation.LocationsRegister.GetResolvedPath(_texturePath);
+        var meshAbsPath = initialLoadout.Installation.LocationsRegister.GetResolvedPath(_meshPath);
+        textureAbsPath.FileExists.Should().BeTrue("The texture file should exist after applying the initial loadout");
+        meshAbsPath.FileExists.Should().BeTrue("The mesh file should exist after applying the initial loadout");
+
+        // Act
+        await _synchronizer.DeleteLoadout(initialLoadout.Installation, initialLoadout.LoadoutId);
+
+        // Assert
+        LoadoutRegistry.Get(initialLoadout.LoadoutId).Should().BeNull("The loadout should be deleted");
+
+        var currentDiskState = await _synchronizer.GetDiskState(initialLoadout.Installation);
+        currentDiskState.Should().BeEquivalentTo(initialDiskState, "The game should be reverted to the initial disk state");
+
+        textureAbsPath.FileExists.Should().BeFalse("The texture file should not exist after deleting the loadout");
+        meshAbsPath.FileExists.Should().BeFalse("The mesh file should not exist after deleting the loadout");
+    }
 }

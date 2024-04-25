@@ -853,19 +853,35 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     public async Task DeleteLoadout(GameInstallation installation, LoadoutId id)
     {
         var lastAppliedLoadoutId = _diskStateRegistry.GetLastAppliedLoadout(installation);
+        var loadout = _loadoutRegistry.Get(id);
+        if (loadout == null)
+            throw new ArgumentException("Loadout not found", nameof(id));
 
-        // Check if the loadout being deleted is the currently active loadout
-        if (lastAppliedLoadoutId != null && lastAppliedLoadoutId.Equals(_loadoutRegistry.GetId(id)))
+        // Gather all versions of the loadout
+        var versions = new List<IId> { loadout.DataStoreId };
+        var currentVersion = loadout.PreviousVersion;
+        while (!currentVersion.Id.Equals(IdEmpty.Empty))
+        {
+            versions.Add(currentVersion.Id);
+            var value = currentVersion.Value;
+            if (value == null)
+                break;
+
+            currentVersion = value.PreviousVersion;
+        }
+
+        // Check if any of the loadout versions is the currently active loadout
+        if (lastAppliedLoadoutId != null && versions.Contains(lastAppliedLoadoutId))
         {
             /*
                 Note(Sewer)
-             
+
                 The loadout being deleted is the currently active loadout
                 As a 'default' reasonable behaviour, we will reset the game folder
-                to its initial state. This is a good default as in most cases, 
+                to its initial state. This is a good default as in most cases,
                 game files are not likely to be overwritten, so this will just
                 end up materialising into a bunch of deletes. (Very Fast)
-               
+
                 In the future, we may make a setting to change the behaviour,
                 if for example the user wants it to revert to last applied loadout
                 that isn't the one being deleted.
