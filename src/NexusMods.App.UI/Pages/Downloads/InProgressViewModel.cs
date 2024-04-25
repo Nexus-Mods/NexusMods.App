@@ -83,7 +83,8 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
     {
         TaskSourceChangeSet = downloadService.Downloads
             .ToObservableChangeSet()
-            .Filter(x => x.PersistentState.Status != DownloadTaskStatus.Completed)
+            //.Filter(x => x.PersistentState.Status != DownloadTaskStatus.Completed && 
+            //             x.PersistentState.Status != DownloadTaskStatus.Cancelled)
             .Transform(x => (IDownloadTaskViewModel)new DownloadTaskViewModel(x))
             .OnUI();
 

@@ -1,4 +1,5 @@
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using NexusMods.App.UI.Resources;
 using NexusMods.Networking.Downloaders.Interfaces;
 using ReactiveUI;
@@ -13,9 +14,15 @@ public class DownloadTaskViewModel : AViewModel<IDownloadTaskViewModel>, IDownlo
     public DownloadTaskViewModel(IDownloadTask task)
     {
         _task = task;
+
+        _task.WhenAnyValue(t => t.PersistentState.FriendlyName)
+            .Select(t => t)
+            .BindTo(this, x => x.Name);
+        
         this.WhenActivated(d =>
         {
             _task.WhenAnyValue(t => t.PersistentState.FriendlyName)
+                .Select(t => t)
                 .BindTo(this, x => x.Name)
                 .DisposeWith(d);
             

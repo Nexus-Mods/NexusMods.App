@@ -37,7 +37,8 @@ public partial class InProgressView : ReactiveUserControl<IInProgressViewModel>
             this.BindCommand(ViewModel, vm => vm.ShowSettings, view => view.SettingsButton)
                 .DisposeWith(d);
 
-            this.OneWayBind(ViewModel, vm => vm.Tasks, view => view.ModsDataGrid.ItemsSource)
+            this.OneWayBind(ViewModel, vm => vm.Tasks, 
+                    view => view.ModsDataGrid.ItemsSource)
                 .DisposeWith(d);
 
             this.WhenAnyValue(view => view.ViewModel!.Columns)
