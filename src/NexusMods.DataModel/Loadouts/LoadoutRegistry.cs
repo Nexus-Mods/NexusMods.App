@@ -470,6 +470,6 @@ public class LoadoutRegistry : IDisposable, ILoadoutRegistry
 
         _markers.TryRemove(loadoutId, out _);
         _loadoutsIds.Remove(loadoutId);
-        _cache.Edit(x => x.Remove(GetId(loadoutId)!));
+        _cache.Edit(x => x.Remove(loadoutId));
     }
 }

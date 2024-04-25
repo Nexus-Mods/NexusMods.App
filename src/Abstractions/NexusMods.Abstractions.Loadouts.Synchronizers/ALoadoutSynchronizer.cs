@@ -874,7 +874,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         var prevState = _diskStateRegistry.GetState(installation)!;
         await FileTreeToDisk(fileTree, null, flattened, prevState, installation, true);
         
-        foreach (var loadoutId in _loadoutRegistry.AllLoadoutIds())
+        foreach (var loadoutId in _loadoutRegistry.AllLoadoutIds().ToArray())
             _loadoutRegistry.Delete(loadoutId);
         
         // Now clear the vanilla game state.
