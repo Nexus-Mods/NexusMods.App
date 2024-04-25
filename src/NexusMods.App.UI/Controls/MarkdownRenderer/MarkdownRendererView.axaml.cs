@@ -16,9 +16,9 @@ public partial class MarkdownRendererView : ReactiveUserControl<IMarkdownRendere
         {
             var viewModel = ViewModel!;
 
-            MarkdownScrollViewer.Engine.HyperlinkCommand = viewModel.OpenLinkCommand;
-            MarkdownScrollViewer.Engine.Plugins.PathResolver = viewModel.PathResolver;
-            MarkdownScrollViewer.Engine.Plugins.Plugins.Add(viewModel.ImageResolverPlugin);
+            MarkdownScrollViewer.Plugins.HyperlinkCommand = viewModel.OpenLinkCommand;
+            MarkdownScrollViewer.Plugins.PathResolver = viewModel.PathResolver;
+            MarkdownScrollViewer.Plugins.Plugins.Add(viewModel.ImageResolverPlugin);
 
             this.OneWayBind(ViewModel, vm => vm.Contents, view => view.MarkdownScrollViewer.Markdown)
                 .DisposeWith(disposables);
