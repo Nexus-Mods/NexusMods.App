@@ -60,7 +60,7 @@ public class FileOriginRegistry : IFileOriginRegistry
 
         await using var tmpFolder = _temporaryFileManager.CreateFolder();
         await _extractor.ExtractAllAsync(factory, tmpFolder.Path, token);
-        return await RegisterFolderInternal(tmpFolder.Path, metaData, _fileStore.GetFileHashes(), archiveHash.Value, archiveSize, token);
+        return await RegisterFolderInternal(tmpFolder.Path, metaData, null, _fileStore.GetFileHashes(), archiveHash.Value, archiveSize, token);
     }
 
     /// <inheritdoc />
@@ -76,14 +76,30 @@ public class FileOriginRegistry : IFileOriginRegistry
 
         await using var tmpFolder = _temporaryFileManager.CreateFolder();
         await _extractor.ExtractAllAsync(path, tmpFolder.Path, token);
-        return await RegisterFolderInternal(tmpFolder.Path, metaDataFn, _fileStore.GetFileHashes(), archiveHash.Value, archiveSize, token);
+        return await RegisterFolderInternal(tmpFolder.Path, metaDataFn, null, _fileStore.GetFileHashes(), archiveHash.Value, archiveSize, token);
+    }
+
+    public async ValueTask<DownloadId> RegisterDownload(AbsolutePath path, EntityId id, CancellationToken token = default)
+    {
+        var db = _conn.Db;
+        var archiveSize = (ulong) path.FileInfo.Size;
+        
+        var archiveHash = (await _fileHashCache.IndexFileAsync(path, token)).Hash;
+
+        // Note: Folders have a hash of 0, so in unlikely event an archive hashes to 0, we can't dedupe by archive.
+        if (archiveHash != 0 && TryGetDownloadIdForHash(db, archiveHash, out var downloadId))
+            return downloadId.Value;
+
+        await using var tmpFolder = _temporaryFileManager.CreateFolder();
+        await _extractor.ExtractAllAsync(path, tmpFolder.Path, token);
+        return await RegisterFolderInternal(tmpFolder.Path, null, id, _fileStore.GetFileHashes(), archiveHash.Value, archiveSize, token);
     }
 
     /// <inheritdoc />
     public async ValueTask<DownloadId> RegisterFolder(AbsolutePath path, Action<ITransaction, EntityId> metaDataFn,
         CancellationToken token = default)
     {
-        return await RegisterFolderInternal(path, metaDataFn, _fileStore.GetFileHashes(), 0, 0, token);
+        return await RegisterFolderInternal(path, metaDataFn, null, _fileStore.GetFileHashes(), 0, 0, token);
     }
 
     /// <inheritdoc />
@@ -109,7 +125,9 @@ public class FileOriginRegistry : IFileOriginRegistry
                  .Select(id => db.Get<DownloadAnalysis.Model>(id));
     }
 
-    private async ValueTask<DownloadId> RegisterFolderInternal(AbsolutePath originalPath, Action<ITransaction, EntityId> metaDataFn, 
+    private async ValueTask<DownloadId> RegisterFolderInternal(AbsolutePath originalPath, 
+        Action<ITransaction, EntityId>? metaDataFn, 
+        EntityId? existingId,
         HashSet<ulong> knownHashes, ulong archiveHash, ulong archiveSize, CancellationToken token = default)
     {
         List<ArchivedFileEntry> filesToBackup = [];
@@ -161,12 +179,14 @@ public class FileOriginRegistry : IFileOriginRegistry
         using var tx = _conn.BeginTransaction();
         var analysis = new DownloadAnalysis.Model(tx)
         {
+            Id = existingId ?? tx.TempId(),
             Hash = Hash.From(archiveHash),
             Size = Size.From(archiveSize),
             Count = (ulong) files.Count,
         };
-        metaDataFn(tx, analysis.Id);
         
+        metaDataFn?.Invoke(tx, analysis.Id);
+
         foreach (var (path, file) in paths.Zip(files))
         {
             _ = new DownloadContentEntry.Model(tx)

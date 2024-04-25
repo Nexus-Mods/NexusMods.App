@@ -4,7 +4,10 @@ using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Activities;
+using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.HttpDownloader;
+using NexusMods.Abstractions.IO;
+using NexusMods.DataModel;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Networking.Downloaders.Tasks.State;
@@ -32,6 +35,7 @@ public abstract class ADownloadTask : ReactiveObject, IDownloadTask
     protected CancellationTokenSource CancellationTokenSource;
     protected TemporaryPath _downloadLocation = default!;
     protected IFileSystem FileSystem;
+    protected IFileOriginRegistry FileOriginRegistry;
     private DownloaderState.Model _persistentState = null!;
 
     protected ADownloadTask(IServiceProvider provider)
@@ -44,8 +48,11 @@ public abstract class ADownloadTask : ReactiveObject, IDownloadTask
         CancellationTokenSource = new CancellationTokenSource();
         ActivityFactory = provider.GetRequiredService<IActivityFactory>();
         FileSystem = provider.GetRequiredService<IFileSystem>();
+        FileOriginRegistry = provider.GetRequiredService<IFileOriginRegistry>();
     }
-    
+
+
+
     public void Init(DownloaderState.Model state)
     {
         PersistentState = state;
@@ -170,8 +177,22 @@ public abstract class ADownloadTask : ReactiveObject, IDownloadTask
         Logger.LogDebug("Dispatching download task for {Name}", PersistentState.FriendlyName);
         await Download(DownloadLocation, CancellationTokenSource.Token);
         UpdateActivity();
+        await SetStatus(DownloadTaskStatus.Analyzing);
+        Logger.LogInformation("Finished download of {Name} starting analysis", PersistentState.FriendlyName);
+        await AnalyzeFile();
         await SetStatus(DownloadTaskStatus.Completed);
-        Logger.LogInformation("Finished download of {Name}", PersistentState.FriendlyName);
+    }
+
+    private async Task AnalyzeFile()
+    {
+        try
+        {
+            await FileOriginRegistry.RegisterDownload(DownloadLocation, PersistentState.Id);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to analyze file {Name}", PersistentState.FriendlyName);
+        }
     }
 
     private async Task StartActivityUpdater()

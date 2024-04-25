@@ -240,6 +240,9 @@
     <data name="DownloadStatusDesignViewModel_FormatStatus_Complete" xml:space="preserve">
         <value>Complete</value>
     </data>
+    <data name="DownloadStatusDesignViewModel_FormatStatus_Analyzing" xml:space="preserve">
+        <value>Analyzing</value>
+    </data>
     <data name="DownloadStatusDesignViewModel_Text_Queued_0_" xml:space="preserve">
         <value>Queued 0%</value>
     </data>

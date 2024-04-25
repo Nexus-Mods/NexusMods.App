@@ -19,6 +19,7 @@ using NexusMods.App.UI.Pages.Downloads.ViewModels;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.Downloaders.Interfaces;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -27,7 +28,7 @@ namespace NexusMods.App.UI.Pages.Downloads;
 
 public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProgressViewModel
 {
-    internal const int PollTimeMilliseconds = 1000;
+    internal const int PollTimeMilliseconds = 100;
 
     private IObservable<Unit> Tick { get; set; } = Observable.Defer(() =>
         Observable.Interval(TimeSpan.FromMilliseconds(PollTimeMilliseconds))
@@ -36,12 +37,12 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
     /// <summary>
     /// For designTime and Testing, provides an alternative list of tasks to use.
     /// </summary>
-    protected readonly SourceList<IDownloadTaskViewModel> DesignTimeDownloadTasks = new();
+    protected readonly SourceCache<IDownloadTaskViewModel, EntityId> DesignTimeDownloadTasks = new(x => x.TaskId);
 
     private ReadOnlyObservableCollection<IDownloadTaskViewModel> _tasksObservable =
         new(new ObservableCollection<IDownloadTaskViewModel>());
 
-    private IObservable<IChangeSet<IDownloadTaskViewModel>> TaskSourceChangeSet { get; }
+    private IObservable<IChangeSet<IDownloadTaskViewModel, EntityId>> TaskSourceChangeSet { get; }
 
     public ReadOnlyObservableCollection<IDownloadTaskViewModel> Tasks => _tasksObservable;
 
@@ -82,8 +83,7 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
         IOverlayController overlayController) : base(windowManager)
     {
         TaskSourceChangeSet = downloadService.Downloads
-            .ToObservableChangeSet()
-
+            .ToObservableChangeSet(x => x.PersistentState.Id)
             .Transform(x =>
                 {
                     var vm = new DownloadTaskViewModel(x);
@@ -91,8 +91,8 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
                     return (IDownloadTaskViewModel)vm;
                 }
             )
-            .Filter(x => x.Status != DownloadTaskStatus.Completed && 
-                         x.Status != DownloadTaskStatus.Cancelled)
+            .FilterOnObservable((item, key) => item.WhenAnyValue(v => v.Status)
+                .Select(s => s != DownloadTaskStatus.Cancelled && s != DownloadTaskStatus.Completed))
             .DisposeMany()
             .OnUI();
 
@@ -177,7 +177,8 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
 
         this.WhenActivated(d =>
         {
-            TaskSourceChangeSet.Bind(out _tasksObservable)
+            TaskSourceChangeSet
+                .Bind(out _tasksObservable)
                 .Subscribe()
                 .DisposeWith(d);
 

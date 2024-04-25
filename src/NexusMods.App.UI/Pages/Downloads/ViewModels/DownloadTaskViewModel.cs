@@ -1,6 +1,7 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using NexusMods.App.UI.Resources;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.Downloaders.Interfaces;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -64,6 +65,8 @@ public class DownloadTaskViewModel : AViewModel<IDownloadTaskViewModel>, IDownlo
 
     [Reactive] public string Version { get; set; } = "";
     [Reactive] public string Game { get; set; } = "";
+    
+    public EntityId TaskId => _task.PersistentState.Id;
 
     [Reactive] public DownloadTaskStatus Status { get; set; } 
 

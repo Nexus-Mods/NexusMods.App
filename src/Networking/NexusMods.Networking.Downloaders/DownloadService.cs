@@ -12,6 +12,8 @@ using NexusMods.Networking.Downloaders.Tasks.State;
 using System.Reactive.Disposables;
 using DynamicData.Kernel;
 using NexusMods.Abstractions.Activities;
+using NexusMods.Abstractions.FileStore;
+using NexusMods.Abstractions.IO;
 using NexusMods.Paths;
 
 namespace NexusMods.Networking.Downloaders;
@@ -29,13 +31,15 @@ public class DownloadService : IDownloadService, IAsyncDisposable
     private readonly IConnection _conn;
     private bool _isDisposed;
     private readonly CompositeDisposable _disposables;
+    private readonly IFileStore _fileStore;
 
-    public DownloadService(ILogger<DownloadService> logger, IServiceProvider provider, IConnection conn)
+    public DownloadService(ILogger<DownloadService> logger, IServiceProvider provider, IFileStore fileStore, IConnection conn)
     {
         _logger = logger;
         _provider = provider;
         _conn = conn;
         _disposables = new CompositeDisposable();
+        _fileStore = fileStore;
 
         _conn.UpdatesFor(DownloaderState.Status)
             .Subscribe(x =>

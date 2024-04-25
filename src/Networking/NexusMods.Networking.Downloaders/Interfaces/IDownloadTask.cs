@@ -97,5 +97,10 @@ public enum DownloadTaskStatus : byte
     /// <summary>
     /// The download was canceled.
     /// </summary>
-    Cancelled
+    Cancelled,
+    
+    /// <summary>
+    /// The download is being extracted and analyzed.
+    /// </summary>
+    Analyzing,
 }

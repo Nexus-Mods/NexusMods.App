@@ -1,3 +1,4 @@
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.Downloaders.Interfaces;
 
 namespace NexusMods.App.UI.Pages.Downloads.ViewModels;
@@ -42,6 +43,11 @@ public interface IDownloadTaskViewModel : IViewModelInterface
     /// Current download speed of this task in bytes per second.
     /// </summary>
     public long Throughput { get; }
+    
+    /// <summary>
+    /// Unique identifier for this task.
+    /// </summary>
+    public EntityId TaskId { get; }
 
     /// <summary>
     /// Schedules a cancellation of the task.
