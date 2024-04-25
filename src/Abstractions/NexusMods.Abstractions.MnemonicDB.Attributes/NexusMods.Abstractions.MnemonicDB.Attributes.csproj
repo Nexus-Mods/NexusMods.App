@@ -11,4 +11,8 @@
       <ProjectReference Include="..\..\Extensions\NexusMods.Extensions.Hashing\NexusMods.Extensions.Hashing.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\NexusMods.Abstractions.GameLocators\NexusMods.Abstractions.GameLocators.csproj" />
+    </ItemGroup>
+
 </Project>

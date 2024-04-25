@@ -16,7 +16,7 @@ namespace NexusMods.App.UI.Controls.Spine.Buttons.Download;
 [UsedImplicitly]
 public class SpineDownloadButtonViewModel : AViewModel<ISpineDownloadButtonViewModel>, ISpineDownloadButtonViewModel
 {
-    private const int PollTimeMilliseconds = 1000;
+    private const int PollTimeMilliseconds = 100;
 
     private IObservable<Unit> Tick { get; } = Observable.Defer(() =>
         Observable.Interval(TimeSpan.FromMilliseconds(PollTimeMilliseconds))

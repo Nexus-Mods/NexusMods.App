@@ -1,4 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
+    <!-- NuGet Package Shared Details -->
+    <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
 
     <ItemGroup>
       <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.Games\NexusMods.Abstractions.Games.csproj" />
@@ -8,5 +10,6 @@
 
     <ItemGroup>
         <InternalsVisibleTo Include="NexusMods.Networking.Downloaders.Tests" />
+        <PackageReference Include="ReactiveUI.Fody"/>
     </ItemGroup>
 </Project>

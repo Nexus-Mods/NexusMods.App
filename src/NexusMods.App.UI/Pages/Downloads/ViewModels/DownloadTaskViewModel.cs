@@ -1,129 +1,80 @@
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using NexusMods.App.UI.Resources;
 using NexusMods.Networking.Downloaders.Interfaces;
-using NexusMods.Networking.Downloaders.Interfaces.Traits;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Pages.Downloads.ViewModels;
 
 public class DownloadTaskViewModel : AViewModel<IDownloadTaskViewModel>, IDownloadTaskViewModel
 {
-    public IDownloadTask Task => _task;
     private readonly IDownloadTask _task;
 
-    public DownloadTaskViewModel(IDownloadTask task, bool initPreviousStates = true)
+    public DownloadTaskViewModel(IDownloadTask task)
     {
         _task = task;
-
-        // Initialize the previous states
-        if (!initPreviousStates)
-            return;
-
-        _previousName = Name;
-        _previousVersion = Version;
-        _previousGame = Game;
-        _previousStatus = Status;
-        _previousDownloadedBytes = DownloadedBytes;
-        _previousSizeBytes = SizeBytes;
-        _previousThroughput = Throughput;
-    }
-
-    public string Name => _task.FriendlyName;
-
-    public string Version
-    {
-        get
+        
+        this.WhenActivated(d =>
         {
-             if (_task is IHaveDownloadVersion version)
-                 return version.Version;
+            _task.WhenAnyValue(t => t.PersistentState.FriendlyName)
+                .OnUI()
+                .Select(t => t)
+                .BindTo(this, x => x.Name)
+                .DisposeWith(d);
+            
+            _task.WhenAnyValue(t => t.PersistentState.Version)
+                .OnUI()
+                .BindTo(this, x => x.Version)
+                .DisposeWith(d);
 
-             return Language.DownloadTaskViewModel_Field_Unknown;
-        }
+            _task.WhenAnyValue(t => t.PersistentState.Status)
+                .OnUI()
+                .BindTo(this, x => x.Status)
+                .DisposeWith(d);
+
+            _task.WhenAnyValue(t => t.Downloaded)
+                .OnUI()
+                .Select(s => s.Value)
+                .BindTo(this, x => x.DownloadedBytes)
+                .DisposeWith(d);
+
+            _task.WhenAnyValue(t => t.PersistentState.Size)
+                .OnUI()
+                .Select(s => s.Value)
+                .BindTo(this, x => x.SizeBytes)
+                .DisposeWith(d);
+            
+            _task.WhenAnyValue(t => t.PersistentState.GameDomain)
+                .OnUI()
+                .Select(g => g.ToString())
+                .BindTo(this, x => x.Game)
+                .DisposeWith(d);
+
+            _task.WhenAnyValue(t => t.Bandwidth)
+                .OnUI()
+                .Select(b => b.Value)
+                .BindTo(this, x => x.Throughput)
+                .DisposeWith(d);
+
+        });
     }
 
-    public string Game
-    {
-        get
-        {
-            if (_task is IHaveGameName name)
-                return name.GameName;
+    [Reactive] public string Name { get; set; } = "";
 
-            return Language.DownloadTaskViewModel_Field_Unknown;
-        }
-    }
+    [Reactive] public string Version { get; set; } = "";
+    [Reactive] public string Game { get; set; } = "";
 
-    public DownloadTaskStatus Status => _task.Status;
+    [Reactive] public DownloadTaskStatus Status { get; set; } 
 
-    public long DownloadedBytes => _task.DownloadedSizeBytes;
+    [Reactive] public long DownloadedBytes { get; set; }
 
-    public long SizeBytes
-    {
-        get
-        {
-            if (_task is IHaveFileSize size)
-                return size.SizeBytes;
+    [Reactive] public long SizeBytes { get; set; }
 
-            return 0;
-        }
-    }
-
-    public long Throughput => _task.CalculateThroughput();
+    [Reactive] public long Throughput { get; set; }
 
     public void Cancel() => _task.Cancel();
     public void Suspend() => _task.Suspend();
     public void Resume() => _task.Resume();
-
-    // Polling implementation, for bridging the gap between a non-INotifyPropertyChanged implementation and
-    // live-updating ViewModel.
-    private string _previousName = string.Empty;
-    private string _previousVersion = string.Empty;
-    private string _previousGame = string.Empty;
-    private DownloadTaskStatus _previousStatus = DownloadTaskStatus.Idle;
-    private long _previousDownloadedBytes = 0;
-    private long _previousSizeBytes = 0;
-    private long _previousThroughput = 0;
-
-    public void Poll()
-    {
-        if (_previousName != Name)
-        {
-            _previousName = Name;
-            this.RaisePropertyChanged(nameof(Name));
-        }
-
-        if (_previousVersion != Version)
-        {
-            _previousVersion = Version;
-            this.RaisePropertyChanged(nameof(Version));
-        }
-
-        if (_previousGame != Game)
-        {
-            _previousGame = Game;
-            this.RaisePropertyChanged(nameof(Game));
-        }
-
-        if (_previousStatus != Status)
-        {
-            _previousStatus = Status;
-            this.RaisePropertyChanged(nameof(Status));
-        }
-
-        if (_previousDownloadedBytes != DownloadedBytes)
-        {
-            _previousDownloadedBytes = DownloadedBytes;
-            this.RaisePropertyChanged(nameof(DownloadedBytes));
-        }
-
-        if (_previousSizeBytes != SizeBytes)
-        {
-            _previousSizeBytes = SizeBytes;
-            this.RaisePropertyChanged(nameof(SizeBytes));
-        }
-
-        if (_previousThroughput != Throughput)
-        {
-            _previousThroughput = Throughput;
-            this.RaisePropertyChanged(nameof(Throughput));
-        }
-    }
+    
 }

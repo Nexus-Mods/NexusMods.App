@@ -42,7 +42,9 @@ public static class DependencyInjectionHelper
             .Combine($"NexusMods.Games.TestFramework-{Guid.NewGuid()}");
 
         return serviceCollection
-            .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug))
+            .AddLogging(builder => builder
+                .AddXUnit()
+                .SetMinimumLevel(LogLevel.Debug))
             .AddSingleton<JsonConverter, GameInstallationConverter>()
             .AddFileSystem()
             .AddSingleton<TemporaryFileManager>(_ => new TemporaryFileManager(FileSystem.Shared, prefix))

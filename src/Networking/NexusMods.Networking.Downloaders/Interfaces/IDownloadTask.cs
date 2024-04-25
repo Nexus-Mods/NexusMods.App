@@ -1,4 +1,8 @@
+using System.ComponentModel;
+using NexusMods.Abstractions.Activities;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.Downloaders.Tasks.State;
+using NexusMods.Paths;
 
 namespace NexusMods.Networking.Downloaders.Interfaces;
 
@@ -8,49 +12,45 @@ namespace NexusMods.Networking.Downloaders.Interfaces;
 public interface IDownloadTask
 {
     /// <summary>
-    /// Total size of items currently downloaded.
+    /// The DownloaderState of the task.
     /// </summary>
-    /// <returns>0 if unknown.</returns>
-    long DownloadedSizeBytes { get; }
-
+    DownloaderState.Model PersistentState { get; }
+    
+    /// <summary>
+    /// The download location of the task.
+    /// </summary>
+    public AbsolutePath DownloadLocation { get; }
+    
     /// <summary>
     /// Calculates the download speed of the current job.
     /// </summary>
     /// <returns>Current speed in terms of bytes per second.</returns>
-    long CalculateThroughput();
-
+    Bandwidth Bandwidth { get; }
+    
     /// <summary>
-    /// Service this task is associated with.
+    /// The amount of data downloaded so far.
     /// </summary>
-    IDownloadService Owner { get; }
-
+    Size Downloaded { get; }
+    
     /// <summary>
-    /// Status of the current task.
+    /// The percent completion of the task.
     /// </summary>
-    DownloadTaskStatus Status { get; set; }
-
-    /// <summary>
-    /// Friendly name for the task.
-    /// </summary>
-    /// <remarks>
-    ///     Only available after download has started.
-    /// </remarks>
-    public string FriendlyName { get; }
-
+    Percent Progress { get; }
+    
     /// <summary>
     /// Starts executing the task.
     /// </summary>
     Task StartAsync();
 
     /// <summary>
-    /// Cancels a download task.
+    /// Cancels a download task, this is a one-way operation.
     /// </summary>
-    void Cancel();
+    Task Cancel();
 
     /// <summary>
     /// Pauses a download task, by saving the current state and temporarily cancelling it.
     /// </summary>
-    void Suspend();
+    Task Suspend();
 
     /// <summary>
     /// Resumes a download task.
@@ -58,18 +58,16 @@ public interface IDownloadTask
     Task Resume();
 
     /// <summary>
-    /// Exports state for performing a suspend operation.
+    /// Reset (reload) the persistent state of the task from the database.
     /// </summary>
-    /// <remarks>Suspend means 'pause download by terminating it, leaving partial download intact'.</remarks>
-    DownloaderState ExportState();
+    /// <param name="db"></param>
+    void ResetState(IDb db);
 }
-
-// TODO: These statuses need unit tests for individual downloaders.
 
 /// <summary>
 /// Current status of the task.
 /// </summary>
-public enum DownloadTaskStatus
+public enum DownloadTaskStatus : byte
 {
     /// <summary>
     /// The task is not yet initialized.
@@ -94,5 +92,10 @@ public enum DownloadTaskStatus
     /// <summary>
     /// The task has ran to completion.
     /// </summary>
-    Completed
+    Completed,
+    
+    /// <summary>
+    /// The download was canceled.
+    /// </summary>
+    Cancelled
 }

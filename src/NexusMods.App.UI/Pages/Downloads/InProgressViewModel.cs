@@ -82,8 +82,18 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
         IOverlayController overlayController) : base(windowManager)
     {
         TaskSourceChangeSet = downloadService.Downloads
-            .Filter(x => x.Status != DownloadTaskStatus.Completed)
-            .Transform(x => (IDownloadTaskViewModel)new DownloadTaskViewModel(x))
+            .ToObservableChangeSet()
+
+            .Transform(x =>
+                {
+                    var vm = new DownloadTaskViewModel(x);
+                    vm.Activator.Activate();
+                    return (IDownloadTaskViewModel)vm;
+                }
+            )
+            .Filter(x => x.Status != DownloadTaskStatus.Completed && 
+                         x.Status != DownloadTaskStatus.Cancelled)
+            .DisposeMany()
             .OnUI();
 
         Init();
@@ -259,13 +269,6 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
     /// </summary>
     private void UpdateWindowInfo()
     {
-        // Poll Tasks
-        foreach (var task in Tasks)
-        {
-            if (task is DownloadTaskViewModel vm)
-                vm.Poll();
-        }
-
         // Update Window Info
         UpdateWindowInfoInternal();
     }

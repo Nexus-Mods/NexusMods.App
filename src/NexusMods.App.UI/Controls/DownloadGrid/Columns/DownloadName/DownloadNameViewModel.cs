@@ -19,10 +19,11 @@ public class DownloadNameViewModel : AViewModel<IDownloadNameViewModel>, IDownlo
         this.WhenActivated(d =>
         {
             this.WhenAnyValue(vm => vm.Row.Name)
-                .BindToUi(this, vm => vm.Name)
+                .BindTo(this, vm => vm.Name)
                 .DisposeWith(d);
         });
     }
 
-    public int Compare(IDownloadTaskViewModel a, IDownloadTaskViewModel b) => String.Compare(a.Name, b.Name, StringComparison.Ordinal);
+    public int Compare(IDownloadTaskViewModel a, IDownloadTaskViewModel b) => 
+        string.Compare(a.Name, b.Name, StringComparison.Ordinal);
 }

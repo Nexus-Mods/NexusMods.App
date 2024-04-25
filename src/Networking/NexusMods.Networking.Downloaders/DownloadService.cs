@@ -1,274 +1,153 @@
 using System.Collections.ObjectModel;
-using System.Reactive.Subjects;
 using DynamicData;
-using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.Activities;
-using NexusMods.Abstractions.FileStore;
-using NexusMods.Abstractions.FileStore.ArchiveMetadata;
-using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.HttpDownloader;
-using NexusMods.Abstractions.NexusWebApi;
+using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.Abstractions.NexusWebApi.Types;
-using NexusMods.Abstractions.Serialization;
-using NexusMods.Abstractions.Serialization.DataModel;
-using NexusMods.Abstractions.Serialization.DataModel.Ids;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.Downloaders.Interfaces;
-using NexusMods.Networking.Downloaders.Interfaces.Traits;
 using NexusMods.Networking.Downloaders.Tasks;
 using NexusMods.Networking.Downloaders.Tasks.State;
+using System.Reactive.Disposables;
+using DynamicData.Kernel;
+using NexusMods.Abstractions.Activities;
 using NexusMods.Paths;
 
 namespace NexusMods.Networking.Downloaders;
 
 /// <inheritdoc />
-public class DownloadService : IDownloadService
+public class DownloadService : IDownloadService, IAsyncDisposable
 {
     /// <inheritdoc />
-    public IObservable<IChangeSet<IDownloadTask>> Downloads => _tasksChangeSet;
+    public ReadOnlyObservableCollection<IDownloadTask> Downloads => _downloadsCollection;
+    private readonly ReadOnlyObservableCollection<IDownloadTask> _downloadsCollection;
 
-    private readonly SourceList<IDownloadTask> _tasks;
+    private readonly SourceCache<IDownloadTask, EntityId> _downloads = new(t => t.PersistentState.Id);
     private readonly ILogger<DownloadService> _logger;
     private readonly IServiceProvider _provider;
-    private readonly IDataStore _store;
-    private readonly Subject<IDownloadTask> _started = new();
-    private readonly Subject<IDownloadTask> _completed = new();
-    private readonly Subject<IDownloadTask> _cancelled = new();
-    private readonly Subject<IDownloadTask> _paused = new();
-    private readonly Subject<IDownloadTask> _resumed = new();
-    private readonly Subject<(IDownloadTask task, DownloadId analyzedHash, string modName)> _analyzed = new();
-    private readonly IObservable<IChangeSet<IDownloadTask>> _tasksChangeSet;
-    private readonly ReadOnlyObservableCollection<IDownloadTask> _currentDownloads;
-    private bool _isDisposed = false;
-    private readonly IFileOriginRegistry _fileOriginRegistry;
+    private readonly IConnection _conn;
+    private bool _isDisposed;
+    private readonly CompositeDisposable _disposables;
 
-    public DownloadService(ILogger<DownloadService> logger, IServiceProvider provider, IDataStore store, IFileOriginRegistry fileOriginRegistry)
+    public DownloadService(ILogger<DownloadService> logger, IServiceProvider provider, IConnection conn)
     {
         _logger = logger;
         _provider = provider;
-        _store = store;
-        _fileOriginRegistry = fileOriginRegistry;
+        _conn = conn;
+        _disposables = new CompositeDisposable();
 
-        _tasks = new SourceList<IDownloadTask>();
-        _tasksChangeSet = _tasks.Connect();
-        _tasksChangeSet.Bind(out _currentDownloads).Subscribe();
-        _tasks.AddRange(GetItemsToResume());
+        _conn.UpdatesFor(DownloaderState.Status)
+            .Subscribe(x =>
+            {
+                var (db, id) = x;
+                _downloads.Edit(e =>
+                {
+                    var found = e.Lookup(id);
+                    if (found.HasValue) 
+                        found.Value.ResetState(db);
+                    else
+                    {
+                        var task = GetTaskFromState(db.Get<DownloaderState.Model>(id));
+                        if (task == null)
+                            return;
+                        e.AddOrUpdate(task);
+                    }
+                });
+            })
+            .DisposeWith(_disposables);
+
+        _downloads.Connect()
+            .Bind(out _downloadsCollection)
+            .Subscribe()
+            .DisposeWith(_disposables);
     }
 
     internal IEnumerable<IDownloadTask> GetItemsToResume()
     {
-        return _store.AllIds(EntityCategory.DownloadStates)
-            .Select(id => _store.Get<DownloaderState>(id))
-            .Where(x => x != null && x.Status != DownloadTaskStatus.Completed)
-            .Select(state => GetTaskFromState(state!))
+        var db = _conn.Db;
+
+        var tasks = db.Find(DownloaderState.Status)
+            .Select(x => db.Get<DownloaderState.Model>(x))
+            .Where(x => x.Status != DownloadTaskStatus.Completed && 
+                             x.Status != DownloadTaskStatus.Cancelled)
+            .Select(GetTaskFromState)
             .Where(x => x != null)
             .Cast<IDownloadTask>();
+        return tasks;
     }
 
-    internal IDownloadTask? GetTaskFromState(DownloaderState state)
+    internal IDownloadTask? GetTaskFromState(DownloaderState.Model state)
     {
-        if (state.Status == DownloadTaskStatus.Completed)
-            return null;
-
-        switch (state.TypeSpecificData)
+        if (state.Contains(HttpDownloadState.Uri))
         {
-            case HttpDownloadState:
-            {
-                var task = new HttpDownloadTask(_provider.GetRequiredService<ILogger<HttpDownloadTask>>(), _provider.GetRequiredService<TemporaryFileManager>(), _provider.GetRequiredService<HttpClient>(), _provider.GetRequiredService<IHttpDownloader>(), this);
-                task.RestoreFromSuspend(state);
-                return task;
-            }
-            case NxmDownloadState:
-            {
-                var task = new NxmDownloadTask(_provider.GetRequiredService<TemporaryFileManager>(), _provider.GetRequiredService<INexusApiClient>(), _provider.GetRequiredService<IHttpDownloader>(), this);
-                task.RestoreFromSuspend(state);
-                return task;
-            }
-            default:
-            {
-                _logger.LogError("Unrecognised Type Specific Data. {StateTypeSpecificData}", state.TypeSpecificData);
-                return null;
-            }
+            var httpState = _provider.GetRequiredService<HttpDownloadTask>();
+            httpState.Init(state);
+            return httpState;
+        }
+        else if (state.Contains(NxmDownloadState.ModId))
+        {
+            var nxmState = _provider.GetRequiredService<NxmDownloadTask>();
+            nxmState.Init(state);
+            return nxmState;
+        }
+        else
+        {
+            throw new InvalidOperationException("Unknown download task type: " + state);
         }
     }
-
+    
     /// <inheritdoc />
-    public IObservable<IDownloadTask> StartedTasks => _started;
-
-    /// <inheritdoc />
-    public IObservable<IDownloadTask> CompletedTasks => _completed;
-
-    /// <inheritdoc />
-    public IObservable<IDownloadTask> CancelledTasks => _cancelled;
-
-    /// <inheritdoc />
-    public IObservable<IDownloadTask> PausedTasks => _paused;
-
-    /// <inheritdoc />
-    public IObservable<IDownloadTask> ResumedTasks => _resumed;
-
-    /// <inheritdoc />
-    public IObservable<(IDownloadTask task, DownloadId downloadId, string modName)> AnalyzedArchives => _analyzed;
-
-    /// <inheritdoc />
-    public Task AddNxmTask(NXMUrl url)
+    public async Task<IDownloadTask> AddTask(NXMModUrl url)
     {
+        _logger.LogInformation("Adding task for {Url}", url);
         var task = _provider.GetRequiredService<NxmDownloadTask>();
-        task.Init(url);
-        return AddTask(task);
+        await task.Create(url);
+        return _downloads.Lookup(task.PersistentState.Id).Value;
     }
 
     /// <inheritdoc />
-    public Task AddHttpTask(string url)
+    public async Task<IDownloadTask> AddTask(Uri url)
     {
         var task = _provider.GetRequiredService<HttpDownloadTask>();
-        task.Init(url);
-        return AddTask(task);
+        await task.Create(url);
+        return _downloads.Lookup(task.PersistentState.Id).Value;
     }
-
-    /// <inheritdoc />
-    public Task AddTask(IDownloadTask task)
-    {
-        AddTaskWithoutStarting(task);
-        var item = task.StartAsync();
-        return item;
-    }
-
-    // For test use, too.
-    internal void AddTaskWithoutStarting(IDownloadTask task)
-    {
-        _tasks.Add(task);
-        _started.OnNext(task);
-        PersistOnStart(task);
-    }
-
-    /// <inheritdoc />
-    public void OnComplete(IDownloadTask task)
-    {
-        UpdateInDatastore(task);
-        _tasks.Remove(task);
-        _completed.OnNext(task);
-    }
-
-    /// <inheritdoc />
-    public void OnCancelled(IDownloadTask task)
-    {
-        DeleteFromDatastore(task);
-        _tasks.Remove(task);
-        _cancelled.OnNext(task);
-    }
-
-    /// <inheritdoc />
-    public void OnPaused(IDownloadTask task)
-    {
-        _paused.OnNext(task);
-        UpdatePersistedState(task);
-    }
-
-    /// <inheritdoc />
-    public void OnResumed(IDownloadTask task) => _resumed.OnNext(task);
 
     /// <inheritdoc />
     public Size GetThroughput()
     {
-        var totalThroughput = 0L;
-        foreach (var download in _currentDownloads)
-            totalThroughput += download.CalculateThroughput();
-
-        return Size.FromLong(totalThroughput);
+        return _downloads.Items
+            .Aggregate(Size.Zero, (acc, x) => acc + Size.From(x.Bandwidth.Value));
     }
 
     /// <inheritdoc />
     public Optional<Percent> GetTotalProgress()
     {
-        long totalDownloadedBytes = 0;
-        long totalSizeBytes = 0;
-        var active = false;
-
-        foreach (var dl in _currentDownloads.Where(x => x.Status == DownloadTaskStatus.Downloading))
-        {
-            // Only compute percent for downloads that have a known size
-            if (dl is not IHaveFileSize size) continue;
-
-            totalSizeBytes += size.SizeBytes;
-            totalDownloadedBytes += dl.DownloadedSizeBytes;
-            active = true;
-        }
-
-        if (!active || totalSizeBytes == 0 || totalSizeBytes <= totalDownloadedBytes)
-        {
-            return Optional.None<Percent>();
-        }
-
-        return new Percent(totalDownloadedBytes / (double) totalSizeBytes);
+        var tasks = _downloads.Items
+            .Where(i => i.PersistentState.Status == DownloadTaskStatus.Downloading)
+            .ToArray();
+        
+        if (tasks.Length == 0)
+            return Optional<Percent>.None;
+        
+        var total = tasks
+            .Aggregate(0.0, (acc, x) => acc + x.Progress.Value);
+        return Optional<Percent>.Create(Percent.CreateClamped(total / tasks.Length));
     }
 
-    /// <inheritdoc />
-    public void UpdatePersistedState(IDownloadTask task) => UpdateInDatastore(task);
-
-    /// <inheritdoc />
-    public async Task FinalizeDownloadAsync(IDownloadTask task, TemporaryPath path, string modName)
-    {
-        task.Status = DownloadTaskStatus.Installing;
-
-        try
-        {
-            // TODO: Fix this so we properly log NexusMods info with Nexus metadata.
-            var downloadId = await _fileOriginRegistry.RegisterDownload(path.Path);
-            _analyzed.OnNext((task, downloadId, modName));
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, "Failed to analyze archive, {Message}\n{Stacktrace}", e.Message, e.StackTrace);
-            throw;
-        }
-        finally
-        {
-            // Make sure we don't leave anything dangling on disk!
-            await path.DisposeAsync();
-
-            // Maybe add a failed state; we don't have UI designs for this however.
-            task.Status = DownloadTaskStatus.Completed;
-            OnComplete(task);
-        }
-    }
-
-    private void PersistOnStart(IDownloadTask task)
-    {
-        var state = task.ExportState();
-        _store.Put(new IdVariableLength(EntityCategory.DownloadStates, state.DownloadPath), state);
-    }
-
-    private void DeleteFromDatastore(IDownloadTask task)
-    {
-        _store.Delete(new IdVariableLength(EntityCategory.DownloadStates, task.ExportState().DownloadPath));
-    }
-
-    private void UpdateInDatastore(IDownloadTask task)
-    {
-        // Note: It's easier to re-generate state rather than updating existing instance.
-        var state = task.ExportState();
-        _store.Delete(new IdVariableLength(EntityCategory.DownloadStates, state.DownloadPath));
-        _store.Put(new IdVariableLength(EntityCategory.DownloadStates, state.DownloadPath), state);
-    }
-
-    public void Dispose()
+    public async ValueTask DisposeAsync()
     {
         if (_isDisposed)
             return;
-
-        // Pause all tasks, which persists them to datastore.
-        foreach (var task in _currentDownloads)
-            task.Suspend();
-
+        
+        _disposables.Dispose();
+        
+        foreach (var download in _downloads.Items)
+        {
+            if (download.PersistentState.Status == DownloadTaskStatus.Downloading)
+                await download.Cancel();
+        }
         _isDisposed = true;
-        _tasks.Dispose();
-        _started.Dispose();
-        _completed.Dispose();
-        _cancelled.Dispose();
-        _paused.Dispose();
-        _resumed.Dispose();
-        _analyzed.Dispose();
     }
 }

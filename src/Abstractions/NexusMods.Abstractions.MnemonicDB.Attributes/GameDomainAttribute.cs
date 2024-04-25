@@ -2,7 +2,7 @@ using NexusMods.Abstractions.Games.DTO;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 
-namespace NexusMods.DataModel.Attributes;
+namespace NexusMods.Abstractions.MnemonicDB.Attributes;
 
 /// <summary>
 /// MnemonicDB attribute for the GameDomain type.
