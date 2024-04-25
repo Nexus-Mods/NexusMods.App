@@ -840,6 +840,46 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// <inheritdoc />
     public async Task UnManage(GameInstallation installation)
     {
+        await ResetToInitialState(installation);
+        foreach (var loadoutId in _loadoutRegistry.AllLoadoutIds().ToArray())
+            _loadoutRegistry.Delete(loadoutId);
+        
+        // Now clear the vanilla game state.
+        // We don't want the user's folder to reset.
+        await _diskStateRegistry.ClearInitialState(installation);
+    }
+
+    /// <inheritdoc />
+    public async Task DeleteLoadout(GameInstallation installation, LoadoutId id)
+    {
+        var lastAppliedLoadoutId = _diskStateRegistry.GetLastAppliedLoadout(installation);
+
+        // Check if the loadout being deleted is the currently active loadout
+        if (lastAppliedLoadoutId != null && lastAppliedLoadoutId.Equals(_loadoutRegistry.GetId(id)))
+        {
+            /*
+                Note(Sewer)
+             
+                The loadout being deleted is the currently active loadout
+                As a 'default' reasonable behaviour, we will reset the game folder
+                to its initial state. This is a good default as in most cases, 
+                game files are not likely to be overwritten, so this will just
+                end up materialising into a bunch of deletes. (Very Fast)
+               
+                In the future, we may make a setting to change the behaviour,
+                if for example the user wants it to revert to last applied loadout
+                that isn't the one being deleted.
+            */
+
+            await ResetToInitialState(installation);
+        }
+
+        // Delete the loadout from the LoadoutRegistry
+        _loadoutRegistry.Delete(id);
+    }
+
+    private async Task ResetToInitialState(GameInstallation installation)
+    {
         // Apply initial disk state.
         var (isCached, initialState) = await GetOrCreateInitialDiskState(installation);
         if (!isCached)
@@ -873,13 +913,6 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         var flattened = ModsToFlattenedLoadout([gameFilesMod]);
         var prevState = _diskStateRegistry.GetState(installation)!;
         await FileTreeToDisk(fileTree, null, flattened, prevState, installation, true);
-        
-        foreach (var loadoutId in _loadoutRegistry.AllLoadoutIds().ToArray())
-            _loadoutRegistry.Delete(loadoutId);
-        
-        // Now clear the vanilla game state.
-        // We don't want the user's folder to reset.
-        await _diskStateRegistry.ClearInitialState(installation);
     }
 
 #endregion

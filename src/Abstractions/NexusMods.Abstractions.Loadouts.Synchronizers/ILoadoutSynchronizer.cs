@@ -64,6 +64,19 @@ public interface ILoadoutSynchronizer
     Task<Loadout> CreateLoadout(GameInstallation installation, string? suggestedName=null);
 
     /// <summary>
+    /// Deletes the loadout for the game. If the loadout is the currently active loadout,
+    /// the game's folder will be reset to its initial state.
+    /// </summary>
+    /// <param name="installation">The installation for which the loadout should be deleted.</param>
+    /// <param name="loadoutId">Unique identifier for the loadout.</param>
+    /// <returns></returns>
+    /// <remarks>
+    ///     If there is only one loadout for this game, the initial game state is removed,
+    ///     in other words, a full <see cref="UnManage"/> is performed.
+    /// </remarks>
+    Task DeleteLoadout(GameInstallation installation, LoadoutId loadoutId);
+
+    /// <summary>
     /// Removes all of the loadouts for a game, an resets the game folder to its
     /// initial state.
     /// </summary>
