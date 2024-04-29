@@ -170,7 +170,7 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
         var newTabPage = _factoryController.Create(pageData, WindowId, WorkspaceId, Id, tabId: Optional<PanelTabId>.None);
         var tab = new PanelTabViewModel
         {
-            Contents = newTabPage
+            Contents = newTabPage,
         };
 
         newTabPage.ViewModel.TabId = tab.Id;

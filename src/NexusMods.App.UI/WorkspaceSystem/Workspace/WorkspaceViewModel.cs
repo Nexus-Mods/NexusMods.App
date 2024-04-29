@@ -343,6 +343,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         // Replace the tab contents
         var newTabPage = _factoryController.Create(pageData, WindowId, Id, panel.Id, tab.Id);
         tab.Contents = newTabPage;
+        tab.Header.Icon = newTabPage.ViewModel.Icon;
 
         if (selectTab) panel.SelectTab(tab.Id);
         panel.SelectTab(tab.Id);
