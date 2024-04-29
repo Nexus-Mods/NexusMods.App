@@ -37,17 +37,13 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
             new ObservableCollection<IFileOriginEntryViewModel>(
                 allFileOrigins.Select(fileOrigin =>
                     {
-                        RelativePath name = fileOrigin.Contains(DownloadAnalysis.SuggestedName)
-                            ? fileOrigin.Get(DownloadAnalysis.SuggestedName)
-                            : fileOrigin.Get(FilePathMetadata.OriginalName);
-
                         return new FileOriginEntryViewModel
                         {
-                            Name = name,
+                            Name = fileOrigin.SuggestedName,
                             Size = fileOrigin.Size,
                             AddToLoadoutCommand = ReactiveCommand.CreateFromTask(async () =>
                                 {
-                                    await archiveInstaller.AddMods(LoadoutId, fileOrigin, name);
+                                    await archiveInstaller.AddMods(LoadoutId, fileOrigin);
                                 }
                             ),
                         };

@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.FileStore;
+using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.HttpDownloader;
 using NexusMods.Abstractions.IO;
 using NexusMods.DataModel;
@@ -194,6 +195,11 @@ public abstract class ADownloadTask : ReactiveObject, IDownloadTask
     {
         try
         {
+            // Set the download's name for the mod library
+            using var tx = Connection.BeginTransaction();
+            tx.Add(PersistentState.Id, DownloadAnalysis.SuggestedName, PersistentState.FriendlyName);
+            await tx.Commit();
+            
             await FileOriginRegistry.RegisterDownload(DownloadLocation, PersistentState.Id);
         }
         catch (Exception ex)

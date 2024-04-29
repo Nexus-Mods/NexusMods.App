@@ -162,6 +162,19 @@ public class NexusApiClient : INexusApiClient
             $"https://api.nexusmods.com/v1/games/{domain}/mods/{modId}/files.json"));
         return await SendAsync<ModFiles>(msg, token);
     }
+    
+    
+    /// <summary>
+    /// Returns information about a specific mod.
+    /// </summary>
+    public async Task<Response<ModInfo>> ModInfoAsync(string domain, ModId modId, CancellationToken token = default)
+    {
+        var msg = await _factory.Create(HttpMethod.Get, new Uri(
+            $"https://api.nexusmods.com/v1/games/{domain}/mods/{modId}.json"));
+        return await SendAsync<ModInfo>(msg, token);
+    }
+    
+    
 
     private async Task<Response<T>> SendAsync<T>(HttpRequestMessage message,
         CancellationToken token = default) where T : IJsonSerializable<T>

@@ -177,14 +177,17 @@ public class FileOriginRegistry : IFileOriginRegistry
 
         _logger.LogInformation("Calculating metadata");
         using var tx = _conn.BeginTransaction();
+        
+
         var analysis = new DownloadAnalysis.Model(tx)
         {
             Id = existingId ?? tx.TempId(),
+            
             Hash = Hash.From(archiveHash),
             Size = Size.From(archiveSize),
             Count = (ulong) files.Count,
         };
-        
+
         metaDataFn?.Invoke(tx, analysis.Id);
 
         foreach (var (path, file) in paths.Zip(files))

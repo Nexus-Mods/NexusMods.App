@@ -79,6 +79,15 @@ public static class DownloadAnalysis
         }
 
         /// <summary>
+        /// The human-readable, friendly name for this download
+        /// </summary>
+        public string SuggestedName
+        {
+            get => DownloadAnalysis.SuggestedName.Get(this, "<Unknown>");
+            set => DownloadAnalysis.SuggestedName.Add(this, value);
+        }
+
+        /// <summary>
         /// The contents of the download
         /// </summary>
         public Entities<EntityIds, DownloadContentEntry.Model> Contents

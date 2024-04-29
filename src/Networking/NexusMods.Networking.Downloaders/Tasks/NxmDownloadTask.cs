@@ -84,13 +84,19 @@ public class NxmDownloadTask : ADownloadTask
             var fileInfos = await _nexusApiClient.ModFilesAsync(nxState.Game, nxState.ModId, token);
 
             var file = fileInfos.Data.Files.FirstOrDefault(f => f.FileId == nxState.FileId);
+            
+            var info = await _nexusApiClient.ModInfoAsync(nxState.Game, nxState.ModId, token);
 
 
             var eid = PersistentState.Id;
             if (file is { SizeInBytes: not null })
             {
                 using var tx = Connection.BeginTransaction();
-                tx.Add(eid, DownloaderState.FriendlyName, file.FileName);
+                if (info.Data.Name is not null)
+                    tx.Add(eid, DownloaderState.FriendlyName, info.Data.Name + " " + file.FileName);
+                else
+                    tx.Add(eid, DownloaderState.FriendlyName, file.FileName);
+                
                 tx.Add(eid, DownloaderState.Size, Size.FromLong(file.SizeInBytes!.Value));
                 tx.Add(eid, DownloaderState.Version, file.Version);
                 var result = await tx.Commit();
