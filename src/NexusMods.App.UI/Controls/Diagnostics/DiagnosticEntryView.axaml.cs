@@ -20,7 +20,7 @@ public partial class DiagnosticEntryView : ReactiveUserControl<IDiagnosticEntryV
                 .Subscribe()
                 .DisposeWith(d);
 
-            this.OneWayBind(ViewModel, vm => vm.SeeDetailsCommand, view => view.EntryButton.Command)
+            this.BindCommand(ViewModel, vm => vm.SeeDetailsCommand, view => view.EntryButton)
                 .DisposeWith(d);
         });
     }

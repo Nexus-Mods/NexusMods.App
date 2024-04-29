@@ -270,9 +270,6 @@
         <Compile Update="WorkspaceSystem\PanelTab\PanelTabViewModel.cs">
           <DependentUpon>IPanelTabViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Controls\Dummy\DummyViewModel.cs">
-          <DependentUpon>IDummyViewModel.cs</DependentUpon>
-        </Compile>
         <Compile Update="WorkspaceSystem\PanelTabHeader\PanelTabHeaderViewModel.cs">
           <DependentUpon>IPanelTabHeaderViewModel.cs</DependentUpon>
         </Compile>
@@ -520,6 +517,15 @@
         </Compile>
         <Compile Update="Pages\Changelog\ChangelogPageViewModel.cs">
           <DependentUpon>IChangelogPageViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="WorkspaceSystem\NewTabPage\NewTabPageSectionItemViewModel.cs">
+          <DependentUpon>INewTabPageSectionItemViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="WorkspaceSystem\NewTabPage\NewTabPageSectionViewModel.cs">
+          <DependentUpon>INewTabPageSectionViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="ImageCache.cs">
+          <DependentUpon>IImageCache.cs</DependentUpon>
         </Compile>
     </ItemGroup>
 

@@ -13,8 +13,7 @@ public class PanelTabHeaderViewModel : AViewModel<IPanelTabHeaderViewModel>, IPa
     [Reactive]
     public string Title { get; set; } = Language.PanelTabHeaderViewModel_Title_New_Tab;
 
-    [Reactive]
-    public IconValue? Icon { get; set; }
+    [Reactive] public IconValue Icon { get; set; } = new();
 
     [Reactive] public bool CanClose { get; set; }
 

@@ -1,5 +1,5 @@
-using System.Reactive;
 using NexusMods.Abstractions.Diagnostics;
+using NexusMods.App.UI.Controls.Navigation;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Controls.Diagnostics;
@@ -12,11 +12,11 @@ public class DiagnosticEntryViewModel : AViewModel<IDiagnosticEntryViewModel>, I
         Diagnostic = diagnostic;
         Summary = diagnostic.FormatSummary(writer);
         Severity = diagnostic.Severity;
-        SeeDetailsCommand = ReactiveCommand.Create(() => diagnostic);
+        SeeDetailsCommand = ReactiveCommand.Create<NavigationInformation, ValueTuple<Diagnostic, NavigationInformation>>(info => (diagnostic, info));
     }
 
     public Diagnostic Diagnostic { get; }
     public string Summary { get; }
     public DiagnosticSeverity Severity { get; }
-    public ReactiveCommand<Unit, Diagnostic> SeeDetailsCommand { get; }
+    public ReactiveCommand<NavigationInformation, ValueTuple<Diagnostic, NavigationInformation>> SeeDetailsCommand { get; }
 }

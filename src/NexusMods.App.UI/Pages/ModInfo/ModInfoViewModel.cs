@@ -43,7 +43,7 @@ public class ModInfoViewModel : APageViewModel<IModInfoViewModel>, IModInfoViewM
         
         this.WhenActivated(delegate(CompositeDisposable dp)
         {
-            GetWorkspaceController().SetTabTitle(GetModName(out _isInvalid), WorkspaceId, PanelId, TabId);
+            TabTitle = GetModName(out _isInvalid);
             if (_isInvalid)
             {
                 SectionViewModel = new DummyErrorViewModel();

@@ -52,6 +52,13 @@ public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewM
             .WhereNotNull()
             .Select(optionVM => optionVM.Option.Image)
             .WhereNotNull()
+            .Select(optionImage =>
+            {
+                return optionImage.Match(
+                    f0: uri => new ImageIdentifier(uri),
+                    f1: imageStoredFile => new ImageIdentifier(imageStoredFile.FileHash)
+                );
+            })
             .OffUi()
             .SelectMany(imageCache.GetImage)
             .WhereNotNull()

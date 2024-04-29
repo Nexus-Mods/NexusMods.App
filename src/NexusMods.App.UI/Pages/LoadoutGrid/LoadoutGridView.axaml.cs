@@ -1,4 +1,5 @@
 ﻿using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using Avalonia.ReactiveUI;
@@ -17,28 +18,33 @@ public partial class LoadoutGridView : ReactiveUserControl<ILoadoutGridViewModel
         this.WhenActivated(d =>
         {
             this.WhenAnyValue(view => view.ViewModel!.Mods)
-                .BindToUi(this, view => view.ModsDataGrid.ItemsSource)
+                .BindToView(this, view => view.ModsDataGrid.ItemsSource)
                 .DisposeWith(d);
 
-            var isItemSelected = this.WhenAnyValue(
-                view => view.ModsDataGrid.SelectedIndex,
-                (selectedIndex) => selectedIndex >= 0);
-            
-            AddModButton.Command =
-                ReactiveCommand.CreateFromTask(AddMod);
-
-            AddModAdvancedButton.Command =
-                ReactiveCommand.CreateFromTask(AddModAdvanced);
-
-            DeleteModsButton.Command =
-                ReactiveCommand.CreateFromTask(DeleteSelectedMods, isItemSelected);
-            
-            ViewModFilesButton.Command =
-                ReactiveCommand.Create(ViewModContents, isItemSelected);
+            this.BindCommand(ViewModel, vm => vm.ViewModContentsCommand, view => view.ViewModFilesButton)
+                .DisposeWith(d);
 
             this.WhenAnyValue(view => view.ViewModel!.Columns)
                 .GenerateColumns(ModsDataGrid)
                 .DisposeWith(d);
+
+            Observable.FromEventPattern<SelectionChangedEventArgs>(
+                addHandler => ModsDataGrid.SelectionChanged += addHandler,
+                removeHandler => ModsDataGrid.SelectionChanged -= removeHandler)
+                .Select(_ => ModsDataGrid.SelectedItems.Cast<ModCursor>().ToArray())
+                .BindTo(ViewModel, vm => vm.SelectedItems)
+                .DisposeWith(d);
+
+            // TODO: remove these commands and move all of this into the ViewModel
+            var isItemSelected = this.WhenAnyValue(
+                view => view.ModsDataGrid.SelectedIndex,
+                (selectedIndex) => selectedIndex >= 0);
+
+            AddModButton.Command = ReactiveCommand.CreateFromTask(AddMod);
+
+            AddModAdvancedButton.Command = ReactiveCommand.CreateFromTask(AddModAdvanced);
+
+            DeleteModsButton.Command = ReactiveCommand.CreateFromTask(DeleteSelectedMods, isItemSelected);
         });
     }
 
@@ -84,21 +90,6 @@ public partial class LoadoutGridView : ReactiveUserControl<ILoadoutGridViewModel
             toDelete.Add(modCursor.ModId);
         }
         await ViewModel!.DeleteMods(toDelete, "Deleted by user via UI.");
-    }
-    
-    private void ViewModContents()
-    {
-        if (ModsDataGrid.SelectedIndex == -1)
-            return;
-
-        var toView = new List<ModId>();
-        foreach (var row in ModsDataGrid.SelectedItems)
-        {
-            if (row is not ModCursor modCursor) continue;
-            toView.Add(modCursor.ModId);
-        }
-
-        ViewModel!.ViewModContents(toView);
     }
 }
 

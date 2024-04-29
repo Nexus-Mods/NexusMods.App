@@ -1,9 +1,20 @@
 using NexusMods.App.UI.Windows;
+using NexusMods.Icons;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
 public interface IPageViewModelInterface : IViewModelInterface
 {
+    /// <summary>
+    /// Gets or sets the icon of this page to be shown in the tab header.
+    /// </summary>
+    public IconValue TabIcon { get; }
+
+    /// <summary>
+    /// Gets or sets the title of this page in the tab header.
+    /// </summary>
+    public string TabTitle { get; }
+
     /// <summary>
     /// Gets or sets the ID of the window this page is in.
     /// </summary>

@@ -1,10 +1,12 @@
 ﻿using System.Collections.ObjectModel;
+using System.Reactive;
 using System.Reactive.Disposables;
 using Avalonia.Controls;
 using DynamicData;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.App.UI.Controls.DataGrid;
+using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModCategory;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModEnabled;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModInstalled;
@@ -21,8 +23,7 @@ using ModVersionView = NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModVersion.Mod
 
 namespace NexusMods.App.UI.Pages.LoadoutGrid;
 
-public class LoadoutGridDesignViewModel : APageViewModel<ILoadoutGridViewModel>,
-    ILoadoutGridViewModel
+public class LoadoutGridDesignViewModel : APageViewModel<ILoadoutGridViewModel>, ILoadoutGridViewModel
 {
     private readonly SourceCache<ModCursor, ModId> _mods;
 
@@ -41,6 +42,10 @@ public class LoadoutGridDesignViewModel : APageViewModel<ILoadoutGridViewModel>,
     public string LoadoutName => "My Test Loadout";
 
     public ReadOnlyObservableCollection<IDataGridColumnFactory<LoadoutColumn>> Columns => _filteredColumns;
+    public int SelectedIndex { get; set; }
+    public ModCursor[] SelectedItems { get; set; } = Array.Empty<ModCursor>();
+
+    public ReactiveCommand<NavigationInformation, Unit> ViewModContentsCommand { get; } = ReactiveCommand.Create<NavigationInformation>(_ => { });
 
     public Task AddMod(string path)
     {
@@ -77,11 +82,6 @@ public class LoadoutGridDesignViewModel : APageViewModel<ILoadoutGridViewModel>,
             }
         });
         return Task.CompletedTask;
-    }
-
-    public void ViewModContents(List<ModId> toView)
-    {
-        throw new NotImplementedException();
     }
 
     public LoadoutGridDesignViewModel() : base(DesignWindowManager.Instance)
