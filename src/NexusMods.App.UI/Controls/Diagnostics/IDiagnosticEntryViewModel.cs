@@ -1,5 +1,6 @@
 using System.Reactive;
 using NexusMods.Abstractions.Diagnostics;
+using NexusMods.App.UI.Controls.Navigation;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Controls.Diagnostics;
@@ -12,6 +13,6 @@ public interface IDiagnosticEntryViewModel : IViewModelInterface
     
     DiagnosticSeverity Severity { get; }
     
-    ReactiveCommand<Unit, Diagnostic> SeeDetailsCommand { get; }
+    ReactiveCommand<NavigationInformation, ValueTuple<Diagnostic, NavigationInformation>> SeeDetailsCommand { get; }
 }
 

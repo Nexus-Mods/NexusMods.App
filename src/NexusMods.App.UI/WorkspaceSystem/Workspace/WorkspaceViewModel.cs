@@ -377,6 +377,8 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
 
     private void OpenPageInNewPanel(PageData pageData, OpenPageBehavior.NewPanel newPanel)
     {
+        if (Panels.Count == MaxPanelCount) return;
+
         var optionalNewWorkspaceState = newPanel.NewWorkspaceState;
         var newWorkspaceState = optionalNewWorkspaceState.ValueOr(() =>
         {

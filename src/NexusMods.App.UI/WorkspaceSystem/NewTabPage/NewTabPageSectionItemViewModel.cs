@@ -1,5 +1,5 @@
-using System.Reactive;
 using Avalonia.Media;
+using NexusMods.App.UI.Controls.Navigation;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
@@ -12,7 +12,7 @@ public class NewTabPageSectionItemViewModel : AViewModel<INewTabPageSectionItemV
 
     public IImage? Icon { get; }
 
-    public ReactiveCommand<Unit, PageData> SelectItemCommand { get; }
+    public ReactiveCommand<NavigationInformation, ValueTuple<PageData, NavigationInformation>> SelectItemCommand { get; }
 
     public NewTabPageSectionItemViewModel(PageDiscoveryDetails details)
     {
@@ -20,6 +20,6 @@ public class NewTabPageSectionItemViewModel : AViewModel<INewTabPageSectionItemV
         Name = details.ItemName;
         Icon = null;
 
-        SelectItemCommand = ReactiveCommand.Create(() => details.PageData);
+        SelectItemCommand = ReactiveCommand.Create<NavigationInformation, ValueTuple<PageData, NavigationInformation>>(info => (details.PageData, info));
     }
 }

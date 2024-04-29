@@ -1,19 +1,19 @@
 using System.Collections.ObjectModel;
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Controls;
 using DynamicData;
-using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.FileStore.ArchiveMetadata;
-using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.App.UI.Controls.DataGrid;
+using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModCategory;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModEnabled;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModInstalled;
@@ -28,22 +28,12 @@ using NexusMods.Icons;
 using NexusMods.Paths;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using static NexusMods.App.UI.WorkspaceSystem.OpenPageBehavior;
 
 namespace NexusMods.App.UI.Pages.LoadoutGrid;
 
 [UsedImplicitly]
 public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoadoutGridViewModel
 {
-    [Reactive]
-    public LoadoutId LoadoutId { get; set; }
-
-    private ReadOnlyObservableCollection<ModCursor> _mods;
-    public ReadOnlyObservableCollection<ModCursor> Mods => _mods;
-
-
-    private readonly SourceCache<IDataGridColumnFactory<LoadoutColumn> ,LoadoutColumn> _columns;
-    private ReadOnlyObservableCollection<IDataGridColumnFactory<LoadoutColumn>> _filteredColumns = new(new ObservableCollection<IDataGridColumnFactory<LoadoutColumn>>());
     private readonly IFileSystem _fileSystem;
     private readonly ILogger<LoadoutGridViewModel> _logger;
     private readonly ILoadoutRegistry _loadoutRegistry;
@@ -51,9 +41,19 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
     private readonly IFileOriginRegistry _fileOriginRegistry;
     private readonly IServiceProvider _provider;
 
-    [Reactive]
-    public string LoadoutName { get; set; } = "";
+    private ReadOnlyObservableCollection<ModCursor> _mods;
+    public ReadOnlyObservableCollection<ModCursor> Mods => _mods;
+
+    private readonly SourceCache<IDataGridColumnFactory<LoadoutColumn> ,LoadoutColumn> _columns;
+
+    private ReadOnlyObservableCollection<IDataGridColumnFactory<LoadoutColumn>> _filteredColumns = new(new ObservableCollection<IDataGridColumnFactory<LoadoutColumn>>());
     public ReadOnlyObservableCollection<IDataGridColumnFactory<LoadoutColumn>> Columns => _filteredColumns;
+
+    [Reactive] public LoadoutId LoadoutId { get; set; }
+    [Reactive] public string LoadoutName { get; set; } = "";
+
+    [Reactive] public ModCursor[] SelectedItems { get; set; } = Array.Empty<ModCursor>();
+    public ReactiveCommand<NavigationInformation, Unit> ViewModContentsCommand { get; }
 
     public LoadoutGridViewModel(
         ILogger<LoadoutGridViewModel> logger,
@@ -71,24 +71,22 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
         _fileOriginRegistry = fileOriginRegistry;
         _provider = provider;
 
-        _columns =
-            new SourceCache<IDataGridColumnFactory<LoadoutColumn>, LoadoutColumn>(
-                x => throw new NotImplementedException());
+        _columns = new SourceCache<IDataGridColumnFactory<LoadoutColumn>, LoadoutColumn>(_ => throw new NotSupportedException());
+        _mods = new ReadOnlyObservableCollection<ModCursor>(new ObservableCollection<ModCursor>());
 
-        _mods = new ReadOnlyObservableCollection<ModCursor>(
-            new ObservableCollection<ModCursor>());
-
-        var nameColumn = provider
-            .GetRequiredService<
-                DataGridColumnFactory<IModNameViewModel, ModCursor, LoadoutColumn>>();
+        var nameColumn = provider.GetRequiredService<DataGridColumnFactory<IModNameViewModel, ModCursor, LoadoutColumn>>();
         nameColumn.Type = LoadoutColumn.Name;
         nameColumn.Width = new DataGridLength(1, DataGridLengthUnitType.Star);
+
         var categoryColumn = provider.GetRequiredService<DataGridColumnFactory<IModCategoryViewModel, ModCursor, LoadoutColumn>>();
         categoryColumn.Type = LoadoutColumn.Category;
+
         var installedColumn = provider.GetRequiredService<DataGridColumnFactory<IModInstalledViewModel, ModCursor, LoadoutColumn>>();
         installedColumn.Type = LoadoutColumn.Installed;
+
         var enabledColumn = provider.GetRequiredService<DataGridColumnFactory<IModEnabledViewModel, ModCursor, LoadoutColumn>>();
         enabledColumn.Type = LoadoutColumn.Enabled;
+
         var versionColumn = provider.GetRequiredService<DataGridColumnFactory<IModVersionViewModel, ModCursor, LoadoutColumn>>();
         versionColumn.Type = LoadoutColumn.Version;
 
@@ -100,6 +98,28 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
             x.AddOrUpdate(installedColumn, LoadoutColumn.Installed);
             x.AddOrUpdate(enabledColumn, LoadoutColumn.Enabled);
         });
+
+        var hasSelection = this.WhenAnyValue(vm => vm.SelectedItems, arr => arr.Length != 0);
+
+        ViewModContentsCommand = ReactiveCommand.Create<NavigationInformation>(info =>
+        {
+            var modId = SelectedItems[0].ModId;
+
+            var pageData = new PageData
+            {
+                Context = new ModInfoPageContext
+                {
+                    LoadoutId = LoadoutId,
+                    ModId = modId,
+                    Section = CurrentModInfoSection.Files,
+                },
+                FactoryId = ModInfoPageFactory.StaticId,
+            };
+
+            var workspaceController = GetWorkspaceController();
+            var behavior = workspaceController.GetOpenPageBehavior(pageData, info, IdBundle);
+            workspaceController.OpenPage(WorkspaceId, pageData, behavior);
+        }, hasSelection);
 
         this.WhenActivated(d =>
         {
@@ -127,7 +147,7 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
                 .SubscribeWithErrorLogging(logger)
                 .DisposeWith(d);
 
-            GetWorkspaceController().SetIcon(IconValues.Collections, WorkspaceId, PanelId, TabId);
+            GetWorkspaceController().SetIcon(IconValues.Collections, WorkspaceId, PanelId, TabId);    
         });
     }
 
@@ -136,8 +156,7 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
         var file = _fileSystem.FromUnsanitizedFullPath(path);
         if (!_fileSystem.FileExists(file))
         {
-            _logger.LogError("File {File} does not exist, not installing mod",
-                file);
+            _logger.LogError("File {File} does not exist, not installing mod", file);
             return Task.CompletedTask;
         }
 
@@ -159,8 +178,7 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
         var file = _fileSystem.FromUnsanitizedFullPath(path);
         if (!_fileSystem.FileExists(file))
         {
-            _logger.LogError("File {File} does not exist, not installing mod",
-                file);
+            _logger.LogError("File {File} does not exist, not installing mod", file);
             return Task.CompletedTask;
         }
 
@@ -197,35 +215,8 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
         return Task.CompletedTask;
     }
 
-    public void ViewModContents(List<ModId> toView)
+    public void ViewModContents(ModId[] toView)
     {
-        var workspaceController = GetWorkspaceController();
 
-        // Or if desired, we can desire to show a merged view, that's supported by
-        // underlying ViewModFilesView too
-        foreach (var modId in toView)
-        {
-            var pageData = new PageData
-            {
-                Context = new ModInfoPageContext
-                {
-                    LoadoutId = LoadoutId,
-                    ModId = modId,
-                    Section = CurrentModInfoSection.Files,
-                },
-                FactoryId = ModInfoPageFactory.StaticId,
-            };
-
-            // TODO: use https://github.com/Nexus-Mods/NexusMods.App/issues/942
-            var input = NavigationInput.Default;
-
-            var behavior = workspaceController.GetDefaultOpenPageBehavior(
-                requestedPage: pageData,
-                input: input,
-                currentPage: IdBundle
-            );
-
-            workspaceController.OpenPage(WorkspaceId, pageData, behavior);
-        }
     }
 }

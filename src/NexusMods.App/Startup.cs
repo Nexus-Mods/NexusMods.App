@@ -24,7 +24,7 @@ public class Startup
     private static bool _hasBeenSetup = false;
     private static IServiceProvider _provider = null!;
     private static ILogger<Startup> _logger = null!;
-    private static uint _windowCount = 0;
+    private static ulong _windowCount;
 
 #pragma warning disable CS0028 // Disables warning about not being a valid entry point
     
@@ -77,6 +77,14 @@ public class Startup
 
     internal static void ShowMainWindow()
     {
+        // TODO: enable multi-window support
+        // https://github.com/Nexus-Mods/NexusMods.App/issues/1267
+        if (Interlocked.Read(ref _windowCount) > 0)
+        {
+            _logger.LogError("We currently only allow 1 MainWindow. See https://github.com/Nexus-Mods/NexusMods.App/issues/1267 for details");
+            return;
+        }
+
         var reactiveWindow = _provider.GetRequiredService<MainWindow>();
         reactiveWindow.ViewModel = _provider.GetRequiredService<MainWindowViewModel>();
         reactiveWindow.WhenActivated(d =>

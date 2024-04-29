@@ -162,7 +162,7 @@ public class SMAPIInstaller : AModInstaller
                     }
 
                     var fvi = tempFile.Path.FileInfo.GetFileVersionInfo();
-                    version = fvi.FileVersionString;
+                    version = fvi.FileVersion.ToString(fieldCount: 3);
                 }
                 catch (Exception e)
                 {

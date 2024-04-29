@@ -4,6 +4,7 @@ using System.Reactive.Linq;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.WorkspaceSystem;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -61,5 +62,5 @@ public class TopBarDesignViewModel : AViewModel<ITopBarViewModel>, ITopBarViewMo
 
     public ReactiveCommand<Unit, Unit> HelpActionCommand { get; } = ReactiveCommand.Create(() => { }, Observable.Return(false));
 
-    public ReactiveCommand<Unit, Unit> SettingsActionCommand { get; } = ReactiveCommand.Create(() => { }, Observable.Return(false));
+    public ReactiveCommand<NavigationInformation, Unit> SettingsActionCommand { get; } = ReactiveCommand.Create<NavigationInformation>(_ => { }, Observable.Return(false));
 }

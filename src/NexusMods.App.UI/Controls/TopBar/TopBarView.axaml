@@ -12,7 +12,8 @@
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:topBar="clr-namespace:NexusMods.App.UI.Controls.TopBar"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources">
+    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
+    xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation">
     <Design.DataContext>
         <topBar:TopBarDesignViewModel ShowWindowControls="True" />
     </Design.DataContext>
@@ -51,10 +52,9 @@
                 <icons:UnifiedIcon Classes="Help ForegroundSubdued" />
             </Button>
 
-            <Button Classes="Action"
-                    x:Name="SettingsActionButton">
+            <navigation:NavigationControl Classes="Action" x:Name="SettingsActionButton">
                 <icons:UnifiedIcon Classes="Cog ForegroundSubdued" />
-            </Button>
+            </navigation:NavigationControl>
 
             <reactiveUi:ViewModelViewHost VerticalAlignment="Center" x:Name="AddPanelViewModelViewHost" />
 

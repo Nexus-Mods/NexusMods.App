@@ -19,7 +19,7 @@ public partial class IconView : ReactiveUserControl<IIconViewModel>
                 .BindTo(this, view => view.LeftIcon.Value)
                 .DisposeWith(d);
 
-            this.BindCommand(ViewModel, vm => vm.Activate, view => view.ItemButton)
+            this.BindCommand(ViewModel, vm => vm.NavigateCommand, view => view.ItemButton)
                 .DisposeWith(d);
         });
     }
