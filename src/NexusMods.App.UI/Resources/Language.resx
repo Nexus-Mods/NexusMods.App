@@ -441,7 +441,7 @@
         <value>Library</value>
     </data>
     <data name="FileOriginsPageView_NameHeader" xml:space="preserve">
-        <value>NAME</value>
+        <value>MOD NAME</value>
     </data>
     <data name="FileOriginsPageView_VersionHeader" xml:space="preserve">
         <value>VERSION</value>

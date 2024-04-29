@@ -618,7 +618,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to NAME.
+        ///   Looks up a localized string similar to MOD NAME.
         /// </summary>
         public static string FileOriginsPageView_NameHeader {
             get {
