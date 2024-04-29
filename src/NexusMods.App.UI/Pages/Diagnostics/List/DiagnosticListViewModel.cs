@@ -6,6 +6,7 @@ using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Settings;
 using NexusMods.App.UI.Controls.Diagnostics;
+using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Icons;
@@ -46,7 +47,7 @@ internal class DiagnosticListViewModel : APageViewModel<IDiagnosticListViewModel
         ISettingsManager settingsManager) : base(windowManager)
     {
         TabIcon = IconValues.MonitorDiagnostics;
-        TabTitle = "Diagnostics";
+        TabTitle = Language.DiagnosticListViewModel_DiagnosticListViewModel_Diagnostics;
 
         Settings = settingsManager.Get<DiagnosticSettings>();
         settingsManager.GetChanges<DiagnosticSettings>().OnUI().BindToVM(this, vm => vm.Settings);
