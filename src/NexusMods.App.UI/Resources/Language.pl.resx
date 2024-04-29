@@ -431,11 +431,14 @@
     <data name="ChangelogPageViewModel_ChangelogPageViewModel_Changelog" xml:space="preserve">
         <value>Dziennik zmian</value>
     </data>
+    <data name="DiagnosticListViewModel_DiagnosticListViewModel_Diagnostics" xml:space="preserve">
+        <value>Diagnostyka</value>
+    </data>
     <data name="FileOriginsPageTitle" xml:space="preserve">
-        <value>Moje mody</value>
+        <value>Biblioteka</value>
     </data>
     <data name="FileOriginsPageView_NameHeader" xml:space="preserve">
-        <value>NAZWA</value>
+        <value>NAZWA MODU</value>
     </data>
     <data name="FileOriginsPageView_VersionHeader" xml:space="preserve">
         <value>WERSJA</value>
