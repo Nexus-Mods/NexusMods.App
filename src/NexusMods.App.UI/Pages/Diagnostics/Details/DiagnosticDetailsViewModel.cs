@@ -20,6 +20,8 @@ public class DiagnosticDetailsViewModel : APageViewModel<IDiagnosticDetailsViewM
         IMarkdownRendererViewModel markdownRendererViewModel,
         Diagnostic diagnostic) : base(windowManager)
     {
+        TabIcon = IconValues.DiagnosticPage;
+        TabTitle = diagnostic.Title;
         Severity = diagnostic.Severity;
 
         var summary = diagnostic.FormatSummary(diagnosticWriter);
@@ -28,16 +30,5 @@ public class DiagnosticDetailsViewModel : APageViewModel<IDiagnosticDetailsViewM
 
         MarkdownRendererViewModel = markdownRendererViewModel;
         MarkdownRendererViewModel.Contents = details;
-
-        this.WhenActivated(disposable =>
-        {
-            {
-                var workspaceController = GetWorkspaceController();
-                workspaceController.SetTabTitle(diagnostic.Title, WorkspaceId, PanelId, TabId);
-                workspaceController.SetIcon(IconValues.DiagnosticPage, WorkspaceId, PanelId, TabId);
-            }
-
-            Disposable.Empty.DisposeWith(disposable);
-        });
     }
 }

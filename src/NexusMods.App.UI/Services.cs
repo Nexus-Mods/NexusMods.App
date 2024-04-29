@@ -219,7 +219,6 @@ public static class Services
 
             // page factories
             .AddSingleton<PageFactoryController>()
-            .AddSingleton<IPageFactory, DummyPageFactory>()
             .AddSingleton<IPageFactory, NewTabPageFactory>()
             .AddSingleton<IPageFactory, MyGamesPageFactory>()
             .AddSingleton<IPageFactory, LoadoutGridPageFactory>()
@@ -241,10 +240,6 @@ public static class Services
             .AddSingleton<IWorkspaceAttachmentsFactory, DownloadsAttachmentsFactory>()
             .AddSingleton<IWorkspaceAttachmentsFactory, HomeAttachmentsFactory>()
             .AddSingleton<IWorkspaceAttachmentsFactory, LoadoutAttachmentsFactory>()
-
-            // Debugging
-            .AddViewModel<DummyViewModel, IDummyViewModel>()
-            .AddView<DummyView, IDummyViewModel>()
 
             // Diagnostics
             .AddSingleton<IValueFormatter, ModReferenceFormatter>()

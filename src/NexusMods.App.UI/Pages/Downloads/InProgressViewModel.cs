@@ -81,6 +81,8 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
         IDownloadService downloadService,
         IOverlayController overlayController) : base(windowManager)
     {
+        TabTitle = Language.InProgressDownloadsPage_Title;
+
         TaskSourceChangeSet = downloadService.Downloads
             .Filter(x => x.Status != DownloadTaskStatus.Completed)
             .Transform(x => (IDownloadTaskViewModel)new DownloadTaskViewModel(x))
@@ -90,8 +92,6 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
 
         this.WhenActivated(d =>
         {
-            GetWorkspaceController().SetTabTitle(Language.InProgressDownloadsPage_Title, WorkspaceId, PanelId, TabId);
-
             ShowCancelDialogCommand = ReactiveCommand.Create(async () =>
                 {
                     if (SelectedTasks.Items.Any())

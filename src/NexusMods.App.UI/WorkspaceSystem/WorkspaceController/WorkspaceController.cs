@@ -314,7 +314,7 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
         if (!TryGetPanel(workspaceViewModel, panelId, out var panelViewModel)) return;
         if (!TryGetTab(panelViewModel, tabId, out var tabViewModel)) return;
 
-        tabViewModel.Header.Icon = icon;
+        tabViewModel.Header.Icon = icon ?? new IconValue();
     }
 
     /// <inheritdoc/>

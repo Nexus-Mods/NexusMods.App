@@ -170,7 +170,12 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
         var newTabPage = _factoryController.Create(pageData, WindowId, WorkspaceId, Id, tabId: Optional<PanelTabId>.None);
         var tab = new PanelTabViewModel
         {
-            Contents = newTabPage
+            Contents = newTabPage,
+            Header =
+            {
+                Icon = newTabPage.ViewModel.TabIcon,
+                Title = newTabPage.ViewModel.TabTitle,
+            },
         };
 
         newTabPage.ViewModel.TabId = tab.Id;
@@ -218,7 +223,12 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
 
                 var vm = new PanelTabViewModel
                 {
-                    Contents = newTabPage
+                    Contents = newTabPage,
+                    Header =
+                    {
+                        Icon = newTabPage.ViewModel.TabIcon,
+                        Title = newTabPage.ViewModel.TabTitle,
+                    },
                 };
 
                 newTabPage.ViewModel.TabId = vm.Id;
