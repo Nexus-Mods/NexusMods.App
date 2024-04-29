@@ -6,6 +6,7 @@
     xmlns:reactive="http://reactiveui.net"
     xmlns:workspace="clr-namespace:NexusMods.App.UI.WorkspaceSystem"
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+    xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation"
     mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="500"
     x:Class="NexusMods.App.UI.WorkspaceSystem.NewTabPageView">
 
@@ -37,7 +38,7 @@
                             <DataTemplate DataType="{x:Type workspace:INewTabPageSectionItemViewModel}">
 
                                 <Border Classes="Mid Rounded">
-                                    <Button Width="375"
+                                    <navigation:NavigationControl Width="375"
                                             Height="56"
                                             Padding="0"
                                             Command="{CompiledBinding SelectItemCommand}">
@@ -48,7 +49,7 @@
                                                        Text="{CompiledBinding Name}"
                                                        Classes="BodyLGBold" />
                                         </StackPanel>
-                                    </Button>
+                                    </navigation:NavigationControl>
                                 </Border>
 
                             </DataTemplate>

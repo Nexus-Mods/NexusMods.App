@@ -1,5 +1,6 @@
 using System.Reactive;
 using Avalonia.Media;
+using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.WorkspaceSystem;
 using ReactiveUI;
 
@@ -25,7 +26,7 @@ public interface ITopBarViewModel : IViewModelInterface
     public ReactiveCommand<Unit, Unit> UndoActionCommand { get; }
     public ReactiveCommand<Unit, Unit> RedoActionCommand { get; }
     public ReactiveCommand<Unit, Unit> HelpActionCommand { get; }
-    public ReactiveCommand<Unit, Unit> SettingsActionCommand { get; }
+    public ReactiveCommand<NavigationInformation, Unit> SettingsActionCommand { get; }
 
 
 }

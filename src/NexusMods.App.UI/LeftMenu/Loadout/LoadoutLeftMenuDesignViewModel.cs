@@ -19,14 +19,12 @@ public class LoadoutLeftMenuDesignViewModel : AViewModel<ILoadoutLeftMenuViewMod
                 {
                     Name = "My Mods",
                     Icon = IconValues.Collections,
-                    Activate = ReactiveCommand.Create(() => { }),
                 },
 
                 new IconViewModel
                 {
                     Name = "Diagnostics",
                     Icon = IconValues.MonitorDiagnostics,
-                    Activate = ReactiveCommand.Create(() => { }),
                 },
             ]
         );

@@ -4,8 +4,10 @@ using System.Diagnostics.CodeAnalysis;
 using Avalonia.Threading;
 using DynamicData;
 using DynamicData.Kernel;
+using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.Icons;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Windows;
@@ -16,6 +18,7 @@ using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
+[UsedImplicitly]
 internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
 {
     private readonly IWorkspaceWindow _window;
@@ -315,6 +318,23 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
     }
 
     /// <inheritdoc/>
+    public OpenPageBehavior GetOpenPageBehavior(
+        PageData requestedPage,
+        NavigationInformation navigationInformation,
+        Optional<PageIdBundle> optionalCurrentPage)
+    {
+        if (!navigationInformation.OpenPageBehaviorType.HasValue)
+        {
+            return GetDefaultOpenPageBehavior(requestedPage, navigationInformation.Input, optionalCurrentPage);
+        }
+
+        return CreateOpenPageBehavior(
+            navigationInformation.OpenPageBehaviorType.Value,
+            optionalCurrentPage
+        );
+    }
+
+    /// <inheritdoc/>
     public OpenPageBehavior GetDefaultOpenPageBehavior(
         PageData requestedPage,
         NavigationInput input,
@@ -340,6 +360,16 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
             ? pageDefaultBehavior.ValueOr(globalSettings.GetValueOrDefault(input, fallback))
             : globalSettings.GetValueOrDefault(input, fallback);
 
+        return CreateOpenPageBehavior(behaviorType, optionalCurrentPage);
+    }
+
+    private OpenPageBehavior CreateOpenPageBehavior(
+        OpenPageBehaviorType behaviorType,
+        Optional<PageIdBundle> optionalCurrentPage)
+    {
+        const OpenPageBehaviorType fallback = OpenPageBehaviorType.NewTab;
+
+        var hasData = optionalCurrentPage.HasValue;
         if (!hasData)
         {
             return behaviorType switch

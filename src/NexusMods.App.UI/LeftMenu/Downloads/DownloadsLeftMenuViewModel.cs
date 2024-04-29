@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
+using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.Pages.Downloads;
 using NexusMods.App.UI.Resources;
@@ -27,7 +28,7 @@ public class DownloadsLeftMenuViewModel : AViewModel<IDownloadsLeftMenuViewModel
             {
                 Name = Language.InProgressTitleTextBlock,
                 Icon = IconValues.Downloading,
-                Activate = ReactiveCommand.Create(() =>
+                NavigateCommand = ReactiveCommand.Create<NavigationInformation>(info =>
                 {
                     var pageData = new PageData
                     {
@@ -35,10 +36,7 @@ public class DownloadsLeftMenuViewModel : AViewModel<IDownloadsLeftMenuViewModel
                         Context = new InProgressPageContext(),
                     };
 
-                    // TODO: use https://github.com/Nexus-Mods/NexusMods.App/issues/942
-                    var input = NavigationInput.Default;
-
-                    var behavior = workspaceController.GetDefaultOpenPageBehavior(pageData, input, Optional<PageIdBundle>.None);
+                    var behavior = workspaceController.GetOpenPageBehavior(pageData, info, Optional<PageIdBundle>.None);
                     workspaceController.OpenPage(WorkspaceId, pageData, behavior);
                 }),
             },

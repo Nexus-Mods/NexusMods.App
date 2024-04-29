@@ -10,11 +10,13 @@
     xmlns:items="clr-namespace:NexusMods.App.UI.LeftMenu.Items"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation">
     <Design.DataContext>
         <items:IconViewModel Icon="News" Name="Some Text" />
     </Design.DataContext>
-    <Button Classes="Invisible" x:Name="ItemButton">
+
+    <navigation:NavigationControl Classes="Invisible" x:Name="ItemButton">
         <Grid
             ColumnDefinitions="38, *"
             Height="40"
@@ -32,7 +34,7 @@
                 VerticalAlignment="Center"
                 x:Name="NameText" />
         </Grid>
-    </Button>
+    </navigation:NavigationControl>
 
 </reactiveUi:ReactiveUserControl>
 

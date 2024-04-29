@@ -7,6 +7,7 @@ using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.NexusWebApi;
+using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Pages.Settings;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -33,13 +34,16 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
 
         var workspaceController = window.WorkspaceController;
 
-        SettingsActionCommand = ReactiveCommand.Create(() =>
+        SettingsActionCommand = ReactiveCommand.Create<NavigationInformation>(info =>
         {
-            workspaceController.OpenPage(workspaceController.ActiveWorkspace!.Id, new PageData
+            var page = new PageData
             {
                 Context = new SettingsPageContext(),
                 FactoryId = SettingsPageFactory.StaticId
-            }, new OpenPageBehavior.NewTab(Optional<PanelId>.None));
+            };
+
+            var behavior = workspaceController.GetOpenPageBehavior(page, info, Optional<PageIdBundle>.None);
+            workspaceController.OpenPage(workspaceController.ActiveWorkspace!.Id, page, behavior);
         });
 
         this.WhenActivated(d =>
@@ -137,5 +141,5 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
     public ReactiveCommand<Unit, Unit> HelpActionCommand { get; } =
         ReactiveCommand.Create(() => { }, Observable.Return(false));
 
-    public ReactiveCommand<Unit, Unit> SettingsActionCommand { get; }
+    public ReactiveCommand<NavigationInformation, Unit> SettingsActionCommand { get; }
 }

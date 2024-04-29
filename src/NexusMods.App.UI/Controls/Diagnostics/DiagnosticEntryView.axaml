@@ -5,14 +5,14 @@
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:diagnostics="clr-namespace:NexusMods.App.UI.Controls.Diagnostics"
                                 xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+                                xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation"
                                 mc:Ignorable="d" d:DesignWidth="980" d:DesignHeight="60"
                                 x:Class="NexusMods.App.UI.Controls.Diagnostics.DiagnosticEntryView">
     <Design.DataContext>
         <diagnostics:DiagnosticEntryDesignViewModel />
     </Design.DataContext>
 
-    <Button x:Name="EntryButton" HorizontalAlignment="Stretch">
-
+    <navigation:NavigationControl x:Name="EntryButton" HorizontalAlignment="Stretch">
         <StackPanel Orientation="Horizontal"
                     HorizontalAlignment="Stretch"
                     Classes="Spacing-2"
@@ -23,6 +23,6 @@
                        Classes="BodyMDBold"
                        VerticalAlignment="Center"/>
         </StackPanel>
-    </Button>
+    </navigation:NavigationControl>
 
 </reactiveUi:ReactiveUserControl>
