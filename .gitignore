@@ -37,9 +37,6 @@ Desktop.ini
 
 coverage.json
 
-# Generated localization files
-**/Language.Designer.cs
-
 # Verify
 *.received.*
 
