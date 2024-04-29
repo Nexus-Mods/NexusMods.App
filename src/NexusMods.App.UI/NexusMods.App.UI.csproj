@@ -509,6 +509,21 @@
         <Compile Update="Controls\Settings\SettingEntries\SettingInteractionControls\Toggle\SettingToggleViewModel.cs">
           <DependentUpon>ISettingToggleViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Pages\Downloads\InProgressDesignViewModel.cs">
+          <DependentUpon>IInProgressViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\Downloads\InProgressViewModel.cs">
+          <DependentUpon>IInProgressViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\ModLibrary\DownloadsLibrary\DownloadsLibraryViewModel.cs">
+          <DependentUpon>IDownloadsLibraryViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\ModLibrary\FileOrigins\FileOriginsPageViewModel.cs">
+          <DependentUpon>IFileOriginsPageViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\ModLibrary\FileOrigins\FileOriginEntry\FileOriginEntryViewModel.cs">
+          <DependentUpon>IFileOriginEntryViewModel.cs</DependentUpon>
+        </Compile>
         <Compile Update="Controls\Settings\SettingEntries\SettingInteractionControls\ComboBox\SettingComboBoxViewModel.cs">
           <DependentUpon>ISettingComboBoxViewModel.cs</DependentUpon>
         </Compile>

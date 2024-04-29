@@ -7,6 +7,7 @@ using NexusMods.App.UI.Controls.Trees;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.Icons;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -27,6 +28,7 @@ public class ApplyDiffViewModel : APageViewModel<IApplyDiffViewModel>, IApplyDif
     public ApplyDiffViewModel(IWindowManager windowManager, IServiceProvider serviceProvider) : base(windowManager)
     {
         TabTitle = Language.ApplyDiffViewModel_PageTitle;
+        TabIcon = IconValues.ListFilled;
 
         _dummyLoadingViewModel = new DummyLoadingViewModel();
         BodyViewModel = _dummyLoadingViewModel;

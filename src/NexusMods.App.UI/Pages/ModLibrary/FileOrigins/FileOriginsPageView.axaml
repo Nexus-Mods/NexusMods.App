@@ -1,0 +1,58 @@
+<reactiveUi:ReactiveUserControl x:TypeArguments="modLibrary:IFileOriginsPageViewModel" xmlns="https://github.com/avaloniaui"
+                                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                                xmlns:reactiveUi="http://reactiveui.net"
+                                xmlns:modLibrary="clr-namespace:NexusMods.App.UI.Pages.ModLibrary"
+                                xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+                                xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
+                                xmlns:fileOriginEntry="clr-namespace:NexusMods.App.UI.Pages.ModLibrary.FileOriginEntry"
+                                mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+                                x:Class="NexusMods.App.UI.Pages.ModLibrary.FileOriginsPageView"
+                                x:CompileBindings="True">
+    <Grid RowDefinitions="Auto, *">
+        <Border Grid.Row="0" Classes="Toolbar">
+        </Border>
+
+        <DataGrid Grid.Row="1"
+                  CanUserReorderColumns="True"
+                  CanUserResizeColumns="True"
+                  CanUserSortColumns="True"
+                  x:Name="DataGrid"
+                  x:DataType="fileOriginEntry:IFileOriginEntryViewModel"
+                  Width="1">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="{x:Static resources:Language.FileOriginsPageView_NameHeader}" 
+                                    Binding="{CompiledBinding Name}"
+                                    Width="*" />
+                <DataGridTextColumn Header="{x:Static resources:Language.FileOriginsPageView_VersionHeader}" 
+                                    Binding="{CompiledBinding Version}"/>
+                <DataGridTextColumn Header="{x:Static resources:Language.FileOriginsPageView_SizeHeader}" 
+                                    Binding="{CompiledBinding Size}"/>
+                <DataGridTextColumn Header="{x:Static resources:Language.FileOriginsPageView_DownloadedHeader}" 
+                                    Binding="{CompiledBinding ArchiveDate}"/>
+                <DataGridTextColumn Header="{x:Static resources:Language.FileOriginsPageView_AddedHeader}" 
+                                    Binding="{CompiledBinding LastInstalledDate}"/>
+                <DataGridTemplateColumn Header="{x:Static resources:Language.FileOriginsPageView_ActionHeader}">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate DataType="fileOriginEntry:IFileOriginEntryViewModel">
+                            <Button x:Name="AddButton"
+                                    Classes="Rounded Primary"
+                                    Margin="0,0,24,0"
+                                    Command="{CompiledBinding AddToLoadoutCommand}">
+                                
+                                <StackPanel>
+                                    <icons:UnifiedIcon Classes="Plus" />
+                                    <TextBlock Text="{x:Static resources:Language.FileOriginsPage_AddButtonText}" />
+                                </StackPanel>
+                            </Button>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+            </DataGrid.Columns>
+        </DataGrid>
+
+    </Grid>
+
+</reactiveUi:ReactiveUserControl>

@@ -14,6 +14,7 @@ using NexusMods.App.UI.Pages.LoadoutGrid;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.Icons;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Pages.MyGames;
@@ -41,7 +42,8 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
         IEnumerable<IGame> games) : base(windowManager)
     {
         TabTitle = Language.MyGames;
-
+		TabIcon = IconValues.JoystickGameFilled;
+        
         _provider = serviceProvider;
         _loadoutRegistry = loadoutRegistry;
         _applyService = applyService;

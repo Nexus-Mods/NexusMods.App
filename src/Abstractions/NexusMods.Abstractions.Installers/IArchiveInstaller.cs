@@ -20,11 +20,11 @@ public interface IArchiveInstaller
     /// standard way to "install" a mod. If the installer is not provided, the installers on the loadout's game
     /// will be tried, in the order they are defined, otherwise the provided installer will be used.
     /// </summary>
-    /// <param name="loadoutId"></param>
-    /// <param name="downloadId"></param>
-    /// <param name="defaultModName"></param>
-    /// <param name="installer"></param>
-    /// <param name="token"></param>
-    /// <returns></returns>
     public Task<ModId[]> AddMods(LoadoutId loadoutId, DownloadId downloadId, string? defaultModName = null, IModInstaller? installer = null, CancellationToken token = default);
+
+    /// <summary>
+    /// Installs a <see cref="DownloadAnalysis.Model"/> to a loadout, potentially adding one or more mods.
+    /// If the installer is not provided, the installers on the loadout's game will be tried, in the order they are defined.
+    /// </summary>
+    public Task<ModId[]> AddMods(LoadoutId loadoutId, DownloadAnalysis.Model downloadAnalysis, string? defaultModName = null, IModInstaller? installer = null, CancellationToken token = default);
 }

@@ -24,6 +24,7 @@ using NexusMods.App.UI.Pages.ModInfo.Types;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Extensions.DynamicData;
+using NexusMods.Icons;
 using NexusMods.Paths;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -72,6 +73,8 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
 
         _columns = new SourceCache<IDataGridColumnFactory<LoadoutColumn>, LoadoutColumn>(_ => throw new NotSupportedException());
         _mods = new ReadOnlyObservableCollection<ModCursor>(new ObservableCollection<ModCursor>());
+        
+        TabIcon = IconValues.Collections;
 
         var nameColumn = provider.GetRequiredService<DataGridColumnFactory<IModNameViewModel, ModCursor, LoadoutColumn>>();
         nameColumn.Type = LoadoutColumn.Name;
@@ -145,6 +148,7 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
                 .Bind(out _filteredColumns)
                 .SubscribeWithErrorLogging(logger)
                 .DisposeWith(d);
+            
         });
     }
 

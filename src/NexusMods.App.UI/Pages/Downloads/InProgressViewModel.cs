@@ -19,6 +19,7 @@ using NexusMods.App.UI.Pages.Downloads.ViewModels;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.Icons;
 using NexusMods.Networking.Downloaders.Interfaces;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -82,6 +83,7 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
         IOverlayController overlayController) : base(windowManager)
     {
         TabTitle = Language.InProgressDownloadsPage_Title;
+        TabIcon = IconValues.Downloading;
 
         TaskSourceChangeSet = downloadService.Downloads
             .Filter(x => x.Status != DownloadTaskStatus.Completed)
