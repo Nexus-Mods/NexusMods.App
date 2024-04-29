@@ -1358,5 +1358,11 @@ namespace NexusMods.App.UI.Resources {
                 return ResourceManager.GetString("ViewModInfoPage_Title", resourceCulture);
             }
         }
+        
+        public static string DiagnosticListViewModel_DiagnosticListViewModel_Diagnostics {
+            get {
+                return ResourceManager.GetString("DiagnosticListViewModel_DiagnosticListViewModel_Diagnostics", resourceCulture);
+            }
+        }
     }
 }

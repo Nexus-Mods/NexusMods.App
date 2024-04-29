@@ -437,6 +437,9 @@
     <data name="ChangelogPageViewModel_ChangelogPageViewModel_Changelog" xml:space="preserve">
         <value>Changelog</value>
     </data>
+    <data name="DiagnosticListViewModel_DiagnosticListViewModel_Diagnostics" xml:space="preserve">
+        <value>Diagnostics</value>
+    </data>
     <data name="FileOriginsPageTitle" xml:space="preserve">
         <value>Library</value>
     </data>

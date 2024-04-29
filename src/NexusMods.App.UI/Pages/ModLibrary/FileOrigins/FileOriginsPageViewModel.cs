@@ -28,6 +28,9 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
         IFileOriginRegistry fileOriginRegistry,
         IWindowManager windowManager) : base(windowManager)
     {
+        TabTitle = Language.FileOriginsPageTitle;
+        TabIcon = IconValues.ModLibrary;
+        
         var allFileOrigins = fileOriginRegistry.GetAll();
 
         FileOrigins = new ReadOnlyObservableCollection<IFileOriginEntryViewModel>(
@@ -53,13 +56,5 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
             )
         );
         
-        this.WhenActivated(disposables =>
-        {
-            var workspaceController = GetWorkspaceController();
-            workspaceController.SetTabTitle(Language.FileOriginsPageTitle, WorkspaceId, PanelId, TabId);
-            workspaceController.SetIcon(IconValues.ModLibrary, WorkspaceId, PanelId, TabId);
-            
-            Disposable.Create(() => { }).DisposeWith(disposables);
-        });
     }
 }

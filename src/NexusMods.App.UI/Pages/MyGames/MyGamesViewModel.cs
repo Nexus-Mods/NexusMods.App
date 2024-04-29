@@ -41,6 +41,9 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
         IApplyService applyService,
         IEnumerable<IGame> games) : base(windowManager)
     {
+        TabTitle = Language.MyGames;
+		TabIcon = IconValues.JoystickGameFilled;
+        
         _provider = serviceProvider;
         _loadoutRegistry = loadoutRegistry;
         _applyService = applyService;
@@ -55,11 +58,6 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
 
         this.WhenActivated(d =>
             {
-                var workspaceController = GetWorkspaceController();
-                workspaceController.SetTabTitle(Language.MyGames, WorkspaceId, PanelId, TabId);
-                workspaceController.SetIcon(IconValues.JoystickGameFilled, WorkspaceId, PanelId, TabId);
-                
-
                 var managedInstallations = _loadoutRegistry.LoadoutRootChanges
                     .Transform(loadoutId => (loadoutId, loadout: loadoutRegistry.Get(loadoutId)))
                     .Filter(tuple => tuple.loadout != null)

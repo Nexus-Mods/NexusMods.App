@@ -270,9 +270,6 @@
         <Compile Update="WorkspaceSystem\PanelTab\PanelTabViewModel.cs">
           <DependentUpon>IPanelTabViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Controls\Dummy\DummyViewModel.cs">
-          <DependentUpon>IDummyViewModel.cs</DependentUpon>
-        </Compile>
         <Compile Update="WorkspaceSystem\PanelTabHeader\PanelTabHeaderViewModel.cs">
           <DependentUpon>IPanelTabHeaderViewModel.cs</DependentUpon>
         </Compile>

@@ -1,5 +1,6 @@
 using DynamicData.Kernel;
 using NexusMods.App.UI.Controls;
+using NexusMods.App.UI.Pages.Changelog;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 // ReSharper disable All
@@ -37,8 +38,11 @@ file class Example
         // The next example will show you how to create new factories and pages.
         pageData = new PageData
         {
-            FactoryId = DummyPageFactory.StaticId,
-            Context = new DummyPageContext(),
+            FactoryId = ChangelogPageFactory.StaticId,
+            Context = new ChangelogPageContext
+            {
+                TargetVersion = null,
+            },
         };
 
         // 2) The OpenPageBehavior:

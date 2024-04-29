@@ -31,14 +31,13 @@ public class ChangelogPageViewModel : APageViewModel<IChangelogPageViewModel>, I
         IServiceProvider serviceProvider,
         IWindowManager windowManager) : base(windowManager)
     {
+        TabIcon = IconValues.FileDocumentOutline;
+        TabTitle = Language.ChangelogPageViewModel_ChangelogPageViewModel_Changelog;
+
         MarkdownRendererViewModel = serviceProvider.GetRequiredService<IMarkdownRendererViewModel>();
 
         this.WhenActivated(disposables =>
         {
-            var workspaceController = GetWorkspaceController();
-            workspaceController.SetTabTitle(Language.ChangelogPageViewModel_ChangelogPageViewModel_Changelog, WorkspaceId, PanelId, TabId);
-            workspaceController.SetIcon(IconValues.FileDocumentOutline, WorkspaceId, PanelId, TabId);
-
             MarkdownRendererViewModel
                 .WhenAnyValue(vm => vm.Contents)
                 .Where(contents => !string.IsNullOrWhiteSpace(contents))
