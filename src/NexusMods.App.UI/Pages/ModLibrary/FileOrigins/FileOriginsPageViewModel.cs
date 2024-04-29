@@ -44,7 +44,7 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
                         return new FileOriginEntryViewModel
                         {
                             Name = name,
-                            Size = ByteSize.FromBytes(fileOrigin.Size.Value).ToString(),
+                            Size = fileOrigin.Size,
                             AddToLoadoutCommand = ReactiveCommand.CreateFromTask(async () =>
                                 {
                                     await archiveInstaller.AddMods(LoadoutId, fileOrigin, name);
