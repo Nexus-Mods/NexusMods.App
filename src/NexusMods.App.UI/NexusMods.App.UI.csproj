@@ -527,6 +527,9 @@
         <Compile Update="WorkspaceSystem\NewTabPage\NewTabPageSectionViewModel.cs">
           <DependentUpon>INewTabPageSectionViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="ImageCache.cs">
+          <DependentUpon>IImageCache.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
