@@ -57,7 +57,7 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
         {
             var workspaceController = GetWorkspaceController();
             workspaceController.SetTabTitle(Language.FileOriginsPageTitle, WorkspaceId, PanelId, TabId);
-            workspaceController.SetIcon(IconValues.Mods, WorkspaceId, PanelId, TabId);
+            workspaceController.SetIcon(IconValues.ModLibrary, WorkspaceId, PanelId, TabId);
             
             Disposable.Create(() => { }).DisposeWith(disposables);
         });

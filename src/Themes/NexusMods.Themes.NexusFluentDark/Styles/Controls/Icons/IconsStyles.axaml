@@ -74,6 +74,7 @@
             <icons:UnifiedIcon Classes="DeleteForever" />
             <icons:UnifiedIcon Classes="Mods" />
             <icons:UnifiedIcon Classes="JoystickGameFilled" />
+            <icons:UnifiedIcon Classes="ModLibrary" />
             
         </WrapPanel>
     </Design.PreviewWith>
@@ -368,5 +369,9 @@
     
     <Style Selector="icons|UnifiedIcon.JoystickGameFilled">
         <Setter Property="Value" Value="{x:Static icons:IconValues.JoystickGameFilled}"/>
+    </Style>
+    
+    <Style Selector="icons|UnifiedIcon.ModLibrary">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.ModLibrary}"/>
     </Style>
 </Styles>

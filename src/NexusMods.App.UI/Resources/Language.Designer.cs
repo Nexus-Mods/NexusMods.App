@@ -582,7 +582,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to My mods.
+        ///   Looks up a localized string similar to Library.
         /// </summary>
         public static string FileOriginsPageTitle {
             get {
