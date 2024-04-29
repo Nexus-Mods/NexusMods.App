@@ -21,7 +21,7 @@ public interface IUpdaterViewModel : IOverlayViewModel
     /// <summary>
     /// The current version of the application
     /// </summary>
-    public Version OldVersion { get; }
+    public Version? OldVersion { get; }
 
     /// <summary>
     /// The command to call to start downloading the update via a downloader
