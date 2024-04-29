@@ -40,6 +40,8 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
         IApplyService applyService,
         IEnumerable<IGame> games) : base(windowManager)
     {
+        TabTitle = Language.MyGames;
+
         _provider = serviceProvider;
         _loadoutRegistry = loadoutRegistry;
         _applyService = applyService;
@@ -54,13 +56,6 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
 
         this.WhenActivated(d =>
             {
-                GetWorkspaceController()
-                    .SetTabTitle(Language.MyGames,
-                        WorkspaceId,
-                        PanelId,
-                        TabId
-                    );
-
                 var managedInstallations = _loadoutRegistry.LoadoutRootChanges
                     .Transform(loadoutId => (loadoutId, loadout: loadoutRegistry.Get(loadoutId)))
                     .Filter(tuple => tuple.loadout != null)

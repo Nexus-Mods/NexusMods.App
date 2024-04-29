@@ -45,6 +45,9 @@ internal class DiagnosticListViewModel : APageViewModel<IDiagnosticListViewModel
         IDiagnosticWriter diagnosticWriter,
         ISettingsManager settingsManager) : base(windowManager)
     {
+        TabIcon = IconValues.MonitorDiagnostics;
+        TabTitle = "Diagnostics";
+
         Settings = settingsManager.Get<DiagnosticSettings>();
         settingsManager.GetChanges<DiagnosticSettings>().OnUI().BindToVM(this, vm => vm.Settings);
 
@@ -65,12 +68,6 @@ internal class DiagnosticListViewModel : APageViewModel<IDiagnosticListViewModel
 
         this.WhenActivated(disposable =>
         {
-            {
-                var workspaceController = GetWorkspaceController();
-                workspaceController.SetTabTitle("Diagnostics", WorkspaceId, PanelId, TabId);
-                workspaceController.SetIcon(IconValues.MonitorDiagnostics, WorkspaceId, PanelId, TabId);
-            }
-
             Filter = AllFilter;
 
             var serialDisposable = new SerialDisposable();

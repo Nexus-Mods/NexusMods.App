@@ -8,7 +8,12 @@ public interface IPageViewModelInterface : IViewModelInterface
     /// <summary>
     /// Gets or sets the icon of this page to be shown in the tab header.
     /// </summary>
-    public IconValue Icon { get; set; }
+    public IconValue TabIcon { get; }
+
+    /// <summary>
+    /// Gets or sets the title of this page in the tab header.
+    /// </summary>
+    public string TabTitle { get; }
 
     /// <summary>
     /// Gets or sets the ID of the window this page is in.

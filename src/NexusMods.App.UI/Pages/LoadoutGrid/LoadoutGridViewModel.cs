@@ -137,7 +137,7 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
                 .OnUI()
                 .Do(loadoutName =>
                 {
-                    GetWorkspaceController().SetTabTitle(loadoutName, WorkspaceId, PanelId, TabId);
+                    TabTitle = loadoutName;
                 })
                 .BindTo(this, vm => vm.LoadoutName);
 
