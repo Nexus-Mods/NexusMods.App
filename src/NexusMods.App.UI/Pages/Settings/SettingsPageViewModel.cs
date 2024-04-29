@@ -28,6 +28,9 @@ public class SettingsPageViewModel : APageViewModel<ISettingsPageViewModel>, ISe
 
     public SettingsPageViewModel(ISettingsManager settingsManager, IWindowManager windowManager) : base(windowManager)
     {
+        TabIcon = IconValues.Settings;
+        TabTitle = Language.SettingsView_Title;
+
         var descriptors = settingsManager.GetAllUIProperties();
         var entryViewModels = descriptors.Select(CreateEntryViewModel).ToArray();
 
@@ -61,10 +64,6 @@ public class SettingsPageViewModel : APageViewModel<ISettingsPageViewModel>, ISe
 
         this.WhenActivated(disposables =>
         {
-            var workspaceController = GetWorkspaceController();
-            workspaceController.SetTabTitle(Language.SettingsView_Title, WorkspaceId, PanelId, TabId);
-            workspaceController.SetIcon(IconValues.Settings, WorkspaceId, PanelId, TabId);
-
             SettingEntries
                 .Select(vm => vm.WhenAnyValue(x => x.InteractionControlViewModel.ValueContainer.HasChanged))
                 .Merge()

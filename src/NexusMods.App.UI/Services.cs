@@ -49,6 +49,7 @@ using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModInstalled;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModName;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModVersion;
 using NexusMods.App.UI.Pages.ModInfo;
+using NexusMods.App.UI.Pages.ModLibrary;
 using NexusMods.App.UI.Pages.MyGames;
 using NexusMods.App.UI.Pages.Settings;
 using NexusMods.App.UI.Settings;
@@ -138,6 +139,7 @@ public static class Services
             .AddViewModel<DummyLoadingViewModel, ILoadingViewModel>()
             .AddViewModel<DummyErrorViewModel, IErrorViewModel>()
             .AddViewModel<ApplyDiffViewModel, IApplyDiffViewModel>()
+            .AddViewModel<FileOriginsPageViewModel, IFileOriginsPageViewModel>()
 
             // Views
             .AddView<DevelopmentBuildBannerView, IDevelopmentBuildBannerViewModel>()
@@ -179,6 +181,7 @@ public static class Services
             .AddView<ErrorView, IErrorViewModel>()
             .AddView<ApplyDiffView, IApplyDiffViewModel>()
             .AddView<FileTreeView, IFileTreeViewModel>()
+            .AddView<FileOriginsPageView, IFileOriginsPageViewModel>()
             
             .AddView<SettingsView, ISettingsPageViewModel>()
             .AddViewModel<SettingsPageViewModel, ISettingsPageViewModel>()
@@ -219,7 +222,6 @@ public static class Services
 
             // page factories
             .AddSingleton<PageFactoryController>()
-            .AddSingleton<IPageFactory, DummyPageFactory>()
             .AddSingleton<IPageFactory, NewTabPageFactory>()
             .AddSingleton<IPageFactory, MyGamesPageFactory>()
             .AddSingleton<IPageFactory, LoadoutGridPageFactory>()
@@ -230,6 +232,7 @@ public static class Services
             .AddSingleton<IPageFactory, ApplyDiffPageFactory>()
             .AddSingleton<IPageFactory, SettingsPageFactory>()
             .AddSingleton<IPageFactory, ChangelogPageFactory>()
+            .AddSingleton<IPageFactory, FileOriginsPageFactory>()
 
             // LeftMenu factories
             .AddSingleton<ILeftMenuFactory, DownloadsLeftMenuFactory>()
@@ -241,10 +244,6 @@ public static class Services
             .AddSingleton<IWorkspaceAttachmentsFactory, DownloadsAttachmentsFactory>()
             .AddSingleton<IWorkspaceAttachmentsFactory, HomeAttachmentsFactory>()
             .AddSingleton<IWorkspaceAttachmentsFactory, LoadoutAttachmentsFactory>()
-
-            // Debugging
-            .AddViewModel<DummyViewModel, IDummyViewModel>()
-            .AddView<DummyView, IDummyViewModel>()
 
             // Diagnostics
             .AddSingleton<IValueFormatter, ModReferenceFormatter>()

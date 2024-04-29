@@ -431,10 +431,37 @@
     <data name="SettingEntryView_NeedRestartMessage" xml:space="preserve">
         <value>The app will need to restart to apply this setting</value>
     </data>
+    <data name="FileOriginsPage_AddButtonText" xml:space="preserve">
+        <value>Add</value>
+    </data>
     <data name="DialogButton_Discard" xml:space="preserve">
         <value>DISCARD</value>
     </data>
     <data name="ChangelogPageViewModel_ChangelogPageViewModel_Changelog" xml:space="preserve">
         <value>Changelog</value>
+    </data>
+    <data name="DiagnosticListViewModel_DiagnosticListViewModel_Diagnostics" xml:space="preserve">
+        <value>Diagnostics</value>
+    </data>
+    <data name="FileOriginsPageTitle" xml:space="preserve">
+        <value>Library</value>
+    </data>
+    <data name="FileOriginsPageView_NameHeader" xml:space="preserve">
+        <value>MOD NAME</value>
+    </data>
+    <data name="FileOriginsPageView_VersionHeader" xml:space="preserve">
+        <value>VERSION</value>
+    </data>
+    <data name="FileOriginsPageView_SizeHeader" xml:space="preserve">
+        <value>SIZE</value>
+    </data>
+    <data name="FileOriginsPageView_DownloadedHeader" xml:space="preserve">
+        <value>DOWNLOADED</value>
+    </data>
+    <data name="FileOriginsPageView_AddedHeader" xml:space="preserve">
+        <value>ADDED</value>
+    </data>
+    <data name="FileOriginsPageView_ActionHeader" xml:space="preserve">
+        <value>ACTIONS</value>
     </data>
 </root>

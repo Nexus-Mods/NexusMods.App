@@ -50,8 +50,8 @@ public interface IPageFactory<out TViewModel, in TContext> : IPageFactory
             PageData = new PageData
             {
                 FactoryId = Id,
-                Context = actualContext
-            }
+                Context = actualContext,
+            },
         };
     }
 

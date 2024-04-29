@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+﻿using System.Reflection;
 
 namespace NexusMods.App.BuildInfo;
 
@@ -7,22 +7,13 @@ namespace NexusMods.App.BuildInfo;
 /// </summary>
 public static class ApplicationConstants
 {
-    /// <summary>
-    /// The current version of the app.
-    /// </summary>
-    public static Version CurrentVersion
+    static ApplicationConstants()
     {
-        get
-        {
-
-            if (CompileConstants.InstallationMethod == InstallationMethod.Manually || CompileConstants.IsDebug)
-                return Version.Parse("0.0.0.1");
-            if (Process.GetCurrentProcess().MainModule?.FileVersionInfo.FileVersion is not null)
-                return Version.TryParse(Process.GetCurrentProcess().MainModule!.FileVersionInfo.FileVersion!,
-                    out var version)
-                    ? version
-                    : Version.Parse("0.0.0.0");
-            return Version.Parse("0.0.0.0");
-        }
+        Version = Assembly.GetExecutingAssembly().GetName().Version;
     }
+
+    /// <summary>
+    /// Gets the current Version.
+    /// </summary>
+    public static Version? Version { get; }
 }

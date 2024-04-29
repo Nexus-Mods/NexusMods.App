@@ -1,6 +1,5 @@
 using System.Reactive;
 using System.Reactive.Concurrency;
-using System.Reactive.Disposables;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Controls.ModInfo.Loading;
@@ -8,6 +7,7 @@ using NexusMods.App.UI.Controls.Trees;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.Icons;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -27,32 +27,22 @@ public class ApplyDiffViewModel : APageViewModel<IApplyDiffViewModel>, IApplyDif
 
     public ApplyDiffViewModel(IWindowManager windowManager, IServiceProvider serviceProvider) : base(windowManager)
     {
+        TabTitle = Language.ApplyDiffViewModel_PageTitle;
+        TabIcon = IconValues.ListFilled;
+
         _dummyLoadingViewModel = new DummyLoadingViewModel();
         BodyViewModel = _dummyLoadingViewModel;
         _serviceProvider = serviceProvider;
 
         RefreshCommand = ReactiveCommand.Create( () =>
-            {
-                if (_fileTreeViewModel is null)
-                {
-                    return;
-                }
-
-                BodyViewModel = _dummyLoadingViewModel;
-                Refresh(_fileTreeViewModel);
-            }
-        );
-
-        this.WhenActivated(disposable =>
         {
-            GetWorkspaceController().SetTabTitle(
-                Language.ApplyDiffViewModel_PageTitle,
-                WorkspaceId,
-                PanelId,
-                TabId
-            );
+            if (_fileTreeViewModel is null)
+            {
+                return;
+            }
 
-            Disposable.Empty.DisposeWith(disposable);
+            BodyViewModel = _dummyLoadingViewModel;
+            Refresh(_fileTreeViewModel);
         });
     }
 

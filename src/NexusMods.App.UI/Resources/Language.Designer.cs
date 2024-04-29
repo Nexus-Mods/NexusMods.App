@@ -438,15 +438,6 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Analyzing.
-        /// </summary>
-        public static string DownloadStatusDesignViewModel_FormatStatus_Analyzing {
-            get {
-                return ResourceManager.GetString("DownloadStatusDesignViewModel_FormatStatus_Analyzing", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Complete.
         /// </summary>
         public static string DownloadStatusDesignViewModel_FormatStatus_Complete {
@@ -578,6 +569,78 @@ namespace NexusMods.App.UI.Resources {
         public static string ErrorView_Title {
             get {
                 return ResourceManager.GetString("ErrorView_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add.
+        /// </summary>
+        public static string FileOriginsPage_AddButtonText {
+            get {
+                return ResourceManager.GetString("FileOriginsPage_AddButtonText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Library.
+        /// </summary>
+        public static string FileOriginsPageTitle {
+            get {
+                return ResourceManager.GetString("FileOriginsPageTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ACTIONS.
+        /// </summary>
+        public static string FileOriginsPageView_ActionHeader {
+            get {
+                return ResourceManager.GetString("FileOriginsPageView_ActionHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ADDED.
+        /// </summary>
+        public static string FileOriginsPageView_AddedHeader {
+            get {
+                return ResourceManager.GetString("FileOriginsPageView_AddedHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DOWNLOADED.
+        /// </summary>
+        public static string FileOriginsPageView_DownloadedHeader {
+            get {
+                return ResourceManager.GetString("FileOriginsPageView_DownloadedHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MOD NAME.
+        /// </summary>
+        public static string FileOriginsPageView_NameHeader {
+            get {
+                return ResourceManager.GetString("FileOriginsPageView_NameHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SIZE.
+        /// </summary>
+        public static string FileOriginsPageView_SizeHeader {
+            get {
+                return ResourceManager.GetString("FileOriginsPageView_SizeHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to VERSION.
+        /// </summary>
+        public static string FileOriginsPageView_VersionHeader {
+            get {
+                return ResourceManager.GetString("FileOriginsPageView_VersionHeader", resourceCulture);
             }
         }
         
@@ -1293,6 +1356,12 @@ namespace NexusMods.App.UI.Resources {
         public static string ViewModInfoPage_Title {
             get {
                 return ResourceManager.GetString("ViewModInfoPage_Title", resourceCulture);
+            }
+        }
+        
+        public static string DiagnosticListViewModel_DiagnosticListViewModel_Diagnostics {
+            get {
+                return ResourceManager.GetString("DiagnosticListViewModel_DiagnosticListViewModel_Diagnostics", resourceCulture);
             }
         }
     }

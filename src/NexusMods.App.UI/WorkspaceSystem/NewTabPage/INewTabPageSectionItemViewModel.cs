@@ -1,5 +1,5 @@
-using System.Reactive;
 using Avalonia.Media;
+using NexusMods.App.UI.Controls.Navigation;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
@@ -12,5 +12,5 @@ public interface INewTabPageSectionItemViewModel : IViewModelInterface
 
     public IImage? Icon { get; }
 
-    public ReactiveCommand<Unit, PageData> SelectItemCommand { get; }
+    public ReactiveCommand<NavigationInformation, ValueTuple<PageData, NavigationInformation>> SelectItemCommand { get; }
 }

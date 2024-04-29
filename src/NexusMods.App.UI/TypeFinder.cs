@@ -6,6 +6,7 @@ using NexusMods.App.UI.Pages.Diff.ApplyDiff;
 using NexusMods.App.UI.Pages.Downloads;
 using NexusMods.App.UI.Pages.LoadoutGrid;
 using NexusMods.App.UI.Pages.ModInfo;
+using NexusMods.App.UI.Pages.ModLibrary;
 using NexusMods.App.UI.Pages.MyGames;
 using NexusMods.App.UI.Pages.Settings;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -22,7 +23,6 @@ internal class TypeFinder : ITypeFinder
     private static IEnumerable<Type> AllTypes => new[]
     {
         // factory context
-        typeof(DummyPageContext),
         typeof(NewTabPageContext),
         typeof(LoadoutGridContext),
         typeof(InProgressPageContext),
@@ -32,6 +32,7 @@ internal class TypeFinder : ITypeFinder
         typeof(ApplyDiffPageContext),
         typeof(SettingsPageContext),
         typeof(ChangelogPageContext),
+        typeof(FileOriginsPageContext),
 
         // workspace context
         typeof(EmptyContext),

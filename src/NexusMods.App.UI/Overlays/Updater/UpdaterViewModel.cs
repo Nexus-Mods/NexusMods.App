@@ -28,7 +28,7 @@ public class UpdaterViewModel : AViewModel<IUpdaterViewModel>, IUpdaterViewModel
     [Reactive]
     public Version NewVersion { get; set; } = Version.Parse("0.0.0.0");
 
-    [Reactive] public Version OldVersion { get; set; }
+    [Reactive] public Version? OldVersion { get; set; }
     public ICommand UpdateCommand { get; }
 
     public ICommand LaterCommand { get; }
@@ -50,7 +50,7 @@ public class UpdaterViewModel : AViewModel<IUpdaterViewModel>, IUpdaterViewModel
         _client = client;
         _logger = logger;
         _overlayController = overlayController;
-        OldVersion = ApplicationConstants.CurrentVersion;
+        OldVersion = ApplicationConstants.Version;
         Method = CompileConstants.InstallationMethod;
 
         LaterCommand = ReactiveCommand.Create(() =>

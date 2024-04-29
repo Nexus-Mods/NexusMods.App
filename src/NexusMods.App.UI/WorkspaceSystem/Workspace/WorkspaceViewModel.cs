@@ -342,6 +342,9 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
 
         // Replace the tab contents
         var newTabPage = _factoryController.Create(pageData, WindowId, Id, panel.Id, tab.Id);
+        tab.Header.Icon = newTabPage.ViewModel.TabIcon;
+        tab.Header.Title = newTabPage.ViewModel.TabTitle;
+
         tab.Contents = newTabPage;
 
         if (selectTab) panel.SelectTab(tab.Id);
@@ -377,6 +380,8 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
 
     private void OpenPageInNewPanel(PageData pageData, OpenPageBehavior.NewPanel newPanel)
     {
+        if (Panels.Count == MaxPanelCount) return;
+
         var optionalNewWorkspaceState = newPanel.NewWorkspaceState;
         var newWorkspaceState = optionalNewWorkspaceState.ValueOr(() =>
         {
