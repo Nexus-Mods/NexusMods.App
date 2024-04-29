@@ -75,6 +75,7 @@
             <icons:UnifiedIcon Classes="Mods" />
             <icons:UnifiedIcon Classes="JoystickGameFilled" />
             <icons:UnifiedIcon Classes="ModLibrary" />
+            <icons:UnifiedIcon Classes="ListFilled" />
             
         </WrapPanel>
     </Design.PreviewWith>
@@ -373,5 +374,9 @@
     
     <Style Selector="icons|UnifiedIcon.ModLibrary">
         <Setter Property="Value" Value="{x:Static icons:IconValues.ModLibrary}"/>
+    </Style>
+    
+    <Style Selector="icons|UnifiedIcon.ListFilled">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.ListFilled}"/>
     </Style>
 </Styles>
