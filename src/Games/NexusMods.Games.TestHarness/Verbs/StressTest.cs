@@ -45,7 +45,7 @@ public class StressTest
         var results = new List<(string FileName, ModId ModId, Abstractions.NexusWebApi.Types.FileId FileId, Hash Hash, bool Passed, Exception? exception)>();
 
         await using var gameFolder = temporaryFileManager.CreateFolder();
-        var gameId = manualLocator.Add(game, new Version(1, 0), gameFolder);
+        var gameId = await manualLocator.Add(game, new Version(1, 0), gameFolder);
         game.ResetInstallations();
         var install = game.Installations.First(f => f.Store == GameStore.ManuallyAdded);
 
@@ -139,7 +139,7 @@ public class StressTest
         }
         finally
         {
-            manualLocator.Remove(gameId);
+            await manualLocator.Remove(gameId);
         }
 
         return 0;
