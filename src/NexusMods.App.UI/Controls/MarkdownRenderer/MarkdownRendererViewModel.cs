@@ -8,6 +8,7 @@ using Markdown.Avalonia.Plugins;
 using Markdown.Avalonia.Utils;
 using Microsoft.Extensions.Logging;
 using NexusMods.CrossPlatform.Process;
+using NexusMods.Hashing.xxHash64;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -17,6 +18,7 @@ namespace NexusMods.App.UI.Controls.MarkdownRenderer;
 public class MarkdownRendererViewModel : AViewModel<IMarkdownRendererViewModel>, IMarkdownRendererViewModel
 {
     private readonly ILogger _logger;
+    private readonly IImageCache _imageCache;
     private readonly HttpClient _httpClient;
 
     [Reactive] public string Contents { get; set; } = string.Empty;
@@ -30,9 +32,11 @@ public class MarkdownRendererViewModel : AViewModel<IMarkdownRendererViewModel>,
     public MarkdownRendererViewModel(
         ILogger<MarkdownRendererViewModel> logger,
         IOSInterop osInterop,
+        IImageCache imageCache,
         HttpClient httpClient)
     {
         _logger = logger;
+        _imageCache = imageCache;
         _httpClient = httpClient;
 
         PathResolver = new PathResolverImpl(this);
@@ -114,9 +118,12 @@ public class MarkdownRendererViewModel : AViewModel<IMarkdownRendererViewModel>,
 
         var uri = new Uri($"{_gitHubBaseUri}{path}");
 
-        _logger.LogDebug("Trying to fetch {Uri}", uri);
-        var stream = await _httpClient.GetStreamAsync(uri, cancellationToken);
-        return stream;
+        var hash = await _imageCache.Prefetch(new ImageIdentifier(uri), cancellationToken);
+        var hashValue = hash.Value;
+
+        var bytes = BitConverter.GetBytes(hashValue);
+        var ms = new MemoryStream(bytes, writable: false);
+        return ms;
     }
 
     private class ImageResolvePluginImpl : IMdAvPlugin
@@ -161,10 +168,16 @@ public class MarkdownRendererViewModel : AViewModel<IMarkdownRendererViewModel>,
             _parent = parent;
         }
 
-        public Task<IImage?> Load(Stream stream)
+        public async Task<IImage?> Load(Stream stream)
         {
-            var bitmap = new Bitmap(stream);
-            return Task.FromResult<IImage?>(bitmap);
+            var bytes = GC.AllocateUninitializedArray<byte>(sizeof(ulong));
+            stream.ReadExactly(bytes);
+
+            var hashValue = BitConverter.ToUInt64(bytes);
+            var hash = Hash.FromULong(hashValue);
+
+            var image = await _parent._imageCache.GetImage(new ImageIdentifier(hash), CancellationToken.None);
+            return image;
         }
     }
 }

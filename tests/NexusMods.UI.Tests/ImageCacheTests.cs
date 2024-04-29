@@ -1,6 +1,5 @@
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.GuidedInstallers;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.App.UI;
@@ -30,10 +29,10 @@ public class ImageCacheTests : AUiTest
         using var scope = _serviceProvider.CreateScope();
         using var imageCache = scope.ServiceProvider.GetRequiredService<IImageCache>();
 
-        var image1 = await imageCache.GetImage(new OptionImage(uri), cancellationToken: default);
+        var image1 = await imageCache.GetImage(new ImageIdentifier(uri), cancellationToken: default);
         image1.Should().NotBeNull();
 
-        var image2 = await imageCache.GetImage(new OptionImage(uri), cancellationToken: default);
+        var image2 = await imageCache.GetImage(new ImageIdentifier(uri), cancellationToken: default);
         image2.Should().NotBeNull();
 
         image1.Should().BeSameAs(image2);
@@ -47,10 +46,10 @@ public class ImageCacheTests : AUiTest
         using var scope = _serviceProvider.CreateScope();
         using var imageCache = scope.ServiceProvider.GetRequiredService<IImageCache>();
 
-        var image1 = await imageCache.GetImage(new OptionImage(new OptionImage.ImageStoredFile(hash)), cancellationToken: default);
+        var image1 = await imageCache.GetImage(new ImageIdentifier(hash), cancellationToken: default);
         image1.Should().NotBeNull();
 
-        var image2 = await imageCache.GetImage(new OptionImage(new OptionImage.ImageStoredFile(hash)), cancellationToken: default);
+        var image2 = await imageCache.GetImage(new ImageIdentifier(hash), cancellationToken: default);
         image2.Should().NotBeNull();
 
         image1.Should().BeSameAs(image2);

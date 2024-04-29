@@ -521,6 +521,9 @@
         <Compile Update="Pages\Changelog\ChangelogPageViewModel.cs">
           <DependentUpon>IChangelogPageViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="ImageCache.cs">
+          <DependentUpon>IImageCache.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>

@@ -1,8 +1,6 @@
-using System.Diagnostics;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.GuidedInstallers;
 using NexusMods.Abstractions.IO;
 using NexusMods.Hashing.xxHash64;
 
@@ -12,49 +10,62 @@ internal sealed class ImageCache : IImageCache
 {
     private readonly ILogger<ImageCache> _logger;
     private readonly IFileStore _fileStore;
+    private readonly HttpClient _client;
 
     private readonly Dictionary<Hash, Bitmap> _cache = new();
 
     public ImageCache(
         ILogger<ImageCache> logger,
-        IFileStore fileStore)
+        IFileStore fileStore,
+        HttpClient client)
     {
         _logger = logger;
         _fileStore = fileStore;
+        _client = client;
     }
 
-    public async Task<IImage?> GetImage(OptionImage optionImage, CancellationToken cancellationToken)
+    public async Task<IImage?> GetImage(ImageIdentifier imageIdentifier, CancellationToken cancellationToken)
     {
-        var hash = GetHash(optionImage);
-        if (_cache.TryGetValue(hash, out var cachedImage)) return cachedImage;
+        var hash = await Prefetch(imageIdentifier, cancellationToken);
+        return hash == Hash.Zero ? null : _cache.GetValueOrDefault(hash);
+    }
 
-        var image = await Load(optionImage, cancellationToken);
-        if (image is null) return null;
+    public async Task<Hash> Prefetch(
+        ImageIdentifier imageIdentifier,
+        CancellationToken cancellationToken)
+    {
+        var hash = GetHash(imageIdentifier);
+        if (_cache.TryGetValue(hash, out _)) return hash;
+
+        var image = await Load(imageIdentifier, cancellationToken);
+        if (image is null) return Hash.Zero;
 
         _cache.TryAdd(hash, image);
-        return image;
+        return hash;
     }
 
-    private static Hash GetHash(OptionImage optionImage)
+    private static Hash GetHash(ImageIdentifier imageIdentifier)
     {
-        if (optionImage.IsT0) return optionImage.AsT0.ToString().XxHash64AsUtf8();
-        if (optionImage.IsT1) return optionImage.AsT1.FileHash;
-        throw new UnreachableException();
+        return imageIdentifier.Union.Match(
+            f0: uri => uri.ToString().XxHash64AsUtf8(),
+            f1: hash => hash
+        );
     }
 
-    private Task<Bitmap?> Load(OptionImage optionImage, CancellationToken cancellationToken)
+    private Task<Bitmap?> Load(ImageIdentifier imageIdentifier, CancellationToken cancellationToken)
     {
-        if (optionImage.IsT0) return LoadRemoteImage(optionImage.AsT0, cancellationToken);
-        if (optionImage.IsT1) return LoadImageStoredFile(optionImage.AsT1, cancellationToken);
-        throw new UnreachableException();
+        return imageIdentifier.Union.Match(
+            f0: uri => LoadFromUri(uri, cancellationToken),
+            f1: hash => LoadFromHash(hash, cancellationToken)
+        );
     }
 
-    private async Task<Bitmap?> LoadRemoteImage(Uri uri, CancellationToken cancellationToken)
+    private async Task<Bitmap?> LoadFromUri(Uri uri, CancellationToken cancellationToken)
     {
         try
         {
-            var client = new HttpClient();
-            var stream = await client.GetByteArrayAsync(uri, cancellationToken);
+            _logger.LogDebug("Fetching image from {Uri}", uri);
+            var stream = await _client.GetByteArrayAsync(uri, cancellationToken);
             return new Bitmap(new MemoryStream(stream));
         }
         catch (Exception e)
@@ -64,13 +75,21 @@ internal sealed class ImageCache : IImageCache
         }
     }
 
-    private async Task<Bitmap?> LoadImageStoredFile(
-        OptionImage.ImageStoredFile imageStoredFile,
+    private async Task<Bitmap?> LoadFromHash(
+        Hash hash,
         CancellationToken cancellationToken)
     {
-        await using var stream = await _fileStore.GetFileStream(imageStoredFile.FileHash, cancellationToken);
-        var res = new Bitmap(stream);
-        return res;
+        try
+        {
+            await using var stream = await _fileStore.GetFileStream(hash, cancellationToken);
+            var res = new Bitmap(stream);
+            return res;
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Exception while loading image from file store with hash {Hash}", hash);
+            return null;
+        }
     }
 
     public void Dispose()
