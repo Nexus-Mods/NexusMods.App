@@ -15,11 +15,7 @@ public class NewTabPageDesignViewModel : NewTabPageViewModel
             {
                 SectionName = $"Section {i % 3}",
                 ItemName = $"Item {i}",
-                PageData = new PageData
-                {
-                    FactoryId = DummyPageFactory.StaticId,
-                    Context = new DummyPageContext()
-                }
+                PageData = null!,
             })
             .ToArray();
     }
