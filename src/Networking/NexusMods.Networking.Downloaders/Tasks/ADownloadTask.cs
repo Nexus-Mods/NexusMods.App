@@ -117,8 +117,15 @@ public abstract class ADownloadTask : ReactiveObject, IDownloadTask
         
         if (TransientState != null)
         {
-            var downloaded = TransientState.ActivityStatus?.MakeTypedReport().Current.Value ?? Size.Zero;
-            tx.Add(PersistentState.Id, DownloaderState.Downloaded, downloaded);
+            var report = TransientState.ActivityStatus?.MakeTypedReport();
+            if (report == null || !report.Current.HasValue)
+            {
+                tx.Add(PersistentState.Id, DownloaderState.Downloaded, Size.Zero);
+            }
+            else
+            {
+                tx.Add(PersistentState.Id, DownloaderState.Downloaded, report.Current.Value);
+            }
         }
         
         var result = await tx.Commit();
