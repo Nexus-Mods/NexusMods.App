@@ -1,7 +1,9 @@
 using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
 using DynamicData;
+using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
+using NexusMods.Icons;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
@@ -15,6 +17,9 @@ public class NewTabPageViewModel : APageViewModel<INewTabPageViewModel>, INewTab
 
     public NewTabPageViewModel(IWindowManager windowManager, PageDiscoveryDetails[] discoveryDetails) : base(windowManager)
     {
+        TabTitle = Language.PanelTabHeaderViewModel_Title_New_Tab;
+        TabIcon = IconValues.Tab;
+        
         _itemSource.Edit(list =>
         {
             var toAdd = discoveryDetails
