@@ -34,7 +34,7 @@
 		<value>Więcej informacji o zbieranych przez nas danych</value>
 	</data>
 	<data name="MetricsOptIn_MainMessage" xml:space="preserve">
-		<value>Pomóż nam zapewnić ci najlepsze wrażenia z modowania.&#x0a;&#x0a;Za twoją zgodą będziemy gromadzić informacje analityczne i wysyłać je do naszego zespołu, by poprawić jakość i wydajność aplikacji.&#x0a;&#x0a;Informacje analityczne są wysyłane anonimowo i nigdy nie będą udostępniane stronom trzecim.</value>
+		<value>Pomóż nam zapewnić ci najlepsze wrażenia z modowania.&#x0a;&#x0a;Za twoją zgodą będziemy gromadzić informacje analityczne i wysyłać je do naszego zespołu, aby poprawić jakość i wydajność aplikacji.&#x0a;&#x0a;Informacje analityczne są wysyłane anonimowo i nigdy nie będą udostępniane stronom trzecim.</value>
 	</data>
 	<data name="Updater_LATER" xml:space="preserve">
 		<value>PÓŹNIEJ</value>
@@ -55,7 +55,7 @@
 		<value>Pokaż dziennik zmian na GitHub</value>
 	</data>
 	<data name="LoadoutGridView_AddMod_FilePicker_Title" xml:space="preserve">
-		<value>Proszę wybrać plik moda do zainstalowania</value>
+		<value>Proszę wybrać plik modu do zainstalowania</value>
 	</data>
 	<data name="LoadoutGridView_AddMod_FileType_Archive" xml:space="preserve">
 		<value>Archiwum</value>
@@ -91,7 +91,7 @@
 		<value>ZAINSTALOWANE</value>
 	</data>
 	<data name="Helpers_GenerateHeader_MOD_NAME" xml:space="preserve">
-		<value>NAZWA MODA</value>
+		<value>NAZWA modu</value>
 	</data>
 	<data name="Helpers_GenerateHeader_GAME" xml:space="preserve">
 		<value>GRA</value>
@@ -262,13 +262,13 @@
 		<value>Strona główna</value>
 	</data>
     <data name="LoadoutGridView__View_Files" xml:space="preserve">
-        <value>Pokaż pliki moda</value>
+        <value>Pokaż pliki modu</value>
     </data>
     <data name="FileTreeNodeView__View" xml:space="preserve">
         <value>Pokaż</value>
     </data>
     <data name="ViewModInfoPage_Title" xml:space="preserve">
-        <value>Informacje moda</value>
+        <value>Informacje modu</value>
     </data>
 	<data name="LoadoutLeftMenuViewModel_LoadoutGridEntry" xml:space="preserve">
 		<value>Moje Mody</value>
@@ -310,10 +310,10 @@
         <value>Aplikacja nie może uzyskać dostępu do określonej modyfikacji, ponieważ została usunięta lub już nie istnieje.</value>
     </data>
     <data name="ViewModInfoPage_NotFound_Title" xml:space="preserve">
-        <value>Brak moda</value>
+        <value>Brak modu</value>
     </data>
     <data name="ErrorView_MissingMod_Subheader" xml:space="preserve">
-        <value>Nie znaleziono moda</value>
+        <value>Nie znaleziono modu</value>
     </data>
     <data name="DiagnosticDetailsView_SeverityTitle_SUGGESTION" xml:space="preserve">
         <value>SUGESTIA</value>
@@ -363,7 +363,7 @@
         <value>Wszystkie wspierane gry zostały dodane. Nie wykryto żadnych nowych gier.</value>
     </data>
     <data name="MyGamesView__NoGamesManagedText" xml:space="preserve">
-        <value>Dodaj gry, by rozpocząć modowanie</value>
+        <value>Dodaj gry, aby rozpocząć modowanie</value>
     </data>
     <data name="GameWidget__Adding_game" xml:space="preserve">
         <value>Dodawanie gry</value>
