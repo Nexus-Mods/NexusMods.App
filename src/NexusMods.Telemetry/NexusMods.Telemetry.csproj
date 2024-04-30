@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Telemetry\NexusMods.Abstractions.Telemetry.csproj" />
+      <ProjectReference Include="..\NexusMods.App.BuildInfo\NexusMods.App.BuildInfo.csproj" />
     </ItemGroup>
 
     <ItemGroup>
