@@ -2,6 +2,7 @@
 using NexusMods.Abstractions.Triggers;
 using NexusMods.DataModel.Loadouts.LoadoutSynchronizerDTOs;
 using NexusMods.Hashing.xxHash64;
+using File = NexusMods.Abstractions.Loadouts.Files.File;
 
 namespace NexusMods.DataModel.Loadouts.ModFiles;
 
@@ -13,7 +14,7 @@ public interface IGeneratedFile
     /// <summary>
     /// The trigger filter that determines if this file should be re-generated.
     /// </summary>
-    public ITriggerFilter<ModFilePair, Plan> TriggerFilter { get; }
+    public ITriggerFilter<File.Model, Plan> TriggerFilter { get; }
 
     /// <summary>
     /// Generates the contents of the file

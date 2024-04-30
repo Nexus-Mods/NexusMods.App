@@ -64,7 +64,9 @@ public class RunGameTool<T> : IRunGameTool
     public async Task Execute(LoadoutId loadout, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Starting {Name}", Name);
+        throw new NotImplementedException();
 
+        /*
         var program = await GetGamePath(loadout);
         var primaryFile = _game.GetPrimaryFile(loadout.Installation.Store).CombineChecked(loadout.Installation);
 
@@ -120,6 +122,7 @@ public class RunGameTool<T> : IRunGameTool
         }
 
         _logger.LogInformation("Finished running {Program}", program);
+        */
     }
 
     private async Task<CommandResult> RunCommand(CancellationToken cancellationToken, AbsolutePath program)
@@ -241,7 +244,7 @@ public class RunGameTool<T> : IRunGameTool
     /// <param name="loadout"></param>
     /// <param name="applyPlan"></param>
     /// <returns></returns>
-    protected virtual ValueTask<AbsolutePath> GetGamePath(Loadout loadout)
+    protected virtual ValueTask<AbsolutePath> GetGamePath(Loadout.Model loadout)
     {
         return ValueTask.FromResult(_game.GetPrimaryFile(loadout.Installation.Store)
             .Combine(loadout.Installation.LocationsRegister[LocationId.Game]));

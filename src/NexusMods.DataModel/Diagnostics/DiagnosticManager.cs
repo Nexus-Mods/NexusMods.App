@@ -18,7 +18,6 @@ namespace NexusMods.DataModel.Diagnostics;
 internal sealed class DiagnosticManager : IDiagnosticManager
 {
     private readonly ILogger<DiagnosticManager> _logger;
-    private readonly ILoadoutRegistry _loadoutRegistry;
 
     private static readonly object Lock = new();
     private readonly SourceCache<IConnectableObservable<Diagnostic[]>, LoadoutId> _observableCache = new(_ => throw new NotSupportedException());
@@ -27,11 +26,9 @@ internal sealed class DiagnosticManager : IDiagnosticManager
     private readonly CompositeDisposable _compositeDisposable = new();
 
     public DiagnosticManager(
-        ILogger<DiagnosticManager> logger,
-        ILoadoutRegistry loadoutRegistry)
+        ILogger<DiagnosticManager> logger)
     {
         _logger = logger;
-        _loadoutRegistry = loadoutRegistry;
     }
 
     public IObservable<Diagnostic[]> GetLoadoutDiagnostics(LoadoutId loadoutId)
@@ -43,6 +40,8 @@ internal sealed class DiagnosticManager : IDiagnosticManager
             var existingObservable = _observableCache.Lookup(loadoutId);
             if (existingObservable.HasValue) return existingObservable.Value;
 
+            throw new NotImplementedException();
+            /*
             var connectableObservable = _loadoutRegistry
                 .RevisionsAsLoadouts(loadoutId)
                 .DistinctUntilChanged(loadout => loadout.DataStoreId)
@@ -66,11 +65,14 @@ internal sealed class DiagnosticManager : IDiagnosticManager
             _compositeDisposable.Add(connectableObservable.Connect());
             _observableCache.Edit(updater => updater.AddOrUpdate(connectableObservable, loadoutId));
             return connectableObservable;
+            */
         }
     }
 
-    private async Task<Diagnostic[]> GetLoadoutDiagnostics(Loadout loadout, CancellationToken cancellationToken)
+    private async Task<Diagnostic[]> GetLoadoutDiagnostics(Loadout.Model loadout, CancellationToken cancellationToken)
     {
+        throw new NotImplementedException();
+        /*
         var diagnosticEmitters = loadout.Installation.GetGame().DiagnosticEmitters;
 
         try
@@ -123,6 +125,7 @@ internal sealed class DiagnosticManager : IDiagnosticManager
             // ignore
             return Array.Empty<Diagnostic>();
         }
+        */
     }
 
     public IObservable<(int NumSuggestions, int NumWarnings, int NumCritical)> CountDiagnostics(LoadoutId loadoutId)

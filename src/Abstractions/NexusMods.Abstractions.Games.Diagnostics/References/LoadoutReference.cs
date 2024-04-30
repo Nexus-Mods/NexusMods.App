@@ -11,7 +11,7 @@ namespace NexusMods.Abstractions.Diagnostics.References;
 /// A reference to a <see cref="Loadout"/>.
 /// </summary>
 [PublicAPI]
-public record LoadoutReference : IDataReference<LoadoutId, Loadout>
+public record LoadoutReference : IDataReference<LoadoutId, Loadout.Model>
 {
     /// <inheritdoc/>
     public required IId DataStoreId { get; init; }
@@ -20,12 +20,15 @@ public record LoadoutReference : IDataReference<LoadoutId, Loadout>
     public required LoadoutId DataId { get; init; }
 
     /// <inheritdoc/>
-    public Loadout? ResolveData(IServiceProvider serviceProvider, IDataStore dataStore)
+    public Loadout.Model? ResolveData(IServiceProvider serviceProvider, IDataStore dataStore)
     {
+        throw new NotImplementedException();
+        /*
         var loadoutRegistry = serviceProvider.GetRequiredService<ILoadoutRegistry>();
         return loadoutRegistry.Get(DataId);
+        */
     }
 
     /// <inheritdoc/>
-    public string ToStringRepresentation(Loadout data) => data.Name;
+    public string ToStringRepresentation(Loadout.Model data) => data.Name;
 }

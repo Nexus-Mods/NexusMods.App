@@ -1,6 +1,7 @@
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Ids;
 
 namespace NexusMods.StandardGameLocators.TestHelpers;
 
@@ -8,7 +9,7 @@ public class ListFilesTool : ITool
 {
     public IEnumerable<GameDomain> Domains => new[] { GameDomain.From("stubbed-game") };
 
-    public async Task Execute(Loadout loadout, CancellationToken cancellationToken)
+    public async Task Execute(Loadout.Model loadout, CancellationToken cancellationToken)
     {
         var listPath = loadout.Installation.LocationsRegister[LocationId.Game];
         var outPath = GeneratedFilePath.Combine(listPath);
@@ -22,5 +23,10 @@ public class ListFilesTool : ITool
     }
 
     public string Name => "List Files";
+    public Task Execute(LoadoutId loadout, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
+
     public static readonly GamePath GeneratedFilePath = new(LocationId.Game, "toolFiles.txt");
 }

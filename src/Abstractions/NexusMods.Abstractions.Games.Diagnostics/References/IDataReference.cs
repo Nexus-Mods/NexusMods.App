@@ -1,7 +1,7 @@
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Serialization;
-using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.Abstractions.Serialization.DataModel.Ids;
+using NexusMods.MnemonicDB.Abstractions.Models;
 
 namespace NexusMods.Abstractions.Diagnostics.References;
 

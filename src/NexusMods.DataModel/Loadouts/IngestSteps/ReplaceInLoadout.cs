@@ -1,4 +1,5 @@
-﻿using NexusMods.Abstractions.Loadouts.Mods;
+﻿using NexusMods.Abstractions.Loadouts.Ids;
+using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 
@@ -27,7 +28,7 @@ public record ReplaceInLoadout : IIngestStep
     /// <summary>
     /// The id of the mod file to be replaced
     /// </summary>
-    public required ModFileId ModFileId { get; init; }
+    public required FileId ModFileId { get; init; }
     
     /// <summary>
     /// The id of the mod that the file belongs to

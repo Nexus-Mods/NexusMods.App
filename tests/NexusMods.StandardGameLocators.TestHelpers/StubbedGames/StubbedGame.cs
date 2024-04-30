@@ -20,6 +20,7 @@ using NexusMods.Abstractions.Serialization;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
+using File = NexusMods.Abstractions.Loadouts.Files.File;
 
 // ReSharper disable InconsistentNaming
 
@@ -104,10 +105,6 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
         }
     }
 
-    public override IEnumerable<AModFile> GetGameFiles(GameInstallation installation, IDataStore store)
-    {
-        return Array.Empty<AModFile>();
-    }
 
     public override ILoadoutSynchronizer Synchronizer =>
         // Lazy initialization to avoid circular dependencies

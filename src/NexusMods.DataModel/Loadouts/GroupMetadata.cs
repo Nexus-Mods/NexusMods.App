@@ -9,7 +9,7 @@ namespace NexusMods.DataModel.Loadouts;
 /// </summary>
 [PublicAPI]
 [JsonName("NexusMods.NexusMods.DataModel.Loadouts.GroupMetadata")]
-public record GroupMetadata : AModMetadata
+public record GroupMetadata
 {
     /// <summary>
     /// Unique identifier of the group.

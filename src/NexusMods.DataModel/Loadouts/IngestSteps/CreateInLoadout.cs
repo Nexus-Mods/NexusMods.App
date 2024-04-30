@@ -1,4 +1,5 @@
-﻿using NexusMods.Abstractions.Loadouts.Mods;
+﻿using NexusMods.Abstractions.Loadouts.Ids;
+using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 

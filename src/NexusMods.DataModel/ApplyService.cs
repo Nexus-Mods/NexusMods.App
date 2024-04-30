@@ -15,26 +15,26 @@ namespace NexusMods.DataModel;
 /// <inheritdoc />
 public class ApplyService : IApplyService
 {
-    private readonly ILoadoutRegistry _loadoutRegistry;
     private readonly ILogger<ApplyService> _logger;
     private readonly IDiskStateRegistry _diskStateRegistry;
 
     /// <summary>
     /// DI Constructor
     /// </summary>
-    public ApplyService(ILoadoutRegistry loadoutRegistry, IDiskStateRegistry diskStateRegistry, ILogger<ApplyService> logger)
+    public ApplyService(IDiskStateRegistry diskStateRegistry, ILogger<ApplyService> logger)
     {
-        _loadoutRegistry = loadoutRegistry;
         _logger = logger;
         _diskStateRegistry = diskStateRegistry;
     }
 
     /// <inheritdoc />
-    public async Task<Loadout> Apply(LoadoutId loadoutId)
+    public async Task<Loadout.Model> Apply(LoadoutId loadoutId)
     {
         // TODO: Check if this or any other loadout is being applied to this game installation
         // Queue the loadout to be applied if that is the case.
 
+        throw new NotImplementedException();
+        /*
         var loadout = _loadoutRegistry.Get(loadoutId);
         if (loadout is null)
             throw new ArgumentException("Loadout not found", nameof(loadoutId));
@@ -85,12 +85,16 @@ public class ApplyService : IApplyService
         }
 
         return loadout;
+        */
     }
 
 
     /// <inheritdoc />
     public ValueTask<FileDiffTree> GetApplyDiffTree(LoadoutId loadoutId)
     {
+        throw new NotImplementedException();
+        
+        /*
         var loadout = _loadoutRegistry.Get(loadoutId);
         if (loadout is null)
             throw new ArgumentException("Loadout not found", nameof(loadoutId));
@@ -100,11 +104,14 @@ public class ApplyService : IApplyService
         var syncrhonizer = loadout.Installation.GetGame().Synchronizer;
         
         return syncrhonizer.LoadoutToDiskDiff(loadout, prevDiskState);
+        */
     }
 
     /// <inheritdoc />
-    public async Task<Loadout> Ingest(GameInstallation gameInstallation)
+    public async Task<Loadout.Model> Ingest(GameInstallation gameInstallation)
     {
+        throw new NotImplementedException();
+        /*
         var lastAppliedRevision = GetLastAppliedLoadout(gameInstallation);
         if (lastAppliedRevision is null)
         {
@@ -136,6 +143,7 @@ public class ApplyService : IApplyService
         );
         
         return mergedLoadout;
+        */
     }
 
     /// <inheritdoc />

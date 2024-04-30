@@ -37,8 +37,6 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     private readonly ISorter _sorter;
     private readonly IOSInformation _os;
     private IFileStore _fileStore;
-    
-    public MultiFn<(File.Model File, )
 
     /// <summary>
     /// Loadout synchronizer base constructor.
@@ -97,7 +95,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             if (!mod.Enabled)
                 continue;
 
-            foreach (var (_, file) in mod.Files)
+            foreach (var file in mod.Files)
             {
                 if (file is not IToFile toFile)
                     continue;
@@ -182,8 +180,12 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                     if (file.Get(StoredFile.Hash) == entry.Hash)
                         continue;
 
-                    toExtract.Add(KeyValuePair.Create(entry.Path, file.Remap<StoredFile.Model>()));
+                    throw new NotImplementedException();
+                    //toExtract.Add(KeyValuePair.Create(entry.Path, file.Remap<StoredFile.Model>()));
                 }
+
+                throw new NotImplementedException();
+                /*
                 else if (WriteGeneratedFileFn.Instance.Supports((file, loadout, flattenedLoadout, fileTree)))
                 {
                     toWrite.Add(KeyValuePair.Create(entry.Path, file));
@@ -192,6 +194,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                 {
                     _logger.LogError("Unknown file type: {Entity}", file);
                 }
+                */
             }
         }
 
@@ -216,8 +219,11 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                 throw new UnreachableException("HandleNeedIngest should have thrown");
             }
 
+            throw new NotImplementedException();
+            /*
             switch (item.Item.Value!)
             {
+                
                 case StoredFile fa:
                     // Don't add toExtract to the results yet as we'll need to get the modified file times
                     // after we extract them
@@ -230,7 +236,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                     break;
                 default:
                     throw new UnreachableException("No way to handle this file");
-            }
+            }*/
         }
         
         // Now delete all the files that need deleting in one batch.
@@ -245,12 +251,13 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         {
             entry.Key.Parent.CreateDirectory();
             await using var outputStream = entry.Key.Create();
-            var hash = await WriteGeneratedFileFn.Instance.Invoke((entry.Value, outputStream, loadout, flattenedLoadout, fileTree)));
+            throw new NotImplementedException();
+            /*
             if (hash == null)
             {
                 outputStream.Position = 0;
                 hash = await outputStream.HashingCopyAsync(Stream.Null, CancellationToken.None);
-            }
+            }*
 
             resultingItems[((IToFile)entry.Value).To] = new DiskStateEntry
             {
@@ -258,10 +265,14 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                 Size = Size.From((ulong)outputStream.Length),
                 LastModified = entry.Key.FileInfo.LastWriteTimeUtc
             };
+            */
         }
 
         // Extract all the files that need extracting in one batch.
+        throw new NotImplementedException();
+        /*
         await _fileStore.ExtractFiles(GetFilesToExtract(toExtract));
+        */
 
         // Update the resulting items with the new file times
         var isUnix = _os.IsUnix();
@@ -332,10 +343,11 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         // Quick convert function such that to not be LINQ bottlenecked.
         // Needed as separate method because parent method is async.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static (Hash Hash, AbsolutePath Dest)[] GetFilesToExtract(List<KeyValuePair<AbsolutePath, StoredFile>> toExtract) 
+        static (Hash Hash, AbsolutePath Dest)[] GetFilesToExtract(List<KeyValuePair<AbsolutePath, File.Model>> toExtract) 
         {
             (Hash Hash, AbsolutePath Dest)[] entries = GC.AllocateUninitializedArray<(Hash Src, AbsolutePath Dest)>(toExtract.Count);
-            var toExtractSpan = CollectionsMarshal.AsSpan(toExtract);
+            throw new NotImplementedException();
+            /*var toExtractSpan = CollectionsMarshal.AsSpan(toExtract);
             for (var x = 0; x < toExtract.Count; x++)
             {
                 ref var item = ref toExtractSpan[x];
@@ -343,6 +355,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             }
 
             return entries;
+            */
         }
     }
 
@@ -383,18 +396,21 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                 // Else, the file has changed, so we need to update it.
                 var newFile = await HandleChangedFile(prevFile, prevEntry.Item.Value, item.Item.Value, gamePath, absPath);
                 newFiles.Add(newFile);
-                results.Add(KeyValuePair.Create(gamePath, newFile));
+                throw new NotImplementedException();
+                //results.Add(KeyValuePair.Create(gamePath, newFile));
             }
             else
             {
                 // Else, the file is new, so we need to add it.
                 var newFile = await HandleNewFile(item.Item.Value, gamePath, absPath);
                 newFiles.Add(newFile);
-                results.Add(KeyValuePair.Create(gamePath, newFile));
+                throw new NotImplementedException();
+                //results.Add(KeyValuePair.Create(gamePath, newFile));
             }
         }
 
-        CollectionsMarshal.AsSpan(newFiles).EnsureAllPersisted(_store);
+        throw new NotImplementedException();
+        //CollectionsMarshal.AsSpan(newFiles).EnsureAllPersisted(_store);
 
         // Deletes are handled implicitly as we only return files that exist in the new state.
         return FileTree.Create(results);
@@ -410,8 +426,10 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// <returns></returns>
     /// <exception cref="NotImplementedException"></exception>
     /// <returns>An unpersisted new file. This file needs to be persisted.</returns>
-    protected virtual ValueTask<AModFile> HandleNewFile(DiskStateEntry newEntry, GamePath gamePath, AbsolutePath absolutePath)
+    protected virtual ValueTask<File.Model> HandleNewFile(DiskStateEntry newEntry, GamePath gamePath, AbsolutePath absolutePath)
     {
+        throw new NotImplementedException();
+        /*
         var newFile = new StoredFile
         {
             Id = ModFileId.NewId(),
@@ -420,6 +438,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             To = gamePath
         };
         return ValueTask.FromResult<AModFile>(newFile);
+        */
     }
 
 
@@ -427,14 +446,10 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// When a file is changed, this method will be called to convert the new data into a AModFile. The
     /// file on disk is still accessible via <paramref name="absolutePath"/>
     /// </summary>
-    /// <param name="prevFile"></param>
-    /// <param name="prevEntry"></param>
-    /// <param name="newEntry"></param>
-    /// <param name="gamePath"></param>
-    /// <param name="absolutePath"></param>
-    /// <returns>An unpersisted changed file. This file needs to be persisted.</returns>
-    protected virtual async ValueTask<AModFile> HandleChangedFile(AModFile prevFile, DiskStateEntry prevEntry, DiskStateEntry newEntry, GamePath gamePath, AbsolutePath absolutePath)
+    protected virtual async ValueTask<File.Model> HandleChangedFile(File.Model prevFile, DiskStateEntry prevEntry, DiskStateEntry newEntry, GamePath gamePath, AbsolutePath absolutePath)
     {
+        throw new NotImplementedException();
+        /*
         if (prevFile is IGeneratedFile gf)
         {
             await using var stream = absolutePath.Read();
@@ -450,12 +465,15 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             To = gamePath
         };
         return newFile;
+        */
     }
 
     /// <inheritdoc />
-    public ValueTask<FlattenedLoadout> FileTreeToFlattenedLoadout(FileTree fileTree, Loadout prevLoadout,
+    public ValueTask<FlattenedLoadout> FileTreeToFlattenedLoadout(FileTree fileTree, Loadout.Model prevLoadout,
         FlattenedLoadout prevFlattenedLoadout)
     {
+        throw new NotImplementedException();
+        /*
         var results = new List<KeyValuePair<GamePath, ModFilePair>>();
         var mods = prevLoadout.Mods.Values
             .Where(m => !string.IsNullOrWhiteSpace(m.ModCategory))
@@ -514,6 +532,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         }
 
         return ValueTask.FromResult(FlattenedLoadout.Create(results));
+        */
     }
 
     /// <summary>
@@ -525,8 +544,10 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// <param name="file"></param>
     /// <param name="modForCategory"></param>
     /// <returns></returns>
-    protected virtual Mod GetModForNewFile(Loadout.Model prevLoadout, GamePath path, AModFile file, Func<string, Mod> modForCategory)
+    protected virtual Mod.Model GetModForNewFile(Loadout.Model prevLoadout, GamePath path, File.Model file, Func<string, Mod.Model> modForCategory)
     {
+        throw new NotImplementedException();
+        /*
         if (path.LocationId == LocationId.Preferences)
         {
             return modForCategory(Mod.PreferencesCategory);
@@ -539,20 +560,27 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         {
             return modForCategory(Mod.OverridesCategory);
         }
+        */
     }
 
     /// <inheritdoc />
     public ValueTask<Loadout.Model> FlattenedLoadoutToLoadout(FlattenedLoadout flattenedLoadout, Loadout.Model prevLoadout, FlattenedLoadout prevFlattenedLoadout)
     {
+        throw new NotImplementedException();
+        /*
         return ValueTask.FromResult(new FlattenedToLoadoutTransformer(flattenedLoadout, prevLoadout, prevFlattenedLoadout)
             .Transform(prevLoadout));
+            */
     }
 
     /// <inheritdoc />
     public virtual Loadout.Model MergeLoadouts(Loadout.Model loadoutA, Loadout.Model loadoutB)
     {
+        throw new NotImplementedException();
+        /*
         var visitor = new MergingVisitor();
         return visitor.Transform(loadoutA, loadoutB);
+        */
     }
 
     #endregion
@@ -568,8 +596,10 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     ///     Force overrides current locations to intended tree
     /// </param>
     /// <returns></returns>
-    public virtual async Task<DiskStateTree> Apply(Loadout loadout, bool forceSkipIngest = false)
+    public virtual async Task<DiskStateTree> Apply(Loadout.Model loadout, bool forceSkipIngest = false)
     {
+        throw new NotImplementedException();
+        /*
         var flattened = await LoadoutToFlattenedLoadout(loadout);
         var fileTree = await FlattenedLoadoutToFileTree(flattened, loadout);
         var prevState = _diskStateRegistry.GetState(loadout.Installation)!;
@@ -577,11 +607,14 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         diskState.LoadoutRevision = loadout.DataStoreId;
         await _diskStateRegistry.SaveState(loadout.Installation, diskState);
         return diskState;
+        */
     }
 
     /// <inheritdoc />
-    public virtual async Task<Loadout> Ingest(Loadout loadout)
+    public virtual async Task<Loadout.Model> Ingest(Loadout.Model loadout)
     {
+        throw new NotImplementedException();
+        /*
         // Reconstruct the previous file tree
         var prevFlattenedLoadout = await LoadoutToFlattenedLoadout(loadout);
         var prevFileTree = await FlattenedLoadoutToFileTree(prevFlattenedLoadout, loadout);
@@ -601,10 +634,11 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         await _diskStateRegistry.SaveState(loadout.Installation, diskState);
 
         return newLoadout;
+        */
     }
     
     /// <inheritdoc />
-    public async ValueTask<FileDiffTree> LoadoutToDiskDiff(Loadout loadout, DiskStateTree diskState)
+    public async ValueTask<FileDiffTree> LoadoutToDiskDiff(Loadout.Model loadout, DiskStateTree diskState)
     {
         var flattenedLoadout = await LoadoutToFlattenedLoadout(loadout);
         return await FlattenedLoadoutToDiskDiff(flattenedLoadout, diskState);
@@ -618,6 +652,8 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         // With both deletions and additions it might be more than Max, but it's a starting point
         Dictionary<GamePath, DiskDiffEntry> resultingItems = new(Math.Max(loadoutFiles.Length, diskStateEntries.Length));
 
+        throw new NotImplementedException();
+        /*
         // Add all the disk state entries to the result, checking for changes
         foreach (var diskItem in diskStateEntries)
         {
@@ -704,6 +740,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         }
 
         return ValueTask.FromResult(FileDiffTree.Create(resultingItems));
+        */
     }
 
     /// <summary>
@@ -712,6 +749,8 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// </summary>
     public virtual async Task BackupNewFiles(GameInstallation installation, FileTree fileTree)
     {
+        throw new NotImplementedException();
+        /*
         // During ingest, new files that haven't been seen before are fed into the game's syncronizer to convert a
         // DiskStateEntry (hash, size, path) into some sort of AModFile. By default these are converted into a "StoredFile".
         // All StoredFile does, is say that this file is copied from the downloaded archives, that is, it's not generated
@@ -747,11 +786,14 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         });
 
         await _fileStore.BackupFiles(archivedFiles);
+        */
     }
 
     /// <inheritdoc />
-    public virtual async Task<Loadout> Manage(GameInstallation installation, string? suggestedName = null)
+    public virtual async Task<Loadout.Model> Manage(GameInstallation installation, string? suggestedName = null)
     {
+        throw new NotImplementedException();
+        /*
         var (isCached, initialState) = await GetOrCreateInitialDiskState(installation);
         
         var loadoutId = LoadoutId.Create();
@@ -811,6 +853,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         
         await _diskStateRegistry.SaveState(loadout.Installation, initialState);
         return loadout;
+        */
     }
 
     #endregion
@@ -844,6 +887,8 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// <returns></returns>
     protected virtual async Task<IEnumerable<Mod.Model>> SortMods(Loadout.Model loadout)
     {
+        throw new NotImplementedException();
+        /*
         var mods = loadout.Mods.Where(mod => mod.Enabled).ToList();
         _logger.LogInformation("Sorting {ModCount} mods in loadout {LoadoutName}", mods.Count, loadout.Name);
         var modRules = await mods
@@ -854,6 +899,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
 
         var sorted = _sorter.Sort(mods, m => m.Id, m => modRules[m.Id]);
         return sorted;
+        */
     }
     #endregion
 

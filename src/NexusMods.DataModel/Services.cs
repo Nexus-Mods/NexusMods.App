@@ -103,9 +103,7 @@ public static class Services
         coll.AddAllSingleton<IFileStore, NxFileStore>();
 
         coll.AddSingleton(typeof(IFingerprintCache<,>), typeof(DataStoreFingerprintCache<,>));
-
-        coll.AddAllSingleton<ILoadoutRegistry, LoadoutRegistry>();
-
+        
         coll.AddAllSingleton<IArchiveInstaller, ArchiveInstaller>();
         coll.AddAllSingleton<IToolManager, ToolManager>();
         

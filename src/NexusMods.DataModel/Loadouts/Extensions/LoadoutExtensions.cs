@@ -13,7 +13,7 @@ public static class LoadoutExtensions
     /// </summary>
     /// <param name="loadout"></param>
     /// <returns></returns>
-    public static Task<DiskStateTree> Apply(this Loadout loadout)
+    public static Task<DiskStateTree> Apply(this Loadout.Model loadout)
     {
         return loadout.Installation.GetGame().Synchronizer.Apply(loadout);
     }
@@ -23,7 +23,7 @@ public static class LoadoutExtensions
     /// </summary>
     /// <param name="loadout"></param>
     /// <returns></returns>
-    public static Task<Loadout> Ingest(this Loadout loadout)
+    public static Task<Loadout.Model> Ingest(this Loadout.Model loadout)
     {
         return loadout.Installation.GetGame().Synchronizer.Ingest(loadout);
     }

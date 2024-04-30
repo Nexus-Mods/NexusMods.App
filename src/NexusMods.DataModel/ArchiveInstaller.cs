@@ -26,7 +26,6 @@ public class ArchiveInstaller : IArchiveInstaller
 {
     private readonly ILogger<ArchiveInstaller> _logger;
     private readonly IDataStore _dataStore;
-    private readonly LoadoutRegistry _registry;
     private readonly IActivityFactory _activityFactory;
     private readonly IFileStore _fileStore;
     private readonly IFileOriginRegistry _fileOriginRegistry;
@@ -37,14 +36,12 @@ public class ArchiveInstaller : IArchiveInstaller
     public ArchiveInstaller(ILogger<ArchiveInstaller> logger,
         IFileOriginRegistry fileOriginRegistry,
         IDataStore dataStore,
-        LoadoutRegistry registry,
         IFileStore fileStore,
         IActivityFactory activityFactory)
     {
         _logger = logger;
         _dataStore = dataStore;
         _fileOriginRegistry = fileOriginRegistry;
-        _registry = registry;
         _fileStore = fileStore;
         _activityFactory = activityFactory;
     }
@@ -52,6 +49,8 @@ public class ArchiveInstaller : IArchiveInstaller
     /// <inheritdoc />
     public async Task<ModId[]> AddMods(LoadoutId loadoutId, DownloadAnalysis.Model download, string? defaultModName = null, IModInstaller? installer = null, CancellationToken token = default)
     {
+        throw new NotImplementedException();
+        /*
         // Get the loadout and create the mod, so we can use it in the job.
         var loadout = _registry.GetMarker(loadoutId);
         var useCustomInstaller = installer != null;
@@ -219,6 +218,7 @@ public class ArchiveInstaller : IArchiveInstaller
 
             throw;
         }
+        */
     }
 
     /// <inheritdoc />

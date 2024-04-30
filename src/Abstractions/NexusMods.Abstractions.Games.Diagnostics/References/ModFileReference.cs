@@ -1,8 +1,10 @@
 using JetBrains.Annotations;
+using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Serialization.DataModel.Ids;
-using File = System.IO.File;
+
+using File = NexusMods.Abstractions.Loadouts.Files.File;
 
 namespace NexusMods.Abstractions.Diagnostics.References;
 
@@ -10,20 +12,22 @@ namespace NexusMods.Abstractions.Diagnostics.References;
 /// A reference to a <see cref="AModFile"/>
 /// </summary>
 [PublicAPI]
-public record ModFileReference : IDataReference<ModFileId, File.Model>
+public record ModFileReference : IDataReference<FileId, File.Model>
 {
     /// <inheritdoc/>
     public required IId DataStoreId { get; init; }
 
     /// <inheritdoc/>
-    public required ModFileId DataId { get; init; }
+    public required FileId DataId { get; init; }
 
     /// <inheritdoc/>
-    public AModFile? ResolveData(IServiceProvider serviceProvider, IDataStore dataStore)
+    public File.Model? ResolveData(IServiceProvider serviceProvider, IDataStore dataStore)
     {
-        return dataStore.Get<AModFile>(DataStoreId);
+        throw new NotImplementedException();
+        
+        //return dataStore.Get<AModFile>(DataStoreId);
     }
 
     /// <inheritdoc/>
-    public string ToStringRepresentation(AModFile data) => data.ToString();
+    public string ToStringRepresentation(File.Model data) => data.ToString();
 }
