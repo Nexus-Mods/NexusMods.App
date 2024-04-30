@@ -47,8 +47,8 @@ public class Startup
         // do additional initialization inside their constructors.
         // We need to make sure their constructors are called to
         // finalize our OpenTelemetry configuration.
-        provider.GetService<TracerProvider>();
         provider.GetService<MeterProvider>();
+        provider.GetService<TracerProvider>();
 
         try
         {

@@ -1,5 +1,6 @@
 ﻿using System.Windows.Input;
 using NexusMods.Abstractions.Settings;
+using NexusMods.Abstractions.Telemetry;
 using NexusMods.App.UI.Settings;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -31,7 +32,7 @@ public class MetricsOptInViewModel : AViewModel<IMetricsOptInViewModel>, IMetric
         {
             _settingsManager.Update<TelemetrySettings>(current => current with
             {
-                EnableTelemetry = true,
+                IsEnabled = true,
                 HasShownPrompt = true,
             });
 
@@ -42,7 +43,7 @@ public class MetricsOptInViewModel : AViewModel<IMetricsOptInViewModel>, IMetric
         {
             _settingsManager.Update<TelemetrySettings>(current => current with
             {
-                EnableTelemetry = false,
+                IsEnabled = false,
                 HasShownPrompt = true,
             });
 
