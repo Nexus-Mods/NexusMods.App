@@ -855,7 +855,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         // Clear Initial State if this is the only loadout for the game.
         // We use folder location for this.
         var installLocation = installation.LocationsRegister[LocationId.Game].ToString();
-        var clearInitialState = _loadoutRegistry
+        var wasLastLoadout = _loadoutRegistry
             .AllLoadouts()
             .Count(x => x.Installation.LocationsRegister[LocationId.Game].ToString() == installLocation) <= 1;
     
@@ -878,17 +878,13 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             await ResetToInitialState(installation);
         }
 
-        // Delete the loadout from the LoadoutRegistry
         _loadoutRegistry.Delete(id);
-        
-        // If this is the last loadout, remove persisted disk state.
-        if (clearInitialState)
+        if (wasLastLoadout)
             await _diskStateRegistry.ClearInitialState(installation);
     }
 
     private async Task ResetToInitialState(GameInstallation installation)
     {
-        // Apply initial disk state.
         var (isCached, initialState) = await GetOrCreateInitialDiskState(installation);
         if (!isCached)
             throw new InvalidOperationException("Something is very wrong with the DataStore.\n" +
@@ -911,13 +907,10 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             with the original file tree here.
         */
 
-        // Create a temporary loadout instance.
-        // Note: We recreate 'Game Files' mod because 
+        // Create a non-persisted mod from original game files.
+        // Then effectively 'Apply' it as single mod 'Loadout'.
         var gameFilesMod = CreateGameFilesMod(initialState);
         var fileTree = CreateFileTreeFromMod(gameFilesMod);
-
-        // Apply temporary loadout.
-        // The loadout is only used as a parameter for generated files.
         var flattened = ModsToFlattenedLoadout([gameFilesMod]);
         var prevState = _diskStateRegistry.GetState(installation)!;
         await FileTreeToDisk(fileTree, null, flattened, prevState, installation, true);

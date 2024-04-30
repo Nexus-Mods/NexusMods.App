@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Games.DTO;
@@ -149,6 +150,7 @@ public static class InitialDiskState
         /// </remarks>
         public void AddRetractToCurrentTx()
         {
+            Debug.Assert(Tx != null, "Transaction should be set on `this` item.");
             InitialDiskState.Game.Retract(this);
             InitialDiskState.Root.Retract(this);
             State.Retract(this);

@@ -244,11 +244,10 @@ public class LoadoutRegistry : IDisposable, ILoadoutRegistry
     /// <exception cref="InvalidOperationException"></exception>
     public Loadout? Get(LoadoutId id)
     {
-        var databaseId = GetId(id)!;
-        // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
-        if (databaseId == null)
-            return null;
-        return _store.Get<Loadout>(databaseId, true);
+        var databaseId = GetId(id);
+        return databaseId == null 
+            ? null 
+            : _store.Get<Loadout>(databaseId, true);
     }
 
     /// <summary>
@@ -462,8 +461,7 @@ public class LoadoutRegistry : IDisposable, ILoadoutRegistry
     /// <inheritdoc />
     public void Delete(LoadoutId loadoutId)
     {
-        if (_isDisposed)
-            throw new ObjectDisposedException(nameof(LoadoutRegistry));
+        ObjectDisposedException.ThrowIf(_isDisposed, nameof(LoadoutRegistry));
 
         // Get all revisions 
         var loadout = Get(loadoutId);
@@ -472,8 +470,8 @@ public class LoadoutRegistry : IDisposable, ILoadoutRegistry
 
         // Remove LoadoutId
         var dbId = loadoutId.ToEntityId(EntityCategory.LoadoutRoots);
+        _logger.LogInformation("Loadout {LoadoutId} is being deleted", loadoutId);
         _store.Delete(dbId);
-        _logger.LogInformation("Loadout {LoadoutId} deleted", loadoutId);
 
         // Remove all previous revisions.
         var currentVersion = loadout.PreviousVersion;
@@ -490,6 +488,7 @@ public class LoadoutRegistry : IDisposable, ILoadoutRegistry
         _markers.TryRemove(loadoutId, out _);
         _loadoutsIds.Remove(loadoutId);
         _cache.Edit(x => x.Remove(loadoutId));
+        _logger.LogInformation("Loadout {LoadoutId} was deleted", loadoutId);
     }
 
     /// <inheritdoc />

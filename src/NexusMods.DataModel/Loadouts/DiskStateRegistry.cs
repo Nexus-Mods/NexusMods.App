@@ -93,10 +93,7 @@ public class DiskStateRegistry : IDiskStateRegistry
     public DiskStateTree? GetInitialState(GameInstallation installation)
     {
         var db = _connection.Db;
-        
-        // Find item with matching domain and root.
-        // In practice it's unlikely you'd ever install more than one game at one
-        // location, but since doing this check is virtually free, we might as well.
+
         return db.FindIndexed(installation.LocationsRegister[LocationId.Game].ToString(), InitialDiskState.Root)
             .Select(x => db.Get<InitialDiskState.Model>(x).DiskState)
             .FirstOrDefault();
