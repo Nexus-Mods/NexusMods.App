@@ -43,7 +43,7 @@
 		<value>ZAKTUALIZUJ</value>
 	</data>
 	<data name="Updater_UpdateAvailable" xml:space="preserve">
-		<value>Dostępna jest aktualizacja</value>
+		<value>Dostępna aktualizacja</value>
 	</data>
 	<data name="Updater_MainMessage" xml:space="preserve">
 		<value>Aktualizuj swoją aplikację, by otrzymywać najnowsze ulepszenia.</value>
