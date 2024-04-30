@@ -859,7 +859,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             .AllLoadouts()
             .Count(x => x.Installation.LocationsRegister[LocationId.Game].ToString() == installLocation) <= 1;
     
-        if (_loadoutRegistry.IsActive(id, _diskStateRegistry.GetLastAppliedLoadout(installation)))
+        if (_loadoutRegistry.IsApplied(id, _diskStateRegistry.GetLastAppliedLoadout(installation)))
         {
             /*
                 Note(Sewer)

@@ -219,12 +219,12 @@ public interface ILoadoutRegistry
     void Delete(LoadoutId loadoutId);
 
     /// <summary>
-    /// Returns true if any revision of this <see cref="LoadoutId"/> is currently active.
+    /// Returns true if any revision of this <see cref="LoadoutId"/> is currently applied.
     /// </summary>
     /// <param name="id">The ID to check for activeness.</param>
     /// <param name="lastAppliedId">
     ///     DataStore ID of the last applied state.
     ///     You can get this from the DiskStateRegistry.
     /// </param>
-    bool IsActive(LoadoutId id, IId? lastAppliedId);
+    bool IsApplied(LoadoutId id, IId? lastAppliedId);
 }
