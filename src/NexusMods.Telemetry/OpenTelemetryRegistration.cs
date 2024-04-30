@@ -89,7 +89,7 @@ public static class OpenTelemetryRegistration
         foreach (var telemetryProvider in telemetryProviders)
         {
             // deferred configuration of metrics until the DI container is available
-            telemetryProvider.ConfigureMetrics(meterConfig, serviceProvider);
+            telemetryProvider.ConfigureMetrics(meterConfig);
         }
     }
 }
