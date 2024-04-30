@@ -143,6 +143,10 @@ public static class InitialDiskState
         /// <summary>
         /// Retracts all of the values of this entity.
         /// </summary>
+        /// <remarks>
+        ///     Make sure the current model has a Transaction (<see cref="tx"/>) attached
+        ///     before calling.
+        /// </remarks>
         public void AddRetractToCurrentTx()
         {
             InitialDiskState.Game.Retract(this);

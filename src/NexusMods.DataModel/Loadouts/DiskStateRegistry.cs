@@ -114,6 +114,7 @@ public class DiskStateRegistry : IDiskStateRegistry
             return;
 
         var tx = _connection.BeginTransaction();
+        initialDiskState.Tx = tx;
         initialDiskState.AddRetractToCurrentTx();
         await tx.Commit();
     }
