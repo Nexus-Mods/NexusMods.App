@@ -7,6 +7,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NexusMods.App.BuildInfo;
 using NexusMods.App.UI;
+using NexusMods.App.UI.Settings;
+using NexusMods.DataModel.Settings;
 using NexusMods.Paths;
 using NexusMods.SingleProcess;
 using NLog.Extensions.Logging;
