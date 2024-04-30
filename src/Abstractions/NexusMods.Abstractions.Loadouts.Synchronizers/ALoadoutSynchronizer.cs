@@ -16,7 +16,6 @@ using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
-using NexusMods.Abstractions.Loadouts.Synchronizers.Transformer;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.Hashing.xxHash64;
@@ -34,11 +33,12 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     private readonly ILogger _logger;
     private readonly IFileHashCache _hashCache;
     private readonly IDataStore _store;
-    private readonly ILoadoutRegistry _loadoutRegistry;
     private readonly IDiskStateRegistry _diskStateRegistry;
     private readonly ISorter _sorter;
     private readonly IOSInformation _os;
     private IFileStore _fileStore;
+    
+    public MultiFn<(File.Model File, )
 
     /// <summary>
     /// Loadout synchronizer base constructor.
@@ -46,7 +46,6 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// <param name="logger"></param>
     /// <param name="hashCache"></param>
     /// <param name="store"></param>
-    /// <param name="loadoutRegistry"></param>
     /// <param name="diskStateRegistry"></param>
     /// <param name="fileStore"></param>
     /// <param name="sorter"></param>
@@ -54,7 +53,6 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     protected ALoadoutSynchronizer(ILogger logger,
         IFileHashCache hashCache,
         IDataStore store,
-        ILoadoutRegistry loadoutRegistry,
         IDiskStateRegistry diskStateRegistry,
         IFileStore fileStore,
         ISorter sorter,
@@ -63,7 +61,6 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         _logger = logger;
         _hashCache = hashCache;
         _store = store;
-        _loadoutRegistry = loadoutRegistry;
         _diskStateRegistry = diskStateRegistry;
         _fileStore = fileStore;
         _sorter = sorter;
@@ -78,7 +75,6 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         provider.GetRequiredService<ILogger<ALoadoutSynchronizer>>(),
         provider.GetRequiredService<IFileHashCache>(),
         provider.GetRequiredService<IDataStore>(),
-        provider.GetRequiredService<ILoadoutRegistry>(),
         provider.GetRequiredService<IDiskStateRegistry>(),
         provider.GetRequiredService<IFileStore>(),
         provider.GetRequiredService<ISorter>(),
@@ -93,7 +89,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// <inheritdoc />
     public async ValueTask<FlattenedLoadout> LoadoutToFlattenedLoadout(Loadout.Model loadout)
     {
-        var dict = new Dictionary<GamePath, ModFilePair>();
+        var dict = new Dictionary<GamePath, File.Model>();
         var sorted = await SortMods(loadout);
 
         foreach (var mod in sorted)
@@ -106,7 +102,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                 if (file is not IToFile toFile)
                     continue;
 
-                dict[toFile.To] = new ModFilePair { Mod = mod, File = file };
+                dict[toFile.To] = file;
             }
         }
 
@@ -117,7 +113,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     public ValueTask<FileTree> FlattenedLoadoutToFileTree(FlattenedLoadout flattenedLoadout, Loadout.Model loadout)
     {
         return ValueTask.FromResult(FileTree.Create(flattenedLoadout.GetAllDescendentFiles()
-            .Select(f => KeyValuePair.Create(f.GamePath(), f.Item.Value!.File))));
+            .Select(f => KeyValuePair.Create(f.GamePath(), f.Item.Value))));
     }
 
 
@@ -132,7 +128,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     internal async Task<DiskStateTree> FileTreeToDiskImpl(FileTree fileTree, Loadout.Model loadout, FlattenedLoadout flattenedLoadout, DiskStateTree prevState, GameInstallation installation, bool fixFileMode, bool skipIngest = false)
     {
         List<KeyValuePair<GamePath, HashedEntryWithName>> toDelete = new();
-        List<KeyValuePair<AbsolutePath, IGeneratedFile>> toWrite = new();
+        List<KeyValuePair<AbsolutePath, File.Model>> toWrite = new();
         List<KeyValuePair<AbsolutePath, StoredFile.Model>> toExtract = new();
 
         Dictionary<GamePath, DiskStateEntry> resultingItems = new();
@@ -177,24 +173,24 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                 // File didn't change on disk and is present in new tree
                 resultingItems.Add(newEntry.GamePath(), prevEntry.Item.Value);
                 
-                switch (newEntry.Item.Value!)
+                var file = newEntry.Item.Value!;
+                if (file.Contains(StoredFile.Hash))
                 {
-                    case StoredFile fa:
-                        // StoredFile files are special cased so we can batch them up and extract them all at once.
-                        // Don't add toExtract to the results yet as we'll need to get the modified file times
-                        // after we extract them
-                        if (fa.Hash == entry.Hash)
-                            continue;
+                    // StoredFile files are special cased so we can batch them up and extract them all at once.
+                    // Don't add toExtract to the results yet as we'll need to get the modified file times
+                    // after we extract them
+                    if (file.Get(StoredFile.Hash) == entry.Hash)
+                        continue;
 
-                        toExtract.Add(KeyValuePair.Create(entry.Path, fa));
-                        continue;
-                    case IGeneratedFile gf and IToFile:
-                        // Hash for these files is generated on the fly, so we need to update it after we write it.
-                        toWrite.Add(KeyValuePair.Create(entry.Path, gf));
-                        continue;
-                    default:
-                        _logger.LogError("Unknown file type: {Type}", newEntry.Item.Value!.GetType());
-                        break;
+                    toExtract.Add(KeyValuePair.Create(entry.Path, file.Remap<StoredFile.Model>()));
+                }
+                else if (WriteGeneratedFileFn.Instance.Supports((file, loadout, flattenedLoadout, fileTree)))
+                {
+                    toWrite.Add(KeyValuePair.Create(entry.Path, file));
+                }
+                else
+                {
+                    _logger.LogError("Unknown file type: {Entity}", file);
                 }
             }
         }
@@ -249,7 +245,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         {
             entry.Key.Parent.CreateDirectory();
             await using var outputStream = entry.Key.Create();
-            var hash = await entry.Value.Write(outputStream, loadout, flattenedLoadout, fileTree);
+            var hash = await WriteGeneratedFileFn.Instance.Invoke((entry.Value, outputStream, loadout, flattenedLoadout, fileTree)));
             if (hash == null)
             {
                 outputStream.Position = 0;

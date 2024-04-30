@@ -16,7 +16,7 @@ public interface ILoadoutSynchronizer
     /// <param name="loadoutA"></param>
     /// <param name="loadoutB"></param>
     /// <returns></returns>
-    Loadout MergeLoadouts(Loadout loadoutA, Loadout loadoutB);
+    Loadout.Model MergeLoadouts(Loadout.Model loadoutA, Loadout.Model loadoutB);
 
     #endregion
     
@@ -28,7 +28,7 @@ public interface ILoadoutSynchronizer
     /// <param name="loadout">Newer state, e.g. unapplied loadout</param>
     /// <param name="diskState">The old state, e.g. last applied DiskState</param>
     /// <returns>A tree of all the files with associated <see cref="FileChangeType"/></returns>
-    ValueTask<FileDiffTree> LoadoutToDiskDiff(Loadout loadout, DiskStateTree diskState);
+    ValueTask<FileDiffTree> LoadoutToDiskDiff(Loadout.Model loadout, DiskStateTree diskState);
     
     #endregion
 
@@ -42,7 +42,7 @@ public interface ILoadoutSynchronizer
     ///     Force overrides current locations to intended tree
     /// </param>
     /// <returns>The new DiskState after the files were applied</returns>
-    Task<DiskStateTree> Apply(Loadout loadout, bool forceSkipIngest = false);
+    Task<DiskStateTree> Apply(Loadout.Model loadout, bool forceSkipIngest = false);
 
     /// <summary>
     /// Ingests changes from the game folder into the loadout.

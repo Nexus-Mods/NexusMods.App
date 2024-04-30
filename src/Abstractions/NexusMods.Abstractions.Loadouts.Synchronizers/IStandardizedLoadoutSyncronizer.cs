@@ -17,7 +17,7 @@ public interface IStandardizedLoadoutSynchronizer : ILoadoutSynchronizer
     /// </summary>
     /// <param name="loadout"></param>
     /// <returns></returns>
-    ValueTask<FlattenedLoadout> LoadoutToFlattenedLoadout(Loadout loadout);
+    ValueTask<FlattenedLoadout> LoadoutToFlattenedLoadout(Loadout.Model loadout);
 
     /// <summary>
     /// Converts a flattened loadout to a file tree.
@@ -25,7 +25,7 @@ public interface IStandardizedLoadoutSynchronizer : ILoadoutSynchronizer
     /// <param name="flattenedLoadout"></param>
     /// <param name="loadout"></param>
     /// <returns></returns>
-    ValueTask<FileTree> FlattenedLoadoutToFileTree(FlattenedLoadout flattenedLoadout, Loadout loadout);
+    ValueTask<FileTree> FlattenedLoadoutToFileTree(FlattenedLoadout flattenedLoadout, Loadout.Model loadout);
 
     /// <summary>
     /// Writes a file tree to disk (updating the game files)
@@ -39,7 +39,7 @@ public interface IStandardizedLoadoutSynchronizer : ILoadoutSynchronizer
     ///     Skips checking if an ingest is needed.
     ///     Force overrides current locations to intended tree.
     /// </param>
-    Task<DiskStateTree> FileTreeToDisk(FileTree fileTree, Loadout loadout, FlattenedLoadout flattenedLoadout,
+    Task<DiskStateTree> FileTreeToDisk(FileTree fileTree, Loadout.Model loadout, FlattenedLoadout flattenedLoadout,
         DiskStateTree prevState, GameInstallation installation, bool skipIngest = false);
 
     #endregion
@@ -61,7 +61,7 @@ public interface IStandardizedLoadoutSynchronizer : ILoadoutSynchronizer
     /// <param name="prevFileTree"></param>
     /// <param name="prevDiskState"></param>
     /// <returns></returns>
-    ValueTask<FileTree> DiskToFileTree(DiskStateTree diskState, Loadout prevLoadout, FileTree prevFileTree, DiskStateTree prevDiskState);
+    ValueTask<FileTree> DiskToFileTree(DiskStateTree diskState, Loadout.Model prevLoadout, FileTree prevFileTree, DiskStateTree prevDiskState);
 
     /// <summary>
     /// Creates a new flattened loadout from the current file tree and the previous flattened loadout.
@@ -70,7 +70,7 @@ public interface IStandardizedLoadoutSynchronizer : ILoadoutSynchronizer
     /// <param name="prevLoadout"></param>
     /// <param name="prevFlattenedLoadout"></param>
     /// <returns></returns>
-    ValueTask<FlattenedLoadout> FileTreeToFlattenedLoadout(FileTree fileTree, Loadout prevLoadout, FlattenedLoadout prevFlattenedLoadout);
+    ValueTask<FlattenedLoadout> FileTreeToFlattenedLoadout(FileTree fileTree, Loadout.Model prevLoadout, FlattenedLoadout prevFlattenedLoadout);
 
     /// <summary>
     /// Creates a new loadout from the current flattened loadout and the previous loadout.
@@ -79,7 +79,7 @@ public interface IStandardizedLoadoutSynchronizer : ILoadoutSynchronizer
     /// <param name="prevLoadout"></param>
     /// <param name="prevFlattenedLoadout"></param>
     /// <returns></returns>
-    ValueTask<Loadout.Model> FlattenedLoadoutToLoadout(FlattenedLoadout flattenedLoadout, Loadout prevLoadout, FlattenedLoadout prevFlattenedLoadout);
+    ValueTask<Loadout.Model> FlattenedLoadoutToLoadout(FlattenedLoadout flattenedLoadout, Loadout.Model prevLoadout, FlattenedLoadout prevFlattenedLoadout);
 
     /// <summary>
     /// Backs up any new files in the file tree.
