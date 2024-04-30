@@ -60,7 +60,7 @@ public static class Services
                 // TODO: fetch from settings
                 .AddTelemetry(new TelemetrySettings
                 {
-                    IsEnabled = true,
+                    IsEnabled = false,
                 })
 
                 .AddSingleton<CommandLineConfigurator>()

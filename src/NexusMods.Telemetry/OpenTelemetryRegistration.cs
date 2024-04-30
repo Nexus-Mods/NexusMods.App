@@ -12,6 +12,9 @@ public static class OpenTelemetryRegistration
         this IServiceCollection serviceCollection,
         TelemetrySettings settings)
     {
+        // NOTE(erri120): see this for debugging:
+        // https://github.com/open-telemetry/opentelemetry-dotnet/blob/main/src/OpenTelemetry/README.md#self-diagnostics
+
         // OpenTelemetry gets added to DI and can't be disabled at runtime.
         // If OpenTelemetry isn't added to the DI container, none of the listeners for
         // Activities and Meters will be added as well.
