@@ -494,28 +494,6 @@ public class LoadoutRegistry : IDisposable, ILoadoutRegistry
     /// <inheritdoc />
     public bool IsApplied(LoadoutId id, IId? lastAppliedId)
     {
-        var loadout = Get(id);
-        if (loadout == null)
-            throw new ArgumentException("Loadout not found", nameof(id));
-
-        // Check if any of the loadout versions is the currently active loadout
-        var isActiveLoadout = loadout.DataStoreId.Equals(lastAppliedId);
-        var currentVersion = loadout.PreviousVersion;
-        while (!currentVersion.Id.Equals(IdEmpty.Empty))
-        {
-            if (currentVersion.Id.Equals(lastAppliedId))
-            {
-                isActiveLoadout = true;
-                break;
-            }
-
-            var value = currentVersion.Value;
-            if (value == null)
-                break;
-
-            currentVersion = value.PreviousVersion;
-        }
-
-        return isActiveLoadout;
+        return id == GetLoadout(lastAppliedId!)?.LoadoutId;
     }
 }
