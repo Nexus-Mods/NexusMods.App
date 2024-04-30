@@ -1,12 +1,14 @@
+using JetBrains.Annotations;
 using NexusMods.Abstractions.Settings;
 
-namespace NexusMods.App.UI.Settings;
+namespace NexusMods.Abstractions.Telemetry;
 
+[PublicAPI]
 public record TelemetrySettings : ISettings
 {
-    public bool EnableTelemetry { get; init; }
+    public bool IsEnabled { get; set; }
 
-    public bool HasShownPrompt { get; init; }
+    public bool HasShownPrompt { get; set; }
 
     public static ISettingsBuilder Configure(ISettingsBuilder settingsBuilder)
     {
@@ -14,7 +16,7 @@ public record TelemetrySettings : ISettings
         var sectionId = SectionId.DefaultValue;
 
         return settingsBuilder.AddToUI<TelemetrySettings>(builder => builder
-            .AddPropertyToUI(x => x.EnableTelemetry, propertyBuilder => propertyBuilder
+            .AddPropertyToUI(x => x.IsEnabled, propertyBuilder => propertyBuilder
                 .AddToSection(sectionId)
                 .WithDisplayName("Enable Telemetry")
                 .WithDescription("Send anonymous analytics information and usage data to Nexus Mods.")
