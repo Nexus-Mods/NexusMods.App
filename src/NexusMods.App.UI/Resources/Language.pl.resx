@@ -91,7 +91,7 @@
 		<value>ZAINSTALOWANE</value>
 	</data>
 	<data name="Helpers_GenerateHeader_MOD_NAME" xml:space="preserve">
-		<value>NAZWA MODA</value>
+		<value>NAZWA MODU</value>
 	</data>
 	<data name="Helpers_GenerateHeader_GAME" xml:space="preserve">
 		<value>GRA</value>
