@@ -8,7 +8,7 @@
     <PackageVersion Include="NexusMods.MnemonicDB.Abstractions" Version="0.9.17" />
     <PackageVersion Include="NexusMods.Paths" Version="0.9.3" />
     <PackageVersion Include="NexusMods.Hashing.xxHash64" Version="2.0.1" />
-    <PackageVersion Include="NexusMods.Paths.TestingHelpers" Version="0.8.0" />
+    <PackageVersion Include="NexusMods.Paths.TestingHelpers" Version="0.9.3" />
     <PackageVersion Include="NexusMods.Archives.Nx" Version="0.4.0" />
     <PackageVersion Include="NexusMods.ProxyConsole.Abstractions" Version="0.6.0" />
     <PackageVersion Include="NexusMods.SingleProcess" Version="0.6.0" />
