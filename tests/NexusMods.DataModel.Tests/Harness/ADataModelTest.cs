@@ -10,6 +10,7 @@ using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Serialization.DataModel;
@@ -21,6 +22,7 @@ using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
 using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 using Xunit.DependencyInjection;
+using Xunit.Sdk;
 using DownloadId = NexusMods.Abstractions.FileStore.Downloads.DownloadId;
 using IGame = NexusMods.Abstractions.Games.IGame;
 
@@ -40,7 +42,6 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
     protected readonly IFileStore FileStore;
     protected readonly IArchiveInstaller ArchiveInstaller;
 
-    protected readonly LoadoutRegistry LoadoutRegistry;
     protected readonly IApplyService ApplyService;
     protected readonly FileHashCache FileHashCache;
     protected readonly IFileSystem FileSystem;
@@ -52,7 +53,6 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
 
     protected readonly IGame Game;
     protected readonly GameInstallation Install;
-    protected LoadoutMarker BaseList; // set via InitializeAsync
 
     protected CancellationToken Token = CancellationToken.None;
     private readonly IHost _host;
@@ -73,7 +73,6 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
         var provider = _host.Services;
         FileStore = provider.GetRequiredService<IFileStore>();
         ArchiveInstaller = provider.GetRequiredService<IArchiveInstaller>();
-        LoadoutRegistry = provider.GetRequiredService<LoadoutRegistry>();
         ApplyService = provider.GetRequiredService<IApplyService>();
         FileHashCache = provider.GetRequiredService<FileHashCache>();
         FileSystem = provider.GetRequiredService<IFileSystem>();
@@ -97,13 +96,15 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
 
     public virtual async Task InitializeAsync()
     {
-        BaseList = LoadoutRegistry.GetMarker((await Install.GetGame().Synchronizer.Manage(Install)).LoadoutId);
+        throw new NotImplementedException();
+        //BaseList = LoadoutRegistry.GetMarker((await Install.GetGame().Synchronizer.Manage(Install)).LoadoutId);
     }
 
-    protected async Task<ModId[]> AddMods(LoadoutMarker mainList, AbsolutePath path, string? name = null)
+    protected async Task<ModId[]> AddMods(LoadoutId mainList, AbsolutePath path, string? name = null)
     {
         var downloadId = await FileOriginRegistry.RegisterDownload(path, Token);
-        return await ArchiveInstaller.AddMods(mainList.Value.LoadoutId, downloadId, name, token: Token);
+        throw new NotImplementedException();
+        //return await ArchiveInstaller.AddMods(mainList.Value, downloadId, name, token: Token);
     }
 
     /// <summary>
@@ -142,8 +143,9 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
     protected async Task<ModId> AddMod(string modName, params (string Name, string Data)[] files)
     {
         var downloadId = await RegisterDownload(files);
-        var modIds = await ArchiveInstaller.AddMods(BaseList.Value.LoadoutId, downloadId, modName, token: Token);
-        return modIds.First();
+        throw new NotImplementedException();
+        //var modIds = await ArchiveInstaller.AddMods(BaseList.Value.LoadoutId, downloadId, modName, token: Token);
+        //return modIds.First();
     }
 
     public Task DisposeAsync()

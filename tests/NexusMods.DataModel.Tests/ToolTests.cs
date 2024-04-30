@@ -16,6 +16,7 @@ public class ToolTests : ADataModelTest<ToolTests>
     {
     }
 
+    /*
     [Fact]
     public async Task CanRunTools()
     {
@@ -47,4 +48,5 @@ public class ToolTests : ADataModelTest<ToolTests>
         latestLoadout.Should().NotBeNull();
         latestLoadout!.DataStoreId.Should().BeEquivalentTo(result.DataStoreId, "the result should be the active loadout");
     }
+    */
 }

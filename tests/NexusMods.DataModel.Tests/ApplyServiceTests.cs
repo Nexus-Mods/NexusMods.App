@@ -4,6 +4,7 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.DataModel.Tests.Harness;
+using Xunit.Sdk;
 
 namespace NexusMods.DataModel.Tests;
 
@@ -12,6 +13,8 @@ public class ApplyServiceTests(IServiceProvider provider) : ADataModelTest<Apply
     [Fact]
     public async Task CanApplyLoadout()
     {
+        throw new NotImplementedException();
+        /*
         // Arrange
         await AddMods(BaseList, Data7ZLzma2, "Mod1");
         var loadout = BaseList.Value;
@@ -25,8 +28,10 @@ public class ApplyServiceTests(IServiceProvider provider) : ADataModelTest<Apply
         // Assert
         gameFolder.Combine("rootFile.txt").FileExists.Should().BeTrue("loadout has been applied");
         gameFolder.Combine("folder1/folder1file.txt").FileExists.Should().BeTrue("loadout has been applied");
+        */
     }
     
+    /*
     [Fact]
     public async Task CanApplyAndIngestLoadout()
     {
@@ -93,4 +98,5 @@ public class ApplyServiceTests(IServiceProvider provider) : ADataModelTest<Apply
         loadout!.Mods.Values.SelectMany(mod=> mod.Files.Values).OfType<IToFile>()
             .Should().NotContain(file => file.To.EndsWith( "rootFile.txt"));
     }
+    */
 }

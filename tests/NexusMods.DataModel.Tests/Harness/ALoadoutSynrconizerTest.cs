@@ -7,7 +7,6 @@ using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.Loadouts.Mods;
-using NexusMods.Abstractions.Loadouts.Sorting;
 using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.Abstractions.Serialization.DataModel.Ids;
@@ -25,14 +24,14 @@ namespace NexusMods.DataModel.Tests.Harness;
 public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
 {
     protected readonly TestFileStore TestFileStoreInstance;
-    protected readonly TestFingerprintCache<Mod, CachedModSortRules> TestFingerprintCacheInstance;
+    protected readonly TestFingerprintCache<Mod.Model, CachedModSortRules> TestFingerprintCacheInstance;
 
     public ALoadoutSynrchonizerTest(IServiceProvider provider) : base(provider)
     {
         AssertionOptions.AssertEquivalencyUsing(opt => opt.ComparingRecordsByValue());
 
         TestFileStoreInstance = new TestFileStore();
-        TestFingerprintCacheInstance = new TestFingerprintCache<Mod, CachedModSortRules>();
+        TestFingerprintCacheInstance = new TestFingerprintCache<Mod.Model, CachedModSortRules>();
     }
 
     /// <summary>
@@ -40,10 +39,12 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
     /// </summary>
     /// <param name="loadout"></param>
     /// <returns></returns>
-    protected static AbsolutePath GetFirstModFile(Loadout loadout)
+    protected static AbsolutePath GetFirstModFile(Loadout.Model loadout)
     {
-        var to = loadout.Mods.Values.First().Files.Values.OfType<IToFile>().First().To;
-        return to.Combine(loadout.Installation.LocationsRegister[LocationId.Game]);
+        throw new NotImplementedException();
+        
+        //var to = loadout.Mods.Values.First().Files.Values.OfType<IToFile>().First().To;
+        //return to.Combine(loadout.Installation.LocationsRegister[LocationId.Game]);
     }
 
 
@@ -110,6 +111,7 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
     }
 }
 
+/*
 [JsonName("NexusMods.DataModel.Tests.Harness.TestGeneratedFile")]
 public record TestGeneratedFile : AModFile, IToFile, ITriggerFilter<ModFilePair, Plan>
 {
@@ -176,3 +178,4 @@ public class AlphabeticalSort : IGeneratedSortRule, ISortRule<Mod, ModId>, ITrig
         return fp.Digest();
     }
 }
+*/

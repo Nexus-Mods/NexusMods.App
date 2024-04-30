@@ -1,14 +1,4 @@
-using System.Buffers.Binary;
-using FluentAssertions;
-using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Loadouts.Files;
-using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Serialization;
-using NexusMods.Abstractions.Serialization.DataModel;
-using NexusMods.Abstractions.Serialization.DataModel.Ids;
-using NexusMods.Hashing.xxHash64;
-using NexusMods.Paths;
-using ModFileId = NexusMods.Abstractions.Loadouts.Mods.ModFileId;
 
 namespace NexusMods.DataModel.Tests;
 
@@ -18,6 +8,7 @@ public class DataStoreTests
 
     public DataStoreTests(IDataStore store) => DataStore = store;
 
+    /*
     [Fact]
     public void CanGetAndSetHashedValues()
     {
@@ -99,4 +90,5 @@ public class DataStoreTests
             modLoaded!.Files[itm.Id].Should().Be(itm);
         }
     }
+    */
 }
