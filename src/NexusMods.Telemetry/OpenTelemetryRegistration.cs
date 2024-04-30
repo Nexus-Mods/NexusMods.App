@@ -79,15 +79,17 @@ public static class OpenTelemetryRegistration
         // and forces all consumers to use the same Meter. We don't need more than
         // one Meter for our purposes and additional Meters will just complicate
         // making sense of the data.
+        var meter = Constants.Meter;
+        var meterConfig = new MeterConfig(meter);
 
         // The SDK requires that we know all names of all Meters we want to use up front.
-        meterProviderBuilder.AddMeter(Constants.Meter.Name);
+        meterProviderBuilder.AddMeter(meter.Name);
 
         var telemetryProviders = serviceProvider.GetServices<ITelemetryProvider>().ToArray();
         foreach (var telemetryProvider in telemetryProviders)
         {
             // deferred configuration of metrics until the DI container is available
-            telemetryProvider.ConfigureMetrics(Constants.Meter, serviceProvider);
+            telemetryProvider.ConfigureMetrics(meterConfig, serviceProvider);
         }
     }
 }
