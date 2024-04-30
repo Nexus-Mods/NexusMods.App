@@ -33,4 +33,9 @@ public static partial class Counters
         AssertSingleCall(caller: caller);
         return impl;
     }
+
+    private static Meter GetMeter(IMeterConfig fake, [CallerMemberName] string caller = "")
+    {
+        return GetImpl(fake, caller: caller).Meter;
+    }
 }

@@ -7,7 +7,7 @@ using OneOf;
 
 namespace NexusMods.App;
 
-internal class TelemetryProvider : ITelemetryProvider, IDisposable
+internal sealed class TelemetryProvider : ITelemetryProvider, IDisposable
 {
     private readonly CompositeDisposable _disposable;
 

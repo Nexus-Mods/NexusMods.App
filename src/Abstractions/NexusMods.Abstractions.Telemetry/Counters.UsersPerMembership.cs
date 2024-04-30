@@ -21,7 +21,7 @@ public static partial class Counters
         this IMeterConfig meterConfig,
         GetMembershipDelegate getMembershipFunc)
     {
-        GetImpl(meterConfig).Meter.CreateObservableUpDownCounter(
+        GetMeter(meterConfig).CreateObservableUpDownCounter(
             name: InstrumentConstants.NameUsersPerMembership,
             observeValue: () => ObserveMembership(getMembershipFunc)
         );

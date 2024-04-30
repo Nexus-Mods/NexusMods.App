@@ -49,7 +49,7 @@ public static class OpenTelemetryRegistration
                     // and send the metrics to the exporter.
 
                     // NOTE(erri120): don't change this
-                    ExportIntervalMilliseconds = (int)Constants.ExportInterval.TotalMicroseconds,
+                    ExportIntervalMilliseconds = (int)Constants.ExportInterval.TotalMilliseconds,
                 };
 
                 ConfigureOtlp(exporterOptions, isMetrics: true);

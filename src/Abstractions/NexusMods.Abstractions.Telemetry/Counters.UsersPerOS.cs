@@ -10,7 +10,7 @@ public static partial class Counters
     /// </summary>
     public static void CreateUsersPerOSCounter(this IMeterConfig meterConfig)
     {
-        GetImpl(meterConfig).Meter.CreateObservableUpDownCounter(
+        GetMeter(meterConfig).CreateObservableUpDownCounter(
             name: InstrumentConstants.NameUsersPerOS,
             observeValue: ObserveOperatingSystem
         );

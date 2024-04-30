@@ -7,7 +7,7 @@ public static partial class Counters
     /// </summary>
     public static void CreateActiveUsersCounter(this IMeterConfig meterConfig)
     {
-        GetImpl(meterConfig).Meter.CreateObservableUpDownCounter(
+        GetMeter(meterConfig).CreateObservableUpDownCounter(
             name: InstrumentConstants.NameActiveUsers,
             observeValue: static () => 1
         );
