@@ -82,7 +82,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                         vm.RemoveAllLoadoutsCommand = ReactiveCommand.CreateFromTask(async () => 
                         {
                             vm.State = GameWidgetState.RemovingGame;
-                            await RemoveAllLoadouts(install);
+                            await Task.Run(async () => await RemoveAllLoadouts(install));
                             vm.State = GameWidgetState.ManagedGame;
                         });
 
@@ -114,7 +114,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                         vm.RemoveAllLoadoutsCommand = ReactiveCommand.CreateFromTask(async () => 
                         {
                             vm.State = GameWidgetState.RemovingGame;
-                            await RemoveAllLoadouts(install);
+                            await Task.Run(async () => await RemoveAllLoadouts(install));
                             vm.State = GameWidgetState.ManagedGame;
                         });
 
