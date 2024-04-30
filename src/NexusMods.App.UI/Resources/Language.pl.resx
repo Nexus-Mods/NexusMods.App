@@ -46,7 +46,7 @@
 		<value>Dostępna aktualizacja</value>
 	</data>
 	<data name="Updater_MainMessage" xml:space="preserve">
-		<value>Aktualizuj swoją aplikację, by otrzymywać najnowsze ulepszenia.</value>
+		<value>Aktualizuj swoją aplikację, aby otrzymywać najnowsze ulepszenia.</value>
 	</data>
 	<data name="Updater_UseSystemUpdater" xml:space="preserve">
 		<value>Wygląda na to, że twoja aplikacja została zainstalowana za pośrednictwem systemu zarządzania pakietami. Proszę zaktualizować aplikację za pośrednictwem systemowej aplikacji do aktualizacji.</value>
@@ -91,7 +91,7 @@
 		<value>ZAINSTALOWANE</value>
 	</data>
 	<data name="Helpers_GenerateHeader_MOD_NAME" xml:space="preserve">
-		<value>NAZWA modu</value>
+		<value>NAZWA MODA</value>
 	</data>
 	<data name="Helpers_GenerateHeader_GAME" xml:space="preserve">
 		<value>GRA</value>
