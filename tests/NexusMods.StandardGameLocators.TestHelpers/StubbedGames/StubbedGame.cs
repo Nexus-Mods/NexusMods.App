@@ -115,8 +115,13 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
 
     private class StubbedGameSyncronizer(IServiceProvider provider, StubbedGame thisGame) : DefaultSynchronizer(provider)
     {
+        private DiskStateTree? _cachedState;
+        
         public override ValueTask<(bool isCachedState, DiskStateTree tree)> GetOrCreateInitialDiskState(GameInstallation installation)
         {
+            if (_cachedState != null)
+                return ValueTask.FromResult((true, _cachedState));
+
             var results = DATA_NAMES.Select(name =>
             {
                 var gamePath = new GamePath(LocationId.Game, name);
@@ -129,7 +134,8 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
                         LastModified = thisGame._modifiedTimes[installation.LocationsRegister.GetResolvedPath(gamePath)]
                     });
             });
-            return ValueTask.FromResult((false, DiskStateTree.Create(results)));
+            _cachedState = DiskStateTree.Create(results);
+            return ValueTask.FromResult((false, _cachedState));
         }
     }
 

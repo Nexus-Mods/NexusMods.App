@@ -13,6 +13,8 @@ public interface IGameWidgetViewModel : IViewModelInterface
     public ReactiveCommand<Unit,Unit> AddGameCommand { get; set; }
     public ReactiveCommand<Unit,Unit> ViewGameCommand { get; set; }
     
+    // TODO: This is temporary, to speed up development. Until design comes up with UX for deleting loadouts.
+    public ReactiveCommand<Unit,Unit> RemoveAllLoadoutsCommand { get; set; }
 
     public GameWidgetState State { get; set; }
 }
