@@ -1,5 +1,7 @@
 using JetBrains.Annotations;
+using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
+using NexusMods.Icons;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
@@ -16,12 +18,58 @@ public abstract class APageViewModel<TInterface> : AViewModel<TInterface>, IPage
 
     protected IWorkspaceController GetWorkspaceController()
     {
+        if (WindowId == default(WindowId)) throw new InvalidOperationException("This method is only available in the WhenActivated block");
+
         if (!WindowManager.TryGetWindow(WindowId, out var window))
         {
             throw new NotImplementedException();
         }
 
         return window.WorkspaceController;
+    }
+
+    private IconValue _tabIcon = new();
+
+    /// <inheritdoc/>
+    public IconValue TabIcon
+    {
+        get => _tabIcon;
+        set
+        {
+            _tabIcon = value;
+            if (WindowId == default(WindowId)) return;
+            try
+            {
+                var workspaceController = GetWorkspaceController();
+                workspaceController.SetIcon(_tabIcon, WorkspaceId, PanelId, TabId);
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
+        }
+    }
+
+    private string _tabTitle = Language.PanelTabHeaderViewModel_Title_New_Tab;
+
+    /// <inheritdoc/>
+    public string TabTitle
+    {
+        get => _tabTitle;
+        set
+        {
+            _tabTitle = value;
+            if (WindowId == default(WindowId)) return;
+            try
+            {
+                var workspaceController = GetWorkspaceController();
+                workspaceController.SetTabTitle(_tabTitle, WorkspaceId, PanelId, TabId);
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
+        }
     }
 
     /// <inheritdoc/>

@@ -1,6 +1,7 @@
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Serialization.Attributes;
+using NexusMods.App.BuildInfo;
 using NexusMods.App.UI.WorkspaceSystem;
 
 namespace NexusMods.App.UI.Pages.Changelog;
@@ -33,15 +34,13 @@ public class ChangelogPageFactory : APageFactory<IChangelogPageViewModel, Change
         {
             new PageDiscoveryDetails
             {
-                // TODO:
-                SectionName = "TODO",
+                SectionName = "Utilities",
                 ItemName = "Changelog",
                 PageData = new PageData
                 {
-                    // TODO: get current version
                     Context = new ChangelogPageContext
                     {
-                        TargetVersion = null,
+                        TargetVersion = ApplicationConstants.Version,
                     },
                     FactoryId = StaticId,
                 },

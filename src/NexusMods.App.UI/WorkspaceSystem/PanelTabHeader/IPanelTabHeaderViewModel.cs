@@ -10,7 +10,7 @@ public interface IPanelTabHeaderViewModel : IViewModelInterface
 
     public string Title { get; set; }
 
-    public IconValue? Icon { get; set; }
+    public IconValue Icon { get; set; }
 
     public bool IsSelected { get; set;  }
 

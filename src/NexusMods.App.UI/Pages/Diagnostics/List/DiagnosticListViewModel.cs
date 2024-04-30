@@ -6,6 +6,7 @@ using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Settings;
 using NexusMods.App.UI.Controls.Diagnostics;
+using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Icons;
@@ -45,6 +46,9 @@ internal class DiagnosticListViewModel : APageViewModel<IDiagnosticListViewModel
         IDiagnosticWriter diagnosticWriter,
         ISettingsManager settingsManager) : base(windowManager)
     {
+        TabIcon = IconValues.MonitorDiagnostics;
+        TabTitle = Language.DiagnosticListViewModel_DiagnosticListViewModel_Diagnostics;
+
         Settings = settingsManager.Get<DiagnosticSettings>();
         settingsManager.GetChanges<DiagnosticSettings>().OnUI().BindToVM(this, vm => vm.Settings);
 
@@ -65,12 +69,6 @@ internal class DiagnosticListViewModel : APageViewModel<IDiagnosticListViewModel
 
         this.WhenActivated(disposable =>
         {
-            {
-                var workspaceController = GetWorkspaceController();
-                workspaceController.SetTabTitle("Diagnostics", WorkspaceId, PanelId, TabId);
-                workspaceController.SetIcon(IconValues.MonitorDiagnostics, WorkspaceId, PanelId, TabId);
-            }
-
             Filter = AllFilter;
 
             var serialDisposable = new SerialDisposable();
@@ -155,8 +153,9 @@ internal class DiagnosticListViewModel : APageViewModel<IDiagnosticListViewModel
                     {
                         entry
                             .WhenAnyObservable(x => x.SeeDetailsCommand)
-                            .SubscribeWithErrorLogging(diagnostic =>
+                            .SubscribeWithErrorLogging(tuple =>
                             {
+                                var (diagnostic, info) = tuple;
                                 var workspaceController = GetWorkspaceController();
 
                                 var pageData = new PageData
@@ -168,10 +167,7 @@ internal class DiagnosticListViewModel : APageViewModel<IDiagnosticListViewModel
                                     },
                                 };
 
-                                // TODO: use https://github.com/Nexus-Mods/NexusMods.App/issues/942
-                                var input = NavigationInput.Default;
-
-                                var behavior = workspaceController.GetDefaultOpenPageBehavior(pageData, input, IdBundle);
+                                var behavior = workspaceController.GetOpenPageBehavior(pageData, info, IdBundle);
                                 workspaceController.OpenPage(WorkspaceId, pageData, behavior);
                             })
                             .DisposeWith(compositeDisposable);

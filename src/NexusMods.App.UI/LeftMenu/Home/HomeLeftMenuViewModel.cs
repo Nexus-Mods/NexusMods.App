@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
+using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.Pages.MyGames;
 using NexusMods.App.UI.Resources;
@@ -27,8 +28,8 @@ public class HomeLeftMenuViewModel : AViewModel<IHomeLeftMenuViewModel>, IHomeLe
             new IconViewModel
             {
                 Name = Language.MyGames,
-                Icon = IconValues.Game,
-                Activate = ReactiveCommand.Create(() =>
+                Icon = IconValues.JoystickGameFilled,
+                NavigateCommand = ReactiveCommand.Create<NavigationInformation>(info =>
                 {
                     var pageData = new PageData
                     {
@@ -36,10 +37,7 @@ public class HomeLeftMenuViewModel : AViewModel<IHomeLeftMenuViewModel>, IHomeLe
                         Context = new MyGamesPageContext(),
                     };
 
-                    // TODO: use https://github.com/Nexus-Mods/NexusMods.App/issues/942
-                    var input = NavigationInput.Default;
-
-                    var behavior = workspaceController.GetDefaultOpenPageBehavior(pageData, input, Optional<PageIdBundle>.None);
+                    var behavior = workspaceController.GetOpenPageBehavior(pageData, info, Optional<PageIdBundle>.None);
                     workspaceController.OpenPage(WorkspaceId, pageData, behavior);
                 }),
             },

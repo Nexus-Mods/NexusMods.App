@@ -1,8 +1,11 @@
 ﻿using System.Collections.ObjectModel;
+using System.Reactive;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.App.UI.Controls.DataGrid;
+using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.WorkspaceSystem;
+using ReactiveUI;
 
 namespace NexusMods.App.UI.Pages.LoadoutGrid;
 
@@ -16,6 +19,10 @@ public interface ILoadoutGridViewModel : IPageViewModelInterface
     public string LoadoutName { get; }
 
     public ReadOnlyObservableCollection<IDataGridColumnFactory<LoadoutColumn>> Columns { get; }
+
+    public ModCursor[] SelectedItems { get; set; }
+
+    public ReactiveCommand<NavigationInformation, Unit> ViewModContentsCommand { get; }
 
     /// <summary>
     /// Add a mod to the loadout using the standard installer.
@@ -38,10 +45,4 @@ public interface ILoadoutGridViewModel : IPageViewModelInterface
     /// <param name="commitMessage"></param>
     /// <returns></returns>
     public Task DeleteMods(IEnumerable<ModId> modsToDelete, string commitMessage);
-
-    /// <summary>
-    /// Views the contents of a given mod.
-    /// </summary>
-    /// <param name="toView">IDs of all mods whose contents should be viewed.</param>
-    public void ViewModContents(List<ModId> toView);
 }

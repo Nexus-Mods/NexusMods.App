@@ -1,7 +1,9 @@
 using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
 using DynamicData;
+using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
+using NexusMods.Icons;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
@@ -15,6 +17,9 @@ public class NewTabPageViewModel : APageViewModel<INewTabPageViewModel>, INewTab
 
     public NewTabPageViewModel(IWindowManager windowManager, PageDiscoveryDetails[] discoveryDetails) : base(windowManager)
     {
+        TabTitle = Language.PanelTabHeaderViewModel_Title_New_Tab;
+        TabIcon = IconValues.Tab;
+        
         _itemSource.Edit(list =>
         {
             var toAdd = discoveryDetails
@@ -35,9 +40,23 @@ public class NewTabPageViewModel : APageViewModel<INewTabPageViewModel>, INewTab
             _itemSource
                 .Connect()
                 .MergeMany(item => item.SelectItemCommand)
-                .SubscribeWithErrorLogging(pageData =>
+                .SubscribeWithErrorLogging(tuple =>
                 {
-                    GetWorkspaceController().OpenPage(WorkspaceId, pageData, new OpenPageBehavior.ReplaceTab(PanelId, TabId));
+                    var (pageData, info) = tuple;
+                    var workspaceController = GetWorkspaceController();
+
+                    OpenPageBehavior behavior;
+                    if (!info.OpenPageBehaviorType.HasValue && info.Input.IsPrimaryInput())
+                    {
+                        // NOTE(erri120): default should be replacing this tab
+                        behavior = new OpenPageBehavior.ReplaceTab(PanelId, TabId);
+                    }
+                    else
+                    {
+                        behavior = workspaceController.GetOpenPageBehavior(pageData, info, IdBundle);
+                    }
+
+                    workspaceController.OpenPage(WorkspaceId, pageData, behavior);
                 })
                 .DisposeWith(disposables);
         });

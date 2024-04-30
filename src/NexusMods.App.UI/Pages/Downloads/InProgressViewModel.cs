@@ -19,6 +19,7 @@ using NexusMods.App.UI.Pages.Downloads.ViewModels;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.Icons;
 using NexusMods.Networking.Downloaders.Interfaces;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -81,6 +82,9 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
         IDownloadService downloadService,
         IOverlayController overlayController) : base(windowManager)
     {
+        TabTitle = Language.InProgressDownloadsPage_Title;
+        TabIcon = IconValues.Downloading;
+
         TaskSourceChangeSet = downloadService.Downloads
             .Filter(x => x.Status != DownloadTaskStatus.Completed)
             .Transform(x => (IDownloadTaskViewModel)new DownloadTaskViewModel(x))
@@ -90,8 +94,6 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
 
         this.WhenActivated(d =>
         {
-            GetWorkspaceController().SetTabTitle(Language.InProgressDownloadsPage_Title, WorkspaceId, PanelId, TabId);
-
             ShowCancelDialogCommand = ReactiveCommand.Create(async () =>
                 {
                     if (SelectedTasks.Items.Any())
