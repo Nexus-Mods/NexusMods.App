@@ -1,8 +1,14 @@
 using System.Collections.Immutable;
 using NexusMods.Abstractions.DataModel.Entities;
 using NexusMods.Abstractions.DataModel.Entities.Sorting;
+using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.Abstractions.Serialization.DataModel;
+using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.Attributes;
+using NexusMods.MnemonicDB.Abstractions.IndexSegments;
+using Entity = NexusMods.MnemonicDB.Abstractions.Models.Entity;
+using File = NexusMods.Abstractions.Loadouts.Files.File;
 
 namespace NexusMods.Abstractions.Loadouts.Mods;
 
@@ -17,85 +23,67 @@ namespace NexusMods.Abstractions.Loadouts.Mods;
 ///
 ///    This will change some time in the future.
 /// </remarks>
-[JsonName("NexusMods.Abstractions.DataModel.Entities.Mods.Mod")]
-public record Mod : Entity, IHasEntityId<ModId>
+public static class Mod
 {
-    /// <summary>
-    /// Category used for 'Game Files'.
-    /// </summary>
-    public const string GameFilesCategory = "Game Files";
-
-    /// <summary>
-    /// Category used for 'Preferences'.
-    /// </summary>
-    public const string PreferencesCategory = "Preferences";
-
-    /// <summary>
-    /// Category used for 'Save Games'.
-    /// </summary>
-    public const string SavesCategory = "Saved Games";
-
-    /// <summary>
-    /// Category used for 'Overrides'.
-    /// </summary>
-    public const string OverridesCategory = "Outside Changes";
-
-    /// <summary>
-    /// A category used for 'Modding Metadata', that is files that contain metadata about mods, like plugins.txt files
-    /// for Bethesda games, or redmod generated files for Cyberpunk 2077.
-    /// </summary>
-    public const string ModdingMetaData = "Modding Metadata";
-
-    /// <summary>
-    /// A unique identifier for this mod within the loadout.
-    /// </summary>
-    public required ModId Id { get; init; }
-
-    /// <summary>
-    /// All files which belong to this mod, accessible by index.
-    /// </summary>
-    public required EntityDictionary<ModFileId, AModFile> Files { get; init; }
-
-    /// <summary>
-    /// Metadata of the mod.
-    /// </summary>
-    public ImmutableList<AModMetadata> Metadata { get; init; } = ImmutableList<AModMetadata>.Empty;
-
-    /// <summary>
-    /// Category of the mod
-    /// </summary>
-    public string ModCategory { get; set; } = string.Empty;
-
-    /// <summary>
-    /// Version of the mod
-    /// </summary>
-    public string Version { get; set; } = string.Empty;
+    private const string Namespace = "NexusMods.Abstractions.Loadouts.Mods.Mod";
 
     /// <summary>
     /// Name of the mod in question.
     /// </summary>
-    public required string Name { get; init; } = string.Empty;
-
+    public static readonly StringAttribute Name = new(Namespace, nameof(Name));
+    
     /// <summary>
-    /// True if the mod is enabled, false otherwise.
+    /// The loadout this mod is part of.
     /// </summary>
-    public bool Enabled { get; init; } = false;
-
-    /// <inheritdoc />
-    public override EntityCategory Category => EntityCategory.Mods;
-
+    public static readonly ReferenceAttribute Loadout = new(Namespace, nameof(Loadout));
+    
     /// <summary>
-    /// Defines the individual sorting rules applied to a game.
+    /// The enabled status of the mod
     /// </summary>
-    public ImmutableList<ISortRule<Mod, ModId>> SortRules { get; init; } = ImmutableList<ISortRule<Mod, ModId>>.Empty;
-
+    public static readonly BooleanAttribute Enabled = new(Namespace, nameof(Enabled));
+    
     /// <summary>
     /// The install status of the mod.
     /// </summary>
-    public ModStatus Status { get; init; } = ModStatus.Installed;
+    public static readonly EnumAttribute<ModStatus> Status = new(Namespace, nameof(Status));
+    
 
-    /// <summary>
-    /// Date and time when the mod was installed.
-    /// </summary>
-    public DateTime Installed { get; set; } = DateTime.UtcNow;
+
+    public class Model(ITransaction tx) : Entity(tx)
+    {
+        
+        public string Name
+        {
+            get => Mod.Name.Get(this);
+            set => Mod.Name.Add(this, value);
+        }
+        
+        public bool Enabled
+        {
+            get => Mod.Enabled.Get(this);
+            set => Mod.Enabled.Add(this, value);
+        }
+        
+        public ModStatus Status
+        {
+            get => Mod.Status.Get(this);
+            set => Mod.Status.Add(this, value);
+        }
+        
+        public EntityId LoadoutId
+        {
+            get => Mod.Loadout.Get(this);
+            set => Mod.Loadout.Add(this, value);
+        }
+
+        public Loadout.Model Loadout
+        {
+            get => Db.Get<Loadout.Model>(LoadoutId);
+            set => Mod.Loadout.Add(this, value.Id);
+        }
+        
+        public Entities<EntityIds, File.Model> Files => GetReverse<File.Model>(File.Mod);
+        
+        
+    }
 }

@@ -6,6 +6,7 @@ using NexusMods.Games.AdvancedInstaller.Exceptions;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees;
 using NexusMods.Paths.Trees.Traits;
+using File = NexusMods.Abstractions.Loadouts.Files.File;
 
 namespace NexusMods.Games.AdvancedInstaller;
 
@@ -104,7 +105,7 @@ public readonly struct DeploymentData
     /// </summary>
     /// <param name="archiveFiles">Files from the archive.</param>
     /// <returns>An IEnumerable of AModFile, representing the files to be moved and their target paths.</returns>
-    public IEnumerable<AModFile> EmitOperations(KeyedBox<RelativePath, ModFileTree> archiveFiles)
+    public IEnumerable<File.Model> EmitOperations(KeyedBox<RelativePath, ModFileTree> archiveFiles)
     {
         // Written like this for clarity, use array in actual code.
         // Just an example, might not compile.

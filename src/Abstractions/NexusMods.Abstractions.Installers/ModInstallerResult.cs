@@ -1,5 +1,6 @@
 using JetBrains.Annotations;
 using NexusMods.Abstractions.DataModel.Entities.Sorting;
+using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
 
 namespace NexusMods.Abstractions.Installers;
@@ -18,7 +19,7 @@ public record ModInstallerResult
     /// <summary>
     /// All files belonging to the mod.
     /// </summary>
-    public required IEnumerable<AModFile> Files { get; init; }
+    public required IEnumerable<object> Files { get; init; }
 
     /// <summary>
     /// Optional name of the mod.
@@ -33,10 +34,5 @@ public record ModInstallerResult
     /// <summary>
     /// Optional sort rules for the mod.
     /// </summary>
-    public IEnumerable<ISortRule<Mod, ModId>>? SortRules { get; init; }
-
-    /// <summary>
-    /// Optionally sets mod metadata.
-    /// </summary>
-    public IEnumerable<AModMetadata> Metadata { get; init; } = Array.Empty<AModMetadata>();
+    public IEnumerable<ISortRule<Mod.Model, ModId>>? SortRules { get; init; }
 }

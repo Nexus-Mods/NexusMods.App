@@ -1,8 +1,12 @@
+
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts.Mods;
-using NexusMods.Abstractions.Serialization;
-using NexusMods.Abstractions.Serialization.Attributes;
-using NexusMods.Abstractions.Serialization.DataModel;
+using NexusMods.Abstractions.MnemonicDB.Attributes;
+using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.Attributes;
+using NexusMods.MnemonicDB.Abstractions.IndexSegments;
+using NexusMods.MnemonicDB.Abstractions.Models;
+using File = NexusMods.Abstractions.Loadouts.Files.File;
 
 namespace NexusMods.Abstractions.Loadouts;
 
@@ -10,117 +14,73 @@ namespace NexusMods.Abstractions.Loadouts;
 /// A loadout can be thought of as a mod list that is specific to a certain
 /// installation of a game.
 /// </summary>
-/// <remarks>
-///    We treat loadouts kind of like git branches, the document <a href="https://github.com/Nexus-Mods/NexusMods.App/blob/main/docs/ImmutableModlists.md">Immutable Mod Lists</a>
-///    might provide you with some additional insight into the idea.
-/// </remarks>
-[JsonName("NexusMods.Abstractions.Games.Loadouts.Loadout")]
-public record Loadout : Entity, IEmptyWithDataStore<Loadout>
+public static class Loadout
 {
-    /// <summary>
-    /// Collection of mods.
-    /// </summary>
-    public required EntityDictionary<ModId, Mod> Mods { get; init; }
+    private const string Namespace = "NexusMods.Abstractions.Loadouts.Loadout";
 
     /// <summary>
-    /// Unique identifier for this loadout in question.
+    /// The human friendly name for this loadout.
     /// </summary>
-    public required LoadoutId LoadoutId { get; init; }
-
-    /// <summary>
-    /// Human friendly name for this loadout.
-    /// </summary>
-    public required string Name { get; init; }
-
+    public static readonly StringAttribute Name = new(Namespace, nameof(Name)) { IsIndexed = true };
+    
     /// <summary>
     /// Unique installation of the game this loadout is tied to.
     /// </summary>
-    public required GameInstallation Installation { get; init; }
+    public static readonly GameInstallationAttribute Installation = new(Namespace, nameof(Installation));
+
 
     /// <summary>
-    /// The time this loadout is last modified.
+    /// Creates a new loadout with the given name.
     /// </summary>
-    public required DateTime LastModified { get; init; }
-
-    /// <summary>
-    /// Link to the previous version of this loadout on the data store.
-    /// </summary>
-    public required EntityLink<Loadout> PreviousVersion { get; init; }
-
-    /// <inheritdoc />
-    public override EntityCategory Category => EntityCategory.Loadouts;
-
-    /// <summary>
-    /// Summarises the changes made in this version of the loadout.
-    /// Think of this like a git commit message.
-    /// </summary>
-    public required string ChangeMessage { get; init; } = "";
-
-    /// <inheritdoc />
-    public static Loadout Empty(IDataStore store) => new()
+    public static Loadout.Model Create(ITransaction tx, string name)
     {
-        LoadoutId = LoadoutId.Create(),
-        Installation = GameInstallation.Empty,
-        Name = "",
-        Mods = EntityDictionary<ModId, Mod>.Empty(store),
-        LastModified = DateTime.UtcNow,
-        PreviousVersion = EntityLink<Loadout>.Empty(store),
-        ChangeMessage = ""
-    };
-
-    /// <summary>
-    /// Makes a change to the collection of mods stored.
-    /// </summary>
-    /// <param name="modId">Unique identifier for this mod.</param>
-    /// <param name="func">Function used to change the details of this mod.</param>
-    /// <returns>A new loadout with the details of a single mod changed.</returns>
-    public Loadout Alter(ModId modId, Func<Mod, Mod?> func)
-    {
-        return this with
+        return new Model(tx)
         {
-            Mods = Mods.Keep(modId, func)
+            Name = name,
         };
     }
 
     /// <summary>
-    /// Adds an individual mod to this loadout, returning a new loadout.
+    /// Retrieves all loadouts from the database.
     /// </summary>
-    /// <param name="mod">An individual modification to add to this loadout.</param>
-    /// <returns>The loadout with this modification added.</returns>
-    public Loadout Add(Mod mod)
+    public static IEnumerable<Model> All(IDb db)
     {
-        return this with
-        {
-            Mods = Mods.With(mod.Id, mod)
-        };
+        return db.Find(Name)
+            .Select(db.Get<Model>);
     }
 
     /// <summary>
-    /// Remove an individual mod from this loadout, returning a new loadout.
+    /// Finds one or more loadouts by name.
     /// </summary>
-    /// <param name="mod"></param>
-    /// <returns></returns>
-    public Loadout Remove(Mod mod)
+    public static IEnumerable<Model> ByName(IDb db, string name)
     {
-        return this with
+        return db.FindIndexed(name, Name)
+            .Select(db.Get<Model>);
+    }
+    
+    public class Model(ITransaction tx) : Entity(tx)
+    {
+        public string Name
         {
-            Mods = Mods.Without(mod.Id)
-        };
+            get => Loadout.Name.Get(this);
+            set => Loadout.Name.Add(this, value);
+        }
+        
+        public GameInstallation Installation
+        {
+            get => Loadout.Installation.Get(this);
+            set => Loadout.Installation.Add(this, value);
+        }
+        
+        /// <summary>
+        /// Gets all mods in this loadout.
+        /// </summary>
+        public Entities<EntityIds, Mod.Model> Mods => GetReverse<Mod.Model>(Mod.Loadout);
+        
+        /// <summary>
+        /// Gets all the files in this loadout.
+        /// </summary>
+        public Entities<EntityIds, File.Model> Files => GetReverse<File.Model>(File.Loadout);
     }
 
-    /// <summary>
-    /// Allows you to change individual files associated with a mod in this collection.
-    /// </summary>
-    /// <param name="func">Function used to change the files of a given mod.</param>
-    /// <returns>A new loadout with the files of mods changed.</returns>
-    public Loadout AlterFiles(Func<AModFile, AModFile?> func)
-    {
-        return this with
-        {
-            Mods = Mods.Keep(m => m with
-            {
-                Files = m.Files.Keep(func)
-            })
-        };
-    }
 }

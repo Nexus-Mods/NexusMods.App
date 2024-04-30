@@ -5,6 +5,7 @@ using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Serialization.DataModel.Ids;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Pages.Diff.ApplyDiff;

@@ -2,6 +2,7 @@ using JetBrains.Annotations;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Serialization.DataModel.Ids;
+using File = System.IO.File;
 
 namespace NexusMods.Abstractions.Diagnostics.References;
 
@@ -9,7 +10,7 @@ namespace NexusMods.Abstractions.Diagnostics.References;
 /// A reference to a <see cref="AModFile"/>
 /// </summary>
 [PublicAPI]
-public record ModFileReference : IDataReference<ModFileId, AModFile>
+public record ModFileReference : IDataReference<ModFileId, File.Model>
 {
     /// <inheritdoc/>
     public required IId DataStoreId { get; init; }

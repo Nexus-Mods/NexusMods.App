@@ -1,6 +1,7 @@
 ﻿using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Serialization.DataModel.Ids;
+using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.Abstractions.Loadouts;
 
@@ -15,12 +16,12 @@ public interface IApplyService
     /// </summary>
     /// <param name="loadoutId"></param>
     /// <returns></returns>
-    public Task<Loadout> Apply(LoadoutId loadoutId);
+    public Task<Loadout.Model> Apply(Ids.LoadoutId loadoutId);
     
     /// <summary>
     /// Get the diff tree of the unapplied changes of a loadout.
     /// </summary>
-    public ValueTask<FileDiffTree> GetApplyDiffTree(LoadoutId loadoutId);
+    public ValueTask<FileDiffTree> GetApplyDiffTree(Ids.LoadoutId loadoutId);
 
     
     /// <summary>
@@ -30,7 +31,7 @@ public interface IApplyService
     /// </summary>
     /// <param name="gameInstallation"></param>
     /// <returns>The merged loadout</returns>
-    public Task<Loadout> Ingest(GameInstallation gameInstallation);
+    public Task<Loadout.Model> Ingest(GameInstallation gameInstallation);
 
     /// <summary>
     /// Returns the last applied loadout for a given game installation.

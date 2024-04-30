@@ -9,6 +9,7 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Games.Stores.Steam;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.Paths;
 
@@ -60,7 +61,7 @@ public class RunGameTool<T> : IRunGameTool
     public string Name => $"Run {_game.Name}";
 
     /// <inheritdoc />
-    public async Task Execute(Loadout loadout, CancellationToken cancellationToken)
+    public async Task Execute(LoadoutId loadout, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Starting {Name}", Name);
 

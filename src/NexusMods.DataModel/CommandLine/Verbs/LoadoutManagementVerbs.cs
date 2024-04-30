@@ -167,13 +167,13 @@ public static class LoadoutManagementVerbs
             switch (file)
             {
                 case IToFile tf and IStoredFile fa:
-                    rows.Add(new object[] { tf.To, fa.Hash });
+                    rows.Add([tf.To, fa.Hash]);
                     break;
                 case IToFile tf2 and IGeneratedFile gf:
-                    rows.Add(new object[] { tf2, gf.GetType().ToString() });
+                    rows.Add([tf2, gf.GetType().ToString()]);
                     break;
                 default:
-                    rows.Add(new object[] { file.GetType().ToString(), "<none>" });
+                    rows.Add([file.GetType().ToString(), "<none>"]);
                     break;
             }
         }

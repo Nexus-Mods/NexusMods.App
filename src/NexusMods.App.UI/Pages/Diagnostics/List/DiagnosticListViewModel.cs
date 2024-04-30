@@ -4,6 +4,7 @@ using System.Reactive.Linq;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Settings;
 using NexusMods.App.UI.Controls.Diagnostics;
 using NexusMods.App.UI.Resources;

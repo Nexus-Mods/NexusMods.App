@@ -3,6 +3,7 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Hashing.xxHash64;
+using File = NexusMods.Abstractions.Loadouts.Files.File;
 
 namespace NexusMods.Abstractions.Loadouts.Synchronizers;
 
@@ -20,7 +21,7 @@ public interface IGeneratedFile
     /// <param name="stream"></param>
     /// <param name="loadout"></param>
     /// <returns></returns>
-    ValueTask<Hash?> Write(Stream stream, Loadout loadout, FlattenedLoadout flattenedLoadout, FileTree fileTree);
+    ValueTask<Hash?> Write(Stream stream, Loadout.Model loadout, FlattenedLoadout flattenedLoadout, FileTree fileTree);
 
     /// <summary>
     /// Called when the file is updated on disk, outside of the application, this method should read the file,
@@ -29,5 +30,5 @@ public interface IGeneratedFile
     /// <param name="newEntry"></param>
     /// <param name="stream"></param>
     /// <returns></returns>
-    ValueTask<AModFile> Update(DiskStateEntry newEntry, Stream stream);
+    ValueTask<File.Model> Update(DiskStateEntry newEntry, Stream stream);
 }

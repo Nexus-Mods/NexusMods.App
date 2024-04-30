@@ -19,9 +19,7 @@ public interface ITool
     public string Name { get; }
 
     /// <summary>
-    /// Executes this tool.
+    /// Executes this tool against the given loadout.
     /// </summary>
-    /// <param name="loadout">The collection of mods (loadout) to be used with this tool.</param>
-    /// <param name="cancellationToken"></param>
-    public Task Execute(Loadout loadout, CancellationToken cancellationToken);
+    public Task Execute(Ids.LoadoutId loadout, CancellationToken cancellationToken);
 }

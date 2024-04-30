@@ -2,6 +2,7 @@ using System.Reactive;
 using System.Reactive.Concurrency;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.App.UI.Controls.ModInfo.Loading;
 using NexusMods.App.UI.Controls.Trees;
 using NexusMods.App.UI.Resources;

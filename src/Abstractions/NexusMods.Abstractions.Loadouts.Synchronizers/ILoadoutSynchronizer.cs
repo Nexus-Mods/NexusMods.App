@@ -49,13 +49,13 @@ public interface ILoadoutSynchronizer
     /// </summary>
     /// <param name="loadout"></param>
     /// <returns></returns>
-    Task<Loadout> Ingest(Loadout loadout);
+    Task<Loadout.Model> Ingest(Loadout.Model loadout);
 
     /// <summary>
     /// Manage a game, creating the initial loadout
     /// </summary>
     /// <param name="installation"></param>
     /// <returns></returns>
-    Task<Loadout> Manage(GameInstallation installation, string? suggestedName=null);
+    Task<Loadout.Model> Manage(GameInstallation installation, string? suggestedName=null);
     #endregion
 }

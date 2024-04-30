@@ -23,16 +23,7 @@ public interface IGame : ILocatableGame
     /// Resets the internal cache of installations, forcing a re-scan on the next access of <see cref="Installations"/>.
     /// </summary>
     public void ResetInstallations();
-
-    /// <summary>
-    /// Returns any files that should be placed in the "Game Files" that are generated or maintained
-    /// by this <see cref="IGame"/> instance.
-    /// </summary>
-    /// <param name="installation">Individual installation of the game.</param>
-    /// <param name="store">Data store [usually database] where information about game files can be cached/stored.</param>
-    /// <returns></returns>
-    public IEnumerable<AModFile> GetGameFiles(GameInstallation installation, IDataStore store);
-
+    
     /// <summary>
     /// Stream factory for the game's icon, must be square but need not be small.
     /// </summary>

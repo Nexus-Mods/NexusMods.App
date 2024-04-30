@@ -14,15 +14,14 @@ using NexusMods.Abstractions.Games.Trees;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Loadouts.Files;
+using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
-using NexusMods.Abstractions.Loadouts.Sorting;
 using NexusMods.Abstractions.Loadouts.Synchronizers.Transformer;
-using NexusMods.Abstractions.Loadouts.Visitors;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Serialization.DataModel;
-using NexusMods.Extensions.BCL;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
+using File = NexusMods.Abstractions.Loadouts.Files.File;
 
 namespace NexusMods.Abstractions.Loadouts.Synchronizers;
 
@@ -92,7 +91,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     #region IStandardizedLoadoutSynchronizer Implementation
 
     /// <inheritdoc />
-    public async ValueTask<FlattenedLoadout> LoadoutToFlattenedLoadout(Loadout loadout)
+    public async ValueTask<FlattenedLoadout> LoadoutToFlattenedLoadout(Loadout.Model loadout)
     {
         var dict = new Dictionary<GamePath, ModFilePair>();
         var sorted = await SortMods(loadout);
@@ -115,7 +114,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     }
 
     /// <inheritdoc />
-    public ValueTask<FileTree> FlattenedLoadoutToFileTree(FlattenedLoadout flattenedLoadout, Loadout loadout)
+    public ValueTask<FileTree> FlattenedLoadoutToFileTree(FlattenedLoadout flattenedLoadout, Loadout.Model loadout)
     {
         return ValueTask.FromResult(FileTree.Create(flattenedLoadout.GetAllDescendentFiles()
             .Select(f => KeyValuePair.Create(f.GamePath(), f.Item.Value!.File))));
@@ -123,18 +122,18 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
 
 
     /// <inheritdoc />
-    public async Task<DiskStateTree> FileTreeToDisk(FileTree fileTree, Loadout loadout, FlattenedLoadout flattenedLoadout, DiskStateTree prevState, GameInstallation installation, bool skipIngest = false)
+    public async Task<DiskStateTree> FileTreeToDisk(FileTree fileTree, Loadout.Model loadout, FlattenedLoadout flattenedLoadout, DiskStateTree prevState, GameInstallation installation, bool skipIngest = false)
     {
         // Return the new tree
         return await FileTreeToDiskImpl(fileTree, loadout, flattenedLoadout, prevState, installation, true);
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal async Task<DiskStateTree> FileTreeToDiskImpl(FileTree fileTree, Loadout loadout, FlattenedLoadout flattenedLoadout, DiskStateTree prevState, GameInstallation installation, bool fixFileMode, bool skipIngest = false)
+    internal async Task<DiskStateTree> FileTreeToDiskImpl(FileTree fileTree, Loadout.Model loadout, FlattenedLoadout flattenedLoadout, DiskStateTree prevState, GameInstallation installation, bool fixFileMode, bool skipIngest = false)
     {
         List<KeyValuePair<GamePath, HashedEntryWithName>> toDelete = new();
         List<KeyValuePair<AbsolutePath, IGeneratedFile>> toWrite = new();
-        List<KeyValuePair<AbsolutePath, StoredFile>> toExtract = new();
+        List<KeyValuePair<AbsolutePath, StoredFile.Model>> toExtract = new();
 
         Dictionary<GamePath, DiskStateEntry> resultingItems = new();
 
@@ -367,10 +366,10 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     }
 
     /// <inheritdoc />
-    public async ValueTask<FileTree> DiskToFileTree(DiskStateTree diskState, Loadout prevLoadout, FileTree prevFileTree, DiskStateTree prevDiskState)
+    public async ValueTask<FileTree> DiskToFileTree(DiskStateTree diskState, Loadout.Model prevLoadout, FileTree prevFileTree, DiskStateTree prevDiskState)
     {
-        List<KeyValuePair<GamePath, AModFile>> results = new();
-        var newFiles = new List<AModFile>();
+        List<KeyValuePair<GamePath, File.Model>> results = new();
+        var newFiles = new List<File.Model>();
         foreach (var item in diskState.GetAllDescendentFiles())
         {
             var gamePath = item.GamePath();
@@ -530,7 +529,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// <param name="file"></param>
     /// <param name="modForCategory"></param>
     /// <returns></returns>
-    protected virtual Mod GetModForNewFile(Loadout prevLoadout, GamePath path, AModFile file, Func<string, Mod> modForCategory)
+    protected virtual Mod GetModForNewFile(Loadout.Model prevLoadout, GamePath path, AModFile file, Func<string, Mod> modForCategory)
     {
         if (path.LocationId == LocationId.Preferences)
         {
@@ -547,14 +546,14 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     }
 
     /// <inheritdoc />
-    public ValueTask<Loadout> FlattenedLoadoutToLoadout(FlattenedLoadout flattenedLoadout, Loadout prevLoadout, FlattenedLoadout prevFlattenedLoadout)
+    public ValueTask<Loadout.Model> FlattenedLoadoutToLoadout(FlattenedLoadout flattenedLoadout, Loadout.Model prevLoadout, FlattenedLoadout prevFlattenedLoadout)
     {
         return ValueTask.FromResult(new FlattenedToLoadoutTransformer(flattenedLoadout, prevLoadout, prevFlattenedLoadout)
             .Transform(prevLoadout));
     }
 
     /// <inheritdoc />
-    public virtual Loadout MergeLoadouts(Loadout loadoutA, Loadout loadoutB)
+    public virtual Loadout.Model MergeLoadouts(Loadout.Model loadoutA, Loadout.Model loadoutB)
     {
         var visitor = new MergingVisitor();
         return visitor.Transform(loadoutA, loadoutB);
@@ -829,13 +828,16 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// <param name="mod"></param>
     /// <returns></returns>
     /// <exception cref="NotImplementedException"></exception>
-    protected virtual async ValueTask<ISortRule<Mod, ModId>[]> ModSortRules(Loadout loadout, Mod mod)
+    protected virtual async ValueTask<ISortRule<Mod.Model, ModId>[]> ModSortRules(Loadout.Model loadout, Mod.Model mod)
     {
+        throw new NotImplementedException();
+        /*
         var builtInSortRules = mod.SortRules.Where(x => x is not IGeneratedSortRule);
         var customSortRules = mod.SortRules.ToAsyncEnumerable()
             .OfType<IGeneratedSortRule>()
             .SelectMany(x => x.GenerateSortRules(mod.Id, loadout));
         return await builtInSortRules.ToAsyncEnumerable().Concat(customSortRules).ToArrayAsync();
+        */
     }
 
 
@@ -844,9 +846,9 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// </summary>
     /// <param name="loadout"></param>
     /// <returns></returns>
-    protected virtual async Task<IEnumerable<Mod>> SortMods(Loadout loadout)
+    protected virtual async Task<IEnumerable<Mod.Model>> SortMods(Loadout.Model loadout)
     {
-        var mods = loadout.Mods.Values.Where(mod => mod.Enabled).ToList();
+        var mods = loadout.Mods.Where(mod => mod.Enabled).ToList();
         _logger.LogInformation("Sorting {ModCount} mods in loadout {LoadoutName}", mods.Count, loadout.Name);
         var modRules = await mods
             .SelectAsync(async mod => (mod.Id, await ModSortRules(loadout, mod)))
