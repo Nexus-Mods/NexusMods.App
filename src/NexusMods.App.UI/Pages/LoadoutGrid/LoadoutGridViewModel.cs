@@ -12,6 +12,7 @@ using NexusMods.Abstractions.FileStore.ArchiveMetadata;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Mods;
+using NexusMods.Abstractions.Settings;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModCategory;
@@ -21,6 +22,7 @@ using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModName;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModVersion;
 using NexusMods.App.UI.Pages.ModInfo;
 using NexusMods.App.UI.Pages.ModInfo.Types;
+using NexusMods.App.UI.Settings;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Extensions.DynamicData;
@@ -57,6 +59,7 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
 
     public LoadoutGridViewModel(
         ILogger<LoadoutGridViewModel> logger,
+    ISettingsManager settingsManager,
         IServiceProvider provider,
         ILoadoutRegistry loadoutRegistry,
         IFileSystem fileSystem,
@@ -127,7 +130,14 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
         {
             this.WhenAnyValue(vm => vm.LoadoutId)
                 .SelectMany(loadoutRegistry.RevisionsAsLoadouts)
-                .Select(loadout => loadout.Mods.Values.Select(m => new ModCursor(loadout.LoadoutId, m.Id)))
+                .Select(loadout =>
+                {
+                    // NOTE(erri120): see https://github.com/Nexus-Mods/NexusMods.App/issues/1195 for details
+                    var showGameFiles = settingsManager.Get<LoadoutGridSettings>().ShowGameFiles;
+                    return loadout.Mods.Values
+                        .Where(mod => showGameFiles || mod.ModCategory != Mod.GameFilesCategory)
+                        .Select(mod => new ModCursor(loadout.LoadoutId, mod.Id));
+                })
                 .OnUI()
                 .ToDiffedChangeSet(cur => cur.ModId, cur => cur)
                 .Bind(out _mods)
