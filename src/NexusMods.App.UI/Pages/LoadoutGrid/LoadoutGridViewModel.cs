@@ -127,7 +127,11 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
         {
             this.WhenAnyValue(vm => vm.LoadoutId)
                 .SelectMany(loadoutRegistry.RevisionsAsLoadouts)
-                .Select(loadout => loadout.Mods.Values.Select(m => new ModCursor(loadout.LoadoutId, m.Id)))
+                .Select(loadout => loadout.Mods.Values
+                    // NOTE(erri120): see https://github.com/Nexus-Mods/NexusMods.App/issues/1195 for details
+                    .Where(mod => mod.ModCategory != Mod.GameFilesCategory)
+                    .Select(mod => new ModCursor(loadout.LoadoutId, mod.Id))
+                )
                 .OnUI()
                 .ToDiffedChangeSet(cur => cur.ModId, cur => cur)
                 .Bind(out _mods)
