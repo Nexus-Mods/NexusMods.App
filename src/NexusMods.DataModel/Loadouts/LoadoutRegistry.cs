@@ -492,7 +492,7 @@ public class LoadoutRegistry : IDisposable, ILoadoutRegistry
     }
 
     /// <inheritdoc />
-    public bool IsActive(GameInstallation installation, LoadoutId id, IId? lastAppliedId)
+    public bool IsActive(LoadoutId id, IId? lastAppliedId)
     {
         var loadout = Get(id);
         if (loadout == null)
