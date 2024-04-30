@@ -20,6 +20,7 @@ using NexusMods.Abstractions.Loadouts.Synchronizers.Transformer;
 using NexusMods.Abstractions.Loadouts.Visitors;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Serialization.DataModel;
+using NexusMods.Abstractions.Serialization.DataModel.Ids;
 using NexusMods.Extensions.BCL;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
@@ -94,10 +95,16 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// <inheritdoc />
     public async ValueTask<FlattenedLoadout> LoadoutToFlattenedLoadout(Loadout loadout)
     {
-        var dict = new Dictionary<GamePath, ModFilePair>();
         var sorted = await SortMods(loadout);
+        return ModsToFlattenedLoadout(sorted);
+    }
 
-        foreach (var mod in sorted)
+    private static FlattenedLoadout ModsToFlattenedLoadout(IEnumerable<Mod> sorted)
+    {
+        var modArray = sorted.ToArray();
+        var numItems = modArray.Sum(mod => mod.Files.Count);
+        var dict = new Dictionary<GamePath, ModFilePair>(numItems);
+        foreach (var mod in modArray)
         {
             if (!mod.Enabled)
                 continue;
@@ -123,14 +130,14 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
 
 
     /// <inheritdoc />
-    public async Task<DiskStateTree> FileTreeToDisk(FileTree fileTree, Loadout loadout, FlattenedLoadout flattenedLoadout, DiskStateTree prevState, GameInstallation installation, bool skipIngest = false)
+    public async Task<DiskStateTree> FileTreeToDisk(FileTree fileTree, Loadout? loadout, FlattenedLoadout flattenedLoadout, DiskStateTree prevState, GameInstallation installation, bool skipIngest = false)
     {
         // Return the new tree
         return await FileTreeToDiskImpl(fileTree, loadout, flattenedLoadout, prevState, installation, true);
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal async Task<DiskStateTree> FileTreeToDiskImpl(FileTree fileTree, Loadout loadout, FlattenedLoadout flattenedLoadout, DiskStateTree prevState, GameInstallation installation, bool fixFileMode, bool skipIngest = false)
+    internal async Task<DiskStateTree> FileTreeToDiskImpl(FileTree fileTree, Loadout? loadout, FlattenedLoadout flattenedLoadout, DiskStateTree prevState, GameInstallation installation, bool fixFileMode, bool skipIngest = false)
     {
         List<KeyValuePair<GamePath, HashedEntryWithName>> toDelete = new();
         List<KeyValuePair<AbsolutePath, IGeneratedFile>> toWrite = new();
@@ -246,11 +253,14 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         }
 
         // Write the generated files (could be done in parallel)
+        if (toWrite.Count > 0 && loadout == null)
+            throw new InvalidOperationException("A valid loadout is required for creating generated files");
+        
         foreach (var entry in toWrite)
         {
             entry.Key.Parent.CreateDirectory();
             await using var outputStream = entry.Key.Create();
-            var hash = await entry.Value.Write(outputStream, loadout, flattenedLoadout, fileTree);
+            var hash = await entry.Value.Write(outputStream, loadout!, flattenedLoadout, fileTree);
             if (hash == null)
             {
                 outputStream.Position = 0;
@@ -755,38 +765,13 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     }
 
     /// <inheritdoc />
-    public virtual async Task<Loadout> Manage(GameInstallation installation, string? suggestedName = null)
+    public virtual async Task<Loadout> CreateLoadout(GameInstallation installation, string? suggestedName = null)
     {
         var (isCached, initialState) = await GetOrCreateInitialDiskState(installation);
         
         var loadoutId = LoadoutId.Create();
-        var gameFiles = new Mod()
-        {
-            Name = "Game Files",
-            ModCategory = Mod.GameFilesCategory,
-            Id = ModId.NewId(),
-            Enabled = true,
-            Files = EntityDictionary<ModFileId, AModFile>.Empty(_store).With(initialState.GetAllDescendentFiles()
-                .Select(f =>
-                {
-                    var id = ModFileId.NewId();
-                    return KeyValuePair.Create(id, (AModFile)new StoredFile
-                    {
-                        Id = id,
-                        Hash = f.Item.Value.Hash,
-                        Size = f.Item.Value.Size,
-                        To = f.GamePath()
-                    });
-                }))
-        };
-
-        var fileTree = FileTree.Create(gameFiles.Files.Select(kv =>
-                {
-                    var storedFile = (kv.Value as StoredFile)!;
-                    return KeyValuePair.Create(storedFile.To, kv.Value);
-                }
-            )
-        );
+        var gameFiles = CreateGameFilesMod(initialState);
+        var fileTree = CreateFileTreeFromMod(gameFiles);
         await BackupNewFiles(installation, fileTree);
 
         var loadout = _loadoutRegistry.Alter(loadoutId, "Initial loadout",  loadout => loadout
@@ -817,8 +802,121 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         await _diskStateRegistry.SaveState(loadout.Installation, initialState);
         return loadout;
     }
+    
+    private static FileTree CreateFileTreeFromMod(Mod gameFiles)
+    {
+        return FileTree.Create(gameFiles.Files.Select(kv =>
+                {
+                    var storedFile = (kv.Value as StoredFile)!;
+                    return KeyValuePair.Create(storedFile.To, kv.Value);
+                }
+            )
+        );
+    }
 
-    #endregion
+    private Mod CreateGameFilesMod(DiskStateTree initialState)
+    {
+        return new Mod()
+        {
+            Name = "Game Files",
+            ModCategory = Mod.GameFilesCategory,
+            Id = ModId.NewId(),
+            Enabled = true,
+            Files = EntityDictionary<ModFileId, AModFile>.Empty(_store).With(initialState.GetAllDescendentFiles()
+                .Select(f =>
+                {
+                    var id = ModFileId.NewId();
+                    return KeyValuePair.Create(id, (AModFile)new StoredFile
+                    {
+                        Id = id,
+                        Hash = f.Item.Value.Hash,
+                        Size = f.Item.Value.Size,
+                        To = f.GamePath()
+                    });
+                }))
+        };
+    }
+
+    /// <inheritdoc />
+    public async Task UnManage(GameInstallation installation)
+    {
+        await ResetToInitialState(installation);
+        foreach (var loadoutId in _loadoutRegistry.AllLoadoutIds().ToArray())
+            _loadoutRegistry.Delete(loadoutId);
+        
+        // Now clear the vanilla game state.
+        // We don't want the user's folder to reset.
+        await _diskStateRegistry.ClearInitialState(installation);
+    }
+
+    /// <inheritdoc />
+    public async Task DeleteLoadout(GameInstallation installation, LoadoutId id)
+    {
+        // Clear Initial State if this is the only loadout for the game.
+        // We use folder location for this.
+        var installLocation = installation.LocationsRegister[LocationId.Game].ToString();
+        var wasLastLoadout = _loadoutRegistry
+            .AllLoadouts()
+            .Count(x => x.Installation.LocationsRegister[LocationId.Game].ToString() == installLocation) <= 1;
+    
+        if (_loadoutRegistry.IsApplied(id, _diskStateRegistry.GetLastAppliedLoadout(installation)))
+        {
+            /*
+                Note(Sewer)
+
+                The loadout being deleted is the currently active loadout
+                As a 'default' reasonable behaviour, we will reset the game folder
+                to its initial state. This is a good default as in most cases,
+                game files are not likely to be overwritten, so this will just
+                end up materialising into a bunch of deletes. (Very Fast)
+
+                In the future, we may make a setting to change the behaviour,
+                if for example the user wants it to revert to last applied loadout
+                that isn't the one being deleted.
+            */
+
+            await ResetToInitialState(installation);
+        }
+
+        _loadoutRegistry.Delete(id);
+        if (wasLastLoadout)
+            await _diskStateRegistry.ClearInitialState(installation);
+    }
+
+    private async Task ResetToInitialState(GameInstallation installation)
+    {
+        var (isCached, initialState) = await GetOrCreateInitialDiskState(installation);
+        if (!isCached)
+            throw new InvalidOperationException("Something is very wrong with the DataStore.\n" +
+                                                "We don't have an initial disk state for the game folder, but we should have.\n" +
+                                                "Because this disk state should only ever be deleted when unmanaging a game.");
+
+        /*
+            Note (Sewer)
+
+            Normally we could navigate to the very first revision of a loadout
+            to get the 'vanilla' state of the game folder and apply that, however...
+
+            In the future we will support rollbacks for loadouts.
+            
+            That means the user will be able to update the 'starting'
+            state of a given loadout, deleting previous history to save space.
+            
+            In order to keep future code 'simpler', where we won't have to make
+            special exceptions/logic. We just perform a stripped down apply
+            with the original file tree here.
+        */
+
+        // Create a non-persisted mod from original game files.
+        // Then effectively 'Apply' it as single mod 'Loadout'.
+        var gameFilesMod = CreateGameFilesMod(initialState);
+        var fileTree = CreateFileTreeFromMod(gameFilesMod);
+        var flattened = ModsToFlattenedLoadout([gameFilesMod]);
+        var prevState = _diskStateRegistry.GetState(installation)!;
+        await FileTreeToDisk(fileTree, null, flattened, prevState, installation, true);
+    }
+
+#endregion
 
     #region FlattenLoadoutToTree Methods
 
