@@ -13,11 +13,11 @@ public class ApplyServiceTests(IServiceProvider provider) : ADataModelTest<Apply
     [Fact]
     public async Task CanApplyLoadout()
     {
+        // Arrange
+        await AddMods(BaseLoadout, Data7ZLzma2, "Mod1");
         throw new NotImplementedException();
         /*
-        // Arrange
-        await AddMods(BaseList, Data7ZLzma2, "Mod1");
-        var loadout = BaseList.Value;
+        var loadout = BaseLoadout.Value;
         var gameFolder = BaseList.Value.Installation.LocationsRegister[LocationId.Game];
         
         gameFolder.Combine("rootFile.txt").FileExists.Should().BeFalse("loadout has not yet been applied");
@@ -29,6 +29,7 @@ public class ApplyServiceTests(IServiceProvider provider) : ADataModelTest<Apply
         gameFolder.Combine("rootFile.txt").FileExists.Should().BeTrue("loadout has been applied");
         gameFolder.Combine("folder1/folder1file.txt").FileExists.Should().BeTrue("loadout has been applied");
         */
+        
     }
     
     /*

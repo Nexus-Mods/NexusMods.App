@@ -39,6 +39,8 @@ public static class AbsolutePathExtensions
     /// <returns>The xxHash64 hash of the file.</returns>
     public static Hash XxHash64MemoryMapped(this AbsolutePath input, IActivitySource<Size>? job = null)
     {
+        if (input.FileSystem is InMemoryFileSystem) 
+            return XxHash64MemoryMappedInMemory(input, job);
         try
         {
             using var mmf = input.FileSystem.CreateMemoryMappedFile(input, FileMode.Open, MemoryMappedFileAccess.Read);
@@ -50,5 +52,12 @@ public static class AbsolutePathExtensions
         {
             return Hash.From(XxHash64Algorithm.HashOfEmptyFile);
         }
+    }
+
+    private static Hash XxHash64MemoryMappedInMemory(this AbsolutePath input, IActivitySource<Size>? job = null)
+    {
+        var ms = (MemoryStream)input.Read();
+        var hashValue = XxHash64Algorithm.HashBytes(ms.ToArray().AsSpan()[..(int)ms.Length]);
+        return Hash.From(hashValue);
     }
 }

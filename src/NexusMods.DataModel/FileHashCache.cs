@@ -1,5 +1,7 @@
 using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
+using DynamicData.Kernel;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.GameLocators;
@@ -31,6 +33,7 @@ public class FileHashCache : IFileHashCache
 
     private readonly IActivityFactory _activityFactory;
     private readonly IConnection _conn;
+    private readonly ILogger<FileHashCache> _logger;
 
     /// <summary/>
     /// <param name="activityFactory">Limits CPU utilization where possible.</param>
@@ -38,8 +41,9 @@ public class FileHashCache : IFileHashCache
     /// <remarks>
     ///    This constructor is usually called from DI.
     /// </remarks>
-    public FileHashCache(IActivityFactory activityFactory, IConnection conn)
+    public FileHashCache(IActivityFactory activityFactory, IConnection conn, ILogger<FileHashCache> logger)
     {
+        _logger = logger;
         _activityFactory = activityFactory;
         _conn = conn;
     }
@@ -49,11 +53,13 @@ public class FileHashCache : IFileHashCache
     {
         var nameHash = Hash.From(path.ToString().AsSpan().GetStableHash());
         var db = _conn.Db;
+        _logger.LogDebug("DbId: {DbId}", db.BasisTxId);
         var id = db
             .FindIndexed(nameHash, HashCacheEntry.NameHash)
-            .FirstOrDefault(EntityId.MinValue);
-        if (id == EntityId.MinValue)
+            .FirstOrDefault();
+        if (id == EntityId.From(0))
         {
+            
             entry = null!;
             return false;
         }
@@ -159,9 +165,9 @@ public class FileHashCache : IFileHashCache
     {
         var hash = Hash.From(nameString.AsSpan().GetStableHash());
         var existing = db.FindIndexed(hash, HashCacheEntry.NameHash)
-            .FirstOrDefault(EntityId.MinValue);
+            .FirstOrDefault();
 
-        if (existing != EntityId.MinValue)
+        if (existing != EntityId.From(0))
         {
             tx.Add(existing,HashCacheEntry.LastModified, entry.LastModified);
             tx.Add(existing,HashCacheEntry.Hash, entry.Hash);

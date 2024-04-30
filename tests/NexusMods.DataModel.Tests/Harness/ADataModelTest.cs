@@ -53,6 +53,8 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
 
     protected readonly IGame Game;
     protected readonly GameInstallation Install;
+    
+    protected Loadout.Model BaseLoadout = null!;
 
     protected CancellationToken Token = CancellationToken.None;
     private readonly IHost _host;
@@ -96,15 +98,36 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
 
     public virtual async Task InitializeAsync()
     {
-        throw new NotImplementedException();
-        //BaseList = LoadoutRegistry.GetMarker((await Install.GetGame().Synchronizer.Manage(Install)).LoadoutId);
+        BaseLoadout = await Game.Synchronizer.Manage(Install, "TestLoadout_" + Guid.NewGuid());
     }
 
-    protected async Task<ModId[]> AddMods(LoadoutId mainList, AbsolutePath path, string? name = null)
+    /// <summary>
+    /// "Primes" the test filesystem with the given file. This means that the file is copied to the test (in-memory)
+    /// filesystem so it can be used in tests.
+    /// </summary>
+    private async Task PrimeFile(AbsolutePath src)
+    {
+        {
+            await using var file = FileSystem.CreateFile(src);
+            await using var stream = src.Read();
+            await stream.CopyToAsync(file, Token);
+        }
+        var entry = FileSystem.GetFileEntry(src);
+        entry.LastWriteTime = DateTime.UtcNow;
+        entry.CreationTime = DateTime.UtcNow;
+
+        return;
+    }
+
+    protected async Task<ModId[]> AddMods(LoadoutId loadoutId, AbsolutePath path, string? name = null)
     {
         var downloadId = await FileOriginRegistry.RegisterDownload(path, Token);
-        throw new NotImplementedException();
-        //return await ArchiveInstaller.AddMods(mainList.Value, downloadId, name, token: Token);
+        return await ArchiveInstaller.AddMods(loadoutId, downloadId, name, token: Token);
+    }
+
+    protected Task<ModId[]> AddMods(Loadout.Model loadout, AbsolutePath path, string? name = null)
+    {
+        return AddMods(LoadoutId.From(loadout.Id), path, name);
     }
 
     /// <summary>

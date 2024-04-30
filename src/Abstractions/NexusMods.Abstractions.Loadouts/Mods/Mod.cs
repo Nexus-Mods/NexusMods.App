@@ -81,6 +81,12 @@ public static class Mod
             get => Db.Get<Loadout.Model>(LoadoutId);
             set => Mod.Loadout.Add(this, value.Id);
         }
+
+        public Category Category
+        {
+            get => ModCategory.Get(this);
+            set => ModCategory.Add(this, value);
+        }
         
         public Entities<EntityIds, File.Model> Files => GetReverse<File.Model>(File.Mod);
         

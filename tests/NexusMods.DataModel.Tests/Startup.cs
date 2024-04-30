@@ -44,13 +44,14 @@ public static class Startup
 
         return container
             .AddSingleton<IGuidedInstaller, NullGuidedInstaller>()
-            .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug))
+            .AddLogging(builder => builder.AddXunitOutput().SetMinimumLevel(LogLevel.Trace))
             .AddFileSystem()
             .AddSingleton(new TemporaryFileManager(FileSystem.Shared, prefix))
             .AddSettingsManager()
             .AddDataModel()
             .OverrideSettingsForTests<DataModelSettings>(settings => settings with
             {
+                UseInMemoryDataModel = true,
                 DataStoreFilePath = new ConfigurablePath(baseKnownPath, $"{baseDirectory}/DataStore.sqlite"),
                 MnemonicDBPath = new ConfigurablePath(baseKnownPath, $"{baseDirectory}/MnemonicDB.rocksdb"),
                 ArchiveLocations = [
