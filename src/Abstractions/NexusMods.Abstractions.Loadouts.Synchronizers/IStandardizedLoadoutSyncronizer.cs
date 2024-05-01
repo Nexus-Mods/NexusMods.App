@@ -75,15 +75,7 @@ public interface IStandardizedLoadoutSynchronizer : ILoadoutSynchronizer
     /// <param name="prevFlattenedLoadout"></param>
     /// <returns></returns>
     ValueTask<FlattenedLoadout> FileTreeToFlattenedLoadout(FileTree fileTree, Loadout.Model prevLoadout, FlattenedLoadout prevFlattenedLoadout);
-
-    /// <summary>
-    /// Creates a new loadout from the current flattened loadout and the previous loadout.
-    /// </summary>
-    /// <param name="flattenedLoadout"></param>
-    /// <param name="prevLoadout"></param>
-    /// <param name="prevFlattenedLoadout"></param>
-    /// <returns></returns>
-    ValueTask<Loadout.Model> FlattenedLoadoutToLoadout(FlattenedLoadout flattenedLoadout, Loadout.Model prevLoadout, FlattenedLoadout prevFlattenedLoadout);
+    
 
     /// <summary>
     /// Backs up any new files in the file tree.

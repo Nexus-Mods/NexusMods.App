@@ -194,7 +194,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                     if (file.Get(StoredFile.Hash) == entry.Hash)
                         continue;
 
-                    toExtract.Add(KeyValuePair.Create(entry.Path, file.As<StoredFile.Model>()));
+                    toExtract.Add(KeyValuePair.Create(entry.Path, file.Remap<StoredFile.Model>()));
                 }
                 else if (IsGeneratedFile(file))
                 {
@@ -238,7 +238,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             }
             else if (file.Contains(StoredFile.Hash))
             {
-                toExtract.Add(KeyValuePair.Create(absolutePath, file.As<StoredFile.Model>()));
+                toExtract.Add(KeyValuePair.Create(absolutePath, file.Remap<StoredFile.Model>()));
             }
             else if (IsGeneratedFile(file))
             {
@@ -533,54 +533,6 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         return FlattenedLoadout.Create(tree);
     }
 
-    /// <summary>
-    /// If a file is new, this method will be called to get the mod for the new file. The modForCategory function
-    /// can be called to get a mod for a given category, or create a new one if it doesn't exist.
-    /// </summary>
-    /// <param name="prevLoadout"></param>
-    /// <param name="path"></param>
-    /// <param name="file"></param>
-    /// <param name="modForCategory"></param>
-    /// <returns></returns>
-    protected virtual Mod.Model GetModForNewFile(Loadout.Model prevLoadout, GamePath path, File.Model file, Func<string, Mod.Model> modForCategory)
-    {
-        throw new NotImplementedException();
-        /*
-        if (path.LocationId == LocationId.Preferences)
-        {
-            return modForCategory(Mod.PreferencesCategory);
-        }
-        else if (path.LocationId == LocationId.Saves)
-        {
-            return modForCategory(Mod.SavesCategory);
-        }
-        else
-        {
-            return modForCategory(Mod.OverridesCategory);
-        }
-        */
-    }
-
-    /// <inheritdoc />
-    public ValueTask<Loadout.Model> FlattenedLoadoutToLoadout(FlattenedLoadout flattenedLoadout, Loadout.Model prevLoadout, FlattenedLoadout prevFlattenedLoadout)
-    {
-        throw new NotImplementedException();
-        /*
-        return ValueTask.FromResult(new FlattenedToLoadoutTransformer(flattenedLoadout, prevLoadout, prevFlattenedLoadout)
-            .Transform(prevLoadout));
-            */
-    }
-
-    /// <inheritdoc />
-    public virtual Loadout.Model MergeLoadouts(Loadout.Model loadoutA, Loadout.Model loadoutB)
-    {
-        throw new NotImplementedException();
-        /*
-        var visitor = new MergingVisitor();
-        return visitor.Transform(loadoutA, loadoutB);
-        */
-    }
-
     #endregion
 
     #region ILoadoutSynchronizer Implementation
@@ -761,56 +713,57 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         return await FlattenedLoadoutToDiskDiff(flattenedLoadout, diskState);
     }
 
-    private static ValueTask<FileDiffTree> FlattenedLoadoutToDiskDiff(FlattenedLoadout flattenedLoadout, DiskStateTree diskState)
+    private ValueTask<FileDiffTree> FlattenedLoadoutToDiskDiff(FlattenedLoadout flattenedLoadout, DiskStateTree diskState)
     {
         var loadoutFiles = flattenedLoadout.GetAllDescendentFiles().ToArray();
         var diskStateEntries = diskState.GetAllDescendentFiles().ToArray();
 
         // With both deletions and additions it might be more than Max, but it's a starting point
         Dictionary<GamePath, DiskDiffEntry> resultingItems = new(Math.Max(loadoutFiles.Length, diskStateEntries.Length));
-
-        throw new NotImplementedException();
-        /*
+        
         // Add all the disk state entries to the result, checking for changes
         foreach (var diskItem in diskStateEntries)
         {
             var gamePath = diskItem.GamePath();
             if (flattenedLoadout.TryGetValue(gamePath, out var loadoutFileEntry))
             {
-                switch (loadoutFileEntry.Item.Value.File)
+                var file = loadoutFileEntry.Item.Value;
+                if (IsStoredFile(file))
                 {
-                    case StoredFile sf:
-                        if (sf.Hash != diskItem.Item.Value.Hash)
-                        {
-                            resultingItems.Add(gamePath,
-                                new DiskDiffEntry
-                                {
-                                    GamePath = gamePath,
-                                    Hash = sf.Hash,
-                                    Size = sf.Size,
-                                    ChangeType = FileChangeType.Modified,
-                                }
-                            );
-                        }
-                        else
-                        {
-                            resultingItems.Add(gamePath,
-                                new DiskDiffEntry
-                                {
-                                    GamePath = gamePath,
-                                    Hash = sf.Hash,
-                                    Size = sf.Size,
-                                    ChangeType = FileChangeType.None,
-                                }
-                            );
-                        }
-
-                        break;
-                    case IGeneratedFile gf and IToFile:
-                        // TODO: Implement change detection for generated files
-                        break;
-                    default:
-                        throw new UnreachableException("No way to handle this file");
+                    var sf = file.Remap<StoredFile.Model>();
+                    if (sf.Hash != diskItem.Item.Value.Hash)
+                    {
+                        resultingItems.Add(gamePath,
+                            new DiskDiffEntry
+                            {
+                                GamePath = gamePath,
+                                Hash = sf.Hash,
+                                Size = sf.Size,
+                                ChangeType = FileChangeType.Modified,
+                            }
+                        );
+                    }
+                    else
+                    {
+                        resultingItems.Add(gamePath,
+                            new DiskDiffEntry
+                            {
+                                GamePath = gamePath,
+                                Hash = sf.Hash,
+                                Size = sf.Size,
+                                ChangeType = FileChangeType.None,
+                            }
+                        );
+                    }
+                }
+                else if (IsGeneratedFile(file))
+                {
+                    // TODO: Implement change detection for generated files
+                    continue;
+                }
+                else
+                {
+                    throw new NotImplementedException("No way to handle this file");
                 }
             }
             else
@@ -831,33 +784,35 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         foreach (var loadoutFile in loadoutFiles)
         {
             var gamePath = loadoutFile.GamePath();
-            switch (loadoutFile.Item.Value.File)
+            var file = loadoutFile.Item.Value;
+            if (IsStoredFile(file))
             {
-                case StoredFile sf:
-                    if (!resultingItems.TryGetValue(gamePath, out _))
-                    {
-                        resultingItems.Add(gamePath,
-                            new DiskDiffEntry
-                            {
-                                GamePath = gamePath,
-                                Hash = sf.Hash,
-                                Size = sf.Size,
-                                ChangeType = FileChangeType.Added,
-                            }
-                        );
-                    }
-
-                    break;
-                case IGeneratedFile gf and IToFile:
-                    // TODO: Implement change detection for generated files
-                    break;
-                default:
-                    throw new UnreachableException("No way to handle this file");
+                var sf = file.Remap<StoredFile.Model>();
+                if (!resultingItems.TryGetValue(gamePath, out _))
+                {
+                    resultingItems.Add(gamePath,
+                        new DiskDiffEntry
+                        {
+                            GamePath = gamePath,
+                            Hash = sf.Hash,
+                            Size = sf.Size,
+                            ChangeType = FileChangeType.Added,
+                        }
+                    );
+                }
+            }
+            else if (IsGeneratedFile(file))
+            {
+                // TODO: Implement change detection for generated files
+                continue;
+            }
+            else
+            {
+                throw new NotImplementedException("No way to handle this file");
             }
         }
 
         return ValueTask.FromResult(FileDiffTree.Create(resultingItems));
-        */
     }
 
     /// <summary>
@@ -913,6 +868,14 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     public bool IsDeletedFile(File.Model file)
     {
         return file.TryGet(DeletedFile.Deleted, out var deleted) && deleted;
+    }
+
+    /// <summary>
+    /// True if the file is a stored file.
+    /// </summary>
+    public bool IsStoredFile(File.Model file)
+    {
+        return file.Contains(StoredFile.Hash);
     }
 
     /// <inheritdoc />
@@ -984,7 +947,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             
             var fileTree = FileTree.Create(gameFiles.Files.Select(file =>
                     {
-                        var storedFile = file.As<StoredFile.Model>();
+                        var storedFile = file.Remap<StoredFile.Model>();
                         return KeyValuePair.Create(storedFile.To, file);
                     }
                 )

@@ -8,17 +8,6 @@ namespace NexusMods.Abstractions.Loadouts.Synchronizers;
 /// </summary>
 public interface ILoadoutSynchronizer
 {
-    #region Merge Methods
-
-    /// <summary>
-    /// Merges two loadouts together, creating a new loadout.
-    /// </summary>
-    /// <param name="loadoutA"></param>
-    /// <param name="loadoutB"></param>
-    /// <returns></returns>
-    Loadout.Model MergeLoadouts(Loadout.Model loadoutA, Loadout.Model loadoutB);
-
-    #endregion
     
     #region Diff Methods
     
