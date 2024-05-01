@@ -118,23 +118,6 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                     diagnosticItem.Name = $"{Language.LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics} ({totalCount})";
                 })
                 .DisposeWith(disposable);
-            
-            loadoutRegistry.LoadoutRootChanges
-                .OnUI()
-                .OnItemRemoved(loadoutId =>
-                {
-                    if (workspaceController.ActiveWorkspace?.Context is LoadoutContext activeLoadoutContext &&
-                        activeLoadoutContext.LoadoutId == loadoutId)
-                    {
-                        workspaceController.ChangeOrCreateWorkspaceByContext<HomeContext>(() => new PageData
-                        {
-                            FactoryId = MyGamesPageFactory.StaticId,
-                            Context = new MyGamesPageContext(),
-                        });
-                    }
-                }, false)
-                .SubscribeWithErrorLogging()
-                .DisposeWith(disposable);
         });
     }
 }
