@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using NexusMods.Abstractions.DataModel.Entities.Sorting;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Loadouts.Sorting;
 using NexusMods.Abstractions.Serialization.Attributes;

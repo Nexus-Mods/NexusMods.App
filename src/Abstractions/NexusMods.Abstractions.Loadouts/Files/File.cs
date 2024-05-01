@@ -69,5 +69,14 @@ public static class File
             set => File.Mod.Add(this, value.Id);
         }
         
+        /// <summary>
+        /// If this file is a stored file, this will return true and cast the stored file to the out parameter.
+        /// </summary>
+        public bool IsStoredFile(out StoredFile.Model storedFile)
+        {
+            storedFile = Db.Get<StoredFile.Model>(Id);
+            return this.Contains(StoredFile.Hash);
+        }
+        
     }
 }

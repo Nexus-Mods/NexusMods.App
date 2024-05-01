@@ -76,6 +76,7 @@ public class NativeModInstaller : IModInstaller
 
                 return new ModInstallerResult
                 {
+                    Id = info.BaseModId,
                     Files = modFiles,
                     Name = string.IsNullOrEmpty(modProject.Title) ? null : modProject.Title,
                     Version = modProject.VersionMajor == 0

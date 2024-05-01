@@ -37,10 +37,10 @@ internal static class Interop
 
     public static ValueTask<Manifest?> DeserializeManifest(Stream stream) => Deserialize<Manifest>(stream);
 
-    public static async ValueTask<Manifest?> GetManifest(IFileStore fileStore, Mod mod, CancellationToken cancellationToken = default)
+    public static async ValueTask<Manifest?> GetManifest(IFileStore fileStore, Mod.Model mod, CancellationToken cancellationToken = default)
     {
-        var manifestFile = mod.Files.Values.FirstOrDefault(f => f.HasMetadata<SMAPIManifestMetadata>());
-        if (manifestFile is not StoredFile storedFile) return null;
+        var manifestFile = mod.Files.FirstOrDefault(f => f.HasMetadata<SMAPIManifestMetadata>());
+        if (!manifestFile?.IsStoredFile(out var storedFile) ?? false) return null;
 
         await using var stream = await fileStore.GetFileStream(storedFile.Hash, cancellationToken);
         return await DeserializeManifest(stream);

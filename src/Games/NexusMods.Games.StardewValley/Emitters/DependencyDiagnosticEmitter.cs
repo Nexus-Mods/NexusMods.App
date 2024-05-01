@@ -8,6 +8,7 @@ using NexusMods.Abstractions.Diagnostics.Values;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
+using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Games.StardewValley.Models;
 using NexusMods.Games.StardewValley.WebAPI;
@@ -37,7 +38,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
         _os = os;
     }
 
-    public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
+    public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.Model loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         var gameVersion = new SemanticVersion(loadout.Installation.Version);
         var optionalSMAPIMod = loadout.GetFirstModWithMetadata<SMAPIMarker>();
@@ -68,7 +69,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
     }
 
     private static IEnumerable<Diagnostic> DiagnoseDisabledDependencies(
-        Loadout loadout,
+        Loadout.Model loadout,
         Dictionary<ModId, SMAPIManifest> modIdToManifest,
         ImmutableDictionary<string, ModId> uniqueIdToModId)
     {
@@ -104,7 +105,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
     }
 
     private async Task<IEnumerable<Diagnostic>> DiagnoseMissingDependencies(
-        Loadout loadout,
+        Loadout.Model loadout,
         ISemanticVersion gameVersion,
         ISemanticVersion smapiVersion,
         Dictionary<ModId, SMAPIManifest> modIdToManifest,
@@ -161,7 +162,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
     }
 
     private async Task<IEnumerable<Diagnostic>> DiagnoseOutdatedDependencies(
-        Loadout loadout,
+        Loadout.Model loadout,
         ISemanticVersion gameVersion,
         ISemanticVersion smapiVersion,
         Dictionary<ModId, SMAPIManifest> modIdToManifest,
