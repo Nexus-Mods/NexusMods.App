@@ -151,6 +151,7 @@ public class ArchiveInstaller : IArchiveInstaller
                 entity.Add(Mod.Name, result.Name ?? modName);
                 entity.Add(Mod.Loadout, loadoutId.Value);
                 entity.Add(Mod.Status, ModStatus.Installed);
+                entity.Add(Mod.Version, result.Version ?? "<unknown>");
                 entity.Add(Mod.Enabled, true);
                 entity.Add(Mod.Source, download.Id);
                 entity.Add(Mod.Category, ModCategory.Mod);

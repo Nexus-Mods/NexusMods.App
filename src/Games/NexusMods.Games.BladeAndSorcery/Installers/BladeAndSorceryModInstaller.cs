@@ -65,6 +65,7 @@ public class BladeAndSorceryModInstaller : AModInstaller
 
             yield return new ModInstallerResult
             {
+                Id = info.BaseModId,
                 Files = modFileData,
                 Name = manifest.Name,
                 Version = manifest.ModVersion,
