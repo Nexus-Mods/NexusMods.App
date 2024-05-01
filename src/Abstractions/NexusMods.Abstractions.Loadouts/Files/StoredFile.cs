@@ -14,7 +14,7 @@ namespace NexusMods.Abstractions.Loadouts.Files;
 /// and the size. This file may originally come from a download, a
 /// tool's output, or a backed up game file.
 /// </summary>
-public static class  StoredFile
+public static class StoredFile
 {
     private const string Namespace = "NexusMods.Abstractions.Loadouts.Files.StoredFile";
 
@@ -27,17 +27,13 @@ public static class  StoredFile
     /// The hash of the file, on disk after extraction.
     /// </summary>
     public static readonly HashAttribute Hash = new(Namespace, nameof(Hash)) { IsIndexed = true };
-    
-    /// <summary>
-    /// The location the file will be installed to
-    /// </summary>
-    public static readonly GamePathAttribute To = new(Namespace, nameof(To));
+
 
 
     /// <summary>
     /// Model for the stored file.
     /// </summary>
-    public class Model(ITransaction tx) : File.Model(tx)
+    public class Model(ITransaction tx) : File.Model(tx), IFileTreeNode
     {
 
         /// <summary>
@@ -57,15 +53,5 @@ public static class  StoredFile
             get => StoredFile.Hash.Get(this);
             set => StoredFile.Hash.Add(this, value);
         }
-        
-        /// <summary>
-        /// The location the file will be installed to
-        /// </summary>
-        public GamePath To
-        {
-            get => StoredFile.To.Get(this);
-            set => StoredFile.To.Add(this, value);
-        }
-        
     }
 }

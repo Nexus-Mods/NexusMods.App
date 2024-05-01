@@ -9,6 +9,7 @@ using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Serialization.DataModel.Ids;
 using NexusMods.DataModel.Loadouts.Extensions;
+using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.DataModel;
 
@@ -17,31 +18,27 @@ public class ApplyService : IApplyService
 {
     private readonly ILogger<ApplyService> _logger;
     private readonly IDiskStateRegistry _diskStateRegistry;
+    private readonly IConnection _conn;
 
     /// <summary>
     /// DI Constructor
     /// </summary>
-    public ApplyService(IDiskStateRegistry diskStateRegistry, ILogger<ApplyService> logger)
+    public ApplyService(IDiskStateRegistry diskStateRegistry, IConnection conn, ILogger<ApplyService> logger)
     {
         _logger = logger;
+        _conn = conn;
         _diskStateRegistry = diskStateRegistry;
     }
 
     /// <inheritdoc />
-    public async Task<Loadout.Model> Apply(LoadoutId loadoutId)
+    public async Task<Loadout.Model> Apply(Loadout.Model loadout)
     {
         // TODO: Check if this or any other loadout is being applied to this game installation
         // Queue the loadout to be applied if that is the case.
 
-        throw new NotImplementedException();
-        /*
-        var loadout = _loadoutRegistry.Get(loadoutId);
-        if (loadout is null)
-            throw new ArgumentException("Loadout not found", nameof(loadoutId));
-
         _logger.LogInformation(
-            "Applying loadout {LoadoutId} to {GameName} {GameVersion}",
-            loadout.LoadoutId,
+            "Applying loadout {Name} to {GameName} {GameVersion}",
+            loadout.Name,
             loadout.Installation.Game.Name,
             loadout.Installation.Version
         );
@@ -52,16 +49,14 @@ public class ApplyService : IApplyService
         }
         catch (NeedsIngestException)
         {
-            _logger.LogInformation("Ingesting loadout {LoadoutId} from {GameName} {GameVersion}", loadout.LoadoutId,
+            _logger.LogInformation("Ingesting loadout {Name} from {GameName} {GameVersion}", loadout.Name,
                 loadout.Installation.Game.Name, loadout.Installation.Version
             );
 
-            Loadout lastAppliedLoadout;
-            var lastAppliedRevision = GetLastAppliedLoadout(loadout.Installation);
-            if (lastAppliedRevision is not null)
+            var lastAppliedLoadout = GetLastAppliedLoadout(loadout.Installation);
+            if (lastAppliedLoadout is not null)
             {
-                var lastLoadout = _loadoutRegistry.GetLoadout(lastAppliedRevision);
-                lastAppliedLoadout = lastLoadout ?? throw new KeyNotFoundException("Loadout not found for last applied revision");
+                _logger.LogInformation("Last applied loadout found: {LoadoutId} as of {TxId}", lastAppliedLoadout.Id, lastAppliedLoadout.Db.BasisTxId);
             }
             else
             {
@@ -69,91 +64,54 @@ public class ApplyService : IApplyService
                 lastAppliedLoadout = loadout;
             }
 
-            var loadoutWithIngest = await lastAppliedLoadout.Ingest();
+            var loadoutWithIngest = await loadout.Ingest();
 
-            // Rebase unapplied changes on top of ingested changes
-            var mergedLoadout = _loadoutRegistry.Alter(loadout.LoadoutId, $"Rebase unapplied changes on top of ingested changes in loadout: {loadout.Name}",
-                l => l.Installation.GetGame().Synchronizer.MergeLoadouts(loadoutWithIngest, loadout)
-            );
-
-            _logger.LogInformation("Applying loadout {LoadoutId} to {GameName} {GameVersion}", mergedLoadout.LoadoutId,
-                mergedLoadout.Installation.Game.Name, mergedLoadout.Installation.Version
-            );
-
-            await mergedLoadout.Apply();
-            return mergedLoadout;
+            await loadoutWithIngest.Apply();
+            return loadoutWithIngest;
         }
-
+        
         return loadout;
-        */
     }
 
 
     /// <inheritdoc />
-    public ValueTask<FileDiffTree> GetApplyDiffTree(LoadoutId loadoutId)
+    public ValueTask<FileDiffTree> GetApplyDiffTree(Loadout.Model loadout)
     {
-        throw new NotImplementedException();
-        
-        /*
-        var loadout = _loadoutRegistry.Get(loadoutId);
-        if (loadout is null)
-            throw new ArgumentException("Loadout not found", nameof(loadoutId));
-
         var prevDiskState = _diskStateRegistry.GetState(loadout.Installation)!;
             
         var syncrhonizer = loadout.Installation.GetGame().Synchronizer;
         
         return syncrhonizer.LoadoutToDiskDiff(loadout, prevDiskState);
-        */
     }
 
     /// <inheritdoc />
     public async Task<Loadout.Model> Ingest(GameInstallation gameInstallation)
     {
-        throw new NotImplementedException();
-        /*
+        
         var lastAppliedRevision = GetLastAppliedLoadout(gameInstallation);
         if (lastAppliedRevision is null)
         {
             throw new InvalidOperationException("Game installation does not have a last applied loadout to ingest into");
         }
 
-        var lastLoadout = _loadoutRegistry.GetLoadout(lastAppliedRevision);
+        var lastLoadout = _conn.Db.Get<Loadout.Model>(lastAppliedRevision.Id);
         var lastAppliedLoadout = lastLoadout ?? throw new KeyNotFoundException("Loadout not found for last applied revision");
         
         var loadoutWithIngest = await lastAppliedLoadout.Ingest();
-        
-        // Get the latest loadout revision
-        var latestRevision = _loadoutRegistry.Get(loadoutWithIngest.LoadoutId);
-        if (latestRevision is null)
-            throw new KeyNotFoundException("No latest revision found for last applied loadout");
-        
-        // if latest revision is the same as the last applied revision, no need to rebase
-        if (latestRevision.DataStoreId.Equals(loadoutWithIngest.DataStoreId))
-        {
-            var newLoadout = _loadoutRegistry.Alter(loadoutWithIngest.LoadoutId, $"Ingested changes in loadout: {loadoutWithIngest.Name}",
-                l => loadoutWithIngest
-            );
-            return newLoadout;
-        }
-        
-        // Rebase unapplied changes on top of ingested changes
-        var mergedLoadout = _loadoutRegistry.Alter(latestRevision.LoadoutId, $"Rebase unapplied changes on top of ingested changes in loadout: {latestRevision.Name}",
-            l => l.Installation.GetGame().Synchronizer.MergeLoadouts(loadoutWithIngest, latestRevision)
-        );
-        
-        return mergedLoadout;
-        */
+
+        return loadoutWithIngest;
     }
 
     /// <inheritdoc />
-    public IId? GetLastAppliedLoadout(GameInstallation gameInstallation)
+    public Loadout.Model? GetLastAppliedLoadout(GameInstallation gameInstallation)
     {
-        throw new NotImplementedException();
-        /*
-        var loadoutRevision = _diskStateRegistry.GetLastAppliedLoadout(gameInstallation);
-        return loadoutRevision;
-        */
+        if (!_diskStateRegistry.TryGetLastAppliedLoadout(gameInstallation, out var loadout, out var txId))
+        {
+            return null;
+        }
+        
+        var db = _conn.AsOf(txId);
+        return db.Get<Loadout.Model>(loadout);
     }
 
     /// <inheritdoc />

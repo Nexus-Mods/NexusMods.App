@@ -1,4 +1,7 @@
 ﻿using NexusMods.Abstractions.GameLocators.Trees;
+using NexusMods.Abstractions.Loadouts.Files;
+using NexusMods.Hashing.xxHash64;
+using NexusMods.Paths;
 using File = NexusMods.Abstractions.Loadouts.Files.File;
 
 namespace NexusMods.Abstractions.GameLocators;

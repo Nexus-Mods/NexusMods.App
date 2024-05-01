@@ -16,12 +16,12 @@ public interface IApplyService
     /// </summary>
     /// <param name="loadoutId"></param>
     /// <returns></returns>
-    public Task<Loadout.Model> Apply(Ids.LoadoutId loadoutId);
+    public Task<Loadout.Model> Apply(Loadout.Model loadout);
     
     /// <summary>
     /// Get the diff tree of the unapplied changes of a loadout.
     /// </summary>
-    public ValueTask<FileDiffTree> GetApplyDiffTree(Ids.LoadoutId loadoutId);
+    public ValueTask<FileDiffTree> GetApplyDiffTree(Loadout.Model loadout);
 
     
     /// <summary>
@@ -36,9 +36,7 @@ public interface IApplyService
     /// <summary>
     /// Returns the last applied loadout for a given game installation.
     /// </summary>
-    /// <param name="gameInstallation"></param>
-    /// <returns>A tuple of the LoadoutId and loadout revision Id of the last applied state</returns>
-    public IId? GetLastAppliedLoadout(GameInstallation gameInstallation);
+    public Loadout.Model? GetLastAppliedLoadout(GameInstallation gameInstallation);
     
     /// <summary>
     /// Returns an observable of the last applied revisions for a specific game installation

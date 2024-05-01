@@ -1,6 +1,7 @@
 using System.Collections.Immutable;
 using NexusMods.Abstractions.DataModel.Entities;
 using NexusMods.Abstractions.DataModel.Entities.Sorting;
+using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.Abstractions.Serialization.DataModel;
@@ -36,6 +37,11 @@ public static class Mod
     /// The loadout this mod is part of.
     /// </summary>
     public static readonly ReferenceAttribute Loadout = new(Namespace, nameof(Loadout));
+    
+    /// <summary>
+    /// The Download Metadata the mod was installed from.
+    /// </summary>
+    public static readonly ReferenceAttribute Source = new(Namespace, nameof(Source));
     
     /// <summary>
     /// The enabled status of the mod
@@ -85,6 +91,18 @@ public static class Mod
         {
             get => Db.Get<Loadout.Model>(LoadoutId);
             set => Mod.Loadout.Add(this, value.Id);
+        }
+        
+        public EntityId SourceId
+        {
+            get => Mod.Source.Get(this);
+            set => Mod.Source.Add(this, value);
+        }
+        
+        public DownloadAnalysis.Model Source
+        {
+            get => Db.Get<DownloadAnalysis.Model>(SourceId);
+            set => Mod.Source.Add(this, value.Id);
         }
 
         public ModCategory Category

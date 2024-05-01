@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 using System.Diagnostics;
+using DynamicData;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.DataModel.Entities.Sorting;
@@ -16,6 +17,9 @@ using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.Extensions.BCL;
+using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.Models;
+using File = NexusMods.Abstractions.Loadouts.Files.File;
 
 namespace NexusMods.DataModel;
 
@@ -25,7 +29,7 @@ namespace NexusMods.DataModel;
 public class ArchiveInstaller : IArchiveInstaller
 {
     private readonly ILogger<ArchiveInstaller> _logger;
-    private readonly IDataStore _dataStore;
+    private readonly IConnection _conn;
     private readonly IActivityFactory _activityFactory;
     private readonly IFileStore _fileStore;
     private readonly IFileOriginRegistry _fileOriginRegistry;
@@ -35,12 +39,12 @@ public class ArchiveInstaller : IArchiveInstaller
     /// </summary>
     public ArchiveInstaller(ILogger<ArchiveInstaller> logger,
         IFileOriginRegistry fileOriginRegistry,
-        IDataStore dataStore,
+        IConnection conn,
         IFileStore fileStore,
         IActivityFactory activityFactory)
     {
         _logger = logger;
-        _dataStore = dataStore;
+        _conn = conn;
         _fileOriginRegistry = fileOriginRegistry;
         _fileStore = fileStore;
         _activityFactory = activityFactory;
@@ -49,11 +53,9 @@ public class ArchiveInstaller : IArchiveInstaller
     /// <inheritdoc />
     public async Task<ModId[]> AddMods(LoadoutId loadoutId, DownloadAnalysis.Model download, string? defaultModName = null, IModInstaller? installer = null, CancellationToken token = default)
     {
-        throw new NotImplementedException();
-        /*
         // Get the loadout and create the mod, so we can use it in the job.
-        var loadout = _registry.GetMarker(loadoutId);
         var useCustomInstaller = installer != null;
+        var loadout = _conn.Db.Get<Loadout.Model>(loadoutId.Value);
         
         var archiveName = "<unknown>";
         if (download.Contains(DownloadAnalysis.SuggestedName))
@@ -61,27 +63,33 @@ public class ArchiveInstaller : IArchiveInstaller
             archiveName = download.Get(DownloadAnalysis.SuggestedName);
         }
         
-        var baseMod = new Mod
-        {
-            Id = ModId.NewId(),
-            Name = defaultModName ?? archiveName,
-            Files = new EntityDictionary<ModFileId, AModFile>(_dataStore),
-            Status = ModStatus.Installing
-        };
+        string modName = defaultModName ?? archiveName;
 
-        var cursor = new ModCursor { LoadoutId = loadoutId, ModId = baseMod.Id };
-        loadout.Add(baseMod);
+        ModId modId;
+        {
+            using var tx = _conn.BeginTransaction();
+
+            var baseMod = new Mod.Model(tx)
+            {
+                Name = modName,
+                Source = download,
+                Status = ModStatus.Installing,
+                Loadout = loadout,
+            };
+            var result = await tx.Commit();
+            modId = ModId.From(result[baseMod.Id]);
+        }
 
         try
         {
             // Create the job so the UI can show progress.
-            using var job = _activityFactory.Create(IArchiveInstaller.Group, "Adding mod files to {Name}", baseMod.Name);
+            using var job = _activityFactory.Create(IArchiveInstaller.Group, "Adding mod files to {Name}", modName);
 
             // Create a tree so installers can find the file easily.
             var tree = download.GetFileTree(_fileStore);
 
             // Step 3: Run the archive through the installers.
-            var installers = loadout.Value.Installation.GetGame().Installers;
+            var installers = loadout.Installation.GetGame().Installers;
             if (installer != null)
             {
                 installers = new[] { installer };
@@ -92,16 +100,16 @@ public class ArchiveInstaller : IArchiveInstaller
                 {
                     try
                     {
-                        var install = loadout.Value.Installation;
+                        var install = loadout.Installation;
                         var info = new ModInstallerInfo
                         {
                             ArchiveFiles = tree,
-                            BaseModId = baseMod.Id,
+                            BaseModId = modId,
                             Locations = install.LocationsRegister,
                             GameName = install.Game.Name,
                             Store = install.Store,
                             Version = install.Version,
-                            ModName = baseMod.Name,
+                            ModName = modName,
                             Source = download,
                         };
 
@@ -122,103 +130,71 @@ public class ArchiveInstaller : IArchiveInstaller
                 {
                     // User was using an explicit installer, if no files were returned, we can assume the user cancelled the installation.
                     // Remove the mod from the loadout.
-                    _registry.Alter(cursor, $"Cancelled installation of {archiveName}", _ => null);
-                    return Array.Empty<ModId>();
+                    await SetStatus(modId, ModStatus.Failed);
+                    return [];
                 }
 
                 _logger.LogError("No Installer found for {Name}", archiveName);
-                _registry.Alter(cursor, $"Failed to install mod {archiveName}",m => m! with { Status = ModStatus.Failed });
+                await SetStatus(modId, ModStatus.Failed);
                 throw new NotSupportedException($"No Installer found for {archiveName}");
             }
 
-            var mods = results.Select(result => new Mod
+            if (results.Length == 0)
             {
-                Id = result.Id,
-                Files = result.Files.ToEntityDictionary(_dataStore),
-                Name = result.Name ?? baseMod.Name,
-                Version = result.Version ?? baseMod.Version,
-                SortRules = (result.SortRules ?? Array.Empty<ISortRule<Mod, ModId>>()).ToImmutableList(),
-                Metadata = result.Metadata.ToImmutableList(),
-            }).WithPersist(_dataStore).ToArray();
-
-            if (mods.Length == 0)
-            {
-                _registry.Alter(cursor, $"Failed to install mod {archiveName}", m => m! with { Status = ModStatus.Failed});
+                await SetStatus(modId, ModStatus.Failed);
                 throw new NotImplementedException($"The installer returned 0 mods for {archiveName}");
             }
+            
+            // Step 4: Add the mods to the loadout
+            using var tx = _conn.BeginTransaction();
+            var modIds = new List<EntityId>();
 
-            if (mods.Length == 1)
+            for (var idx = 0; idx < results.Length; idx++)
             {
-                mods[0] = mods[0] with
+                var entity = new TempEntity();
+                var result = results[idx];
+                if (idx == 0) 
+                    entity.Id = modId.Value;
+                
+                entity.Add(Mod.Name, result.Name ?? modName);
+                entity.Add(Mod.Loadout, loadoutId.Value);
+                entity.Add(Mod.Status, ModStatus.Installed);
+                entity.Add(Mod.Enabled, true);
+                entity.Add(Mod.Source, download.Id);
+                entity.Add(Mod.Category, ModCategory.Mod);
+                
+                entity.AddTo(tx);
+                modIds.Add(entity.Id!.Value);
+                
+                
+                foreach (var file in result.Files)
                 {
-                    Id = baseMod.Id
-                };
-            }
-
-            job.AddProgress(Percent.CreateClamped(0.75));
-
-            // Step 5: Add the mod to the loadout.
-            var groupMetadata = mods.Length > 1
-                ? new GroupMetadata
-                {
-                    Id = GroupId.NewId(),
-                    CreationReason = GroupCreationReason.MultipleModsOneArchive
-                }
-                : null;
-
-            var modIds = mods.Select(mod => mod.Id).ToHashSet();
-            Debug.Assert(modIds.Count == mods.Length, $"The installer {modInstaller.GetType()} returned mods with non-unique ids.");
-
-            foreach (var mod in mods)
-            {
-                var metadata = mod.Metadata;
-                if (groupMetadata is not null) metadata = metadata.Add(groupMetadata);
-
-                if (mod.Id.Equals(baseMod.Id))
-                {
-                    _registry.Alter(
-                        cursor,
-                        $"Adding mod files to {baseMod.Name}",
-                        x => x! with
-                        {
-                            Status = ModStatus.Installed,
-                            Enabled = true,
-                            Name = mod.Name,
-                            Version = mod.Version,
-                            SortRules = mod.SortRules,
-                            Files = mod.Files,
-                            Metadata = metadata,
-                        });
-                }
-                else
-                {
-                    loadout.Add(mod with
-                    {
-                        Status = ModStatus.Installed,
-                        Enabled = true,
-                        Metadata = metadata,
-                    });
+                    file.Add(File.Loadout, loadoutId.Value);
+                    file.Add(File.Mod, entity.Id!.Value);
+                    file.AddTo(tx);
                 }
             }
-
-            if (!modIds.Contains(baseMod.Id))
-            {
-                loadout.Remove(baseMod);
-            }
-
-            return mods.Select(x => x.Id).ToArray();
+            
+            var finalResult = await tx.Commit();
+            _logger.LogInformation("Added {Count} mods to {Loadout}", results.Length, loadout.Name);
+            return modIds.Select(id => ModId.From(finalResult[id])).ToArray();
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to install mod {Name}", archiveName);
-            _registry.Alter(cursor, $"Failed to install {archiveName}", mod => mod! with
-            {
-                Status = ModStatus.Failed,
-            });
-
+            await SetStatus(modId, ModStatus.Failed);
             throw;
         }
-        */
+    }
+
+    private async Task SetStatus(ModId modId, ModStatus status)
+    {
+        var mod = _conn.Db.Get<Mod.Model>(modId.Value);
+        _logger.LogInformation("Setting status of ModId:{ModId}({Name}) to {Status}", modId, mod.Name, status);
+        
+        using var tx = _conn.BeginTransaction();
+        tx.Add(modId.Value, Mod.Status, status);
+        await tx.Commit();
     }
 
     /// <inheritdoc />

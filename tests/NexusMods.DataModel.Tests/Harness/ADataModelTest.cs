@@ -3,28 +3,22 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.FileStore;
-using NexusMods.Abstractions.FileStore.ArchiveMetadata;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Games.DTO;
-using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
-using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.Hashing.xxHash64;
-using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
 using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 using Xunit.DependencyInjection;
-using Xunit.Sdk;
 using DownloadId = NexusMods.Abstractions.FileStore.Downloads.DownloadId;
+using Entity = NexusMods.MnemonicDB.Abstractions.Models.Entity;
 using IGame = NexusMods.Abstractions.Games.IGame;
 
 // ReSharper disable StaticMemberInGenericType
@@ -125,7 +119,10 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
     protected async Task<ModId[]> AddMods(LoadoutId loadoutId, AbsolutePath path, string? name = null)
     {
         var downloadId = await FileOriginRegistry.RegisterDownload(path, Token);
-        return await ArchiveInstaller.AddMods(loadoutId, downloadId, name, token: Token);
+        var result = await ArchiveInstaller.AddMods(loadoutId, downloadId, name, token: Token);
+        // Refresh the loadout to get the new mods, as a convenience.
+        Refresh(ref BaseLoadout);
+        return result;
     }
 
     protected Task<ModId[]> AddMods(Loadout.Model loadout, AbsolutePath path, string? name = null)
@@ -191,5 +188,10 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
         foreach (var category in Enum.GetValues<EntityCategory>())
         foreach (var id in DataStore.AllIds(category))
             DataStore.Delete(id);
+    }
+
+    public void Refresh<T>(ref T ent) where T : Entity
+    {
+        ent = Connection.Db.Get<T>(ent.Id);
     }
 }

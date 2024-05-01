@@ -1,4 +1,6 @@
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts.Mods;
+using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
@@ -23,6 +25,10 @@ public static class File
     /// </summary>
     public static readonly ReferenceAttribute Mod = new(Namespace, nameof(Mod));
     
+    /// <summary>
+    /// The location the file will be installed to
+    /// </summary>
+    public static readonly GamePathAttribute To = new(Namespace, nameof(To));
     
     /// <summary>
     /// Standard model for a file.
@@ -40,6 +46,15 @@ public static class File
         {
             get => Db.Get<Loadout.Model>(LoadoutId);
             set => File.Loadout.Add(this, value.Id);
+        }
+        
+        /// <summary>
+        /// The location the file will be installed to
+        /// </summary>
+        public GamePath To
+        {
+            get => File.To.Get(this);
+            set => File.To.Add(this, value);
         }
         
         public EntityId ModId

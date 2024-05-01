@@ -2,6 +2,7 @@ using JetBrains.Annotations;
 using NexusMods.Abstractions.DataModel.Entities.Sorting;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
+using NexusMods.MnemonicDB.Abstractions.Models;
 
 namespace NexusMods.Abstractions.Installers;
 
@@ -19,8 +20,8 @@ public record ModInstallerResult
     /// <summary>
     /// All files belonging to the mod.
     /// </summary>
-    public required IEnumerable<object> Files { get; init; }
-
+    public required IEnumerable<TempEntity> Files { get; init; }
+    
     /// <summary>
     /// Optional name of the mod.
     /// </summary>

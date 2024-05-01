@@ -4,6 +4,8 @@ using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 
+using File = NexusMods.Abstractions.Loadouts.Files.File;
+
 namespace NexusMods.Abstractions.Loadouts.Synchronizers;
 
 
@@ -88,4 +90,21 @@ public interface IStandardizedLoadoutSynchronizer : ILoadoutSynchronizer
     /// </summary>
     Task BackupNewFiles(GameInstallation installation, IEnumerable<(GamePath To, Hash Hash, Size Size)> newFiles);
     #endregion
+    
+    
+    #region File Helpers
+
+    /// <summary>
+    /// Returns true if the file is a generated file.
+    /// </summary>
+    bool IsGeneratedFile(File.Model file);
+
+    /// <summary>
+    /// Writes a generated file to the output stream.
+    /// </summary>
+    Task<Hash?> WriteGeneratedFile(File.Model file, Stream outputStream, Loadout.Model loadout, FlattenedLoadout flattenedLoadout, FileTree fileTree);
+
+
+#endregion
+
 }

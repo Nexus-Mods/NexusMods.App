@@ -7,6 +7,7 @@ using NexusMods.Abstractions.Serialization;
 using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees;
+using File = NexusMods.Abstractions.Loadouts.Files.File;
 
 namespace NexusMods.Abstractions.Installers;
 
@@ -32,7 +33,7 @@ public static class Extensions
         TempEntity? metaData)
     {
         var entity = metaData ?? [];
-        entity.Add(StoredFile.To, to);
+        entity.Add(File.To, to);
         entity.Add(StoredFile.Hash, input.Item.Hash);
         entity.Add(StoredFile.Size, input.Item.Size);
         return entity;

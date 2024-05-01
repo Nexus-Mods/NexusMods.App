@@ -18,6 +18,7 @@ public static class Services
     {
         services.AddAttributeCollection(typeof(File));
         services.AddAttributeCollection(typeof(StoredFile));
+        services.AddAttributeCollection(typeof(DeletedFile));
         services.AddAttributeCollection(typeof(Mod));
         services.AddAttributeCollection(typeof(Loadout));
         return services;
