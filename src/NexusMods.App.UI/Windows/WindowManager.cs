@@ -94,13 +94,14 @@ internal sealed class WindowManager : ReactiveObject, IWindowManager
         }
     }
 
-    public bool RestoreWindowState(IWorkspaceWindow window)
+    public bool RestoreWindowState(IWorkspaceWindow window, Func<WindowData, WindowData>? sanitize)
     {
         try
         {
             var data = _dataStore.Get<WindowData>(WindowData.Id);
             if (data is null) return false;
 
+            data = sanitize != null ? sanitize(data) : data;
             window.WorkspaceController.FromData(data);
             return true;
         }
