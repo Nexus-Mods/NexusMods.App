@@ -120,15 +120,10 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                 .DisposeWith(disposable);
             
             loadoutRegistry.LoadoutRootChanges
-                .Where(changeSet => changeSet.Any(change => change.Reason == ListChangeReason.Remove))
-                .OnUI()
-                .Subscribe(_ =>
+                .OnItemRemoved(loadoutId =>
                 {
-                    // Loadout is deleted, check if the current workspace is
-                    // associated with the deleted loadout And if it is, navigate
-                    // away. For now, we will navigate to Home ('My Games'),
                     if (workspaceController.ActiveWorkspace?.Context is LoadoutContext activeLoadoutContext &&
-                        activeLoadoutContext.LoadoutId == loadoutContext.LoadoutId)
+                        activeLoadoutContext.LoadoutId == loadoutId)
                     {
                         workspaceController.ChangeOrCreateWorkspaceByContext<HomeContext>(() => new PageData
                         {
@@ -136,7 +131,9 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                             Context = new MyGamesPageContext(),
                         });
                     }
-                })
+                }, false)
+                .OnUI()
+                .SubscribeWithErrorLogging()
                 .DisposeWith(disposable);
         });
     }
