@@ -40,7 +40,6 @@ public class AppearancePreset : AModInstaller
 
         return new ModInstallerResult[] { new()
         {
-            Id = info.BaseModId,
             Files = modFiles
         }};
     }

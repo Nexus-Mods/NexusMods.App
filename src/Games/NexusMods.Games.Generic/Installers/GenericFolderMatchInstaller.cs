@@ -5,6 +5,7 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.GameCapabilities;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Loadouts.Files;
+using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees;
 using NexusMods.Paths.Trees.Traits;
@@ -49,7 +50,7 @@ public class GenericFolderMatchInstaller : AModInstaller
         CancellationToken cancellationToken = default)
     {
         List<RelativePath> missedFiles = new();
-        List<StoredFile> modFiles = new();
+        List<TempEntity> modFiles = new();
 
         foreach (var target in _installFolderTargets)
         {
@@ -73,7 +74,6 @@ public class GenericFolderMatchInstaller : AModInstaller
         {
             new ModInstallerResult
             {
-                Id = info.BaseModId,
                 Files = modFiles
             }
         });
@@ -90,10 +90,10 @@ public class GenericFolderMatchInstaller : AModInstaller
     /// <param name="target"></param>
     /// <param name="missedFiles"></param>
     /// <returns></returns>
-    private IEnumerable<StoredFile> GetModFilesForTarget(KeyedBox<RelativePath, ModFileTree> archiveFiles,
+    private IEnumerable<TempEntity> GetModFilesForTarget(KeyedBox<RelativePath, ModFileTree> archiveFiles,
         InstallFolderTarget target, List<RelativePath> missedFiles)
     {
-        List<StoredFile> modFiles = new();
+        List<TempEntity> modFiles = new();
 
         // TODO: Currently just assumes that the prefix of the first file that matches the target structure is the correct one.
         // Consider checking that each file matches the target at the found location before adding it.

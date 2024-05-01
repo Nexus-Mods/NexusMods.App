@@ -3,9 +3,11 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.Loadouts.Mods;
+using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Trees.Traits;
+using File = NexusMods.Abstractions.Loadouts.Files.File;
 
 namespace NexusMods.Games.RedEngine.ModInstallers;
 
@@ -37,7 +39,7 @@ public class SimpleOverlayModInstaller : IModInstaller
             return Array.Empty<ModInstallerResult>();
 
         var highestRoot = roots.First();
-        var newFiles = new List<StoredFile>();
+        var newFiles = new List<TempEntity>();
 
         // Enumerate over all directories with the same depth as the most rooted item.
         foreach (var node in roots.Where(root => root.Depth() == highestRoot.Depth()))
@@ -49,12 +51,11 @@ public class SimpleOverlayModInstaller : IModInstaller
 
             var fullPath = file.Path(); // all the way up to root
             var relativePath = fullPath.DropFirst(node.Depth() - 1); // get relative path
-            newFiles.Add(new StoredFile()
+            newFiles.Add(new TempEntity
             {
-                Id = ModFileId.NewId(),
-                Hash = file.Item.Hash,
-                Size = file.Item.Size,
-                To = new GamePath(LocationId.Game, relativePath)
+                { StoredFile.Hash, file.Item.Hash },
+                { StoredFile.Size, file.Item.Size },
+                { File.To, new GamePath(LocationId.Game, relativePath) },
             });
         }
 
@@ -63,7 +64,6 @@ public class SimpleOverlayModInstaller : IModInstaller
 
         return new ModInstallerResult[]{ new()
         {
-            Id = info.BaseModId,
             Files = newFiles
         }};
     }

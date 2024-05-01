@@ -4,6 +4,7 @@ using NexusMods.Abstractions.FileStore.Trees;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Loadouts.Mods;
+using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Trees;
@@ -37,17 +38,15 @@ public class RedModInstaller : IModInstaller
         {
             var modFolder = node.File.Parent();
             var parentName = modFolder!.Segment();
-            var files = new List<AModFile>();
+            var files = new List<TempEntity>();
             foreach (var childNode in modFolder!.GetFiles())
                 files.Add(childNode.ToStoredFile(new GamePath(LocationId.Game, Mods.Join(parentName).Join(childNode.Path().RelativeTo(modFolder!.Item.Path)))));
 
             results.Add(new ModInstallerResult
             {
-                Id = baseIdUsed ? ModId.NewId() : info.BaseModId,
                 Files = files,
                 Name = node.InfoJson?.Name ?? "<unknown>"
             });
-            baseIdUsed = true;
         }
 
         return results;

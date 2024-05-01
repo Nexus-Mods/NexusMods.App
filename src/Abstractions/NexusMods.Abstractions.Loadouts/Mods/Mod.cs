@@ -34,6 +34,11 @@ public static class Mod
     public static readonly StringAttribute Name = new(Namespace, nameof(Name));
     
     /// <summary>
+    /// The version of the mod.
+    /// </summary>
+    public static readonly StringAttribute Version = new(Namespace, nameof(Version));
+    
+    /// <summary>
     /// The loadout this mod is part of.
     /// </summary>
     public static readonly ReferenceAttribute Loadout = new(Namespace, nameof(Loadout));
@@ -74,6 +79,12 @@ public static class Mod
         {
             get => Mod.Name.Get(this);
             set => Mod.Name.Add(this, value);
+        }
+        
+        public string Version
+        {
+            get => Mod.Version.Get(this, "<unknown>");
+            set => Mod.Version.Add(this, value);
         }
         
         public bool Enabled

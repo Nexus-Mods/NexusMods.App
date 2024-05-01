@@ -1,6 +1,7 @@
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.Loadouts.Mods;
+using NexusMods.Abstractions.MnemonicDB.Attributes;
 
 namespace NexusMods.Games.TestFramework.Verifiers;
 
@@ -9,14 +10,14 @@ internal record VerifiableMod
 {
     public required string Name { get; init; }
     public required string Version { get; init; }
-    public required string Category { get; init; }
+    public required ModCategory Category { get; init; }
 
     public required List<VerifiableFile> Files { get; init; }
 
-    public static VerifiableMod From(Mod mod)
+    public static VerifiableMod From(Mod.Model mod)
     {
-        var files = mod.Files.Values
-            .OfType<StoredFile>()
+        var files = mod.Files
+            .Select(f => f.Remap<StoredFile.Model>())
             .Select(VerifiableFile.From)
             .OrderByDescending(file => file.To, StringComparer.OrdinalIgnoreCase)
             .ThenByDescending(file => file.Hash)
@@ -26,7 +27,7 @@ internal record VerifiableMod
         {
             Name = mod.Name,
             Version = mod.Version,
-            Category = mod.ModCategory,
+            Category = mod.Category,
             Files = files,
         };
     }
@@ -41,7 +42,7 @@ internal record VerifiableFile
 
     public required ulong Hash { get; init; }
 
-    public static VerifiableFile From(StoredFile storedFile)
+    public static VerifiableFile From(StoredFile.Model storedFile)
     {
         return new VerifiableFile
         {

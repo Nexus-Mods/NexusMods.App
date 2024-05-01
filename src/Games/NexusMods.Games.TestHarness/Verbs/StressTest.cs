@@ -31,7 +31,6 @@ public class StressTest
         [Option("o", "output", "Output path for the resulting report")] AbsolutePath output,
         [Injected] INexusApiClient nexusApiClient,
         [Injected] TemporaryFileManager temporaryFileManager,
-        [Injected] ILoadoutRegistry loadoutRegistry,
         [Injected] IHttpDownloader downloader,
         [Injected] IArchiveInstaller archiveInstaller,
         [Injected] IFileOriginRegistry fileOriginRegistry,

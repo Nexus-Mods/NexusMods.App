@@ -9,7 +9,7 @@ namespace NexusMods.CLI.OptionParsers;
 /// <summary>
 /// Parses a string into a loadout
 /// </summary>
-internal class LoadoutParser : IOptionParser<Loadout>
+internal class LoadoutParser : IOptionParser<Loadout.Model>
 {
     private readonly IDataStore _store;
 
