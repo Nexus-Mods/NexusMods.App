@@ -987,7 +987,10 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         foreach (var loadout in _loadoutRegistry.AllLoadouts())
         {
             if (loadout.IsMarkerLoadout)
+            {
                 _loadoutRegistry.Delete(loadout.LoadoutId);
+                return;
+            }
         }
     }
 
