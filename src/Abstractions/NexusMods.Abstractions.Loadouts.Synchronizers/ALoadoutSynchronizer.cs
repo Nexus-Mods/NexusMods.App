@@ -926,7 +926,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
 
         var loadout = _loadoutRegistry.Alter(loadoutId, "Marker Loadout", loadout => loadout with
         {
-            Name = "Marker Loadout",
+            Name = "Temporary Marker Loadout",
             Installation = installation,
             Mods = loadout.Mods.With(gameFiles.Id, gameFiles),
             IsMarkerLoadout = true,
