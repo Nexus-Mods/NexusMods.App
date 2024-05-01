@@ -47,6 +47,11 @@ public static class Mod
     /// </summary>
     public static readonly EnumAttribute<ModStatus> Status = new(Namespace, nameof(Status));
     
+    /// <summary>
+    /// The category of the mod.
+    /// </summary>
+    public static readonly EnumAttribute<ModCategory> Category = new(Namespace, nameof(Category));
+    
 
 
     public class Model(ITransaction tx) : Entity(tx)
@@ -82,10 +87,10 @@ public static class Mod
             set => Mod.Loadout.Add(this, value.Id);
         }
 
-        public Category Category
+        public ModCategory Category
         {
-            get => ModCategory.Get(this);
-            set => ModCategory.Add(this, value);
+            get => Mod.Category.Get(this);
+            set => Mod.Category.Add(this, value);
         }
         
         public Entities<EntityIds, File.Model> Files => GetReverse<File.Model>(File.Mod);

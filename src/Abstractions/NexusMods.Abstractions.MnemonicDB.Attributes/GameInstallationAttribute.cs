@@ -13,9 +13,10 @@ public class GameInstallationAttribute(string ns, string name) :
         // TODO: Replace this with a reference to the actual game install in the store
         return $"{value.Game.Domain}|{value.Version}|{value.Store}";
     }
-    
-    protected GameInstallation ToHighLevel(ValueTags tag, string value)
+
+    protected override GameInstallation FromLowLevel(string value, ValueTags tag)
     {
-        throw new NotImplementedException();
+        throw new NotImplementedException("DO this");
+        return base.FromLowLevel(value, tag);
     }
 }

@@ -149,18 +149,24 @@ public class ApplyService : IApplyService
     /// <inheritdoc />
     public IId? GetLastAppliedLoadout(GameInstallation gameInstallation)
     {
+        throw new NotImplementedException();
+        /*
         var loadoutRevision = _diskStateRegistry.GetLastAppliedLoadout(gameInstallation);
         return loadoutRevision;
+        */
     }
 
     /// <inheritdoc />
     public IObservable<IId> LastAppliedRevisionFor(GameInstallation gameInstallation)
     {
+        throw new NotImplementedException();
+        /*
         // Return a deferred observable that computes the starting value only on first subscription
         return Observable.Defer(() => _diskStateRegistry.LastAppliedRevisionObservable
             .Where(x => x.gameInstallation.Equals(gameInstallation))
             .Select(x => x.loadoutRevision)
             .StartWith(_diskStateRegistry.GetLastAppliedLoadout(gameInstallation) ?? IdEmpty.Empty)
         );
+        */
     }
 }

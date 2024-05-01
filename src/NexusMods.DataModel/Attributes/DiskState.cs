@@ -30,7 +30,12 @@ public static class DiskState
     /// <summary>
     /// The associated loadout id.
     /// </summary>
-    public static readonly IIdAttribute LoadoutRevision = new(Namespace, nameof(LoadoutRevision)) { IsIndexed = true, NoHistory = true };
+    public static readonly ReferenceAttribute Loadout = new(Namespace, nameof(Loadout)) { IsIndexed = true, NoHistory = true };
+    
+    /// <summary>
+    /// The associated transaction id.
+    /// </summary>
+    public static readonly ReferenceAttribute TxId = new(Namespace, nameof(TxId)) { IsIndexed = true, NoHistory = true };
 
     /// <summary>
     /// The state of the disk.
@@ -59,14 +64,25 @@ public static class DiskState
             set => Attributes.DiskState.Root.Add(this, value);
         }
     
+
         /// <summary>
-        /// The associated loadout revision.
+        /// The associated loadout id.
         /// </summary>
-        public IId LoadoutRevision
+        public EntityId LoadoutId
         {
-            get => Attributes.DiskState.LoadoutRevision.Get(this);
-            set => Attributes.DiskState.LoadoutRevision.Add(this, value);
+            get => Loadout.Get(this);
+            set => Loadout.Add(this, value);
         }
+        
+        /// <summary>
+        /// The associated transaction id.
+        /// </summary>
+        public TxId TxId
+        {
+            get => TxId.From(Attributes.DiskState.TxId.Get(this).Value);
+            set => Attributes.DiskState.TxId.Add(this, EntityId.From(value.Value));
+        }
+        
     
         /// <summary>
         /// The state of the disk.

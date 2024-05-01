@@ -81,6 +81,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         provider.GetRequiredService<IDiskStateRegistry>(),
         provider.GetRequiredService<IFileStore>(),
         provider.GetRequiredService<ISorter>(),
+        provider.GetRequiredService<IConnection>(),
         provider.GetRequiredService<IOSInformation>())
 
     {
@@ -806,7 +807,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         var gameFiles = new Mod.Model(tx)
         {
             Name = "Game Files",
-            Category = Category.GameFiles,
+            Category = ModCategory.GameFiles,
             Enabled = true,
         };
 

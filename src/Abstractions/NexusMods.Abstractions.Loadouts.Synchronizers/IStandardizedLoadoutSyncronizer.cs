@@ -1,6 +1,8 @@
 ﻿using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Hashing.xxHash64;
+using NexusMods.Paths;
 
 namespace NexusMods.Abstractions.Loadouts.Synchronizers;
 
@@ -84,6 +86,6 @@ public interface IStandardizedLoadoutSynchronizer : ILoadoutSynchronizer
     /// <summary>
     /// Backs up any new files in the file tree.
     /// </summary>
-    Task BackupNewFiles(GameInstallation installation, FileTree fileTree);
+    Task BackupNewFiles(GameInstallation installation, IEnumerable<(GamePath To, Hash Hash, Size Size)> newFiles);
     #endregion
 }
