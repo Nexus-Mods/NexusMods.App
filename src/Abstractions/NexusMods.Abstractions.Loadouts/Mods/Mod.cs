@@ -2,6 +2,7 @@ using System.Collections.Immutable;
 using NexusMods.Abstractions.DataModel.Entities;
 using NexusMods.Abstractions.DataModel.Entities.Sorting;
 using NexusMods.Abstractions.FileStore.Downloads;
+using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.Abstractions.Serialization.DataModel;
@@ -74,6 +75,11 @@ public static class Mod
 
     public class Model(ITransaction tx) : Entity(tx)
     {
+        
+        /// <summary>
+        /// Remaps the entity id into a mod id, this is mostly just a cast.
+        /// </summary>
+        public ModId ModId => ModId.From(Id);
         
         public string Name
         {

@@ -206,7 +206,7 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
         {
            Name = f.Name,
            Hash = f.Hash,
-           Data = new byte[]{ 0xDE, 0xAD, 0xBE, 0xEF, 0x42}
+           Data = [0xDE, 0xAD, 0xBE, 0xEF, 0x42]
         }));
     }
 
@@ -220,8 +220,6 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
     protected async Task<IEnumerable<(ulong Hash, LocationId LocationId, string Path)>> 
         BuildAndInstall(IEnumerable<ModInstallerExampleFile> files)
     {
-        throw new NotImplementedException();
-        /*
         ModInstallerResult[] mods;
         var sources = files
             .Select(f => new ModFileTreeSource(f.Hash, (ulong)f.Data.Length, f.Name, new MemoryStreamFactory(f.Name.ToRelativePath(), new MemoryStream(f.Data))))
@@ -229,10 +227,24 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
 
         var tree = ModFileTree.Create(sources);
         var install = GameInstallation;
+
+        ModId baseId;
+        {
+            using var tx = Connection.BeginTransaction();
+            var mod = new Mod.Model(tx)
+            {
+                Name = "Base Mod (Test)",
+                Category = ModCategory.Mod,
+                Status = ModStatus.Installing,
+            };
+            var result = await tx.Commit();
+            baseId = result.Remap(mod).ModId;
+        }
+        
         var info = new ModInstallerInfo
         {
             ArchiveFiles = tree,
-            BaseModId = ModId.NewId(),
+            BaseModId = baseId,
             Locations = install.LocationsRegister,
             GameName = install.Game.Name,
             Store = install.Store,
@@ -247,8 +259,7 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
 
         mods.Length.Should().BeGreaterOrEqualTo(1);
         var contents = mods.First().Files;
-        return contents.OfType<StoredFile.Model>().Select(m => (m.Hash.Value, m.To.LocationId, m.To.Path.ToString()));
-        */
+        return contents.Select(m => (m.GetFirst(StoredFile.Hash).Value, m.GetFirst(File.To).LocationId, m.GetFirst(File.To).Path.ToString()));
     }
 
     protected async Task VerifyMod(Mod.Model mod, [CallerFilePath] string sourceFile = "")
