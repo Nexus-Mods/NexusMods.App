@@ -8,6 +8,7 @@ using NexusMods.Abstractions.GuidedInstallers;
 using NexusMods.Abstractions.HttpDownloader;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.DTOs;
 using NexusMods.Abstractions.NexusWebApi.Types;
@@ -89,11 +90,11 @@ public class StressTest
                             file.FileName,
                             Size.FromLong(file.SizeInBytes ?? 0));
 
-                        var list = await loadoutRegistry.Manage(install);
+                        var list = await game.Synchronizer.Manage(install);
                         var downloadId = await fileOriginRegistry.RegisterDownload(tmpPath, 
                             (tx, id) => tx.Add(id, FilePathMetadata.OriginalName, tmpPath.Path.Name),
                             token);
-                        await archiveInstaller.AddMods(list.Value.LoadoutId, downloadId, token: token);
+                        await archiveInstaller.AddMods(LoadoutId.From(list.Id), downloadId, token: token);
 
                         results.Add((file.FileName, mod.ModId, file.FileId, hash, true, null));
                         await renderer.Text("Installed {ModId} {FileId} {FileName} - {Size}", mod.ModId, file.FileId,

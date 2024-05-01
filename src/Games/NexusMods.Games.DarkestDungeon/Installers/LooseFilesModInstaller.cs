@@ -35,7 +35,6 @@ public class LooseFilesModInstaller : IModInstaller
 
         return new [] { new ModInstallerResult
         {
-            Id = info.BaseModId,
             Files = files.AsEnumerable(),
         }};
     }
