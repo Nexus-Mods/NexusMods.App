@@ -117,6 +117,24 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                     .SubscribeWithErrorLogging()
                     .DisposeWith(disposables);
 
+                // Navigate away from the Loadout workspace if the Loadout is removed
+                loadoutRegistry.LoadoutRootChanges
+                    .OnUI()
+                    .OnItemRemoved(loadoutId =>
+                    {
+                        if (workspaceController.ActiveWorkspace?.Context is LoadoutContext activeLoadoutContext &&
+                            activeLoadoutContext.LoadoutId == loadoutId)
+                        {
+                            workspaceController.ChangeOrCreateWorkspaceByContext<HomeContext>(() => new PageData
+                            {
+                                FactoryId = MyGamesPageFactory.StaticId,
+                                Context = new MyGamesPageContext(),
+                            });
+                        }
+                    }, false)
+                    .SubscribeWithErrorLogging()
+                    .DisposeWith(disposables);
+
                 // Update the LeftMenuViewModel when the active workspace changes
                 workspaceController.WhenAnyValue(controller => controller.ActiveWorkspace)
                     .Select(workspace => workspace?.Id)

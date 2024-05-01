@@ -584,6 +584,11 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// <returns></returns>
     public virtual async Task<DiskStateTree> Apply(Loadout loadout, bool forceSkipIngest = false)
     {
+        // Note(Sewer) If the last loadout was a marker loadout, we need to
+        // skip ingest and ignore changes, since marker loadouts should not be changed.
+        // (Prevent 'Needs Ingest' exception)
+        forceSkipIngest = forceSkipIngest || IsLastLoadoutAMarkerLoadout(loadout.Installation);
+
         var flattened = await LoadoutToFlattenedLoadout(loadout);
         var fileTree = await FlattenedLoadoutToFileTree(flattened, loadout);
         var prevState = _diskStateRegistry.GetState(loadout.Installation)!;
@@ -860,11 +865,17 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         // Clear Initial State if this is the only loadout for the game.
         // We use folder location for this.
         var installLocation = installation.LocationsRegister[LocationId.Game].ToString();
-        var wasLastLoadout = _loadoutRegistry
+        var isLastLoadout = _loadoutRegistry
             .AllLoadouts()
             .Count(x => 
                 x.Installation.LocationsRegister[LocationId.Game].ToString() == installLocation 
                 && !x.IsMarkerLoadout) <= 1;
+
+        if (isLastLoadout)
+        {
+            await UnManage(installation);
+            return;
+        }
     
         if (_loadoutRegistry.IsApplied(id, _diskStateRegistry.GetLastAppliedLoadout(installation)))
         {
@@ -900,8 +911,6 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         }
 
         _loadoutRegistry.Delete(id);
-        if (wasLastLoadout)
-            await _diskStateRegistry.ClearInitialState(installation);
     }
     
     /// <summary>
@@ -922,7 +931,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
 
         var loadout = _loadoutRegistry.Alter(loadoutId, "Marker Loadout", loadout => loadout with
         {
-            Name = "Marker Loadout",
+            Name = "Temporary Marker Loadout",
             Installation = installation,
             Mods = loadout.Mods.With(gameFiles.Id, gameFiles),
             IsMarkerLoadout = true,
@@ -970,8 +979,21 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     }
     #endregion
 
-
     #region Misc Helper Functions
+    /// <summary>
+    /// Checks if the last applied loadout is a 'marker' loadout.
+    /// </summary>
+    /// <param name="installation">The game installation to check.</param>
+    /// <returns>True if the last applied loadout is a marker loadout.</returns>
+    private bool IsLastLoadoutAMarkerLoadout(GameInstallation installation)
+    {
+        var lastId = _diskStateRegistry.GetLastAppliedLoadout(installation);
+        if (lastId == null)
+            return false;
+
+        return _loadoutRegistry.GetLoadout(lastId) is { IsMarkerLoadout: true };
+    }
+    
     /// <summary>
     /// Removes the first found 'marker' loadout from the data store.
     /// </summary>
