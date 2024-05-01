@@ -865,11 +865,17 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         // Clear Initial State if this is the only loadout for the game.
         // We use folder location for this.
         var installLocation = installation.LocationsRegister[LocationId.Game].ToString();
-        var wasLastLoadout = _loadoutRegistry
+        var isLastLoadout = _loadoutRegistry
             .AllLoadouts()
             .Count(x => 
                 x.Installation.LocationsRegister[LocationId.Game].ToString() == installLocation 
                 && !x.IsMarkerLoadout) <= 1;
+
+        if (isLastLoadout)
+        {
+            await UnManage(installation);
+            return;
+        }
     
         if (_loadoutRegistry.IsApplied(id, _diskStateRegistry.GetLastAppliedLoadout(installation)))
         {
@@ -905,8 +911,6 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         }
 
         _loadoutRegistry.Delete(id);
-        if (wasLastLoadout)
-            await _diskStateRegistry.ClearInitialState(installation);
     }
     
     /// <summary>
