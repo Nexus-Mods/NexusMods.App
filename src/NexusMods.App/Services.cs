@@ -132,10 +132,6 @@ public static class Services
                 };
             })
             .AddDefaultRenderers()
-            // TODO: Make AddLogging use this!!
-            // This is here for app-uninstall for now.
-            // Will fix this in  upcoming PR
-            .AddSettings<LoggingSettings>()
             .AddCleanupVerbs();
 
         return services;

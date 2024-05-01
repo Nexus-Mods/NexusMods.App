@@ -24,14 +24,11 @@ internal static class CleanupVerbs
     [Verb("uninstall-app", "Uninstall the application and revert games to their original state")]
     private static async Task<int> UninstallApp(
         [Injected] IRenderer renderer,
+        [Option("t", "--text", "")] string? uwu,
         [Injected] ILoadoutRegistry loadoutRegistry,
         [Injected] ISettingsManager settingsManager,
         [Injected] IFileSystem fileSystem)
     {
-        var dataModelSettings = settingsManager.Get<DataModelSettings>();
-        var fileExtractorSettings = settingsManager.Get<FileExtractorSettings>();
-        var loggingSettings = settingsManager.Get<LoggingSettings>();
-
         // Step 1: Revert the managed games to their original state
         var managedInstallations = loadoutRegistry.AllLoadouts()
             .Select(loadout => loadout.Installation)
@@ -63,6 +60,12 @@ internal static class CleanupVerbs
                 https://nlog-project.org/config/?tab=layout-renderers that
                 are other than {##}. Resolving these on our end would be hard.
             */
+            var dataModelSettings = settingsManager.Get<DataModelSettings>();
+            var fileExtractorSettings = settingsManager.Get<FileExtractorSettings>();
+            
+            // TODO: LoggingSettings can't be set up via DI right now, and are not
+            // configurable as of the time of writing this code.
+            var loggingSettings = LoggingSettings.CreateDefault(fileSystem.OS);
             var appFiles = (AbsolutePath[]) [ 
                 dataModelSettings.DataStoreFilePath.ToPath(fileSystem),
                 loggingSettings.MainProcessLogFilePath.ToPath(fileSystem),
