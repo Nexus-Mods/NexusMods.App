@@ -120,6 +120,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                 .DisposeWith(disposable);
             
             loadoutRegistry.LoadoutRootChanges
+                .OnUI()
                 .OnItemRemoved(loadoutId =>
                 {
                     if (workspaceController.ActiveWorkspace?.Context is LoadoutContext activeLoadoutContext &&
@@ -132,7 +133,6 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                         });
                     }
                 }, false)
-                .OnUI()
                 .SubscribeWithErrorLogging()
                 .DisposeWith(disposable);
         });
