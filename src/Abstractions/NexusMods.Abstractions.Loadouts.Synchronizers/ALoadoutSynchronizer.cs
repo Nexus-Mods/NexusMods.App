@@ -584,8 +584,9 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// <returns></returns>
     public virtual async Task<DiskStateTree> Apply(Loadout loadout, bool forceSkipIngest = false)
     {
-        // Note(Sewer) If the last loadout was a marker loadout, we need to guard
-        // in the case the user has modified the game folder since.
+        // Note(Sewer) If the last loadout was a marker loadout, we need to
+        // skip ingest and ignore changes, since marker loadouts should not be changed.
+        // (Prevent 'Needs Ingest' exception)
         forceSkipIngest = forceSkipIngest || IsLastLoadoutAMarkerLoadout(loadout.Installation);
 
         var flattened = await LoadoutToFlattenedLoadout(loadout);
