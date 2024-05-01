@@ -1,5 +1,6 @@
 using NexusMods.Abstractions.GameLocators.GameCapabilities;
 using NexusMods.Abstractions.Games;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 
 namespace NexusMods.Abstractions.GameLocators;
@@ -10,6 +11,10 @@ namespace NexusMods.Abstractions.GameLocators;
 /// </summary>
 public class GameInstallation
 {
+    /// <summary>
+    /// EntityId of the game installation, use this to link entities to the game installation.
+    /// </summary>
+    public EntityId Id { get; set; }
     /// <summary>
     /// Empty game installation, used for testing and some cases where a property must be set.
     /// </summary>

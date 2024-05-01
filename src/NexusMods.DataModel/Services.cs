@@ -6,6 +6,7 @@ using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.FileStore.ArchiveMetadata;
 using NexusMods.Abstractions.FileStore.Downloads;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Games.Loadouts.Sorting;
 using NexusMods.Abstractions.Installers;
@@ -18,6 +19,7 @@ using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Attributes;
 using NexusMods.DataModel.CommandLine.Verbs;
 using NexusMods.DataModel.Diagnostics;
+using NexusMods.DataModel.GameRegistry;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.LoadoutSynchronizerDTOs;
@@ -96,6 +98,10 @@ public static class Services
 
 
         coll.AddAllSingleton<IDataStore, SqliteDataStore>();
+        
+        // Game Registry
+        coll.AddSingleton<IGameRegistry, Registry>();
+        coll.AddAttributeCollection(typeof(GameMetadata));
         
         // File Store
         coll.AddAttributeCollection(typeof(ArchivedFileContainer));

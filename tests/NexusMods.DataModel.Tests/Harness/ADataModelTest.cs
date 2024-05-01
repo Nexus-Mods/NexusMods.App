@@ -6,6 +6,7 @@ using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.FileStore.ArchiveMetadata;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
@@ -50,6 +51,7 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
     protected readonly IFileOriginRegistry FileOriginRegistry;
     protected readonly DiskStateRegistry DiskStateRegistry;
     protected readonly IToolManager ToolManager;
+    protected readonly IGameRegistry GameRegistry;
 
     protected readonly IGame Game;
     protected readonly GameInstallation Install;
@@ -86,9 +88,10 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
         TemporaryFileManager = provider.GetRequiredService<TemporaryFileManager>();
         ToolManager = provider.GetRequiredService<IToolManager>();
         ServiceProvider = provider;
+        GameRegistry = provider.GetRequiredService<IGameRegistry>();
 
-        Game = provider.GetRequiredService<StubbedGame>();
-        Install = Game.Installations.First();
+        Install = GameRegistry.AllInstalledGames.First(g => g.Game is StubbedGame);
+        Game = (IGame)Install.Game;
     }
 
     public void Dispose()

@@ -1,5 +1,7 @@
 
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.MnemonicDB.Abstractions;
@@ -26,20 +28,8 @@ public static class Loadout
     /// <summary>
     /// Unique installation of the game this loadout is tied to.
     /// </summary>
-    public static readonly GameInstallationAttribute Installation = new(Namespace, nameof(Installation));
-
-
-    /// <summary>
-    /// Creates a new loadout with the given name.
-    /// </summary>
-    public static Loadout.Model Create(ITransaction tx, string name)
-    {
-        return new Model(tx)
-        {
-            Name = name,
-        };
-    }
-
+    public static readonly ReferenceAttribute Installation = new(Namespace, nameof(Installation));
+    
     /// <summary>
     /// Retrieves all loadouts from the database.
     /// </summary>
@@ -66,10 +56,23 @@ public static class Loadout
             set => Loadout.Name.Add(this, value);
         }
         
-        public GameInstallation Installation
+        /// <summary>
+        /// Get the installation id for this loadout.
+        /// </summary>
+        public EntityId InstallationId
         {
             get => Loadout.Installation.Get(this);
             set => Loadout.Installation.Add(this, value);
+        }
+
+        /// <summary>
+        /// Get the game installation for this loadout.
+        /// </summary>
+        public GameInstallation Installation
+        {
+            get => ServiceProvider.GetRequiredService<IGameRegistry>()
+                .Get(Loadout.Installation.Get(this));
+            set => Loadout.Installation.Add(this, value.Id);
         }
         
         /// <summary>
