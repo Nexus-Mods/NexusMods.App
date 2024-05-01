@@ -64,6 +64,7 @@ public class SimpleOverlayModInstaller : IModInstaller
 
         return new ModInstallerResult[]{ new()
         {
+            Id = info.BaseModId,
             Files = newFiles
         }};
     }

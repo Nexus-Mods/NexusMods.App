@@ -40,6 +40,7 @@ public class FolderlessModInstaller : IModInstaller
         {
             new ModInstallerResult
             {
+                Id = info.BaseModId,
                 Files = modFiles
             }
         };

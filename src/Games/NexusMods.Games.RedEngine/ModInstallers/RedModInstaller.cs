@@ -44,6 +44,7 @@ public class RedModInstaller : IModInstaller
 
             results.Add(new ModInstallerResult
             {
+                Id = info.BaseModId,
                 Files = files,
                 Name = node.InfoJson?.Name ?? "<unknown>"
             });

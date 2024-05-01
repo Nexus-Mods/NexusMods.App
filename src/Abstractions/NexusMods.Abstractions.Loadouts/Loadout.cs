@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.MnemonicDB.Abstractions;
@@ -50,6 +51,11 @@ public static class Loadout
     
     public class Model(ITransaction tx) : Entity(tx)
     {
+        /// <summary>
+        /// The unique identifier for this loadout, casted to a <see cref="LoadoutId"/>.
+        /// </summary>
+        public LoadoutId LoadoutId => LoadoutId.From(Id);
+        
         public string Name
         {
             get => Loadout.Name.Get(this);

@@ -13,6 +13,11 @@ namespace NexusMods.Abstractions.Installers;
 public record ModInstallerResult
 {
     /// <summary>
+    /// Unique identifier of the mod.
+    /// </summary>
+    public required ModId? Id { get; init; }
+
+    /// <summary>
     /// All files belonging to the mod.
     /// </summary>
     public required IEnumerable<TempEntity> Files { get; init; }

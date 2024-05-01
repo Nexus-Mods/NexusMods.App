@@ -1,9 +1,4 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using JetBrains.Annotations;
-using NexusMods.Abstractions.Serialization.DataModel;
-using NexusMods.Abstractions.Serialization.DataModel.Ids;
-using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions;
 using TransparentValueObjects;
 
@@ -27,4 +22,9 @@ public readonly partial struct LoadoutId : ITypedId<Loadout.Model>
     /// Resolve the Loadout.Model from the database
     /// </summary>
     public Loadout.Model Resolve(IDb db) => db.Get<Loadout.Model>(Value);
+    
+    /// <summary>
+    /// Create a new LoadoutId from a loadout model
+    /// </summary>
+    public static implicit operator LoadoutId(Loadout.Model loadout) => From(loadout.Id);
 }

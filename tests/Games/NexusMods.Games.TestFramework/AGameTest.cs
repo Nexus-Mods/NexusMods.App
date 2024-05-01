@@ -44,6 +44,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
     protected readonly IFileStore FileStore;
     protected readonly IArchiveInstaller ArchiveInstaller;
     protected readonly IFileOriginRegistry FileOriginRegistry;
+    protected readonly IGameRegistry GameRegistry;
     protected readonly IDataStore DataStore;
 
     protected readonly IConnection Connection;
@@ -59,21 +60,17 @@ public abstract class AGameTest<TGame> where TGame : AGame
     protected AGameTest(IServiceProvider serviceProvider)
     {
         ServiceProvider = serviceProvider;
-
-        Game = serviceProvider.FindImplementationInContainer<TGame, IGame>();
-
-        var gameInstallations = Game.Installations.ToArray();
-        gameInstallations.Should().NotBeEmpty("because the game has to be installed");
-
-        GameInstallation = gameInstallations.First();
-        GameInstallation.Game.Should().BeOfType<TGame>("because the game installation should be for the game we're testing");
+        
+        GameRegistry = serviceProvider.GetRequiredService<IGameRegistry>();
+        
+        GameInstallation = GameRegistry.AllInstalledGames.First(g => g.Game is TGame);
+        Game = (TGame)GameInstallation.Game;
 
         FileSystem = serviceProvider.GetRequiredService<IFileSystem>();
         FileStore = serviceProvider.GetRequiredService<IFileStore>();
         ArchiveInstaller = serviceProvider.GetRequiredService<IArchiveInstaller>();
         FileOriginRegistry = serviceProvider.GetRequiredService<IFileOriginRegistry>();
         TemporaryFileManager = serviceProvider.GetRequiredService<TemporaryFileManager>();
-        LoadoutRegistry = serviceProvider.GetRequiredService<LoadoutRegistry>();
         DataStore = serviceProvider.GetRequiredService<IDataStore>();
         Connection = serviceProvider.GetRequiredService<IConnection>();
 
@@ -89,6 +86,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
 
     }
 
+    
     /// <summary>
     /// Resets the game folders to a clean state.
     /// </summary>

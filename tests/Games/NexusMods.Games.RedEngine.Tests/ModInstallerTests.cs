@@ -23,8 +23,7 @@ public class ModInstallerTests : AGameTest<Cyberpunk2077>
         var id = await DownloadAndCacheMod(GameInstallation.Game.Domain, modId, fileId, hash);
         var mod = await InstallModStoredFileIntoLoadout(loadout, id, name);
 
-        mod.Files.Values
-            .OfType<IToFile>()
+        mod.Files
             .Select(file => file.To)
             .Should()
             .BeEquivalentTo(files, opt => opt.WithoutStrictOrdering());
