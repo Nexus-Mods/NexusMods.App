@@ -35,9 +35,8 @@ public class SifuModInstaller : AModInstaller
 
         return new [] { new ModInstallerResult
         {
-            Id = info.BaseModId,
             Files = modFiles,
-            Name = pakPath!.FileName()
+            Name = pakPath!.FileName(),
         }};
     }
 }

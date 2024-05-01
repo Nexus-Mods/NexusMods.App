@@ -63,7 +63,6 @@ public class ReshadePresetInstaller : AModInstaller
 
         return new [] { new ModInstallerResult
         {
-            Id = info.BaseModId,
             Files = modFiles
         }};
     }
