@@ -1,13 +1,17 @@
 using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
+using DynamicData;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.Pages.Diagnostics;
 using NexusMods.App.UI.Pages.LoadoutGrid;
 using NexusMods.App.UI.Pages.ModLibrary;
+using NexusMods.App.UI.Pages.MyGames;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Icons;
@@ -29,7 +33,8 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
         IServiceProvider serviceProvider)
     {
         var diagnosticManager = serviceProvider.GetRequiredService<IDiagnosticManager>();
-
+        var loadoutRegistry = serviceProvider.GetRequiredService<ILoadoutRegistry>();
+        
         WorkspaceId = workspaceId;
         ApplyControlViewModel = new ApplyControlViewModel(loadoutContext.LoadoutId, serviceProvider);
 
@@ -111,6 +116,26 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                 {
                     var totalCount = counts.NumSuggestions + counts.NumWarnings + counts.NumCritical;
                     diagnosticItem.Name = $"{Language.LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics} ({totalCount})";
+                })
+                .DisposeWith(disposable);
+            
+            loadoutRegistry.LoadoutRootChanges
+                .Where(changeSet => changeSet.Any(change => change.Reason == ListChangeReason.Remove))
+                .OnUI()
+                .Subscribe(_ =>
+                {
+                    // Loadout is deleted, check if the current workspace is
+                    // associated with the deleted loadout And if it is, navigate
+                    // away. For now, we will navigate to Home ('My Games'),
+                    if (workspaceController.ActiveWorkspace?.Context is LoadoutContext activeLoadoutContext &&
+                        activeLoadoutContext.LoadoutId == loadoutContext.LoadoutId)
+                    {
+                        workspaceController.ChangeOrCreateWorkspaceByContext<HomeContext>(() => new PageData
+                        {
+                            FactoryId = MyGamesPageFactory.StaticId,
+                            Context = new MyGamesPageContext(),
+                        });
+                    }
                 })
                 .DisposeWith(disposable);
         });

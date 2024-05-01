@@ -69,7 +69,6 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         Downloads.WorkspaceContext = new DownloadsContext();
         _specialSpineItems.Add(Downloads);
         Downloads.Click = ReactiveCommand.Create(NavigateToDownloads);
-
         
         if (!_windowManager.TryGetActiveWindow(out var currentWindow)) return;
         var workspaceController = currentWindow.WorkspaceController;
@@ -78,7 +77,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
             {
                 loadoutRegistry.LoadoutRootChanges
                     .Transform(loadoutId => (loadoutId, loadout: loadoutRegistry.Get(loadoutId)))
-                    .Filter(tuple => tuple.loadout != null)
+                    .Filter(tuple => tuple.loadout is { IsMarkerLoadout: false })
                     .TransformAsync(async tuple =>
                         {
                             var loadoutId = tuple.loadoutId;

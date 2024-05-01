@@ -137,27 +137,27 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
         var marker = await _loadoutRegistry.Manage(installation, name);
 
         var loadoutId = marker.Id;
+        Dispatcher.UIThread.Invoke(() => { SwitchToLoadoutId(loadoutId); });
+    }
 
-        Dispatcher.UIThread.Invoke(() =>
+    private void SwitchToLoadoutId(LoadoutId loadoutId)
+    {
+        if (!_windowManager.TryGetActiveWindow(out var window)) return;
+        var workspaceController = window.WorkspaceController;
+
+        workspaceController.ChangeOrCreateWorkspaceByContext(
+            context => context.LoadoutId == loadoutId,
+            () => new PageData
             {
-                if (!_windowManager.TryGetActiveWindow(out var window)) return;
-                var workspaceController = window.WorkspaceController;
-
-                workspaceController.ChangeOrCreateWorkspaceByContext(
-                    context => context.LoadoutId == loadoutId,
-                    () => new PageData
-                    {
-                        FactoryId = LoadoutGridPageFactory.StaticId,
-                        Context = new LoadoutGridContext
-                        {
-                            LoadoutId = loadoutId
-                        }
-                    },
-                    () => new LoadoutContext
-                    {
-                        LoadoutId = loadoutId
-                    }
-                );
+                FactoryId = LoadoutGridPageFactory.StaticId,
+                Context = new LoadoutGridContext
+                {
+                    LoadoutId = loadoutId
+                }
+            },
+            () => new LoadoutContext
+            {
+                LoadoutId = loadoutId
             }
         );
     }

@@ -46,6 +46,15 @@ public record Loadout : Entity, IEmptyWithDataStore<Loadout>
     /// Link to the previous version of this loadout on the data store.
     /// </summary>
     public required EntityLink<Loadout> PreviousVersion { get; init; }
+    
+    /// <summary>
+    /// This is true if the loadout is a hidden 'Marker' loadout.
+    /// A marker loadout is created from the original game state and should
+    /// be a singleton.
+    ///
+    /// Marker loadouts should not be shown in any user facing elements.
+    /// </summary>
+    public bool IsMarkerLoadout { get; init; }
 
     /// <inheritdoc />
     public override EntityCategory Category => EntityCategory.Loadouts;

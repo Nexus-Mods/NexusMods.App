@@ -148,10 +148,11 @@ public static class LoadoutManagementVerbs
         [Injected] CancellationToken token)
     {
         var rows = registry.AllLoadouts()
+            .Where(x => !x.IsMarkerLoadout)
             .Select(list => new object[] { list.Name, list.Installation, list.LoadoutId, list.Mods.Count })
             .ToList();
 
-        await renderer.Table(new[] { "Name", "Game", "Id", "Mod Count" }, rows);
+        await renderer.Table(["Name", "Game", "Id", "Mod Count"], rows);
         return 0;
     }
 
@@ -227,7 +228,7 @@ public static class LoadoutManagementVerbs
     [Verb("remove-loadout", "Remove a loadout by its ID")]
     private static async Task<int> RemoveLoadout(
         [Injected] IRenderer renderer,
-        [Option("l", "loadout", "loadout to add the mod to")] LoadoutMarker loadoutMarker,
+        [Option("l", "loadout", "loadout to remove.")] LoadoutMarker loadoutMarker,
         [Injected] LoadoutRegistry registry,
         [Injected] CancellationToken token)
     {
@@ -241,7 +242,6 @@ public static class LoadoutManagementVerbs
             var installation = loadout.Installation;
             var synchronizer = installation.GetGame().Synchronizer;
             await synchronizer.DeleteLoadout(installation, loadoutId);
-            registry.Delete(loadoutId);
             await renderer.Text($"Loadout {loadoutId} removed successfully");
             return 0;
         }
