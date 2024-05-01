@@ -502,64 +502,34 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
         flattenedLoadout[deletedFile].Should().BeNull("the file should have been deleted");
     }
     
-
-    /*
     [Fact]
     public async Task CanSwitchBetweenLoadouts()
     {
-        var listA = BaseLoadout;
-        // Apply the old state
-        var baseState = await _synchronizer.Apply(listA);
-
-        var newId = LoadoutId.NewId();
-        LoadoutRegistry.Alter(newId, "Clone List",
-            _ => listA.Value with {
-                LoadoutId = newId,
-                Name = "List B",
-            });
-        var listB = LoadoutRegistry.GetMarker(newId);
-
-        // We have two lists, so we can now swap between them and that's fine because they are the same so far
-        await _synchronizer.Apply(listB.Value);
-        await _synchronizer.Apply(listA.Value);
-        await _synchronizer.Apply(listB.Value);
-
-        GamePath testFilePath = new(LocationId.Game, "textures/test_file_switcher.dds");
-
-        // Now let's add a mod to listA
-        await AddMod("Other Files",
-            // Each mod overrides the same files for these three files
-            (testFilePath.Path, $"test-file-switcher")
-        );
-
-        listA.Value.Mods.Count.Should().Be(listB.Value.Mods.Count + 1, "the mod should have been added");
-
-        var absPath = Install.LocationsRegister.GetResolvedPath(testFilePath);
-        // And apply it
-        await _synchronizer.Apply(listA.Value);
-        absPath.FileExists.Should().BeTrue("the file should have been written to disk");
-        (await absPath.ReadAllTextAsync()).Should().Be("test-file-switcher", "the file should contain the new data");
-
-
-        // And switch back to listB
-        await _synchronizer.Apply(listB.Value);
-
-        absPath.FileExists.Should().BeFalse("the file should have been removed from disk");
-
-
-        var listCValue = await _synchronizer.Manage(Install);
-
-        var listC = LoadoutRegistry.GetMarker(listCValue.LoadoutId);
-        await _synchronizer.Ingest(listC.Value);
-
-        await _synchronizer.Apply(listC.Value);
-
-        await _synchronizer.Apply(listA.Value);
-        await _synchronizer.Apply(listB.Value);
-        await _synchronizer.Apply(listC.Value);
+        var secondLoadout = await Game.Synchronizer.Manage(Install, "Second Loadout");
+        await ApplyService.Apply(secondLoadout);
+        FilesVerify(secondLoadout).Should().BeTrue();
+        FilesVerify(BaseLoadout).Should().BeFalse();
+        
+        await ApplyService.Apply(BaseLoadout);
+        FilesVerify(secondLoadout).Should().BeFalse();
+        FilesVerify(BaseLoadout).Should().BeTrue();
+        
+        await ApplyService.Apply(secondLoadout);
+        FilesVerify(secondLoadout).Should().BeTrue();
+        FilesVerify(BaseLoadout).Should().BeFalse();
+        
+        bool FilesVerify(Loadout.Model loadout)
+        {
+            foreach(var file in loadout.Files.Where(f => f.Mod.Enabled))
+            {
+                var path = Install.LocationsRegister.GetResolvedPath(file.To);
+                if (!path.FileExists)
+                    return false;
+            }
+            return true;
+        }
     }
-
-    */
+    
     [Fact]
     public async Task ManageGame_SecondLoadout_UsesInitialDiskState()
     {
