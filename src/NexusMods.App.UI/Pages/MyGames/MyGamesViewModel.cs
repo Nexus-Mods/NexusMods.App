@@ -180,6 +180,13 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
             _logger.LogError("Unable to find loadout for revision {RevId}", revId);
             return;
         }
+        
+        if (loadout.IsMarkerLoadout)
+        {
+            // Last loadout was a marker, we'll pick some non-marker loadout
+            // so the user can apply it.
+            loadout = _loadoutRegistry.AllLoadouts().First(x => !x.IsMarkerLoadout);
+        }
 
         var loadoutId = loadout.LoadoutId;
 
