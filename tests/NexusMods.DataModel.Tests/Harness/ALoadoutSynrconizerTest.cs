@@ -33,21 +33,7 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
         TestFileStoreInstance = new TestFileStore();
         TestFingerprintCacheInstance = new TestFingerprintCache<Mod.Model, CachedModSortRules>();
     }
-
-    /// <summary>
-    /// Get the `To` location of the first file in the first mod that is IToFile
-    /// </summary>
-    /// <param name="loadout"></param>
-    /// <returns></returns>
-    protected static AbsolutePath GetFirstModFile(Loadout.Model loadout)
-    {
-        throw new NotImplementedException();
-        
-        //var to = loadout.Mods.Values.First().Files.Values.OfType<IToFile>().First().To;
-        //return to.Combine(loadout.Installation.LocationsRegister[LocationId.Game]);
-    }
-
-
+    
     protected class TestFileStore : IFileStore
     {
         public readonly HashSet<Hash> Archives = new();

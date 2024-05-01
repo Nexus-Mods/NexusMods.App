@@ -1,7 +1,11 @@
 ﻿using FluentAssertions;
+using NexusMods.Abstractions.DataModel.Entities.Sorting;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Games.Trees;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.Loadouts.Ids;
+using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.DataModel.Tests.Harness;
 using File = NexusMods.Abstractions.Loadouts.Files.File;
@@ -34,18 +38,21 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
     public ALoadoutSynchronizerTests(IServiceProvider provider) : base(provider)
     {
         _synchronizer = (IStandardizedLoadoutSynchronizer)Game.Synchronizer;
+        
     }
 
     public override async Task InitializeAsync()
     {
         await base.InitializeAsync();
 
-        throw new NotImplementedException();
-        //_originalLoadout = BaseList.Value;
-
-        /*
-        BaseList.Alter("Remove Base Mods",
-            l => l with { Mods = l.Mods.Keep(m => m with { Enabled = false }) });
+        {
+            // Disable all mods
+            using var tx = Connection.BeginTransaction();
+            foreach (var mod in BaseLoadout.Mods)
+                tx.Add(mod.Id, Mod.Enabled, false);
+            await tx.Commit();
+            Refresh(ref BaseLoadout);
+        }
 
 
         for (var i = 0; i < ModCount; i++)
@@ -68,45 +75,41 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
         }
 
 
-        for (var i = 0; i < ModCount - 1; i++)
         {
-            LoadoutRegistry.Alter(BaseList.Id, _modIds[i], "Sort rule for mod {i}", mod =>
-                mod with { SortRules = mod.SortRules.Add(new After<Mod, ModId> { Other = _modIds[i + 1]})});
-        }
-
-        foreach (var modId in _modIds)
-        {
-            var mod = BaseList.Value.Mods[modId];
-
-            foreach (var (fileId, file) in mod.Files)
+            using var tx = Connection.BeginTransaction();
+            for (var i = 0; i < ModCount - 1; i++)
             {
-                _pairs[fileId] = new ModFilePair { Mod = mod, File = file };
+                tx.Add(_modIds[i].Value, Mod.SortAfter, _modIds[i + 1].Value);
             }
+            await tx.Commit();
         }
-        */
+
+        Refresh(ref BaseLoadout);
     }
-    /*
+    
     [Fact]
     public async Task ApplyingTwiceDoesNothing()
     {
-
         // If apply is buggy, it will result in a "needs ingest" error when we try to re-apply. Because Apply
         // will have not properly updated the disk state, and it will error because the disk state is not in sync
-        await _synchronizer.Apply(BaseList.Value);
-        await _synchronizer.Apply(BaseList.Value);
+        await _synchronizer.Apply(BaseLoadout);
+        await _synchronizer.Apply(BaseLoadout);
 
         // This should not throw as the disk state should be in sync
-        throw new NotImplementedException();
 
-        //BaseList.Alter("Changing the name", l => l with { Name = "Changed Name"});
-        await _synchronizer.Apply(BaseList.Value);
+        using var tx = Connection.BeginTransaction();
+        tx.Add(BaseLoadout.Id, Loadout.Name, "Changed Name");
+        await tx.Commit();
+        Refresh(ref BaseLoadout);
+        
+        await _synchronizer.Apply(BaseLoadout);
     }
 
+    
     [Fact]
     public async Task ApplyingDeletesCleansUpEmptyDirectories()
     {
-        var originalMods = BaseList.Value.Mods;
-        await _synchronizer.Apply(BaseList.Value);
+        await _synchronizer.Apply(BaseLoadout);
 
         var file1 = new GamePath(LocationId.Game, "deleteMeMod/deleteMeDir1/deleteMeFile.txt");
         var path1 = Install.LocationsRegister.GetResolvedPath(file1);
@@ -114,20 +117,25 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
         var path2 = Install.LocationsRegister.GetResolvedPath(file2);
 
         // Add mod that will be deleted
-        await AddMod("DeleteMe",
+        var toDelete = await AddMod("DeleteMe",
             (_texturePath.Path, "texture.dds"),
             (file1.Path, "deleteMeContents"),
             (file2.Path, "deleteMeContents"));
 
-        await _synchronizer.Apply(BaseList.Value);
+        Refresh(ref BaseLoadout);
+        await _synchronizer.Apply(BaseLoadout);
 
         path1.FileExists.Should().BeTrue("the file should exist");
 
         // Delete the mod
-        throw new NotImplementedException();
-        //BaseList.Alter("Delete the mod", l => l with { Mods = originalMods });
+        {
+            using var tx = Connection.BeginTransaction();
+            tx.Add(toDelete.Value, Mod.Enabled, false);
+            await tx.Commit();
+        }
 
-        await _synchronizer.Apply(BaseList.Value);
+        Refresh(ref BaseLoadout);
+        await _synchronizer.Apply(BaseLoadout);
 
         path1.FileExists.Should().BeFalse("the file should not exist");
         path1.Parent.DirectoryExists().Should().BeFalse("the directory should not exist");
@@ -139,12 +147,11 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
         var textureAbsPath = Install.LocationsRegister.GetResolvedPath(_texturePath.Parent);
         textureAbsPath.DirectoryExists().Should().BeTrue("the texture folder should still exist");
     }
-
-
+    
     [Fact]
     public async Task CanFlattenLoadout()
     {
-        var flattened = await _synchronizer.LoadoutToFlattenedLoadout(BaseList.Value);
+        var flattened = await _synchronizer.LoadoutToFlattenedLoadout(BaseLoadout);
 
         // Game files are not included, because they are disabled in the initializer
         flattened.GetAllDescendentFiles()
@@ -172,28 +179,29 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
                 "all the mods are flattened into a single tree, with overlaps removed");
 
         var topMod = _modIds[0];
-        var topFiles = BaseList.Value.Mods[topMod].Files.Values.OfType<StoredFile>().ToDictionary(d => d.To);
+        var topFiles = Connection.Db.Get<Mod.Model>(topMod.Value).Files.ToDictionary(d => d.To);
 
         foreach (var path in _allPaths)
         {
-            flattened[path].Item.Value!.File.Should()
+            flattened[path].Item.Value.Should()
                 .BeEquivalentTo(topFiles[path], "the top mod should be the one that contributes the file data");
         }
 
         for (var i = 0; i < ModCount; i++)
         {
             var path = new GamePath(LocationId.Game, $"perMod/{i}.dat");
-            var originalFile = BaseList.Value.Mods[_modIds[i]].Files.Values.OfType<StoredFile>().First(f => f.To == path);
-            flattened[path].Item.Value!.File.Should()
+            var originalFile = BaseLoadout.Files.First(f => f.To == path);
+            flattened[path].Item.Value.Should()
                 .BeEquivalentTo(originalFile, "these files have unique paths, so they should not be overridden");
         }
     }
 
+    
     [Fact]
     public async Task CanCreateFileTree()
     {
-        var flattened = await _synchronizer.LoadoutToFlattenedLoadout(BaseList.Value);
-        var fileTree = await _synchronizer.FlattenedLoadoutToFileTree(flattened, BaseList.Value);
+        var flattened = await _synchronizer.LoadoutToFlattenedLoadout(BaseLoadout);
+        var fileTree = await _synchronizer.FlattenedLoadoutToFileTree(flattened, BaseLoadout);
 
         fileTree.GetAllDescendentFiles()
             .Select(f => f.GamePath().ToString())
@@ -220,7 +228,7 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
                 "all the mods are flattened into a single tree, with overlaps removed");
 
         var topMod = _modIds[0];
-        var topFiles = BaseList.Value.Mods[topMod].Files.Values.OfType<StoredFile>().ToDictionary(d => d.To);
+        var topFiles = BaseLoadout.Mods.First(m => m.Id == topMod).Files.ToDictionary(d => d.To);
 
         foreach (var path in _allPaths)
         {
@@ -231,12 +239,13 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
         for (var i = 0; i < ModCount; i++)
         {
             var path = new GamePath(LocationId.Game, $"perMod/{i}.dat");
-            var originalFile = BaseList.Value.Mods[_modIds[i]].Files.Values.OfType<StoredFile>().First(f => f.To == path);
+            var originalFile = BaseLoadout.Mods.First(m => m.Id == _modIds[i]).Files.First(f => f.To == path);
             fileTree[path].Item.Value!.Should()
                 .BeEquivalentTo(originalFile, "these files have unique paths, so they should not be overridden");
         }
     }
 
+    /*
     [Fact]
     public async Task CanWriteDiskTreeToDisk()
     {

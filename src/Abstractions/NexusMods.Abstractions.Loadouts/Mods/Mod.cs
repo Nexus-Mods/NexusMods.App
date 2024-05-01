@@ -58,6 +58,13 @@ public static class Mod
     /// </summary>
     public static readonly EnumAttribute<ModCategory> Category = new(Namespace, nameof(Category));
     
+    
+    /// <summary>
+    /// Sort this mod after another mod, mostly used as a placeholder until we figure out better
+    /// sorting mechanisms.
+    /// </summary>
+    public static readonly ReferenceAttribute SortAfter = new(Namespace, nameof(SortAfter));
+    
 
 
     public class Model(ITransaction tx) : Entity(tx)

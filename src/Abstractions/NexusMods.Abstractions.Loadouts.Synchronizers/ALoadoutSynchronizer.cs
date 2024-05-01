@@ -1015,6 +1015,8 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     {
         if (mod.Category == ModCategory.GameFiles)
             return [new First<Mod.Model, ModId>()];
+        if (mod.TryGet(Mod.SortAfter, out var other))
+            return [new After<Mod.Model, ModId> { Other = ModId.From(other) }];
         return [];
     }
 

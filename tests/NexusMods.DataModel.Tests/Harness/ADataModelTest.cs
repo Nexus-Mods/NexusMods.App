@@ -166,9 +166,8 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
     protected async Task<ModId> AddMod(string modName, params (string Name, string Data)[] files)
     {
         var downloadId = await RegisterDownload(files);
-        throw new NotImplementedException();
-        //var modIds = await ArchiveInstaller.AddMods(BaseList.Value.LoadoutId, downloadId, modName, token: Token);
-        //return modIds.First();
+        var modIds = await ArchiveInstaller.AddMods(LoadoutId.From(BaseLoadout.Id), downloadId, modName, token: Token);
+        return modIds.First();
     }
 
     public Task DisposeAsync()
