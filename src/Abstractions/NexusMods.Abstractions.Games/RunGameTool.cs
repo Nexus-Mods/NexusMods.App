@@ -61,7 +61,7 @@ public class RunGameTool<T> : IRunGameTool
     public string Name => $"Run {_game.Name}";
 
     /// <inheritdoc />
-    public async Task Execute(LoadoutId loadout, CancellationToken cancellationToken)
+    public async Task Execute(Loadout.Model loadout, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Starting {Name}", Name);
         throw new NotImplementedException();

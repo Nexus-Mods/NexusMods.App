@@ -43,8 +43,6 @@ public class ToolManager : IToolManager
     /// <inheritdoc />
     public async Task<Loadout.Model> RunTool(ITool tool, Loadout.Model loadout, Mod.Model? generatedFilesMod = null, CancellationToken token = default)
     {
-        throw new NotImplementedException();
-        /*
         if (!tool.Domains.Contains(loadout.Installation.Game.Domain))
             throw new Exception("Tool does not support this game");
 
@@ -54,6 +52,5 @@ public class ToolManager : IToolManager
         // This will ingest the changes into the last applied loadout without but will not apply any loadout
         _logger.LogInformation("Ingesting loadout {LoadoutId} from {GameName} {GameVersion}", loadout.Id, loadout.Installation.Game.Name, loadout.Installation.Version);
         return await _applyService.Ingest(loadout.Installation);
-        */
     }
 }

@@ -2,6 +2,7 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
+using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.StandardGameLocators.TestHelpers;
 
@@ -23,10 +24,6 @@ public class ListFilesTool : ITool
     }
 
     public string Name => "List Files";
-    public Task Execute(LoadoutId loadout, CancellationToken cancellationToken)
-    {
-        throw new NotImplementedException();
-    }
 
     public static readonly GamePath GeneratedFilePath = new(LocationId.Game, "toolFiles.txt");
 }
