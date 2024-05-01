@@ -590,8 +590,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         var diskState = await FileTreeToDisk(fileTree, loadout, flattened, prevState, loadout.Installation, forceSkipIngest);
         diskState.LoadoutRevision = loadout.DataStoreId;
         await _diskStateRegistry.SaveState(loadout.Installation, diskState);
-        
-        // Remove an existing temporary marker loadout.
+
         if (!loadout.IsMarkerLoadout)
             RemoveMarkerLoadout();
 
@@ -879,7 +878,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
 
                 This is a good default for many cases:
                 
-                - Game files are not  likely to be overwritten, so this will 
+                - Game files are not likely to be overwritten, so this will 
                   just end up materialising into a bunch of deletes. (Very Fast)
                   
                 - Ensures internal consistency. i.e. 'last applied loadout' is always

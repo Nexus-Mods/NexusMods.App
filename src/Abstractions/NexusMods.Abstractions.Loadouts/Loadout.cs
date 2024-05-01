@@ -50,7 +50,8 @@ public record Loadout : Entity, IEmptyWithDataStore<Loadout>
     /// <summary>
     /// This is true if the loadout is a hidden 'Marker' loadout.
     /// A marker loadout is created from the original game state and should
-    /// be a singleton.
+    /// be a singleton for a given game. It is a temporary loadout that is
+    /// destroyed when a real loadout is applied.
     ///
     /// Marker loadouts should not be shown in any user facing elements.
     /// </summary>
