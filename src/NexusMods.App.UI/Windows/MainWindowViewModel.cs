@@ -112,64 +112,12 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
                 vm._windowManager.UnregisterWindow(vm);
             }).DisposeWith(d);
 
-            if (!_windowManager.RestoreWindowState(this, SanitizeWindowData))
+            if (!_windowManager.RestoreWindowState(this))
             {
                 // NOTE(erri120): select home on startup if we didn't restore the previous state
                 Spine.NavigateToHome();
             }
         });
-    }
-    
-    private WindowData SanitizeWindowData(WindowData data)
-    {
-        /*
-            Note(Sewer)
-
-            Some of our persisted workspaces are dependent on the contents of the
-            datastore. For example, we create a workspace for each loadout.
-
-            In some rare scenarios, it may however become possible that our
-            saved window state is not valid.
-
-            For loadouts, some examples would be:
-
-            - User deleted a loadout from the CLI
-                - Which may not remove the workspace.
-            - App crashes before complete removal of a loadout is complete.
-
-            Although we could reorder operations, or add explicit code to update
-            the current workspaces from say, the CLI command; there's still
-            some inherent risks.
-
-            Suppose someone writes some code that could run before the UI is
-            fully set up. They would have to remember to update workspaces.
-            If they forget, there's a chance of creating a potentially
-            very silent, hard to find bug.
-
-            Therefore, we sanitize the data here, doing cleanup on no longer
-            valid items.
-        */
-
-        var workspaces = new List<WorkspaceData>(data.Workspaces.Length);
-        var activeWorkspaceId = data.ActiveWorkspaceId;
-        foreach (var workspace in data.Workspaces)
-        {
-            if (workspace.Context is LoadoutContext loadout && !_registry.Contains(loadout.LoadoutId))
-            {
-                if (activeWorkspaceId == workspace.Id)
-                    activeWorkspaceId = null;
-
-                continue;
-            }
-
-            workspaces.Add(workspace);
-        }
-
-        return data with
-        {
-            Workspaces = workspaces.ToArray(),
-            ActiveWorkspaceId = activeWorkspaceId,
-        };
     }
 
     internal void OnClose()
