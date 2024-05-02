@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Cli;
 using NexusMods.Abstractions.FileExtractor;
@@ -72,22 +74,6 @@ internal static class CleanupVerbs
                 loggingSettings.SlimProcessLogFilePath.ToPath(fileSystem),
             ];
 
-            foreach (var appFile in appFiles)
-            {
-                if (!appFile.FileExists)
-                    continue;
-
-                try
-                {
-                    appFile.Delete();
-                    await renderer.Text("Deleted file: {0}", appFile);
-                }
-                catch (Exception e)
-                {
-                    await renderer.Error(e, "Failed to delete file: {0}", appFile); 
-                }
-            }
-
             var appDirectories = new[]
             {
                 dataModelSettings.MnemonicDBPath.ToPath(fileSystem),
@@ -95,14 +81,10 @@ internal static class CleanupVerbs
                 LoggingSettings.GetLogBaseFolder(OSInformation.Shared, fileSystem)
             }.Concat(dataModelSettings.ArchiveLocations.Select(path => path.ToPath(fileSystem)));
 
-            foreach (var directory in appDirectories)
-            {
-                if (!directory.DirectoryExists())
-                    continue;
-
-                directory.Delete();
-                await renderer.Text("Deleted directory: {0}", directory);
-            }
+            if (fileSystem.OS.IsUnix())
+                await DeleteRemainingFilesUnix(renderer, appFiles, appDirectories);
+            else
+                DeleteRemainingFilesWindows(renderer, appFiles, appDirectories);
 
             await renderer.Text("Application uninstalled successfully");
             return 0;
@@ -111,6 +93,88 @@ internal static class CleanupVerbs
         {
             await renderer.Error(ex, $"Error deleting application directories: {ex.Message}");
             return -1;
+        }
+    }
+
+    private static async Task DeleteRemainingFilesUnix(IRenderer renderer, AbsolutePath[] appFiles, IEnumerable<AbsolutePath> appDirectories)
+    {
+        await DeleteFilesUnix(renderer, appFiles);
+        await DeleteDirectoriesUnix(renderer, appDirectories);
+    }
+    
+    private static void DeleteRemainingFilesWindows(IRenderer renderer, AbsolutePath[] appFiles, IEnumerable<AbsolutePath> appDirectories)
+    {
+        // Generate the batch script content
+        var scriptContent = new StringBuilder();
+        scriptContent.AppendLine("@echo off");
+
+        // Kill all processes with the name "NexusMods.App"
+        // Note(sewer) Technically we can start with `dotnet NexusMods.App`,
+        // but this will only really ever get called from the setup binary,
+        // so we have control over this.
+        scriptContent.AppendLine("taskkill /F /IM \"NexusMods.App.exe\" /T");
+
+        // Delete application-specific files
+        foreach (var appFile in appFiles)
+            scriptContent.AppendLine($"del /Q \"{appFile}\"");
+
+        // Delete application-specific directories
+        foreach (var directory in appDirectories)
+            scriptContent.AppendLine($"rmdir /S /Q \"{directory}\"");
+
+        // Save the script to a temporary file
+        var tempScriptPath = Path.GetTempFileName().Replace(".tmp", ".bat");
+        File.WriteAllText(tempScriptPath, scriptContent.ToString());
+
+        // Execute the script using cmd.exe
+        var processStartInfo = new ProcessStartInfo
+        {
+            FileName = "cmd.exe",
+            Arguments = $"/C \"{tempScriptPath}\"",
+            UseShellExecute = false,
+            CreateNoWindow = true,
+        };
+
+        using (var process = new Process())
+        {
+            process.StartInfo = processStartInfo;
+            process.Start();
+            process.WaitForExit();
+        }
+
+        // In case somehow our script does not die.
+        // Delete the temporary script file
+        File.Delete(tempScriptPath);
+    }
+
+    private static async Task DeleteDirectoriesUnix(IRenderer renderer, IEnumerable<AbsolutePath> appDirectories)
+    {
+        foreach (var directory in appDirectories)
+        {
+            if (!directory.DirectoryExists())
+                continue;
+
+            directory.Delete();
+            await renderer.Text("Deleted directory: {0}", directory);
+        }
+    }
+
+    private static async Task DeleteFilesUnix(IRenderer renderer, AbsolutePath[] appFiles)
+    {
+        foreach (var appFile in appFiles)
+        {
+            if (!appFile.FileExists)
+                continue;
+
+            try
+            {
+                appFile.Delete();
+                await renderer.Text("Deleted file: {0}", appFile);
+            }
+            catch (Exception e)
+            {
+                await renderer.Error(e, "Failed to delete file: {0}", appFile); 
+            }
         }
     }
 }
