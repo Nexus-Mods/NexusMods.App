@@ -53,14 +53,14 @@ public class SMAPIModDatabaseCompatibilityDiagnosticEmitter : ILoadoutDiagnostic
         _smapiWebApi = smapiWebApi;
     }
 
-    public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
+    public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.Model loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         var gameVersion = new SemanticVersion(loadout.Installation.Version);
-        var optionalSMAPIMod = loadout.GetFirstModWithMetadata<SMAPIMarker>();
+        var optionalSMAPIMod = loadout.GetFirstModWithMetadata(SMAPIMarker.Version);
 
         if (!optionalSMAPIMod.HasValue) yield break;
         var (smapiMod, smapiMarker) = optionalSMAPIMod.Value;
-        if (!smapiMarker.TryParse(out var smapiVersion)) yield break;
+        if (!SemanticVersion.TryParse(smapiMarker, out var smapiVersion)) yield break;
 
         var modDatabase = await GetModDatabase(smapiMod, cancellationToken);
         if (modDatabase is null) yield break;
@@ -69,7 +69,7 @@ public class SMAPIModDatabaseCompatibilityDiagnosticEmitter : ILoadoutDiagnostic
             .GetAllManifestsAsync(_logger, _fileStore, loadout, onlyEnabledMods: true, cancellationToken)
             .ToArrayAsync(cancellationToken);
 
-        var list = new List<(Mod mod, SMAPIManifest manifest, ModDataRecordVersionedFields versionedFields)>();
+        var list = new List<(Mod.Model mod, SMAPIManifest manifest, ModDataRecordVersionedFields versionedFields)>();
 
         foreach (var tuple in smapiMods)
         {
@@ -123,7 +123,7 @@ public class SMAPIModDatabaseCompatibilityDiagnosticEmitter : ILoadoutDiagnostic
         }
     }
 
-    private async ValueTask<SMAPIModDatabase?> GetModDatabase(Mod smapi, CancellationToken cancellationToken)
+    private async ValueTask<SMAPIModDatabase?> GetModDatabase(Mod.Model smapi, CancellationToken cancellationToken)
     {
         try
         {

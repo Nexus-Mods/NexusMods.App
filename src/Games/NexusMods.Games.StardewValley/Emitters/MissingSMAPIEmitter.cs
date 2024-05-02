@@ -14,10 +14,10 @@ public class MissingSMAPIEmitter : ILoadoutDiagnosticEmitter
     {
         await Task.Yield();
 
-        var smapiModCount = loadout.CountModsWithMetadata<SMAPIModMarker>();
+        var smapiModCount = loadout.CountModsWithMetadata(SMAPIModMarker.SMAPIMod);
         if (smapiModCount == 0) yield break;
 
-        var optionalSmapiMod = loadout.GetFirstModWithMetadata<SMAPIMarker>(onlyEnabledMods: false);
+        var optionalSmapiMod = loadout.GetFirstModWithMetadata(SMAPIMarker.Version, onlyEnabledMods: false);
         if (!optionalSmapiMod.HasValue)
         {
             yield return Diagnostics.CreateSMAPIRequiredButNotInstalled(

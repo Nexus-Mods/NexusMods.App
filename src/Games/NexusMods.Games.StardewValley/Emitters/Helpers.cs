@@ -13,7 +13,7 @@ internal static class Helpers
     public static readonly NamedLink NexusModsLink = new("Nexus Mods", new Uri("https://nexusmods.com/stardewvalley"));
     public static readonly NamedLink SMAPILink = new("Nexus Mods", new Uri("https://nexusmods.com/stardewvalley/mods/2400"));
 
-    public static async IAsyncEnumerable<ValueTuple<Mod, Manifest>> GetAllManifestsAsync(
+    public static async IAsyncEnumerable<ValueTuple<Mod.Model, Manifest>> GetAllManifestsAsync(
         ILogger logger,
         IFileStore fileStore,
         Loadout.Model loadout,

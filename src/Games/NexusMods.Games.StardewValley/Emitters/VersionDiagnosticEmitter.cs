@@ -34,16 +34,16 @@ public class VersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
         _smapiWebApi = smapiWebApi;
     }
 
-    public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
+    public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.Model loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         var gameVersion = new SemanticVersion(loadout.Installation.Version);
         // var gameVersion = new SemanticVersion("1.5.6");
 
-        var optionalSMAPIMod = loadout.GetFirstModWithMetadata<SMAPIMarker>();
+        var optionalSMAPIMod = loadout.GetFirstModWithMetadata(SMAPIMarker.Version);
         if (!optionalSMAPIMod.HasValue) yield break;
 
         var (_, smapiMarker) = optionalSMAPIMod.Value;
-        if (!smapiMarker.TryParse(out var smapiVersion)) yield break;
+        if (!SemanticVersion.TryParse(smapiMarker, out var smapiVersion)) yield break;
 
         var smapiMods = await Helpers
             .GetAllManifestsAsync(_logger, _fileStore, loadout, onlyEnabledMods: true, cancellationToken)

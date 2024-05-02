@@ -44,11 +44,11 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
         // var gameVersion = SimplifyVersion(new Version("1.5.6.22018"));
         var gameVersion = new SemanticVersion(loadout.Installation.Version);
 
-        var optionalSmapiMod = loadout.GetFirstModWithMetadata<SMAPIMarker>();
+        var optionalSmapiMod = loadout.GetFirstModWithMetadata(SMAPIMarker.Version);
 
         if (!optionalSmapiMod.HasValue)
         {
-            var smapiModCount = loadout.CountModsWithMetadata<SMAPIMarker>();
+            var smapiModCount = loadout.CountModsWithMetadata(SMAPIMarker.Version);
 
             // NOTE(erri120): The MissingSMAPIEmitter will warn the user if SMAPI is required.
             // This emitter will suggest SMAPI if there are no mods yet.
@@ -60,7 +60,7 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
         }
 
         var (smapiMod, smapiMarker) = optionalSmapiMod.Value;
-        if (!smapiMarker.TryParse(out var smapiVersion)) yield break;
+        if (!SemanticVersion.TryParse(smapiMarker, out var smapiVersion)) yield break;
 
         // var smapiVersion = SimplifyVersion(new Version("4.0.6.1254"));
 
@@ -104,8 +104,8 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
     private Diagnostic? GameVersionNewerThanMaximumGameVersion(
         GameToSMAPIMapping gameToSMAPIMappings,
-        Loadout loadout,
-        Mod smapiMod,
+        Loadout.Model loadout,
+        Mod.Model smapiMod,
         ISemanticVersion gameVersion,
         ISemanticVersion smapiVersion,
         GameVersions supportedGameVersions)
@@ -134,8 +134,8 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
     private Diagnostic? GameVersionOlderThanMinimumGameVersion(
         GameToSMAPIMapping gameToSMAPIMappings,
-        Loadout loadout,
-        Mod smapiMod,
+        Loadout.Model loadout,
+        Mod.Model smapiMod,
         ISemanticVersion gameVersion,
         ISemanticVersion smapiVersion,
         GameVersions supportedGameVersions)

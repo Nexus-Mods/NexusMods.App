@@ -39,8 +39,8 @@ internal static class Interop
 
     public static async ValueTask<Manifest?> GetManifest(IFileStore fileStore, Mod.Model mod, CancellationToken cancellationToken = default)
     {
-        var manifestFile = mod.Files.FirstOrDefault(f => f.HasMetadata<SMAPIManifestMetadata>());
-        if (!manifestFile?.IsStoredFile(out var storedFile) ?? false) return null;
+        var manifestFile = mod.Files.FirstOrDefault(f => f.HasMetadata(SMAPIManifestMetadata.SMAPIManifest));
+        if (manifestFile == null || !manifestFile.IsStoredFile(out var storedFile)) return null;
 
         await using var stream = await fileStore.GetFileStream(storedFile.Hash, cancellationToken);
         return await DeserializeManifest(stream);
@@ -48,11 +48,11 @@ internal static class Interop
 
     public static async ValueTask<ModDatabase?> GetModDatabase(
         IFileStore fileStore,
-        Mod smapi,
+        Mod.Model smapi,
         CancellationToken cancellationToken = default)
     {
-        var manifestFile = smapi.Files.Values.FirstOrDefault(f => f.HasMetadata<SMAPIModDatabaseMarker>());
-        if (manifestFile is not StoredFile storedFile) return null;
+        var manifestFile = smapi.Files.FirstOrDefault(f => f.HasMetadata(SMAPIModDatabaseMarker.SMAPIModDatabase));
+        if (manifestFile == null || !manifestFile.IsStoredFile(out var storedFile)) return null;
 
         // https://github.com/Pathoschild/SMAPI/blob/e8a86a0b98061d322c2af89af845ed9f5fd15468/src/SMAPI.Toolkit/ModToolkit.cs#L66-L71
         await using var stream = await fileStore.GetFileStream(storedFile.Hash, cancellationToken);

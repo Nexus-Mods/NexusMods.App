@@ -74,6 +74,7 @@ public class GenericFolderMatchInstaller : AModInstaller
         {
             new ModInstallerResult
             {
+                Id = info.BaseModId,
                 Files = modFiles
             }
         });
