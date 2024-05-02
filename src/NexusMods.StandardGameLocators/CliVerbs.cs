@@ -25,7 +25,7 @@ internal static class CliVerbs
         [Option("p", "path", "The path where the game can be found")] AbsolutePath path)
     {
         var locator = locators.OfType<ManuallyAddedLocator>().First();
-        locator.Add(game, version, path);
+        await locator.Add(game, version, path);
         await renderer.Text("Game added successfully");
         return 0;
     }
