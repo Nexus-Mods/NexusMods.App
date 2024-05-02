@@ -148,7 +148,7 @@ public static class LoadoutManagementVerbs
         [Injected] CancellationToken token)
     {
         var rows = registry.AllLoadouts()
-            .Where(x => !x.IsMarkerLoadout)
+            .Where(x => x.IsVisible)
             .Select(list => new object[] { list.Name, list.Installation, list.LoadoutId, list.Mods.Count })
             .ToList();
 

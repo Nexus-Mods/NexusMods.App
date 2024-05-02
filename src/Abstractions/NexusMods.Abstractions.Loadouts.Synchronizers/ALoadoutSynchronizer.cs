@@ -934,7 +934,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             Name = "Temporary Marker Loadout",
             Installation = installation,
             Mods = loadout.Mods.With(gameFiles.Id, gameFiles),
-            IsMarkerLoadout = true,
+            LoadoutKind = LoadoutKind.Marker,
         });
 
         return loadout;
@@ -1005,11 +1005,9 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     {
         foreach (var loadout in _loadoutRegistry.AllLoadouts())
         {
-            if (loadout.IsMarkerLoadout)
-            {
-                _loadoutRegistry.Delete(loadout.LoadoutId);
-                return;
-            }
+            if (!loadout.IsMarkerLoadout) continue;
+            _loadoutRegistry.Delete(loadout.LoadoutId);
+            return;
         }
     }
 

@@ -77,7 +77,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
             {
                 loadoutRegistry.LoadoutRootChanges
                     .Transform(loadoutId => (loadoutId, loadout: loadoutRegistry.Get(loadoutId)))
-                    .Filter(tuple => tuple.loadout is { IsMarkerLoadout: false })
+                    .Filter(tuple => tuple.loadout is { IsVisible: true })
                     .TransformAsync(async tuple =>
                         {
                             var loadoutId = tuple.loadoutId;
