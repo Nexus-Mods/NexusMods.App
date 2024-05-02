@@ -5,6 +5,7 @@ using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Binding;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
@@ -243,10 +244,10 @@ public class LoadoutRegistry : IDisposable, ILoadoutRegistry
     /// <exception cref="InvalidOperationException"></exception>
     public Loadout? Get(LoadoutId id)
     {
-        var databaseId = GetId(id)!;
-        if (databaseId == null)
-            throw new InvalidOperationException($"Loadout {id} does not exist");
-        return _store.Get<Loadout>(databaseId, true);
+        var databaseId = GetId(id);
+        return databaseId == null 
+            ? null 
+            : _store.Get<Loadout>(databaseId, true);
     }
 
     /// <summary>
@@ -442,7 +443,7 @@ public class LoadoutRegistry : IDisposable, ILoadoutRegistry
         if (string.IsNullOrWhiteSpace(name))
             name = SuggestName(installation);
 
-        var result = await installation.GetGame().Synchronizer.Manage(installation, name);
+        var result = await installation.GetGame().Synchronizer.CreateLoadout(installation, name);
 
         return GetMarker(result.LoadoutId);
     }
@@ -455,5 +456,44 @@ public class LoadoutRegistry : IDisposable, ILoadoutRegistry
     public bool Contains(LoadoutId loadoutId)
     {
         return GetId(loadoutId) != null;
+    }
+
+    /// <inheritdoc />
+    public void Delete(LoadoutId loadoutId)
+    {
+        ObjectDisposedException.ThrowIf(_isDisposed, nameof(LoadoutRegistry));
+
+        // Get all revisions 
+        var loadout = Get(loadoutId);
+        if (loadout == null)
+            throw new ArgumentException("Loadout not found", nameof(loadoutId));
+
+        // Remove LoadoutId
+        var dbId = loadoutId.ToEntityId(EntityCategory.LoadoutRoots);
+        _logger.LogInformation("Loadout {LoadoutId} is being deleted", loadoutId);
+        _store.Delete(dbId);
+
+        // Remove all previous revisions.
+        var currentVersion = loadout.PreviousVersion;
+        while (true)
+        {
+            var previousLoadout = currentVersion.Value;
+            if (previousLoadout == null)
+                break;
+
+            _store.Delete(previousLoadout.DataStoreId);
+            currentVersion = previousLoadout.PreviousVersion;
+        }
+        
+        _markers.TryRemove(loadoutId, out _);
+        _loadoutsIds.Remove(loadoutId);
+        _cache.Edit(x => x.Remove(loadoutId));
+        _logger.LogInformation("Loadout {LoadoutId} was deleted", loadoutId);
+    }
+
+    /// <inheritdoc />
+    public bool IsApplied(LoadoutId id, IId? lastAppliedId)
+    {
+        return id == GetLoadout(lastAppliedId!)?.LoadoutId;
     }
 }

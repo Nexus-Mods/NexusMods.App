@@ -34,7 +34,7 @@
 		<value>Więcej informacji o zbieranych przez nas danych</value>
 	</data>
 	<data name="MetricsOptIn_MainMessage" xml:space="preserve">
-		<value>Pomóż nam zapewnić ci najlepsze wrażenia z modowania.&#x0a;&#x0a;Za twoją zgodą będziemy gromadzić informacje analityczne i wysyłać je do naszego zespołu, by poprawić jakość i wydajność aplikacji.&#x0a;&#x0a;Informacje analityczne są wysyłane anonimowo i nigdy nie będą udostępniane stronom trzecim.</value>
+		<value>Pomóż nam zapewnić ci najlepsze wrażenia z modowania.&#x0a;&#x0a;Za twoją zgodą będziemy gromadzić informacje analityczne i wysyłać je do naszego zespołu, aby poprawić jakość i wydajność aplikacji.&#x0a;&#x0a;Informacje analityczne są wysyłane anonimowo i nigdy nie będą udostępniane stronom trzecim.</value>
 	</data>
 	<data name="Updater_LATER" xml:space="preserve">
 		<value>PÓŹNIEJ</value>
@@ -46,7 +46,7 @@
 		<value>Dostępna aktualizacja</value>
 	</data>
 	<data name="Updater_MainMessage" xml:space="preserve">
-		<value>Aktualizuj swoją aplikację, by otrzymywać najnowsze ulepszenia.</value>
+		<value>Aktualizuj swoją aplikację, aby otrzymywać najnowsze ulepszenia.</value>
 	</data>
 	<data name="Updater_UseSystemUpdater" xml:space="preserve">
 		<value>Wygląda na to, że twoja aplikacja została zainstalowana za pośrednictwem systemu zarządzania pakietami. Proszę zaktualizować aplikację za pośrednictwem systemowej aplikacji do aktualizacji.</value>
@@ -55,7 +55,7 @@
 		<value>Pokaż dziennik zmian na GitHub</value>
 	</data>
 	<data name="LoadoutGridView_AddMod_FilePicker_Title" xml:space="preserve">
-		<value>Proszę wybrać plik moda do zainstalowania</value>
+		<value>Proszę wybrać plik modu do zainstalowania</value>
 	</data>
 	<data name="LoadoutGridView_AddMod_FileType_Archive" xml:space="preserve">
 		<value>Archiwum</value>
@@ -91,7 +91,7 @@
 		<value>ZAINSTALOWANE</value>
 	</data>
 	<data name="Helpers_GenerateHeader_MOD_NAME" xml:space="preserve">
-		<value>NAZWA MODA</value>
+		<value>NAZWA MODU</value>
 	</data>
 	<data name="Helpers_GenerateHeader_GAME" xml:space="preserve">
 		<value>GRA</value>
@@ -262,13 +262,13 @@
 		<value>Strona główna</value>
 	</data>
     <data name="LoadoutGridView__View_Files" xml:space="preserve">
-        <value>Pokaż pliki moda</value>
+        <value>Pokaż pliki modu</value>
     </data>
     <data name="FileTreeNodeView__View" xml:space="preserve">
         <value>Pokaż</value>
     </data>
     <data name="ViewModInfoPage_Title" xml:space="preserve">
-        <value>Informacje moda</value>
+        <value>Informacje modu</value>
     </data>
 	<data name="LoadoutLeftMenuViewModel_LoadoutGridEntry" xml:space="preserve">
 		<value>Moje Mody</value>
@@ -307,13 +307,13 @@
         <value>Coś poszło nie tak</value>
     </data>
     <data name="ErrorView_MissingMod_Description" xml:space="preserve">
-        <value>Mod, do którego próbujesz uzyskać dostęp, został usunięty lub nie istnieje.</value>
+        <value>Aplikacja nie może uzyskać dostępu do określonej modyfikacji, ponieważ została usunięta lub już nie istnieje.</value>
     </data>
     <data name="ViewModInfoPage_NotFound_Title" xml:space="preserve">
-        <value>Brak moda</value>
+        <value>Brak modu</value>
     </data>
     <data name="ErrorView_MissingMod_Subheader" xml:space="preserve">
-        <value>Nie znaleziono moda</value>
+        <value>Nie znaleziono modu</value>
     </data>
     <data name="DiagnosticDetailsView_SeverityTitle_SUGGESTION" xml:space="preserve">
         <value>SUGESTIA</value>
@@ -363,7 +363,7 @@
         <value>Wszystkie wspierane gry zostały dodane. Nie wykryto żadnych nowych gier.</value>
     </data>
     <data name="MyGamesView__NoGamesManagedText" xml:space="preserve">
-        <value>Dodaj gry, by rozpocząć modowanie</value>
+        <value>Dodaj gry, aby rozpocząć modowanie</value>
     </data>
     <data name="GameWidget__Adding_game" xml:space="preserve">
         <value>Dodawanie gry</value>
@@ -409,5 +409,50 @@
     </data>
     <data name="ApplyDiffViewModel_PageTitle" xml:space="preserve">
         <value>Podgląd zmian</value>
+    </data>
+   <data name="SettingsView_Title" xml:space="preserve">
+        <value>Ustawienia</value>
+    </data>
+    <data name="DialogButton_CANCEL" xml:space="preserve">
+        <value>ANULUJ</value>
+    </data>
+    <data name="DialogButton_SAVE" xml:space="preserve">
+        <value>ZAPISZ</value>
+    </data>
+    <data name="SettingEntryView_NeedRestartMessage" xml:space="preserve">
+        <value>Uruchom ponownie aplikację, aby zastosować ustawienia języka</value>
+    </data>
+    <data name="FileOriginsPage_AddButtonText" xml:space="preserve">
+        <value>Dodaj</value>
+    </data>
+    <data name="DialogButton_Discard" xml:space="preserve">
+        <value>ODRZUĆ</value>
+    </data>
+    <data name="ChangelogPageViewModel_ChangelogPageViewModel_Changelog" xml:space="preserve">
+        <value>Dziennik zmian</value>
+    </data>
+    <data name="DiagnosticListViewModel_DiagnosticListViewModel_Diagnostics" xml:space="preserve">
+        <value>Diagnostyka</value>
+    </data>
+    <data name="FileOriginsPageTitle" xml:space="preserve">
+        <value>Biblioteka</value>
+    </data>
+    <data name="FileOriginsPageView_NameHeader" xml:space="preserve">
+        <value>NAZWA MODU</value>
+    </data>
+    <data name="FileOriginsPageView_VersionHeader" xml:space="preserve">
+        <value>WERSJA</value>
+    </data>
+    <data name="FileOriginsPageView_SizeHeader" xml:space="preserve">
+        <value>ROZMIAR</value>
+    </data>
+    <data name="FileOriginsPageView_DownloadedHeader" xml:space="preserve">
+        <value>POBRANE</value>
+    </data>
+    <data name="FileOriginsPageView_AddedHeader" xml:space="preserve">
+        <value>DODANE</value>
+    </data>
+    <data name="FileOriginsPageView_ActionHeader" xml:space="preserve">
+        <value>AKCJE</value>
     </data>
 </root>
