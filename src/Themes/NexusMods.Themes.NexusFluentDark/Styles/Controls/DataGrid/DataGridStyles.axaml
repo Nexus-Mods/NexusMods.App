@@ -4,8 +4,7 @@
         <Border Padding="20" Classes="Low">
             <DataGrid CanUserReorderColumns="True"
                       CanUserResizeColumns="True"
-                      CanUserSortColumns="True"
-                      Margin="24,16">
+                      CanUserSortColumns="True">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Name"
                                         Width="SizeToCells"
