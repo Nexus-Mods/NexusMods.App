@@ -25,11 +25,10 @@ public static class Services
     {
         services.AddOptionParser<AbsolutePath, AbsolutePathParser>()
                 .AddOptionParser<IGame, GameParser>()
-                .AddOptionParser<LoadoutMarker, LoadoutMarkerParser>()
+                .AddOptionParser<Loadout.Model, LoadoutParser>()
                 .AddOptionParser<Uri>(u => (new Uri(u), null))
                 .AddOptionParser<Version>(v => (Version.Parse(v), null))
                 .AddOptionParser<string>(s => (s, null))
-                .AddOptionParser<Loadout, LoadoutParser>()
                 .AddOptionParser<ITool, ToolParser>();
 
         // Protocol Handlers

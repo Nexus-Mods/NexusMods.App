@@ -16,7 +16,7 @@ public class BuiltInEmitter : ILoadoutDiagnosticEmitter
 {
     internal const string Source = "NexusMods.Games.MountAndBlade2Bannerlord";
 
-    public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
+    public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.Model loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         await Task.Yield();
 
@@ -34,7 +34,7 @@ public class BuiltInEmitter : ILoadoutDiagnosticEmitter
         }
     }
 
-    private static Diagnostic Render(Loadout loadout, Mod mod, ModuleIssue issue)
+    private static Diagnostic Render(Loadout.Model loadout, Mod.Model mod, ModuleIssue issue)
     {
         static string Version(ApplicationVersionRange version) => version == ApplicationVersionRange.Empty
             ? version.ToString()

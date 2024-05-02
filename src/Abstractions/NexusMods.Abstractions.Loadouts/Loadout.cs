@@ -32,6 +32,13 @@ public static class Loadout
     public static readonly ReferenceAttribute Installation = new(Namespace, nameof(Installation));
     
     /// <summary>
+    /// A revision number for this loadout. Each change to a file/mod in the loadout should increment
+    /// this value by one. This will then be used by the UI and other parts of the app to determine
+    /// what aspects of the loadout have changed and need to be reloaded
+    /// </summary>
+    public static readonly ULongAttribute Revision = new(Namespace, nameof(Revision));
+    
+    /// <summary>
     /// Retrieves all loadouts from the database.
     /// </summary>
     public static IEnumerable<Model> All(IDb db)
@@ -69,6 +76,15 @@ public static class Loadout
         {
             get => Loadout.Installation.Get(this);
             set => Loadout.Installation.Add(this, value);
+        }
+
+        /// <summary>
+        /// The revision number for this loadout, increments by one for each change.
+        /// </summary>
+        public ulong Revision
+        {
+            get => Loadout.Revision.Get(this, 0);
+            set => Loadout.Revision.Add(this, value);
         }
 
         /// <summary>

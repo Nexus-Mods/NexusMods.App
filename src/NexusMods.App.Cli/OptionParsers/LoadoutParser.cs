@@ -1,5 +1,7 @@
+using JetBrains.Annotations;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
 
 namespace NexusMods.CLI.OptionParsers;
@@ -7,27 +9,24 @@ namespace NexusMods.CLI.OptionParsers;
 /// <summary>
 /// Parses a string into a loadout marker
 /// </summary>
-internal class LoadoutMarkerParser : IOptionParser<LoadoutMarker>
+[UsedImplicitly]
+internal class LoadoutParser(IConnection conn) : IOptionParser<Loadout.Model>
 {
-    private readonly ILoadoutRegistry _registry;
-
-    /// <summary>
-    /// DI constructor
-    /// </summary>
-    /// <param name="manager"></param>
-    public LoadoutMarkerParser(ILoadoutRegistry manager) => _registry = manager;
-
-    public bool TryParse(string input, out LoadoutMarker value, out string error)
+    public bool TryParse(string input, out Loadout.Model value, out string error)
     {
+        var db = conn.Db;
         error = string.Empty;
-        if (LoadoutId.TryParseFromHex(input, out var parsedId) && _registry.Contains(parsedId))
+        if (LoadoutId.TryParseFromHex(input, out var parsedId))
         {
-            value = _registry.GetMarker(parsedId);
-            return true;
+            var loadout = db.Get<Loadout.Model>(parsedId.Value);
+            if (loadout.Contains(Loadout.Name))
+            {
+                value = loadout;
+                return true;
+            }
         }
 
-        var found = _registry.GetByName(input).Select(l => l.LoadoutId)
-            .ToArray();
+        var found = db.FindIndexed(input, Loadout.Name).ToArray();
 
         switch (found.Length)
         {
@@ -36,7 +35,7 @@ internal class LoadoutMarkerParser : IOptionParser<LoadoutMarker>
             case > 1:
                 throw new Exception($"Multiple loadouts found with name {input}");
             case 1:
-                value = _registry.GetMarker(found[0]);
+                value = db.Get<Loadout.Model>(found[0]);
                 return true;
             default:
                 throw new Exception($"No loadout found with name {input}");

@@ -1,13 +1,11 @@
 ﻿using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.FileStore.ArchiveMetadata;
-using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.HttpDownloader;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.DTOs;
 using NexusMods.Abstractions.NexusWebApi.Types;
-using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 
 namespace NexusMods.CLI.Types.DownloadHandlers;
@@ -41,7 +39,7 @@ public class NxmDownloadProtocolHandler : IDownloadProtocolHandler
     public string Protocol => "nxm";
 
     /// <inheritdoc />
-    public async Task Handle(Uri url, LoadoutMarker loadout, string modName, CancellationToken token)
+    public async Task Handle(Uri url, Loadout.Model loadout, string modName, CancellationToken token)
     {
         await using var tempPath = _temp.CreateFile();
         var parsed = NXMUrl.Parse(url);
@@ -61,6 +59,6 @@ public class NxmDownloadProtocolHandler : IDownloadProtocolHandler
             {
                 tx.Add(id, FilePathMetadata.OriginalName, tempPath.Path.Name);
             }, token);
-        await _archiveInstaller.AddMods(loadout.Value.LoadoutId, downloadId, modName, token:token);
+        await _archiveInstaller.AddMods(loadout.LoadoutId, downloadId, modName, token:token);
     }
 }

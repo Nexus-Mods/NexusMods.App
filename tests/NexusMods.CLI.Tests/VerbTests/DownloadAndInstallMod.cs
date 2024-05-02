@@ -28,22 +28,17 @@ public class DownloadAndInstallMod(IServiceProvider serviceProvider, LocalHttpSe
     public async Task DownloadModFromUrl(string url)
     {
         var loadout = await CreateLoadout();
-        var loadoutName = loadout.Value.Name;
-        var origNumMods = loadout.Value.Mods.Count;
+        var origNumMods = loadout.Mods.Count;
         origNumMods.Should().Be(1); // game files
 
-        var oldId = loadout.Value.DataStoreId;
-        var oldLoadoutId = loadout.Value.LoadoutId;
+        var oldRevision = loadout.Revision;
+        var oldLoadoutId = loadout.LoadoutId;
         var makeUrl = $"{server.Uri}{url}";
-        LoadoutRegistry.AllLoadouts().Should().ContainSingle(l => l.LoadoutId.Equals(oldLoadoutId));
-
+        
         await Test.Run("download-and-install-mod", "-u", makeUrl, "-l", oldLoadoutId.ToString(), "-n", "TestMod");
-        loadout.DataStoreId.Should().NotBe(oldId, "the loadout has been updated");
-        loadout.Id.Should().Be(oldLoadoutId, "the loadout ID should not change");
+        loadout.Revision.Should().NotBe(oldRevision, "the loadout has been updated");
 
-        loadout.Value.Mods.Count.Should().BeGreaterThan(origNumMods);
-
-
+        loadout.Mods.Count.Should().BeGreaterThan(origNumMods);
     }
 
     [Theory]
@@ -52,11 +47,11 @@ public class DownloadAndInstallMod(IServiceProvider serviceProvider, LocalHttpSe
     {
         // This test requires Premium. If it fails w/o Premium, ignore that.
         var loadout = await CreateLoadout();
-        var origNumMods = loadout.Value.Mods.Count;
+        var origNumMods = loadout.Mods.Count;
         origNumMods.Should().Be(1); // game files
 
         var uri = $"nxm://{gameDomain}/mods/{modId}/files/{fileId}";
         await Test.Run("download-and-install-mod", "-u", uri, "-l", loadout.Id.ToString(), "-n", "TestMod");
-        loadout.Value.Mods.Count.Should().BeGreaterThan(origNumMods);
+        loadout.Mods.Count.Should().BeGreaterThan(origNumMods);
     }
 }

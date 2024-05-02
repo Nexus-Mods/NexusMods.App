@@ -2,7 +2,7 @@
   {
     Name: Raised Garden Beds,
     Version: 1.0.5,
-    Category: ,
+    Category: Mod,
     Files: [
       {
         To: {Game}/Mods/RaisedGardenBeds/RaisedGardenBeds.pdb,
@@ -39,7 +39,7 @@
   {
     Name: (RGB) Raised Garden Beds,
     Version: 1.0.5,
-    Category: ,
+    Category: Mod,
     Files: [
       {
         To: {Game}/Mods/[RGB] RaisedGardenBeds/sprites.png,
@@ -61,7 +61,7 @@
   {
     Name: (CP) Raised Garden Beds Translation: English,
     Version: 1.0.5,
-    Category: ,
+    Category: Mod,
     Files: [
       {
         To: {Game}/Mods/[CP] RaisedGardenBeds - English/manifest.json,

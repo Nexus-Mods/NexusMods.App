@@ -27,4 +27,19 @@ public readonly partial struct LoadoutId : ITypedId<Loadout.Model>
     /// Create a new LoadoutId from a loadout model
     /// </summary>
     public static implicit operator LoadoutId(Loadout.Model loadout) => From(loadout.Id);
+    
+    
+    /// <summary>
+    /// Try to parse a LoadoutId from a hex string
+    /// </summary>
+    public static bool TryParseFromHex(string hex, out LoadoutId id)
+    {
+        if (MnemonicDB.Attributes.Extensions.TryParseFromHex(hex, out var entityId))
+        {
+            id = From(entityId);
+            return true;
+        }
+        id = default;
+        return false;
+    }
 }

@@ -8,11 +8,11 @@ using NexusMods.Games.MountAndBlade2Bannerlord.Models;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord.Extensions;
 
-internal delegate LoadoutModuleViewModel ViewModelCreator(Mod mod, ModuleInfoExtendedWithPath moduleInfo, int index);
+internal delegate LoadoutModuleViewModel ViewModelCreator(Mod.Model mod, ModuleInfoExtendedWithPath moduleInfo, int index);
 
 internal static class LoadoutExtensions
 {
-    private static LoadoutModuleViewModel Default(Mod mod, ModuleInfoExtendedWithPath moduleInfo, int index) => new()
+    private static LoadoutModuleViewModel Default(Mod.Model mod, ModuleInfoExtendedWithPath moduleInfo, int index) => new()
     {
         Mod = mod,
         ModuleInfoExtended = moduleInfo,
@@ -22,7 +22,7 @@ internal static class LoadoutExtensions
         Index = index,
     };
 
-    private static async Task<IEnumerable<Mod>> SortMods(Loadout loadout)
+    private static async Task<IEnumerable<Mod.Model>> SortMods(Loadout.Model loadout)
     {
         var loadoutSynchronizer = (((IGame)loadout.Installation.Game).Synchronizer as MountAndBlade2BannerlordLoadoutSynchronizer)!;
 
@@ -30,7 +30,7 @@ internal static class LoadoutExtensions
         return sorted;
     }
 
-    public static IEnumerable<LoadoutModuleViewModel> GetViewModels(this Loadout loadout, IEnumerable<Mod> mods, ViewModelCreator? viewModelCreator = null)
+    public static IEnumerable<LoadoutModuleViewModel> GetViewModels(this Loadout.Model loadout, IEnumerable<Mod.Model> mods, ViewModelCreator? viewModelCreator = null)
     {
         viewModelCreator ??= Default;
         var i = 0;
@@ -39,27 +39,27 @@ internal static class LoadoutExtensions
             var moduleInfo = x.GetModuleInfo();
             if (moduleInfo is null) return null;
 
-            var subModule = x.Files.Values.OfType<StoredFile>().First(y => y.To.FileName.Path.Equals(Constants.SubModuleName, StringComparison.OrdinalIgnoreCase));
+            var subModule = x.Files.First(y => y.To.FileName.Path.Equals(Constants.SubModuleName, StringComparison.OrdinalIgnoreCase));
             var subModulePath = loadout.Installation.LocationsRegister.GetResolvedPath(subModule.To).GetFullPath();
 
             return viewModelCreator(x, new ModuleInfoExtendedWithPath(moduleInfo, subModulePath), i++);
         }).OfType<LoadoutModuleViewModel>();
     }
 
-    public static async Task<IEnumerable<LoadoutModuleViewModel>> GetSortedViewModelsAsync(this Loadout loadout, ViewModelCreator? viewModelCreator = null)
+    public static async Task<IEnumerable<LoadoutModuleViewModel>> GetSortedViewModelsAsync(this Loadout.Model loadout, ViewModelCreator? viewModelCreator = null)
     {
         var sortedMods = await SortMods(loadout);
         return GetViewModels(loadout, sortedMods, viewModelCreator);
     }
 
-    public static IEnumerable<LoadoutModuleViewModel> GetViewModels(this Loadout loadout, ViewModelCreator? viewModelCreator = null)
+    public static IEnumerable<LoadoutModuleViewModel> GetViewModels(this Loadout.Model loadout, ViewModelCreator? viewModelCreator = null)
     {
-        return GetViewModels(loadout, loadout.Mods.Values, viewModelCreator);
+        return GetViewModels(loadout, loadout.Mods, viewModelCreator);
     }
 
-    public static bool HasModuleInstalled(this Loadout loadout, string moduleId) => loadout.Mods.Values.Any(x =>
+    public static bool HasModuleInstalled(this Loadout.Model loadout, string moduleId) => loadout.Mods.Values.Any(x =>
         x.GetModuleInfo() is { } moduleInfo && moduleInfo.Id.Equals(moduleId, StringComparison.OrdinalIgnoreCase));
 
-    public static bool HasInstalledFile(this Loadout loadout, string filename) => loadout.Mods.Values.Any(x =>
+    public static bool HasInstalledFile(this Loadout.Model loadout, string filename) => loadout.Mods.Values.Any(x =>
         x.GetModuleFileMetadatas().Any(y => y.OriginalRelativePath.EndsWith(filename, StringComparison.OrdinalIgnoreCase)));
 }
