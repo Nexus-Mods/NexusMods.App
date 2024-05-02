@@ -596,7 +596,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         diskState.LoadoutRevision = loadout.DataStoreId;
         await _diskStateRegistry.SaveState(loadout.Installation, diskState);
 
-        if (!loadout.IsMarkerLoadout)
+        if (!loadout.IsMarkerLoadout())
             RemoveMarkerLoadout();
 
         return diskState;
@@ -869,7 +869,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             .AllLoadouts()
             .Count(x => 
                 x.Installation.LocationsRegister[LocationId.Game].ToString() == installLocation 
-                && !x.IsMarkerLoadout) <= 1;
+                && !x.IsMarkerLoadout()) <= 1;
 
         if (isLastLoadout)
         {
@@ -991,7 +991,8 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         if (lastId == null)
             return false;
 
-        return _loadoutRegistry.GetLoadout(lastId) is { IsMarkerLoadout: true };
+        var loadout = _loadoutRegistry.GetLoadout(lastId);
+        return loadout != null && loadout.IsMarkerLoadout();
     }
     
     /// <summary>
@@ -1005,7 +1006,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     {
         foreach (var loadout in _loadoutRegistry.AllLoadouts())
         {
-            if (!loadout.IsMarkerLoadout) continue;
+            if (!loadout.IsMarkerLoadout()) continue;
             _loadoutRegistry.Delete(loadout.LoadoutId);
             return;
         }
