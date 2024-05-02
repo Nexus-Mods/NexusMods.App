@@ -34,6 +34,7 @@ public readonly partial struct LoadoutId : ITypedId<Loadout.Model>
     /// </summary>
     public static bool TryParseFromHex(string hex, out LoadoutId id)
     {
+        
         if (MnemonicDB.Attributes.Extensions.TryParseFromHex(hex, out var entityId))
         {
             id = From(entityId);

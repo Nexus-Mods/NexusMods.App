@@ -1,3 +1,4 @@
+using System.Globalization;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Models;
 
@@ -22,7 +23,10 @@ public static class Extensions
     /// </summary>
     public static bool TryParseFromHex(string hex, out EntityId id)
     {
-        if (ulong.TryParse(hex, out var parsed))
+        if (hex.StartsWith("EId:"))
+            hex = hex[4..];
+        
+        if (ulong.TryParse(hex, NumberStyles.HexNumber, null, out var parsed))
         {
             id = EntityId.From(parsed);
             return true;
