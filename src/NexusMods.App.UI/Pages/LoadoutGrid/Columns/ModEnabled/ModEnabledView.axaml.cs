@@ -12,7 +12,6 @@ namespace NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModEnabled;
 public partial class ModEnabledView : ReactiveUserControl<IModEnabledViewModel>
 {
     
-    
     public ModEnabledView()
     {
         InitializeComponent();
@@ -24,7 +23,8 @@ public partial class ModEnabledView : ReactiveUserControl<IModEnabledViewModel>
         this.WhenActivated(d =>
         {
             this.WhenAnyValue(view => view.ViewModel!.Enabled)
-                .BindToUi<bool, ModEnabledView, bool?>(this, view => view.EnabledToggleSwitch.IsChecked)
+                .OnUI()
+                .BindTo(this, view => view.EnabledToggleSwitch.IsChecked)
                 .DisposeWith(d);
 
             this.WhenAnyValue(view => view.ViewModel!.Status)
