@@ -141,18 +141,16 @@
         <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter:empty">
             <Setter Property="Margin" Value="0" />
         </Style>
-
+        
         <!--  NormalState  -->
-        <Style Selector="^:not(:dragging) /template/ Grid#PART_MovingKnobs">
-            <Setter Property="Transitions">
-                <Transitions>
-                    <DoubleTransition
-                        Duration="0:0:0.2"
-                        Easing="CubicEaseOut"
-                        Property="Canvas.Left" />
-                </Transitions>
-            </Setter>
-        </Style>
+        <Setter Property="KnobTransitions">
+            <Transitions>
+                <DoubleTransition
+                    Duration="0:0:0.2"
+                    Easing="CubicEaseOut"
+                    Property="Canvas.Left" />
+            </Transitions>
+        </Setter>
 
         <!--  PointerOverState  -->
         <Style Selector="^:pointerover /template/ Border#OuterBorder">
