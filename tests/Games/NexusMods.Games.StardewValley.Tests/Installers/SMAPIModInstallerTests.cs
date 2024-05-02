@@ -32,8 +32,8 @@ public class SMAPIModInstallerTests : AModInstallerTest<StardewValley, SMAPIModI
 
         var (_, modFiles) = await GetModWithFilesFromInstaller(path);
         modFiles.Should().HaveCount(2);
-        modFiles.Cast<IToFile>().Should().Contain(x => x.To.Path.Equals($"Mods/{modName}/manifest.json"));
-        modFiles.Cast<IToFile>().Should().Contain(x => x.To.Path.Equals($"Mods/{modName}/foo"));
+        modFiles.Should().Contain(x => x.To.Path.Equals($"Mods/{modName}/manifest.json"));
+        modFiles.Should().Contain(x => x.To.Path.Equals($"Mods/{modName}/foo"));
     }
 
     [Fact]

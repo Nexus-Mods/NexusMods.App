@@ -33,6 +33,8 @@ public static class Services
             // Attributes
             .AddAttributeCollection(typeof(SMAPIMarker))
             .AddAttributeCollection(typeof(SMAPIModMarker))
+            .AddAttributeCollection(typeof(SMAPIManifestMetadata))
+            .AddAttributeCollection(typeof(SMAPIModDatabaseMarker))
 
             // Misc
             .AddSingleton<ISMAPIWebApi, SMAPIWebApi>();
