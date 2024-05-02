@@ -56,6 +56,8 @@ public static class Services
         {
             services
                 .AddSettings<TelemetrySettings>()
+                .AddSettings<LoggingSettings>()
+
                 .AddSingleton<ITelemetryProvider, TelemetryProvider>()
                 .AddTelemetry(telemetrySettings ?? new TelemetrySettings())
 
