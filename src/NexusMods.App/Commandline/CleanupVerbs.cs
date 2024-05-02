@@ -1,8 +1,6 @@
-using System.Diagnostics;
 using System.Text;
 using CliWrap;
 using CliWrap.Buffered;
-using FluentResults;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Cli;
 using NexusMods.Abstractions.FileExtractor;
@@ -29,7 +27,6 @@ internal static class CleanupVerbs
     [Verb("uninstall-app", "Uninstall the application and revert games to their original state")]
     private static async Task<int> UninstallApp(
         [Injected] IRenderer renderer,
-        [Option("t", "--text", "")] string? uwu,
         [Injected] ILoadoutRegistry loadoutRegistry,
         [Injected] ISettingsManager settingsManager,
         [Injected] IFileSystem fileSystem)
@@ -87,7 +84,7 @@ internal static class CleanupVerbs
             if (fileSystem.OS.IsUnix())
                 await DeleteRemainingFilesUnix(renderer, appFiles, appDirectories);
             else
-                DeleteRemainingFilesWindows(renderer, appFiles, appDirectories);
+                DeleteRemainingFilesWindows(appFiles, appDirectories);
 
             await renderer.Text("Application uninstalled successfully");
             return 0;
@@ -105,7 +102,7 @@ internal static class CleanupVerbs
         await DeleteDirectoriesUnix(renderer, appDirectories);
     }
     
-    private static void DeleteRemainingFilesWindows(IRenderer renderer, AbsolutePath[] appFiles, IEnumerable<AbsolutePath> appDirectories)
+    private static void DeleteRemainingFilesWindows(AbsolutePath[] appFiles, IEnumerable<AbsolutePath> appDirectories)
     {
         var scriptContent = new StringBuilder();
 
