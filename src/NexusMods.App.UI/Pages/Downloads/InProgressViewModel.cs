@@ -25,6 +25,7 @@ using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Icons;
 using NexusMods.Networking.Downloaders.Interfaces;
+using NexusMods.Paths;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -80,17 +81,12 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
     [Reactive]
     public ICommand ShowSettings { get; private set; } = ReactiveCommand.Create(() => { }, Observable.Return(false));
 
-    private readonly ObservableCollectionExtended<DateTimePoint> _throughputValues = new();
+    private readonly ObservableCollectionExtended<DateTimePoint> _throughputValues = [];
     public ReadOnlyObservableCollection<ISeries> Series { get; } = ReadOnlyObservableCollection<ISeries>.Empty;
 
-    public Axis[] YAxes { get; } =
-    [
-        new Axis
-        {
-            MinLimit = 0,
-            Labeler = static value => StringFormatters.ToThroughputString((long)value, TimeSpan.FromSeconds(1)),
-        },
-    ];
+    private readonly ObservableCollectionExtended<double> _customSeparators = [0];
+
+    public Axis[] YAxes { get; } = [];
 
     public Axis[] XAxes { get; } =
     [
@@ -116,6 +112,16 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
                 GeometryStroke = null,
             },
         ]);
+
+        YAxes =
+        [
+            new Axis
+            {
+                MinLimit = 0,
+                CustomSeparators = _customSeparators,
+                Labeler = static value => StringFormatters.ToThroughputString((long)value, TimeSpan.FromSeconds(1)),
+            },
+        ];
 
         TabTitle = Language.InProgressDownloadsPage_Title;
         TabIcon = IconValues.Downloading;
@@ -332,6 +338,26 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
             _throughputValues.RemoveRange(0, count: 60);
         }
 
+        if (throughput > _customSeparators.Last())
+        {
+            _customSeparators.Add(FirstMultiple(throughput));
+        }
+
         _throughputValues.Add(new DateTimePoint(DateTime.Now, throughput));
+    }
+
+    private static double FirstMultiple(long value)
+    {
+        const int step = 5;
+        var start = (long)Size.MB.Value * step;
+
+        var res = start;
+
+        while (res <= value)
+        {
+            res += start;
+        }
+
+        return res;
     }
 }
