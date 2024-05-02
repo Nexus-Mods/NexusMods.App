@@ -1,6 +1,7 @@
-﻿using System.Windows.Input;
+﻿using System.Reactive;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.App.UI.Controls.DataGrid;
+using ReactiveUI;
 
 namespace NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModEnabled;
 
@@ -12,6 +13,7 @@ public interface IModEnabledViewModel : IColumnViewModel<ModCursor>
     public bool Enabled { get; }
     public ModStatus Status { get; }
 
-    public ICommand ToggleEnabledCommand { get; }
-    public ICommand DeleteModCommand { get; }
+    public ReactiveCommand<bool, Unit> ToggleEnabledCommand { get; }
+    
+    public ReactiveCommand<Unit, Unit> DeleteModCommand { get; }
 }

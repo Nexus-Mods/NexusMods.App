@@ -24,10 +24,10 @@ public class ModEnabledViewModel : AViewModel<IModEnabledViewModel>, IModEnabled
     public ModStatus Status { get; set; } = ModStatus.Installed;
 
     [Reactive]
-    public ICommand ToggleEnabledCommand { get; set; }
+    public ReactiveCommand<bool, Unit> ToggleEnabledCommand { get; set; }
 
     [Reactive]
-    public ICommand DeleteModCommand { get; set; }
+    public ReactiveCommand<Unit, Unit> DeleteModCommand { get; set; }
 
     public ModEnabledViewModel(ILoadoutRegistry loadoutRegistry)
     {

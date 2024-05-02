@@ -1,4 +1,5 @@
 ﻿using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Windows.Input;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -10,6 +11,8 @@ namespace NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModEnabled;
 
 public partial class ModEnabledView : ReactiveUserControl<IModEnabledViewModel>
 {
+    
+    
     public ModEnabledView()
     {
         InitializeComponent();
@@ -29,21 +32,18 @@ public partial class ModEnabledView : ReactiveUserControl<IModEnabledViewModel>
                 .SubscribeWithErrorLogging(logger: default, UpdateVisibilities)
                 .DisposeWith(d);
 
-            this.BindCommand<ModEnabledView, IModEnabledViewModel, ICommand, Button>(ViewModel, vm => vm.DeleteModCommand, view => view.DeleteButton)
+            this.BindCommand(ViewModel, vm => vm.DeleteModCommand, view => view.DeleteButton)
                 .DisposeWith(d);
 
-            void HandleToggleSwitchCheckedChanged(object? sender, RoutedEventArgs e)
-            {
-                ViewModel!.ToggleEnabledCommand.Execute(EnabledToggleSwitch.IsChecked);
-            }
-
-            EnabledToggleSwitch.IsCheckedChanged +=
-                HandleToggleSwitchCheckedChanged;
-            d.Add(Disposable.Create(() =>
-            {
-                EnabledToggleSwitch.IsCheckedChanged -=
-                    HandleToggleSwitchCheckedChanged;
-            }));
+            var isCheckedObservable = this.WhenAnyValue(view => view.EnabledToggleSwitch.IsChecked)
+                .Select(isChecked => isChecked ?? false);
+            
+            this.BindCommand(ViewModel, 
+                    vm => vm.ToggleEnabledCommand, 
+                    view => view.EnabledToggleSwitch,
+                    isCheckedObservable)
+                .DisposeWith(d);
+            
         });
     }
 
