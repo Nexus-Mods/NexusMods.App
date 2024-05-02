@@ -1,5 +1,8 @@
 using System.Diagnostics;
 using System.Text;
+using CliWrap;
+using CliWrap.Buffered;
+using FluentResults;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Cli;
 using NexusMods.Abstractions.FileExtractor;
@@ -104,46 +107,36 @@ internal static class CleanupVerbs
     
     private static void DeleteRemainingFilesWindows(IRenderer renderer, AbsolutePath[] appFiles, IEnumerable<AbsolutePath> appDirectories)
     {
-        // Generate the batch script content
         var scriptContent = new StringBuilder();
-        scriptContent.AppendLine("@echo off");
 
-        // Kill all processes with the name "NexusMods.App"
-        // Note(sewer) Technically we can start with `dotnet NexusMods.App`,
-        // but this will only really ever get called from the setup binary,
-        // so we have control over this.
-        scriptContent.AppendLine("taskkill /F /IM \"NexusMods.App.exe\" /T");
+        // Kill the App Client and Server
+        scriptContent.AppendLine("Stop-Process -Name \"NexusMods.App\" -Force -ErrorAction SilentlyContinue");
 
-        // Delete application-specific files
+        // Note(Sewer) Ensure the process handles are freed, just in case.
+        scriptContent.AppendLine("Start-Sleep -Seconds 1");
+
         foreach (var appFile in appFiles)
-            scriptContent.AppendLine($"del /Q \"{appFile}\"");
+            scriptContent.AppendLine($"Remove-Item -Path \"{appFile}\" -Force -ErrorAction SilentlyContinue");
 
-        // Delete application-specific directories
         foreach (var directory in appDirectories)
-            scriptContent.AppendLine($"rmdir /S /Q \"{directory}\"");
+            scriptContent.AppendLine($"Remove-Item -Path \"{directory}\" -Recurse -Force -ErrorAction SilentlyContinue");
+
+        // Remove the script itself
+        scriptContent.AppendLine("Remove-Item -Path $MyInvocation.MyCommand.Path -Force -ErrorAction SilentlyContinue");
 
         // Save the script to a temporary file
-        var tempScriptPath = Path.GetTempFileName().Replace(".tmp", ".bat");
+        var tempFile = Path.GetTempFileName();
+        var tempScriptPath = tempFile.Replace(".tmp", ".ps1");
+        File.Delete(tempFile);
         File.WriteAllText(tempScriptPath, scriptContent.ToString());
 
-        // Execute the script using cmd.exe
-        var processStartInfo = new ProcessStartInfo
-        {
-            FileName = "cmd.exe",
-            Arguments = $"/C \"{tempScriptPath}\"",
-            UseShellExecute = false,
-            CreateNoWindow = true,
-        };
+        // Execute the script
+        Task.Run(async () => await Cli.Wrap("powershell.exe")
+            .WithArguments(new[] { "-ExecutionPolicy", "Bypass", "-File", tempScriptPath })
+            .ExecuteBufferedAsync()).Wait();
 
-        using (var process = new Process())
-        {
-            process.StartInfo = processStartInfo;
-            process.Start();
-            process.WaitForExit();
-        }
-
-        // In case somehow our script does not die.
-        // Delete the temporary script file
+        // Script will terminate this process, this is just ensuring we don't exit early.
+        Thread.Sleep(10);
         File.Delete(tempScriptPath);
     }
 
