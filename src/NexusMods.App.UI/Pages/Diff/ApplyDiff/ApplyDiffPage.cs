@@ -4,6 +4,7 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.App.UI.Pages.Diff.ApplyDiff;
 
@@ -16,10 +17,10 @@ public record ApplyDiffPageContext : IPageFactoryContext
 [UsedImplicitly]
 public class ApplyDiffPageFactory : APageFactory<IApplyDiffViewModel, ApplyDiffPageContext>
 {
-    private readonly ILoadoutRegistry _loadoutRegistry;
+    private readonly IConnection _connection;
     public ApplyDiffPageFactory(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        _loadoutRegistry = serviceProvider.GetRequiredService<ILoadoutRegistry>();
+        _connection = serviceProvider.GetRequiredService<IConnection>();
     }
 
     public static readonly PageFactoryId StaticId = PageFactoryId.From(Guid.Parse("CA9E8FFE-02E0-4123-9CA2-F68D07D44583"));
@@ -36,7 +37,7 @@ public class ApplyDiffPageFactory : APageFactory<IApplyDiffViewModel, ApplyDiffP
     {
         if (workspaceContext is not LoadoutContext loadoutContext) yield break;
 
-        var loadout = _loadoutRegistry.Get(loadoutContext.LoadoutId);
+        var loadout = _connection.Db.Get(loadoutContext.LoadoutId);
         if (loadout is null) yield break;
 
         yield return new PageDiscoveryDetails

@@ -10,6 +10,7 @@ using Avalonia.Platform;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
+using NexusMods.MnemonicDB.Abstractions;
 using ReactiveUI;
 
 // ReSharper disable InconsistentNaming
@@ -25,6 +26,6 @@ public static class Initializers
     public static readonly ReactiveCommand<Unit, Unit> EnabledReactiveCommand = ReactiveCommand.Create(() => { }, Observable.Return(true));
     public static readonly ReactiveCommand<Unit, Unit> DisabledReactiveCommand = ReactiveCommand.Create(() => { }, Observable.Return(false));
 
-    public static readonly LoadoutId LoadoutId = Abstractions.Loadouts.Ids.LoadoutId.From(new Guid("00000000-0000-0000-0000-000000000001"));
-    public static readonly ModCursor ModCursor = new(LoadoutId, ModId.From(new Guid("00000000-0000-0000-0000-000000000002")));
+    public static readonly LoadoutId LoadoutId = LoadoutId.From(EntityId.From(0xDEADBEEF));
+    public static readonly ModId ModCursor = ModId.From(EntityId.From(0xDEADBEAF));
 }

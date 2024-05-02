@@ -14,6 +14,7 @@ using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.App.UI.Controls.Trees.Files;
 using NexusMods.App.UI.Helpers.TreeDataGrid;
 using NexusMods.App.UI.Resources;
+using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.App.UI.Controls.Trees;
 
@@ -22,7 +23,7 @@ namespace NexusMods.App.UI.Controls.Trees;
 /// </summary>
 public class ModFileTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeViewModel
 {
-    private readonly ILoadoutRegistry _registry;
+    private readonly IConnection _conn;
     private readonly SourceCache<IFileTreeNodeViewModel, GamePath> _sourceCache;
     private ReadOnlyObservableCollection<IFileTreeNodeViewModel> _items;
     private uint _totalNumFiles;
@@ -33,9 +34,9 @@ public class ModFileTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeVie
     public ITreeDataGridSource<IFileTreeNodeViewModel> TreeSource { get; }
     public ReadOnlyObservableCollection<string> StatusBarStrings => _statusBarStrings;
 
-    public ModFileTreeViewModel(LoadoutId loadoutId, ModId modId, ILoadoutRegistry registry)
+    public ModFileTreeViewModel(LoadoutId loadoutId, ModId modId, IConnection conn)
     {
-        _registry = registry;
+        _conn = conn;
         _items = new ReadOnlyObservableCollection<IFileTreeNodeViewModel>([]);
         _sourceCache = new SourceCache<IFileTreeNodeViewModel, GamePath>(x => x.Key);
         _totalNumFiles = 0;
@@ -44,16 +45,17 @@ public class ModFileTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeVie
         // Store GamePaths to dedupe the strings. No unsafe API in .NET to access the keys directly, but we need parent anyway, so it's ok.
         var folderToSize = new Dictionary<GamePath, (ulong size, uint numFileChildren, GamePath folder, GamePath parent, bool isLeaf)>();
 
-        var loadout = _registry.Get(loadoutId);
+        var db = _conn.Db;
+        var loadout = db.Get(loadoutId);
         var locationsRegister = loadout!.Installation.LocationsRegister;
-        var mod = _registry.Get(loadoutId, modId)!; // <= suppressed because this throws on error, and we should always have valid mod if we made it here.
+        var mod = db.Get(modId); // <= suppressed because this throws on error, and we should always have valid mod if we made it here.
         var displayedItems = new List<IFileTreeNodeViewModel>();
 
         // Add all the files to the displayedItems list
-        foreach (var file in mod.Files.Values)
+        foreach (var file in mod.Files)
         {
             // TODO: Check for IStoredFile, IToFile interfaces if we ever have more types of files that get put to disk.
-            if (file is not StoredFile storedFile)
+            if (!file.IsStoredFile(out var storedFile))
                 continue;
 
             _totalNumFiles++;

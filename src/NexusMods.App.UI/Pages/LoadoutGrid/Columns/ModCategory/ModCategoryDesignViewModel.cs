@@ -4,7 +4,7 @@ namespace NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModCategory;
 
 public class ModCategoryDesignViewModel : AViewModel<IModCategoryViewModel>, IModCategoryViewModel
 {
-    public ModCursor Row { get; set; }
+    public Mod.Model Row { get; set; } = null!;
     public string Category { get; } = "Some Category";
 
     public static LoadoutColumn Type => LoadoutColumn.Category;

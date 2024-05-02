@@ -4,6 +4,7 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.App.UI.Pages.Diagnostics;
 
@@ -16,10 +17,10 @@ public record DiagnosticListPageContext : IPageFactoryContext
 [UsedImplicitly]
 public class DiagnosticListPageFactory : APageFactory<IDiagnosticListViewModel, DiagnosticListPageContext>
 {
-    private readonly ILoadoutRegistry _loadoutRegistry;
+    private readonly IConnection _conn;
     public DiagnosticListPageFactory(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        _loadoutRegistry = serviceProvider.GetRequiredService<ILoadoutRegistry>();
+        _conn = serviceProvider.GetRequiredService<IConnection>();
     }
 
     public static readonly PageFactoryId StaticId = PageFactoryId.From(Guid.Parse("db77a8c2-61ad-4d59-8e95-4bebbba9ea5f"));
@@ -36,7 +37,7 @@ public class DiagnosticListPageFactory : APageFactory<IDiagnosticListViewModel, 
     {
         if (workspaceContext is not LoadoutContext loadoutContext) yield break;
 
-        var loadout = _loadoutRegistry.Get(loadoutContext.LoadoutId);
+        var loadout = _conn.Db.Get(loadoutContext.LoadoutId);
         if (loadout is null) yield break;
 
         yield return new PageDiscoveryDetails

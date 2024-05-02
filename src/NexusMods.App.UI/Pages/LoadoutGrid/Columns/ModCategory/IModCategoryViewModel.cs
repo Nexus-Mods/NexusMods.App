@@ -6,7 +6,7 @@ namespace NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModCategory;
 /// <summary>
 /// Displays the category of a mod.
 /// </summary>
-public interface IModCategoryViewModel : IColumnViewModel<ModCursor>
+public interface IModCategoryViewModel : IColumnViewModel<Mod.Model>
 {
     public string Category { get; }
 }

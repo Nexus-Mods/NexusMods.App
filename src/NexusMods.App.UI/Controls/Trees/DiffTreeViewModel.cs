@@ -10,6 +10,7 @@ using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.App.UI.Controls.Trees.Files;
 using NexusMods.App.UI.Helpers.TreeDataGrid;
 using NexusMods.App.UI.Resources;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths.Trees.Traits;
 
 namespace NexusMods.App.UI.Controls.Trees;
@@ -18,7 +19,7 @@ public class DiffTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeViewMo
 {
     private readonly LoadoutId _loadoutId;
     private readonly IApplyService _applyService;
-    private readonly ILoadoutRegistry _loadoutRegistry;
+    private readonly IConnection _conn;
     private readonly SourceCache<IFileTreeNodeViewModel, GamePath> _treeSourceCache;
     private readonly ReadOnlyObservableCollection<IFileTreeNodeViewModel> _items;
 
@@ -29,11 +30,11 @@ public class DiffTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeViewMo
     public ReadOnlyObservableCollection<string> StatusBarStrings => _statusBarStrings;
 
 
-    public DiffTreeViewModel(LoadoutId loadoutId, IApplyService applyService, ILoadoutRegistry loadoutRegistry)
+    public DiffTreeViewModel(LoadoutId loadoutId, IApplyService applyService, IConnection conn)
     {
         _loadoutId = loadoutId;
         _applyService = applyService;
-        _loadoutRegistry = loadoutRegistry;
+        _conn = conn;
 
         _treeSourceCache = new SourceCache<IFileTreeNodeViewModel, GamePath>(entry => entry.Key);
         _statusBarSourceList = new SourceList<string>();
@@ -55,13 +56,13 @@ public class DiffTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeViewMo
 
     public async Task Refresh()
     {
-        var loadout = _loadoutRegistry.Get(_loadoutId);
+        var loadout = _conn.Db.Get(_loadoutId);
         if (loadout is null)
         {
             throw new KeyNotFoundException($"Loadout with ID {_loadoutId} not found.");
         }
 
-        var diffTree = await _applyService.GetApplyDiffTree(_loadoutId);
+        var diffTree = await _applyService.GetApplyDiffTree(loadout);
 
         Dictionary<GamePath, IFileTreeNodeViewModel> fileViewModelNodes = [];
 
