@@ -5,6 +5,7 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Games.StardewValley.Models;
+using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees;
 using NexusMods.Paths.Trees.Traits;
@@ -80,20 +81,22 @@ public class SMAPIModInstaller : AModInstaller
                             );
 
                             if (!kv.Equals(manifestFile)) return storedFile;
-                            return storedFile with
-                            {
-                                Metadata = [new SMAPIManifestMetadata()],
-                            };
+                            
+                            storedFile.Add(SMAPIManifestMetadata.SMAPIManifest, true);
+                            return storedFile;
                         }
                     );
 
                 return new ModInstallerResult
                 {
-                    Id = ModId.NewId(),
+                    Id = info.BaseModId,
                     Files = modFiles,
                     Name = manifest.Name,
                     Version = manifest.Version.ToString(),
-                    Metadata = [new SMAPIModMarker()],
+                    Metadata = new TempEntity()
+                    {
+                        {SMAPIModMarker.SMAPIMod, true},
+                    },
                 };
             });
 

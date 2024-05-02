@@ -4,8 +4,10 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.Games.StardewValley.Emitters;
 using NexusMods.Games.StardewValley.Installers;
+using NexusMods.Games.StardewValley.Models;
 using NexusMods.Games.StardewValley.RunGameTools;
 using NexusMods.Games.StardewValley.WebAPI;
+using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.Games.StardewValley;
 
@@ -28,9 +30,12 @@ public static class Services
             .AddSingleton<SMAPIGameVersionDiagnosticEmitter>()
             .AddSingleton<VersionDiagnosticEmitter>()
 
+            // Attributes
+            .AddAttributeCollection(typeof(SMAPIMarker))
+            .AddAttributeCollection(typeof(SMAPIModMarker))
+
             // Misc
-            .AddSingleton<ISMAPIWebApi, SMAPIWebApi>()
-            .AddSingleton<ITypeFinder, TypeFinder>();
+            .AddSingleton<ISMAPIWebApi, SMAPIWebApi>();
 
         return services;
     }

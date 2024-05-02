@@ -31,9 +31,9 @@ public record ModInstallerResult
     /// Optional version of the mod.
     /// </summary>
     public string? Version { get; init; }
-
+    
     /// <summary>
-    /// Optional sort rules for the mod.
+    /// Extra metadata for the mod.
     /// </summary>
-    public IEnumerable<ISortRule<Mod.Model, ModId>>? SortRules { get; init; }
+    public TempEntity? Metadata { get; init; }
 }

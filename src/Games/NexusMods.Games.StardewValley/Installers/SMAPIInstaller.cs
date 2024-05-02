@@ -8,14 +8,14 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts.Files;
-using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Games.StardewValley.Models;
-using NexusMods.Games.StardewValley.Sorters;
+using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Trees;
 using NexusMods.Paths.Trees.Traits;
+using File = NexusMods.Abstractions.Loadouts.Files.File;
 
 // ReSharper disable IdentifierTypo
 // ReSharper disable InconsistentNaming
@@ -81,7 +81,7 @@ public class SMAPIInstaller : AModInstaller
         ModInstallerInfo info,
         CancellationToken cancellationToken = default)
     {
-        var modFiles = new List<AModFile>();
+        var modFiles = new List<TempEntity>();
 
         var isSMAPI = false;
         if (info.Source.Contains(NexusModsArchiveMetadata.GameId))
@@ -190,7 +190,11 @@ public class SMAPIInstaller : AModInstaller
                 && item.Parent is not null
                 && item.Parent.Item.FileName.Equals("smapi-internal"))
             {
-                var storedFile = kv.ToStoredFile(to, [new SMAPIModDatabaseMarker()]);
+                var storedFile = kv.ToStoredFile(to, new TempEntity
+                {
+                    {SMAPIModDatabaseMarker.SMAPIModDatabase, true},
+                });
+                
                 modFiles.Add(storedFile);
                 continue;
             }
@@ -204,12 +208,11 @@ public class SMAPIInstaller : AModInstaller
 
         if (_fileHashCache.TryGetCached(gameDepsFilePath, out var gameDepsFileCache))
         {
-            modFiles.Add(new StoredFile
+            modFiles.Add(new TempEntity()
             {
-                Hash = gameDepsFileCache.Hash,
-                Size = gameDepsFileCache.Size,
-                Id = ModFileId.NewId(),
-                To = new GamePath(LocationId.Game, "StardewModdingAPI.deps.json")
+                {StoredFile.Hash, gameDepsFileCache.Hash},
+                {StoredFile.Size, gameDepsFileCache.Size},
+                {File.To, new GamePath(LocationId.Game, "StardewModdingAPI.deps.json")},
             });
         }
         else
@@ -226,17 +229,10 @@ public class SMAPIInstaller : AModInstaller
                 Name = "SMAPI",
                 Id = info.BaseModId,
                 Files = modFiles,
-                SortRules = new[]
+                Metadata = new TempEntity
                 {
-                    new SMAPISorter(),
+                    {SMAPIMarker.Version, version},
                 },
-                Metadata =
-                [
-                    new SMAPIMarker
-                    {
-                        Version = version,
-                    },
-                ],
                 Version = version,
             },
         };
