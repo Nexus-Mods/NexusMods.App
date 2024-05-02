@@ -1,4 +1,5 @@
 
+using System.Reactive.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.DTO;
@@ -56,6 +57,18 @@ public static class Loadout
         return db.FindIndexed(name, Name)
             .Select(db.Get<Model>);
     }
+
+    /// <summary>
+    /// Gets all the revisions of a loadout over time
+    /// </summary>
+    public static IObservable<Model> Revisions(this IConnection conn, LoadoutId id)
+    {
+        // All db revisions that contain the loadout id, select the loadout
+        return conn.Revisions
+            .Where(db => db.Datoms(db.BasisTxId).Any(datom => datom.E == id.Value))
+            .StartWith(conn.Db)
+            .Select(db => db.Get<Model>(id.Value));
+    }
     
     public class Model(ITransaction tx) : Entity(tx)
     {
@@ -63,6 +76,11 @@ public static class Loadout
         /// The unique identifier for this loadout, casted to a <see cref="LoadoutId"/>.
         /// </summary>
         public LoadoutId LoadoutId => LoadoutId.From(Id);
+        
+        /// <summary>
+        /// Gets the loadout id/txid pair for this revision of the loadout.
+        /// </summary>
+        public LoadoutRevisionId LoadoutRevisionId => new(LoadoutId, Db.BasisTxId);
         
         public string Name
         {

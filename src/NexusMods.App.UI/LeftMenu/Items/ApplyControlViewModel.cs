@@ -12,6 +12,7 @@ using NexusMods.App.UI.Pages.Diff.ApplyDiff;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.MnemonicDB.Abstractions;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -19,7 +20,6 @@ namespace NexusMods.App.UI.LeftMenu.Items;
 
 public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyControlViewModel
 {
-    private readonly ILoadoutRegistry _loadoutRegistry;
     private readonly IApplyService _applyService;
 
     private readonly LoadoutId _loadoutId;
@@ -29,13 +29,14 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
     private readonly ReactiveCommand<Unit, Unit> _applyReactiveCommand;
     private readonly ReactiveCommand<Unit, Unit> _ingestReactiveCommand;
 
-    private ObservableAsPropertyHelper<IId> _lastAppliedRevisionId;
-    private IId LastAppliedRevisionId => _lastAppliedRevisionId.Value;
+    private ObservableAsPropertyHelper<LoadoutRevisionId> _lastAppliedRevisionId;
+    private LoadoutRevisionId LastAppliedRevisionId => _lastAppliedRevisionId.Value;
 
     [Reactive] private LoadoutId LastAppliedLoadoutId { get; set; }
 
-    private ObservableAsPropertyHelper<Abstractions.Loadouts.Loadout> _newestLoadout;
-    private Abstractions.Loadouts.Loadout NewestLoadout => _newestLoadout.Value;
+    private ObservableAsPropertyHelper<Abstractions.Loadouts.Loadout.Model> _newestLoadout;
+    private readonly IConnection _conn;
+    private Abstractions.Loadouts.Loadout.Model NewestLoadout => _newestLoadout.Value;
 
 
     public ReactiveCommand<Unit, Unit> ApplyCommand => _applyReactiveCommand;
@@ -54,18 +55,18 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
     public ApplyControlViewModel(LoadoutId loadoutId, IServiceProvider serviceProvider)
     {
         _loadoutId = loadoutId;
-        _loadoutRegistry = serviceProvider.GetRequiredService<ILoadoutRegistry>();
         _applyService = serviceProvider.GetRequiredService<IApplyService>();
+        _conn = serviceProvider.GetRequiredService<IConnection>();
         LaunchButtonViewModel = serviceProvider.GetRequiredService<ILaunchButtonViewModel>();
         var windowManager = serviceProvider.GetRequiredService<IWindowManager>();
         LaunchButtonViewModel.LoadoutId = loadoutId;
 
-        var currentLoadout = _loadoutRegistry.Get(loadoutId);
+        var currentLoadout = _conn.Db.Get(loadoutId);
         if (currentLoadout is null)
             throw new ArgumentException("Loadout not found", nameof(loadoutId));
 
         _newestLoadout = Observable.Return(currentLoadout)
-            .Merge(_loadoutRegistry.RevisionsAsLoadouts(loadoutId))
+            .Merge(_conn.Revisions(loadoutId))
             .ToProperty(this, vm => vm.NewestLoadout, scheduler: RxApp.MainThreadScheduler);
 
         _gameInstallation = currentLoadout.Installation;
@@ -99,11 +100,12 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
 
         this.WhenActivated(disposables =>
             {
+                var db = _conn.Db;
                 // Last applied loadout id
                 this.WhenAnyValue(vm => vm.LastAppliedRevisionId)
                     .Select(revId =>
                         {
-                            var loadout = _loadoutRegistry.GetLoadout(revId);
+                            var loadout = _conn.AsOf(revId.Tx).Get(revId.Id);
                             if (loadout is null)
                                 throw new ArgumentException("Loadout not found for revision: " + revId);
                             return loadout.LoadoutId;
@@ -125,7 +127,7 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
                             var isIngesting = data.Second;
                             CanApply = !isApplying && !isIngesting &&
                                        (!LastAppliedLoadoutId.Equals(_loadoutId) ||
-                                        !NewestLoadout.DataStoreId.Equals(LastAppliedRevisionId));
+                                        !NewestLoadout.LoadoutRevisionId.Equals(LastAppliedRevisionId));
                             CanIngest = !isApplying && !isIngesting &&
                                         LastAppliedLoadoutId.Equals(_loadoutId);
                         }
@@ -148,7 +150,11 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
 
     private async Task Apply()
     {
-        await Task.Run(async () => { await _applyService.Apply(_loadoutId); });
+        await Task.Run(async () =>
+        {
+            var loadout = _conn.Db.Get(_loadoutId);
+            await _applyService.Apply(loadout);
+        });
     }
 
     private async Task Ingest()

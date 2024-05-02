@@ -1,4 +1,5 @@
 ﻿using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Serialization.DataModel.Ids;
 using NexusMods.MnemonicDB.Abstractions;
@@ -43,5 +44,5 @@ public interface IApplyService
     /// </summary>
     /// <param name="gameInstallation"></param>
     /// <returns></returns>
-    public IObservable<IId> LastAppliedRevisionFor(GameInstallation gameInstallation);    
+    public IObservable<LoadoutRevisionId> LastAppliedRevisionFor(GameInstallation gameInstallation);    
 }
