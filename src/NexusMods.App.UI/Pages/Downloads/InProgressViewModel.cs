@@ -80,7 +80,7 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
     [Reactive]
     public ICommand ShowSettings { get; private set; } = ReactiveCommand.Create(() => { }, Observable.Return(false));
 
-    private readonly ObservableCollection<DateTimePoint> _throughputValues = new();
+    private readonly ObservableCollectionExtended<DateTimePoint> _throughputValues = new();
     public ReadOnlyObservableCollection<ISeries> Series { get; } = ReadOnlyObservableCollection<ISeries>.Empty;
 
     public Axis[] YAxes { get; } =
@@ -88,23 +88,18 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
         new Axis
         {
             MinLimit = 0,
-            Labeler = value => StringFormatters.ToThroughputString((long)value, TimeSpan.FromSeconds(1)),
+            Labeler = static value => StringFormatters.ToThroughputString((long)value, TimeSpan.FromSeconds(1)),
         },
     ];
 
     public Axis[] XAxes { get; } =
     [
-        new DateTimeAxis(TimeSpan.FromSeconds(1), DateFormatter)
+        new DateTimeAxis(TimeSpan.FromSeconds(1), static date => date.ToString("HH:mm:ss"))
         {
             AnimationsSpeed = TimeSpan.FromMilliseconds(0),
+            LabelsPaint = null,
         },
     ];
-
-    private static string DateFormatter(DateTime date)
-    {
-        var diff = (DateTime.Now - date).TotalSeconds;
-        return diff < 1 ? "now" : $"{diff:N0}s ago";
-    }
 
     [UsedImplicitly]
     public InProgressViewModel(
@@ -331,6 +326,11 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
         var throughput = Tasks.Sum(x => x.Throughput);
         var remainingBytes = totalSizeBytes - totalDownloadedBytes;
         SecondsRemaining = throughput < 1.0 ? 0 : (int)(remainingBytes / Math.Max(throughput, 1));
+
+        if (_throughputValues.Count > 120)
+        {
+            _throughputValues.RemoveRange(0, count: 60);
+        }
 
         _throughputValues.Add(new DateTimePoint(DateTime.Now, throughput));
     }
