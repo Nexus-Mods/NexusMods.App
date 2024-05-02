@@ -46,6 +46,11 @@ public record Loadout : Entity, IEmptyWithDataStore<Loadout>
     /// Link to the previous version of this loadout on the data store.
     /// </summary>
     public required EntityLink<Loadout> PreviousVersion { get; init; }
+    
+    /// <summary>
+    /// Specifies the type of the loadout that the current loadout represents
+    /// </summary>
+    public LoadoutKind LoadoutKind { get; init; }
 
     /// <inheritdoc />
     public override EntityCategory Category => EntityCategory.Loadouts;
@@ -123,4 +128,23 @@ public record Loadout : Entity, IEmptyWithDataStore<Loadout>
             })
         };
     }
+    
+    /// <summary>
+    /// This is true if the loadout is a hidden 'Marker' loadout.
+    /// A marker loadout is created from the original game state and should
+    /// be a singleton for a given game. It is a temporary loadout that is
+    /// destroyed when a real loadout is applied.
+    ///
+    /// Marker loadouts should not be shown in any user facing elements.
+    /// </summary>
+    public bool IsMarkerLoadout() => LoadoutKind == LoadoutKind.Marker;
+
+    /// <summary>
+    /// Returns true if the loadout should be visible to the user.
+    /// </summary>
+    /// <remarks>
+    /// Note(sewer), it's better to 'opt into' functionality, than opt out.
+    /// especially, when it comes to displaying elements the user can edit.
+    /// </remarks>
+    public bool IsVisible() => LoadoutKind == LoadoutKind.Default;
 }

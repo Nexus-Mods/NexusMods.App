@@ -50,7 +50,12 @@ file class ExampleOutsideAPage
     }
 }
 
-file record ExampleContext : IWorkspaceContext;
+file record ExampleContext : IWorkspaceContext
+{
+    // Use this method to verify if the data in the context is still valid.
+    // The workspace will be discarded if the data becomes invalid.
+    public bool IsValid(IServiceProvider serviceProvider) => true;
+}
 
 // This example class shows how to query Windows and Workspaces from within a page.
 file class ExamplePage : APageViewModel<IMyPageInterface>, IMyPageInterface

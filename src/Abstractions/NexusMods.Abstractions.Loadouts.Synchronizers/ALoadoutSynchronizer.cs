@@ -20,7 +20,6 @@ using NexusMods.Abstractions.Loadouts.Synchronizers.Transformer;
 using NexusMods.Abstractions.Loadouts.Visitors;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Serialization.DataModel;
-using NexusMods.Abstractions.Serialization.DataModel.Ids;
 using NexusMods.Extensions.BCL;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
@@ -585,12 +584,21 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// <returns></returns>
     public virtual async Task<DiskStateTree> Apply(Loadout loadout, bool forceSkipIngest = false)
     {
+        // Note(Sewer) If the last loadout was a marker loadout, we need to
+        // skip ingest and ignore changes, since marker loadouts should not be changed.
+        // (Prevent 'Needs Ingest' exception)
+        forceSkipIngest = forceSkipIngest || IsLastLoadoutAMarkerLoadout(loadout.Installation);
+
         var flattened = await LoadoutToFlattenedLoadout(loadout);
         var fileTree = await FlattenedLoadoutToFileTree(flattened, loadout);
         var prevState = _diskStateRegistry.GetState(loadout.Installation)!;
         var diskState = await FileTreeToDisk(fileTree, loadout, flattened, prevState, loadout.Installation, forceSkipIngest);
         diskState.LoadoutRevision = loadout.DataStoreId;
         await _diskStateRegistry.SaveState(loadout.Installation, diskState);
+
+        if (!loadout.IsMarkerLoadout())
+            RemoveMarkerLoadout();
+
         return diskState;
     }
 
@@ -840,12 +848,14 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// <inheritdoc />
     public async Task UnManage(GameInstallation installation)
     {
-        await ResetToInitialState(installation);
+        await FastForceApplyOriginalState(installation);
+
+        // Cleanup all of the metadata left behind for this game.
+        // All database information, including loadouts, initial game state and
+        // TODO: Garbage Collect unused files.
         foreach (var loadoutId in _loadoutRegistry.AllLoadoutIds().ToArray())
             _loadoutRegistry.Delete(loadoutId);
         
-        // Now clear the vanilla game state.
-        // We don't want the user's folder to reset.
         await _diskStateRegistry.ClearInitialState(installation);
     }
 
@@ -855,67 +865,80 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         // Clear Initial State if this is the only loadout for the game.
         // We use folder location for this.
         var installLocation = installation.LocationsRegister[LocationId.Game].ToString();
-        var wasLastLoadout = _loadoutRegistry
+        var isLastLoadout = _loadoutRegistry
             .AllLoadouts()
-            .Count(x => x.Installation.LocationsRegister[LocationId.Game].ToString() == installLocation) <= 1;
+            .Count(x => 
+                x.Installation.LocationsRegister[LocationId.Game].ToString() == installLocation 
+                && !x.IsMarkerLoadout()) <= 1;
+
+        if (isLastLoadout)
+        {
+            await UnManage(installation);
+            return;
+        }
     
         if (_loadoutRegistry.IsApplied(id, _diskStateRegistry.GetLastAppliedLoadout(installation)))
         {
             /*
                 Note(Sewer)
 
-                The loadout being deleted is the currently active loadout
-                As a 'default' reasonable behaviour, we will reset the game folder
-                to its initial state. This is a good default as in most cases,
-                game files are not likely to be overwritten, so this will just
-                end up materialising into a bunch of deletes. (Very Fast)
+                The loadout being deleted is the currently active loadout.
 
-                In the future, we may make a setting to change the behaviour,
-                if for example the user wants it to revert to last applied loadout
-                that isn't the one being deleted.
+                As a 'default' reasonable behaviour, we will reset the game folder
+                to its initial state and create a 'hidden' loadout to accomodate this.
+
+                This is a good default for many cases:
+                
+                - Game files are not likely to be overwritten, so this will 
+                  just end up materialising into a bunch of deletes. (Very Fast)
+                  
+                - Ensures internal consistency. i.e. 'last applied loadout' is always
+                  a valid loadout.
+                  
+                - Provides more backend flexibility (e.g. we can 'squash' the
+                  revisions at the beginning of other loadouts without consequence.)
+                  
+                - Meets user UI/UX expectations. The next loadout they navigate to
+                  won't be somehow magically applied.
+
+                We may make a setting to change the behaviour in the future,
+                via a setting to match user preferences, but for now this is the
+                default.
             */
 
-            await ResetToInitialState(installation);
+            var markerLoadout = await CreateMarkerLoadout(installation);
+            await Apply(markerLoadout, true);
         }
 
         _loadoutRegistry.Delete(id);
-        if (wasLastLoadout)
-            await _diskStateRegistry.ClearInitialState(installation);
     }
-
-    private async Task ResetToInitialState(GameInstallation installation)
+    
+    /// <summary>
+    ///     Creates a 'Marker Loadout', which is a loadout embued with the initial
+    ///     state of the game folder.
+    ///
+    ///     This loadout is created when the last applied loadout for a game
+    ///     is deleted. And is deleted when a non-marker loadout is applied.
+    ///     It should be a singleton.
+    /// </summary>
+    private async Task<Loadout> CreateMarkerLoadout(GameInstallation installation)
     {
-        var (isCached, initialState) = await GetOrCreateInitialDiskState(installation);
-        if (!isCached)
-            throw new InvalidOperationException("Something is very wrong with the DataStore.\n" +
-                                                "We don't have an initial disk state for the game folder, but we should have.\n" +
-                                                "Because this disk state should only ever be deleted when unmanaging a game.");
+        var initialState = await GetOrCreateInitialDiskState(installation);
+        var loadoutId = LoadoutId.Create();
+        var gameFiles = CreateGameFilesMod(initialState.tree);
+        var fileTree = CreateFileTreeFromMod(gameFiles);
+        await BackupNewFiles(installation, fileTree);
 
-        /*
-            Note (Sewer)
+        var loadout = _loadoutRegistry.Alter(loadoutId, "Marker Loadout", loadout => loadout with
+        {
+            Name = "Temporary Marker Loadout",
+            Installation = installation,
+            Mods = loadout.Mods.With(gameFiles.Id, gameFiles),
+            LoadoutKind = LoadoutKind.Marker,
+        });
 
-            Normally we could navigate to the very first revision of a loadout
-            to get the 'vanilla' state of the game folder and apply that, however...
-
-            In the future we will support rollbacks for loadouts.
-            
-            That means the user will be able to update the 'starting'
-            state of a given loadout, deleting previous history to save space.
-            
-            In order to keep future code 'simpler', where we won't have to make
-            special exceptions/logic. We just perform a stripped down apply
-            with the original file tree here.
-        */
-
-        // Create a non-persisted mod from original game files.
-        // Then effectively 'Apply' it as single mod 'Loadout'.
-        var gameFilesMod = CreateGameFilesMod(initialState);
-        var fileTree = CreateFileTreeFromMod(gameFilesMod);
-        var flattened = ModsToFlattenedLoadout([gameFilesMod]);
-        var prevState = _diskStateRegistry.GetState(installation)!;
-        await FileTreeToDisk(fileTree, null, flattened, prevState, installation, true);
+        return loadout;
     }
-
 #endregion
 
     #region FlattenLoadoutToTree Methods
@@ -935,7 +958,6 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             .SelectMany(x => x.GenerateSortRules(mod.Id, loadout));
         return await builtInSortRules.ToAsyncEnumerable().Concat(customSortRules).ToArrayAsync();
     }
-
 
     /// <summary>
     /// Sorts the mods in a loadout.
@@ -957,8 +979,38 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     }
     #endregion
 
-
     #region Misc Helper Functions
+    /// <summary>
+    /// Checks if the last applied loadout is a 'marker' loadout.
+    /// </summary>
+    /// <param name="installation">The game installation to check.</param>
+    /// <returns>True if the last applied loadout is a marker loadout.</returns>
+    private bool IsLastLoadoutAMarkerLoadout(GameInstallation installation)
+    {
+        var lastId = _diskStateRegistry.GetLastAppliedLoadout(installation);
+        if (lastId == null)
+            return false;
+
+        var loadout = _loadoutRegistry.GetLoadout(lastId);
+        return loadout != null && loadout.IsMarkerLoadout();
+    }
+    
+    /// <summary>
+    /// Removes the first found 'marker' loadout from the data store.
+    /// </summary>
+    /// <remarks>
+    /// The 'marker loadout' should be a singleton as per <see cref="Loadout.IsMarkerLoadout"/>
+    /// and <see cref="CreateMarkerLoadout"/>.
+    /// </remarks>
+    private void RemoveMarkerLoadout()
+    {
+        foreach (var loadout in _loadoutRegistry.AllLoadouts())
+        {
+            if (!loadout.IsMarkerLoadout()) continue;
+            _loadoutRegistry.Delete(loadout.LoadoutId);
+            return;
+        }
+    }
 
     /// <summary>
     /// By default this method just returns the current state of the game folders. Most of the time
@@ -980,6 +1032,28 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         var indexedState = await _hashCache.IndexDiskState(installation);
         await _diskStateRegistry.SaveInitialState(installation, indexedState);
         return (false, indexedState);
+    }
+    
+    /// <summary>
+    /// Quickly reverts the folder to its original state, without updating
+    /// the database state or doing any other changes that produce
+    /// external side effects.
+    ///
+    /// Intended for use when unmanaging a game.
+    /// </summary>
+    private async Task FastForceApplyOriginalState(GameInstallation installation)
+    {
+        var (isCached, initialState) = await GetOrCreateInitialDiskState(installation);
+        if (!isCached)
+            throw new InvalidOperationException("Something is very wrong with the DataStore.\n" +
+                                                "We don't have an initial disk state for the game folder, but we should have.\n" +
+                                                "Because this disk state should only ever be deleted when unmanaging a game.");
+
+        var gameFilesMod = CreateGameFilesMod(initialState);
+        var fileTree = CreateFileTreeFromMod(gameFilesMod);
+        var flattened = ModsToFlattenedLoadout([gameFilesMod]);
+        var prevState = _diskStateRegistry.GetState(installation)!;
+        await FileTreeToDisk(fileTree, null, flattened, prevState, installation, true);
     }
     #endregion
 

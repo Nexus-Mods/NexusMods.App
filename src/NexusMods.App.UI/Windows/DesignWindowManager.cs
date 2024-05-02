@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
+using NexusMods.App.UI.WorkspaceSystem;
 
 namespace NexusMods.App.UI.Windows;
 
@@ -28,6 +29,5 @@ public class DesignWindowManager : IWindowManager
     public void UnregisterWindow(IWorkspaceWindow window) { }
 
     public void SaveWindowState(IWorkspaceWindow window) { }
-
     public bool RestoreWindowState(IWorkspaceWindow window) => false;
 }

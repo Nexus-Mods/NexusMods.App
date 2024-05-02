@@ -21,6 +21,7 @@ namespace NexusMods.App.UI.WorkspaceSystem;
 [UsedImplicitly]
 internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
 {
+    private readonly IServiceProvider _serviceProvider;
     private readonly IWorkspaceWindow _window;
     private readonly ILogger<WorkspaceController> _logger;
     private readonly IWorkspaceAttachmentsFactoryManager _workspaceAttachmentsFactory;
@@ -36,6 +37,7 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
 
     public WorkspaceController(IWorkspaceWindow window, IServiceProvider serviceProvider)
     {
+        _serviceProvider = serviceProvider;
         _window = window;
 
         _logger = serviceProvider.GetRequiredService<ILogger<WorkspaceController>>();
@@ -71,15 +73,22 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
 
         foreach (var workspaceData in data.Workspaces)
         {
+            var isActiveWorkspace = workspaceData.Id == data.ActiveWorkspaceId;
+
+            var context = workspaceData.Context;
+            if (!context.IsValid(_serviceProvider))
+            {
+                _logger.LogWarning("Workspace with Context {Context} ({Type}) is no longer valid and has been removed", context, context.GetType());
+                continue;
+            }
+
             var vm = CreateWorkspace(
                 context: Optional<IWorkspaceContext>.Create(workspaceData.Context),
                 pageData: Optional<PageData>.None
             );
 
             vm.FromData(workspaceData);
-
-            if (workspaceData.Id == data.ActiveWorkspaceId)
-                activeWorkspace = vm;
+            if (isActiveWorkspace) activeWorkspace = vm;
         }
 
         ChangeActiveWorkspace(activeWorkspace?.Id ?? _workspaces.Keys.First());
