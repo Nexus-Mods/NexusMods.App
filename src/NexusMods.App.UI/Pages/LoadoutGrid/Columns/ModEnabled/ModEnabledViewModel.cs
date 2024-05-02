@@ -15,7 +15,7 @@ public class ModEnabledViewModel : AViewModel<IModEnabledViewModel>, IModEnabled
     private readonly ILoadoutRegistry _loadoutRegistry;
 
     [Reactive]
-    public ModCursor Row { get; set; } = Initializers.ModCursor;
+    public ModCursor Row { get; set; } = Initializers.ModId;
 
     [Reactive]
     public bool Enabled { get; set; } = false;

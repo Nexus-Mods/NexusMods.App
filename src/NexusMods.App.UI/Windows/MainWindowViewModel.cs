@@ -14,6 +14,7 @@ using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Overlays.MetricsOptIn;
 using NexusMods.App.UI.Overlays.Updater;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Networking.Downloaders.Interfaces.Traits;
 using NexusMods.Paths;
@@ -25,8 +26,8 @@ namespace NexusMods.App.UI.Windows;
 public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindowViewModel
 {
     private readonly IArchiveInstaller _archiveInstaller;
-    private readonly ILoadoutRegistry _registry;
     private readonly IWindowManager _windowManager;
+    private readonly IConnection _conn;
 
     public MainWindowViewModel(
         IServiceProvider serviceProvider,
@@ -38,7 +39,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
         IArchiveInstaller archiveInstaller,
         IMetricsOptInViewModel metricsOptInViewModel,
         IUpdaterViewModel updaterViewModel,
-        ILoadoutRegistry registry)
+        IConnection conn)
     {
         // NOTE(erri120): can't use DI for VMs that require an active Window because
         // those VMs would be instantiated before this constructor gets called.
@@ -58,7 +59,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
         DevelopmentBuildBanner = serviceProvider.GetRequiredService<IDevelopmentBuildBannerViewModel>();
 
         _archiveInstaller = archiveInstaller;
-        _registry = registry;
+        _conn = conn;
 
         // Only show controls in Windows since we can remove the chrome on that platform
         TopBar.ShowWindowControls = osInformation.IsWindows;
@@ -132,7 +133,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
     {
         var loadouts = Array.Empty<LoadoutId>();
         if (task is IHaveGameDomain gameDomain)
-            loadouts = _registry.AllLoadouts().Where(x => x.Installation.Game.Domain == gameDomain.GameDomain)
+            loadouts = _conn.Db.Loadouts().Where(x => x.Installation.Game.Domain == gameDomain.GameDomain)
                 .Select(x => x.LoadoutId).ToArray();
 
         // Insert code here to invoke loadout picker and get results for final loadouts to install to.
@@ -144,7 +145,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
             if (loadouts.Length > 0)
                 await _archiveInstaller.AddMods(loadouts[0], downloadId, modName);
             else
-                await _archiveInstaller.AddMods(_registry.AllLoadouts().First().LoadoutId, downloadId, modName);
+                await _archiveInstaller.AddMods(_conn.Db.Loadouts().First().LoadoutId, downloadId, modName);
         });
     }
 

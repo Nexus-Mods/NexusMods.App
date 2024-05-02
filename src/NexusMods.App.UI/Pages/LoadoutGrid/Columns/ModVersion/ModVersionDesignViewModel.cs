@@ -4,6 +4,6 @@ namespace NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModVersion;
 
 public class ModVersionDesignViewModel : AViewModel<IModVersionViewModel>, IModVersionViewModel
 {
-    public ModCursor Row { get; set; } = Initializers.ModCursor;
+    public ModCursor Row { get; set; } = Initializers.ModId;
     public string Version { get; } = "1.0.0-rc.1";
 }

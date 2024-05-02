@@ -26,12 +26,12 @@ namespace NexusMods.App.UI.Pages.LoadoutGrid;
 
 public class LoadoutGridDesignViewModel : APageViewModel<ILoadoutGridViewModel>, ILoadoutGridViewModel
 {
-    private readonly SourceCache<ModCursor, ModId> _mods;
+    private readonly SourceCache<Mod.Model, ModId> _mods;
 
-    private ReadOnlyObservableCollection<ModCursor> _filteredMods =
-        new(new ObservableCollection<ModCursor>());
+    private ReadOnlyObservableCollection<Mod.Model> _filteredMods =
+        new(new ObservableCollection<Mod.Model>());
 
-    public ReadOnlyObservableCollection<ModCursor> Mods => _filteredMods;
+    public ReadOnlyObservableCollection<Mod.Model> Mods => _filteredMods;
 
     public LoadoutId LoadoutId { get; set; } = Initializers.LoadoutId;
 
@@ -44,7 +44,7 @@ public class LoadoutGridDesignViewModel : APageViewModel<ILoadoutGridViewModel>,
 
     public ReadOnlyObservableCollection<IDataGridColumnFactory<LoadoutColumn>> Columns => _filteredColumns;
     public int SelectedIndex { get; set; }
-    public ModCursor[] SelectedItems { get; set; } = Array.Empty<ModCursor>();
+    public Mod.Model[] SelectedItems { get; set; } = Array.Empty<Mod.Model>();
 
     public ReactiveCommand<NavigationInformation, Unit> ViewModContentsCommand { get; } = ReactiveCommand.Create<NavigationInformation>(_ => { });
 

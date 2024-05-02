@@ -1,4 +1,4 @@
-﻿using NexusMods.Abstractions.Loadouts.Mods;
+﻿using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.App.UI.Controls.DataGrid;
 
 namespace NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModCategory;
@@ -6,7 +6,7 @@ namespace NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModCategory;
 /// <summary>
 /// Displays the category of a mod.
 /// </summary>
-public interface IModCategoryViewModel : IColumnViewModel<Mod.Model>
+public interface IModCategoryViewModel : IColumnViewModel<ModId>
 {
     public string Category { get; }
 }

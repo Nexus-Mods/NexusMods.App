@@ -8,7 +8,7 @@ namespace NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModName;
 
 public class ModNameDesignViewModel : AViewModel<IModNameViewModel>, IModNameViewModel
 {
-    public ModCursor Row { get; set; } = Initializers.ModCursor;
+    public ModCursor Row { get; set; } = Initializers.ModId;
 
     [Reactive]
     public string Name { get; set; } = "";

@@ -14,7 +14,7 @@ public class ModNameViewModel : AViewModel<IModNameViewModel>, IModNameViewModel
     private readonly ILoadoutRegistry _loadoutRegistry;
 
     [Reactive]
-    public ModCursor Row { get; set; } = Initializers.ModCursor;
+    public ModCursor Row { get; set; } = Initializers.ModId;
 
     [Reactive]
     public string Name { get; set; } = "";

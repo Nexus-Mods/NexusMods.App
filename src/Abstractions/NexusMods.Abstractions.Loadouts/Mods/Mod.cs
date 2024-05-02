@@ -1,3 +1,4 @@
+using System.Reactive.Linq;
 using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
@@ -73,6 +74,17 @@ public static class Mod
     public static readonly ReferenceAttribute SortAfter = new(Namespace, nameof(SortAfter));
     
 
+    /// <summary>
+    /// Gets all the revisions of a loadout over time
+    /// </summary>
+    public static IObservable<Model> Revisions(this IConnection conn, ModId id)
+    {
+        // All db revisions that contain the loadout id, select the loadout
+        return conn.Revisions
+            .Where(db => db.Datoms(db.BasisTxId).Any(datom => datom.E == id.Value))
+            .StartWith(conn.Db)
+            .Select(db => db.Get<Model>(id.Value));
+    }
 
     public class Model(ITransaction tx) : Entity(tx)
     {

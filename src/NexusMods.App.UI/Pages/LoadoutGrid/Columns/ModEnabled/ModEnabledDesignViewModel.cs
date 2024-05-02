@@ -8,7 +8,7 @@ namespace NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModEnabled;
 
 public class ModEnabledDesignViewModel : AViewModel<IModEnabledViewModel>, IModEnabledViewModel
 {
-    public ModCursor Row { get; set; } = Initializers.ModCursor;
+    public ModCursor Row { get; set; } = Initializers.ModId;
 
     [Reactive]
     public bool Enabled { get; set; }

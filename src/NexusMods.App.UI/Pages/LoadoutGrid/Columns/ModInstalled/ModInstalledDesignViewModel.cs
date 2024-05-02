@@ -5,7 +5,7 @@ namespace NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModInstalled;
 
 public class ModInstalledDesignViewModel : AViewModel<IModInstalledViewModel>, IModInstalledViewModel
 {
-    public ModCursor Row { get; set; } = Initializers.ModCursor;
+    public ModCursor Row { get; set; } = Initializers.ModId;
 
     public DateTime Installed { get; } =
         DateTime.UtcNow - TimeSpan.FromMinutes(42);

@@ -15,13 +15,13 @@ namespace NexusMods.App.UI.Pages.LoadoutGrid;
 /// </summary>
 public interface ILoadoutGridViewModel : IPageViewModelInterface
 {
-    public ReadOnlyObservableCollection<ModCursor> Mods { get; }
+    public ReadOnlyObservableCollection<ModId> Mods { get; }
     public LoadoutId LoadoutId { get; set; }
     public string LoadoutName { get; }
 
     public ReadOnlyObservableCollection<IDataGridColumnFactory<LoadoutColumn>> Columns { get; }
 
-    public ModCursor[] SelectedItems { get; set; }
+    public ModId[] SelectedItems { get; set; }
 
     public ReactiveCommand<NavigationInformation, Unit> ViewModContentsCommand { get; }
 

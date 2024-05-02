@@ -6,6 +6,7 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.App.UI.Resources;
+using NexusMods.MnemonicDB.Abstractions;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -21,14 +22,14 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
 
     [Reactive] public Percent? Progress { get; set; }
 
-    private readonly ILoadoutRegistry _loadoutRegistry;
     private readonly IToolManager _toolManager;
+    private readonly IConnection _conn;
 
     public LaunchButtonViewModel(ILogger<LaunchButtonViewModel> logger, IToolManager toolManager,
-        IActivityMonitor manager, ILoadoutRegistry loadoutRegistry)
+        IActivityMonitor manager, IConnection conn)
     {
         _toolManager = toolManager;
-        _loadoutRegistry = loadoutRegistry;
+        _conn = conn;
 
         Command = ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(LaunchGame, RxApp.TaskpoolScheduler));
     }
@@ -36,11 +37,11 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
     private async Task LaunchGame(CancellationToken token)
     {
         Label = Language.LaunchButtonViewModel_LaunchGame_RUNNING;
-        var marker = _loadoutRegistry.GetMarker(LoadoutId);
-        var tool = _toolManager.GetTools(marker.Value).OfType<IRunGameTool>().First();
+        var marker = _conn.Db.Get(LoadoutId);
+        var tool = _toolManager.GetTools(marker).OfType<IRunGameTool>().First();
         await Task.Run(async () =>
         {
-            await _toolManager.RunTool(tool, marker.Value, token: token);
+            await _toolManager.RunTool(tool, marker, token: token);
         }, token);
         Label = Language.LaunchButtonViewModel_LaunchGame_LAUNCH;
     }

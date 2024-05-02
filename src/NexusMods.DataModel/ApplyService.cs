@@ -105,26 +105,29 @@ public class ApplyService : IApplyService
     /// <inheritdoc />
     public Loadout.Model? GetLastAppliedLoadout(GameInstallation gameInstallation)
     {
-        if (!_diskStateRegistry.TryGetLastAppliedLoadout(gameInstallation, out var loadout, out var txId))
+        if (!_diskStateRegistry.TryGetLastAppliedLoadout(gameInstallation, out var lastId))
         {
             return null;
         }
         
-        var db = _conn.AsOf(txId);
-        return db.Get<Loadout.Model>(loadout);
+        var db = _conn.AsOf(lastId.Tx);
+        return db.Get(lastId.Id);
     }
 
     /// <inheritdoc />
-    public IObservable<IId> LastAppliedRevisionFor(GameInstallation gameInstallation)
+    public IObservable<LoadoutRevisionId> LastAppliedRevisionFor(GameInstallation gameInstallation)
     {
-        throw new NotImplementedException();
-        /*
+        LoadoutRevisionId last;
+        if (_diskStateRegistry.TryGetLastAppliedLoadout(gameInstallation, out var lastId))
+            last = lastId;
+        else
+            last = new LoadoutRevisionId(LoadoutId.From(EntityId.From(0)), TxId.From(0));
+        
         // Return a deferred observable that computes the starting value only on first subscription
         return Observable.Defer(() => _diskStateRegistry.LastAppliedRevisionObservable
-            .Where(x => x.gameInstallation.Equals(gameInstallation))
-            .Select(x => x.loadoutRevision)
-            .StartWith(_diskStateRegistry.GetLastAppliedLoadout(gameInstallation) ?? IdEmpty.Empty)
+            .Where(x => x.Install.Equals(gameInstallation))
+            .Select(x => x.LoadoutRevisionId)
+            .StartWith(last)
         );
-        */
     }
 }
