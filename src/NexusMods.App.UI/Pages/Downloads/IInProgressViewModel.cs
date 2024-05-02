@@ -22,6 +22,7 @@ public interface IInProgressViewModel : IPageViewModelInterface
     public ReadOnlyObservableCollection<ISeries> Series { get; }
 
     public Axis[] YAxes { get; }
+    public Axis[] XAxes { get; }
 
     /// <summary>
     /// True if download is running, else false.

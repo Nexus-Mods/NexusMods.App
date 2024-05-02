@@ -8,6 +8,7 @@ using DynamicData;
 using DynamicData.Binding;
 using JetBrains.Annotations;
 using LiveChartsCore;
+using LiveChartsCore.Defaults;
 using LiveChartsCore.SkiaSharpView;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.Controls.DownloadGrid;
@@ -54,9 +55,6 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
 
     public ReadOnlyObservableCollection<IDataGridColumnFactory<DownloadColumn>> Columns => _filteredColumns;
 
-    private readonly ObservableCollection<long> _throughputValues = new();
-    public ReadOnlyObservableCollection<ISeries> Series { get; } = ReadOnlyObservableCollection<ISeries>.Empty;
-
     [Reactive] public int ActiveDownloadCount { get; set; }
 
     [Reactive] public bool HasDownloads { get; private set; }
@@ -82,14 +80,31 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
     [Reactive]
     public ICommand ShowSettings { get; private set; } = ReactiveCommand.Create(() => { }, Observable.Return(false));
 
+    private readonly ObservableCollection<DateTimePoint> _throughputValues = new();
+    public ReadOnlyObservableCollection<ISeries> Series { get; } = ReadOnlyObservableCollection<ISeries>.Empty;
+
     public Axis[] YAxes { get; } =
     [
-        new Axis()
+        new Axis
         {
             MinLimit = 0,
             Labeler = value => StringFormatters.ToThroughputString((long)value, TimeSpan.FromSeconds(1)),
         },
     ];
+
+    public Axis[] XAxes { get; } =
+    [
+        new DateTimeAxis(TimeSpan.FromSeconds(1), DateFormatter)
+        {
+            AnimationsSpeed = TimeSpan.FromMilliseconds(0),
+        },
+    ];
+
+    private static string DateFormatter(DateTime date)
+    {
+        var diff = (DateTime.Now - date).TotalSeconds;
+        return diff < 1 ? "now" : $"{diff:N0}s ago";
+    }
 
     [UsedImplicitly]
     public InProgressViewModel(
@@ -98,12 +113,14 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
         IOverlayController overlayController) : base(windowManager)
     {
         Series = new ReadOnlyObservableCollection<ISeries>([
-                new LineSeries<long>
-                {
-                    Values = _throughputValues,
-                },
-            ]
-        );
+            new LineSeries<DateTimePoint>
+            {
+                Values = _throughputValues,
+                Fill = null,
+                GeometryFill = null,
+                GeometryStroke = null,
+            },
+        ]);
 
         TabTitle = Language.InProgressDownloadsPage_Title;
         TabIcon = IconValues.Downloading;
@@ -315,6 +332,6 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
         var remainingBytes = totalSizeBytes - totalDownloadedBytes;
         SecondsRemaining = throughput < 1.0 ? 0 : (int)(remainingBytes / Math.Max(throughput, 1));
 
-        _throughputValues.Add(throughput);
+        _throughputValues.Add(new DateTimePoint(DateTime.Now, throughput));
     }
 }
