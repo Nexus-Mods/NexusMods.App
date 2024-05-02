@@ -25,11 +25,23 @@
     <Style Selector="DataGrid">
         <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
     </Style>
+    
+    <Style Selector="DataGridCell:nth-child(1)">
+        <Setter Property="Padding" Value="24,0,0,0" />
+    </Style>
 
     <Style Selector="DataGridColumnHeader">
         <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
         <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
-        <Setter Property="Padding" Value="16, 0, 0, 0" />
+        <Setter Property="Padding" Value="16, 8, 0, 8" />
+        <Setter Property="Height" Value="44" />
+        <Setter Property="BorderThickness" Value="0,1,0,0" />
+        <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+
+        <Style Selector="^:nth-child(1)">
+            <Setter Property="Padding" Value="24, 8, 0, 8" />
+        </Style>
     </Style>
 
     <Style Selector="DataGridColumnHeader:sortascending /template/ Path#SortIcon">
@@ -43,12 +55,19 @@
     <Style Selector="DataGridColumnHeader TextBlock">
         <Setter Property="Theme" Value="{StaticResource TitleXSSemiTheme}" />
         <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
 
     <Style Selector="DataGridRow:selected Rectangle#BackgroundRectangle">
         <Setter Property="Fill" Value="{StaticResource SurfaceMidBrush}" />
     </Style>
 
+    <Style Selector="DataGridCell">
+        <Setter Property="Height" Value="44" />
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="Padding" Value="16, 0, 0, 0" />
+    </Style>
+    
     <Style Selector="DataGridCell">
         <Setter Property="Height" Value="44" />
         <Setter Property="Margin" Value="0" />
@@ -66,5 +85,6 @@
     <Style Selector="DataGridCell TextBlock">
         <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
         <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
+        <Setter Property="Margin" Value="0" />
     </Style>
 </Styles>
