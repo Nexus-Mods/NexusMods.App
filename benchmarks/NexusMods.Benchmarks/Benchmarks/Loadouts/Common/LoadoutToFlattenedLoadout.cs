@@ -31,6 +31,6 @@ public class LoadoutToFlattenedLoadout : ASynchronizerBenchmark, IBenchmark
     [Benchmark]
     public async Task<FlattenedLoadout> FlattenLoadout()
     {
-        return await _defaultSynchronizer.LoadoutToFlattenedLoadout(_datamodel.BaseList.Value);
+        return await _defaultSynchronizer.LoadoutToFlattenedLoadout(_datamodel.BaseLoadout);
     }
 }

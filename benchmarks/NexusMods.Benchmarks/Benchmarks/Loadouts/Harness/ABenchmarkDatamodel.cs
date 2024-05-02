@@ -21,8 +21,6 @@ public class ABenchmarkDatamodel(IServiceProvider provider) : ADataModelTest<ABe
     public new TemporaryFileManager TemporaryFileManager => base.TemporaryFileManager;
     public new IFileStore FileStore => base.FileStore;
     public new IArchiveInstaller ArchiveInstaller => base.ArchiveInstaller;
-
-    public new LoadoutRegistry LoadoutRegistry => base.LoadoutRegistry;
     public new FileHashCache FileHashCache => base.FileHashCache;
     public new IFileSystem FileSystem => base.FileSystem;
     public new IDataStore DataStore => base.DataStore;
@@ -32,7 +30,7 @@ public class ABenchmarkDatamodel(IServiceProvider provider) : ADataModelTest<ABe
 
     public new IGame Game => base.Game;
     public new GameInstallation Install => base.Install;
-    public new LoadoutMarker BaseList => base.BaseList;
+    public new Loadout.Model BaseLoadout => base.BaseLoadout;
     
     public static ABenchmarkDatamodel WithMod(IServiceProvider provider, string modName, IEnumerable<string> files)
     {

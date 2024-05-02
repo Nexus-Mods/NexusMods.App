@@ -29,12 +29,12 @@ public class FlattenedLoadoutToFileTree : ASynchronizerBenchmark, IBenchmark
     {
         var filePath = Assets.Loadouts.FileLists.GetFileListPathByFileName(FileName);
         Init("Benchmark Mod Files", filePath);
-        _flattenedLoadout = Task.Run(() => _defaultSynchronizer.LoadoutToFlattenedLoadout(_datamodel.BaseList.Value)).Result.Result;
+        _flattenedLoadout = Task.Run<FlattenedLoadout>(async () => await _defaultSynchronizer.LoadoutToFlattenedLoadout(_datamodel.BaseLoadout)).Result;
     }
 
     [Benchmark]
     public async Task<FileTree> ToFileTree()
     {
-        return await _defaultSynchronizer.FlattenedLoadoutToFileTree(_flattenedLoadout, _datamodel.BaseList.Value);
+        return await _defaultSynchronizer.FlattenedLoadoutToFileTree(_flattenedLoadout, _datamodel.BaseLoadout);
     }
 }

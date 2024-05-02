@@ -29,7 +29,7 @@ public class GetPreviousState : ASynchronizerBenchmark, IBenchmark
     {
         var filePath = Assets.Loadouts.FileLists.GetFileListPathByFileName(FileName);
         Init("Benchmark Mod Files", filePath);
-        _flattenedLoadout = Task.Run(() => _defaultSynchronizer.LoadoutToFlattenedLoadout(_datamodel.BaseList.Value)).Result.Result;
+        _flattenedLoadout = Task.Run<FlattenedLoadout>(async () => await _defaultSynchronizer.LoadoutToFlattenedLoadout(_datamodel.BaseLoadout)).Result;
     }
 
     [Benchmark]
