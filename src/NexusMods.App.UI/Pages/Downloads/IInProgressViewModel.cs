@@ -1,6 +1,8 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows.Input;
 using DynamicData;
+using LiveChartsCore;
+using LiveChartsCore.SkiaSharpView;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.Controls.DownloadGrid;
 using NexusMods.App.UI.Pages.Downloads.ViewModels;
@@ -17,6 +19,9 @@ public interface IInProgressViewModel : IPageViewModelInterface
 
     ReadOnlyObservableCollection<IDataGridColumnFactory<DownloadColumn>> Columns { get; }
 
+    public ReadOnlyObservableCollection<ISeries> Series { get; }
+
+    public Axis[] YAxes { get; }
 
     /// <summary>
     /// True if download is running, else false.

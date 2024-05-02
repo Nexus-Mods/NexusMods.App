@@ -7,6 +7,8 @@ using Avalonia.Controls;
 using DynamicData;
 using DynamicData.Binding;
 using JetBrains.Annotations;
+using LiveChartsCore;
+using LiveChartsCore.SkiaSharpView;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.Controls.DownloadGrid;
 using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadGameName;
@@ -14,6 +16,7 @@ using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadName;
 using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadSize;
 using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadStatus;
 using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadVersion;
+using NexusMods.App.UI.Helpers;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Pages.Downloads.ViewModels;
 using NexusMods.App.UI.Resources;
@@ -51,6 +54,9 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
 
     public ReadOnlyObservableCollection<IDataGridColumnFactory<DownloadColumn>> Columns => _filteredColumns;
 
+    private readonly ObservableCollection<long> _throughputValues = new();
+    public ReadOnlyObservableCollection<ISeries> Series { get; } = ReadOnlyObservableCollection<ISeries>.Empty;
+
     [Reactive] public int ActiveDownloadCount { get; set; }
 
     [Reactive] public bool HasDownloads { get; private set; }
@@ -76,12 +82,29 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
     [Reactive]
     public ICommand ShowSettings { get; private set; } = ReactiveCommand.Create(() => { }, Observable.Return(false));
 
+    public Axis[] YAxes { get; } =
+    [
+        new Axis()
+        {
+            MinLimit = 0,
+            Labeler = value => StringFormatters.ToThroughputString((long)value, TimeSpan.FromSeconds(1)),
+        },
+    ];
+
     [UsedImplicitly]
     public InProgressViewModel(
         IWindowManager windowManager,
         IDownloadService downloadService,
         IOverlayController overlayController) : base(windowManager)
     {
+        Series = new ReadOnlyObservableCollection<ISeries>([
+                new LineSeries<long>
+                {
+                    Values = _throughputValues,
+                },
+            ]
+        );
+
         TabTitle = Language.InProgressDownloadsPage_Title;
         TabIcon = IconValues.Downloading;
 
@@ -291,5 +314,7 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
         var throughput = Tasks.Sum(x => x.Throughput);
         var remainingBytes = totalSizeBytes - totalDownloadedBytes;
         SecondsRemaining = throughput < 1.0 ? 0 : (int)(remainingBytes / Math.Max(throughput, 1));
+
+        _throughputValues.Add(throughput);
     }
 }

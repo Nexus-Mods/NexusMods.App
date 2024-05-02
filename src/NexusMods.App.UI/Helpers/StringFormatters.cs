@@ -21,6 +21,11 @@ public static class StringFormatters
         return $"{currentBytesStr} / {totalBytesStr}";
     }
 
+    public static string ToThroughputString(long throughput, TimeSpan interval)
+    {
+        return new ByteRate(ByteSize.FromBytes(throughput), interval).Humanize();
+    }
+
     /// <summary>
     /// Formats the seconds remaining in format '0 mins', '0 secs' etc.
     /// </summary>
