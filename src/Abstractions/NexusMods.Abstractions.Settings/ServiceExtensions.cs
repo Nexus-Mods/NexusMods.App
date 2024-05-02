@@ -38,8 +38,7 @@ public static class ServiceExtensions
         if (!isDefault) return serviceCollection;
         return serviceCollection
             .AddSingleton<T>()
-            .AddSingleton<DefaultSettingsStorageBackend>(
-                serviceProvider => new DefaultSettingsStorageBackend(serviceProvider.GetRequiredService<T>())
+            .AddSingleton<DefaultSettingsStorageBackend>(serviceProvider => new DefaultSettingsStorageBackend(serviceProvider.GetRequiredService<T>())
         );
     }
 
@@ -67,5 +66,14 @@ public static class ServiceExtensions
         return serviceCollection.AddSingleton(new SettingsOverrideInformation(typeof(T), Hack));
 
         object Hack(object obj) => overrideMethod((T)obj);
+    }
+
+    /// <summary>
+    /// Use the JSON storage backend for this setting.
+    /// </summary>
+    public static void UseJson<T>(this ISettingsStorageBackendBuilder<T> builder)
+        where T : class, ISettings, new()
+    {
+        builder.UseStorageBackend(JsonStorageBackend.StaticId);
     }
 }

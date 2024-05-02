@@ -4,6 +4,8 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.Abstractions.Serialization.DataModel.Converters;
 using NexusMods.Abstractions.Serialization.Json;
+using NexusMods.Abstractions.Serialization.Settings;
+using NexusMods.Abstractions.Settings;
 
 namespace NexusMods.Abstractions.Serialization;
 
@@ -17,6 +19,8 @@ public static class Services
     /// </summary>
     public static IServiceCollection AddSerializationAbstractions(this IServiceCollection services)
     {
+        services.AddSettingsStorageBackend<JsonStorageBackend>();
+
         services.AddSingleton<JsonConverter, AbstractClassConverterFactory<Entity>>();
         services.AddSingleton<JsonConverter, AbstractClassConverterFactory<IMetadata>>();
 

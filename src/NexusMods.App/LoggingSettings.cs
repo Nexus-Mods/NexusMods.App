@@ -49,8 +49,7 @@ public record LoggingSettings : ISettings
 
     public static ISettingsBuilder Configure(ISettingsBuilder settingsBuilder)
     {
-        // TODO: figure out what to do with this since it can't be used with DI
-        return settingsBuilder;
+        return settingsBuilder.ConfigureStorageBackend<LoggingSettings>(builder => builder.UseJson());
     }
 
     public static LoggingSettings CreateDefault(IOSInformation os)
