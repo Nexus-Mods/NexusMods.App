@@ -1,13 +1,16 @@
-using System.Diagnostics;
 using System.Reactive;
 using System.Runtime.InteropServices;
 using Avalonia;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.Serialization;
+using NexusMods.Abstractions.Settings;
+using NexusMods.Abstractions.Telemetry;
 using NexusMods.App.BuildInfo;
 using NexusMods.App.UI;
 using NexusMods.Paths;
+using NexusMods.Settings;
 using NexusMods.SingleProcess;
 using NLog.Extensions.Logging;
 using NLog.Targets;
@@ -18,14 +21,27 @@ namespace NexusMods.App;
 public class Program
 {
     private static ILogger<Program> _logger = default!;
-  
+
     [STAThread]
     public static int Main(string[] args)
     {
         MainThreadData.SetMainThread();
 
+        TelemetrySettings telemetrySettings;
+        LoggingSettings loggingSettings;
+        using (var settingsHost = BuildSettingsHost())
+        {
+            var settingsManager = settingsHost.Services.GetRequiredService<ISettingsManager>();
+            telemetrySettings = settingsManager.Get<TelemetrySettings>();
+            loggingSettings = settingsManager.Get<LoggingSettings>();
+        }
+
         var isMain = IsMainProcess(args);
-        var host = BuildHost(slimMode: !isMain);
+        var host = BuildHost(
+            slimMode: !isMain,
+            telemetrySettings,
+            loggingSettings
+        );
 
         _logger = host.Services.GetRequiredService<ILogger<Program>>();
         LogMessages.RuntimeInformation(_logger, RuntimeInformation.OSDescription, RuntimeInformation.FrameworkDescription);
@@ -117,27 +133,47 @@ public class Program
         return args.Count == 1 && args[0] == StartupHandler.MainProcessVerb;
     }
 
-    /// <summary>
-    /// Constructs the host for the application, if <paramref name="slimMode"/> is true, the host will not register
-    /// most of the services, and will only register what is required to proxy the app to the main process.
-    /// </summary>
-    /// <param name="slimMode"></param>
-    /// <returns></returns>
-    public static IHost BuildHost(bool slimMode = false)
+    private static IHost BuildSettingsHost()
     {
         var host = new HostBuilder()
-            .ConfigureServices(services => services.AddApp(slimMode: slimMode).Validate())
-            .ConfigureLogging((_, builder) => AddLogging(builder, isMainProcess: !slimMode))
+            .ConfigureServices(services => services
+                .AddSingleton(FileSystem.Shared)
+                .AddSettingsManager()
+                .AddSerializationAbstractions()
+                .AddSettingsStorageBackend<JsonStorageBackend>()
+                .AddSettings<TelemetrySettings>()
+                .AddSettings<LoggingSettings>()
+            )
+            .ConfigureLogging((_, builder) => builder
+                .ClearProviders()
+                .AddSimpleConsole()
+                .SetMinimumLevel(LogLevel.Trace)
+            )
             .Build();
 
         return host;
     }
 
-    private static void AddLogging(ILoggingBuilder loggingBuilder, bool isMainProcess)
+    /// <summary>
+    /// Constructs the host for the application, if <paramref name="slimMode"/> is true, the host will not register
+    /// most of the services, and will only register what is required to proxy the app to the main process.
+    /// </summary>
+    private static IHost BuildHost(
+        bool slimMode,
+        TelemetrySettings telemetrySettings,
+        LoggingSettings loggingSettings)
+    {
+        var host = new HostBuilder()
+            .ConfigureServices(services => services.AddApp(telemetrySettings, slimMode: slimMode).Validate())
+            .ConfigureLogging((_, builder) => AddLogging(builder, loggingSettings, isMainProcess: !slimMode))
+            .Build();
+
+        return host;
+    }
+
+    private static void AddLogging(ILoggingBuilder loggingBuilder, LoggingSettings settings, bool isMainProcess)
     {
         var fs = FileSystem.Shared;
-        var settings = LoggingSettings.CreateDefault(fs.OS);
-
         var config = new NLog.Config.LoggingConfiguration();
 
         const string defaultLayout = "${processtime} [${level:uppercase=true}] (${logger}) ${message:withexception=true}";
@@ -194,7 +230,7 @@ public class Program
     // ReSharper disable once UnusedMember.Global
     public static AppBuilder BuildAvaloniaApp()
     {
-        var host = BuildHost();
+        var host = BuildHost(slimMode: false, telemetrySettings: new TelemetrySettings(), LoggingSettings.CreateDefault(OSInformation.Shared));
         DesignerUtils.Activate(host.Services);
         return Startup.BuildAvaloniaApp(host.Services);
     }

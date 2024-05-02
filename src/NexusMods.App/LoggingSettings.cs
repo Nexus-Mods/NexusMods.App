@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Paths;
@@ -49,7 +50,9 @@ public record LoggingSettings : ISettings
 
     public static ISettingsBuilder Configure(ISettingsBuilder settingsBuilder)
     {
-        return settingsBuilder.ConfigureStorageBackend<LoggingSettings>(builder => builder.UseJson());
+        return settingsBuilder
+            .ConfigureDefault(serviceProvider => CreateDefault(serviceProvider.GetRequiredService<IFileSystem>().OS))
+            .ConfigureStorageBackend<LoggingSettings>(builder => builder.UseJson());
     }
 
     public static LoggingSettings CreateDefault(IOSInformation os)

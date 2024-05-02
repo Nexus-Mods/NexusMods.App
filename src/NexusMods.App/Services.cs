@@ -48,6 +48,7 @@ public static class Services
     }
 
     public static IServiceCollection AddApp(this IServiceCollection services,
+        TelemetrySettings? telemetrySettings = null,
         bool addStandardGameLocators = true,
         bool slimMode = false)
     {
@@ -56,12 +57,7 @@ public static class Services
             services
                 .AddSettings<TelemetrySettings>()
                 .AddSingleton<ITelemetryProvider, TelemetryProvider>()
-
-                // TODO: fetch from settings
-                .AddTelemetry(new TelemetrySettings
-                {
-                    IsEnabled = false,
-                })
+                .AddTelemetry(telemetrySettings ?? new TelemetrySettings())
 
                 .AddSingleton<CommandLineConfigurator>()
                 .AddCLI()
@@ -99,7 +95,6 @@ public static class Services
 
             if (addStandardGameLocators)
                 services.AddStandardGameLocators();
-
         }
 
         services
