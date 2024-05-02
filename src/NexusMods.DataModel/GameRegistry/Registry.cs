@@ -14,6 +14,7 @@ public class Registry : IGameRegistry
     private readonly IConnection _connection;
     private readonly Task _startup;
     private Dictionary<EntityId,GameInstallation> _byId = new();
+    private Dictionary<(GameDomain Domain, Version Version, GameStore Store),EntityId> _byInstall = new();
 
     /// <summary>
     /// Game registry for all installed games.
@@ -38,11 +39,12 @@ public class Registry : IGameRegistry
         using var tx = _connection.BeginTransaction();
 
         var added = new List<(EntityId Id, GameInstallation)>();
+        var results = new List<(EntityId Id, GameInstallation)>();
         foreach (var install in allInstalls)
         {
             if (allInDb.TryGetValue((install.Game.Domain, install.Store), out var found))
             {
-                install.Id = found.Id;
+                results.Add((found.Id, install));
             }
             else
             {
@@ -59,10 +61,16 @@ public class Registry : IGameRegistry
         {
             var result = await tx.Commit();
             foreach (var (id, install) in added)
-                install.Id = result[id];
+                results.Add((result[id], install));
         }
 
-        _byId = added.ToDictionary(x => x.Item2.Id, x => x.Item2);
+        _byId = results.ToDictionary(x => x.Id, x => x.Item2);
+        _byInstall = results.ToDictionary(x => GetKey(x.Item2), x => x.Id);
+    }
+    
+    private (GameDomain Domain, Version Version, GameStore Store) GetKey(GameInstallation installation)
+    {
+        return (installation.Game.Domain, installation.Version, installation.Store);
     }
 
     /// <inheritdoc />
@@ -82,5 +90,13 @@ public class Registry : IGameRegistry
         if (!_startup.IsCompleted)
             _startup.Wait();
         return _byId[id];
+    }
+
+    /// <inheritdoc />
+    public EntityId GetId(GameInstallation installation)
+    {
+        if (!_startup.IsCompleted)
+            _startup.Wait();
+        return _byInstall[GetKey(installation)];
     }
 }

@@ -16,4 +16,9 @@ public interface IGameRegistry
     /// Get a game installation by its id.
     /// </summary>
     public GameInstallation Get(EntityId id);
+    
+    /// <summary>
+    /// Get the id for a game installation.
+    /// </summary>
+    public EntityId GetId(GameInstallation installation);
 }

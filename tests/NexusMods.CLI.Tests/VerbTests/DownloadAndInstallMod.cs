@@ -53,6 +53,7 @@ public class DownloadAndInstallMod(IServiceProvider serviceProvider, LocalHttpSe
 
         var uri = $"nxm://{gameDomain}/mods/{modId}/files/{fileId}";
         await Test.Run("download-and-install-mod", "-u", uri, "-l", loadout.Id.ToString(), "-n", "TestMod");
+        Refresh(ref loadout);
         loadout.Mods.Count.Should().BeGreaterThan(origNumMods);
     }
 }

@@ -1,3 +1,4 @@
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
 
@@ -6,21 +7,14 @@ namespace NexusMods.CLI.OptionParsers;
 /// <summary>
 /// Parses a string into an <see cref="IGame"/>
 /// </summary>
-internal class GameParser : IOptionParser<IGame>
+internal class GameParser(IGameRegistry gameRegistry) : IOptionParser<IGame>
 {
-    private readonly IGame[] _games;
-
-    /// <summary>
-    /// DI constructor
-    /// </summary>
-    /// <param name="games"></param>
-    public GameParser(IEnumerable<IGame> games) => _games = games.ToArray();
-
-
     public bool TryParse(string toParse, out IGame value, out string error)
     {
-        value = _games.FirstOrDefault(g => g.Domain == toParse) ??
-                    _games.FirstOrDefault(g => g.Name.Equals(toParse, StringComparison.CurrentCultureIgnoreCase))!;
+        var install = gameRegistry.AllInstalledGames.FirstOrDefault(g => g.Game.Domain == toParse) ??
+                    gameRegistry.AllInstalledGames.FirstOrDefault(g => g.Game.Name.Equals(toParse, StringComparison.CurrentCultureIgnoreCase))!;
+
+        value = (IGame)install.Game;
         error = string.Empty;
         return true;
     }

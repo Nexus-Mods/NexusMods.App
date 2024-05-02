@@ -892,9 +892,11 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         
         using var tx = _conn.BeginTransaction();
 
+        var basis = _conn.Db;
         // Add the loadout
         var loadout = new Loadout.Model(tx)
         {
+            Db = basis, // Has to be here to the installation resolves properly
             Name = suggestedName ?? $"Loadout {installation.Game.Name}",
             Installation = installation,
         };

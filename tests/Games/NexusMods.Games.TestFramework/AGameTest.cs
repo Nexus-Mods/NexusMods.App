@@ -117,6 +117,12 @@ public abstract class AGameTest<TGame> where TGame : AGame
     /// </summary>
     protected T Refresh<T>(T entity) where T : IEntity
         => Connection.Db.Get<T>(entity.Id);
+    
+    /// <summary>
+    /// Reloads the entity from the database.
+    /// </summary>
+    protected void Refresh<T>(ref T entity) where T : IEntity
+        => entity = Connection.Db.Get<T>(entity.Id);
 
     /// <summary>
     /// Downloads a mod and returns the <see cref="TemporaryPath"/> and <see cref="Hash"/> of it.

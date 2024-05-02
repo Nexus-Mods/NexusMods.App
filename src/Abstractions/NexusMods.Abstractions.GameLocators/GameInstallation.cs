@@ -12,10 +12,6 @@ namespace NexusMods.Abstractions.GameLocators;
 public class GameInstallation
 {
     /// <summary>
-    /// EntityId of the game installation, use this to link entities to the game installation.
-    /// </summary>
-    public EntityId Id { get; set; }
-    /// <summary>
     /// Empty game installation, used for testing and some cases where a property must be set.
     /// </summary>
     public static GameInstallation Empty => new();

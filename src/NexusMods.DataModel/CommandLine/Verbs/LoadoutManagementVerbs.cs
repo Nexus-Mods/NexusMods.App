@@ -12,6 +12,7 @@ using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Extensions;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.ProxyConsole.Abstractions;
 using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
@@ -45,19 +46,16 @@ public static class LoadoutManagementVerbs
 
     [Verb("apply", "Apply the given loadout to the game folder")]
     private static async Task<int> Apply([Injected] IRenderer renderer,
-        [Option("l", "loadout", "Loadout to apply")] LoadoutId loadout)
+        [Option("l", "loadout", "Loadout to apply")] Loadout.Model loadout)
     {
-        throw new NotImplementedException();
-        /*
-        var state = await loadout.Value.Apply();
+        var state = await loadout.Apply();
 
         var summary = state.GetAllDescendentFiles()
             .Aggregate((Count:0, Size:Size.Zero), (acc, file) => (acc.Item1 + 1, acc.Item2 + file.Item.Value.Size));
 
-        await renderer.Text($"Applied {loadout} resulting state contains {summary.Count} files and {summary.Size} of data");
+        await renderer.Text($"Applied {loadout.Name} resulting state contains {summary.Count} files and {summary.Size} of data");
 
         return 0;
-        */
     }
 
     [Verb("ingest", "Ingest changes from the game folders into the given loadout")]
@@ -97,49 +95,43 @@ public static class LoadoutManagementVerbs
     [Verb("flatten-loadout", "Flatten a loadout into the projected filesystem")]
     private static async Task<int> FlattenLoadout([Injected] IRenderer renderer,
         [Option("l", "loadout", "Loadout to flatten")]
-        LoadoutId loadout,
+        Loadout.Model loadout,
         [Injected] CancellationToken token)
     {
-        throw new NotImplementedException();
-        /*
         var rows = new List<object[]>();
-        var synchronizer = loadout.Value.Installation.GetGame().Synchronizer as IStandardizedLoadoutSynchronizer;
+        var synchronizer = loadout.Installation.GetGame().Synchronizer as IStandardizedLoadoutSynchronizer;
         if (synchronizer == null)
         {
-            await renderer.Text($"{loadout.Value.Installation.Game.Name} does not support flattening loadouts");
+            await renderer.Text($"{loadout.Installation.Game.Name} does not support flattening loadouts");
             return -1;
         }
 
-        var flattened = await synchronizer.LoadoutToFlattenedLoadout(loadout.Value);
+        var flattened = await synchronizer.LoadoutToFlattenedLoadout(loadout);
 
         foreach (var item in flattened.GetAllDescendentFiles())
             rows.Add([item.Item.Value!.Mod.Name, item.GamePath()]);
 
-        await renderer.Table(new[] { "Mod", "To" }, rows);
+        await renderer.Table(["Mod", "To"], rows);
         return 0;
-        */
     }
 
     [Verb("install-mod", "Installs a mod into a loadout")]
     private static async Task<int> InstallMod([Injected] IRenderer renderer,
-        [Option("l", "loadout", "loadout to add the mod to")] LoadoutId loadout,
+        [Option("l", "loadout", "loadout to add the mod to")] Loadout.Model loadout,
         [Option("f", "file", "Mod file to install")] AbsolutePath file,
         [Option("n", "name", "Name of the mod after installing")] string name,
         [Injected] IArchiveInstaller archiveInstaller,
         [Injected] IFileOriginRegistry fileOriginRegistry,
         [Injected] CancellationToken token)
     {
-        throw new NotImplementedException();
-        /*
         return await renderer.WithProgress(token, async () =>
         {
             var downloadId = await fileOriginRegistry.RegisterDownload(file, 
             (tx, id) => tx.Add(id, FilePathMetadata.OriginalName, file.FileName), token);
 
-            await archiveInstaller.AddMods(loadout.Value.LoadoutId, downloadId, name, token: token);
+            await archiveInstaller.AddMods(loadout.LoadoutId, downloadId, name, token: token);
             return 0;
         });
-        */
     }
 
     [Verb("list-history", "Lists the history of a loadout")]
@@ -160,30 +152,27 @@ public static class LoadoutManagementVerbs
 
     [Verb("list-loadouts", "Lists all the loadouts")]
     private static async Task<int> ListLoadouts([Injected] IRenderer renderer,
+        [Injected] IConnection conn,
         [Injected] CancellationToken token)
     {
-        throw new NotImplementedException();
-        /*
-        var rows = registry.AllLoadouts()
+        var db = conn.Db;
+        var rows = db.Loadouts()
             .Select(list => new object[] { list.Name, list.Installation, list.LoadoutId, list.Mods.Count })
             .ToList();
 
         await renderer.Table(new[] { "Name", "Game", "Id", "Mod Count" }, rows);
         return 0;
-        */
     }
 
     [Verb("list-mod-contents", "Lists the contents of a mod")]
     private static async Task<int> ListModContents([Injected] IRenderer renderer,
-        [Option("l", "loadout", "Loadout to load")] LoadoutId loadout,
+        [Option("l", "loadout", "Loadout to load")] Loadout.Model loadout,
         [Option("m", "mod", "Mod to print the contents of")] string modName,
         [Injected] CancellationToken token)
     {
-        throw new NotImplementedException();
-        /*
         var rows = new List<object[]>();
-        var mod = loadout.Value.Mods.Values.First(m => m.Name == modName);
-        foreach (var file in mod.Files.Values)
+        var mod = loadout.Mods.First(m => m.Name == modName);
+        foreach (var file in mod.Files)
         {
             switch (file)
             {
@@ -199,25 +188,21 @@ public static class LoadoutManagementVerbs
             }
         }
 
-        await renderer.Table(new[] { "Name", "Source" }, rows);
+        await renderer.Table(["Name", "Source"], rows);
         return 0;
-        */
     }
 
     [Verb("list-mods", "Lists the mods in a loadout")]
     private static async Task<int> ListMods([Injected] IRenderer renderer,
-        [Option("l", "loadout", "Loadout to load")] LoadoutId loadout,
+        [Option("l", "loadout", "Loadout to load")] Loadout.Model loadout,
         [Injected] CancellationToken token)
     {
-        throw new NotImplementedException();
-        /*
-        var rows = loadout.Value.Mods.Values
+        var rows = loadout.Mods
             .Select(mod => new object[] { mod.Name, mod.Files.Count })
             .ToList();
 
-        await renderer.Table(new[] { "Name", "File Count" }, rows);
+        await renderer.Table(["Name", "File Count"], rows);
         return 0;
-        */
     }
 
     [Verb("rename", "Rename a loadout id to a specific registry name")]
@@ -239,18 +224,15 @@ public static class LoadoutManagementVerbs
         [Option("n", "name", "The name of the new loadout")] string name,
         [Injected] CancellationToken token)
     {
-        throw new NotImplementedException();
-        /*
         var installation = game.Installations.FirstOrDefault(i => i.Version == version);
         if (installation == null)
             throw new Exception("Game not found");
 
         return await renderer.WithProgress(token, async () =>
         {
-            await loadoutRegistry.Manage(installation, name);
+            await game.Synchronizer.Manage(installation, name);
             return 0;
         });
-        */
     }
 
 }

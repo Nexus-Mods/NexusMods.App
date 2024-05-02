@@ -42,7 +42,7 @@ public static class Loadout
     /// <summary>
     /// Retrieves all loadouts from the database.
     /// </summary>
-    public static IEnumerable<Model> All(IDb db)
+    public static IEnumerable<Model> Loadouts(this IDb db)
     {
         return db.Find(Name)
             .Select(db.Get<Model>);
@@ -95,9 +95,13 @@ public static class Loadout
         {
             get => ServiceProvider.GetRequiredService<IGameRegistry>()
                 .Get(Loadout.Installation.Get(this));
-            set => Loadout.Installation.Add(this, value.Id);
+            set
+            {
+                var id = ServiceProvider.GetRequiredService<IGameRegistry>().GetId(value);
+                Loadout.Installation.Add(this, id);
+            }
         }
-        
+
         /// <summary>
         /// Gets all mods in this loadout.
         /// </summary>

@@ -34,6 +34,7 @@ public class ModManagementVerbs(StubbedGame stubbedGame, IServiceProvider provid
         log.LastTable.Rows.Length.Should().Be(7);
 
         log = await Run("apply", "-l", listName);
+        
         log.Last<Text>().Template.Should().Contain($"Applied {listName}");
     }
 }
