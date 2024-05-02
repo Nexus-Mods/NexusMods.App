@@ -28,10 +28,10 @@ public class LoadoutGridDesignViewModel : APageViewModel<ILoadoutGridViewModel>,
 {
     private readonly SourceCache<Mod.Model, ModId> _mods;
 
-    private ReadOnlyObservableCollection<Mod.Model> _filteredMods =
-        new(new ObservableCollection<Mod.Model>());
+    private ReadOnlyObservableCollection<ModId> _filteredMods =
+        new(new ObservableCollection<ModId>());
 
-    public ReadOnlyObservableCollection<Mod.Model> Mods => _filteredMods;
+    public ReadOnlyObservableCollection<ModId> Mods => _filteredMods;
 
     public LoadoutId LoadoutId { get; set; } = Initializers.LoadoutId;
 
@@ -44,7 +44,7 @@ public class LoadoutGridDesignViewModel : APageViewModel<ILoadoutGridViewModel>,
 
     public ReadOnlyObservableCollection<IDataGridColumnFactory<LoadoutColumn>> Columns => _filteredColumns;
     public int SelectedIndex { get; set; }
-    public Mod.Model[] SelectedItems { get; set; } = Array.Empty<Mod.Model>();
+    public ModId[] SelectedItems { get; set; } = [];
 
     public ReactiveCommand<NavigationInformation, Unit> ViewModContentsCommand { get; } = ReactiveCommand.Create<NavigationInformation>(_ => { });
 
@@ -65,7 +65,7 @@ public class LoadoutGridDesignViewModel : APageViewModel<ILoadoutGridViewModel>,
     /// </summary>
     /// <param name="cursor">Row to add</param>
     /// <returns></returns>
-    public void AddMod(ModCursor cursor)
+    public void AddMod(ModId cursor)
     {
         _mods.Edit(x =>
         {

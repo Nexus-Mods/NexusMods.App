@@ -20,7 +20,7 @@ public record PluginOrderFile : AModFile, IGeneratedFile, IToFile
 
     public GamePath To => Path;
 
-    public async ValueTask<Hash?> Write(Stream stream, Loadout loadout, FlattenedLoadout flattenedLoadout, FileTree fileTree)
+    public async ValueTask<Hash?> Write(Stream stream, Loadout.Model loadout, FlattenedLoadout flattenedLoadout, FileTree fileTree)
     {
         var sorted = await ((ABethesdaGame)loadout.Installation.Game)
             .PluginSorter.Sort(fileTree, CancellationToken.None);

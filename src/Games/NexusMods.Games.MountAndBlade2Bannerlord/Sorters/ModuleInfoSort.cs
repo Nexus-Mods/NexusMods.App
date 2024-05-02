@@ -6,7 +6,6 @@ using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
-using NexusMods.Abstractions.Loadouts.Sorting;
 using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.Abstractions.Triggers;
 using NexusMods.Games.MountAndBlade2Bannerlord.Extensions;
@@ -22,7 +21,7 @@ public class ModuleInfoSort : IGeneratedSortRule, ISortRule<Mod.Model, ModId>, I
 
     private static async IAsyncEnumerable<ISortRule<Mod.Model, ModId>> GetRules(ModuleInfoExtended moduleInfo, Loadout.Model loadout)
     {
-        ModId? GetModIdFromModuleId(string moduleId) => loadout.Mods.Values.FirstOrDefault(x => x.GetModuleInfo() is { } mi && mi.Id == moduleId)?.Id;
+        ModId? GetModIdFromModuleId(string moduleId) => loadout.Mods.FirstOrDefault(x => x.GetModuleInfo() is { } mi && mi.Id == moduleId)?.Id;
 
         await Task.Yield();
 
@@ -50,7 +49,7 @@ public class ModuleInfoSort : IGeneratedSortRule, ISortRule<Mod.Model, ModId>, I
         }
     }
 
-    public IAsyncEnumerable<ISortRule<Mod.Model, ModId>> GenerateSortRules(ModId selfId, Loadout loadout)
+    public IAsyncEnumerable<ISortRule<Mod.Model, ModId>> GenerateSortRules(ModId selfId, Loadout.Model loadout)
     {
         var thisMod = loadout.Mods[selfId];
         return thisMod.GetModuleInfo() is { } moduleInfo ? GetRules(moduleInfo, loadout) : AsyncEnumerable.Empty<ISortRule<Mod, ModId>>();

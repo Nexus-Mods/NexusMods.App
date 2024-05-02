@@ -22,6 +22,7 @@ using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceAttachments;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.MnemonicDB.Abstractions;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -43,12 +44,13 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
     private ISpineItemViewModel? _activeSpineItem;
 
     private ReadOnlyObservableCollection<ILeftMenuViewModel> _leftMenus = new([]);
+    private readonly IConnection _conn;
     [Reactive] public ILeftMenuViewModel? LeftMenuViewModel { get; private set; }
 
     public SpineViewModel(
         IServiceProvider serviceProvider,
         ILogger<SpineViewModel> logger,
-        ILoadoutRegistry loadoutRegistry,
+        IConnection conn,
         IWindowManager windowManager,
         IIconButtonViewModel addButtonViewModel,
         IIconButtonViewModel homeButtonViewModel,
@@ -58,6 +60,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         _serviceProvider = serviceProvider;
         _logger = logger;
         _windowManager = windowManager;
+        _conn = conn;
 
         // Setup the special spine items
         Home = homeButtonViewModel;

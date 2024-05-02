@@ -1,5 +1,6 @@
 ﻿using System.Reactive;
 using System.Windows.Input;
+using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -8,7 +9,7 @@ namespace NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModEnabled;
 
 public class ModEnabledDesignViewModel : AViewModel<IModEnabledViewModel>, IModEnabledViewModel
 {
-    public ModCursor Row { get; set; } = Initializers.ModId;
+    public ModId Row { get; set; } = Initializers.ModId;
 
     [Reactive]
     public bool Enabled { get; set; }

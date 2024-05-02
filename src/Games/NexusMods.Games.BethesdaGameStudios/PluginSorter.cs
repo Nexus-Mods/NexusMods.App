@@ -152,7 +152,7 @@ public class PluginSorter
     /// <param name="archive"></param>
     /// <param name="token"></param>
     /// <returns></returns>
-    private async Task<PluginAnalysisData?> GetAnalysis(StoredFile archive, CancellationToken token)
+    private async Task<PluginAnalysisData?> GetAnalysis(StoredFile.Model archive, CancellationToken token)
     {
         await using var stream = await _fileStore.GetFileStream(archive.Hash, token);
         return await _pluginAnalyzer.AnalyzeAsync(archive.To.FileName, stream, token);

@@ -22,7 +22,7 @@ namespace NexusMods.Abstractions.Loadouts.Mods;
 ///
 ///    This will change some time in the future.
 /// </remarks>
-public static class Mod
+public static partial class Mod
 {
     private const string Namespace = "NexusMods.Abstractions.Loadouts.Mods.Mod";
 
@@ -86,7 +86,7 @@ public static class Mod
             .Select(db => db.Get<Model>(id.Value));
     }
 
-    public class Model(ITransaction tx) : Entity(tx)
+    public partial class Model(ITransaction tx) : Entity(tx)
     {
         
         /// <summary>

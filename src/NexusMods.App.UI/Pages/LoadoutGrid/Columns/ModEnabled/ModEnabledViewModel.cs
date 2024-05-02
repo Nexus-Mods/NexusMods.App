@@ -3,19 +3,22 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Windows.Input;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.App.UI.Controls.DataGrid;
+using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModEnabled;
 
-public class ModEnabledViewModel : AViewModel<IModEnabledViewModel>, IModEnabledViewModel, IComparableColumn<ModCursor>
+public class ModEnabledViewModel : AViewModel<IModEnabledViewModel>, IModEnabledViewModel, IComparableColumn<ModId>
 {
-    private readonly ILoadoutRegistry _loadoutRegistry;
+    private readonly IConnection _conn;
 
     [Reactive]
-    public ModCursor Row { get; set; } = Initializers.ModId;
+    public ModId Row { get; set; } = Initializers.ModId;
 
     [Reactive]
     public bool Enabled { get; set; } = false;
@@ -29,52 +32,44 @@ public class ModEnabledViewModel : AViewModel<IModEnabledViewModel>, IModEnabled
     [Reactive]
     public ICommand DeleteModCommand { get; set; }
 
-    public ModEnabledViewModel(ILoadoutRegistry loadoutRegistry)
+    public ModEnabledViewModel(IConnection conn)
     {
-        _loadoutRegistry = loadoutRegistry;
+        _conn = conn;
 
         this.WhenActivated(d =>
         {
             this.WhenAnyValue(vm => vm.Row)
-                .SelectMany(loadoutRegistry.RevisionsAsMods)
+                .SelectMany(id => _conn.Revisions(id))
                 .Select(mod => mod.Enabled)
-                .BindToUi(this, vm => vm.Enabled)
+                .OnUI()
+                .BindTo(this, vm => vm.Enabled)
                 .DisposeWith(d);
 
             this.WhenAnyValue(vm => vm.Row)
-                .SelectMany(loadoutRegistry.RevisionsAsMods)
+                .SelectMany(id => _conn.Revisions(id))
                 .Select(mod => mod.Status)
+                .OnUI()
                 .BindTo(this, vm => vm.Status)
                 .DisposeWith(d);
         });
-        ToggleEnabledCommand = ReactiveCommand.Create<bool, Unit>(enabled =>
+        ToggleEnabledCommand = ReactiveCommand.CreateFromTask<bool, Unit>(async enabled =>
         {
-            var mod = loadoutRegistry.Get(Row);
-            if (mod is null) return Unit.Default;
-
-            var oldState = mod.Enabled ? "Enabled" : "Disabled";
-            var newState = !mod.Enabled ? "Enabled" : "Disabled";
-
-            loadoutRegistry.Alter(Row,
-                $"Setting {mod.Name} from {oldState} to {newState}",
-                mod =>
-                {
-                    if (mod?.Enabled == enabled) return mod;
-                    return mod! with { Enabled = enabled };
-                });
+            var old = _conn.Db.Get(Row);
+            await old.ToggleEnabled();
             return Unit.Default;
         });
-        DeleteModCommand = ReactiveCommand.Create(() =>
+        DeleteModCommand = ReactiveCommand.Create(async () =>
         {
-            var mod = loadoutRegistry.Get(Row)!;
-            loadoutRegistry.Alter(Row, $"Deleting mod {mod.Name}", _ => null);
+            var mod = _conn.Db.Get(Row);
+            await mod.Delete();
         });
     }
 
-    public int Compare(ModCursor a, ModCursor b)
+    public int Compare(ModId a, ModId b)
     {
-        var aEnt = _loadoutRegistry.Get(a);
-        var bEnt = _loadoutRegistry.Get(b);
+        var db = _conn.Db;
+        var aEnt = db.Get(a);
+        var bEnt = db.Get(b);
         return (aEnt?.Enabled ?? false).CompareTo(bEnt?.Enabled ?? false);
     }
 }

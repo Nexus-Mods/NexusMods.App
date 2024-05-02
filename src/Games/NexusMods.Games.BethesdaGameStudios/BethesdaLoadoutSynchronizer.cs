@@ -10,7 +10,7 @@ public class BethesdaLoadoutSynchronizer : ALoadoutSynchronizer
 {
     public BethesdaLoadoutSynchronizer(IServiceProvider provider) : base(provider) { }
 
-    public override async Task<Loadout> Manage(GameInstallation installation, string? suggestedName = null)
+    public override async Task<Loadout.Model> Manage(GameInstallation installation, string? suggestedName = null)
     {
         var loadout = await base.Manage(installation, suggestedName);
         return FixupLoadout(loadout);
@@ -21,9 +21,9 @@ public class BethesdaLoadoutSynchronizer : ALoadoutSynchronizer
     /// </summary>
     /// <param name="loadout"></param>
     /// <returns></returns>
-    protected virtual Loadout FixupLoadout(Loadout loadout)
+    protected virtual Loadout.Model FixupLoadout(Loadout.Model loadout)
     {
-        var gameMod = loadout.Mods.Where(m => m.Value.ModCategory == Mod.ModdingMetaData)
+        var gameMod = loadout.Mods.Where(m => m.Category == Mod.ModdingMetaData)
             .Select(m => m.Value)
             .FirstOrDefault();
 
