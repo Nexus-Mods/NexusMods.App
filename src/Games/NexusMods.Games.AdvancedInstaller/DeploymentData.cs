@@ -3,6 +3,7 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Games.AdvancedInstaller.Exceptions;
+using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees;
 using NexusMods.Paths.Trees.Traits;
@@ -105,7 +106,7 @@ public readonly struct DeploymentData
     /// </summary>
     /// <param name="archiveFiles">Files from the archive.</param>
     /// <returns>An IEnumerable of AModFile, representing the files to be moved and their target paths.</returns>
-    public IEnumerable<File.Model> EmitOperations(KeyedBox<RelativePath, ModFileTree> archiveFiles)
+    public IEnumerable<TempEntity> EmitOperations(KeyedBox<RelativePath, ModFileTree> archiveFiles)
     {
         // Written like this for clarity, use array in actual code.
         // Just an example, might not compile.
@@ -115,12 +116,11 @@ public readonly struct DeploymentData
             var src = RelativePath.FromUnsanitizedInput(mapping.Key);
             var file = archiveFiles.FindByPathFromChild(src)!;
 
-            yield return new StoredFile
+            yield return new TempEntity
             {
-                Id = ModFileId.NewId(),
-                To = mapping.Value,
-                Hash = file!.Item.Hash,
-                Size = file.Item.Size
+                { StoredFile.Hash, file.Item.Hash },
+                { StoredFile.Size, file.Item.Size },
+                { File.To, mapping.Value },
             };
         }
     }
