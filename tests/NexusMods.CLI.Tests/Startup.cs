@@ -19,6 +19,7 @@ using NexusMods.Settings;
 using NexusMods.SingleProcess;
 using NexusMods.StandardGameLocators;
 using NexusMods.StandardGameLocators.TestHelpers;
+using Xunit.DependencyInjection.Logging;
 
 namespace NexusMods.CLI.Tests;
 
@@ -48,7 +49,7 @@ public class Startup
                 .AddGames()
                 .AddInstallerTypes()
                 .AddCrossPlatform()
-                .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace))
+                .AddLogging(builder => builder.AddXunitOutput().SetMinimumLevel(LogLevel.Trace))
                 .AddSingleton<LocalHttpServer>()
                 .AddLogging(builder => builder.AddXUnit())
                 .Validate();

@@ -9,6 +9,7 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.Models;
+using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using File = NexusMods.Abstractions.Loadouts.Files.File;
 
 namespace NexusMods.Abstractions.Loadouts;
@@ -106,6 +107,19 @@ public static class Loadout
         /// Gets all the files in this loadout.
         /// </summary>
         public Entities<EntityIds, File.Model> Files => GetReverse<File.Model>(File.Loadout);
+
+
+        /// <summary>
+        /// Issue a new revision of this loadout into the transaction, this will increment the revision number
+        /// </summary>
+        public void Revise(ITransaction tx)
+        {
+            tx.Add(Id, static (innerTx, db, id) =>
+            {
+                var self = db.Get<Model>(id);
+                innerTx.Add(id, Loadout.Revision, self.Revision + 1);
+            });
+        }
     }
 
 }

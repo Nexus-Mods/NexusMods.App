@@ -58,17 +58,20 @@ public class ArchiveInstaller : IArchiveInstaller
         string modName = defaultModName ?? archiveName;
 
         ModId modId;
+        Mod.Model baseMod;
         {
             using var tx = _conn.BeginTransaction();
 
-            var baseMod = new Mod.Model(tx)
+            baseMod = new Mod.Model(tx)
             {
                 Name = modName,
                 Source = download,
                 Status = ModStatus.Installing,
                 Loadout = loadout,
             };
+            loadout.Revise(tx);
             var result = await tx.Commit();
+            baseMod = result.Remap(baseMod);
             modId = ModId.From(result[baseMod.Id]);
         }
 
@@ -145,9 +148,12 @@ public class ArchiveInstaller : IArchiveInstaller
             {
                 var entity = new TempEntity();
                 var result = results[idx];
-                if (idx == 0) 
+                if (idx == 0)
+                {
                     entity.Id = modId.Value;
-                
+                    baseMod.Revise(tx);
+                }
+
                 entity.Add(Mod.Name, result.Name ?? modName);
                 entity.Add(Mod.Loadout, loadoutId.Value);
                 entity.Add(Mod.Status, ModStatus.Installed);

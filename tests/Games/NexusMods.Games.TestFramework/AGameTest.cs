@@ -22,6 +22,7 @@ using NexusMods.DataModel.Loadouts;
 using NexusMods.Games.TestFramework.Downloader;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.Extensions;
 using NexusMods.Paths;
@@ -110,6 +111,12 @@ public abstract class AGameTest<TGame> where TGame : AGame
     {
         return await GameInstallation.GetGame().Synchronizer.Manage(GameInstallation);
     }
+    
+    /// <summary>
+    /// Reloads the entity from the database.
+    /// </summary>
+    protected T Refresh<T>(T entity) where T : IEntity
+        => Connection.Db.Get<T>(entity.Id);
 
     /// <summary>
     /// Downloads a mod and returns the <see cref="TemporaryPath"/> and <see cref="Hash"/> of it.

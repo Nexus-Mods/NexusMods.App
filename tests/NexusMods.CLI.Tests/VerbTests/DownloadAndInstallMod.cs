@@ -36,6 +36,7 @@ public class DownloadAndInstallMod(IServiceProvider serviceProvider, LocalHttpSe
         var makeUrl = $"{server.Uri}{url}";
         
         await Test.Run("download-and-install-mod", "-u", makeUrl, "-l", oldLoadoutId.ToString(), "-n", "TestMod");
+        loadout = Refresh(loadout);
         loadout.Revision.Should().NotBe(oldRevision, "the loadout has been updated");
 
         loadout.Mods.Count.Should().BeGreaterThan(origNumMods);

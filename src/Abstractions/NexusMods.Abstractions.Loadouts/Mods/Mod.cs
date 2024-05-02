@@ -1,14 +1,10 @@
-using System.Collections.Immutable;
-using NexusMods.Abstractions.DataModel.Entities;
-using NexusMods.Abstractions.DataModel.Entities.Sorting;
 using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
-using NexusMods.Abstractions.Serialization.Attributes;
-using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
+using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using Entity = NexusMods.MnemonicDB.Abstractions.Models.Entity;
 using File = NexusMods.Abstractions.Loadouts.Files.File;
 
@@ -33,6 +29,11 @@ public static class Mod
     /// Name of the mod in question.
     /// </summary>
     public static readonly StringAttribute Name = new(Namespace, nameof(Name));
+    
+    /// <summary>
+    /// Revision number of the mod.
+    /// </summary>
+    public static readonly ULongAttribute Revision = new(Namespace, nameof(Revision));
     
     /// <summary>
     /// The version of the mod.
@@ -87,6 +88,15 @@ public static class Mod
             set => Mod.Name.Add(this, value);
         }
         
+        /// <summary>
+        /// The revision number for this mod, increments by one for each change.
+        /// </summary>
+        public ulong Revision
+        {
+            get => Mod.Revision.Get(this, 0);
+            set => Mod.Revision.Add(this, value);
+        }
+        
         public string Version
         {
             get => Mod.Version.Get(this, "<unknown>");
@@ -137,6 +147,20 @@ public static class Mod
         
         public Entities<EntityIds, File.Model> Files => GetReverse<File.Model>(File.Mod);
         
+        
+        /// <summary>
+        /// Issue a new revision of this loadout into the transaction, this will increment the revision number,
+        /// and also revise the loadout this mod is part of.
+        /// </summary>
+        public void Revise(ITransaction tx)
+        {
+            tx.Add(Id, static (innerTx, db, id) =>
+            {
+                var self = db.Get<Model>(id);
+                innerTx.Add(id, Mod.Revision, self.Revision + 1);
+            });
+            Loadout.Revise(tx);
+        }
         
     }
 }
