@@ -1,26 +1,25 @@
 ﻿using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using NexusMods.Abstractions.Loadouts.Mods;
+using NexusMods.MnemonicDB.Abstractions;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModName;
 
-public class ModNameDesignViewModel : AViewModel<IModNameViewModel>, IModNameViewModel
+public class ModNameDesignViewModel : AColumnViewModel<IModNameViewModel, string>
 {
-    public ModCursor Row { get; set; } = Initializers.ModId;
-
-    [Reactive]
-    public string Name { get; set; } = "";
-
-    public ModNameDesignViewModel()
+    public ModNameDesignViewModel() : base()
     {
-        this.WhenActivated(d =>
-        {
-            this.WhenAnyValue(vm => vm.Row)
-                .Select(row => $"Name for ({row.ModId})")
-                .BindToUi(this, vm => vm.Name)
-                .DisposeWith(d);
-        });
+    }
+
+    protected override string Selector(Mod.Model model)
+    {
+        throw new NotImplementedException();
+    }
+
+    protected override int Compare(string a, string b)
+    {
+        throw new NotImplementedException();
     }
 }
