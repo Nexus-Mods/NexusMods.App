@@ -12,11 +12,11 @@ using ReactiveUI.Fody.Helpers;
 namespace NexusMods.App.UI.Pages.LoadoutGrid.Columns;
 
 public abstract class AColumnViewModel<TBaseInterface, TValue> : AViewModel<TBaseInterface>, IComparableColumn<ModId>
-    where TBaseInterface : class, IViewModelInterface
+    where TBaseInterface : class, IViewModelInterface, ICellViewModel<TValue>
 {
     private readonly IConnection _conn;
 
-    protected AColumnViewModel(IConnection conn, Expression<Func<Mod.Model, TValue?>> selector)
+    protected AColumnViewModel(IConnection conn)
     {
         _conn = conn;
         
@@ -36,9 +36,7 @@ public abstract class AColumnViewModel<TBaseInterface, TValue> : AViewModel<TBas
     /// A selector function to get the value of the column from the model
     /// </summary>
     protected abstract TValue Selector(Mod.Model model);
-
-    protected abstract TValue Binder();
-
+    
     /// <summary>
     /// A comparer function to compare two values of the column
     /// </summary>

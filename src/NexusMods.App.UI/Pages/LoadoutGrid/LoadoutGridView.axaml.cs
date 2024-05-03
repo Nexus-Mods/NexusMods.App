@@ -3,6 +3,7 @@ using System.Reactive.Linq;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using Avalonia.ReactiveUI;
+using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.App.UI.Resources;
 using ReactiveUI;
@@ -31,7 +32,7 @@ public partial class LoadoutGridView : ReactiveUserControl<ILoadoutGridViewModel
             Observable.FromEventPattern<SelectionChangedEventArgs>(
                 addHandler => ModsDataGrid.SelectionChanged += addHandler,
                 removeHandler => ModsDataGrid.SelectionChanged -= removeHandler)
-                .Select(_ => ModsDataGrid.SelectedItems.Cast<ModCursor>().ToArray())
+                .Select(_ => ModsDataGrid.SelectedItems.Cast<ModId>().ToArray())
                 .BindTo(ViewModel, vm => vm.SelectedItems)
                 .DisposeWith(d);
 
@@ -86,8 +87,8 @@ public partial class LoadoutGridView : ReactiveUserControl<ILoadoutGridViewModel
         var toDelete = new List<ModId>();
         foreach (var row in ModsDataGrid.SelectedItems)
         {
-            if (row is not ModCursor modCursor) continue;
-            toDelete.Add(modCursor.ModId);
+            if (row is not ModId id) continue;
+            toDelete.Add(id);
         }
         await ViewModel!.DeleteMods(toDelete, "Deleted by user via UI.");
     }

@@ -4,6 +4,7 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.App.UI.Pages.LoadoutGrid;
 
@@ -16,10 +17,10 @@ public record LoadoutGridContext : IPageFactoryContext
 [UsedImplicitly]
 public class LoadoutGridPageFactory : APageFactory<ILoadoutGridViewModel, LoadoutGridContext>
 {
-    private readonly ILoadoutRegistry _loadoutRegistry;
+    private readonly IConnection _conn;
     public LoadoutGridPageFactory(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        _loadoutRegistry = serviceProvider.GetRequiredService<ILoadoutRegistry>();
+        _conn = serviceProvider.GetRequiredService<IConnection>();
     }
 
     public static readonly PageFactoryId StaticId = PageFactoryId.From(Guid.Parse("c6221ce6-cf12-49bf-b32c-8138ef701cc5"));
@@ -36,8 +37,8 @@ public class LoadoutGridPageFactory : APageFactory<ILoadoutGridViewModel, Loadou
     {
         if (workspaceContext is not LoadoutContext loadoutContext) yield break;
 
-        var loadout = _loadoutRegistry.Get(loadoutContext.LoadoutId);
-        if (loadout is null) yield break;
+        var loadout = _conn.Db.Get(loadoutContext.LoadoutId);
+        if (!loadout.Contains(Loadout.Name)) yield break;
 
         yield return new PageDiscoveryDetails
         {

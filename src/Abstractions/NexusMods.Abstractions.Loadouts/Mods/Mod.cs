@@ -6,6 +6,7 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
+using NexusMods.MnemonicDB.Storage;
 using Entity = NexusMods.MnemonicDB.Abstractions.Models.Entity;
 using File = NexusMods.Abstractions.Loadouts.Files.File;
 
@@ -86,6 +87,7 @@ public static partial class Mod
             .Select(db => db.Get<Model>(id.Value));
     }
 
+
     public partial class Model(ITransaction tx) : Entity(tx)
     {
         
@@ -157,6 +159,20 @@ public static partial class Mod
             set => Mod.Category.Add(this, value);
         }
         
+        /// <summary>
+        /// The timestamp of the creation of this mod.
+        /// </summary>
+        public DateTime CreatedAt
+        {
+            get
+            {
+                // Get the lowest transaction id, then get the timestamp of that transaction
+                var t = this.Select(d => d.T).Min();
+                var txEntity = Db.Get<Entity>(EntityId.From(t.Value));
+                return BuiltInAttributes.TxTimestanp.Get(txEntity);
+            }
+        }
+
         public Entities<EntityIds, File.Model> Files => GetReverse<File.Model>(File.Mod);
         
         

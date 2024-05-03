@@ -12,6 +12,7 @@ using NexusMods.App.UI.Pages.ModInfo.Types;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.MnemonicDB.Abstractions;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -32,14 +33,14 @@ public class ModInfoViewModel : APageViewModel<IModInfoViewModel>, IModInfoViewM
     public IViewModelInterface SectionViewModel { get; set; }
 
     private readonly IServiceProvider _serviceProvider;
-    private readonly ILoadoutRegistry _registry;
+    private readonly IConnection _conn;
     private bool _isInvalid;
     private Dictionary<CurrentModInfoSection, IViewModelInterface> _cache = new();
 
-    public ModInfoViewModel(IWindowManager windowManager, IServiceProvider serviceProvider, ILoadoutRegistry registry) : base(windowManager)
+    public ModInfoViewModel(IWindowManager windowManager, IServiceProvider serviceProvider, IConnection conn) : base(windowManager)
     {
         _serviceProvider = serviceProvider;
-        _registry = registry;
+        _conn = conn;
         SectionViewModel = new DummyLoadingViewModel();
         
         this.WhenActivated(delegate(CompositeDisposable dp)
@@ -91,7 +92,7 @@ public class ModInfoViewModel : APageViewModel<IModInfoViewModel>, IModInfoViewM
         try
         {
             isInvalid = false;
-            return _registry.Get(LoadoutId, ModId)!.Name;
+            return _conn.Db.Get(ModId)!.Name;
         }
         catch (KeyNotFoundException ex)
         {

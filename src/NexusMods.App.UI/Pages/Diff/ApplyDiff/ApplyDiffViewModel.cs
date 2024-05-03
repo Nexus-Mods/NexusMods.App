@@ -9,6 +9,7 @@ using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Icons;
+using NexusMods.MnemonicDB.Abstractions;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -53,7 +54,7 @@ public class ApplyDiffViewModel : APageViewModel<IApplyDiffViewModel>, IApplyDif
         _loadoutId = loadoutId;
         _fileTreeViewModel = new DiffTreeViewModel(_loadoutId,
             _serviceProvider.GetRequiredService<IApplyService>(),
-            _serviceProvider.GetRequiredService<ILoadoutRegistry>()
+            _serviceProvider.GetRequiredService<IConnection>()
         );
 
         Refresh(_fileTreeViewModel);

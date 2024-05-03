@@ -78,6 +78,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         if (!_windowManager.TryGetActiveWindow(out var currentWindow)) return;
         var workspaceController = currentWindow.WorkspaceController;
 
+        /*
         this.WhenActivated(disposables =>
             {
                 loadoutRegistry.LoadoutRootChanges
@@ -174,6 +175,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                     .DisposeWith(disposables);
             }
         );
+        */
     }
 
     private Bitmap LoadImageFromStream(Stream iconStream)

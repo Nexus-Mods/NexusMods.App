@@ -7,9 +7,4 @@ namespace NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModInstalled;
 /// <summary>
 /// Displays the installed date of a mod.
 /// </summary>
-public interface IModInstalledViewModel : IColumnViewModel<ModId>
-{
-    public DateTime Installed { get; }
-
-    public ModStatus Status { get; }
-}
+public interface IModInstalledViewModel : IColumnViewModel<ModId>, ICellViewModel<DateTime>;

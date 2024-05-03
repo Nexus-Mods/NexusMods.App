@@ -7,7 +7,4 @@ namespace NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModVersion;
 /// <summary>
 /// Displays the version of a mod.
 /// </summary>
-public interface IModVersionViewModel : IColumnViewModel<ModId>
-{
-    public string Version { get; }
-}
+public interface IModVersionViewModel : IColumnViewModel<ModId>, ICellViewModel<string>;

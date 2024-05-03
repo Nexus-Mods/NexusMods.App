@@ -1,9 +1,11 @@
-﻿using NexusMods.Abstractions.Loadouts.Mods;
+﻿using JetBrains.Annotations;
+using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModName;
 
-public class ModNameViewModel(IConnection conn) : AColumnViewModel<IModNameViewModel, string>(conn)
+[UsedImplicitly]
+internal class ModNameViewModel(IConnection conn) : AColumnViewModel<IModNameViewModel, string>(conn), IModNameViewModel
 {
     protected override string Selector(Mod.Model model) => model.Name;
 

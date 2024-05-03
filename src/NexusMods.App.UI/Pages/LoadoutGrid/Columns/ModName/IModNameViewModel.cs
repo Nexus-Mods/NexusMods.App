@@ -7,7 +7,4 @@ namespace NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModName;
 /// <summary>
 /// Displays the name of a mod.
 /// </summary>
-public interface IModNameViewModel : IColumnViewModel<ModId>
-{
-    public string Name { get; }
-}
+public interface IModNameViewModel : IColumnViewModel<ModId>, ICellViewModel<string>;

@@ -15,6 +15,7 @@ using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Icons;
+using NexusMods.MnemonicDB.Abstractions;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Pages.MyGames;
@@ -22,7 +23,7 @@ namespace NexusMods.App.UI.Pages.MyGames;
 [UsedImplicitly]
 public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewModel
 {
-    private readonly ILoadoutRegistry _loadoutRegistry;
+    private readonly IConnection _conn;
     private readonly IServiceProvider _provider;
     private readonly IWindowManager _windowManager;
     private readonly ILogger<MyGamesViewModel> _logger;
@@ -36,7 +37,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
     public MyGamesViewModel(
         IWindowManager windowManager,
         IServiceProvider serviceProvider,
-        ILoadoutRegistry loadoutRegistry,
+        IConnection conn,
         ILogger<MyGamesViewModel> logger,
         IApplyService applyService,
         IEnumerable<IGame> games) : base(windowManager)
@@ -45,7 +46,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
 		TabIcon = IconValues.JoystickGameFilled;
         
         _provider = serviceProvider;
-        _loadoutRegistry = loadoutRegistry;
+        _conn = conn;
         _applyService = applyService;
         _windowManager = windowManager;
         _logger = logger;
@@ -56,8 +57,11 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
             .ToObservableCollection()
             .AsObservableChangeSet();
 
+        /*
         this.WhenActivated(d =>
             {
+                throw new NotImplementedException();
+                
                 var managedInstallations = _loadoutRegistry.LoadoutRootChanges
                     .Transform(loadoutId => (loadoutId, loadout: loadoutRegistry.Get(loadoutId)))
                     .Filter(tuple => tuple.loadout != null)
@@ -109,12 +113,16 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                     .Bind(out _detectedGames)
                     .SubscribeWithErrorLogging()
                     .DisposeWith(d);
+                    
             }
+            
         );
+        */
     }
 
     private async Task ManageGame(GameInstallation installation)
     {
+        /*
         var name = _loadoutRegistry.SuggestName(installation);
         var marker = await _loadoutRegistry.Manage(installation, name);
 
@@ -142,10 +150,12 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                 );
             }
         );
+        */
     }
 
     private void NavigateToLoadout(GameInstallation installation)
     {
+        /*
         var revId = _applyService.GetLastAppliedLoadout(installation);
         if (revId is null)
         {
@@ -187,5 +197,6 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                 );
             }
         );
+        */
     }
 }
