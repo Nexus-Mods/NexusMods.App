@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.HttpDownloader;
 using NexusMods.Abstractions.Settings;
+using NexusMods.CrossPlatform;
 using NexusMods.DataModel;
 using NexusMods.FileExtractor;
 using NexusMods.Networking.HttpDownloader;
