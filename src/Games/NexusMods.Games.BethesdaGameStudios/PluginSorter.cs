@@ -39,22 +39,24 @@ public class PluginSorter
 
     public async Task<RelativePath[]> Sort(FileTree tree, CancellationToken token)
     {
-        throw new NotImplementedException();
-        /*
         // Get all plugins and analyze them
         var allPlugins = await tree[Constants.DataFolder]
             .Children()
             .Where(c => c.IsFile())
             .Select(c => c.Value.Item.Value)
-            // For now we only support plugins that are not generated on-the-fly
-            .OfType<StoredFile>()
             .Where(f => SkyrimSpecialEdition.SkyrimSpecialEdition.PluginExtensions.Contains(f.To.Extension))
+            .Select(f =>
+                {
+                    f.IsStoredFile(out var stored);
+                    return stored;
+                }
+            )
             .SelectAsync(async f => await GetAnalysis(f, token))
             .Where(result => result is not null)
             .Select(result => result!)
             .ToArrayAsync(cancellationToken: token);
 
-        if (allPlugins.Length == 0) return Array.Empty<RelativePath>();
+        if (allPlugins.Length == 0) return [];
 
         var allNames = allPlugins.Select(p => p.FileName).ToHashSet();
         var missingMasters = allPlugins
@@ -84,7 +86,6 @@ public class PluginSorter
 
         // Return the sorted plugins, projected from the tuples
         return results.Select(r => r.Plugin).ToArray();
-        */
     }
 
     private IEnumerable<ISortRule<RuleTuple, RelativePath>> GenerateRules(PluginAnalysisData[] allPlugins, PluginAnalysisData plugin)
