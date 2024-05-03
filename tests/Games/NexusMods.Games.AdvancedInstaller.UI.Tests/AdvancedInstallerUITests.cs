@@ -7,6 +7,7 @@ using NexusMods.Games.AdvancedInstaller.UI.SelectLocation;
 using NexusMods.Games.AdvancedInstaller.UI.Tests.Helpers;
 using NexusMods.Paths;
 using NexusMods.Paths.TestingHelpers;
+using File = NexusMods.Abstractions.Loadouts.Files.File;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Tests;
 
@@ -29,7 +30,7 @@ public class AdvancedInstallerUITests
             { LocationId.AppData, fs.FromUnsanitizedFullPath(appdataDir.GetFullPath()) }
         });
 
-        Loadout? loadout = null;
+        Loadout.Model? loadout = null;
         return new BodyViewModel(deploymentData, "some-mod-name", fileTreeNode, gameLocationsRegister, loadout,
             "some-game-name");
     }
@@ -267,12 +268,9 @@ public class AdvancedInstallerUITests
 
         // Check output
         bodyVm.DeploymentData.EmitOperations(AdvancedInstallerTestHelpers.CreateTestFileTree())
-            .Select(aModFile =>
-            {
-                aModFile.Should().BeOfType<StoredFile>();
-                return (aModFile as StoredFile)!.To;
-            }).Should().BeEquivalentTo(
-                new List<GamePath>()
+            .Select(aModFile => aModFile.Get(File.To))
+            .Should().BeEquivalentTo(
+                new List<GamePath>
                 {
                     new(LocationId.Game, "Data/file1.txt"),
                     new(LocationId.Game, "Data/file2.txt"),
