@@ -34,12 +34,12 @@ Mod {Mod} has been made obsolete:
 file class MyDiagnosticLoadoutEmitter : ILoadoutDiagnosticEmitter
 {
     public IAsyncEnumerable<Diagnostic> Diagnose(
-        Loadout loadout,
+        Loadout.Model loadout,
         CancellationToken cancellationToken)
     {
         var res = new List<Diagnostic>();
 
-        var someMod = loadout.Mods.First().Value;
+        var someMod = loadout.Mods.First();
 
         // this "Create" method was generated for you
         res.Add(Diagnostics.CreateModCompatabilityObsolete(
