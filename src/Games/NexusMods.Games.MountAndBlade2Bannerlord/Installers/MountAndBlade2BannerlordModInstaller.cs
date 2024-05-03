@@ -78,8 +78,7 @@ public sealed class MountAndBlade2BannerlordModInstaller : AModInstaller
 
         var launcherManager = _launcherManagerFactory.Get(info);
 
-        throw new NotImplementedException();
-        /*
+        
         return moduleInfoFiles.Select(node =>
         {
             var (moduleInfoFile, moduleInfo) = node;
@@ -107,30 +106,20 @@ public sealed class MountAndBlade2BannerlordModInstaller : AModInstaller
                 var modulesFolderDepth = parent?.Depth() ?? 0;
 
                 var fromArchive = node.ToStoredFile(new GamePath(LocationId.Game, ModFolder.Join(path.DropFirst(modulesFolderDepth))));
-                throw new NotImplementedException();
-                
-                return fromArchive with
-                {
-                    Metadata = fromArchive.Metadata.AddRange(GetMetadata(moduleInfoWithPath, relativePath))
-                };
-                
+
+                return fromArchive;
+
             });
 
-            throw new NotImplementedException();
-            
             return new ModInstallerResult
             {
-                Id = ModId.NewId(),
+                Id = info.BaseModId,
                 Files = modFiles,
                 Name = moduleInfo.Name,
-                Version = moduleInfo.Version.ToString(),
-                SortRules = new []
-                {
-                    new ModuleInfoSort()
-                },
+                Version = moduleInfo.Version.ToString()
             };
             
         });
-*/
+
     }
 }

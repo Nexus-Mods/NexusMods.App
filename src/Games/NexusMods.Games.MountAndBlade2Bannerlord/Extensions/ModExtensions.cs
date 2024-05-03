@@ -9,8 +9,7 @@ internal static class ModExtensions
 {
     public static SubModuleFileMetadata? GetSubModuleFileMetadata(this Mod.Model mod)
     {
-        throw new NotImplementedException();
-        //return mod.Files.SelectMany(y => y.Metadata).OfType<SubModuleFileMetadata>().FirstOrDefault();
+        return mod.Files.SelectMany(y => y.Metadata).OfType<SubModuleFileMetadata>().FirstOrDefault();
     }
 
     public static ModuleInfoExtended? GetModuleInfo(this Mod.Model mod) => GetSubModuleFileMetadata(mod)?.ModuleInfo;
