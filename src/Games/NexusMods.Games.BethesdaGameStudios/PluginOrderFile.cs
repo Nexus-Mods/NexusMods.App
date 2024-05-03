@@ -5,6 +5,7 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
+using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.Extensions.BCL;
 using NexusMods.Hashing.xxHash64;
@@ -13,14 +14,12 @@ using NexusMods.Hashing.xxHash64;
 
 namespace NexusMods.Games.BethesdaGameStudios;
 
-/*
-[JsonName("NexusMods.Games.BethesdaGameStudios.PluginOrderFile")]
-public record PluginOrderFile : AModFile, IGeneratedFile, IToFile
-{
-    private static readonly GamePath Path = new(LocationId.AppData, "plugins.txt");
-
-    public GamePath To => Path;
-
+public record PluginOrderFile : IFileGenerator
+{ 
+    static UInt128 IGuidClass.Guid => new(0x3f1b_7b1b_4b1b_8b1b, 0x2b1b_1b1b_9b1b_6b1b);
+    
+    public static readonly GamePath Path = new(LocationId.AppData, "plugins.txt");
+    
     public async ValueTask<Hash?> Write(Stream stream, Loadout.Model loadout, FlattenedLoadout flattenedLoadout, FileTree fileTree)
     {
         var sorted = await ((ABethesdaGame)loadout.Installation.Game)
@@ -29,12 +28,4 @@ public record PluginOrderFile : AModFile, IGeneratedFile, IToFile
         await stream.WriteAllLinesAsync(sorted.Select(e => "*" + e.FileName));
         return null;
     }
-
-    
-    public ValueTask<AModFile> Update(DiskStateEntry newEntry, Stream stream)
-    {
-        return ValueTask.FromResult<AModFile>(new PluginOrderFile {Id = ModFileId.NewId()});
-    }
-    
 }
-*/

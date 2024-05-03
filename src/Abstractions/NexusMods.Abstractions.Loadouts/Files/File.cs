@@ -74,9 +74,8 @@ public static class File
         /// </summary>
         public bool IsStoredFile(out StoredFile.Model storedFile)
         {
-            storedFile = Db.Get<StoredFile.Model>(Id);
-            return this.Contains(StoredFile.Hash);
+            storedFile = this.Remap<StoredFile.Model>();
+            return Contains(StoredFile.Hash);
         }
-        
     }
 }

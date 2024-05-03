@@ -7,6 +7,7 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.Loadouts.Mods;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.CLI.Tests.VerbTests;
 using NexusMods.DataModel.Loadouts.Extensions;
 using NexusMods.DataModel.LoadoutSynchronizer.Extensions;
@@ -132,21 +133,23 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition.SkyrimSp
 
 
         var metadataFiles =
-            loadout.Mods.First(m => m.ModCategory == Mod.ModdingMetaData); // <= throws on failure
+            loadout.Mods.First(m => m.Category == ModCategory.Mod); // <= throws on failure
 
         var gameFiles =
-            loadout.Mods.First(m => m.ModCategory == Mod.GameFilesCategory); // <= throws on failure
+            loadout.Mods.First(m => m.Category == ModCategory.GameFiles); // <= throws on failure
 
         var modPath = FileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine("Assets/SMIM_Truncated_Plugins.7z");
         await InstallModStoredFileIntoLoadout(loadout, modPath, "SMIM");
 
-        var pluginOrderFile = metadataFiles.Files.OfType<PluginOrderFile>().First();
-
+        var file = metadataFiles.Files.First(f => f.IsGeneratedFile(out _));
+        file.IsGeneratedFile(out var pluginOrderFile);
+        var generator = pluginOrderFile.Generator;
+        
         var flattened = await loadout.ToFlattenedLoadout();
 
         await Task.Delay(100);
         using var ms = new MemoryStream();
-        await pluginOrderFile.Write(ms, loadout, flattened, await loadout.ToFileTree());
+        await generator.Write(ms, loadout, flattened, await loadout.ToFileTree());
         await ms.FlushAsync();
 
 
