@@ -12,7 +12,7 @@ public class LoadoutExtensionsTests : AGameTest<MountAndBlade2Bannerlord>
 {
     public LoadoutExtensionsTests(IServiceProvider serviceProvider) : base(serviceProvider) { }
 
-    private static LoadoutModuleViewModel ViewModelCreator(Mod mod, ModuleInfoExtendedWithPath moduleInfo, int index) => new()
+    private static LoadoutModuleViewModel ViewModelCreator(Mod.Model mod, ModuleInfoExtendedWithPath moduleInfo, int index) => new()
     {
         Mod = mod,
         ModuleInfoExtended = moduleInfo,
@@ -32,18 +32,18 @@ public class LoadoutExtensionsTests : AGameTest<MountAndBlade2Bannerlord>
         await loadoutMarker.AddButterLib(context);
         await loadoutMarker.AddHarmony(context);
 
-        var unsorted = loadoutMarker.Value.GetViewModels(ViewModelCreator).Select(x => x.Mod.Name).ToList();
-        var sorted = (await loadoutMarker.Value.GetSortedViewModelsAsync(ViewModelCreator)).Select(x => x.Mod.Name).ToList();
+        var unsorted = loadoutMarker.GetViewModels(ViewModelCreator).Select(x => x.Mod.Name).ToList();
+        var sorted = (await loadoutMarker.GetSortedViewModelsAsync(ViewModelCreator)).Select(x => x.Mod.Name).ToList();
 
-        unsorted.Should().BeEquivalentTo(new[]
-        {
+        unsorted.Should().BeEquivalentTo([
             "ButterLib",
             "Harmony",
-        });
-        sorted.Should().BeEquivalentTo(new[]
-        {
+            ]
+        );
+        sorted.Should().BeEquivalentTo([
             "Harmony",
             "ButterLib",
-        });
+            ]
+        );
     }
 }

@@ -24,11 +24,11 @@ public class MountAndBlade2BannerlordModInstallerTests : AModInstallerTest<Mount
 
         var mod = await InstallModStoredFileIntoLoadout(loadout, downloadId);
         mod.Files.Should().HaveCount(11);
-        mod.Files.Values.Cast<IToFile>().Should().AllSatisfy(x => x.To.Path.StartsWith("bin").Should().BeTrue());
-        mod.Files.Values.Cast<IToFile>().Should().Contain(x => x.To.FileName == "Bannerlord.BLSE.Shared.dll");
-        mod.Files.Values.Cast<IToFile>().Should().Contain(x => x.To.FileName == "Bannerlord.BLSE.Standalone.exe");
-        mod.Files.Values.Cast<IToFile>().Should().Contain(x => x.To.FileName == "Bannerlord.BLSE.Launcher.exe");
-        mod.Files.Values.Cast<IToFile>().Should().Contain(x => x.To.FileName == "Bannerlord.BLSE.LauncherEx.exe");
+        mod.Files.Should().AllSatisfy(x => x.To.Path.StartsWith("bin").Should().BeTrue());
+        mod.Files.Should().Contain(x => x.To.FileName == "Bannerlord.BLSE.Shared.dll");
+        mod.Files.Should().Contain(x => x.To.FileName == "Bannerlord.BLSE.Standalone.exe");
+        mod.Files.Should().Contain(x => x.To.FileName == "Bannerlord.BLSE.Launcher.exe");
+        mod.Files.Should().Contain(x => x.To.FileName == "Bannerlord.BLSE.LauncherEx.exe");
     }
 
     [Fact]
@@ -43,10 +43,10 @@ public class MountAndBlade2BannerlordModInstallerTests : AModInstallerTest<Mount
         var mod = await InstallModStoredFileIntoLoadout(loadout, downloadId);
         mod.Name.Should().BeEquivalentTo("Harmony");
         mod.Version.Should().BeEquivalentTo("v2.3.0.0");
-        mod.Files.Values.Cast<IToFile>().Should().HaveCount(49);
-        mod.Files.Values.Cast<IToFile>().Should().AllSatisfy(x => x.To.Path.StartsWith("Modules").Should().BeTrue());
-        mod.Files.Values.Cast<IToFile>().Should().Contain(x => x.To.FileName == "Bannerlord.Harmony.dll");
-        mod.Files.Values.Cast<IToFile>().Should().Contain(x => x.To.FileName == "SubModule.xml");
+        mod.Files.Should().HaveCount(49);
+        mod.Files.Should().AllSatisfy(x => x.To.Path.StartsWith("Modules").Should().BeTrue());
+        mod.Files.Should().Contain(x => x.To.FileName == "Bannerlord.Harmony.dll");
+        mod.Files.Should().Contain(x => x.To.FileName == "SubModule.xml");
     }
 
     [Fact]
@@ -65,15 +65,15 @@ public class MountAndBlade2BannerlordModInstallerTests : AModInstallerTest<Mount
         mod1.Name.Should().BeEquivalentTo("Custom Spawns API");
         mod1.Version.Should().BeEquivalentTo("v1.9.5.0");
         mod1.Files.Should().HaveCount(8);
-        mod1.Files.Values.Cast<IToFile>().Should().AllSatisfy(x => x.To.Path.StartsWith("Modules/CustomSpawns").Should().BeTrue());
-        mod1.Files.Values.Cast<IToFile>().Should().Contain(x => x.To.FileName == "CustomSpawns.dll");
-        mod1.Files.Values.Cast<IToFile>().Should().Contain(x => x.To.FileName == "SubModule.xml");
+        mod1.Files.Should().AllSatisfy(x => x.To.Path.StartsWith("Modules/CustomSpawns").Should().BeTrue());
+        mod1.Files.Should().Contain(x => x.To.FileName == "CustomSpawns.dll");
+        mod1.Files.Should().Contain(x => x.To.FileName == "SubModule.xml");
 
         mod2.Name.Should().BeEquivalentTo("Calradia At War");
         mod2.Version.Should().BeEquivalentTo("v1.9.1.0");
-        mod2.Files.Values.Cast<IToFile>().Should().HaveCount(20);
-        mod2.Files.Values.Cast<IToFile>().Should().AllSatisfy(x => x.To.Path.StartsWith("Modules/CalradiaAtWar").Should().BeTrue());
-        mod2.Files.Values.Cast<IToFile>().Should().Contain(x => x.To.FileName == "SubModule.xml");
+        mod2.Files.Should().HaveCount(20);
+        mod2.Files.Should().AllSatisfy(x => x.To.Path.StartsWith("Modules/CalradiaAtWar").Should().BeTrue());
+        mod2.Files.Should().Contain(x => x.To.FileName == "SubModule.xml");
     }
 
     [Fact]
@@ -93,9 +93,9 @@ public class MountAndBlade2BannerlordModInstallerTests : AModInstallerTest<Mount
             mod.Name.Should().BeEquivalentTo("Harmony");
             mod.Version.Should().BeEquivalentTo("v2.2.0.0");
             modFiles.Should().HaveCount(3);
-            modFiles.Cast<IToFile>().Should().AllSatisfy(x => x.To.Path.StartsWith("Modules/Test").Should().BeTrue());
-            modFiles.Cast<IToFile>().Should().Contain(x => x.To.FileName == "Bannerlord.Harmony.dll");
-            modFiles.Cast<IToFile>().Should().Contain(x => x.To.FileName == "SubModule.xml");
+            modFiles.Should().AllSatisfy(x => x.To.Path.StartsWith("Modules/Test").Should().BeTrue());
+            modFiles.Should().Contain(x => x.To.FileName == "Bannerlord.Harmony.dll");
+            modFiles.Should().Contain(x => x.To.FileName == "SubModule.xml");
         }
     }
     [Fact]
@@ -115,9 +115,9 @@ public class MountAndBlade2BannerlordModInstallerTests : AModInstallerTest<Mount
             mod.Name.Should().BeEquivalentTo("Harmony");
             mod.Version.Should().BeEquivalentTo("v2.2.0.0");
             modFiles.Should().HaveCount(3);
-            modFiles.Cast<IToFile>().Should().AllSatisfy(x => x.To.Path.StartsWith("Modules/Test").Should().BeTrue());
-            modFiles.Cast<IToFile>().Should().Contain(x => x.To.FileName == "Bannerlord.Harmony.dll");
-            modFiles.Cast<IToFile>().Should().Contain(x => x.To.FileName == "SubModule.xml");
+            modFiles.Should().AllSatisfy(x => x.To.Path.StartsWith("Modules/Test").Should().BeTrue());
+            modFiles.Should().Contain(x => x.To.FileName == "Bannerlord.Harmony.dll");
+            modFiles.Should().Contain(x => x.To.FileName == "SubModule.xml");
         }
     }
 }
