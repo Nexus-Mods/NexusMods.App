@@ -59,7 +59,7 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition.SkyrimSp
         // Note: can't create the loadout using CLI as it would index the game files,
         // and other tests might pollute the game folder in the meantime.
         var loadout = await CreateLoadout(indexGameFiles: false);
-        var loadoutName = loadout.Value.Name;
+        var loadoutName = loadout.Name;
 
         var modPath = FileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine("Assets/TruncatedPlugins.7z");
         await InstallModStoredFileIntoLoadout(loadout, modPath, "Skyrim Truncated Plugins");
@@ -132,21 +132,21 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition.SkyrimSp
 
 
         var metadataFiles =
-            loadout.Value.Mods.Values.First(m => m.ModCategory == Mod.ModdingMetaData); // <= throws on failure
+            loadout.Mods.First(m => m.ModCategory == Mod.ModdingMetaData); // <= throws on failure
 
         var gameFiles =
-            loadout.Value.Mods.Values.First(m => m.ModCategory == Mod.GameFilesCategory); // <= throws on failure
+            loadout.Mods.First(m => m.ModCategory == Mod.GameFilesCategory); // <= throws on failure
 
         var modPath = FileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine("Assets/SMIM_Truncated_Plugins.7z");
         await InstallModStoredFileIntoLoadout(loadout, modPath, "SMIM");
 
-        var pluginOrderFile = metadataFiles.Files.Values.OfType<PluginOrderFile>().First();
+        var pluginOrderFile = metadataFiles.Files.OfType<PluginOrderFile>().First();
 
-        var flattened = await loadout.Value.ToFlattenedLoadout();
+        var flattened = await loadout.ToFlattenedLoadout();
 
         await Task.Delay(100);
         using var ms = new MemoryStream();
-        await pluginOrderFile.Write(ms, loadout.Value, flattened, await loadout.Value.ToFileTree());
+        await pluginOrderFile.Write(ms, loadout, flattened, await loadout.ToFileTree());
         await ms.FlushAsync();
 
 

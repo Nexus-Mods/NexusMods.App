@@ -33,7 +33,7 @@ public class SkyrimLegendaryEditionTests(IServiceProvider serviceProvider) : AGa
         // Note: can't create the loadout using CLI as it would index the game files,
         // and other tests might pollute the game folder in the meantime.
         var loadout = await CreateLoadout(indexGameFiles: false);
-        var loadoutName = loadout.Value.Name;
+        var loadoutName = loadout.Name;
 
         var log = await _verbTester.Run("list-loadouts");
 
