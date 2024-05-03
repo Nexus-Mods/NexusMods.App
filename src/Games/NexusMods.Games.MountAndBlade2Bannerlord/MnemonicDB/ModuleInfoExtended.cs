@@ -1,11 +1,19 @@
+using Bannerlord.LauncherManager.Models;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
+using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord.MnemonicDB;
 
 public static class ModuleInfoExtended
 {
-    private const string Namespace = "NexusMods.Games.MountAndBlade2Bannerlord.Models";
+    private const string Namespace = "NexusMods.Games.MountAndBlade2Bannerlord.MnemonicDB.ModuleInfoExtended";
+    
+    /// <summary>
+    /// Path of the module.
+    /// </summary>
+    public static readonly RelativePathAttribute Path = new(Namespace, nameof(Path));
     
     /// <summary>
     /// The module ID.
@@ -42,4 +50,70 @@ public static class ModuleInfoExtended
     /// </summary>
     public static readonly BooleanAttribute IsServerModule = new(Namespace, nameof(IsServerModule));
     
+    /// <summary>
+    /// Sub-modules of the module.
+    /// </summary>
+    public static readonly ReferencesAttribute SubModules = new(Namespace, nameof(SubModules));
+    
+    /// <summary>
+    /// Modules that this module depends on.
+    /// </summary>
+    public static readonly ReferencesAttribute DependentModules = new(Namespace, nameof(DependentModules));
+    
+    /// <summary>
+    /// Modules that should be loaded after this module.
+    /// </summary>
+    public static readonly ReferencesAttribute ModulesToLoadAfterThis = new(Namespace, nameof(ModulesToLoadAfterThis));
+    
+    /// <summary>
+    /// Modules that are incompatible with this module.
+    /// </summary>
+    public static readonly ReferencesAttribute IncompatibleModules = new(Namespace, nameof(IncompatibleModules));
+    
+    /// <summary>
+    /// Metadata of dependent modules.
+    /// </summary>
+    public static readonly ReferencesAttribute DependentModuleMetadatas = new(Namespace, nameof(DependentModuleMetadatas));
+    
+    /// <summary>
+    /// Url of the module's page.
+    /// </summary>
+    public static readonly UrlAttribute Url = new(Namespace, nameof(Url));
+
+    /// <summary>
+    /// Adds the information of the module to the transaction.
+    /// </summary>
+    public static EntityId AddTo(ModuleInfoExtendedWithPath info, ITransaction tx)
+    {
+        var id = tx.TempId();
+        tx.Add(id, Path, info.Path);
+        tx.Add(id, ModuleId, info.Id);
+        tx.Add(id, Name, info.Name);
+        tx.Add(id, IsOfficial, info.IsOfficial);
+        tx.Add(id, Version, info.Version);
+        tx.Add(id, IsSingleplayerModule, info.IsSingleplayerModule);
+        tx.Add(id, IsMultiplayerModule, info.IsMultiplayerModule);
+        tx.Add(id, IsServerModule, info.IsServerModule);
+        
+        foreach (var subModule in info.SubModules)
+        {
+            var subModuleId = tx.TempId();
+            tx.Add(id, SubModules, subModuleId);
+            tx.Add(subModuleId, SubModuleInfo.Name, subModule.Name);
+            tx.Add(subModuleId, SubModuleInfo.DLLName, subModule.DLLName);
+            foreach (var assembly in subModule.Assemblies)
+                tx.Add(subModuleId, SubModuleInfo.Assemblies, assembly);
+        }
+        
+        foreach (var dependentModule in info.DependentModules)
+        {
+            var dependentModuleId = tx.TempId();
+            tx.Add(id, DependentModules, dependentModuleId);
+            tx.Add(dependentModuleId, DependentModule.ModuleId, dependentModule.Id);
+            tx.Add(dependentModuleId, DependentModule.Version, dependentModule.Version);
+            tx.Add(dependentModuleId, DependentModule.IsOptional, dependentModule.IsOptional);
+        }
+
+        return id;
+    }
 }

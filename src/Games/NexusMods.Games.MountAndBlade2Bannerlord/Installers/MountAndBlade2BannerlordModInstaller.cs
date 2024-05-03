@@ -12,6 +12,8 @@ using NexusMods.Extensions.BCL;
 using NexusMods.Games.MountAndBlade2Bannerlord.Models;
 using NexusMods.Games.MountAndBlade2Bannerlord.Services;
 using NexusMods.Games.MountAndBlade2Bannerlord.Sorters;
+using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Trees;
@@ -23,10 +25,12 @@ namespace NexusMods.Games.MountAndBlade2Bannerlord.Installers;
 public sealed class MountAndBlade2BannerlordModInstaller : AModInstaller
 {
     private readonly LauncherManagerFactory _launcherManagerFactory;
+    private readonly IConnection _conn;
 
     private MountAndBlade2BannerlordModInstaller(IServiceProvider serviceProvider) : base(serviceProvider)
     {
         _launcherManagerFactory = serviceProvider.GetRequiredService<LauncherManagerFactory>();
+        _conn = serviceProvider.GetRequiredService<IConnection>();
     }
 
     public static MountAndBlade2BannerlordModInstaller Create(IServiceProvider serviceProvider) => new(serviceProvider);
@@ -77,26 +81,37 @@ public sealed class MountAndBlade2BannerlordModInstaller : AModInstaller
         }
 
         var launcherManager = _launcherManagerFactory.Get(info);
-
         
-        return moduleInfoFiles.Select(node =>
+        var results = new List<ModInstallerResult>();
+
+        foreach (var node in moduleInfoFiles)
         {
             var (moduleInfoFile, moduleInfo) = node;
             var moduleRoot = moduleInfoFile.Parent();
             var moduleInfoWithPath = new ModuleInfoExtendedWithPath(moduleInfo, moduleInfoFile.Path());
-
+            
+            using var tx = _conn.BeginTransaction();
+            var moduleInfoId = MnemonicDB.ModuleInfoExtended.AddTo(moduleInfoWithPath, tx);
+            var txResult = await tx.Commit();
+            var moduleInfoIdEntity = txResult[moduleInfoId];
+            
+            
             // InstallModuleContent will only install mods if the ModuleInfoExtendedWithPath for a mod was provided
             var result = launcherManager.InstallModuleContent(moduleRoot!.GetFiles().Select(x => x.Path().ToString()).ToArray(), new[] { moduleInfoWithPath });
             var modFiles = result.Instructions.OfType<CopyInstallInstruction>().Select(instruction =>
             {
-                static IEnumerable<IMetadata> GetMetadata(ModuleInfoExtendedWithPath moduleInfo, RelativePath relativePath)
+                static TempEntity WithMetaData(TempEntity src, EntityId moduleInfo, RelativePath relativePath)
                 {
-                    yield return new ModuleFileMetadata { OriginalRelativePath = relativePath.Path };
-                    if (relativePath.Equals(SubModuleFile)) yield return new SubModuleFileMetadata
+                    src.Add(MnemonicDB.ModuleFileMetadata.OriginalRelativePath, relativePath.Path);
+
+                    if (relativePath.Equals(SubModuleFile))
                     {
-                        IsValid = true, // TODO: For now lets keep it true while we don't have the validation layer
-                        ModuleInfo = moduleInfo
-                    };
+                        // TODO: For now lets keep it true while we don't have the validation layer
+                        src.Add(MnemonicDB.SubModuleFileMetadata.IsValid, true); 
+                        src.Add(MnemonicDB.SubModuleFileMetadata.ModuleInfo, moduleInfo);
+                    }
+
+                    return src;
                 }
 
                 var relativePath = instruction.Source.ToRelativePath();
@@ -107,19 +122,21 @@ public sealed class MountAndBlade2BannerlordModInstaller : AModInstaller
 
                 var fromArchive = node.ToStoredFile(new GamePath(LocationId.Game, ModFolder.Join(path.DropFirst(modulesFolderDepth))));
 
-                return fromArchive;
+                return WithMetaData(fromArchive, moduleInfoIdEntity, relativePath);
 
             });
 
-            return new ModInstallerResult
+            var installerResult = new ModInstallerResult
             {
                 Id = info.BaseModId,
                 Files = modFiles,
                 Name = moduleInfo.Name,
                 Version = moduleInfo.Version.ToString()
             };
-            
-        });
+            results.Add(installerResult);
+        }
+
+        return results;
 
     }
 }
