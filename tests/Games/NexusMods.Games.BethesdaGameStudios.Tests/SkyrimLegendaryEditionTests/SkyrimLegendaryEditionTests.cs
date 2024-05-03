@@ -12,6 +12,7 @@ public class SkyrimLegendaryEditionTests(IServiceProvider serviceProvider) : AGa
     private readonly AVerbTest _verbTester = new AVerbTest(serviceProvider);
 
     [Fact]
+    // This fails after my rewrite to MnemonicDB, but it failed beforehand as well...so....
     [Trait("FlakeyTest", "True")]
     public async Task CanInstallAndApplyMostPopularMods()
     {
