@@ -130,6 +130,11 @@ public static class Loadout
         /// </summary>
         public Entities<EntityIds, File.Model> Files => GetReverse<File.Model>(File.Loadout);
 
+                
+        /// <summary>
+        /// Gets the mod with the given id from this loadout.
+        /// </summary>
+        public Mod.Model this[ModId idx] => Mods.First(m => m.ModId == idx);
 
         /// <summary>
         /// Issue a new revision of this loadout into the transaction, this will increment the revision number
@@ -142,6 +147,7 @@ public static class Loadout
                 innerTx.Add(id, Loadout.Revision, self.Revision + 1);
             });
         }
+
     }
 
 }

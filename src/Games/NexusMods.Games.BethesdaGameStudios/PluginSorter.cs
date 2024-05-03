@@ -39,6 +39,8 @@ public class PluginSorter
 
     public async Task<RelativePath[]> Sort(FileTree tree, CancellationToken token)
     {
+        throw new NotImplementedException();
+        /*
         // Get all plugins and analyze them
         var allPlugins = await tree[Constants.DataFolder]
             .Children()
@@ -82,6 +84,7 @@ public class PluginSorter
 
         // Return the sorted plugins, projected from the tuples
         return results.Select(r => r.Plugin).ToArray();
+        */
     }
 
     private IEnumerable<ISortRule<RuleTuple, RelativePath>> GenerateRules(PluginAnalysisData[] allPlugins, PluginAnalysisData plugin)

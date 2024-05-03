@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.FileStore.Trees;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Extensions.BCL;
@@ -77,6 +78,8 @@ public sealed class MountAndBlade2BannerlordModInstaller : AModInstaller
 
         var launcherManager = _launcherManagerFactory.Get(info);
 
+        throw new NotImplementedException();
+        /*
         return moduleInfoFiles.Select(node =>
         {
             var (moduleInfoFile, moduleInfo) = node;
@@ -104,12 +107,17 @@ public sealed class MountAndBlade2BannerlordModInstaller : AModInstaller
                 var modulesFolderDepth = parent?.Depth() ?? 0;
 
                 var fromArchive = node.ToStoredFile(new GamePath(LocationId.Game, ModFolder.Join(path.DropFirst(modulesFolderDepth))));
+                throw new NotImplementedException();
+                
                 return fromArchive with
                 {
                     Metadata = fromArchive.Metadata.AddRange(GetMetadata(moduleInfoWithPath, relativePath))
                 };
+                
             });
 
+            throw new NotImplementedException();
+            
             return new ModInstallerResult
             {
                 Id = ModId.NewId(),
@@ -121,6 +129,8 @@ public sealed class MountAndBlade2BannerlordModInstaller : AModInstaller
                     new ModuleInfoSort()
                 },
             };
+            
         });
+*/
     }
 }

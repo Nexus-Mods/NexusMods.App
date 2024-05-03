@@ -57,9 +57,9 @@ internal static class LoadoutExtensions
         return GetViewModels(loadout, loadout.Mods, viewModelCreator);
     }
 
-    public static bool HasModuleInstalled(this Loadout.Model loadout, string moduleId) => loadout.Mods.Values.Any(x =>
+    public static bool HasModuleInstalled(this Loadout.Model loadout, string moduleId) => loadout.Mods.Any(x =>
         x.GetModuleInfo() is { } moduleInfo && moduleInfo.Id.Equals(moduleId, StringComparison.OrdinalIgnoreCase));
 
-    public static bool HasInstalledFile(this Loadout.Model loadout, string filename) => loadout.Mods.Values.Any(x =>
+    public static bool HasInstalledFile(this Loadout.Model loadout, string filename) => loadout.Mods.Any(x =>
         x.GetModuleFileMetadatas().Any(y => y.OriginalRelativePath.EndsWith(filename, StringComparison.OrdinalIgnoreCase)));
 }

@@ -58,6 +58,10 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
     [Reactive] public ModId[] SelectedItems { get; set; } = Array.Empty<ModId>();
     public ReactiveCommand<NavigationInformation, Unit> ViewModContentsCommand { get; }
 
+    public LoadoutGridViewModel() : base(null!)
+    {
+        throw new NotImplementedException();
+    }
     public LoadoutGridViewModel(
         ILogger<LoadoutGridViewModel> logger,
         IServiceProvider provider,

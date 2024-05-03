@@ -260,7 +260,7 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition.SkyrimSp
     /// </summary>
     /// <param name="loadout"></param>
     /// <exception cref="NotImplementedException"></exception>
-    private async Task<Mod> InstallTruncatedPlugins(LoadoutMarker loadout)
+    private async Task<Mod.Model> InstallTruncatedPlugins(Loadout.Model loadout)
     {
         var path = FileSystem.GetKnownPath(KnownPath.EntryDirectory)
             .Combine("Assets/TruncatedPlugins.7z");
@@ -273,13 +273,14 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition.SkyrimSp
     {
         var loadout = await CreateLoadout(indexGameFiles: false);
 
-        loadout.Value.Mods.Values.SelectMany(m => m.Files.Values)
-            .OfType<IToFile>()
+        loadout.Mods.SelectMany(m => m.Files)
             .Where(t => t.To.FileName == "plugin_test.esp")
             .Should()
             .BeEmpty("the mod is not installed");
 
-        var pluginFile = (from mod in loadout.Value.Mods.Values
+        throw new NotImplementedException();
+        /*
+        var pluginFile = (from mod in loadout.Mods
                 from file in mod.Files.Values
                 where file is PluginOrderFile
                 select file)
@@ -354,6 +355,7 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition.SkyrimSp
 
         text.Should().Contain("Skyrim.esm");
         text.Should().Contain("plugin_test.esp", "plugin_test.esp is enabled again");
+        */
     }
 
     private static async Task<string[]> GetPluginOrder(AbsolutePath pluginFilePath)

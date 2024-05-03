@@ -15,12 +15,14 @@ namespace NexusMods.Games.MountAndBlade2Bannerlord.Sorters;
 
 [PublicAPI]
 [JsonName("NexusMods.Games.MountAndBlade2Bannerlord.Sorters.ModuleInfoSort")]
-public class ModuleInfoSort : IGeneratedSortRule, ISortRule<Mod.Model, ModId>, ITriggerFilter<ModId, Loadout.Model>
+public class ModuleInfoSort : ISortRule<Mod.Model, ModId>, ITriggerFilter<ModId, Loadout.Model>
 {
     public ITriggerFilter<ModId, Loadout.Model> TriggerFilter => this;
 
-    private static async IAsyncEnumerable<ISortRule<Mod.Model, ModId>> GetRules(ModuleInfoExtended moduleInfo, Loadout.Model loadout)
+    private static IAsyncEnumerable<ISortRule<Mod.Model, ModId>> GetRules(ModuleInfoExtended moduleInfo, Loadout.Model loadout)
     {
+        throw new NotImplementedException();
+        /*
         ModId? GetModIdFromModuleId(string moduleId) => loadout.Mods.FirstOrDefault(x => x.GetModuleInfo() is { } mi && mi.Id == moduleId)?.Id;
 
         await Task.Yield();
@@ -47,12 +49,13 @@ public class ModuleInfoSort : IGeneratedSortRule, ISortRule<Mod.Model, ModId>, I
                 throw new UnreachableException();
             }
         }
+        */
     }
 
     public IAsyncEnumerable<ISortRule<Mod.Model, ModId>> GenerateSortRules(ModId selfId, Loadout.Model loadout)
     {
-        var thisMod = loadout.Mods[selfId];
-        return thisMod.GetModuleInfo() is { } moduleInfo ? GetRules(moduleInfo, loadout) : AsyncEnumerable.Empty<ISortRule<Mod, ModId>>();
+        var thisMod = loadout[selfId];
+        return thisMod.GetModuleInfo() is { } moduleInfo ? GetRules(moduleInfo, loadout) : AsyncEnumerable.Empty<ISortRule<Mod.Model, ModId>>();
     }
 
     // From what I guess, we will need to re-sort either when a mod was added/removed or a mod version changed
@@ -60,15 +63,18 @@ public class ModuleInfoSort : IGeneratedSortRule, ISortRule<Mod.Model, ModId>, I
     // Investigate once testing is available
     public Hash GetFingerprint(ModId self, Loadout.Model loadout)
     {
+        throw new NotImplementedException();
+        /*
         var moduleInfos = loadout.Mods.Select(x => x.Value.GetModuleInfo()).OfType<ModuleInfoExtended>().OrderBy(x => x.Id).ToArray();
 
         using var fp = Fingerprinter.Create();
-        fp.Add(loadout.Mods[self].DataStoreId);
+        fp.Add(loadout[self].ModId);
         foreach (var moduleInfo in moduleInfos)
         {
             fp.Add(moduleInfo.Id);
             fp.Add(moduleInfo.Version.ToString());
         }
         return fp.Digest();
+        */
     }
 }

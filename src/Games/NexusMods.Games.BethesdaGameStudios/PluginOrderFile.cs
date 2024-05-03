@@ -13,6 +13,7 @@ using NexusMods.Hashing.xxHash64;
 
 namespace NexusMods.Games.BethesdaGameStudios;
 
+/*
 [JsonName("NexusMods.Games.BethesdaGameStudios.PluginOrderFile")]
 public record PluginOrderFile : AModFile, IGeneratedFile, IToFile
 {
@@ -29,8 +30,11 @@ public record PluginOrderFile : AModFile, IGeneratedFile, IToFile
         return null;
     }
 
+    
     public ValueTask<AModFile> Update(DiskStateEntry newEntry, Stream stream)
     {
         return ValueTask.FromResult<AModFile>(new PluginOrderFile {Id = ModFileId.NewId()});
     }
+    
 }
+*/

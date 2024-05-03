@@ -6,6 +6,7 @@ using Avalonia.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.UI;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.UI.Tests.Framework;
 
 namespace NexusMods.UI.Tests;
@@ -14,7 +15,7 @@ public class AUiTest
 {
     private readonly IServiceProvider _provider;
 
-    protected LoadoutRegistry LoadoutRegistry { get; }
+    protected IConnection Connection { get; }
     protected AvaloniaApp App { get; }
 
     public AUiTest(IServiceProvider provider)
@@ -23,7 +24,7 @@ public class AUiTest
 
         // Do this to trigger the AvaloniaApp constructor/initialization
         App = provider.GetRequiredService<AvaloniaApp>();
-        LoadoutRegistry = provider.GetRequiredService<LoadoutRegistry>();
+        Connection = provider.GetRequiredService<IConnection>();
     }
 
     protected VMWrapper<T> GetActivatedViewModel<T>()

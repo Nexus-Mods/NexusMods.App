@@ -40,15 +40,7 @@ public class SkyrimSpecialEdition : ABethesdaGame, ISteamGame, IGogGame, IXboxGa
             }
         };
     }
-
-    public override IEnumerable<AModFile> GetGameFiles(GameInstallation installation, IDataStore store)
-    {
-        yield return new PluginOrderFile
-        {
-            Id = ModFileId.NewId()
-        };
-    }
-
+    
     public IEnumerable<uint> SteamIds => new[] { 489830u };
 
     public IEnumerable<long> GogIds => new long[]

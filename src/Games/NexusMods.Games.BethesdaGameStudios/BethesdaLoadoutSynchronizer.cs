@@ -23,6 +23,8 @@ public class BethesdaLoadoutSynchronizer : ALoadoutSynchronizer
     /// <returns></returns>
     protected virtual Loadout.Model FixupLoadout(Loadout.Model loadout)
     {
+        throw new NotImplementedException();
+        /*
         var gameMod = loadout.Mods.Where(m => m.Category == Mod.ModdingMetaData)
             .Select(m => m.Value)
             .FirstOrDefault();
@@ -65,5 +67,6 @@ public class BethesdaLoadoutSynchronizer : ALoadoutSynchronizer
         }
 
         return loadout;
+        */
     }
 }

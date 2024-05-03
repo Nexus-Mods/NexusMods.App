@@ -4,11 +4,12 @@ using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using FluentAssertions;
 using NexusMods.Abstractions.Loadouts.Mods;
+using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.App.UI.Pages.LoadoutGrid;
 
 namespace NexusMods.UI.Tests.RightContent;
 
-public class LoadoutGridViewTests : AViewTest<LoadoutGridView, LoadoutGridDesignViewModel, ILoadoutGridViewModel>
+public class LoadoutGridViewTests : AViewTest<LoadoutGridView, LoadoutGridViewModel, ILoadoutGridViewModel>
 {
     public LoadoutGridViewTests(IServiceProvider provider) : base(provider) { }
 
@@ -17,15 +18,15 @@ public class LoadoutGridViewTests : AViewTest<LoadoutGridView, LoadoutGridDesign
     {
         var control = await GetControl<DataGrid>("ModsDataGrid");
 
-        var ids = new List<ModCursor>();
+        var ids = new List<ModId>();
         await OnUi(() =>
         {
-            control.ItemsSource.OfType<ModCursor>().Should().HaveCount(9);
+            control.ItemsSource.OfType<ModId>().Should().HaveCount(9);
 
             for (int i = 0; i < Random.Shared.Next(1, 4); i++)
             {
-                ids.Add(control.ItemsSource.OfType<ModCursor>().ElementAt(i));
-                control.SelectedItems.Add(control.ItemsSource.OfType<ModCursor>().ElementAt(i));
+                ids.Add(control.ItemsSource.OfType<ModId>().ElementAt(i));
+                control.SelectedItems.Add(control.ItemsSource.OfType<ModId>().ElementAt(i));
             }
 
         });
@@ -36,10 +37,10 @@ public class LoadoutGridViewTests : AViewTest<LoadoutGridView, LoadoutGridDesign
 
         await OnUi(() =>
         {
-            control.ItemsSource.OfType<ModCursor>().Should().HaveCount(9 - ids.Count);
+            control.ItemsSource.OfType<ModId>().Should().HaveCount(9 - ids.Count);
             foreach (var item in ids)
             {
-                control.ItemsSource.OfType<ModCursor>().Should().NotContain(item);
+                control.ItemsSource.OfType<ModId>().Should().NotContain(item);
             }
         });
     }
@@ -62,7 +63,8 @@ public class LoadoutGridViewTests : AViewTest<LoadoutGridView, LoadoutGridDesign
 
         await OnUi(() =>
         {
-            ViewModel.AddMod(new ModCursor(ViewModel.LoadoutId, ModId.NewId()));
+            throw new NotImplementedException();
+            //ViewModel.AddMod(new ModCursor(ViewModel.LoadoutId, ModId.NewId()));
         });
 
 

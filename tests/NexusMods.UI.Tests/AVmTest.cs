@@ -2,13 +2,16 @@
 using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.FileStore.ArchiveMetadata;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.App.UI;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 
@@ -27,21 +30,21 @@ where TVm : IViewModelInterface
     protected StubbedGame Game { get; }
     protected IFileSystem FileSystem { get; }
     protected GameInstallation Install { get; }
-    protected LoadoutRegistry LoadoutRegistry { get; }
+    protected IConnection Connection { get; }
 
     protected IDataStore DataStore { get; }
     protected IArchiveInstaller ArchiveInstaller { get; }
 
     protected IFileOriginRegistry FileOriginRegistry { get; }
 
-    private LoadoutMarker? _loadout;
-    protected LoadoutMarker Loadout => _loadout!;
+    private Loadout.Model? _loadout;
+    protected Loadout.Model Loadout => _loadout!;
 
     public AVmTest(IServiceProvider provider) : base(provider)
     {
         _vmWrapper = GetActivatedViewModel<TVm>();
         DataStore = provider.GetRequiredService<IDataStore>();
-        LoadoutRegistry = provider.GetRequiredService<LoadoutRegistry>();
+        Connection = provider.GetRequiredService<IConnection>();
         Game = provider.GetRequiredService<StubbedGame>();
         Install = Game.Installations.First();
         FileSystem = provider.GetRequiredService<IFileSystem>();
@@ -53,7 +56,7 @@ where TVm : IViewModelInterface
 
     public async Task InitializeAsync()
     {
-        _loadout = await LoadoutRegistry.Manage(Install, "Test");
+        _loadout = await ((IGame)Install.Game).Synchronizer.Manage(Install, "Test");
     }
 
     protected async Task<ModId[]> InstallMod(AbsolutePath path)
@@ -63,7 +66,7 @@ where TVm : IViewModelInterface
             {
                 tx.Add(id, FilePathMetadata.OriginalName, path.FileName);
             });
-        return await ArchiveInstaller.AddMods(Loadout.Value.LoadoutId, downloadId);
+        return await ArchiveInstaller.AddMods(Loadout.LoadoutId, downloadId);
     }
 
     public Task DisposeAsync()
