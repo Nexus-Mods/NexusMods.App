@@ -40,7 +40,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     private readonly IDataStore _store;
     private readonly IDiskStateRegistry _diskStateRegistry;
     private readonly ISorter _sorter;
-    private readonly IConnection _conn;
+    protected readonly IConnection Connection;
     private readonly IOSInformation _os;
     private IFileStore _fileStore;
 
@@ -69,7 +69,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         _diskStateRegistry = diskStateRegistry;
         _fileStore = fileStore;
         _sorter = sorter;
-        _conn = conn;
+        Connection = conn;
         _os = os;
     }
 
@@ -196,9 +196,9 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
 
                     toExtract.Add(KeyValuePair.Create(entry.Path, file.Remap<StoredFile.Model>()));
                 }
-                else if (IsGeneratedFile(file))
+                else if (file.IsGeneratedFile())
                 {
-                    toWrite.Add(KeyValuePair.Create(entry.Path, (File.Model)file));
+                    toWrite.Add(KeyValuePair.Create(entry.Path, file));
                 }
                 else
                 {
@@ -240,9 +240,9 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             {
                 toExtract.Add(KeyValuePair.Create(absolutePath, file.Remap<StoredFile.Model>()));
             }
-            else if (IsGeneratedFile(file))
+            else if (file.IsGeneratedFile())
             {
-                toWrite.Add(KeyValuePair.Create(absolutePath, (File.Model)file));
+                toWrite.Add(KeyValuePair.Create(absolutePath, file));
             }
             else
             {
@@ -416,7 +416,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             _logger.LogInformation("Found {Count} new files during ingest", newFiles.Count);
 
             var overridesMod = prevLoadout.Mods.FirstOrDefault(m => m.Category == ModCategory.Overrides);
-            using var tx = _conn.BeginTransaction();
+            using var tx = Connection.BeginTransaction();
             
             if (overridesMod == null)
             {
@@ -497,7 +497,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             .GroupBy(m => m.Category)
             .ToDictionary(g => g.Key, g => g.First());
         
-        using var tx = _conn.BeginTransaction();
+        using var tx = Connection.BeginTransaction();
 
         // Helper function to get a mod for a given category, or create a new one if it doesn't exist.
         Mod.Model ModForCategory(ModCategory category)
@@ -587,7 +587,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     {
         var overridesMod = loadout.Mods.FirstOrDefault(m => m.Category == ModCategory.Overrides);
         
-        using var tx = _conn.BeginTransaction();
+        using var tx = Connection.BeginTransaction();
         
         overridesMod ??= new Mod.Model(tx)
         {
@@ -756,7 +756,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                         );
                     }
                 }
-                else if (IsGeneratedFile(file))
+                else if (file.IsGeneratedFile())
                 {
                     // TODO: Implement change detection for generated files
                     continue;
@@ -801,7 +801,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                     );
                 }
             }
-            else if (IsGeneratedFile(file))
+            else if (file.IsGeneratedFile())
             {
                 // TODO: Implement change detection for generated files
                 continue;
@@ -854,14 +854,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
 
         await _fileStore.BackupFiles(archivedFiles);
     }
-
-    /// <inheritdoc />
-    public bool IsGeneratedFile(File.Model file)
-    {
-        return false;
-    }
-
-
+    
     /// <summary>
     /// True if the file is marked as deleted.
     /// </summary>
@@ -879,9 +872,16 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     }
 
     /// <inheritdoc />
-    public Task<Hash?> WriteGeneratedFile(File.Model file, Stream outputStream, Loadout.Model loadout, FlattenedLoadout flattenedLoadout, FileTree fileTree)
+    public async Task<Hash?> WriteGeneratedFile(File.Model file, Stream outputStream, Loadout.Model loadout, FlattenedLoadout flattenedLoadout, FileTree fileTree)
     {
-        throw new NotSupportedException("This method should be overridden by the game's syncronizer.");
+        if (!file.IsGeneratedFile(out var generatedFile))
+            throw new InvalidOperationException("File is not a generated file");
+
+        var generator = generatedFile.Generator;
+        if (generator == null)
+            throw new InvalidOperationException("Generated file does not have a generator");
+        
+        return await generator.Write(generatedFile, outputStream, loadout, flattenedLoadout, fileTree);
     }
 
     /// <inheritdoc />
@@ -890,9 +890,9 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         // Get the initial state of the game folders
         var (isCached, initialState) = await GetOrCreateInitialDiskState(installation);
         
-        using var tx = _conn.BeginTransaction();
+        using var tx = Connection.BeginTransaction();
 
-        var basis = _conn.Db;
+        var basis = Connection.Db;
         // Add the loadout
         var loadout = new Loadout.Model(tx)
         {

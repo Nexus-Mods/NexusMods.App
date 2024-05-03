@@ -19,6 +19,7 @@ public static class Services
     {
 #if DEBUG
         var serviceDescriptors = serviceCollection
+            .Where(sd => !sd.IsKeyedService)
             .Where(sd => sd.ImplementationType != null)
             .GroupBy(sd => (sd.ServiceType, sd.ImplementationType))
             .Where(g => g.Count() > 1)

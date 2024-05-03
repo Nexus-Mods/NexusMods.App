@@ -3,6 +3,7 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Games.TestFramework;
 using NexusMods.Paths;
+using static Xunit.Assert;
 
 namespace NexusMods.Games.BethesdaGameStudios.Tests.Installers;
 
@@ -95,10 +96,14 @@ public abstract class GenericFolderMatchInstallerTests<TGame> : AGameTest<TGame>
 
         foreach (var file in files)
         {
-            if (!file.To.Path.StartsWith("Data"))
-                Assert.Fail("Loose files should target data folder.");
+            if (file.IsStoredFile(out var storedFile))
+            {
+                if (!file.To.Path.StartsWith("Data"))
+                    Fail("Loose files should target data folder.");
+                continue;
+            }
 
-            Assert.Fail("File should be recognised as from archive.");
+            Fail("File should be recognised as from archive.");
         }
     }
 }

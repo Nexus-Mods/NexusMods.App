@@ -65,7 +65,7 @@ public static partial class Mod
     /// <summary>
     /// The category of the mod.
     /// </summary>
-    public static readonly EnumAttribute<ModCategory> Category = new(Namespace, nameof(Category));
+    public static readonly EnumAttribute<ModCategory> Category = new(Namespace, nameof(Category)) { IsIndexed = true };
     
     
     /// <summary>

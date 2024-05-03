@@ -2,18 +2,17 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
+using NexusMods.Abstractions.NexusWebApi.DTOs;
 using NexusMods.Abstractions.Serialization.DataModel;
 
 namespace NexusMods.Games.BethesdaGameStudios;
 
-public class BethesdaLoadoutSynchronizer : ALoadoutSynchronizer
+public class BethesdaLoadoutSynchronizer(IServiceProvider provider) : ALoadoutSynchronizer(provider)
 {
-    public BethesdaLoadoutSynchronizer(IServiceProvider provider) : base(provider) { }
-
     public override async Task<Loadout.Model> Manage(GameInstallation installation, string? suggestedName = null)
     {
         var loadout = await base.Manage(installation, suggestedName);
-        return FixupLoadout(loadout);
+        return await FixupLoadout(loadout);
     }
 
     /// <summary>
@@ -21,53 +20,45 @@ public class BethesdaLoadoutSynchronizer : ALoadoutSynchronizer
     /// </summary>
     /// <param name="loadout"></param>
     /// <returns></returns>
-    protected virtual Loadout.Model FixupLoadout(Loadout.Model loadout)
+    protected virtual async ValueTask<Loadout.Model> FixupLoadout(Loadout.Model loadout)
     {
-        return loadout;
-
-        /*
-        var gameMod = loadout.Mods.Where(m => m.Category == Mod.ModdingMetaData)
-            .Select(m => m.Value)
-            .FirstOrDefault();
-
-        ModId metadataModId;
-        if (gameMod == default)
+        var metadataMod = loadout.Mods
+            .FirstOrDefault(m => m.Category == ModCategory.Metadata);
+        
+        if (metadataMod == null)
         {
-            metadataModId = ModId.NewId();
-            loadout = loadout with
+            using var tx = Connection.BeginTransaction();
+            metadataMod = new Mod.Model(tx)
             {
-                Mods = loadout.Mods.With(metadataModId, new Mod()
-                {
-                    Id = metadataModId,
-                    Name = "Modding Metadata",
-                    ModCategory = Mod.ModdingMetaData,
-                    Files = EntityDictionary<ModFileId, AModFile>.Empty(loadout.Mods.Store),
-                    Enabled = true
-                })
+                Name = "Modding Metadata",
+                Category = ModCategory.Metadata,
+                Enabled = true,
+                Loadout = loadout,
             };
-        }
-        else
-        {
-            metadataModId = gameMod.Id;
+            loadout.Revise(tx);
+            var result = await tx.Commit();
+            metadataMod = result.Remap(metadataMod);
         }
 
-        gameMod = loadout.Mods[metadataModId];
-        var pluginFile = gameMod.Files.Values.OfType<PluginOrderFile>().FirstOrDefault();
+        
+        var mod = metadataMod.Files
+            .FirstOrDefault(f => f.IsGeneratedFile<PluginOrderFile>());
 
-        if (pluginFile == default)
+        if (mod == null)
         {
-            pluginFile = new PluginOrderFile { Id = ModFileId.NewId() };
-            gameMod = gameMod with
+            using var tx = Connection.BeginTransaction(); 
+            var generated = new GeneratedFile.Model(tx)
             {
-                Files = gameMod.Files.With(pluginFile.Id, pluginFile)
+                Loadout = loadout,
+                Mod = metadataMod,
+                To = PluginOrderFile.Path,
             };
-            loadout = loadout with
-            {
-                Mods = loadout.Mods.With(metadataModId, gameMod)
-            };
+            generated.SetGenerator<PluginOrderFile>();
+            metadataMod.Revise(tx);
+            var result = await tx.Commit(); 
+            loadout = result.Remap(loadout);
         }
 
         return loadout;
-        */
     }
 }

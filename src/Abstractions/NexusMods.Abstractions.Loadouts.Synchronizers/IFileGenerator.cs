@@ -17,5 +17,8 @@ public interface IFileGenerator : IGuidClass
     /// <exception cref="NotSupportedException"></exception>
     static UInt128 IGuidClass.Guid => throw new NotSupportedException();
 
-    public ValueTask<Hash?> Write(Stream stream, Loadout.Model loadout, FlattenedLoadout flattenedLoadout, FileTree fileTree);
+    /// <summary>
+    /// Writes the contents of the file to the stream.
+    /// </summary>
+    public ValueTask<Hash?> Write(GeneratedFile.Model generatedFile, Stream stream, Loadout.Model loadout, FlattenedLoadout flattenedLoadout, FileTree fileTree);
 }

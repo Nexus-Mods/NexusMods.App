@@ -85,12 +85,7 @@ public interface IStandardizedLoadoutSynchronizer : ILoadoutSynchronizer
     
     
     #region File Helpers
-
-    /// <summary>
-    /// Returns true if the file is a generated file.
-    /// </summary>
-    bool IsGeneratedFile(File.Model file);
-
+    
     /// <summary>
     /// Writes a generated file to the output stream.
     /// </summary>

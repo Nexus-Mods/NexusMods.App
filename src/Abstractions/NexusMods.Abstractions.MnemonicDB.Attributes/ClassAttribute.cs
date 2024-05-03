@@ -20,15 +20,6 @@ where TType : IGuidClass
     protected override UInt128 FromLowLevel(UInt128 value, ValueTags tags) => value;
     
     /// <summary>
-    /// Adds the value to the transaction.
-    /// </summary>
-    /// <param name="entity"></param>
-    /// <param name="value"></param>
-    public void Add<TActual>(IEntityWithTx entity, TActual value) 
-        where TActual : TType, IGuidClass
-        => base.Add(entity, TActual.Guid);
-    
-    /// <summary>
     /// Gets the instance of the class from the DI container.
     /// </summary>
     public TType GetInstance(Entity entity) 

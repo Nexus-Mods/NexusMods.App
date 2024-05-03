@@ -8,7 +8,11 @@ public static class GeneratedFile
 {
     private const string Namespace = "NexusMods.Abstractions.Loadouts.Files.GeneratedFile";
     
-    public static readonly ClassAttribute<IFileGenerator> Generator = new("NexusMods.Abstractions.Loadouts.Files.GeneratedFile", nameof(Generator));
+    /// <summary>
+    /// The generator unique ID for the file, this specifies the class that is used to generate
+    /// the contents of this file. 
+    /// </summary>
+    public static readonly ClassAttribute<IFileGenerator> Generator = new("NexusMods.Abstractions.Loadouts.Files.GeneratedFile", nameof(Generator)) { IsIndexed = true };
 
     public class Model(ITransaction tx) : File.Model(tx)
     {
@@ -23,10 +27,10 @@ public static class GeneratedFile
         /// <summary>
         /// Set the generator for this file.
         /// </summary>
-        public void SetGenerator<TType>(TType generator)
+        public void SetGenerator<TType>()
         where TType : IFileGenerator
         {
-            GeneratedFile.Generator.Add(this, generator);
+            GeneratedFile.Generator.Add(this, TType.Guid);
         }
     }
 }
@@ -44,4 +48,17 @@ public static class FileModelExtensions
         generatedFile = model.Remap<GeneratedFile.Model>();
         return model.Contains(GeneratedFile.Generator);
     }
+
+    /// <summary>
+    /// Returns true if the file is a generated file of the specified type.
+    /// </summary>
+    public static bool IsGeneratedFile<TType>(this File.Model model)
+    where TType : IFileGenerator =>
+        model.TryGet(GeneratedFile.Generator, out var val) && val == TType.Guid;
+    
+    /// <summary>
+    /// Returns true if the file is a generated file.
+    /// </summary>
+    public static bool IsGeneratedFile(this File.Model model) =>
+        model.Contains(GeneratedFile.Generator);
 }

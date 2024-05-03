@@ -105,7 +105,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
     /// <returns></returns>
     protected async Task<Loadout.Model> CreateLoadout(bool indexGameFiles = true)
     {
-        return await GameInstallation.GetGame().Synchronizer.Manage(GameInstallation);
+        return await GameInstallation.GetGame().Synchronizer.Manage(GameInstallation, Guid.NewGuid().ToString());
     }
     
     /// <summary>

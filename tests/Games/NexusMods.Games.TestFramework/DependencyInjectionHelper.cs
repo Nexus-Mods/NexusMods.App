@@ -3,6 +3,7 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.HttpDownloader;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Settings;
 using NexusMods.CrossPlatform;
 using NexusMods.DataModel;
@@ -53,6 +54,7 @@ public static class DependencyInjectionHelper
             .AddNexusWebApi(true)
             .AddHttpDownloader()
             .AddDataModel()
+            .AddLoadoutsSynchronizers()
             .OverrideSettingsForTests<DataModelSettings>(settings => settings with
             {
                 UseInMemoryDataModel = true,
