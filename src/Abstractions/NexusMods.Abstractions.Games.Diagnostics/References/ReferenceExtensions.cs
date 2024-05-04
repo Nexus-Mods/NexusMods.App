@@ -16,14 +16,11 @@ public static class ReferenceExtensions
     /// </summary>
     public static LoadoutReference ToReference(this Loadout.Model loadout)
     {
-        throw new NotImplementedException();
-        /*
         return new LoadoutReference
         {
             DataId = loadout.LoadoutId,
-            DataStoreId = loadout.DataStoreId
+            TxId = loadout.Db.BasisTxId,
         };
-        */
     }
 
     /// <summary>
@@ -31,14 +28,11 @@ public static class ReferenceExtensions
     /// </summary>
     public static ModReference ToReference(this Mod.Model mod, Loadout.Model loadout)
     {
-        throw new NotImplementedException();
-        /*
         return new ModReference
         {
-            DataId = new ModCursor(loadout.LoadoutId, mod.Id),
-            DataStoreId = mod.DataStoreId
+            DataId = mod.ModId,
+            TxId = mod.Db.BasisTxId,
         };
-        */
     }
 
     /// <summary>
@@ -46,13 +40,10 @@ public static class ReferenceExtensions
     /// </summary>
     public static ModFileReference ToReference(this File.Model modFile)
     {
-        throw new NotImplementedException();
-        /*
         return new ModFileReference
         {
-            DataId = modFile.Id,
-            DataStoreId = modFile.DataStoreId
+            DataId = modFile.FileId,
+            TxId = modFile.Db.BasisTxId,
         };
-        */
     }
 }

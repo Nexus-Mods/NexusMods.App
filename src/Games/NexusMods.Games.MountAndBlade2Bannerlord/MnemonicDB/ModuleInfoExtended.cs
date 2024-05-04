@@ -3,6 +3,7 @@ using Bannerlord.ModuleManager;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
+using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 
@@ -118,6 +119,20 @@ public static class ModuleInfoExtended
             tx.Add(dependentModuleId, DependentModule.IsOptional, dependentModule.IsOptional);
         }
 
+
+        foreach (var meta in info.DependentModuleMetadatas)
+        {
+            var metaId = tx.TempId();
+            tx.Add(id, DependentModuleMetadatas, metaId);
+            tx.Add(metaId, DependentModuleMetadata.MetaId, meta.Id);
+            tx.Add(metaId, DependentModuleMetadata.LoadType, meta.LoadType);
+            tx.Add(metaId, DependentModuleMetadata.IsOptional, meta.IsOptional);
+            tx.Add(metaId, DependentModuleMetadata.IsIncompatible, meta.IsIncompatible);
+            tx.Add(metaId, DependentModuleMetadata.Version, meta.Version);
+            tx.Add(metaId, DependentModuleMetadata.MinVersion, meta.VersionRange.Min);
+            tx.Add(metaId, DependentModuleMetadata.MaxVersion, meta.VersionRange.Max);
+        }
+
         return id;
     }
 
@@ -167,7 +182,38 @@ public static class ModuleInfoExtended
             init => ModuleInfoExtended.IsServerModule.Add(this, value);
         }
         
-        
+        /// <summary>
+        /// The dependent modules of the module.
+        /// </summary>
+        public IEnumerable<DependentModule.Model> DependentModules
+        {
+            get
+            {
+                if (!ModuleInfoExtended.DependentModules.IsIn(Db, Id))
+                    return Enumerable.Empty<DependentModule.Model>();
+                return ModuleInfoExtended.DependentModules
+                    .Get(this)
+                    .Select(id => Db.Get<DependentModule.Model>(id));
+            }
+        }
+
+        /// <summary>
+        /// The dependent module metadata of the module.
+        /// </summary>
+        public IEnumerable<DependentModuleMetadata.Model> DependentModuleMetadatas
+        {
+            get
+            {
+                if (!ModuleInfoExtended.DependentModuleMetadatas.IsIn(Db, Id))
+                    return Enumerable.Empty<DependentModuleMetadata.Model>();
+                
+                return ModuleInfoExtended.DependentModuleMetadatas
+                    .Get(this)
+                    .Select(id => Db.Get<DependentModuleMetadata.Model>(id));
+            }
+        }
+
+
         /// <summary>
         /// Convert a MneumonicDB entity to a ModuleInfoExtendedWithPath.
         /// </summary>
@@ -182,6 +228,8 @@ public static class ModuleInfoExtended
                 IsSingleplayerModule = IsSingleplayerModule,
                 IsMultiplayerModule = IsMultiplayerModule,
                 IsServerModule = IsServerModule,
+                DependentModules = DependentModules.Select(dm => dm.ToDependentModule()).ToList(),
+                DependentModuleMetadatas = DependentModuleMetadatas.Select(dm => dm.ToModuleManagerDependentModuleMetadata()).ToList(),
             };
         }
         

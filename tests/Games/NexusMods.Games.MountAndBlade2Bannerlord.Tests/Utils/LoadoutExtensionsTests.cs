@@ -25,15 +25,17 @@ public class LoadoutExtensionsTests : AGameTest<MountAndBlade2Bannerlord>
     [Fact]
     public async Task Test_GetViewModels()
     {
-        var loadoutMarker = await CreateLoadout();
+        var loadout = await CreateLoadout();
 
         var context = AGameTestContext.Create(CreateTestArchive, InstallModStoredFileIntoLoadout);
 
-        await loadoutMarker.AddButterLib(context);
-        await loadoutMarker.AddHarmony(context);
+        await loadout.AddButterLib(context);
+        await loadout.AddHarmony(context);
 
-        var unsorted = loadoutMarker.GetViewModels(ViewModelCreator).Select(x => x.Mod.Name).ToList();
-        var sorted = (await loadoutMarker.GetSortedViewModelsAsync(ViewModelCreator)).Select(x => x.Mod.Name).ToList();
+        Refresh(ref loadout);
+
+        var unsorted = loadout.GetViewModels(ViewModelCreator).Select(x => x.Mod.Name).ToList();
+        var sorted = (await loadout.GetSortedViewModelsAsync(ViewModelCreator)).Select(x => x.Mod.Name).ToList();
 
         unsorted.Should().BeEquivalentTo([
             "ButterLib",

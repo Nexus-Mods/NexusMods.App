@@ -24,7 +24,8 @@ public static class ServicesExtensions
             .AddAttributeCollection(typeof(MnemonicDB.DependentModule))
             .AddAttributeCollection(typeof(MnemonicDB.SubModuleInfo))
             .AddAttributeCollection(typeof(MnemonicDB.SubModuleFileMetadata))
-            .AddAttributeCollection(typeof(MnemonicDB.ModuleFileMetadata));
+            .AddAttributeCollection(typeof(MnemonicDB.ModuleFileMetadata))
+            .AddAttributeCollection(typeof(MnemonicDB.DependentModuleMetadata));
 
         return services;
     }

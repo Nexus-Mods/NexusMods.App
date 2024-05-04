@@ -29,7 +29,8 @@ public class BuiltInEmitter : ILoadoutDiagnosticEmitter
         var ctx = new ModuleContext(lookup);
         foreach (var moduleViewModel in viewModels)
         {
-            foreach (var diagnostic in ModuleUtilities.ValidateModule(modules, moduleViewModel.ModuleInfoExtended, ctx.GetIsSelected, ctx.GetIsValid).Select(x => Render(loadout, moduleViewModel.Mod, x)))
+            foreach (var diagnostic in ModuleUtilities.ValidateModule(modules, moduleViewModel.ModuleInfoExtended, ctx.GetIsSelected, ctx.GetIsValid)
+                         .Select(x => Render(loadout, moduleViewModel.Mod, x)))
             {
                 yield return diagnostic;
             }

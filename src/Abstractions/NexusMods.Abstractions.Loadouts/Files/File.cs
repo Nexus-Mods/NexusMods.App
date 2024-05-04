@@ -1,4 +1,5 @@
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.MnemonicDB.Abstractions;
@@ -36,6 +37,12 @@ public static class File
     /// <param name="tx"></param>
     public class Model(ITransaction tx) : Entity(tx)
     {
+
+        /// <summary>
+        /// Gets the file id
+        /// </summary>
+        public FileId FileId => FileId.From(Id);
+
         public EntityId LoadoutId
         {
             get => File.Loadout.Get(this);

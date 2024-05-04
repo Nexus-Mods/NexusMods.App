@@ -30,18 +30,20 @@ public class BuiltInEmitterTests : ALoadoutDiagnosticEmitterTest<MountAndBlade2B
     [Fact]
     public async Task Test_Emitter2()
     {
-        var loadoutMarker = await CreateLoadout();
+        var loadout = await CreateLoadout();
 
         var context = AGameTestContext.Create(CreateTestArchive, InstallModStoredFileIntoLoadout);
 
-        await loadoutMarker.AddNative(context);
-        var modA = await loadoutMarker.AddButterLib(context);
+        await loadout.AddNative(context);
+        var modA = await loadout.AddButterLib(context);
 
-        var diagnostic = await GetSingleDiagnostic(loadoutMarker);
+        Refresh(ref loadout);
+
+        var diagnostic = await GetSingleDiagnostic(loadout);
         diagnostic.Id.Should().Be(new DiagnosticId(BuiltInEmitter.Source, (ushort) ModuleIssueType.MissingDependencies));
         diagnostic.DataReferences.Values.Should().Equal(
-            loadoutMarker.ToReference(),
-            modA.ToReference(loadoutMarker)
+            loadout.ToReference(),
+            modA.ToReference(loadout)
         );
     }
 }

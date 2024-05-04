@@ -3,7 +3,7 @@ using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Serialization.DataModel.Ids;
-
+using NexusMods.MnemonicDB.Abstractions;
 using File = NexusMods.Abstractions.Loadouts.Files.File;
 
 namespace NexusMods.Abstractions.Diagnostics.References;
@@ -15,17 +15,16 @@ namespace NexusMods.Abstractions.Diagnostics.References;
 public record ModFileReference : IDataReference<FileId, File.Model>
 {
     /// <inheritdoc/>
-    public required IId DataStoreId { get; init; }
+    public required TxId TxId { get; init; }
 
     /// <inheritdoc/>
     public required FileId DataId { get; init; }
 
     /// <inheritdoc/>
-    public File.Model? ResolveData(IServiceProvider serviceProvider, IDataStore dataStore)
+    public File.Model? ResolveData(IServiceProvider serviceProvider, IConnection conn)
     {
-        throw new NotImplementedException();
-        
-        //return dataStore.Get<AModFile>(DataStoreId);
+        var db = conn.AsOf(TxId);
+        return db.Get<File.Model>(DataId.Value);
     }
 
     /// <inheritdoc/>
