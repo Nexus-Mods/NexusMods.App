@@ -24,6 +24,7 @@ public class MountAndBlade2BannerlordLoadoutSynchronizerTests : AGameTest<MountA
         await loadout.AddButterLib(context);
         await loadout.AddHarmony(context);
 
+        Refresh(ref loadout);
         var mod = loadout.Mods.First(m => m.Name == "ButterLib");
         var nameForId = loadout.Mods.ToDictionary(m => ModId.From(m.Id), m => m.Name);
         var rules = await loadoutSynchronizer.ModSortRules(loadout, mod);

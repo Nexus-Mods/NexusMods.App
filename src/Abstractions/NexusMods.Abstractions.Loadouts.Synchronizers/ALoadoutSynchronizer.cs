@@ -976,7 +976,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// <param name="mod"></param>
     /// <returns></returns>
     /// <exception cref="NotImplementedException"></exception>
-    protected virtual async ValueTask<ISortRule<Mod.Model, ModId>[]> ModSortRules(Loadout.Model loadout, Mod.Model mod)
+    public virtual async ValueTask<ISortRule<Mod.Model, ModId>[]> ModSortRules(Loadout.Model loadout, Mod.Model mod)
     {
         if (mod.Category == ModCategory.GameFiles)
             return [new First<Mod.Model, ModId>()];

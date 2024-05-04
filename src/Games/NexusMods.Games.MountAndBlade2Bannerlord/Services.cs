@@ -19,7 +19,6 @@ public static class ServicesExtensions
             .AddSingleton<ILoadoutDiagnosticEmitter, BuiltInEmitter>()
             .AddSingleton<ITool, RunStandaloneTool>()
             .AddSingleton<ITool, RunLauncherTool>()
-            .AddSingleton<ITypeFinder, TypeFinder>()
             .AddAttributeCollection(typeof(MnemonicDB.ModuleInfoExtended))
             .AddAttributeCollection(typeof(MnemonicDB.DependentModule))
             .AddAttributeCollection(typeof(MnemonicDB.SubModuleInfo))
