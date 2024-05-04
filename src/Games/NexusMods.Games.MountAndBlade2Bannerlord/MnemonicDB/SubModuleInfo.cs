@@ -1,5 +1,7 @@
 using NexusMods.Abstractions.MnemonicDB.Attributes;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
+using NexusMods.MnemonicDB.Abstractions.Models;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord.MnemonicDB;
 
@@ -21,5 +23,22 @@ public static class SubModuleInfo
     /// Assembly names of the sub-module.
     /// </summary>
     public static readonly StringsAttribute Assemblies = new(Namespace, nameof(Assemblies));
+    
+    public class Model(ITransaction tx) : Entity(tx)
+    {
+        public string Name
+        {
+            get => SubModuleInfo.Name.Get(this);
+            init => SubModuleInfo.Name.Add(this, value);
+        }
+
+        public string DLLName
+        {
+            get => SubModuleInfo.DLLName.Get(this);
+            init => SubModuleInfo.DLLName.Add(this, value);
+        }
+        
+        public IEnumerable<string> Assemblies => SubModuleInfo.Assemblies.Get(this);
+    }
     
 }

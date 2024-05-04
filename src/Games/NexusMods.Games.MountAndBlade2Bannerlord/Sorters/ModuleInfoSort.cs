@@ -55,7 +55,7 @@ public class ModuleInfoSort : ISortRule<Mod.Model, ModId>, ITriggerFilter<ModId,
     public IAsyncEnumerable<ISortRule<Mod.Model, ModId>> GenerateSortRules(ModId selfId, Loadout.Model loadout)
     {
         var thisMod = loadout[selfId];
-        return thisMod.GetModuleInfo() is { } moduleInfo ? GetRules(moduleInfo, loadout) : AsyncEnumerable.Empty<ISortRule<Mod.Model, ModId>>();
+        return thisMod.GetModuleInfo() is { } moduleInfo ? GetRules(moduleInfo.FromEntity(), loadout) : AsyncEnumerable.Empty<ISortRule<Mod.Model, ModId>>();
     }
 
     // From what I guess, we will need to re-sort either when a mod was added/removed or a mod version changed

@@ -4,6 +4,7 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.Loadouts.Mods;
+using NexusMods.Games.MountAndBlade2Bannerlord.MnemonicDB;
 using NexusMods.Games.MountAndBlade2Bannerlord.Models;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord.Extensions;
@@ -42,7 +43,7 @@ internal static class LoadoutExtensions
             var subModule = x.Files.First(y => y.To.FileName.Path.Equals(Constants.SubModuleName, StringComparison.OrdinalIgnoreCase));
             var subModulePath = loadout.Installation.LocationsRegister.GetResolvedPath(subModule.To).GetFullPath();
 
-            return viewModelCreator(x, new ModuleInfoExtendedWithPath(moduleInfo, subModulePath), i++);
+            return viewModelCreator(x, moduleInfo.FromEntity(), i++);
         }).OfType<LoadoutModuleViewModel>();
     }
 
@@ -58,7 +59,7 @@ internal static class LoadoutExtensions
     }
 
     public static bool HasModuleInstalled(this Loadout.Model loadout, string moduleId) => loadout.Mods.Any(x =>
-        x.GetModuleInfo() is { } moduleInfo && moduleInfo.Id.Equals(moduleId, StringComparison.OrdinalIgnoreCase));
+        x.GetModuleInfo() is { } moduleInfo && moduleInfo.ModuleId.Equals(moduleId, StringComparison.OrdinalIgnoreCase));
 
     public static bool HasInstalledFile(this Loadout.Model loadout, string filename) => loadout.Mods.Any(x =>
         x.GetModuleFileMetadatas().Any(y => y.OriginalRelativePath.EndsWith(filename, StringComparison.OrdinalIgnoreCase)));

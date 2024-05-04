@@ -1,7 +1,9 @@
 using Bannerlord.LauncherManager.Models;
+using Bannerlord.ModuleManager;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
+using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord.MnemonicDB;
@@ -80,6 +82,8 @@ public static class ModuleInfoExtended
     /// </summary>
     public static readonly UrlAttribute Url = new(Namespace, nameof(Url));
 
+
+    
     /// <summary>
     /// Adds the information of the module to the transaction.
     /// </summary>
@@ -115,5 +119,71 @@ public static class ModuleInfoExtended
         }
 
         return id;
+    }
+
+
+    public class Model(ITransaction tx) : Entity(tx)
+    {
+        
+        public string ModuleId
+        {
+            get => ModuleInfoExtended.ModuleId.Get(this);
+            init => ModuleInfoExtended.ModuleId.Add(this, value);
+        }
+        
+        public string Name
+        {
+            get => ModuleInfoExtended.Name.Get(this);
+            init => ModuleInfoExtended.Name.Add(this, value);
+        }
+        
+        public bool IsOfficial
+        {
+            get => ModuleInfoExtended.IsOfficial.Get(this);
+            init => ModuleInfoExtended.IsOfficial.Add(this, value);
+        }
+        
+        public ApplicationVersion Version
+        {
+            get => ModuleInfoExtended.Version.Get(this);
+            init => ModuleInfoExtended.Version.Add(this, value);
+        }
+        
+        public bool IsSingleplayerModule
+        {
+            get => ModuleInfoExtended.IsSingleplayerModule.Get(this);
+            init => ModuleInfoExtended.IsSingleplayerModule.Add(this, value);
+        }
+        
+        public bool IsMultiplayerModule
+        {
+            get => ModuleInfoExtended.IsMultiplayerModule.Get(this);
+            init => ModuleInfoExtended.IsMultiplayerModule.Add(this, value);
+        }
+        
+        public bool IsServerModule
+        {
+            get => ModuleInfoExtended.IsServerModule.Get(this);
+            init => ModuleInfoExtended.IsServerModule.Add(this, value);
+        }
+        
+        
+        /// <summary>
+        /// Convert a MneumonicDB entity to a ModuleInfoExtendedWithPath.
+        /// </summary>
+        public ModuleInfoExtendedWithPath FromEntity()
+        {
+            return new ModuleInfoExtendedWithPath
+            {
+                Id = ModuleId,
+                Name = Name,
+                IsOfficial = IsOfficial,
+                Version = Version,
+                IsSingleplayerModule = IsSingleplayerModule,
+                IsMultiplayerModule = IsMultiplayerModule,
+                IsServerModule = IsServerModule,
+            };
+        }
+        
     }
 }

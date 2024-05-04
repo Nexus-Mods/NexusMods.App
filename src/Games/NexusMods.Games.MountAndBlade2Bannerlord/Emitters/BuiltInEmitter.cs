@@ -22,7 +22,9 @@ public class BuiltInEmitter : ILoadoutDiagnosticEmitter
 
         var viewModels = (await loadout.GetSortedViewModelsAsync()).ToList();
         var lookup = viewModels.ToDictionary(x => x.ModuleInfoExtended.Id, x => x);
-        var modules = lookup.Values.Select(x => x.ModuleInfoExtended).Concat(FeatureIds.LauncherFeatures.Select(x => new ModuleInfoExtended { Id = x })).ToList();
+        var modules = lookup.Values.Select(x => x.ModuleInfoExtended)
+            .Concat(FeatureIds.LauncherFeatures.Select(x => new ModuleInfoExtended { Id = x }))
+            .ToList();
 
         var ctx = new ModuleContext(lookup);
         foreach (var moduleViewModel in viewModels)

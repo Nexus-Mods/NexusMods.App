@@ -1,5 +1,6 @@
 using Bannerlord.LauncherManager.Models;
 using NexusMods.Abstractions.Loadouts.Mods;
+using NexusMods.Games.MountAndBlade2Bannerlord.MnemonicDB;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord.Models;
 
