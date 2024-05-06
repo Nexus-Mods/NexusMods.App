@@ -50,8 +50,7 @@
         <DataGrid Grid.Row="1"
             CanUserResizeColumns="True"
             CanUserSortColumns="True"
-            Margin="24,16"
-            x:Name="ModsDataGrid" />
+            x:Name="ModsDataGrid"/>
     </Grid>
 </reactiveUi:ReactiveUserControl>
 

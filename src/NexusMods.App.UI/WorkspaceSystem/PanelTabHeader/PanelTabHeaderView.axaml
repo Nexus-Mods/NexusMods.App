@@ -26,7 +26,7 @@
                     <icons:UnifiedIcon MaxSize="18" Size="18" x:Name="Icon"/>
                     <TextBlock x:Name="TitleTextBlock"
                                Padding="0 6 0 0"
-                               Classes="BodyLGBold"
+                               Classes="BodyMDBold"
                                MaxWidth="122"
                                TextWrapping="NoWrap"
                                TextTrimming="CharacterEllipsis"/>
