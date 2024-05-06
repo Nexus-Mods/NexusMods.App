@@ -1,4 +1,5 @@
 ﻿using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 
@@ -13,11 +14,12 @@ public partial class DownloadStatusView : ReactiveUserControl<IDownloadStatusVie
         this.WhenActivated(d =>
         {
             this.WhenAnyValue(vm => vm.ViewModel!.CurrentValue)
-                .BindToUi<float, DownloadStatusView, double>(this, view => view.DownloadProgressBar.Value)
+                .Select(value => (double)value)
+                .BindToView(this, view => view.DownloadProgressBar.Value)
                 .DisposeWith(d);
 
             this.WhenAnyValue(vm => vm.ViewModel!.Text)
-                .BindToUi<string, DownloadStatusView, string>(this, view => view.DownloadProgressBar.ProgressTextFormat)
+                .BindToView(this, view => view.DownloadProgressBar.ProgressTextFormat)
                 .DisposeWith(d);
 
             this.WhenAnyValue(view => view.DataContext)

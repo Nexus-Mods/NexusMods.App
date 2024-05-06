@@ -23,6 +23,11 @@ public interface IFileOriginRegistry
     /// Register a download with the registry, returns a download id that can be used to retrieve the download later.
     /// </summary>
     public ValueTask<DownloadId> RegisterDownload(AbsolutePath path, MetadataFn metaDataFn, CancellationToken token = default);
+    
+    /// <summary>
+    /// Register a download with the registry, using the given entity id as the download id.
+    /// </summary>
+    public ValueTask<DownloadId> RegisterDownload(AbsolutePath path, EntityId downloadId, CancellationToken token = default);
 
     /// <summary>
     /// Register a download with the registry, returns a download id that can be used to retrieve the download later,

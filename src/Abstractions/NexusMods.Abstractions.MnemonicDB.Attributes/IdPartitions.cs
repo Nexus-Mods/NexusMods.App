@@ -20,7 +20,7 @@ public enum IdPartitions : byte
     DiskState,
     
     /// <summary>
-    /// Downloaded Files and their contents
+    /// Downloaded files and their contents
     /// </summary>
     DownloadAnalysis,
 }

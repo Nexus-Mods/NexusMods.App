@@ -7,6 +7,9 @@ using Avalonia.Controls;
 using DynamicData;
 using DynamicData.Binding;
 using JetBrains.Annotations;
+using LiveChartsCore;
+using LiveChartsCore.Defaults;
+using LiveChartsCore.SkiaSharpView;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.Controls.DownloadGrid;
 using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadGameName;
@@ -14,13 +17,16 @@ using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadName;
 using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadSize;
 using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadStatus;
 using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadVersion;
+using NexusMods.App.UI.Helpers;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Pages.Downloads.ViewModels;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Icons;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.Downloaders.Interfaces;
+using NexusMods.Paths;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -37,12 +43,12 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
     /// <summary>
     /// For designTime and Testing, provides an alternative list of tasks to use.
     /// </summary>
-    protected readonly SourceList<IDownloadTaskViewModel> DesignTimeDownloadTasks = new();
+    protected readonly SourceCache<IDownloadTaskViewModel, EntityId> DesignTimeDownloadTasks = new(x => x.TaskId);
 
     private ReadOnlyObservableCollection<IDownloadTaskViewModel> _tasksObservable =
         new(new ObservableCollection<IDownloadTaskViewModel>());
 
-    private IObservable<IChangeSet<IDownloadTaskViewModel>> TaskSourceChangeSet { get; }
+    private IObservable<IChangeSet<IDownloadTaskViewModel, EntityId>> TaskSourceChangeSet { get; }
 
     public ReadOnlyObservableCollection<IDownloadTaskViewModel> Tasks => _tasksObservable;
 
@@ -76,24 +82,71 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
     [Reactive]
     public ICommand ShowSettings { get; private set; } = ReactiveCommand.Create(() => { }, Observable.Return(false));
 
+    private readonly ObservableCollectionExtended<DateTimePoint> _throughputValues = [];
+    public ReadOnlyObservableCollection<ISeries> Series { get; } = ReadOnlyObservableCollection<ISeries>.Empty;
+
+    private readonly ObservableCollectionExtended<double> _customSeparators = [0];
+
+    public Axis[] YAxes { get; } = [];
+
+    public Axis[] XAxes { get; } =
+    [
+        new DateTimeAxis(TimeSpan.FromSeconds(1), static date => date.ToString("HH:mm:ss"))
+        {
+            AnimationsSpeed = TimeSpan.FromMilliseconds(0),
+            LabelsPaint = null,
+        },
+    ];
+
     [UsedImplicitly]
     public InProgressViewModel(
         IWindowManager windowManager,
         IDownloadService downloadService,
         IOverlayController overlayController) : base(windowManager)
     {
+        Series = new ReadOnlyObservableCollection<ISeries>([
+            new LineSeries<DateTimePoint>
+            {
+                Values = _throughputValues,
+                Fill = null,
+                GeometryFill = null,
+                GeometryStroke = null,
+            },
+        ]);
+
+        YAxes =
+        [
+            new Axis
+            {
+                MinLimit = 0,
+                CustomSeparators = _customSeparators,
+                Labeler = static value => StringFormatters.ToThroughputString((long)value, TimeSpan.FromSeconds(1)),
+            },
+        ];
+
         TabTitle = Language.InProgressDownloadsPage_Title;
         TabIcon = IconValues.Downloading;
 
         TaskSourceChangeSet = downloadService.Downloads
-            .Filter(x => x.Status != DownloadTaskStatus.Completed)
-            .Transform(x => (IDownloadTaskViewModel)new DownloadTaskViewModel(x))
+            .ToObservableChangeSet(x => x.PersistentState.Id)
+            .Transform(x =>
+                {
+                    var vm = new DownloadTaskViewModel(x);
+                    vm.Activator.Activate();
+                    return (IDownloadTaskViewModel)vm;
+                }
+            )
+            .FilterOnObservable((item, key) => item.WhenAnyValue(v => v.Status)
+                .Select(s => s != DownloadTaskStatus.Cancelled && s != DownloadTaskStatus.Completed))
+            .DisposeMany()
             .OnUI();
 
         Init();
 
         this.WhenActivated(d =>
         {
+            GetWorkspaceController().SetTabTitle(Language.InProgressDownloadsPage_Title, WorkspaceId, PanelId, TabId);
+
             ShowCancelDialogCommand = ReactiveCommand.Create(async () =>
                 {
                     if (SelectedTasks.Items.Any())
@@ -169,7 +222,8 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
 
         this.WhenActivated(d =>
         {
-            TaskSourceChangeSet.Bind(out _tasksObservable)
+            TaskSourceChangeSet
+                .Bind(out _tasksObservable)
                 .Subscribe()
                 .DisposeWith(d);
 
@@ -261,13 +315,6 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
     /// </summary>
     private void UpdateWindowInfo()
     {
-        // Poll Tasks
-        foreach (var task in Tasks)
-        {
-            if (task is DownloadTaskViewModel vm)
-                vm.Poll();
-        }
-
         // Update Window Info
         UpdateWindowInfoInternal();
     }
@@ -291,5 +338,33 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
         var throughput = Tasks.Sum(x => x.Throughput);
         var remainingBytes = totalSizeBytes - totalDownloadedBytes;
         SecondsRemaining = throughput < 1.0 ? 0 : (int)(remainingBytes / Math.Max(throughput, 1));
+
+        if (_throughputValues.Count > 120)
+        {
+            _throughputValues.RemoveRange(0, count: 60);
+        }
+
+        throughput = totalSizeBytes > 0 ? throughput : 0;
+        if (throughput > _customSeparators.Last())
+        {
+            _customSeparators.Add(FirstMultiple(throughput));
+        }
+
+        _throughputValues.Add(new DateTimePoint(DateTime.Now, throughput));
+    }
+
+    private static double FirstMultiple(long value)
+    {
+        const int step = 5;
+        var start = (long)Size.MB.Value * step;
+
+        var res = start;
+
+        while (res <= value)
+        {
+            res += start;
+        }
+
+        return res;
     }
 }

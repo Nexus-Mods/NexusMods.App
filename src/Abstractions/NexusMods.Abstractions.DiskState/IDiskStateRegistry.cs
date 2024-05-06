@@ -47,4 +47,10 @@ public interface IDiskStateRegistry
     /// <param name="installation">The game installation to retrieve the initial disk state for</param>
     /// <returns>The initial disk state, or null if not found</returns>
     DiskStateTree? GetInitialState(GameInstallation installation);
+    
+    /// <summary>
+    /// Removes the persisted initial state for a given game installation.
+    /// </summary>
+    /// <param name="installation">The installation to clear the state for.</param>
+    Task ClearInitialState(GameInstallation installation);
 }
