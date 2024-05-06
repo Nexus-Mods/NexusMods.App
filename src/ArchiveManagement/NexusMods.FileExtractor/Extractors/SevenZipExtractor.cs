@@ -212,6 +212,12 @@ public class SevenZipExtractor : IExtractor
         return fileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine(directory + fileName).ToString();
     }
 
+    /// <summary>
+    /// Useful for Linux packages that already install 7z globally.
+    /// </summary>
+    /// <remarks>
+    /// See https://github.com/Nexus-Mods/NexusMods.App/issues/1306 for details.
+    /// </remarks>
     private const bool UseSystemExtractor =
 #if USE_SYSTEM_EXTRACTOR
         true;
