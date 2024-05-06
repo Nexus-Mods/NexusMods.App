@@ -338,6 +338,7 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
             _throughputValues.RemoveRange(0, count: 60);
         }
 
+        throughput = totalSizeBytes > 0 ? throughput : 0;
         if (throughput > _customSeparators.Last())
         {
             _customSeparators.Add(FirstMultiple(throughput));
