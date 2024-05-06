@@ -5,13 +5,11 @@ using NexusMods.Abstractions.GameLocators.Stores.Xbox;
 using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
-using NexusMods.Abstractions.Loadouts.Mods;
-using NexusMods.Abstractions.Serialization;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.BethesdaGameStudios.SkyrimSpecialEdition;
 
-public class SkyrimSpecialEdition : ABethesdaGame, ISteamGame, IGogGame, IXboxGame
+public class SkyrimSpecialEdition(IServiceProvider provider) : ABethesdaGame(provider), ISteamGame, IGogGame, IXboxGame
 {
     // ReSharper disable InconsistentNaming
     public static readonly Extension ESL = new(".esl");
@@ -25,11 +23,10 @@ public class SkyrimSpecialEdition : ABethesdaGame, ISteamGame, IGogGame, IXboxGa
     public override GameDomain Domain => StaticDomain;
     public override GamePath GetPrimaryFile(GameStore store) => new(LocationId.Game, "SkyrimSE.exe");
 
-    public SkyrimSpecialEdition(IServiceProvider provider) : base(provider) {}
     protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem,
         GameLocatorResult installation)
     {
-        return new Dictionary<LocationId, AbsolutePath>()
+        return new Dictionary<LocationId, AbsolutePath>
         {
             { LocationId.Game, installation.Path },
             {
