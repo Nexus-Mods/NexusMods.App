@@ -7,7 +7,6 @@ using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.FileStore.ArchiveMetadata;
 using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Games.Loadouts.Sorting;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
@@ -22,12 +21,10 @@ using NexusMods.DataModel.Diagnostics;
 using NexusMods.DataModel.GameRegistry;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.Loadouts.LoadoutSynchronizerDTOs;
 using NexusMods.DataModel.Messaging;
 using NexusMods.DataModel.Repository;
 using NexusMods.DataModel.Settings;
 using NexusMods.DataModel.Sorting;
-using NexusMods.DataModel.TriggerFilter;
 using NexusMods.Extensions.DependencyInjection;
 using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
@@ -108,8 +105,6 @@ public static class Services
         coll.AddAttributeCollection(typeof(ArchivedFileContainer));
         coll.AddAttributeCollection(typeof(ArchivedFile));
         coll.AddAllSingleton<IFileStore, NxFileStore>();
-
-        coll.AddSingleton(typeof(IFingerprintCache<,>), typeof(DataStoreFingerprintCache<,>));
         
         coll.AddAllSingleton<IArchiveInstaller, ArchiveInstaller>();
         coll.AddAllSingleton<IToolManager, ToolManager>();

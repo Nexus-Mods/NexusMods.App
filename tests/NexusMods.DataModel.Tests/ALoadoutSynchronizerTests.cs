@@ -33,7 +33,6 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
     private static GamePath _imagePath = new(LocationId.Game, "Data/image.dds");
 
     private static GamePath[] _allPaths = {_texturePath , _meshPath, _prefsPath, _savePath};
-    //private Loadout _originalLoadout;
 
     /// <summary>
     /// DI constructor
