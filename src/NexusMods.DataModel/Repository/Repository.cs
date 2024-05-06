@@ -8,7 +8,7 @@ using NexusMods.MnemonicDB.Abstractions.Models;
 
 namespace NexusMods.DataModel.Repository;
 
-public class Repository<TModel> : IRepository<TModel> where TModel : Entity
+internal class Repository<TModel> : IRepository<TModel> where TModel : Entity
 {
     private readonly IConnection _conn;
     private readonly IAttribute[] _watchedAttributes;
