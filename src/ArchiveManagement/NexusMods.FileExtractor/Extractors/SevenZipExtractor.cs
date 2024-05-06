@@ -48,12 +48,18 @@ public class SevenZipExtractor : IExtractor
     /// <param name="fileManager">Manager that can be used to create temporary folders.</param>
     /// <param name="activityFactory"></param>
     /// <param name="fileSystem">Filesystem to use when constructing and using paths</param>
-    public SevenZipExtractor(ILogger<SevenZipExtractor> logger, TemporaryFileManager fileManager, IActivityFactory activityFactory, IFileSystem fileSystem)
+    public SevenZipExtractor(
+        ILogger<SevenZipExtractor> logger,
+        TemporaryFileManager fileManager,
+        IActivityFactory activityFactory,
+        IFileSystem fileSystem)
     {
         _logger = logger;
         _manager = fileManager;
         _activityFactory = activityFactory;
-        _exePath = fileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine(GetExeLocation().ToRelativePath()).ToString();
+
+        _exePath = GetExtractorExecutable(fileSystem);
+        logger.LogDebug("Using extractor at {ExtractorExecutable}", _exePath);
     }
 
     /// <inheritdoc />
@@ -82,7 +88,7 @@ public class SevenZipExtractor : IExtractor
                 f.Delete();
                 return KeyValuePair.Create(path, mapResult);
             })
-            .Where(d => d.Key != default)
+            .Where(d => d.Key != default(RelativePath))
             .ToDictionary();
 
         return results;
@@ -183,12 +189,33 @@ public class SevenZipExtractor : IExtractor
         }
     }
 
-    private static string GetExeLocation()
+    private static string GetExtractorExecutableFileName()
     {
         return OSInformation.MatchPlatform(
-            onWindows: () => "runtimes/win-x64/native/7z.exe",
-            onLinux: () => "runtimes/linux-x64/native/7zz",
-            onOSX: () => "runtimes/osx-x64/native/7zz"
+            onWindows: () => "7z.exe",
+            onLinux: () => "7zz",
+            onOSX: () => "7zz"
         );
     }
+
+    private static string GetExtractorExecutable(IFileSystem fileSystem)
+    {
+        var fileName = GetExtractorExecutableFileName();
+        if (UseSystemExtractor) return fileName;
+
+        var directory = OSInformation.MatchPlatform(
+            onWindows: () => "runtimes/win-x64/native/",
+            onLinux: () => "runtimes/linux-x64/native/",
+            onOSX: () => "runtimes/osx-x64/native/"
+        );
+
+        return fileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine(directory + fileName).ToString();
+    }
+
+    private const bool UseSystemExtractor =
+#if USE_SYSTEM_EXTRACTOR
+        true;
+#else
+        false;
+#endif
 }
