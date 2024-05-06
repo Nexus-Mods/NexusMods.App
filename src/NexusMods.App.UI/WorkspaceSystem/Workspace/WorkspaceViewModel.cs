@@ -495,7 +495,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         var currentState = WorkspaceGridState.From(Panels, IsHorizontal);
         if (GridUtils.IsPerfectGrid(currentState, doThrow: false)) return;
         
-        _logger.LogError("The Workspace Grid is broken and will be reset");
+        _logger.LogError("The Workspace Grid is broken and will be reset: {State}", currentState.ToString());
         var newState = GridUtils.ResetState(currentState, MaxColumns, MaxRows);
 
         foreach (var panel in Panels)
