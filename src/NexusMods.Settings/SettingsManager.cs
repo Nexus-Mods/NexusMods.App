@@ -62,19 +62,35 @@ internal partial class SettingsManager : ISettingsManager
 
     public T Get<T>() where T : class, ISettings, new()
     {
+        var settingsType = typeof(T);
         if (_values.TryGetValue(typeof(T), out var obj)) return (obj as T)!;
 
         var savedValue = Load<T>();
         if (savedValue is not null)
         {
+            savedValue = Override(savedValue);
             CoreSet(savedValue, notify: false);
             return savedValue;
         }
 
         var defaultValue = GetDefaultValue<T>();
+        defaultValue = Override(defaultValue);
         Set(defaultValue);
 
         return defaultValue;
+
+        T Override(T value)
+        {
+            if (_overrides.TryGetValue(settingsType, out var overrideMethod))
+            {
+                var overriden = overrideMethod.Invoke(value);
+                Debug.Assert(overriden.GetType() == settingsType);
+
+                return (T)overriden;
+            }
+
+            return value;
+        }
     }
 
     public T Update<T>(Func<T, T> updater) where T : class, ISettings, new()
@@ -112,12 +128,6 @@ internal partial class SettingsManager : ISettingsManager
             throw new KeyNotFoundException($"Unknown settings type '{settingsType}'. Did you forget to register the setting with DI?");
 
         var value = objectCreationInformation.GetOrCreateDefaultValue(_serviceProvider);
-
-        if (_overrides.TryGetValue(settingsType, out var overrideMethod))
-        {
-            value = overrideMethod.Invoke(value);
-        }
-
         return value;
     }
 

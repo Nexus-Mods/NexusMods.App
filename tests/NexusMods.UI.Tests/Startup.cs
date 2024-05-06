@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Settings;
 using NexusMods.App;
 using NexusMods.App.BuildInfo;
+using NexusMods.App.UI.Settings;
 using NexusMods.DataModel;
 using NexusMods.Games.RedEngine;
 using NexusMods.Paths;
@@ -23,6 +24,10 @@ public class Startup
                 .OverrideSettingsForTests<DataModelSettings>(settings => settings with
                 {
                     UseInMemoryDataModel = true,
+                })
+                .OverrideSettingsForTests<LoadoutGridSettings>(settings => settings with
+                {
+                    ShowGameFiles = true,
                 })
                 .AddStubbedGameLocators()
                 .AddSingleton<AvaloniaApp>()

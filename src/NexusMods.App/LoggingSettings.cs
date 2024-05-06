@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Paths;
@@ -37,20 +38,33 @@ public record LoggingSettings : ISettings
     /// <summary>
     /// Gets the minimum logging level.
     /// </summary>
-    public LogLevel MinimumLevel { get; init; } =
-#if DEBUG
-        LogLevel.Debug;
-#elif TRACE
-        LogLevel.Trace;
-#else
-        // TODO: Until this value can be changed through the UI, we'll use Debug by default even for Releases.
-        LogLevel.Debug;
-#endif
+    public LogLevel MinimumLevel { get; init; } = LogLevel.Debug;
 
     public static ISettingsBuilder Configure(ISettingsBuilder settingsBuilder)
     {
-        // TODO: figure out what to do with this since it can't be used with DI
-        return settingsBuilder;
+        // TODO: put in some section
+        var sectionId = SectionId.DefaultValue;
+
+        return settingsBuilder
+            .ConfigureDefault(serviceProvider => CreateDefault(serviceProvider.GetRequiredService<IFileSystem>().OS))
+            .ConfigureStorageBackend<LoggingSettings>(builder => builder.UseJson())
+            .AddToUI<LoggingSettings>(builder => builder
+                .AddPropertyToUI(x => x.MinimumLevel, propertyBuilder => propertyBuilder
+                    .AddToSection(sectionId)
+                    .WithDisplayName("Minimum Logging Level")
+                    .WithDescription("Set the minimum logging level. Recommended: Debug")
+                    .UseSingleValueMultipleChoiceContainer(
+                        valueComparer: EqualityComparer<LogLevel>.Default,
+                        allowedValues: [
+                            LogLevel.Information,
+                            LogLevel.Debug,
+                            LogLevel.Trace,
+                        ],
+                        valueToDisplayString: static logLevel => logLevel.ToString()
+                    )
+                    .RequiresRestart()
+                )
+            );
     }
 
     public static LoggingSettings CreateDefault(IOSInformation os)

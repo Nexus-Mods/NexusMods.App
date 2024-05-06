@@ -83,7 +83,7 @@ public class DiskStateRegistry : IDiskStateRegistry
         {
             Game = domain,
             Root = installation.LocationsRegister[LocationId.Game].ToString(),
-            DiskState = diskState,
+            DiskState = diskState
         };
 
         await tx.Commit();
@@ -93,16 +93,27 @@ public class DiskStateRegistry : IDiskStateRegistry
     public DiskStateTree? GetInitialState(GameInstallation installation)
     {
         var db = _connection.Db;
-        var domain = installation.Game.Domain;
-        
-        // Find item with matching domain and root.
-        // In practice it's unlikely you'd ever install more than one game at one
-        // location, but since doing this check is virtually free, we might as well.
+
         return db.FindIndexed(installation.LocationsRegister[LocationId.Game].ToString(), InitialDiskState.Root)
-            .Select(db.Get<InitialDiskState.Model>)
-            .Where(x => x.Game == domain)
-            .Select(x => x.DiskState)
+            .Select(x => db.Get<InitialDiskState.Model>(x).DiskState)
             .FirstOrDefault();
+    }
+
+    /// <inheritdoc />
+    public async Task ClearInitialState(GameInstallation installation)
+    {
+        var db = _connection.Db;
+        var initialDiskState = db.FindIndexed(installation.LocationsRegister[LocationId.Game].ToString(), InitialDiskState.Root)
+            .Select(x => db.Get<InitialDiskState.Model>(x))
+            .FirstOrDefault();
+        
+        if (initialDiskState == null)
+            return;
+
+        var tx = _connection.BeginTransaction();
+        initialDiskState.Tx = tx;
+        initialDiskState.AddRetractToCurrentTx();
+        await tx.Commit();
     }
 
     /// <inheritdoc />

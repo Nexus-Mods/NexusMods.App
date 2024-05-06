@@ -252,8 +252,7 @@ public static class Services
             .AddSingleton<IDiagnosticWriter, DiagnosticWriter>()
 
             // Settings
-            .AddSettings<LanguageSettings>()
-            .AddSettings<TelemetrySettings>()
+            .AddUISettings()
 
             // Other
             .AddSingleton<InjectedViewLocator>()

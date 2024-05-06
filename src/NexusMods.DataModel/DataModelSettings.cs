@@ -36,7 +36,7 @@ public record DataModelSettings : ISettings
     {
         return settingsBuilder
             .ConfigureDefault(CreateDefault)
-            .ConfigureStorageBackend<DataModelSettings>(builder => builder.Disable());
+            .ConfigureStorageBackend<DataModelSettings>(builder => builder.UseJson());
     }
 
     /// <summary>

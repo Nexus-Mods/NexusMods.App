@@ -4,6 +4,8 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization;
+using NexusMods.Abstractions.Settings;
+using NexusMods.Abstractions.Telemetry;
 using NexusMods.Activities;
 using NexusMods.App.Listeners;
 using NexusMods.App.UI;
@@ -34,8 +36,6 @@ using NexusMods.Settings;
 using NexusMods.SingleProcess;
 using NexusMods.StandardGameLocators;
 using NexusMods.Telemetry;
-using NexusMods.Telemetry.OpenTelemetry;
-using OpenTelemetry.Exporter;
 
 namespace NexusMods.App;
 
@@ -48,12 +48,19 @@ public static class Services
     }
 
     public static IServiceCollection AddApp(this IServiceCollection services,
+        TelemetrySettings? telemetrySettings = null,
         bool addStandardGameLocators = true,
         bool slimMode = false)
     {
         if (!slimMode)
         {
             services
+                .AddSettings<TelemetrySettings>()
+                .AddSettings<LoggingSettings>()
+
+                .AddSingleton<ITelemetryProvider, TelemetryProvider>()
+                .AddTelemetry(telemetrySettings ?? new TelemetrySettings())
+
                 .AddSingleton<CommandLineConfigurator>()
                 .AddCLI()
                 .AddUI()
@@ -88,27 +95,8 @@ public static class Services
                 .AddListeners()
                 .AddDownloaders();
 
-            services = OpenTelemetryRegistration.AddTelemetry(services, new OpenTelemetrySettings
-            {
-                // TODO: pull from settings
-                // IsEnabled = config.EnableTelemetry ?? false,
-                IsEnabled = false,
-
-                EnableMetrics = true,
-                EnableTracing = true,
-
-                ApplicationName = Telemetry.LibraryInfo.AssemblyName,
-                ApplicationVersion = Telemetry.LibraryInfo.AssemblyVersion,
-
-                ExporterProtocol = OtlpExportProtocol.HttpProtobuf,
-                ExporterMetricsEndpoint = new Uri("https://collector.nexusmods.com/v1/metrics"),
-                ExporterTracesEndpoint = new Uri("https://collector.nexusmods.com/v1/traces"),
-            }).ConfigureTelemetry(Telemetry.LibraryInfo, configureMetrics: Telemetry.SetupTelemetry);
-
-
             if (addStandardGameLocators)
                 services.AddStandardGameLocators();
-
         }
 
         services

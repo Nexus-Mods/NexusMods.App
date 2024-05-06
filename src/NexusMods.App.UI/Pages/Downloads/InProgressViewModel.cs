@@ -7,6 +7,9 @@ using Avalonia.Controls;
 using DynamicData;
 using DynamicData.Binding;
 using JetBrains.Annotations;
+using LiveChartsCore;
+using LiveChartsCore.Defaults;
+using LiveChartsCore.SkiaSharpView;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.Controls.DownloadGrid;
 using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadGameName;
@@ -14,6 +17,7 @@ using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadName;
 using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadSize;
 using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadStatus;
 using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadVersion;
+using NexusMods.App.UI.Helpers;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Pages.Downloads.ViewModels;
 using NexusMods.App.UI.Resources;
@@ -21,6 +25,7 @@ using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.Downloaders.Interfaces;
+using NexusMods.Paths;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -76,12 +81,51 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
     [Reactive]
     public ICommand ShowSettings { get; private set; } = ReactiveCommand.Create(() => { }, Observable.Return(false));
 
+    private readonly ObservableCollectionExtended<DateTimePoint> _throughputValues = [];
+    public ReadOnlyObservableCollection<ISeries> Series { get; } = ReadOnlyObservableCollection<ISeries>.Empty;
+
+    private readonly ObservableCollectionExtended<double> _customSeparators = [0];
+
+    public Axis[] YAxes { get; } = [];
+
+    public Axis[] XAxes { get; } =
+    [
+        new DateTimeAxis(TimeSpan.FromSeconds(1), static date => date.ToString("HH:mm:ss"))
+        {
+            AnimationsSpeed = TimeSpan.FromMilliseconds(0),
+            LabelsPaint = null,
+        },
+    ];
+
     [UsedImplicitly]
     public InProgressViewModel(
         IWindowManager windowManager,
         IDownloadService downloadService,
         IOverlayController overlayController) : base(windowManager)
     {
+        Series = new ReadOnlyObservableCollection<ISeries>([
+            new LineSeries<DateTimePoint>
+            {
+                Values = _throughputValues,
+                Fill = null,
+                GeometryFill = null,
+                GeometryStroke = null,
+            },
+        ]);
+
+        YAxes =
+        [
+            new Axis
+            {
+                MinLimit = 0,
+                CustomSeparators = _customSeparators,
+                Labeler = static value => StringFormatters.ToThroughputString((long)value, TimeSpan.FromSeconds(1)),
+            },
+        ];
+
+        TabTitle = Language.InProgressDownloadsPage_Title;
+        TabIcon = IconValues.Downloading;
+
         TaskSourceChangeSet = downloadService.Downloads
             .ToObservableChangeSet(x => x.PersistentState.Id)
             .Transform(x =>
@@ -293,5 +337,33 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
         var throughput = Tasks.Sum(x => x.Throughput);
         var remainingBytes = totalSizeBytes - totalDownloadedBytes;
         SecondsRemaining = throughput < 1.0 ? 0 : (int)(remainingBytes / Math.Max(throughput, 1));
+
+        if (_throughputValues.Count > 120)
+        {
+            _throughputValues.RemoveRange(0, count: 60);
+        }
+
+        throughput = totalSizeBytes > 0 ? throughput : 0;
+        if (throughput > _customSeparators.Last())
+        {
+            _customSeparators.Add(FirstMultiple(throughput));
+        }
+
+        _throughputValues.Add(new DateTimePoint(DateTime.Now, throughput));
+    }
+
+    private static double FirstMultiple(long value)
+    {
+        const int step = 5;
+        var start = (long)Size.MB.Value * step;
+
+        var res = start;
+
+        while (res <= value)
+        {
+            res += start;
+        }
+
+        return res;
     }
 }

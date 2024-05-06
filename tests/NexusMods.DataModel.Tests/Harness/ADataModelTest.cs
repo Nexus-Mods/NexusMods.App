@@ -97,7 +97,7 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
 
     public virtual async Task InitializeAsync()
     {
-        BaseList = LoadoutRegistry.GetMarker((await Install.GetGame().Synchronizer.Manage(Install)).LoadoutId);
+        BaseList = LoadoutRegistry.GetMarker((await Install.GetGame().Synchronizer.CreateLoadout(Install)).LoadoutId);
     }
 
     protected async Task<ModId[]> AddMods(LoadoutMarker mainList, AbsolutePath path, string? name = null)

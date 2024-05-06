@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Games.DTO;
@@ -138,6 +139,21 @@ public static class InitialDiskState
         {
             get => State.Get(this);
             set => State.Add(this, value);
+        }
+
+        /// <summary>
+        /// Retracts all of the values of this entity.
+        /// </summary>
+        /// <remarks>
+        ///     Make sure the current model has a Transaction (<see cref="tx"/>) attached
+        ///     before calling.
+        /// </remarks>
+        public void AddRetractToCurrentTx()
+        {
+            Debug.Assert(Tx != null, "Transaction should be set on `this` item.");
+            InitialDiskState.Game.Retract(this);
+            InitialDiskState.Root.Retract(this);
+            State.Retract(this);
         }
     }
 }
