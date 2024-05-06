@@ -75,24 +75,17 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
             .Bind(out _panels)
             .Do(_ => UpdateStates())
             .Do(_ => UpdateResizers())
-            .Subscribe();
+            .SubscribeWithErrorLogging();
 
         this.WhenActivated(disposables =>
         {
             // Workspace resizing
             this.WhenAnyValue(vm => vm.IsHorizontal)
                 .Distinct()
-                .Do(_ =>
-                {
-                    var currentState = WorkspaceGridState.From(_panels, IsHorizontal);
-                    if (!GridUtils.IsPerfectGrid(currentState, doThrow: false))
-                    {
-                        _logger.LogWarning("Panel Grid isn't perfect {Grid}", currentState.ToString());
-                    }
-                })
+                .Do(_ => ResetGridIfBroken())
                 .Do(_ => UpdateStates())
                 .Do(_ => UpdateResizers())
-                .Subscribe();
+                .SubscribeWithErrorLogging(logger: _logger);
 
             // Adding a panel
             _addPanelButtonViewModelSource
@@ -131,7 +124,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                 .MergeMany(item => item.DragEndCommand)
                 .Do(_ => UpdateStates())
                 .Do(_ => UpdateResizers())
-                .Subscribe()
+                .SubscribeWithErrorLogging()
                 .DisposeWith(disposables);
 
             // Resizing
@@ -493,5 +486,21 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                 updater.AddOrUpdate(vm);
             }
         });
+
+        ResetGridIfBroken();
+    }
+
+    private void ResetGridIfBroken()
+    {
+        var currentState = WorkspaceGridState.From(Panels, IsHorizontal);
+        if (GridUtils.IsPerfectGrid(currentState, doThrow: false)) return;
+        
+        _logger.LogError("The Workspace Grid is broken and will be reset");
+        var newState = GridUtils.ResetState(currentState, MaxColumns, MaxRows);
+
+        foreach (var panel in Panels)
+        {
+            panel.LogicalBounds = newState[panel.Id].Rect;
+        }
     }
 }
