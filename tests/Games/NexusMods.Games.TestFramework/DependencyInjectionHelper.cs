@@ -11,6 +11,7 @@ using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
 using NexusMods.Settings;
 using NexusMods.StandardGameLocators;
+using Xunit.DependencyInjection.Logging;
 
 namespace NexusMods.Games.TestFramework;
 
@@ -43,7 +44,7 @@ public static class DependencyInjectionHelper
 
         return serviceCollection
             .AddLogging(builder => builder
-                .AddXUnit()
+                .AddXunitOutput()
                 .SetMinimumLevel(LogLevel.Debug))
             .AddSingleton<JsonConverter, GameInstallationConverter>()
             .AddFileSystem()

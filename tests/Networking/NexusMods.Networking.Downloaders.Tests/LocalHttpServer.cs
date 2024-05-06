@@ -30,26 +30,33 @@ public class LocalHttpServer : IDisposable
         {
             while (_listener.IsListening)
             {
-                var context = await _listener.GetContextAsync();
-                _logger.LogInformation("Got connection");
+                try
+                {
+                    var context = await _listener.GetContextAsync();
+                    _logger.LogInformation("Got connection");
 
-                while (IsPaused)
-                {
-                    _logger.LogDebug("Server is paused, waiting for 100ms");
-                    await Task.Delay(100);
+                    while (IsPaused)
+                    {
+                        _logger.LogDebug("Server is paused, waiting for 100ms");
+                        await Task.Delay(100);
+                    }
+
+                    using var resp = context.Response;
+
+                    var responseData = _content[context.Request.Url!.LocalPath];
+                    resp.StatusCode = 200;
+                    resp.StatusDescription = "OK";
+                    resp.ProtocolVersion = HttpVersion.Version11;
+                    resp.ContentLength64 = responseData.Length;
+                    if (context.Request.HttpMethod != "HEAD")
+                    {
+                        await using var ros = resp.OutputStream;
+                        await ros.WriteAsync(responseData);
+                    }
                 }
-                
-                using var resp = context.Response;
-                
-                var responseData = _content[context.Request.Url!.LocalPath];
-                resp.StatusCode = 200;
-                resp.StatusDescription = "OK";
-                resp.ProtocolVersion = HttpVersion.Version11;
-                resp.ContentLength64 = responseData.Length;
-                if (context.Request.HttpMethod != "HEAD")
+                catch (Exception ex)
                 {
-                    await using var ros = resp.OutputStream;
-                    await ros.WriteAsync(responseData);
+                    _logger.LogError(ex, "Error in server loop");
                 }
             }
         });

@@ -34,7 +34,7 @@ namespace NexusMods.App.UI.Pages.Downloads;
 
 public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProgressViewModel
 {
-    internal const int PollTimeMilliseconds = 100;
+    internal const int PollTimeMilliseconds = 1000;
 
     private IObservable<Unit> Tick { get; set; } = Observable.Defer(() =>
         Observable.Interval(TimeSpan.FromMilliseconds(PollTimeMilliseconds))

@@ -13,7 +13,7 @@ public partial class DownloadNameView : ReactiveUserControl<IDownloadNameViewMod
         this.WhenActivated(d =>
         {
             this.WhenAnyValue(vm => vm.ViewModel!.Name)
-                .BindTo<string, DownloadNameView, string>(this, view => view.NameTextBox.Text)
+                .BindToView(this, view => view.NameTextBox.Text)
                 .DisposeWith(d);
 
             this.WhenAnyValue(view => view.DataContext)

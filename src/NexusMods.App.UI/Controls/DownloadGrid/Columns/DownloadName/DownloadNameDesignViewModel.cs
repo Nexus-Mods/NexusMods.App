@@ -19,7 +19,7 @@ public class DownloadNameDesignViewModel : AViewModel<IDownloadNameViewModel>, I
         this.WhenActivated(d =>
         {
             this.WhenAnyValue(vm => vm.Row.Name)
-                .BindTo(this, vm => vm.Name)
+                .BindToVM(this, vm => vm.Name)
                 .DisposeWith(d);
         });
     }

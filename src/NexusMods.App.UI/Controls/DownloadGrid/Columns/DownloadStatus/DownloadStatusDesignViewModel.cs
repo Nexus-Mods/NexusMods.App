@@ -43,22 +43,22 @@ public class DownloadStatusDesignViewModel : AViewModel<IDownloadStatusViewModel
         {
             this.WhenAnyValue(vm => vm.Row.Status, vm => vm.Row.SizeBytes, vm => vm.Row.DownloadedBytes)
                 .Select(x => FormatStatus(x.Item1, x.Item2, x.Item3))
-                .BindToUi(this, vm => vm.Text)
+                .BindToVM(this, vm => vm.Text)
                 .DisposeWith(d);
 
             this.WhenAnyValue(vm => vm.Row.Status)
                 .Select(status => !(status is DownloadTaskStatus.Idle or DownloadTaskStatus.Paused))
-                .BindToUi(this, vm => vm.IsRunning)
+                .BindToVM(this, vm => vm.IsRunning)
                 .DisposeWith(d);
 
             this.WhenAnyValue(vm => vm.Row.DownloadedBytes, vm => vm.Row.SizeBytes)
                 .Select(x => x.Item1 / (float)Math.Max(1, x.Item2))
-                .BindToUi(this, vm => vm.CurrentValue)
+                .BindToVM(this, vm => vm.CurrentValue)
                 .DisposeWith(d);
 
             this.WhenAnyValue(vm => vm.Row.Status)
                 .Select(status => !(status is DownloadTaskStatus.Idle or DownloadTaskStatus.Paused))
-                .BindToUi(this, vm => vm.CanPause)
+                .BindToVM(this, vm => vm.CanPause)
                 .DisposeWith(d);
         });
     }

@@ -22,7 +22,7 @@ public class DownloadSizeDesignViewModel : AViewModel<IDownloadSizeViewModel>, I
         {
             this.WhenAnyValue(vm => vm.Row.DownloadedBytes, vm => vm.Row.SizeBytes)
                 .Select(x => StringFormatters.ToSizeString(x.Item1, x.Item2))
-                .BindToUi(this, vm => vm.Size)
+                .BindToVM(this, vm => vm.Size)
                 .DisposeWith(d);
         });
     }

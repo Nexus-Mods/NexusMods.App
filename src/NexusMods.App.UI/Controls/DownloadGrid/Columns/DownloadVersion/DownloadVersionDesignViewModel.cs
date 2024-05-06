@@ -19,7 +19,7 @@ public class DownloadVersionDesignViewModel : AViewModel<IDownloadVersionViewMod
         this.WhenActivated(d =>
         {
             this.WhenAnyValue(vm => vm.Row.Version)
-                .BindToUi(this, vm => vm.Version)
+                .BindToVM(this, vm => vm.Version)
                 .DisposeWith(d);
         });
     }
