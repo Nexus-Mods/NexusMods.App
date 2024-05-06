@@ -1,11 +1,8 @@
-using System.Collections.ObjectModel;
-using DynamicData;
-using DynamicData.Kernel;
 using FluentAssertions;
-using NexusMods.Abstractions.Activities;
 using NexusMods.Networking.Downloaders.Interfaces;
-using NexusMods.Networking.Downloaders.Interfaces.Traits;
-using NexusMods.Networking.Downloaders.Tasks.State;
+using NexusMods.Paths;
+using Noggog;
+using ReactiveUI;
 
 namespace NexusMods.Networking.Downloaders.Tests;
 
@@ -13,165 +10,149 @@ public class DownloadServiceTests
 {
     // For the uninitiated with xUnit: This is initialized before every test.
     private readonly DownloadService _downloadService;
-    private readonly ReadOnlyObservableCollection<IDownloadTask> _currentDownloads;
-    private readonly DummyDownloadTask _dummyTask;
+    private readonly LocalHttpServer _httpServer;
+    private readonly TemporaryFileManager _temporaryFileManager;
+    private IReadOnlyCollection<IDownloadTask> _downloadTasks;
 
-    public DownloadServiceTests(DownloadService downloadService)
+    public DownloadServiceTests(DownloadService downloadService, 
+        LocalHttpServer httpServer, TemporaryFileManager temporaryFileManager)
     {
-        // Create a new instance of the DownloadService
+        _httpServer = httpServer;
         _downloadService = downloadService;
-        _downloadService.Downloads.Bind(out _currentDownloads).Subscribe();
-        _dummyTask = new DummyDownloadTask(_downloadService);
+        _temporaryFileManager = temporaryFileManager;
     }
 
     [Fact]
-    public void AddTask_ShouldFireStartedObservable()
+    public async Task AddTask_Uri_ShouldDownload()
     {
-        // Arrange
-        var startedObservableFired = false;
-        _downloadService.StartedTasks.Subscribe(_ => { startedObservableFired = true; });
+        var id = Guid.NewGuid().ToString();
+        _httpServer.SetContent(id, "Hello, World!".ToBytes());
+        
 
-        // Act
-        _downloadService.AddTask(_dummyTask);
+        var task = await _downloadService.AddTask(new Uri($"{_httpServer.Prefix}{id}"));
+        
+        List<DownloadTaskStatus> statuses = new();
+        
+        using var _ = task
+            .ObservableForProperty(t => t.PersistentState, skipInitial:false)
+            .Subscribe(s => statuses.Add(s.Value.Status));
+            
+        
+        _downloadService.Downloads
+            .Select(t => t.PersistentState.Id)
+            .Should()
+            .Contain(task.PersistentState.Id);
 
-        // Assert
-        startedObservableFired.Should().BeTrue();
+        await task.StartAsync();
+        
+        task.PersistentState.Status.Should().Be(DownloadTaskStatus.Completed);
+
+        statuses.Should().ContainInOrder(
+            DownloadTaskStatus.Idle,
+            DownloadTaskStatus.Downloading, 
+            DownloadTaskStatus.Completed);
+        
+        task.DownloadLocation.FileExists.Should().BeTrue();
+        (await task.DownloadLocation.ReadAllTextAsync()).Should().Be("Hello, World!");
+        
+        task.Downloaded.Value.Should().BeGreaterThan(0);
     }
-
+    
     [Fact]
-    public void OnComplete_ShouldFireCompletedObservable()
+    public async Task CanSuspendDownloads()
     {
-        // Arrange
-        var completedObservableFired = false;
-        _downloadService.CompletedTasks.Subscribe(_ => { completedObservableFired = true; });
+        var id = Guid.NewGuid().ToString();
+        _httpServer.SetContent(id, "Suspended Test".ToBytes());
+        
 
-        // Act
-        _downloadService.OnComplete(_dummyTask);
+        var task = await _downloadService.AddTask(new Uri($"{_httpServer.Prefix}{id}"));
+        
+        List<DownloadTaskStatus> statuses = new();
 
-        // Assert
-        completedObservableFired.Should().BeTrue();
+        // Pause the server so the download doesn't complete immediately
+        _httpServer.IsPaused = true;
+        
+        using var _ = task
+            .ObservableForProperty(t => t.PersistentState, skipInitial:false)
+            .Subscribe(s => statuses.Add(s.Value.Status));
+            
+        
+        _downloadService.Downloads
+            .Select(t => t.PersistentState.Id)
+            .Should()
+            .Contain(task.PersistentState.Id);
+
+        var unused = Task.Run(async () =>
+            {
+                await task.StartAsync();
+            }
+        );
+
+        await Task.Delay(100);
+        await task.Suspend();
+
+        await Task.Delay(100);
+        task.PersistentState.Status.Should().Be(DownloadTaskStatus.Paused);
+
+        _httpServer.IsPaused = false;
+
+        await task.Resume();
+        
+        task.PersistentState.Status.Should().Be(DownloadTaskStatus.Completed);
+
+        statuses.Should().ContainInOrder(
+            DownloadTaskStatus.Idle,
+            DownloadTaskStatus.Downloading, 
+            DownloadTaskStatus.Paused,
+            DownloadTaskStatus.Downloading,
+            DownloadTaskStatus.Completed);
+        
+        task.DownloadLocation.FileExists.Should().BeTrue();
+        (await task.DownloadLocation.ReadAllTextAsync()).Should().Be("Suspended Test");
+        
+        task.Downloaded.Value.Should().BeGreaterThan(0);
     }
-
+    
     [Fact]
-    public void OnCancelled_ShouldFireCancelledObservable()
+    public async Task CanCencelDownloads()
     {
-        // Arrange
-        var cancelledObservableFired = false;
-        _downloadService.CancelledTasks.Subscribe(_ => { cancelledObservableFired = true; });
+        var id = Guid.NewGuid().ToString();
+        _httpServer.SetContent(id, "Suspended Test".ToBytes());
+        
 
-        // Act
-        _downloadService.OnCancelled(_dummyTask);
+        var task = await _downloadService.AddTask(new Uri($"{_httpServer.Prefix}{id}"));
+        
+        List<DownloadTaskStatus> statuses = new();
 
-        // Assert
-        cancelledObservableFired.Should().BeTrue();
+        // Pause the server so the download doesn't complete immediately
+        _httpServer.IsPaused = true;
+        
+        using var _ = task
+            .ObservableForProperty(t => t.PersistentState, skipInitial:false)
+            .Subscribe(s => statuses.Add(s.Value.Status));
+            
+        
+        _downloadService.Downloads
+            .Select(t => t.PersistentState.Id)
+            .Should()
+            .Contain(task.PersistentState.Id);
+
+        var unused = Task.Run(async () =>
+            {
+                await task.StartAsync();
+            }
+        );
+
+        await Task.Delay(100);
+        await task.Cancel();
+        
+        statuses.Should().ContainInOrder(
+            DownloadTaskStatus.Idle,
+            DownloadTaskStatus.Downloading, 
+            DownloadTaskStatus.Cancelled);
+
+        _httpServer.IsPaused = false;
     }
-
-    [Fact]
-    public void OnPaused_ShouldFirePausedObservable()
-    {
-        // Arrange
-        var pausedObservableFired = false;
-        _downloadService.PausedTasks.Subscribe(_ => { pausedObservableFired = true; });
-
-        // Act
-        _downloadService.OnPaused(_dummyTask);
-
-        // Assert
-        pausedObservableFired.Should().BeTrue();
-    }
-
-    [Fact]
-    public void OnResumed_ShouldFireResumedObservable()
-    {
-        // Arrange
-        var resumedObservableFired = false;
-        _downloadService.ResumedTasks.Subscribe(_ => { resumedObservableFired = true; });
-
-        // Act
-        _downloadService.OnResumed(_dummyTask);
-
-        // Assert
-        resumedObservableFired.Should().BeTrue();
-    }
-
-    [Fact]
-    public void GetTotalProgress_Test()
-    {
-        // Arrange
-        // Clear all current downloads
-        foreach (var task in _currentDownloads.ToArray())
-        {
-            task.Cancel();
-        }
-        _dummyTask.SizeBytes = 100;
-        _dummyTask.DownloadedSizeBytes = 25;
-        _dummyTask.Status = DownloadTaskStatus.Downloading;
-
-        // Act
-        _downloadService.AddTaskWithoutStarting(_dummyTask);
-
-        // Assert
-        _currentDownloads.Should().ContainSingle();
-        _downloadService.GetTotalProgress().Should().Be(Optional.Some(new Percent(0.25)));
-    }
-
-    [Fact]
-    public void GetTotalProgress_MultipleTest()
-    {
-        // Arrange
-        // Clear all current downloads
-        foreach (var task in _currentDownloads.ToArray())
-        {
-            task.Cancel();
-        }
-        _dummyTask.SizeBytes = 100;
-        _dummyTask.DownloadedSizeBytes = 60;
-        _dummyTask.Status = DownloadTaskStatus.Downloading;
-
-        var dummyTask2 = new DummyDownloadTask(_downloadService)
-        {
-            SizeBytes = 100,
-            DownloadedSizeBytes = 0,
-            Status = DownloadTaskStatus.Downloading
-        };
-
-        // Act
-        _downloadService.AddTaskWithoutStarting(_dummyTask);
-        _downloadService.AddTaskWithoutStarting(dummyTask2);
-
-        // Assert
-        _currentDownloads.Should().HaveCount(2);
-        _downloadService.GetTotalProgress().Should().Be(Optional.Some(new Percent(0.30)));
-    }
-
-    private class DummyDownloadTask : IDownloadTask, IHaveFileSize
-    {
-        public DummyDownloadTask(DownloadService service) { Owner = service; }
-        public long DownloadedSizeBytes { get; internal set; } = 0;
-        public long SizeBytes { get; internal set;  } = 0;
-
-        public long CalculateThroughput() => 0;
-
-        public IDownloadService Owner { get; set; }
-        public DownloadTaskStatus Status { get; set; }
-        public string FriendlyName { get; } = "";
-
-        public Task StartAsync()
-        {
-            Owner.OnComplete(this);
-            return Task.CompletedTask;
-        }
-
-        public void Cancel() => Owner.OnCancelled(this);
-        public void Suspend() => Owner.OnPaused(this);
-        public Task Resume()
-        {
-            Owner.OnResumed(this);
-            return Task.CompletedTask;
-        }
-
-        public DownloaderState ExportState() => DownloaderState.Create(this, null!, "");
-
-    }
+    
 }
 

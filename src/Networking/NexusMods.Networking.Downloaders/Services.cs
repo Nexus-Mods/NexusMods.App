@@ -1,8 +1,6 @@
-using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.Serialization.ExpressionGenerator;
-using NexusMods.Abstractions.Serialization.Json;
 using NexusMods.Extensions.DependencyInjection;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Networking.Downloaders.Tasks;
 using NexusMods.Networking.Downloaders.Tasks.State;
@@ -23,7 +21,8 @@ public static class Services
         return services.AddAllSingleton<IDownloadService, DownloadService>()
             .AddTransient<NxmDownloadTask>()
             .AddTransient<HttpDownloadTask>()
-            .AddSingleton<JsonConverter, AbstractClassConverterFactory<ITypeSpecificState>>()
-            .AddAllSingleton<ITypeFinder, TypeFinder>();
+            .AddAttributeCollection(typeof(DownloaderState))
+            .AddAttributeCollection(typeof(HttpDownloadState))
+            .AddAttributeCollection(typeof(NxmDownloadState));
     }
 }

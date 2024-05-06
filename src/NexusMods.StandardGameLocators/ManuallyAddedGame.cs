@@ -1,5 +1,6 @@
 ﻿using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.DataModel.Attributes;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;

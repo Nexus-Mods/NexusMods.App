@@ -94,4 +94,9 @@ public interface INexusApiClient
     /// <param name="token">Token used to cancel the task.</param>
     /// <returns></returns>
     Task<Response<ModFiles>> ModFilesAsync(string domain, ModId modId, CancellationToken token = default);
+    
+    /// <summary>
+    /// Returns metadata about a specific mod.
+    /// </summary>
+    Task<Response<ModInfo>> ModInfoAsync(string domain, ModId modId, CancellationToken token = default);
 }

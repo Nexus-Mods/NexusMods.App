@@ -24,6 +24,7 @@ using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Icons;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Paths;
 using ReactiveUI;
@@ -42,12 +43,12 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
     /// <summary>
     /// For designTime and Testing, provides an alternative list of tasks to use.
     /// </summary>
-    protected readonly SourceList<IDownloadTaskViewModel> DesignTimeDownloadTasks = new();
+    protected readonly SourceCache<IDownloadTaskViewModel, EntityId> DesignTimeDownloadTasks = new(x => x.TaskId);
 
     private ReadOnlyObservableCollection<IDownloadTaskViewModel> _tasksObservable =
         new(new ObservableCollection<IDownloadTaskViewModel>());
 
-    private IObservable<IChangeSet<IDownloadTaskViewModel>> TaskSourceChangeSet { get; }
+    private IObservable<IChangeSet<IDownloadTaskViewModel, EntityId>> TaskSourceChangeSet { get; }
 
     public ReadOnlyObservableCollection<IDownloadTaskViewModel> Tasks => _tasksObservable;
 
@@ -127,14 +128,25 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
         TabIcon = IconValues.Downloading;
 
         TaskSourceChangeSet = downloadService.Downloads
-            .Filter(x => x.Status != DownloadTaskStatus.Completed)
-            .Transform(x => (IDownloadTaskViewModel)new DownloadTaskViewModel(x))
+            .ToObservableChangeSet(x => x.PersistentState.Id)
+            .Transform(x =>
+                {
+                    var vm = new DownloadTaskViewModel(x);
+                    vm.Activator.Activate();
+                    return (IDownloadTaskViewModel)vm;
+                }
+            )
+            .FilterOnObservable((item, key) => item.WhenAnyValue(v => v.Status)
+                .Select(s => s != DownloadTaskStatus.Cancelled && s != DownloadTaskStatus.Completed))
+            .DisposeMany()
             .OnUI();
 
         Init();
 
         this.WhenActivated(d =>
         {
+            GetWorkspaceController().SetTabTitle(Language.InProgressDownloadsPage_Title, WorkspaceId, PanelId, TabId);
+
             ShowCancelDialogCommand = ReactiveCommand.Create(async () =>
                 {
                     if (SelectedTasks.Items.Any())
@@ -210,7 +222,8 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
 
         this.WhenActivated(d =>
         {
-            TaskSourceChangeSet.Bind(out _tasksObservable)
+            TaskSourceChangeSet
+                .Bind(out _tasksObservable)
                 .Subscribe()
                 .DisposeWith(d);
 
@@ -302,13 +315,6 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
     /// </summary>
     private void UpdateWindowInfo()
     {
-        // Poll Tasks
-        foreach (var task in Tasks)
-        {
-            if (task is DownloadTaskViewModel vm)
-                vm.Poll();
-        }
-
         // Update Window Info
         UpdateWindowInfoInternal();
     }
