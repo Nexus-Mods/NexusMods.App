@@ -1,10 +1,8 @@
 using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using Avalonia.Threading;
 using DynamicData;
 using DynamicData.Binding;
-using DynamicData.PLinq;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,7 +11,6 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.App.UI.Controls.GameWidget;
-using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.LoadoutGrid;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
@@ -27,8 +24,6 @@ namespace NexusMods.App.UI.Pages.MyGames;
 [UsedImplicitly]
 public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewModel
 {
-    private readonly IConnection _conn;
-    private readonly IServiceProvider _provider;
     private readonly IWindowManager _windowManager;
     private readonly ILogger<MyGamesViewModel> _logger;
     private readonly IApplyService _applyService;
@@ -50,8 +45,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
         TabTitle = Language.MyGames;
 		TabIcon = IconValues.JoystickGameFilled;
         
-        _provider = serviceProvider;
-        _conn = conn;
+        var provider = serviceProvider;
         _applyService = applyService;
         _windowManager = windowManager;
         _logger = logger;
@@ -67,7 +61,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                     .OnUI()
                     .Transform(install =>
                     {
-                        var vm = _provider.GetRequiredService<IGameWidgetViewModel>();
+                        var vm = provider.GetRequiredService<IGameWidgetViewModel>();
                         vm.Installation = install;
                         vm.AddGameCommand = ReactiveCommand.CreateFromTask(async () =>
                         {
@@ -94,7 +88,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                     .OnUI()
                     .Transform(install =>
                     {
-                        var vm = _provider.GetRequiredService<IGameWidgetViewModel>();
+                        var vm = provider.GetRequiredService<IGameWidgetViewModel>();
                         vm.Installation = install;
                         vm.AddGameCommand = ReactiveCommand.CreateFromTask(async () =>
                         {
@@ -133,7 +127,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                         Context = new LoadoutGridContext
                         {
                             LoadoutId = install.LoadoutId,
-                        }
+                        },
                     },
                     () => new LoadoutContext
                     {

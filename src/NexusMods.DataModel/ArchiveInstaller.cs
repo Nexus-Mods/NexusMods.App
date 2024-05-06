@@ -8,6 +8,7 @@ using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
+using NexusMods.Abstractions.NexusWebApi.DTOs;
 using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Models;
@@ -68,6 +69,8 @@ public class ArchiveInstaller : IArchiveInstaller
                 Source = download,
                 Status = ModStatus.Installing,
                 Loadout = loadout,
+                Category = ModCategory.Mod,
+                Enabled = true,
             };
             loadout.Revise(tx);
             var result = await tx.Commit();
