@@ -63,6 +63,7 @@
         <PackageReference Include="Avalonia.ReactiveUI" />
         <PackageReference Include="Avalonia.Svg.Skia" />
         <PackageReference Include="Avalonia.Themes.Fluent" />
+        <PackageReference Include="LiveChartsCore.SkiaSharpView.Avalonia" />
         <PackageReference Include="Markdown.Avalonia.Tight" />
         <PackageReference Include="DynamicData" />
         <PackageReference Include="Humanizer" />

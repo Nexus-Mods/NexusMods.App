@@ -19,6 +19,13 @@ public partial class InProgressView : ReactiveUserControl<IInProgressViewModel>
 
         this.WhenActivated(d =>
         {
+            this.OneWayBind(ViewModel, vm => vm.Series, view => view.Chart.Series)
+                .DisposeWith(d);
+            this.OneWayBind(ViewModel, vm => vm.YAxes, view => view.Chart.YAxes)
+                .DisposeWith(d);
+            this.OneWayBind(ViewModel, vm => vm.XAxes, view => view.Chart.XAxes)
+                .DisposeWith(d);
+
             this.BindCommand(ViewModel, vm => vm.ShowCancelDialogCommand, view => view.CancelButton)
                 .DisposeWith(d);
 

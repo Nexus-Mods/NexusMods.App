@@ -4,6 +4,7 @@
     <PackageVersion Include="FlatSharp.Compiler" Version="7.6.0" />
     <PackageVersion Include="FlatSharp.Runtime" Version="7.6.0" />
     <PackageVersion Include="LinqGen" Version="0.3.1" />
+    <PackageVersion Include="LiveChartsCore.SkiaSharpView.Avalonia" Version="2.0.0-rc2" />
     <PackageVersion Include="NexusMods.MnemonicDB" Version="0.9.17" />
     <PackageVersion Include="NexusMods.MnemonicDB.Abstractions" Version="0.9.17" />
     <PackageVersion Include="NexusMods.Paths" Version="0.9.3" />
