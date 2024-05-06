@@ -2,12 +2,12 @@ using System.Globalization;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Models;
 
-namespace NexusMods.Abstractions.MnemonicDB.Attributes;
+namespace NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 
 /// <summary>
-/// Extension methods for MnemonicDB.
+/// Extension methods for MnemonicDB entities
 /// </summary>
-public static class Extensions
+public static class EntityExtensions
 {
     /// <summary>
     /// Casts an entity to a specific type, performing no checks.

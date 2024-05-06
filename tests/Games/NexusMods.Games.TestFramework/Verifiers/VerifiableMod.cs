@@ -2,6 +2,7 @@ using JetBrains.Annotations;
 using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
+using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 
 namespace NexusMods.Games.TestFramework.Verifiers;
 

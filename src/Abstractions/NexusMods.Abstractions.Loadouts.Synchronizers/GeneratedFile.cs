@@ -1,4 +1,5 @@
 using NexusMods.Abstractions.MnemonicDB.Attributes;
+using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.MnemonicDB.Abstractions;
 using File = NexusMods.Abstractions.Loadouts.Files.File;
 

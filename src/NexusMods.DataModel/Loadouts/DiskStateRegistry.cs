@@ -113,6 +113,11 @@ public class DiskStateRegistry : IDiskStateRegistry
             .FirstOrDefault();
     }
 
+    public Task ClearInitialState(GameInstallation installation)
+    {
+        throw new NotImplementedException();
+    }
+
     /// <inheritdoc />
     public bool TryGetLastAppliedLoadout(GameInstallation gameInstallation, out LoadoutRevisionId id)
     {

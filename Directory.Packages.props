@@ -23,6 +23,13 @@
     <PackageVersion Include="System.Text.Json" Version="8.0.3" />
   </ItemGroup>
   <ItemGroup>
+      <!-- Open Telementry -->
+      <PackageVersion Include="OpenTelemetry" Version="1.8.1" />
+      <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.8.1" />
+      <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.8.1" />
+  </ItemGroup>
+  <ItemGroup>
+      
     <PackageVersion Include="JetBrains.Annotations" Version="2023.3.0" PrivateAssets="all" />
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="8.0.0">
       <PrivateAssets>all</PrivateAssets>
@@ -98,9 +105,9 @@
     <PackageVersion Include="Verify.ImageMagick" Version="3.3.0" />
     <PackageVersion Include="Verify.SourceGenerators" Version="2.2.0" />
     <PackageVersion Include="xunit" Version="2.7.0" />
-    <PackageVersion Include="Xunit.DependencyInjection" Version="8.9.1" />
-    <PackageVersion Include="Xunit.DependencyInjection.Logging" Version="8.1.0" />
-    <PackageVersion Include="Xunit.DependencyInjection.SkippableFact" Version="8.1.0" />
+    <PackageVersion Include="Xunit.DependencyInjection" Version="9.2.1" />
+    <PackageVersion Include="Xunit.DependencyInjection.Logging" Version="9.0.0" />
+    <PackageVersion Include="Xunit.DependencyInjection.SkippableFact" Version="9.0.0" />
     <PackageVersion Include="xunit.extensibility.core" Version="2.6.3" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.5.7">
       <PrivateAssets>all</PrivateAssets>

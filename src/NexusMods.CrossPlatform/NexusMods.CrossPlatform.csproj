@@ -42,4 +42,8 @@
       </Compile>
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageVersion Update="CliWrap" Version="3.6.6" />
+    </ItemGroup>
+
 </Project>
