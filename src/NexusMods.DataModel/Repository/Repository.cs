@@ -62,6 +62,15 @@ public class Repository<TModel> : IRepository<TModel> where TModel : Entity
 
     /// <inheritdoc />
     public ReadOnlyObservableCollection<TModel> Observable => _observable;
+
+    /// <inheritdoc />
+    public IObservable<TModel> Revisions(EntityId id)
+    {
+        return _conn.Revisions
+            .Where(db => db.Datoms(db.BasisTxId).Any(datom => datom.E == id.Value))
+            .StartWith(_conn.Db)
+            .Select(db => db.Get<TModel>(id));
+    }
 }
 
 

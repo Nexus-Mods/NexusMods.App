@@ -9,6 +9,7 @@ using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
+using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Extensions.BCL;
 
 namespace NexusMods.DataModel.Diagnostics;
@@ -24,11 +25,14 @@ internal sealed class DiagnosticManager : IDiagnosticManager
 
     private bool _isDisposed;
     private readonly CompositeDisposable _compositeDisposable = new();
+    private readonly IRepository<Loadout.Model> _loadoutRepository;
 
     public DiagnosticManager(
-        ILogger<DiagnosticManager> logger)
+        ILogger<DiagnosticManager> logger,
+        IRepository<Loadout.Model> loadoutRepository)
     {
         _logger = logger;
+        _loadoutRepository = loadoutRepository;
     }
 
     public IObservable<Diagnostic[]> GetLoadoutDiagnostics(LoadoutId loadoutId)
@@ -40,11 +44,8 @@ internal sealed class DiagnosticManager : IDiagnosticManager
             var existingObservable = _observableCache.Lookup(loadoutId);
             if (existingObservable.HasValue) return existingObservable.Value;
 
-            throw new NotImplementedException();
-            /*
-            var connectableObservable = _loadoutRegistry
-                .RevisionsAsLoadouts(loadoutId)
-                .DistinctUntilChanged(loadout => loadout.DataStoreId)
+            var connectableObservable = 
+                _loadoutRepository.Revisions(loadoutId.Value)
                 .Throttle(dueTime: TimeSpan.FromMilliseconds(250))
                 .SelectMany(async loadout =>
                 {
@@ -57,7 +58,7 @@ internal sealed class DiagnosticManager : IDiagnosticManager
                     catch (Exception e)
                     {
                         _logger.LogError(e, "Exception while diagnosing loadout {Loadout}", loadout.Name);
-                        return Array.Empty<Diagnostic>();
+                        return [];
                     }
                 })
                 .Replay(bufferSize: 1);
@@ -65,14 +66,11 @@ internal sealed class DiagnosticManager : IDiagnosticManager
             _compositeDisposable.Add(connectableObservable.Connect());
             _observableCache.Edit(updater => updater.AddOrUpdate(connectableObservable, loadoutId));
             return connectableObservable;
-            */
         }
     }
 
     private async Task<Diagnostic[]> GetLoadoutDiagnostics(Loadout.Model loadout, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
-        /*
         var diagnosticEmitters = loadout.Installation.GetGame().DiagnosticEmitters;
 
         try
@@ -123,9 +121,8 @@ internal sealed class DiagnosticManager : IDiagnosticManager
         catch (TaskCanceledException)
         {
             // ignore
-            return Array.Empty<Diagnostic>();
+            return [];
         }
-        */
     }
 
     public IObservable<(int NumSuggestions, int NumWarnings, int NumCritical)> CountDiagnostics(LoadoutId loadoutId)
