@@ -12,8 +12,10 @@
     <_NativeRuntime Condition=" '$(_NativeRuntime)' == '' And '$(_IsWindows)' == 'true' And '$(PlatformTarget)' == 'arm64'">win-arm64</_NativeRuntime>
     <_NativeRuntime Condition=" '$(_NativeRuntime)' == '' And '$(_IsWindows)' == 'true' And ('$(Prefer32Bit)' == 'true' Or '$(PlatformTarget)' == 'x86')">win-x86</_NativeRuntime>
     <_NativeRuntime Condition=" '$(_NativeRuntime)' == '' And '$(_IsWindows)' == 'true' And ('$(Prefer32Bit)' == 'false' Or '$(PlatformTarget)' == 'x64')">win-x64</_NativeRuntime>
+
+      <_IsDisabled Condition="'$(NEXUSMODS_APP_NO_BUNDLED_EXTRACTORS)' == '1'">true</_IsDisabled>
   </PropertyGroup>
-  <ItemGroup>
+  <ItemGroup Condition="'$(_IsDisabled)' == '' Or '$(_IsDisabled)' == 'false'">
     <!-- Copy all if platform not specified -->
     <None Condition="'$(PlatformTarget)' == 'AnyCPU' Or '$(PlatformTarget)' == ''" Include="$(MSBuildThisFileDirectory)../runtimes/**" Exclude="$(MSBuildThisFileDirectory)*.targets">
       <Link>runtimes\%(RecursiveDir)\%(Filename)%(Extension)</Link>
