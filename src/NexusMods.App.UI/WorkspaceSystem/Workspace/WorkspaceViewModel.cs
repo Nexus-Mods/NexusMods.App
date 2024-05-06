@@ -6,6 +6,7 @@ using Avalonia;
 using DynamicData;
 using DynamicData.Aggregation;
 using DynamicData.Kernel;
+using Microsoft.Extensions.Logging;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Windows;
 using ReactiveUI;
@@ -45,13 +46,16 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
     private readonly ReadOnlyObservableCollection<IPanelResizerViewModel> _resizers;
     public ReadOnlyObservableCollection<IPanelResizerViewModel> Resizers => _resizers;
 
+    private readonly ILogger _logger;
     private readonly IWorkspaceController _workspaceController;
     private readonly PageFactoryController _factoryController;
 
     public WorkspaceViewModel(
+        ILogger<WorkspaceViewModel> logger,
         IWorkspaceController workspaceController,
         PageFactoryController factoryController)
     {
+        _logger = logger;
         _workspaceController = workspaceController;
         _factoryController = factoryController;
 
@@ -78,6 +82,14 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
             // Workspace resizing
             this.WhenAnyValue(vm => vm.IsHorizontal)
                 .Distinct()
+                .Do(_ =>
+                {
+                    var currentState = WorkspaceGridState.From(_panels, IsHorizontal);
+                    if (!GridUtils.IsPerfectGrid(currentState, doThrow: false))
+                    {
+                        _logger.LogWarning("Panel Grid isn't perfect {Grid}", currentState.ToString());
+                    }
+                })
                 .Do(_ => UpdateStates())
                 .Do(_ => UpdateResizers())
                 .Subscribe();
@@ -166,8 +178,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                         if (isHorizontal)
                         {
                             // true if the resizer sits on the "top" edge of the panel
-                            var isResizerYAligned =
-                                lastLogicalValue.IsCloseTo(currentSize.Y, tolerance: defaultTolerance);
+                            var isResizerYAligned = lastLogicalValue.IsCloseTo(currentSize.Y, tolerance: defaultTolerance);
 
                             // if the resizer sits on the "top" edge of the panel, we want to move the panel with the resizer
                             var newY = isResizerYAligned ? newLogicalValue : currentSize.Y;
@@ -188,8 +199,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                         else
                         {
                             // true if the resizer sits on the "left" edge of the panel
-                            var isResizerXAligned =
-                                lastLogicalValue.IsCloseTo(currentSize.X, tolerance: defaultTolerance);
+                            var isResizerXAligned = lastLogicalValue.IsCloseTo(currentSize.X, tolerance: defaultTolerance);
 
                             // if the resizer sits on the "left" edge of the panel, we want to move the panel with the resizer
                             var newX = isResizerXAligned ? newLogicalValue : currentSize.X;

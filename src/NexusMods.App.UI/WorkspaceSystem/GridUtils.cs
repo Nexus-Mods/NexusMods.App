@@ -13,7 +13,7 @@ public static class GridUtils
     /// A perfect has no gaps, and no panel is out-of-bounds.
     /// </remarks>
     /// <exception cref="Exception">Thrown when the grid is not perfect.</exception>
-    internal static bool IsPerfectGrid(WorkspaceGridState gridState)
+    internal static bool IsPerfectGrid(WorkspaceGridState gridState, bool doThrow = true)
     {
         var totalArea = 0.0;
 
@@ -25,7 +25,8 @@ public static class GridUtils
                 !rect.Top.IsGreaterThanOrCloseTo(0.0)  ||
                 !rect.Bottom.IsLessThanOrCloseTo(1.0))
             {
-                throw new Exception($"Panel {panelState} is out of bounds");
+                if (doThrow) throw new Exception($"Panel {panelState} is out of bounds");
+                return false;
             }
 
             totalArea += rect.Height * rect.Width;
@@ -36,17 +37,49 @@ public static class GridUtils
 
                 if (rect.Intersects(other.Rect))
                 {
-                    throw new Exception($"{panelState.ToString()} intersects with {other.ToString()}");
+                    if (doThrow) throw new Exception($"{panelState.ToString()} intersects with {other.ToString()}");
+                    return false;
                 }
             }
         }
 
         if (!totalArea.IsCloseTo(1.0))
         {
-            throw new Exception($"Area of {totalArea} doesn't match 1.0");
+            if (doThrow) throw new Exception($"Area of {totalArea} doesn't match 1.0");
+            return false;
         }
 
         return true;
+    }
+
+    /// <summary>
+    /// Resets the current state into a working state.
+    /// </summary>
+    internal static WorkspaceGridState ResetState(
+        WorkspaceGridState currentState,
+        int maxColumns,
+        int maxRows)
+    {
+        var count = currentState.Count;
+        Debug.Assert(count > 0);
+
+        var res = currentState.Clear().Add(new PanelGridState(currentState[0].Id, MathUtils.One));
+        for (var i = 1; i < count; i++)
+        {
+            var possibleStates = GetPossibleStates(res, maxColumns, maxRows);
+            var state = possibleStates.First();
+
+            var newPanels = state.Select(x =>
+            {
+                if (x.Id == PanelId.DefaultValue)
+                    x.Id = currentState[i].Id;
+                return x;
+            }).ToArray();
+
+            res = res.UnionById(newPanels);
+        }
+
+        return res;
     }
 
     /// <summary>
