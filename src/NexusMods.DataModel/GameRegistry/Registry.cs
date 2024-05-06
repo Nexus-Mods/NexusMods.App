@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using DynamicData;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.DTO;
@@ -23,6 +24,7 @@ public class Registry : IGameRegistry
     private readonly SourceCache<(GameInstallation Game, EntityId Id), EntityId> _cache = new(x => x.Id); 
     
     private readonly ReadOnlyObservableCollection<GameInstallation> _installedGames;
+    private readonly ILogger<Registry> _logger;
 
     /// <inheritdoc />
     public ReadOnlyObservableCollection<GameInstallation> InstalledGames => _installedGames;
@@ -30,10 +32,23 @@ public class Registry : IGameRegistry
     /// <summary>
     /// Game registry for all installed games.
     /// </summary>
-    public Registry(IEnumerable<ILocatableGame> games, IConnection connection)
+    public Registry(ILogger<Registry> logger, IEnumerable<ILocatableGame> games, IConnection connection)
     {
+        _logger = logger;
         _connection = connection;
-        _startup = Task.Run(() => Startup(games));
+        _startup = Task.Run(() =>
+            {
+                try
+                {
+                    return Startup(games);
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "While trying to start Registry");
+                    throw;
+                }
+            }
+        );
         
         _cache
             .Connect()
@@ -48,11 +63,14 @@ public class Registry : IGameRegistry
             let igame = (IGame)game
             from install in igame.Installations
             select install;
+        
+        _logger.LogInformation("Getting game metadata");
 
         var allInDb = GameMetadata
             .All(_connection.Db)
             .ToDictionary(x => (GameDomain.From(x.Domain), GameStore.From(x.Store)));
 
+        _logger.LogInformation("Creating transaction");
         using var tx = _connection.BeginTransaction();
 
         var added = new List<(EntityId Id, GameInstallation)>();
@@ -76,10 +94,14 @@ public class Registry : IGameRegistry
 
         if (added.Count > 0)
         {
+            _logger.LogInformation("Found {Count} new games to register", added.Count);
             var result = await tx.Commit();
+            _logger.LogInformation("Registered {Count} new games", added.Count);
             foreach (var (id, install) in added)
                 results.Add((result[id], install));
         }
+        
+        _logger.LogInformation("Register setup");
 
         _byId = results.ToDictionary(x => x.Id, x => x.Item2);
         _byInstall = results.ToDictionary(x => GetKey(x.Item2), x => x.Id);

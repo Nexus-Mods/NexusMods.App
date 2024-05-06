@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Models;
+using static System.Reactive.Linq.Observable;
 
 namespace NexusMods.DataModel.Repository;
 
@@ -66,6 +67,9 @@ internal class Repository<TModel> : IRepository<TModel> where TModel : Entity
     /// <inheritdoc />
     public IObservable<TModel> Revisions(EntityId id)
     {
+        if (!Exists(id))
+            return Empty<TModel>();
+        
         return _conn.Revisions
             .Where(db => db.Datoms(db.BasisTxId).Any(datom => datom.E == id.Value))
             .StartWith(_conn.Db)

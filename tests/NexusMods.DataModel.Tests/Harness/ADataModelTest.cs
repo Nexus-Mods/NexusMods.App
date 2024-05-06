@@ -47,8 +47,8 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
     protected readonly IToolManager ToolManager;
     protected readonly IGameRegistry GameRegistry;
 
-    protected readonly IGame Game;
-    protected readonly GameInstallation Install;
+    protected IGame Game;
+    protected GameInstallation Install;
     
     protected Loadout.Model BaseLoadout = null!;
 
@@ -84,8 +84,6 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
         ServiceProvider = provider;
         GameRegistry = provider.GetRequiredService<IGameRegistry>();
 
-        Install = GameRegistry.AllInstalledGames.First(g => g.Game is StubbedGame);
-        Game = (IGame)Install.Game;
     }
 
     public void Dispose()
@@ -95,6 +93,8 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
 
     public virtual async Task InitializeAsync()
     {
+        Install = GameRegistry.AllInstalledGames.First(g => g.Game is StubbedGame);
+        Game = (IGame)Install.Game;
         BaseLoadout = await Game.Synchronizer.Manage(Install, "TestLoadout_" + Guid.NewGuid());
     }
 

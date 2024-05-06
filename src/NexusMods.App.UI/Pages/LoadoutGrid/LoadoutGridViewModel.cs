@@ -13,6 +13,7 @@ using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
+using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModCategory;
@@ -66,6 +67,7 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
         ILogger<LoadoutGridViewModel> logger,
         IServiceProvider provider,
         IConnection conn,
+        IRepository<Loadout.Model> loadoutRepository,
         IFileSystem fileSystem,
         IArchiveInstaller archiveInstaller,
         IFileOriginRegistry fileOriginRegistry,
@@ -133,7 +135,7 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
         this.WhenActivated(d =>
         {
             this.WhenAnyValue(vm => vm.LoadoutId)
-                .SelectMany(id => _conn.Revisions(id))
+                .SelectMany(id => loadoutRepository.Revisions(id.Value))
                 .Select(loadout => loadout.Mods.Select(m => m.ModId))
                 .OnUI()
                 .ToDiffedChangeSet(cur => cur, cur => cur)
@@ -142,7 +144,7 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
                 .DisposeWith(d);
 
             this.WhenAnyValue(vm => vm.LoadoutId)
-                .SelectMany(id => _conn.Revisions(id))
+                .SelectMany(id => loadoutRepository.Revisions(id.Value))
                 .Select(loadout => loadout.Name)
                 .OnUI()
                 .Do(loadoutName =>
