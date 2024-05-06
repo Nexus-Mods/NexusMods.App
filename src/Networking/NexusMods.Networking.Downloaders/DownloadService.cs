@@ -2,7 +2,6 @@ using System.Collections.ObjectModel;
 using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.HttpDownloader;
 using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.MnemonicDB.Abstractions;
@@ -12,7 +11,6 @@ using NexusMods.Networking.Downloaders.Tasks.State;
 using System.Reactive.Disposables;
 using DynamicData.Kernel;
 using NexusMods.Abstractions.Activities;
-using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.IO;
 using NexusMods.Paths;
 

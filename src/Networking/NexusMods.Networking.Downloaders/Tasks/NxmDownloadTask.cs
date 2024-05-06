@@ -5,6 +5,7 @@ using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.DTOs;
 using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.Hashing.xxHash64;
 using NexusMods.Networking.Downloaders.Tasks.State;
 using NexusMods.Paths;
 
@@ -72,7 +73,10 @@ public class NxmDownloadTask : ADownloadTask
 
         Logger.LogInformation("Starting download of NXM file {Name}", PersistentState.FriendlyName);
         
-        await HttpDownloader.DownloadAsync(links, destination, TransientState, PersistentState.Size, token);
+        var hash = await HttpDownloader.DownloadAsync(links, destination, TransientState, PersistentState.Size, token);
+        if (hash.Value == Hash.Zero)
+            throw new OperationCanceledException();
+        
         Logger.LogInformation("Finished download of NXM file {Name}", PersistentState.FriendlyName);
     }
 

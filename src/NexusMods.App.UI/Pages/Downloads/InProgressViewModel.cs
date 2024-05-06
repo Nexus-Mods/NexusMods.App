@@ -23,6 +23,7 @@ using NexusMods.App.UI.Pages.Downloads.ViewModels;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Paths;
