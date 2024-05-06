@@ -268,7 +268,7 @@ public class AdvancedInstallerUITests
 
         // Check output
         bodyVm.DeploymentData.EmitOperations(AdvancedInstallerTestHelpers.CreateTestFileTree())
-            .Select(aModFile => aModFile.Get(File.To))
+            .Select(aModFile => aModFile.GetFirst(File.To))
             .Should().BeEquivalentTo(
                 new List<GamePath>
                 {
