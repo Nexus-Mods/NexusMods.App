@@ -81,7 +81,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         {
             // Workspace resizing
             this.WhenAnyValue(vm => vm.IsHorizontal)
-                .Distinct()
+                .DistinctUntilChanged()
                 .Do(_ => ResetGridIfBroken())
                 .Do(_ => UpdateStates())
                 .Do(_ => UpdateResizers())
