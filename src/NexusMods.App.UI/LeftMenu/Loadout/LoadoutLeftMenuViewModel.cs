@@ -33,7 +33,6 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
         IServiceProvider serviceProvider)
     {
         var diagnosticManager = serviceProvider.GetRequiredService<IDiagnosticManager>();
-        var loadoutRegistry = serviceProvider.GetRequiredService<ILoadoutRegistry>();
         
         WorkspaceId = workspaceId;
         ApplyControlViewModel = new ApplyControlViewModel(loadoutContext.LoadoutId, serviceProvider);

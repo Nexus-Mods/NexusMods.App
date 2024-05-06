@@ -16,7 +16,6 @@ using NexusMods.App.UI.Overlays.Updater;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.Downloaders.Interfaces;
-using NexusMods.Networking.Downloaders.Interfaces.Traits;
 using NexusMods.Paths;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -66,16 +65,6 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
 
         this.WhenActivated(d =>
         {
-            downloadService.AnalyzedArchives.Subscribe(tuple =>
-            {
-                // Because HandleDownloadedAnalyzedArchive is an async task, it begins automatically.
-                HandleDownloadedAnalyzedArchive(tuple.task, tuple.downloadId, tuple.modName).ContinueWith(t =>
-                {
-                    if (t.Exception != null)
-                        logger.LogError(t.Exception, "Error while installing downloaded analyzed archive");
-                });
-            }).DisposeWith(d);
-
             controller.ApplyNextOverlay.Subscribe(item =>
                 {
                     if (item == null)
@@ -128,27 +117,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
         // of the VM because the MainWindowViewModel gets disposed last, after its contents.
         _windowManager.SaveWindowState(this);
     }
-
-    private async Task HandleDownloadedAnalyzedArchive(IDownloadTask task, DownloadId downloadId, string modName)
-    {
-        var loadouts = Array.Empty<LoadoutId>();
-        if (task is IHaveGameDomain gameDomain)
-            loadouts = _conn.Db.Loadouts().Where(x => x.Installation.Game.Domain == gameDomain.GameDomain)
-                .Select(x => x.LoadoutId).ToArray();
-
-        // Insert code here to invoke loadout picker and get results for final loadouts to install to.
-        // ...
-
-        // Install in the background, to avoid blocking UI.
-        await Task.Run(async () =>
-        {
-            if (loadouts.Length > 0)
-                await _archiveInstaller.AddMods(loadouts[0], downloadId, modName);
-            else
-                await _archiveInstaller.AddMods(_conn.Db.Loadouts().First().LoadoutId, downloadId, modName);
-        });
-    }
-
+    
     public WindowId WindowId { get; } = WindowId.NewId();
 
     /// <inheritdoc/>

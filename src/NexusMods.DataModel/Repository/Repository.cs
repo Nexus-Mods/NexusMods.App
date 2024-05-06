@@ -71,6 +71,19 @@ public class Repository<TModel> : IRepository<TModel> where TModel : Entity
             .StartWith(_conn.Db)
             .Select(db => db.Get<TModel>(id));
     }
+
+    /// <inheritdoc />
+    public bool Exists(EntityId loadoutId)
+    {
+        var entity = _conn.Db.Get<TModel>(loadoutId);
+        foreach (var attribute in _watchedAttributes)
+        {
+            if (!entity.Contains(attribute))
+                return false;
+        }
+
+        return true;
+    }
 }
 
 

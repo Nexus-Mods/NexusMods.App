@@ -15,8 +15,8 @@ public class ModEnabledDesignViewModel : AViewModel<IModEnabledViewModel>, IModE
     public bool Enabled { get; set; }
 
     [Reactive] public ModStatus Status { get; set; } = ModStatus.Failed;
-    public ReactiveCommand<bool, Unit> ToggleEnabledCommand { get; }
-    public ReactiveCommand<Unit, Unit> DeleteModCommand { get; }
+    public ICommand ToggleEnabledCommand { get; }
+    public ICommand DeleteModCommand { get; }
 
     public ModEnabledDesignViewModel()
     {

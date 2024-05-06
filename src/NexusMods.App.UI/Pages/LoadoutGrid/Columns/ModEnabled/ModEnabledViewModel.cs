@@ -27,10 +27,10 @@ public class ModEnabledViewModel : AViewModel<IModEnabledViewModel>, IModEnabled
     public ModStatus Status { get; set; } = ModStatus.Installed;
 
     [Reactive]
-    public ReactiveCommand<bool, Unit> ToggleEnabledCommand { get; set; }
+    public ICommand ToggleEnabledCommand { get; set; }
 
     [Reactive]
-    public ReactiveCommand<Unit, Unit> DeleteModCommand { get; set; }
+    public ICommand DeleteModCommand { get; set; }
 
     public ModEnabledViewModel(IConnection conn)
     {
@@ -58,7 +58,7 @@ public class ModEnabledViewModel : AViewModel<IModEnabledViewModel>, IModEnabled
             await old.ToggleEnabled();
             return Unit.Default;
         });
-        DeleteModCommand = ReactiveCommand.Create(async () =>
+        DeleteModCommand = ReactiveCommand.CreateFromTask(async () =>
         {
             var mod = _conn.Db.Get(Row);
             await mod.Delete();

@@ -1,7 +1,9 @@
-﻿using System.Windows.Input;
+﻿using System.Reactive;
+using System.Windows.Input;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.App.UI.Controls.DataGrid;
+using ReactiveUI;
 
 namespace NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModEnabled;
 
