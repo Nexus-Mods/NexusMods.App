@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.Abstractions.GameLocators;
@@ -11,7 +12,12 @@ public interface IGameRegistry
     /// Get all installed games.
     /// </summary>
     public IEnumerable<GameInstallation> AllInstalledGames { get; }
-
+    
+    /// <summary>
+    /// Get an Observable of all installed games.
+    /// </summary>
+    public ReadOnlyObservableCollection<GameInstallation> InstalledGames { get; }
+    
     /// <summary>
     /// Get a game installation by its id.
     /// </summary>

@@ -134,7 +134,7 @@ public class DiskStateRegistry : IDiskStateRegistry
         }
         
         _lastAppliedRevisionDictionary[gameInstallation] = lastAppliedLoadout;
-        id = lastAppliedLoadout;
+        id = new LoadoutRevisionId { Id = LoadoutId.From(diskStateTree.LoadoutId), Tx = diskStateTree.TxId };
         return true;
     }
     

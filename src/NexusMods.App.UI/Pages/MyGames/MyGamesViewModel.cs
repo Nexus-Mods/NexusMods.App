@@ -1,13 +1,17 @@
 using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using Avalonia.Threading;
 using DynamicData;
+using DynamicData.Binding;
+using DynamicData.PLinq;
 using JetBrains.Annotations;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.App.UI.Controls.GameWidget;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.LoadoutGrid;
@@ -40,7 +44,8 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
         IConnection conn,
         ILogger<MyGamesViewModel> logger,
         IApplyService applyService,
-        IEnumerable<IGame> games) : base(windowManager)
+        IGameRegistry gameRegistry,
+        IRepository<Loadout.Model> loadoutRepository) : base(windowManager)
     {
         TabTitle = Language.MyGames;
 		TabIcon = IconValues.JoystickGameFilled;
@@ -50,22 +55,12 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
         _applyService = applyService;
         _windowManager = windowManager;
         _logger = logger;
-
-        var gamesList = games.ToList();
-        var installations = gamesList
-            .SelectMany(game => game.Installations)
-            .ToObservableCollection()
-            .AsObservableChangeSet();
-
-        /*
+        
         this.WhenActivated(d =>
             {
-                throw new NotImplementedException();
-                
-                var managedInstallations = _loadoutRegistry.LoadoutRootChanges
-                    .Transform(loadoutId => (loadoutId, loadout: loadoutRegistry.Get(loadoutId)))
-                    .Filter(tuple => tuple.loadout != null)
-                    .DistinctValues(tuple => tuple.loadout!.Installation);
+                var managedInstallations = loadoutRepository.Observable
+                    .ToObservableChangeSet()
+                    .Transform(l => l.Installation);
 
                 // Managed games widgets
                 managedInstallations
@@ -93,7 +88,8 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                     .DisposeWith(d);
 
                 // Detected games widgets, except already managed games
-                installations
+                gameRegistry.InstalledGames
+                    .ToObservableChangeSet()
                     .Except(managedInstallations)
                     .OnUI()
                     .Transform(install =>
@@ -117,16 +113,12 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
             }
             
         );
-        */
     }
 
     private async Task ManageGame(GameInstallation installation)
     {
-        /*
-        var name = _loadoutRegistry.SuggestName(installation);
-        var marker = await _loadoutRegistry.Manage(installation, name);
-
-        var loadoutId = marker.Id;
+        
+        var install = await ((IGame)installation.Game).Synchronizer.Manage(installation);
 
         Dispatcher.UIThread.Invoke(() =>
             {
@@ -134,30 +126,29 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                 var workspaceController = window.WorkspaceController;
 
                 workspaceController.ChangeOrCreateWorkspaceByContext(
-                    context => context.LoadoutId == loadoutId,
+                    context => context.LoadoutId == install.LoadoutId,
                     () => new PageData
                     {
                         FactoryId = LoadoutGridPageFactory.StaticId,
                         Context = new LoadoutGridContext
                         {
-                            LoadoutId = loadoutId
+                            LoadoutId = install.LoadoutId,
                         }
                     },
                     () => new LoadoutContext
                     {
-                        LoadoutId = loadoutId
+                        LoadoutId = install.LoadoutId,
                     }
                 );
             }
         );
-        */
     }
 
     private void NavigateToLoadout(GameInstallation installation)
     {
-        /*
-        var revId = _applyService.GetLastAppliedLoadout(installation);
-        if (revId is null)
+        
+        var loadout = _applyService.GetLastAppliedLoadout(installation);
+        if (loadout is null)
         {
             _logger.LogError("Unable to find active loadout for  {GameName} : {InstallPath}",
                 installation.Game.Name,
@@ -165,14 +156,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
             );
             return;
         }
-
-        var loadout = _loadoutRegistry.GetLoadout(revId);
-        if (loadout is null)
-        {
-            _logger.LogError("Unable to find loadout for revision {RevId}", revId);
-            return;
-        }
-
+        
         var loadoutId = loadout.LoadoutId;
 
         Dispatcher.UIThread.Invoke(() =>
@@ -187,16 +171,15 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                         FactoryId = LoadoutGridPageFactory.StaticId,
                         Context = new LoadoutGridContext
                         {
-                            LoadoutId = loadoutId
-                        }
+                            LoadoutId = loadoutId,
+                        },
                     },
                     () => new LoadoutContext
                     {
-                        LoadoutId = loadoutId
+                        LoadoutId = loadoutId,
                     }
                 );
             }
         );
-        */
     }
 }

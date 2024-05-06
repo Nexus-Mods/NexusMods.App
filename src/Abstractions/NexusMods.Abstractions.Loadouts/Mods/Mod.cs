@@ -125,7 +125,7 @@ public static partial class Mod
         
         public ModStatus Status
         {
-            get => Mod.Status.Get(this);
+            get => Mod.Status.Get(this, ModStatus.Installed);
             set => Mod.Status.Add(this, value);
         }
         

@@ -1,3 +1,7 @@
+using System.Collections.ObjectModel;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
+using DynamicData;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.DTO;
@@ -16,6 +20,13 @@ public class Registry : IGameRegistry
     private Dictionary<EntityId,GameInstallation> _byId = new();
     private Dictionary<(GameDomain Domain, Version Version, GameStore Store),EntityId> _byInstall = new();
 
+    private readonly SourceCache<(GameInstallation Game, EntityId Id), EntityId> _cache = new(x => x.Id); 
+    
+    private readonly ReadOnlyObservableCollection<GameInstallation> _installedGames;
+
+    /// <inheritdoc />
+    public ReadOnlyObservableCollection<GameInstallation> InstalledGames => _installedGames;
+
     /// <summary>
     /// Game registry for all installed games.
     /// </summary>
@@ -23,6 +34,12 @@ public class Registry : IGameRegistry
     {
         _connection = connection;
         _startup = Task.Run(() => Startup(games));
+        
+        _cache
+            .Connect()
+            .Transform(g => g.Game)
+            .Bind(out _installedGames)
+            .Subscribe();
     }
 
     private async Task Startup(IEnumerable<ILocatableGame> games)
@@ -66,6 +83,12 @@ public class Registry : IGameRegistry
 
         _byId = results.ToDictionary(x => x.Id, x => x.Item2);
         _byInstall = results.ToDictionary(x => GetKey(x.Item2), x => x.Id);
+        
+        _cache.Edit(x => {
+            x.Clear();
+            foreach (var (id, install) in results)
+                _cache.AddOrUpdate((install, id));
+        });
     }
     
     private (GameDomain Domain, Version Version, GameStore Store) GetKey(GameInstallation installation)

@@ -1,0 +1,83 @@
+using System.Collections.ObjectModel;
+using System.Reactive.Linq;
+using DynamicData;
+using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.MnemonicDB.Attributes;
+using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.Models;
+
+namespace NexusMods.DataModel.Repository;
+
+public class Repository<TModel> : IRepository<TModel> where TModel : Entity
+{
+    private readonly IConnection _conn;
+    private readonly IAttribute[] _watchedAttributes;
+
+    /// <summary>
+    /// DI constructor.
+    /// </summary>
+    public Repository(IAttribute[] watchedAttributes, IConnection connection)
+    {
+        _conn = connection;
+        _watchedAttributes = watchedAttributes;
+        
+        _cache
+            .Connect()
+            .Bind(out _observable)
+            .Subscribe();
+        
+        _conn.Revisions
+            .SelectMany(db => db.Datoms(db.BasisTxId).Select(datom => (datom, db)))
+            .Where(d => _watchedAttributes.Contains(d.datom.A))
+            .Select(d => (Db: d.db, E: d.datom.E))
+            .StartWith(All.Select(l => (Db: l.Db, E:l.Id)))
+            .Subscribe(dbAndE =>
+            {
+                _cache.Edit(x =>
+                {
+                    x.AddOrUpdate(dbAndE.Db.Get<TModel>(dbAndE.E));
+                });
+            });
+    }
+
+    /// <inheritdoc />
+    public IEnumerable<TModel> All
+    {
+        get
+        {
+            var db = _conn.Db;
+            var items = db.Find(_watchedAttributes[0]);
+            foreach (var attr in _watchedAttributes.Skip(1))
+            {
+                items = items.Intersect(db.Find(attr));
+            }
+
+            return items.Select(id => db.Get<TModel>(id));
+        }
+    }
+    
+    private readonly SourceCache<TModel, EntityId> _cache = new(x => x.Id);
+
+    private readonly ReadOnlyObservableCollection<TModel> _observable;
+
+    /// <inheritdoc />
+    public ReadOnlyObservableCollection<TModel> Observable => _observable;
+}
+
+
+/// <summary>
+/// DI extensions for the repository.
+/// </summary>
+public static class Extensions
+{
+    
+    /// <summary>
+    /// Registers a repository for a model with the given attributes.
+    /// </summary>
+    public static IServiceCollection AddRepository<TModel>(this IServiceCollection collection, params IAttribute[] attributes) where TModel : Entity
+    {
+        return collection
+            .AddSingleton<IRepository<TModel>>(provider => 
+                new Repository<TModel>(attributes, provider.GetRequiredService<IConnection>()));
+    }
+}

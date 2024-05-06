@@ -24,6 +24,7 @@ using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.LoadoutSynchronizerDTOs;
 using NexusMods.DataModel.Messaging;
+using NexusMods.DataModel.Repository;
 using NexusMods.DataModel.Settings;
 using NexusMods.DataModel.Sorting;
 using NexusMods.DataModel.TriggerFilter;
@@ -132,6 +133,9 @@ public static class Services
         coll.AddAttributeCollection(typeof(DownloadContentEntry));
         coll.AddAttributeCollection(typeof(FilePathMetadata));
         coll.AddAllSingleton<IFileOriginRegistry, FileOriginRegistry>();
+        
+        // Repositories
+        coll.AddRepository<Loadout.Model>(Loadout.Revision);
 
 
         // Diagnostics

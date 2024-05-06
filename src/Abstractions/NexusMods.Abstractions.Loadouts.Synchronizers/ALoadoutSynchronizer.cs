@@ -23,6 +23,7 @@ using NexusMods.Extensions.BCL;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Models;
+using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees.Traits;
 using File = NexusMods.Abstractions.Loadouts.Files.File;
@@ -899,14 +900,17 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             Db = basis, // Has to be here to the installation resolves properly
             Name = suggestedName ?? $"Loadout {installation.Game.Name}",
             Installation = installation,
+            Revision = 0,
         };
         
         var gameFiles = new Mod.Model(tx)
         {
             Name = "Game Files",
+            Version = installation.Version.ToString(),
             Category = ModCategory.GameFiles,
             Enabled = true,
             Loadout = loadout,
+            Status = ModStatus.Installed,
         };
 
         var filesToBackup = new List<(GamePath To, Hash Hash, Size Size)>();

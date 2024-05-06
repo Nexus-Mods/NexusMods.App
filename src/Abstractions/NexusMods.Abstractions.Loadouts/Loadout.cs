@@ -69,6 +69,20 @@ public static class Loadout
             .StartWith(conn.Db)
             .Select(db => db.Get<Model>(id.Value));
     }
+
+    /// <summary>
+    /// Returns all revisions of a loadouts over time.
+    /// </summary>
+    public static IObservable<Model> LoadoutRevisions(this IConnection conn)
+    {
+        // All db revisions that contain a loadout id, select the loadout
+        return conn.Revisions
+            .SelectMany(db => db.Datoms(db.BasisTxId))
+            .Where(d => d.A == Revision)
+            .Select(d => d.E)
+            .StartWith(conn.Db.Find(Revision))
+            .Select(id => conn.Db.Get<Model>(id));
+    }
     
     public class Model(ITransaction tx) : Entity(tx)
     {
