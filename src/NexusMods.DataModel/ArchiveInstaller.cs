@@ -140,7 +140,7 @@ public class ArchiveInstaller : IArchiveInstaller
             if (results.Length == 0)
             {
                 await SetStatus(modId, ModStatus.Failed);
-                throw new NotImplementedException($"The installer returned 0 mods for {archiveName}");
+                throw new NotSupportedException($"The installer returned 0 mods for {archiveName}");
             }
             
             // Step 4: Add the mods to the loadout
@@ -149,8 +149,9 @@ public class ArchiveInstaller : IArchiveInstaller
 
             for (var idx = 0; idx < results.Length; idx++)
             {
-                var entity = new TempEntity();
                 var result = results[idx];
+                var entity = result.Metadata ?? [];
+                
                 if (idx == 0)
                 {
                     entity.Id = modId.Value;
