@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
+using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.App.UI.Controls.Spine.Buttons;
 using NexusMods.App.UI.Controls.Spine.Buttons.Download;
 using NexusMods.App.UI.Controls.Spine.Buttons.Icon;
@@ -55,7 +56,8 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         IIconButtonViewModel addButtonViewModel,
         IIconButtonViewModel homeButtonViewModel,
         ISpineDownloadButtonViewModel spineDownloadsButtonViewModel,
-        IWorkspaceAttachmentsFactoryManager workspaceAttachmentsFactory)
+        IWorkspaceAttachmentsFactoryManager workspaceAttachmentsFactory,
+        IRepository<Loadout.Model> loadoutRepository)
     {
         _serviceProvider = serviceProvider;
         _logger = logger;
@@ -78,25 +80,22 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         if (!_windowManager.TryGetActiveWindow(out var currentWindow)) return;
         var workspaceController = currentWindow.WorkspaceController;
 
-        /*
+        
         this.WhenActivated(disposables =>
             {
-                loadoutRegistry.LoadoutRootChanges
-                    .Transform(loadoutId => (loadoutId, loadout: loadoutRegistry.Get(loadoutId)))
-                    .Filter(tuple => tuple.loadout != null)
-                    .TransformAsync(async tuple =>
+                loadoutRepository.Observable
+                    .ToObservableChangeSet()
+                    .TransformAsync(async loadout =>
                         {
-                            var loadoutId = tuple.loadoutId;
-                            var loadout = tuple.loadout!;
-
+                            
                             await using var iconStream = await ((IGame)loadout.Installation.Game).Icon.GetStreamAsync();
 
                             var vm = serviceProvider.GetRequiredService<IImageButtonViewModel>();
                             vm.Name = loadout.Name;
                             vm.Image = LoadImageFromStream(iconStream);
                             vm.IsActive = false;
-                            vm.WorkspaceContext = new LoadoutContext { LoadoutId = loadoutId };
-                            vm.Click = ReactiveCommand.Create(() => ChangeToLoadoutWorkspace(loadoutId));
+                            vm.WorkspaceContext = new LoadoutContext { LoadoutId = loadout.LoadoutId };
+                            vm.Click = ReactiveCommand.Create(() => ChangeToLoadoutWorkspace(loadout.LoadoutId));
                             return vm;
                         }
                     )
@@ -175,7 +174,6 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                     .DisposeWith(disposables);
             }
         );
-        */
     }
 
     private Bitmap LoadImageFromStream(Stream iconStream)
