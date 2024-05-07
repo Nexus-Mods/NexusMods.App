@@ -174,18 +174,12 @@ public static class LoadoutManagementVerbs
         var mod = loadout.Mods.First(m => m.Name == modName);
         foreach (var file in mod.Files)
         {
-            switch (file)
-            {
-                case IToFile tf and IStoredFile fa:
-                    rows.Add([tf.To, fa.Hash]);
-                    break;
-                case IToFile tf2 and IGeneratedFile gf:
-                    rows.Add([tf2, gf.GetType().ToString()]);
-                    break;
-                default:
-                    rows.Add([file.GetType().ToString(), "<none>"]);
-                    break;
-            }
+            if (file.IsStoredFile(out var stored))
+                rows.Add([file.To, stored.Hash]);
+            else if (file.IsGeneratedFile(out var generatedFile))
+                rows.Add([file.To, generatedFile.Generator.GetType().ToString()]);
+            else
+                rows.Add([file.GetType().ToString(), "<none>"]);
         }
 
         await renderer.Table(["Name", "Source"], rows);
