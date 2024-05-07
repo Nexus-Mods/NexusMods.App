@@ -17,7 +17,6 @@ namespace NexusMods.DataModel;
 public class Registry : IGameRegistry
 {
     private readonly IConnection _connection;
-    private readonly Task _startup;
     private Dictionary<EntityId,GameInstallation> _byId = new();
     private Dictionary<(GameDomain Domain, Version Version, GameStore Store),EntityId> _byInstall = new();
 
@@ -25,6 +24,7 @@ public class Registry : IGameRegistry
     
     private readonly ReadOnlyObservableCollection<GameInstallation> _installedGames;
     private readonly ILogger<Registry> _logger;
+    private readonly IEnumerable<ILocatableGame> _games;
 
     /// <inheritdoc />
     public ReadOnlyObservableCollection<GameInstallation> InstalledGames => _installedGames;
@@ -34,21 +34,9 @@ public class Registry : IGameRegistry
     /// </summary>
     public Registry(ILogger<Registry> logger, IEnumerable<ILocatableGame> games, IConnection connection)
     {
+        _games = games;
         _logger = logger;
         _connection = connection;
-        _startup = Task.Run(() =>
-            {
-                try
-                {
-                    return Startup(games);
-                }
-                catch (Exception ex)
-                {
-                    logger.LogError(ex, "While trying to start Registry");
-                    throw;
-                }
-            }
-        );
         
         _cache
             .Connect()
@@ -119,29 +107,23 @@ public class Registry : IGameRegistry
     }
 
     /// <inheritdoc />
-    public IEnumerable<GameInstallation> AllInstalledGames
+    public IEnumerable<GameInstallation> AllInstalledGames => _byId.Values;
+
+    /// <inheritdoc />
+    public GameInstallation Get(EntityId id) => _byId[id];
+
+    /// <inheritdoc />
+    public EntityId GetId(GameInstallation installation) => _byInstall[GetKey(installation)];
+
+    /// <inheritdoc />
+    public async Task StartAsync(CancellationToken cancellationToken)
     {
-        get
-        {
-            if (!_startup.IsCompleted)
-                _startup.Wait();
-            return _byId.Values;
-        }
+        await Startup(_games);
     }
 
     /// <inheritdoc />
-    public GameInstallation Get(EntityId id)
+    public Task StopAsync(CancellationToken cancellationToken)
     {
-        if (!_startup.IsCompleted)
-            _startup.Wait();
-        return _byId[id];
-    }
-
-    /// <inheritdoc />
-    public EntityId GetId(GameInstallation installation)
-    {
-        if (!_startup.IsCompleted)
-            _startup.Wait();
-        return _byInstall[GetKey(installation)];
+        return Task.CompletedTask;
     }
 }

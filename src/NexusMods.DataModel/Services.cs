@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.DiskState;
@@ -43,7 +44,6 @@ public static class Services
     /// </summary>
     public static IServiceCollection AddDataModel(this IServiceCollection coll)
     {
-
         coll.AddMnemonicDB();
         coll.AddMnemonicDBStorage();
 
@@ -99,6 +99,7 @@ public static class Services
         
         // Game Registry
         coll.AddSingleton<IGameRegistry, Registry>();
+        coll.AddHostedService<IGameRegistry>(s => s.GetRequiredService<IGameRegistry>());
         coll.AddAttributeCollection(typeof(GameMetadata));
         
         // File Store
