@@ -88,17 +88,20 @@ public class ApplyServiceTests(IServiceProvider provider) : ADataModelTest<Apply
         BaseLoadout.Mods.Should().HaveCount(1);
         await AddMods(BaseLoadout, Data7ZLzma2, "Mod1");
         
-        var deletedFile = new GamePath(LocationId.Game, "rootFile.txt");
+        var deletedFile = Install.LocationsRegister.GetResolvedPath(new GamePath(LocationId.Game, "rootFile.txt"));
+
         // Apply the loadout to make sure there are no uncommitted revisions
         await ApplyService.Apply(BaseLoadout);
 
+        deletedFile.FileExists.Should().BeTrue("the file was applied");
         // Act
-        Install.LocationsRegister.GetResolvedPath(deletedFile).Delete();
+        deletedFile.Delete();
+        deletedFile.FileExists.Should().BeFalse("the file was deleted");
         await ApplyService.Ingest(BaseLoadout.Installation);
         Refresh(ref BaseLoadout);
         
         // Assert
-        Install.LocationsRegister.GetResolvedPath(deletedFile).FileExists.Should().BeFalse("file is still deleted");
+        deletedFile.FileExists.Should().BeFalse("file is still deleted after ingest");
         var files = BaseLoadout.Files.Where(f => f.To.EndsWith("rootFile.txt")).ToArray();
         files.Length.Should().Be(2, "deletes are reified, and the delete is in the overrides");
         var overrideFile = files.FirstOrDefault(f => f.Mod.Category == ModCategory.Overrides);
@@ -110,7 +113,7 @@ public class ApplyServiceTests(IServiceProvider provider) : ADataModelTest<Apply
         await ApplyService.Apply(BaseLoadout);
         
         // Assert
-        Install.LocationsRegister.GetResolvedPath(deletedFile).FileExists.Should().BeFalse("file is still deleted");
+        deletedFile.FileExists.Should().BeFalse("file is still deleted after apply");
         
     }
 }
