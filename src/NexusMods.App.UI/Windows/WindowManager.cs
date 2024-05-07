@@ -134,7 +134,11 @@ internal sealed class WindowManager : ReactiveObject, IWindowManager
 
             try
             {
-                
+                using var tx = _conn.BeginTransaction();
+                if (!_repository.TryFindFirst(out var found))
+                    return false;
+                WindowDataAttributes.Data.Retract(found);
+                tx.Commit().Wait();
             }
             catch (Exception)
             {

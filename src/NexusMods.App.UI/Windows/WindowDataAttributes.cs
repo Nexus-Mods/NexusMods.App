@@ -15,7 +15,7 @@ public class WindowDataAttributes
     /// <summary>
     /// The state of the window, stored as json
     /// </summary>
-    public static readonly StringAttribute Data = new(Namespace, "Data");
+    public static readonly StringAttribute Data = new(Namespace, nameof(Data));
 
     public class Model(ITransaction tx) : Entity(tx)
     {

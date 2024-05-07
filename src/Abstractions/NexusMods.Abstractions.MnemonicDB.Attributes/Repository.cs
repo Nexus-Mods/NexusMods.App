@@ -132,6 +132,17 @@ internal class Repository<TModel> : IRepository<TModel> where TModel : Entity
         return false;
     }
 
+    public bool TryFindFirst([NotNullWhen(true)] out TModel? model)
+    {
+        foreach (var item in All)
+        {
+            model = item;
+            return true;
+        }
+        model = null;
+        return false;
+    }
+
     public IEnumerable<TModel> FindAll<TOuter, TInner>(Attribute<TOuter, TInner> attr, TOuter value)
     {
         Debug.Assert(attr.IsIndexed, "Attribute must be indexed to be used in a find operation");
