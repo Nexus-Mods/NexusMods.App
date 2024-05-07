@@ -15,9 +15,7 @@ public interface IApplyService
     /// Apply a loadout to its game installation.
     /// This will also ingest outside changes and merge unapplied changes on top and apply them.
     /// </summary>
-    /// <param name="loadoutId"></param>
-    /// <returns></returns>
-    public Task<Loadout.Model> Apply(Loadout.Model loadout);
+    public Task Apply(Loadout.Model loadout);
     
     /// <summary>
     /// Get the diff tree of the unapplied changes of a loadout.

@@ -31,7 +31,7 @@ public class ApplyService : IApplyService
     }
 
     /// <inheritdoc />
-    public async Task<Loadout.Model> Apply(Loadout.Model loadout)
+    public async Task Apply(Loadout.Model loadout)
     {
         // TODO: Check if this or any other loadout is being applied to this game installation
         // Queue the loadout to be applied if that is the case.
@@ -67,10 +67,7 @@ public class ApplyService : IApplyService
             var loadoutWithIngest = await loadout.Ingest();
 
             await loadoutWithIngest.Apply();
-            return loadoutWithIngest;
         }
-        
-        return loadout;
     }
 
 
