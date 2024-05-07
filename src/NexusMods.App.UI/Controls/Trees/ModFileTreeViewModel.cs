@@ -55,7 +55,7 @@ public class ModFileTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeVie
         foreach (var file in mod.Files)
         {
             // TODO: Check for IStoredFile, IToFile interfaces if we ever have more types of files that get put to disk.
-            if (!file.IsStoredFile(out var storedFile))
+            if (!file.TryGetAsStoredFile(out var storedFile))
                 continue;
 
             _totalNumFiles++;

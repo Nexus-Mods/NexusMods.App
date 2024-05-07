@@ -96,7 +96,7 @@ public abstract class GenericFolderMatchInstallerTests<TGame> : AGameTest<TGame>
 
         foreach (var file in files)
         {
-            if (file.IsStoredFile(out var storedFile))
+            if (file.TryGetAsStoredFile(out var storedFile))
             {
                 if (!file.To.Path.StartsWith("Data"))
                     Fail("Loose files should target data folder.");

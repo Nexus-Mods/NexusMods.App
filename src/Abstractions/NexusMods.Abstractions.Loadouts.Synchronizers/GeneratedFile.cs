@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.MnemonicDB.Abstractions;
@@ -44,10 +45,14 @@ public static class FileModelExtensions
     /// <summary>
     /// If this file is a generated file, this will return true and cast the generated file to the out parameter.
     /// </summary>
-    public static bool IsGeneratedFile(this File.Model model, out GeneratedFile.Model generatedFile)
+    public static bool TryGetAsGeneratedFile(this File.Model model, [NotNullWhen(true)] out GeneratedFile.Model? generatedFile)
     {
+        generatedFile = null;
+        if (!model.Contains(GeneratedFile.Generator))
+            return false;
+
         generatedFile = model.Remap<GeneratedFile.Model>();
-        return model.Contains(GeneratedFile.Generator);
+        return true;
     }
 
     /// <summary>

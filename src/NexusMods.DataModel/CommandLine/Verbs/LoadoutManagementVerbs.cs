@@ -174,9 +174,9 @@ public static class LoadoutManagementVerbs
         var mod = loadout.Mods.First(m => m.Name == modName);
         foreach (var file in mod.Files)
         {
-            if (file.IsStoredFile(out var stored))
+            if (file.TryGetAsStoredFile(out var stored))
                 rows.Add([file.To, stored.Hash]);
-            else if (file.IsGeneratedFile(out var generatedFile))
+            else if (file.TryGetAsGeneratedFile(out var generatedFile))
                 rows.Add([file.To, generatedFile.Generator.GetType().ToString()]);
             else
                 rows.Add([file.GetType().ToString(), "<none>"]);

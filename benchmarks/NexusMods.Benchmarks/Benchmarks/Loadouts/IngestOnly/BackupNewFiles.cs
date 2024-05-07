@@ -56,8 +56,8 @@ public class BackupNewFiles : ASynchronizerBenchmark, IBenchmark
                 .GetAllDescendentFiles()
                 .Select(f =>
                     {
-                        f.Item.Value.IsStoredFile(out var stored);
-                        return (f.Item.GamePath, stored.Hash, stored.Size);
+                        f.Item.Value.TryGetAsStoredFile(out var stored);
+                        return (f.Item.GamePath, stored!.Hash, stored.Size);
                     }
                 ).ToArray();
         }).Wait();

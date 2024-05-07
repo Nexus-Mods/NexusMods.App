@@ -143,9 +143,9 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition.SkyrimSp
         var modPath = FileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine("Assets/SMIM_Truncated_Plugins.7z");
         await InstallModStoredFileIntoLoadout(loadout, modPath, "SMIM");
 
-        var file = metadataFiles.Files.First(f => f.IsGeneratedFile(out _));
-        file.IsGeneratedFile(out var pluginOrderFile);
-        var generator = pluginOrderFile.Generator;
+        var file = metadataFiles.Files.First(f => f.TryGetAsGeneratedFile(out _));
+        file.TryGetAsGeneratedFile(out var pluginOrderFile);
+        var generator = pluginOrderFile!.Generator;
         
         var flattened = await loadout.ToFlattenedLoadout();
 
@@ -186,7 +186,7 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition.SkyrimSp
         GeneratedFile.Model? file = null;
         foreach (var f in loadout.Files)
         {
-            if (!f.IsGeneratedFile(out var generator) || generator.Generator is not PluginOrderFile pof) continue;
+            if (!f.TryGetAsGeneratedFile(out var generator) || generator.Generator is not PluginOrderFile pof) continue;
             file = generator;
             pluginOrderFile = pof;
             break;

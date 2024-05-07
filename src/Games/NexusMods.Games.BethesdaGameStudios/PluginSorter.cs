@@ -47,8 +47,8 @@ public class PluginSorter
             .Where(f => SkyrimSpecialEdition.SkyrimSpecialEdition.PluginExtensions.Contains(f.To.Extension))
             .Select(f =>
                 {
-                    f.IsStoredFile(out var stored);
-                    return stored;
+                    f.TryGetAsStoredFile(out var stored);
+                    return stored!;
                 }
             )
             .SelectAsync(async f => await GetAnalysis(f, token))

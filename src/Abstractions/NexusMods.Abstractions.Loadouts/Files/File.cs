@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
@@ -80,10 +81,14 @@ public static class File
         /// <summary>
         /// If this file is a stored file, this will return true and cast the stored file to the out parameter.
         /// </summary>
-        public bool IsStoredFile(out StoredFile.Model storedFile)
+        public bool TryGetAsStoredFile([NotNullWhen(true)] out StoredFile.Model? storedFile)
         {
+            storedFile = null;
+            if (!Contains(StoredFile.Hash)) 
+                return false;
+            
             storedFile = this.Remap<StoredFile.Model>();
-            return Contains(StoredFile.Hash);
+            return true;
         }
     }
 }

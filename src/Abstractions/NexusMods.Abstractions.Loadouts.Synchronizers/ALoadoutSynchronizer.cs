@@ -876,7 +876,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// <inheritdoc />
     public async Task<Hash?> WriteGeneratedFile(File.Model file, Stream outputStream, Loadout.Model loadout, FlattenedLoadout flattenedLoadout, FileTree fileTree)
     {
-        if (!file.IsGeneratedFile(out var generatedFile))
+        if (!file.TryGetAsGeneratedFile(out var generatedFile))
             throw new InvalidOperationException("File is not a generated file");
 
         var generator = generatedFile.Generator;
