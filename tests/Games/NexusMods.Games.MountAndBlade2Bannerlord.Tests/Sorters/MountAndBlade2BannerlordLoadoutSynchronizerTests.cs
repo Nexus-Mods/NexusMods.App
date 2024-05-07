@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using NexusMods.Abstractions.DataModel.Entities.Sorting;
 using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Games.MountAndBlade2Bannerlord.Tests.Shared;
 using NexusMods.Games.TestFramework;
@@ -14,23 +15,24 @@ public class MountAndBlade2BannerlordLoadoutSynchronizerTests : AGameTest<MountA
     [Fact]
     public async Task GeneratedSortRulesAreFetched()
     {
-        var loadoutMarker = await CreateLoadout();
-        var loadoutSynchronizer = (loadoutMarker.Value.Installation.GetGame().Synchronizer as MountAndBlade2BannerlordLoadoutSynchronizer)!;
+        var loadout = await CreateLoadout();
+        var loadoutSynchronizer = (loadout.Installation.GetGame().Synchronizer as MountAndBlade2BannerlordLoadoutSynchronizer)!;
 
         var context = AGameTestContext.Create(CreateTestArchive, InstallModStoredFileIntoLoadout);
 
-        await loadoutMarker.AddNative(context);
-        await loadoutMarker.AddButterLib(context);
-        await loadoutMarker.AddHarmony(context);
+        await loadout.AddNative(context);
+        await loadout.AddButterLib(context);
+        await loadout.AddHarmony(context);
 
-        var mod = loadoutMarker.Value.Mods.Values.First(m => m.Name == "ButterLib");
-        var nameForId = loadoutMarker.Value.Mods.Values.ToDictionary(m => m.Id, m => m.Name);
-        var rules = await loadoutSynchronizer.ModSortRules(loadoutMarker.Value, mod);
+        Refresh(ref loadout);
+        var mod = loadout.Mods.First(m => m.Name == "ButterLib");
+        var nameForId = loadout.Mods.ToDictionary(m => ModId.From(m.Id), m => m.Name);
+        var rules = await loadoutSynchronizer.ModSortRules(loadout, mod);
 
         var testData = rules.Select(r =>
         {
-            if (r is After<Mod, ModId> a) return ("After", nameForId[a.Other]);
-            if (r is Before<Mod, ModId> b) return ("Before", nameForId[b.Other]);
+            if (r is After<Mod.Model, ModId> a) return ("After", nameForId[a.Other]);
+            if (r is Before<Mod.Model, ModId> b) return ("Before", nameForId[b.Other]);
             throw new NotImplementedException();
         });
 

@@ -1,6 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Ids;
+using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.Serialization.Attributes;
+using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
@@ -11,7 +14,7 @@ public record LoadoutContext : IWorkspaceContext
 
     public bool IsValid(IServiceProvider serviceProvider)
     {
-        var loadoutRegistry = serviceProvider.GetRequiredService<ILoadoutRegistry>();
-        return loadoutRegistry.Contains(LoadoutId);
+        var repo = serviceProvider.GetRequiredService<IRepository<Loadout.Model>>();
+        return repo.Exists(LoadoutId.Value);
     }
 }

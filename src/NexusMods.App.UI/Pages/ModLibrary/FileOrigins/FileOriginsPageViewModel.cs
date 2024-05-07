@@ -6,6 +6,7 @@ using NexusMods.Abstractions.FileStore.ArchiveMetadata;
 using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.App.UI.Pages.ModLibrary.FileOriginEntry;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;

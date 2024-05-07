@@ -9,6 +9,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Ids;
+using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.App.UI.Controls.Spine.Buttons;
 using NexusMods.App.UI.Controls.Spine.Buttons.Download;
 using NexusMods.App.UI.Controls.Spine.Buttons.Icon;
@@ -21,6 +23,7 @@ using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceAttachments;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.MnemonicDB.Abstractions;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -42,21 +45,24 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
     private ISpineItemViewModel? _activeSpineItem;
 
     private ReadOnlyObservableCollection<ILeftMenuViewModel> _leftMenus = new([]);
+    private readonly IConnection _conn;
     [Reactive] public ILeftMenuViewModel? LeftMenuViewModel { get; private set; }
 
     public SpineViewModel(
         IServiceProvider serviceProvider,
         ILogger<SpineViewModel> logger,
-        ILoadoutRegistry loadoutRegistry,
+        IConnection conn,
         IWindowManager windowManager,
         IIconButtonViewModel addButtonViewModel,
         IIconButtonViewModel homeButtonViewModel,
         ISpineDownloadButtonViewModel spineDownloadsButtonViewModel,
-        IWorkspaceAttachmentsFactoryManager workspaceAttachmentsFactory)
+        IWorkspaceAttachmentsFactoryManager workspaceAttachmentsFactory,
+        IRepository<Loadout.Model> loadoutRepository)
     {
         _serviceProvider = serviceProvider;
         _logger = logger;
         _windowManager = windowManager;
+        _conn = conn;
 
         // Setup the special spine items
         Home = homeButtonViewModel;
@@ -69,28 +75,27 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         Downloads.WorkspaceContext = new DownloadsContext();
         _specialSpineItems.Add(Downloads);
         Downloads.Click = ReactiveCommand.Create(NavigateToDownloads);
+
         
         if (!_windowManager.TryGetActiveWindow(out var currentWindow)) return;
         var workspaceController = currentWindow.WorkspaceController;
 
+        
         this.WhenActivated(disposables =>
             {
-                loadoutRegistry.LoadoutRootChanges
-                    .Transform(loadoutId => (loadoutId, loadout: loadoutRegistry.Get(loadoutId)))
-                    .Filter(tuple => tuple.loadout != null && tuple.loadout.IsVisible())
-                    .TransformAsync(async tuple =>
+                loadoutRepository.Observable
+                    .ToObservableChangeSet()
+                    .TransformAsync(async loadout =>
                         {
-                            var loadoutId = tuple.loadoutId;
-                            var loadout = tuple.loadout!;
-
+                            
                             await using var iconStream = await ((IGame)loadout.Installation.Game).Icon.GetStreamAsync();
 
                             var vm = serviceProvider.GetRequiredService<IImageButtonViewModel>();
                             vm.Name = loadout.Name;
                             vm.Image = LoadImageFromStream(iconStream);
                             vm.IsActive = false;
-                            vm.WorkspaceContext = new LoadoutContext { LoadoutId = loadoutId };
-                            vm.Click = ReactiveCommand.Create(() => ChangeToLoadoutWorkspace(loadoutId));
+                            vm.WorkspaceContext = new LoadoutContext { LoadoutId = loadout.LoadoutId };
+                            vm.Click = ReactiveCommand.Create(() => ChangeToLoadoutWorkspace(loadout.LoadoutId));
                             return vm;
                         }
                     )
@@ -114,24 +119,6 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                         }
                     )
                     .Bind(out _leftMenus)
-                    .SubscribeWithErrorLogging()
-                    .DisposeWith(disposables);
-
-                // Navigate away from the Loadout workspace if the Loadout is removed
-                loadoutRegistry.LoadoutRootChanges
-                    .OnUI()
-                    .OnItemRemoved(loadoutId =>
-                    {
-                        if (workspaceController.ActiveWorkspace?.Context is LoadoutContext activeLoadoutContext &&
-                            activeLoadoutContext.LoadoutId == loadoutId)
-                        {
-                            workspaceController.ChangeOrCreateWorkspaceByContext<HomeContext>(() => new PageData
-                            {
-                                FactoryId = MyGamesPageFactory.StaticId,
-                                Context = new MyGamesPageContext(),
-                            });
-                        }
-                    }, false)
                     .SubscribeWithErrorLogging()
                     .DisposeWith(disposables);
 

@@ -5,6 +5,7 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.Games.MountAndBlade2Bannerlord.Emitters;
 using NexusMods.Games.MountAndBlade2Bannerlord.Services;
+using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord;
 
@@ -18,7 +19,12 @@ public static class ServicesExtensions
             .AddSingleton<ILoadoutDiagnosticEmitter, BuiltInEmitter>()
             .AddSingleton<ITool, RunStandaloneTool>()
             .AddSingleton<ITool, RunLauncherTool>()
-            .AddSingleton<ITypeFinder, TypeFinder>();
+            .AddAttributeCollection(typeof(MnemonicDB.ModuleInfoExtended))
+            .AddAttributeCollection(typeof(MnemonicDB.DependentModule))
+            .AddAttributeCollection(typeof(MnemonicDB.SubModuleInfo))
+            .AddAttributeCollection(typeof(MnemonicDB.SubModuleFileMetadata))
+            .AddAttributeCollection(typeof(MnemonicDB.ModuleFileMetadata))
+            .AddAttributeCollection(typeof(MnemonicDB.DependentModuleMetadata));
 
         return services;
     }

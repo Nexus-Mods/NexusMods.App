@@ -1,8 +1,17 @@
+
+using System.Reactive.Linq;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
-using NexusMods.Abstractions.Serialization;
-using NexusMods.Abstractions.Serialization.Attributes;
-using NexusMods.Abstractions.Serialization.DataModel;
+using NexusMods.Abstractions.MnemonicDB.Attributes;
+using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.Attributes;
+using NexusMods.MnemonicDB.Abstractions.IndexSegments;
+using NexusMods.MnemonicDB.Abstractions.Models;
+using NexusMods.MnemonicDB.Abstractions.TxFunctions;
+using File = NexusMods.Abstractions.Loadouts.Files.File;
 
 namespace NexusMods.Abstractions.Loadouts;
 
@@ -10,141 +19,146 @@ namespace NexusMods.Abstractions.Loadouts;
 /// A loadout can be thought of as a mod list that is specific to a certain
 /// installation of a game.
 /// </summary>
-/// <remarks>
-///    We treat loadouts kind of like git branches, the document <a href="https://github.com/Nexus-Mods/NexusMods.App/blob/main/docs/ImmutableModlists.md">Immutable Mod Lists</a>
-///    might provide you with some additional insight into the idea.
-/// </remarks>
-[JsonName("NexusMods.Abstractions.Games.Loadouts.Loadout")]
-public record Loadout : Entity, IEmptyWithDataStore<Loadout>
+public static class Loadout
 {
-    /// <summary>
-    /// Collection of mods.
-    /// </summary>
-    public required EntityDictionary<ModId, Mod> Mods { get; init; }
+    private const string Namespace = "NexusMods.Abstractions.Loadouts.Loadout";
 
     /// <summary>
-    /// Unique identifier for this loadout in question.
+    /// The human friendly name for this loadout.
     /// </summary>
-    public required LoadoutId LoadoutId { get; init; }
-
-    /// <summary>
-    /// Human friendly name for this loadout.
-    /// </summary>
-    public required string Name { get; init; }
-
+    public static readonly StringAttribute Name = new(Namespace, nameof(Name)) { IsIndexed = true };
+    
     /// <summary>
     /// Unique installation of the game this loadout is tied to.
     /// </summary>
-    public required GameInstallation Installation { get; init; }
-
-    /// <summary>
-    /// The time this loadout is last modified.
-    /// </summary>
-    public required DateTime LastModified { get; init; }
-
-    /// <summary>
-    /// Link to the previous version of this loadout on the data store.
-    /// </summary>
-    public required EntityLink<Loadout> PreviousVersion { get; init; }
+    public static readonly ReferenceAttribute Installation = new(Namespace, nameof(Installation));
     
     /// <summary>
-    /// Specifies the type of the loadout that the current loadout represents
+    /// A revision number for this loadout. Each change to a file/mod in the loadout should increment
+    /// this value by one. This will then be used by the UI and other parts of the app to determine
+    /// what aspects of the loadout have changed and need to be reloaded
     /// </summary>
-    public LoadoutKind LoadoutKind { get; init; }
-
-    /// <inheritdoc />
-    public override EntityCategory Category => EntityCategory.Loadouts;
-
+    public static readonly ULongAttribute Revision = new(Namespace, nameof(Revision));
+    
     /// <summary>
-    /// Summarises the changes made in this version of the loadout.
-    /// Think of this like a git commit message.
+    /// Retrieves all loadouts from the database.
     /// </summary>
-    public required string ChangeMessage { get; init; } = "";
-
-    /// <inheritdoc />
-    public static Loadout Empty(IDataStore store) => new()
+    public static IEnumerable<Model> Loadouts(this IDb db)
     {
-        LoadoutId = LoadoutId.Create(),
-        Installation = GameInstallation.Empty,
-        Name = "",
-        Mods = EntityDictionary<ModId, Mod>.Empty(store),
-        LastModified = DateTime.UtcNow,
-        PreviousVersion = EntityLink<Loadout>.Empty(store),
-        ChangeMessage = ""
-    };
-
-    /// <summary>
-    /// Makes a change to the collection of mods stored.
-    /// </summary>
-    /// <param name="modId">Unique identifier for this mod.</param>
-    /// <param name="func">Function used to change the details of this mod.</param>
-    /// <returns>A new loadout with the details of a single mod changed.</returns>
-    public Loadout Alter(ModId modId, Func<Mod, Mod?> func)
-    {
-        return this with
-        {
-            Mods = Mods.Keep(modId, func)
-        };
+        return db.Find(Name)
+            .Select(db.Get<Model>);
     }
 
     /// <summary>
-    /// Adds an individual mod to this loadout, returning a new loadout.
+    /// Finds one or more loadouts by name.
     /// </summary>
-    /// <param name="mod">An individual modification to add to this loadout.</param>
-    /// <returns>The loadout with this modification added.</returns>
-    public Loadout Add(Mod mod)
+    public static IEnumerable<Model> ByName(IDb db, string name)
     {
-        return this with
-        {
-            Mods = Mods.With(mod.Id, mod)
-        };
+        return db.FindIndexed(name, Name)
+            .Select(db.Get<Model>);
     }
 
     /// <summary>
-    /// Remove an individual mod from this loadout, returning a new loadout.
+    /// Gets all the revisions of a loadout over time
     /// </summary>
-    /// <param name="mod"></param>
-    /// <returns></returns>
-    public Loadout Remove(Mod mod)
+    public static IObservable<Model> Revisions(this IConnection conn, LoadoutId id)
     {
-        return this with
-        {
-            Mods = Mods.Without(mod.Id)
-        };
+        // All db revisions that contain the loadout id, select the loadout
+        return conn.Revisions
+            .Where(db => db.Datoms(db.BasisTxId).Any(datom => datom.E == id.Value))
+            .StartWith(conn.Db)
+            .Select(db => db.Get<Model>(id.Value));
     }
-
-    /// <summary>
-    /// Allows you to change individual files associated with a mod in this collection.
-    /// </summary>
-    /// <param name="func">Function used to change the files of a given mod.</param>
-    /// <returns>A new loadout with the files of mods changed.</returns>
-    public Loadout AlterFiles(Func<AModFile, AModFile?> func)
+    
+    public class Model(ITransaction tx) : Entity(tx)
     {
-        return this with
+        /// <summary>
+        /// The unique identifier for this loadout, casted to a <see cref="LoadoutId"/>.
+        /// </summary>
+        public LoadoutId LoadoutId => LoadoutId.From(Id);
+        
+        /// <summary>
+        /// Gets the loadout id/txid pair for this revision of the loadout.
+        /// </summary>
+        public LoadoutWithTxId LoadoutWithTxId => new(LoadoutId, Db.BasisTxId);
+        
+        public string Name
         {
-            Mods = Mods.Keep(m => m with
+            get => Loadout.Name.Get(this);
+            set => Loadout.Name.Add(this, value);
+        }
+        
+        /// <summary>
+        /// Get the installation id for this loadout.
+        /// </summary>
+        public EntityId InstallationId
+        {
+            get => Loadout.Installation.Get(this);
+            set => Loadout.Installation.Add(this, value);
+        }
+
+        /// <summary>
+        /// The revision number for this loadout, increments by one for each change.
+        /// </summary>
+        public ulong Revision
+        {
+            get => Loadout.Revision.Get(this, 0);
+            set => Loadout.Revision.Add(this, value);
+        }
+
+        /// <summary>
+        /// Get the game installation for this loadout.
+        /// </summary>
+        public GameInstallation Installation
+        {
+            get => ServiceProvider.GetRequiredService<IGameRegistry>()
+                .Get(Loadout.Installation.Get(this));
+            set
             {
-                Files = m.Files.Keep(func)
-            })
-        };
-    }
-    
-    /// <summary>
-    /// This is true if the loadout is a hidden 'Marker' loadout.
-    /// A marker loadout is created from the original game state and should
-    /// be a singleton for a given game. It is a temporary loadout that is
-    /// destroyed when a real loadout is applied.
-    ///
-    /// Marker loadouts should not be shown in any user facing elements.
-    /// </summary>
-    public bool IsMarkerLoadout() => LoadoutKind == LoadoutKind.Marker;
+                var id = ServiceProvider.GetRequiredService<IGameRegistry>().GetId(value);
+                Loadout.Installation.Add(this, id);
+            }
+        }
 
-    /// <summary>
-    /// Returns true if the loadout should be visible to the user.
-    /// </summary>
-    /// <remarks>
-    /// Note(sewer), it's better to 'opt into' functionality, than opt out.
-    /// especially, when it comes to displaying elements the user can edit.
-    /// </remarks>
-    public bool IsVisible() => LoadoutKind == LoadoutKind.Default;
+        /// <summary>
+        /// Gets all mods in this loadout.
+        /// </summary>
+        public Entities<EntityIds, Mod.Model> Mods => GetReverse<Mod.Model>(Mod.Loadout);
+        
+        /// <summary>
+        /// Gets all the files in this loadout.
+        /// </summary>
+        public Entities<EntityIds, File.Model> Files => GetReverse<File.Model>(File.Loadout);
+
+                
+        /// <summary>
+        /// Gets the mod with the given id from this loadout.
+        /// </summary>
+        public Mod.Model this[ModId idx]
+        {
+            get
+            {
+                var mod = Db.Get<Mod.Model>(idx.Value);
+                if (mod is null) 
+                    throw new KeyNotFoundException($"Mod with id {idx} not found in database");
+                if (mod.LoadoutId != LoadoutId)
+                    throw new KeyNotFoundException($"Mod with id {idx} is not part of Loadout {LoadoutId} but of Loadout {mod.LoadoutId}");
+                return mod;
+            }
+        }
+
+        /// <summary>
+        /// Issue a new revision of this loadout into the transaction, this will increment the revision number
+        /// </summary>
+        public void Revise(ITransaction tx)
+        {
+            tx.Add(Id, static (innerTx, db, id) =>
+            {
+                var self = db.Get<Model>(id);
+                innerTx.Add(id, Loadout.Revision, self.Revision + 1);
+            });
+        }
+
+    }
+
 }

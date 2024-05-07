@@ -14,12 +14,10 @@ public partial class ModInstalledView : ReactiveUserControl<IModInstalledViewMod
         InitializeComponent();
         this.WhenActivated(d =>
         {
-            this.WhenAnyValue(view => view.ViewModel!.Installed)
+            this.WhenAnyValue(view => view.ViewModel!.Value)
                 .CombineLatest(Observable.Interval(TimeSpan.FromSeconds(60)).StartWith(1))
                 .Select(time => time.First.Humanize())
-                .CombineLatest(this.WhenAnyValue(view => view.ViewModel!.Status))
-                .Select(t => t.Second == ModStatus.Installed ? t.First : t.Second.ToString())
-                .BindToUi<string, ModInstalledView, string>(this, view => view.InstalledTextBlock.Text)
+                .BindTo<string, ModInstalledView, string>(this, view => view.InstalledTextBlock.Text)
                 .DisposeWith(d);
         });
 

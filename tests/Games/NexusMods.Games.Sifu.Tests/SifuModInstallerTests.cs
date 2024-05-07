@@ -23,7 +23,6 @@ public class SifuModInstallerTests : AModInstallerTest<Sifu, SifuModInstaller>
         {
             var (_, modFiles) = await GetModWithFilesFromInstaller(file);
             modFiles
-                .Cast<IToFile>()
                 .Should()
                 .HaveCount(2)
                 .And.AllSatisfy(x => x.To.Path.StartsWith(@"Content/Paks/~mods").Should().BeTrue())
@@ -47,7 +46,6 @@ public class SifuModInstallerTests : AModInstallerTest<Sifu, SifuModInstaller>
         {
             var (_, modFiles) = await GetModWithFilesFromInstaller(file);
             modFiles
-                .Cast<IToFile>()
                 .Should().HaveCount(2)
                 .And.AllSatisfy(x => x.To.Path.StartsWith(@"Content/Paks/~mods").Should().BeTrue())
                 .And

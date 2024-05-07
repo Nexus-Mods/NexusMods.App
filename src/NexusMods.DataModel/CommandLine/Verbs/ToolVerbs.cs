@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Cli;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.ProxyConsole.Abstractions;
 using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
 
@@ -25,15 +26,18 @@ internal static class ToolVerbs
     [Verb("run-tool", "Runs a tool")]
     private static async Task<int> RunTool([Injected] IRenderer renderer,
         [Option("t", "tool", "Tool to run")] ITool tool,
-        [Option("l", "loadout", "Loadout to run the tool on")] LoadoutMarker loadout,
+        [Option("l", "loadout", "Loadout to run the tool on")] LoadoutId loadout,
         [Injected] IToolManager toolManager,
         [Injected] CancellationToken token)
     {
+        throw new NotImplementedException();
+        /*
         await renderer.WithProgress(token, async () =>
         {
             await toolManager.RunTool(tool, loadout.Value, token:token);
             return 0;
         });
         return 0;
+        */
     }
 }

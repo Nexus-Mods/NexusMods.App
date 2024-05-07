@@ -42,7 +42,7 @@ public class Startup
         
         var logger = provider.GetRequiredService<ILogger<Startup>>();
         var builder = BuildAvaloniaApp(provider);
-
+        
         // NOTE(erri120): DI is lazy by default and these services
         // do additional initialization inside their constructors.
         // We need to make sure their constructors are called to

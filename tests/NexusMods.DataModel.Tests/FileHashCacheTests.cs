@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.DiskState;
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Tests.Harness;
@@ -22,8 +23,11 @@ public class FileHashCacheTests : ADataModelTest<FileHashCacheTests>
             .Combine(Guid.NewGuid().ToString()).AppendExtension(KnownExtensions.Tmp);
         await file.WriteAllTextAsync("Test data here");
 
+        Logger.LogDebug("Hashing file {file}", file);
         var hash = await FileHashCache.IndexFileAsync(file);
+        Logger.LogDebug("Hashed file {file} as {hash}", file, hash);
         hash.Hash.Should().Be((Hash)0xB08C91D1CDF11402);
+        ;
         FileHashCache.TryGetCached(file, out var found).Should().BeTrue();
         found.Hash.Should().Be(hash.Hash);
         file.Delete();
@@ -39,10 +43,12 @@ public class FileHashCacheTests : ADataModelTest<FileHashCacheTests>
         // an existing entry, this will fail.
         for (var i = 0; i < 10; i++)
         {
+            Logger.LogDebug("Putting");
             await FileHashCache.PutCached([ 
                 new HashedEntryWithName(tmpName, Hash.From(0xDEADBEEF+(ulong)i), 
                     DateTime.UtcNow, Size.From((ulong)i))]);
             
+            Logger.LogDebug("Getting");
             FileHashCache.TryGetCached(tmpName, out var found).Should().BeTrue();
             found.Hash.Should().Be(Hash.From(0xDEADBEEF+(ulong)i));
             found.Size.Should().Be(Size.From((ulong)i));

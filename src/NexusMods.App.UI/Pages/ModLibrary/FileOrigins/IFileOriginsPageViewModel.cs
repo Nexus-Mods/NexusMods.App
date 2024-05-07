@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.App.UI.Pages.ModLibrary.FileOriginEntry;
 using NexusMods.App.UI.WorkspaceSystem;
 

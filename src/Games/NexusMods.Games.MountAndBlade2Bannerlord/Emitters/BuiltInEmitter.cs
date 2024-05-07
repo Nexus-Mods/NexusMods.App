@@ -16,25 +16,28 @@ public class BuiltInEmitter : ILoadoutDiagnosticEmitter
 {
     internal const string Source = "NexusMods.Games.MountAndBlade2Bannerlord";
 
-    public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
+    public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.Model loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         await Task.Yield();
 
         var viewModels = (await loadout.GetSortedViewModelsAsync()).ToList();
         var lookup = viewModels.ToDictionary(x => x.ModuleInfoExtended.Id, x => x);
-        var modules = lookup.Values.Select(x => x.ModuleInfoExtended).Concat(FeatureIds.LauncherFeatures.Select(x => new ModuleInfoExtended { Id = x })).ToList();
+        var modules = lookup.Values.Select(x => x.ModuleInfoExtended)
+            .Concat(FeatureIds.LauncherFeatures.Select(x => new ModuleInfoExtended { Id = x }))
+            .ToList();
 
         var ctx = new ModuleContext(lookup);
         foreach (var moduleViewModel in viewModels)
         {
-            foreach (var diagnostic in ModuleUtilities.ValidateModule(modules, moduleViewModel.ModuleInfoExtended, ctx.GetIsSelected, ctx.GetIsValid).Select(x => Render(loadout, moduleViewModel.Mod, x)))
+            foreach (var diagnostic in ModuleUtilities.ValidateModule(modules, moduleViewModel.ModuleInfoExtended, ctx.GetIsSelected, ctx.GetIsValid)
+                         .Select(x => Render(loadout, moduleViewModel.Mod, x)))
             {
                 yield return diagnostic;
             }
         }
     }
 
-    private static Diagnostic Render(Loadout loadout, Mod mod, ModuleIssue issue)
+    private static Diagnostic Render(Loadout.Model loadout, Mod.Model mod, ModuleIssue issue)
     {
         static string Version(ApplicationVersionRange version) => version == ApplicationVersionRange.Empty
             ? version.ToString()

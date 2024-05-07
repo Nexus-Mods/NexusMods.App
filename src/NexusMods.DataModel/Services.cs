@@ -1,12 +1,14 @@
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.FileStore.ArchiveMetadata;
 using NexusMods.Abstractions.FileStore.Downloads;
-using NexusMods.Abstractions.Games.Loadouts;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.Loadouts.Sorting;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
@@ -18,13 +20,13 @@ using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Attributes;
 using NexusMods.DataModel.CommandLine.Verbs;
 using NexusMods.DataModel.Diagnostics;
+using NexusMods.DataModel.GameRegistry;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.Loadouts.LoadoutSynchronizerDTOs;
 using NexusMods.DataModel.Messaging;
+using NexusMods.DataModel.Repository;
 using NexusMods.DataModel.Settings;
 using NexusMods.DataModel.Sorting;
-using NexusMods.DataModel.TriggerFilter;
 using NexusMods.Extensions.DependencyInjection;
 using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
@@ -43,7 +45,6 @@ public static class Services
     /// </summary>
     public static IServiceCollection AddDataModel(this IServiceCollection coll)
     {
-
         coll.AddMnemonicDB();
         coll.AddMnemonicDBStorage();
 
@@ -97,15 +98,16 @@ public static class Services
 
         coll.AddAllSingleton<IDataStore, SqliteDataStore>();
         
+        // Game Registry
+        coll.AddSingleton<IGameRegistry, Registry>();
+        coll.AddHostedService(s => (Registry)s.GetRequiredService<IGameRegistry>());
+        coll.AddAttributeCollection(typeof(GameMetadata));
+        
         // File Store
         coll.AddAttributeCollection(typeof(ArchivedFileContainer));
         coll.AddAttributeCollection(typeof(ArchivedFile));
         coll.AddAllSingleton<IFileStore, NxFileStore>();
-
-        coll.AddSingleton(typeof(IFingerprintCache<,>), typeof(DataStoreFingerprintCache<,>));
-
-        coll.AddAllSingleton<ILoadoutRegistry, LoadoutRegistry>();
-
+        
         coll.AddAllSingleton<IArchiveInstaller, ArchiveInstaller>();
         coll.AddAllSingleton<IToolManager, ToolManager>();
         
@@ -128,6 +130,9 @@ public static class Services
         coll.AddAttributeCollection(typeof(DownloadContentEntry));
         coll.AddAttributeCollection(typeof(FilePathMetadata));
         coll.AddAllSingleton<IFileOriginRegistry, FileOriginRegistry>();
+        
+        // Repositories
+        coll.AddRepository<Loadout.Model>(Loadout.Revision);
 
 
         // Diagnostics

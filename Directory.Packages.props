@@ -4,25 +4,29 @@
     <PackageVersion Include="FlatSharp.Compiler" Version="7.6.0" />
     <PackageVersion Include="FlatSharp.Runtime" Version="7.6.0" />
     <PackageVersion Include="LinqGen" Version="0.3.1" />
-    <PackageVersion Include="LiveChartsCore.SkiaSharpView.Avalonia" Version="2.0.0-rc2" />
-    <PackageVersion Include="NexusMods.MnemonicDB" Version="0.9.17" />
-    <PackageVersion Include="NexusMods.MnemonicDB.Abstractions" Version="0.9.17" />
-    <PackageVersion Include="NexusMods.Paths" Version="0.9.3" />
+    <PackageVersion Include="NexusMods.MnemonicDB" Version="0.9.25" />
+    <PackageVersion Include="NexusMods.MnemonicDB.Abstractions" Version="0.9.25" />
+    <PackageVersion Include="NexusMods.MnemonicDB.Storage" Version="0.9.25" />
+    <PackageVersion Include="NexusMods.Paths" Version="0.9.4" />
     <PackageVersion Include="NexusMods.Hashing.xxHash64" Version="2.0.1" />
-    <PackageVersion Include="NexusMods.Paths.TestingHelpers" Version="0.8.0" />
+    <PackageVersion Include="NexusMods.Paths.TestingHelpers" Version="0.9.4" />
     <PackageVersion Include="NexusMods.Archives.Nx" Version="0.4.0" />
     <PackageVersion Include="NexusMods.ProxyConsole.Abstractions" Version="0.6.0" />
     <PackageVersion Include="NexusMods.SingleProcess" Version="0.6.0" />
+    <PackageVersion Include="NexusMods.Telemetry.OpenTelemetry" Version="1.0.0" />
     <PackageVersion Include="FomodInstaller.Interface" Version="1.2.0" />
     <PackageVersion Include="FomodInstaller.Scripting.XmlScript" Version="1.0.0" />
     <!-- Bannerlord -->
     <PackageVersion Include="Bannerlord.LauncherManager" Version="1.0.76" />
     <PackageVersion Include="FetchBannerlordVersion" Version="1.0.6.45" />
+    <PackageVersion Include="System.Linq" Version="4.3.0" />
+    <PackageVersion Include="System.Text.Json" Version="8.0.3" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Open Telementry -->
     <PackageVersion Include="OpenTelemetry" Version="1.8.1" />
     <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.8.1" />
     <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.8.1" />
-    <PackageVersion Include="System.Linq" Version="4.3.0" />
-    <PackageVersion Include="System.Text.Json" Version="8.0.3" />
   </ItemGroup>
   <ItemGroup>
     <PackageVersion Include="JetBrains.Annotations" Version="2023.3.0" PrivateAssets="all" />
@@ -44,6 +48,7 @@
     <PackageVersion Include="Avalonia.Themes.Fluent" Version="11.1.0-beta2" />
     <PackageVersion Include="Projektanker.Icons.Avalonia.MaterialDesign" Version="9.1.2" />
     <PackageVersion Include="Avalonia.Svg.Skia" Version="11.1.0-beta1" />
+    <PackageVersion Include="LiveChartsCore.SkiaSharpView.Avalonia" Version="2.0.0-rc2" />
     <!-- keep this version in sync with Avalonia (https://github.com/whistyun/Markdown.Avalonia?tab=readme-ov-file#nuget) -->
     <PackageVersion Include="Markdown.Avalonia.Tight" Version="11.0.3-a1" />
   </ItemGroup>
@@ -65,7 +70,7 @@
     <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Logging" Version="8.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1" />
-    <PackageVersion Include="Microsoft.Extensions.ObjectPool" Version="8.0.3" />
+    <PackageVersion Include="Microsoft.Extensions.ObjectPool" Version="8.0.4" />
     <PackageVersion Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0" />
@@ -100,9 +105,9 @@
     <PackageVersion Include="Verify.ImageMagick" Version="3.3.0" />
     <PackageVersion Include="Verify.SourceGenerators" Version="2.2.0" />
     <PackageVersion Include="xunit" Version="2.7.0" />
-    <PackageVersion Include="Xunit.DependencyInjection" Version="8.9.1" />
-    <PackageVersion Include="Xunit.DependencyInjection.Logging" Version="8.1.0" />
-    <PackageVersion Include="Xunit.DependencyInjection.SkippableFact" Version="8.1.0" />
+    <PackageVersion Include="Xunit.DependencyInjection" Version="9.2.1" />
+    <PackageVersion Include="Xunit.DependencyInjection.Logging" Version="9.0.0" />
+    <PackageVersion Include="Xunit.DependencyInjection.SkippableFact" Version="9.0.0" />
     <PackageVersion Include="xunit.extensibility.core" Version="2.6.3" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.5.7">
       <PrivateAssets>all</PrivateAssets>

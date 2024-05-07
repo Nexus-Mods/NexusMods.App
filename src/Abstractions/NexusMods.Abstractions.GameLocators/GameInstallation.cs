@@ -1,5 +1,6 @@
 using NexusMods.Abstractions.GameLocators.GameCapabilities;
 using NexusMods.Abstractions.Games;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 
 namespace NexusMods.Abstractions.GameLocators;

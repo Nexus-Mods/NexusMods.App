@@ -44,15 +44,19 @@ public class PluginSorter
             .Children()
             .Where(c => c.IsFile())
             .Select(c => c.Value.Item.Value)
-            // For now we only support plugins that are not generated on-the-fly
-            .OfType<StoredFile>()
             .Where(f => SkyrimSpecialEdition.SkyrimSpecialEdition.PluginExtensions.Contains(f.To.Extension))
+            .Select(f =>
+                {
+                    f.TryGetAsStoredFile(out var stored);
+                    return stored!;
+                }
+            )
             .SelectAsync(async f => await GetAnalysis(f, token))
             .Where(result => result is not null)
             .Select(result => result!)
             .ToArrayAsync(cancellationToken: token);
 
-        if (allPlugins.Length == 0) return Array.Empty<RelativePath>();
+        if (allPlugins.Length == 0) return [];
 
         var allNames = allPlugins.Select(p => p.FileName).ToHashSet();
         var missingMasters = allPlugins
@@ -152,7 +156,7 @@ public class PluginSorter
     /// <param name="archive"></param>
     /// <param name="token"></param>
     /// <returns></returns>
-    private async Task<PluginAnalysisData?> GetAnalysis(StoredFile archive, CancellationToken token)
+    private async Task<PluginAnalysisData?> GetAnalysis(StoredFile.Model archive, CancellationToken token)
     {
         await using var stream = await _fileStore.GetFileStream(archive.Hash, token);
         return await _pluginAnalyzer.AnalyzeAsync(archive.To.FileName, stream, token);

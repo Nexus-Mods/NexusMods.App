@@ -7,9 +7,8 @@ using NexusMods.Paths;
 
 namespace NexusMods.Games.BethesdaGameStudios.SkyrimLegendaryEdition;
 
-public class SkyrimLegendaryEdition : ABethesdaGame, ISteamGame
+public class SkyrimLegendaryEdition(IServiceProvider provider) : ABethesdaGame(provider), ISteamGame
 {
-    public SkyrimLegendaryEdition(IServiceProvider provider) : base(provider) { }
     public override string Name => "Skyrim Legendary Edition";
 
     public static GameDomain StaticDomain => GameDomain.From("skyrim");

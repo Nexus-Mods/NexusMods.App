@@ -10,9 +10,6 @@
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:modName="clr-namespace:NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModName">
-    <Design.DataContext>
-        <modName:ModNameDesignViewModel />
-    </Design.DataContext>
     <TextBlock
         Classes="BodyMDNormal"
         VerticalAlignment="Center"

@@ -1,32 +1,48 @@
 ﻿using FluentAssertions;
+using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.App.UI.Pages.LoadoutGrid;
+using Noggog;
 
 namespace NexusMods.UI.Tests.RightContent;
 
-public class LoadoutGridViewModelTests : AVmTest<ILoadoutGridViewModel>
+public class LoadoutGridViewModelTests(IServiceProvider provider) : AVmTest<ILoadoutGridViewModel>(provider)
 {
-    public LoadoutGridViewModelTests(IServiceProvider provider) : base(provider) { }
+    [Fact]
+    public async Task AddingModUpdatesTheModSource()
+    {
+        Vm.LoadoutId = Loadout.LoadoutId;
 
+        var ids = await InstallMod(DataZipLzma);
+
+        await Eventually(() =>
+        {
+            Vm.Mods.Count.Should().Be(2);
+            Vm.Mods.Should().Contain(ids.First());
+        });
+
+    }
+    
     [Fact]
     public async Task CanDeleteMods()
     {
-        Vm.LoadoutId = Loadout.Value.LoadoutId;
-
+        Vm.LoadoutId = Loadout.LoadoutId;
+        
         var ids = new List<ModId>();
-        for (int x = 0; x < 10; x++)
+        for (var x = 0; x < 10; x++)
         {
-            var id = ModId.NewId();
-            ids.Add(id);
-            Loadout.Add(new Mod
+            using var tx = Connection.BeginTransaction();
+            var mod = new Mod.Model(tx)
             {
-                Id = id,
-                Name = $"Mod {x}",
-                Version = "1.0.0",
+                Name = "Mod",
+                Version = "1.0." + x,
                 Enabled = true,
-                Files = new EntityDictionary<ModFileId, AModFile>(DataStore)
-            });
+                Loadout = Loadout,
+            };
+            Loadout.Revise(tx);
+            var result = await tx.Commit();
+            ids.Add(ModId.From(result[mod.Id]));
         }
 
         await Eventually(() =>
@@ -45,23 +61,8 @@ public class LoadoutGridViewModelTests : AVmTest<ILoadoutGridViewModel>
             Vm.Mods.Count.Should().Be(11 - toDelete, $"because {toDelete} mods were deleted of {10}");
             foreach (var id in toDeleteIds)
             {
-                Vm.Mods.Any(m => m.ModId.Equals(id)).Should().BeFalse();
+                Vm.Mods.Any(m => m.Equals(id)).Should().BeFalse();
             }
         });
-    }
-
-    [Fact]
-    public async Task AddingModUpdatesTheModSource()
-    {
-        Vm.LoadoutId = Loadout.Value.LoadoutId;
-
-        var ids = await InstallMod(DataZipLzma);
-
-        await Eventually(() =>
-        {
-            Vm.Mods.Count.Should().Be(2);
-            Vm.Mods.Should().Contain(new ModCursor(Loadout.Value.LoadoutId, ids.First()));
-        });
-
     }
 }

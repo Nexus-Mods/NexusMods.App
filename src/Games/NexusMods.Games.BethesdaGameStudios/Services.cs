@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.Extensions.DependencyInjection;
 using NexusMods.Games.BethesdaGameStudios.SkyrimLegendaryEdition;
@@ -15,7 +16,7 @@ public static class Services
             .AddGame<SkyrimLegendaryEdition.SkyrimLegendaryEdition>()
             .AddSingleton<ITool, SkyrimLegendaryEditionGameTool>()
             .AddSingleton<ITool, SkyrimSpecialEditionGameTool>()
+            .AddGeneratedFile<PluginOrderFile>()
             .AddSingleton<PluginAnalyzer>()
-            .AddAllSingleton<ITypeFinder, TypeFinder>()
             .AddSingleton<PluginSorter>();
 }

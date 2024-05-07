@@ -3,25 +3,22 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.FileStore;
-using NexusMods.Abstractions.FileStore.ArchiveMetadata;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Mods;
+using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.Hashing.xxHash64;
-using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
 using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 using Xunit.DependencyInjection;
 using DownloadId = NexusMods.Abstractions.FileStore.Downloads.DownloadId;
+using Entity = NexusMods.MnemonicDB.Abstractions.Models.Entity;
 using IGame = NexusMods.Abstractions.Games.IGame;
 
 // ReSharper disable StaticMemberInGenericType
@@ -40,7 +37,6 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
     protected readonly IFileStore FileStore;
     protected readonly IArchiveInstaller ArchiveInstaller;
 
-    protected readonly LoadoutRegistry LoadoutRegistry;
     protected readonly IApplyService ApplyService;
     protected readonly FileHashCache FileHashCache;
     protected readonly IFileSystem FileSystem;
@@ -49,10 +45,12 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
     protected readonly IFileOriginRegistry FileOriginRegistry;
     protected readonly DiskStateRegistry DiskStateRegistry;
     protected readonly IToolManager ToolManager;
+    protected readonly IGameRegistry GameRegistry;
 
-    protected readonly IGame Game;
-    protected readonly GameInstallation Install;
-    protected LoadoutMarker BaseList; // set via InitializeAsync
+    protected IGame Game;
+    protected GameInstallation Install;
+    
+    protected Loadout.Model BaseLoadout = null!;
 
     protected CancellationToken Token = CancellationToken.None;
     private readonly IHost _host;
@@ -73,7 +71,6 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
         var provider = _host.Services;
         FileStore = provider.GetRequiredService<IFileStore>();
         ArchiveInstaller = provider.GetRequiredService<IArchiveInstaller>();
-        LoadoutRegistry = provider.GetRequiredService<LoadoutRegistry>();
         ApplyService = provider.GetRequiredService<IApplyService>();
         FileHashCache = provider.GetRequiredService<FileHashCache>();
         FileSystem = provider.GetRequiredService<IFileSystem>();
@@ -85,9 +82,8 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
         TemporaryFileManager = provider.GetRequiredService<TemporaryFileManager>();
         ToolManager = provider.GetRequiredService<IToolManager>();
         ServiceProvider = provider;
+        GameRegistry = provider.GetRequiredService<IGameRegistry>();
 
-        Game = provider.GetRequiredService<StubbedGame>();
-        Install = Game.Installations.First();
     }
 
     public void Dispose()
@@ -97,13 +93,42 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
 
     public virtual async Task InitializeAsync()
     {
-        BaseList = LoadoutRegistry.GetMarker((await Install.GetGame().Synchronizer.CreateLoadout(Install)).LoadoutId);
+        await _host.StartAsync(Token);
+        Install = GameRegistry.AllInstalledGames.First(g => g.Game is StubbedGame);
+        Game = (IGame)Install.Game;
+        BaseLoadout = await Game.Synchronizer.Manage(Install, "TestLoadout_" + Guid.NewGuid());
     }
 
-    protected async Task<ModId[]> AddMods(LoadoutMarker mainList, AbsolutePath path, string? name = null)
+    /// <summary>
+    /// "Primes" the test filesystem with the given file. This means that the file is copied to the test (in-memory)
+    /// filesystem so it can be used in tests.
+    /// </summary>
+    private async Task PrimeFile(AbsolutePath src)
+    {
+        {
+            await using var file = FileSystem.CreateFile(src);
+            await using var stream = src.Read();
+            await stream.CopyToAsync(file, Token);
+        }
+        var entry = FileSystem.GetFileEntry(src);
+        entry.LastWriteTime = DateTime.UtcNow;
+        entry.CreationTime = DateTime.UtcNow;
+
+        return;
+    }
+
+    protected async Task<ModId[]> AddMods(LoadoutId loadoutId, AbsolutePath path, string? name = null)
     {
         var downloadId = await FileOriginRegistry.RegisterDownload(path, Token);
-        return await ArchiveInstaller.AddMods(mainList.Value.LoadoutId, downloadId, name, token: Token);
+        var result = await ArchiveInstaller.AddMods(loadoutId, downloadId, name, token: Token);
+        // Refresh the loadout to get the new mods, as a convenience.
+        Refresh(ref BaseLoadout);
+        return result;
+    }
+
+    protected Task<ModId[]> AddMods(Loadout.Model loadout, AbsolutePath path, string? name = null)
+    {
+        return AddMods(LoadoutId.From(loadout.Id), path, name);
     }
 
     /// <summary>
@@ -142,7 +167,7 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
     protected async Task<ModId> AddMod(string modName, params (string Name, string Data)[] files)
     {
         var downloadId = await RegisterDownload(files);
-        var modIds = await ArchiveInstaller.AddMods(BaseList.Value.LoadoutId, downloadId, modName, token: Token);
+        var modIds = await ArchiveInstaller.AddMods(LoadoutId.From(BaseLoadout.Id), downloadId, modName, token: Token);
         return modIds.First();
     }
 
@@ -163,5 +188,10 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
         foreach (var category in Enum.GetValues<EntityCategory>())
         foreach (var id in DataStore.AllIds(category))
             DataStore.Delete(id);
+    }
+
+    public void Refresh<T>(ref T ent) where T : Entity
+    {
+        ent = Connection.Db.Get<T>(ent.Id);
     }
 }

@@ -65,13 +65,7 @@ public abstract class AGame : IGame
     /// Each game can have multiple installations, e.g. different game versions.
     /// </summary>
     public virtual IEnumerable<GameInstallation> Installations => _installations ??= GetInstallations();
-
-    /// <inheritdoc />
-    public virtual IEnumerable<AModFile> GetGameFiles(GameInstallation installation, IDataStore store)
-    {
-        return Array.Empty<AModFile>();
-    }
-
+    
     /// <inheritdoc />
     public virtual IStreamFactory Icon => throw new NotImplementedException("No icon provided for this game.");
 

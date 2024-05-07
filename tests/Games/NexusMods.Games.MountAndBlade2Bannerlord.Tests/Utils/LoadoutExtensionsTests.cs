@@ -12,7 +12,7 @@ public class LoadoutExtensionsTests : AGameTest<MountAndBlade2Bannerlord>
 {
     public LoadoutExtensionsTests(IServiceProvider serviceProvider) : base(serviceProvider) { }
 
-    private static LoadoutModuleViewModel ViewModelCreator(Mod mod, ModuleInfoExtendedWithPath moduleInfo, int index) => new()
+    private static LoadoutModuleViewModel ViewModelCreator(Mod.Model mod, ModuleInfoExtendedWithPath moduleInfo, int index) => new()
     {
         Mod = mod,
         ModuleInfoExtended = moduleInfo,
@@ -25,25 +25,27 @@ public class LoadoutExtensionsTests : AGameTest<MountAndBlade2Bannerlord>
     [Fact]
     public async Task Test_GetViewModels()
     {
-        var loadoutMarker = await CreateLoadout();
+        var loadout = await CreateLoadout();
 
         var context = AGameTestContext.Create(CreateTestArchive, InstallModStoredFileIntoLoadout);
 
-        await loadoutMarker.AddButterLib(context);
-        await loadoutMarker.AddHarmony(context);
+        await loadout.AddButterLib(context);
+        await loadout.AddHarmony(context);
 
-        var unsorted = loadoutMarker.Value.GetViewModels(ViewModelCreator).Select(x => x.Mod.Name).ToList();
-        var sorted = (await loadoutMarker.Value.GetSortedViewModelsAsync(ViewModelCreator)).Select(x => x.Mod.Name).ToList();
+        Refresh(ref loadout);
 
-        unsorted.Should().BeEquivalentTo(new[]
-        {
+        var unsorted = loadout.GetViewModels(ViewModelCreator).Select(x => x.Mod.Name).ToList();
+        var sorted = (await loadout.GetSortedViewModelsAsync(ViewModelCreator)).Select(x => x.Mod.Name).ToList();
+
+        unsorted.Should().BeEquivalentTo([
             "ButterLib",
             "Harmony",
-        });
-        sorted.Should().BeEquivalentTo(new[]
-        {
+            ]
+        );
+        sorted.Should().BeEquivalentTo([
             "Harmony",
             "ButterLib",
-        });
+            ]
+        );
     }
 }

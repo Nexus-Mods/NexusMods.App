@@ -4,6 +4,8 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Benchmarks.Benchmarks.Loadouts.Harness;
 using NexusMods.Benchmarks.Interfaces;
+using NexusMods.Hashing.xxHash64;
+using NexusMods.Paths;
 
 namespace NexusMods.Benchmarks.Benchmarks.Loadouts.IngestOnly;
 
@@ -23,8 +25,7 @@ public class BackupNewFiles : ASynchronizerBenchmark, IBenchmark
     private FileTree _prevFileTree = null!;
     private DiskStateTree _prevDiskState = null!;
     private DiskStateTree _diskState = null!;
-    private FileTree _fileTree = null!;
-    private FlattenedLoadout _flattenedLoadout = null!;
+    private (GamePath GamePath, Hash Hash, Size Size)[] _fileTree = null!;
 
     public IEnumerable<string> ValuesForFilePath => new[]
     {
@@ -39,7 +40,7 @@ public class BackupNewFiles : ASynchronizerBenchmark, IBenchmark
         var filePath = Assets.Loadouts.FileLists.GetFileListPathByFileName(FileName);
         Init("Benchmark Mod Files", filePath);
         InitForIngest();
-        var loadout = _datamodel.BaseList.Value;
+        var loadout = _datamodel.BaseLoadout;
         
         // Init for function.
         Task.Run(async () =>
@@ -50,9 +51,15 @@ public class BackupNewFiles : ASynchronizerBenchmark, IBenchmark
 
             // Get the new disk state
             _diskState = await _defaultSynchronizer.GetDiskState(_installation);
-            _fileTree = await _defaultSynchronizer.DiskToFileTree(_diskState, loadout, _prevFileTree, _prevDiskState);
-            _flattenedLoadout = await _defaultSynchronizer.FileTreeToFlattenedLoadout(_fileTree, loadout, _prevFlattenedLoadout);
-            await _defaultSynchronizer.FlattenedLoadoutToLoadout(_flattenedLoadout, loadout, _prevFlattenedLoadout);
+            _fileTree = (await _defaultSynchronizer
+                .DiskToFileTree(_diskState, loadout, _prevFileTree, _prevDiskState))
+                .GetAllDescendentFiles()
+                .Select(f =>
+                    {
+                        f.Item.Value.TryGetAsStoredFile(out var stored);
+                        return (f.Item.GamePath, stored!.Hash, stored.Size);
+                    }
+                ).ToArray();
         }).Wait();
         
 #pragma warning disable CS0618 // Type or member is obsolete

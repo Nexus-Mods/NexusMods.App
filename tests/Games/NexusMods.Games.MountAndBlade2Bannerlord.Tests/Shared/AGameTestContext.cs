@@ -8,13 +8,13 @@ public class AGameTestContext
 {
     public static AGameTestContext Create(
         Func<IDictionary<RelativePath, byte[]>, Task<TemporaryPath>> createTestArchive,
-        Func<LoadoutMarker, AbsolutePath, string?, CancellationToken, Task<Mod>> installModStoredFileIntoLoadout) =>
+        Func<Loadout.Model, AbsolutePath, string?, CancellationToken, Task<Mod.Model>> installModStoredFileIntoLoadout) =>
         new(createTestArchive, installModStoredFileIntoLoadout);
 
     public Func<IDictionary<RelativePath, byte[]>, Task<TemporaryPath>> CreateTestArchive { get; }
-    public Func<LoadoutMarker, AbsolutePath, string?, CancellationToken, Task<Mod>> InstallModStoredFileIntoLoadout { get; }
+    public Func<Loadout.Model, AbsolutePath, string?, CancellationToken, Task<Mod.Model>> InstallModStoredFileIntoLoadout { get; }
 
-    private AGameTestContext(Func<IDictionary<RelativePath, byte[]>, Task<TemporaryPath>> createTestArchive, Func<LoadoutMarker, AbsolutePath, string?, CancellationToken, Task<Mod>> installModStoredFileIntoLoadout)
+    private AGameTestContext(Func<IDictionary<RelativePath, byte[]>, Task<TemporaryPath>> createTestArchive, Func<Loadout.Model, AbsolutePath, string?, CancellationToken, Task<Mod.Model>> installModStoredFileIntoLoadout)
     {
         CreateTestArchive = createTestArchive;
         InstallModStoredFileIntoLoadout = installModStoredFileIntoLoadout;

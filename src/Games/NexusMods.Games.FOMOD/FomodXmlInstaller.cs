@@ -8,10 +8,12 @@ using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Games.FOMOD.CoreDelegates;
+using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees;
 using NexusMods.Paths.Trees.Traits;
 using NexusMods.Paths.Utilities;
+using File = NexusMods.Abstractions.Loadouts.Files.File;
 using IFileSystem = NexusMods.Paths.IFileSystem;
 using Mod = FomodInstaller.Interface.Mod;
 
@@ -117,7 +119,7 @@ public class FomodXmlInstaller : AModInstaller
         return Path.DirectorySeparatorChar == PathHelpers.DirectorySeparatorChar ? input.Replace('\\', PathHelpers.DirectorySeparatorChar) : input;
     }
 
-    private IEnumerable<AModFile> InstructionsToModFiles(
+    private IEnumerable<TempEntity> InstructionsToModFiles(
         IList<Instruction> instructions,
         KeyedBox<RelativePath, ModFileTree> files,
         GamePath gameTargetPath)
@@ -139,13 +141,13 @@ public class FomodXmlInstaller : AModInstaller
         return res;
     }
 
-    private AModFile? ReportUnknownType(string instructionType)
+    private TempEntity? ReportUnknownType(string instructionType)
     {
         _logger.LogWarning("Unknown FOMOD instruction type: {Type}", instructionType);
         return null;
     }
 
-    private static AModFile ConvertInstructionCopy(
+    private static TempEntity ConvertInstructionCopy(
         Instruction instruction,
         KeyedBox<RelativePath, ModFileTree> files,
         GamePath gameTargetPath)
@@ -154,25 +156,24 @@ public class FomodXmlInstaller : AModInstaller
         var dest = RelativePath.FromUnsanitizedInput(instruction.destination);
 
         var file = files.FindByPathFromChild(src)!;
-        return new StoredFile
+        return new TempEntity
         {
-            Id = ModFileId.NewId(),
-            To = new GamePath(gameTargetPath.LocationId, gameTargetPath.Path.Join(dest)),
-            Hash = file!.Item.Hash,
-            Size = file.Item.Size
+            { StoredFile.Hash, file.Item.Hash },
+            { StoredFile.Size, file.Item.Size },
+            { File.To, new GamePath(gameTargetPath.LocationId, gameTargetPath.Path.Join(dest)) },
         };
     }
 
 
-    private static AModFile ConvertInstructionMkdir(
+    private static TempEntity ConvertInstructionMkdir(
         Instruction instruction,
         GamePath gameTargetPath)
     {
         var dest = RelativePath.FromUnsanitizedInput(instruction.destination);
-        return new EmptyDirectory
+        return new TempEntity
         {
-            Id = ModFileId.NewId(),
-            Directory = new GamePath(gameTargetPath.LocationId, gameTargetPath.Path.Join(dest))
+            { File.To, new GamePath(gameTargetPath.LocationId, gameTargetPath.Path.Join(dest)) },
+            { EmptyDirectory.Directory, true }
         };
     }
 }

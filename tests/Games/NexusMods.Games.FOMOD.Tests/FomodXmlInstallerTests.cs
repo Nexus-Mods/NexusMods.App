@@ -5,10 +5,13 @@ using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Loadouts.Files;
+using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Games.BethesdaGameStudios.SkyrimSpecialEdition;
 using NexusMods.Games.TestFramework;
 using NexusMods.Paths;
+using File = NexusMods.Abstractions.Loadouts.Files.File;
+using Mod = FomodInstaller.Interface.Mod;
 
 namespace NexusMods.Games.FOMOD.Tests;
 
@@ -28,10 +31,17 @@ public class FomodXmlInstallerTests : AModInstallerTest<SkyrimSpecialEdition, Fo
         var tree = TreeCreator.Create(analysis.Contents, FileStore);
 
         var install = GameInstallation;
-        var info = new ModInstallerInfo()
+        using var tx = Connection.BeginTransaction();
+        var mod = new NexusMods.Abstractions.Loadouts.Mods.Mod.Model(tx)
+        {
+            Name = "Test Mod",
+        };
+        var result = await tx.Commit();
+        
+        var info = new ModInstallerInfo
         {
             ArchiveFiles = tree,
-            BaseModId = ModId.NewId(),
+            BaseModId = ModId.From(result[mod.Id]),
             Locations = install.LocationsRegister,
             GameName = install.Game.Name,
             Store = install.Store,
@@ -55,13 +65,10 @@ public class FomodXmlInstallerTests : AModInstallerTest<SkyrimSpecialEdition, Fo
         var results = await GetResultsFromDirectory("SimpleInstaller");
         results.SelectMany(f => f.Files)
             .Should()
-            .AllBeAssignableTo<IToFile>()
-            .Which
-            .Should()
             .HaveCount(2)
             .And.Satisfy(
-                x => x.To.FileName == "g1p1f1.out.esp",
-                x => x.To.FileName == "g2p1f1.out.esp"
+                x => x.GetFirst(File.To).FileName == "g1p1f1.out.esp",
+                x => x.GetFirst(File.To).FileName == "g2p1f1.out.esp"
             );
     }
 
@@ -71,16 +78,13 @@ public class FomodXmlInstallerTests : AModInstallerTest<SkyrimSpecialEdition, Fo
         var results = await GetResultsFromDirectory("WithImages");
         results.SelectMany(f => f.Files)
             .Should()
-            .AllBeAssignableTo<IToFile>()
-            .Which
-            .Should()
             .HaveCount(3)
             .And.Satisfy(
                 // In group 1, the second plugin is recommended
-                x => x.To.FileName == "g1p2f1.out.esp",
+                x => x.GetFirst(File.To).FileName == "g1p2f1.out.esp",
                 // In group 2, both plugins are required
-                x => x.To.FileName == "g2p1f1.out.esp",
-                x => x.To.FileName == "g2p2f1.out.esp"
+                x => x.GetFirst(File.To).FileName == "g2p1f1.out.esp",
+                x => x.GetFirst(File.To).FileName == "g2p2f1.out.esp"
             );
     }
 
@@ -89,16 +93,13 @@ public class FomodXmlInstallerTests : AModInstallerTest<SkyrimSpecialEdition, Fo
     {
         var results = await GetResultsFromDirectory("WithMissingImage");
         results.SelectMany(f => f.Files)
-            .Should()
-            .AllBeAssignableTo<IToFile>()
-            .Which
             .Should().HaveCount(3)
             .And.Satisfy(
                 // In group 1, the second plugin is recommended
-                x => x.To.FileName == "g1p2f1.out.esp",
+                x => x.GetFirst(File.To).FileName == "g1p2f1.out.esp",
                 // In group 2, both plugins are required
-                x => x.To.FileName == "g2p1f1.out.esp",
-                x => x.To.FileName == "g2p2f1.out.esp"
+                x => x.GetFirst(File.To).FileName == "g2p1f1.out.esp",
+                x => x.GetFirst(File.To).FileName == "g2p2f1.out.esp"
             );
     }
 
@@ -107,13 +108,10 @@ public class FomodXmlInstallerTests : AModInstallerTest<SkyrimSpecialEdition, Fo
     {
         var results = await GetResultsFromDirectory("SimpleInstaller-rar");
         results.SelectMany(f => f.Files)
-            .Should()
-            .AllBeAssignableTo<IToFile>()
-            .Which
             .Should().HaveCount(2)
             .And.Satisfy(
-                x => x.To.FileName == "g1p1f1.out.esp",
-                x => x.To.FileName == "g2p1f1.out.esp"
+                x => x.GetFirst(File.To).FileName == "g1p1f1.out.esp",
+                x => x.GetFirst(File.To).FileName == "g2p1f1.out.esp"
             );
     }
 
@@ -122,13 +120,10 @@ public class FomodXmlInstallerTests : AModInstallerTest<SkyrimSpecialEdition, Fo
     {
         var results = await GetResultsFromDirectory("SimpleInstaller-7z");
         results.SelectMany(f => f.Files)
-            .Should()
-            .AllBeAssignableTo<IToFile>()
-            .Which
             .Should().HaveCount(2)
             .And.Satisfy(
-                x => x.To.FileName == "g1p1f1.out.esp",
-                x => x.To.FileName == "g2p1f1.out.esp"
+                x => x.GetFirst(File.To).FileName == "g1p1f1.out.esp",
+                x => x.GetFirst(File.To).FileName == "g2p1f1.out.esp"
             );
     }
 
@@ -138,16 +133,13 @@ public class FomodXmlInstallerTests : AModInstallerTest<SkyrimSpecialEdition, Fo
         var results = await GetResultsFromDirectory("NestedWithImages.zip");
         results.SelectMany(f => f.Files)
             .Should()
-            .AllBeAssignableTo<IToFile>()
-            .Which
-            .Should()
             .HaveCount(3)
             .And.Satisfy(
                 // In group 1, the second plugin is recommended
-                x => x.To.FileName == "g1p2f1.out.esp",
+                x => x.GetFirst(File.To).FileName == "g1p2f1.out.esp",
                 // In group 2, both plugins are required
-                x => x.To.FileName == "g2p1f1.out.esp",
-                x => x.To.FileName == "g2p2f1.out.esp"
+                x => x.GetFirst(File.To).FileName == "g2p1f1.out.esp",
+                x => x.GetFirst(File.To).FileName == "g2p2f1.out.esp"
             );
     }
 
@@ -157,16 +149,13 @@ public class FomodXmlInstallerTests : AModInstallerTest<SkyrimSpecialEdition, Fo
         var results = await GetResultsFromDirectory("MultipleNestingWithImages.7z");
         results.SelectMany(f => f.Files)
             .Should()
-            .AllBeAssignableTo<IToFile>()
-            .Which
-            .Should()
             .HaveCount(3)
             .And.Satisfy(
                 // In group 1, the second plugin is recommended
-                x => x.To.FileName == "g1p2f1.out.esp",
+                x => x.GetFirst(File.To).FileName == "g1p2f1.out.esp",
                 // In group 2, both plugins are required
-                x => x.To.FileName == "g2p1f1.out.esp",
-                x => x.To.FileName == "g2p2f1.out.esp"
+                x => x.GetFirst(File.To).FileName == "g2p1f1.out.esp",
+                x => x.GetFirst(File.To).FileName == "g2p2f1.out.esp"
             );
     }
 
@@ -175,16 +164,13 @@ public class FomodXmlInstallerTests : AModInstallerTest<SkyrimSpecialEdition, Fo
     {
         var results = await GetResultsFromDirectory("ComplexInstaller");
         results.SelectMany(f => f.Files)
-            .Should()
-            .AllBeAssignableTo<IToFile>()
-            .Which
             .Should().HaveCount(3)
             .And.Satisfy(
                 // In group 1, the second plugin is recommended
-                x => x.To.FileName == "g1p2f1.out.esp",
+                x => x.GetFirst(File.To).FileName == "g1p2f1.out.esp",
                 // In group 2, both plugins are required
-                x => x.To.FileName == "g2p1f1.out.esp",
-                x => x.To.FileName == "g2p2f1.out.esp"
+                x => x.GetFirst(File.To).FileName == "g2p1f1.out.esp",
+                x => x.GetFirst(File.To).FileName == "g2p2f1.out.esp"
             );
     }
 
@@ -193,16 +179,13 @@ public class FomodXmlInstallerTests : AModInstallerTest<SkyrimSpecialEdition, Fo
     {
         var results = await GetResultsFromDirectory("ComplexInstallerCaseChanges.7z");
         results.SelectMany(f => f.Files)
-            .Should()
-            .AllBeAssignableTo<IToFile>()
-            .Which
             .Should().HaveCount(3)
             .And.Satisfy(
                 // In group 1, the second plugin is recommended
-                x => x.To.FileName.Equals("g1p2f1.out.esp"),
+                x => x.GetFirst(File.To).FileName.Equals("g1p2f1.out.esp"),
                 // In group 2, both plugins are required
-                x => x.To.FileName.Equals("g2p1f1.out.esp"),
-                x => x.To.FileName.Equals("g2p2f1.out.esp")
+                x => x.GetFirst(File.To).FileName.Equals("g2p1f1.out.esp"),
+                x => x.GetFirst(File.To).FileName.Equals("g2p2f1.out.esp")
             );
     }
 

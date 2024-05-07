@@ -3,6 +3,7 @@ using NexusMods.Abstractions.FileStore.Trees;
 using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
+using File = NexusMods.Abstractions.Loadouts.Files.File;
 
 namespace NexusMods.Games.AdvancedInstaller.Tests;
 
@@ -22,20 +23,20 @@ public partial class DeploymentDataTests
 
         // Assert
         emittedOperations.Should().NotBeEmpty();
-        var first = emittedOperations[0] as StoredFile;
-        first!.To.Should().Be(MakeGamePath("folder/file1.txt"));
-        first.Hash.Should().Be(Hash.From(1));
-        first.Size.Should().Be(Size.From(1));
+        var first = emittedOperations[0];
+        first.GetFirst(File.To).Should().Be(MakeGamePath("folder/file1.txt"));
+        first.GetFirst(StoredFile.Hash).Should().Be(Hash.From(1));
+        first.GetFirst(StoredFile.Size).Should().Be(Size.From(1));
 
-        var second = emittedOperations[1] as StoredFile;
-        second!.To.Should().Be(MakeGamePath("folder/file2.txt"));
-        second.Hash.Should().Be(Hash.From(2));
-        second.Size.Should().Be(Size.From(2));
+        var second = emittedOperations[1];
+        second.GetFirst(File.To).Should().Be(MakeGamePath("folder/file2.txt"));
+        second.GetFirst(StoredFile.Hash).Should().Be(Hash.From(2));
+        second.GetFirst(StoredFile.Size).Should().Be(Size.From(2));
 
-        var third = emittedOperations[2] as StoredFile;
-        third!.To.Should().Be(MakeGamePath("folder/subfolder/file3.txt"));
-        third.Hash.Should().Be(Hash.From(3));
-        third.Size.Should().Be(Size.From(3));
+        var third = emittedOperations[2];
+        third.GetFirst(File.To).Should().Be(MakeGamePath("folder/subfolder/file3.txt"));
+        third.GetFirst(StoredFile.Hash).Should().Be(Hash.From(3));
+        third.GetFirst(StoredFile.Size).Should().Be(Size.From(3));
     }
 
     private static ModFileTreeSource[] CreateEmitTestFileTree()

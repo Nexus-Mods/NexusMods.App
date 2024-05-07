@@ -1,7 +1,6 @@
 using JetBrains.Annotations;
-using NexusMods.Abstractions.Serialization;
-using NexusMods.Abstractions.Serialization.DataModel;
-using NexusMods.Abstractions.Serialization.DataModel.Ids;
+using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.Models;
 
 namespace NexusMods.Abstractions.Diagnostics.References;
 
@@ -13,18 +12,18 @@ namespace NexusMods.Abstractions.Diagnostics.References;
 public interface IDataReference
 {
     /// <summary>
-    /// Gets the ID of the <see cref="Entity"/> in the data store.
+    /// Gets the TxId of the data store at the time of the reference.
     /// </summary>
     /// <remarks>
     /// This is used for change tracking.
     /// </remarks>
-    IId DataStoreId { get; }
+    TxId TxId { get; }
 
     /// <summary>
-    /// Resolves the data at <see cref="DataStoreId"/>.
+    /// Resolves the data at <see cref="TxId"/> to an <see cref="Entity"/>.
     /// </summary>
     /// <returns><c>null</c> if the value doesn't exist in the data store.</returns>
-    Entity? ResolveData(IServiceProvider serviceProvider, IDataStore dataStore);
+    Entity? ResolveData(IServiceProvider serviceProvider, TxId dataStore);
 
     /// <summary>
     /// Converts the data from <see cref="ResolveData"/> to a string representation.
@@ -46,7 +45,8 @@ public interface IDataReference<out TDataId, TData> : IDataReference
     TDataId DataId { get; }
 
     /// <inheritdoc/>
-    Entity? IDataReference.ResolveData(IServiceProvider serviceProvider, IDataStore dataStore) => ResolveData(serviceProvider, dataStore);
+    Entity? IDataReference.ResolveData(IServiceProvider serviceProvider, TxId dataStore) 
+        => ResolveData(serviceProvider, dataStore);
 
     /// <inheritdoc/>
     string IDataReference.ToStringRepresentation(Entity data)
@@ -60,7 +60,7 @@ public interface IDataReference<out TDataId, TData> : IDataReference
     /// Resolves the data at <see cref="IDataReference.DataStoreId"/>.
     /// </summary>
     /// <returns><c>null</c> if the value doesn't exist in the data store.</returns>
-    new TData? ResolveData(IServiceProvider serviceProvider, IDataStore dataStore);
+    new TData? ResolveData(IServiceProvider serviceProvider, IConnection dataStore);
 
     /// <summary>
     /// Converts the data from <see cref="ResolveData"/> to a string representation.

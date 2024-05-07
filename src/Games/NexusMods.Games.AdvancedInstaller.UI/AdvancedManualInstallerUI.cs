@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.AdvancedInstaller.UI.Resources;
+using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.Games.AdvancedInstaller.UI;
 
@@ -16,7 +17,7 @@ namespace NexusMods.Games.AdvancedInstaller.UI;
 // ReSharper disable once InconsistentNaming
 public class AdvancedManualInstallerUI : IAdvancedInstallerHandler
 {
-    private readonly Lazy<ILoadoutRegistry> _loadoutRegistry;
+    private readonly Lazy<IConnection> _conn;
     private ILogger<AdvancedManualInstallerUI> _logger;
 
     /// <summary>
@@ -26,7 +27,7 @@ public class AdvancedManualInstallerUI : IAdvancedInstallerHandler
     public AdvancedManualInstallerUI(IServiceProvider provider)
     {
         // Delay to avoid circular dependency.
-        _loadoutRegistry = new Lazy<ILoadoutRegistry>(provider.GetRequiredService<ILoadoutRegistry>);
+        _conn = new Lazy<IConnection>(provider.GetRequiredService<IConnection>);
         _logger = provider.GetRequiredService<ILogger<AdvancedManualInstallerUI>>();
     }
 

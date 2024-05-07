@@ -9,6 +9,7 @@ using NexusMods.Games.RedEngine;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators.TestHelpers;
 using NexusMods.UI.Tests.Framework;
+using Xunit.DependencyInjection.Logging;
 
 namespace NexusMods.UI.Tests;
 
@@ -31,7 +32,7 @@ public class Startup
                 })
                 .AddStubbedGameLocators()
                 .AddSingleton<AvaloniaApp>()
-                .AddLogging(builder => builder.AddXUnit())
+                .AddLogging(builder => builder.AddXunitOutput().SetMinimumLevel(LogLevel.Debug))
                 .Validate();
     }
 }

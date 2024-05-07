@@ -3,7 +3,9 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.HttpDownloader;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Settings;
+using NexusMods.CrossPlatform;
 using NexusMods.DataModel;
 using NexusMods.FileExtractor;
 using NexusMods.Networking.HttpDownloader;
@@ -43,9 +45,7 @@ public static class DependencyInjectionHelper
             .Combine($"NexusMods.Games.TestFramework-{Guid.NewGuid()}");
 
         return serviceCollection
-            .AddLogging(builder => builder
-                .AddXunitOutput()
-                .SetMinimumLevel(LogLevel.Debug))
+            .AddLogging(builder => builder.AddXunitOutput().SetMinimumLevel(LogLevel.Debug))
             .AddSingleton<JsonConverter, GameInstallationConverter>()
             .AddFileSystem()
             .AddSingleton<TemporaryFileManager>(_ => new TemporaryFileManager(FileSystem.Shared, prefix))
@@ -54,6 +54,7 @@ public static class DependencyInjectionHelper
             .AddNexusWebApi(true)
             .AddHttpDownloader()
             .AddDataModel()
+            .AddLoadoutsSynchronizers()
             .OverrideSettingsForTests<DataModelSettings>(settings => settings with
             {
                 UseInMemoryDataModel = true,

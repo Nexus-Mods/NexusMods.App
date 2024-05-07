@@ -4,39 +4,16 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.App.UI.Controls.DataGrid;
+using NexusMods.MnemonicDB.Abstractions;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModVersion;
 
-public class ModVersionViewModel : AViewModel<IModVersionViewModel>, IModVersionViewModel, IComparableColumn<ModCursor>
+public class ModVersionViewModel(IConnection conn) : AColumnViewModel<IModVersionViewModel, string>(conn), IModVersionViewModel
 {
-    private readonly ILoadoutRegistry _loadoutRegistry;
+    protected override string Selector(Mod.Model model) => model.Version;
 
-    [Reactive]
-    public ModCursor Row { get; set; }
-
-    [Reactive] public string Version { get; set; } = "";
-
-    public ModVersionViewModel(ILoadoutRegistry loadoutRegistry, IDataStore store)
-    {
-        _loadoutRegistry = loadoutRegistry;
-        this.WhenActivated(d =>
-        {
-            this.WhenAnyValue(vm => vm.Row)
-                .SelectMany(loadoutRegistry.Revisions)
-                .Select(id => store.Get<Mod>(id, true))
-                .WhereNotNull()
-                .Select(revision => revision.Version)
-                .BindToUi(this, vm => vm.Version)
-                .DisposeWith(d);
-        });
-    }
-
-    public int Compare(ModCursor a, ModCursor b)
-{
-        var aEnt = _loadoutRegistry.Get(a);
-        var bEnt = _loadoutRegistry.Get(b);
-        return string.Compare(aEnt?.Version ?? "", bEnt?.Version ?? "", StringComparison.Ordinal);
-    }
+    protected override int Compare(string a, string b) =>
+        string.Compare(a, b, StringComparison.Ordinal);
 }

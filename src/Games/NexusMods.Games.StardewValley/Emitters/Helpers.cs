@@ -13,14 +13,14 @@ internal static class Helpers
     public static readonly NamedLink NexusModsLink = new("Nexus Mods", new Uri("https://nexusmods.com/stardewvalley"));
     public static readonly NamedLink SMAPILink = new("Nexus Mods", new Uri("https://nexusmods.com/stardewvalley/mods/2400"));
 
-    public static async IAsyncEnumerable<ValueTuple<Mod, Manifest>> GetAllManifestsAsync(
+    public static async IAsyncEnumerable<ValueTuple<Mod.Model, Manifest>> GetAllManifestsAsync(
         ILogger logger,
         IFileStore fileStore,
-        Loadout loadout,
+        Loadout.Model loadout,
         bool onlyEnabledMods,
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        var asyncEnumerable = loadout.Mods.Values
+        var asyncEnumerable = loadout.Mods
             .Where(mod => !onlyEnabledMods || mod.Enabled)
             .ToAsyncEnumerable()
             .ConfigureAwait(continueOnCapturedContext: false)
@@ -40,7 +40,7 @@ internal static class Helpers
     private static async ValueTask<Manifest?> GetManifest(
         ILogger logger,
         IFileStore fileStore,
-        Mod mod,
+        Mod.Model mod,
         CancellationToken cancellationToken)
     {
         try

@@ -1,49 +1,20 @@
 ﻿using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using JetBrains.Annotations;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.App.UI.Controls.DataGrid;
+using NexusMods.MnemonicDB.Abstractions;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModInstalled;
 
-public class ModInstalledViewModel : AViewModel<IModInstalledViewModel>, IModInstalledViewModel, IComparableColumn<ModCursor>
+[UsedImplicitly]
+internal class ModInstalledViewModel(IConnection connection) : 
+    AColumnViewModel<IModInstalledViewModel, DateTime>(connection), IModInstalledViewModel
 {
-    private readonly ILoadoutRegistry _loadoutRegistry;
+    protected override DateTime Selector(Mod.Model model) => model.CreatedAt;
 
-    [Reactive]
-    public ModCursor Row { get; set; }
-
-    [Reactive]
-    public DateTime Installed { get; set; }
-
-    [Reactive]
-    public ModStatus Status { get; set; }
-
-    public ModInstalledViewModel(ILoadoutRegistry loadoutRegistry)
-    {
-        _loadoutRegistry = loadoutRegistry;
-        this.WhenActivated(d =>
-        {
-            this.WhenAnyValue(vm => vm.Row)
-                .SelectMany(loadoutRegistry.RevisionsAsMods)
-                .Select(mod => mod.Installed)
-                .BindToUi(this, vm => vm.Installed)
-                .DisposeWith(d);
-
-            this.WhenAnyValue(vm => vm.Row)
-                .SelectMany(loadoutRegistry.RevisionsAsMods)
-                .Select(mod => mod.Status)
-                .BindToUi(this, vm => vm.Status)
-                .DisposeWith(d);
-        });
-    }
-
-    public int Compare(ModCursor a, ModCursor b)
-    {
-        var aEnt = _loadoutRegistry.Get(a);
-        var bEnt = _loadoutRegistry.Get(b);
-        return aEnt?.Installed.CompareTo(bEnt?.Installed) ?? 0;
-    }
+    protected override int Compare(DateTime a, DateTime b) => DateTime.Compare(a, b);
 }

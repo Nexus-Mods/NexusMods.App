@@ -12,8 +12,8 @@ public partial class ModNameView : ReactiveUserControl<IModNameViewModel>
 
         this.WhenActivated(d =>
         {
-            this.WhenAnyValue(vm => vm.ViewModel!.Name)
-                .BindToUi<string, ModNameView, string>(this, view => view.NameTextBox.Text)
+            this.WhenAnyValue(vm => vm.ViewModel!.Value)
+                .BindTo<string, ModNameView, string>(this, view => view.NameTextBox.Text)
                 .DisposeWith(d);
 
             this.WhenAnyValue(view => view.DataContext)

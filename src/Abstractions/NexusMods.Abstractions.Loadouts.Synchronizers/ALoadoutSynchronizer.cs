@@ -14,15 +14,20 @@ using NexusMods.Abstractions.Games.Trees;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Loadouts.Files;
+using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
-using NexusMods.Abstractions.Loadouts.Sorting;
-using NexusMods.Abstractions.Loadouts.Synchronizers.Transformer;
-using NexusMods.Abstractions.Loadouts.Visitors;
+using NexusMods.Abstractions.MnemonicDB.Attributes;
+using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.Extensions.BCL;
 using NexusMods.Hashing.xxHash64;
+using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.Models;
+using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
+using NexusMods.Paths.Trees.Traits;
+using File = NexusMods.Abstractions.Loadouts.Files.File;
 
 namespace NexusMods.Abstractions.Loadouts.Synchronizers;
 
@@ -35,9 +40,9 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     private readonly ILogger _logger;
     private readonly IFileHashCache _hashCache;
     private readonly IDataStore _store;
-    private readonly ILoadoutRegistry _loadoutRegistry;
     private readonly IDiskStateRegistry _diskStateRegistry;
     private readonly ISorter _sorter;
+    protected readonly IConnection Connection;
     private readonly IOSInformation _os;
     private IFileStore _fileStore;
 
@@ -47,7 +52,6 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// <param name="logger"></param>
     /// <param name="hashCache"></param>
     /// <param name="store"></param>
-    /// <param name="loadoutRegistry"></param>
     /// <param name="diskStateRegistry"></param>
     /// <param name="fileStore"></param>
     /// <param name="sorter"></param>
@@ -55,19 +59,19 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     protected ALoadoutSynchronizer(ILogger logger,
         IFileHashCache hashCache,
         IDataStore store,
-        ILoadoutRegistry loadoutRegistry,
         IDiskStateRegistry diskStateRegistry,
         IFileStore fileStore,
         ISorter sorter,
+        IConnection conn,
         IOSInformation os)
     {
         _logger = logger;
         _hashCache = hashCache;
         _store = store;
-        _loadoutRegistry = loadoutRegistry;
         _diskStateRegistry = diskStateRegistry;
         _fileStore = fileStore;
         _sorter = sorter;
+        Connection = conn;
         _os = os;
     }
 
@@ -79,10 +83,10 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         provider.GetRequiredService<ILogger<ALoadoutSynchronizer>>(),
         provider.GetRequiredService<IFileHashCache>(),
         provider.GetRequiredService<IDataStore>(),
-        provider.GetRequiredService<ILoadoutRegistry>(),
         provider.GetRequiredService<IDiskStateRegistry>(),
         provider.GetRequiredService<IFileStore>(),
         provider.GetRequiredService<ISorter>(),
+        provider.GetRequiredService<IConnection>(),
         provider.GetRequiredService<IOSInformation>())
 
     {
@@ -92,28 +96,22 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     #region IStandardizedLoadoutSynchronizer Implementation
 
     /// <inheritdoc />
-    public async ValueTask<FlattenedLoadout> LoadoutToFlattenedLoadout(Loadout loadout)
+    public async ValueTask<FlattenedLoadout> LoadoutToFlattenedLoadout(Loadout.Model loadout)
     {
+        var dict = new Dictionary<GamePath, File.Model>();
         var sorted = await SortMods(loadout);
-        return ModsToFlattenedLoadout(sorted);
-    }
 
-    private static FlattenedLoadout ModsToFlattenedLoadout(IEnumerable<Mod> sorted)
-    {
-        var modArray = sorted.ToArray();
-        var numItems = modArray.Sum(mod => mod.Files.Count);
-        var dict = new Dictionary<GamePath, ModFilePair>(numItems);
-        foreach (var mod in modArray)
+        foreach (var mod in sorted)
         {
             if (!mod.Enabled)
                 continue;
 
-            foreach (var (_, file) in mod.Files)
+            foreach (var file in mod.Files)
             {
-                if (file is not IToFile toFile)
+                if (!file.TryGet(File.To, out var path))
                     continue;
 
-                dict[toFile.To] = new ModFilePair { Mod = mod, File = file };
+                dict[path] = file;
             }
         }
 
@@ -121,26 +119,26 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     }
 
     /// <inheritdoc />
-    public ValueTask<FileTree> FlattenedLoadoutToFileTree(FlattenedLoadout flattenedLoadout, Loadout loadout)
+    public ValueTask<FileTree> FlattenedLoadoutToFileTree(FlattenedLoadout flattenedLoadout, Loadout.Model loadout)
     {
         return ValueTask.FromResult(FileTree.Create(flattenedLoadout.GetAllDescendentFiles()
-            .Select(f => KeyValuePair.Create(f.GamePath(), f.Item.Value!.File))));
+            .Select(f => KeyValuePair.Create(f.GamePath(), f.Item.Value))));
     }
 
 
     /// <inheritdoc />
-    public async Task<DiskStateTree> FileTreeToDisk(FileTree fileTree, Loadout? loadout, FlattenedLoadout flattenedLoadout, DiskStateTree prevState, GameInstallation installation, bool skipIngest = false)
+    public async Task<DiskStateTree> FileTreeToDisk(FileTree fileTree, Loadout.Model loadout, FlattenedLoadout flattenedLoadout, DiskStateTree prevState, GameInstallation installation, bool skipIngest = false)
     {
         // Return the new tree
         return await FileTreeToDiskImpl(fileTree, loadout, flattenedLoadout, prevState, installation, true);
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal async Task<DiskStateTree> FileTreeToDiskImpl(FileTree fileTree, Loadout? loadout, FlattenedLoadout flattenedLoadout, DiskStateTree prevState, GameInstallation installation, bool fixFileMode, bool skipIngest = false)
+    internal async Task<DiskStateTree> FileTreeToDiskImpl(FileTree fileTree, Loadout.Model loadout, FlattenedLoadout flattenedLoadout, DiskStateTree prevState, GameInstallation installation, bool fixFileMode, bool skipIngest = false)
     {
         List<KeyValuePair<GamePath, HashedEntryWithName>> toDelete = new();
-        List<KeyValuePair<AbsolutePath, IGeneratedFile>> toWrite = new();
-        List<KeyValuePair<AbsolutePath, StoredFile>> toExtract = new();
+        List<KeyValuePair<AbsolutePath, File.Model>> toWrite = new();
+        List<KeyValuePair<AbsolutePath, StoredFile.Model>> toExtract = new();
 
         Dictionary<GamePath, DiskStateEntry> resultingItems = new();
 
@@ -184,24 +182,29 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                 // File didn't change on disk and is present in new tree
                 resultingItems.Add(newEntry.GamePath(), prevEntry.Item.Value);
                 
-                switch (newEntry.Item.Value!)
+                var file = newEntry.Item.Value!;
+                if (file.TryGetAsDeletedFile(out _))
                 {
-                    case StoredFile fa:
-                        // StoredFile files are special cased so we can batch them up and extract them all at once.
-                        // Don't add toExtract to the results yet as we'll need to get the modified file times
-                        // after we extract them
-                        if (fa.Hash == entry.Hash)
-                            continue;
+                    // File is deleted in the new tree, so nothing to do
+                    continue;
+                }
+                else if (file.Contains(StoredFile.Hash))
+                {
+                    // StoredFile files are special cased so we can batch them up and extract them all at once.
+                    // Don't add toExtract to the results yet as we'll need to get the modified file times
+                    // after we extract them
+                    if (file.Get(StoredFile.Hash) == entry.Hash)
+                        continue;
 
-                        toExtract.Add(KeyValuePair.Create(entry.Path, fa));
-                        continue;
-                    case IGeneratedFile gf and IToFile:
-                        // Hash for these files is generated on the fly, so we need to update it after we write it.
-                        toWrite.Add(KeyValuePair.Create(entry.Path, gf));
-                        continue;
-                    default:
-                        _logger.LogError("Unknown file type: {Type}", newEntry.Item.Value!.GetType());
-                        break;
+                    toExtract.Add(KeyValuePair.Create(entry.Path, file.Remap<StoredFile.Model>()));
+                }
+                else if (file.IsGeneratedFile())
+                {
+                    toWrite.Add(KeyValuePair.Create(entry.Path, file));
+                }
+                else
+                {
+                    _logger.LogError("Unknown file type: {Entity}", file);
                 }
             }
         }
@@ -210,6 +213,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         foreach (var item in fileTree.GetAllDescendentFiles())
         {
             var path = item.GamePath();
+
 
             // If the file has already been handled above, skip it
             if (resultingItems.ContainsKey(path))
@@ -227,20 +231,24 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                 throw new UnreachableException("HandleNeedIngest should have thrown");
             }
 
-            switch (item.Item.Value!)
+
+            var file = item.Item.Value!;
+            if (file.TryGetAsDeletedFile(out _))
             {
-                case StoredFile fa:
-                    // Don't add toExtract to the results yet as we'll need to get the modified file times
-                    // after we extract them
-                    toExtract.Add(KeyValuePair.Create(absolutePath, fa));
-                    break;
-                case IGeneratedFile gf and IToFile:
-                    // Don't add to the results here as we'll write the file in a bit, and need the metadata
-                    // after we write it.
-                    toWrite.Add(KeyValuePair.Create(absolutePath, gf));
-                    break;
-                default:
-                    throw new UnreachableException("No way to handle this file");
+                // File is deleted in the new tree, so nothing to do
+                continue;
+            }
+            else if (file.Contains(StoredFile.Hash))
+            {
+                toExtract.Add(KeyValuePair.Create(absolutePath, file.Remap<StoredFile.Model>()));
+            }
+            else if (file.IsGeneratedFile())
+            {
+                toWrite.Add(KeyValuePair.Create(absolutePath, file));
+            }
+            else
+            {
+                throw new UnreachableException("No way to handle this file");
             }
         }
         
@@ -252,21 +260,19 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         }
 
         // Write the generated files (could be done in parallel)
-        if (toWrite.Count > 0 && loadout == null)
-            throw new InvalidOperationException("A valid loadout is required for creating generated files");
-        
         foreach (var entry in toWrite)
         {
             entry.Key.Parent.CreateDirectory();
             await using var outputStream = entry.Key.Create();
-            var hash = await entry.Value.Write(outputStream, loadout!, flattenedLoadout, fileTree);
+            var hash = await WriteGeneratedFile(entry.Value, outputStream, loadout, flattenedLoadout, fileTree);
             if (hash == null)
             {
                 outputStream.Position = 0;
                 hash = await outputStream.HashingCopyAsync(Stream.Null, CancellationToken.None);
             }
 
-            resultingItems[((IToFile)entry.Value).To] = new DiskStateEntry
+            var gamePath = loadout.Installation.LocationsRegister.ToGamePath(entry.Key);
+            resultingItems[gamePath] = new DiskStateEntry
             {
                 Hash = hash!.Value,
                 Size = Size.From((ulong)outputStream.Length),
@@ -275,6 +281,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         }
 
         // Extract all the files that need extracting in one batch.
+        _logger.LogInformation("Extracting {Count} files", toExtract.Count);
         await _fileStore.ExtractFiles(GetFilesToExtract(toExtract));
 
         // Update the resulting items with the new file times
@@ -346,7 +353,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         // Quick convert function such that to not be LINQ bottlenecked.
         // Needed as separate method because parent method is async.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static (Hash Hash, AbsolutePath Dest)[] GetFilesToExtract(List<KeyValuePair<AbsolutePath, StoredFile>> toExtract) 
+        static (Hash Hash, AbsolutePath Dest)[] GetFilesToExtract(List<KeyValuePair<AbsolutePath, StoredFile.Model>> toExtract) 
         {
             (Hash Hash, AbsolutePath Dest)[] entries = GC.AllocateUninitializedArray<(Hash Src, AbsolutePath Dest)>(toExtract.Count);
             var toExtractSpan = CollectionsMarshal.AsSpan(toExtract);
@@ -376,10 +383,10 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     }
 
     /// <inheritdoc />
-    public async ValueTask<FileTree> DiskToFileTree(DiskStateTree diskState, Loadout prevLoadout, FileTree prevFileTree, DiskStateTree prevDiskState)
+    public async ValueTask<FileTree> DiskToFileTree(DiskStateTree diskState, Loadout.Model prevLoadout, FileTree prevFileTree, DiskStateTree prevDiskState)
     {
-        List<KeyValuePair<GamePath, AModFile>> results = new();
-        var newFiles = new List<AModFile>();
+        List<KeyValuePair<GamePath, File.Model>> results = new();
+        var newFiles = new List<TempEntity>();
         foreach (var item in diskState.GetAllDescendentFiles())
         {
             var gamePath = item.GamePath();
@@ -397,20 +404,51 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                 // Else, the file has changed, so we need to update it.
                 var newFile = await HandleChangedFile(prevFile, prevEntry.Item.Value, item.Item.Value, gamePath, absPath);
                 newFiles.Add(newFile);
-                results.Add(KeyValuePair.Create(gamePath, newFile));
             }
             else
             {
                 // Else, the file is new, so we need to add it.
                 var newFile = await HandleNewFile(item.Item.Value, gamePath, absPath);
                 newFiles.Add(newFile);
-                results.Add(KeyValuePair.Create(gamePath, newFile));
             }
         }
 
-        CollectionsMarshal.AsSpan(newFiles).EnsureAllPersisted(_store);
+        if (newFiles.Count > 0)
+        {
+            _logger.LogInformation("Found {Count} new files during ingest", newFiles.Count);
 
-        // Deletes are handled implicitly as we only return files that exist in the new state.
+            var overridesMod = prevLoadout.Mods.FirstOrDefault(m => m.Category == ModCategory.Overrides);
+            using var tx = Connection.BeginTransaction();
+            
+            if (overridesMod == null)
+            {
+                overridesMod = new Mod.Model(tx)
+                {
+                    Loadout = prevLoadout,
+                    Category = ModCategory.Overrides,
+                    Name = "Overrides",
+                    Enabled = true,
+                };
+            }
+            
+            List<EntityId> addedFiles = new();
+            foreach (var newFile in newFiles)
+            {
+                newFile.Add(File.Loadout, prevLoadout.Id);
+                newFile.Add(File.Mod, overridesMod.Id);
+                newFile.AddTo(tx);
+                addedFiles.Add(newFile.Id!.Value);
+            }
+            
+            var result = await tx.Commit();
+
+            foreach (var addedFile in addedFiles)
+            {
+                var storedFile = result.Db.Get<StoredFile.Model>(result[addedFile]);
+                results.Add(KeyValuePair.Create(storedFile.To, (File.Model)storedFile));
+            }
+        }
+
         return FileTree.Create(results);
     }
 
@@ -424,16 +462,15 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// <returns></returns>
     /// <exception cref="NotImplementedException"></exception>
     /// <returns>An unpersisted new file. This file needs to be persisted.</returns>
-    protected virtual ValueTask<AModFile> HandleNewFile(DiskStateEntry newEntry, GamePath gamePath, AbsolutePath absolutePath)
+    protected virtual ValueTask<TempEntity> HandleNewFile(DiskStateEntry newEntry, GamePath gamePath, AbsolutePath absolutePath)
     {
-        var newFile = new StoredFile
+        var newFile = new TempEntity
         {
-            Id = ModFileId.NewId(),
-            Hash = newEntry.Hash,
-            Size = newEntry.Size,
-            To = gamePath
+            {StoredFile.Hash, newEntry.Hash},
+            {StoredFile.Size, newEntry.Size},
+            {File.To, gamePath},
         };
-        return ValueTask.FromResult<AModFile>(newFile);
+        return ValueTask.FromResult(newFile);
     }
 
 
@@ -441,132 +478,61 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// When a file is changed, this method will be called to convert the new data into a AModFile. The
     /// file on disk is still accessible via <paramref name="absolutePath"/>
     /// </summary>
-    /// <param name="prevFile"></param>
-    /// <param name="prevEntry"></param>
-    /// <param name="newEntry"></param>
-    /// <param name="gamePath"></param>
-    /// <param name="absolutePath"></param>
-    /// <returns>An unpersisted changed file. This file needs to be persisted.</returns>
-    protected virtual async ValueTask<AModFile> HandleChangedFile(AModFile prevFile, DiskStateEntry prevEntry, DiskStateEntry newEntry, GamePath gamePath, AbsolutePath absolutePath)
+    protected virtual async ValueTask<TempEntity> HandleChangedFile(File.Model prevFile, DiskStateEntry prevEntry, DiskStateEntry newEntry, GamePath gamePath, AbsolutePath absolutePath)
     {
-        if (prevFile is IGeneratedFile gf)
+        var newFile = new TempEntity
         {
-            await using var stream = absolutePath.Read();
-            var entity = await gf.Update(newEntry, stream);
-            return entity;
-        }
-
-        var newFile = new StoredFile
-        {
-            Id = ModFileId.NewId(),
-            Hash = newEntry.Hash,
-            Size = newEntry.Size,
-            To = gamePath
+            {StoredFile.Hash, newEntry.Hash},
+            {StoredFile.Size, newEntry.Size},
+            {File.To, gamePath},
         };
         return newFile;
     }
 
     /// <inheritdoc />
-    public ValueTask<FlattenedLoadout> FileTreeToFlattenedLoadout(FileTree fileTree, Loadout prevLoadout,
+    public async ValueTask<FlattenedLoadout> FileTreeToFlattenedLoadout(FileTree fileTree, Loadout.Model prevLoadout,
         FlattenedLoadout prevFlattenedLoadout)
     {
-        var results = new List<KeyValuePair<GamePath, ModFilePair>>();
-        var mods = prevLoadout.Mods.Values
-            .Where(m => !string.IsNullOrWhiteSpace(m.ModCategory))
-            .GroupBy(m => m.ModCategory)
+        var resultIds = new List<(GamePath Path, EntityId Id)>();
+        var results = new List<KeyValuePair<GamePath, File.Model>>();
+        var mods = prevLoadout.Mods
+            .GroupBy(m => m.Category)
             .ToDictionary(g => g.Key, g => g.First());
+        
+        using var tx = Connection.BeginTransaction();
 
         // Helper function to get a mod for a given category, or create a new one if it doesn't exist.
-        Mod ModForCategory(string name)
+        Mod.Model ModForCategory(ModCategory category)
         {
-            if (mods.TryGetValue(name, out var mod))
+            if (mods.TryGetValue(category, out var mod))
                 return mod;
-            var newMod = new Mod
+            var newMod = new Mod.Model(tx)
             {
-                ModCategory = name,
-                Name = name,
-                Id = ModId.NewId(),
+                Category = category,
+                Name = category.ToString(),
                 Enabled = true,
-                Files = EntityDictionary<ModFileId, AModFile>.Empty(_store)
             };
-            mods.Add(name, newMod);
+            mods.Add(category, newMod);
             return newMod;
         }
 
+        
         // Find all the files, and try to find a match in the previous state
         foreach (var item in fileTree.GetAllDescendentFiles())
         {
-            var path = item.GamePath();
-            var file = item.Item.Value;
-            if (prevFlattenedLoadout.TryGetValue(path, out var prevPair))
+            resultIds.Add((item.Item.GamePath, item.Item.Value.Id));
+            // No mod, so we need to put it somewhere, for now we put it in the Override Mod
+            if (!item.Item.Value.Contains(File.Mod))
             {
-                if (prevPair.Item.Value!.File.DataStoreId.Equals(file.DataStoreId))
-                {
-                    // File hasn't changed, so we can use the previous entry
-                    results.Add(KeyValuePair.Create(path, prevPair.Item.Value!));
-                    continue;
-                }
-                else
-                {
-                    // Use the previous mod, but the new file
-                    results.Add(KeyValuePair.Create(path, new ModFilePair
-                    {
-                        Mod = prevPair.Item.Value!.Mod,
-                        File = file
-                    }));
-                    continue;
-                }
+                var mod = ModForCategory(ModCategory.Overrides);
+                tx.Add(item.Item.Value.Id, File.Mod, mod.Id);
             }
-
-            // Assign the new files to a mod
-            var mod = GetModForNewFile(prevLoadout, path, file, ModForCategory);
-            results.Add(KeyValuePair.Create(path, new ModFilePair
-            {
-                Mod = mod,
-                File = file!
-            }));
         }
+        var result = await tx.Commit();
 
-        return ValueTask.FromResult(FlattenedLoadout.Create(results));
-    }
-
-    /// <summary>
-    /// If a file is new, this method will be called to get the mod for the new file. The modForCategory function
-    /// can be called to get a mod for a given category, or create a new one if it doesn't exist.
-    /// </summary>
-    /// <param name="prevLoadout"></param>
-    /// <param name="path"></param>
-    /// <param name="file"></param>
-    /// <param name="modForCategory"></param>
-    /// <returns></returns>
-    protected virtual Mod GetModForNewFile(Loadout prevLoadout, GamePath path, AModFile file, Func<string, Mod> modForCategory)
-    {
-        if (path.LocationId == LocationId.Preferences)
-        {
-            return modForCategory(Mod.PreferencesCategory);
-        }
-        else if (path.LocationId == LocationId.Saves)
-        {
-            return modForCategory(Mod.SavesCategory);
-        }
-        else
-        {
-            return modForCategory(Mod.OverridesCategory);
-        }
-    }
-
-    /// <inheritdoc />
-    public ValueTask<Loadout> FlattenedLoadoutToLoadout(FlattenedLoadout flattenedLoadout, Loadout prevLoadout, FlattenedLoadout prevFlattenedLoadout)
-    {
-        return ValueTask.FromResult(new FlattenedToLoadoutTransformer(flattenedLoadout, prevLoadout, prevFlattenedLoadout)
-            .Transform(prevLoadout));
-    }
-
-    /// <inheritdoc />
-    public virtual Loadout MergeLoadouts(Loadout loadoutA, Loadout loadoutB)
-    {
-        var visitor = new MergingVisitor();
-        return visitor.Transform(loadoutA, loadoutB);
+        var tree = resultIds.Select(kv => 
+            KeyValuePair.Create(kv.Path, result.Db.Get<File.Model>(result[kv.Id])));
+        return FlattenedLoadout.Create(tree);
     }
 
     #endregion
@@ -582,28 +548,20 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     ///     Force overrides current locations to intended tree
     /// </param>
     /// <returns></returns>
-    public virtual async Task<DiskStateTree> Apply(Loadout loadout, bool forceSkipIngest = false)
+    public virtual async Task<DiskStateTree> Apply(Loadout.Model loadout, bool forceSkipIngest = false)
     {
-        // Note(Sewer) If the last loadout was a marker loadout, we need to
-        // skip ingest and ignore changes, since marker loadouts should not be changed.
-        // (Prevent 'Needs Ingest' exception)
-        forceSkipIngest = forceSkipIngest || IsLastLoadoutAMarkerLoadout(loadout.Installation);
-
         var flattened = await LoadoutToFlattenedLoadout(loadout);
         var fileTree = await FlattenedLoadoutToFileTree(flattened, loadout);
         var prevState = _diskStateRegistry.GetState(loadout.Installation)!;
         var diskState = await FileTreeToDisk(fileTree, loadout, flattened, prevState, loadout.Installation, forceSkipIngest);
-        diskState.LoadoutRevision = loadout.DataStoreId;
+        diskState.LoadoutId = loadout.Id;
+        diskState.TxId = loadout.Db.BasisTxId;
         await _diskStateRegistry.SaveState(loadout.Installation, diskState);
-
-        if (!loadout.IsMarkerLoadout())
-            RemoveMarkerLoadout();
-
         return diskState;
     }
 
     /// <inheritdoc />
-    public virtual async Task<Loadout> Ingest(Loadout loadout)
+    public virtual async Task<Loadout.Model> Ingest(Loadout.Model loadout)
     {
         // Reconstruct the previous file tree
         var prevFlattenedLoadout = await LoadoutToFlattenedLoadout(loadout);
@@ -612,75 +570,202 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
 
         // Get the new disk state
         var diskState = await GetDiskState(loadout.Installation);
-        var fileTree = await DiskToFileTree(diskState, loadout, prevFileTree, prevDiskState);
-        var flattenedLoadout = await FileTreeToFlattenedLoadout(fileTree, loadout, prevFlattenedLoadout);
-        var newLoadout = await FlattenedLoadoutToLoadout(flattenedLoadout, loadout, prevFlattenedLoadout);
+        var newFiles = FindChangedFiles(diskState, loadout, prevFileTree, prevDiskState);
 
-        // TODO: Make a diff here of the trees (compared to previous tree).
-        // Otherwise we'll suffer a lot on checking existing files.
-        await BackupNewFiles(loadout.Installation, fileTree);
-        newLoadout.EnsurePersisted(_store);
-        diskState.LoadoutRevision = newLoadout.DataStoreId;
+        await BackupNewFiles(loadout.Installation, newFiles.Select(f => 
+            (f.GetFirst(File.To), 
+             f.GetFirst(StoredFile.Hash), 
+             f.GetFirst(StoredFile.Size))));
+        var newLoadout = await AddChangedFilesToLoadout(loadout, newFiles);
+        
+        diskState.LoadoutId = newLoadout.Id;
+        diskState.TxId = newLoadout.Db.BasisTxId;
         await _diskStateRegistry.SaveState(loadout.Installation, diskState);
-
         return newLoadout;
     }
-    
+
+
+    private async Task<Loadout.Model> AddChangedFilesToLoadout(Loadout.Model loadout, TempEntity[] newFiles)
+    {
+        var overridesMod = loadout.Mods.FirstOrDefault(m => m.Category == ModCategory.Overrides);
+        
+        using var tx = Connection.BeginTransaction();
+        
+        overridesMod ??= new Mod.Model(tx)
+        {
+            Loadout = loadout,
+            Category = ModCategory.Overrides,
+            Name = "Overrides",
+            Enabled = true,
+        };
+        
+        foreach (var newFile in newFiles)
+        {
+            newFile.Add(File.Loadout, loadout.Id);
+            newFile.Add(File.Mod, overridesMod.Id);
+            newFile.AddTo(tx);
+        }
+        
+        var result = await tx.Commit();
+        return result.Db.Get<Loadout.Model>(loadout.Id);
+    }
+
+    private TempEntity[] FindChangedFiles(DiskStateTree diskState, Loadout.Model loadout, FileTree prevFileTree, DiskStateTree prevDiskState)
+    {
+        List<TempEntity> newFiles = new();
+        // Find files on disk that have changed or are not in the loadout
+        foreach (var file in diskState.GetAllDescendentFiles())
+        {
+            var gamePath = file.GamePath();
+            TempEntity? newFile;
+            if (prevDiskState.TryGetValue(gamePath, out var prevEntry))
+            {
+                var prevFile = prevFileTree[gamePath].Item.Value!;
+                if (prevEntry.Item.Value.Hash == file.Item.Value.Hash)
+                {
+                    // If the file hasn't changed, do nothing
+                    continue;
+                }
+
+                if (prevFile.Mod.Category == ModCategory.Overrides)
+                {
+                    // Previous file was in the overrides, so we need to update it
+                    newFile = new TempEntity
+                    {
+                        { StoredFile.Hash, file.Item.Value.Hash },
+                        { StoredFile.Size, file.Item.Value.Size },
+                    };
+                    newFile.Id = prevFile.Id;
+                }
+                else
+                {
+                    // Previous file was not in the overrides, so we need to add it
+                    newFile = new TempEntity
+                    {
+                        { StoredFile.Hash, file.Item.Value.Hash },
+                        { StoredFile.Size, file.Item.Value.Size },
+                        { File.To, gamePath },
+                    };
+                }
+            }
+            else
+            {
+                // Else, the file is new, so we need to add it.
+                newFile = new TempEntity
+                {
+                    { StoredFile.Hash, file.Item.Value.Hash },
+                    { StoredFile.Size, file.Item.Value.Size },
+                    { File.To, gamePath },
+                };
+            }
+
+            newFiles.Add(newFile);
+        }
+        
+        // Find files in the loadout that are not on disk
+        foreach (var loadoutFile in prevDiskState.GetAllDescendentFiles())
+        {
+            var gamePath = loadoutFile.GamePath();
+            if (diskState.ContainsKey(gamePath))
+                continue;
+            
+            var prevDbFile = prevFileTree[gamePath].Item.Value!;
+            if (prevDbFile.Mod.Category == ModCategory.Overrides)
+            {
+                if (prevDbFile.TryGet(DeletedFile.Deleted, out var deleted) && deleted)
+                {
+                    // already deleted, do nothing
+                    continue;
+                }
+                else
+                {
+                    var newFile = new TempEntity
+                    {
+                        { StoredFile.Hash, loadoutFile.Item.Value.Hash },
+                        { StoredFile.Size, loadoutFile.Item.Value.Size },
+                        { DeletedFile.Deleted, true },
+                        { File.To, gamePath },
+                    };
+                    newFile.Id = prevDbFile.Id;
+                    newFiles.Add(newFile);
+                }
+            }
+            else
+            {
+                // New Deleted file
+                var newFile = new TempEntity
+                {
+                    { StoredFile.Hash, loadoutFile.Item.Value.Hash },
+                    { StoredFile.Size, loadoutFile.Item.Value.Size },
+                    { DeletedFile.Deleted, true },
+                    { File.To, gamePath },
+                };
+                newFiles.Add(newFile);
+            }
+        }
+        
+
+        return newFiles.ToArray();
+    }
+
     /// <inheritdoc />
-    public async ValueTask<FileDiffTree> LoadoutToDiskDiff(Loadout loadout, DiskStateTree diskState)
+    public async ValueTask<FileDiffTree> LoadoutToDiskDiff(Loadout.Model loadout, DiskStateTree diskState)
     {
         var flattenedLoadout = await LoadoutToFlattenedLoadout(loadout);
         return await FlattenedLoadoutToDiskDiff(flattenedLoadout, diskState);
     }
 
-    private static ValueTask<FileDiffTree> FlattenedLoadoutToDiskDiff(FlattenedLoadout flattenedLoadout, DiskStateTree diskState)
+    private ValueTask<FileDiffTree> FlattenedLoadoutToDiskDiff(FlattenedLoadout flattenedLoadout, DiskStateTree diskState)
     {
         var loadoutFiles = flattenedLoadout.GetAllDescendentFiles().ToArray();
         var diskStateEntries = diskState.GetAllDescendentFiles().ToArray();
 
         // With both deletions and additions it might be more than Max, but it's a starting point
         Dictionary<GamePath, DiskDiffEntry> resultingItems = new(Math.Max(loadoutFiles.Length, diskStateEntries.Length));
-
+        
         // Add all the disk state entries to the result, checking for changes
         foreach (var diskItem in diskStateEntries)
         {
             var gamePath = diskItem.GamePath();
             if (flattenedLoadout.TryGetValue(gamePath, out var loadoutFileEntry))
             {
-                switch (loadoutFileEntry.Item.Value.File)
+                var file = loadoutFileEntry.Item.Value;
+                if (file.TryGetAsStoredFile(out _))
                 {
-                    case StoredFile sf:
-                        if (sf.Hash != diskItem.Item.Value.Hash)
-                        {
-                            resultingItems.Add(gamePath,
-                                new DiskDiffEntry
-                                {
-                                    GamePath = gamePath,
-                                    Hash = sf.Hash,
-                                    Size = sf.Size,
-                                    ChangeType = FileChangeType.Modified,
-                                }
-                            );
-                        }
-                        else
-                        {
-                            resultingItems.Add(gamePath,
-                                new DiskDiffEntry
-                                {
-                                    GamePath = gamePath,
-                                    Hash = sf.Hash,
-                                    Size = sf.Size,
-                                    ChangeType = FileChangeType.None,
-                                }
-                            );
-                        }
-
-                        break;
-                    case IGeneratedFile gf and IToFile:
-                        // TODO: Implement change detection for generated files
-                        break;
-                    default:
-                        throw new UnreachableException("No way to handle this file");
+                    var sf = file.Remap<StoredFile.Model>();
+                    if (sf.Hash != diskItem.Item.Value.Hash)
+                    {
+                        resultingItems.Add(gamePath,
+                            new DiskDiffEntry
+                            {
+                                GamePath = gamePath,
+                                Hash = sf.Hash,
+                                Size = sf.Size,
+                                ChangeType = FileChangeType.Modified,
+                            }
+                        );
+                    }
+                    else
+                    {
+                        resultingItems.Add(gamePath,
+                            new DiskDiffEntry
+                            {
+                                GamePath = gamePath,
+                                Hash = sf.Hash,
+                                Size = sf.Size,
+                                ChangeType = FileChangeType.None,
+                            }
+                        );
+                    }
+                }
+                else if (file.IsGeneratedFile())
+                {
+                    // TODO: Implement change detection for generated files
+                    continue;
+                }
+                else
+                {
+                    throw new NotImplementedException("No way to handle this file");
                 }
             }
             else
@@ -701,28 +786,30 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         foreach (var loadoutFile in loadoutFiles)
         {
             var gamePath = loadoutFile.GamePath();
-            switch (loadoutFile.Item.Value.File)
+            var file = loadoutFile.Item.Value;
+            if (file.TryGetAsStoredFile(out var storedFile))
             {
-                case StoredFile sf:
-                    if (!resultingItems.TryGetValue(gamePath, out _))
-                    {
-                        resultingItems.Add(gamePath,
-                            new DiskDiffEntry
-                            {
-                                GamePath = gamePath,
-                                Hash = sf.Hash,
-                                Size = sf.Size,
-                                ChangeType = FileChangeType.Added,
-                            }
-                        );
-                    }
-
-                    break;
-                case IGeneratedFile gf and IToFile:
-                    // TODO: Implement change detection for generated files
-                    break;
-                default:
-                    throw new UnreachableException("No way to handle this file");
+                if (!resultingItems.TryGetValue(gamePath, out _))
+                {
+                    resultingItems.Add(gamePath,
+                        new DiskDiffEntry
+                        {
+                            GamePath = gamePath,
+                            Hash = storedFile.Hash,
+                            Size = storedFile.Size,
+                            ChangeType = FileChangeType.Added,
+                        }
+                    );
+                }
+            }
+            else if (file.IsGeneratedFile())
+            {
+                // TODO: Implement change detection for generated files
+                continue;
+            }
+            else
+            {
+                throw new NotImplementedException("No way to handle this file");
             }
         }
 
@@ -733,9 +820,9 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// Backs up any new files in the loadout.
     ///
     /// </summary>
-    public virtual async Task BackupNewFiles(GameInstallation installation, FileTree fileTree)
+    public virtual async Task BackupNewFiles(GameInstallation installation, IEnumerable<(GamePath To, Hash Hash, Size Size)> files)
     {
-        // During ingest, new files that haven't been seen before are fed into the game's syncronizer to convert a
+// During ingest, new files that haven't been seen before are fed into the game's syncronizer to convert a
         // DiskStateEntry (hash, size, path) into some sort of AModFile. By default these are converted into a "StoredFile".
         // All StoredFile does, is say that this file is copied from the downloaded archives, that is, it's not generated
         // by any extension system.
@@ -750,48 +837,94 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         // TODO: This may be slow for very large games when other games/mods already exist.
         // Backup the files that are new or changed
         var archivedFiles = new ConcurrentBag<ArchivedFileEntry>();
-        await Parallel.ForEachAsync(fileTree.GetAllDescendentFiles(), async (file, cancellationToken) =>
+        await Parallel.ForEachAsync(files, async (file, cancellationToken) =>
         {
-            if (file.Item.Value is StoredFile storedFile)
+            var path = installation.LocationsRegister.GetResolvedPath(file.To);
+            if (await _fileStore.HaveFile(file.Hash))
+                return;
+
+            var archivedFile = new ArchivedFileEntry
             {
-                var path = installation.LocationsRegister.GetResolvedPath(storedFile.To);
-                if (await _fileStore.HaveFile(storedFile.Hash))
-                    return;
+                Size = file.Size,
+                Hash = file.Hash,
+                StreamFactory = new NativeFileStreamFactory(path),
+            };
 
-                var archivedFile = new ArchivedFileEntry
-                {
-                    Size = storedFile.Size,
-                    Hash = storedFile.Hash,
-                    StreamFactory = new NativeFileStreamFactory(path),
-                };
-
-                archivedFiles.Add(archivedFile);
-            }
+            archivedFiles.Add(archivedFile);
         });
 
         await _fileStore.BackupFiles(archivedFiles);
     }
+    
+    /// <inheritdoc />
+    public async Task<Hash?> WriteGeneratedFile(File.Model file, Stream outputStream, Loadout.Model loadout, FlattenedLoadout flattenedLoadout, FileTree fileTree)
+    {
+        if (!file.TryGetAsGeneratedFile(out var generatedFile))
+            throw new InvalidOperationException("File is not a generated file");
+
+        var generator = generatedFile.Generator;
+        if (generator == null)
+            throw new InvalidOperationException("Generated file does not have a generator");
+        
+        return await generator.Write(generatedFile, outputStream, loadout, flattenedLoadout, fileTree);
+    }
 
     /// <inheritdoc />
-    public virtual async Task<Loadout> CreateLoadout(GameInstallation installation, string? suggestedName = null)
+    public virtual async Task<Loadout.Model> Manage(GameInstallation installation, string? suggestedName = null)
     {
+        // Get the initial state of the game folders
         var (isCached, initialState) = await GetOrCreateInitialDiskState(installation);
         
-        var loadoutId = LoadoutId.Create();
-        var gameFiles = CreateGameFilesMod(initialState);
-        var fileTree = CreateFileTreeFromMod(gameFiles);
-        await BackupNewFiles(installation, fileTree);
+        using var tx = Connection.BeginTransaction();
 
-        var loadout = _loadoutRegistry.Alter(loadoutId, "Initial loadout",  loadout => loadout
-            with
+        var basis = Connection.Db;
+        // Add the loadout
+        var loadout = new Loadout.Model(tx)
+        {
+            Db = basis, // Has to be here to the installation resolves properly
+            Name = suggestedName ?? $"Loadout {installation.Game.Name}",
+            Installation = installation,
+            Revision = 0,
+        };
+        
+        var gameFiles = new Mod.Model(tx)
+        {
+            Name = "Game Files",
+            Version = installation.Version.ToString(),
+            Category = ModCategory.GameFiles,
+            Enabled = true,
+            Loadout = loadout,
+            Status = ModStatus.Installed,
+        };
+
+        var filesToBackup = new List<(GamePath To, Hash Hash, Size Size)>();
+        foreach (var file in initialState.GetAllDescendentFiles())
+        {
+            var path = file.GamePath();
+            filesToBackup.Add((path, file.Item.Value.Hash, file.Item.Value.Size));
+            _ = new StoredFile.Model(tx)
             {
-                Name = suggestedName?? $"Loadout {installation.Game.Name}",
-                Installation = installation,
-                Mods = loadout.Mods.With(gameFiles.Id, gameFiles)
-            });
+                Loadout = loadout,
+                Mod = gameFiles,
+                Hash = file.Item.Value.Hash,
+                Size = file.Item.Value.Size,
+                To = path,
+            };
+        }
         
-        initialState.LoadoutRevision = loadout.DataStoreId;
+        // Backup the files
+        await BackupNewFiles(installation, filesToBackup);
         
+        // Commit the transaction as of this point the loadout is live
+        var result = await tx.Commit();
+        
+        // Remap the ids
+        loadout = result.Remap(loadout);
+        gameFiles = result.Remap(gameFiles);
+        
+        initialState.TxId = result.NewTx;
+        initialState.LoadoutId = loadout.Id;
+
         // Reset the game folder to initial state if making a new loadout.
         // We must do this before saving state, as Apply does a diff against
         // the last state. Which will be a state from previous loadout.
@@ -801,145 +934,26 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             // And avoids a double save-state.
             var flattened = await LoadoutToFlattenedLoadout(loadout);
             var prevState = _diskStateRegistry.GetState(loadout.Installation)!;
-            await FileTreeToDisk(fileTree, loadout, flattened, prevState, loadout.Installation, true);
             
+            var fileTree = FileTree.Create(gameFiles.Files.Select(file =>
+                    {
+                        var storedFile = file.Remap<StoredFile.Model>();
+                        return KeyValuePair.Create(storedFile.To, file);
+                    }
+                )
+            );
+            
+            await FileTreeToDisk(fileTree, loadout, flattened, prevState, loadout.Installation, true);
+
             // Note: DiskState returned from `FileTreeToDisk` and `initialState`
             // are the same in terms of content!!
         }
-        
+
         await _diskStateRegistry.SaveState(loadout.Installation, initialState);
         return loadout;
     }
-    
-    private static FileTree CreateFileTreeFromMod(Mod gameFiles)
-    {
-        return FileTree.Create(gameFiles.Files.Select(kv =>
-                {
-                    var storedFile = (kv.Value as StoredFile)!;
-                    return KeyValuePair.Create(storedFile.To, kv.Value);
-                }
-            )
-        );
-    }
 
-    private Mod CreateGameFilesMod(DiskStateTree initialState)
-    {
-        return new Mod()
-        {
-            Name = "Game Files",
-            ModCategory = Mod.GameFilesCategory,
-            Id = ModId.NewId(),
-            Enabled = true,
-            Files = EntityDictionary<ModFileId, AModFile>.Empty(_store).With(initialState.GetAllDescendentFiles()
-                .Select(f =>
-                {
-                    var id = ModFileId.NewId();
-                    return KeyValuePair.Create(id, (AModFile)new StoredFile
-                    {
-                        Id = id,
-                        Hash = f.Item.Value.Hash,
-                        Size = f.Item.Value.Size,
-                        To = f.GamePath()
-                    });
-                }))
-        };
-    }
-
-    /// <inheritdoc />
-    public async Task UnManage(GameInstallation installation)
-    {
-        await FastForceApplyOriginalState(installation);
-
-        // Cleanup all of the metadata left behind for this game.
-        // All database information, including loadouts, initial game state and
-        // TODO: Garbage Collect unused files.
-        foreach (var loadoutId in _loadoutRegistry.AllLoadoutIds().ToArray())
-            _loadoutRegistry.Delete(loadoutId);
-        
-        await _diskStateRegistry.ClearInitialState(installation);
-    }
-
-    /// <inheritdoc />
-    public async Task DeleteLoadout(GameInstallation installation, LoadoutId id)
-    {
-        // Clear Initial State if this is the only loadout for the game.
-        // We use folder location for this.
-        var installLocation = installation.LocationsRegister[LocationId.Game].ToString();
-        var isLastLoadout = _loadoutRegistry
-            .AllLoadouts()
-            .Count(x => 
-                x.Installation.LocationsRegister[LocationId.Game].ToString() == installLocation 
-                && !x.IsMarkerLoadout()) <= 1;
-
-        if (isLastLoadout)
-        {
-            await UnManage(installation);
-            return;
-        }
-    
-        if (_loadoutRegistry.IsApplied(id, _diskStateRegistry.GetLastAppliedLoadout(installation)))
-        {
-            /*
-                Note(Sewer)
-
-                The loadout being deleted is the currently active loadout.
-
-                As a 'default' reasonable behaviour, we will reset the game folder
-                to its initial state and create a 'hidden' loadout to accomodate this.
-
-                This is a good default for many cases:
-                
-                - Game files are not likely to be overwritten, so this will 
-                  just end up materialising into a bunch of deletes. (Very Fast)
-                  
-                - Ensures internal consistency. i.e. 'last applied loadout' is always
-                  a valid loadout.
-                  
-                - Provides more backend flexibility (e.g. we can 'squash' the
-                  revisions at the beginning of other loadouts without consequence.)
-                  
-                - Meets user UI/UX expectations. The next loadout they navigate to
-                  won't be somehow magically applied.
-
-                We may make a setting to change the behaviour in the future,
-                via a setting to match user preferences, but for now this is the
-                default.
-            */
-
-            var markerLoadout = await CreateMarkerLoadout(installation);
-            await Apply(markerLoadout, true);
-        }
-
-        _loadoutRegistry.Delete(id);
-    }
-    
-    /// <summary>
-    ///     Creates a 'Marker Loadout', which is a loadout embued with the initial
-    ///     state of the game folder.
-    ///
-    ///     This loadout is created when the last applied loadout for a game
-    ///     is deleted. And is deleted when a non-marker loadout is applied.
-    ///     It should be a singleton.
-    /// </summary>
-    private async Task<Loadout> CreateMarkerLoadout(GameInstallation installation)
-    {
-        var initialState = await GetOrCreateInitialDiskState(installation);
-        var loadoutId = LoadoutId.Create();
-        var gameFiles = CreateGameFilesMod(initialState.tree);
-        var fileTree = CreateFileTreeFromMod(gameFiles);
-        await BackupNewFiles(installation, fileTree);
-
-        var loadout = _loadoutRegistry.Alter(loadoutId, "Marker Loadout", loadout => loadout with
-        {
-            Name = "Temporary Marker Loadout",
-            Installation = installation,
-            Mods = loadout.Mods.With(gameFiles.Id, gameFiles),
-            LoadoutKind = LoadoutKind.Marker,
-        });
-
-        return loadout;
-    }
-#endregion
+    #endregion
 
     #region FlattenLoadoutToTree Methods
 
@@ -950,67 +964,38 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// <param name="mod"></param>
     /// <returns></returns>
     /// <exception cref="NotImplementedException"></exception>
-    protected virtual async ValueTask<ISortRule<Mod, ModId>[]> ModSortRules(Loadout loadout, Mod mod)
+    public virtual async ValueTask<ISortRule<Mod.Model, ModId>[]> ModSortRules(Loadout.Model loadout, Mod.Model mod)
     {
-        var builtInSortRules = mod.SortRules.Where(x => x is not IGeneratedSortRule);
-        var customSortRules = mod.SortRules.ToAsyncEnumerable()
-            .OfType<IGeneratedSortRule>()
-            .SelectMany(x => x.GenerateSortRules(mod.Id, loadout));
-        return await builtInSortRules.ToAsyncEnumerable().Concat(customSortRules).ToArrayAsync();
+        if (mod.Category == ModCategory.GameFiles)
+            return [new First<Mod.Model, ModId>()];
+        if (mod.TryGet(Mod.SortAfter, out var other))
+            return [new After<Mod.Model, ModId> { Other = ModId.From(other) }];
+        return [];
     }
+
 
     /// <summary>
     /// Sorts the mods in a loadout.
     /// </summary>
     /// <param name="loadout"></param>
     /// <returns></returns>
-    protected virtual async Task<IEnumerable<Mod>> SortMods(Loadout loadout)
+    protected virtual async Task<IEnumerable<Mod.Model>> SortMods(Loadout.Model loadout)
     {
-        var mods = loadout.Mods.Values.Where(mod => mod.Enabled).ToList();
+        var mods = loadout.Mods.Where(mod => mod.Enabled).ToList();
         _logger.LogInformation("Sorting {ModCount} mods in loadout {LoadoutName}", mods.Count, loadout.Name);
         var modRules = await mods
             .SelectAsync(async mod => (mod.Id, await ModSortRules(loadout, mod)))
             .ToDictionaryAsync(r => r.Id, r => r.Item2);
         if (modRules.Count == 0)
-            return Array.Empty<Mod>();
+            return Array.Empty<Mod.Model>();
 
-        var sorted = _sorter.Sort(mods, m => m.Id, m => modRules[m.Id]);
+        var sorted = _sorter.Sort(mods, m => ModId.From(m.Id), m => modRules[m.Id]);
         return sorted;
     }
     #endregion
 
-    #region Misc Helper Functions
-    /// <summary>
-    /// Checks if the last applied loadout is a 'marker' loadout.
-    /// </summary>
-    /// <param name="installation">The game installation to check.</param>
-    /// <returns>True if the last applied loadout is a marker loadout.</returns>
-    private bool IsLastLoadoutAMarkerLoadout(GameInstallation installation)
-    {
-        var lastId = _diskStateRegistry.GetLastAppliedLoadout(installation);
-        if (lastId == null)
-            return false;
 
-        var loadout = _loadoutRegistry.GetLoadout(lastId);
-        return loadout != null && loadout.IsMarkerLoadout();
-    }
-    
-    /// <summary>
-    /// Removes the first found 'marker' loadout from the data store.
-    /// </summary>
-    /// <remarks>
-    /// The 'marker loadout' should be a singleton as per <see cref="Loadout.IsMarkerLoadout"/>
-    /// and <see cref="CreateMarkerLoadout"/>.
-    /// </remarks>
-    private void RemoveMarkerLoadout()
-    {
-        foreach (var loadout in _loadoutRegistry.AllLoadouts())
-        {
-            if (!loadout.IsMarkerLoadout()) continue;
-            _loadoutRegistry.Delete(loadout.LoadoutId);
-            return;
-        }
-    }
+    #region Misc Helper Functions
 
     /// <summary>
     /// By default this method just returns the current state of the game folders. Most of the time
@@ -1032,28 +1017,6 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         var indexedState = await _hashCache.IndexDiskState(installation);
         await _diskStateRegistry.SaveInitialState(installation, indexedState);
         return (false, indexedState);
-    }
-    
-    /// <summary>
-    /// Quickly reverts the folder to its original state, without updating
-    /// the database state or doing any other changes that produce
-    /// external side effects.
-    ///
-    /// Intended for use when unmanaging a game.
-    /// </summary>
-    private async Task FastForceApplyOriginalState(GameInstallation installation)
-    {
-        var (isCached, initialState) = await GetOrCreateInitialDiskState(installation);
-        if (!isCached)
-            throw new InvalidOperationException("Something is very wrong with the DataStore.\n" +
-                                                "We don't have an initial disk state for the game folder, but we should have.\n" +
-                                                "Because this disk state should only ever be deleted when unmanaging a game.");
-
-        var gameFilesMod = CreateGameFilesMod(initialState);
-        var fileTree = CreateFileTreeFromMod(gameFilesMod);
-        var flattened = ModsToFlattenedLoadout([gameFilesMod]);
-        var prevState = _diskStateRegistry.GetState(installation)!;
-        await FileTreeToDisk(fileTree, null, flattened, prevState, installation, true);
     }
     #endregion
 

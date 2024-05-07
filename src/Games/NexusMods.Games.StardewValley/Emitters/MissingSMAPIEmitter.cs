@@ -10,14 +10,14 @@ namespace NexusMods.Games.StardewValley.Emitters;
 
 public class MissingSMAPIEmitter : ILoadoutDiagnosticEmitter
 {
-    public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
+    public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.Model loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         await Task.Yield();
 
-        var smapiModCount = loadout.CountModsWithMetadata<SMAPIModMarker>();
+        var smapiModCount = loadout.CountModsWithMetadata(SMAPIMarker.Version);
         if (smapiModCount == 0) yield break;
 
-        var optionalSmapiMod = loadout.GetFirstModWithMetadata<SMAPIMarker>(onlyEnabledMods: false);
+        var optionalSmapiMod = loadout.GetFirstModWithMetadata(SMAPIMarker.Version, onlyEnabledMods: false);
         if (!optionalSmapiMod.HasValue)
         {
             yield return Diagnostics.CreateSMAPIRequiredButNotInstalled(

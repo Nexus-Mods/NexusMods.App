@@ -38,7 +38,7 @@ public class DiskToFileTree : ASynchronizerBenchmark, IBenchmark
         var filePath = Assets.Loadouts.FileLists.GetFileListPathByFileName(FileName);
         Init("Benchmark Mod Files", filePath);
         InitForIngest();
-        var loadout = _datamodel.BaseList.Value;
+        var loadout = _datamodel.BaseLoadout;
         
         // Init for function.
         Task.Run(async () =>
@@ -55,6 +55,6 @@ public class DiskToFileTree : ASynchronizerBenchmark, IBenchmark
     [Benchmark]
     public async Task<FileTree> DiskToFileTreee()
     {
-        return await _defaultSynchronizer.DiskToFileTree(_diskState, _datamodel.BaseList.Value, _prevFileTree, _prevDiskState);
+        return await _defaultSynchronizer.DiskToFileTree(_diskState, _datamodel.BaseLoadout, _prevFileTree, _prevDiskState);
     }
 }

@@ -1,6 +1,8 @@
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Serialization;
+using NexusMods.MnemonicDB.Abstractions;
+using File = NexusMods.Abstractions.Loadouts.Files.File;
 
 namespace NexusMods.Abstractions.Loadouts.Extensions;
 
@@ -14,8 +16,8 @@ public static class AModFileExtensions
     /// Checks whether any items in <see cref="AModFile.Metadata"/> are of type
     /// <typeparamref name="T"/>.
     /// </summary>
-    public static bool HasMetadata<T>(this AModFile file) where T : IMetadata
+    public static bool HasMetadata(this File.Model file, IAttribute attribute)
     {
-        return file.Metadata.Any(m => m is T);
+        return file.Contains(attribute);
     }
 }

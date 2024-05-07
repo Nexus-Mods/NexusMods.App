@@ -20,7 +20,7 @@ public class RunLauncherTool : ITool
         _logger = logger;
     }
 
-    public async Task Execute(Loadout loadout, CancellationToken ct)
+    public async Task Execute(Loadout.Model loadout, CancellationToken ct)
     {
         if (!loadout.Installation.Is<MountAndBlade2Bannerlord>()) return;
 

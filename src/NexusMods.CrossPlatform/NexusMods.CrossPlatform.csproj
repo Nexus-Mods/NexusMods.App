@@ -41,5 +41,4 @@
         <DependentUpon>IProtocolRegistration.cs</DependentUpon>
       </Compile>
     </ItemGroup>
-
 </Project>

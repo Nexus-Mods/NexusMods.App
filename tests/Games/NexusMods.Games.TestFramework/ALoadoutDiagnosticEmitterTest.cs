@@ -17,12 +17,12 @@ public class ALoadoutDiagnosticEmitterTest<TGame, TEmitter> : AGameTest<TGame>
         Emitter = serviceProvider.FindImplementationInContainer<TEmitter, ILoadoutDiagnosticEmitter>();
     }
 
-    protected async ValueTask<Diagnostic[]> GetAllDiagnostics(Loadout loadout)
+    protected async ValueTask<Diagnostic[]> GetAllDiagnostics(Loadout.Model loadout)
     {
         return await Emitter.Diagnose(loadout, CancellationToken.None).ToArrayAsync();
     }
 
-    protected async ValueTask<Diagnostic> GetSingleDiagnostic(Loadout loadout)
+    protected async ValueTask<Diagnostic> GetSingleDiagnostic(Loadout.Model loadout)
     {
         var diagnostics = await GetAllDiagnostics(loadout);
         diagnostics.Should().ContainSingle();

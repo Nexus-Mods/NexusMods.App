@@ -11,8 +11,9 @@ using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.FileStore.ArchiveMetadata;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
-using NexusMods.Abstractions.Settings;
+using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModCategory;
@@ -22,14 +23,15 @@ using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModName;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModVersion;
 using NexusMods.App.UI.Pages.ModInfo;
 using NexusMods.App.UI.Pages.ModInfo.Types;
-using NexusMods.App.UI.Settings;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Extensions.DynamicData;
 using NexusMods.Icons;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using File = NexusMods.Abstractions.Loadouts.Files.File;
 
 namespace NexusMods.App.UI.Pages.LoadoutGrid;
 
@@ -38,13 +40,13 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
 {
     private readonly IFileSystem _fileSystem;
     private readonly ILogger<LoadoutGridViewModel> _logger;
-    private readonly ILoadoutRegistry _loadoutRegistry;
+    private readonly IConnection _conn;
     private readonly IArchiveInstaller _archiveInstaller;
     private readonly IFileOriginRegistry _fileOriginRegistry;
     private readonly IServiceProvider _provider;
 
-    private ReadOnlyObservableCollection<ModCursor> _mods;
-    public ReadOnlyObservableCollection<ModCursor> Mods => _mods;
+    private ReadOnlyObservableCollection<ModId> _mods;
+    public ReadOnlyObservableCollection<ModId> Mods => _mods;
 
     private readonly SourceCache<IDataGridColumnFactory<LoadoutColumn> ,LoadoutColumn> _columns;
 
@@ -54,14 +56,18 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
     [Reactive] public LoadoutId LoadoutId { get; set; }
     [Reactive] public string LoadoutName { get; set; } = "";
 
-    [Reactive] public ModCursor[] SelectedItems { get; set; } = Array.Empty<ModCursor>();
+    [Reactive] public ModId[] SelectedItems { get; set; } = Array.Empty<ModId>();
     public ReactiveCommand<NavigationInformation, Unit> ViewModContentsCommand { get; }
 
+    public LoadoutGridViewModel() : base(null!)
+    {
+        throw new NotImplementedException();
+    }
     public LoadoutGridViewModel(
         ILogger<LoadoutGridViewModel> logger,
-    ISettingsManager settingsManager,
         IServiceProvider provider,
-        ILoadoutRegistry loadoutRegistry,
+        IConnection conn,
+        IRepository<Loadout.Model> loadoutRepository,
         IFileSystem fileSystem,
         IArchiveInstaller archiveInstaller,
         IFileOriginRegistry fileOriginRegistry,
@@ -69,30 +75,30 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
     {
         _logger = logger;
         _fileSystem = fileSystem;
-        _loadoutRegistry = loadoutRegistry;
+        _conn = conn;
         _archiveInstaller = archiveInstaller;
         _fileOriginRegistry = fileOriginRegistry;
         _provider = provider;
 
         _columns = new SourceCache<IDataGridColumnFactory<LoadoutColumn>, LoadoutColumn>(_ => throw new NotSupportedException());
-        _mods = new ReadOnlyObservableCollection<ModCursor>(new ObservableCollection<ModCursor>());
+        _mods = new ReadOnlyObservableCollection<ModId>(new ObservableCollection<ModId>());
         
         TabIcon = IconValues.Collections;
 
-        var nameColumn = provider.GetRequiredService<DataGridColumnFactory<IModNameViewModel, ModCursor, LoadoutColumn>>();
+        var nameColumn = provider.GetRequiredService<DataGridColumnFactory<IModNameViewModel, ModId, LoadoutColumn>>();
         nameColumn.Type = LoadoutColumn.Name;
         nameColumn.Width = new DataGridLength(1, DataGridLengthUnitType.Star);
 
-        var categoryColumn = provider.GetRequiredService<DataGridColumnFactory<IModCategoryViewModel, ModCursor, LoadoutColumn>>();
+        var categoryColumn = provider.GetRequiredService<DataGridColumnFactory<IModCategoryViewModel, ModId, LoadoutColumn>>();
         categoryColumn.Type = LoadoutColumn.Category;
 
-        var installedColumn = provider.GetRequiredService<DataGridColumnFactory<IModInstalledViewModel, ModCursor, LoadoutColumn>>();
+        var installedColumn = provider.GetRequiredService<DataGridColumnFactory<IModInstalledViewModel, ModId, LoadoutColumn>>();
         installedColumn.Type = LoadoutColumn.Installed;
 
-        var enabledColumn = provider.GetRequiredService<DataGridColumnFactory<IModEnabledViewModel, ModCursor, LoadoutColumn>>();
+        var enabledColumn = provider.GetRequiredService<DataGridColumnFactory<IModEnabledViewModel, ModId, LoadoutColumn>>();
         enabledColumn.Type = LoadoutColumn.Enabled;
 
-        var versionColumn = provider.GetRequiredService<DataGridColumnFactory<IModVersionViewModel, ModCursor, LoadoutColumn>>();
+        var versionColumn = provider.GetRequiredService<DataGridColumnFactory<IModVersionViewModel, ModId, LoadoutColumn>>();
         versionColumn.Type = LoadoutColumn.Version;
 
         _columns.Edit(x =>
@@ -108,7 +114,7 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
 
         ViewModContentsCommand = ReactiveCommand.Create<NavigationInformation>(info =>
         {
-            var modId = SelectedItems[0].ModId;
+            var modId = SelectedItems[0];
 
             var pageData = new PageData
             {
@@ -129,23 +135,16 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
         this.WhenActivated(d =>
         {
             this.WhenAnyValue(vm => vm.LoadoutId)
-                .SelectMany(loadoutRegistry.RevisionsAsLoadouts)
-                .Select(loadout =>
-                {
-                    // NOTE(erri120): see https://github.com/Nexus-Mods/NexusMods.App/issues/1195 for details
-                    var showGameFiles = settingsManager.Get<LoadoutGridSettings>().ShowGameFiles;
-                    return loadout.Mods.Values
-                        .Where(mod => showGameFiles || mod.ModCategory != Mod.GameFilesCategory)
-                        .Select(mod => new ModCursor(loadout.LoadoutId, mod.Id));
-                })
+                .SelectMany(id => loadoutRepository.Revisions(id.Value))
+                .Select(loadout => loadout.Mods.Select(m => m.ModId))
                 .OnUI()
-                .ToDiffedChangeSet(cur => cur.ModId, cur => cur)
+                .ToDiffedChangeSet(cur => cur, cur => cur)
                 .Bind(out _mods)
                 .SubscribeWithErrorLogging(logger)
                 .DisposeWith(d);
 
             this.WhenAnyValue(vm => vm.LoadoutId)
-                .SelectMany(loadoutRegistry.RevisionsAsLoadouts)
+                .SelectMany(id => loadoutRepository.Revisions(id.Value))
                 .Select(loadout => loadout.Name)
                 .OnUI()
                 .Do(loadoutName =>
@@ -212,22 +211,21 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
         return Task.CompletedTask;
     }
 
-    public Task DeleteMods(IEnumerable<ModId> modsToDelete, string commitMessage)
+    public async Task DeleteMods(IEnumerable<ModId> modsToDelete, string commitMessage)
     {
-        _loadoutRegistry.Alter(LoadoutId, commitMessage, loadout =>
+        var db = _conn.Db;
+        var loadout = db.Get(LoadoutId);
+        using var tx = _conn.BeginTransaction();
+        foreach (var modId in modsToDelete)
         {
-            var mods = loadout.Mods;
-            foreach (var modId in modsToDelete)
+            var mod = db.Get(modId);
+            foreach (var file in mod.Files)
             {
-                mods = mods.Without(modId);
+                tx.Retract(file.Id, File.Loadout, file.LoadoutId.Value);
             }
-            return loadout with { Mods = mods };
-        });
-        return Task.CompletedTask;
-    }
-
-    public void ViewModContents(ModId[] toView)
-    {
-
+            tx.Retract(modId.Value, Mod.Loadout, mod.LoadoutId.Value);
+        }
+        loadout.Revise(tx);
+        await tx.Commit();
     }
 }

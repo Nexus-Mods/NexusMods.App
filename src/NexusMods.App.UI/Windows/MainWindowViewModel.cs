@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.App.UI.Controls.DevelopmentBuildBanner;
 using NexusMods.App.UI.Controls.Spine;
 using NexusMods.App.UI.Controls.TopBar;
@@ -13,6 +14,7 @@ using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Overlays.MetricsOptIn;
 using NexusMods.App.UI.Overlays.Updater;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Paths;
 using ReactiveUI;
@@ -23,8 +25,8 @@ namespace NexusMods.App.UI.Windows;
 public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindowViewModel
 {
     private readonly IArchiveInstaller _archiveInstaller;
-    private readonly ILoadoutRegistry _registry;
     private readonly IWindowManager _windowManager;
+    private readonly IConnection _conn;
 
     public MainWindowViewModel(
         IServiceProvider serviceProvider,
@@ -36,7 +38,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
         IArchiveInstaller archiveInstaller,
         IMetricsOptInViewModel metricsOptInViewModel,
         IUpdaterViewModel updaterViewModel,
-        ILoadoutRegistry registry)
+        IConnection conn)
     {
         // NOTE(erri120): can't use DI for VMs that require an active Window because
         // those VMs would be instantiated before this constructor gets called.
@@ -56,7 +58,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
         DevelopmentBuildBanner = serviceProvider.GetRequiredService<IDevelopmentBuildBannerViewModel>();
 
         _archiveInstaller = archiveInstaller;
-        _registry = registry;
+        _conn = conn;
 
         // Only show controls in Windows since we can remove the chrome on that platform
         TopBar.ShowWindowControls = osInformation.IsWindows;

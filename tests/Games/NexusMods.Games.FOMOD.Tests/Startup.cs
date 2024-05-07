@@ -4,14 +4,17 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Activities;
 using NexusMods.App.BuildInfo;
+using NexusMods.CrossPlatform;
 using NexusMods.Games.BethesdaGameStudios;
 using NexusMods.Games.BethesdaGameStudios.SkyrimSpecialEdition;
 using NexusMods.Games.Generic;
 using NexusMods.Games.TestFramework;
 using NexusMods.StandardGameLocators.TestHelpers;
+using Xunit.DependencyInjection.Logging;
 
 namespace NexusMods.Games.FOMOD.Tests;
 
@@ -20,6 +23,8 @@ public class Startup
     public void ConfigureServices(IServiceCollection container)
     {
         container
+            .AddCrossPlatform()
+            .AddLoadoutAbstractions()
             .AddDefaultServicesForTesting()
             .AddBethesdaGameStudios()
             .AddUniversalGameLocator<SkyrimSpecialEdition>(new Version("1.6.659.0"))
@@ -27,7 +32,7 @@ public class Startup
             .AddFileStoreAbstractions()
             .AddFomod()
             .AddSingleton<ICoreDelegates, MockDelegates>()
-            .AddLogging(builder => builder.AddXUnit())
+            .AddLogging(builder => builder.AddXunitOutput().SetMinimumLevel(LogLevel.Debug))
             .AddGames()
             .AddActivityMonitor()
             .AddSerializationAbstractions()

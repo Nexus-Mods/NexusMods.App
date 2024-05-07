@@ -32,7 +32,7 @@ public static class ReactiveUiExtensions
     /// </summary>
     /// <param name="observable"></param>
     /// <typeparam name="T"></typeparam>
-    /// <returns></returns>
+    /// <returns></returns>x
     public static IObservable<T> OffUi<T>(this IObservable<T> observable)
     {
         return observable.ObserveOn(RxApp.TaskpoolScheduler);

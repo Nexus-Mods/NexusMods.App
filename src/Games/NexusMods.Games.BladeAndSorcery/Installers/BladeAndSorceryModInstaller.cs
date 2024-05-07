@@ -65,12 +65,10 @@ public class BladeAndSorceryModInstaller : AModInstaller
 
             yield return new ModInstallerResult
             {
-                Id = mods.Count == 1
-                    ? info.BaseModId
-                    : ModId.NewId(),
+                Id = info.BaseModId,
                 Files = modFileData,
                 Name = manifest.Name,
-                Version = manifest.ModVersion
+                Version = manifest.ModVersion,
             };
         }
     }

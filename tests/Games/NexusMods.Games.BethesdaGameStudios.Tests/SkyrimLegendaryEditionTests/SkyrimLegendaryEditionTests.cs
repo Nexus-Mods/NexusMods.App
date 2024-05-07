@@ -12,6 +12,7 @@ public class SkyrimLegendaryEditionTests(IServiceProvider serviceProvider) : AGa
     private readonly AVerbTest _verbTester = new AVerbTest(serviceProvider);
 
     [Fact]
+    // This fails after my rewrite to MnemonicDB, but it failed beforehand as well...so....
     [Trait("FlakeyTest", "True")]
     public async Task CanInstallAndApplyMostPopularMods()
     {
@@ -33,7 +34,10 @@ public class SkyrimLegendaryEditionTests(IServiceProvider serviceProvider) : AGa
         // Note: can't create the loadout using CLI as it would index the game files,
         // and other tests might pollute the game folder in the meantime.
         var loadout = await CreateLoadout(indexGameFiles: false);
-        var loadoutName = loadout.Value.Name;
+        var loadoutName = loadout.Name;
+        
+        var modPath = FileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine("Assets/TruncatedPlugins.7z");
+        await InstallModStoredFileIntoLoadout(loadout, modPath, "Skyrim Truncated Plugins");
 
         var log = await _verbTester.Run("list-loadouts");
 
@@ -41,20 +45,20 @@ public class SkyrimLegendaryEditionTests(IServiceProvider serviceProvider) : AGa
         log.TableCellsWith(loadoutName).Should().NotBeNull();
 
         log = await _verbTester.Run("list-mods", "-l", loadoutName);
-        log.LastTable.Rows.Count().Should().Be(2);
+        log.LastTable.Rows.Count().Should().Be(3);
 
         // install SKSE
         log = await _verbTester.Run("install-mod", "-l", loadoutName, "-f", sksePath.ToString(), "-n", skseModName);
 
         log = await _verbTester.Run("list-mods", "-l", loadoutName);
-        log.LastTable.Rows.Count().Should().Be(3);
+        log.LastTable.Rows.Count().Should().Be(4);
 
         log = await _verbTester.Run("list-mod-contents", "-l", loadoutName, "-m", skseModName);
         log.LastTable.Rows.Count().Should().Be(127);
 
         // Test Apply
         log = await _verbTester.Run("flatten-loadout", "-l", loadoutName);
-        log.LastTable.Rows.Count().Should().Be(128);
+        log.LastTable.Rows.Count().Should().Be(209);
 
         log = await _verbTester.Run("apply", "-l", loadoutName);
 
@@ -64,7 +68,7 @@ public class SkyrimLegendaryEditionTests(IServiceProvider serviceProvider) : AGa
             skyuiModName);
 
         log = await _verbTester.Run("list-mods", "-l", loadoutName);
-        log.LastTable.Rows.Count().Should().Be(4);
+        log.LastTable.Rows.Count().Should().Be(5);
 
         log = await _verbTester.Run("list-mod-contents", "-l", loadoutName, "-m", skyuiModName);
         log.LastTable.Rows.Count().Should().Be(5);
@@ -75,7 +79,7 @@ public class SkyrimLegendaryEditionTests(IServiceProvider serviceProvider) : AGa
             uslepModName);
 
         log = await _verbTester.Run("list-mods", "-l", loadoutName);
-        log.LastTable.Rows.Count().Should().Be(5);
+        log.LastTable.Rows.Count().Should().Be(6);
 
         log = await _verbTester.Run("list-mod-contents", "-l", loadoutName, "-m", uslepModName);
         log.LastTable.Rows.Count().Should().Be(5);
@@ -83,7 +87,7 @@ public class SkyrimLegendaryEditionTests(IServiceProvider serviceProvider) : AGa
         // Test Apply
         log = await _verbTester.Run("flatten-loadout", "-l", loadoutName);
         // count plugins.txt
-        log.LastTable.Rows.Count().Should().Be(138);
+        log.LastTable.Rows.Count().Should().Be(219);
 
         log = await _verbTester.Run("apply", "-l", loadoutName);
     }

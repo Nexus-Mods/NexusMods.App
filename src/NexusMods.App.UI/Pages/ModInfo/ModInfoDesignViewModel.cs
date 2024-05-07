@@ -1,5 +1,4 @@
-using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Mods;
+using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.App.UI.Controls.ModInfo.ModFiles;
 using NexusMods.App.UI.Pages.ModInfo.Types;
 using NexusMods.App.UI.Windows;

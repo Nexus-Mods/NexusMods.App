@@ -28,11 +28,7 @@ public class BladeAndSorceryModInstallerTests : AModInstallerTest<BladeAndSorcer
 
         var (mod, modFiles) = await GetModWithFilesFromInstaller(path);
 
-        var toFiles = modFiles
-            .Should().HaveCount(2)
-            .And.AllBeAssignableTo<IToFile>()
-            .Which
-            .ToList();
+        var toFiles = modFiles.ToList();
 
         toFiles.Should().Contain(x => x.To.Path.Equals("BladeAndSorcery_Data/StreamingAssets/Mods/MyMod/manifest.json"));
         toFiles.Should().Contain(x => x.To.Path.Equals("BladeAndSorcery_Data/StreamingAssets/Mods/MyMod/foo"));
@@ -51,7 +47,7 @@ public class BladeAndSorceryModInstallerTests : AModInstallerTest<BladeAndSorcer
         var downloadId = await DownloadMod(GameInstallation.Game.Domain, ModId.From(1934), FileId.From(21173));
         var mod = await InstallModStoredFileIntoLoadout(loadout, downloadId);
         mod.Files.Should().NotBeEmpty();
-        mod.Files.Values.Cast<IToFile>().Should().AllSatisfy(kv => kv.To.Path.StartsWith("BladeAndSorcery_Data/StreamingAssets/Mods/Dismemberment").Should().BeTrue());
+        mod.Files.Should().AllSatisfy(kv => kv.To.Path.StartsWith("BladeAndSorcery_Data/StreamingAssets/Mods/Dismemberment").Should().BeTrue());
     }
 
     internal static byte[] CreateModManifest(ModManifest manifest)

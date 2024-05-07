@@ -41,7 +41,7 @@ public static class ProtocolVerbs
     [Verb("download-and-install-mod", "Download a mod and install it in one step")]
     private static async Task<int> DownloadAndInstallMod([Injected] IRenderer renderer,
         [Option("u","url", "The url of the mod to download")] Uri uri,
-        [Option("l", "loadout", "The loadout to install the mod to")] LoadoutMarker loadout,
+        [Option("l", "loadout", "The loadout to install the mod to")] Loadout.Model loadout,
         [Option("n", "name", "The name of the mod after installing")] string? modName,
         [Injected] IHttpDownloader httpDownloader,
         [Injected] TemporaryFileManager temporaryFileManager,
@@ -70,7 +70,7 @@ public static class ProtocolVerbs
             {
                 tx.Add(id, FilePathMetadata.OriginalName, temporaryPath.Path.Name);
             }, token);
-            await archiveInstaller.AddMods(loadout.Value.LoadoutId, downloadId,
+            await archiveInstaller.AddMods(loadout.LoadoutId, downloadId,
                 string.IsNullOrWhiteSpace(modName) ? null : modName, token: token);
             return 0;
         });

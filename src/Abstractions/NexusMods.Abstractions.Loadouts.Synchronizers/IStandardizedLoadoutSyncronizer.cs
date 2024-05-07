@@ -1,6 +1,10 @@
 ﻿using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Hashing.xxHash64;
+using NexusMods.Paths;
+
+using File = NexusMods.Abstractions.Loadouts.Files.File;
 
 namespace NexusMods.Abstractions.Loadouts.Synchronizers;
 
@@ -17,7 +21,7 @@ public interface IStandardizedLoadoutSynchronizer : ILoadoutSynchronizer
     /// </summary>
     /// <param name="loadout"></param>
     /// <returns></returns>
-    ValueTask<FlattenedLoadout> LoadoutToFlattenedLoadout(Loadout loadout);
+    ValueTask<FlattenedLoadout> LoadoutToFlattenedLoadout(Loadout.Model loadout);
 
     /// <summary>
     /// Converts a flattened loadout to a file tree.
@@ -25,7 +29,7 @@ public interface IStandardizedLoadoutSynchronizer : ILoadoutSynchronizer
     /// <param name="flattenedLoadout"></param>
     /// <param name="loadout"></param>
     /// <returns></returns>
-    ValueTask<FileTree> FlattenedLoadoutToFileTree(FlattenedLoadout flattenedLoadout, Loadout loadout);
+    ValueTask<FileTree> FlattenedLoadoutToFileTree(FlattenedLoadout flattenedLoadout, Loadout.Model loadout);
 
     /// <summary>
     /// Writes a file tree to disk (updating the game files)
@@ -39,7 +43,7 @@ public interface IStandardizedLoadoutSynchronizer : ILoadoutSynchronizer
     ///     Skips checking if an ingest is needed.
     ///     Force overrides current locations to intended tree.
     /// </param>
-    Task<DiskStateTree> FileTreeToDisk(FileTree fileTree, Loadout loadout, FlattenedLoadout flattenedLoadout,
+    Task<DiskStateTree> FileTreeToDisk(FileTree fileTree, Loadout.Model loadout, FlattenedLoadout flattenedLoadout,
         DiskStateTree prevState, GameInstallation installation, bool skipIngest = false);
 
     #endregion
@@ -61,7 +65,7 @@ public interface IStandardizedLoadoutSynchronizer : ILoadoutSynchronizer
     /// <param name="prevFileTree"></param>
     /// <param name="prevDiskState"></param>
     /// <returns></returns>
-    ValueTask<FileTree> DiskToFileTree(DiskStateTree diskState, Loadout prevLoadout, FileTree prevFileTree, DiskStateTree prevDiskState);
+    ValueTask<FileTree> DiskToFileTree(DiskStateTree diskState, Loadout.Model prevLoadout, FileTree prevFileTree, DiskStateTree prevDiskState);
 
     /// <summary>
     /// Creates a new flattened loadout from the current file tree and the previous flattened loadout.
@@ -70,20 +74,24 @@ public interface IStandardizedLoadoutSynchronizer : ILoadoutSynchronizer
     /// <param name="prevLoadout"></param>
     /// <param name="prevFlattenedLoadout"></param>
     /// <returns></returns>
-    ValueTask<FlattenedLoadout> FileTreeToFlattenedLoadout(FileTree fileTree, Loadout prevLoadout, FlattenedLoadout prevFlattenedLoadout);
-
-    /// <summary>
-    /// Creates a new loadout from the current flattened loadout and the previous loadout.
-    /// </summary>
-    /// <param name="flattenedLoadout"></param>
-    /// <param name="prevLoadout"></param>
-    /// <param name="prevFlattenedLoadout"></param>
-    /// <returns></returns>
-    ValueTask<Loadout> FlattenedLoadoutToLoadout(FlattenedLoadout flattenedLoadout, Loadout prevLoadout, FlattenedLoadout prevFlattenedLoadout);
+    ValueTask<FlattenedLoadout> FileTreeToFlattenedLoadout(FileTree fileTree, Loadout.Model prevLoadout, FlattenedLoadout prevFlattenedLoadout);
+    
 
     /// <summary>
     /// Backs up any new files in the file tree.
     /// </summary>
-    Task BackupNewFiles(GameInstallation installation, FileTree fileTree);
+    Task BackupNewFiles(GameInstallation installation, IEnumerable<(GamePath To, Hash Hash, Size Size)> newFiles);
     #endregion
+    
+    
+    #region File Helpers
+    
+    /// <summary>
+    /// Writes a generated file to the output stream.
+    /// </summary>
+    Task<Hash?> WriteGeneratedFile(File.Model file, Stream outputStream, Loadout.Model loadout, FlattenedLoadout flattenedLoadout, FileTree fileTree);
+
+
+#endregion
+
 }

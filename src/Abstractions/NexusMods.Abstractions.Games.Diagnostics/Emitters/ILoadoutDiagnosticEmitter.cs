@@ -16,5 +16,5 @@ public interface ILoadoutDiagnosticEmitter : IDiagnosticEmitter
     /// <summary>
     /// Diagnoses a loadout and creates instances of <see cref="Diagnostic"/>.
     /// </summary>
-    IAsyncEnumerable<Diagnostic> Diagnose(Loadout loadout, CancellationToken cancellationToken);
+    IAsyncEnumerable<Diagnostic> Diagnose(Loadout.Model loadout, CancellationToken cancellationToken);
 }

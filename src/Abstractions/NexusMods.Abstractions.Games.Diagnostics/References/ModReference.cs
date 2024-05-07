@@ -1,9 +1,9 @@
 using JetBrains.Annotations;
-using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Serialization.DataModel.Ids;
+using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.Abstractions.Diagnostics.References;
 
@@ -11,21 +11,21 @@ namespace NexusMods.Abstractions.Diagnostics.References;
 /// A reference to a <see cref="Mod"/>.
 /// </summary>
 [PublicAPI]
-public record ModReference : IDataReference<ModCursor, Mod>
+public record ModReference : IDataReference<ModId, Mod.Model>
 {
     /// <inheritdoc/>
-    public required IId DataStoreId { get; init; }
+    public required TxId TxId { get; init; }
 
     /// <inheritdoc/>
-    public required ModCursor DataId { get; init; }
+    public required ModId DataId { get; init; }
 
     /// <inheritdoc/>
-    public Mod? ResolveData(IServiceProvider serviceProvider, IDataStore dataStore)
+    public Mod.Model? ResolveData(IServiceProvider serviceProvider, IConnection dataStore)
     {
-        var loadoutRegistry = serviceProvider.GetRequiredService<ILoadoutRegistry>();
-        return loadoutRegistry.Get(DataId);
+        var db = dataStore.AsOf(TxId);
+        return db.Get<Mod.Model>(DataId.Value);
     }
 
     /// <inheritdoc/>
-    public string ToStringRepresentation(Mod data) => data.Name;
+    public string ToStringRepresentation(Mod.Model data) => data.Name;
 }

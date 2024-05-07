@@ -1,5 +1,7 @@
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Serialization.DataModel.Ids;
+using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.Abstractions.DiskState;
 
@@ -25,14 +27,12 @@ public interface IDiskStateRegistry
     /// <summary>
     /// Gets the Loadout Revision Id of the last applied state for a given game installation
     /// </summary>
-    /// <param name="gameInstallation">The game installation to retrieve the last applied loadout for</param>
-    /// <returns>The Loadout Revision Id of the last applied state, or null if not found</returns>
-    IId? GetLastAppliedLoadout(GameInstallation gameInstallation);
+    public bool TryGetLastAppliedLoadout(GameInstallation gameInstallation, out LoadoutWithTxId loadoutWithTxId);
     
     /// <summary>
     /// Observable of all the last applied revisions for all game installations
     /// </summary>
-    IObservable<(GameInstallation gameInstallation, IId loadoutRevision)> LastAppliedRevisionObservable { get; }
+    IObservable<(GameInstallation Install, LoadoutWithTxId LoadoutRevisionId)> LastAppliedRevisionObservable { get; }
 
     /// <summary>
     /// Saves the initial disk state for a given game installation.

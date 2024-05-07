@@ -16,7 +16,7 @@ public abstract class RunGameWithScriptExtender<T> : RunGameTool<T> where T : AG
 
     protected abstract GamePath ScriptLoaderPath { get; }
 
-    protected override async ValueTask<AbsolutePath> GetGamePath(Loadout loadout)
+    protected override async ValueTask<AbsolutePath> GetGamePath(Loadout.Model loadout)
     {
         var flattened =
             await ((IStandardizedLoadoutSynchronizer)loadout.Installation.GetGame().Synchronizer)

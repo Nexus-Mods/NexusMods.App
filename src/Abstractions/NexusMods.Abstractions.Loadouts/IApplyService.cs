@@ -1,6 +1,8 @@
 ﻿using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Serialization.DataModel.Ids;
+using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.Abstractions.Loadouts;
 
@@ -13,14 +15,12 @@ public interface IApplyService
     /// Apply a loadout to its game installation.
     /// This will also ingest outside changes and merge unapplied changes on top and apply them.
     /// </summary>
-    /// <param name="loadoutId"></param>
-    /// <returns></returns>
-    public Task<Loadout> Apply(LoadoutId loadoutId);
+    public Task Apply(Loadout.Model loadout);
     
     /// <summary>
     /// Get the diff tree of the unapplied changes of a loadout.
     /// </summary>
-    public ValueTask<FileDiffTree> GetApplyDiffTree(LoadoutId loadoutId);
+    public ValueTask<FileDiffTree> GetApplyDiffTree(Loadout.Model loadout);
 
     
     /// <summary>
@@ -30,19 +30,17 @@ public interface IApplyService
     /// </summary>
     /// <param name="gameInstallation"></param>
     /// <returns>The merged loadout</returns>
-    public Task<Loadout> Ingest(GameInstallation gameInstallation);
+    public Task<Loadout.Model> Ingest(GameInstallation gameInstallation);
 
     /// <summary>
     /// Returns the last applied loadout for a given game installation.
     /// </summary>
-    /// <param name="gameInstallation"></param>
-    /// <returns>A tuple of the LoadoutId and loadout revision Id of the last applied state</returns>
-    public IId? GetLastAppliedLoadout(GameInstallation gameInstallation);
+    public Loadout.Model? GetLastAppliedLoadout(GameInstallation gameInstallation);
     
     /// <summary>
     /// Returns an observable of the last applied revisions for a specific game installation
     /// </summary>
     /// <param name="gameInstallation"></param>
     /// <returns></returns>
-    public IObservable<IId> LastAppliedRevisionFor(GameInstallation gameInstallation);    
+    public IObservable<LoadoutWithTxId> LastAppliedRevisionFor(GameInstallation gameInstallation);    
 }

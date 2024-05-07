@@ -51,4 +51,11 @@ public static class AbsolutePathExtensions
             return Hash.From(XxHash64Algorithm.HashOfEmptyFile);
         }
     }
+
+    private static Hash XxHash64MemoryMappedInMemory(this AbsolutePath input, IActivitySource<Size>? job = null)
+    {
+        var ms = (MemoryStream)input.Read();
+        var hashValue = XxHash64Algorithm.HashBytes(ms.ToArray().AsSpan()[..(int)ms.Length]);
+        return Hash.From(hashValue);
+    }
 }
