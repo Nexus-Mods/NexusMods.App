@@ -41,6 +41,9 @@ public static class Services
         collection.AddAttributeCollection(typeof(JWTToken));
         collection.AddRepository<JWTToken.Model>(JWTToken.AccessToken);
         
+        // Nexus API Key
+        collection.AddAttributeCollection(typeof(ApiKey));
+        
         return collection
             .AddAllSingleton<ILoginManager, LoginManager>()
             .AddAllSingleton<INexusApiClient, NexusApiClient>()

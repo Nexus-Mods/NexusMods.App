@@ -4,22 +4,21 @@ using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.Abstractions.Serialization.DataModel.Ids;
+using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.Networking.NexusWebApi.Auth;
 
 /// <summary>
 /// Injects Nexus API keys into HTTP messages.
 /// </summary>
-public class ApiKeyMessageFactory : IAuthenticatingMessageFactory
+public class ApiKeyMessageFactory(IConnection conn) : IAuthenticatingMessageFactory
 {
     /// <summary>
     /// The name of the environment variable that contains the API key.
     /// </summary>
     public const string NexusApiKeyEnvironmentVariable = "NEXUS_API_KEY";
-
-    private static readonly IId ApiKeyId = new IdVariableLength(EntityCategory.AuthData, "NexusMods.Networking.NexusWebApi.ApiKey"u8.ToArray());
-
-    private readonly IDataStore _store;
+    
+    private readonly IConnection _conn = conn;
 
     private string? EnvironmentApiKey => Environment.GetEnvironmentVariable(NexusApiKeyEnvironmentVariable);
 
@@ -27,7 +26,7 @@ public class ApiKeyMessageFactory : IAuthenticatingMessageFactory
     {
         get
         {
-            var value = Encoding.UTF8.GetString(_store.GetRaw(ApiKeyId) ?? Array.Empty<byte>());
+            var value = NexusMods.Networking.NexusWebApi.Auth.ApiKey.Get(_conn.Db);
             if (!string.IsNullOrWhiteSpace(value))
                 return value;
 
@@ -36,13 +35,6 @@ public class ApiKeyMessageFactory : IAuthenticatingMessageFactory
     }
 
     // TODO: Remove dependency on external components here.
-
-    /// <summary/>
-    /// <param name="store"></param>
-    public ApiKeyMessageFactory(IDataStore store)
-    {
-        _store = store;
-    }
 
     /// <inheritdoc />
     public ValueTask<HttpRequestMessage> Create(HttpMethod method, Uri uri)
@@ -55,7 +47,7 @@ public class ApiKeyMessageFactory : IAuthenticatingMessageFactory
     /// <inheritdoc />
     public async ValueTask<bool> IsAuthenticated()
     {
-        var dataStoreResult = await ValueTask.FromResult(_store.GetRaw(ApiKeyId) != null);
+        var dataStoreResult = await ValueTask.FromResult(!string.IsNullOrWhiteSpace(Auth.ApiKey.Get(_conn.Db)));
         return dataStoreResult || EnvironmentApiKey != null;
     }
 
@@ -63,10 +55,9 @@ public class ApiKeyMessageFactory : IAuthenticatingMessageFactory
     /// Sets the API key used for future requests.
     /// </summary>
     /// <param name="apiKey">The new API key set.</param>
-    public ValueTask SetApiKey(string apiKey)
+    public async ValueTask SetApiKey(string apiKey)
     {
-        _store.PutRaw(ApiKeyId, Encoding.UTF8.GetBytes(apiKey));
-        return ValueTask.CompletedTask;
+        await Auth.ApiKey.Set(_conn, apiKey);
     }
 
     /// <inheritdoc/>
@@ -77,7 +68,7 @@ public class ApiKeyMessageFactory : IAuthenticatingMessageFactory
         {
             Name = result.Data.Name,
             IsPremium = result.Data.IsPremium,
-            AvatarUrl = result.Data.ProfileUrl
+            AvatarUrl = result.Data.ProfileUrl,
         };
     }
 
@@ -85,10 +76,5 @@ public class ApiKeyMessageFactory : IAuthenticatingMessageFactory
     public ValueTask<HttpRequestMessage?> HandleError(HttpRequestMessage original, HttpRequestException ex, CancellationToken token)
     {
         return new ValueTask<HttpRequestMessage?>();
-    }
-
-    public ValueTask<UserInfo?> Verify(NexusApiClient nexusApiClient, CancellationToken token)
-    {
-        throw new NotImplementedException();
     }
 }

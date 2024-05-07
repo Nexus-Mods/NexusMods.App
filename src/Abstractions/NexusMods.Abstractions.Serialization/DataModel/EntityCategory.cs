@@ -15,11 +15,6 @@ namespace NexusMods.Abstractions.Serialization.DataModel;
 public enum EntityCategory : byte
 {
     /// <summary>
-    /// Used to store Nexus Authentication data [JWT Tokens and the like].
-    /// </summary>
-    AuthData = 7,
-
-    /// <summary>
     /// Stores test information e.g. for mocking purposes.
     /// </summary>
     TestData = 8,
