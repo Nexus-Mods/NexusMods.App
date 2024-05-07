@@ -82,7 +82,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
             // Workspace resizing
             this.WhenAnyValue(vm => vm.IsHorizontal)
                 .DistinctUntilChanged()
-                .Do(_ => ResetGridIfBroken())
+                .Do(_ => ResetGridIfBroken(forceReset: true))
                 .Do(_ => UpdateStates())
                 .Do(_ => UpdateResizers())
                 .SubscribeWithErrorLogging(logger: _logger);
@@ -490,14 +490,17 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         ResetGridIfBroken();
     }
 
-    private void ResetGridIfBroken()
+    private void ResetGridIfBroken(bool forceReset = false)
     {
         var currentState = WorkspaceGridState.From(Panels, IsHorizontal);
-        if (GridUtils.IsPerfectGrid(currentState, doThrow: false)) return;
-        
-        _logger.LogError("The Workspace Grid is broken and will be reset: {State}", currentState.ToString());
-        var newState = GridUtils.ResetState(currentState, MaxColumns, MaxRows);
 
+        if (!forceReset)
+        {
+            if (GridUtils.IsPerfectGrid(currentState, doThrow: false)) return;
+            _logger.LogError("The Workspace Grid is broken and will be reset: {State}", currentState.ToString());
+        }
+
+        var newState = GridUtils.ResetState(currentState, MaxColumns, MaxRows);
         foreach (var panel in Panels)
         {
             panel.LogicalBounds = newState[panel.Id].Rect;
