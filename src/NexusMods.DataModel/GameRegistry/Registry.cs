@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using DynamicData;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
@@ -14,7 +15,7 @@ namespace NexusMods.DataModel;
 /// <summary>
 /// Game registry for all installed games.
 /// </summary>
-public class Registry : IGameRegistry
+public class Registry : IGameRegistry, IHostedService
 {
     private readonly IConnection _connection;
     private Dictionary<EntityId,GameInstallation> _byId = new();
@@ -43,6 +44,7 @@ public class Registry : IGameRegistry
             .Transform(g => g.Game)
             .Bind(out _installedGames)
             .Subscribe();
+        
     }
 
     private async Task Startup(IEnumerable<ILocatableGame> games)

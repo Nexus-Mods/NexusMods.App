@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using GameFinder.Common;
 using NexusMods.Abstractions.DataModel.Entities.Sorting;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.Trees;
@@ -18,7 +19,7 @@ namespace NexusMods.DataModel.Tests;
 
 public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTests>
 {
-    protected readonly IStandardizedLoadoutSynchronizer _synchronizer;
+    protected IStandardizedLoadoutSynchronizer _synchronizer;
     private readonly Dictionary<ModId, string> _modNames = new();
     private readonly Dictionary<string, ModId> _modIdForName = new();
     private readonly Dictionary<FileId, File.Model> _pairs = new();
@@ -40,13 +41,13 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
     /// <param name="provider"></param>
     public ALoadoutSynchronizerTests(IServiceProvider provider) : base(provider)
     {
-        _synchronizer = (IStandardizedLoadoutSynchronizer)Game.Synchronizer;
-        
     }
 
     public override async Task InitializeAsync()
     {
         await base.InitializeAsync();
+
+        _synchronizer = (IStandardizedLoadoutSynchronizer)Game.Synchronizer;
 
         {
             // Disable all mods
