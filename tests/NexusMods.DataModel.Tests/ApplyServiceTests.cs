@@ -111,6 +111,7 @@ public class ApplyServiceTests(IServiceProvider provider) : ADataModelTest<Apply
         
         // Act
         await ApplyService.Apply(BaseLoadout);
+
         
         // Assert
         deletedFile.FileExists.Should().BeFalse("file is still deleted after apply");

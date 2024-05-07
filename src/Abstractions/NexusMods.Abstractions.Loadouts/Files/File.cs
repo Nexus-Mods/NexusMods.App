@@ -44,15 +44,15 @@ public static class File
         /// </summary>
         public FileId FileId => FileId.From(Id);
 
-        public EntityId LoadoutId
+        public LoadoutId LoadoutId
         {
-            get => File.Loadout.Get(this);
-            set => File.Loadout.Add(this, value);
+            get => LoadoutId.From(File.Loadout.Get(this));
+            set => File.Loadout.Add(this, value.Value);
         }
 
         public Loadout.Model Loadout
         {
-            get => Db.Get<Loadout.Model>(LoadoutId);
+            get => Db.Get<Loadout.Model>(LoadoutId.Value);
             set => File.Loadout.Add(this, value.Id);
         }
         

@@ -221,9 +221,9 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
             var mod = db.Get(modId);
             foreach (var file in mod.Files)
             {
-                tx.Retract(file.Id, File.Loadout, file.LoadoutId);
+                tx.Retract(file.Id, File.Loadout, file.LoadoutId.Value);
             }
-            tx.Retract(modId.Value, Mod.Loadout, mod.LoadoutId);
+            tx.Retract(modId.Value, Mod.Loadout, mod.LoadoutId.Value);
         }
         loadout.Revise(tx);
         await tx.Commit();

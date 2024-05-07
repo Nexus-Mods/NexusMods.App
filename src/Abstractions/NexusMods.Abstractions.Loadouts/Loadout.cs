@@ -69,20 +69,6 @@ public static class Loadout
             .StartWith(conn.Db)
             .Select(db => db.Get<Model>(id.Value));
     }
-
-    /// <summary>
-    /// Returns all revisions of a loadouts over time.
-    /// </summary>
-    public static IObservable<Model> LoadoutRevisions(this IConnection conn)
-    {
-        // All db revisions that contain a loadout id, select the loadout
-        return conn.Revisions
-            .SelectMany(db => db.Datoms(db.BasisTxId))
-            .Where(d => d.A == Revision)
-            .Select(d => d.E)
-            .StartWith(conn.Db.Find(Revision))
-            .Select(id => conn.Db.Get<Model>(id));
-    }
     
     public class Model(ITransaction tx) : Entity(tx)
     {
@@ -148,7 +134,16 @@ public static class Loadout
         /// <summary>
         /// Gets the mod with the given id from this loadout.
         /// </summary>
-        public Mod.Model this[ModId idx] => Mods.First(m => m.ModId == idx);
+        public Mod.Model this[ModId idx]
+        {
+            get
+            {
+                var mod = Db.Get<Mod.Model>(idx.Value);
+                if (mod is null) 
+                    throw new KeyNotFoundException($"Mod with id {idx} not found in loadout {Id}");
+                return mod;
+            }
+        }
 
         /// <summary>
         /// Issue a new revision of this loadout into the transaction, this will increment the revision number

@@ -129,15 +129,15 @@ public static partial class Mod
             set => Mod.Status.Add(this, value);
         }
         
-        public EntityId LoadoutId
+        public LoadoutId LoadoutId
         {
-            get => Mod.Loadout.Get(this);
-            set => Mod.Loadout.Add(this, value);
+            get => LoadoutId.From(Mod.Loadout.Get(this));
+            set => Mod.Loadout.Add(this, value.Value);
         }
 
         public Loadout.Model Loadout
         {
-            get => Db.Get<Loadout.Model>(LoadoutId);
+            get => Db.Get<Loadout.Model>(LoadoutId.Value);
             set => Mod.Loadout.Add(this, value.Id);
         }
         
