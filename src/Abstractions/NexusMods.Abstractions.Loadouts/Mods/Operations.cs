@@ -31,7 +31,8 @@ public static partial class Mod
         }
         
         /// <summary>
-        /// Toggle the enabled status of the mod.
+        /// Deletes a mod from the loadout, by unlinking it and all the files
+        /// associated with it. 
         /// </summary>
         public async Task Delete()
         {
