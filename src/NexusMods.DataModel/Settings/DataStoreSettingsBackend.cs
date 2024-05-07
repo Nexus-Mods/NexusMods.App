@@ -34,33 +34,7 @@ internal sealed class DataStoreSettingsBackend : ISettingsStorageBackend
 
     public SettingsStorageBackendId Id { get; } = Abstractions.Serialization.Settings.Extensions.StorageBackendId;
 
-    private string? Serialize<T>(T value) where T : class
-    {
-        try
-        {
-            var json = JsonSerializer.Serialize(value, _jsonOptions.Value);
-            return json;
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, "Exception while serializing `{Type}` with value `{Value}`", typeof(T), value);
-            return null;
-        }
-    }
 
-    private T? Deserialize<T>(string json) where T : class
-    {
-        try
-        {
-            var value = JsonSerializer.Deserialize<T>(json, _jsonOptions.Value);
-            return value;
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, "Exception while deserializing to `{Type}` with JSON `{Json}`", typeof(T), json);
-            return null;
-        }
-    }
 
     public void Save<T>(T value) where T : class, ISettings, new()
     {
