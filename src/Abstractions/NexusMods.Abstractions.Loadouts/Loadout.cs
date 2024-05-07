@@ -140,7 +140,9 @@ public static class Loadout
             {
                 var mod = Db.Get<Mod.Model>(idx.Value);
                 if (mod is null) 
-                    throw new KeyNotFoundException($"Mod with id {idx} not found in loadout {Id}");
+                    throw new KeyNotFoundException($"Mod with id {idx} not found in database");
+                if (mod.LoadoutId != LoadoutId)
+                    throw new KeyNotFoundException($"Mod with id {idx} is not part of Loadout {LoadoutId} but of Loadout {mod.LoadoutId}");
                 return mod;
             }
         }
