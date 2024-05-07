@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
@@ -21,6 +22,7 @@ public class GamePathAttribute(string ns, string name) : ScalarAttribute<GamePat
     protected override GamePath FromLowLevel(string value, ValueTags tags)
     {
         var parts = value.Split('|');
+        Debug.Assert(parts.Length == 2);
         return new GamePath(LocationId.From(parts[0]), RelativePath.FromUnsanitizedInput(parts[1]));
     }
 }

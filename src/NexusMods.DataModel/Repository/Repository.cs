@@ -67,19 +67,27 @@ internal class Repository<TModel> : IRepository<TModel> where TModel : Entity
     /// <inheritdoc />
     public IObservable<TModel> Revisions(EntityId id)
     {
-        if (!Exists(id))
-            return Empty<TModel>();
-        
         return _conn.Revisions
             .Where(db => db.Datoms(db.BasisTxId).Any(datom => datom.E == id.Value))
             .StartWith(_conn.Db)
-            .Select(db => db.Get<TModel>(id));
+            .Select(db => db.Get<TModel>(id))
+            .Where(IsValid);
+    }
+
+    private bool IsValid(TModel model)
+    {
+        foreach (var attribute in _watchedAttributes)
+        {
+            if (!model.Contains(attribute))
+                return false;
+        }
+        return true;
     }
 
     /// <inheritdoc />
-    public bool Exists(EntityId loadoutId)
+    public bool Exists(EntityId eid)
     {
-        var entity = _conn.Db.Get<TModel>(loadoutId);
+        var entity = _conn.Db.Get<TModel>(eid);
         foreach (var attribute in _watchedAttributes)
         {
             if (!entity.Contains(attribute))

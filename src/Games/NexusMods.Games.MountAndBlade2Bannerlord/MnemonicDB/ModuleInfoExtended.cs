@@ -81,7 +81,7 @@ public static class ModuleInfoExtended
     /// <summary>
     /// Url of the module's page.
     /// </summary>
-    public static readonly UrlAttribute Url = new(Namespace, nameof(Url));
+    public static readonly UriAttribute Url = new(Namespace, nameof(Url));
 
 
     
