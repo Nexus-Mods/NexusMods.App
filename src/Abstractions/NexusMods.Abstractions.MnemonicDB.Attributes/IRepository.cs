@@ -34,4 +34,11 @@ public interface IRepository<TModel>
     /// <param name="loadoutId"></param>
     /// <returns></returns>
     bool Exists(EntityId loadoutId);
+
+    /// <summary>
+    /// Completely deletes a model from the repository, by retracting all attributes, returns the new db
+    /// with the model removed.
+    /// </summary>
+    /// <param name="first"></param>
+    Task Delete(TModel first);
 }
