@@ -15,12 +15,6 @@ namespace NexusMods.Abstractions.Serialization.DataModel;
 public enum EntityCategory : byte
 {
     /// <summary>
-    /// Stores test information e.g. for mocking purposes.
-    /// </summary>
-    TestData = 8,
-
-    
-    /// <summary>
     /// Global settings for things like metrics opt-in and the like.
     /// </summary>
     GlobalSettings = 16,
