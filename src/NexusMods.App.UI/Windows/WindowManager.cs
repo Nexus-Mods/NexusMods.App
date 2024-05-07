@@ -100,6 +100,7 @@ internal sealed class WindowManager : ReactiveObject, IWindowManager
             {
                 _ = new WindowDataAttributes.Model(tx)
                 {
+                    Db = _conn.Db,
                     Data = data,
                 };
             }
