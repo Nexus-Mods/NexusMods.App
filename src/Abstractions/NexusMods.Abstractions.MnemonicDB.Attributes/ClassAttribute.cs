@@ -27,7 +27,7 @@ where TType : IGuidClass
         var key = Get(entity);
         var item = entity.Db.Connection.ServiceProvider.GetKeyedService<TType>(key);
         if (item == null)
-            throw new NullReferenceException($"The item {typeof(TType)} with key {key} was not found in the DI container.");
+            throw new KeyNotFoundException($"The item {typeof(TType)} with key {key} was not found in the DI container.");
         return item;
     }
 }

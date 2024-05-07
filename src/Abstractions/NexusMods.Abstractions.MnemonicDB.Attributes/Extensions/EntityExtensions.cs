@@ -23,10 +23,11 @@ public static class EntityExtensions
     /// </summary>
     public static bool TryParseFromHex(string hex, out EntityId id)
     {
-        if (hex.StartsWith("EId:"))
-            hex = hex[4..];
+        var input = hex.AsSpan();
+        if (input.StartsWith("EId:"))
+            input = input[4..];
         
-        if (ulong.TryParse(hex, NumberStyles.HexNumber, null, out var parsed))
+        if (ulong.TryParse(input, NumberStyles.HexNumber, null, out var parsed))
         {
             id = EntityId.From(parsed);
             return true;

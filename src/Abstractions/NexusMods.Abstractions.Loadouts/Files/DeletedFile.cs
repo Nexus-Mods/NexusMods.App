@@ -1,4 +1,6 @@
+using System.Diagnostics.CodeAnalysis;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
+using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.Abstractions.Loadouts.Files;
@@ -32,5 +34,19 @@ public static class DeletedFile
             get => DeletedFile.Deleted.TryGet(this, out var deleted) && deleted;
             set => DeletedFile.Deleted.Add(this, value);
         }
+    }
+    
+    
+    /// <summary>
+    /// If this file is a deleted file, this will return true and cast the deleted file to the out parameter.
+    /// </summary>
+    public static bool TryGetAsDeletedFile(this File.Model model, [NotNullWhen(true)] out DeletedFile.Model? deletedFile)
+    {
+        deletedFile = null;
+        if (!model.Contains(DeletedFile.Deleted))
+            return false;
+
+        deletedFile = model.Remap<DeletedFile.Model>();
+        return true;
     }
 }

@@ -183,7 +183,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                 resultingItems.Add(newEntry.GamePath(), prevEntry.Item.Value);
                 
                 var file = newEntry.Item.Value!;
-                if (IsDeletedFile(file))
+                if (file.TryGetAsDeletedFile(out _))
                 {
                     // File is deleted in the new tree, so nothing to do
                     continue;
@@ -233,7 +233,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
 
 
             var file = item.Item.Value!;
-            if (IsDeletedFile(file))
+            if (file.TryGetAsDeletedFile(out _))
             {
                 // File is deleted in the new tree, so nothing to do
                 continue;
@@ -730,7 +730,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             if (flattenedLoadout.TryGetValue(gamePath, out var loadoutFileEntry))
             {
                 var file = loadoutFileEntry.Item.Value;
-                if (IsStoredFile(file))
+                if (file.TryGetAsStoredFile(out _))
                 {
                     var sf = file.Remap<StoredFile.Model>();
                     if (sf.Hash != diskItem.Item.Value.Hash)
@@ -787,17 +787,16 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         {
             var gamePath = loadoutFile.GamePath();
             var file = loadoutFile.Item.Value;
-            if (IsStoredFile(file))
+            if (file.TryGetAsStoredFile(out var storedFile))
             {
-                var sf = file.Remap<StoredFile.Model>();
                 if (!resultingItems.TryGetValue(gamePath, out _))
                 {
                     resultingItems.Add(gamePath,
                         new DiskDiffEntry
                         {
                             GamePath = gamePath,
-                            Hash = sf.Hash,
-                            Size = sf.Size,
+                            Hash = storedFile.Hash,
+                            Size = storedFile.Size,
                             ChangeType = FileChangeType.Added,
                         }
                     );
@@ -857,22 +856,6 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         await _fileStore.BackupFiles(archivedFiles);
     }
     
-    /// <summary>
-    /// True if the file is marked as deleted.
-    /// </summary>
-    public bool IsDeletedFile(File.Model file)
-    {
-        return file.TryGet(DeletedFile.Deleted, out var deleted) && deleted;
-    }
-
-    /// <summary>
-    /// True if the file is a stored file.
-    /// </summary>
-    public bool IsStoredFile(File.Model file)
-    {
-        return file.Contains(StoredFile.Hash);
-    }
-
     /// <inheritdoc />
     public async Task<Hash?> WriteGeneratedFile(File.Model file, Stream outputStream, Loadout.Model loadout, FlattenedLoadout flattenedLoadout, FileTree fileTree)
     {

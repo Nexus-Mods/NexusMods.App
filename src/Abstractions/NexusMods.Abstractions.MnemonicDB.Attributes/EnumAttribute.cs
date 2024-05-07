@@ -6,7 +6,7 @@ namespace NexusMods.Abstractions.MnemonicDB.Attributes;
 /// <summary>
 ///    An attribute that represents an enum value.
 /// </summary>
-public class EnumAttribute<T>(string ns, string name) : ScalarAttribute<T, string>(ValueTags.Utf8, ns, name)
+public class EnumAttribute<T>(string ns, string name) : ScalarAttribute<T, string>(ValueTags.Int32, ns, name)
     where T : Enum
 {
     /// <inheritdoc />

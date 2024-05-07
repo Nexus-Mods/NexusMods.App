@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
@@ -15,7 +16,7 @@ public interface IFileGenerator : IGuidClass
     /// Not supported, as this is an interface
     /// </summary>
     /// <exception cref="NotSupportedException"></exception>
-    static UInt128 IGuidClass.Guid => throw new NotSupportedException();
+    static UInt128 IGuidClass.Guid => throw new UnreachableException();
 
     /// <summary>
     /// Writes the contents of the file to the stream.
