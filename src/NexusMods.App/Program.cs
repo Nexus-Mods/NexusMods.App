@@ -44,7 +44,7 @@ public class Program
         );
 
         // Okay to do wait here, as we are in the main process thread.
-        host.StartAsync().Wait();
+        host.StartAsync().Wait(timeout: TimeSpan.FromMinutes(5));
 
         _logger = host.Services.GetRequiredService<ILogger<Program>>();
         LogMessages.RuntimeInformation(_logger, RuntimeInformation.OSDescription, RuntimeInformation.FrameworkDescription);
