@@ -147,6 +147,9 @@
 	<data name="DownloadsView__Completed" xml:space="preserve">
 		<value>Ukończone</value>
 	</data>
+    <data name="DownloadStatusDesignViewModel_FormatStatus_Analyzing" xml:space="preserve">
+        <value>Analizowanie</value>
+    </data>
 	<data name="DownloadsView__Download_history" xml:space="preserve">
 		<value>Historia pobierania</value>
 	</data>
