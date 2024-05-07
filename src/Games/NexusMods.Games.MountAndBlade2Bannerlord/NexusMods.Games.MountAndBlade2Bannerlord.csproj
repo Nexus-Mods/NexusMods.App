@@ -26,9 +26,4 @@
     <InternalsVisibleTo Include="NexusMods.Games.MountAndBlade2Bannerlord.Tests" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Remove="MnemonicDB\SubModuleInfoExtended.cs" />
-    <Compile Remove="MnemonicDB\ModuleInfoExtendedWithPath.cs" />
-  </ItemGroup>
-
 </Project>
