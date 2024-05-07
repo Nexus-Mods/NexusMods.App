@@ -53,7 +53,6 @@ public class FileHashCache : IFileHashCache
     {
         var nameHash = Hash.From(path.ToString().AsSpan().GetStableHash());
         var db = _conn.Db;
-        _logger.LogDebug("DbId: {DbId}", db.BasisTxId);
         var id = db
             .FindIndexed(nameHash, HashCacheEntry.NameHash)
             .FirstOrDefault();

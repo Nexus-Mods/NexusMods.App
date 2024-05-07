@@ -24,10 +24,6 @@ public enum EntityCategory : byte
     /// </summary>
     TestData = 8,
 
-    /// <summary>
-    /// This entity is used as part of the IPC job system.
-    /// </summary>
-    InterprocessJob = 9,
     
     /// <summary>
     /// Global settings for things like metrics opt-in and the like.

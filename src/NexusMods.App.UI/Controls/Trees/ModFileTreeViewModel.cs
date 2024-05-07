@@ -47,8 +47,8 @@ public class ModFileTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeVie
 
         var db = _conn.Db;
         var loadout = db.Get(loadoutId);
-        var locationsRegister = loadout!.Installation.LocationsRegister;
-        var mod = db.Get(modId); // <= suppressed because this throws on error, and we should always have valid mod if we made it here.
+        var locationsRegister = loadout.Installation.LocationsRegister;
+        var mod = db.Get(modId);
         var displayedItems = new List<IFileTreeNodeViewModel>();
 
         // Add all the files to the displayedItems list
