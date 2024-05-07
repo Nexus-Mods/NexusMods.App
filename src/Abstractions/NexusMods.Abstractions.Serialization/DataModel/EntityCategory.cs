@@ -15,11 +15,6 @@ namespace NexusMods.Abstractions.Serialization.DataModel;
 public enum EntityCategory : byte
 {
     /// <summary>
-    /// Global settings for things like metrics opt-in and the like.
-    /// </summary>
-    GlobalSettings = 16,
-
-    /// <summary>
     /// Persisted workspaces.
     /// </summary>
     Workspaces = 19,

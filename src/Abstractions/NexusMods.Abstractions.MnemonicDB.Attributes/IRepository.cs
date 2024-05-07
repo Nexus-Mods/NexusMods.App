@@ -51,6 +51,11 @@ public interface IRepository<TModel>
     bool TryFindFirst<TOuter, TInner>(Attribute<TOuter, TInner> attr, TOuter value, [NotNullWhen(true)] out TModel? model);
     
     /// <summary>
+    /// Tries to find the first model, returns false if no model is found.
+    /// </summary>
+    bool TryFindFirst([NotNullWhen(true)] out TModel? model);
+    
+    /// <summary>
     /// Finds all models where the attribute matches the value.
     /// </summary>
     /// <param name="attr"></param>
