@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.Games.Stores.Steam;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.Paths;
@@ -61,9 +62,7 @@ public class RunGameTool<T> : IRunGameTool
     public async Task Execute(Loadout.Model loadout, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Starting {Name}", Name);
-        throw new NotImplementedException();
-
-        /*
+        
         var program = await GetGamePath(loadout);
         var primaryFile = _game.GetPrimaryFile(loadout.Installation.Store).CombineChecked(loadout.Installation);
 
@@ -119,7 +118,7 @@ public class RunGameTool<T> : IRunGameTool
         }
 
         _logger.LogInformation("Finished running {Program}", program);
-        */
+        
     }
 
     private async Task<CommandResult> RunCommand(CancellationToken cancellationToken, AbsolutePath program)

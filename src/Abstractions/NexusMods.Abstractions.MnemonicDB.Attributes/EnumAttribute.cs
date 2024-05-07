@@ -6,18 +6,21 @@ namespace NexusMods.Abstractions.MnemonicDB.Attributes;
 /// <summary>
 ///    An attribute that represents an enum value.
 /// </summary>
-public class EnumAttribute<T>(string ns, string name) : ScalarAttribute<T, string>(ValueTags.Int32, ns, name)
+public class EnumAttribute<T>(string ns, string name) : ScalarAttribute<T, int>(ValueTags.Int32, ns, name)
     where T : Enum
 {
     /// <inheritdoc />
-    protected override string ToLowLevel(T value)
+    protected override int ToLowLevel(T value)
     {
-        return value.ToString();
+        // Looks like an allocation, but the cast to object is removed by the JIT since the type of
+        // T is a compile-time constant. Verified via sharpLab.io
+        return (int)(object)value;
     }
 
     /// <inheritdoc />
-    protected override T FromLowLevel(string value, ValueTags tag)
+    protected override T FromLowLevel(int value, ValueTags tags)
     {
-        return (T) Enum.Parse(typeof(T), value);
+        // Same as ToLowLevel, the cast to object is removed by the JIT
+        return (T)(object)value;
     }
 }
