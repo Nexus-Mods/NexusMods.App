@@ -1,4 +1,6 @@
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Linq;
 using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
@@ -110,6 +112,40 @@ internal class Repository<TModel> : IRepository<TModel> where TModel : Entity
 
         await tx.Commit();
     }
+
+    public bool TryFindFirst<TOuter, TInner>(Attribute<TOuter, TInner> attr, TOuter value, [NotNullWhen(true)] out TModel? model)
+    {
+        Debug.Assert(attr.IsIndexed, "Attribute must be indexed to be used in a find operation");
+        var db = _conn.Db;
+        var items = db.FindIndexed(value, attr);
+        foreach (var item in items)
+        {
+            var entity = db.Get<TModel>(item);
+            if (IsValid(entity))
+            {
+                model = entity;
+                return true;
+            }
+        }
+
+        model = null;
+        return false;
+    }
+
+    public IEnumerable<TModel> FindAll<TOuter, TInner>(Attribute<TOuter, TInner> attr, TOuter value)
+    {
+        Debug.Assert(attr.IsIndexed, "Attribute must be indexed to be used in a find operation");
+        var db = _conn.Db;
+        var items = db.FindIndexed(value, attr);
+        foreach (var item in items)
+        {
+            var entity = db.Get<TModel>(item);
+            if (IsValid(entity))
+            {
+                yield return entity;
+            }
+        }
+    }
 }
 
 
@@ -124,6 +160,8 @@ public static class ServiceExtensions
     /// </summary>
     public static IServiceCollection AddRepository<TModel>(this IServiceCollection collection, params IAttribute[] attributes) where TModel : Entity
     {
+        if (attributes.Length == 0)
+            throw new InvalidOperationException("At least one attribute must be provided when creating a repository");
         return collection
             .AddSingleton<IRepository<TModel>>(provider => 
                 new Repository<TModel>(attributes, provider.GetRequiredService<IConnection>()));

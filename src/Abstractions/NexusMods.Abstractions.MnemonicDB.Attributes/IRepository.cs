@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
@@ -47,7 +48,7 @@ public interface IRepository<TModel>
     /// <summary>
     /// Tries to find the first model where the attribute matches the value.
     /// </summary>
-    bool TryFindFirst<TOuter, TInner>(Attribute<TOuter, TInner> attr, TOuter value, out TModel model);
+    bool TryFindFirst<TOuter, TInner>(Attribute<TOuter, TInner> attr, TOuter value, [NotNullWhen(true)] out TModel? model);
     
     /// <summary>
     /// Finds all models where the attribute matches the value.
@@ -57,5 +58,5 @@ public interface IRepository<TModel>
     /// <typeparam name="TOuter"></typeparam>
     /// <typeparam name="TInner"></typeparam>
     /// <returns></returns>
-    TModel FindAll<TOuter, TInner>(Attribute<TOuter, TInner> attr, TOuter value);
+    IEnumerable<TModel> FindAll<TOuter, TInner>(Attribute<TOuter, TInner> attr, TOuter value);
 }

@@ -48,8 +48,11 @@ public static class Services
         coll.AddMnemonicDB();
         coll.AddMnemonicDBStorage();
 
+        // Settings
         coll.AddSettings<DataModelSettings>();
-        coll.AddSettingsStorageBackend<DataStoreSettingsBackend>(isDefault: true);
+        coll.AddSettingsStorageBackend<MnemonicDBSettingsBackend>(isDefault: true);
+        coll.AddAttributeCollection(typeof(Setting));
+        coll.AddRepository<Setting.Model>(Setting.Name);
 
         coll.AddSingleton<MnemonicDB.Storage.InMemoryBackend.Backend>();
         coll.AddSingleton<MnemonicDB.Storage.RocksDbBackend.Backend>();

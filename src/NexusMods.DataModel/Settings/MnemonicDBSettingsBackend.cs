@@ -2,11 +2,16 @@ using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
+using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.Abstractions.Settings;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 
 namespace NexusMods.DataModel.Settings;
 
+/// <summary>
+/// A settings backend that uses the MnemonicDB for storage.
+/// </summary>
 public class MnemonicDBSettingsBackend : ISettingsStorageBackend
 {
     private readonly ILogger<MnemonicDBSettingsBackend> _logger;
@@ -27,10 +32,10 @@ public class MnemonicDBSettingsBackend : ISettingsStorageBackend
     
     public void Dispose()
     {
-        // TODO release managed resources here
+        // Nothing to dispose
     }
 
-    public SettingsStorageBackendId Id { get; }
+    public SettingsStorageBackendId Id { get; } = Abstractions.Serialization.Settings.Extensions.StorageBackendId;
     
     private string? Serialize<T>(T value) where T : class
     {
@@ -59,9 +64,29 @@ public class MnemonicDBSettingsBackend : ISettingsStorageBackend
             return null;
         }
     }
+
+    /// <inheritdoc />
     public void Save<T>(T value) where T : class, ISettings, new()
     {
-        throw new NotImplementedException();
+        using var tx = _conn.Value.BeginTransaction();
+        EntityId id;
+        if (!_settingRepository.Value.TryFindFirst(Setting.Name, GetId<T>(), out var setting))
+        {
+            id = tx.TempId();
+            tx.Add(id, Setting.Name, GetId<T>());
+        }
+        else
+        {
+            id = setting.Id;
+        }
+        
+        tx.Add(id, Setting.Value, Serialize(value) ?? "null");
+        tx.Commit().ContinueWith(t =>
+            {
+                if (t.IsFaulted)
+                    _logger.LogError(t.Exception, "Failed to save settings for `{Type}`", typeof(T));
+            }
+        );
     }
 
     /// <inheritdoc />
