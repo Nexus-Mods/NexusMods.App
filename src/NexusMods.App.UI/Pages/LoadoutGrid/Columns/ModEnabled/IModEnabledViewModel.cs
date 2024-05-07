@@ -15,6 +15,6 @@ public interface IModEnabledViewModel : IColumnViewModel<ModId>
     public bool Enabled { get; }
     public ModStatus Status { get; }
 
-    public ICommand ToggleEnabledCommand { get; }
-    public ICommand DeleteModCommand { get; }
+    public ReactiveCommand<bool, Unit> ToggleEnabledCommand { get; }
+    public ReactiveCommand<Unit, Unit> DeleteModCommand { get; }
 }
