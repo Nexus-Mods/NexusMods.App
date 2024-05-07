@@ -27,12 +27,12 @@ public interface IDiskStateRegistry
     /// <summary>
     /// Gets the Loadout Revision Id of the last applied state for a given game installation
     /// </summary>
-    public bool TryGetLastAppliedLoadout(GameInstallation gameInstallation, out LoadoutRevisionId loadoutRevisionId);
+    public bool TryGetLastAppliedLoadout(GameInstallation gameInstallation, out LoadoutWithTxId loadoutWithTxId);
     
     /// <summary>
     /// Observable of all the last applied revisions for all game installations
     /// </summary>
-    IObservable<(GameInstallation Install, LoadoutRevisionId LoadoutRevisionId)> LastAppliedRevisionObservable { get; }
+    IObservable<(GameInstallation Install, LoadoutWithTxId LoadoutRevisionId)> LastAppliedRevisionObservable { get; }
 
     /// <summary>
     /// Saves the initial disk state for a given game installation.

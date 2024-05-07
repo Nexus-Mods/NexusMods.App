@@ -29,8 +29,8 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
     private readonly ReactiveCommand<Unit, Unit> _applyReactiveCommand;
     private readonly ReactiveCommand<Unit, Unit> _ingestReactiveCommand;
 
-    private ObservableAsPropertyHelper<LoadoutRevisionId> _lastAppliedRevisionId;
-    private LoadoutRevisionId LastAppliedRevisionId => _lastAppliedRevisionId.Value;
+    private ObservableAsPropertyHelper<LoadoutWithTxId> _lastAppliedRevisionId;
+    private LoadoutWithTxId LastAppliedWithTxId => _lastAppliedRevisionId.Value;
 
     [Reactive] private LoadoutId LastAppliedLoadoutId { get; set; }
 
@@ -72,7 +72,7 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
         _gameInstallation = currentLoadout.Installation;
 
         _lastAppliedRevisionId = _applyService.LastAppliedRevisionFor(_gameInstallation)
-            .ToProperty(this, vm => vm.LastAppliedRevisionId, scheduler: RxApp.MainThreadScheduler);
+            .ToProperty(this, vm => vm.LastAppliedWithTxId, scheduler: RxApp.MainThreadScheduler);
 
         _applyReactiveCommand = ReactiveCommand.CreateFromTask(async () => await Apply(), 
             canExecute: this.WhenAnyValue(vm => vm.CanApply));
@@ -102,7 +102,7 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
             {
                 var db = _conn.Db;
                 // Last applied loadout id
-                this.WhenAnyValue(vm => vm.LastAppliedRevisionId)
+                this.WhenAnyValue(vm => vm.LastAppliedWithTxId)
                     .Select(revId =>
                         {
                             var loadout = _conn.AsOf(revId.Tx).Get(revId.Id);
@@ -116,7 +116,7 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
 
                 // Apply and Ingest button visibility
                 var loadoutOrLastAppliedStream = this.WhenAnyValue(vm => vm.NewestLoadout,
-                    vm => vm.LastAppliedRevisionId
+                    vm => vm.LastAppliedWithTxId
                 );
 
                 loadoutOrLastAppliedStream.CombineLatest(_applyReactiveCommand.IsExecuting)
@@ -127,7 +127,7 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
                             var isIngesting = data.Second;
                             CanApply = !isApplying && !isIngesting &&
                                        (!LastAppliedLoadoutId.Equals(_loadoutId) ||
-                                        !NewestLoadout.LoadoutRevisionId.Equals(LastAppliedRevisionId));
+                                        !NewestLoadout.LoadoutWithTxId.Equals(LastAppliedWithTxId));
                             CanIngest = !isApplying && !isIngesting &&
                                         LastAppliedLoadoutId.Equals(_loadoutId);
                         }

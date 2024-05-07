@@ -112,13 +112,13 @@ public class ApplyService : IApplyService
     }
 
     /// <inheritdoc />
-    public IObservable<LoadoutRevisionId> LastAppliedRevisionFor(GameInstallation gameInstallation)
+    public IObservable<LoadoutWithTxId> LastAppliedRevisionFor(GameInstallation gameInstallation)
     {
-        LoadoutRevisionId last;
+        LoadoutWithTxId last;
         if (_diskStateRegistry.TryGetLastAppliedLoadout(gameInstallation, out var lastId))
             last = lastId;
         else
-            last = new LoadoutRevisionId(LoadoutId.From(EntityId.From(0)), TxId.From(0));
+            last = new LoadoutWithTxId(LoadoutId.From(EntityId.From(0)), TxId.From(0));
         
         // Return a deferred observable that computes the starting value only on first subscription
         return Observable.Defer(() => _diskStateRegistry.LastAppliedRevisionObservable

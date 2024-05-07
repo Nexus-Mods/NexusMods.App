@@ -42,5 +42,5 @@ public interface IApplyService
     /// </summary>
     /// <param name="gameInstallation"></param>
     /// <returns></returns>
-    public IObservable<LoadoutRevisionId> LastAppliedRevisionFor(GameInstallation gameInstallation);    
+    public IObservable<LoadoutWithTxId> LastAppliedRevisionFor(GameInstallation gameInstallation);    
 }

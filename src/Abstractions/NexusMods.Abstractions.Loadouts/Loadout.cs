@@ -80,7 +80,7 @@ public static class Loadout
         /// <summary>
         /// Gets the loadout id/txid pair for this revision of the loadout.
         /// </summary>
-        public LoadoutRevisionId LoadoutRevisionId => new(LoadoutId, Db.BasisTxId);
+        public LoadoutWithTxId LoadoutWithTxId => new(LoadoutId, Db.BasisTxId);
         
         public string Name
         {

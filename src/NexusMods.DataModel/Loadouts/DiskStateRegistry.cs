@@ -15,12 +15,12 @@ namespace NexusMods.DataModel.Loadouts;
 /// </summary>
 public class DiskStateRegistry : IDiskStateRegistry
 {
-    private readonly Dictionary<GameInstallation, LoadoutRevisionId> _lastAppliedRevisionDictionary = new();
-    private readonly Subject<(GameInstallation gameInstallation, LoadoutRevisionId)> _lastAppliedRevisionSubject = new();
+    private readonly Dictionary<GameInstallation, LoadoutWithTxId> _lastAppliedRevisionDictionary = new();
+    private readonly Subject<(GameInstallation gameInstallation, LoadoutWithTxId)> _lastAppliedRevisionSubject = new();
     private readonly IConnection _connection;
 
     /// <inheritdoc />
-    public IObservable<(GameInstallation Install, LoadoutRevisionId LoadoutRevisionId)> LastAppliedRevisionObservable => _lastAppliedRevisionSubject;
+    public IObservable<(GameInstallation Install, LoadoutWithTxId LoadoutRevisionId)> LastAppliedRevisionObservable => _lastAppliedRevisionSubject;
 
     /// <summary>
     /// DI Constructor
@@ -62,7 +62,7 @@ public class DiskStateRegistry : IDiskStateRegistry
         await tx.Commit();
 
 
-        var id = new LoadoutRevisionId { Id = LoadoutId.From(diskState.LoadoutId), Tx = diskState.TxId };
+        var id = new LoadoutWithTxId { Id = LoadoutId.From(diskState.LoadoutId), Tx = diskState.TxId };
         _lastAppliedRevisionDictionary[installation] = id;
         _lastAppliedRevisionSubject.OnNext((installation, id));
     }
@@ -119,7 +119,7 @@ public class DiskStateRegistry : IDiskStateRegistry
     }
 
     /// <inheritdoc />
-    public bool TryGetLastAppliedLoadout(GameInstallation gameInstallation, out LoadoutRevisionId id)
+    public bool TryGetLastAppliedLoadout(GameInstallation gameInstallation, out LoadoutWithTxId id)
     {
         if (_lastAppliedRevisionDictionary.TryGetValue(gameInstallation, out var lastAppliedLoadout))
         {
@@ -130,7 +130,7 @@ public class DiskStateRegistry : IDiskStateRegistry
         var diskStateTree = GetState(gameInstallation);
         if (diskStateTree is null)
         {
-            id = new LoadoutRevisionId()
+            id = new LoadoutWithTxId()
             {
                 Id = LoadoutId.From(EntityId.MinValue),
                 Tx = TxId.MinValue
@@ -139,7 +139,7 @@ public class DiskStateRegistry : IDiskStateRegistry
         }
         
         _lastAppliedRevisionDictionary[gameInstallation] = lastAppliedLoadout;
-        id = new LoadoutRevisionId { Id = LoadoutId.From(diskStateTree.LoadoutId), Tx = diskStateTree.TxId };
+        id = new LoadoutWithTxId { Id = LoadoutId.From(diskStateTree.LoadoutId), Tx = diskStateTree.TxId };
         return true;
     }
     

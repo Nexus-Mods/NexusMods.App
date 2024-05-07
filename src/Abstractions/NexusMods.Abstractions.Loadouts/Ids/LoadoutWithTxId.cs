@@ -7,4 +7,4 @@ namespace NexusMods.Abstractions.Loadouts.Ids;
 /// </summary>
 /// <param name="Id"></param>
 /// <param name="Tx"></param>
-public record struct LoadoutRevisionId(LoadoutId Id, TxId Tx);
+public record struct LoadoutWithTxId(LoadoutId Id, TxId Tx);
