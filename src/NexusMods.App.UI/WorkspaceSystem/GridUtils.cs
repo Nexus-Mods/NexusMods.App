@@ -63,23 +63,31 @@ public static class GridUtils
         var count = currentState.Count;
         Debug.Assert(count > 0);
 
-        var res = currentState.Clear().Add(new PanelGridState(currentState[0].Id, MathUtils.One));
+        var fake = currentState.Clear().Add(new PanelGridState(MakeId(-1), MathUtils.One));
         for (var i = 1; i < count; i++)
         {
-            var possibleStates = GetPossibleStates(res, maxColumns, maxRows);
+            var possibleStates = GetPossibleStates(fake, maxColumns, maxRows);
             var state = possibleStates.First();
 
-            var newPanels = state.Select(x =>
+            var updatedPanels = state.Select(x =>
             {
-                if (x.Id == PanelId.DefaultValue)
-                    x.Id = currentState[i].Id;
+                if (x.Id == PanelId.DefaultValue) x.Id = MakeId(i);
                 return x;
             }).ToArray();
 
-            res = res.UnionById(newPanels);
+            fake = fake.UnionById(updatedPanels);
         }
 
+        var panels = GC.AllocateUninitializedArray<PanelGridState>(length: count);
+        for (var i = 0; i < count; i++)
+        {
+            panels[i] = new PanelGridState(currentState[i].Id, fake[i].Rect);
+        }
+
+        var res = currentState.UnionById(panels);
         return res;
+
+        static PanelId MakeId(int i) => PanelId.From(new Guid(i, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
     }
 
     /// <summary>

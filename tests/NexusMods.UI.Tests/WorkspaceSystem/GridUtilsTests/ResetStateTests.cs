@@ -35,9 +35,24 @@ public partial class GridUtilsTests
             ),
             CreateState(isHorizontal: true,
                 new PanelGridState(firstPanelId, new Rect(0, 0, 0.5, 0.5)),
-                new PanelGridState(fourthPanelId, new Rect(0, 0.5, 0.5, 0.5)),
-                new PanelGridState(secondPanelId, new Rect(0.5, 0, 0.5, 0.5)),
-                new PanelGridState(thirdPanelId, new Rect(0.5, 0.5, 0.5, 0.5))
+                new PanelGridState(secondPanelId, new Rect(0, 0.5, 0.5, 0.5)),
+                new PanelGridState(thirdPanelId, new Rect(0.5, 0, 0.5, 0.5)),
+                new PanelGridState(fourthPanelId, new Rect(0.5, 0.5, 0.5, 0.5))
+            )
+        );
+
+        res.Add(
+            CreateState(isHorizontal: true,
+                new PanelGridState(firstPanelId, new Rect(0, 0, 0.5, 0.5)),
+                new PanelGridState(secondPanelId, new Rect(0, 0.5, 0.5, 0.5)),
+                new PanelGridState(thirdPanelId, new Rect(0.5, 0, 0.5, 0.5)),
+                new PanelGridState(fourthPanelId, new Rect(0.5, 0.5, 0.5, 0.5))
+            ),
+            CreateState(isHorizontal: true,
+                new PanelGridState(firstPanelId, new Rect(0, 0, 0.5, 0.5)),
+                new PanelGridState(secondPanelId, new Rect(0, 0.5, 0.5, 0.5)),
+                new PanelGridState(thirdPanelId, new Rect(0.5, 0, 0.5, 0.5)),
+                new PanelGridState(fourthPanelId, new Rect(0.5, 0.5, 0.5, 0.5))
             )
         );
 
