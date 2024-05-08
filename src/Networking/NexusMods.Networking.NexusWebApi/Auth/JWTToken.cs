@@ -63,7 +63,7 @@ public static class JWTToken
         /// <summary>
         /// True if the token has expired.
         /// </summary>
-        public bool HasExpired => ExpiresAt < DateTimeOffset.UtcNow;
+        public bool HasExpired => ExpiresAt - TimeSpan.FromMinutes(5) <= DateTimeOffset.UtcNow;
 
         /// <summary>
         /// Creates a new JWT Token model from a <see cref="JwtTokenReply"/>. And reuses the existing
