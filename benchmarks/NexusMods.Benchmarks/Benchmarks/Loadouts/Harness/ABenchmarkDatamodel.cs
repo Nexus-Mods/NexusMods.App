@@ -1,11 +1,9 @@
 using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Serialization;
 using NexusMods.DataModel;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Tests.Harness;
@@ -23,7 +21,6 @@ public class ABenchmarkDatamodel(IServiceProvider provider) : ADataModelTest<ABe
     public new IArchiveInstaller ArchiveInstaller => base.ArchiveInstaller;
     public new FileHashCache FileHashCache => base.FileHashCache;
     public new IFileSystem FileSystem => base.FileSystem;
-    public new IDataStore DataStore => base.DataStore;
     public new IFileOriginRegistry FileOriginRegistry => base.FileOriginRegistry;
     public new DiskStateRegistry DiskStateRegistry => base.DiskStateRegistry;
     public new IToolManager ToolManager => base.ToolManager;

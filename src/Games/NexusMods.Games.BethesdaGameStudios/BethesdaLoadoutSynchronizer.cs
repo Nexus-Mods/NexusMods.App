@@ -2,8 +2,6 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
-using NexusMods.Abstractions.NexusWebApi.DTOs;
-using NexusMods.Abstractions.Serialization.DataModel;
 
 namespace NexusMods.Games.BethesdaGameStudios;
 

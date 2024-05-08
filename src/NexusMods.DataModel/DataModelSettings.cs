@@ -15,11 +15,6 @@ public record DataModelSettings : ISettings
     /// If true, data model will be stored in memory only and the paths will be ignored.
     /// </summary>
     public bool UseInMemoryDataModel { get; set; }
-
-    /// <summary>
-    /// Path of the file which contains the backing data store or database.
-    /// </summary>
-    public ConfigurablePath DataStoreFilePath { get; set; }
     
     /// <summary>
     /// Path of the folder containing the MnemonicDB database.
@@ -57,7 +52,6 @@ public record DataModelSettings : ISettings
 
         return new DataModelSettings
         {
-            DataStoreFilePath = new ConfigurablePath(baseKnownPath, $"{baseDirectoryName}/DataModel.sqlite"),
             MnemonicDBPath = new ConfigurablePath(baseKnownPath, $"{baseDirectoryName}/MnemonicDB.rocksdb"),
             ArchiveLocations = [
                 new ConfigurablePath(baseKnownPath, $"{baseDirectoryName}/Archives"),

@@ -1,9 +1,13 @@
 using System.Reactive.Linq;
+using DynamicData.Binding;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.DTOs.OAuth;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.Serialization;
+using NexusMods.Extensions.BCL;
+using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.Networking.NexusWebApi.Auth;
 
@@ -13,48 +17,56 @@ namespace NexusMods.Networking.NexusWebApi.Auth;
 public class OAuth2MessageFactory : IAuthenticatingMessageFactory
 {
     private readonly ILogger<OAuth2MessageFactory> _logger;
-    private readonly IDataStore _store;
     private readonly OAuth _auth;
 
     /// <summary>
     /// Constructor.
     /// </summary>
     public OAuth2MessageFactory(
-        IDataStore store,
+        IConnection conn,
+        IRepository<JWTToken.Model> jwtTokenRepository,
         OAuth auth,
         ILogger<OAuth2MessageFactory> logger)
     {
-        _store = store;
+        _conn = conn;
+        _jwtTokenRepository = jwtTokenRepository;
         _auth = auth;
         _logger = logger;
 
-        _store.IdChanges
-            .Where(x => x.Equals(JWTTokenEntity.StoreId))
+        jwtTokenRepository.Observable
+            .ToObservableChangeSet()
             .Subscribe(_ => _cachedTokenEntity = null);
     }
 
-    private JWTTokenEntity? _cachedTokenEntity;
+    private JWTToken.Model? _cachedTokenEntity;
+    private readonly IConnection _conn;
+    private readonly IRepository<JWTToken.Model> _jwtTokenRepository;
 
     private async ValueTask<string?> GetOrRefreshToken(CancellationToken cancellationToken)
     {
-        _cachedTokenEntity ??= _store.Get<JWTTokenEntity>(JWTTokenEntity.StoreId);
-        if (_cachedTokenEntity is null) return null;
-        if (!_cachedTokenEntity.HasExpired()) return _cachedTokenEntity.AccessToken;
+        if (!_jwtTokenRepository.TryFindFirst(out var token))
+            return null;
+        
+        _cachedTokenEntity = token;
+        if (!_cachedTokenEntity.HasExpired) return _cachedTokenEntity.AccessToken;
 
         _logger.LogDebug("Refreshing expired OAuth token");
 
         var newToken = await _auth.RefreshToken(_cachedTokenEntity.RefreshToken, cancellationToken);
-        var newTokenEntity = JWTTokenEntity.From(newToken);
+        var db = _conn.Db;
+        using var tx = _conn.BeginTransaction();
+        
+        var newTokenEntity = JWTToken.Model.Create(db, tx, newToken!);
         if (newTokenEntity is null)
         {
-            _logger.LogError("Invalid new token!");
+            _logger.LogError("Invalid new token in OAuth2MessageFactory");
             return null;
         }
 
-        _cachedTokenEntity = newTokenEntity;
-        _store.Put(JWTTokenEntity.StoreId, _cachedTokenEntity);
-        _cachedTokenEntity.DataStoreId = JWTTokenEntity.StoreId;
+        var result = await tx.Commit();
+        newTokenEntity = result.Remap(newTokenEntity);
 
+        _cachedTokenEntity = newTokenEntity;
         return _cachedTokenEntity.AccessToken;
     }
 

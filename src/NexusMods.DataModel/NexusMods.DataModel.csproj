@@ -28,7 +28,6 @@
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="FlatSharp.Runtime" />
-        <PackageReference Include="Microsoft.Data.Sqlite" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
         <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
         <PackageReference Include="Microsoft.Extensions.Logging" />
@@ -44,9 +43,6 @@
         <InternalsVisibleTo Include="NexusMods.DataModel.Tests" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="LoadoutSynchronizer\Exceptions\" />
-    </ItemGroup>
 
     <ItemGroup>
       <Compile Remove="DirectoryIndexer.cs" />

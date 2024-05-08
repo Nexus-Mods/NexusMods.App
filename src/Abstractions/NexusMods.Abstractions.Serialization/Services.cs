@@ -1,10 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.Serialization.DataModel;
-using NexusMods.Abstractions.Serialization.DataModel.Converters;
 using NexusMods.Abstractions.Serialization.Json;
-using NexusMods.Abstractions.Serialization.Settings;
 using NexusMods.Abstractions.Settings;
 
 namespace NexusMods.Abstractions.Serialization;
@@ -21,17 +18,8 @@ public static class Services
     {
         services.AddSettingsStorageBackend<JsonStorageBackend>();
 
-        services.AddSingleton<JsonConverter, AbstractClassConverterFactory<Entity>>();
         services.AddSingleton<JsonConverter, AbstractClassConverterFactory<IMetadata>>();
-
-        services.AddSingleton<JsonConverter, EntityHashSetConverterFactory>();
-        services.AddSingleton(typeof(EntityHashSetConverter<>));
-        services.AddSingleton<JsonConverter, EntityDictionaryConverterFactory>();
-        services.AddSingleton(typeof(EntityDictionaryConverter<,>));
-        services.AddSingleton<JsonConverter, EntityLinkConverterFactory>();
-        services.AddSingleton(typeof(EntityLinkConverter<>));
-        services.AddSingleton<JsonConverter, IdJsonConverter>();
-
+        
         services.AddSingleton(s =>
         {
             var opts = new JsonSerializerOptions();

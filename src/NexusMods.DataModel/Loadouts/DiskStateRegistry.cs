@@ -2,9 +2,7 @@ using System.Diagnostics;
 using System.Reactive.Subjects;
 using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
-using NexusMods.Abstractions.Serialization.DataModel.Ids;
 using NexusMods.DataModel.Attributes;
 using NexusMods.MnemonicDB.Abstractions;
 

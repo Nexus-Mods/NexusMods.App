@@ -1,7 +1,5 @@
 ﻿using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.Trees;
-using NexusMods.Abstractions.Loadouts.Ids;
-using NexusMods.Abstractions.Serialization.DataModel.Ids;
 using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.Abstractions.DiskState;

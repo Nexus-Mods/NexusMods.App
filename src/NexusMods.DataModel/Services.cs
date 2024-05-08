@@ -14,6 +14,7 @@ using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Messaging;
+using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.DataModel.ArchiveContents;
@@ -24,7 +25,6 @@ using NexusMods.DataModel.GameRegistry;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Messaging;
-using NexusMods.DataModel.Repository;
 using NexusMods.DataModel.Settings;
 using NexusMods.DataModel.Sorting;
 using NexusMods.Extensions.DependencyInjection;
@@ -48,8 +48,11 @@ public static class Services
         coll.AddMnemonicDB();
         coll.AddMnemonicDBStorage();
 
+        // Settings
         coll.AddSettings<DataModelSettings>();
-        coll.AddSettingsStorageBackend<DataStoreSettingsBackend>(isDefault: true);
+        coll.AddSettingsStorageBackend<MnemonicDBSettingsBackend>(isDefault: true);
+        coll.AddAttributeCollection(typeof(Setting));
+        coll.AddRepository<Setting.Model>(Setting.Name);
 
         coll.AddSingleton<MnemonicDB.Storage.InMemoryBackend.Backend>();
         coll.AddSingleton<MnemonicDB.Storage.RocksDbBackend.Backend>();
@@ -94,9 +97,6 @@ public static class Services
         coll.AddSingleton<JsonConverter, GamePathConverter>();
         coll.AddSingleton<JsonConverter, DateTimeConverter>();
         coll.AddSingleton<JsonConverter, SizeConverter>();
-
-
-        coll.AddAllSingleton<IDataStore, SqliteDataStore>();
         
         // Game Registry
         coll.AddSingleton<IGameRegistry, Registry>();

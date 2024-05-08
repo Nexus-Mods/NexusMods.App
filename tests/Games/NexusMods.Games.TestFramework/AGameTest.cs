@@ -16,7 +16,6 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.NexusWebApi;
-using NexusMods.Abstractions.Serialization;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Models;
@@ -42,7 +41,6 @@ public abstract class AGameTest<TGame> where TGame : AGame
     protected readonly IArchiveInstaller ArchiveInstaller;
     protected readonly IFileOriginRegistry FileOriginRegistry;
     protected readonly IGameRegistry GameRegistry;
-    protected readonly IDataStore DataStore;
 
     protected readonly IConnection Connection;
 
@@ -68,7 +66,6 @@ public abstract class AGameTest<TGame> where TGame : AGame
         ArchiveInstaller = serviceProvider.GetRequiredService<IArchiveInstaller>();
         FileOriginRegistry = serviceProvider.GetRequiredService<IFileOriginRegistry>();
         TemporaryFileManager = serviceProvider.GetRequiredService<TemporaryFileManager>();
-        DataStore = serviceProvider.GetRequiredService<IDataStore>();
         Connection = serviceProvider.GetRequiredService<IConnection>();
 
         NexusNexusApiClient = serviceProvider.GetRequiredService<NexusApiClient>();

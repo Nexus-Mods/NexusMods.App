@@ -58,7 +58,6 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
         var workspaces = _allWorkspaces.Select(workspace => workspace.ToData()).ToArray();
         var data = new WindowData
         {
-            DataStoreId = WindowData.Id,
             ActiveWorkspaceId = ActiveWorkspace?.Id,
             Workspaces = workspaces,
         };

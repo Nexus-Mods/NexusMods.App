@@ -17,7 +17,7 @@ namespace NexusMods.DataModel;
 /// </summary>
 public class Registry : IGameRegistry, IHostedService
 {
-    private readonly IConnection _connection;
+    private readonly IConnection _conn;
     private Dictionary<EntityId,GameInstallation> _byId = new();
     private Dictionary<(GameDomain Domain, Version Version, GameStore Store),EntityId> _byInstall = new();
 
@@ -33,11 +33,11 @@ public class Registry : IGameRegistry, IHostedService
     /// <summary>
     /// Game registry for all installed games.
     /// </summary>
-    public Registry(ILogger<Registry> logger, IEnumerable<ILocatableGame> games, IConnection connection)
+    public Registry(ILogger<Registry> logger, IEnumerable<ILocatableGame> games, IConnection conn)
     {
         _games = games;
         _logger = logger;
-        _connection = connection;
+        _conn = conn;
         
         _cache
             .Connect()
@@ -55,13 +55,13 @@ public class Registry : IGameRegistry, IHostedService
             select install;
         
         _logger.LogInformation("Getting game metadata");
-
+        
         var allInDb = GameMetadata
-            .All(_connection.Db)
+            .All(_conn.Db)
             .ToDictionary(x => (GameDomain.From(x.Domain), GameStore.From(x.Store)));
 
         _logger.LogInformation("Creating transaction");
-        using var tx = _connection.BeginTransaction();
+        using var tx = _conn.BeginTransaction();
 
         var added = new List<(EntityId Id, GameInstallation)>();
         var results = new List<(EntityId Id, GameInstallation)>();

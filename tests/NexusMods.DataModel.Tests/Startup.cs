@@ -52,7 +52,6 @@ public static class Startup
             .OverrideSettingsForTests<DataModelSettings>(settings => settings with
             {
                 UseInMemoryDataModel = true,
-                DataStoreFilePath = new ConfigurablePath(baseKnownPath, $"{baseDirectory}/DataStore.sqlite"),
                 MnemonicDBPath = new ConfigurablePath(baseKnownPath, $"{baseDirectory}/MnemonicDB.rocksdb"),
                 ArchiveLocations = [
                     new ConfigurablePath(baseKnownPath, $"{baseDirectory}/Archives"),

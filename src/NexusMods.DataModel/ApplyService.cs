@@ -7,7 +7,6 @@ using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
-using NexusMods.Abstractions.Serialization.DataModel.Ids;
 using NexusMods.DataModel.Loadouts.Extensions;
 using NexusMods.MnemonicDB.Abstractions;
 

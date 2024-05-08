@@ -1,13 +1,13 @@
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Linq;
 using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Models;
-using static System.Reactive.Linq.Observable;
 
-namespace NexusMods.DataModel.Repository;
+namespace NexusMods.Abstractions.MnemonicDB.Attributes;
 
 internal class Repository<TModel> : IRepository<TModel> where TModel : Entity
 {
@@ -96,13 +96,74 @@ internal class Repository<TModel> : IRepository<TModel> where TModel : Entity
 
         return true;
     }
+
+    public async Task Delete(TModel model)
+    {
+        var tx = _conn.BeginTransaction();
+        // For each attribute, resolve it to a IAttribute (default is A = ushort), then
+        // use that to call .Add with isRetract = true and pass in the value by object
+        foreach (var attr in model.Select(d => d.Resolved))
+        {
+            // This does a bunch of casting, and isn't optimal, but it's such a rarely used usecase
+            // it's fine for now. We can optimize this later by adding methods to `Datom` and `IReadDatom`
+            // in MnemonicDB
+            attr.A.Add(tx, model.Id, attr.ObjectValue, true);
+        }
+
+        await tx.Commit();
+    }
+
+    public bool TryFindFirst<TOuter, TInner>(Attribute<TOuter, TInner> attr, TOuter value, [NotNullWhen(true)] out TModel? model)
+    {
+        Debug.Assert(attr.IsIndexed, "Attribute must be indexed to be used in a find operation");
+        var db = _conn.Db;
+        var items = db.FindIndexed(value, attr);
+        foreach (var item in items)
+        {
+            var entity = db.Get<TModel>(item);
+            if (IsValid(entity))
+            {
+                model = entity;
+                return true;
+            }
+        }
+
+        model = null;
+        return false;
+    }
+
+    public bool TryFindFirst([NotNullWhen(true)] out TModel? model)
+    {
+        foreach (var item in All)
+        {
+            model = item;
+            return true;
+        }
+        model = null;
+        return false;
+    }
+
+    public IEnumerable<TModel> FindAll<TOuter, TInner>(Attribute<TOuter, TInner> attr, TOuter value)
+    {
+        Debug.Assert(attr.IsIndexed, "Attribute must be indexed to be used in a find operation");
+        var db = _conn.Db;
+        var items = db.FindIndexed(value, attr);
+        foreach (var item in items)
+        {
+            var entity = db.Get<TModel>(item);
+            if (IsValid(entity))
+            {
+                yield return entity;
+            }
+        }
+    }
 }
 
 
 /// <summary>
 /// DI extensions for the repository.
 /// </summary>
-public static class Extensions
+public static class ServiceExtensions
 {
     
     /// <summary>
@@ -110,6 +171,8 @@ public static class Extensions
     /// </summary>
     public static IServiceCollection AddRepository<TModel>(this IServiceCollection collection, params IAttribute[] attributes) where TModel : Entity
     {
+        if (attributes.Length == 0)
+            throw new InvalidOperationException("At least one attribute must be provided when creating a repository");
         return collection
             .AddSingleton<IRepository<TModel>>(provider => 
                 new Repository<TModel>(attributes, provider.GetRequiredService<IConnection>()));

@@ -1,5 +1,8 @@
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
 
 namespace NexusMods.Abstractions.MnemonicDB.Attributes;
@@ -34,4 +37,31 @@ public interface IRepository<TModel>
     /// <param name="loadoutId"></param>
     /// <returns></returns>
     bool Exists(EntityId loadoutId);
+
+    /// <summary>
+    /// Completely deletes a model from the repository, by retracting all attributes, returns the new db
+    /// with the model removed.
+    /// </summary>
+    /// <param name="first"></param>
+    Task Delete(TModel first);
+
+    /// <summary>
+    /// Tries to find the first model where the attribute matches the value.
+    /// </summary>
+    bool TryFindFirst<TOuter, TInner>(Attribute<TOuter, TInner> attr, TOuter value, [NotNullWhen(true)] out TModel? model);
+    
+    /// <summary>
+    /// Tries to find the first model, returns false if no model is found.
+    /// </summary>
+    bool TryFindFirst([NotNullWhen(true)] out TModel? model);
+    
+    /// <summary>
+    /// Finds all models where the attribute matches the value.
+    /// </summary>
+    /// <param name="attr"></param>
+    /// <param name="value"></param>
+    /// <typeparam name="TOuter"></typeparam>
+    /// <typeparam name="TInner"></typeparam>
+    /// <returns></returns>
+    IEnumerable<TModel> FindAll<TOuter, TInner>(Attribute<TOuter, TInner> attr, TOuter value);
 }
