@@ -109,7 +109,7 @@ internal sealed class WindowManager : ReactiveObject, IWindowManager
                 found.Tx = tx;
                 found.Data = data;
             }
-            tx.Commit().Wait();
+            tx.Commit();
         }
         catch (Exception e)
         {
@@ -121,10 +121,10 @@ internal sealed class WindowManager : ReactiveObject, IWindowManager
     {
         try
         {
-            var data = _repository.TryFindFirst(out var found) ? found.Data : null;
-            if (data is null) return false;
+            if (!_repository.TryFindFirst(out var found))
+                return false;
 
-            window.WorkspaceController.FromData(data);
+            window.WorkspaceController.FromData(found.Data);
             return true;
         }
         catch (Exception e)
@@ -139,7 +139,7 @@ internal sealed class WindowManager : ReactiveObject, IWindowManager
                 if (!_repository.TryFindFirst(out var found))
                     return false;
                 WindowDataAttributes.Data.Retract(found);
-                tx.Commit().Wait();
+                tx.Commit();
             }
             catch (Exception)
             {
