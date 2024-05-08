@@ -47,7 +47,7 @@ public static class DownloadAnalysis
     public static readonly StringAttribute SuggestedName = new(Namespace, nameof(SuggestedName));
     
     
-    public class Model(ITransaction tx) : Entity(tx, (byte)IdPartitions.DownloadAnalysis)
+    public class Model(ITransaction tx) : Entity(tx)
     {
         
         /// <summary>
@@ -76,6 +76,15 @@ public static class DownloadAnalysis
         {
             get => NumberOfEntries.Get(this);
             set => NumberOfEntries.Add(this, value);
+        }
+
+        /// <summary>
+        /// The human-readable, friendly name for this download
+        /// </summary>
+        public string SuggestedName
+        {
+            get => DownloadAnalysis.SuggestedName.Get(this, "<Unknown>");
+            set => DownloadAnalysis.SuggestedName.Add(this, value);
         }
 
         /// <summary>

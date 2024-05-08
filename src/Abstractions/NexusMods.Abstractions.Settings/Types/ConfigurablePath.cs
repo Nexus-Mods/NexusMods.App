@@ -1,3 +1,5 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using JetBrains.Annotations;
 using NexusMods.Paths;
 
@@ -8,6 +10,7 @@ namespace NexusMods.Abstractions.Settings;
 /// base directory and a <see cref="RelativePath"/> file part.
 /// </summary>
 [PublicAPI]
+[JsonConverter(typeof(JsonConverter))]
 public readonly struct ConfigurablePath
 {
     /// <summary>
@@ -44,5 +47,49 @@ public readonly struct ConfigurablePath
     public override string ToString()
     {
         return $"{BaseDirectory}/{File}";
+    }
+
+    /// <inheritdoc/>
+    public class JsonConverter : JsonConverter<ConfigurablePath>
+    {
+        /// <inheritdoc/>
+        public override ConfigurablePath Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            if (reader.TokenType != JsonTokenType.StartObject) throw new JsonException();
+            reader.Read();
+
+            if (reader.TokenType != JsonTokenType.PropertyName) throw new JsonException();
+            reader.Read();
+
+            if (reader.TokenType != JsonTokenType.String) throw new JsonException();
+            var baseDirectoryString = reader.GetString();
+            reader.Read();
+
+            if (reader.TokenType != JsonTokenType.PropertyName) throw new JsonException();
+            reader.Read();
+
+            if (reader.TokenType != JsonTokenType.String) throw new JsonException();
+            var fileString = reader.GetString();
+            reader.Read();
+
+            if (reader.TokenType != JsonTokenType.EndObject) throw new JsonException();
+
+            if (!Enum.TryParse<KnownPath>(baseDirectoryString, ignoreCase: true, out var baseDirectory))
+                throw new JsonException($"Unknown: {baseDirectoryString}");
+
+            if (fileString is null) throw new JsonException("File can't be null");
+            return new ConfigurablePath(baseDirectory, new RelativePath(fileString));
+        }
+
+        /// <inheritdoc/>
+        public override void Write(Utf8JsonWriter writer, ConfigurablePath value, JsonSerializerOptions options)
+        {
+            writer.WriteStartObject();
+
+            writer.WriteString($"{nameof(BaseDirectory)}", value.BaseDirectory.ToString());
+            writer.WriteString($"{nameof(File)}", value.File.ToString());
+
+            writer.WriteEndObject();
+        }
     }
 }

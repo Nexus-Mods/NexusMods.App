@@ -31,6 +31,7 @@
         <ProjectReference Include="..\NexusMods.App.Cli\NexusMods.App.Cli.csproj" />
         <ProjectReference Include="..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
         <ProjectReference Include="..\NexusMods.Settings\NexusMods.Settings.csproj" />
+        <ProjectReference Include="..\NexusMods.Telemetry\NexusMods.Telemetry.csproj" />
         <ProjectReference Include="..\Themes\NexusMods.Themes.NexusFluentDark\NexusMods.Themes.NexusFluentDark.csproj" />
     </ItemGroup>
 
@@ -40,7 +41,6 @@
         <PackageReference Include="NexusMods.SingleProcess" />
         <PackageReference Include="NLog.Extensions.Logging" />
         <PackageReference Include="Spectre.Console" />
-        <PackageReference Include="NexusMods.Telemetry.OpenTelemetry" />
     </ItemGroup>
 
     <ItemGroup>

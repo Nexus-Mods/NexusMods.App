@@ -14,7 +14,6 @@ using NexusMods.App.UI.Overlays.MetricsOptIn;
 using NexusMods.App.UI.Overlays.Updater;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Networking.Downloaders.Interfaces;
-using NexusMods.Networking.Downloaders.Interfaces.Traits;
 using NexusMods.Paths;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -64,16 +63,6 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
 
         this.WhenActivated(d =>
         {
-            downloadService.AnalyzedArchives.Subscribe(tuple =>
-            {
-                // Because HandleDownloadedAnalyzedArchive is an async task, it begins automatically.
-                HandleDownloadedAnalyzedArchive(tuple.task, tuple.downloadId, tuple.modName).ContinueWith(t =>
-                {
-                    if (t.Exception != null)
-                        logger.LogError(t.Exception, "Error while installing downloaded analyzed archive");
-                });
-            }).DisposeWith(d);
-
             controller.ApplyNextOverlay.Subscribe(item =>
                 {
                     if (item == null)
@@ -112,64 +101,12 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
                 vm._windowManager.UnregisterWindow(vm);
             }).DisposeWith(d);
 
-            if (!_windowManager.RestoreWindowState(this, SanitizeWindowData))
+            if (!_windowManager.RestoreWindowState(this))
             {
                 // NOTE(erri120): select home on startup if we didn't restore the previous state
                 Spine.NavigateToHome();
             }
         });
-    }
-    
-    private WindowData SanitizeWindowData(WindowData data)
-    {
-        /*
-            Note(Sewer)
-
-            Some of our persisted workspaces are dependent on the contents of the
-            datastore. For example, we create a workspace for each loadout.
-
-            In some rare scenarios, it may however become possible that our
-            saved window state is not valid.
-
-            For loadouts, some examples would be:
-
-            - User deleted a loadout from the CLI
-                - Which may not remove the workspace.
-            - App crashes before complete removal of a loadout is complete.
-
-            Although we could reorder operations, or add explicit code to update
-            the current workspaces from say, the CLI command; there's still
-            some inherent risks.
-
-            Suppose someone writes some code that could run before the UI is
-            fully set up. They would have to remember to update workspaces.
-            If they forget, there's a chance of creating a potentially
-            very silent, hard to find bug.
-
-            Therefore, we sanitize the data here, doing cleanup on no longer
-            valid items.
-        */
-
-        var workspaces = new List<WorkspaceData>(data.Workspaces.Length);
-        var activeWorkspaceId = data.ActiveWorkspaceId;
-        foreach (var workspace in data.Workspaces)
-        {
-            if (workspace.Context is LoadoutContext loadout && !_registry.Contains(loadout.LoadoutId))
-            {
-                if (activeWorkspaceId == workspace.Id)
-                    activeWorkspaceId = null;
-
-                continue;
-            }
-
-            workspaces.Add(workspace);
-        }
-
-        return data with
-        {
-            Workspaces = workspaces.ToArray(),
-            ActiveWorkspaceId = activeWorkspaceId,
-        };
     }
 
     internal void OnClose()
@@ -178,27 +115,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
         // of the VM because the MainWindowViewModel gets disposed last, after its contents.
         _windowManager.SaveWindowState(this);
     }
-
-    private async Task HandleDownloadedAnalyzedArchive(IDownloadTask task, DownloadId downloadId, string modName)
-    {
-        var loadouts = Array.Empty<LoadoutId>();
-        if (task is IHaveGameDomain gameDomain)
-            loadouts = _registry.AllLoadouts().Where(x => x.Installation.Game.Domain == gameDomain.GameDomain)
-                .Select(x => x.LoadoutId).ToArray();
-
-        // Insert code here to invoke loadout picker and get results for final loadouts to install to.
-        // ...
-
-        // Install in the background, to avoid blocking UI.
-        await Task.Run(async () =>
-        {
-            if (loadouts.Length > 0)
-                await _archiveInstaller.AddMods(loadouts[0], downloadId, modName);
-            else
-                await _archiveInstaller.AddMods(_registry.AllLoadouts().First().LoadoutId, downloadId, modName);
-        });
-    }
-
+    
     public WindowId WindowId { get; } = WindowId.NewId();
 
     /// <inheritdoc/>

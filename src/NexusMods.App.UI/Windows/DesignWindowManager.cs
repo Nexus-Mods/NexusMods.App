@@ -29,5 +29,5 @@ public class DesignWindowManager : IWindowManager
     public void UnregisterWindow(IWorkspaceWindow window) { }
 
     public void SaveWindowState(IWorkspaceWindow window) { }
-    public bool RestoreWindowState(IWorkspaceWindow window, Func<WindowData, WindowData>? sanitize = null) => false;
+    public bool RestoreWindowState(IWorkspaceWindow window) => false;
 }

@@ -13,7 +13,7 @@ public partial class DownloadSizeView : ReactiveUserControl<IDownloadSizeViewMod
         this.WhenActivated(d =>
         {
             this.WhenAnyValue(vm => vm.ViewModel!.Size)
-                .BindToUi<string, DownloadSizeView, string>(this, view => view.SizeTextBox.Text)
+                .BindToView(this, view => view.SizeTextBox.Text)
                 .DisposeWith(d);
 
             this.WhenAnyValue(view => view.DataContext)

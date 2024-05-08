@@ -181,11 +181,11 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
             return;
         }
         
-        if (loadout.IsMarkerLoadout)
+        // We can't navigate to an invisible loadout, make sure we pick a visible one.
+        if (!loadout.IsVisible())
         {
-            // Last loadout was a marker, we'll pick some non-marker loadout
-            // so the user can apply it.
-            loadout = _loadoutRegistry.AllLoadouts().First(x => !x.IsMarkerLoadout);
+            // Note(sewer) | If we're here, last loadout was most likely a marker
+            loadout = _loadoutRegistry.AllLoadouts().First(x => x.IsVisible());
         }
 
         var loadoutId = loadout.LoadoutId;

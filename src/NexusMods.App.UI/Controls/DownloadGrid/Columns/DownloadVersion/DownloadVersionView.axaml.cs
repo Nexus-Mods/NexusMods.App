@@ -13,7 +13,7 @@ public partial class DownloadVersionView : ReactiveUserControl<IDownloadVersionV
         this.WhenActivated(d =>
         {
             this.WhenAnyValue(vm => vm.ViewModel!.Version)
-                .BindToUi<string, DownloadVersionView, string>(this, view => view.VersionTextBox.Text)
+                .BindToView(this, view => view.VersionTextBox.Text)
                 .DisposeWith(d);
 
             this.WhenAnyValue(view => view.DataContext)

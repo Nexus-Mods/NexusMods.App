@@ -19,7 +19,7 @@ public class DownloadGameNameDesignViewModel : AViewModel<IDownloadGameNameViewM
         this.WhenActivated(d =>
         {
             this.WhenAnyValue(vm => vm.Row.Game)
-                .BindToUi(this, vm => vm.Game)
+                .BindToVM(this, vm => vm.Game)
                 .DisposeWith(d);
         });
     }

@@ -1,7 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using JetBrains.Annotations;
-using NexusMods.App.UI.WorkspaceSystem;
 
 namespace NexusMods.App.UI.Windows;
 
@@ -54,7 +53,6 @@ public interface IWindowManager
     /// Restores the saved window state.
     /// </summary>
     /// <param name="window"></param>
-    /// <param name="sanitize">Optional method to sanitize the restored data.</param>
     /// <returns>Whether the restore was successful.</returns>
-    public bool RestoreWindowState(IWorkspaceWindow window, Func<WindowData, WindowData>? sanitize = null);
+    public bool RestoreWindowState(IWorkspaceWindow window);
 }

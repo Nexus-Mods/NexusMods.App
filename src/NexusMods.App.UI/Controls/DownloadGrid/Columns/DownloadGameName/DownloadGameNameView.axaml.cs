@@ -13,7 +13,7 @@ public partial class DownloadGameNameView : ReactiveUserControl<IDownloadGameNam
         this.WhenActivated(d =>
         {
             this.WhenAnyValue(vm => vm.ViewModel!.Game)
-                .BindToUi<string, DownloadGameNameView, string>(this, view => view.GameTextBox.Text)
+                .BindToView(this, view => view.GameTextBox.Text)
                 .DisposeWith(d);
 
             this.WhenAnyValue(view => view.DataContext)
