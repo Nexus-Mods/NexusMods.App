@@ -1,9 +1,7 @@
 ﻿using FluentAssertions;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
-using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.App.UI.Pages.LoadoutGrid;
-using Noggog;
 
 namespace NexusMods.UI.Tests.RightContent;
 

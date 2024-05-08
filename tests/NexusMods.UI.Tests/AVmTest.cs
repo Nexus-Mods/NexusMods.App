@@ -3,14 +3,10 @@ using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.FileStore.ArchiveMetadata;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
-using NexusMods.Abstractions.Loadouts.Mods;
-using NexusMods.Abstractions.Serialization;
 using NexusMods.App.UI;
-using NexusMods.DataModel.Loadouts;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
@@ -31,8 +27,6 @@ where TVm : IViewModelInterface
     protected IFileSystem FileSystem { get; }
     protected GameInstallation Install { get; }
     protected IConnection Connection { get; }
-
-    protected IDataStore DataStore { get; }
     protected IArchiveInstaller ArchiveInstaller { get; }
 
     protected IFileOriginRegistry FileOriginRegistry { get; }
@@ -43,7 +37,6 @@ where TVm : IViewModelInterface
     public AVmTest(IServiceProvider provider) : base(provider)
     {
         _vmWrapper = GetActivatedViewModel<TVm>();
-        DataStore = provider.GetRequiredService<IDataStore>();
         Connection = provider.GetRequiredService<IConnection>();
         Game = provider.GetRequiredService<StubbedGame>();
         Install = Game.Installations.First();

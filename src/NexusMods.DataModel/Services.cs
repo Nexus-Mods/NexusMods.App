@@ -97,9 +97,6 @@ public static class Services
         coll.AddSingleton<JsonConverter, GamePathConverter>();
         coll.AddSingleton<JsonConverter, DateTimeConverter>();
         coll.AddSingleton<JsonConverter, SizeConverter>();
-
-
-        coll.AddAllSingleton<IDataStore, SqliteDataStore>();
         
         // Game Registry
         coll.AddSingleton<IGameRegistry, Registry>();

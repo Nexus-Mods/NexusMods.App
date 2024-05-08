@@ -2,10 +2,8 @@ using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
-using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.Abstractions.Settings;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 
 namespace NexusMods.DataModel.Settings;
 
@@ -23,8 +21,6 @@ internal sealed class MnemonicDBSettingsBackend : ISettingsStorageBackend
     {
         _logger = logger;
 
-        // NOTE(erri120): Lazy to fix circular dependency:
-        // SettingsManager -> DataStoreSettingsBackend -> IDataStore -> ISettingsManager
         _conn = new Lazy<IConnection>(serviceProvider.GetRequiredService<IConnection>);
         _jsonOptions = new Lazy<JsonSerializerOptions>(serviceProvider.GetRequiredService<JsonSerializerOptions>);
         _settingRepository = new Lazy<IRepository<Setting.Model>>(serviceProvider.GetRequiredService<IRepository<Setting.Model>>);
