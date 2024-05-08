@@ -80,8 +80,8 @@ public static class JWTToken
             return new Model(tx)
             {
                 Id = existingId,
-                AccessToken = reply.AccessToken ?? "",
-                RefreshToken = reply.RefreshToken ?? "",
+                AccessToken = reply.AccessToken,
+                RefreshToken = reply.RefreshToken,
                 ExpiresAt = DateTimeOffset.FromUnixTimeSeconds(reply.CreatedAt).DateTime + TimeSpan.FromSeconds(reply.ExpiresIn),
             };
         }
