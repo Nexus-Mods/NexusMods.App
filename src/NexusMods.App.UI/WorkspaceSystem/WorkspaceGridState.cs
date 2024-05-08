@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Text;
 using Avalonia;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
@@ -149,15 +150,22 @@ public readonly partial struct WorkspaceGridState :
     [SuppressMessage("ReSharper", "UnusedMember.Global")]
     public void DebugPrint()
     {
-        foreach (var panel in Inner)
-        {
-            Console.WriteLine(panel.ToString());
-        }
-
+        Console.WriteLine(ToString());
         Console.WriteLine();
     }
 
-    #region Interface Implementations
+    public override string ToString()
+    {
+        var sb = new StringBuilder();
+        foreach (var panel in Inner)
+        {
+            sb.AppendLine(panel.ToString());
+        }
+
+        return sb.ToString();
+    }
+
+#region Interface Implementations
 
     public ImmutableSortedSet<PanelGridState>.Enumerator GetEnumerator() => Inner.GetEnumerator();
     IEnumerator<PanelGridState> IEnumerable<PanelGridState>.GetEnumerator() => Inner.GetEnumerator();

@@ -75,12 +75,12 @@ OMOD is currently out of scope.
 ### XML
 
 - `fomod/ModuleConfig.xml` (or `fomod/script.xml` (?), never seen this in the wild).
-- Rheoretically any image (don't have to be in an "images" subdirectory).
+- Theoretically any image (don't have to be in an "images" subdirectory).
 
 ### C#
 
 - `fomod/script.cs`
-- Rheoretically any other file in the archive
+- Theoretically any other file in the archive
 
 ### ModScript
 
