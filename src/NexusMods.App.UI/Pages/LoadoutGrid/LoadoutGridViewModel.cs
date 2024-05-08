@@ -177,7 +177,7 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
                 {
                     tx.Add(id, FilePathMetadata.OriginalName, file.FileName);
                 });
-            await _archiveInstaller.AddMods(LoadoutId, downloadId, token: CancellationToken.None);
+            await _archiveInstaller.AddMods(LoadoutId, downloadId, file.FileName, token: CancellationToken.None);
         });
 
         return Task.CompletedTask;
@@ -205,7 +205,7 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
                 {
                     tx.Add(id, FilePathMetadata.OriginalName, file.FileName);
                 });
-            await _archiveInstaller.AddMods(LoadoutId, downloadId, token: CancellationToken.None, installer: installer);
+            await _archiveInstaller.AddMods(LoadoutId, downloadId, file.FileName, token: CancellationToken.None, installer: installer);
         });
 
         return Task.CompletedTask;
