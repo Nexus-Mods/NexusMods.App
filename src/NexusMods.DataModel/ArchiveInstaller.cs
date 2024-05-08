@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.FileStore;
+using NexusMods.Abstractions.FileStore.ArchiveMetadata;
 using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Installers;
@@ -50,14 +51,18 @@ public class ArchiveInstaller : IArchiveInstaller
         var useCustomInstaller = installer != null;
         var loadout = _conn.Db.Get<Loadout.Model>(loadoutId.Value);
         
-        var archiveName = "<unknown>";
-        if (download.Contains(DownloadAnalysis.SuggestedName))
-        {
-            archiveName = download.Get(DownloadAnalysis.SuggestedName);
-        }
-        
-        string modName = defaultModName ?? archiveName;
+        var modName = defaultModName ?? (download.Contains(DownloadAnalysis.SuggestedName)
+            ? download.SuggestedName
+            : "<unknown>");
 
+        var dlTx = _conn.BeginTransaction();
+        dlTx.Add(download.Id, DownloadAnalysis.SuggestedName, modName);
+        await dlTx.Commit();
+        
+        var archiveName = download.Contains(FilePathMetadata.OriginalName)
+            ? download.Get(FilePathMetadata.OriginalName).FileName.ToString()
+            : "<unknown>";
+        
         ModId modId;
         Mod.Model baseMod;
         {

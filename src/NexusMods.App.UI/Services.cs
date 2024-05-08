@@ -259,7 +259,7 @@ public static class Services
             .AddSingleton<InjectedViewLocator>()
             .AddFileSystem()
 
-            .AddRepository<DownloadAnalysis.Model>(DownloadAnalysis.NumberOfEntries);
+            .AddRepository<DownloadAnalysis.Model>([DownloadAnalysis.NumberOfEntries, DownloadAnalysis.SuggestedName]);
     }
 
 }
