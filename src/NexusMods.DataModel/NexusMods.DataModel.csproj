@@ -44,10 +44,6 @@
         <InternalsVisibleTo Include="NexusMods.DataModel.Tests" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="LoadoutSynchronizer\Exceptions\" />
-      <Folder Include="Repository\" />
-    </ItemGroup>
 
     <ItemGroup>
       <Compile Remove="DirectoryIndexer.cs" />
