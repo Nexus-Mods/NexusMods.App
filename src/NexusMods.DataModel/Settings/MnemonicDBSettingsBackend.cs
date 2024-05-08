@@ -12,7 +12,7 @@ namespace NexusMods.DataModel.Settings;
 /// <summary>
 /// A settings backend that uses the MnemonicDB for storage.
 /// </summary>
-public class MnemonicDBSettingsBackend : ISettingsStorageBackend
+internal sealed class MnemonicDBSettingsBackend : ISettingsStorageBackend
 {
     private readonly ILogger<MnemonicDBSettingsBackend> _logger;
     private readonly Lazy<IConnection> _conn;
