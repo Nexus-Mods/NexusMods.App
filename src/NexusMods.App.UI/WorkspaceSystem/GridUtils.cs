@@ -63,6 +63,7 @@ public static class GridUtils
         var count = currentState.Count;
         Debug.Assert(count > 0);
 
+        // Create a "fake" WorkspaceGrid and fill it with N panels in their default position and sizes.
         var fake = currentState.Clear().Add(new PanelGridState(MakeId(-1), MathUtils.One));
         for (var i = 1; i < count; i++)
         {
@@ -78,6 +79,7 @@ public static class GridUtils
             fake = fake.UnionById(updatedPanels);
         }
 
+        // Update the existing panels with the bounds of the "fake" panels
         var panels = GC.AllocateUninitializedArray<PanelGridState>(length: count);
         for (var i = 0; i < count; i++)
         {
