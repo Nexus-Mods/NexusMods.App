@@ -6,6 +6,7 @@ using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.DTOs.OAuth;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.Serialization;
+using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.Networking.NexusWebApi.Auth;
@@ -43,8 +44,10 @@ public class OAuth2MessageFactory : IAuthenticatingMessageFactory
 
     private async ValueTask<string?> GetOrRefreshToken(CancellationToken cancellationToken)
     {
-        _cachedTokenEntity ??= _jwtTokenRepository.All.First();
-        if (_cachedTokenEntity is null) return null;
+        if (!_jwtTokenRepository.TryFindFirst(out var token))
+            return null;
+        
+        _cachedTokenEntity = token;
         if (!_cachedTokenEntity.HasExpired) return _cachedTokenEntity.AccessToken;
 
         _logger.LogDebug("Refreshing expired OAuth token");

@@ -41,10 +41,10 @@ public class ApiKeyMessageFactory(IConnection conn) : IAuthenticatingMessageFact
     }
 
     /// <inheritdoc />
-    public async ValueTask<bool> IsAuthenticated()
+    public ValueTask<bool> IsAuthenticated()
     {
-        var dataStoreResult = await ValueTask.FromResult(!string.IsNullOrWhiteSpace(Auth.ApiKey.Get(_conn.Db)));
-        return dataStoreResult || EnvironmentApiKey != null;
+        var dataStoreResult = !string.IsNullOrWhiteSpace(Auth.ApiKey.Get(_conn.Db));
+        return ValueTask.FromResult(dataStoreResult || EnvironmentApiKey != null);
     }
 
     /// <summary>
