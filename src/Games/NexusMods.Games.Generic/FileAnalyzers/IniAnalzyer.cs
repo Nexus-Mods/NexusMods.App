@@ -1,18 +1,13 @@
 using IniParser;
 using IniParser.Model.Configuration;
 using IniParser.Parser;
-using NexusMods.Abstractions.FileExtractor;
 using NexusMods.Abstractions.IO;
-using NexusMods.Abstractions.Serialization.DataModel.Ids;
 
 namespace NexusMods.Games.Generic.FileAnalyzers;
 
 
 public class IniAnalzyer
 {
-    public FileAnalyzerId Id { get; } = FileAnalyzerId.New("904bca7b-fbd6-4350-b4e2-6fdbd034ec76", 1);
-    public IEnumerable<FileType> FileTypes => new[] { FileType.INI };
-
     public static readonly IniParserConfiguration Config = new()
     {
         AllowDuplicateKeys = true,
