@@ -12,7 +12,7 @@ public class FileOriginEntryViewModel : AViewModel<IFileOriginEntryViewModel>, I
     public required string Name { get; init; } 
     public string Version { get; init; } = "-";
     public required Size Size { get; init; }
-    public DateTime ArchiveDate { get; init; } = DateTime.UnixEpoch;
+    public DateTime ArchiveDate { get; set; } = DateTime.UnixEpoch;
 
     [ObservableAsProperty]
     public string DisplayArchiveDate { get; } = "-";
