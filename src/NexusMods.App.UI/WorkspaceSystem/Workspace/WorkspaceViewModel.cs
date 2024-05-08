@@ -6,6 +6,7 @@ using Avalonia;
 using DynamicData;
 using DynamicData.Aggregation;
 using DynamicData.Kernel;
+using Microsoft.Extensions.Logging;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Windows;
 using ReactiveUI;
@@ -45,13 +46,16 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
     private readonly ReadOnlyObservableCollection<IPanelResizerViewModel> _resizers;
     public ReadOnlyObservableCollection<IPanelResizerViewModel> Resizers => _resizers;
 
+    private readonly ILogger _logger;
     private readonly IWorkspaceController _workspaceController;
     private readonly PageFactoryController _factoryController;
 
     public WorkspaceViewModel(
+        ILogger<WorkspaceViewModel> logger,
         IWorkspaceController workspaceController,
         PageFactoryController factoryController)
     {
+        _logger = logger;
         _workspaceController = workspaceController;
         _factoryController = factoryController;
 
@@ -71,16 +75,17 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
             .Bind(out _panels)
             .Do(_ => UpdateStates())
             .Do(_ => UpdateResizers())
-            .Subscribe();
+            .SubscribeWithErrorLogging();
 
         this.WhenActivated(disposables =>
         {
             // Workspace resizing
             this.WhenAnyValue(vm => vm.IsHorizontal)
-                .Distinct()
+                .DistinctUntilChanged()
+                .Do(_ => ResetGridIfBroken(forceReset: true))
                 .Do(_ => UpdateStates())
                 .Do(_ => UpdateResizers())
-                .Subscribe();
+                .SubscribeWithErrorLogging(logger: _logger);
 
             // Adding a panel
             _addPanelButtonViewModelSource
@@ -119,7 +124,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                 .MergeMany(item => item.DragEndCommand)
                 .Do(_ => UpdateStates())
                 .Do(_ => UpdateResizers())
-                .Subscribe()
+                .SubscribeWithErrorLogging()
                 .DisposeWith(disposables);
 
             // Resizing
@@ -166,8 +171,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                         if (isHorizontal)
                         {
                             // true if the resizer sits on the "top" edge of the panel
-                            var isResizerYAligned =
-                                lastLogicalValue.IsCloseTo(currentSize.Y, tolerance: defaultTolerance);
+                            var isResizerYAligned = lastLogicalValue.IsCloseTo(currentSize.Y, tolerance: defaultTolerance);
 
                             // if the resizer sits on the "top" edge of the panel, we want to move the panel with the resizer
                             var newY = isResizerYAligned ? newLogicalValue : currentSize.Y;
@@ -188,8 +192,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                         else
                         {
                             // true if the resizer sits on the "left" edge of the panel
-                            var isResizerXAligned =
-                                lastLogicalValue.IsCloseTo(currentSize.X, tolerance: defaultTolerance);
+                            var isResizerXAligned = lastLogicalValue.IsCloseTo(currentSize.X, tolerance: defaultTolerance);
 
                             // if the resizer sits on the "left" edge of the panel, we want to move the panel with the resizer
                             var newX = isResizerXAligned ? newLogicalValue : currentSize.X;
@@ -483,5 +486,24 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                 updater.AddOrUpdate(vm);
             }
         });
+
+        ResetGridIfBroken();
+    }
+
+    private void ResetGridIfBroken(bool forceReset = false)
+    {
+        var currentState = WorkspaceGridState.From(Panels, IsHorizontal);
+
+        if (!forceReset)
+        {
+            if (GridUtils.IsPerfectGrid(currentState, doThrow: false)) return;
+            _logger.LogError("The Workspace Grid is broken and will be reset: {State}", currentState.ToString());
+        }
+
+        var newState = GridUtils.ResetState(currentState, MaxColumns, MaxRows);
+        foreach (var panel in Panels)
+        {
+            panel.LogicalBounds = newState[panel.Id].Rect;
+        }
     }
 }

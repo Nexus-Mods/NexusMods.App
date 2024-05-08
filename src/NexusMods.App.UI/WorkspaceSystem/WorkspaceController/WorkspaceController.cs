@@ -23,7 +23,8 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly IWorkspaceWindow _window;
-    private readonly ILogger<WorkspaceController> _logger;
+    private readonly ILogger _logger;
+    private readonly ILoggerFactory _loggerFactory;
     private readonly IWorkspaceAttachmentsFactoryManager _workspaceAttachmentsFactory;
     private readonly PageFactoryController _pageFactoryController;
 
@@ -40,7 +41,8 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
         _serviceProvider = serviceProvider;
         _window = window;
 
-        _logger = serviceProvider.GetRequiredService<ILogger<WorkspaceController>>();
+        _loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+        _logger = _loggerFactory.CreateLogger<WorkspaceController>();
         _workspaceAttachmentsFactory = serviceProvider.GetRequiredService<IWorkspaceAttachmentsFactoryManager>();
         _pageFactoryController = serviceProvider.GetRequiredService<PageFactoryController>();
 
@@ -99,6 +101,7 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
         Dispatcher.UIThread.VerifyAccess();
 
         var vm = new WorkspaceViewModel(
+            logger: _loggerFactory.CreateLogger<WorkspaceViewModel>(),
             workspaceController: this,
             factoryController: _pageFactoryController
         )

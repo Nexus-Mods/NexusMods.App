@@ -13,7 +13,7 @@ public static class GridUtils
     /// A perfect has no gaps, and no panel is out-of-bounds.
     /// </remarks>
     /// <exception cref="Exception">Thrown when the grid is not perfect.</exception>
-    internal static bool IsPerfectGrid(WorkspaceGridState gridState)
+    internal static bool IsPerfectGrid(WorkspaceGridState gridState, bool doThrow = true)
     {
         var totalArea = 0.0;
 
@@ -25,7 +25,8 @@ public static class GridUtils
                 !rect.Top.IsGreaterThanOrCloseTo(0.0)  ||
                 !rect.Bottom.IsLessThanOrCloseTo(1.0))
             {
-                throw new Exception($"Panel {panelState} is out of bounds");
+                if (doThrow) throw new Exception($"Panel {panelState} is out of bounds");
+                return false;
             }
 
             totalArea += rect.Height * rect.Width;
@@ -36,17 +37,59 @@ public static class GridUtils
 
                 if (rect.Intersects(other.Rect))
                 {
-                    throw new Exception($"{panelState.ToString()} intersects with {other.ToString()}");
+                    if (doThrow) throw new Exception($"{panelState.ToString()} intersects with {other.ToString()}");
+                    return false;
                 }
             }
         }
 
         if (!totalArea.IsCloseTo(1.0))
         {
-            throw new Exception($"Area of {totalArea} doesn't match 1.0");
+            if (doThrow) throw new Exception($"Area of {totalArea} doesn't match 1.0");
+            return false;
         }
 
         return true;
+    }
+
+    /// <summary>
+    /// Resets the current state into a working state.
+    /// </summary>
+    internal static WorkspaceGridState ResetState(
+        WorkspaceGridState currentState,
+        int maxColumns,
+        int maxRows)
+    {
+        var count = currentState.Count;
+        Debug.Assert(count > 0);
+
+        // Create a "fake" WorkspaceGrid and fill it with N panels in their default position and sizes.
+        var fake = currentState.Clear().Add(new PanelGridState(MakeId(-1), MathUtils.One));
+        for (var i = 1; i < count; i++)
+        {
+            var possibleStates = GetPossibleStates(fake, maxColumns, maxRows);
+            var state = possibleStates.First();
+
+            var updatedPanels = state.Select(x =>
+            {
+                if (x.Id == PanelId.DefaultValue) x.Id = MakeId(i);
+                return x;
+            }).ToArray();
+
+            fake = fake.UnionById(updatedPanels);
+        }
+
+        // Update the existing panels with the bounds of the "fake" panels
+        var panels = GC.AllocateUninitializedArray<PanelGridState>(length: count);
+        for (var i = 0; i < count; i++)
+        {
+            panels[i] = new PanelGridState(currentState[i].Id, fake[i].Rect);
+        }
+
+        var res = currentState.UnionById(panels);
+        return res;
+
+        static PanelId MakeId(int i) => PanelId.From(new Guid(i, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
     }
 
     /// <summary>
