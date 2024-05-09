@@ -20,6 +20,7 @@ public class GameWidgetViewModel : AViewModel<IGameWidgetViewModel>, IGameWidget
 
         AddGameCommand = ReactiveCommand.Create(() => { });
         ViewGameCommand = ReactiveCommand.Create(() => { });
+        RemoveAllLoadoutsCommand = ReactiveCommand.Create(() => { });
 
         _image = this
             .WhenAnyValue(vm => vm.Installation)
@@ -68,6 +69,10 @@ public class GameWidgetViewModel : AViewModel<IGameWidgetViewModel>, IGameWidget
 
     [Reactive]
     public ReactiveCommand<Unit, Unit> ViewGameCommand { get; set; }
+
+    // TODO: This is temporary, to speed up development. Until design comes up with UX for deleting loadouts.
+    [Reactive]
+    public ReactiveCommand<Unit, Unit> RemoveAllLoadoutsCommand { get; set; }
 
 
     [Reactive]

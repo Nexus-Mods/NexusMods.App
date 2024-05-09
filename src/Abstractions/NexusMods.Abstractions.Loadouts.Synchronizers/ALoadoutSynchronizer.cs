@@ -94,10 +94,16 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// <inheritdoc />
     public async ValueTask<FlattenedLoadout> LoadoutToFlattenedLoadout(Loadout loadout)
     {
-        var dict = new Dictionary<GamePath, ModFilePair>();
         var sorted = await SortMods(loadout);
+        return ModsToFlattenedLoadout(sorted);
+    }
 
-        foreach (var mod in sorted)
+    private static FlattenedLoadout ModsToFlattenedLoadout(IEnumerable<Mod> sorted)
+    {
+        var modArray = sorted.ToArray();
+        var numItems = modArray.Sum(mod => mod.Files.Count);
+        var dict = new Dictionary<GamePath, ModFilePair>(numItems);
+        foreach (var mod in modArray)
         {
             if (!mod.Enabled)
                 continue;
@@ -123,14 +129,14 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
 
 
     /// <inheritdoc />
-    public async Task<DiskStateTree> FileTreeToDisk(FileTree fileTree, Loadout loadout, FlattenedLoadout flattenedLoadout, DiskStateTree prevState, GameInstallation installation, bool skipIngest = false)
+    public async Task<DiskStateTree> FileTreeToDisk(FileTree fileTree, Loadout? loadout, FlattenedLoadout flattenedLoadout, DiskStateTree prevState, GameInstallation installation, bool skipIngest = false)
     {
         // Return the new tree
         return await FileTreeToDiskImpl(fileTree, loadout, flattenedLoadout, prevState, installation, true);
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal async Task<DiskStateTree> FileTreeToDiskImpl(FileTree fileTree, Loadout loadout, FlattenedLoadout flattenedLoadout, DiskStateTree prevState, GameInstallation installation, bool fixFileMode, bool skipIngest = false)
+    internal async Task<DiskStateTree> FileTreeToDiskImpl(FileTree fileTree, Loadout? loadout, FlattenedLoadout flattenedLoadout, DiskStateTree prevState, GameInstallation installation, bool fixFileMode, bool skipIngest = false)
     {
         List<KeyValuePair<GamePath, HashedEntryWithName>> toDelete = new();
         List<KeyValuePair<AbsolutePath, IGeneratedFile>> toWrite = new();
@@ -246,11 +252,14 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         }
 
         // Write the generated files (could be done in parallel)
+        if (toWrite.Count > 0 && loadout == null)
+            throw new InvalidOperationException("A valid loadout is required for creating generated files");
+        
         foreach (var entry in toWrite)
         {
             entry.Key.Parent.CreateDirectory();
             await using var outputStream = entry.Key.Create();
-            var hash = await entry.Value.Write(outputStream, loadout, flattenedLoadout, fileTree);
+            var hash = await entry.Value.Write(outputStream, loadout!, flattenedLoadout, fileTree);
             if (hash == null)
             {
                 outputStream.Position = 0;
@@ -575,12 +584,21 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// <returns></returns>
     public virtual async Task<DiskStateTree> Apply(Loadout loadout, bool forceSkipIngest = false)
     {
+        // Note(Sewer) If the last loadout was a marker loadout, we need to
+        // skip ingest and ignore changes, since marker loadouts should not be changed.
+        // (Prevent 'Needs Ingest' exception)
+        forceSkipIngest = forceSkipIngest || IsLastLoadoutAMarkerLoadout(loadout.Installation);
+
         var flattened = await LoadoutToFlattenedLoadout(loadout);
         var fileTree = await FlattenedLoadoutToFileTree(flattened, loadout);
         var prevState = _diskStateRegistry.GetState(loadout.Installation)!;
         var diskState = await FileTreeToDisk(fileTree, loadout, flattened, prevState, loadout.Installation, forceSkipIngest);
         diskState.LoadoutRevision = loadout.DataStoreId;
         await _diskStateRegistry.SaveState(loadout.Installation, diskState);
+
+        if (!loadout.IsMarkerLoadout())
+            RemoveMarkerLoadout();
+
         return diskState;
     }
 
@@ -755,38 +773,13 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     }
 
     /// <inheritdoc />
-    public virtual async Task<Loadout> Manage(GameInstallation installation, string? suggestedName = null)
+    public virtual async Task<Loadout> CreateLoadout(GameInstallation installation, string? suggestedName = null)
     {
         var (isCached, initialState) = await GetOrCreateInitialDiskState(installation);
         
         var loadoutId = LoadoutId.Create();
-        var gameFiles = new Mod()
-        {
-            Name = "Game Files",
-            ModCategory = Mod.GameFilesCategory,
-            Id = ModId.NewId(),
-            Enabled = true,
-            Files = EntityDictionary<ModFileId, AModFile>.Empty(_store).With(initialState.GetAllDescendentFiles()
-                .Select(f =>
-                {
-                    var id = ModFileId.NewId();
-                    return KeyValuePair.Create(id, (AModFile)new StoredFile
-                    {
-                        Id = id,
-                        Hash = f.Item.Value.Hash,
-                        Size = f.Item.Value.Size,
-                        To = f.GamePath()
-                    });
-                }))
-        };
-
-        var fileTree = FileTree.Create(gameFiles.Files.Select(kv =>
-                {
-                    var storedFile = (kv.Value as StoredFile)!;
-                    return KeyValuePair.Create(storedFile.To, kv.Value);
-                }
-            )
-        );
+        var gameFiles = CreateGameFilesMod(initialState);
+        var fileTree = CreateFileTreeFromMod(gameFiles);
         await BackupNewFiles(installation, fileTree);
 
         var loadout = _loadoutRegistry.Alter(loadoutId, "Initial loadout",  loadout => loadout
@@ -817,8 +810,136 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         await _diskStateRegistry.SaveState(loadout.Installation, initialState);
         return loadout;
     }
+    
+    private static FileTree CreateFileTreeFromMod(Mod gameFiles)
+    {
+        return FileTree.Create(gameFiles.Files.Select(kv =>
+                {
+                    var storedFile = (kv.Value as StoredFile)!;
+                    return KeyValuePair.Create(storedFile.To, kv.Value);
+                }
+            )
+        );
+    }
 
-    #endregion
+    private Mod CreateGameFilesMod(DiskStateTree initialState)
+    {
+        return new Mod()
+        {
+            Name = "Game Files",
+            ModCategory = Mod.GameFilesCategory,
+            Id = ModId.NewId(),
+            Enabled = true,
+            Files = EntityDictionary<ModFileId, AModFile>.Empty(_store).With(initialState.GetAllDescendentFiles()
+                .Select(f =>
+                {
+                    var id = ModFileId.NewId();
+                    return KeyValuePair.Create(id, (AModFile)new StoredFile
+                    {
+                        Id = id,
+                        Hash = f.Item.Value.Hash,
+                        Size = f.Item.Value.Size,
+                        To = f.GamePath()
+                    });
+                }))
+        };
+    }
+
+    /// <inheritdoc />
+    public async Task UnManage(GameInstallation installation)
+    {
+        await FastForceApplyOriginalState(installation);
+
+        // Cleanup all of the metadata left behind for this game.
+        // All database information, including loadouts, initial game state and
+        // TODO: Garbage Collect unused files.
+        foreach (var loadoutId in _loadoutRegistry.AllLoadoutIds().ToArray())
+            _loadoutRegistry.Delete(loadoutId);
+        
+        await _diskStateRegistry.ClearInitialState(installation);
+    }
+
+    /// <inheritdoc />
+    public async Task DeleteLoadout(GameInstallation installation, LoadoutId id)
+    {
+        // Clear Initial State if this is the only loadout for the game.
+        // We use folder location for this.
+        var installLocation = installation.LocationsRegister[LocationId.Game].ToString();
+        var isLastLoadout = _loadoutRegistry
+            .AllLoadouts()
+            .Count(x => 
+                x.Installation.LocationsRegister[LocationId.Game].ToString() == installLocation 
+                && !x.IsMarkerLoadout()) <= 1;
+
+        if (isLastLoadout)
+        {
+            await UnManage(installation);
+            return;
+        }
+    
+        if (_loadoutRegistry.IsApplied(id, _diskStateRegistry.GetLastAppliedLoadout(installation)))
+        {
+            /*
+                Note(Sewer)
+
+                The loadout being deleted is the currently active loadout.
+
+                As a 'default' reasonable behaviour, we will reset the game folder
+                to its initial state and create a 'hidden' loadout to accomodate this.
+
+                This is a good default for many cases:
+                
+                - Game files are not likely to be overwritten, so this will 
+                  just end up materialising into a bunch of deletes. (Very Fast)
+                  
+                - Ensures internal consistency. i.e. 'last applied loadout' is always
+                  a valid loadout.
+                  
+                - Provides more backend flexibility (e.g. we can 'squash' the
+                  revisions at the beginning of other loadouts without consequence.)
+                  
+                - Meets user UI/UX expectations. The next loadout they navigate to
+                  won't be somehow magically applied.
+
+                We may make a setting to change the behaviour in the future,
+                via a setting to match user preferences, but for now this is the
+                default.
+            */
+
+            var markerLoadout = await CreateMarkerLoadout(installation);
+            await Apply(markerLoadout, true);
+        }
+
+        _loadoutRegistry.Delete(id);
+    }
+    
+    /// <summary>
+    ///     Creates a 'Marker Loadout', which is a loadout embued with the initial
+    ///     state of the game folder.
+    ///
+    ///     This loadout is created when the last applied loadout for a game
+    ///     is deleted. And is deleted when a non-marker loadout is applied.
+    ///     It should be a singleton.
+    /// </summary>
+    private async Task<Loadout> CreateMarkerLoadout(GameInstallation installation)
+    {
+        var initialState = await GetOrCreateInitialDiskState(installation);
+        var loadoutId = LoadoutId.Create();
+        var gameFiles = CreateGameFilesMod(initialState.tree);
+        var fileTree = CreateFileTreeFromMod(gameFiles);
+        await BackupNewFiles(installation, fileTree);
+
+        var loadout = _loadoutRegistry.Alter(loadoutId, "Marker Loadout", loadout => loadout with
+        {
+            Name = "Temporary Marker Loadout",
+            Installation = installation,
+            Mods = loadout.Mods.With(gameFiles.Id, gameFiles),
+            LoadoutKind = LoadoutKind.Marker,
+        });
+
+        return loadout;
+    }
+#endregion
 
     #region FlattenLoadoutToTree Methods
 
@@ -837,7 +958,6 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             .SelectMany(x => x.GenerateSortRules(mod.Id, loadout));
         return await builtInSortRules.ToAsyncEnumerable().Concat(customSortRules).ToArrayAsync();
     }
-
 
     /// <summary>
     /// Sorts the mods in a loadout.
@@ -859,8 +979,38 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     }
     #endregion
 
-
     #region Misc Helper Functions
+    /// <summary>
+    /// Checks if the last applied loadout is a 'marker' loadout.
+    /// </summary>
+    /// <param name="installation">The game installation to check.</param>
+    /// <returns>True if the last applied loadout is a marker loadout.</returns>
+    private bool IsLastLoadoutAMarkerLoadout(GameInstallation installation)
+    {
+        var lastId = _diskStateRegistry.GetLastAppliedLoadout(installation);
+        if (lastId == null)
+            return false;
+
+        var loadout = _loadoutRegistry.GetLoadout(lastId);
+        return loadout != null && loadout.IsMarkerLoadout();
+    }
+    
+    /// <summary>
+    /// Removes the first found 'marker' loadout from the data store.
+    /// </summary>
+    /// <remarks>
+    /// The 'marker loadout' should be a singleton as per <see cref="Loadout.IsMarkerLoadout"/>
+    /// and <see cref="CreateMarkerLoadout"/>.
+    /// </remarks>
+    private void RemoveMarkerLoadout()
+    {
+        foreach (var loadout in _loadoutRegistry.AllLoadouts())
+        {
+            if (!loadout.IsMarkerLoadout()) continue;
+            _loadoutRegistry.Delete(loadout.LoadoutId);
+            return;
+        }
+    }
 
     /// <summary>
     /// By default this method just returns the current state of the game folders. Most of the time
@@ -882,6 +1032,28 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         var indexedState = await _hashCache.IndexDiskState(installation);
         await _diskStateRegistry.SaveInitialState(installation, indexedState);
         return (false, indexedState);
+    }
+    
+    /// <summary>
+    /// Quickly reverts the folder to its original state, without updating
+    /// the database state or doing any other changes that produce
+    /// external side effects.
+    ///
+    /// Intended for use when unmanaging a game.
+    /// </summary>
+    private async Task FastForceApplyOriginalState(GameInstallation installation)
+    {
+        var (isCached, initialState) = await GetOrCreateInitialDiskState(installation);
+        if (!isCached)
+            throw new InvalidOperationException("Something is very wrong with the DataStore.\n" +
+                                                "We don't have an initial disk state for the game folder, but we should have.\n" +
+                                                "Because this disk state should only ever be deleted when unmanaging a game.");
+
+        var gameFilesMod = CreateGameFilesMod(initialState);
+        var fileTree = CreateFileTreeFromMod(gameFilesMod);
+        var flattened = ModsToFlattenedLoadout([gameFilesMod]);
+        var prevState = _diskStateRegistry.GetState(installation)!;
+        await FileTreeToDisk(fileTree, null, flattened, prevState, installation, true);
     }
     #endregion
 

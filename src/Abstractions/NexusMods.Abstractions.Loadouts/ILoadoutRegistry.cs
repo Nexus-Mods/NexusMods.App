@@ -208,4 +208,23 @@ public interface ILoadoutRegistry
     /// <param name="loadoutId"></param>
     /// <returns></returns>
     bool Contains(LoadoutId loadoutId);
+
+    /// <summary>
+    /// Deletes a loadout with the given ID.
+    ///
+    /// [WARNING] Calling this directly is discouraged as it may lead to inconsistencies
+    /// in other parts of the App. Instead consider using the `Loadout Synchronizer`.
+    /// </summary>
+    /// <param name="loadoutId">The ID associated with the loadout.</param>
+    void Delete(LoadoutId loadoutId);
+
+    /// <summary>
+    /// Returns true if any revision of this <see cref="LoadoutId"/> is currently applied.
+    /// </summary>
+    /// <param name="id">The ID to check for activeness.</param>
+    /// <param name="lastAppliedId">
+    ///     DataStore ID of the last applied state.
+    ///     You can get this from the DiskStateRegistry.
+    /// </param>
+    bool IsApplied(LoadoutId id, IId? lastAppliedId);
 }

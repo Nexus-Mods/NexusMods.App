@@ -45,6 +45,9 @@ public partial class GameWidget : ReactiveUserControl<IGameWidgetViewModel>
                 this.BindCommand(ViewModel, vm => vm.AddGameCommand, v => v.AddGameButton)
                     .DisposeWith(d);
                 
+                this.BindCommand(ViewModel, vm => vm.RemoveAllLoadoutsCommand, v => v.RemoveGameButton)
+                    .DisposeWith(d);
+                
                 this.BindCommand(ViewModel, vm => vm.ViewGameCommand, v => v.ViewGameButton)
                     .DisposeWith(d);
                 

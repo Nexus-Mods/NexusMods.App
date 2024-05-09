@@ -10,9 +10,9 @@ public class BethesdaLoadoutSynchronizer : ALoadoutSynchronizer
 {
     public BethesdaLoadoutSynchronizer(IServiceProvider provider) : base(provider) { }
 
-    public override async Task<Loadout> Manage(GameInstallation installation, string? suggestedName = null)
+    public override async Task<Loadout> CreateLoadout(GameInstallation installation, string? suggestedName = null)
     {
-        var loadout = await base.Manage(installation, suggestedName);
+        var loadout = await base.CreateLoadout(installation, suggestedName);
         return FixupLoadout(loadout);
     }
 

@@ -40,7 +40,8 @@ public static class LoadoutManagementVerbs
             .AddVerb(() => ListModContents)
             .AddVerb(() => ListMods)
             .AddVerb(() => ManageGame)
-            .AddVerb(() => RenameLoadout);
+            .AddVerb(() => RenameLoadout)
+            .AddVerb(() => RemoveLoadout);
 
     [Verb("apply", "Apply the given loadout to the game folder")]
     private static async Task<int> Apply([Injected] IRenderer renderer,
@@ -147,10 +148,11 @@ public static class LoadoutManagementVerbs
         [Injected] CancellationToken token)
     {
         var rows = registry.AllLoadouts()
+            .Where(x => x.IsVisible())
             .Select(list => new object[] { list.Name, list.Installation, list.LoadoutId, list.Mods.Count })
             .ToList();
 
-        await renderer.Table(new[] { "Name", "Game", "Id", "Mod Count" }, rows);
+        await renderer.Table(["Name", "Game", "Id", "Mod Count"], rows);
         return 0;
     }
 
@@ -223,4 +225,30 @@ public static class LoadoutManagementVerbs
         });
     }
 
+    [Verb("remove-loadout", "Remove a loadout by its ID")]
+    private static async Task<int> RemoveLoadout(
+        [Injected] IRenderer renderer,
+        [Option("l", "loadout", "loadout to remove.")] LoadoutMarker loadoutMarker,
+        [Injected] LoadoutRegistry registry,
+        [Injected] CancellationToken token)
+    {
+        var loadout = loadoutMarker.Value;
+        var loadoutId = loadout.LoadoutId;
+
+        try
+        {
+            // The loadout should be removed through the synchronizer, if it is
+            // removed via the registry only, the game may be left in an inconsistent state
+            var installation = loadout.Installation;
+            var synchronizer = installation.GetGame().Synchronizer;
+            await synchronizer.DeleteLoadout(installation, loadoutId);
+            await renderer.Text($"Loadout {loadoutId} removed successfully");
+            return 0;
+        }
+        catch (Exception ex)
+        {
+            await renderer.Error(ex, $"Error removing loadout: {ex.Message}");
+            return -1;
+        }
+    }
 }
