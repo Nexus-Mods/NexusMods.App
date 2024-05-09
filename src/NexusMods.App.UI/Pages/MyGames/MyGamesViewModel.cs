@@ -54,7 +54,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
             {
                 var managedInstallations = loadoutRepository.Observable
                     .ToObservableChangeSet()
-                    .Transform(l => l.Installation);
+                    .DistinctValues(model => model.Installation);
 
                 // Managed games widgets
                 managedInstallations
