@@ -256,9 +256,6 @@ public class Program
             LoggingSettings.CreateDefault(OSInformation.Shared),
             isAvaloniaDesigner: true);
         
-        // We have to initialize async services here, waiting is bad, but we don't have many alternatives
-        host.StartAsync().Wait(timeout: TimeSpan.FromMinutes(5));
-        
         DesignerUtils.Activate(host.Services);
         
         return Startup.BuildAvaloniaApp(host.Services);
