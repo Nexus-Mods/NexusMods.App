@@ -10,7 +10,6 @@ public static class Services
     public static IServiceCollection AddTestHarness(this IServiceCollection services)
     {
         services.AddVerb(() => StressTest.RunStressTest);
-        services.AddSingleton<ITypeFinder, TypeFinder>();
         return services;
     }
 }

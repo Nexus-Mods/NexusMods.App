@@ -16,17 +16,12 @@ using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
-using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
-using NexusMods.Abstractions.Serialization;
-using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.Extensions.BCL;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Models;
-using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
-using NexusMods.Paths.Trees.Traits;
 using File = NexusMods.Abstractions.Loadouts.Files.File;
 
 namespace NexusMods.Abstractions.Loadouts.Synchronizers;
@@ -39,7 +34,6 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
 {
     private readonly ILogger _logger;
     private readonly IFileHashCache _hashCache;
-    private readonly IDataStore _store;
     private readonly IDiskStateRegistry _diskStateRegistry;
     private readonly ISorter _sorter;
     protected readonly IConnection Connection;
@@ -58,7 +52,6 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// <param name="os"></param>
     protected ALoadoutSynchronizer(ILogger logger,
         IFileHashCache hashCache,
-        IDataStore store,
         IDiskStateRegistry diskStateRegistry,
         IFileStore fileStore,
         ISorter sorter,
@@ -67,7 +60,6 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     {
         _logger = logger;
         _hashCache = hashCache;
-        _store = store;
         _diskStateRegistry = diskStateRegistry;
         _fileStore = fileStore;
         _sorter = sorter;
@@ -82,7 +74,6 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     protected ALoadoutSynchronizer(IServiceProvider provider) : this(
         provider.GetRequiredService<ILogger<ALoadoutSynchronizer>>(),
         provider.GetRequiredService<IFileHashCache>(),
-        provider.GetRequiredService<IDataStore>(),
         provider.GetRequiredService<IDiskStateRegistry>(),
         provider.GetRequiredService<IFileStore>(),
         provider.GetRequiredService<ISorter>(),

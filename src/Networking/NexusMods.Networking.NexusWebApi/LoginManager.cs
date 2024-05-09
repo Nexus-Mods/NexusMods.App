@@ -1,13 +1,16 @@
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
+using DynamicData.Binding;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.DTOs.OAuth;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.CrossPlatform.ProtocolRegistration;
 using NexusMods.Extensions.BCL;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi.Auth;
 
 namespace NexusMods.Networking.NexusWebApi;
@@ -20,7 +23,6 @@ public sealed class LoginManager : IDisposable, ILoginManager
 {
     private readonly ILogger<LoginManager> _logger;
     private readonly OAuth _oauth;
-    private readonly IDataStore _dataStore;
     private readonly IProtocolRegistration _protocolRegistration;
     private readonly NexusApiClient _nexusApiClient;
     private readonly IAuthenticatingMessageFactory _msgFactory;
@@ -49,32 +51,35 @@ public sealed class LoginManager : IDisposable, ILoginManager
     /// Constructor.
     /// </summary>
     public LoginManager(
+        IConnection conn,
         NexusApiClient nexusApiClient,
         IAuthenticatingMessageFactory msgFactory,
         OAuth oauth,
-        IDataStore dataStore,
+        IRepository<JWTToken.Model> jwtTokenRepository,
         IProtocolRegistration protocolRegistration,
         ILogger<LoginManager> logger)
     {
         _oauth = oauth;
+        _conn = conn;
         _msgFactory = msgFactory;
         _nexusApiClient = nexusApiClient;
-        _dataStore = dataStore;
+        _jwtTokenRepository = jwtTokenRepository;
         _protocolRegistration = protocolRegistration;
         _logger = logger;
 
-        UserInfo = _dataStore.IdChanges
+        UserInfo = _jwtTokenRepository.Observable
+            .ToObservableChangeSet()
             // NOTE(err120): Since IDs don't change on startup, we can insert
             // a fake change at the start of the observable chain. This will only
             // run once at startup and notify the subscribers.
-            .Merge(Observable.Return(JWTTokenEntity.StoreId))
-            .Where(id => id.Equals(JWTTokenEntity.StoreId))
             .ObserveOn(TaskPoolScheduler.Default)
             .SelectMany(async _ => await Verify(CancellationToken.None));
     }
 
     private CachedObject<UserInfo> _cachedUserInfo = new(TimeSpan.FromHours(1));
     private readonly SemaphoreSlim _verifySemaphore = new(initialCount: 1, maxCount: 1);
+    private readonly IRepository<JWTToken.Model> _jwtTokenRepository;
+    private readonly IConnection _conn;
 
     private async Task<UserInfo?> Verify(CancellationToken cancellationToken)
     {
@@ -118,25 +123,32 @@ public sealed class LoginManager : IDisposable, ILoginManager
             _logger.LogError(e, "Exception while logging in");
             return;
         }
+        
+        if (jwtToken is null)
+        {
+            _logger.LogError("Invalid new token in Login Manager");
+            return;
+        }
+        
+        using var tx = _conn.BeginTransaction();
 
-        var newTokenEntity = JWTTokenEntity.From(jwtToken);
+        var newTokenEntity = JWTToken.Model.Create(_conn.Db, tx, jwtToken!);
         if (newTokenEntity is null)
         {
-            _logger.LogError("Invalid new token!");
+            _logger.LogError("Invalid new token data");
             return;
         }
 
-        _dataStore.Put(JWTTokenEntity.StoreId, newTokenEntity);
+        await tx.Commit();
     }
 
     /// <summary>
     ///  Log out of Nexus Mods
     /// </summary>
-    public Task Logout()
+    public async Task Logout()
     {
-        _dataStore.Delete(JWTTokenEntity.StoreId);
+        await _jwtTokenRepository.Delete(_jwtTokenRepository.All.First());
         _cachedUserInfo.Evict();
-        return Task.CompletedTask;
     }
 
     /// <inheritdoc/>

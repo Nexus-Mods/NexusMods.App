@@ -3,8 +3,8 @@ using System.Diagnostics.CodeAnalysis;
 using Avalonia.Threading;
 using DynamicData;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.Serialization;
-using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.Abstractions.MnemonicDB.Attributes;
+using NexusMods.MnemonicDB.Abstractions;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -13,17 +13,20 @@ namespace NexusMods.App.UI.Windows;
 internal sealed class WindowManager : ReactiveObject, IWindowManager
 {
     private readonly ILogger<WindowManager> _logger;
-    private readonly IDataStore _dataStore;
+    private readonly IConnection _conn;
+    private readonly IRepository<WindowDataAttributes.Model> _repository;
 
     private readonly Dictionary<WindowId, WeakReference<IWorkspaceWindow>> _windows = new();
     private readonly SourceList<WindowId> _allWindowIdSource = new();
 
     public WindowManager(
         ILogger<WindowManager> logger,
-        IDataStore dataStore)
+        IRepository<WindowDataAttributes.Model> repository,
+        IConnection conn)
     {
         _logger = logger;
-        _dataStore = dataStore;
+        _conn = conn;
+        _repository = repository;
 
         _allWindowIdSource.Connect().OnUI().Bind(out _allWindowIds);
     }
@@ -86,7 +89,22 @@ internal sealed class WindowManager : ReactiveObject, IWindowManager
         try
         {
             var data = window.WorkspaceController.ToData();
-            _dataStore.Put(WindowData.Id, data);
+
+            using var tx = _conn.BeginTransaction();
+            if (!_repository.TryFindFirst(out var found))
+            {
+                _ = new WindowDataAttributes.Model(tx)
+                {
+                    Db = _conn.Db,
+                    Data = data,
+                };
+            }
+            else
+            {
+                found.Tx = tx;
+                found.Data = data;
+            }
+            tx.Commit();
         }
         catch (Exception e)
         {
@@ -98,10 +116,10 @@ internal sealed class WindowManager : ReactiveObject, IWindowManager
     {
         try
         {
-            var data = _dataStore.Get<WindowData>(WindowData.Id);
-            if (data is null) return false;
+            if (!_repository.TryFindFirst(out var found))
+                return false;
 
-            window.WorkspaceController.FromData(data);
+            window.WorkspaceController.FromData(found.Data);
             return true;
         }
         catch (Exception e)
@@ -112,7 +130,11 @@ internal sealed class WindowManager : ReactiveObject, IWindowManager
 
             try
             {
-                _dataStore.Delete(WindowData.Id);
+                using var tx = _conn.BeginTransaction();
+                if (!_repository.TryFindFirst(out var found))
+                    return false;
+                WindowDataAttributes.Data.Retract(found);
+                tx.Commit();
             }
             catch (Exception)
             {

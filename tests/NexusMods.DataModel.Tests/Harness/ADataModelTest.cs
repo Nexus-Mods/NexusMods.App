@@ -8,8 +8,6 @@ using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
-using NexusMods.Abstractions.Serialization;
-using NexusMods.Abstractions.Serialization.DataModel;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions;
@@ -40,7 +38,6 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
     protected readonly IApplyService ApplyService;
     protected readonly FileHashCache FileHashCache;
     protected readonly IFileSystem FileSystem;
-    protected readonly IDataStore DataStore;
     protected readonly IConnection Connection;
     protected readonly IFileOriginRegistry FileOriginRegistry;
     protected readonly DiskStateRegistry DiskStateRegistry;
@@ -74,7 +71,6 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
         ApplyService = provider.GetRequiredService<IApplyService>();
         FileHashCache = provider.GetRequiredService<FileHashCache>();
         FileSystem = provider.GetRequiredService<IFileSystem>();
-        DataStore = provider.GetRequiredService<IDataStore>();
         Connection = provider.GetRequiredService<IConnection>();
         FileOriginRegistry = provider.GetRequiredService<IFileOriginRegistry>();
         DiskStateRegistry = provider.GetRequiredService<DiskStateRegistry>();
@@ -174,20 +170,6 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
     public Task DisposeAsync()
     {
         return Task.CompletedTask;
-    }
-
-    /// <summary>
-    /// Clears data store of content from previous runs.
-    /// Only valid if tests are ran non-concurrently.
-    /// </summary>
-    private void ClearDataStore()
-    {
-        // TODO: Replace this with something more performant.
-        //       This is not being done now as we'll be switching from SQLite to RocksDB with EventSourcing
-        //       , therefore code will change there.
-        foreach (var category in Enum.GetValues<EntityCategory>())
-        foreach (var id in DataStore.AllIds(category))
-            DataStore.Delete(id);
     }
 
     public void Refresh<T>(ref T ent) where T : Entity
