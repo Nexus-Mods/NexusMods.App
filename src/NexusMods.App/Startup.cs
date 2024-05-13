@@ -87,6 +87,7 @@ public class Startup
 
         var reactiveWindow = _provider.GetRequiredService<MainWindow>();
         reactiveWindow.ViewModel = _provider.GetRequiredService<MainWindowViewModel>();
+        /*
         reactiveWindow.WhenActivated(d =>
             {
                 Interlocked.Increment(ref _windowCount);
@@ -105,6 +106,7 @@ public class Startup
                 ).DisposeWith(d);
             }
         );
+        */
         reactiveWindow.Show();
     }
 

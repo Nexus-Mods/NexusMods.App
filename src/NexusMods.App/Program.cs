@@ -48,10 +48,7 @@ public class Program
         host.StartAsync().Wait(timeout: TimeSpan.FromMinutes(5));
 
         _logger = host.Services.GetRequiredService<ILogger<Program>>();
-        var startupHandler = host.Services.GetService<StartupHandler>();
         LogMessages.RuntimeInformation(_logger, RuntimeInformation.OSDescription, RuntimeInformation.FrameworkDescription);
-        LogMessages.StartingProcess(_logger, Environment.ProcessPath, Environment.ProcessId, args.Length, args);
-
         TaskScheduler.UnobservedTaskException += (sender, eventArgs) =>
         {
             LogMessages.UnobservedTaskException(_logger, eventArgs.Exception, sender, sender?.GetType());
@@ -63,51 +60,22 @@ public class Program
             LogMessages.UnobservedReactiveThrownException(_logger, ex);
         });
 
-        var startup = host.Services.GetRequiredService<StartupDirector>();
-
-
-        var managerTask = Task.Run(async () =>
-        {
-            try
-            {
-                _logger.LogTrace("Calling startup handler");
-                return await startup.Start(args);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogCritical(ex, "Exception in startup handler");
-                Environment.Exit(-1);
-                throw;
-            }
-            finally
-            {
-                try
-                {
-                    if (!MainThreadData.IsDebugMode)
-                    {
-                        _logger.LogTrace("Shutting down main thread in release mode");
-                        MainThreadData.Shutdown();
-                    }
-                    else
-                    {
-                        _logger.LogInformation("The main thread won't be shutdown in debug mode");
-                    }
-                }
-                catch (Exception e)
-                {
-                    _logger.LogCritical(e, "Error shutting down main thread");
-                }
-            }
-        });
+        
         
         if (isMain)
         {
+            
+            LogMessages.StartingProcess(_logger, Environment.ProcessPath, Environment.ProcessId, args);
             host.Services.GetRequiredService<NxmRpcListener>();
             Startup.Main(host.Services, []);
+            return 0;
         }
-        
-        _logger.LogInformation("Startup handler returned {Result}", managerTask.Result);
-        return managerTask.Result;
+        else
+        {
+            var client = host.Services.GetRequiredService<CliClient>();
+            client.ExecuteCommand(args).Wait();
+            return 0;
+        }
     }
 
     private static bool IsMainProcess(IReadOnlyList<string> args)
