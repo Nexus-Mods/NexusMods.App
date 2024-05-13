@@ -14,6 +14,7 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
+using NexusMods.Abstractions.Settings;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModCategory;
@@ -23,6 +24,7 @@ using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModName;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModVersion;
 using NexusMods.App.UI.Pages.ModInfo;
 using NexusMods.App.UI.Pages.ModInfo.Types;
+using NexusMods.App.UI.Settings;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Extensions.DynamicData;
@@ -71,7 +73,8 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
         IFileSystem fileSystem,
         IArchiveInstaller archiveInstaller,
         IFileOriginRegistry fileOriginRegistry,
-        IWindowManager windowManager) : base(windowManager)
+        IWindowManager windowManager,
+        ISettingsManager settingsManager) : base(windowManager)
     {
         _logger = logger;
         _fileSystem = fileSystem;
@@ -136,7 +139,13 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
         {
             this.WhenAnyValue(vm => vm.LoadoutId)
                 .SelectMany(id => loadoutRepository.Revisions(id.Value))
-                .Select(loadout => loadout.Mods.Select(m => m.ModId))
+                .Select(loadout =>
+                {
+                    var showGameFiles = settingsManager.Get<LoadoutGridSettings>().ShowGameFiles;
+                    return loadout.Mods
+                        .Where(m => showGameFiles || m.Category != ModCategory.GameFiles)
+                        .Select(m => m.ModId);
+                })
                 .OnUI()
                 .ToDiffedChangeSet(cur => cur, cur => cur)
                 .Bind(out _mods)
