@@ -10,6 +10,7 @@ public class ProxyTests(IServiceProvider provider) : AProxyConsoleTest(provider)
     public async Task CanRenderTest()
     {
         await Server.RenderAsync(new Text {Template = "Hello World!"});
+        await Task.Delay(100);
 
         LoggingRenderer.Messages.Should().BeEquivalentTo(new List<(string Method, object Message)>
         {
@@ -23,6 +24,8 @@ public class ProxyTests(IServiceProvider provider) : AProxyConsoleTest(provider)
         await Server.RenderAsync(new Text {Template = "Hello World!1"});
         await Server.RenderAsync(new Text {Template = "Hello World!2"});
         await Server.RenderAsync(new Text {Template = "Hello World!3"});
+        await Task.Delay(100);
+
 
         LoggingRenderer.Messages.Should().BeEquivalentTo(new List<(string Method, object Message)>
         {
@@ -37,35 +40,36 @@ public class ProxyTests(IServiceProvider provider) : AProxyConsoleTest(provider)
     {
         await Server.RenderAsync(new Table
         {
-            Columns = new IRenderable[]
-            {
+            Columns =
+            [
                 new Text {Template = "Text"},
-                new Text {Template = "Number"}
-            },
-            Rows = new[]
-            {
+                new Text {Template = "Number"},
+            ],
+            Rows =
+            [
                 new IRenderable[] { new Text { Template = "Hello World!1" } , new Text { Template = "4" }},
                 new IRenderable[] { new Text { Template = "Hello World!2" } , new Text { Template = "5" }},
-            }
+            ]
         });
 
+        await Task.Delay(100);
 
         LoggingRenderer.Messages.Should().BeEquivalentTo(new List<(string Method, object Message)>
         {
             ("RenderAsync",
                 new Table
                 {
-                    Columns = new IRenderable[]
-                    {
+                    Columns =
+                    [
                         new Text {Template = "Text"},
-                        new Text {Template = "Number"}
-                    },
-                    Rows = new[]
-                    {
+                        new Text {Template = "Number"},
+                    ],
+                    Rows =
+                    [
                         new IRenderable[] { new Text { Template = "Hello World!1" }, new Text { Template = "4" }},
                         new IRenderable[] { new Text { Template = "Hello World!2" }, new Text { Template = "5" }},
-                    }
-                })
+                    ],
+                }),
         });
     }
 
