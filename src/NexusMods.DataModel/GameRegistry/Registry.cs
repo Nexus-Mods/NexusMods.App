@@ -8,6 +8,7 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.DTO;
 using NexusMods.DataModel.GameRegistry;
+using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.DataModel;
@@ -120,6 +121,7 @@ public class Registry : IGameRegistry, IHostedService
     /// <inheritdoc />
     public async Task StartAsync(CancellationToken cancellationToken)
     {
+        await ((IHostedService)_conn).StartAsync(cancellationToken);
         await Startup(_games);
     }
 

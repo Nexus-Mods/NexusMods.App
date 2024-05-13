@@ -14,6 +14,7 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
+using NexusMods.Abstractions.Settings;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModCategory;
@@ -23,6 +24,7 @@ using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModName;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModVersion;
 using NexusMods.App.UI.Pages.ModInfo;
 using NexusMods.App.UI.Pages.ModInfo.Types;
+using NexusMods.App.UI.Settings;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Extensions.DynamicData;
@@ -71,7 +73,8 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
         IFileSystem fileSystem,
         IArchiveInstaller archiveInstaller,
         IFileOriginRegistry fileOriginRegistry,
-        IWindowManager windowManager) : base(windowManager)
+        IWindowManager windowManager,
+        ISettingsManager settingsManager) : base(windowManager)
     {
         _logger = logger;
         _fileSystem = fileSystem;
@@ -136,7 +139,17 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
         {
             this.WhenAnyValue(vm => vm.LoadoutId)
                 .SelectMany(id => loadoutRepository.Revisions(id.Value))
-                .Select(loadout => loadout.Mods.Select(m => m.ModId))
+                .Select(loadout =>
+                {
+                    var settings = settingsManager.Get<LoadoutGridSettings>();
+                    var showGameFiles = settings.ShowGameFiles;
+                    var showOverride = settings.ShowOverride;
+                    
+                    return loadout.Mods
+                        .Where(m => showGameFiles || m.Category != ModCategory.GameFiles)
+                        .Where(m => showOverride || m.Category != ModCategory.Overrides)
+                        .Select(m => m.ModId);
+                })
                 .OnUI()
                 .ToDiffedChangeSet(cur => cur, cur => cur)
                 .Bind(out _mods)
@@ -177,7 +190,7 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
                 {
                     tx.Add(id, FilePathMetadata.OriginalName, file.FileName);
                 });
-            await _archiveInstaller.AddMods(LoadoutId, downloadId, token: CancellationToken.None);
+            await _archiveInstaller.AddMods(LoadoutId, downloadId, file.FileName, token: CancellationToken.None);
         });
 
         return Task.CompletedTask;
@@ -191,12 +204,8 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
             _logger.LogError("File {File} does not exist, not installing mod", file);
             return Task.CompletedTask;
         }
-
-        // this is one of the worst hacks I've done in recent years, it's bad, and I should feel bad
-        // Likely could be solved by .NET 8's DI improvements, with Keyed services
-        var installer = _provider
-            .GetRequiredService<IEnumerable<IModInstaller>>()
-            .First(i => i.GetType().Name.Contains("AdvancedManualInstaller"));
+        
+        var installer = _provider.GetRequiredKeyedService<IModInstaller>("AdvancedManualInstaller");
 
         var _ = Task.Run(async () =>
         {
@@ -205,7 +214,7 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
                 {
                     tx.Add(id, FilePathMetadata.OriginalName, file.FileName);
                 });
-            await _archiveInstaller.AddMods(LoadoutId, downloadId, token: CancellationToken.None, installer: installer);
+            await _archiveInstaller.AddMods(LoadoutId, downloadId, file.FileName, token: CancellationToken.None, installer: installer);
         });
 
         return Task.CompletedTask;

@@ -4,12 +4,13 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Linq;
 using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Models;
 
 namespace NexusMods.Abstractions.MnemonicDB.Attributes;
 
-internal class Repository<TModel> : IRepository<TModel> where TModel : Entity
+internal class Repository<TModel> : IRepository<TModel>, IHostedService where TModel : Entity
 {
     private readonly IConnection _conn;
     private readonly IAttribute[] _watchedAttributes;
@@ -26,19 +27,6 @@ internal class Repository<TModel> : IRepository<TModel> where TModel : Entity
             .Connect()
             .Bind(out _observable)
             .Subscribe();
-        
-        _conn.Revisions
-            .SelectMany(db => db.Datoms(db.BasisTxId).Select(datom => (datom, db)))
-            .Where(d => _watchedAttributes.Contains(d.datom.A))
-            .Select(d => (Db: d.db, E: d.datom.E))
-            .StartWith(All.Select(l => (Db: l.Db, E:l.Id)))
-            .Subscribe(dbAndE =>
-            {
-                _cache.Edit(x =>
-                {
-                    x.AddOrUpdate(dbAndE.Db.Get<TModel>(dbAndE.E));
-                });
-            });
     }
 
     /// <inheritdoc />
@@ -157,6 +145,29 @@ internal class Repository<TModel> : IRepository<TModel> where TModel : Entity
             }
         }
     }
+
+    public async Task StartAsync(CancellationToken cancellationToken)
+    {
+        await ((IHostedService)_conn).StartAsync(cancellationToken);
+        _conn.Revisions
+            .SelectMany(db => db.Datoms(db.BasisTxId).Select(datom => (datom, db)))
+            .Where(d => _watchedAttributes.Contains(d.datom.A))
+            .Select(d => (Db: d.db, E: d.datom.E))
+            .StartWith(All.Select(l => (Db: l.Db, E:l.Id)))
+            .Subscribe(dbAndE =>
+            {
+                _cache.Edit(x =>
+                {
+                    x.AddOrUpdate(dbAndE.Db.Get<TModel>(dbAndE.E));
+                });
+            });
+    }
+
+    public Task StopAsync(CancellationToken cancellationToken)
+    {
+        // No-op
+        return Task.CompletedTask;
+    }
 }
 
 
@@ -175,6 +186,7 @@ public static class ServiceExtensions
             throw new InvalidOperationException("At least one attribute must be provided when creating a repository");
         return collection
             .AddSingleton<IRepository<TModel>>(provider => 
-                new Repository<TModel>(attributes, provider.GetRequiredService<IConnection>()));
+                new Repository<TModel>(attributes, provider.GetRequiredService<IConnection>()))
+            .AddHostedService<Repository<TModel>>(s => (Repository<TModel>)s.GetRequiredService<IRepository<TModel>>());
     }
 }

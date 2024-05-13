@@ -30,9 +30,9 @@
                 <DataGridTextColumn Header="{x:Static resources:Language.FileOriginsPageView_SizeHeader}" 
                                     Binding="{CompiledBinding Size}"/>
                 <DataGridTextColumn Header="{x:Static resources:Language.FileOriginsPageView_DownloadedHeader}" 
-                                    Binding="{CompiledBinding ArchiveDate}"/>
+                                    Binding="{CompiledBinding DisplayArchiveDate}"/>
                 <DataGridTextColumn Header="{x:Static resources:Language.FileOriginsPageView_AddedHeader}" 
-                                    Binding="{CompiledBinding LastInstalledDate}"/>
+                                    Binding="{CompiledBinding DisplayLastInstalledDate}"/>
                 <DataGridTemplateColumn Header="{x:Static resources:Language.FileOriginsPageView_ActionHeader}">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate DataType="fileOriginEntry:IFileOriginEntryViewModel">

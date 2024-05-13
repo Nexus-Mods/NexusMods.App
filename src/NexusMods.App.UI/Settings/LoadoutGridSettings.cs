@@ -6,6 +6,8 @@ public record LoadoutGridSettings : ISettings
 {
     public bool ShowGameFiles { get; set; }
 
+    public bool ShowOverride { get; set; }
+
     public static ISettingsBuilder Configure(ISettingsBuilder settingsBuilder)
     {
         // TODO: put in some section
@@ -16,7 +18,14 @@ public record LoadoutGridSettings : ISettings
                 .AddToSection(sectionId)
                 .WithDisplayName("Show Game Files")
                 .WithDescription("Shows the Game Files in the Mods page.")
-                .UseBooleanContainer())
+                .UseBooleanContainer()
+            )
+            .AddPropertyToUI(x => x.ShowOverride, propertyBuilder => propertyBuilder
+                .AddToSection(sectionId)
+                .WithDisplayName("Show Override")
+                .WithDescription("Shows Override in the Mods page.")
+                .UseBooleanContainer()
+            )
         );
     }
 }

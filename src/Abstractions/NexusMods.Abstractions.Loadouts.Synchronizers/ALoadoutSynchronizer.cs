@@ -663,7 +663,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             var prevDbFile = prevFileTree[gamePath].Item.Value!;
             if (prevDbFile.Mod.Category == ModCategory.Overrides)
             {
-                if (prevDbFile.TryGet(DeletedFile.Deleted, out var deleted) && deleted)
+                if (prevDbFile.TryGetAsDeletedFile(out _))
                 {
                     // already deleted, do nothing
                     continue;
@@ -674,7 +674,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                     {
                         { StoredFile.Hash, loadoutFile.Item.Value.Hash },
                         { StoredFile.Size, loadoutFile.Item.Value.Size },
-                        { DeletedFile.Deleted, true },
+                        DeletedFile.Deleted,
                         { File.To, gamePath },
                     };
                     newFile.Id = prevDbFile.Id;
@@ -688,7 +688,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                 {
                     { StoredFile.Hash, loadoutFile.Item.Value.Hash },
                     { StoredFile.Size, loadoutFile.Item.Value.Size },
-                    { DeletedFile.Deleted, true },
+                    DeletedFile.Deleted,
                     { File.To, gamePath },
                 };
                 newFiles.Add(newFile);
@@ -959,6 +959,8 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     {
         if (mod.Category == ModCategory.GameFiles)
             return [new First<Mod.Model, ModId>()];
+        if (mod.Category == ModCategory.Overrides)
+            return [new Last<Mod.Model, ModId>()];
         if (mod.TryGet(Mod.SortAfter, out var other))
             return [new After<Mod.Model, ModId> { Other = ModId.From(other) }];
         return [];

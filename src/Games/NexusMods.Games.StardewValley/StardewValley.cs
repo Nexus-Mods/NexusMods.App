@@ -72,19 +72,12 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
     protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem,
         GameLocatorResult installation)
     {
-        // global data files (https://github.com/Pathoschild/SMAPI/blob/8d600e226960a81636137d9bf286c69ab39066ed/src/SMAPI/Framework/ModHelpers/DataHelper.cs#L163-L169)
-        var stardewValleyAppDataPath = fileSystem
-            .GetKnownPath(KnownPath.ApplicationDataDirectory)
-            .Combine("StardewValley");
-
         var result = new Dictionary<LocationId, AbsolutePath>()
         {
             {
                 LocationId.Game,
                 installation.Store == GameStore.XboxGamePass ? installation.Path.Combine("Content") : installation.Path
             },
-            { LocationId.AppData, stardewValleyAppDataPath.Combine(".smapi") },
-            { LocationId.Saves, stardewValleyAppDataPath.Combine("Saves") },
         };
         return result;
     }

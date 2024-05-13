@@ -20,7 +20,7 @@ namespace NexusMods.Networking.Downloaders.Tasks;
 
 public abstract class ADownloadTask : ReactiveObject, IDownloadTask
 {
-    private const int PollTimeMilliseconds = 100;
+    private const int PollTimeMilliseconds = 1000;
     
     protected readonly IConnection Connection;
     protected readonly IActivityFactory ActivityFactory;

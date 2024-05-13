@@ -8,6 +8,6 @@ public static class Services
     public static IServiceCollection AddAdvancedInstaller(this IServiceCollection serviceCollection)
     {
         return serviceCollection
-            .AddTransient<IModInstaller, AdvancedManualInstaller>();
+            .AddKeyedTransient<IModInstaller, AdvancedManualInstaller>("AdvancedManualInstaller");
     }
 }
