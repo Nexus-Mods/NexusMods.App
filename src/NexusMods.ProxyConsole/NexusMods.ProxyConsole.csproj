@@ -1,11 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <ItemGroup>
-      <PackageReference Include="MemoryPack" Version="1.10.0" />
-      <PackageReference Include="MemoryPack.Streaming" Version="1.10.0" />
-      <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" />
-      <PackageReference Include="Spectre.Console" Version="0.47.0" />
-      <PackageReference Update="JetBrains.Annotations" Version="2023.3.0" />
+      <PackageReference Include="MemoryPack"/>
+      <PackageReference Include="MemoryPack.Streaming"/>
+        <PackageReference Include="Spectre.Console"/>
     </ItemGroup>
 
     <ItemGroup>

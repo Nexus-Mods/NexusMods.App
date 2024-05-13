@@ -5,12 +5,10 @@
       <LangVersion>latest</LangVersion>
     </PropertyGroup>
     <ItemGroup>
-      <PackageReference Include="MemoryPack.Streaming"/>
       <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
       <PackageReference Include="Microsoft.Extensions.Logging.Abstractions"/>
-      <PackageReference Include="NexusMods.Paths"/>
-      <PackageReference Include="System.CommandLine"/>
-      <PackageReference Remove="JetBrains.Annotations" />
+      <PackageReference Include="Spectre.Console"/>  
+      <PackageReference Include="System.CommandLine" />  
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Settings\NexusMods.Abstractions.Settings.csproj" />
