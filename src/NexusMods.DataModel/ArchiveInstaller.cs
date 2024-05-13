@@ -99,8 +99,16 @@ public class ArchiveInstaller : IArchiveInstaller
 
             // Step 3: Run the archive through the installers.
             var installers = loadout.Installation.GetGame().Installers;
-            var advancedInstaller = _provider.GetRequiredKeyedService<IModInstaller>("AdvancedManualInstaller");
-            installers = installers.Append(advancedInstaller);
+            try
+            {
+                var advancedInstaller = _provider.GetRequiredKeyedService<IModInstaller>("AdvancedManualInstaller");
+                installers = installers.Append(advancedInstaller);
+
+            }
+            catch (InvalidOperationException)
+            {
+                _logger.LogWarning("AdvancedManualInstaller not found, fallback will not be available");
+            }
             
             if (installer != null)
             {
