@@ -29,6 +29,7 @@ public class Startup
                 .OverrideSettingsForTests<LoadoutGridSettings>(settings => settings with
                 {
                     ShowGameFiles = true,
+                    ShowOverride = true,
                 })
                 .AddStubbedGameLocators()
                 .AddSingleton<AvaloniaApp>()

@@ -141,9 +141,13 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
                 .SelectMany(id => loadoutRepository.Revisions(id.Value))
                 .Select(loadout =>
                 {
-                    var showGameFiles = settingsManager.Get<LoadoutGridSettings>().ShowGameFiles;
+                    var settings = settingsManager.Get<LoadoutGridSettings>();
+                    var showGameFiles = settings.ShowGameFiles;
+                    var showOverride = settings.ShowOverride;
+                    
                     return loadout.Mods
                         .Where(m => showGameFiles || m.Category != ModCategory.GameFiles)
+                        .Where(m => showOverride || m.Category != ModCategory.Overrides)
                         .Select(m => m.ModId);
                 })
                 .OnUI()
