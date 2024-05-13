@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.FileStore;
@@ -27,6 +28,7 @@ public class ArchiveInstaller : IArchiveInstaller
     private readonly IActivityFactory _activityFactory;
     private readonly IFileStore _fileStore;
     private readonly IFileOriginRegistry _fileOriginRegistry;
+    private readonly IServiceProvider _provider;
 
     /// <summary>
     /// DI Constructor
@@ -35,13 +37,15 @@ public class ArchiveInstaller : IArchiveInstaller
         IFileOriginRegistry fileOriginRegistry,
         IConnection conn,
         IFileStore fileStore,
-        IActivityFactory activityFactory)
+        IActivityFactory activityFactory,
+        IServiceProvider provider)
     {
         _logger = logger;
         _conn = conn;
         _fileOriginRegistry = fileOriginRegistry;
         _fileStore = fileStore;
         _activityFactory = activityFactory;
+        _provider = provider;
     }
     
     /// <inheritdoc />
@@ -95,6 +99,9 @@ public class ArchiveInstaller : IArchiveInstaller
 
             // Step 3: Run the archive through the installers.
             var installers = loadout.Installation.GetGame().Installers;
+            var advancedInstaller = _provider.GetRequiredKeyedService<IModInstaller>("AdvancedManualInstaller");
+            installers = installers.Append(advancedInstaller);
+            
             if (installer != null)
             {
                 installers = new[] { installer };
