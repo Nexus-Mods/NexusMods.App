@@ -41,8 +41,7 @@ public class Program
         var host = BuildHost(
             slimMode: !isMain,
             telemetrySettings,
-            loggingSettings,
-            isAvaloniaDesigner: true
+            loggingSettings
         );
 
         // Okay to do wait here, as we are in the main process thread.
