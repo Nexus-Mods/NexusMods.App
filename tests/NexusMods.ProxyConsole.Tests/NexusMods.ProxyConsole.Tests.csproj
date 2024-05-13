@@ -9,48 +9,17 @@
         <IsTestProject>true</IsTestProject>
         <RootNamespace>NexusMods.Spectre.ProxyConsole.Tests</RootNamespace>
     </PropertyGroup>
-
-    <ItemGroup>
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.7.1"/>
-        <PackageReference Include="Nerdbank.Streams" Version="2.10.72" />
-        <PackageReference Include="Spectre.Console.Testing" Version="0.47.0" />
-        <PackageReference Include="xunit" Version="2.4.2"/>
-        <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-            <PrivateAssets>all</PrivateAssets>
-        </PackageReference>
-        <PackageReference Include="coverlet.collector" Version="3.2.0">
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-            <PrivateAssets>all</PrivateAssets>
-        </PackageReference>
-        <PackageReference Remove="Xunit.DependencyInjection" />
-        <PackageReference Remove="Xunit.DependencyInjection.SkippableFact" />
-        <PackageReference Update="JetBrains.Annotations" Version="2023.3.0" />
-        <PackageReference Update="Moq" Version="4.20.69" />
-        <PackageReference Update="AutoFixture" Version="4.18.0" />
-        <PackageReference Update="AutoFixture.AutoMoq" Version="4.18.0" />
-        <PackageReference Update="AutoFixture.Xunit2" Version="4.18.0" />
-        <PackageReference Update="FluentAssertions" Version="6.12.0" />
-        <PackageReference Update="FluentAssertions.Analyzers" Version="0.26.0">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-        <PackageReference Update="xunit" Version="2.6.1" />
-        <PackageReference Update="xunit.runner.visualstudio" Version="2.5.3">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-        <PackageReference Update="Xunit.SkippableFact" Version="1.4.13" />
-        <PackageReference Update="Microsoft.NET.Test.Sdk" Version="17.8.0" />
-        <PackageReference Update="GitHubActionsTestLogger" Version="2.3.3">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-        <PackageReference Update="Xunit.DependencyInjection.Logging" Version="8.1.0" />
-    </ItemGroup>
+    
 
     <ItemGroup>
       <ProjectReference Include="..\..\src\NexusMods.ProxyConsole\NexusMods.ProxyConsole.csproj" />
+    </ItemGroup>
+    
+
+    <ItemGroup>
+      <PackageReference Include="Nerdbank.FullDuplexStream" />
+      <PackageReference Include="Nerdbank.Streams" />
+      <PackageReference Include="Spectre.Console.Testing" />
     </ItemGroup>
 
 </Project>
