@@ -232,6 +232,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.ProxyConsole", "s
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.SingleProcess", "src\NexusMods.SingleProcess\NexusMods.SingleProcess.csproj", "{68397463-6FA4-4E87-9BDF-1BCADE4D5E28}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.ProxyConsole.Tests", "tests\NexusMods.ProxyConsole.Tests\NexusMods.ProxyConsole.Tests.csproj", "{355955A6-F508-493E-A08A-40626D2E4CFE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Interprocess", "Interprocess", "{92AC7C89-5265-4D51-AB15-0EB9F3C168B5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -602,6 +606,10 @@ Global
 		{68397463-6FA4-4E87-9BDF-1BCADE4D5E28}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{68397463-6FA4-4E87-9BDF-1BCADE4D5E28}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{68397463-6FA4-4E87-9BDF-1BCADE4D5E28}.Release|Any CPU.Build.0 = Release|Any CPU
+		{355955A6-F508-493E-A08A-40626D2E4CFE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{355955A6-F508-493E-A08A-40626D2E4CFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{355955A6-F508-493E-A08A-40626D2E4CFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{355955A6-F508-493E-A08A-40626D2E4CFE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -708,6 +716,8 @@ Global
 		{ECE7168F-A4A1-409D-AB6D-0F0A7DBE8F2E} = {0234BFE8-829B-4649-8D8A-6D4A13E1849F}
 		{CA927296-F17E-469E-B806-AEDEEFE66A50} = {0234BFE8-829B-4649-8D8A-6D4A13E1849F}
 		{68397463-6FA4-4E87-9BDF-1BCADE4D5E28} = {0234BFE8-829B-4649-8D8A-6D4A13E1849F}
+		{92AC7C89-5265-4D51-AB15-0EB9F3C168B5} = {52AF9D62-7D5B-4AD0-BA12-86F2AA67428B}
+		{355955A6-F508-493E-A08A-40626D2E4CFE} = {92AC7C89-5265-4D51-AB15-0EB9F3C168B5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9F9F8352-34DD-42C0-8564-EE9AF34A3501}
