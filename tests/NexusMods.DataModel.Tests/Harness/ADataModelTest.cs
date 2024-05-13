@@ -92,7 +92,7 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
         await _host.StartAsync(Token);
         Install = GameRegistry.AllInstalledGames.First(g => g.Game is StubbedGame);
         Game = (IGame)Install.Game;
-        BaseLoadout = await Game.Synchronizer.Manage(Install, "TestLoadout_" + Guid.NewGuid());
+        BaseLoadout = await Game.Synchronizer.CreateLoadout(Install, "TestLoadout_" + Guid.NewGuid());
     }
 
     /// <summary>

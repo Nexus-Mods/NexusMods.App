@@ -69,6 +69,12 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                             await Task.Run(async () => await ManageGame(install));
                             vm.State = GameWidgetState.ManagedGame;
                         });
+                        vm.RemoveAllLoadoutsCommand = ReactiveCommand.CreateFromTask(async () => 
+                        {
+                            vm.State = GameWidgetState.RemovingGame;
+                            await Task.Run(async () => await RemoveAllLoadouts(install));
+                            vm.State = GameWidgetState.ManagedGame;
+                        });
 
                         vm.ViewGameCommand = ReactiveCommand.Create(
                             () => { NavigateToLoadout(install); }
@@ -96,6 +102,12 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                             await Task.Run(async () => await ManageGame(install));
                             vm.State = GameWidgetState.ManagedGame;
                         });
+                        vm.RemoveAllLoadoutsCommand = ReactiveCommand.CreateFromTask(async () => 
+                        {
+                            vm.State = GameWidgetState.RemovingGame;
+                            await Task.Run(async () => await RemoveAllLoadouts(install));
+                            vm.State = GameWidgetState.ManagedGame;
+                        });
 
                         vm.State = GameWidgetState.DetectedGame;
                         return vm;
@@ -107,6 +119,12 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
             }
             
         );
+    }
+
+    private async Task RemoveAllLoadouts(GameInstallation install)
+    {
+        var synchronizer = install.GetGame().Synchronizer;
+        await synchronizer.UnManage(install);
     }
 
     private async Task ManageGame(GameInstallation installation)
@@ -150,7 +168,21 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
             );
             return;
         }
+
+        var loadout = _loadoutRegistry.GetLoadout(revId);
+        if (loadout is null)
+        {
+            _logger.LogError("Unable to find loadout for revision {RevId}", revId);
+            return;
+        }
         
+        // We can't navigate to an invisible loadout, make sure we pick a visible one.
+        if (!loadout.IsVisible())
+        {
+            // Note(sewer) | If we're here, last loadout was most likely a marker
+            loadout = _loadoutRegistry.AllLoadouts().First(x => x.IsVisible());
+        }
+
         var loadoutId = loadout.LoadoutId;
 
         Dispatcher.UIThread.Invoke(() =>

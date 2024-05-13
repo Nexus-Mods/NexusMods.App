@@ -75,7 +75,6 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         Downloads.WorkspaceContext = new DownloadsContext();
         _specialSpineItems.Add(Downloads);
         Downloads.Click = ReactiveCommand.Create(NavigateToDownloads);
-
         
         if (!_windowManager.TryGetActiveWindow(out var currentWindow)) return;
         var workspaceController = currentWindow.WorkspaceController;
@@ -85,6 +84,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
             {
                 loadoutRepository.Observable
                     .ToObservableChangeSet()
+                    .Filter(loadout => loadout.IsVisible())
                     .TransformAsync(async loadout =>
                         {
                             
@@ -119,6 +119,24 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                         }
                     )
                     .Bind(out _leftMenus)
+                    .SubscribeWithErrorLogging()
+                    .DisposeWith(disposables);
+
+                // Navigate away from the Loadout workspace if the Loadout is removed
+                loadoutRegistry.LoadoutRootChanges
+                    .OnUI()
+                    .OnItemRemoved(loadoutId =>
+                    {
+                        if (workspaceController.ActiveWorkspace?.Context is LoadoutContext activeLoadoutContext &&
+                            activeLoadoutContext.LoadoutId == loadoutId)
+                        {
+                            workspaceController.ChangeOrCreateWorkspaceByContext<HomeContext>(() => new PageData
+                            {
+                                FactoryId = MyGamesPageFactory.StaticId,
+                                Context = new MyGamesPageContext(),
+                            });
+                        }
+                    }, false)
                     .SubscribeWithErrorLogging()
                     .DisposeWith(disposables);
 

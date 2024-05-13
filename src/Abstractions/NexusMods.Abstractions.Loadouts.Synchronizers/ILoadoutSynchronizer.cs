@@ -1,5 +1,6 @@
 ﻿using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Loadouts.Ids;
 
 namespace NexusMods.Abstractions.Loadouts.Synchronizers;
 
@@ -25,7 +26,7 @@ public interface ILoadoutSynchronizer
     /// <summary>
     /// Applies a loadout to the game folder.
     /// </summary>
-    /// <param name="loadout"></param>
+    /// <param name="loadout">The loadout to apply.</param>
     /// <param name="forceSkipIngest">
     ///     Skips checking if an ingest is needed.
     ///     Force overrides current locations to intended tree
@@ -34,17 +35,42 @@ public interface ILoadoutSynchronizer
     Task<DiskStateTree> Apply(Loadout.Model loadout, bool forceSkipIngest = false);
 
     /// <summary>
-    /// Ingests changes from the game folder into the loadout.
+    /// Finds changes from the game folder compared to loadout and bundles them
+    /// into 1 or more Mods.
     /// </summary>
-    /// <param name="loadout"></param>
-    /// <returns></returns>
+    /// <param name="loadout">The current loadout.</param>
     Task<Loadout.Model> Ingest(Loadout.Model loadout);
 
     /// <summary>
-    /// Manage a game, creating the initial loadout
+    /// Creates a loadout for a game, managing the game if it has not previously
+    /// been managed.
     /// </summary>
-    /// <param name="installation"></param>
+    /// <param name="installation">The installation which should be managed.</param>
+    /// <param name="suggestedName">Suggested friendly name for the 'Game Files' mod.</param>
     /// <returns></returns>
-    Task<Loadout.Model> Manage(GameInstallation installation, string? suggestedName=null);
+    /// <remarks>
+    ///     This was formerly called 'Manage'.
+    /// </remarks>
+    Task<Loadout.Model> CreateLoadout(GameInstallation installation, string? suggestedName=null);
+
+    /// <summary>
+    /// Deletes the loadout for the game. If the loadout is the currently active loadout,
+    /// the game's folder will be reset to its initial state.
+    /// </summary>
+    /// <param name="installation">The installation for which the loadout should be deleted.</param>
+    /// <param name="loadoutId">Unique identifier for the loadout.</param>
+    /// <returns></returns>
+    /// <remarks>
+    ///     If there is only one loadout for this game, the initial game state is removed,
+    ///     in other words, a full <see cref="UnManage"/> is performed.
+    /// </remarks>
+    Task DeleteLoadout(GameInstallation installation, LoadoutId loadoutId);
+
+    /// <summary>
+    /// Removes all of the loadouts for a game, an resets the game folder to its
+    /// initial state.
+    /// </summary>
+    /// <param name="installation">Game installation which should be unmanaged.</param>
+    Task UnManage(GameInstallation installation);
     #endregion
 }
