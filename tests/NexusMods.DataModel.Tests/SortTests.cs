@@ -23,7 +23,29 @@ public class SortTests
 
         new Sorter().Sort<Item, string>(data, x => x.Id, x => x.Rules)
             .Select(i => i.Id)
-            .Should().BeEquivalentTo("A", "B");
+            .Should().Equal("A", "B");
+    }
+
+    [Fact]
+    public void FirstAndLast()
+    {
+        var data = new List<Item>
+        {
+            new() { Id = "B", Rules = [] },
+            new() { Id = "C", Rules = [] },
+            new() { Id = "D", Rules = [ new Last<Item, string>()] },
+            new() { Id = "E", Rules = [] },
+            new() { Id = "F", Rules = [] },
+            new() { Id = "G", Rules = [] },
+            new() { Id = "A", Rules = [ new First<Item, string>()] },
+        };
+
+        var res = new Sorter().Sort<Item, string>(data, x => x.Id, x => x.Rules)
+            .Select(i => i.Id)
+            .ToArray();
+
+        res.First().Should().Be("A");
+        res.Last().Should().Be("D");
     }
 
     [Fact]
@@ -46,7 +68,7 @@ public class SortTests
 
         new Sorter().Sort<Item, string>(data, x => x.Id, x => x.Rules)
             .Select(i => i.Id)
-            .Should().BeEquivalentTo("A", "B", "C");
+            .Should().Equal("A", "B", "C");
     }
 
     [Fact]
@@ -97,7 +119,7 @@ public class SortTests
 
         new Sorter().Sort<Item, string>(rules, x => x.Id, x => x.Rules)
             .Select(i => i.Id)
-            .Should().BeEquivalentTo(letters.Concat(numbers));
+            .Should().Equal(letters.Concat(numbers));
     }
 
     private IEnumerable<Item> Shuffle(List<Item> rules)
