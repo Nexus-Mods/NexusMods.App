@@ -1,6 +1,8 @@
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.FileStore;
+using NexusMods.Abstractions.FileStore.ArchiveMetadata;
 using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Installers;
@@ -26,6 +28,7 @@ public class ArchiveInstaller : IArchiveInstaller
     private readonly IActivityFactory _activityFactory;
     private readonly IFileStore _fileStore;
     private readonly IFileOriginRegistry _fileOriginRegistry;
+    private readonly IServiceProvider _provider;
 
     /// <summary>
     /// DI Constructor
@@ -34,13 +37,15 @@ public class ArchiveInstaller : IArchiveInstaller
         IFileOriginRegistry fileOriginRegistry,
         IConnection conn,
         IFileStore fileStore,
-        IActivityFactory activityFactory)
+        IActivityFactory activityFactory,
+        IServiceProvider provider)
     {
         _logger = logger;
         _conn = conn;
         _fileOriginRegistry = fileOriginRegistry;
         _fileStore = fileStore;
         _activityFactory = activityFactory;
+        _provider = provider;
     }
     
     /// <inheritdoc />
@@ -50,14 +55,20 @@ public class ArchiveInstaller : IArchiveInstaller
         var useCustomInstaller = installer != null;
         var loadout = _conn.Db.Get<Loadout.Model>(loadoutId.Value);
         
-        var archiveName = "<unknown>";
-        if (download.Contains(DownloadAnalysis.SuggestedName))
-        {
-            archiveName = download.Get(DownloadAnalysis.SuggestedName);
-        }
-        
-        string modName = defaultModName ?? archiveName;
+        var modName = defaultModName ?? (download.Contains(DownloadAnalysis.SuggestedName)
+            ? download.SuggestedName
+            : "<unknown>");
 
+        {
+            using var dlTx = _conn.BeginTransaction();
+            dlTx.Add(download.Id, DownloadAnalysis.SuggestedName, modName);
+            await dlTx.Commit();
+        }
+
+        var archiveName = download.Contains(FilePathMetadata.OriginalName)
+            ? download.Get(FilePathMetadata.OriginalName).FileName.ToString()
+            : "<unknown>";
+        
         ModId modId;
         Mod.Model baseMod;
         {
@@ -88,6 +99,17 @@ public class ArchiveInstaller : IArchiveInstaller
 
             // Step 3: Run the archive through the installers.
             var installers = loadout.Installation.GetGame().Installers;
+            try
+            {
+                var advancedInstaller = _provider.GetRequiredKeyedService<IModInstaller>("AdvancedManualInstaller");
+                installers = installers.Append(advancedInstaller);
+
+            }
+            catch (InvalidOperationException)
+            {
+                _logger.LogWarning("AdvancedManualInstaller not found, fallback will not be available");
+            }
+            
             if (installer != null)
             {
                 installers = new[] { installer };

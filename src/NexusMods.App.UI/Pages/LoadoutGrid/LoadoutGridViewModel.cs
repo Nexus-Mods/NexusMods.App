@@ -177,7 +177,7 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
                 {
                     tx.Add(id, FilePathMetadata.OriginalName, file.FileName);
                 });
-            await _archiveInstaller.AddMods(LoadoutId, downloadId, token: CancellationToken.None);
+            await _archiveInstaller.AddMods(LoadoutId, downloadId, file.FileName, token: CancellationToken.None);
         });
 
         return Task.CompletedTask;
@@ -191,12 +191,8 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
             _logger.LogError("File {File} does not exist, not installing mod", file);
             return Task.CompletedTask;
         }
-
-        // this is one of the worst hacks I've done in recent years, it's bad, and I should feel bad
-        // Likely could be solved by .NET 8's DI improvements, with Keyed services
-        var installer = _provider
-            .GetRequiredService<IEnumerable<IModInstaller>>()
-            .First(i => i.GetType().Name.Contains("AdvancedManualInstaller"));
+        
+        var installer = _provider.GetRequiredKeyedService<IModInstaller>("AdvancedManualInstaller");
 
         var _ = Task.Run(async () =>
         {
@@ -205,7 +201,7 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
                 {
                     tx.Add(id, FilePathMetadata.OriginalName, file.FileName);
                 });
-            await _archiveInstaller.AddMods(LoadoutId, downloadId, token: CancellationToken.None, installer: installer);
+            await _archiveInstaller.AddMods(LoadoutId, downloadId, file.FileName, token: CancellationToken.None, installer: installer);
         });
 
         return Task.CompletedTask;

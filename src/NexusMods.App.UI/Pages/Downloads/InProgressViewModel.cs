@@ -324,8 +324,9 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
         // Calculate Number of Downloaded Bytes.
         long totalDownloadedBytes = 0;
         long totalSizeBytes = 0;
+        var activeTasks = Tasks.Where(x => x.Status == DownloadTaskStatus.Downloading).ToArray();
 
-        foreach (var task in Tasks.Where(x => x.Status == DownloadTaskStatus.Downloading))
+        foreach (var task in activeTasks)
         {
             totalDownloadedBytes += task.DownloadedBytes;
             totalSizeBytes += task.SizeBytes;
@@ -335,7 +336,7 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
         DownloadedSizeBytes = totalDownloadedBytes;
 
         // Calculate Remaining Time.
-        var throughput = Tasks.Sum(x => x.Throughput);
+        var throughput = activeTasks.Sum(x => x.Throughput);
         var remainingBytes = totalSizeBytes - totalDownloadedBytes;
         SecondsRemaining = throughput < 1.0 ? 0 : (int)(remainingBytes / Math.Max(throughput, 1));
 

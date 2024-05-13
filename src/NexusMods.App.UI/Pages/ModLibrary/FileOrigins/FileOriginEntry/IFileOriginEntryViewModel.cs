@@ -6,10 +6,13 @@ namespace NexusMods.App.UI.Pages.ModLibrary.FileOriginEntry;
 
 public interface IFileOriginEntryViewModel : IViewModelInterface
 {
-    string Name { get; init;}
-    string Version { get; init; }
-    Size Size { get; init; }    
-    DateTime ArchiveDate { get; init; }
-    DateTime LastInstalledDate { get; init; }
-    ReactiveCommand<Unit, Unit> AddToLoadoutCommand { get; init; }
+    string Name { get;}
+    string Version { get; }
+    Size Size { get; }    
+    
+    public DateTime LastInstalledDate { get; set; }
+    public DateTime ArchiveDate { get; set; }
+    string DisplayArchiveDate { get; }
+    string DisplayLastInstalledDate { get; }
+    ReactiveCommand<Unit, Unit> AddToLoadoutCommand { get; }
 }

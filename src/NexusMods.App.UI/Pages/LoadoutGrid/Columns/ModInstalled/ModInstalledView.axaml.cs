@@ -17,6 +17,7 @@ public partial class ModInstalledView : ReactiveUserControl<IModInstalledViewMod
             this.WhenAnyValue(view => view.ViewModel!.Value)
                 .CombineLatest(Observable.Interval(TimeSpan.FromSeconds(60)).StartWith(1))
                 .Select(time => time.First.Humanize())
+                .OnUI()
                 .BindTo<string, ModInstalledView, string>(this, view => view.InstalledTextBlock.Text)
                 .DisposeWith(d);
         });
