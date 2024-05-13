@@ -6,7 +6,6 @@
         <PackageReference Include="GameFinder" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
-        <PackageReference Include="NexusMods.ProxyConsole.Abstractions" />
     </ItemGroup>
 
     <ItemGroup>
@@ -14,5 +13,6 @@
       <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Installers\NexusMods.Abstractions.Installers.csproj" />
       <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Games\NexusMods.Abstractions.Games.csproj" />
       <ProjectReference Include="..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
+      <ProjectReference Include="..\NexusMods.ProxyConsole.Abstractions\NexusMods.ProxyConsole.Abstractions.csproj" />
     </ItemGroup>
 </Project>

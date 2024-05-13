@@ -11,14 +11,13 @@
     <PackageVersion Include="NexusMods.Hashing.xxHash64" Version="2.0.1" />
     <PackageVersion Include="NexusMods.Paths.TestingHelpers" Version="0.9.4" />
     <PackageVersion Include="NexusMods.Archives.Nx" Version="0.4.0" />
-    <PackageVersion Include="NexusMods.ProxyConsole.Abstractions" Version="0.6.0" />
-    <PackageVersion Include="NexusMods.SingleProcess" Version="0.6.0" />
     <PackageVersion Include="NexusMods.Telemetry.OpenTelemetry" Version="1.0.0" />
     <PackageVersion Include="FomodInstaller.Interface" Version="1.2.0" />
     <PackageVersion Include="FomodInstaller.Scripting.XmlScript" Version="1.0.0" />
     <!-- Bannerlord -->
     <PackageVersion Include="Bannerlord.LauncherManager" Version="1.0.76" />
     <PackageVersion Include="FetchBannerlordVersion" Version="1.0.6.45" />
+    <PackageVersion Include="NLog" Version="5.2.8" />
     <PackageVersion Include="System.Linq" Version="4.3.0" />
     <PackageVersion Include="System.Text.Json" Version="8.0.3" />
   </ItemGroup>

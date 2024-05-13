@@ -8,6 +8,7 @@ using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.App.BuildInfo;
+using NexusMods.App.Listeners;
 using NexusMods.App.UI;
 using NexusMods.Paths;
 using NexusMods.Settings;
@@ -47,6 +48,7 @@ public class Program
         host.StartAsync().Wait(timeout: TimeSpan.FromMinutes(5));
 
         _logger = host.Services.GetRequiredService<ILogger<Program>>();
+        var startupHandler = host.Services.GetService<StartupHandler>();
         LogMessages.RuntimeInformation(_logger, RuntimeInformation.OSDescription, RuntimeInformation.FrameworkDescription);
         LogMessages.StartingProcess(_logger, Environment.ProcessPath, Environment.ProcessId, args.Length, args);
 
@@ -61,23 +63,15 @@ public class Program
             LogMessages.UnobservedReactiveThrownException(_logger, ex);
         });
 
-        if (MainThreadData.IsDebugMode)
-        {
-            _logger.LogInformation("Starting the application in single-process mode with an attached debugger");
-        }
-        else
-        {
-            _logger.LogInformation("Starting the application in release mode without an attached debugger");
-        }
-
         var startup = host.Services.GetRequiredService<StartupDirector>();
+
 
         var managerTask = Task.Run(async () =>
         {
             try
             {
                 _logger.LogTrace("Calling startup handler");
-                return await startup.Start(args, MainThreadData.IsDebugMode);
+                return await startup.Start(args);
             }
             catch (Exception ex)
             {
@@ -105,35 +99,20 @@ public class Program
                 }
             }
         });
-
-        // The UI *must* be started on the main thread, according to the Avalonia docs, although it
-        // seems to work fine on some platforms (this behavior is not guaranteed). So when we need to open a new
-        // window, the handler will enqueue an action to be run on the main thread.
-        while (!MainThreadData.GlobalShutdownToken.IsCancellationRequested)
+        
+        if (isMain)
         {
-            if (MainThreadData.MainThreadActions.TryDequeue(out var action))
-            {
-                try
-                {
-                    action();
-                }
-                catch (Exception e)
-                {
-                    _logger.LogError(e, "Exception running main thread action");
-                }
-                continue;
-            }
-            Thread.Sleep(250);
+            host.Services.GetRequiredService<NxmRpcListener>();
+            Startup.Main(host.Services, []);
         }
-
+        
         _logger.LogInformation("Startup handler returned {Result}", managerTask.Result);
         return managerTask.Result;
     }
 
     private static bool IsMainProcess(IReadOnlyList<string> args)
     {
-        if (MainThreadData.IsDebugMode) return true;
-        return args.Count == 1 && args[0] == StartupHandler.MainProcessVerb;
+        return args.Count == 0;
     }
 
     private static IHost BuildSettingsHost()

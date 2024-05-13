@@ -13,6 +13,7 @@
         <ProjectReference Include="..\Extensions\NexusMods.Extensions.DynamicData\NexusMods.Extensions.DynamicData.csproj" />
         <ProjectReference Include="..\Extensions\NexusMods.Extensions.Hashing\NexusMods.Extensions.Hashing.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Installers\NexusMods.Abstractions.Installers.csproj" />
+        <ProjectReference Include="..\NexusMods.ProxyConsole.Abstractions\NexusMods.ProxyConsole.Abstractions.csproj" />
     </ItemGroup>
 
     <PropertyGroup>
@@ -35,7 +36,6 @@
         <PackageReference Include="NexusMods.Archives.Nx" />
         <PackageReference Include="NexusMods.Hashing.xxHash64" />
         <PackageReference Include="NexusMods.MnemonicDB" />
-        <PackageReference Include="NexusMods.ProxyConsole.Abstractions" />
         <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
 

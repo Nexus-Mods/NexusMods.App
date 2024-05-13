@@ -7,12 +7,12 @@
         <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.FileExtractor\NexusMods.Abstractions.FileExtractor.csproj" />
         <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.IO\NexusMods.Abstractions.IO.csproj" />
         <ProjectReference Include="..\..\Extensions\NexusMods.Extensions.BCL\NexusMods.Extensions.BCL.csproj" />
+        <ProjectReference Include="..\..\NexusMods.ProxyConsole.Abstractions\NexusMods.ProxyConsole.Abstractions.csproj" />
     </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="CliWrap" />
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
-        <PackageReference Include="NexusMods.ProxyConsole.Abstractions" />
         <PackageReference Include="System.Linq.Async" />
         <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
     </ItemGroup>
