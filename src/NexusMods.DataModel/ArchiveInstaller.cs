@@ -55,10 +55,12 @@ public class ArchiveInstaller : IArchiveInstaller
             ? download.SuggestedName
             : "<unknown>");
 
-        var dlTx = _conn.BeginTransaction();
-        dlTx.Add(download.Id, DownloadAnalysis.SuggestedName, modName);
-        await dlTx.Commit();
-        
+        {
+            using var dlTx = _conn.BeginTransaction();
+            dlTx.Add(download.Id, DownloadAnalysis.SuggestedName, modName);
+            await dlTx.Commit();
+        }
+
         var archiveName = download.Contains(FilePathMetadata.OriginalName)
             ? download.Get(FilePathMetadata.OriginalName).FileName.ToString()
             : "<unknown>";
