@@ -4,9 +4,9 @@
     <PackageVersion Include="FlatSharp.Compiler" Version="7.6.0" />
     <PackageVersion Include="FlatSharp.Runtime" Version="7.6.0" />
     <PackageVersion Include="LinqGen" Version="0.3.1" />
-    <PackageVersion Include="NexusMods.MnemonicDB" Version="0.9.26" />
-    <PackageVersion Include="NexusMods.MnemonicDB.Abstractions" Version="0.9.26" />
-    <PackageVersion Include="NexusMods.MnemonicDB.Storage" Version="0.9.26" />
+    <PackageVersion Include="NexusMods.MnemonicDB" Version="0.9.28" />
+    <PackageVersion Include="NexusMods.MnemonicDB.Abstractions" Version="0.9.28" />
+    <PackageVersion Include="NexusMods.MnemonicDB.Storage" Version="0.9.28" />
     <PackageVersion Include="NexusMods.Paths" Version="0.9.4" />
     <PackageVersion Include="NexusMods.Hashing.xxHash64" Version="2.0.1" />
     <PackageVersion Include="NexusMods.Paths.TestingHelpers" Version="0.9.4" />

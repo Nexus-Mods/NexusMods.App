@@ -9,6 +9,7 @@ using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.App.BuildInfo;
 using NexusMods.App.UI;
+using NexusMods.DataModel;
 using NexusMods.Paths;
 using NexusMods.Settings;
 using NexusMods.SingleProcess;
@@ -160,14 +161,30 @@ public class Program
     /// <summary>
     /// Constructs the host for the application, if <paramref name="slimMode"/> is true, the host will not register
     /// most of the services, and will only register what is required to proxy the app to the main process.
+    /// <paramref name="isAvaloniaDesigner"/> should be set to true when constructing the host for the Avalonia Designer
+    /// and will use the in memory database 
     /// </summary>
     private static IHost BuildHost(
         bool slimMode,
         TelemetrySettings telemetrySettings,
-        LoggingSettings loggingSettings)
+        LoggingSettings loggingSettings,
+        bool isAvaloniaDesigner = false)
     {
         var host = new HostBuilder()
-            .ConfigureServices(services => services.AddApp(telemetrySettings, slimMode: slimMode).Validate())
+            .ConfigureServices(services =>
+                {
+                    var s = services.AddApp(telemetrySettings, slimMode: slimMode).Validate();
+
+                    if (isAvaloniaDesigner)
+                    {
+                        s.OverrideSettingsForTests<DataModelSettings>(settings => settings with
+                            {
+                                UseInMemoryDataModel = true,
+                            }
+                        );
+                    }
+                }
+            )
             .ConfigureLogging((_, builder) => AddLogging(builder, loggingSettings, isMainProcess: !slimMode))
             .Build();
 
@@ -233,8 +250,13 @@ public class Program
     // ReSharper disable once UnusedMember.Global
     public static AppBuilder BuildAvaloniaApp()
     {
-        var host = BuildHost(slimMode: false, telemetrySettings: new TelemetrySettings(), LoggingSettings.CreateDefault(OSInformation.Shared));
+        var host = BuildHost(slimMode: false, 
+            telemetrySettings: new TelemetrySettings(), 
+            LoggingSettings.CreateDefault(OSInformation.Shared),
+            isAvaloniaDesigner: true);
+        
         DesignerUtils.Activate(host.Services);
+        
         return Startup.BuildAvaloniaApp(host.Services);
     }
 }
