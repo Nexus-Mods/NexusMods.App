@@ -56,7 +56,7 @@ public class FileOriginEntryViewModel : AViewModel<IFileOriginEntryViewModel>, I
             ? version
             : "-";
         
-        ArchiveDate = fileOrigin.CreatedAt;
+        ArchiveDate = fileOrigin.GetCreatedAt();
 
         var loadout = conn.Db.Get<Loadout.Model>(loadoutId.Value);
 
@@ -72,7 +72,7 @@ public class FileOriginEntryViewModel : AViewModel<IFileOriginEntryViewModel>, I
             .StartWith(loadout)
             .Select(rev => rev.Mods.Where(mod => mod.Contains(Mod.Source)
                                                  && mod.SourceId.Equals(fileOrigin.Id))
-                .Select(mod => mod.CreatedAt)
+                .Select(mod => mod.GetCreatedAt())
                 .DefaultIfEmpty(DateTime.MinValue)
                 .Max()
             )

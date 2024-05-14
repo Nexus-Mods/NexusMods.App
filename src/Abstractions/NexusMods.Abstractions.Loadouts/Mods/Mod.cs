@@ -158,19 +158,16 @@ public static partial class Mod
             get => Mod.Category.Get(this);
             set => Mod.Category.Add(this, value);
         }
-        
+
         /// <summary>
         /// The timestamp of the creation of this mod.
         /// </summary>
-        public DateTime CreatedAt
+        public DateTime GetCreatedAt()
         {
-            get
-            {
-                // Get the lowest transaction id, then get the timestamp of that transaction
-                var t = this.Select(d => d.T).Min();
-                var txEntity = Db.Get<Entity>(EntityId.From(t.Value));
-                return BuiltInAttributes.TxTimestanp.Get(txEntity);
-            }
+            // Get the lowest transaction id, then get the timestamp of that transaction
+            var t = this.Select(d => d.T).Min();
+            var txEntity = Db.Get<Entity>(EntityId.From(t.Value));
+            return BuiltInAttributes.TxTimestanp.Get(txEntity);
         }
 
         public Entities<EntityIds, File.Model> Files => GetReverse<File.Model>(File.Mod);
