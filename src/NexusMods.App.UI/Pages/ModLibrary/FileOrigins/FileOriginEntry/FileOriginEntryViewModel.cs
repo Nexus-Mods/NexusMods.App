@@ -40,14 +40,22 @@ public class FileOriginEntryViewModel : AViewModel<IFileOriginEntryViewModel>, I
         Name = fileOrigin.TryGet(DownloaderState.FriendlyName, out var friendlyName) && friendlyName != "Unknown"
             ? friendlyName
             : fileOrigin.SuggestedName;
-        Size = fileOrigin.TryGet(DownloaderState.Size, out var size) ? size : Size.Zero;
+        
+        Size = fileOrigin.TryGet(DownloadAnalysis.Size, out var analysisSize) 
+            ? analysisSize 
+            : fileOrigin.TryGet(DownloaderState.Size, out var dlStateSize) 
+                ? dlStateSize 
+                : Size.Zero;
+        
         AddToLoadoutCommand = ReactiveCommand.CreateFromTask(async () =>
         {
             await archiveInstaller.AddMods(loadoutId, fileOrigin);
         });
+        
         Version = fileOrigin.TryGet(DownloaderState.Version, out var version) && version != "Unknown"
             ? version
             : "-";
+        
         ArchiveDate = fileOrigin.CreatedAt;
 
         var loadout = conn.Db.Get<Loadout.Model>(loadoutId.Value);
