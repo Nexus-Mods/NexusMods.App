@@ -27,15 +27,17 @@ public class FileOriginEntryViewModel : AViewModel<IFileOriginEntryViewModel>, I
     [ObservableAsProperty] public DateTime LastInstalledDate { get; set; }
 
     [ObservableAsProperty] public string DisplayLastInstalledDate { get; } = "-";
-    
+
     public FileOriginEntryViewModel(
         IConnection conn,
         IArchiveInstaller archiveInstaller,
         LoadoutId loadoutId,
         DownloadAnalysis.Model fileOrigin)
     {
-        Name = fileOrigin.SuggestedName;
-        Size = fileOrigin.Size;
+        Name = fileOrigin.TryGet(DownloaderState.FriendlyName, out var friendlyName) && friendlyName != "Unknown"
+            ? friendlyName
+            : fileOrigin.SuggestedName;
+        Size = fileOrigin.TryGet(DownloaderState.Size, out var size) ? size : Size.Zero;
         AddToLoadoutCommand = ReactiveCommand.CreateFromTask(async () => { await archiveInstaller.AddMods(loadoutId, fileOrigin); }
         );
         Version = fileOrigin.TryGet(DownloaderState.Version, out var version) && version != "Unknown"
