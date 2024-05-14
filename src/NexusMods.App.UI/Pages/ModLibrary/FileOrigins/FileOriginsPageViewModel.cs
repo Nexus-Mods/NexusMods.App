@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
 using DynamicData;
 using DynamicData.Binding;
+using NexusMods.Abstractions.FileStore.ArchiveMetadata;
 using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Loadouts;
@@ -54,8 +55,10 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
         var downloadAnalyses = _dlAnalysisRepo.Observable;
         
         var entriesObservable = downloadAnalyses.ToObservableChangeSet()
-            .Filter(downloadAnalysis => 
-                !downloadAnalysis.TryGet(DownloaderState.GameDomain, out var domain) || domain == game.Domain)
+            .Filter(downloadAnalysis => (!downloadAnalysis.TryGet(DownloaderState.GameDomain, out var domain) 
+                                         || domain == game.Domain)
+                                        && !downloadAnalysis.Contains(NestedArchiveMetadata.NestedArchive)
+            )
             .Transform(fileOrigin => (IFileOriginEntryViewModel)new FileOriginEntryViewModel(
                     _conn,
                     _archiveInstaller,

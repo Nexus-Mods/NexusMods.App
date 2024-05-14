@@ -3,12 +3,14 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.FileExtractor;
 using NexusMods.Abstractions.FileStore;
+using NexusMods.Abstractions.FileStore.ArchiveMetadata;
 using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Extensions.Hashing;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.Paths;
 
 using MetadataFn = System.Action<NexusMods.MnemonicDB.Abstractions.ITransaction, NexusMods.MnemonicDB.Abstractions.EntityId>;
@@ -60,7 +62,14 @@ public class FileOriginRegistry : IFileOriginRegistry
 
         await using var tmpFolder = _temporaryFileManager.CreateFolder();
         await _extractor.ExtractAllAsync(factory, tmpFolder.Path, token);
-        return await RegisterFolderInternal(tmpFolder.Path, metaData, null, _fileStore.GetFileHashes(), archiveHash.Value, archiveSize, token);
+
+        return await RegisterFolderInternal(tmpFolder.Path, AppendNestedArchiveMetadata, null, _fileStore.GetFileHashes(), archiveHash.Value, archiveSize, token);
+
+        void AppendNestedArchiveMetadata(ITransaction tx, EntityId id)
+        {
+            metaData?.Invoke(tx, id);
+            tx.Add(id, NestedArchiveMetadata.NestedArchive, new Null());
+        }
     }
 
     /// <inheritdoc />
@@ -128,7 +137,10 @@ public class FileOriginRegistry : IFileOriginRegistry
     private async ValueTask<DownloadId> RegisterFolderInternal(AbsolutePath originalPath, 
         Action<ITransaction, EntityId>? metaDataFn, 
         EntityId? existingId,
-        HashSet<ulong> knownHashes, ulong archiveHash, ulong archiveSize, CancellationToken token = default)
+        HashSet<ulong> knownHashes, 
+        ulong archiveHash, 
+        ulong archiveSize, 
+        CancellationToken token = default)
     {
         List<ArchivedFileEntry> filesToBackup = [];
         List<ArchivedFileEntry> files = [];
