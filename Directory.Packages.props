@@ -1,6 +1,7 @@
 <Project>
   <ItemGroup>
-    <!-- Custom Packages -->
+    <PackageVersion Include="Avalonia.AvaloniaEdit" Version="11.0.6" />
+    <PackageVersion Include="AvaloniaEdit.TextMate" Version="11.0.6" />
     <PackageVersion Include="FlatSharp.Compiler" Version="7.6.0" />
     <PackageVersion Include="FlatSharp.Runtime" Version="7.6.0" />
     <PackageVersion Include="LinqGen" Version="0.3.1" />
@@ -16,28 +17,20 @@
     <PackageVersion Include="NexusMods.Telemetry.OpenTelemetry" Version="1.0.0" />
     <PackageVersion Include="FomodInstaller.Interface" Version="1.2.0" />
     <PackageVersion Include="FomodInstaller.Scripting.XmlScript" Version="1.0.0" />
-    <!-- Bannerlord -->
     <PackageVersion Include="Bannerlord.LauncherManager" Version="1.0.76" />
     <PackageVersion Include="FetchBannerlordVersion" Version="1.0.6.45" />
     <PackageVersion Include="System.Linq" Version="4.3.0" />
     <PackageVersion Include="System.Text.Json" Version="8.0.3" />
-  </ItemGroup>
-  <ItemGroup>
-    <!-- Open Telementry -->
+    <PackageVersion Include="TextMateSharp.Grammars" Version="1.0.56" />
     <PackageVersion Include="OpenTelemetry" Version="1.8.1" />
     <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.8.1" />
     <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.8.1" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageVersion Include="JetBrains.Annotations" Version="2023.3.0" PrivateAssets="all" />
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="8.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageVersion>
     <PackageVersion Include="NetEscapades.EnumGenerators" Version="1.0.0-beta07" PrivateAssets="all" ExcludeAssets="compile;runtime" />
-  </ItemGroup>
-  <ItemGroup>
-    <!-- Avalonia -->
     <PackageVersion Include="Avalonia" Version="11.1.0-beta2" />
     <PackageVersion Include="Avalonia.Controls.DataGrid" Version="11.1.0-beta2" />
     <PackageVersion Include="Avalonia.Controls.TreeDataGrid" Version="11.0.2" />
@@ -51,18 +44,12 @@
     <PackageVersion Include="LiveChartsCore.SkiaSharpView.Avalonia" Version="2.0.0-rc2" />
     <!-- keep this version in sync with Avalonia (https://github.com/whistyun/Markdown.Avalonia?tab=readme-ov-file#nuget) -->
     <PackageVersion Include="Markdown.Avalonia.Tight" Version="11.0.3-a1" />
-  </ItemGroup>
-  <ItemGroup>
-    <!-- System -->
     <PackageVersion Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
     <PackageVersion Include="System.CommandLine.NamingConventionBinder" Version="2.0.0-beta4.22272.1" />
     <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="7.2.0" />
     <PackageVersion Include="System.IO.Hashing" Version="8.0.0" />
     <PackageVersion Include="System.Linq.Async" Version="6.0.1" />
     <PackageVersion Include="System.Reactive" Version="6.0.0" />
-  </ItemGroup>
-  <ItemGroup>
-    <!-- Microsoft -->
     <PackageVersion Include="Microsoft.AspNetCore.WebUtilities" Version="8.0.3" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.1" />
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
@@ -75,9 +62,6 @@
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.8.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.SourceGenerators.Testing.XUnit" Version="1.1.1" />
-  </ItemGroup>
-  <ItemGroup>
-    <!-- Testing -->
     <PackageVersion Include="AutoFixture" Version="4.18.1" />
     <PackageVersion Include="AutoFixture.Xunit2" Version="4.18.1" />
     <PackageVersion Include="coverlet.collector" Version="6.0.0">
@@ -113,9 +97,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageVersion>
     <PackageVersion Include="Xunit.SkippableFact" Version="1.4.13" />
-  </ItemGroup>
-  <ItemGroup>
-    <!-- Other -->
     <PackageVersion Include="BenchmarkDotNet" Version="0.13.12" />
     <PackageVersion Include="BitFaster.Caching" Version="2.4.1" />
     <PackageVersion Include="CliWrap" Version="3.6.6" />
