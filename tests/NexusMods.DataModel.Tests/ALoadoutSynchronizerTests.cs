@@ -39,8 +39,12 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
     /// DI constructor
     /// </summary>
     /// <param name="provider"></param>
-    public ALoadoutSynchronizerTests(IServiceProvider provider) : base(provider)
+    public ALoadoutSynchronizerTests(IServiceProvider provider) : base(provider) { }
+
+    public override async Task InitializeAsync()
     {
+        await base.InitializeAsync();
+        
         _synchronizer = (IStandardizedLoadoutSynchronizer)Game.Synchronizer;
         
         // Ensure we have an initial disk state in stubbed synchronizer.
@@ -49,13 +53,6 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
         
         // So this line creates an initial state.
         Task.Run(async () => await ((ALoadoutSynchronizer)_synchronizer).GetOrCreateInitialDiskState(Install)).Wait();
-    }
-
-    public override async Task InitializeAsync()
-    {
-        await base.InitializeAsync();
-
-        _synchronizer = (IStandardizedLoadoutSynchronizer)Game.Synchronizer;
 
         {
             // Disable all mods

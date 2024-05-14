@@ -79,7 +79,6 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
         ToolManager = provider.GetRequiredService<IToolManager>();
         ServiceProvider = provider;
         GameRegistry = provider.GetRequiredService<IGameRegistry>();
-
     }
 
     public void Dispose()
