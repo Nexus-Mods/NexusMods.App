@@ -29,6 +29,9 @@ public partial class TextEditorPageView : ReactiveUserControl<ITextEditorPageVie
         {
             Disposable.Create(textMate, x => x.Dispose()).DisposeWith(disposables);
 
+            this.BindCommand(ViewModel, vm => vm.SaveCommand, view => view.SaveButton)
+                .DisposeWith(disposables);
+
             this.OneWayBind(ViewModel, vm => vm.IsReadOnly, view => view.TextEditor.IsReadOnly)
                 .DisposeWith(disposables);
 

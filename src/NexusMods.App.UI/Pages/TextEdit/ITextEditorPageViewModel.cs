@@ -1,5 +1,7 @@
+using System.Reactive;
 using AvaloniaEdit.Document;
 using NexusMods.App.UI.WorkspaceSystem;
+using ReactiveUI;
 
 namespace NexusMods.App.UI.Pages.TextEdit;
 
@@ -24,4 +26,6 @@ public interface ITextEditorPageViewModel : IPageViewModelInterface
     /// Gets or sets the document to display and edit in the text editor.
     /// </summary>
     public TextDocument? Document { get; set; }
+
+    public ReactiveCommand<Unit, Unit> SaveCommand { get; }
 }

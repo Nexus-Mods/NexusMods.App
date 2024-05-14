@@ -10,10 +10,18 @@
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="NexusMods.App.UI.Pages.TextEdit.TextEditorPageView">
 
-    <avaloniaEdit:TextEditor x:Name="TextEditor"
-                             ShowLineNumbers="True"
-                             HorizontalScrollBarVisibility="Auto"
-                             VerticalScrollBarVisibility="Visible"/>
+    <Grid RowDefinitions="Auto, *">
+        <Button Grid.Row="0" x:Name="SaveButton">
+            <TextBlock>Save</TextBlock>
+        </Button>
+
+        <avaloniaEdit:TextEditor Grid.Row="1" x:Name="TextEditor"
+                                 ShowLineNumbers="True"
+                                 HorizontalScrollBarVisibility="Auto"
+                                 VerticalScrollBarVisibility="Visible" />
+
+    </Grid>
+
 
 </reactive:ReactiveUserControl>
 

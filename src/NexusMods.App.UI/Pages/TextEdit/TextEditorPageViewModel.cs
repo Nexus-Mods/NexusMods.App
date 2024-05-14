@@ -1,12 +1,16 @@
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Text;
 using AvaloniaEdit.Document;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.IO;
+using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.Hashing.xxHash64;
 using NexusMods.Icons;
+using NexusMods.Paths;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -23,6 +27,7 @@ public class TextEditorPageViewModel : APageViewModel<ITextEditorPageViewModel>,
 
     [Reactive] public TextDocument? Document { get; set; }
 
+    public ReactiveCommand<Unit, Unit> SaveCommand { get; }
     private readonly ReactiveCommand<TextEditorPageContext, ValueTuple<TextEditorPageContext, string>> _loadFileCommand;
 
     public TextEditorPageViewModel(
@@ -44,6 +49,26 @@ public class TextEditorPageViewModel : APageViewModel<ITextEditorPageViewModel>,
 
             return (context, contents);
         });
+
+        var canSaveObservable = this.WhenAnyValue(
+            vm => vm.Document,
+            vm => vm.IsModified,
+            (document, isModified) => document is not null && isModified
+        );
+
+        SaveCommand = ReactiveCommand.CreateFromTask(async () =>
+        {
+            var text = Document?.Text ?? string.Empty;
+
+            var bytes = Encoding.UTF8.GetBytes(text);
+            var hash = Hash.From(XxHash64Algorithm.HashBytes(bytes));
+            var size = Size.From((ulong)bytes.Length);
+
+            var ms = new MemoryStream(bytes, writable: false);
+            var streamFactory = new MemoryStreamFactory(Context!.FileName, ms);
+
+            await fileStore.BackupFiles([new ArchivedFileEntry(streamFactory, hash, size)]);
+        }, canSaveObservable);
 
         this.WhenActivated(disposables =>
         {
