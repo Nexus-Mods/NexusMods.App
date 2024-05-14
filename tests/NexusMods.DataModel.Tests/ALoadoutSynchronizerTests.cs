@@ -586,7 +586,7 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
     public async Task DeleteLoadout_LoadoutIsDeletedAndGameRevertedToInitialState()
     {
         // Arrange
-        var initialLoadout = BaseList.Value;
+        var initialLoadout = BaseLoadout;
         var initialDiskState = await _synchronizer.GetDiskState(initialLoadout.Installation);
 
         // Add a mod to the initial loadout
@@ -605,7 +605,8 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
         await _synchronizer.DeleteLoadout(initialLoadout.Installation, initialLoadout.LoadoutId);
 
         // Assert
-        LoadoutRegistry.Get(initialLoadout.LoadoutId).Should().BeNull("The loadout should be deleted");
+        var model = Connection.Db.Get<Loadout.Model>(initialLoadout.LoadoutId.Value);
+        model.Should().BeNull("The loadout should be deleted");
 
         var currentDiskState = await _synchronizer.GetDiskState(initialLoadout.Installation);
         currentDiskState.Should().BeEquivalentTo(initialDiskState, "The game should be reverted to the initial disk state");

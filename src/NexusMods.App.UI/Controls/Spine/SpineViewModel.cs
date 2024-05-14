@@ -148,8 +148,6 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                     .BindToVM(this, vm => vm.LeftMenuViewModel)
                     .DisposeWith(disposables);
 
-
-
                 // Update the active spine item when the active workspace changes
                 workspaceController
                     .WhenAnyValue(controller => controller.ActiveWorkspace)
