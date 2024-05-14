@@ -38,8 +38,10 @@ public class FileOriginEntryViewModel : AViewModel<IFileOriginEntryViewModel>, I
             ? friendlyName
             : fileOrigin.SuggestedName;
         Size = fileOrigin.TryGet(DownloaderState.Size, out var size) ? size : Size.Zero;
-        AddToLoadoutCommand = ReactiveCommand.CreateFromTask(async () => { await archiveInstaller.AddMods(loadoutId, fileOrigin); }
-        );
+        AddToLoadoutCommand = ReactiveCommand.CreateFromTask(async () =>
+        {
+            await archiveInstaller.AddMods(loadoutId, fileOrigin);
+        });
         Version = fileOrigin.TryGet(DownloaderState.Version, out var version) && version != "Unknown"
             ? version
             : "-";
@@ -58,8 +60,7 @@ public class FileOriginEntryViewModel : AViewModel<IFileOriginEntryViewModel>, I
         conn.Revisions(loadoutId)
             .StartWith(loadout)
             .Select(rev => rev.Mods.Where(mod => mod.Contains(Mod.Source)
-                                                 && mod.SourceId.Equals(fileOrigin.Id)
-                )
+                                                 && mod.SourceId.Equals(fileOrigin.Id))
                 .Select(mod => mod.CreatedAt)
                 .DefaultIfEmpty(DateTime.MinValue)
                 .Max()

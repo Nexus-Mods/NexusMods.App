@@ -57,8 +57,8 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
         var entriesObservable = downloadAnalyses.ToObservableChangeSet()
             .Filter(downloadAnalysis => (!downloadAnalysis.TryGet(DownloaderState.GameDomain, out var domain) 
                                          || domain == game.Domain)
-                                        && !downloadAnalysis.Contains(NestedArchiveMetadata.NestedArchive)
-            )
+                                        && !downloadAnalysis.Contains(NestedArchiveMetadata.NestedArchive))
+            .OnUI()
             .Transform(fileOrigin => (IFileOriginEntryViewModel)new FileOriginEntryViewModel(
                     _conn,
                     _archiveInstaller,
@@ -66,7 +66,6 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
                     fileOrigin
                 )
             )
-            .OnUI()
             .Bind(out _fileOrigins);
         
         this.WhenActivated(d =>
