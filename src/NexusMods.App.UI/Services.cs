@@ -52,6 +52,7 @@ using NexusMods.App.UI.Pages.ModInfo;
 using NexusMods.App.UI.Pages.ModLibrary;
 using NexusMods.App.UI.Pages.MyGames;
 using NexusMods.App.UI.Pages.Settings;
+using NexusMods.App.UI.Pages.TextEdit;
 using NexusMods.App.UI.Settings;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceAttachments;
@@ -205,6 +206,9 @@ public static class Services
             .AddView<ChangelogPageView, IChangelogPageViewModel>()
             .AddViewModel<ChangelogPageViewModel, IChangelogPageViewModel>()
 
+            .AddView<TextEditorPageView, ITextEditorPageViewModel>()
+            .AddViewModel<TextEditorPageViewModel, ITextEditorPageViewModel>()
+
             // workspace system
             .AddSingleton<IWindowManager, WindowManager>()
             .AddRepository<WindowDataAttributes.Model>(WindowDataAttributes.Data)
@@ -236,6 +240,7 @@ public static class Services
             .AddSingleton<IPageFactory, SettingsPageFactory>()
             .AddSingleton<IPageFactory, ChangelogPageFactory>()
             .AddSingleton<IPageFactory, FileOriginsPageFactory>()
+            .AddSingleton<IPageFactory, TextEditorPageFactory>()
 
             // LeftMenu factories
             .AddSingleton<ILeftMenuFactory, DownloadsLeftMenuFactory>()
