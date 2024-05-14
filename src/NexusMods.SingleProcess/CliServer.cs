@@ -74,8 +74,7 @@ public class CliServer : IHostedService
                 CleanClosedConnections();
 
                 // Create a timeout token, and combine it with the main cancellation token
-                var timeout = new CancellationTokenSource();
-                timeout.CancelAfter(_settings.ListenTimeout);
+                var timeout = new CancellationTokenSource(delay: _settings.ListenTimeout);
                 var combined = CancellationTokenSource.CreateLinkedTokenSource(Token, timeout.Token);
 
                 var found = await _tcpListener!.AcceptTcpClientAsync(combined.Token);
