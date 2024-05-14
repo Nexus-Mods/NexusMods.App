@@ -6,13 +6,17 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
+using NexusMods.Abstractions.Loadouts.Files;
+using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Icons;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using File = NexusMods.Abstractions.Loadouts.Files.File;
 
 namespace NexusMods.App.UI.Pages.TextEdit;
 
@@ -33,7 +37,8 @@ public class TextEditorPageViewModel : APageViewModel<ITextEditorPageViewModel>,
     public TextEditorPageViewModel(
         ILogger<TextEditorPageViewModel> logger,
         IWindowManager windowManager,
-        IFileStore fileStore) : base(windowManager)
+        IFileStore fileStore,
+        IConnection connection) : base(windowManager)
     {
         TabIcon = IconValues.FileDocumentOutline;
         TabTitle = "Text Editor";
@@ -58,16 +63,37 @@ public class TextEditorPageViewModel : APageViewModel<ITextEditorPageViewModel>,
 
         SaveCommand = ReactiveCommand.CreateFromTask(async () =>
         {
+            var previousHash = Context!.FileHash;
+            var fileName = Context!.FileName;
+
             var text = Document?.Text ?? string.Empty;
 
+            // hash and store the new contents
             var bytes = Encoding.UTF8.GetBytes(text);
             var hash = Hash.From(XxHash64Algorithm.HashBytes(bytes));
             var size = Size.From((ulong)bytes.Length);
 
             var ms = new MemoryStream(bytes, writable: false);
-            var streamFactory = new MemoryStreamFactory(Context!.FileName, ms);
+            var streamFactory = new MemoryStreamFactory(fileName, ms);
 
             await fileStore.BackupFiles([new ArchivedFileEntry(streamFactory, hash, size)]);
+
+            // update the file
+            var db = connection.Db;
+            var storedFile = db
+                .FindIndexed(previousHash, StoredFile.Hash)
+                .Select(id => db.Get<StoredFile.Model>(id))
+                .First();
+
+            var file = storedFile.Remap<File.Model>();
+
+            using (var tx = connection.BeginTransaction())
+            {
+                tx.Add(storedFile.Id, StoredFile.Hash, hash);
+                tx.Add(storedFile.Id, StoredFile.Size, size);
+                file.Mod.Revise(tx);
+                await tx.Commit();
+            }
         }, canSaveObservable);
 
         this.WhenActivated(disposables =>
