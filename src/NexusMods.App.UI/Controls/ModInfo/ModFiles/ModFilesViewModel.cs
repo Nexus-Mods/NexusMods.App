@@ -15,6 +15,7 @@ using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.MnemonicDB.Abstractions;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using File = NexusMods.Abstractions.Loadouts.Files.File;
 
 namespace NexusMods.App.UI.Controls.ModInfo.ModFiles;
 
@@ -40,13 +41,18 @@ public class ModFilesViewModel : AViewModel<IModFilesViewModel>, IModFilesViewMo
         OpenEditorCommand = ReactiveCommand.Create<NavigationInformation>(info =>
         {
             var key = SelectedItem!.Key;
+            var targetModId = _modId.Value;
 
             // NOTE(erri120): not a huge fan of this, but it works
             var db = connection.Db;
             var storedFile = db
                 .Find(StoredFile.Hash)
                 .Select(id => db.Get<StoredFile.Model>(id))
-                .FirstOrDefault(storedFile => storedFile.To.Equals(key));
+                .FirstOrDefault(storedFile =>
+                {
+                    if (!storedFile.To.Equals(key)) return false;
+                    return targetModId.Equals(storedFile.ModId);
+                });
 
             if (storedFile is null) return;
 
@@ -55,7 +61,7 @@ public class ModFilesViewModel : AViewModel<IModFilesViewModel>, IModFilesViewMo
                 FactoryId = TextEditorPageFactory.StaticId,
                 Context = new TextEditorPageContext
                 {
-                    FileHash = storedFile.Hash,
+                    FileId = storedFile.FileId,
                     FileName = key.FileName,
                 },
             };

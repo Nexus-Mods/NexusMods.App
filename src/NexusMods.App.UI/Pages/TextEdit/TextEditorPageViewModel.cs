@@ -45,7 +45,9 @@ public class TextEditorPageViewModel : APageViewModel<ITextEditorPageViewModel>,
 
         _loadFileCommand = ReactiveCommand.CreateFromTask<TextEditorPageContext, ValueTuple<TextEditorPageContext, string>>(async context =>
         {
-            var fileHash = context.FileHash;
+            var fileId = context.FileId;
+
+            var fileHash = connection.Db.Get<StoredFile.Model>(fileId.Value).Hash;
             logger.LogDebug("Loading file {Hash} into the Text Editor", fileHash);
 
             await using var stream = await fileStore.GetFileStream(fileHash);
@@ -63,7 +65,7 @@ public class TextEditorPageViewModel : APageViewModel<ITextEditorPageViewModel>,
 
         SaveCommand = ReactiveCommand.CreateFromTask(async () =>
         {
-            var previousHash = Context!.FileHash;
+            var fileId = Context!.FileId;
             var fileName = Context!.FileName;
 
             var text = Document?.Text ?? string.Empty;
@@ -80,18 +82,13 @@ public class TextEditorPageViewModel : APageViewModel<ITextEditorPageViewModel>,
 
             // update the file
             var db = connection.Db;
-            var storedFile = db
-                .FindIndexed(previousHash, StoredFile.Hash)
-                .Select(id => db.Get<StoredFile.Model>(id))
-                .First();
-
-            var file = storedFile.Remap<File.Model>();
+            var storedFile = db.Get<StoredFile.Model>(fileId.Value);
 
             using (var tx = connection.BeginTransaction())
             {
                 tx.Add(storedFile.Id, StoredFile.Hash, hash);
                 tx.Add(storedFile.Id, StoredFile.Size, size);
-                file.Mod.Revise(tx);
+                storedFile.Remap<File.Model>().Mod.Revise(tx);
                 await tx.Commit();
             }
         }, canSaveObservable);
