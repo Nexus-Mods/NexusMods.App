@@ -16,9 +16,9 @@
         <viewModFiles:ModFilesDesignViewModel />
     </Design.DataContext>
 
-    <StackPanel>
-        <navigation:NavigationControl x:Name="OpenEditorButton" Content="Open Editor" />
-        <trees:FileTreeView x:Name="FilesTreeView" />
-    </StackPanel>
+    <Grid RowDefinitions="Auto, *">
+        <navigation:NavigationControl Grid.Row="0" x:Name="OpenEditorButton" Content="Open Editor" />
+        <trees:FileTreeView Grid.Row="1" x:Name="FilesTreeView" />
+    </Grid>
 
 </reactiveUi:ReactiveUserControl>
