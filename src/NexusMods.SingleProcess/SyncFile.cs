@@ -1,7 +1,4 @@
-using System.Buffers.Binary;
 using System.Diagnostics;
-using System.Net;
-using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Settings;
 
@@ -20,94 +17,84 @@ public class SyncFile
     public SyncFile(ILogger<SyncFile> logger, ISettingsManager settingsManager)
     {
         var settings = settingsManager.Get<CliSettings>();
-        
-        _sharedArray = new MultiProcessSharedArray(settings.SyncFile, 2 * 8);
+
+        _sharedArray = new MultiProcessSharedArray(settings.SyncFile, itemCount: 1);
     }
 
-
-    /// <summary>
-    /// Combines the process id and port into a single ulong, this can then be used as a CAS value
-    /// to atomically update where the main process is running.
-    /// </summary>
-    /// <returns></returns>
-    /// <exception cref="InvalidOperationException"></exception>
-    private ulong GetThis(int port)
+    private readonly struct SyncFileContents
     {
-        Span<byte> buffer = stackalloc byte[8];
-        MemoryMarshal.Write(buffer, port);
-        MemoryMarshal.Write(buffer[4..], Environment.ProcessId);
-        return MemoryMarshal.Read<ulong>(buffer);
+        public readonly ulong Value;
+
+        public int Port => (int)(Value >> 32);
+
+        public int ProcessId => (int)(Value & 0xFFFFFFFF);
+
+        public SyncFileContents(ulong value)
+        {
+            Value = value;
+        }
+
+        public SyncFileContents(int port, int processId)
+        {
+            var lower = (ulong)port;
+            var upper = (ulong)processId << 32;
+            Value = lower & upper;
+        }
+
+        public void Deconstruct(out int port, out int processId)
+        {
+            port = Port;
+            processId = ProcessId;
+        }
     }
-    
+
     /// <summary>
     /// Returns the current process and port that's stored in the sync file
     /// </summary>
     /// <returns></returns>
     public (Process? Process, int Port) GetSyncInfo()
     {
-        var val = _sharedArray!.Get(0);
-        var pid = (int)(val >> 32);
-        var port = (int)(val & 0xFFFFFFFF);
+        var rawValue = _sharedArray.Get(0);
+        var value = new SyncFileContents(rawValue);
+        var (port, processId) = value;
 
-        if (pid == 0)
-            return (null, port);
-
-        try
-        {
-            return (Process.GetProcessById(pid), port);
-        }
-        catch (Exception)
-        {
-            return (null, port);
-        }
+        if (processId == 0) return (null, port);
+        var process = GetProcessById(processId);
+        return (process, port);
     }
 
-    /// <summary>
-    /// True if this process is the main process, and the CLIServer has started
-    /// </summary>
-    public bool IsMainProcess
-    {
-        get
-        {
-            var info = GetSyncInfo();
-            return info.Process is not null && info.Process.Id == Environment.ProcessId;
-        }
-    }
-    
-    /// <summary>
-    /// The port that the main process is listening on
-    /// </summary>
-    public int Port => GetSyncInfo().Port;
-    
     /// <summary>
     /// Flags this process as the main process, returns false if another process is already the main process
     /// </summary>
     public bool TrySetMain(int port)
     {
-        var id = GetThis(port);
-        var current = _sharedArray.Get(0);
-        var pid = (int)(current >> 32);
-        var process = GetProcessById(pid);
-        if (process is not null && process.Id != Environment.ProcessId)
+        var newContents = new SyncFileContents(port, Environment.ProcessId);
+        var newRawValue = newContents.Value;
+
+        var currentRawValue = _sharedArray.Get(0);
+        var currentContents = new SyncFileContents(currentRawValue);
+
+        var process = GetProcessById(currentContents.ProcessId);
+        if (process is not null && process.Id != newContents.ProcessId)
             return false;
-        
-        return _sharedArray.CompareAndSwap(0, current, id);
+
+        return _sharedArray.CompareAndSwap(0, currentRawValue, newRawValue);
     }
     
     /// <summary>
     /// Returns the process with the given id, or null if it doesn't exist
     /// </summary>
-    private Process? GetProcessById(int pid)
+    private static Process? GetProcessById(int pid)
     {
         try
         {
             var process = Process.GetProcessById(pid);
             return process.Id == 0 ? null : process;
         }
-        catch (ArgumentException)
+        catch (Exception)
         {
             return null;
         }
     }
-    
 }
+
