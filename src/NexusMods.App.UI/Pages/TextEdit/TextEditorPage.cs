@@ -1,10 +1,18 @@
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.IO;
+using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.Hashing.xxHash64;
+using NexusMods.Paths;
 
 namespace NexusMods.App.UI.Pages.TextEdit;
 
-public record TextEditorPageContext : IPageFactoryContext;
+public record TextEditorPageContext : IPageFactoryContext
+{
+    public required Hash FileHash { get; init; }
+    public required RelativePath FileName { get; init; }
+}
 
 [UsedImplicitly]
 public class TextEditorPageFactory : APageFactory<ITextEditorPageViewModel, TextEditorPageContext>
@@ -17,6 +25,7 @@ public class TextEditorPageFactory : APageFactory<ITextEditorPageViewModel, Text
     public override ITextEditorPageViewModel CreateViewModel(TextEditorPageContext context)
     {
         var vm = ServiceProvider.GetRequiredService<ITextEditorPageViewModel>();
+        vm.Context = context;
         return vm;
     }
 }

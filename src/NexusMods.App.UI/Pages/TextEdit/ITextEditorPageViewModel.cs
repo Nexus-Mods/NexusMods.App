@@ -6,6 +6,11 @@ namespace NexusMods.App.UI.Pages.TextEdit;
 public interface ITextEditorPageViewModel : IPageViewModelInterface
 {
     /// <summary>
+    /// Gets or sets the current context of the page.
+    /// </summary>
+    public TextEditorPageContext? Context { get; set; }
+
+    /// <summary>
     /// Gets or sets whether the text editor is read-only.
     /// </summary>
     public bool IsReadOnly { get; set; }
