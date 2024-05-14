@@ -149,6 +149,7 @@ public class CliServer : IHostedService, IDisposable
         await _cancellationTokenSource.CancelAsync();
         _tcpListener?.Stop();
         await Task.WhenAll(_runningClients);
+        _started = false;
     }
 
     /// <inheritdoc />
