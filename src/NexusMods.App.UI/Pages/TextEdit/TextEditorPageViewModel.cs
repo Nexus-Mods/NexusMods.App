@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.IO;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.Icons;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -29,6 +30,9 @@ public class TextEditorPageViewModel : APageViewModel<ITextEditorPageViewModel>,
         IWindowManager windowManager,
         IFileStore fileStore) : base(windowManager)
     {
+        TabIcon = IconValues.FileDocumentOutline;
+        TabTitle = "Text Editor";
+
         _loadFileCommand = ReactiveCommand.CreateFromTask<TextEditorPageContext, ValueTuple<TextEditorPageContext, string>>(async context =>
         {
             var fileHash = context.FileHash;
@@ -55,6 +59,7 @@ public class TextEditorPageViewModel : APageViewModel<ITextEditorPageViewModel>,
                 {
                     var (context, contents) = output;
                     var fileName = context.FileName;
+                    TabTitle = fileName.ToString();
 
                     var document = new TextDocument(new StringTextSource(contents))
                     {

@@ -1,13 +1,13 @@
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.IO;
-using NexusMods.Abstractions.Loadouts.Ids;
+using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 
 namespace NexusMods.App.UI.Pages.TextEdit;
 
+[JsonName("TextEditorPageContext")]
 public record TextEditorPageContext : IPageFactoryContext
 {
     public required Hash FileHash { get; init; }

@@ -31,6 +31,7 @@ public class ModFilesViewModel : AViewModel<IModFilesViewModel>, IModFilesViewMo
 
     private Optional<LoadoutId> _loadoutId;
     private Optional<ModId> _modId;
+    private Optional<PageIdBundle> _pageIdBundle;
 
     public ModFilesViewModel(IWindowManager windowManager, IConnection connection)
     {
@@ -62,7 +63,7 @@ public class ModFilesViewModel : AViewModel<IModFilesViewModel>, IModFilesViewMo
             if (!windowManager.TryGetActiveWindow(out var activeWindow)) return;
             var workspaceController = activeWindow.WorkspaceController;
 
-            var behavior = workspaceController.GetOpenPageBehavior(pageData, info, Optional<PageIdBundle>.None);
+            var behavior = workspaceController.GetOpenPageBehavior(pageData, info, _pageIdBundle);
             var workspaceId = workspaceController.ActiveWorkspace!.Id;
             workspaceController.OpenPage(workspaceId, pageData, behavior);
         }, this.WhenAnyValue(vm => vm.SelectedItem).WhereNotNull().Select(item => item.IsFile));
@@ -93,10 +94,11 @@ public class ModFilesViewModel : AViewModel<IModFilesViewModel>, IModFilesViewMo
         });
     }
 
-    public void Initialize(LoadoutId loadoutId, ModId modId)
+    public void Initialize(LoadoutId loadoutId, ModId modId, PageIdBundle pageIdBundle)
     {
         _loadoutId = loadoutId;
         _modId = modId;
+        _pageIdBundle = pageIdBundle;
 
         FileTreeViewModel = new ModFileTreeViewModel(loadoutId, modId, _connection);
     }

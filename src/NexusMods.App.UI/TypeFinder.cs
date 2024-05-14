@@ -9,6 +9,7 @@ using NexusMods.App.UI.Pages.ModInfo;
 using NexusMods.App.UI.Pages.ModLibrary;
 using NexusMods.App.UI.Pages.MyGames;
 using NexusMods.App.UI.Pages.Settings;
+using NexusMods.App.UI.Pages.TextEdit;
 using NexusMods.App.UI.WorkspaceSystem;
 
 namespace NexusMods.App.UI;
@@ -33,6 +34,7 @@ internal class TypeFinder : ITypeFinder
         typeof(SettingsPageContext),
         typeof(ChangelogPageContext),
         typeof(FileOriginsPageContext),
+        typeof(TextEditorPageContext),
 
         // workspace context
         typeof(EmptyContext),
