@@ -68,7 +68,7 @@ public class FileOriginRegistry : IFileOriginRegistry
         void AppendNestedArchiveMetadata(ITransaction tx, EntityId id)
         {
             metaData?.Invoke(tx, id);
-            tx.Add(id, NestedArchiveMetadata.NestedArchive, new Null());
+            tx.Add(id, StreamBasedFileOriginMetadata.StreamBasedOrigin, new Null());
         }
     }
 

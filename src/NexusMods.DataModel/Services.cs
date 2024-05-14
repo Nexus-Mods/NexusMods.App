@@ -126,7 +126,7 @@ public static class Services
         coll.AddAttributeCollection(typeof(DownloadAnalysis));
         coll.AddAttributeCollection(typeof(DownloadContentEntry));
         coll.AddAttributeCollection(typeof(FilePathMetadata));
-        coll.AddAttributeCollection(typeof(NestedArchiveMetadata));
+        coll.AddAttributeCollection(typeof(StreamBasedFileOriginMetadata));
         coll.AddAllSingleton<IFileOriginRegistry, FileOriginRegistry>();
         
         // Repositories

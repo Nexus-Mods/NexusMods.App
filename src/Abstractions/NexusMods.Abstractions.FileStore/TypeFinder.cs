@@ -17,6 +17,6 @@ internal class TypeFinder : ITypeFinder
         typeof(FilePathMetadata),
         typeof(GameArchiveMetadata),
         typeof(DownloadAnalysis),
-        typeof(NestedArchiveMetadata),
+        typeof(StreamBasedFileOriginMetadata),
     };
 }
