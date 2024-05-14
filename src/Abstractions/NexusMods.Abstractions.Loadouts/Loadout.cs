@@ -100,6 +100,7 @@ public static class Loadout
         tx.Retract(loadout.Id, Name, loadout.Name);
         tx.Retract(loadout.Id, Installation, loadout.InstallationId);
         tx.Retract(loadout.Id, Revision, loadout.Revision);
+        tx.Retract(loadout.Id, LoadoutKind, loadout.LoadoutKind);
         await tx.Commit();
     }
     
