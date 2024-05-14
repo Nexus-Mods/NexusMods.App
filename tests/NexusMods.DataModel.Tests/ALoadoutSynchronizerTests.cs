@@ -514,7 +514,7 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
     [Fact]
     public async Task CanSwitchBetweenLoadouts()
     {
-        var secondLoadout = await Game.Synchronizer.Manage(Install, "Second Loadout");
+        var secondLoadout = await Game.Synchronizer.CreateLoadout(Install, "Second Loadout");
         await ApplyService.Apply(secondLoadout);
         FilesVerify(secondLoadout).Should().BeTrue();
         FilesVerify(BaseLoadout).Should().BeFalse();
@@ -564,7 +564,7 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
         // Act
         // Manage the game again to create a second loadout
         // This should reset our game folder to the initial state.
-        var secondLoadout = await Game.Synchronizer.Manage(Install, "Second Loadout");
+        var secondLoadout = await Game.Synchronizer.CreateLoadout(Install, "Second Loadout");
 
         // Assert
         var secondLoadoutDiskState = await _synchronizer.GetDiskState(secondLoadout.Installation);

@@ -234,20 +234,16 @@ public static class LoadoutManagementVerbs
     [Verb("remove-loadout", "Remove a loadout by its ID")]
     private static async Task<int> RemoveLoadout(
         [Injected] IRenderer renderer,
-        [Option("l", "loadout", "loadout to remove.")] LoadoutMarker loadoutMarker,
-        [Injected] LoadoutRegistry registry,
+        [Injected] IConnection conn,
+        [Option("l", "loadout", "Loadout to delete")] LoadoutId loadoutId,
         [Injected] CancellationToken token)
     {
-        var loadout = loadoutMarker.Value;
-        var loadoutId = loadout.LoadoutId;
 
         try
         {
             // The loadout should be removed through the synchronizer, if it is
             // removed via the registry only, the game may be left in an inconsistent state
-            var installation = loadout.Installation;
-            var synchronizer = installation.GetGame().Synchronizer;
-            await synchronizer.DeleteLoadout(installation, loadoutId);
+            await conn.Delete(loadoutId);
             await renderer.Text($"Loadout {loadoutId} removed successfully");
             return 0;
         }

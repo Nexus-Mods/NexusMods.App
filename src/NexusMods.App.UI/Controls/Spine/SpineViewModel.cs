@@ -123,12 +123,13 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                     .DisposeWith(disposables);
 
                 // Navigate away from the Loadout workspace if the Loadout is removed
-                loadoutRegistry.LoadoutRootChanges
+                loadoutRepository.Observable
+                    .ToObservableChangeSet()
                     .OnUI()
-                    .OnItemRemoved(loadoutId =>
+                    .OnItemRemoved(loadout =>
                     {
                         if (workspaceController.ActiveWorkspace?.Context is LoadoutContext activeLoadoutContext &&
-                            activeLoadoutContext.LoadoutId == loadoutId)
+                            activeLoadoutContext.LoadoutId == loadout.LoadoutId)
                         {
                             workspaceController.ChangeOrCreateWorkspaceByContext<HomeContext>(() => new PageData
                             {

@@ -77,7 +77,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                         });
 
                         vm.ViewGameCommand = ReactiveCommand.Create(
-                            () => { NavigateToLoadout(install); }
+                            () => { NavigateToLoadout(conn, install); }
                         );
 
                         vm.State = GameWidgetState.ManagedGame;
@@ -129,9 +129,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
 
     private async Task ManageGame(GameInstallation installation)
     {
-        
-        var install = await ((IGame)installation.Game).Synchronizer.Manage(installation);
-
+        var install = await ((IGame)installation.Game).Synchronizer.CreateLoadout(installation);
         Dispatcher.UIThread.Invoke(() =>
             {
                 if (!_windowManager.TryGetActiveWindow(out var window)) return;
@@ -156,9 +154,8 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
         );
     }
 
-    private void NavigateToLoadout(GameInstallation installation)
+    private void NavigateToLoadout(IConnection conn, GameInstallation installation)
     {
-        
         var loadout = _applyService.GetLastAppliedLoadout(installation);
         if (loadout is null)
         {
@@ -169,22 +166,15 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
             return;
         }
 
-        var loadout = _loadoutRegistry.GetLoadout(revId);
-        if (loadout is null)
-        {
-            _logger.LogError("Unable to find loadout for revision {RevId}", revId);
-            return;
-        }
-        
         // We can't navigate to an invisible loadout, make sure we pick a visible one.
+        using var db = conn.Db;
         if (!loadout.IsVisible())
         {
             // Note(sewer) | If we're here, last loadout was most likely a marker
-            loadout = _loadoutRegistry.AllLoadouts().First(x => x.IsVisible());
+            loadout = db.Loadouts().First(x => x.IsVisible());
         }
 
         var loadoutId = loadout.LoadoutId;
-
         Dispatcher.UIThread.Invoke(() =>
             {
                 if (!_windowManager.TryGetActiveWindow(out var window)) return;

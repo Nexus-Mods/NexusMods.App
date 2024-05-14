@@ -69,6 +69,32 @@ public static class Loadout
             .StartWith(conn.Db)
             .Select(db => db.Get<Model>(id.Value));
     }
+
+    /// <summary>
+    /// Retracts a loadout, performing an effective deletion.
+    /// </summary>
+    /// <param name="conn">The connection to use.</param>
+    /// <param name="loadoutId">The ID of the loadout which needs to be retracted.</param>
+    public static async Task Delete(this IConnection conn, LoadoutId loadoutId)
+    {
+        using var db = conn.Db;
+        var loadout = db.Get<Model>(loadoutId.Value);
+
+        using var tx = conn.BeginTransaction();
+
+        // Retract associated mods and files.
+        // Note(sewer): Technically we don't need to do this, but it will make
+        // GC easier. As the mods & files will not be pointing to a Loadout/Mod
+        // as opposed to pointing to something invalid.
+        foreach (var mod in loadout.Mods)
+            mod.Delete(tx);
+
+        // Retract the loadout itself
+        tx.Retract(loadout.Id, Name, loadout.Name);
+        tx.Retract(loadout.Id, Installation, loadout.InstallationId);
+        tx.Retract(loadout.Id, Revision, loadout.Revision);
+        await tx.Commit();
+    }
     
     public class Model(ITransaction tx) : Entity(tx)
     {

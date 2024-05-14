@@ -36,18 +36,22 @@ public static partial class Mod
         /// </summary>
         public async Task Delete()
         {
-            var old = Db.Get(ModId);
             using var tx = Db.Connection.BeginTransaction();
-            foreach (var file in old.Files)
-            {
-                tx.Retract(file.Id, File.Loadout, old.Loadout.Id);
-            }
-            tx.Retract(old.Id, Mod.Loadout, old.Loadout.Id);
-            old.Revise(tx);
+            Delete(tx);
             await tx.Commit();
         }
-        
-        
-        
+
+        /// <summary>
+        /// Adds a retraction which deletes the current mod and its files from the loadout.
+        /// </summary>
+        /// <param name="tx">The transaction to add the retraction to.</param>
+        public void Delete(ITransaction tx)
+        {
+            foreach (var file in this.Files)
+                tx.Retract(file.Id, File.Loadout, this.Loadout.Id);
+
+            tx.Retract(this.Id, Mod.Loadout, this.Loadout.Id);
+            this.Revise(tx);
+        }
     }
 }
