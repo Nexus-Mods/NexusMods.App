@@ -52,10 +52,7 @@ public class Startup
 
         try
         {
-            // We aren't going to use the standard Avalonia startup because we don't want the app to exit
-            // when the last window closes. Instead we want to exit only when the single process IPC server
-            // has shutdown
-            builder.Start(AppMain, args);
+            builder.StartWithClassicDesktopLifetime(args);
         }
         catch (Exception e)
         {

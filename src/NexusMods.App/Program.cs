@@ -61,22 +61,31 @@ public class Program
             LogMessages.UnobservedReactiveThrownException(_logger, ex);
         });
 
-        
-        
-        if (isMain)
+
+        try
         {
-            
-            LogMessages.StartingProcess(_logger, Environment.ProcessPath, Environment.ProcessId, args);
-            host.Services.GetRequiredService<NxmRpcListener>();
-            Startup.Main(host.Services, []);
-            return 0;
+            if (isMain)
+            {
+
+                LogMessages.StartingProcess(_logger, Environment.ProcessPath, Environment.ProcessId,
+                    args
+                );
+                host.Services.GetRequiredService<NxmRpcListener>();
+                Startup.Main(host.Services, []);
+                return 0;
+            }
+            else
+            {
+                var client = host.Services.GetRequiredService<CliClient>();
+                client.ExecuteCommand(args).Wait();
+            }
         }
-        else
+        finally
         {
-            var client = host.Services.GetRequiredService<CliClient>();
-            client.ExecuteCommand(args).Wait();
-            return 0;
+            host.StopAsync().Wait(timeout: TimeSpan.FromSeconds(5));
         }
+
+        return 0;
     }
 
     private static bool IsMainProcess(IReadOnlyList<string> args)
