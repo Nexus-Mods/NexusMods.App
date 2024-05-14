@@ -22,11 +22,14 @@ public class FileOriginEntryViewModel : AViewModel<IFileOriginEntryViewModel>, I
     public DateTime ArchiveDate { get; }
     public ReactiveCommand<Unit, Unit> AddToLoadoutCommand { get; init; }
 
-    [ObservableAsProperty] public string DisplayArchiveDate { get; } = "-";
+    private readonly ObservableAsPropertyHelper<string> _displayArchiveDate;
+    public string DisplayArchiveDate => _displayArchiveDate.Value;
 
-    [ObservableAsProperty] public DateTime LastInstalledDate { get; set; }
+    private readonly ObservableAsPropertyHelper<DateTime> _lastInstalledDate;
+    public DateTime LastInstalledDate => _lastInstalledDate.Value;
 
-    [ObservableAsProperty] public string DisplayLastInstalledDate { get; } = "-";
+    private readonly ObservableAsPropertyHelper<string> _displayLastInstalledDate;
+    public string DisplayLastInstalledDate => _displayLastInstalledDate.Value;
 
     public FileOriginEntryViewModel(
         IConnection conn,
@@ -52,12 +55,12 @@ public class FileOriginEntryViewModel : AViewModel<IFileOriginEntryViewModel>, I
         var interval = Observable.Interval(TimeSpan.FromSeconds(60)).StartWith(1);
 
         // Update the humanized Archive Date every minute
-        interval.Select(_ => ArchiveDate)
+        _displayArchiveDate = interval.Select(_ => ArchiveDate)
             .Select(date => date.Equals(DateTime.MinValue) ? "-" : date.Humanize())
-            .ToPropertyEx(this, vm => vm.DisplayArchiveDate);
+            .ToProperty(this, vm => vm.DisplayArchiveDate, scheduler: RxApp.MainThreadScheduler);
 
         // Update the LastInstalledDate every time the loadout is updated
-        conn.Revisions(loadoutId)
+        _lastInstalledDate = conn.Revisions(loadoutId)
             .StartWith(loadout)
             .Select(rev => rev.Mods.Where(mod => mod.Contains(Mod.Source)
                                                  && mod.SourceId.Equals(fileOrigin.Id))
@@ -65,12 +68,12 @@ public class FileOriginEntryViewModel : AViewModel<IFileOriginEntryViewModel>, I
                 .DefaultIfEmpty(DateTime.MinValue)
                 .Max()
             )
-            .ToPropertyEx(this, vm => vm.LastInstalledDate);
+            .ToProperty(this, vm => vm.LastInstalledDate, scheduler: RxApp.MainThreadScheduler);
 
         // Update the humanized LastInstalledDate every minute and when the LastInstalledDate changes
-        this.WhenAnyValue(vm => vm.LastInstalledDate)
+        _displayLastInstalledDate = this.WhenAnyValue(vm => vm.LastInstalledDate)
             .Merge(interval.Select(_ => LastInstalledDate))
             .Select(date => date.Equals(DateTime.MinValue) ? "-" : date.Humanize())
-            .ToPropertyEx(this, vm => vm.DisplayLastInstalledDate);
+            .ToProperty(this, vm => vm.DisplayLastInstalledDate, scheduler: RxApp.MainThreadScheduler);
     }
 }
