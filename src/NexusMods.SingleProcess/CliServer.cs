@@ -12,15 +12,41 @@ namespace NexusMods.SingleProcess;
 /// A long-running service that listens for incoming connections from clients and executes them as if they ran
 /// on as CLI command.
 /// </summary>
-public class CliServer(ILogger<CliServer> logger, CommandLineConfigurator configurator, ISettingsManager settingsManager, SyncFile syncFile, IServiceProvider provider) : IHostedService
+public class CliServer : IHostedService
 {
-    private bool _started = false;
-    private TcpListener? _tcpListener;
-    private Task? _listenerTask;
     private readonly CancellationTokenSource _cancellationTokenSource = new();
     private CancellationToken Token => _cancellationTokenSource.Token;
-    private readonly List<Task> _runningClients = new();
-    private CliSettings _settings = default!;
+
+    private bool _started;
+
+    private TcpListener? _tcpListener;
+    private Task? _listenerTask;
+
+    private readonly List<Task> _runningClients = [];
+    private readonly CliSettings _settings;
+
+    private readonly IServiceProvider _serviceProvider;
+    private readonly ILogger<CliServer> _logger;
+    private readonly CommandLineConfigurator _configurator;
+    private readonly SyncFile _syncFile;
+
+    /// <summary>
+    /// Constructor.
+    /// </summary>
+    public CliServer(
+        ILogger<CliServer> logger,
+        CommandLineConfigurator configurator,
+        ISettingsManager settingsManager,
+        SyncFile syncFile,
+        IServiceProvider serviceProvider)
+    {
+        _serviceProvider = serviceProvider;
+        _logger = logger;
+        _configurator = configurator;
+        _syncFile = syncFile;
+
+        _settings = settingsManager.Get<CliSettings>();
+    }
 
     private Task StartTcpListenerAsync()
     {
