@@ -2,7 +2,6 @@
 using System.Reactive.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
@@ -39,6 +38,14 @@ public static class Loadout
     /// what aspects of the loadout have changed and need to be reloaded
     /// </summary>
     public static readonly ULongAttribute Revision = new(Namespace, nameof(Revision));
+    
+    /// <summary>
+    /// Defines the 'type' of layout that this layout represents.
+    /// Currently it is just `Default` and `Marker` type, with
+    /// `marker` being a special hidden loadout type that represents
+    /// a game's base state as it was added to the App.
+    /// </summary>
+    public static readonly EnumByteAttribute<LoadoutKind> LoadoutKind = new(Namespace, nameof(LoadoutKind));
     
     /// <summary>
     /// Retrieves all loadouts from the database.
@@ -159,7 +166,11 @@ public static class Loadout
         /// <summary>
         /// Specifies the type of the loadout that the current loadout represents
         /// </summary>
-        public LoadoutKind LoadoutKind { get; init; }
+        public LoadoutKind LoadoutKind 
+        {
+            get => Loadout.LoadoutKind.Get(this, 0);
+            set => Loadout.LoadoutKind.Add(this, value);
+        }
                 
         /// <summary>
         /// Gets the mod with the given id from this loadout.
@@ -192,8 +203,7 @@ public static class Loadout
         /// <summary>
         /// This is true if the loadout is a hidden 'Marker' loadout.
         /// A marker loadout is created from the original game state and should
-        /// be a singleton for a given game. It is a temporary loadout that is
-        /// destroyed when a real loadout is applied.
+        /// be a singleton for a given game.
         ///
         /// Marker loadouts should not be shown in any user facing elements.
         /// </summary>

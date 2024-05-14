@@ -562,9 +562,6 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         diskState.TxId = loadout.Db.BasisTxId;
         await _diskStateRegistry.SaveState(loadout.Installation, diskState);
 
-        if (!loadout.IsMarkerLoadout())
-            await RemoveMarkerLoadout();
-
         return diskState;
     }
 
@@ -882,9 +879,21 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     {
         // Get the initial state of the game folders
         var (isCached, initialState) = await GetOrCreateInitialDiskState(installation);
-
+        
         using var tx = Connection.BeginTransaction();
         var db = Connection.Db;
+        
+        // We need to create a 'Marker Loadout' for rolling back the game
+        // to the original state before NMA touched it, if we don't already
+        // have one.
+        var installLocation = installation.LocationsRegister[LocationId.Game].ToString();;
+        if (!db.Loadouts().Any(x => 
+                x.Installation.LocationsRegister[LocationId.Game].ToString() == installLocation 
+                && x.IsMarkerLoadout()))
+        {
+            await CreateMarkerLoadout(installation);
+        }
+        
         var loadout = new Loadout.Model(tx)
         {
             Db = db, // Has to be here to the installation resolves properly
@@ -944,17 +953,6 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         await _diskStateRegistry.SaveState(loadout.Installation, initialState);
         return loadout;
     }
-    
-    private static FileTree CreateFileTreeFromMod(Mod.Model gameFiles)
-    {
-        return FileTree.Create(gameFiles.Files.Select(file =>
-                {
-                    var storedFile = file.Remap<StoredFile.Model>();
-                    return KeyValuePair.Create(storedFile.To, file);
-                }
-            )
-        );
-    }
 
     private Mod.Model CreateGameFilesMod(Loadout.Model loadout, GameInstallation installation, ITransaction tx)
     {
@@ -972,7 +970,8 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// <inheritdoc />
     public async Task UnManage(GameInstallation installation)
     {
-        await FastForceApplyOriginalState(installation);
+        // The 'Marker Loadout' contains the original state.
+        await ApplyMarkerLoadout(installation);
 
         // Cleanup all of the metadata left behind for this game.
         // All database information, including loadouts, initial game state and
@@ -990,7 +989,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         // Clear Initial State if this is the only loadout for the game.
         // We use folder location for this.
         var installLocation = installation.LocationsRegister[LocationId.Game].ToString();
-         var isLastLoadout = Connection.Db.Loadouts()
+        var isLastLoadout = Connection.Db.Loadouts()
             .Count(x => 
                 x.Installation.LocationsRegister[LocationId.Game].ToString() == installLocation 
                 && !x.IsMarkerLoadout()) <= 1;
@@ -1034,13 +1033,12 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                 default.
             */
 
-            var markerLoadout = await CreateMarkerLoadout(installation);
-            await Apply(markerLoadout, true);
+            await ApplyMarkerLoadout(installation);
         }
 
         await Connection.Delete(id);
     }
-    
+
     /// <summary>
     ///     Creates a 'Marker Loadout', which is a loadout embued with the initial
     ///     state of the game folder.
@@ -1143,24 +1141,6 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         var db = Connection.AsOf(lastApplied.Tx);
         return db.Get<Loadout.Model>(lastApplied.Id.Value).IsMarkerLoadout();
     }
-    
-    /// <summary>
-    /// Removes the first found 'marker' loadout from the data store.
-    /// </summary>
-    /// <remarks>
-    /// The 'marker loadout' should be a singleton as per <see cref="Loadout.Model.IsMarkerLoadout"/>
-    /// and <see cref="CreateMarkerLoadout"/>.
-    /// </remarks>
-    private async Task RemoveMarkerLoadout()
-    {
-        using var db = Connection.Db;
-        foreach (var loadout in db.Loadouts())
-        {
-            if (!loadout.IsMarkerLoadout()) continue;
-            await Connection.Delete(loadout.LoadoutId);
-            return;
-        }
-    }
 
     /// <summary>
     /// By default this method just returns the current state of the game folders. Most of the time
@@ -1183,43 +1163,22 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         await _diskStateRegistry.SaveInitialState(installation, indexedState);
         return (false, indexedState);
     }
-    
-    /// <summary>
-    /// Quickly reverts the folder to its original state, without updating
-    /// the database state or doing any other changes that produce
-    /// external side effects.
-    ///
-    /// Intended for use when unmanaging a game.
-    /// </summary>
-    private async Task FastForceApplyOriginalState(GameInstallation installation)
+
+    private async Task ApplyMarkerLoadout(GameInstallation installation)
     {
-        var (isCached, initialState) = await GetOrCreateInitialDiskState(installation);
-        if (!isCached)
-            throw new InvalidOperationException("Something is very wrong with the DataStore.\n" +
-                                                "We don't have an initial disk state for the game folder, but we should have.\n" +
-                                                "Because this disk state should only ever be deleted when unmanaging a game.");
+        using var db = Connection.Db;
+        var installLocation = installation.LocationsRegister[LocationId.Game].ToString();
+        
+        // Note(sewer) We should always have a marker loadout, so FirstOrDefault
+        // should never return null. But, if due to some issue or bug we don't,
+        // this is a recoverable error. We can just create a new marker loadout.
+        // as that is based on the initial state of the game folder.
+        var markerLoadout = db.Loadouts().FirstOrDefault(x =>
+            x.Installation.LocationsRegister[LocationId.Game].ToString() == installLocation
+            && x.IsMarkerLoadout()
+        ) ?? await CreateMarkerLoadout(installation);
 
-        /*
-            Convert DiskStateTree to FileTree
-           
-            Note(Sewer).
-
-            We're working on the assumption that we can't have GeneratedFile(s),
-            which well, we can't by definition of the fact we're applying game's
-            initial state.
-            
-            The loadout (and flattenedloadout) are not actually used by FileTreeToDisk.
-            They're only passed to File Generators to create Generated Files
-            (which we can't have). So we pass nulls here.
-            
-            Same applies to the FileTree.
-            If this assumption ever changes, CI will fail, as this is CI tested.
-        */
-
-        var paths = initialState.GetAllDescendentFiles().Select(file => file.GamePath());
-        var fileTree = FileTree.Create(paths.Select(x => new KeyValuePair<GamePath, File.Model>(x, null!)));
-        var prevState = _diskStateRegistry.GetState(installation)!;
-        await FileTreeToDisk(fileTree, null, null, prevState, installation, true);
+        await Apply(markerLoadout, true);
     }
     #endregion
 
