@@ -61,8 +61,4 @@ public class CliSettings() : ISettings
     /// </summary>
     public AbsolutePath SyncFile { get; set; } = default!;
     
-    /// <summary>
-    /// The amount of time the main process will wait for new connections before terminating.
-    /// </summary>
-    public TimeSpan StayRunningTimeout { get; set; } = TimeSpan.FromSeconds(5);
 }
