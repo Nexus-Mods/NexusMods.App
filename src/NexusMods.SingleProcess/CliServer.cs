@@ -57,7 +57,7 @@ public class CliServer : IHostedService
 
         if (!syncFile.TrySetMain(port))
         {
-            logger.LogInformation("Failed to set main process in shared array, another process is likely running.");
+            _logger.LogError("Failed to set main process in shared array, another process is likely running");
             throw new SingleProcessLockException();
         }
 
