@@ -12,7 +12,7 @@ namespace NexusMods.SingleProcess;
 /// A long-running service that listens for incoming connections from clients and executes them as if they ran
 /// on as CLI command.
 /// </summary>
-public class CliServer : IHostedService
+public class CliServer : IHostedService, IDisposable
 {
     private readonly CancellationTokenSource _cancellationTokenSource = new();
     private CancellationToken Token => _cancellationTokenSource.Token;
@@ -55,13 +55,13 @@ public class CliServer : IHostedService
         _listenerTask = Task.Run(async () => await StartListeningAsync(), _cancellationTokenSource.Token);
         var port = ((IPEndPoint)_tcpListener.LocalEndpoint).Port;
 
-        if (!syncFile.TrySetMain(port))
+        if (!_syncFile.TrySetMain(port))
         {
             _logger.LogError("Failed to set main process in shared array, another process is likely running");
             throw new SingleProcessLockException();
         }
 
-        logger.LogInformation("Started TCP listener on port {Port}", port);
+        _logger.LogInformation("Started TCP listener on port {Port}", port);
         return Task.CompletedTask;
     }
 
@@ -81,8 +81,9 @@ public class CliServer : IHostedService
                 found.NoDelay = true; // Disable Nagle's algorithm to reduce delay.
                 _runningClients.Add(Task.Run(() => HandleClientAsync(found), Token));
 
-                logger.LogInformation("Accepted TCP connection from {RemoteEndPoint}",
-                    ((IPEndPoint)found.Client.RemoteEndPoint!).Port);
+                _logger.LogInformation("Accepted TCP connection from {RemoteEndPoint}",
+                    ((IPEndPoint)found.Client.RemoteEndPoint!).Port
+                );
             }
             catch (OperationCanceledException)
             {
@@ -90,8 +91,12 @@ public class CliServer : IHostedService
                 // timeout, then we should just continue, if it's the main cancellation token, then we should stop
                 if (!Token.IsCancellationRequested)
                     continue;
-                logger.LogInformation("TCP listener was cancelled, stopping");
+                _logger.LogInformation("TCP listener was cancelled, stopping");
                 return;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Got an exception while accepting a client connection");
             }
 
         }
@@ -107,8 +112,8 @@ public class CliServer : IHostedService
     {
         var stream = client.GetStream();
 
-        var (arguments, renderer) = await ProxiedRenderer.Create(provider, stream);
-        await configurator.RunAsync(arguments, renderer, Token);
+        var (arguments, renderer) = await ProxiedRenderer.Create(_serviceProvider, stream);
+        await _configurator.RunAsync(arguments, renderer, Token);
 
         client.Dispose();
     }
@@ -130,8 +135,6 @@ public class CliServer : IHostedService
     /// <inheritdoc />
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        _settings = settingsManager.Get<CliSettings>();
-
         if (!_started && _settings.StartCliBackend)
         {
             _started = true;
@@ -146,5 +149,14 @@ public class CliServer : IHostedService
         await _cancellationTokenSource.CancelAsync();
         _tcpListener?.Stop();
         await Task.WhenAll(_runningClients);
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        if (!_started) return;
+        _cancellationTokenSource.Dispose();
+        _tcpListener?.Dispose();
+        _listenerTask?.Dispose();
     }
 }
