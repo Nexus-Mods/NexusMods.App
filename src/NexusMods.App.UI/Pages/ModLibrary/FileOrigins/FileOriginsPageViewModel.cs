@@ -32,6 +32,7 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
     
     
     public FileOriginsPageViewModel(
+        LoadoutId loadoutId,
         IArchiveInstaller archiveInstaller,
         IRepository<DownloadAnalysis.Model> downloadAnalysisRepository,
         IConnection conn,
@@ -43,10 +44,7 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
         
         TabTitle = Language.FileOriginsPageTitle;
         TabIcon = IconValues.ModLibrary;
-    }
-    
-    public void Initialize(LoadoutId loadoutId)
-    {
+        
         LoadoutId = loadoutId;
         
         var loadout = _conn.Db.Get<Loadout.Model>(LoadoutId.Value);

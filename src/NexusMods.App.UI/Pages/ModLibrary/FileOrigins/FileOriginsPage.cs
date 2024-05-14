@@ -1,10 +1,14 @@
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.FileStore.Downloads;
+using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Loadouts.Ids;
+using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.App.UI.Resources;
+using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.App.UI.Pages.ModLibrary;
 
@@ -27,9 +31,13 @@ public class FileOriginsPageFactory : APageFactory<IFileOriginsPageViewModel, Fi
 
     public override IFileOriginsPageViewModel CreateViewModel(FileOriginsPageContext context)
     {
-        var vm = ServiceProvider.GetRequiredService<IFileOriginsPageViewModel>();
-        vm.Initialize(context.LoadoutId);
-        return vm;
+        return new FileOriginsPageViewModel(
+            context.LoadoutId,
+            ServiceProvider.GetRequiredService<IArchiveInstaller>(),
+            ServiceProvider.GetRequiredService<IRepository<DownloadAnalysis.Model>>(),
+            ServiceProvider.GetRequiredService<IConnection>(),
+            ServiceProvider.GetRequiredService<IWindowManager>()
+        );
     }
 
     public override IEnumerable<PageDiscoveryDetails?> GetDiscoveryDetails(IWorkspaceContext workspaceContext)

@@ -10,6 +10,4 @@ public interface IFileOriginsPageViewModel : IPageViewModelInterface
     LoadoutId LoadoutId { get; }
     
     ReadOnlyObservableCollection<IFileOriginEntryViewModel> FileOrigins { get; }
-    
-    void Initialize(LoadoutId loadoutId);
 }
