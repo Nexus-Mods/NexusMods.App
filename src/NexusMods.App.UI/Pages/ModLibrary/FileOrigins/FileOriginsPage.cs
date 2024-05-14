@@ -28,7 +28,7 @@ public class FileOriginsPageFactory : APageFactory<IFileOriginsPageViewModel, Fi
     public override IFileOriginsPageViewModel CreateViewModel(FileOriginsPageContext context)
     {
         var vm = ServiceProvider.GetRequiredService<IFileOriginsPageViewModel>();
-        vm.LoadoutId = context.LoadoutId;
+        vm.Initialize(context.LoadoutId);
         return vm;
     }
 

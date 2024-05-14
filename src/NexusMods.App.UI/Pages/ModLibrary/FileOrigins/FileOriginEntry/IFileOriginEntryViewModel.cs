@@ -11,7 +11,7 @@ public interface IFileOriginEntryViewModel : IViewModelInterface
     Size Size { get; }    
     
     public DateTime LastInstalledDate { get; set; }
-    public DateTime ArchiveDate { get; set; }
+    public DateTime ArchiveDate { get; }
     string DisplayArchiveDate { get; }
     string DisplayLastInstalledDate { get; }
     ReactiveCommand<Unit, Unit> AddToLoadoutCommand { get; }
