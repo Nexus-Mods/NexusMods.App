@@ -6,7 +6,6 @@
 
     <ItemGroup>
       <PackageReference Include="MemoryPack"/>
-      <PackageReference Update="JetBrains.Annotations"/>
       <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions"/>
     </ItemGroup>
 
