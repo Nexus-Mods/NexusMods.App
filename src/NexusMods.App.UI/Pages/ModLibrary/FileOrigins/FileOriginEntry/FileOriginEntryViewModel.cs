@@ -1,12 +1,11 @@
 using System.Reactive;
 using System.Reactive.Linq;
-using DynamicData;
-using DynamicData.Aggregation;
 using Humanizer;
 using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
+using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.Downloaders.Tasks.State;
 using NexusMods.Paths;
@@ -24,9 +23,8 @@ public class FileOriginEntryViewModel : AViewModel<IFileOriginEntryViewModel>, I
     
     [ObservableAsProperty]
     public string DisplayArchiveDate { get; } = "-";
-
     
-    [ObservableAsProperty]
+    [Reactive]
     public DateTime LastInstalledDate { get; set; } 
     
     [ObservableAsProperty]
@@ -51,23 +49,32 @@ public class FileOriginEntryViewModel : AViewModel<IFileOriginEntryViewModel>, I
             : "-";
         ArchiveDate = fileOrigin.CreatedAt;
         
+        var loadout = conn.Db.Get<Loadout.Model>(loadoutId.Value);
+        
         var interval = Observable.Interval(TimeSpan.FromSeconds(60)).StartWith(1);
         
+        // Update the humanized Archive Date every minute
         interval.Select(_ => ArchiveDate)
-            .Select(date => date.Equals(DateTime.UnixEpoch) ? "-" : date.Humanize())
+            .Select(date => date.Equals(DateTime.MinValue) ? "-" : date.Humanize())
             .ToPropertyEx(this, vm => vm.DisplayArchiveDate);
         
+        // Update the LastInstalledDate every time the loadout is updated
         conn.Revisions(loadoutId)
-            .StartWith(conn.Db.Get<Loadout.Model>(loadoutId.Value))
-            .ToObservableChangeSet()
-            .TransformMany(revision => revision.Mods)
-            .Filter(mod =>  fileOrigin.Id.Equals(mod.SourceId))
-            .Maximum(mod => mod.CreatedAt)
-            .ToPropertyEx(this, vm => vm.LastInstalledDate);
+            .StartWith(loadout)
+            .Do(rev =>
+                {
+                    LastInstalledDate = rev.Mods.Where(mod => mod.Contains(Mod.Source)
+                                                              && mod.SourceId.Equals(fileOrigin.Id))
+                        .Select(mod => mod.CreatedAt)
+                        .DefaultIfEmpty(DateTime.MinValue)
+                        .Max();
+                }
+            ).Subscribe();
 
+        // Update the humanized LastInstalledDate every minute and when the LastInstalledDate changes
         this.WhenAnyValue(vm => vm.LastInstalledDate)
-            .Merge(interval.Select(_ => LastInstalledDate))
-            .Select(date => date.Equals(DateTime.UnixEpoch) ? "-" : date.Humanize())
+            .Merge( interval.Select(_ => LastInstalledDate))
+            .Select(date => date.Equals(DateTime.MinValue) ? "-" : date.Humanize())
             .ToPropertyEx(this, vm => vm.DisplayLastInstalledDate);
         
     }
