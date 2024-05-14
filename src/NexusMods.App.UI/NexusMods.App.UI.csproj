@@ -544,6 +544,9 @@
         <Compile Update="ImageCache.cs">
           <DependentUpon>IImageCache.cs</DependentUpon>
         </Compile>
+        <Compile Update="Pages\LoadoutGrid\LoadoutGridViewModel.cs">
+          <DependentUpon>ILoadoutGridViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>

@@ -18,10 +18,10 @@
     <Style Selector="Window.Dialog.WithDecorations">
         <Setter Property="Background" Value="{StaticResource SurfaceTopBrush}"/>
         <Setter Property="ExtendClientAreaChromeHints" Value="Default"/>
-        <Setter Property="ExtendClientAreaToDecorationsHint" Value="True"/>
         <Setter Property="Padding" Value="0,32,0,0"/>
         <Setter Property="WindowStartupLocation" Value="CenterOwner"/>
         <Setter Property="CanResize" Value="True"/>
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-lg}"/>
     </Style>
 </Styles>
 

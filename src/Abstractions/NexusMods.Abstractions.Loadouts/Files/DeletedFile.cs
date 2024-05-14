@@ -2,6 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.Attributes;
 
 namespace NexusMods.Abstractions.Loadouts.Files;
 
@@ -19,7 +20,7 @@ public static class DeletedFile
     /// <summary>
     /// If set to true, the file is considered deleted.
     /// </summary>
-    public static readonly BooleanAttribute Deleted = new(Namespace, nameof(Deleted));
+    public static readonly MarkerAttribute Deleted = new(Namespace, nameof(Deleted));
 
     /// <summary>
     /// Model for a deleted file.
@@ -31,8 +32,8 @@ public static class DeletedFile
         /// </summary>
         public bool Deleted
         {
-            get => DeletedFile.Deleted.TryGet(this, out var deleted) && deleted;
-            set => DeletedFile.Deleted.Add(this, value);
+            get => DeletedFile.Deleted.Contains(this);
+            set => DeletedFile.Deleted.Add(this);
         }
     }
     
@@ -40,13 +41,13 @@ public static class DeletedFile
     /// <summary>
     /// If this file is a deleted file, this will return true and cast the deleted file to the out parameter.
     /// </summary>
-    public static bool TryGetAsDeletedFile(this File.Model model, [NotNullWhen(true)] out DeletedFile.Model? deletedFile)
+    public static bool TryGetAsDeletedFile(this File.Model model, [NotNullWhen(true)] out Model? deletedFile)
     {
         deletedFile = null;
-        if (!model.Contains(DeletedFile.Deleted))
+        if (!model.Contains(Deleted))
             return false;
 
-        deletedFile = model.Remap<DeletedFile.Model>();
+        deletedFile = model.Remap<Model>();
         return true;
     }
 }

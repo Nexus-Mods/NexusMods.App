@@ -119,8 +119,13 @@ public class DownloadService : IDownloadService, IAsyncDisposable
     /// <inheritdoc />
     public Size GetThroughput()
     {
-        return _downloads.Items
-            .Aggregate(Size.Zero, (acc, x) => acc + Size.From(x.Bandwidth.Value));
+        var tasks = _downloads.Items
+            .Where(i => i.PersistentState.Status == DownloadTaskStatus.Downloading)
+            .ToArray();
+        
+        return tasks.Length == 0 
+            ? Size.Zero 
+            : tasks.Aggregate(Size.Zero, (acc, x) => acc + Size.From(x.Bandwidth.Value));
     }
 
     /// <inheritdoc />

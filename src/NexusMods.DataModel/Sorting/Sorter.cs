@@ -161,6 +161,7 @@ public class Sorter : ISorter
     {
         idsBuffer.Clear();
         var haveFirst = false;
+        var isLast = false;
         var rulesForThisItem = ruleFn(thisItem);
 
         /*
@@ -170,20 +171,21 @@ public class Sorter : ISorter
 
              - Sewer
         */
+        // ReSharper disable once ForCanBeConvertedToForeach
         for (var x = 0; x < rulesForThisItem.Count; x++)
         {
             switch (rulesForThisItem[x])
             {
                 case First<TItem, TId>:
-                    // Handled later
                     haveFirst = true;
+                    break;
+                case Last<TItem, TId>:
+                    isLast = true;
                     break;
                 case After<TItem, TId> after:
                     idsBuffer.Add(after.Other);
                     break;
-                case Before<TItem, TId>:
-                    // Handled later
-                    break;
+
             }
         }
 
@@ -195,6 +197,8 @@ public class Sorter : ISorter
             if (otherId.Equals(idForThisItem))
                 continue;
 
+            if (isLast) idsBuffer.Add(otherId);
+
             var rulesForOtherItem = ruleFn(itm);
             for (var y = 0; y < rulesForOtherItem.Count; y++)
             {
@@ -204,9 +208,6 @@ public class Sorter : ISorter
                     case First<TItem, TId>:
                         if (!haveFirst)
                             idsBuffer.Add(otherId);
-                        break;
-                    case After<TItem, TId>:
-                        // Handled above
                         break;
                     case Before<TItem, TId> b:
                         if (b.Other.Equals(idForThisItem))
