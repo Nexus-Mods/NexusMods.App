@@ -72,8 +72,8 @@ public class PluginAnalyzer
             var frame = new MutagenFrame(readStream);
             var header = readStream.ReadModHeaderFrame(readSafe: true);
 
-            var isLightMaster = (header.Flags & (int)SkyrimModHeader.HeaderFlag.LightMaster) ==
-                                (int)SkyrimModHeader.HeaderFlag.LightMaster;
+            var isLightMaster = (header.Flags & (int)SkyrimModHeader.HeaderFlag.Light) ==
+                                (int)SkyrimModHeader.HeaderFlag.Light;
 
             var masters = header
                 .Masters()
