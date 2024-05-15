@@ -2,7 +2,6 @@ using JetBrains.Annotations;
 using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.MnemonicDB.Abstractions;
 using TransparentValueObjects;
-using static NexusMods.Abstractions.MnemonicDB.Attributes.Extensions.EntityExtensions;
 
 namespace NexusMods.Abstractions.Loadouts.Ids;
 
@@ -14,7 +13,7 @@ namespace NexusMods.Abstractions.Loadouts.Ids;
 /// </summary>
 [ValueObject<EntityId>]
 [PublicAPI]
-public readonly partial struct LoadoutId : ITypedId<Loadout.Model>
+public readonly partial struct LoadoutId : ITypedId<Loadout.Model>, IAugmentWith<JsonAugment>
 {
     
     /// <inheritdoc />

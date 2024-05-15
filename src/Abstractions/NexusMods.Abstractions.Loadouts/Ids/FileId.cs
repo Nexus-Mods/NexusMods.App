@@ -9,7 +9,7 @@ namespace NexusMods.Abstractions.Loadouts.Ids;
 /// then one winning file is written to disk when the loadout is applied.
 /// </summary>
 [ValueObject<EntityId>]
-public readonly partial struct FileId : ITypedId<File.Model>
+public readonly partial struct FileId : ITypedId<File.Model>, IAugmentWith<JsonAugment>
 {
     EntityId ITypedEntityId.Value => Value;
 }

@@ -738,6 +738,21 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                 if (file.TryGetAsStoredFile(out _))
                 {
                     var sf = file.Remap<StoredFile.Model>();
+                    
+                    if (sf.TryGetAsDeletedFile(out _))
+                    {
+                        resultingItems.Add(gamePath,
+                            new DiskDiffEntry
+                            {
+                                GamePath = gamePath,
+                                Hash = diskItem.Item.Value.Hash,
+                                Size = diskItem.Item.Value.Size,
+                                ChangeType = FileChangeType.Removed,
+                            }
+                        );
+                        continue;
+                    }
+                    
                     if (sf.Hash != diskItem.Item.Value.Hash)
                     {
                         resultingItems.Add(gamePath,
@@ -794,18 +809,25 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             var file = loadoutFile.Item.Value;
             if (file.TryGetAsStoredFile(out var storedFile))
             {
-                if (!resultingItems.TryGetValue(gamePath, out _))
+                if (resultingItems.TryGetValue(gamePath, out _))
                 {
-                    resultingItems.Add(gamePath,
-                        new DiskDiffEntry
-                        {
-                            GamePath = gamePath,
-                            Hash = storedFile.Hash,
-                            Size = storedFile.Size,
-                            ChangeType = FileChangeType.Added,
-                        }
-                    );
+                    continue;
                 }
+
+                if (storedFile.TryGetAsDeletedFile(out _))
+                {
+                    continue;
+                }
+
+                resultingItems.Add(gamePath,
+                    new DiskDiffEntry
+                    {
+                        GamePath = gamePath,
+                        Hash = storedFile.Hash,
+                        Size = storedFile.Size,
+                        ChangeType = FileChangeType.Added,
+                    }
+                );
             }
             else if (file.IsGeneratedFile())
             {

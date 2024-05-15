@@ -29,7 +29,7 @@ public interface IRepository<TModel>
     /// <summary>
     /// Gets the revisions of a specific model.
     /// </summary>
-    IObservable<TModel> Revisions(EntityId id);
+    IObservable<TModel> Revisions(EntityId id, bool includeCurrent = true);
 
     /// <summary>
     /// True if the model exists in the repository

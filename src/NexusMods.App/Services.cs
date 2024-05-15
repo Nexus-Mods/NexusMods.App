@@ -57,6 +57,8 @@ public static class Services
             services
                 .AddSettings<TelemetrySettings>()
                 .AddSettings<LoggingSettings>()
+                .AddSingleProcess(Mode.Main)
+                .AddDefaultRenderers()
 
                 .AddSingleton<ITelemetryProvider, TelemetryProvider>()
                 .AddTelemetry(telemetrySettings ?? new TelemetrySettings())
@@ -93,31 +95,19 @@ public static class Services
                 .AddTestHarness()
                 .AddSingleton<HttpClient>()
                 .AddListeners()
+                .AddFileSystem()
                 .AddDownloaders();
 
             if (addStandardGameLocators)
                 services.AddStandardGameLocators();
         }
-
-        services
-            .AddFileSystem()
-            .AddSingleton<IStartupHandler, StartupHandler>()
-            .AddSingleProcess()
-            .AddSingleton(s =>
-            {
-                var fs = s.GetRequiredService<IFileSystem>();
-                var directory = fs.OS.MatchPlatform(
-                    () => fs.GetKnownPath(KnownPath.TempDirectory),
-                    () => fs.GetKnownPath(KnownPath.XDG_RUNTIME_DIR),
-                    () => fs.GetKnownPath(KnownPath.ApplicationDataDirectory).Combine("NexusMods_App")
-                );
-
-                return new SingleProcessSettings
-                {
-                    SyncFile = directory.Combine("NexusMods.App-single_process.sync")
-                };
-            })
-            .AddDefaultRenderers();
+        else
+        {
+            services.AddFileSystem()
+                .AddSingleProcess(Mode.Client)
+                .AddDefaultRenderers()
+                .AddSettingsManager();
+        }
 
         return services;
     }

@@ -52,10 +52,7 @@ public class Startup
 
         try
         {
-            // We aren't going to use the standard Avalonia startup because we don't want the app to exit
-            // when the last window closes. Instead we want to exit only when the single process IPC server
-            // has shutdown
-            builder.Start(AppMain, args);
+            builder.StartWithClassicDesktopLifetime(args);
         }
         catch (Exception e)
         {
@@ -75,7 +72,7 @@ public class Startup
         _logger.LogInformation("Application loop ended");
     }
 
-    internal static void ShowMainWindow()
+    private static void ShowMainWindow()
     {
         // TODO: enable multi-window support
         // https://github.com/Nexus-Mods/NexusMods.App/issues/1267
@@ -87,24 +84,6 @@ public class Startup
 
         var reactiveWindow = _provider.GetRequiredService<MainWindow>();
         reactiveWindow.ViewModel = _provider.GetRequiredService<MainWindowViewModel>();
-        reactiveWindow.WhenActivated(d =>
-            {
-                Interlocked.Increment(ref _windowCount);
-                var token = _provider.GetRequiredService<MainProcessDirector>().MakeKeepAliveToken();
-                _logger.LogDebug("MainWindow activated");
-                token.DisposeWith(d);
-                Disposable.Create(() =>
-                    {
-                        if (Interlocked.Decrement(ref _windowCount) == 0 && MainThreadData.IsDebugMode)
-                        {
-                            _logger.LogDebug("Final window closed, in debug mode, shutting down");
-                            MainThreadData.Shutdown();
-                        }
-                        _logger.LogDebug("MainWindow deactivated");
-                    }
-                ).DisposeWith(d);
-            }
-        );
         reactiveWindow.Show();
     }
 

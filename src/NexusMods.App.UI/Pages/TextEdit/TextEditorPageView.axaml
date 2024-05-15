@@ -1,0 +1,31 @@
+<reactive:ReactiveUserControl
+    x:TypeArguments="local:ITextEditorPageViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactive="http://reactiveui.net"
+    xmlns:local="clr-namespace:NexusMods.App.UI.Pages.TextEdit"
+    xmlns:avaloniaEdit="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit"
+    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    x:Class="NexusMods.App.UI.Pages.TextEdit.TextEditorPageView">
+
+    <Grid RowDefinitions="Auto, *">
+        <Grid Grid.Row="0" ColumnDefinitions="*, *" Margin="4 2">
+            <Button Grid.Column="0" x:Name="SaveButton">
+                <TextBlock>Save</TextBlock>
+            </Button>
+
+            <TextBlock Grid.Column="1" x:Name="LanguageNameText" Classes="BodyMDNormal ForegroundSubdued" HorizontalAlignment="Right" TextAlignment="Right"/>
+        </Grid>
+
+        <avaloniaEdit:TextEditor Grid.Row="1" x:Name="TextEditor"
+                                 ShowLineNumbers="True"
+                                 HorizontalScrollBarVisibility="Auto"
+                                 VerticalScrollBarVisibility="Visible" />
+
+    </Grid>
+
+
+</reactive:ReactiveUserControl>
+

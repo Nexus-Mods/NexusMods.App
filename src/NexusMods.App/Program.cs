@@ -8,6 +8,7 @@ using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.App.BuildInfo;
+using NexusMods.App.Listeners;
 using NexusMods.App.UI;
 using NexusMods.DataModel;
 using NexusMods.Paths;
@@ -49,8 +50,6 @@ public class Program
 
         _logger = host.Services.GetRequiredService<ILogger<Program>>();
         LogMessages.RuntimeInformation(_logger, RuntimeInformation.OSDescription, RuntimeInformation.FrameworkDescription);
-        LogMessages.StartingProcess(_logger, Environment.ProcessPath, Environment.ProcessId, args.Length, args);
-
         TaskScheduler.UnobservedTaskException += (sender, eventArgs) =>
         {
             LogMessages.UnobservedTaskException(_logger, eventArgs.Exception, sender, sender?.GetType());
@@ -62,79 +61,36 @@ public class Program
             LogMessages.UnobservedReactiveThrownException(_logger, ex);
         });
 
-        if (MainThreadData.IsDebugMode)
+
+        try
         {
-            _logger.LogInformation("Starting the application in single-process mode with an attached debugger");
+            if (isMain)
+            {
+
+                LogMessages.StartingProcess(_logger, Environment.ProcessPath, Environment.ProcessId,
+                    args
+                );
+                host.Services.GetRequiredService<NxmRpcListener>();
+                Startup.Main(host.Services, []);
+                return 0;
+            }
+            else
+            {
+                var client = host.Services.GetRequiredService<CliClient>();
+                client.ExecuteCommand(args).Wait();
+            }
         }
-        else
+        finally
         {
-            _logger.LogInformation("Starting the application in release mode without an attached debugger");
-        }
-
-        var startup = host.Services.GetRequiredService<StartupDirector>();
-
-        var managerTask = Task.Run(async () =>
-        {
-            try
-            {
-                _logger.LogTrace("Calling startup handler");
-                return await startup.Start(args, MainThreadData.IsDebugMode);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogCritical(ex, "Exception in startup handler");
-                Environment.Exit(-1);
-                throw;
-            }
-            finally
-            {
-                try
-                {
-                    if (!MainThreadData.IsDebugMode)
-                    {
-                        _logger.LogTrace("Shutting down main thread in release mode");
-                        MainThreadData.Shutdown();
-                    }
-                    else
-                    {
-                        _logger.LogInformation("The main thread won't be shutdown in debug mode");
-                    }
-                }
-                catch (Exception e)
-                {
-                    _logger.LogCritical(e, "Error shutting down main thread");
-                }
-            }
-        });
-
-        // The UI *must* be started on the main thread, according to the Avalonia docs, although it
-        // seems to work fine on some platforms (this behavior is not guaranteed). So when we need to open a new
-        // window, the handler will enqueue an action to be run on the main thread.
-        while (!MainThreadData.GlobalShutdownToken.IsCancellationRequested)
-        {
-            if (MainThreadData.MainThreadActions.TryDequeue(out var action))
-            {
-                try
-                {
-                    action();
-                }
-                catch (Exception e)
-                {
-                    _logger.LogError(e, "Exception running main thread action");
-                }
-                continue;
-            }
-            Thread.Sleep(250);
+            host.StopAsync().Wait(timeout: TimeSpan.FromSeconds(5));
         }
 
-        _logger.LogInformation("Startup handler returned {Result}", managerTask.Result);
-        return managerTask.Result;
+        return 0;
     }
 
     private static bool IsMainProcess(IReadOnlyList<string> args)
     {
-        if (MainThreadData.IsDebugMode) return true;
-        return args.Count == 1 && args[0] == StartupHandler.MainProcessVerb;
+        return args.Count == 0;
     }
 
     private static IHost BuildSettingsHost()
@@ -222,13 +178,17 @@ public class Program
         fileTarget.Layout = defaultLayout;
         fileTarget.Header = defaultHeader;
 
-        var consoleTarget = new ConsoleTarget("console")
+        if (settings.LogToConsole)
         {
-            Layout = "${processtime} [${level:uppercase=true}] ${message:withexception=true}",
-        };
+            var consoleTarget = new ConsoleTarget("console")
+            {
+                Layout = "${processtime} [${level:uppercase=true}] ${message:withexception=true}",
+            };
+            config.AddRuleForAllLevels(consoleTarget);
+        }
 
         config.AddRuleForAllLevels(fileTarget);
-        config.AddRuleForAllLevels(consoleTarget);
+
 
         // NOTE(erri120): RemoveLoggerFactoryFilter prevents
         // the global minimum level to take effect.
