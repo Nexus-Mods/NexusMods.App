@@ -44,15 +44,12 @@ public partial class TextEditorPageView : ReactiveUserControl<ITextEditorPageVie
                     TextEditor.Document = document;
                     if (document is null) return;
 
-                    try
-                    {
-                        var extension = Extension.FromPath(document.FileName);
-                        textMate.SetGrammar(registryOptions.GetScopeByExtension(extension.ToString()));
-                    }
-                    catch (Exception)
-                    {
-                        // ignored
-                    }
+                    var extension = Extension.FromPath(document.FileName);
+                    var language = registryOptions.GetLanguageByExtension(extension.ToString());
+                    LanguageNameText.Text = language.ToString();
+
+                    var scopeName = registryOptions.GetScopeByLanguageId(language.Id);
+                    textMate.SetGrammar(scopeName);
                 })
                 .DisposeWith(disposables);
         });

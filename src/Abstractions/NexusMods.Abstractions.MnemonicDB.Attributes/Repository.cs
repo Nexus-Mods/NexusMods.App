@@ -53,11 +53,14 @@ internal class Repository<TModel> : IRepository<TModel>, IHostedService where TM
     public ReadOnlyObservableCollection<TModel> Observable => _observable;
 
     /// <inheritdoc />
-    public IObservable<TModel> Revisions(EntityId id)
+    public IObservable<TModel> Revisions(EntityId id, bool includeCurrent = true)
     {
-        return _conn.Revisions
-            .Where(db => db.Datoms(db.BasisTxId).Any(datom => datom.E == id.Value))
-            .StartWith(_conn.Db)
+        var observable = _conn.Revisions.Where(db => db.Datoms(db.BasisTxId).Any(datom => datom.E == id.Value));
+        if (includeCurrent)
+            observable = observable.StartWith(_conn.Db);
+
+        return
+            observable
             .Select(db => db.Get<TModel>(id))
             .Where(IsValid);
     }
