@@ -130,11 +130,12 @@ public class TextEditorPageViewModel : APageViewModel<ITextEditorPageViewModel>,
                 {
                     var (context, contents) = output;
                     var filePath = context.FilePath;
-                    TabTitle = filePath.Path.ToString();
+                    var fileName = filePath.FileName.ToString();
+                    TabTitle = fileName;
 
                     var document = new TextDocument(new StringTextSource(contents))
                     {
-                        FileName = filePath.Path.ToString(),
+                        FileName = fileName,
                     };
 
                     Document = document;
