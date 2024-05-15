@@ -9,7 +9,7 @@ namespace NexusMods.Abstractions.Loadouts.Ids;
 /// they are from the same installation archive.
 /// </summary>
 [ValueObject<EntityId>]
-public readonly partial struct ModId : ITypedId<Mod.Model>
+public readonly partial struct ModId : ITypedId<Mod.Model>, IAugmentWith<JsonAugment>
 {
     EntityId ITypedEntityId.Value => Value;
 }

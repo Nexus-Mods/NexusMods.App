@@ -19,23 +19,18 @@ public class WindowDataAttributes
 
     public class Model(ITransaction tx) : Entity(tx)
     {
-        /// <summary>
-        /// The data of the window
-        /// </summary>
-        public WindowData Data
+        public WindowData GetData()
         {
-            get
-            {
-                var options = Db.Connection.ServiceProvider.GetRequiredService<JsonSerializerOptions>();
-                var jsonString = WindowDataAttributes.Data.Get(this);
-                return JsonSerializer.Deserialize<WindowData>(jsonString, options)!;
-            }
-            set
-            {
-                var options = Db.Connection.ServiceProvider.GetRequiredService<JsonSerializerOptions>();
-                var jsonString = JsonSerializer.Serialize(value, options);
-                WindowDataAttributes.Data.Add(this, jsonString);
-            }
+            var options = Db.Connection.ServiceProvider.GetRequiredService<JsonSerializerOptions>();
+            var jsonString = Data.Get(this);
+            return JsonSerializer.Deserialize<WindowData>(jsonString, options)!;
+        }
+
+        public void SetData(WindowData value)
+        {
+            var options = Db.Connection.ServiceProvider.GetRequiredService<JsonSerializerOptions>();
+            var jsonString = JsonSerializer.Serialize(value, options);
+            Data.Add(this, jsonString);
         }
     }
 }
