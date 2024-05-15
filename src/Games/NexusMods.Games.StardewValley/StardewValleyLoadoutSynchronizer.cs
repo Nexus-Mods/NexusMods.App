@@ -1,5 +1,6 @@
-using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Models;
@@ -12,33 +13,74 @@ public class StardewValleyLoadoutSynchronizer : ALoadoutSynchronizer
 {
     public StardewValleyLoadoutSynchronizer(IServiceProvider provider) : base(provider) { }
 
-    protected override ValueTask<TempEntity> HandleNewFile(DiskStateEntry newEntry, GamePath gamePath, AbsolutePath absolutePath)
+
+    protected override async Task<Loadout.Model> AddChangedFilesToLoadout(Loadout.Model loadout, TempEntity[] newFiles)
     {
-        if (!IsModFile(gamePath)) return base.HandleNewFile(newEntry, gamePath, absolutePath);
-        return HandleNewModFile(newEntry, gamePath, absolutePath);
+        using var tx = Connection.BeginTransaction();
+        var overridesMod = GetOrCreateOverridesMod(loadout, tx);
+
+        foreach (var newFile in newFiles)
+        {
+            newFile.Add(File.Loadout, loadout.Id);
+
+            if (!newFile.Contains(File.To))
+            {
+                AddToOverride(newFile);
+                continue;
+            }
+
+            var gamePath = newFile.GetFirst(File.To);
+            if (!IsModFile(gamePath, out var modDirectoryName))
+            {
+                AddToOverride(newFile);
+                continue;
+            }
+
+            var smapiMod = GetSMAPIMod(modDirectoryName, loadout, loadout.Db);
+            if (smapiMod is null)
+            {
+                AddToOverride(newFile);
+                continue;
+            }
+
+            newFile.Add(File.Mod, smapiMod.Id);
+            newFile.AddTo(tx);
+        }
+
+        var result = await tx.Commit();
+        return result.Db.Get<Loadout.Model>(loadout.Id);
+
+        void AddToOverride(TempEntity newFile)
+        {
+            newFile.Add(File.Mod, overridesMod.Id);
+            newFile.AddTo(tx);
+        }
     }
 
-    private async ValueTask<TempEntity> HandleNewModFile(DiskStateEntry newEntry, GamePath gamePath, AbsolutePath absolutePath)
+    private static Mod.Model? GetSMAPIMod(RelativePath modDirectoryName, Loadout.Model loadout, IDb db)
     {
-        var newFile = await base.HandleNewFile(newEntry, gamePath, absolutePath);
+        var manifestFilePath = new GamePath(LocationId.Game, Constants.ModsFolder.Join(modDirectoryName).Join(Constants.ManifestFile));
 
-        // TODO: find the matching files
-        newFile.Add(File.Loadout, EntityId.MinValue);
-        newFile.Add(File.Mod, EntityId.MinValue);
+        var manifestFile = db
+            .Find(File.To)
+            .Select(db.Get<File.Model>)
+            .FirstOrDefault(file => file.LoadoutId.Equals(loadout.LoadoutId) && file.To.Equals(manifestFilePath));
 
-        return newFile;
+        return manifestFile?.Mod;
     }
 
-    private static readonly RelativePath ModsDirectoryName = new("Mods");
-
-    private static bool IsModFile(GamePath gamePath)
+    private static bool IsModFile(GamePath gamePath, out RelativePath modDirectoryName)
     {
+        modDirectoryName = RelativePath.Empty;
         if (gamePath.LocationId != LocationId.Game) return false;
         var path = gamePath.Path;
 
-        if (!path.StartsWith(ModsDirectoryName)) return false;
+        if (!path.StartsWith(Constants.ModsFolder)) return false;
+        path = path.DropFirst(numDirectories: 1);
 
-        // TODO
-        return false;
+        modDirectoryName = path.TopParent;
+        if (modDirectoryName.Equals(RelativePath.Empty)) return false;
+
+        return true;
     }
 }

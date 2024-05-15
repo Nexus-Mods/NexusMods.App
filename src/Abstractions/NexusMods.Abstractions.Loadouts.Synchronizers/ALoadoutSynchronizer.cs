@@ -581,13 +581,9 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         return newLoadout;
     }
 
-
-    private async Task<Loadout.Model> AddChangedFilesToLoadout(Loadout.Model loadout, TempEntity[] newFiles)
+    protected Mod.Model GetOrCreateOverridesMod(Loadout.Model loadout, ITransaction tx)
     {
         var overridesMod = loadout.Mods.FirstOrDefault(m => m.Category == ModCategory.Overrides);
-        
-        using var tx = Connection.BeginTransaction();
-        
         overridesMod ??= new Mod.Model(tx)
         {
             Loadout = loadout,
@@ -595,7 +591,15 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             Name = "Overrides",
             Enabled = true,
         };
-        
+
+        return overridesMod;
+    }
+
+    protected virtual async Task<Loadout.Model> AddChangedFilesToLoadout(Loadout.Model loadout, TempEntity[] newFiles)
+    {
+        using var tx = Connection.BeginTransaction();
+        var overridesMod = GetOrCreateOverridesMod(loadout, tx);
+
         foreach (var newFile in newFiles)
         {
             newFile.Add(File.Loadout, loadout.Id);
