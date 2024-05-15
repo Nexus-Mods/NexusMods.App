@@ -1,7 +1,5 @@
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.DiskState;
@@ -15,7 +13,6 @@ using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Messaging;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
-using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Attributes;
@@ -129,6 +126,7 @@ public static class Services
         coll.AddAttributeCollection(typeof(DownloadAnalysis));
         coll.AddAttributeCollection(typeof(DownloadContentEntry));
         coll.AddAttributeCollection(typeof(FilePathMetadata));
+        coll.AddAttributeCollection(typeof(StreamBasedFileOriginMetadata));
         coll.AddAllSingleton<IFileOriginRegistry, FileOriginRegistry>();
         
         // Repositories

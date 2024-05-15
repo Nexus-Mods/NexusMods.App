@@ -2,6 +2,7 @@ using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.FileStore.Downloads;
+using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.Abstractions.Serialization.Json;
@@ -52,6 +53,7 @@ using NexusMods.App.UI.Pages.ModInfo;
 using NexusMods.App.UI.Pages.ModLibrary;
 using NexusMods.App.UI.Pages.MyGames;
 using NexusMods.App.UI.Pages.Settings;
+using NexusMods.App.UI.Pages.TextEdit;
 using NexusMods.App.UI.Settings;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceAttachments;
@@ -140,7 +142,6 @@ public static class Services
             .AddViewModel<DummyLoadingViewModel, ILoadingViewModel>()
             .AddViewModel<DummyErrorViewModel, IErrorViewModel>()
             .AddViewModel<ApplyDiffViewModel, IApplyDiffViewModel>()
-            .AddViewModel<FileOriginsPageViewModel, IFileOriginsPageViewModel>()
 
             // Views
             .AddView<DevelopmentBuildBannerView, IDevelopmentBuildBannerViewModel>()
@@ -205,6 +206,9 @@ public static class Services
             .AddView<ChangelogPageView, IChangelogPageViewModel>()
             .AddViewModel<ChangelogPageViewModel, IChangelogPageViewModel>()
 
+            .AddView<TextEditorPageView, ITextEditorPageViewModel>()
+            .AddViewModel<TextEditorPageViewModel, ITextEditorPageViewModel>()
+
             // workspace system
             .AddSingleton<IWindowManager, WindowManager>()
             .AddRepository<WindowDataAttributes.Model>(WindowDataAttributes.Data)
@@ -236,6 +240,7 @@ public static class Services
             .AddSingleton<IPageFactory, SettingsPageFactory>()
             .AddSingleton<IPageFactory, ChangelogPageFactory>()
             .AddSingleton<IPageFactory, FileOriginsPageFactory>()
+            .AddSingleton<IPageFactory, TextEditorPageFactory>()
 
             // LeftMenu factories
             .AddSingleton<ILeftMenuFactory, DownloadsLeftMenuFactory>()
@@ -261,7 +266,8 @@ public static class Services
             .AddSingleton<InjectedViewLocator>()
             .AddFileSystem()
 
-            .AddRepository<DownloadAnalysis.Model>([DownloadAnalysis.NumberOfEntries, DownloadAnalysis.SuggestedName]);
+            .AddRepository<DownloadAnalysis.Model>([DownloadAnalysis.NumberOfEntries, DownloadAnalysis.SuggestedName])
+            .AddRepository<StoredFile.Model>(StoredFile.Hash);
     }
 
 }

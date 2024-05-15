@@ -55,6 +55,7 @@
 
     <ItemGroup>
         <PackageReference Include="Avalonia" />
+        <PackageReference Include="Avalonia.AvaloniaEdit" />
         <PackageReference Include="Avalonia.Controls.TreeDataGrid" />
         <PackageReference Include="Avalonia.Desktop" />
         <PackageReference Include="Avalonia.Controls.DataGrid" />
@@ -63,6 +64,7 @@
         <PackageReference Include="Avalonia.ReactiveUI" />
         <PackageReference Include="Avalonia.Svg.Skia" />
         <PackageReference Include="Avalonia.Themes.Fluent" />
+        <PackageReference Include="AvaloniaEdit.TextMate" />
         <PackageReference Include="LiveChartsCore.SkiaSharpView.Avalonia"/>
         <PackageReference Include="Markdown.Avalonia.Tight" />
         <PackageReference Include="DynamicData" />
@@ -73,6 +75,7 @@
         <PackageReference Include="ReactiveUI.Fody" />
         <PackageReference Include="Splat.Microsoft.Extensions.Logging" />
         <PackageReference Include="System.Reactive" />
+        <PackageReference Include="TextMateSharp.Grammars" />
         <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
 
@@ -546,6 +549,9 @@
         </Compile>
         <Compile Update="Pages\LoadoutGrid\LoadoutGridViewModel.cs">
           <DependentUpon>ILoadoutGridViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\TextEdit\TextEditorPageViewModel.cs">
+          <DependentUpon>ITextEditorPageViewModel.cs</DependentUpon>
         </Compile>
     </ItemGroup>
 

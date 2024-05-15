@@ -6,6 +6,7 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.Models;
+using NexusMods.MnemonicDB.Storage;
 using NexusMods.Paths;
 using ModFileTreeNode = NexusMods.Paths.Trees.KeyedBox<NexusMods.Paths.RelativePath, NexusMods.Abstractions.FileStore.Trees.ModFileTree>;
 
@@ -100,6 +101,18 @@ public static class DownloadAnalysis
         public ModFileTreeNode GetFileTree(IFileStore? fs = null)
         {
             return TreeCreator.Create(Contents, fs);
+        }
+
+        /// <summary>
+        /// The timestamp of the creation of this <see cref="DownloadAnalysis"/> entity
+        /// Download start time or first manual installation time
+        /// </summary>
+        public DateTime GetCreatedAt()
+        {
+            // Get the lowest transaction id, then get the timestamp of that transaction
+            var t = this.Select(d => d.T).Min();
+            var txEntity = Db.Get<Entity>(EntityId.From(t.Value));
+            return BuiltInAttributes.TxTimestanp.Get(txEntity);
         }
     }
 }
