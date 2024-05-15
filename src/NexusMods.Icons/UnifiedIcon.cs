@@ -81,6 +81,10 @@ public sealed class UnifiedIcon : ContentControl
 
             MaxHeight = value;
             MaxWidth = value;
+        } else if (change.Property == ForegroundProperty && Content is PathIcon)
+        {
+            // Note(Al12rs): workaround to update PathIcon foreground colors
+            ((PathIcon)Content).Foreground = (IBrush)change.NewValue!;
         }
     }
 
@@ -117,6 +121,7 @@ public sealed class UnifiedIcon : ContentControl
                 [WidthProperty] = this[WidthProperty],
                 [MaxHeightProperty] = this[MaxHeightProperty],
                 [MaxWidthProperty] = this[MaxWidthProperty],
+                [ForegroundProperty] = this[ForegroundProperty],
             }
         );
 
