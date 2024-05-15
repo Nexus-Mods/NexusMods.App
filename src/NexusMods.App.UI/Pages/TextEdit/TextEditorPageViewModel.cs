@@ -114,7 +114,7 @@ public class TextEditorPageViewModel : APageViewModel<ITextEditorPageViewModel>,
                         return;
                     }
 
-                    serialDisposable.Disposable = repository.Revisions(context.FileId.Value)
+                    serialDisposable.Disposable = repository.Revisions(context.FileId.Value, includeCurrent: false)
                         .Select(_ => context)
                         .OffUi()
                         .InvokeCommand(_loadFileCommand);
