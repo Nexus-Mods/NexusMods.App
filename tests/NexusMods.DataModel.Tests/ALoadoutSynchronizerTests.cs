@@ -580,7 +580,7 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
     }
     
     [Fact]
-    public async Task DeleteLoadout_LoadoutIsDeletedAndGameRevertedToInitialState()
+    public async Task WhenDeletingLoadout_GameIsRevertedToInitialState()
     {
         // Arrange
         var initialLoadout = BaseLoadout;
