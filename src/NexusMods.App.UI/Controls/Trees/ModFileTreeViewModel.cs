@@ -58,7 +58,7 @@ public class ModFileTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeVie
             if (!file.TryGetAsStoredFile(out var storedFile))
                 continue;
 
-            var isDeletion = file.Contains(DeletedFile.Deleted);
+            var isDeletion = file.TryGetAsDeletedFile(out _);
             _totalNumFiles++;
             
             if (!isDeletion)
