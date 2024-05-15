@@ -230,10 +230,6 @@ public class Program
             };
             config.AddRuleForAllLevels(consoleTarget);
         }
-        else
-        {
-            
-        }
 
         config.AddRuleForAllLevels(fileTarget);
 
