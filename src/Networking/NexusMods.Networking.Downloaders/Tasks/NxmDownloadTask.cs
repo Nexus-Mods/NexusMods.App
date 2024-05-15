@@ -97,7 +97,7 @@ public class NxmDownloadTask : ADownloadTask
             {
                 using var tx = Connection.BeginTransaction();
                 if (info.Data.Name is not null)
-                    tx.Add(eid, DownloaderState.FriendlyName, info.Data.Name + " " + file.FileName);
+                    tx.Add(eid, DownloaderState.FriendlyName, info.Data.Name);
                 else
                     tx.Add(eid, DownloaderState.FriendlyName, file.FileName);
                 
