@@ -19,6 +19,11 @@ public interface IFileTreeNodeViewModel : IViewModelInterface, IExpandableItem, 
     ///     True if this node represents a file.
     /// </summary>
     bool IsFile { get; }
+    
+    /// <summary>
+    ///     True if this node represents a file deletion.
+    /// </summary>
+    bool IsDeletion { get; }
 
     /// <summary>
     ///     Name of the file or folder segment.

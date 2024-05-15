@@ -58,8 +58,11 @@ public class ModFileTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeVie
             if (!file.TryGetAsStoredFile(out var storedFile))
                 continue;
 
+            var isDeletion = file.Contains(DeletedFile.Deleted);
             _totalNumFiles++;
-            _totalSize += storedFile.Size.Value;
+            
+            if (!isDeletion)
+                _totalSize += storedFile.Size.Value;
 
             var folderName = storedFile.To.Parent;
             var parent = folderName;
@@ -68,8 +71,9 @@ public class ModFileTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeVie
                     storedFile.To,
                     folderName,
                     true,
-                    storedFile.Size.Value,
-                    0
+                    isDeletion ? 0 : storedFile.Size.Value,
+                    0,
+                    isDeletion
                 )
             );
 
