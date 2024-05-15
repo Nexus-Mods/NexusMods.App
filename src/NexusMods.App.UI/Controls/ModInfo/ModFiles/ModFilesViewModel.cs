@@ -62,7 +62,7 @@ public class ModFilesViewModel : AViewModel<IModFilesViewModel>, IModFilesViewMo
                 Context = new TextEditorPageContext
                 {
                     FileId = storedFile.FileId,
-                    FileName = key.FileName,
+                    FilePath = storedFile.To,
                 },
             };
 

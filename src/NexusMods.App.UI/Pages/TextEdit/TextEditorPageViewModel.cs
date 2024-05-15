@@ -69,7 +69,7 @@ public class TextEditorPageViewModel : APageViewModel<ITextEditorPageViewModel>,
         SaveCommand = ReactiveCommand.CreateFromTask(async () =>
         {
             var fileId = Context!.FileId;
-            var fileName = Context!.FileName;
+            var filePath = Context!.FilePath;
 
             var text = Document?.Text ?? string.Empty;
 
@@ -79,7 +79,7 @@ public class TextEditorPageViewModel : APageViewModel<ITextEditorPageViewModel>,
             var size = Size.From((ulong)bytes.Length);
 
             var ms = new MemoryStream(bytes, writable: false);
-            var streamFactory = new MemoryStreamFactory(fileName, ms);
+            var streamFactory = new MemoryStreamFactory(filePath.Path, ms);
 
             await fileStore.BackupFiles([new ArchivedFileEntry(streamFactory, hash, size)]);
 
@@ -129,12 +129,12 @@ public class TextEditorPageViewModel : APageViewModel<ITextEditorPageViewModel>,
                 .SubscribeWithErrorLogging(output =>
                 {
                     var (context, contents) = output;
-                    var fileName = context.FileName;
-                    TabTitle = fileName.ToString();
+                    var filePath = context.FilePath;
+                    TabTitle = filePath.Path.ToString();
 
                     var document = new TextDocument(new StringTextSource(contents))
                     {
-                        FileName = fileName.ToString(),
+                        FileName = filePath.Path.ToString(),
                     };
 
                     Document = document;
