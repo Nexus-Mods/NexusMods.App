@@ -725,7 +725,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                 {
                     var sf = file.Remap<StoredFile.Model>();
                     
-                    if (sf.Contains(DeletedFile.Deleted))
+                    if (sf.TryGetAsDeletedFile(out _))
                     {
                         resultingItems.Add(gamePath,
                             new DiskDiffEntry
@@ -800,7 +800,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                     continue;
                 }
 
-                if (storedFile.Contains(DeletedFile.Deleted))
+                if (storedFile.TryGetAsDeletedFile(out _))
                 {
                     continue;
                 }
