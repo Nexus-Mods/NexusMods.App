@@ -2,6 +2,7 @@ using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.FileStore.Downloads;
+using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.Abstractions.Serialization.Json;
@@ -266,7 +267,8 @@ public static class Services
             .AddSingleton<InjectedViewLocator>()
             .AddFileSystem()
 
-            .AddRepository<DownloadAnalysis.Model>([DownloadAnalysis.NumberOfEntries, DownloadAnalysis.SuggestedName]);
+            .AddRepository<DownloadAnalysis.Model>([DownloadAnalysis.NumberOfEntries, DownloadAnalysis.SuggestedName])
+            .AddRepository<StoredFile.Model>(StoredFile.Hash);
     }
 
 }

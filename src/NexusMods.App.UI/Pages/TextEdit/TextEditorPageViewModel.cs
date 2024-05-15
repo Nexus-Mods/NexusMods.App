@@ -1,5 +1,6 @@
 using System.Reactive;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Text;
 using AvaloniaEdit.Document;
 using JetBrains.Annotations;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Loadouts.Files;
+using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -38,7 +40,8 @@ public class TextEditorPageViewModel : APageViewModel<ITextEditorPageViewModel>,
         ILogger<TextEditorPageViewModel> logger,
         IWindowManager windowManager,
         IFileStore fileStore,
-        IConnection connection) : base(windowManager)
+        IConnection connection,
+        IRepository<StoredFile.Model> repository) : base(windowManager)
     {
         TabIcon = IconValues.FileDocumentOutline;
         TabTitle = "Text Editor";
@@ -95,7 +98,25 @@ public class TextEditorPageViewModel : APageViewModel<ITextEditorPageViewModel>,
 
         this.WhenActivated(disposables =>
         {
+            var serialDisposable = new SerialDisposable();
+            serialDisposable.DisposeWith(disposables);
+
+            repository.Revisions(Context!.FileId.Value);
+
             this.WhenAnyValue(vm => vm.Context)
+                .Do(context =>
+                {
+                    if (context is null)
+                    {
+                        serialDisposable.Disposable = null;
+                        return;
+                    }
+
+                    serialDisposable.Disposable = repository.Revisions(context.FileId.Value)
+                        .Select(_ => context)
+                        .OffUi()
+                        .InvokeCommand(_loadFileCommand);
+                })
                 .WhereNotNull()
                 .OffUi()
                 .InvokeCommand(_loadFileCommand)

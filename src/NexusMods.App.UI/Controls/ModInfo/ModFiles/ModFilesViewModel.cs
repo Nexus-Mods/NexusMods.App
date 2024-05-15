@@ -50,8 +50,8 @@ public class ModFilesViewModel : AViewModel<IModFilesViewModel>, IModFilesViewMo
                 .Select(id => db.Get<StoredFile.Model>(id))
                 .FirstOrDefault(storedFile =>
                 {
-                    if (!storedFile.To.Equals(key)) return false;
-                    return targetModId.Equals(storedFile.ModId);
+                    if (!targetModId.Equals(storedFile.ModId)) return false;
+                    return storedFile.To.Equals(key);
                 });
 
             if (storedFile is null) return;
