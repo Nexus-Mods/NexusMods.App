@@ -79,7 +79,7 @@ public class ModInfoViewModel : APageViewModel<IModInfoViewModel>, IModInfoViewM
         {
             case CurrentModInfoSection.Files:
                 var vm = _serviceProvider.GetRequiredService<IModFilesViewModel>();
-                vm.Initialize(LoadoutId, ModId);
+                vm.Initialize(LoadoutId, ModId, IdBundle);
                 _cache.Add(section, vm);
                 return vm;
             default:
