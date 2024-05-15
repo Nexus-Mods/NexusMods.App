@@ -61,6 +61,9 @@ public unsafe class MultiProcessSharedArray : ISharedArray
 
 
         _stream = path.Open(FileMode.Open, FileAccess.ReadWrite);
+        _stream.Position = _totalSize + sizeof(ulong);
+        _stream.Write([0xFF]);
+        _stream.Position = 0;
 
         _mmapFile = MemoryMappedFile.CreateFromFile((FileStream)_stream,
             null,

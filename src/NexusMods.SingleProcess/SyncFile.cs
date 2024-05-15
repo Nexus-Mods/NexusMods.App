@@ -10,6 +10,7 @@ namespace NexusMods.SingleProcess;
 public class SyncFile
 {
     private readonly MultiProcessSharedArray _sharedArray;
+    private readonly ILogger<SyncFile> _logger;
 
     /// <summary>
     /// DI constructor
@@ -17,37 +18,11 @@ public class SyncFile
     public SyncFile(ILogger<SyncFile> logger, ISettingsManager settingsManager)
     {
         var settings = settingsManager.Get<CliSettings>();
-
+        _logger = logger;
+        _logger.LogDebug("Using Sync File: {SyncFile}", settings.SyncFile);
         _sharedArray = new MultiProcessSharedArray(settings.SyncFile, itemCount: 8);
     }
-
-    private readonly struct SyncFileContents
-    {
-        public readonly ulong Value;
-
-        public int Port => (int)(Value >> 32);
-
-        public int ProcessId => (int)(Value & 0xFFFFFFFF);
-
-        public SyncFileContents(ulong value)
-        {
-            Value = value;
-        }
-
-        public SyncFileContents(int port, int processId)
-        {
-            var lower = (ulong)port;
-            var upper = (ulong)processId << 32;
-            Value = lower & upper;
-        }
-
-        public void Deconstruct(out int port, out int processId)
-        {
-            port = Port;
-            processId = ProcessId;
-        }
-    }
-
+    
     /// <summary>
     /// Returns the current process and port that's stored in the sync file
     /// </summary>
@@ -55,8 +30,11 @@ public class SyncFile
     public (Process? Process, int Port) GetSyncInfo()
     {
         var rawValue = _sharedArray.Get(0);
-        var value = new SyncFileContents(rawValue);
-        var (port, processId) = value;
+        var processId = (int)(rawValue >> 32);
+        var port = (int) rawValue;
+        
+        
+        _logger.LogDebug("Sync file contents: {Port}, {ProcessId}", port, processId);
 
         if (processId == 0) return (null, port);
         var process = GetProcessById(processId);
@@ -68,17 +46,18 @@ public class SyncFile
     /// </summary>
     public bool TrySetMain(int port)
     {
-        var newContents = new SyncFileContents(port, Environment.ProcessId);
-        var newRawValue = newContents.Value;
+        var newProcessId = Environment.ProcessId;
+        var newContents = ((ulong)newProcessId << 32) | (uint) port;
+
 
         var currentRawValue = _sharedArray.Get(0);
-        var currentContents = new SyncFileContents(currentRawValue);
+        var currentProcessId = (int)(currentRawValue >> 32);
 
-        var process = GetProcessById(currentContents.ProcessId);
-        if (process is not null && process.Id != newContents.ProcessId)
+        var process = GetProcessById(currentProcessId);
+        if (process is not null && process.Id != newProcessId)
             return false;
 
-        return _sharedArray.CompareAndSwap(0, currentRawValue, newRawValue);
+        return _sharedArray.CompareAndSwap(0, currentRawValue, newContents);
     }
     
     /// <summary>
