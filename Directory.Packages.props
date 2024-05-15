@@ -5,6 +5,8 @@
     <PackageVersion Include="FlatSharp.Compiler" Version="7.6.0" />
     <PackageVersion Include="FlatSharp.Runtime" Version="7.6.0" />
     <PackageVersion Include="LinqGen" Version="0.3.1" />
+    <PackageVersion Include="Nerdbank.FullDuplexStream" Version="1.1.12" />
+    <PackageVersion Include="Nerdbank.Streams" Version="2.11.74" />
     <PackageVersion Include="NexusMods.MnemonicDB" Version="0.9.28" />
     <PackageVersion Include="NexusMods.MnemonicDB.Abstractions" Version="0.9.28" />
     <PackageVersion Include="NexusMods.MnemonicDB.Storage" Version="0.9.28" />
@@ -12,19 +14,24 @@
     <PackageVersion Include="NexusMods.Hashing.xxHash64" Version="2.0.1" />
     <PackageVersion Include="NexusMods.Paths.TestingHelpers" Version="0.9.4" />
     <PackageVersion Include="NexusMods.Archives.Nx" Version="0.4.0" />
-    <PackageVersion Include="NexusMods.ProxyConsole.Abstractions" Version="0.6.0" />
-    <PackageVersion Include="NexusMods.SingleProcess" Version="0.6.0" />
     <PackageVersion Include="NexusMods.Telemetry.OpenTelemetry" Version="1.0.0" />
     <PackageVersion Include="FomodInstaller.Interface" Version="1.2.0" />
     <PackageVersion Include="FomodInstaller.Scripting.XmlScript" Version="1.0.0" />
     <PackageVersion Include="Bannerlord.LauncherManager" Version="1.0.76" />
     <PackageVersion Include="FetchBannerlordVersion" Version="1.0.6.45" />
+    <PackageVersion Include="NLog" Version="5.2.8" />
+    <PackageVersion Include="Spectre.Console.Testing" Version="0.49.1" />
     <PackageVersion Include="System.Linq" Version="4.3.0" />
     <PackageVersion Include="System.Text.Json" Version="8.0.3" />
     <PackageVersion Include="TextMateSharp.Grammars" Version="1.0.56" />
     <PackageVersion Include="OpenTelemetry" Version="1.8.1" />
     <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.8.1" />
     <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.8.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageVersion Include="MemoryPack.Streaming" Version="1.21.1" />
+    <PackageVersion Include="MemoryPack" Version="1.21.1" />
+    <PackageVersion Include="Spectre.Console" Version="0.49.1" />
     <PackageVersion Include="JetBrains.Annotations" Version="2023.3.0" PrivateAssets="all" />
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="8.0.0">
       <PrivateAssets>all</PrivateAssets>
