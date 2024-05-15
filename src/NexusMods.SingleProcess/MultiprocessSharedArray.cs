@@ -36,7 +36,7 @@ public unsafe class MultiProcessSharedArray : ISharedArray
         {
             try
             {
-                // Make sure the a previous process didn't exit without setting the file size
+                // Make sure a previous process didn't exit without setting the file size
                 if (path.FileExists)
                 {
                     var tmpStream =
