@@ -78,10 +78,10 @@ public class TextEditorPageViewModel : APageViewModel<ITextEditorPageViewModel>,
             var hash = Hash.From(XxHash64Algorithm.HashBytes(bytes));
             var size = Size.From((ulong)bytes.Length);
 
-            var ms = new MemoryStream(bytes, writable: false);
-            var streamFactory = new MemoryStreamFactory(filePath.Path, ms);
-
-            await fileStore.BackupFiles([new ArchivedFileEntry(streamFactory, hash, size)]);
+            using (var streamFactory = new MemoryStreamFactory(filePath.Path, new MemoryStream(bytes, writable: false)))
+            {
+                await fileStore.BackupFiles([new ArchivedFileEntry(streamFactory, hash, size)]);
+            }
 
             // update the file
             var db = connection.Db;
