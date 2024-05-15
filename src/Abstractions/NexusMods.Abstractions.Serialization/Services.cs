@@ -19,7 +19,8 @@ public static class Services
         services.AddSettingsStorageBackend<JsonStorageBackend>();
 
         services.AddSingleton<JsonConverter, AbstractClassConverterFactory<IMetadata>>();
-        
+        services.AddSingleton<JsonConverter, EntityIdConverter>();
+
         services.AddSingleton(s =>
         {
             var opts = new JsonSerializerOptions();
