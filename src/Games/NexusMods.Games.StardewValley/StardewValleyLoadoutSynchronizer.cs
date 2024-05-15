@@ -19,6 +19,8 @@ public class StardewValleyLoadoutSynchronizer : ALoadoutSynchronizer
         using var tx = Connection.BeginTransaction();
         var overridesMod = GetOrCreateOverridesMod(loadout, tx);
 
+        var smapiModDirectoryNameToModel = new Dictionary<RelativePath, Mod.Model>();
+
         foreach (var newFile in newFiles)
         {
             newFile.Add(File.Loadout, loadout.Id);
@@ -36,11 +38,16 @@ public class StardewValleyLoadoutSynchronizer : ALoadoutSynchronizer
                 continue;
             }
 
-            var smapiMod = GetSMAPIMod(modDirectoryName, loadout, loadout.Db);
-            if (smapiMod is null)
+            if (!smapiModDirectoryNameToModel.TryGetValue(modDirectoryName, out var smapiMod))
             {
-                AddToOverride(newFile);
-                continue;
+                smapiMod = GetSMAPIMod(modDirectoryName, loadout, loadout.Db);
+                if (smapiMod is null)
+                {
+                    AddToOverride(newFile);
+                    continue;
+                }
+
+                smapiModDirectoryNameToModel[modDirectoryName] = smapiMod;
             }
 
             newFile.Add(File.Mod, smapiMod.Id);
