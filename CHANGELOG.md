@@ -14,7 +14,7 @@ Stardew Valley received three new diagnostics ([#1171](https://github.com/Nexus-
 
 ![Screenshot of a critical error where the maximum supported game version of SMAPI is lower than the currently installed game version.](./docs/changelog-assets/15b10289b7aaaefd6f8f9c13da79ced9.webp)
 
-This also includes our first "suggestion" diagnostic. This diagnostic will only appear if you have no mods installed and it will recommend a supported SMAPI version:
+This also includes our first "suggestion" diagnostic. This diagnostic will only appear if you have no mods installed, and it will recommend a supported SMAPI version:
 
 ![Screenshot of a suggestion for installing SMAPI to get started with modding Stardew Valley.](./docs/changelog-assets/081da2f32c8803bbd759cf2f22641810.webp)
 
