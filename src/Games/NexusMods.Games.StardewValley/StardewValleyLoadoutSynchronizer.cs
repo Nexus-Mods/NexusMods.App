@@ -14,11 +14,11 @@ public class StardewValleyLoadoutSynchronizer : ALoadoutSynchronizer
 
     protected override ValueTask<TempEntity> HandleNewFile(DiskStateEntry newEntry, GamePath gamePath, AbsolutePath absolutePath)
     {
-        if (!IsConfigFile(gamePath)) return base.HandleNewFile(newEntry, gamePath, absolutePath);
-        return HandleNewConfigFile(newEntry, gamePath, absolutePath);
+        if (!IsModFile(gamePath)) return base.HandleNewFile(newEntry, gamePath, absolutePath);
+        return HandleNewModFile(newEntry, gamePath, absolutePath);
     }
 
-    private async ValueTask<TempEntity> HandleNewConfigFile(DiskStateEntry newEntry, GamePath gamePath, AbsolutePath absolutePath)
+    private async ValueTask<TempEntity> HandleNewModFile(DiskStateEntry newEntry, GamePath gamePath, AbsolutePath absolutePath)
     {
         var newFile = await base.HandleNewFile(newEntry, gamePath, absolutePath);
 
@@ -29,8 +29,15 @@ public class StardewValleyLoadoutSynchronizer : ALoadoutSynchronizer
         return newFile;
     }
 
-    private bool IsConfigFile(GamePath gamePath)
+    private static readonly RelativePath ModsDirectoryName = new("Mods");
+
+    private static bool IsModFile(GamePath gamePath)
     {
+        if (gamePath.LocationId != LocationId.Game) return false;
+        var path = gamePath.Path;
+
+        if (!path.StartsWith(ModsDirectoryName)) return false;
+
         // TODO
         return false;
     }
