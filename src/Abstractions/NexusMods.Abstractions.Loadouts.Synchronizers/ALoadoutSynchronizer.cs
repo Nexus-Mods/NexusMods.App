@@ -965,7 +965,12 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             var prevState = _diskStateRegistry.GetState(loadout.Installation)!;
             
             // Note: We can downcast (remap) here because StoredFile inherits from File (base).
-            var tree = FileTree.Create(allStoredFileModels.Select(file => KeyValuePair.Create(file.To, file.Remap<File.Model>())));
+            var tree = FileTree.Create(allStoredFileModels.Select(file =>
+                {
+                    var remapped = result.Remap<File.Model>(file);
+                    return KeyValuePair.Create(remapped.To, remapped);
+                }
+            ));
             await FileTreeToDisk(tree, loadout, flattened, prevState, loadout.Installation, true);
             
             // Note: DiskState returned from `FileTreeToDisk` and `initialState`
