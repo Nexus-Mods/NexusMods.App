@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Settings;
@@ -40,6 +41,15 @@ public record LoggingSettings : ISettings
     /// </summary>
     public LogLevel MinimumLevel { get; init; } = LogLevel.Debug;
 
+    /// <summary>
+    /// When enabled, logs will be written to the console as well as the log file.
+    /// </summary>
+    #if DEBUG
+    public bool LogToConsole { get; init; } = true;
+    #else
+    public bool LogToConsole { get; init; } = false;
+    #endif
+
     public static ISettingsBuilder Configure(ISettingsBuilder settingsBuilder)
     {
         // TODO: put in some section
@@ -62,6 +72,13 @@ public record LoggingSettings : ISettings
                         ],
                         valueToDisplayString: static logLevel => logLevel.ToString()
                     )
+                    .RequiresRestart()
+                )
+                .AddPropertyToUI(x => x.LogToConsole, propertybuilder => propertybuilder
+                    .AddToSection(sectionId)
+                    .WithDisplayName("Log to Console")
+                    .WithDescription("When enabled, logs will be written to the console as well as the log file.")
+                    .UseBooleanContainer()
                     .RequiresRestart()
                 )
             );

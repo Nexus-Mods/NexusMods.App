@@ -178,13 +178,17 @@ public class Program
         fileTarget.Layout = defaultLayout;
         fileTarget.Header = defaultHeader;
 
-        var consoleTarget = new ConsoleTarget("console")
+        if (settings.LogToConsole)
         {
-            Layout = "${processtime} [${level:uppercase=true}] ${message:withexception=true}",
-        };
+            var consoleTarget = new ConsoleTarget("console")
+            {
+                Layout = "${processtime} [${level:uppercase=true}] ${message:withexception=true}",
+            };
+            config.AddRuleForAllLevels(consoleTarget);
+        }
 
         config.AddRuleForAllLevels(fileTarget);
-        config.AddRuleForAllLevels(consoleTarget);
+
 
         // NOTE(erri120): RemoveLoggerFactoryFilter prevents
         // the global minimum level to take effect.
