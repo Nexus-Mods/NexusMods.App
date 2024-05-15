@@ -7,6 +7,7 @@
         <ProjectReference Include="..\..\src\Abstractions\NexusMods.Abstractions.Games\NexusMods.Abstractions.Games.csproj" />
         <ProjectReference Include="..\..\src\Networking\NexusMods.Networking.HttpDownloader\NexusMods.Networking.HttpDownloader.csproj" />
         <ProjectReference Include="..\..\src\NexusMods.App.Cli\NexusMods.App.Cli.csproj" />
+        <ProjectReference Include="..\..\src\NexusMods.App\NexusMods.App.csproj" />
         <ProjectReference Include="..\..\src\NexusMods.DataModel\NexusMods.DataModel.csproj" />
         <ProjectReference Include="..\..\src\NexusMods.SingleProcess\NexusMods.SingleProcess.csproj" />
         <ProjectReference Include="..\..\src\NexusMods.StandardGameLocators\NexusMods.StandardGameLocators.csproj" />
@@ -22,5 +23,10 @@
         <None Update="xunit.runner.json">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
+        <None Remove="StartupModeTests.TestStartupModeParsing_input=as-main.verified.txt" />
+        <None Remove="StartupModeTests.TestStartupModeParsing_input=.verified.txt" />
+        <None Remove="StartupModeTests.TestStartupModeParsing_input=--help.verified.txt" />
+        <None Remove="StartupModeTests.TestStartupModeParsing_input=as-main --help.verified.txt" />
+        <None Remove="StartupModeTests.TestStartupModeParsing_input=as-main-ui.verified.txt" />
     </ItemGroup>
 </Project>

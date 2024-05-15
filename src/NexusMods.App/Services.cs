@@ -50,9 +50,10 @@ public static class Services
     public static IServiceCollection AddApp(this IServiceCollection services,
         TelemetrySettings? telemetrySettings = null,
         bool addStandardGameLocators = true,
-        bool slimMode = false)
+        StartupMode? startupMode = null)
     {
-        if (!slimMode)
+        startupMode ??= new StartupMode();
+        if (startupMode.RunAsMain)
         {
             services
                 .AddSettings<TelemetrySettings>()
@@ -104,6 +105,7 @@ public static class Services
         else
         {
             services.AddFileSystem()
+                .AddCrossPlatform()
                 .AddSingleProcess(Mode.Client)
                 .AddDefaultRenderers()
                 .AddSettingsManager();

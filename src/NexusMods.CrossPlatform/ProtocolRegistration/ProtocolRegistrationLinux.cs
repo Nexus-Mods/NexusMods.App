@@ -16,31 +16,30 @@ public class ProtocolRegistrationLinux : IProtocolRegistration
 
     private readonly IProcessFactory _processFactory;
     private readonly IFileSystem _fileSystem;
+    private readonly IOSInterop _osInterop;
 
     /// <summary>
     /// Constructor.
     /// </summary>
     /// <param name="processFactory"></param>
     /// <param name="fileSystem"></param>
-    public ProtocolRegistrationLinux(IProcessFactory processFactory, IFileSystem fileSystem)
+    public ProtocolRegistrationLinux(IProcessFactory processFactory, IFileSystem fileSystem, IOSInterop osInterop)
     {
         _processFactory = processFactory;
         _fileSystem = fileSystem;
+        _osInterop = osInterop;
     }
 
     /// <inheritdoc/>
     public async Task<string?> RegisterSelf(string protocol)
     {
-        // https://docs.appimage.org/packaging-guide/environment-variables.html#type-2-appimage-runtime
-        // APPIMAGE: (Absolute) path to AppImage file (with symlinks resolved)
-        var appImagePath = Environment.GetEnvironmentVariable("APPIMAGE", EnvironmentVariableTarget.Process);
-        var executable = appImagePath ?? Environment.ProcessPath;
+        var executable = _osInterop.GetOwnExe();
 
         return await Register(
             protocol,
             friendlyName: $"{BaseId}-{protocol}.desktop",
-            workingDirectory: FixWhitespace(Path.GetDirectoryName(executable)),
-            commandLine: $"{FixWhitespace(executable)} protocol-invoke --url %u"
+            workingDirectory: executable.Directory,
+            commandLine: $"{executable} protocol-invoke --url %u"
         );
     }
 
@@ -89,11 +88,5 @@ public class ProtocolRegistrationLinux : IProtocolRegistration
 
         // might end with 0xA (LF)
         return stdOut.StartsWith("yes", StringComparison.InvariantCultureIgnoreCase);
-    }
-
-    private static string FixWhitespace(string? input)
-    {
-        if (input is null) return string.Empty;
-        return input.Replace(" ", @"\ ");
     }
 }

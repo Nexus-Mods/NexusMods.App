@@ -6,7 +6,7 @@ using NexusMods.Paths;
 
 namespace NexusMods.CrossPlatform.Tests;
 
-public class ProtocolRegistrationTests
+public class ProtocolRegistrationTests(IOSInterop interop)
 {
     [SkippableFact]
     [SupportedOSPlatform("linux")]
@@ -20,7 +20,7 @@ public class ProtocolRegistrationTests
             StandardOutput = "yes\n"
         };
 
-        var protocolRegistration = new ProtocolRegistrationLinux(processFactory, FileSystem.Shared);
+        var protocolRegistration = new ProtocolRegistrationLinux(processFactory, FileSystem.Shared, interop);
         var res = await protocolRegistration.IsSelfHandler(protocol);
         res.Should().BeTrue();
     }
@@ -37,7 +37,7 @@ public class ProtocolRegistrationTests
             StandardOutput = "no\n"
         };
 
-        var protocolRegistration = new ProtocolRegistrationLinux(processFactory, FileSystem.Shared);
+        var protocolRegistration = new ProtocolRegistrationLinux(processFactory, FileSystem.Shared, interop);
         var res = await protocolRegistration.IsSelfHandler(protocol);
         res.Should().BeFalse();
     }

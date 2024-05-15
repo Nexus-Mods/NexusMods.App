@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Sockets;
 using Microsoft.Extensions.Logging;
 using NexusMods.ProxyConsole;
+using NexusMods.SingleProcess.Exceptions;
 using Spectre.Console;
 
 namespace NexusMods.SingleProcess;
@@ -22,7 +23,7 @@ public class CliClient(ILogger<CliClient> logger, SyncFile syncFile, IServicePro
         var (process, port) = syncFile.GetSyncInfo();
         if (process is null)
         {
-            throw new InvalidDataException("No main process is started");
+            throw new NoMainProcessStarted();
         }
 
         logger.LogInformation("Found main process {ProcessId} listening on port {Port}", process.Id, port);

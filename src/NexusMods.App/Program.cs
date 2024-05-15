@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Reactive;
 using System.Runtime.InteropServices;
 using Avalonia;
@@ -10,13 +11,18 @@ using NexusMods.Abstractions.Telemetry;
 using NexusMods.App.BuildInfo;
 using NexusMods.App.Listeners;
 using NexusMods.App.UI;
+using NexusMods.CrossPlatform.Process;
+using NexusMods.CrossPlatform.ProtocolRegistration;
 using NexusMods.DataModel;
 using NexusMods.Paths;
+using NexusMods.ProxyConsole;
 using NexusMods.Settings;
 using NexusMods.SingleProcess;
+using NexusMods.SingleProcess.Exceptions;
 using NLog.Extensions.Logging;
 using NLog.Targets;
 using ReactiveUI;
+using Spectre.Console;
 
 namespace NexusMods.App;
 
@@ -38,17 +44,19 @@ public class Program
             loggingSettings = settingsManager.Get<LoggingSettings>();
         }
 
-        var isMain = IsMainProcess(args);
+        var startupMode = StartupMode.Parse(args);
+        
         var host = BuildHost(
-            slimMode: !isMain,
+            startupMode,
             telemetrySettings,
             loggingSettings
         );
+        var services = host.Services;
 
         // Okay to do wait here, as we are in the main process thread.
         host.StartAsync().Wait(timeout: TimeSpan.FromMinutes(5));
 
-        _logger = host.Services.GetRequiredService<ILogger<Program>>();
+        _logger = services.GetRequiredService<ILogger<Program>>();
         LogMessages.RuntimeInformation(_logger, RuntimeInformation.OSDescription, RuntimeInformation.FrameworkDescription);
         TaskScheduler.UnobservedTaskException += (sender, eventArgs) =>
         {
@@ -64,20 +72,27 @@ public class Program
 
         try
         {
-            if (isMain)
+            if (startupMode.RunAsMain)
             {
-
-                LogMessages.StartingProcess(_logger, Environment.ProcessPath, Environment.ProcessId,
-                    args
-                );
-                host.Services.GetRequiredService<NxmRpcListener>();
-                Startup.Main(host.Services, []);
-                return 0;
+                LogMessages.StartingProcess(_logger, Environment.ProcessPath, Environment.ProcessId, args);
+                
+                if (startupMode.ShowUI)
+                {
+                    services.GetRequiredService<NxmRpcListener>();
+                    var task = RunCliTaskAsMain(services, startupMode);
+                    Startup.Main(services, []);
+                    return task.Result;
+                }
+                else
+                {
+                    var task = RunCliTaskAsMain(services, startupMode);
+                    return task.Result;
+                }
             }
             else
             {
-                var client = host.Services.GetRequiredService<CliClient>();
-                client.ExecuteCommand(args).Wait();
+                var task = RunCliTaskRemotely(services, startupMode);
+                return task.Result;
             }
         }
         finally
@@ -88,9 +103,61 @@ public class Program
         return 0;
     }
 
-    private static bool IsMainProcess(IReadOnlyList<string> args)
+    private static async Task<int> RunCliTaskRemotely(IServiceProvider services, StartupMode startupMode)
     {
-        return args.Count == 0;
+        var client = services.GetRequiredService<CliClient>();
+        var syncFile = services.GetRequiredService<SyncFile>();
+        try
+        {
+            await client.ExecuteCommand(startupMode.Args, AnsiConsole.Console);
+            return 0;
+        }
+        catch (NoMainProcessStarted _)
+        {
+            var interop = services.GetRequiredService<IOSInterop>();
+            var ownExe = interop.GetOwnExe();
+            _logger.LogInformation("No main process started, starting {OwnExe}", ownExe);
+            var processInfo = new ProcessStartInfo
+            {
+                FileName = ownExe.ToString(),
+                Arguments = "",
+            };
+            var process = Process.Start(processInfo);
+            if (process is null)
+            {
+                _logger.LogError("Failed to start main process {OwnExe}", ownExe);
+                return 1;
+            }
+            else
+            {
+                _logger.LogInformation("Started main process {OwnExe} with id {ProcessId}", ownExe, process.Id);
+            }
+
+            var st = Stopwatch.StartNew();
+            while (!syncFile.IsMainRunning)
+            {
+                await Task.Delay(100);
+                if (st.Elapsed > TimeSpan.FromSeconds(60))
+                {
+                    _logger.LogError("Main process {OwnExe} did not start", ownExe);
+                    return 1;
+                }
+            }
+                
+            await client.ExecuteCommand(startupMode.Args, AnsiConsole.Console);
+            return 0;
+        }
+    }
+
+    /// <summary>
+    /// Runs the CLI task in this process. 
+    /// </summary>
+    private static Task<int> RunCliTaskAsMain(IServiceProvider provider, StartupMode startupMode)
+    {
+        if (!startupMode.ExecuteCli)
+            return Task.FromResult(0);
+        var configurator = provider.GetRequiredService<CommandLineConfigurator>();
+        return configurator.RunAsync(startupMode.Args, new SpectreRenderer(AnsiConsole.Console), CancellationToken.None);
     }
 
     private static IHost BuildSettingsHost()
@@ -121,7 +188,7 @@ public class Program
     /// and will use the in memory database 
     /// </summary>
     private static IHost BuildHost(
-        bool slimMode,
+        StartupMode startupMode,
         TelemetrySettings telemetrySettings,
         LoggingSettings loggingSettings,
         bool isAvaloniaDesigner = false)
@@ -129,7 +196,7 @@ public class Program
         var host = new HostBuilder()
             .ConfigureServices(services =>
                 {
-                    var s = services.AddApp(telemetrySettings, slimMode: slimMode).Validate();
+                    var s = services.AddApp(telemetrySettings, startupMode: startupMode).Validate();
 
                     if (isAvaloniaDesigner)
                     {
@@ -141,13 +208,13 @@ public class Program
                     }
                 }
             )
-            .ConfigureLogging((_, builder) => AddLogging(builder, loggingSettings, isMainProcess: !slimMode))
+            .ConfigureLogging((_, builder) => AddLogging(builder, loggingSettings, startupMode))
             .Build();
 
         return host;
     }
 
-    private static void AddLogging(ILoggingBuilder loggingBuilder, LoggingSettings settings, bool isMainProcess)
+    private static void AddLogging(ILoggingBuilder loggingBuilder, LoggingSettings settings, StartupMode startupMode)
     {
         var fs = FileSystem.Shared;
         var config = new NLog.Config.LoggingConfiguration();
@@ -156,7 +223,7 @@ public class Program
         const string defaultHeader = "############ Nexus Mods App log file - ${longdate} ############";
 
         FileTarget fileTarget;
-        if (isMainProcess)
+        if (startupMode.RunAsMain)
         {
             fileTarget = new FileTarget("file")
             {
@@ -210,7 +277,14 @@ public class Program
     // ReSharper disable once UnusedMember.Global
     public static AppBuilder BuildAvaloniaApp()
     {
-        var host = BuildHost(slimMode: false, 
+        var startupMode = new StartupMode()
+        {
+            RunAsMain = true,
+            ShowUI = false,
+            Args = [],
+            OriginalArgs = [],
+        };
+        var host = BuildHost(startupMode, 
             telemetrySettings: new TelemetrySettings(), 
             LoggingSettings.CreateDefault(OSInformation.Shared),
             isAvaloniaDesigner: true);

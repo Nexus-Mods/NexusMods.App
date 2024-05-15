@@ -112,6 +112,7 @@ public class CliServer : IHostedService, IDisposable
     {
         var stream = client.GetStream();
 
+        
         var (arguments, renderer) = await ProxiedRenderer.Create(_serviceProvider, stream);
         await _configurator.RunAsync(arguments, renderer, Token);
 

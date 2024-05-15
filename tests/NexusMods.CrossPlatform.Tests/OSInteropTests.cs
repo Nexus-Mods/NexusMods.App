@@ -1,6 +1,7 @@
 using CliWrap;
 using Microsoft.Extensions.Logging;
 using NexusMods.CrossPlatform.Process;
+using NexusMods.Paths;
 using NSubstitute;
 
 namespace NexusMods.CrossPlatform.Tests;
@@ -16,7 +17,7 @@ public class OSInteropTests
         const string targetFilePath = "cmd.exe";
         var arguments = $@"/c start """" ""{url}""";
 
-        await TestWithCommand((loggerFactory, processFactory) => new OSInteropWindows(loggerFactory, processFactory), url, targetFilePath, arguments);
+        await TestWithCommand((loggerFactory, processFactory) => new OSInteropWindows(loggerFactory, processFactory, FileSystem.Shared), url, targetFilePath, arguments);
     }
 
     [Fact]
@@ -27,7 +28,7 @@ public class OSInteropTests
         const string targetFilePath = "xdg-open";
         var arguments = url.ToString();
 
-        await TestWithCommand((loggerFactory, processFactory) => new OSInteropWindows(loggerFactory, processFactory), url, targetFilePath, arguments);
+        await TestWithCommand((loggerFactory, processFactory) => new OSInteropWindows(loggerFactory, processFactory, FileSystem.Shared), url, targetFilePath, arguments);
     }
 
     [Fact]
@@ -38,7 +39,7 @@ public class OSInteropTests
         const string targetFilePath = "open";
         var arguments = url.ToString();
 
-        await TestWithCommand((loggerFactory, processFactory) => new OSInteropWindows(loggerFactory, processFactory), url, targetFilePath, arguments);
+        await TestWithCommand((loggerFactory, processFactory) => new OSInteropWindows(loggerFactory, processFactory, FileSystem.Shared), url, targetFilePath, arguments);
     }
 
     private static async Task TestWithCommand(

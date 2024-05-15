@@ -1,14 +1,8 @@
-using System;
-using System.Collections.Generic;
 using System.CommandLine;
-using System.CommandLine.Binding;
 using System.CommandLine.Builder;
 using System.CommandLine.Invocation;
 using System.CommandLine.Parsing;
-using System.Linq;
 using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.ProxyConsole.Abstractions;
 using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
@@ -16,7 +10,7 @@ using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
 namespace NexusMods.SingleProcess;
 
 /// <summary>
-/// A configurator for the commandline parser. It looks for all verb definitions (created by AddVerb) and
+/// A configurator for the commandline parser. It looks for all verb definitions (created by AddVerb)
 /// and adds them to the parser. It also adds all injected types to the binding context. The RunAsync method
 /// can be used to run the parser and execute the matching verb.
 /// </summary>
