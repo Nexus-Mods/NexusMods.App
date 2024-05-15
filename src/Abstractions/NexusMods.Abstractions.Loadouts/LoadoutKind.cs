@@ -11,11 +11,21 @@ public enum LoadoutKind : byte
     Default,
     
     /// <summary>
-    /// This is a temporary loadout that is created from the original game state
-    /// upon removal of the currently active loadout. This loadout is removed
-    /// when a 'real' loadout is applied.
+    /// This is loadout that is created from the original game state.
+    /// It has a lifetime equal to that of how long we manage an individual
+    /// game installation.
     ///
-    /// A GameInstallation should only have 1 marker loadout.
+    /// Only when a game is unmanaged do we remove the marker loadout.
     /// </summary>
     Marker,
+    
+    /// <summary>
+    /// This loadout has been deleted and is marked for garbage collection.
+    /// </summary>
+    /// <remarks>
+    ///     This is expressed as a separate loadout kind because retractions
+    ///     in MnemonicDB function as records. Storing this as a property
+    ///     allows us to therefore more efficiently delete a loadout.
+    /// </remarks>
+    Deleted,
 }

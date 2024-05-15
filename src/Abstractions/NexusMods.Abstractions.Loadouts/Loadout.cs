@@ -96,11 +96,9 @@ public static class Loadout
         foreach (var mod in loadout.Mods)
             mod.Delete(tx);
 
-        // Retract the loadout itself
-        tx.Retract(loadout.Id, Name, loadout.Name);
-        tx.Retract(loadout.Id, Installation, loadout.InstallationId);
-        tx.Retract(loadout.Id, Revision, loadout.Revision);
-        tx.Retract(loadout.Id, LoadoutKind, loadout.LoadoutKind);
+        // Retract the loadout itself by changing its kind to `Deleted`
+        // This marks the entity for Garbage Collection on next GC run.
+        LoadoutKind.Add(tx, loadout.Id, Abstractions.Loadouts.LoadoutKind.Deleted, false);
         await tx.Commit();
     }
     
@@ -212,6 +210,7 @@ public static class Loadout
 
         /// <summary>
         /// Returns true if the loadout should be visible to the user.
+        /// A non-visible loadout should be treated as if it doesn't exist.
         /// </summary>
         /// <remarks>
         /// Note(sewer), it's better to 'opt into' functionality, than opt out.

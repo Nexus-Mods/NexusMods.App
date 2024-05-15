@@ -603,7 +603,7 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
 
         // Assert
         var model = Connection.Db.Get<Loadout.Model>(initialLoadout.LoadoutId.Value);
-        model.Should().BeNull("The loadout should be deleted");
+        model.LoadoutKind.Should().Be(LoadoutKind.Deleted, "The loadout should be deleted");
 
         var currentDiskState = await _synchronizer.GetDiskState(initialLoadout.Installation);
         currentDiskState.Should().BeEquivalentTo(initialDiskState, "The game should be reverted to the initial disk state");

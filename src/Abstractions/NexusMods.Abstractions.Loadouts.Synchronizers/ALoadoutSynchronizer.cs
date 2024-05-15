@@ -992,7 +992,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         var isLastLoadout = Connection.Db.Loadouts()
             .Count(x => 
                 x.Installation.LocationsRegister[LocationId.Game].ToString() == installLocation 
-                && !x.IsMarkerLoadout()) <= 1;
+                && !x.IsVisible()) <= 1;
 
         if (isLastLoadout)
         {
@@ -1012,7 +1012,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                 The loadout being deleted is the currently active loadout.
 
                 As a 'default' reasonable behaviour, we will reset the game folder
-                to its initial state and create a 'hidden' loadout to accomodate this.
+                to its initial state by using the 'marker' loadout to accomodate this.
 
                 This is a good default for many cases:
                 
