@@ -18,7 +18,7 @@ public class SyncFile
     {
         var settings = settingsManager.Get<CliSettings>();
 
-        _sharedArray = new MultiProcessSharedArray(settings.SyncFile, itemCount: 1);
+        _sharedArray = new MultiProcessSharedArray(settings.SyncFile, itemCount: 8);
     }
 
     private readonly struct SyncFileContents
