@@ -425,8 +425,14 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             List<EntityId> addedFiles = new();
             foreach (var newFile in newFiles)
             {
-                newFile.Add(File.Loadout, prevLoadout.Id);
-                newFile.Add(File.Mod, overridesMod.Id);
+                // NOTE(erri120): allow implementations to put new files into custom mods
+                // but default to the override mod if they don't
+                if (!newFile.Contains(File.Loadout) && !newFile.Contains(File.Mod))
+                {
+                    newFile.Add(File.Loadout, prevLoadout.Id);
+                    newFile.Add(File.Mod, overridesMod.Id);
+                }
+
                 newFile.AddTo(tx);
                 addedFiles.Add(newFile.Id!.Value);
             }
