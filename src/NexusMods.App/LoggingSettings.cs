@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Settings;
@@ -43,7 +44,11 @@ public record LoggingSettings : ISettings
     /// <summary>
     /// When enabled, logs will be written to the console as well as the log file.
     /// </summary>
+    #if DEBUG
+    public bool LogToConsole { get; init; } = true;
+    #else
     public bool LogToConsole { get; init; } = false;
+    #endif
 
     public static ISettingsBuilder Configure(ISettingsBuilder settingsBuilder)
     {
