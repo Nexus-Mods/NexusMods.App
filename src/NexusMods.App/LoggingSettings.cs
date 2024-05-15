@@ -40,6 +40,11 @@ public record LoggingSettings : ISettings
     /// </summary>
     public LogLevel MinimumLevel { get; init; } = LogLevel.Debug;
 
+    /// <summary>
+    /// When enabled, logs will be written to the console as well as the log file.
+    /// </summary>
+    public bool LogToConsole { get; init; } = false;
+
     public static ISettingsBuilder Configure(ISettingsBuilder settingsBuilder)
     {
         // TODO: put in some section
@@ -62,6 +67,13 @@ public record LoggingSettings : ISettings
                         ],
                         valueToDisplayString: static logLevel => logLevel.ToString()
                     )
+                    .RequiresRestart()
+                )
+                .AddPropertyToUI(x => x.LogToConsole, propertybuilder => propertybuilder
+                    .AddToSection(sectionId)
+                    .WithDisplayName("Log to Console")
+                    .WithDescription("When enabled, logs will be written to the console as well as the log file.")
+                    .UseBooleanContainer()
                     .RequiresRestart()
                 )
             );
