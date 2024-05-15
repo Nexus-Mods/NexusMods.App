@@ -94,6 +94,8 @@ public class TextEditorPageViewModel : APageViewModel<ITextEditorPageViewModel>,
                 storedFile.Remap<File.Model>().Mod.Revise(tx);
                 await tx.Commit();
             }
+
+            IsModified = false;
         }, canSaveObservable);
 
         this.WhenActivated(disposables =>
