@@ -611,4 +611,42 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
         textureAbsPath.FileExists.Should().BeFalse("The texture file should not exist after deleting the loadout");
         meshAbsPath.FileExists.Should().BeFalse("The mesh file should not exist after deleting the loadout");
     }
+    
+    [Fact]
+    public async Task CreatingASecondLoadoutResetsTheGameFolder()
+    {
+        // Arrange
+        var firstLoadout = BaseLoadout;
+        var initialDiskState = await _synchronizer.GetDiskState(firstLoadout.Installation);
+
+        // Add a mod to the first loadout
+        await AddMod("TestMod",
+            (_texturePath.Path, "texture.dds"),
+            (_meshPath.Path, "mesh.nif"));
+
+        // Apply the first loadout
+        await _synchronizer.Apply(firstLoadout);
+
+        // Assert that the new files were deployed to disk after applying the first loadout
+        var textureAbsPath = firstLoadout.Installation.LocationsRegister.GetResolvedPath(_texturePath);
+        var meshAbsPath = firstLoadout.Installation.LocationsRegister.GetResolvedPath(_meshPath);
+        textureAbsPath.FileExists.Should().BeTrue("The texture file should exist after applying the first loadout");
+        meshAbsPath.FileExists.Should().BeTrue("The mesh file should exist after applying the first loadout");
+
+        // Act
+        // Create a second loadout
+        // This should reset our game folder to the initial state.
+        var secondLoadout = await Game.Synchronizer.CreateLoadout(Install, "Second Loadout");
+
+        // Assert
+        var secondLoadoutDiskState = await _synchronizer.GetDiskState(secondLoadout.Installation);
+
+        // Check that the second loadout's disk state matches the original initial disk state
+        secondLoadoutDiskState.Should().BeEquivalentTo(initialDiskState, 
+            "The second loadout should revert the game to the initial disk state");
+
+        // Check that the files added by the first loadout are not present in the second loadout
+        textureAbsPath.FileExists.Should().BeFalse("The texture file should not exist in the second loadout");
+        meshAbsPath.FileExists.Should().BeFalse("The mesh file should not exist in the second loadout");
+    }
 }
