@@ -957,6 +957,8 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         // Reset the game folder to initial state if making a new loadout.
         // We must do this before saving state, as Apply does a diff against
         // the last state. Which will be a state from previous loadout.
+        // Note(sewer): We can't just apply the new loadout here because we haven't ran SaveState
+        // and we can't guarantee we have a clean state without applying.
         if (isCached)
         {
             // This is a 'fast apply' operation, that avoids recomputing the file tree.
