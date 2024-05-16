@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Reactive.Subjects;
 using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.DataModel.Attributes;
 using NexusMods.MnemonicDB.Abstractions;
@@ -127,8 +128,10 @@ public class DiskStateRegistry : IDiskStateRegistry
     {
         if (_lastAppliedRevisionDictionary.TryGetValue(gameInstallation, out var lastAppliedLoadout))
         {
+            using var conn = _connection.AsOf(lastAppliedLoadout.Tx);
+            var model = conn.Get<Loadout.Model>(lastAppliedLoadout.Id.Value);
             id = lastAppliedLoadout;
-            return true;
+            return model.LoadoutKind != LoadoutKind.Deleted;
         }
 
         var diskStateTree = GetState(gameInstallation);
