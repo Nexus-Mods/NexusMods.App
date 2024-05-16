@@ -33,13 +33,8 @@ public class OSInteropLinux : AOSInterop
         // https://docs.appimage.org/packaging-guide/environment-variables.html#type-2-appimage-runtime
         // APPIMAGE: (Absolute) path to AppImage file (with symlinks resolved)
         var appImagePath = Environment.GetEnvironmentVariable("APPIMAGE", EnvironmentVariableTarget.Process);
-        var executable = appImagePath ?? Environment.ProcessPath;
-        return _fileSystem.FromUnsanitizedFullPath(FixWhitespace(executable));
-    }
-    
-    private static string FixWhitespace(string? input)
-    {
-        if (input is null) return string.Empty;
-        return input.Replace(" ", @"\ ");
+        if (appImagePath is null) return base.GetOwnExe();
+
+        return _fileSystem.FromUnsanitizedFullPath(appImagePath);
     }
 }
