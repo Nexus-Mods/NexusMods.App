@@ -22,10 +22,5 @@ public class OSInteropOSX : AOSInterop
         return Cli.Wrap("open").WithArguments(uri.ToString());
     }
 
-    /// <inheritdoc />
-    public override AbsolutePath GetOwnExe()
-    {
-        return FileSystem.Shared.FromUnsanitizedFullPath(Environment.ProcessPath!);
-    }
 
 }
