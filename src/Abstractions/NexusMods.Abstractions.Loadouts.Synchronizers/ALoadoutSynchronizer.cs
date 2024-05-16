@@ -908,9 +908,9 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         // We need to create a 'Vanilla State Loadout' for rolling back the game
         // to the original state before NMA touched it, if we don't already
         // have one.
-        var installLocation = installation.LocationsRegister[LocationId.Game].ToString();;
+        var installLocation = installation.LocationsRegister[LocationId.Game];
         if (!db.Loadouts().Any(x => 
-                x.Installation.LocationsRegister[LocationId.Game].ToString() == installLocation 
+                x.Installation.LocationsRegister[LocationId.Game] == installLocation 
                 && x.IsVanillaStateLoadout()))
         {
             await CreateVanillaStateLoadout(installation);
@@ -1017,10 +1017,10 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     {
         // Clear Initial State if this is the only loadout for the game.
         // We use folder location for this.
-        var installLocation = installation.LocationsRegister[LocationId.Game].ToString();
+        var installLocation = installation.LocationsRegister[LocationId.Game];
         var isLastLoadout = Connection.Db.Loadouts()
             .Count(x => 
-                x.Installation.LocationsRegister[LocationId.Game].ToString() == installLocation 
+                x.Installation.LocationsRegister[LocationId.Game] == installLocation 
                 && !x.IsVisible()) <= 1;
 
         if (isLastLoadout)
@@ -1196,14 +1196,14 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     private async Task ApplyVanillaStateLoadout(GameInstallation installation)
     {
         using var db = Connection.Db;
-        var installLocation = installation.LocationsRegister[LocationId.Game].ToString();
-        
+        var installLocation = installation.LocationsRegister[LocationId.Game];
+
         // Note(sewer) We should always have a vanilla state loadout, so FirstOrDefault
         // should never return null. But, if due to some issue or bug we don't,
         // this is a recoverable error. We can just create a new vanilla state loadout.
         // as that is based on the initial state of the game folder.
         var vanillaStateLoadout = db.Loadouts().FirstOrDefault(x =>
-            x.Installation.LocationsRegister[LocationId.Game].ToString() == installLocation
+            x.Installation.LocationsRegister[LocationId.Game] == installLocation
             && x.IsVanillaStateLoadout()
         ) ?? await CreateVanillaStateLoadout(installation);
 
