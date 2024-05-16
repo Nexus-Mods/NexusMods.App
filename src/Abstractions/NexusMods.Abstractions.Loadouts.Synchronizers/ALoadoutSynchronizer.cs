@@ -298,7 +298,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             if (!isUnix || !fixFileMode)
                 continue;
 
-            var ext = path.Extension.ToString();
+            var ext = path.Extension.ToString().ToLower();
             if (ext is not ("" or ".sh" or ".bin" or ".run" or ".py" or ".pl" or ".php" or ".rb" or ".out"
                 or ".elf")) continue;
 
