@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using System.Reactive;
 using AvaloniaEdit.Document;
 using NexusMods.App.UI.WorkspaceSystem;

@@ -49,7 +49,7 @@ public class TextEditorPageViewModel : APageViewModel<ITextEditorPageViewModel>,
         IRepository<StoredFile.Model> repository,
         ISettingsManager settingsManager) : base(windowManager)
     {
-        TabIcon = IconValues.FileDocumentOutline;
+        TabIcon = IconValues.FileEdit;
         TabTitle = "Text Editor";
 
         Theme = settingsManager.Get<TextEditorSettings>().ThemeName;
