@@ -45,11 +45,11 @@ public class CliSettings() : ISettings
             SyncFile = directory.Combine("NexusMods.App-sync_file.sync"),
         };
     }
-    
+
     /// <summary>
     /// The amount of time the TCPListener will pause waiting for new connections before checking if it should exit.
     /// </summary>
-    public TimeSpan ListenTimeout { get; set; } = TimeSpan.FromSeconds(5);
+    public TimeSpan ListenTimeout { get; set; } = TimeSpan.FromSeconds(1);
     
     /// <summary>
     /// If true the CLI backend will be started, otherwise it will not be started, and CLI commands will not be available.
