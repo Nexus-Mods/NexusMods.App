@@ -89,10 +89,16 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// <inheritdoc />
     public async ValueTask<FlattenedLoadout> LoadoutToFlattenedLoadout(Loadout.Model loadout)
     {
-        var dict = new Dictionary<GamePath, File.Model>();
         var sorted = await SortMods(loadout);
+        return ModsToFlattenedLoadout(sorted);
+    }
 
-        foreach (var mod in sorted)
+    private static FlattenedLoadout ModsToFlattenedLoadout(IEnumerable<Mod.Model> sorted)
+    {
+        var modArray = sorted.ToArray();
+        var numItems = modArray.Sum(mod => mod.Files.Count);
+        var dict = new Dictionary<GamePath, File.Model>(numItems);
+        foreach (var mod in modArray)
         {
             if (!mod.Enabled)
                 continue;
@@ -205,7 +211,6 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         {
             var path = item.GamePath();
 
-
             // If the file has already been handled above, skip it
             if (resultingItems.ContainsKey(path))
                 continue;
@@ -255,14 +260,14 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         {
             entry.Key.Parent.CreateDirectory();
             await using var outputStream = entry.Key.Create();
-            var hash = await WriteGeneratedFile(entry.Value, outputStream, loadout, flattenedLoadout, fileTree);
+            var hash = await WriteGeneratedFile(entry.Value, outputStream, loadout!, flattenedLoadout!, fileTree);
             if (hash == null)
             {
                 outputStream.Position = 0;
                 hash = await outputStream.HashingCopyAsync(Stream.Null, CancellationToken.None);
             }
 
-            var gamePath = loadout.Installation.LocationsRegister.ToGamePath(entry.Key);
+            var gamePath = loadout!.Installation.LocationsRegister.ToGamePath(entry.Key);
             resultingItems[gamePath] = new DiskStateEntry
             {
                 Hash = hash!.Value,
@@ -290,7 +295,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             if (!isUnix || !fixFileMode)
                 continue;
 
-            var ext = path.Extension.ToString();
+            var ext = path.Extension.ToString().ToLower();
             if (ext is not ("" or ".sh" or ".bin" or ".run" or ".py" or ".pl" or ".php" or ".rb" or ".out"
                 or ".elf")) continue;
 
@@ -532,7 +537,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         return FlattenedLoadout.Create(tree);
     }
 
-    #endregion
+#endregion
 
     #region ILoadoutSynchronizer Implementation
 
@@ -547,6 +552,11 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// <returns></returns>
     public virtual async Task<DiskStateTree> Apply(Loadout.Model loadout, bool forceSkipIngest = false)
     {
+        // Note(Sewer) If the last loadout was a vanilla state loadout, we need to
+        // skip ingest and ignore changes, since vanilla state loadouts should not be changed.
+        // (Prevent 'Needs Ingest' exception)
+        forceSkipIngest = forceSkipIngest || IsLastLoadoutAVanillaStateLoadout(loadout.Installation);
+
         var flattened = await LoadoutToFlattenedLoadout(loadout);
         var fileTree = await FlattenedLoadoutToFileTree(flattened, loadout);
         var prevState = _diskStateRegistry.GetState(loadout.Installation)!;
@@ -554,6 +564,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         diskState.LoadoutId = loadout.Id;
         diskState.TxId = loadout.Db.BasisTxId;
         await _diskStateRegistry.SaveState(loadout.Installation, diskState);
+
         return diskState;
     }
 
@@ -845,7 +856,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// </summary>
     public virtual async Task BackupNewFiles(GameInstallation installation, IEnumerable<(GamePath To, Hash Hash, Size Size)> files)
     {
-// During ingest, new files that haven't been seen before are fed into the game's syncronizer to convert a
+        // During ingest, new files that haven't been seen before are fed into the game's synchronizer to convert a
         // DiskStateEntry (hash, size, path) into some sort of AModFile. By default these are converted into a "StoredFile".
         // All StoredFile does, is say that this file is copied from the downloaded archives, that is, it's not generated
         // by any extension system.
@@ -860,7 +871,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         // TODO: This may be slow for very large games when other games/mods already exist.
         // Backup the files that are new or changed
         var archivedFiles = new ConcurrentBag<ArchivedFileEntry>();
-        await Parallel.ForEachAsync(files, async (file, cancellationToken) =>
+        await Parallel.ForEachAsync(files, async (file, _) =>
         {
             var path = installation.LocationsRegister.GetResolvedPath(file.To);
             if (await _fileStore.HaveFile(file.Hash))
@@ -893,24 +904,95 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     }
 
     /// <inheritdoc />
-    public virtual async Task<Loadout.Model> Manage(GameInstallation installation, string? suggestedName = null)
+    public virtual async Task<Loadout.Model> CreateLoadout(GameInstallation installation, string? suggestedName = null)
     {
         // Get the initial state of the game folders
         var (isCached, initialState) = await GetOrCreateInitialDiskState(installation);
         
         using var tx = Connection.BeginTransaction();
-
-        var basis = Connection.Db;
-        // Add the loadout
+        var db = Connection.Db;
+        
+        // We need to create a 'Vanilla State Loadout' for rolling back the game
+        // to the original state before NMA touched it, if we don't already
+        // have one.
+        var installLocation = installation.LocationsRegister[LocationId.Game];
+        if (!db.Loadouts().Any(x => 
+                x.Installation.LocationsRegister[LocationId.Game] == installLocation 
+                && x.IsVanillaStateLoadout()))
+        {
+            await CreateVanillaStateLoadout(installation);
+        }
+        
         var loadout = new Loadout.Model(tx)
         {
-            Db = basis, // Has to be here to the installation resolves properly
+            Db = db, // Has to be here to the installation resolves properly
             Name = suggestedName ?? $"Loadout {installation.Game.Name}",
             Installation = installation,
             Revision = 0,
         };
         
-        var gameFiles = new Mod.Model(tx)
+        var gameFiles = CreateGameFilesMod(loadout, installation, tx);
+        
+        // Backup the files
+        var filesToBackup = new List<(GamePath To, Hash Hash, Size Size)>();
+        var allStoredFileModels = new List<StoredFile.Model>();
+        foreach (var file in initialState.GetAllDescendentFiles())
+        {
+            var path = file.GamePath();
+            filesToBackup.Add((path, file.Item.Value.Hash, file.Item.Value.Size));
+            allStoredFileModels.Add(new StoredFile.Model(tx)
+            {
+                Loadout = loadout,
+                Mod = gameFiles,
+                Hash = file.Item.Value.Hash,
+                Size = file.Item.Value.Size,
+                To = path,
+            });
+        }
+        
+        await BackupNewFiles(installation, filesToBackup);
+        
+        // Commit the transaction as of this point the loadout is live
+        var result = await tx.Commit();
+        
+        // Remap the ids
+        loadout = result.Remap(loadout);
+        
+        initialState.TxId = result.NewTx;
+        initialState.LoadoutId = loadout.Id;
+
+        // Reset the game folder to initial state if making a new loadout.
+        // We must do this before saving state, as Apply does a diff against
+        // the last state. Which will be a state from previous loadout.
+        // Note(sewer): We can't just apply the new loadout here because we haven't ran SaveState
+        // and we can't guarantee we have a clean state without applying.
+        if (isCached)
+        {
+            // This is a 'fast apply' operation, that avoids recomputing the file tree.
+            // And avoids a double save-state.
+            var flattened = await LoadoutToFlattenedLoadout(loadout);
+            var prevState = _diskStateRegistry.GetState(loadout.Installation)!;
+            
+            // Note: We can downcast (remap) here because StoredFile inherits from File (base).
+            var tree = FileTree.Create(allStoredFileModels.Select(file =>
+                {
+                    var remapped = result.Remap<File.Model>(file);
+                    return KeyValuePair.Create(remapped.To, remapped);
+                }
+            ));
+            await FileTreeToDisk(tree, loadout, flattened, prevState, loadout.Installation, true);
+            
+            // Note: DiskState returned from `FileTreeToDisk` and `initialState`
+            // are the same in terms of content!!
+        }
+
+        await _diskStateRegistry.SaveState(loadout.Installation, initialState);
+        return loadout;
+    }
+
+    private Mod.Model CreateGameFilesMod(Loadout.Model loadout, GameInstallation installation, ITransaction tx)
+    {
+        return new Mod.Model(tx)
         {
             Name = "Game Files",
             Version = installation.Version.ToString(),
@@ -919,7 +1001,108 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             Loadout = loadout,
             Status = ModStatus.Installed,
         };
+    }
 
+    /// <inheritdoc />
+    public async Task UnManage(GameInstallation installation)
+    {
+        // The 'Vanilla State Loadout' contains the original state.
+        await ApplyVanillaStateLoadout(installation);
+
+        // Cleanup all of the metadata left behind for this game.
+        // All database information, including loadouts, initial game state and
+        // TODO: Garbage Collect unused files.
+
+        foreach (var loadout in Connection.Db.Loadouts().ToArray())
+            await Connection.Delete(loadout.LoadoutId);
+        
+        await _diskStateRegistry.ClearInitialState(installation);
+    }
+
+    /// <inheritdoc />
+    public async Task DeleteLoadout(GameInstallation installation, LoadoutId id)
+    {
+        // Clear Initial State if this is the only loadout for the game.
+        // We use folder location for this.
+        var installLocation = installation.LocationsRegister[LocationId.Game];
+        var isLastLoadout = Connection.Db.Loadouts()
+            .Count(x => 
+                x.Installation.LocationsRegister[LocationId.Game] == installLocation 
+                && !x.IsVisible()) <= 1;
+
+        if (isLastLoadout)
+        {
+            await UnManage(installation);
+            return;
+        }
+
+        var hasLastApplied = _diskStateRegistry.TryGetLastAppliedLoadout(installation, out var loadoutWithTxId);
+        
+        // Note(Sewer) TxId, which affects loadout revision is irrelevant here
+        // because we're deleting the loadout as a whole.
+        if (hasLastApplied && id == loadoutWithTxId.Id)
+        {
+            /*
+                Note(Sewer)
+
+                The loadout being deleted is the currently active loadout.
+
+                As a 'default' reasonable behaviour, we will reset the game folder
+                to its initial state by using the 'vanilla state' loadout to accomodate this.
+
+                This is a good default for many cases:
+                
+                - Game files are not likely to be overwritten, so this will 
+                  just end up materialising into a bunch of deletes. (Very Fast)
+                  
+                - Ensures internal consistency. i.e. 'last applied loadout' is always
+                  a valid loadout.
+                  
+                - Provides more backend flexibility (e.g. we can 'squash' the
+                  revisions at the beginning of other loadouts without consequence.)
+                  
+                - Meets user UI/UX expectations. The next loadout they navigate to
+                  won't be somehow magically applied.
+
+                We may make a setting to change the behaviour in the future,
+                via a setting to match user preferences, but for now this is the
+                default.
+            */
+
+            await ApplyVanillaStateLoadout(installation);
+        }
+
+        await Connection.Delete(id);
+    }
+
+    /// <summary>
+    ///     Creates a 'Vanilla State Loadout', which is a loadout embued with the initial
+    ///     state of the game folder.
+    ///
+    ///     This loadout is created when the last applied loadout for a game
+    ///     is deleted. And is deleted when a non-vanillastate loadout is applied.
+    ///     It should be a singleton.
+    /// </summary>
+    private async Task<Loadout.Model> CreateVanillaStateLoadout(GameInstallation installation)
+    {
+        var (_, initialState) = await GetOrCreateInitialDiskState(installation);
+
+        using var tx = Connection.BeginTransaction();
+        var db = Connection.Db;
+        var loadout = new Loadout.Model(tx)
+        {
+            Db = db, // Has to be here to the installation resolves properly
+            Name = $"Vanilla State Loadout for {installation.Game.Name}",
+            Installation = installation,
+            Revision = 0,
+            LoadoutKind = LoadoutKind.VanillaState,
+        };
+        
+        var gameFiles = CreateGameFilesMod(loadout, installation, tx);
+
+        // Backup the files
+        // 1. Because we need to backup the files for every created loadout.
+        // 2. Because in practice this is the first loadout created.
         var filesToBackup = new List<(GamePath To, Hash Hash, Size Size)>();
         foreach (var file in initialState.GetAllDescendentFiles())
         {
@@ -935,48 +1118,12 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             };
         }
         
-        // Backup the files
         await BackupNewFiles(installation, filesToBackup);
-        
-        // Commit the transaction as of this point the loadout is live
-        var result = await tx.Commit();
-        
-        // Remap the ids
-        loadout = result.Remap(loadout);
-        gameFiles = result.Remap(gameFiles);
-        
-        initialState.TxId = result.NewTx;
-        initialState.LoadoutId = loadout.Id;
+        await tx.Commit();
 
-        // Reset the game folder to initial state if making a new loadout.
-        // We must do this before saving state, as Apply does a diff against
-        // the last state. Which will be a state from previous loadout.
-        if (isCached)
-        {
-            // This is a 'fast apply' operation, that avoids recomputing the file tree.
-            // And avoids a double save-state.
-            var flattened = await LoadoutToFlattenedLoadout(loadout);
-            var prevState = _diskStateRegistry.GetState(loadout.Installation)!;
-            
-            var fileTree = FileTree.Create(gameFiles.Files.Select(file =>
-                    {
-                        var storedFile = file.Remap<StoredFile.Model>();
-                        return KeyValuePair.Create(storedFile.To, file);
-                    }
-                )
-            );
-            
-            await FileTreeToDisk(fileTree, loadout, flattened, prevState, loadout.Installation, true);
-
-            // Note: DiskState returned from `FileTreeToDisk` and `initialState`
-            // are the same in terms of content!!
-        }
-
-        await _diskStateRegistry.SaveState(loadout.Installation, initialState);
         return loadout;
     }
-
-    #endregion
+#endregion
 
     #region FlattenLoadoutToTree Methods
 
@@ -998,7 +1145,6 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         return [];
     }
 
-
     /// <summary>
     /// Sorts the mods in a loadout.
     /// </summary>
@@ -1019,8 +1165,20 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     }
     #endregion
 
-
     #region Misc Helper Functions
+    /// <summary>
+    /// Checks if the last applied loadout is a 'vanilla state' loadout.
+    /// </summary>
+    /// <param name="installation">The game installation to check.</param>
+    /// <returns>True if the last applied loadout is a vanilla state.</returns>
+    private bool IsLastLoadoutAVanillaStateLoadout(GameInstallation installation)
+    {
+        if (!_diskStateRegistry.TryGetLastAppliedLoadout(installation, out var lastApplied))
+            return false;
+
+        var db = Connection.AsOf(lastApplied.Tx);
+        return db.Get<Loadout.Model>(lastApplied.Id.Value).IsVanillaStateLoadout();
+    }
 
     /// <summary>
     /// By default this method just returns the current state of the game folders. Most of the time
@@ -1042,6 +1200,23 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         var indexedState = await _hashCache.IndexDiskState(installation);
         await _diskStateRegistry.SaveInitialState(installation, indexedState);
         return (false, indexedState);
+    }
+
+    private async Task ApplyVanillaStateLoadout(GameInstallation installation)
+    {
+        using var db = Connection.Db;
+        var installLocation = installation.LocationsRegister[LocationId.Game];
+
+        // Note(sewer) We should always have a vanilla state loadout, so FirstOrDefault
+        // should never return null. But, if due to some issue or bug we don't,
+        // this is a recoverable error. We can just create a new vanilla state loadout.
+        // as that is based on the initial state of the game folder.
+        var vanillaStateLoadout = db.Loadouts().FirstOrDefault(x =>
+            x.Installation.LocationsRegister[LocationId.Game] == installLocation
+            && x.IsVanillaStateLoadout()
+        ) ?? await CreateVanillaStateLoadout(installation);
+
+        await Apply(vanillaStateLoadout, true);
     }
     #endregion
 

@@ -49,7 +49,7 @@ where TVm : IViewModelInterface
 
     public async Task InitializeAsync()
     {
-        _loadout = await ((IGame)Install.Game).Synchronizer.Manage(Install, "Test");
+        _loadout = await ((IGame)Install.Game).Synchronizer.CreateLoadout(Install, "Test");
     }
 
     protected async Task<ModId[]> InstallMod(AbsolutePath path)

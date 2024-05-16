@@ -2,7 +2,6 @@
 using System.Reactive.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
@@ -41,6 +40,14 @@ public static class Loadout
     public static readonly ULongAttribute Revision = new(Namespace, nameof(Revision));
     
     /// <summary>
+    /// Defines the 'type' of layout that this layout represents.
+    /// Currently it is just `Default`, 'Deleted' and `VanillaState` type, with
+    /// `marker` being a special hidden loadout type that represents
+    /// a game's base state as it was added to the App.
+    /// </summary>
+    public static readonly EnumByteAttribute<LoadoutKind> LoadoutKind = new(Namespace, nameof(LoadoutKind));
+    
+    /// <summary>
     /// Retrieves all loadouts from the database.
     /// </summary>
     public static IEnumerable<Model> Loadouts(this IDb db)
@@ -68,6 +75,25 @@ public static class Loadout
             .Where(db => db.Datoms(db.BasisTxId).Any(datom => datom.E == id.Value))
             .StartWith(conn.Db)
             .Select(db => db.Get<Model>(id.Value));
+    }
+
+    /// <summary>
+    /// Retracts a loadout, performing an effective deletion.
+    /// </summary>
+    /// <param name="conn">The connection to use.</param>
+    /// <param name="loadoutId">The ID of the loadout which needs to be retracted.</param>
+    public static async Task Delete(this IConnection conn, LoadoutId loadoutId)
+    {
+        using var db = conn.Db;
+        var loadout = db.Get<Model>(loadoutId.Value);
+
+        using var tx = conn.BeginTransaction();
+
+        // Retract the loadout itself by changing its kind to `Deleted`
+        // This marks the entity for Garbage Collection on next GC run.
+        LoadoutKind.Add(tx, loadout.Id, Abstractions.Loadouts.LoadoutKind.Deleted, false);
+        loadout.Revise(tx);
+        await tx.Commit();
     }
     
     public class Model(ITransaction tx) : Entity(tx)
@@ -130,6 +156,14 @@ public static class Loadout
         /// </summary>
         public Entities<EntityIds, File.Model> Files => GetReverse<File.Model>(File.Loadout);
 
+        /// <summary>
+        /// Specifies the type of the loadout that the current loadout represents
+        /// </summary>
+        public LoadoutKind LoadoutKind 
+        {
+            get => Loadout.LoadoutKind.Get(this, 0);
+            set => Loadout.LoadoutKind.Add(this, value);
+        }
                 
         /// <summary>
         /// Gets the mod with the given id from this loadout.
@@ -158,7 +192,25 @@ public static class Loadout
                 innerTx.Add(id, Loadout.Revision, self.Revision + 1);
             });
         }
+        
+        /// <summary>
+        /// This is true if the loadout is the 'Vanilla State' loadout.
+        /// This loadout is created from the original game state and should
+        /// be a singleton for a given game. It should never be mutated outside
+        /// of ingesting game updates.
+        ///
+        /// These loadouts should not be shown in any user facing elements.
+        /// </summary>
+        public bool IsVanillaStateLoadout() => LoadoutKind == LoadoutKind.VanillaState;
 
+        /// <summary>
+        /// Returns true if the loadout should be visible to the user.
+        /// A non-visible loadout should be treated as if it doesn't exist.
+        /// </summary>
+        /// <remarks>
+        /// Note(sewer), it's better to 'opt into' functionality, than opt out.
+        /// especially, when it comes to displaying elements the user can edit.
+        /// </remarks>
+        public bool IsVisible() => LoadoutKind == LoadoutKind.Default;
     }
-
 }

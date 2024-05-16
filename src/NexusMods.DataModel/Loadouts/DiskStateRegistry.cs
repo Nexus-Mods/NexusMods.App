@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Reactive.Subjects;
 using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.DataModel.Attributes;
 using NexusMods.MnemonicDB.Abstractions;
@@ -99,21 +100,27 @@ public class DiskStateRegistry : IDiskStateRegistry
     public DiskStateTree? GetInitialState(GameInstallation installation)
     {
         var db = _connection.Db;
-        var domain = installation.Game.Domain;
-        
-        // Find item with matching domain and root.
-        // In practice it's unlikely you'd ever install more than one game at one
-        // location, but since doing this check is virtually free, we might as well.
+
         return db.FindIndexed(installation.LocationsRegister[LocationId.Game].ToString(), InitialDiskState.Root)
-            .Select(db.Get<InitialDiskState.Model>)
-            .Where(x => x.Game == domain)
-            .Select(x => x.DiskState)
+            .Select(x => db.Get<InitialDiskState.Model>(x).DiskState)
             .FirstOrDefault();
     }
 
-    public Task ClearInitialState(GameInstallation installation)
+    /// <inheritdoc />
+    public async Task ClearInitialState(GameInstallation installation)
     {
-        throw new NotImplementedException();
+        var db = _connection.Db;
+        var initialDiskState = db.FindIndexed(installation.LocationsRegister[LocationId.Game].ToString(), InitialDiskState.Root)
+            .Select(x => db.Get<InitialDiskState.Model>(x))
+            .FirstOrDefault();
+        
+        if (initialDiskState == null)
+            return;
+
+        var tx = _connection.BeginTransaction();
+        initialDiskState.Tx = tx;
+        initialDiskState.AddRetractToCurrentTx();
+        await tx.Commit();
     }
 
     /// <inheritdoc />
@@ -121,8 +128,10 @@ public class DiskStateRegistry : IDiskStateRegistry
     {
         if (_lastAppliedRevisionDictionary.TryGetValue(gameInstallation, out var lastAppliedLoadout))
         {
+            using var conn = _connection.AsOf(lastAppliedLoadout.Tx);
+            var model = conn.Get<Loadout.Model>(lastAppliedLoadout.Id.Value);
             id = lastAppliedLoadout;
-            return true;
+            return model.LoadoutKind != LoadoutKind.Deleted;
         }
 
         var diskStateTree = GetState(gameInstallation);

@@ -80,9 +80,8 @@ public interface IStandardizedLoadoutSynchronizer : ILoadoutSynchronizer
     /// <summary>
     /// Backs up any new files in the file tree.
     /// </summary>
-    Task BackupNewFiles(GameInstallation installation, IEnumerable<(GamePath To, Hash Hash, Size Size)> newFiles);
+    Task BackupNewFiles(GameInstallation installation, IEnumerable<(GamePath To, Hash Hash, Size Size)> fileTree);
     #endregion
-    
     
     #region File Helpers
     
@@ -93,5 +92,4 @@ public interface IStandardizedLoadoutSynchronizer : ILoadoutSynchronizer
 
 
 #endregion
-
 }

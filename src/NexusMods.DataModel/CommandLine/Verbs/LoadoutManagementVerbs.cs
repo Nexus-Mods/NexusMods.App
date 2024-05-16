@@ -42,7 +42,8 @@ public static class LoadoutManagementVerbs
             .AddVerb(() => ListModContents)
             .AddVerb(() => ListMods)
             .AddVerb(() => ManageGame)
-            .AddVerb(() => RenameLoadout);
+            .AddVerb(() => RenameLoadout)
+            .AddVerb(() => RemoveLoadout);
 
     [Verb("apply", "Apply the given loadout to the game folder")]
     private static async Task<int> Apply([Injected] IRenderer renderer,
@@ -157,10 +158,11 @@ public static class LoadoutManagementVerbs
     {
         var db = conn.Db;
         var rows = db.Loadouts()
+            .Where(x => x.IsVisible())
             .Select(list => new object[] { list.Name, list.Installation, list.LoadoutId, list.Mods.Count })
             .ToList();
 
-        await renderer.Table(new[] { "Name", "Game", "Id", "Mod Count" }, rows);
+        await renderer.Table(["Name", "Game", "Id", "Mod Count"], rows);
         return 0;
     }
 
@@ -211,9 +213,9 @@ public static class LoadoutManagementVerbs
         */
     }
 
-    [Verb("manage-game", "Manage a game")]
+    [Verb("manage-game", "Create a Loadout for a given game")]
     private static async Task<int> ManageGame([Injected] IRenderer renderer,
-        [Option("g", "game", "Game to manage")] IGame game,
+        [Option("g", "game", "Game to create a loadoout for")] IGame game,
         [Option("v", "version", "Version of the game to manage")] Version version,
         [Option("n", "name", "The name of the new loadout")] string name,
         [Injected] CancellationToken token)
@@ -224,9 +226,31 @@ public static class LoadoutManagementVerbs
 
         return await renderer.WithProgress(token, async () =>
         {
-            await game.Synchronizer.Manage(installation, name);
+            await game.Synchronizer.CreateLoadout(installation, name);
             return 0;
         });
     }
 
+    [Verb("remove-loadout", "Remove a loadout by its ID")]
+    private static async Task<int> RemoveLoadout(
+        [Injected] IRenderer renderer,
+        [Injected] IConnection conn,
+        [Option("l", "loadout", "Loadout to delete")] LoadoutId loadoutId,
+        [Injected] CancellationToken token)
+    {
+
+        try
+        {
+            // The loadout should be removed through the synchronizer, if it is
+            // removed via the registry only, the game may be left in an inconsistent state
+            await conn.Delete(loadoutId);
+            await renderer.Text($"Loadout {loadoutId} removed successfully");
+            return 0;
+        }
+        catch (Exception ex)
+        {
+            await renderer.Error(ex, $"Error removing loadout: {ex.Message}");
+            return -1;
+        }
+    }
 }

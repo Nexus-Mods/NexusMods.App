@@ -19,7 +19,6 @@ namespace NexusMods.DataModel.Tests;
 
 public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTests>
 {
-    protected IStandardizedLoadoutSynchronizer _synchronizer;
     private readonly Dictionary<ModId, string> _modNames = new();
     private readonly Dictionary<string, ModId> _modIdForName = new();
     private readonly Dictionary<FileId, File.Model> _pairs = new();
@@ -39,15 +38,11 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
     /// DI constructor
     /// </summary>
     /// <param name="provider"></param>
-    public ALoadoutSynchronizerTests(IServiceProvider provider) : base(provider)
-    {
-    }
+    public ALoadoutSynchronizerTests(IServiceProvider provider) : base(provider) { }
 
     public override async Task InitializeAsync()
     {
         await base.InitializeAsync();
-
-        _synchronizer = (IStandardizedLoadoutSynchronizer)Game.Synchronizer;
 
         {
             // Disable all mods
@@ -96,8 +91,8 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
     {
         // If apply is buggy, it will result in a "needs ingest" error when we try to re-apply. Because Apply
         // will have not properly updated the disk state, and it will error because the disk state is not in sync
-        await _synchronizer.Apply(BaseLoadout);
-        await _synchronizer.Apply(BaseLoadout);
+        await Synchronizer.Apply(BaseLoadout);
+        await Synchronizer.Apply(BaseLoadout);
 
         // This should not throw as the disk state should be in sync
 
@@ -106,14 +101,14 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
         await tx.Commit();
         Refresh(ref BaseLoadout);
         
-        await _synchronizer.Apply(BaseLoadout);
+        await Synchronizer.Apply(BaseLoadout);
     }
 
     
     [Fact]
     public async Task ApplyingDeletesCleansUpEmptyDirectories()
     {
-        await _synchronizer.Apply(BaseLoadout);
+        await Synchronizer.Apply(BaseLoadout);
 
         var file1 = new GamePath(LocationId.Game, "deleteMeMod/deleteMeDir1/deleteMeFile.txt");
         var path1 = Install.LocationsRegister.GetResolvedPath(file1);
@@ -127,7 +122,7 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
             (file2.Path, "deleteMeContents"));
 
         Refresh(ref BaseLoadout);
-        await _synchronizer.Apply(BaseLoadout);
+        await Synchronizer.Apply(BaseLoadout);
 
         path1.FileExists.Should().BeTrue("the file should exist");
 
@@ -139,7 +134,7 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
         }
 
         Refresh(ref BaseLoadout);
-        await _synchronizer.Apply(BaseLoadout);
+        await Synchronizer.Apply(BaseLoadout);
 
         path1.FileExists.Should().BeFalse("the file should not exist");
         path1.Parent.DirectoryExists().Should().BeFalse("the directory should not exist");
@@ -155,7 +150,7 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
     [Fact]
     public async Task CanFlattenLoadout()
     {
-        var flattened = await _synchronizer.LoadoutToFlattenedLoadout(BaseLoadout);
+        var flattened = await Synchronizer.LoadoutToFlattenedLoadout(BaseLoadout);
 
         // Game files are not included, because they are disabled in the initializer
         flattened.GetAllDescendentFiles()
@@ -204,8 +199,8 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
     [Fact]
     public async Task CanCreateFileTree()
     {
-        var flattened = await _synchronizer.LoadoutToFlattenedLoadout(BaseLoadout);
-        var fileTree = await _synchronizer.FlattenedLoadoutToFileTree(flattened, BaseLoadout);
+        var flattened = await Synchronizer.LoadoutToFlattenedLoadout(BaseLoadout);
+        var fileTree = await Synchronizer.FlattenedLoadoutToFileTree(flattened, BaseLoadout);
 
         fileTree.GetAllDescendentFiles()
             .Select(f => f.GamePath().ToString())
@@ -253,10 +248,10 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
     [Fact]
     public async Task CanWriteDiskTreeToDisk()
     {
-        var flattened = await _synchronizer.LoadoutToFlattenedLoadout(BaseLoadout);
-        var fileTree = await _synchronizer.FlattenedLoadoutToFileTree(flattened, BaseLoadout);
+        var flattened = await Synchronizer.LoadoutToFlattenedLoadout(BaseLoadout);
+        var fileTree = await Synchronizer.FlattenedLoadoutToFileTree(flattened, BaseLoadout);
         var prevState = DiskStateRegistry.GetState(BaseLoadout.Installation)!;
-        var diskState = await _synchronizer.FileTreeToDisk(fileTree, BaseLoadout, flattened, prevState, Install);
+        var diskState = await Synchronizer.FileTreeToDisk(fileTree, BaseLoadout, flattened, prevState, Install);
 
         diskState.GetAllDescendentFiles()
             .Select(f => f.GamePath().ToString())
@@ -316,7 +311,7 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
             );
 
         Refresh(ref BaseLoadout);
-        var diffTree = await _synchronizer.LoadoutToDiskDiff(BaseLoadout, prevDiskState );
+        var diffTree = await Synchronizer.LoadoutToDiskDiff(BaseLoadout, prevDiskState );
         var res = diffTree.GetAllDescendentFiles()
             .Select(node => VerifiableFile.From(node.Item.Value))
             .OrderByDescending(mod => mod.GamePath)
@@ -330,7 +325,7 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
     public async Task CanIngestDiskState()
     {
         // Apply the old state
-        await _synchronizer.Apply(BaseLoadout);
+        await Synchronizer.Apply(BaseLoadout);
 
         // Setup some paths
         var modifiedFile = new GamePath(LocationId.Game, "meshes/b.nif");
@@ -342,7 +337,7 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
         await Install.LocationsRegister.GetResolvedPath(modifiedFile).WriteAllBytesAsync(new byte[] { 0x01, 0x02, 0x03 });
         await Install.LocationsRegister.GetResolvedPath(newFile).WriteAllBytesAsync(new byte[] { 0x04, 0x05, 0x06 });
 
-        var diskState = await _synchronizer.GetDiskState(Install);
+        var diskState = await Synchronizer.GetDiskState(Install);
 
         diskState.GetAllDescendentFiles()
             .Select(f => f.GamePath().ToString())
@@ -381,7 +376,7 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
     public async Task CanIngestFileTree()
     {
         // Apply the old state
-        await _synchronizer.Apply(BaseLoadout);
+        await Synchronizer.Apply(BaseLoadout);
 
         // Setup some paths
         var modifiedFile = new GamePath(LocationId.Game, "meshes/b.nif");
@@ -393,14 +388,14 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
         await Install.LocationsRegister.GetResolvedPath(modifiedFile).WriteAllBytesAsync(new byte[] { 0x01, 0x02, 0x03 });
         await Install.LocationsRegister.GetResolvedPath(newFile).WriteAllBytesAsync(new byte[] { 0x04, 0x05, 0x06 });
 
-        var diskState = await _synchronizer.GetDiskState(Install);
+        var diskState = await Synchronizer.GetDiskState(Install);
 
         // Reconstruct the previous file tree
-        var prevFlattenedLoadout = await _synchronizer.LoadoutToFlattenedLoadout(BaseLoadout);
-        var prevFileTree = await _synchronizer.FlattenedLoadoutToFileTree(prevFlattenedLoadout, BaseLoadout);
+        var prevFlattenedLoadout = await Synchronizer.LoadoutToFlattenedLoadout(BaseLoadout);
+        var prevFileTree = await Synchronizer.FlattenedLoadoutToFileTree(prevFlattenedLoadout, BaseLoadout);
         var prevDiskState = DiskStateRegistry.GetState(BaseLoadout.Installation);
 
-        var fileTree = await _synchronizer.DiskToFileTree(diskState, BaseLoadout, prevFileTree, prevDiskState);
+        var fileTree = await Synchronizer.DiskToFileTree(diskState, BaseLoadout, prevFileTree, prevDiskState);
 
         fileTree.GetAllDescendentFiles()
             .Select(f => f.GamePath().ToString())
@@ -440,7 +435,7 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
     public async Task CanIngestFlattenedList()
     {
         // Apply the old state
-        await _synchronizer.Apply(BaseLoadout);
+        await Synchronizer.Apply(BaseLoadout);
 
         // Setup some paths
         var modifiedFile = new GamePath(LocationId.Game, "meshes/b.nif");
@@ -452,15 +447,15 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
         await Install.LocationsRegister.GetResolvedPath(modifiedFile).WriteAllBytesAsync(new byte[] { 0x01, 0x02, 0x03 });
         await Install.LocationsRegister.GetResolvedPath(newFile).WriteAllBytesAsync(new byte[] { 0x04, 0x05, 0x06 });
 
-        var diskState = await _synchronizer.GetDiskState(Install);
+        var diskState = await Synchronizer.GetDiskState(Install);
 
         // Reconstruct the previous file tree
-        var prevFlattenedLoadout = await _synchronizer.LoadoutToFlattenedLoadout(BaseLoadout);
-        var prevFileTree = await _synchronizer.FlattenedLoadoutToFileTree(prevFlattenedLoadout, BaseLoadout);
+        var prevFlattenedLoadout = await Synchronizer.LoadoutToFlattenedLoadout(BaseLoadout);
+        var prevFileTree = await Synchronizer.FlattenedLoadoutToFileTree(prevFlattenedLoadout, BaseLoadout);
         var prevDiskState = DiskStateRegistry.GetState(BaseLoadout.Installation)!;
 
-        var fileTree = await _synchronizer.DiskToFileTree(diskState, BaseLoadout, prevFileTree, prevDiskState);
-        var flattenedLoadout = await _synchronizer.FileTreeToFlattenedLoadout(fileTree, BaseLoadout, prevFlattenedLoadout);
+        var fileTree = await Synchronizer.DiskToFileTree(diskState, BaseLoadout, prevFileTree, prevDiskState);
+        var flattenedLoadout = await Synchronizer.FileTreeToFlattenedLoadout(fileTree, BaseLoadout, prevFlattenedLoadout);
 
         flattenedLoadout.GetAllDescendentFiles()
             .Select(f => f.GamePath().ToString())
@@ -506,7 +501,7 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
     [Fact]
     public async Task CanSwitchBetweenLoadouts()
     {
-        var secondLoadout = await Game.Synchronizer.Manage(Install, "Second Loadout");
+        var secondLoadout = await Game.Synchronizer.CreateLoadout(Install, "Second Loadout");
         await ApplyService.Apply(secondLoadout);
         FilesVerify(secondLoadout).Should().BeTrue();
         FilesVerify(BaseLoadout).Should().BeFalse();
@@ -537,40 +532,81 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
         // Arrange
         // Get our initial game disk state
         var initialLoadout = BaseLoadout;
-        var initialDiskState = await _synchronizer.GetDiskState(initialLoadout.Installation);
-
+        var initialDiskState = await Synchronizer.GetDiskState(initialLoadout.Installation);
+        
+        // Check that the files added by the first mod don't already exist, for sanity.
+        var textureAbsPath = initialLoadout.Installation.LocationsRegister.GetResolvedPath(_texturePath);
+        var meshAbsPath = initialLoadout.Installation.LocationsRegister.GetResolvedPath(_meshPath);
+        textureAbsPath.FileExists.Should().BeFalse("The texture file should not exist in the second loadout");
+        meshAbsPath.FileExists.Should().BeFalse("The mesh file should not exist in the second loadout");
+        
         // Add a mod to the initial loadout
         await AddMod("TestMod",
             (_texturePath.Path, "texture.dds"),
             (_meshPath.Path, "mesh.nif"));
 
         // Apply the initial loadout
-        await _synchronizer.Apply(initialLoadout);
+        await Synchronizer.Apply(initialLoadout);
 
         // Assert that the new files were deployed to disk after the first apply
-        var textureAbsPath = initialLoadout.Installation.LocationsRegister.GetResolvedPath(_texturePath);
-        var meshAbsPath = initialLoadout.Installation.LocationsRegister.GetResolvedPath(_meshPath);
         textureAbsPath.FileExists.Should().BeTrue("The texture file should exist after applying the initial loadout");
         meshAbsPath.FileExists.Should().BeTrue("The mesh file should exist after applying the initial loadout");
 
         // Act
         // Manage the game again to create a second loadout
         // This should reset our game folder to the initial state.
-        var secondLoadout = await Game.Synchronizer.Manage(Install, "Second Loadout");
+        var secondLoadout = await Synchronizer.CreateLoadout(Install, "Second Loadout");
 
         // Assert
-        var secondLoadoutDiskState = await _synchronizer.GetDiskState(secondLoadout.Installation);
+        var secondLoadoutDiskState = await Synchronizer.GetDiskState(secondLoadout.Installation);
 
         // Check that the second loadout's initial disk state matches the original initial disk state
         secondLoadoutDiskState.Should().BeEquivalentTo(initialDiskState);
 
         // Check that the second loadout only contains the original game files
-        var secondLoadoutFileTree = await _synchronizer.LoadoutToFlattenedLoadout(secondLoadout);
+        var secondLoadoutFileTree = await Synchronizer.LoadoutToFlattenedLoadout(secondLoadout);
         secondLoadoutFileTree.GetAllDescendentFiles()
             .Select(f => f.GamePath().ToString())
             .Should()
             .NotContain(_texturePath.ToString())
             .And
             .NotContain(_meshPath.ToString());
+
+        // Check that the files added by the first loadout are not present in the second loadout
+        textureAbsPath.FileExists.Should().BeFalse("The texture file should not exist in the second loadout");
+        meshAbsPath.FileExists.Should().BeFalse("The mesh file should not exist in the second loadout");
+    }
+    
+    [Fact]
+    public async Task WhenDeletingLoadout_GameIsRevertedToInitialState()
+    {
+        // Arrange
+        var initialLoadout = BaseLoadout;
+        var initialDiskState = await Synchronizer.GetDiskState(initialLoadout.Installation);
+
+        // Add a mod to the initial loadout
+        await AddMod("TestMod",
+            (_texturePath.Path, "texture.dds"),
+            (_meshPath.Path, "mesh.nif"));
+
+        await Synchronizer.Apply(initialLoadout);
+
+        var textureAbsPath = initialLoadout.Installation.LocationsRegister.GetResolvedPath(_texturePath);
+        var meshAbsPath = initialLoadout.Installation.LocationsRegister.GetResolvedPath(_meshPath);
+        textureAbsPath.FileExists.Should().BeTrue("The texture file should exist after applying the initial loadout");
+        meshAbsPath.FileExists.Should().BeTrue("The mesh file should exist after applying the initial loadout");
+
+        // Act
+        await Synchronizer.DeleteLoadout(initialLoadout.Installation, initialLoadout.LoadoutId);
+
+        // Assert
+        var model = Connection.Db.Get<Loadout.Model>(initialLoadout.LoadoutId.Value);
+        model.LoadoutKind.Should().Be(LoadoutKind.Deleted, "The loadout should be deleted");
+
+        var currentDiskState = await Synchronizer.GetDiskState(initialLoadout.Installation);
+        currentDiskState.Should().BeEquivalentTo(initialDiskState, "The game should be reverted to the initial disk state");
+
+        textureAbsPath.FileExists.Should().BeFalse("The texture file should not exist after deleting the loadout");
+        meshAbsPath.FileExists.Should().BeFalse("The mesh file should not exist after deleting the loadout");
     }
 }

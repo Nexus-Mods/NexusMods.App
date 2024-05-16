@@ -7,9 +7,9 @@ namespace NexusMods.Games.BethesdaGameStudios;
 
 public class BethesdaLoadoutSynchronizer(IServiceProvider provider) : ALoadoutSynchronizer(provider)
 {
-    public override async Task<Loadout.Model> Manage(GameInstallation installation, string? suggestedName = null)
+    public override async Task<Loadout.Model> CreateLoadout(GameInstallation installation, string? suggestedName = null)
     {
-        var loadout = await base.Manage(installation, suggestedName);
+        var loadout = await base.CreateLoadout(installation, suggestedName);
         return await FixupLoadout(loadout);
     }
 
