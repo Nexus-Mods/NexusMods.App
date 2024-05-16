@@ -7,25 +7,64 @@
     xmlns:reactive="http://reactiveui.net"
     xmlns:local="clr-namespace:NexusMods.App.UI.Pages.TextEdit"
     xmlns:avaloniaEdit="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit"
+    xmlns:grammars="clr-namespace:TextMateSharp.Grammars;assembly=TextMateSharp.Grammars"
+    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="NexusMods.App.UI.Pages.TextEdit.TextEditorPageView">
 
     <Grid RowDefinitions="Auto, *">
-        <Grid Grid.Row="0" ColumnDefinitions="*, *" Margin="4 2">
-            <Button Grid.Column="0" x:Name="SaveButton">
-                <TextBlock>Save</TextBlock>
-            </Button>
+        <Border Grid.Row="0" Classes="Toolbar" BorderThickness="0 0 0 1" BorderBrush="{StaticResource StrokeTranslucentWeakBrush}">
+            <Grid ColumnDefinitions="*, Auto" Margin="24 0">
+                <StackPanel Grid.Column="1">
+                    <TextBlock x:Name="LanguageNameText" Classes="BodyMDNormal ForegroundSubdued" HorizontalAlignment="Right" TextAlignment="Right" VerticalAlignment="Center"/>
 
-            <TextBlock Grid.Column="1" x:Name="LanguageNameText" Classes="BodyMDNormal ForegroundSubdued" HorizontalAlignment="Right" TextAlignment="Right"/>
-        </Grid>
+                    <Line/>
+
+                    <ComboBox x:Name="ThemeSelector">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate DataType="{x:Type grammars:ThemeName}">
+                                <ComboBoxItem>
+                                    <TextBlock Text="{CompiledBinding}"/>
+                                </ComboBoxItem>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+
+                    <Line/>
+
+                    <Button x:Name="CopyButton">
+                        <StackPanel>
+                            <icons:UnifiedIcon Classes="Copy" />
+                            <TextBlock Text="Copy"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button x:Name="PasteButton">
+                        <StackPanel>
+                            <icons:UnifiedIcon Classes="Paste" />
+                            <TextBlock Text="Paste"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Line/>
+
+                    <Button x:Name="SaveButton">
+                        <StackPanel>
+                            <icons:UnifiedIcon Classes="Save" />
+                            <TextBlock Text="Save"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
 
         <avaloniaEdit:TextEditor Grid.Row="1" x:Name="TextEditor"
                                  ShowLineNumbers="True"
                                  HorizontalScrollBarVisibility="Auto"
-                                 VerticalScrollBarVisibility="Visible" />
+                                 VerticalScrollBarVisibility="Visible"
+                                 Margin="24"/>
 
     </Grid>
-
 
 </reactive:ReactiveUserControl>
 

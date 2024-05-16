@@ -102,11 +102,20 @@ public static class IconValues
     // https://pictogrammers.com/library/mdi/icon/plus-circle-outline/
     public static readonly IconValue AddCircleOutline = new ProjektankerIcon("mdi-plus-circle-outline");
 
+    // https://pictogrammers.com/library/mdi/icon/content-copy/
+    public static readonly IconValue Copy = new ProjektankerIcon("mdi-content-copy");
+
+    // https://pictogrammers.com/library/mdi/icon/content-paste/
+    public static readonly IconValue Paste = new ProjektankerIcon("mdi-content-paste");
+
     // https://pictogrammers.com/library/mdi/icon/redo/
     public static readonly IconValue Redo = new ProjektankerIcon("mdi-redo");
 
     // https://pictogrammers.com/library/mdi/icon/minus-circle-outline/
     public static readonly IconValue RemoveCircleOutline = new ProjektankerIcon("mdi-minus-circle-outline");
+
+    // https://pictogrammers.com/library/mdi/icon/content-save/
+    public static readonly IconValue Save = new ProjektankerIcon("mdi-content-save");
 
     // https://pictogrammers.com/library/mdi/icon/undo/
     public static readonly IconValue Undo = new ProjektankerIcon("mdi-undo");
@@ -139,6 +148,9 @@ public static class IconValues
 
     // https://pictogrammers.com/library/mdi/icon/check-underline/
     public static readonly IconValue FolderOpen = new ProjektankerIcon("mdi-folder-open-outline");
+
+    // https://pictogrammers.com/library/mdi/icon/file-edit/
+    public static readonly IconValue FileEdit = new ProjektankerIcon("mdi-file-edit");
 
     // https://pictogrammers.com/library/mdi/icon/video-outline/
     public static readonly IconValue Video = new ProjektankerIcon("mdi-video-outline");

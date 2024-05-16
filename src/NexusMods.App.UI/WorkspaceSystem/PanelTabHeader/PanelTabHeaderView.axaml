@@ -19,13 +19,12 @@
             <StackPanel Orientation="Horizontal"
                         Classes="Spacing-2"
                         Height="52"
-                        Margin="24, 0, 24, 14">
+                        Margin="24, 0, 24, 0">
                 <StackPanel Orientation="Horizontal"
                             Classes="Spacing-1_5"
                             VerticalAlignment="Center">
                     <icons:UnifiedIcon MaxSize="18" Size="18" x:Name="Icon"/>
                     <TextBlock x:Name="TitleTextBlock"
-                               Padding="0 6 0 0"
                                Classes="BodyMDBold"
                                MaxWidth="122"
                                TextWrapping="NoWrap"
