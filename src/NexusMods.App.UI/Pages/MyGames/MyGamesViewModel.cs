@@ -55,6 +55,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
             {
                 var managedInstallations = loadoutRepository.Observable
                     .DistinctBy(model => model.Installation.LocationsRegister[LocationId.Game])
+                    .Where(x => x.IsVisible())
                     .ToObservableCollection()
                     .ToObservableChangeSet()
                     .Transform(model => model.Installation);
