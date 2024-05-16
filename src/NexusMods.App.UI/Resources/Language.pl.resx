@@ -16,10 +16,10 @@
 		<value>Aktualności</value>
 	</data>
 	<data name="MyGames" xml:space="preserve">
-		<value>Moje Gry</value>
+		<value>Moje gry</value>
 	</data>
 	<data name="BrowseGames" xml:space="preserve">
-		<value>Przeglądaj Gry</value>
+		<value>Przeglądaj gry</value>
 	</data>
 	<data name="MetricsOptIn_ALLOW" xml:space="preserve">
 		<value>ZEZWÓL</value>
@@ -55,7 +55,7 @@
 		<value>Pokaż dziennik zmian na GitHub</value>
 	</data>
 	<data name="LoadoutGridView_AddMod_FilePicker_Title" xml:space="preserve">
-		<value>Proszę wybrać plik modu do zainstalowania</value>
+		<value>Proszę wybrać plik moda do zainstalowania</value>
 	</data>
 	<data name="LoadoutGridView_AddMod_FileType_Archive" xml:space="preserve">
 		<value>Archiwum</value>
@@ -91,7 +91,7 @@
 		<value>ZAINSTALOWANE</value>
 	</data>
 	<data name="Helpers_GenerateHeader_MOD_NAME" xml:space="preserve">
-		<value>NAZWA MODU</value>
+		<value>NAZWA MODA</value>
 	</data>
 	<data name="Helpers_GenerateHeader_GAME" xml:space="preserve">
 		<value>GRA</value>
@@ -139,17 +139,17 @@
 		<value>Dodaj grę</value>
 	</data>
 	<data name="DownloadsView__DOWNLOADS" xml:space="preserve">
-		<value>POBRANE</value>
+		<value>POBIERANIE</value>
 	</data>
 	<data name="DownloadsView__In_Progress" xml:space="preserve">
-		<value>Pobierane</value>
+		<value>Pobieranie</value>
 	</data>
 	<data name="DownloadsView__Completed" xml:space="preserve">
 		<value>Ukończone</value>
 	</data>
-    <data name="DownloadStatusDesignViewModel_FormatStatus_Analyzing" xml:space="preserve">
-        <value>Analizowanie</value>
-    </data>
+	<data name="DownloadStatusDesignViewModel_FormatStatus_Analyzing" xml:space="preserve">
+		<value>Analizowanie</value>
+	</data>
 	<data name="DownloadsView__Download_history" xml:space="preserve">
 		<value>Historia pobierania</value>
 	</data>
@@ -256,206 +256,206 @@
 		<value>modów</value>
 	</data>
 	<data name="InProgress_NoDownloadsTextBlock" xml:space="preserve">
-		<value>Brak pobierań</value>
+		<value>Brak pobrań w kolejce</value>
 	</data>
 	<data name="SpineDownloadButton_ToolTip" xml:space="preserve">
-		<value>Pobrane</value>
+		<value>Pobieranie</value>
 	</data>
 	<data name="SpineHomeButton_ToolTip_Home" xml:space="preserve">
 		<value>Strona główna</value>
 	</data>
-    <data name="LoadoutGridView__View_Files" xml:space="preserve">
-        <value>Pokaż pliki modu</value>
-    </data>
-    <data name="FileTreeNodeView__View" xml:space="preserve">
-        <value>Pokaż</value>
-    </data>
-    <data name="ViewModInfoPage_Title" xml:space="preserve">
-        <value>Informacje modu</value>
-    </data>
+	<data name="LoadoutGridView__View_Files" xml:space="preserve">
+		<value>Pokaż pliki moda</value>
+	</data>
+	<data name="FileTreeNodeView__View" xml:space="preserve">
+		<value>Pokaż</value>
+	</data>
+	<data name="ViewModInfoPage_Title" xml:space="preserve">
+		<value>Informacje moda</value>
+	</data>
 	<data name="LoadoutLeftMenuViewModel_LoadoutGridEntry" xml:space="preserve">
-		<value>Moje Mody</value>
+		<value>Moje mody</value>
 	</data>
 	<data name="Downloads_WorkspaceTitle" xml:space="preserve">
-		<value>Pobrane</value>
+		<value>Pobieranie</value>
 	</data>
 	<data name="HomeWorkspace_Title" xml:space="preserve">
 		<value>Strona główna</value>
 	</data>
 	<data name="InProgressDownloadsPage_Title" xml:space="preserve">
-		<value>Pobrane</value>
-    </data>
-    <data name="ApplyControlViewModel__ACTIVATE_LOADOUT" xml:space="preserve">
-        <value>AKTYWUJ ZESTAW</value>
-    </data>
-    <data name="ApplyControlViewModel__ACTIVATE_AND_APPLY" xml:space="preserve">
-        <value>AKTYWUJ i ZASTOSUJ</value>
-    </data>
-    <data name="ApplyControlViewModel__APPLY" xml:space="preserve">
-        <value>ZASTOSUJ</value>
-    </data>
-    <data name="ApplyingControlView__ApplyingText" xml:space="preserve">
-        <value>Zastosowywanie...</value>
+		<value>Pobieranie</value>
 	</data>
-    <data name="ViewModFilesView_Location" xml:space="preserve">
-        <value>ŚCIEŻKA:</value>
-    </data>
-    <data name="ViewModFilesView_Locations" xml:space="preserve">
-        <value>ŚCIEŻKI:</value>
-    </data>
-    <data name="Helpers_ERROR" xml:space="preserve">
-        <value>BŁĄD</value>
-    </data>
-    <data name="ErrorView_Title" xml:space="preserve">
-        <value>Coś poszło nie tak</value>
-    </data>
-    <data name="ErrorView_MissingMod_Description" xml:space="preserve">
-        <value>Aplikacja nie może uzyskać dostępu do określonej modyfikacji, ponieważ została usunięta lub już nie istnieje.</value>
-    </data>
-    <data name="ViewModInfoPage_NotFound_Title" xml:space="preserve">
-        <value>Brak modu</value>
-    </data>
-    <data name="ErrorView_MissingMod_Subheader" xml:space="preserve">
-        <value>Nie znaleziono modu</value>
-    </data>
-    <data name="DiagnosticDetailsView_SeverityTitle_SUGGESTION" xml:space="preserve">
-        <value>SUGESTIA</value>
-    </data>
-    <data name="DiagnosticDetailsView_SeverityTitle_WARNING" xml:space="preserve">
-        <value>OSTRZEŻENIE</value>
-    </data>
-    <data name="DiagnosticDetailsView_SeverityTitle_CRITICAL_ERROR" xml:space="preserve">
-        <value>BŁĄD KRYTYCZNY</value>
-    </data>
-    <data name="LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics" xml:space="preserve">
-        <value>Diagnostyka</value>
-    </data>
-    <data name="DiagnosticDetailsView_SeverityTitle_HIDDEN" xml:space="preserve">
-        <value>UKRYTE</value>
-    </data>
-        <data name="DiagnosticListView_DiagnosticListView_All" xml:space="preserve">
-        <value>Wszystkie ({0})</value>
-        <comment>0 is placeholder for a number</comment>
-    </data>
-    <data name="DiagnosticListView_DiagnosticListView_Critical" xml:space="preserve">
-        <value>Krytyczne ({0})</value>
-        <comment>0 is placeholder for a number</comment>
-    </data>
-    <data name="DiagnosticListView_DiagnosticListView_Warnings" xml:space="preserve">
-        <value>Ostrzeżenia ({0})</value>
-        <comment>0 is placeholder for a number</comment>
-    </data>
-    <data name="DiagnosticListView_DiagnosticListView_Suggestions" xml:space="preserve">
-        <value>Sugestie ({0})</value>
-        <comment>0 is placeholder for a number</comment>
-    </data>
-    <data name="DiagnosticListView_DiagnosticListView_There_are_no_diagnostics" xml:space="preserve">
-        <value>Brak diagnostyki</value>
-    </data>
-    <data name="ModFileTreeViewModel_StatusBar_Files__0__1" xml:space="preserve">
-        <value>Pliki: {0} ({1})</value>
-        <comment>{0} Represents a number, {1} represents a formatted size (e.g. 12GB)</comment>
-    </data>
-    <data name="Helpers_GenerateHeader_File_Count" xml:space="preserve">
-        <value>ILOŚĆ PLIKÓW</value>
-    </data>
-    <data name="IngestButtonTextBlock_Text" xml:space="preserve">
-        <value>POZYSKAJ</value>
-    </data>
-    <data name="MyGamesView__NoGamesDetectedText" xml:space="preserve">
-        <value>Wszystkie wspierane gry zostały dodane. Nie wykryto żadnych nowych gier.</value>
-    </data>
-    <data name="MyGamesView__NoGamesManagedText" xml:space="preserve">
-        <value>Dodaj gry, aby rozpocząć modowanie</value>
-    </data>
-    <data name="GameWidget__Adding_game" xml:space="preserve">
-        <value>Dodawanie gry</value>
-    </data>
-    <data name="GameWidget__View" xml:space="preserve">
-        <value>Pokaż</value>
-    </data>
-    <data name="GameWidget__Removing_game" xml:space="preserve">
-        <value>Usuwanie gry</value>
-    </data>
-    <data name="ApplyDiff_Refresh" xml:space="preserve">
-        <value>Odśwież</value>
-    </data>
-    <data name="Helpers_GenerateHeader_State" xml:space="preserve">
-        <value>STAN</value>
-    </data>
-    <data name="IFileTreeNodeViewModel_ToFormattedChangeState_Added" xml:space="preserve">
-        <value>Dodane</value>
-    </data>
-    <data name="IFileTreeNodeViewModel_ToFormattedChangeState_Modified" xml:space="preserve">
-        <value>Zmodyfikowane</value>
-    </data>
-    <data name="IFileTreeNodeViewModel_ToFormattedChangeState_Contents_modified" xml:space="preserve">
-        <value>Zmodyfikowana zawartość</value>
-    </data>
-    <data name="IFileTreeNodeViewModel_ToFormattedChangeState_Removed" xml:space="preserve">
-        <value>Usunięte</value>
-    </data>
-    <data name="DiffTreeViewModel_StatusBar__File_Loadout_Disk" xml:space="preserve">
-        <value>Pliki: Zestaw {0} ({1})  Dysk {2} ({3})</value>
-        <comment>{0} and {2} are file counts, {1} and {3} are formatted file sizes </comment>
-    </data>
-    <data name="DiffTreeViewModel_StatusBar__Apply_changes" xml:space="preserve">
-        <value>Zastosowane zmiany: Dodane {0} Zmodyfikowane {1} Usunięte {2}</value>
-        <comment>{0}, {1} and {2} are integer representing the file counts</comment>
-    </data>
-    <data name="DiffTreeViewModel_StatusBar__Data_to_process___0_" xml:space="preserve">
-        <value>Dane do przetworzenia: {0}</value>
-        <comment>{0} is a formatted file size, representing the data to be processed </comment>
-    </data>
-    <data name="ApplyControlView_ViewApplyChanges" xml:space="preserve">
-        <value>Pokaż dodane zmiany</value>
-    </data>
-    <data name="ApplyDiffViewModel_PageTitle" xml:space="preserve">
-        <value>Podgląd zmian</value>
-    </data>
-   <data name="SettingsView_Title" xml:space="preserve">
-        <value>Ustawienia</value>
-    </data>
-    <data name="DialogButton_CANCEL" xml:space="preserve">
-        <value>ANULUJ</value>
-    </data>
-    <data name="DialogButton_SAVE" xml:space="preserve">
-        <value>ZAPISZ</value>
-    </data>
-    <data name="SettingEntryView_NeedRestartMessage" xml:space="preserve">
-        <value>Uruchom ponownie aplikację, aby zastosować ustawienia języka</value>
-    </data>
-    <data name="FileOriginsPage_AddButtonText" xml:space="preserve">
-        <value>Dodaj</value>
-    </data>
-    <data name="DialogButton_Discard" xml:space="preserve">
-        <value>ODRZUĆ</value>
-    </data>
-    <data name="ChangelogPageViewModel_ChangelogPageViewModel_Changelog" xml:space="preserve">
-        <value>Dziennik zmian</value>
-    </data>
-    <data name="DiagnosticListViewModel_DiagnosticListViewModel_Diagnostics" xml:space="preserve">
-        <value>Diagnostyka</value>
-    </data>
-    <data name="FileOriginsPageTitle" xml:space="preserve">
-        <value>Biblioteka</value>
-    </data>
-    <data name="FileOriginsPageView_NameHeader" xml:space="preserve">
-        <value>NAZWA MODU</value>
-    </data>
-    <data name="FileOriginsPageView_VersionHeader" xml:space="preserve">
-        <value>WERSJA</value>
-    </data>
-    <data name="FileOriginsPageView_SizeHeader" xml:space="preserve">
-        <value>ROZMIAR</value>
-    </data>
-    <data name="FileOriginsPageView_DownloadedHeader" xml:space="preserve">
-        <value>POBRANE</value>
-    </data>
-    <data name="FileOriginsPageView_AddedHeader" xml:space="preserve">
-        <value>DODANE</value>
-    </data>
-    <data name="FileOriginsPageView_ActionHeader" xml:space="preserve">
-        <value>AKCJE</value>
-    </data>
+	<data name="ApplyControlViewModel__ACTIVATE_LOADOUT" xml:space="preserve">
+		<value>AKTYWUJ ZESTAW</value>
+	</data>
+	<data name="ApplyControlViewModel__ACTIVATE_AND_APPLY" xml:space="preserve">
+		<value>AKTYWUJ i ZASTOSUJ</value>
+	</data>
+	<data name="ApplyControlViewModel__APPLY" xml:space="preserve">
+		<value>ZASTOSUJ</value>
+	</data>
+	<data name="ApplyingControlView__ApplyingText" xml:space="preserve">
+		<value>Zastosowywanie...</value>
+	</data>
+	<data name="ViewModFilesView_Location" xml:space="preserve">
+		<value>ŚCIEŻKA:</value>
+	</data>
+	<data name="ViewModFilesView_Locations" xml:space="preserve">
+		<value>ŚCIEŻKI:</value>
+	</data>
+	<data name="Helpers_ERROR" xml:space="preserve">
+		<value>BŁĄD</value>
+	</data>
+	<data name="ErrorView_Title" xml:space="preserve">
+		<value>Coś poszło nie tak</value>
+	</data>
+	<data name="ErrorView_MissingMod_Description" xml:space="preserve">
+		<value>Aplikacja nie może uzyskać dostępu do określonego moda, ponieważ został usunięty lub już nie istnieje.</value>
+	</data>
+	<data name="ViewModInfoPage_NotFound_Title" xml:space="preserve">
+		<value>Brak moda</value>
+	</data>
+	<data name="ErrorView_MissingMod_Subheader" xml:space="preserve">
+		<value>Nie znaleziono moda</value>
+	</data>
+	<data name="DiagnosticDetailsView_SeverityTitle_SUGGESTION" xml:space="preserve">
+		<value>SUGESTIA</value>
+	</data>
+	<data name="DiagnosticDetailsView_SeverityTitle_WARNING" xml:space="preserve">
+		<value>OSTRZEŻENIE</value>
+	</data>
+	<data name="DiagnosticDetailsView_SeverityTitle_CRITICAL_ERROR" xml:space="preserve">
+		<value>BŁĄD KRYTYCZNY</value>
+	</data>
+	<data name="LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics" xml:space="preserve">
+		<value>Diagnostyka</value>
+	</data>
+	<data name="DiagnosticDetailsView_SeverityTitle_HIDDEN" xml:space="preserve">
+		<value>UKRYTE</value>
+	</data>
+	<data name="DiagnosticListView_DiagnosticListView_All" xml:space="preserve">
+		<value>Wszystkie ({0})</value>
+		<comment>0 is placeholder for a number</comment>
+	</data>
+	<data name="DiagnosticListView_DiagnosticListView_Critical" xml:space="preserve">
+		<value>Krytyczne ({0})</value>
+		<comment>0 is placeholder for a number</comment>
+	</data>
+	<data name="DiagnosticListView_DiagnosticListView_Warnings" xml:space="preserve">
+		<value>Ostrzeżenia ({0})</value>
+		<comment>0 is placeholder for a number</comment>
+	</data>
+	<data name="DiagnosticListView_DiagnosticListView_Suggestions" xml:space="preserve">
+		<value>Sugestie ({0})</value>
+		<comment>0 is placeholder for a number</comment>
+	</data>
+	<data name="DiagnosticListView_DiagnosticListView_There_are_no_diagnostics" xml:space="preserve">
+		<value>Brak diagnostyki</value>
+	</data>
+	<data name="ModFileTreeViewModel_StatusBar_Files__0__1" xml:space="preserve">
+		<value>Pliki: {0} ({1})</value>
+		<comment>{0} Represents a number, {1} represents a formatted size (e.g. 12GB)</comment>
+	</data>
+	<data name="Helpers_GenerateHeader_File_Count" xml:space="preserve">
+		<value>ILOŚĆ PLIKÓW</value>
+	</data>
+	<data name="IngestButtonTextBlock_Text" xml:space="preserve">
+		<value>POZYSKAJ</value>
+	</data>
+	<data name="MyGamesView__NoGamesDetectedText" xml:space="preserve">
+		<value>Wszystkie wspierane gry zostały dodane. Nie wykryto żadnych nowych gier.</value>
+	</data>
+	<data name="MyGamesView__NoGamesManagedText" xml:space="preserve">
+		<value>Dodaj gry, aby rozpocząć modowanie</value>
+	</data>
+	<data name="GameWidget__Adding_game" xml:space="preserve">
+		<value>Dodawanie gry</value>
+	</data>
+	<data name="GameWidget__View" xml:space="preserve">
+		<value>Pokaż</value>
+	</data>
+	<data name="GameWidget__Removing_game" xml:space="preserve">
+		<value>Usuwanie gry</value>
+	</data>
+	<data name="ApplyDiff_Refresh" xml:space="preserve">
+		<value>Odśwież</value>
+	</data>
+	<data name="Helpers_GenerateHeader_State" xml:space="preserve">
+		<value>STAN</value>
+	</data>
+	<data name="IFileTreeNodeViewModel_ToFormattedChangeState_Added" xml:space="preserve">
+		<value>Dodane</value>
+	</data>
+	<data name="IFileTreeNodeViewModel_ToFormattedChangeState_Modified" xml:space="preserve">
+		<value>Zmodyfikowane</value>
+	</data>
+	<data name="IFileTreeNodeViewModel_ToFormattedChangeState_Contents_modified" xml:space="preserve">
+		<value>Zmodyfikowana zawartość</value>
+	</data>
+	<data name="IFileTreeNodeViewModel_ToFormattedChangeState_Removed" xml:space="preserve">
+		<value>Usunięte</value>
+	</data>
+	<data name="DiffTreeViewModel_StatusBar__File_Loadout_Disk" xml:space="preserve">
+		<value>Pliki: Zestaw {0} ({1})  Dysk {2} ({3})</value>
+		<comment>{0} and {2} are file counts, {1} and {3} are formatted file sizes </comment>
+	</data>
+	<data name="DiffTreeViewModel_StatusBar__Apply_changes" xml:space="preserve">
+		<value>Zastosowane zmiany: Dodane {0} Zmodyfikowane {1} Usunięte {2}</value>
+		<comment>{0}, {1} and {2} are integer representing the file counts</comment>
+	</data>
+	<data name="DiffTreeViewModel_StatusBar__Data_to_process___0_" xml:space="preserve">
+		<value>Dane do przetworzenia: {0}</value>
+		<comment>{0} is a formatted file size, representing the data to be processed </comment>
+	</data>
+	<data name="ApplyControlView_ViewApplyChanges" xml:space="preserve">
+		<value>Pokaż dodane zmiany</value>
+	</data>
+	<data name="ApplyDiffViewModel_PageTitle" xml:space="preserve">
+		<value>Podgląd zmian</value>
+	</data>
+	<data name="SettingsView_Title" xml:space="preserve">
+		<value>Ustawienia</value>
+	</data>
+	<data name="DialogButton_CANCEL" xml:space="preserve">
+		<value>ANULUJ</value>
+	</data>
+	<data name="DialogButton_SAVE" xml:space="preserve">
+		<value>ZAPISZ</value>
+	</data>
+	<data name="SettingEntryView_NeedRestartMessage" xml:space="preserve">
+		<value>Uruchom ponownie aplikację, aby zastosować ustawienia języka</value>
+	</data>
+	<data name="FileOriginsPage_AddButtonText" xml:space="preserve">
+		<value>Dodaj</value>
+	</data>
+	<data name="DialogButton_Discard" xml:space="preserve">
+		<value>ODRZUĆ</value>
+	</data>
+	<data name="ChangelogPageViewModel_ChangelogPageViewModel_Changelog" xml:space="preserve">
+		<value>Dziennik zmian</value>
+	</data>
+	<data name="DiagnosticListViewModel_DiagnosticListViewModel_Diagnostics" xml:space="preserve">
+		<value>Diagnostyka</value>
+	</data>
+	<data name="FileOriginsPageTitle" xml:space="preserve">
+		<value>Biblioteka</value>
+	</data>
+	<data name="FileOriginsPageView_NameHeader" xml:space="preserve">
+		<value>NAZWA MODA</value>
+	</data>
+	<data name="FileOriginsPageView_VersionHeader" xml:space="preserve">
+		<value>WERSJA</value>
+	</data>
+	<data name="FileOriginsPageView_SizeHeader" xml:space="preserve">
+		<value>ROZMIAR</value>
+	</data>
+	<data name="FileOriginsPageView_DownloadedHeader" xml:space="preserve">
+		<value>POBRANE</value>
+	</data>
+	<data name="FileOriginsPageView_AddedHeader" xml:space="preserve">
+		<value>DODANE</value>
+	</data>
+	<data name="FileOriginsPageView_ActionHeader" xml:space="preserve">
+		<value>AKCJE</value>
+	</data>
 </root>
