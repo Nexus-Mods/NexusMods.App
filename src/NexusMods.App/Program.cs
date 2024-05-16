@@ -123,6 +123,7 @@ public class Program
             {
                 FileName = ownExe.ToString(),
                 Arguments = "",
+                UseShellExecute = true,
             };
             var process = Process.Start(processInfo);
             if (process is null)
