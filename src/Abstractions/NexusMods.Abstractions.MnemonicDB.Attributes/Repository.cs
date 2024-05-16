@@ -161,7 +161,13 @@ internal class Repository<TModel> : IRepository<TModel>, IHostedService where TM
             {
                 _cache.Edit(x =>
                 {
-                    x.AddOrUpdate(dbAndE.Db.Get<TModel>(dbAndE.E));
+                    if (x.Keys.Contains(dbAndE.E))
+                    {
+                        x.Refresh(dbAndE.E);
+                    }
+                    else {
+                        x.AddOrUpdate(dbAndE.Db.Get<TModel>(dbAndE.E));
+                    }
                 });
             });
     }
