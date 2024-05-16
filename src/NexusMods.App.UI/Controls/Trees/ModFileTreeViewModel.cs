@@ -58,8 +58,11 @@ public class ModFileTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeVie
             if (!file.TryGetAsStoredFile(out var storedFile))
                 continue;
 
+            var isDeletion = file.TryGetAsDeletedFile(out _);
             _totalNumFiles++;
-            _totalSize += storedFile.Size.Value;
+            
+            if (!isDeletion)
+                _totalSize += storedFile.Size.Value;
 
             var folderName = storedFile.To.Parent;
             var parent = folderName;
@@ -68,8 +71,9 @@ public class ModFileTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeVie
                     storedFile.To,
                     folderName,
                     true,
-                    storedFile.Size.Value,
-                    0
+                    isDeletion ? 0 : storedFile.Size.Value,
+                    0,
+                    isDeletion
                 )
             );
 
@@ -78,6 +82,7 @@ public class ModFileTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeVie
             {
                 ref var item = ref CollectionsMarshal.GetValueRefOrNullRef(folderToSize, parent);
                 var exists = !Unsafe.IsNullRef(ref item);
+                // TODO: keep track of deleted files in the parent folders, to mark them as deleted if they only contain deletions 
                 if (!exists)
                 {
                     folderToSize.Add(parent, (storedFile.Size.Value, 1, parent, parent.Parent, false));

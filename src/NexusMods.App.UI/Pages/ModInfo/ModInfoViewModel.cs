@@ -12,6 +12,7 @@ using NexusMods.App.UI.Pages.ModInfo.Types;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -41,6 +42,7 @@ public class ModInfoViewModel : APageViewModel<IModInfoViewModel>, IModInfoViewM
     {
         _serviceProvider = serviceProvider;
         _conn = conn;
+        TabIcon = IconValues.Mods;
         SectionViewModel = new DummyLoadingViewModel();
         
         this.WhenActivated(delegate(CompositeDisposable dp)

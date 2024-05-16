@@ -20,6 +20,8 @@ public class FileTreeNodeViewModel : AViewModel<IFileTreeNodeViewModel>, IFileTr
     [Reactive] public FileTreeNodeIconType Icon { get; set; }
 
     public bool IsFile { get; protected init; }
+    
+    public bool IsDeletion { get; protected init; } = false;
     public string Name { get; protected init; } = string.Empty;
     public ulong FileSize { get; set; }
     public uint FileCount { get; set; }
@@ -40,7 +42,8 @@ public class FileTreeNodeViewModel : AViewModel<IFileTreeNodeViewModel>, IFileTr
         GamePath parentPath,
         bool isFile,
         ulong fileSize,
-        uint numChildFiles)
+        uint numChildFiles,
+        bool isDeletion = false)
         : this(fullPath.FileName,
             fullPath,
             parentPath,
@@ -49,6 +52,7 @@ public class FileTreeNodeViewModel : AViewModel<IFileTreeNodeViewModel>, IFileTr
             numChildFiles
         )
     {
+        IsDeletion = isDeletion;
     }
     
     public FileTreeNodeViewModel(

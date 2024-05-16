@@ -1,6 +1,7 @@
 ﻿using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.ReactiveUI;
+using NexusMods.Games.AdvancedInstaller.UI.Resources;
 using ReactiveUI;
 
 namespace NexusMods.Games.AdvancedInstaller.UI;
@@ -13,6 +14,8 @@ public partial class AdvancedInstallerWindowView : ReactiveWindow<IAdvancedInsta
 
         this.WhenActivated(disposables =>
         {
+            Title = Language.OverlayHeaderText_Advanced_Installer;
+            
             this.WhenAnyObservable(view => view.ViewModel!.UnsupportedModVM.DeclineCommand,
                     view => view.ViewModel!.AdvancedInstallerVM.FooterViewModel.CancelCommand)
                 .Do(_ => Close())

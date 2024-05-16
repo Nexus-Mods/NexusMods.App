@@ -39,6 +39,10 @@ public partial class FileTreeNodeView : ReactiveUserControl<IFileTreeNodeViewMod
     private void PopulateFromViewModel(IFileTreeNodeViewModel vm)
     {
         FileNameTextBlock.Text = vm.Name;
+        if (vm.IsDeletion)
+        {
+            FileNameTextBlock.TextDecorations = TextDecorations.Strikethrough;
+        }
 
         switch (vm.ChangeType)
         {
