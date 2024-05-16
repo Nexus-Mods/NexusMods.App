@@ -39,7 +39,7 @@ public static class Services
         
         // JWToken
         collection.AddAttributeCollection(typeof(JWTToken));
-        collection.AddRepository<JWTToken.Model>(JWTToken.AccessToken);
+        collection.AddRepository<JWTToken.Model>([JWTToken.AccessToken]);
         
         // Nexus API Key
         collection.AddAttributeCollection(typeof(ApiKey));

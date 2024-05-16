@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using Avalonia.Threading;
 using DynamicData;
 using DynamicData.Binding;
@@ -53,35 +54,35 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
         
         this.WhenActivated(d =>
             {
-                var managedInstallations = loadoutRepository.Observable
-                    .DistinctBy(model => model.Installation.LocationsRegister[LocationId.Game])
-                    .Where(x => x.IsVisible())
-                    .ToObservableCollection()
-                    .ToObservableChangeSet()
-                    .Transform(model => model.Installation);
+                var loadouts = loadoutRepository.Observable
+                    .ToObservableChangeSet();
+                var foundGames = gameRegistry.InstalledGames
+                    .ToObservableChangeSet();
+                
+                
 
                 // Managed games widgets
-                managedInstallations
+                loadouts
                     .OnUI()
-                    .Transform(install =>
+                    .Transform(loadout =>
                     {
                         var vm = provider.GetRequiredService<IGameWidgetViewModel>();
-                        vm.Installation = install;
+                        vm.Installation = loadout.Installation;
                         vm.AddGameCommand = ReactiveCommand.CreateFromTask(async () =>
                         {
                             vm.State = GameWidgetState.AddingGame;
-                            await Task.Run(async () => await ManageGame(install));
+                            await Task.Run(async () => await ManageGame(loadout.Installation));
                             vm.State = GameWidgetState.ManagedGame;
                         });
                         vm.RemoveAllLoadoutsCommand = ReactiveCommand.CreateFromTask(async () => 
                         {
                             vm.State = GameWidgetState.RemovingGame;
-                            await Task.Run(async () => await RemoveAllLoadouts(install));
+                            await Task.Run(async () => await RemoveAllLoadouts(loadout.Installation));
                             vm.State = GameWidgetState.ManagedGame;
                         });
 
                         vm.ViewGameCommand = ReactiveCommand.Create(
-                            () => { NavigateToLoadout(conn, install); }
+                            () => { NavigateToLoadout(conn, loadout); }
                         );
 
                         vm.State = GameWidgetState.ManagedGame;
@@ -91,10 +92,8 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                     .SubscribeWithErrorLogging()
                     .DisposeWith(d);
 
-                // Detected games widgets, except already managed games
-                gameRegistry.InstalledGames
-                    .ToObservableChangeSet()
-                    .Except(managedInstallations)
+                // For the games that are detected, we only want to show those that are not managed
+                foundGames.Except(loadouts.Transform(t => t.Installation))
                     .OnUI()
                     .Transform(install =>
                     {
@@ -158,18 +157,8 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
         );
     }
 
-    private void NavigateToLoadout(IConnection conn, GameInstallation installation)
+    private void NavigateToLoadout(IConnection conn, Loadout.Model loadout)
     {
-        var loadout = _applyService.GetLastAppliedLoadout(installation);
-        if (loadout is null)
-        {
-            _logger.LogError("Unable to find active loadout for  {GameName} : {InstallPath}",
-                installation.Game.Name,
-                installation.LocationsRegister[LocationId.Game]
-            );
-            return;
-        }
-
         // We can't navigate to an invisible loadout, make sure we pick a visible one.
         using var db = conn.Db;
         if (!loadout.IsVisible())

@@ -89,16 +89,10 @@ public static class Loadout
 
         using var tx = conn.BeginTransaction();
 
-        // Retract associated mods and files.
-        // Note(sewer): Technically we don't need to do this, but it will make
-        // GC easier. As the mods & files will not be pointing to a Loadout/Mod
-        // as opposed to pointing to something invalid.
-        foreach (var mod in loadout.Mods)
-            mod.Delete(tx);
-
         // Retract the loadout itself by changing its kind to `Deleted`
         // This marks the entity for Garbage Collection on next GC run.
         LoadoutKind.Add(tx, loadout.Id, Abstractions.Loadouts.LoadoutKind.Deleted, false);
+        loadout.Revise(tx);
         await tx.Commit();
     }
     

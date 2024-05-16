@@ -211,7 +211,7 @@ public static class Services
 
             // workspace system
             .AddSingleton<IWindowManager, WindowManager>()
-            .AddRepository<WindowDataAttributes.Model>(WindowDataAttributes.Data)
+            .AddRepository<WindowDataAttributes.Model>([WindowDataAttributes.Data])
             .AddAttributeCollection(typeof(WindowDataAttributes))
             .AddViewModel<WorkspaceViewModel, IWorkspaceViewModel>()
             .AddViewModel<PanelViewModel, IPanelViewModel>()
@@ -267,7 +267,7 @@ public static class Services
             .AddFileSystem()
 
             .AddRepository<DownloadAnalysis.Model>([DownloadAnalysis.NumberOfEntries, DownloadAnalysis.SuggestedName])
-            .AddRepository<StoredFile.Model>(StoredFile.Hash);
+            .AddRepository<StoredFile.Model>([StoredFile.Hash]);
     }
 
 }

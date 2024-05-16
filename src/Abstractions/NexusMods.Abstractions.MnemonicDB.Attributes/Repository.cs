@@ -5,6 +5,7 @@ using System.Reactive.Linq;
 using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Models;
 
@@ -18,13 +19,15 @@ internal class Repository<TModel> : IRepository<TModel>, IHostedService where TM
     /// <summary>
     /// DI constructor.
     /// </summary>
-    public Repository(IAttribute[] watchedAttributes, IConnection connection)
+    public Repository(IAttribute[] watchedAttributes, IConnection connection, Predicate<TModel>? filter = null)
     {
         _conn = connection;
+        _filter = filter;
         _watchedAttributes = watchedAttributes;
         
         _cache
             .Connect()
+            .Filter(IsValid)
             .Bind(out _observable)
             .Subscribe();
     }
@@ -48,6 +51,7 @@ internal class Repository<TModel> : IRepository<TModel>, IHostedService where TM
     private readonly SourceCache<TModel, EntityId> _cache = new(x => x.Id);
 
     private readonly ReadOnlyObservableCollection<TModel> _observable;
+    private readonly Predicate<TModel>? _filter;
 
     /// <inheritdoc />
     public ReadOnlyObservableCollection<TModel> Observable => _observable;
@@ -61,8 +65,7 @@ internal class Repository<TModel> : IRepository<TModel>, IHostedService where TM
 
         return
             observable
-            .Select(db => db.Get<TModel>(id))
-            .Where(IsValid);
+            .Select(db => db.Get<TModel>(id));
     }
 
     private bool IsValid(TModel model)
@@ -72,7 +75,7 @@ internal class Repository<TModel> : IRepository<TModel>, IHostedService where TM
             if (!model.Contains(attribute))
                 return false;
         }
-        return true;
+        return _filter?.Invoke(model) ?? true;
     }
 
     /// <inheritdoc />
@@ -159,9 +162,15 @@ internal class Repository<TModel> : IRepository<TModel>, IHostedService where TM
             .StartWith(All.Select(l => (Db: l.Db, E:l.Id)))
             .Subscribe(dbAndE =>
             {
+                var model = dbAndE.Db.Get<TModel>(dbAndE.E);
                 _cache.Edit(x =>
                 {
-                    if (x.Keys.Contains(dbAndE.E))
+                    if (!IsValid(model))
+                    {
+                        if (x.Keys.Contains(dbAndE.E))
+                            x.Remove(dbAndE.E);
+                    }
+                    else if (x.Keys.Contains(dbAndE.E))
                     {
                         x.Refresh(dbAndE.E);
                     }
@@ -189,13 +198,13 @@ public static class ServiceExtensions
     /// <summary>
     /// Registers a repository for a model with the given attributes.
     /// </summary>
-    public static IServiceCollection AddRepository<TModel>(this IServiceCollection collection, params IAttribute[] attributes) where TModel : Entity
+    public static IServiceCollection AddRepository<TModel>(this IServiceCollection collection, IAttribute[] attributes, Predicate<TModel>? filter = null) where TModel : Entity
     {
         if (attributes.Length == 0)
             throw new InvalidOperationException("At least one attribute must be provided when creating a repository");
         return collection
             .AddSingleton<IRepository<TModel>>(provider => 
-                new Repository<TModel>(attributes, provider.GetRequiredService<IConnection>()))
+                new Repository<TModel>(attributes, provider.GetRequiredService<IConnection>(), filter))
             .AddHostedService<Repository<TModel>>(s => (Repository<TModel>)s.GetRequiredService<IRepository<TModel>>());
     }
 }
