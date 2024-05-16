@@ -50,5 +50,11 @@ public abstract class AOSInterop : IOSInterop
     }
 
     /// <inheritdoc />
-    public abstract AbsolutePath GetOwnExe();
+    public virtual AbsolutePath GetOwnExe()
+    {
+        var processPath = Environment.ProcessPath;
+        Debug.Assert(processPath is not null);
+
+        return _fileSystem.FromUnsanitizedFullPath(processPath);
+    }
 }
