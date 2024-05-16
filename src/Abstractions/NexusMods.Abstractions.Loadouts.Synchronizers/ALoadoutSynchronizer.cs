@@ -911,7 +911,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         var installLocation = installation.LocationsRegister[LocationId.Game].ToString();;
         if (!db.Loadouts().Any(x => 
                 x.Installation.LocationsRegister[LocationId.Game].ToString() == installLocation 
-                && x.IsMarkerLoadout()))
+                && x.IsVanillaStateLoadout()))
         {
             await CreateMarkerLoadout(installation);
         }
@@ -1086,7 +1086,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             Name = $"Marker Loadout for {installation.Game.Name}",
             Installation = installation,
             Revision = 0,
-            LoadoutKind = LoadoutKind.Marker,
+            LoadoutKind = LoadoutKind.VanillaState,
         };
         
         var gameFiles = CreateGameFilesMod(loadout, installation, tx);
@@ -1166,7 +1166,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             return false;
 
         var db = Connection.AsOf(lastApplied.Tx);
-        return db.Get<Loadout.Model>(lastApplied.Id.Value).IsMarkerLoadout();
+        return db.Get<Loadout.Model>(lastApplied.Id.Value).IsVanillaStateLoadout();
     }
 
     /// <summary>
@@ -1202,7 +1202,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         // as that is based on the initial state of the game folder.
         var markerLoadout = db.Loadouts().FirstOrDefault(x =>
             x.Installation.LocationsRegister[LocationId.Game].ToString() == installLocation
-            && x.IsMarkerLoadout()
+            && x.IsVanillaStateLoadout()
         ) ?? await CreateMarkerLoadout(installation);
 
         await Apply(markerLoadout, true);

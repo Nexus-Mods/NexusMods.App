@@ -170,7 +170,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
         using var db = conn.Db;
         if (!loadout.IsVisible())
         {
-            // Note(sewer) | If we're here, last loadout was most likely a marker
+            // Note(sewer) | If we're here, last loadout was most likely a LoadoutKind.VanillaState
             loadout = db.Loadouts().First(x => x.IsVisible());
         }
 

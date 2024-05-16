@@ -41,7 +41,7 @@ public static class Loadout
     
     /// <summary>
     /// Defines the 'type' of layout that this layout represents.
-    /// Currently it is just `Default` and `Marker` type, with
+    /// Currently it is just `Default`, 'Deleted' and `VanillaState` type, with
     /// `marker` being a special hidden loadout type that represents
     /// a game's base state as it was added to the App.
     /// </summary>
@@ -200,13 +200,14 @@ public static class Loadout
         }
         
         /// <summary>
-        /// This is true if the loadout is a hidden 'Marker' loadout.
-        /// A marker loadout is created from the original game state and should
-        /// be a singleton for a given game.
+        /// This is true if the loadout is the 'Vanilla State' loadout.
+        /// This loadout is created from the original game state and should
+        /// be a singleton for a given game. It should never be mutated outside
+        /// of ingesting game updates.
         ///
-        /// Marker loadouts should not be shown in any user facing elements.
+        /// These loadouts should not be shown in any user facing elements.
         /// </summary>
-        public bool IsMarkerLoadout() => LoadoutKind == LoadoutKind.Marker;
+        public bool IsVanillaStateLoadout() => LoadoutKind == LoadoutKind.VanillaState;
 
         /// <summary>
         /// Returns true if the loadout should be visible to the user.
