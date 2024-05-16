@@ -1,4 +1,6 @@
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
+using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.ReactiveUI;
@@ -18,6 +20,12 @@ public partial class TextEditorPageView : ReactiveUserControl<ITextEditorPageVie
     {
         InitializeComponent();
 
+        var copyCommand = ReactiveCommand.Create(() => TextEditor.Copy(), this.WhenAnyValue(view => view.TextEditor.CanCopy));
+        CopyButton.Command = copyCommand;
+
+        var pasteCommand = ReactiveCommand.Create(() => TextEditor.Paste(), this.WhenAnyValue(view => view.TextEditor.CanPaste));
+        PasteButton.Command = pasteCommand;
+
         TextEditor.Options = new TextEditorOptions
         {
             EnableTextDragDrop = false,
@@ -35,6 +43,7 @@ public partial class TextEditorPageView : ReactiveUserControl<ITextEditorPageVie
         {
             Disposable.Create(textMate, x => x.Dispose()).DisposeWith(disposables);
 
+            // values from settings
             this.Bind(ViewModel, vm => vm.Theme, view => view.ThemeSelector.SelectedItem)
                 .DisposeWith(disposables);
 
@@ -44,15 +53,18 @@ public partial class TextEditorPageView : ReactiveUserControl<ITextEditorPageVie
             this.Bind(ViewModel, vm => vm.FontSize, view => view.TextEditor.FontSize)
                 .DisposeWith(disposables);
 
+            // commands for buttons
             this.BindCommand(ViewModel, vm => vm.SaveCommand, view => view.SaveButton)
                 .DisposeWith(disposables);
 
+            // misc properties
             this.OneWayBind(ViewModel, vm => vm.IsReadOnly, view => view.TextEditor.IsReadOnly)
                 .DisposeWith(disposables);
 
             this.Bind(ViewModel, vm => vm.IsModified, view => view.TextEditor.IsModified)
                 .DisposeWith(disposables);
 
+            // setting up the document
             this.WhenAnyValue(view => view.ViewModel!.Document)
                 .SubscribeWithErrorLogging(document =>
                 {
