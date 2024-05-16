@@ -51,8 +51,9 @@ public class ProtocolRegistrationWindows : IProtocolRegistration
     {
         var exePath = _osInterop.GetOwnExe();
         var osInfo = FileSystem.Shared.OS;
-        return Register(protocol, "NMA", exePath.Parent.ToNativeSeparators(osInfo), 
-            exePath.ToNativeSeparators(osInfo) + " protocol-invoke --url \"%1\"");
+        return Register(protocol, "NMA", "\""+exePath.Parent.ToNativeSeparators(osInfo) + "\"", 
+            "\""+exePath.ToNativeSeparators(osInfo)+"\"" +
+            " protocol-invoke --url \"%1\"");
     }
     
     private static RegistryKey GetClassKey(string protocol)
