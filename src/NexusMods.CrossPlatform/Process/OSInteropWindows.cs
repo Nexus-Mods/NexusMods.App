@@ -28,9 +28,4 @@ public class OSInteropWindows : AOSInterop
         return Cli.Wrap("cmd.exe").WithArguments($@"/c start """" ""{uri}""");
     }
     
-    /// <inheritdoc />
-    public override AbsolutePath GetOwnExe()
-    {
-        return _fileSystem.FromUnsanitizedFullPath(Environment.ProcessPath!);
-    }
 }
