@@ -41,6 +41,9 @@ public partial class TextEditorPageView : ReactiveUserControl<ITextEditorPageVie
             this.WhenAnyValue(view => view.ViewModel!.Theme)
                 .SubscribeWithErrorLogging(theme => textMate.SetTheme(registryOptions.LoadTheme(theme)));
 
+            this.Bind(ViewModel, vm => vm.FontSize, view => view.TextEditor.FontSize)
+                .DisposeWith(disposables);
+
             this.BindCommand(ViewModel, vm => vm.SaveCommand, view => view.SaveButton)
                 .DisposeWith(disposables);
 

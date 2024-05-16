@@ -41,6 +41,8 @@ public class TextEditorPageViewModel : APageViewModel<ITextEditorPageViewModel>,
 
     [Reactive] public ThemeName Theme { get; set; }
 
+    [Reactive] public double FontSize { get; set; }
+
     public TextEditorPageViewModel(
         ILogger<TextEditorPageViewModel> logger,
         IWindowManager windowManager,
@@ -52,7 +54,9 @@ public class TextEditorPageViewModel : APageViewModel<ITextEditorPageViewModel>,
         TabIcon = IconValues.FileEdit;
         TabTitle = "Text Editor";
 
-        Theme = settingsManager.Get<TextEditorSettings>().ThemeName;
+        var initialSettings = settingsManager.Get<TextEditorSettings>();
+        Theme = initialSettings.ThemeName;
+        FontSize = initialSettings.FontSize;
 
         _loadFileCommand = ReactiveCommand.CreateFromTask<TextEditorPageContext, ValueTuple<TextEditorPageContext, string>>(async context =>
         {
@@ -152,17 +156,23 @@ public class TextEditorPageViewModel : APageViewModel<ITextEditorPageViewModel>,
 
             settingsManager
                 .GetChanges<TextEditorSettings>()
-                .Select(settings => settings.ThemeName)
                 .OnUI()
-                .BindToVM(this, vm => vm.Theme)
+                .SubscribeWithErrorLogging(settings =>
+                {
+                    Theme = settings.ThemeName;
+                    FontSize = settings.FontSize;
+                })
                 .DisposeWith(disposables);
 
-            this.WhenAnyValue(vm => vm.Theme)
-                .SubscribeWithErrorLogging(theme =>
+            this.WhenAnyValue(vm => vm.Theme, vm => vm.FontSize)
+                // NOTE(erri120): Sample to prevent rapid changes when using scroll wheel to change font size
+                .Sample(interval: TimeSpan.FromMilliseconds(500))
+                .SubscribeWithErrorLogging(_ =>
                 {
                     settingsManager.Update<TextEditorSettings>(settings => settings with
                     {
-                        ThemeName = theme,
+                        ThemeName = Theme,
+                        FontSize = FontSize,
                     });
                 })
                 .DisposeWith(disposables);

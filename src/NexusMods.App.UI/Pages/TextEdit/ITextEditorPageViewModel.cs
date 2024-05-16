@@ -31,4 +31,6 @@ public interface ITextEditorPageViewModel : IPageViewModelInterface
     public ReactiveCommand<Unit, Unit> SaveCommand { get; }
 
     public ThemeName Theme { get; set; }
+
+    public double FontSize { get; set; }
 }
