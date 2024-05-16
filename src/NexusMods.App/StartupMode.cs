@@ -2,11 +2,29 @@ namespace NexusMods.App;
 
 public class StartupMode
 {
+    /// <summary>
+    /// The CLI arguments
+    /// </summary>
     public string[] Args { get; set; } = [];
+    
+    /// <summary>
+    /// The original unprocessed CLI arguments
+    /// </summary>
     public string[] OriginalArgs { get; set; } = [];
+    
+    /// <summary>
+    /// If true, the app will assume it is the main application and will not try to connect to another instance
+    /// </summary>
     public bool RunAsMain { get; set; } = false;
     
+    /// <summary>
+    /// If true, the app will execute the CLI commands, otherwise the arguments will be ignored
+    /// </summary>
     public bool ExecuteCli { get; set; } = false;
+    
+    /// <summary>
+    /// If true, the Avalonia UI will be shown
+    /// </summary>
     public bool ShowUI { get; set; } = true;
     
     public static StartupMode Parse(string[] args)
