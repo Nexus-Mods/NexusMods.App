@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using CliWrap;
 using Microsoft.Extensions.DependencyInjection;
@@ -55,6 +56,6 @@ public abstract class AOSInterop : IOSInterop
         var processPath = Environment.ProcessPath;
         Debug.Assert(processPath is not null);
 
-        return _fileSystem.FromUnsanitizedFullPath(processPath);
+        return FileSystem.Shared.FromUnsanitizedFullPath(processPath);
     }
 }
