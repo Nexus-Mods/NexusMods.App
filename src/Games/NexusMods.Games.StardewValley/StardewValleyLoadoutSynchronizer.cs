@@ -71,8 +71,16 @@ public class StardewValleyLoadoutSynchronizer : ALoadoutSynchronizer
         var manifestFile = db
             .Find(File.To)
             .Select(db.Get<File.Model>)
-            .Where(model => model.Contains(File.Loadout))
-            .FirstOrDefault(file => file.LoadoutId.Equals(loadout.LoadoutId) && file.To.Equals(manifestFilePath));
+            .FirstOrDefault(file =>
+            {
+                if (!file.Contains(File.Loadout)) return false;
+                if (!file.LoadoutId.Equals(loadout.LoadoutId)) return false;
+
+                if (!file.To.Equals(manifestFilePath)) return false;
+
+                if (!file.Contains(File.Mod)) return false;
+                return file.Mod.Enabled;
+            });
 
         return manifestFile?.Mod;
     }
