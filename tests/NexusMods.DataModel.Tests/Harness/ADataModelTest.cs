@@ -8,6 +8,7 @@ using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions;
@@ -43,6 +44,7 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
     protected readonly DiskStateRegistry DiskStateRegistry;
     protected readonly IToolManager ToolManager;
     protected readonly IGameRegistry GameRegistry;
+    protected IStandardizedLoadoutSynchronizer Synchronizer;
 
     protected IGame Game;
     protected GameInstallation Install;
@@ -91,7 +93,8 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
         await _host.StartAsync(Token);
         Install = GameRegistry.AllInstalledGames.First(g => g.Game is StubbedGame);
         Game = (IGame)Install.Game;
-        BaseLoadout = await Game.Synchronizer.CreateLoadout(Install, "TestLoadout_" + Guid.NewGuid());
+        Synchronizer = (IStandardizedLoadoutSynchronizer)Game.Synchronizer;
+        BaseLoadout = await Synchronizer.CreateLoadout(Install, "TestLoadout_" + Guid.NewGuid());
     }
 
     /// <summary>
