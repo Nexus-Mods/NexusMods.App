@@ -1091,6 +1091,8 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         var gameFiles = CreateGameFilesMod(loadout, installation, tx);
 
         // Backup the files
+        // 1. Because we need to backup the files for every created loadout.
+        // 2. Because in practice this is the first loadout created.
         var filesToBackup = new List<(GamePath To, Hash Hash, Size Size)>();
         foreach (var file in initialState.GetAllDescendentFiles())
         {
