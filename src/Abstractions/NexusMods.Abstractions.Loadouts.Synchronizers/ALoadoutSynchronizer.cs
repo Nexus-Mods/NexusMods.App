@@ -124,14 +124,14 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
 
 
     /// <inheritdoc />
-    public async Task<DiskStateTree> FileTreeToDisk(FileTree fileTree, Loadout.Model? loadout, FlattenedLoadout? flattenedLoadout, DiskStateTree prevState, GameInstallation installation, bool skipIngest = false)
+    public async Task<DiskStateTree> FileTreeToDisk(FileTree fileTree, Loadout.Model loadout, FlattenedLoadout flattenedLoadout, DiskStateTree prevState, GameInstallation installation, bool skipIngest = false)
     {
         // Return the new tree
         return await FileTreeToDiskImpl(fileTree, loadout, flattenedLoadout, prevState, installation, true);
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal async Task<DiskStateTree> FileTreeToDiskImpl(FileTree fileTree, Loadout.Model? loadout, FlattenedLoadout? flattenedLoadout, DiskStateTree prevState, GameInstallation installation, bool fixFileMode, bool skipIngest = false)
+    internal async Task<DiskStateTree> FileTreeToDiskImpl(FileTree fileTree, Loadout.Model loadout, FlattenedLoadout flattenedLoadout, DiskStateTree prevState, GameInstallation installation, bool fixFileMode, bool skipIngest = false)
     {
         List<KeyValuePair<GamePath, HashedEntryWithName>> toDelete = new();
         List<KeyValuePair<AbsolutePath, File.Model>> toWrite = new();
@@ -256,9 +256,6 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         }
 
         // Write the generated files (could be done in parallel)
-        if (toWrite.Count > 0 && (loadout == null || flattenedLoadout == null))
-            throw new InvalidOperationException("A valid loadout is required for creating generated files");
-        
         foreach (var entry in toWrite)
         {
             entry.Key.Parent.CreateDirectory();
