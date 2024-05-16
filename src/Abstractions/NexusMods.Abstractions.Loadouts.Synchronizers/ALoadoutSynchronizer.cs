@@ -552,7 +552,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         // Note(Sewer) If the last loadout was a vanilla state loadout, we need to
         // skip ingest and ignore changes, since vanilla state loadouts should not be changed.
         // (Prevent 'Needs Ingest' exception)
-        forceSkipIngest = forceSkipIngest || IsLastLoadoutAMarkerLoadout(loadout.Installation);
+        forceSkipIngest = forceSkipIngest || IsLastLoadoutAVanillaStateLoadout(loadout.Installation);
 
         var flattened = await LoadoutToFlattenedLoadout(loadout);
         var fileTree = await FlattenedLoadoutToFileTree(flattened, loadout);
@@ -1041,7 +1041,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                 The loadout being deleted is the currently active loadout.
 
                 As a 'default' reasonable behaviour, we will reset the game folder
-                to its initial state by using the 'marker' loadout to accomodate this.
+                to its initial state by using the 'vanilla state' loadout to accomodate this.
 
                 This is a good default for many cases:
                 
@@ -1162,7 +1162,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// </summary>
     /// <param name="installation">The game installation to check.</param>
     /// <returns>True if the last applied loadout is a vanilla state.</returns>
-    private bool IsLastLoadoutAMarkerLoadout(GameInstallation installation)
+    private bool IsLastLoadoutAVanillaStateLoadout(GameInstallation installation)
     {
         if (!_diskStateRegistry.TryGetLastAppliedLoadout(installation, out var lastApplied))
             return false;
@@ -1202,12 +1202,12 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         // should never return null. But, if due to some issue or bug we don't,
         // this is a recoverable error. We can just create a new vanilla state loadout.
         // as that is based on the initial state of the game folder.
-        var markerLoadout = db.Loadouts().FirstOrDefault(x =>
+        var vanillaStateLoadout = db.Loadouts().FirstOrDefault(x =>
             x.Installation.LocationsRegister[LocationId.Game].ToString() == installLocation
             && x.IsVanillaStateLoadout()
         ) ?? await CreateVanillaStateLoadout(installation);
 
-        await Apply(markerLoadout, true);
+        await Apply(vanillaStateLoadout, true);
     }
     #endregion
 
