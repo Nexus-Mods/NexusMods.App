@@ -11,6 +11,7 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.App.UI.Controls.GameWidget;
+using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.LoadoutGrid;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
@@ -53,8 +54,10 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
         this.WhenActivated(d =>
             {
                 var managedInstallations = loadoutRepository.Observable
+                    .DistinctBy(model => model.Installation.LocationsRegister[LocationId.Game])
+                    .ToObservableCollection()
                     .ToObservableChangeSet()
-                    .DistinctValues(model => model.Installation);
+                    .Transform(model => model.Installation);
 
                 // Managed games widgets
                 managedInstallations
