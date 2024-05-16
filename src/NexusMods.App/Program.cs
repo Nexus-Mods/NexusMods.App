@@ -72,8 +72,10 @@ public class Program
         {
             if (startupMode.RunAsMain)
             {
-                LogMessages.StartingProcess(_logger, Environment.ProcessPath, Environment.ProcessId, args);
-                
+                LogMessages.StartingProcess(_logger, Environment.ProcessPath, Environment.ProcessId,
+                    args
+                );
+
                 if (startupMode.ShowUI)
                 {
                     var task = RunCliTaskAsMain(services, startupMode);
@@ -92,12 +94,15 @@ public class Program
                 return task.Result;
             }
         }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unhandled exception");
+            return 1;
+        }
         finally
         {
             host.StopAsync().Wait(timeout: TimeSpan.FromSeconds(5));
         }
-
-        return 0;
     }
 
     private static async Task<int> RunCliTaskRemotely(IServiceProvider services, StartupMode startupMode)
