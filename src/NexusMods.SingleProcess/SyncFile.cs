@@ -24,6 +24,11 @@ public class SyncFile
     }
     
     /// <summary>
+    /// True if the main process is running
+    /// </summary>
+    public bool IsMainRunning => GetSyncInfo().Process is not null;
+    
+    /// <summary>
     /// Returns the current process and port that's stored in the sync file
     /// </summary>
     /// <returns></returns>

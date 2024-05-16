@@ -1,4 +1,5 @@
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -35,7 +36,7 @@ public class OAuth
     private readonly HttpClient _http;
     private readonly IOSInterop _os;
     private readonly IIDGenerator _idGenerator;
-    private readonly IMessageConsumer<NXMUrlMessage> _nxmUrlMessages;
+    private readonly Subject<NXMOAuthUrl> _nxmUrlMessages;
     private readonly IActivityFactory _activityFactory;
 
     /// <summary>
@@ -45,7 +46,6 @@ public class OAuth
         HttpClient http,
         IIDGenerator idGenerator,
         IOSInterop os,
-        IMessageConsumer<NXMUrlMessage> nxmUrlMessages,
         IActivityFactory activityFactory)
     {
         _logger = logger;
@@ -53,7 +53,7 @@ public class OAuth
         _os = os;
         _idGenerator = idGenerator;
         _activityFactory = activityFactory;
-        _nxmUrlMessages = nxmUrlMessages;
+        _nxmUrlMessages = new Subject<NXMOAuthUrl>();
     }
 
     /// <summary>
@@ -75,9 +75,9 @@ public class OAuth
         var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
         // Start listening first, otherwise we might miss the message
-        var codeTask = _nxmUrlMessages.Messages
-            .Where(url => url.Value.UrlType == NXMUrlType.OAuth && url.Value.OAuth.State == state)
-            .Select(url => url.Value.OAuth.Code)
+        var codeTask = _nxmUrlMessages
+            .Where(oauth => oauth.State == state)
+            .Select(url => url.OAuth.Code)
             .Where(code => code is not null)
             .Select(code => code!)
             .ToAsyncEnumerable()
@@ -93,6 +93,14 @@ public class OAuth
         var code = await codeTask;
 
         return await AuthorizeToken(codeVerifier, code, cancellationToken);
+    }
+    
+    /// <summary>
+    /// Add a new url as a response to an OAuth request
+    /// </summary>
+    public void AddUrl(NXMOAuthUrl url)
+    {
+        _nxmUrlMessages.OnNext(url);
     }
 
     private IActivitySource CreateJob(Uri url)
@@ -129,7 +137,7 @@ public class OAuth
             { "client_id", OAuthClientId },
             { "redirect_uri", OAuthRedirectUrl },
             { "code", code },
-            { "code_verifier", verifier }
+            { "code_verifier", verifier },
         };
 
         var content = new FormUrlEncodedContent(request);

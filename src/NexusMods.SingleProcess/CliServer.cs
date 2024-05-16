@@ -112,7 +112,9 @@ public class CliServer : IHostedService, IDisposable
     {
         var stream = client.GetStream();
 
+        
         var (arguments, renderer) = await ProxiedRenderer.Create(_serviceProvider, stream);
+        _logger.LogDebug("Received command: {Command}", string.Join(" ", arguments));
         await _configurator.RunAsync(arguments, renderer, Token);
 
         client.Dispose();
@@ -156,8 +158,8 @@ public class CliServer : IHostedService, IDisposable
     public void Dispose()
     {
         if (!_started) return;
+        _started = false;
         _cancellationTokenSource.Dispose();
         _tcpListener?.Dispose();
-        _listenerTask?.Dispose();
     }
 }
