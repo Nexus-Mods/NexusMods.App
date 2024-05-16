@@ -158,8 +158,8 @@ public class CliServer : IHostedService, IDisposable
     public void Dispose()
     {
         if (!_started) return;
+        _started = false;
         _cancellationTokenSource.Dispose();
         _tcpListener?.Dispose();
-        _listenerTask?.Dispose();
     }
 }
