@@ -60,6 +60,9 @@
             <icons:UnifiedIcon Classes="Game" />
             <icons:UnifiedIcon Classes="Undo" />
             <icons:UnifiedIcon Classes="Redo" />
+            <icons:UnifiedIcon Classes="Save" />
+            <icons:UnifiedIcon Classes="Copy" />
+            <icons:UnifiedIcon Classes="Paste" />
             <icons:UnifiedIcon Classes="AddCircle" />
             <icons:UnifiedIcon Classes="AlertCircle" />
             <icons:UnifiedIcon Classes="AlertOctagon" />
@@ -76,6 +79,7 @@
             <icons:UnifiedIcon Classes="JoystickGameFilled" />
             <icons:UnifiedIcon Classes="ModLibrary" />
             <icons:UnifiedIcon Classes="ListFilled" />
+            <icons:UnifiedIcon Classes="FileEdit"/>
             
         </WrapPanel>
     </Design.PreviewWith>
@@ -306,6 +310,18 @@
         <Setter Property="Value" Value="{x:Static icons:IconValues.Game}"/>
     </Style>
 
+    <Style Selector="icons|UnifiedIcon.Save">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.Save}"/>
+    </Style>
+
+    <Style Selector="icons|UnifiedIcon.Copy">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.Copy}"/>
+    </Style>
+
+    <Style Selector="icons|UnifiedIcon.Paste">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.Paste}"/>
+    </Style>
+
     <Style Selector="icons|UnifiedIcon.Undo">
         <Setter Property="Value" Value="{x:Static icons:IconValues.Undo}"/>
     </Style>
@@ -378,5 +394,9 @@
     
     <Style Selector="icons|UnifiedIcon.ListFilled">
         <Setter Property="Value" Value="{x:Static icons:IconValues.ListFilled}"/>
+    </Style>
+
+    <Style Selector="icons|UnifiedIcon.ListFilled">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.FileEdit}"/>
     </Style>
 </Styles>

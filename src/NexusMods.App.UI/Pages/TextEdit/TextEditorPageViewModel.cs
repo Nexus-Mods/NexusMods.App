@@ -10,6 +10,8 @@ using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
+using NexusMods.Abstractions.Settings;
+using NexusMods.App.UI.Settings;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Hashing.xxHash64;
@@ -18,6 +20,7 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using TextMateSharp.Grammars;
 using File = NexusMods.Abstractions.Loadouts.Files.File;
 
 namespace NexusMods.App.UI.Pages.TextEdit;
@@ -36,15 +39,24 @@ public class TextEditorPageViewModel : APageViewModel<ITextEditorPageViewModel>,
     public ReactiveCommand<Unit, Unit> SaveCommand { get; }
     private readonly ReactiveCommand<TextEditorPageContext, ValueTuple<TextEditorPageContext, string>> _loadFileCommand;
 
+    [Reactive] public ThemeName Theme { get; set; }
+
+    [Reactive] public double FontSize { get; set; }
+
     public TextEditorPageViewModel(
         ILogger<TextEditorPageViewModel> logger,
         IWindowManager windowManager,
         IFileStore fileStore,
         IConnection connection,
-        IRepository<StoredFile.Model> repository) : base(windowManager)
+        IRepository<StoredFile.Model> repository,
+        ISettingsManager settingsManager) : base(windowManager)
     {
-        TabIcon = IconValues.FileDocumentOutline;
+        TabIcon = IconValues.FileEdit;
         TabTitle = "Text Editor";
+
+        var initialSettings = settingsManager.Get<TextEditorSettings>();
+        Theme = initialSettings.ThemeName;
+        FontSize = initialSettings.FontSize;
 
         _loadFileCommand = ReactiveCommand.CreateFromTask<TextEditorPageContext, ValueTuple<TextEditorPageContext, string>>(async context =>
         {
@@ -139,6 +151,29 @@ public class TextEditorPageViewModel : APageViewModel<ITextEditorPageViewModel>,
                     };
 
                     Document = document;
+                })
+                .DisposeWith(disposables);
+
+            settingsManager
+                .GetChanges<TextEditorSettings>()
+                .OnUI()
+                .SubscribeWithErrorLogging(settings =>
+                {
+                    Theme = settings.ThemeName;
+                    FontSize = settings.FontSize;
+                })
+                .DisposeWith(disposables);
+
+            this.WhenAnyValue(vm => vm.Theme, vm => vm.FontSize)
+                // NOTE(erri120): Sample to prevent rapid changes when using scroll wheel to change font size
+                .Sample(interval: TimeSpan.FromMilliseconds(500))
+                .SubscribeWithErrorLogging(_ =>
+                {
+                    settingsManager.Update<TextEditorSettings>(settings => settings with
+                    {
+                        ThemeName = Theme,
+                        FontSize = FontSize,
+                    });
                 })
                 .DisposeWith(disposables);
         });
