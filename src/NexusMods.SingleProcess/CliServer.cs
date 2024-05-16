@@ -114,6 +114,7 @@ public class CliServer : IHostedService, IDisposable
 
         
         var (arguments, renderer) = await ProxiedRenderer.Create(_serviceProvider, stream);
+        _logger.LogDebug("Received command: {Command}", string.Join(" ", arguments));
         await _configurator.RunAsync(arguments, renderer, Token);
 
         client.Dispose();

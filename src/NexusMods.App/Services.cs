@@ -7,7 +7,6 @@ using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.Activities;
-using NexusMods.App.Listeners;
 using NexusMods.App.UI;
 using NexusMods.CLI;
 using NexusMods.CrossPlatform;
@@ -41,11 +40,6 @@ namespace NexusMods.App;
 
 public static class Services
 {
-    public static IServiceCollection AddListeners(this IServiceCollection services)
-    {
-        services.AddSingleton<NxmRpcListener>();
-        return services;
-    }
 
     public static IServiceCollection AddApp(this IServiceCollection services,
         TelemetrySettings? telemetrySettings = null,
@@ -95,7 +89,6 @@ public static class Services
                 .AddAdvancedHttpDownloader()
                 .AddTestHarness()
                 .AddSingleton<HttpClient>()
-                .AddListeners()
                 .AddFileSystem()
                 .AddDownloaders();
 

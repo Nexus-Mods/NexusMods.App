@@ -9,10 +9,8 @@ using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.App.BuildInfo;
-using NexusMods.App.Listeners;
 using NexusMods.App.UI;
 using NexusMods.CrossPlatform.Process;
-using NexusMods.CrossPlatform.ProtocolRegistration;
 using NexusMods.DataModel;
 using NexusMods.Paths;
 using NexusMods.ProxyConsole;
@@ -78,7 +76,6 @@ public class Program
                 
                 if (startupMode.ShowUI)
                 {
-                    services.GetRequiredService<NxmRpcListener>();
                     var task = RunCliTaskAsMain(services, startupMode);
                     Startup.Main(services, []);
                     return task.Result;

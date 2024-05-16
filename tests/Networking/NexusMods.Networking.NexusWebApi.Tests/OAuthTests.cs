@@ -58,7 +58,7 @@ public class OAuthTests
         #endregion
 
         #region Execution
-        var oauth = new OAuth(_logger, httpClient, idGen, os, _consumer, _activityFactory);
+        var oauth = new OAuth(_logger, httpClient, idGen, os, _activityFactory);
         var tokenTask = oauth.AuthorizeRequest(CancellationToken.None);
 
         await _producer.Write(new NXMUrlMessage { Value = NXMUrl.Parse($"nxm://oauth/callback?state={stateId}&code=code") }, CancellationToken.None);
@@ -97,7 +97,7 @@ public class OAuthTests
         #endregion
 
         #region Execution
-        var oauth = new OAuth(_logger, httpClient, idGen, os, _consumer, _activityFactory);
+        var oauth = new OAuth(_logger, httpClient, idGen, os, _activityFactory);
         var token = await oauth.RefreshToken("refresh_token", CancellationToken.None);
         #endregion
 
@@ -134,7 +134,7 @@ public class OAuthTests
         #endregion
 
         #region Execution
-        var oauth = new OAuth(_logger, httpClient, idGen, os, _consumer, _activityFactory);
+        var oauth = new OAuth(_logger, httpClient, idGen, os, _activityFactory);
         Func<Task> call = () => oauth.AuthorizeRequest(CancellationToken.None);
         var tokenTask = call.Should().ThrowAsync<JsonException>();
 
@@ -160,7 +160,7 @@ public class OAuthTests
         #endregion
 
         #region Execution
-        var oauth = new OAuth(_logger, httpClient, idGen, os, _consumer, _activityFactory);
+        var oauth = new OAuth(_logger, httpClient, idGen, os, _activityFactory);
         Func<Task> call = () => oauth.AuthorizeRequest(cts.Token);
         var task = call.Should().ThrowAsync<OperationCanceledException>();
         cts.Cancel();
