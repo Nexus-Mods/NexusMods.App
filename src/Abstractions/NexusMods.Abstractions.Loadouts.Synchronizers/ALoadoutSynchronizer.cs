@@ -549,8 +549,8 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// <returns></returns>
     public virtual async Task<DiskStateTree> Apply(Loadout.Model loadout, bool forceSkipIngest = false)
     {
-        // Note(Sewer) If the last loadout was a marker loadout, we need to
-        // skip ingest and ignore changes, since marker loadouts should not be changed.
+        // Note(Sewer) If the last loadout was a vanilla state loadout, we need to
+        // skip ingest and ignore changes, since vanilla state loadouts should not be changed.
         // (Prevent 'Needs Ingest' exception)
         forceSkipIngest = forceSkipIngest || IsLastLoadoutAMarkerLoadout(loadout.Installation);
 
@@ -905,7 +905,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         using var tx = Connection.BeginTransaction();
         var db = Connection.Db;
         
-        // We need to create a 'Marker Loadout' for rolling back the game
+        // We need to create a 'Vanilla State Loadout' for rolling back the game
         // to the original state before NMA touched it, if we don't already
         // have one.
         var installLocation = installation.LocationsRegister[LocationId.Game].ToString();;
@@ -913,7 +913,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                 x.Installation.LocationsRegister[LocationId.Game].ToString() == installLocation 
                 && x.IsVanillaStateLoadout()))
         {
-            await CreateMarkerLoadout(installation);
+            await CreateVanillaStateLoadout(installation);
         }
         
         var loadout = new Loadout.Model(tx)
@@ -999,8 +999,8 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// <inheritdoc />
     public async Task UnManage(GameInstallation installation)
     {
-        // The 'Marker Loadout' contains the original state.
-        await ApplyMarkerLoadout(installation);
+        // The 'Vanilla State Loadout' contains the original state.
+        await ApplyVanillaStateLoadout(installation);
 
         // Cleanup all of the metadata left behind for this game.
         // All database information, including loadouts, initial game state and
@@ -1062,21 +1062,21 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                 default.
             */
 
-            await ApplyMarkerLoadout(installation);
+            await ApplyVanillaStateLoadout(installation);
         }
 
         await Connection.Delete(id);
     }
 
     /// <summary>
-    ///     Creates a 'Marker Loadout', which is a loadout embued with the initial
+    ///     Creates a 'Vanilla State Loadout', which is a loadout embued with the initial
     ///     state of the game folder.
     ///
     ///     This loadout is created when the last applied loadout for a game
-    ///     is deleted. And is deleted when a non-marker loadout is applied.
+    ///     is deleted. And is deleted when a non-vanillastate loadout is applied.
     ///     It should be a singleton.
     /// </summary>
-    private async Task<Loadout.Model> CreateMarkerLoadout(GameInstallation installation)
+    private async Task<Loadout.Model> CreateVanillaStateLoadout(GameInstallation installation)
     {
         var (_, initialState) = await GetOrCreateInitialDiskState(installation);
 
@@ -1085,7 +1085,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         var loadout = new Loadout.Model(tx)
         {
             Db = db, // Has to be here to the installation resolves properly
-            Name = $"Marker Loadout for {installation.Game.Name}",
+            Name = $"Vanilla State Loadout for {installation.Game.Name}",
             Installation = installation,
             Revision = 0,
             LoadoutKind = LoadoutKind.VanillaState,
@@ -1158,10 +1158,10 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
 
     #region Misc Helper Functions
     /// <summary>
-    /// Checks if the last applied loadout is a 'marker' loadout.
+    /// Checks if the last applied loadout is a 'vanilla state' loadout.
     /// </summary>
     /// <param name="installation">The game installation to check.</param>
-    /// <returns>True if the last applied loadout is a marker loadout.</returns>
+    /// <returns>True if the last applied loadout is a vanilla state.</returns>
     private bool IsLastLoadoutAMarkerLoadout(GameInstallation installation)
     {
         if (!_diskStateRegistry.TryGetLastAppliedLoadout(installation, out var lastApplied))
@@ -1193,19 +1193,19 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         return (false, indexedState);
     }
 
-    private async Task ApplyMarkerLoadout(GameInstallation installation)
+    private async Task ApplyVanillaStateLoadout(GameInstallation installation)
     {
         using var db = Connection.Db;
         var installLocation = installation.LocationsRegister[LocationId.Game].ToString();
         
-        // Note(sewer) We should always have a marker loadout, so FirstOrDefault
+        // Note(sewer) We should always have a vanilla state loadout, so FirstOrDefault
         // should never return null. But, if due to some issue or bug we don't,
-        // this is a recoverable error. We can just create a new marker loadout.
+        // this is a recoverable error. We can just create a new vanilla state loadout.
         // as that is based on the initial state of the game folder.
         var markerLoadout = db.Loadouts().FirstOrDefault(x =>
             x.Installation.LocationsRegister[LocationId.Game].ToString() == installLocation
             && x.IsVanillaStateLoadout()
-        ) ?? await CreateMarkerLoadout(installation);
+        ) ?? await CreateVanillaStateLoadout(installation);
 
         await Apply(markerLoadout, true);
     }
