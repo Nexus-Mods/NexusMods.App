@@ -39,9 +39,11 @@ public class ProtocolRegistrationLinux : IProtocolRegistration
             protocol,
             friendlyName: $"{BaseId}-{protocol}.desktop",
             workingDirectory: executable.Directory,
-            commandLine: $"{executable} protocol-invoke --url %u"
+            commandLine: $"{EscapeWhitespaceForCli(executable)} protocol-invoke --url %u"
         );
     }
+
+    private static string EscapeWhitespaceForCli(AbsolutePath path) => path.ToString().Replace(" ", @"\ ");
 
     /// <inheritdoc/>
     public async Task<string?> Register(string protocol, string friendlyName, string workingDirectory, string commandLine)
