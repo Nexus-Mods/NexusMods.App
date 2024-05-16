@@ -9,6 +9,7 @@ public static class ServiceExtensions
     {
         return serviceCollection
             .AddSettings<LoadoutGridSettings>()
-            .AddSettings<LanguageSettings>();
+            .AddSettings<LanguageSettings>()
+            .AddSettings<TextEditorSettings>();
     }
 }

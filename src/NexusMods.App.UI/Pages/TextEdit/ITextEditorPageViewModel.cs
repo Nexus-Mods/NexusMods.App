@@ -1,7 +1,9 @@
+using System.Collections.ObjectModel;
 using System.Reactive;
 using AvaloniaEdit.Document;
 using NexusMods.App.UI.WorkspaceSystem;
 using ReactiveUI;
+using TextMateSharp.Grammars;
 
 namespace NexusMods.App.UI.Pages.TextEdit;
 
@@ -28,4 +30,6 @@ public interface ITextEditorPageViewModel : IPageViewModelInterface
     public TextDocument? Document { get; set; }
 
     public ReactiveCommand<Unit, Unit> SaveCommand { get; }
+
+    public ThemeName Theme { get; set; }
 }

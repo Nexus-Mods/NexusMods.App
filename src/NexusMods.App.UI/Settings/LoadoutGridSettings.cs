@@ -1,12 +1,13 @@
+using JetBrains.Annotations;
 using NexusMods.Abstractions.Settings;
 
 namespace NexusMods.App.UI.Settings;
 
 public record LoadoutGridSettings : ISettings
 {
-    public bool ShowGameFiles { get; set; }
+    public bool ShowGameFiles { get; [UsedImplicitly] set; }
 
-    public bool ShowOverride { get; set; }
+    public bool ShowOverride { get; [UsedImplicitly] set; }
 
     public static ISettingsBuilder Configure(ISettingsBuilder settingsBuilder)
     {

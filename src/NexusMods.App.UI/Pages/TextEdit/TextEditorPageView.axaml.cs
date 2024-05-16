@@ -23,11 +23,21 @@ public partial class TextEditorPageView : ReactiveUserControl<ITextEditorPageVie
         };
 
         var registryOptions = new RegistryOptions(ThemeName.Dark);
+        var allThemes = Enum.GetValues<ThemeName>();
+        ThemeSelector.ItemsSource = allThemes;
+        ThemeSelector.SelectedItem = ThemeName.Dark;
+
         var textMate = TextEditor.InstallTextMate(registryOptions);
 
         this.WhenActivated(disposables =>
         {
             Disposable.Create(textMate, x => x.Dispose()).DisposeWith(disposables);
+
+            this.Bind(ViewModel, vm => vm.Theme, view => view.ThemeSelector.SelectedItem)
+                .DisposeWith(disposables);
+
+            this.WhenAnyValue(view => view.ViewModel!.Theme)
+                .SubscribeWithErrorLogging(theme => textMate.SetTheme(registryOptions.LoadTheme(theme)));
 
             this.BindCommand(ViewModel, vm => vm.SaveCommand, view => view.SaveButton)
                 .DisposeWith(disposables);
