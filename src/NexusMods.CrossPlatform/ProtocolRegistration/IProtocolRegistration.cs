@@ -1,3 +1,5 @@
+using NexusMods.Paths;
+
 namespace NexusMods.CrossPlatform.ProtocolRegistration;
 
 /// <summary>

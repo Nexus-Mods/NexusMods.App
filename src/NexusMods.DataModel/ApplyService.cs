@@ -105,6 +105,8 @@ public class ApplyService : IApplyService
         {
             return null;
         }
+
+        if (lastId == default(LoadoutWithTxId)) return null;
         
         var db = _conn.AsOf(lastId.Tx);
         return db.Get(lastId.Id);

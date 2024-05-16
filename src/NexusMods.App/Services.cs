@@ -7,7 +7,6 @@ using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.Activities;
-using NexusMods.App.Listeners;
 using NexusMods.App.UI;
 using NexusMods.CLI;
 using NexusMods.CrossPlatform;
@@ -41,18 +40,14 @@ namespace NexusMods.App;
 
 public static class Services
 {
-    public static IServiceCollection AddListeners(this IServiceCollection services)
-    {
-        services.AddSingleton<NxmRpcListener>();
-        return services;
-    }
 
     public static IServiceCollection AddApp(this IServiceCollection services,
         TelemetrySettings? telemetrySettings = null,
         bool addStandardGameLocators = true,
-        bool slimMode = false)
+        StartupMode? startupMode = null)
     {
-        if (!slimMode)
+        startupMode ??= new StartupMode();
+        if (startupMode.RunAsMain)
         {
             services
                 .AddSettings<TelemetrySettings>()
@@ -94,7 +89,6 @@ public static class Services
                 .AddAdvancedHttpDownloader()
                 .AddTestHarness()
                 .AddSingleton<HttpClient>()
-                .AddListeners()
                 .AddFileSystem()
                 .AddDownloaders();
 
@@ -104,6 +98,7 @@ public static class Services
         else
         {
             services.AddFileSystem()
+                .AddCrossPlatform()
                 .AddSingleProcess(Mode.Client)
                 .AddDefaultRenderers()
                 .AddSettingsManager();

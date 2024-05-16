@@ -145,8 +145,8 @@ public class DiskStateRegistry : IDiskStateRegistry
             return false;
         }
         
-        _lastAppliedRevisionDictionary[gameInstallation] = lastAppliedLoadout;
         id = new LoadoutWithTxId { Id = LoadoutId.From(diskStateTree.LoadoutId), Tx = diskStateTree.TxId };
+        _lastAppliedRevisionDictionary[gameInstallation] = id;
         return true;
     }
     

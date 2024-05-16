@@ -1,5 +1,6 @@
 using CliWrap;
 using Microsoft.Extensions.Logging;
+using NexusMods.Paths;
 
 namespace NexusMods.CrossPlatform.Process;
 
@@ -20,4 +21,6 @@ public class OSInteropOSX : AOSInterop
     {
         return Cli.Wrap("open").WithArguments(uri.ToString());
     }
+
+
 }

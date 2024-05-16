@@ -11,6 +11,7 @@ using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Games.StardewValley.Emitters;
 using NexusMods.Games.StardewValley.Installers;
 using NexusMods.Paths;
@@ -102,4 +103,9 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
     ];
 
     public override List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations) => ModInstallDestinationHelpers.GetCommonLocations(locations);
+
+    protected override IStandardizedLoadoutSynchronizer MakeSynchronizer(IServiceProvider provider)
+    {
+        return new StardewValleyLoadoutSynchronizer(provider);
+    }
 }

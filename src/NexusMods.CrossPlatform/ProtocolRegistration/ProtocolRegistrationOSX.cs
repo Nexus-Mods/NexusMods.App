@@ -1,3 +1,5 @@
+using NexusMods.Paths;
+
 namespace NexusMods.CrossPlatform.ProtocolRegistration;
 
 /// <summary>
@@ -10,7 +12,7 @@ public class ProtocolRegistrationOSX : IProtocolRegistration
     {
         throw new NotImplementedException();
     }
-
+    
     /// <inheritdoc />
     public Task<string?> Register(string protocol, string friendlyName, string workingDirectory, string commandLine)
     {

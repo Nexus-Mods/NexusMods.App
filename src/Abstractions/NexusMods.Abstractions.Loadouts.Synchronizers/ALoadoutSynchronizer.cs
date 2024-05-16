@@ -430,8 +430,14 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             List<EntityId> addedFiles = new();
             foreach (var newFile in newFiles)
             {
-                newFile.Add(File.Loadout, prevLoadout.Id);
-                newFile.Add(File.Mod, overridesMod.Id);
+                // NOTE(erri120): allow implementations to put new files into custom mods
+                // but default to the override mod if they don't
+                if (!newFile.Contains(File.Loadout) && !newFile.Contains(File.Mod))
+                {
+                    newFile.Add(File.Loadout, prevLoadout.Id);
+                    newFile.Add(File.Mod, overridesMod.Id);
+                }
+
                 newFile.AddTo(tx);
                 addedFiles.Add(newFile.Id!.Value);
             }
@@ -586,13 +592,9 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         return newLoadout;
     }
 
-
-    private async Task<Loadout.Model> AddChangedFilesToLoadout(Loadout.Model loadout, TempEntity[] newFiles)
+    protected Mod.Model GetOrCreateOverridesMod(Loadout.Model loadout, ITransaction tx)
     {
         var overridesMod = loadout.Mods.FirstOrDefault(m => m.Category == ModCategory.Overrides);
-        
-        using var tx = Connection.BeginTransaction();
-        
         overridesMod ??= new Mod.Model(tx)
         {
             Loadout = loadout,
@@ -600,7 +602,15 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             Name = "Overrides",
             Enabled = true,
         };
-        
+
+        return overridesMod;
+    }
+
+    protected virtual async Task<Loadout.Model> AddChangedFilesToLoadout(Loadout.Model loadout, TempEntity[] newFiles)
+    {
+        using var tx = Connection.BeginTransaction();
+        var overridesMod = GetOrCreateOverridesMod(loadout, tx);
+
         foreach (var newFile in newFiles)
         {
             newFile.Add(File.Loadout, loadout.Id);

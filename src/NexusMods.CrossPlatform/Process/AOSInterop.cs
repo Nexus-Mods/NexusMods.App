@@ -1,7 +1,9 @@
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using CliWrap;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.Paths;
 
 namespace NexusMods.CrossPlatform.Process;
 
@@ -46,5 +48,14 @@ public abstract class AOSInterop : IOSInterop
         {
             _logger.LogError(e, "Exception while opening `{Uri}`", url);
         }
+    }
+
+    /// <inheritdoc />
+    public virtual AbsolutePath GetOwnExe()
+    {
+        var processPath = Environment.ProcessPath;
+        Debug.Assert(processPath is not null);
+
+        return FileSystem.Shared.FromUnsanitizedFullPath(processPath);
     }
 }

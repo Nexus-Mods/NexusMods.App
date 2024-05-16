@@ -1,4 +1,6 @@
-﻿namespace NexusMods.CrossPlatform.Process;
+﻿using NexusMods.Paths;
+
+namespace NexusMods.CrossPlatform.Process;
 
 /// <summary>
 /// abstractions for functionality that has no platform independent implementation in .NET
@@ -13,4 +15,9 @@ public interface IOSInterop
     /// <param name="fireAndForget">Start the process but don't wait for the completion</param>
     /// <param name="cancellationToken">Cancellation token</param>
     Task OpenUrl(Uri url, bool fireAndForget = false, CancellationToken cancellationToken = default);
+    
+    /// <summary>
+    /// Get the path to the current executable
+    /// </summary>
+    AbsolutePath GetOwnExe();
 }

@@ -21,7 +21,12 @@ public class Startup
         path.CreateDirectory();
 
         services.AddUniversalGameLocator<Cyberpunk2077>(new Version("1.61"))
-                .AddApp()
+                .AddApp(startupMode: new StartupMode()
+                {
+                    ShowUI = false,
+                    ExecuteCli = false,
+                    RunAsMain = true,
+                })
                 .OverrideSettingsForTests<DataModelSettings>(settings => settings with
                 {
                     UseInMemoryDataModel = true,
