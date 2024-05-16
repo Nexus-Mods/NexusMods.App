@@ -76,6 +76,7 @@ public class OAuth
 
         // Start listening first, otherwise we might miss the message
         var codeTask = _nxmUrlMessages
+            .Where(oauth => oauth.State == state)
             .Select(url => url.OAuth.Code)
             .Where(code => code is not null)
             .Select(code => code!)
@@ -136,7 +137,7 @@ public class OAuth
             { "client_id", OAuthClientId },
             { "redirect_uri", OAuthRedirectUrl },
             { "code", code },
-            { "code_verifier", verifier }
+            { "code_verifier", verifier },
         };
 
         var content = new FormUrlEncodedContent(request);
