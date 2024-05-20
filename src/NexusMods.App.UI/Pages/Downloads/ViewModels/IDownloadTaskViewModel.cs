@@ -23,6 +23,11 @@ public interface IDownloadTaskViewModel : IViewModelInterface
     /// e.g. 'Skyrim'
     /// </summary>
     public string Game { get; }
+    
+    /// <summary>
+    /// Total size in humanized string format.
+    /// </summary>
+    public string HumanizedSize { get; }
 
     /// <summary>
     /// e.g. 'Downloading'

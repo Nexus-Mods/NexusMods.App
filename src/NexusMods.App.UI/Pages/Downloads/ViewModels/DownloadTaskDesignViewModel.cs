@@ -1,3 +1,4 @@
+using Humanizer.Bytes;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.Downloaders.Interfaces;
 
@@ -9,6 +10,7 @@ public class DownloadTaskDesignViewModel : AViewModel<IDownloadTaskViewModel>, I
     public string Name { get; set; } = "Design Mod";
     public string Version { get; set; } = "1.0.0";
     public string Game { get; set; } = "Unknown Game";
+    public string HumanizedSize => ByteSize.FromBytes(SizeBytes).ToString();
     public DownloadTaskStatus Status { get; set; } = DownloadTaskStatus.Idle;
 
     public EntityId TaskId { get; set; } = EntityId.From(1024);

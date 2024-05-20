@@ -154,7 +154,7 @@
                                                 Binding="{CompiledBinding Game}" />
                             <!-- TODO: Humanize the size -->
                             <DataGridTextColumn Header="SIZE"
-                                                Binding="{CompiledBinding SizeBytes}" />
+                                                Binding="{CompiledBinding HumanizedSize}" />
                             <!-- TODO: Add Downloaded DateTime data to vm -->
                             <DataGridTextColumn Header="DOWNLOADED" />
 
