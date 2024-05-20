@@ -10,6 +10,7 @@ using JetBrains.Annotations;
 using LiveChartsCore;
 using LiveChartsCore.Defaults;
 using LiveChartsCore.SkiaSharpView;
+using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.Controls.DownloadGrid;
 using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadGameName;
@@ -26,6 +27,7 @@ using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.Downloaders.Interfaces;
+using NexusMods.Networking.Downloaders.Tasks.State;
 using NexusMods.Paths;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -154,7 +156,8 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
             .FilterOnObservable((item, key) =>
                 {
                     return item.WhenAnyValue(v => v.Status)
-                        .Select(s => s == DownloadTaskStatus.Completed);
+                        .Select(s => s == DownloadTaskStatus.Completed 
+                        && !item.IsHidden());
                 }
             )
             .DisposeMany()
@@ -331,6 +334,20 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
         {
             if (task.Status == DownloadTaskStatus.Paused)
                 task.Resume();
+        }
+    }
+    
+    private async Task HideTasks(IEnumerable<IDownloadTaskViewModel> downloads)
+    {
+        var dls = downloads
+            .Where(x => x.Status == DownloadTaskStatus.Completed)
+            .ToArray();
+        if (dls.Length == 0)
+            return;
+        
+        foreach (var dl in dls)
+        {
+            // dl.Task.PersistentState.Remap<CompletedDownloadState.Model>().IsHidden = true;
         }
     }
 

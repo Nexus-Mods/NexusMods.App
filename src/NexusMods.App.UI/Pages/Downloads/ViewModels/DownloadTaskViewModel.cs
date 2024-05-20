@@ -1,3 +1,4 @@
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Humanizer;
@@ -76,6 +77,7 @@ public class DownloadTaskViewModel : AViewModel<IDownloadTaskViewModel>, IDownlo
         });
     }
 
+    public IDownloadTask Task => _task;
     [Reactive] public string Name { get; set; } = "";
 
     [Reactive] public string Version { get; set; } = "";
@@ -94,7 +96,16 @@ public class DownloadTaskViewModel : AViewModel<IDownloadTaskViewModel>, IDownlo
     [Reactive] public long SizeBytes { get; set; }
 
     [Reactive] public long Throughput { get; set; }
-
+    
+    public bool IsHidden()
+    {
+        return _task.PersistentState.Status.Equals(DownloadTaskStatus.Completed) 
+               && _task.PersistentState.Remap<CompletedDownloadState.Model>().IsHidden;
+    }
+    public ReactiveCommand<Unit, Unit> HideCommand { get; set; } = ReactiveCommand.Create(() => { });
+    
+    public ReactiveCommand<Unit, Unit> ViewInLibraryCommand { get; set; } = ReactiveCommand.Create(() => { });
+    
     public void Cancel() => _task.Cancel();
     public void Suspend() => _task.Suspend();
     public void Resume() => _task.Resume();

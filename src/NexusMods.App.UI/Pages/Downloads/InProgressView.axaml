@@ -152,26 +152,25 @@
                                                 Binding="{CompiledBinding Version}" />
                             <DataGridTextColumn Header="GAME"
                                                 Binding="{CompiledBinding Game}" />
-                            <!-- TODO: Humanize the size -->
                             <DataGridTextColumn Header="SIZE"
                                                 Binding="{CompiledBinding HumanizedSize}" />
-                            <!-- TODO: Add Downloaded DateTime data to vm -->
                             <DataGridTextColumn Header="COMPLETED" 
                                                 Binding="{CompiledBinding HumanizedCompletedTime}"/>
 
-                            <!-- TODO: command bindings -->
                             <DataGridTemplateColumn Header="ACTIONS" Width="180">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate DataType="viewModels:IDownloadTaskViewModel">
-                                        <StackPanel Orientation="Horizontal">
+                                        <StackPanel Orientation="Horizontal"
+                                                    Classes="Spacing-4">
                                             <Button x:Name="ViewInLibraryButton"
                                                     Classes="Rounded Primary"
-                                                    Margin="0,0,16,0">
+                                                    Command="{CompiledBinding ViewInLibraryCommand}">
                                                 <StackPanel>
                                                     <TextBlock Text="View in library" />
                                                 </StackPanel>
                                             </Button>
-                                            <Button Classes="BareIcon WindowClose" />
+                                            <Button Classes="BareIcon WindowClose"
+                                                    Command="{CompiledBinding HideCommand}"/>
                                         </StackPanel>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
