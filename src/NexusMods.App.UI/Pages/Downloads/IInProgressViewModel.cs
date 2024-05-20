@@ -13,9 +13,14 @@ namespace NexusMods.App.UI.Pages.Downloads;
 public interface IInProgressViewModel : IPageViewModelInterface
 {
     /// <summary>
-    /// These tasks contain only current in-progress tasks; completed tasks are removed from this list.
+    /// Collection of in progress download tasks (downloading, paused, etc.)
     /// </summary>
-    ReadOnlyObservableCollection<IDownloadTaskViewModel> Tasks { get; }
+    ReadOnlyObservableCollection<IDownloadTaskViewModel> InProgressTasks { get; }
+    
+    /// <summary>
+    /// Collection of completed download tasks
+    /// </summary>
+    ReadOnlyObservableCollection<IDownloadTaskViewModel> CompletedTasks { get; }
 
     ReadOnlyObservableCollection<IDataGridColumnFactory<DownloadColumn>> Columns { get; }
 

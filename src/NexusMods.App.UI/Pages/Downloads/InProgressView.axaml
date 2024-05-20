@@ -123,7 +123,9 @@
                        x:Name="NoDownloadsTextBlock"/>
             
             <!-- Completed -->
-            <Expander Grid.Row="5" HorizontalAlignment="Stretch">
+            <Expander Grid.Row="5" 
+                      HorizontalAlignment="Stretch" 
+                      IsExpanded="True">
                 <Expander.Header>
                     <StackPanel Orientation="Horizontal">
                         <!-- Title -->

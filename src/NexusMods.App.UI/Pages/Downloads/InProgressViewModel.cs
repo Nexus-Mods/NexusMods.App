@@ -45,12 +45,15 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
     /// </summary>
     protected readonly SourceCache<IDownloadTaskViewModel, EntityId> DesignTimeDownloadTasks = new(x => x.TaskId);
 
-    private ReadOnlyObservableCollection<IDownloadTaskViewModel> _tasksObservable =
-        new(new ObservableCollection<IDownloadTaskViewModel>());
+    private ReadOnlyObservableCollection<IDownloadTaskViewModel> _inProgressTasksObservable = new([]);
+    
+    private ReadOnlyObservableCollection<IDownloadTaskViewModel> _completedTasksObservable = new([]);
+    
+    private IObservable<IChangeSet<IDownloadTaskViewModel, EntityId>> InProgressTaskChangeSet { get; }
+    private IObservable<IChangeSet<IDownloadTaskViewModel, EntityId>> CompletedTaskChangeSet { get; }
 
-    private IObservable<IChangeSet<IDownloadTaskViewModel, EntityId>> TaskSourceChangeSet { get; }
-
-    public ReadOnlyObservableCollection<IDownloadTaskViewModel> Tasks => _tasksObservable;
+    public ReadOnlyObservableCollection<IDownloadTaskViewModel> InProgressTasks => _inProgressTasksObservable;
+    public ReadOnlyObservableCollection<IDownloadTaskViewModel> CompletedTasks => _completedTasksObservable;
 
     private ReadOnlyObservableCollection<IDataGridColumnFactory<DownloadColumn>>
         _filteredColumns = new(new ObservableCollection<IDataGridColumnFactory<DownloadColumn>>());
@@ -127,7 +130,7 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
         TabTitle = Language.InProgressDownloadsPage_Title;
         TabIcon = IconValues.Downloading;
 
-        TaskSourceChangeSet = downloadService.Downloads
+        var tasksChangeSet = downloadService.Downloads
             .ToObservableChangeSet(x => x.PersistentState.Id)
             .Transform(x =>
                 {
@@ -135,9 +138,25 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
                     vm.Activator.Activate();
                     return (IDownloadTaskViewModel)vm;
                 }
+            );
+        
+        InProgressTaskChangeSet = tasksChangeSet
+            .FilterOnObservable((item, key) =>
+                {
+                    return item.WhenAnyValue(v => v.Status)
+                        .Select(s => s != DownloadTaskStatus.Cancelled && s != DownloadTaskStatus.Completed);
+                }
             )
-            .FilterOnObservable((item, key) => item.WhenAnyValue(v => v.Status)
-                .Select(s => s != DownloadTaskStatus.Cancelled && s != DownloadTaskStatus.Completed))
+            .DisposeMany()
+            .OnUI();
+        
+        CompletedTaskChangeSet = tasksChangeSet
+            .FilterOnObservable((item, key) =>
+                {
+                    return item.WhenAnyValue(v => v.Status)
+                        .Select(s => s == DownloadTaskStatus.Completed);
+                }
+            )
             .DisposeMany()
             .OnUI();
 
@@ -155,9 +174,9 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
                         if (result)
                             CancelTasks(SelectedTasks.Items);
                     }
-                }, Tasks.ToObservableChangeSet()
+                }, InProgressTasks.ToObservableChangeSet()
                     .AutoRefresh(task => task.Status)
-                    .Select(_ => Tasks.Any()))
+                    .Select(_ => InProgressTasks.Any()))
                 .DisposeWith(d);
         });
     }
@@ -167,7 +186,8 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
     /// </summary>
     protected InProgressViewModel() : base(new DesignWindowManager())
     {
-        TaskSourceChangeSet = DesignTimeDownloadTasks.Connect().OnUI();
+        InProgressTaskChangeSet = DesignTimeDownloadTasks.Connect().OnUI();
+        CompletedTaskChangeSet = DesignTimeDownloadTasks.Connect().OnUI();
         Init();
     }
 
@@ -222,8 +242,13 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
 
         this.WhenActivated(d =>
         {
-            TaskSourceChangeSet
-                .Bind(out _tasksObservable)
+            InProgressTaskChangeSet
+                .Bind(out _inProgressTasksObservable)
+                .Subscribe()
+                .DisposeWith(d);
+            
+            CompletedTaskChangeSet
+                .Bind(out _completedTasksObservable)
                 .Subscribe()
                 .DisposeWith(d);
 
@@ -247,26 +272,26 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
                 .DisposeWith(d);
 
             SuspendAllTasksCommand = ReactiveCommand.Create(
-                    () => { SuspendTasks(Tasks); },
-                    Tasks.ToObservableChangeSet()
+                    () => { SuspendTasks(InProgressTasks); },
+                    InProgressTasks.ToObservableChangeSet()
                         .AutoRefresh(task => task.Status)
-                        .Select(_ => Tasks.Any(task => task.Status == DownloadTaskStatus.Downloading)))
+                        .Select(_ => InProgressTasks.Any(task => task.Status == DownloadTaskStatus.Downloading)))
                 .DisposeWith(d);
 
             ResumeAllTasksCommand = ReactiveCommand.Create(
-                    () => { ResumeTasks(Tasks); },
-                    Tasks.ToObservableChangeSet()
+                    () => { ResumeTasks(InProgressTasks); },
+                    InProgressTasks.ToObservableChangeSet()
                         .AutoRefresh(task => task.Status)
-                        .Select(_ => Tasks.Any(task => task.Status == DownloadTaskStatus.Paused)))
+                        .Select(_ => InProgressTasks.Any(task => task.Status == DownloadTaskStatus.Paused)))
                 .DisposeWith(d);
 
-            Tasks.ToObservableChangeSet()
+            InProgressTasks.ToObservableChangeSet()
                 .AutoRefresh(task => task.Status)
                 .Subscribe(_ =>
                 {
                     UpdateWindowInfo();
-                    ActiveDownloadCount = Tasks.Count(task => task.Status == DownloadTaskStatus.Downloading);
-                    HasDownloads = Tasks.Any();
+                    ActiveDownloadCount = InProgressTasks.Count(task => task.Status == DownloadTaskStatus.Downloading);
+                    HasDownloads = InProgressTasks.Any();
                 }).DisposeWith(d);
 
             // Start updating on the UI thread
@@ -324,7 +349,7 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
         // Calculate Number of Downloaded Bytes.
         long totalDownloadedBytes = 0;
         long totalSizeBytes = 0;
-        var activeTasks = Tasks.Where(x => x.Status == DownloadTaskStatus.Downloading).ToArray();
+        var activeTasks = InProgressTasks.Where(x => x.Status == DownloadTaskStatus.Downloading).ToArray();
 
         foreach (var task in activeTasks)
         {

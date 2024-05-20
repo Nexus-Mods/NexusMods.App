@@ -9,7 +9,7 @@ public class InProgressDesignViewModel : InProgressViewModel
 {
     public InProgressDesignViewModel()
     {
-        // Note (Al12rs): We can't simply assign a new collection to the Tasks property,
+        // Note (Al12rs): We can't simply assign a new collection to the InProgressTasks property,
         // because all the bindings are already subscribed to the old collection.
         // It would be possible to unsubscribe from the old collection and subscribe to the new one,
         // but that would make all the bindings code much more messy, with nested subscriptions.
