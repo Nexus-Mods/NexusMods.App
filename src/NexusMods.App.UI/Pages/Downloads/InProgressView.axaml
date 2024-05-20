@@ -9,6 +9,7 @@
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
     xmlns:downloads="clr-namespace:NexusMods.App.UI.Pages.Downloads"
     xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.Avalonia;assembly=LiveChartsCore.SkiaSharpView.Avalonia"
+    xmlns:viewModels="clr-namespace:NexusMods.App.UI.Pages.Downloads.ViewModels"
     mc:Ignorable="d" d:DesignWidth="920" d:DesignHeight="664"
     x:Class="NexusMods.App.UI.Pages.Downloads.InProgressView">
     <Design.DataContext>
@@ -139,7 +140,44 @@
                 <!-- Completed downloads -->
                 <DataGrid x:Name="CompletedDataGrid"
                           HorizontalAlignment="Stretch"
-                          CanUserSortColumns="True"/>
+                          CanUserSortColumns="True"
+                          CanUserResizeColumns="True"
+                          x:DataType="viewModels:IDownloadTaskViewModel"
+                          Width="1">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="MOD NAME"
+                                            Binding="{CompiledBinding Name}"
+                                            Width="*"/>
+                        <DataGridTextColumn Header="VERSION"
+                                            Binding="{CompiledBinding Version}"/>
+                        <DataGridTextColumn Header="GAME"
+                                            Binding="{CompiledBinding Game}"/>
+                        <!-- TODO: Humanize the size -->
+                        <DataGridTextColumn Header="SIZE" 
+                                            Binding="{CompiledBinding SizeBytes}"/>
+                        <!-- TODO: Add Downloaded DateTime data to vm -->
+                        <DataGridTextColumn Header="DOWNLOADED"/>
+                        
+                        <!-- TODO: command bindings -->
+                        <DataGridTemplateColumn Header="ACTIONS">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate DataType="viewModels:IDownloadTaskViewModel">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Button x:Name="ViewInLibraryButton"
+                                                Classes="Rounded Primary"
+                                                Margin="0,0,16,0">
+                                            <StackPanel>
+                                                <TextBlock Text="View in library" />
+                                            </StackPanel>
+                                        </Button>
+                                        <Button Classes="BareIcon WindowClose"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                    
+                </DataGrid>
             </Expander>
         </Grid>
     </Grid>

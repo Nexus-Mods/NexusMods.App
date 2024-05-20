@@ -58,6 +58,28 @@ public class InProgressDesignViewModel : InProgressViewModel
             DownloadedBytes = 0,
             TaskId = EntityId.From(1027),
         });
+        
+        DesignTimeDownloadTasks.AddOrUpdate(new DownloadTaskDesignViewModel()
+        {
+            Name = "Fast Travel From Anywhere",
+            Game = "Chrono Fiddler",
+            Version = "13.3.7",
+            DownloadedBytes = 1000_000000,
+            SizeBytes = 1000_000000,
+            Status = DownloadTaskStatus.Completed,
+            TaskId = EntityId.From(1028),
+        });
+        
+        DesignTimeDownloadTasks.AddOrUpdate(new DownloadTaskDesignViewModel()
+        {
+            Name = "Better Farmhouse Textures",
+            Game = "Valdur's Fate",
+            Version = "13.3.10",
+            DownloadedBytes = 300,
+            SizeBytes = 300,
+            Status = DownloadTaskStatus.Completed,
+            TaskId = EntityId.From(1029),
+        });
     }
 
     internal void AddDownload(DownloadTaskDesignViewModel vm) => DesignTimeDownloadTasks.AddOrUpdate(vm);
