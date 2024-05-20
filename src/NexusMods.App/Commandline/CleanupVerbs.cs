@@ -79,7 +79,11 @@ internal static class CleanupVerbs
             {
                 dataModelSettings.MnemonicDBPath.ToPath(fileSystem),
                 fileExtractorSettings.TempFolderLocation.ToPath(fileSystem),
-                LoggingSettings.GetLogBaseFolder(OSInformation.Shared, fileSystem)
+                LoggingSettings.GetLogBaseFolder(OSInformation.Shared, fileSystem),
+                
+                // Note: This references backend directly in case we ever have
+                // switching backends out. At that point you'd add others here too.
+                JsonStorageBackend.GetConfigsFolderPath(fileSystem),
             }.Concat(dataModelSettings.ArchiveLocations.Select(path => path.ToPath(fileSystem)));
 
             if (fileSystem.OS.IsUnix())
