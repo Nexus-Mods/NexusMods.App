@@ -38,7 +38,7 @@ public class DownloadService : IDownloadService, IAsyncDisposable
         _conn = conn;
         _disposables = new CompositeDisposable();
         _fileStore = fileStore;
-
+        
         _conn.UpdatesFor(DownloaderState.Status)
             .Subscribe(x =>
             {
@@ -63,6 +63,22 @@ public class DownloadService : IDownloadService, IAsyncDisposable
             .Bind(out _downloadsCollection)
             .Subscribe()
             .DisposeWith(_disposables);
+        
+        // Cancel any orphaned downloads
+        foreach (var task in _conn.Db.FindIndexed((byte)DownloadTaskStatus.Downloading, DownloaderState.Status))
+        {
+            try
+            {
+                _logger.LogInformation("Cancelling orphaned download task {Task}", task);
+                var state = _conn.Db.Get<DownloaderState.Model>(task);
+                var downloadTask = GetTaskFromState(state);
+                downloadTask?.Cancel();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "While cancelling orphaned download task {Task}", task);
+            }
+        }
     }
 
     internal IEnumerable<IDownloadTask> GetItemsToResume()
