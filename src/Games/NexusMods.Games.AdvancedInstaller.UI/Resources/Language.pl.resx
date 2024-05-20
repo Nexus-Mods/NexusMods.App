@@ -22,13 +22,13 @@
 		<value>Zaawansowany instalator</value>
 	</data>
 	<data name="InstallerNameText" xml:space="preserve">
-		<value>Zaawansowany ręczny instalator modyfikacji</value>
+		<value>Zaawansowany ręczny instalator modów</value>
 	</data>
 	<data name="SubHeadingText_Please_select_files" xml:space="preserve">
 		<value>Wybierz pliki do zainstalowania i ścieżkę, w której mają zostać zainstalowane.</value>
 	</data>
 	<data name="ModContentTitle_MOD_CONTENT" xml:space="preserve">
-		<value>ZAWARTOŚĆ MODYFIKACJI</value>
+		<value>ZAWARTOŚĆ MODA</value>
 	</data>
 	<data name="ModContentSubHeading_Files_with_no" xml:space="preserve">
 		<value>Pliki bez wybranej scieżki nie zostaną zainstalowane.</value>
@@ -61,13 +61,13 @@
 		<value>Zapisz</value>
 	</data>
 	<data name="EmptyPreviewText_Select_files_to_install" xml:space="preserve">
-		<value>Wybierz pliki do zainstalowania z archiwum modyfikacji po lewej stronie.</value>
+		<value>Wybierz pliki do zainstalowania z archiwum moda po lewej stronie.</value>
 	</data>
 	<data name="SelectLocationHeaderText_SELECT_INSTALL_LOCATION" xml:space="preserve">
 		<value>WYBIERZ ŚCIEŻKĘ INSTALACJI</value>
 	</data>
 	<data name="SelectLocationSubHeadingText_Select_where_to" xml:space="preserve">
-		<value>Wybierz scieżkę instalacji pliku/folderu modyfikacji.</value>
+		<value>Wybierz scieżkę instalacji pliku/folderu moda.</value>
 	</data>
 	<data name="SuggestedHeaderText_SUGGESTED" xml:space="preserve">
 		<value>SUGEROWANE</value>
@@ -79,7 +79,7 @@
 		<value>Wybierz z pełnej struktury folderów</value>
 	</data>
 	<data name="FileTree_ALL_MOD_FILES" xml:space="preserve">
-		<value>Wszystkie pliki modyfikacji</value>
+		<value>Wszystkie pliki moda</value>
 	</data>
 	<data name="PreviewHeader_INSTALL_LOCATION_PREVIEW" xml:space="preserve">
 		<value>PODGLĄD SCIEŻKI INSTALACJI</value>
@@ -88,16 +88,16 @@
 		<value>Pliki/foldery oznaczone jako „Nowe” zostaną zainstalowane/dodane.</value>
 	</data>
 	<data name="UnsupportedModHeader_Unsupported_mod" xml:space="preserve">
-		<value>Niewspierana modyfikacja</value>
+		<value>Niewspierany mod</value>
 	</data>
 	<data name="UnsupportedTitleTextBlock_This_mod_is_not_supported" xml:space="preserve">
-		<value>Modyfikacja nie jest wspierana</value>
+		<value>Mod nie jest wspierany</value>
 	</data>
 	<data name="UnsupportedDescriptionTextBlock_This_mod_is_structured" xml:space="preserve">
-		<value>Modyfikacja ma nierozpoznaną strukturę lub zawiera nierozpoznane typy plików, więc nie może zostać zainstalowana automatycznie.</value>
+		<value>Mod ma nierozpoznaną strukturę lub zawiera nierozpoznane typy plików, więc nie może zostać zainstalowana automatycznie.</value>
 	</data>
 	<data name="ExtraDescriptionTextBlock_If_you_are_confident" xml:space="preserve">
-		<value>Jeśli masz pewność, że pliki modyfikacji są bezpieczne i wiesz, gdzie należy je zainstalować, możesz spróbować ręcznej zaawansowanej instalacji.</value>
+		<value>Jeśli masz pewność, że pliki moda są bezpieczne i wiesz, gdzie należy je zainstalować, możesz spróbować ręcznej zaawansowanej instalacji.</value>
 	</data>
 	<data name="UnsupportedOverlayFooter_ADVANCED_INSTALL" xml:space="preserve">
 		<value>ZAAWANSOWANA INSTALACJA</value>
@@ -106,7 +106,7 @@
 		<value>ZAMKNIJ</value>
 	</data>
 	<data name="TreeEntryView_FileNameTextBlock_All_mod_files" xml:space="preserve">
-		<value>Wszystkie pliki modyfikacji</value>
+		<value>Wszystkie pliki moda</value>
 	</data>
 	<data name="TreeEntryView_InstallRoundedButtonTextBlock_Install_all" xml:space="preserve">
 		<value>Zainstaluj wszystko</value>
@@ -139,6 +139,6 @@
 		<value>Ręczny mod</value>
 	</data>
 	<data name="SelectLocationViewModel_SuggestedLocationsSubtitle" xml:space="preserve">
-		<value>Modyfikacje dla {0} są zazwyczaj instalowane w następujących folderach gry.</value>
+		<value>Mody dla {0} są zazwyczaj instalowane w następujących folderach gry.</value>
 	</data>
 </root>
