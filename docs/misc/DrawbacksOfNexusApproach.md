@@ -7,16 +7,16 @@ This takes considerable CPU and Disk resources.
 
 ## Disk Usage
 
-!!! info "To support undo, any game files managed by the app are backed up."
+!!! info “To support undo, any game files managed by the app are backed up.”
 
 This typically results in an increase in disk usage of 60-100% compared to regular game size.
 
-!!! tip "For a 100GB game, an additional 60-100GB of space will be used once 'managed' with the Nexus Mods App."
+!!! tip “For a 100 GB game, an additional 60-100 GB of space will be used once 'managed' with the Nexus Mods App.”
 
 For desktops, storage today is fairly cheap, however, there are still limitations.
 
-Handheld users, such as those using the [Steam Deck][steam-deck] may end up limited with storage space;
-and require buying expandable storage (microSD). To accomodate for such use case we'll need to support storing mods in
+Handheld users, such as those using the [Steam Deck][steam-deck], may end up limited in storage space
+and require buying expandable storage (microSD). To accommodate such a use case, we'll need to support storing mods in
 multiple locations.
 
 ## Time to First Play
@@ -25,7 +25,7 @@ multiple locations.
 
 A 100GB game may take around 10 minutes to backup under ideal circumstances on a system using a SATA SSD (we consider this the 'baseline').
 
-More realistically, probably in the realm of 12-13 minutes depending on:
+More realistically, probably in the realm of 12-13 minutes, depending on:
 
 - Drive activity
 - CPU performance (and [Certain kind of software][microsoft-defender-antivirus])
@@ -42,7 +42,7 @@ so they don't really notice a difference.
 If we can be done with our work by the time an end user finds and downloads a mod they want to play;
 we're probably in a good place.
 
-With certain game stores it may be possible to fetch the original
+With certain game stores, it may be possible to fetch the original
 files from the store rather than backing them up on the user's machine. We'll have to see in the future.
 
 [steam-deck]: https://store.steampowered.com/steamdeck
