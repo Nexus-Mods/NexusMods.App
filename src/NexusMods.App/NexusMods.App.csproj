@@ -51,16 +51,8 @@
       </Compile>
     </ItemGroup>
 
-    <ItemGroup>
-      <None Update="uninstall.bat">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-    </ItemGroup>
-
-    <!--
-    <Target Name="CopyUninstallBatForWinBuild" AfterTargets="Build;Publish" Condition="'$(_NativeRuntime)' == 'win-x64' Or '$(_NativeRuntime)' == 'win-x86'">
-        <Copy SourceFiles="$(ProjectDir)\uninstall.bat" DestinationFolder="$(OutputPath)" />
-        <Message Text="uninstall.bat copied for Windows build." Importance="high" />
+    <Target Name="CopyCustomContentOnPublish" AfterTargets="Publish"
+            Condition="'$(RuntimeIdentifier)' == 'win-x64' Or '$(RuntimeIdentifier)' == 'win-x86' Or '$(RuntimeIdentifier)' == 'win'">
+        <Copy SourceFiles="uninstall.bat" DestinationFolder="$(PublishDir)" />
     </Target>
-    -->
 </Project>
