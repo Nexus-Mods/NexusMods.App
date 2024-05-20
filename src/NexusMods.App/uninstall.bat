@@ -1,1 +1,1 @@
-./NexusMods.App uninstall-app
+NexusMods.App.exe uninstall-app
