@@ -59,18 +59,19 @@ internal static class CleanupVerbs
                 Note (Sewer): There's a possibility some data may be left behind if
                 the user manually modified the logging configuration to point
                 their logs outside of the regular 'Logs' folder.
-                
+
                 Specifically, the historical logs may use Layout Renderers
                 https://nlog-project.org/config/?tab=layout-renderers that
                 are other than {##}. Resolving these on our end would be hard.
             */
             var dataModelSettings = settingsManager.Get<DataModelSettings>();
             var fileExtractorSettings = settingsManager.Get<FileExtractorSettings>();
-            
+
             // TODO: LoggingSettings can't be set up via DI right now, and are not
             // configurable as of the time of writing this code.
             var loggingSettings = LoggingSettings.CreateDefault(fileSystem.OS);
-            var appFiles = (AbsolutePath[]) [ 
+            var appFiles = (AbsolutePath[])
+            [
                 loggingSettings.MainProcessLogFilePath.ToPath(fileSystem),
                 loggingSettings.SlimProcessLogFilePath.ToPath(fileSystem),
             ];
@@ -80,11 +81,11 @@ internal static class CleanupVerbs
                 dataModelSettings.MnemonicDBPath.ToPath(fileSystem),
                 fileExtractorSettings.TempFolderLocation.ToPath(fileSystem),
                 LoggingSettings.GetLogBaseFolder(OSInformation.Shared, fileSystem),
-                
+
                 // Note: This references backend directly in case we ever have
                 // switching backends out. At that point you'd add others here too.
                 JsonStorageBackend.GetConfigsFolderPath(fileSystem),
-                
+
                 // The whole base DataModel folder.
                 DataModelSettings.GetStandardDataModelFolder(fileSystem)
             }.Concat(dataModelSettings.ArchiveLocations.Select(path => path.ToPath(fileSystem)));
@@ -95,13 +96,16 @@ internal static class CleanupVerbs
                 DeleteRemainingFilesWindows(appFiles, appDirectories);
 
             await renderer.Text("Application uninstalled successfully");
-            Environment.Exit(0);
             return 0;
         }
         catch (Exception ex)
         {
             await renderer.Error(ex, $"Error deleting application directories: {ex.Message}");
             return -1;
+        }
+        finally
+        {
+            Environment.Exit(0);
         }
     }
 
