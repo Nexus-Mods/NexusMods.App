@@ -123,8 +123,6 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                     .DisposeWith(disposables);
 
                 // Navigate away from the Loadout workspace if the Loadout is removed
-                // TODO: Will be fixed along with SPINE in next PR.
-                /*
                 loadoutRepository.Observable
                     .ToObservableChangeSet()
                     .OnUI()
@@ -142,7 +140,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                     }, false)
                     .SubscribeWithErrorLogging()
                     .DisposeWith(disposables);
-                */
+
                 // Update the LeftMenuViewModel when the active workspace changes
                 workspaceController.WhenAnyValue(controller => controller.ActiveWorkspace)
                     .Select(workspace => workspace?.Id)
