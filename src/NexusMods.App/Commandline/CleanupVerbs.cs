@@ -8,6 +8,7 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Settings;
 using NexusMods.DataModel;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.ProxyConsole.Abstractions;
 using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
@@ -27,12 +28,13 @@ internal static class CleanupVerbs
     [Verb("uninstall-app", "Uninstall the application and revert games to their original state")]
     private static async Task<int> UninstallApp(
         [Injected] IRenderer renderer,
-        [Injected] ILoadoutRegistry loadoutRegistry,
+        [Injected] IConnection conn,
         [Injected] ISettingsManager settingsManager,
         [Injected] IFileSystem fileSystem)
     {
         // Step 1: Revert the managed games to their original state
-        var managedInstallations = loadoutRegistry.AllLoadouts()
+        using var db = conn.Db;
+        var managedInstallations = db.Loadouts()
             .Select(loadout => loadout.Installation)
             .Distinct();
 
@@ -69,7 +71,6 @@ internal static class CleanupVerbs
             // configurable as of the time of writing this code.
             var loggingSettings = LoggingSettings.CreateDefault(fileSystem.OS);
             var appFiles = (AbsolutePath[]) [ 
-                dataModelSettings.DataStoreFilePath.ToPath(fileSystem),
                 loggingSettings.MainProcessLogFilePath.ToPath(fileSystem),
                 loggingSettings.SlimProcessLogFilePath.ToPath(fileSystem),
             ];
