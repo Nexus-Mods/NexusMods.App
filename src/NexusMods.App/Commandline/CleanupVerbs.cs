@@ -92,6 +92,7 @@ internal static class CleanupVerbs
                 DeleteRemainingFilesWindows(appFiles, appDirectories);
 
             await renderer.Text("Application uninstalled successfully");
+            Environment.Exit(0);
             return 0;
         }
         catch (Exception ex)
