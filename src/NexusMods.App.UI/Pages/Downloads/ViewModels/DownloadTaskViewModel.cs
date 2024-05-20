@@ -97,11 +97,6 @@ public class DownloadTaskViewModel : AViewModel<IDownloadTaskViewModel>, IDownlo
 
     [Reactive] public long Throughput { get; set; }
     
-    public bool IsHidden()
-    {
-        return _task.PersistentState.Status.Equals(DownloadTaskStatus.Completed) 
-               && _task.PersistentState.Remap<CompletedDownloadState.Model>().IsHidden;
-    }
     public ReactiveCommand<Unit, Unit> HideCommand { get; set; } = ReactiveCommand.Create(() => { });
     
     public ReactiveCommand<Unit, Unit> ViewInLibraryCommand { get; set; } = ReactiveCommand.Create(() => { });

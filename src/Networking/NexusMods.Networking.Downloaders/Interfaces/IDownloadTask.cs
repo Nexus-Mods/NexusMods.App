@@ -103,4 +103,9 @@ public enum DownloadTaskStatus : byte
     /// The download is being extracted and analyzed.
     /// </summary>
     Analyzing,
+    
+    /// <summary>
+    /// The download is completed but hidden from the UI.
+    /// </summary>
+    Hidden,
 }
