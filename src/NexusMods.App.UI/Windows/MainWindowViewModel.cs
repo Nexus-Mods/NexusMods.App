@@ -11,6 +11,7 @@ using NexusMods.App.UI.Controls.Spine;
 using NexusMods.App.UI.Controls.TopBar;
 using NexusMods.App.UI.LeftMenu;
 using NexusMods.App.UI.Overlays;
+using NexusMods.App.UI.Overlays.Login;
 using NexusMods.App.UI.Overlays.MetricsOptIn;
 using NexusMods.App.UI.Overlays.Updater;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -24,6 +25,7 @@ namespace NexusMods.App.UI.Windows;
 
 public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindowViewModel
 {
+    private readonly INexusLoginOverlayViewModel _nexusLoginOverlayViewModel;
     private readonly IArchiveInstaller _archiveInstaller;
     private readonly IWindowManager _windowManager;
     private readonly IConnection _conn;
@@ -38,6 +40,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
         IArchiveInstaller archiveInstaller,
         IMetricsOptInViewModel metricsOptInViewModel,
         IUpdaterViewModel updaterViewModel,
+        INexusLoginOverlayViewModel nexusLoginOverlayViewModel,
         IConnection conn)
     {
         // NOTE(erri120): can't use DI for VMs that require an active Window because
@@ -62,6 +65,11 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
 
         // Only show controls in Windows since we can remove the chrome on that platform
         TopBar.ShowWindowControls = osInformation.IsWindows;
+        
+        // Don't delete this until we rework overlays, this is required so that the overlay constructor
+        // is called by DI.
+        _nexusLoginOverlayViewModel = nexusLoginOverlayViewModel;
+
 
         this.WhenActivated(d =>
         {

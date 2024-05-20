@@ -18,6 +18,7 @@ public class NexusLoginOverlayViewModel : AViewModel<INexusLoginOverlayViewModel
         _compositeDisposable = new CompositeDisposable();
 
         var currentJob = activityMonitor.Activities
+            .Select(f => f)
             .AsObservableChangeSet(x => x.Id)
             .QueryWhenChanged(q => q.Items.FirstOrDefault(activity => activity.Group.Value == Constants.OAuthActivityGroupName))
             .OnUI();
