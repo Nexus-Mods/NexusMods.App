@@ -1,1 +1,1 @@
-msg /w %username% "Taktikal Nook Inkoming!! ⚠️ It's over 💀"
+./NexusMods.App uninstall-app
