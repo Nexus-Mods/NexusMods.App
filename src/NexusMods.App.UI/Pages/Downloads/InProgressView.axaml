@@ -23,32 +23,32 @@
                     <Button x:Name="CancelButton">
                         <StackPanel>
                             <icons:UnifiedIcon Classes="RemoveCircleOutline" />
-                            <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Cancel}"/>
+                            <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Cancel}" />
                         </StackPanel>
                     </Button>
                     <Button x:Name="PauseButton">
                         <StackPanel>
                             <icons:UnifiedIcon Classes="PauseCircleOutline" />
-                            <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Pause}"/>
+                            <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Pause}" />
                         </StackPanel>
                     </Button>
                     <Button x:Name="ResumeButton">
                         <StackPanel>
                             <icons:UnifiedIcon Classes="PlayCircleOutline" />
-                            <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Resume}"/>
+                            <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Resume}" />
                         </StackPanel>
                     </Button>
                     <Line />
                     <Button x:Name="ResumeAllButton">
                         <StackPanel>
                             <icons:UnifiedIcon Classes="PlayCircleFilled" />
-                            <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Resume_All}"/>
+                            <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Resume_All}" />
                         </StackPanel>
                     </Button>
                     <Button x:Name="PauseAllButton">
                         <StackPanel>
                             <icons:UnifiedIcon Classes="PauseCircleFilled" />
-                            <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Pause_All}"/>
+                            <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Pause_All}" />
                         </StackPanel>
                     </Button>
                     <Line />
@@ -100,7 +100,7 @@
 
             </DockPanel>
 
-            <lvc:CartesianChart Grid.Row="1" x:Name="Chart"/>
+            <lvc:CartesianChart Grid.Row="1" x:Name="Chart" />
 
             <!-- Progress -->
             <ProgressBar Classes="DownloadBar"
@@ -121,63 +121,64 @@
                        Classes="HeadingXSSemi ForegroundWeak"
                        IsVisible="False"
                        Text="{x:Static resources:Language.InProgress_NoDownloadsTextBlock}"
-                       x:Name="NoDownloadsTextBlock"/>
-            
+                       x:Name="NoDownloadsTextBlock" />
+
             <!-- Completed -->
-            <Expander Grid.Row="5" 
-                      HorizontalAlignment="Stretch" 
+            <Expander Grid.Row="5"
+                      HorizontalAlignment="Stretch"
                       IsExpanded="True">
                 <Expander.Header>
                     <StackPanel Orientation="Horizontal">
                         <!-- Title -->
                         <TextBlock Classes="HeadingSMSemi ForegroundModerate"
                                    Text="{x:Static resources:Language.DownloadsView__Completed}" />
-                        <TextBlock Classes="HeadingSMSemi ForegroundWeak" 
-                                   Text=" (0)"/>
+                        <TextBlock Classes="HeadingSMSemi ForegroundWeak"
+                                   Text=" (0)" />
                     </StackPanel>
                 </Expander.Header>
-                
-                <!-- Completed downloads -->
-                <DataGrid x:Name="CompletedDataGrid"
-                          HorizontalAlignment="Stretch"
-                          CanUserSortColumns="True"
-                          CanUserResizeColumns="True"
-                          x:DataType="viewModels:IDownloadTaskViewModel"
-                          Width="1">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="MOD NAME"
-                                            Binding="{CompiledBinding Name}"
-                                            Width="*"/>
-                        <DataGridTextColumn Header="VERSION"
-                                            Binding="{CompiledBinding Version}"/>
-                        <DataGridTextColumn Header="GAME"
-                                            Binding="{CompiledBinding Game}"/>
-                        <!-- TODO: Humanize the size -->
-                        <DataGridTextColumn Header="SIZE" 
-                                            Binding="{CompiledBinding SizeBytes}"/>
-                        <!-- TODO: Add Downloaded DateTime data to vm -->
-                        <DataGridTextColumn Header="DOWNLOADED"/>
-                        
-                        <!-- TODO: command bindings -->
-                        <DataGridTemplateColumn Header="ACTIONS">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate DataType="viewModels:IDownloadTaskViewModel">
-                                    <StackPanel Orientation="Horizontal">
-                                        <Button x:Name="ViewInLibraryButton"
-                                                Classes="Rounded Primary"
-                                                Margin="0,0,16,0">
-                                            <StackPanel>
-                                                <TextBlock Text="View in library" />
-                                            </StackPanel>
-                                        </Button>
-                                        <Button Classes="BareIcon WindowClose"/>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-                    </DataGrid.Columns>
-                    
-                </DataGrid>
+                <Grid RowDefinitions="*">
+                    <!-- Completed downloads -->
+                    <DataGrid Grid.Row="0"
+                              x:Name="CompletedDataGrid"
+                              HorizontalAlignment="Stretch"
+                              CanUserSortColumns="True"
+                              CanUserResizeColumns="True"
+                              x:DataType="viewModels:IDownloadTaskViewModel">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="MOD NAME"
+                                                Binding="{CompiledBinding Name}"
+                                                Width="0.5*"/>
+                            <DataGridTextColumn Header="VERSION"
+                                                Binding="{CompiledBinding Version}" />
+                            <DataGridTextColumn Header="GAME"
+                                                Binding="{CompiledBinding Game}" />
+                            <!-- TODO: Humanize the size -->
+                            <DataGridTextColumn Header="SIZE"
+                                                Binding="{CompiledBinding SizeBytes}" />
+                            <!-- TODO: Add Downloaded DateTime data to vm -->
+                            <DataGridTextColumn Header="DOWNLOADED" />
+
+                            <!-- TODO: command bindings -->
+                            <DataGridTemplateColumn Header="ACTIONS" Width="180">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate DataType="viewModels:IDownloadTaskViewModel">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Button x:Name="ViewInLibraryButton"
+                                                    Classes="Rounded Primary"
+                                                    Margin="0,0,16,0">
+                                                <StackPanel>
+                                                    <TextBlock Text="View in library" />
+                                                </StackPanel>
+                                            </Button>
+                                            <Button Classes="BareIcon WindowClose" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+
+                    </DataGrid>
+                </Grid>
             </Expander>
         </Grid>
     </Grid>

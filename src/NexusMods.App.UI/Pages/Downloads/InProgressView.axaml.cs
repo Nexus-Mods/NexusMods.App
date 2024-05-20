@@ -19,6 +19,8 @@ public partial class InProgressView : ReactiveUserControl<IInProgressViewModel>
 
         this.WhenActivated(d =>
         {
+            CompletedDataGrid.Width = double.NaN;
+            
             this.OneWayBind(ViewModel, vm => vm.Series, view => view.Chart.Series)
                 .DisposeWith(d);
             this.OneWayBind(ViewModel, vm => vm.YAxes, view => view.Chart.YAxes)
