@@ -14,17 +14,10 @@ using NexusMods.DataModel;
 using NexusMods.FileExtractor;
 using NexusMods.Games.AdvancedInstaller;
 using NexusMods.Games.AdvancedInstaller.UI;
-using NexusMods.Games.BethesdaGameStudios;
-using NexusMods.Games.BladeAndSorcery;
-using NexusMods.Games.DarkestDungeon;
 using NexusMods.Games.FOMOD;
 using NexusMods.Games.FOMOD.UI;
 using NexusMods.Games.Generic;
-using NexusMods.Games.MountAndBlade2Bannerlord;
-using NexusMods.Games.RedEngine;
 using NexusMods.Games.Reshade;
-using NexusMods.Games.Sifu;
-using NexusMods.Games.StardewValley;
 using NexusMods.Games.TestHarness;
 using NexusMods.Networking.Downloaders;
 using NexusMods.Networking.HttpDownloader;
@@ -35,6 +28,28 @@ using NexusMods.Settings;
 using NexusMods.SingleProcess;
 using NexusMods.StandardGameLocators;
 using NexusMods.Telemetry;
+
+#if NEXUSMODS_APP_ENABLE_BETHESDA
+using NexusMods.Games.BethesdaGameStudios;
+#endif
+#if NEXUSMODS_APP_ENABLE_BLADE_AND_SORCERY
+using NexusMods.Games.BladeAndSorcery;
+#endif
+#if NEXUSMODS_APP_ENABLE_DARKEST_DUNGEON
+using NexusMods.Games.DarkestDungeon;
+#endif
+#if NEXUSMODS_APP_ENABLE_BANNERLORD
+using NexusMods.Games.MountAndBlade2Bannerlord;
+#endif
+#if NEXUSMODS_APP_ENABLE_CYBERPUNK_2077
+using NexusMods.Games.RedEngine;
+#endif
+#if NEXUSMODS_APP_ENABLE_SIFU
+using NexusMods.Games.Sifu;
+#endif
+#if NEXUSMODS_APP_ENABLE_STARDEW_VALLEY
+using NexusMods.Games.StardewValley;
+#endif
 
 namespace NexusMods.App;
 
@@ -70,21 +85,15 @@ public static class Services
                 .AddDataModel()
                 .AddSerializationAbstractions()
                 .AddInstallerTypes()
-                .AddGames()
+                .AddSupportedGames()
                 .AddActivityMonitor()
                 .AddCrossPlatform()
-                .AddBethesdaGameStudios()
-                .AddRedEngineGames()
+                .AddGames()
                 .AddGenericGameSupport()
                 .AddFileStoreAbstractions()
                 .AddLoadoutAbstractions()
                 .AddReshade()
                 .AddFomod()
-                .AddDarkestDungeon()
-                .AddBladeAndSorcery()
-                .AddSifu()
-                .AddStardewValley()
-                .AddMountAndBladeBannerlord()
                 .AddNexusWebApi()
                 .AddAdvancedHttpDownloader()
                 .AddTestHarness()
@@ -103,6 +112,33 @@ public static class Services
                 .AddDefaultRenderers()
                 .AddSettingsManager();
         }
+
+        return services;
+    }
+    
+    private static IServiceCollection AddSupportedGames(this IServiceCollection services)
+    {
+#if NEXUSMODS_APP_ENABLE_BETHESDA
+        services.AddBethesdaGameStudios();
+#endif
+#if NEXUSMODS_APP_ENABLE_CYBERPUNK_2077
+        services.AddRedEngineGames();
+#endif
+#if NEXUSMODS_APP_ENABLE_DARKEST_DUNGEON
+        services.AddDarkestDungeon();
+#endif
+#if NEXUSMODS_APP_ENABLE_BLADE_AND_SORCERY
+        services.AddBladeAndSorcery();
+#endif
+#if NEXUSMODS_APP_ENABLE_SIFU
+        services.AddSifu();
+#endif
+#if NEXUSMODS_APP_ENABLE_STARDEW_VALLEY
+        services.AddStardewValley();
+#endif
+#if NEXUSMODS_APP_ENABLE_BANNERLORD
+        services.AddMountAndBladeBannerlord();
+#endif
 
         return services;
     }

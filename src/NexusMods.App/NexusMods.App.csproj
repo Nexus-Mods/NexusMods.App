@@ -11,17 +11,17 @@
     <ItemGroup>
         <ProjectReference Include="..\ArchiveManagement\NexusMods.FileExtractor\NexusMods.FileExtractor.csproj" />
         <ProjectReference Include="..\Games\NexusMods.Games.AdvancedInstaller.UI\NexusMods.Games.AdvancedInstaller.UI.csproj" />
-        <ProjectReference Include="..\Games\NexusMods.Games.BethesdaGameStudios\NexusMods.Games.BethesdaGameStudios.csproj" />
-        <ProjectReference Include="..\Games\NexusMods.Games.DarkestDungeon\NexusMods.Games.DarkestDungeon.csproj" />
+        <ProjectReference Include="..\Games\NexusMods.Games.BethesdaGameStudios\NexusMods.Games.BethesdaGameStudios.csproj" Condition="$(DefineConstants.Contains('NEXUSMODS_APP_ENABLE_BETHESDA'))" />
+        <ProjectReference Include="..\Games\NexusMods.Games.DarkestDungeon\NexusMods.Games.DarkestDungeon.csproj" Condition="$(DefineConstants.Contains('NEXUSMODS_APP_ENABLE_DARKEST_DUNGEON'))" />
         <ProjectReference Include="..\Games\NexusMods.Games.FOMOD.UI\NexusMods.Games.FOMOD.UI.csproj" />
-        <ProjectReference Include="..\Games\NexusMods.Games.StardewValley\NexusMods.Games.StardewValley.csproj" />
+        <ProjectReference Include="..\Games\NexusMods.Games.StardewValley\NexusMods.Games.StardewValley.csproj" Condition="$(DefineConstants.Contains('NEXUSMODS_APP_ENABLE_STARDEW_VALLEY'))" />
         <ProjectReference Include="..\Games\NexusMods.Games.FOMOD\NexusMods.Games.FOMOD.csproj" />
         <ProjectReference Include="..\Games\NexusMods.Games.Generic\NexusMods.Games.Generic.csproj" />
-        <ProjectReference Include="..\Games\NexusMods.Games.RedEngine\NexusMods.Games.RedEngine.csproj" />
-        <ProjectReference Include="..\Games\NexusMods.Games.Reshade\NexusMods.Games.Reshade.csproj" />
-        <ProjectReference Include="..\Games\NexusMods.Games.MountAndBlade2Bannerlord\NexusMods.Games.MountAndBlade2Bannerlord.csproj" />
-        <ProjectReference Include="..\Games\NexusMods.Games.Sifu\NexusMods.Games.Sifu.csproj" />
-        <ProjectReference Include="..\Games\NexusMods.Games.BladeAndSorcery\NexusMods.Games.BladeAndSorcery.csproj" />
+        <ProjectReference Include="..\Games\NexusMods.Games.RedEngine\NexusMods.Games.RedEngine.csproj" Condition="$(DefineConstants.Contains('NEXUSMODS_APP_ENABLE_CYBERPUNK_2077'))" />
+        <ProjectReference Include="..\Games\NexusMods.Games.Reshade\NexusMods.Games.Reshade.csproj"  />
+        <ProjectReference Include="..\Games\NexusMods.Games.MountAndBlade2Bannerlord\NexusMods.Games.MountAndBlade2Bannerlord.csproj" Condition="$(DefineConstants.Contains('NEXUSMODS_APP_ENABLE_BANNERLORD'))" />
+        <ProjectReference Include="..\Games\NexusMods.Games.Sifu\NexusMods.Games.Sifu.csproj" Condition="$(DefineConstants.Contains('NEXUSMODS_APP_ENABLE_SIFU'))" />
+        <ProjectReference Include="..\Games\NexusMods.Games.BladeAndSorcery\NexusMods.Games.BladeAndSorcery.csproj" Condition="$(DefineConstants.Contains('NEXUSMODS_APP_ENABLE_BLADE_AND_SORCERY'))" />
         <ProjectReference Include="..\Games\NexusMods.Games.TestHarness\NexusMods.Games.TestHarness.csproj" />
         <ProjectReference Include="..\Networking\NexusMods.Networking.Downloaders\NexusMods.Networking.Downloaders.csproj" />
         <ProjectReference Include="..\Networking\NexusMods.Networking.HttpDownloader\NexusMods.Networking.HttpDownloader.csproj" />

@@ -1,0 +1,26 @@
+<Project>
+    <PropertyGroup>
+        <!-- Note: This file contains items we can't place in Directory.Build.props,
+                   because they will be overwritten by MSBuild -->
+        
+        <!-- 
+            Some usable constants. 
+        
+            NEXUSMODS_APP_USE_SYSTEM_EXTRACTOR: Use system `7z` binary for extraction.
+                - This is intended for Linux package maintainers.
+
+            NEXUSMODS_APP_ENABLE_BANNERLORD: Enable Mount & Blade 2 Bannerlord support.
+            NEXUSMODS_APP_ENABLE_BETHESDA: Enables Skyrim Special Edition & Skyrim Legendary Edition.
+            NEXUSMODS_APP_ENABLE_BLADE_AND_SORCERY: Enables Blade & Sorcery.
+            NEXUSMODS_APP_ENABLE_CYBERPUNK_2077: Enable CyberPunk 2077 support.
+            NEXUSMODS_APP_ENABLE_DARKEST_DUNGEON: Enable Darkest Dungeon.
+            NEXUSMODS_APP_ENABLE_SIFU: Enable Sifu support.
+            NEXUSMODS_APP_ENABLE_STARDEW_VALLEY: Enable Stardew Valley support.
+        -->
+        <DefineConstants>
+            $(DefineConstants);
+            NEXUSMODS_APP_ENABLE_STARDEW_VALLEY;
+            NEXUSMODS_APP_ENABLE_BETHESDA
+        </DefineConstants>
+    </PropertyGroup>
+</Project>

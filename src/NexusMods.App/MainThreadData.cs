@@ -1,5 +1,7 @@
 using System.Collections.Concurrent;
+#if DEBUG
 using System.Diagnostics;
+#endif
 
 namespace NexusMods.App;
 
