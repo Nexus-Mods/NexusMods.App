@@ -17,10 +17,13 @@
             NEXUSMODS_APP_ENABLE_SIFU: Enable Sifu support.
             NEXUSMODS_APP_ENABLE_STARDEW_VALLEY: Enable Stardew Valley support.
         -->
+        
+        <!-- When defining constants with newlines, you need to suffix with ';'
+             This isn't common knowledge - Sewer
+        -->
         <DefineConstants>
             $(DefineConstants);
             NEXUSMODS_APP_ENABLE_STARDEW_VALLEY;
-            NEXUSMODS_APP_ENABLE_BETHESDA
         </DefineConstants>
     </PropertyGroup>
 </Project>
