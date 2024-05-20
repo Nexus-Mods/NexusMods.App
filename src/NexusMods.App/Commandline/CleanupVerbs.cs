@@ -66,10 +66,7 @@ internal static class CleanupVerbs
             */
             var dataModelSettings = settingsManager.Get<DataModelSettings>();
             var fileExtractorSettings = settingsManager.Get<FileExtractorSettings>();
-
-            // TODO: LoggingSettings can't be set up via DI right now, and are not
-            // configurable as of the time of writing this code.
-            var loggingSettings = LoggingSettings.CreateDefault(fileSystem.OS);
+            var loggingSettings = settingsManager.Get<LoggingSettings>();
             var appFiles = (AbsolutePath[])
             [
                 loggingSettings.MainProcessLogFilePath.ToPath(fileSystem),
