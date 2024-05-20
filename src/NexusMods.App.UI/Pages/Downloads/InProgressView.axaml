@@ -9,7 +9,6 @@
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
     xmlns:downloads="clr-namespace:NexusMods.App.UI.Pages.Downloads"
     xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.Avalonia;assembly=LiveChartsCore.SkiaSharpView.Avalonia"
-    xmlns:skiaSharpView="clr-namespace:LiveChartsCore.SkiaSharpView;assembly=LiveChartsCore.SkiaSharpView"
     mc:Ignorable="d" d:DesignWidth="920" d:DesignHeight="664"
     x:Class="NexusMods.App.UI.Pages.Downloads.InProgressView">
     <Design.DataContext>
@@ -62,7 +61,7 @@
         </Border>
 
         <!-- Page Content -->
-        <Grid RowDefinitions="Auto, *, 24, *, Auto" Margin="24, 16" Grid.Row="1">
+        <Grid RowDefinitions="Auto, *, 24, *, Auto, Auto" Margin="24, 16" Grid.Row="1">
 
             <!-- Title & Status -->
             <DockPanel LastChildFill="True" HorizontalAlignment="Stretch" Grid.Row="0">
@@ -107,12 +106,12 @@
                          ProgressTextFormat="{x:Static resources:Language.ProgressBar_ProgressTextFormat__Total_1_0}"
                          x:Name="DownloadProgressBar" Minimum="0" Maximum="1" Grid.Row="2" />
 
-            <!-- Currently Downloaded Mods -->
+            <!-- In progress downloads -->
             <DataGrid Grid.Row="3"
                       HorizontalAlignment="Stretch"
                       CanUserSortColumns="True"
                       Margin="-16,16"
-                      x:Name="ModsDataGrid" />
+                      x:Name="InprogressDataGrid" />
 
             <TextBlock Grid.Row="4"
                        HorizontalAlignment="Center"
@@ -122,6 +121,24 @@
                        IsVisible="False"
                        Text="{x:Static resources:Language.InProgress_NoDownloadsTextBlock}"
                        x:Name="NoDownloadsTextBlock"/>
+            
+            <!-- Completed -->
+            <Expander Grid.Row="5" HorizontalAlignment="Stretch">
+                <Expander.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <!-- Title -->
+                        <TextBlock Classes="HeadingSMSemi ForegroundModerate"
+                                   Text="{x:Static resources:Language.DownloadsView__Completed}" />
+                        <TextBlock Classes="HeadingSMSemi ForegroundWeak" 
+                                   Text=" (0)"/>
+                    </StackPanel>
+                </Expander.Header>
+                
+                <!-- Completed downloads -->
+                <DataGrid x:Name="CompletedDataGrid"
+                          HorizontalAlignment="Stretch"
+                          CanUserSortColumns="True"/>
+            </Expander>
         </Grid>
     </Grid>
 </reactiveUi:ReactiveUserControl>

@@ -45,11 +45,11 @@ public partial class InProgressView : ReactiveUserControl<IInProgressViewModel>
                 .DisposeWith(d);
 
             this.OneWayBind(ViewModel, vm => vm.Tasks, 
-                    view => view.ModsDataGrid.ItemsSource)
+                    view => view.InprogressDataGrid.ItemsSource)
                 .DisposeWith(d);
 
             this.WhenAnyValue(view => view.ViewModel!.Columns)
-                .GenerateColumns(ModsDataGrid)
+                .GenerateColumns(InprogressDataGrid)
                 .DisposeWith(d);
 
             // Dynamically hide the "No Downloads" TextBlock
@@ -111,14 +111,14 @@ public partial class InProgressView : ReactiveUserControl<IInProgressViewModel>
 
             // Bind Selected Items
             Observable.FromEventPattern<SelectionChangedEventArgs>(
-                    addHandler => ModsDataGrid.SelectionChanged += addHandler,
-                    removeHandler => ModsDataGrid.SelectionChanged -= removeHandler)
+                    addHandler => InprogressDataGrid.SelectionChanged += addHandler,
+                    removeHandler => InprogressDataGrid.SelectionChanged -= removeHandler)
                 .Do(_ =>
                 {
                     ViewModel!.SelectedTasks.Edit(updater =>
                     {
                         updater.Clear();
-                        foreach (var item in ModsDataGrid.SelectedItems)
+                        foreach (var item in InprogressDataGrid.SelectedItems)
                         {
                             if (item is IDownloadTaskViewModel task)
                                 updater.Add(task);
