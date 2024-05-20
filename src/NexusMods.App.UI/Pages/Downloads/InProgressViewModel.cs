@@ -156,7 +156,8 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
             .FilterOnObservable((item, key) =>
                 {
                     return item.WhenAnyValue(v => v.Status)
-                        .Select(s => s == DownloadTaskStatus.Completed);
+                        .Select(s => s == DownloadTaskStatus.Completed 
+                        && !item.IsHidden());
                 }
             )
             .DisposeMany()

@@ -14,6 +14,11 @@ public static class CompletedDownloadState
     /// The timestamp the download was completed at
     /// </summary>
     public static readonly DateTimeAttribute CompletedDateTime= new(Namespace, nameof(CompletedDateTime));
+    
+    /// <summary>
+    /// Whether the download is hidden (clear action) in the UI
+    /// </summary>
+    public static readonly BooleanAttribute Hidden = new(Namespace, nameof(Hidden));
 
     /// <summary>
     /// Model for reading and writing CompletedDownloadStates
@@ -31,5 +36,13 @@ public static class CompletedDownloadState
             set => CompletedDateTime.Add(this, value);
         }
         
+        /// <summary>
+        /// Whether the download is hidden (clear action) in the UI
+        /// </summary>
+        public bool IsHidden
+        {
+            get => Hidden.Get(this, false);
+            set => Hidden.Add(this, value);
+        }
     }
 }
