@@ -19,6 +19,9 @@ public class DownloadTaskViewModel : AViewModel<IDownloadTaskViewModel>, IDownlo
     public DownloadTaskViewModel(IDownloadTask task)
     {
         _task = task;
+        IsHidden = task.PersistentState.Status.Equals(DownloadTaskStatus.Completed) 
+                   && task.PersistentState.Remap<CompletedDownloadState.Model>().IsHidden;
+        
         var interval = Observable.Interval(TimeSpan.FromSeconds(60)).StartWith(1);
         
         this.WhenActivated(d =>
@@ -96,12 +99,9 @@ public class DownloadTaskViewModel : AViewModel<IDownloadTaskViewModel>, IDownlo
     [Reactive] public long SizeBytes { get; set; }
 
     [Reactive] public long Throughput { get; set; }
-    
-    public bool IsHidden()
-    {
-        return _task.PersistentState.Status.Equals(DownloadTaskStatus.Completed) 
-               && _task.PersistentState.Remap<CompletedDownloadState.Model>().IsHidden;
-    }
+
+    [Reactive] public bool IsHidden { get; private set; }
+
     public ReactiveCommand<Unit, Unit> HideCommand { get; set; } = ReactiveCommand.Create(() => { });
     
     public ReactiveCommand<Unit, Unit> ViewInLibraryCommand { get; set; } = ReactiveCommand.Create(() => { });

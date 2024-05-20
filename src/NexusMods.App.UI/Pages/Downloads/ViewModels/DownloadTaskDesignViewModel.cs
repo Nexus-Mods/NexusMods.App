@@ -16,7 +16,9 @@ public class DownloadTaskDesignViewModel : AViewModel<IDownloadTaskViewModel>, I
     public string HumanizedCompletedTime { get; } = "-";
     public DownloadTaskStatus Status { get; set; } = DownloadTaskStatus.Idle;
     public EntityId TaskId { get; set; } = EntityId.From(1024);
-    public bool IsHidden() => false;
+
+    public bool IsHidden => false;
+
     public ReactiveCommand<Unit, Unit> HideCommand { get; } = ReactiveCommand.Create(() => { });
     public ReactiveCommand<Unit, Unit> ViewInLibraryCommand { get; } = ReactiveCommand.Create(() => { });
     public long DownloadedBytes { get; set; } = 1024 * 1024 * 512;

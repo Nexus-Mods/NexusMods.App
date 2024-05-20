@@ -10,7 +10,6 @@ using JetBrains.Annotations;
 using LiveChartsCore;
 using LiveChartsCore.Defaults;
 using LiveChartsCore.SkiaSharpView;
-using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.Controls.DownloadGrid;
 using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadGameName;
@@ -27,7 +26,6 @@ using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.Downloaders.Interfaces;
-using NexusMods.Networking.Downloaders.Tasks.State;
 using NexusMods.Paths;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -156,8 +154,8 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
             .FilterOnObservable((item, key) =>
                 {
                     return item.WhenAnyValue(v => v.Status)
-                        .Select(s => s == DownloadTaskStatus.Completed 
-                        && !item.IsHidden());
+                        .CombineLatest(item.WhenAnyValue(v => v.IsHidden))
+                        .Select(_ => item is { Status: DownloadTaskStatus.Completed, IsHidden: false });
                 }
             )
             .DisposeMany()
