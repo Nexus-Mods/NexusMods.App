@@ -28,6 +28,11 @@ public interface IDownloadTaskViewModel : IViewModelInterface
     /// Total size in humanized string format.
     /// </summary>
     public string HumanizedSize { get; }
+    
+    /// <summary>
+    /// The DateTime when the download was completed in humanized string format.
+    /// </summary>
+    public string HumanizedCompletedTime { get; }
 
     /// <summary>
     /// e.g. 'Downloading'

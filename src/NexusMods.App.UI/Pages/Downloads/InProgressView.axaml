@@ -156,7 +156,8 @@
                             <DataGridTextColumn Header="SIZE"
                                                 Binding="{CompiledBinding HumanizedSize}" />
                             <!-- TODO: Add Downloaded DateTime data to vm -->
-                            <DataGridTextColumn Header="DOWNLOADED" />
+                            <DataGridTextColumn Header="COMPLETED" 
+                                                Binding="{CompiledBinding HumanizedCompletedTime}"/>
 
                             <!-- TODO: command bindings -->
                             <DataGridTemplateColumn Header="ACTIONS" Width="180">

@@ -23,6 +23,7 @@ public static class Services
             .AddTransient<HttpDownloadTask>()
             .AddAttributeCollection(typeof(DownloaderState))
             .AddAttributeCollection(typeof(HttpDownloadState))
-            .AddAttributeCollection(typeof(NxmDownloadState));
+            .AddAttributeCollection(typeof(NxmDownloadState))
+            .AddAttributeCollection(typeof(CompletedDownloadState));
     }
 }

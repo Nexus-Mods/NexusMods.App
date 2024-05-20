@@ -1,9 +1,11 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using Humanizer;
 using Humanizer.Bytes;
-using NexusMods.App.UI.Resources;
+using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.Downloaders.Interfaces;
+using NexusMods.Networking.Downloaders.Tasks.State;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -16,6 +18,7 @@ public class DownloadTaskViewModel : AViewModel<IDownloadTaskViewModel>, IDownlo
     public DownloadTaskViewModel(IDownloadTask task)
     {
         _task = task;
+        var interval = Observable.Interval(TimeSpan.FromSeconds(60)).StartWith(1);
         
         this.WhenActivated(d =>
         {
@@ -58,6 +61,17 @@ public class DownloadTaskViewModel : AViewModel<IDownloadTaskViewModel>, IDownlo
                 .Select(b => b.Value)
                 .BindTo(this, x => x.Throughput)
                 .DisposeWith(d);
+            
+            _task.WhenAnyValue(t => t.PersistentState.Status)
+                .Where(s => s.Equals(DownloadTaskStatus.Completed))
+                .CombineLatest(interval)
+                .Select(_ => _task.PersistentState.Status.Equals(DownloadTaskStatus.Completed) 
+                    ? _task.PersistentState.Remap<CompletedDownloadState.Model>().CompletedAt.Humanize()
+                    : "-"
+                )
+                .OnUI()
+                .BindTo(this, x => x.HumanizedCompletedTime)
+                .DisposeWith(d);
 
         });
     }
@@ -68,6 +82,8 @@ public class DownloadTaskViewModel : AViewModel<IDownloadTaskViewModel>, IDownlo
     [Reactive] public string Game { get; set; } = "";
 
     public string HumanizedSize => ByteSize.FromBytes(SizeBytes).ToString();
+    
+    [Reactive] public string HumanizedCompletedTime { get; set; } = "-";
 
     public EntityId TaskId => _task.PersistentState.Id;
 
