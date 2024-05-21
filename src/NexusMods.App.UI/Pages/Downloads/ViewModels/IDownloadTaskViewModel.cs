@@ -1,4 +1,5 @@
 using System.Reactive;
+using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.Downloaders.Interfaces;
 using ReactiveUI;
@@ -78,7 +79,7 @@ public interface IDownloadTaskViewModel : IViewModelInterface
     /// <summary>
     /// View the entry corresponding to this completed download in the mod Library page
     /// </summary>
-    public ReactiveCommand<Unit, Unit> ViewInLibraryCommand { get; }
+    public ReactiveCommand<NavigationInformation, Unit> ViewInLibraryCommand { get; }
 
     /// <summary>
     /// Schedules a cancellation of the task.

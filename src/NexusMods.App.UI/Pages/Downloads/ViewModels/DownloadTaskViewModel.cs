@@ -5,6 +5,7 @@ using System.Reactive.Linq;
 using Humanizer;
 using Humanizer.Bytes;
 using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
+using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Networking.Downloaders.Tasks.State;
@@ -103,9 +104,9 @@ public class DownloadTaskViewModel : AViewModel<IDownloadTaskViewModel>, IDownlo
 
     [Reactive] public bool IsHidden { get; set; }
 
-    public ReactiveCommand<Unit, Unit> HideCommand { get; set; } = ReactiveCommand.Create(() => { Debugger.Break(); });
+    public ReactiveCommand<Unit, Unit> HideCommand { get; set; } = ReactiveCommand.Create(() => { });
     
-    public ReactiveCommand<Unit, Unit> ViewInLibraryCommand { get; set; } = ReactiveCommand.Create(() => { });
+    public ReactiveCommand<NavigationInformation, Unit> ViewInLibraryCommand { get; set; } = ReactiveCommand.Create<NavigationInformation>(_ => { });
     
     public void Cancel() => _task.Cancel();
     public void Suspend() => _task.Suspend();

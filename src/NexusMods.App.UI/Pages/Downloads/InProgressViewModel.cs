@@ -6,10 +6,12 @@ using System.Windows.Input;
 using Avalonia.Controls;
 using DynamicData;
 using DynamicData.Binding;
+using DynamicData.Kernel;
 using JetBrains.Annotations;
 using LiveChartsCore;
 using LiveChartsCore.Defaults;
 using LiveChartsCore.SkiaSharpView;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.Controls.DownloadGrid;
 using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadGameName;
@@ -17,9 +19,12 @@ using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadName;
 using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadSize;
 using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadStatus;
 using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadVersion;
+using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Helpers;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Pages.Downloads.ViewModels;
+using NexusMods.App.UI.Pages.LoadoutGrid;
+using NexusMods.App.UI.Pages.ModLibrary;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -115,6 +120,7 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
     public InProgressViewModel(
         IWindowManager windowManager,
         IDownloadService downloadService,
+        IConnection conn,
         IOverlayController overlayController) : base(windowManager)
     {
         _downloadService = downloadService;
@@ -172,11 +178,34 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
                 {
                     var vm = new DownloadTaskViewModel(x);
                     vm.HideCommand = ReactiveCommand.CreateFromTask(async () => await HideTasks(true, [vm]));
+                    vm.ViewInLibraryCommand = ReactiveCommand.Create<NavigationInformation>((navInfo) =>
+                    {
+                        var controller = GetWorkspaceController();
+                        var workspaces = controller
+                            .AllWorkspaces
+                            .Where(w => w.Context is LoadoutContext loadoutContext
+                                        && conn.Db.Get<Loadout.Model>(loadoutContext.LoadoutId.Value).Installation.Game.Domain.Equals(vm.Game)
+                            )
+                            .Select(w => (w.Id, Context: (LoadoutContext)w.Context)).ToArray();
+                        
+                        if (workspaces.Length == 0)
+                            return;
+                        var workspace = workspaces[0];
+
+                        var pageData = new PageData
+                        {
+                            FactoryId = FileOriginsPageFactory.StaticId,
+                            Context = new FileOriginsPageContext { LoadoutId = workspace.Context.LoadoutId },
+                        };
+                        
+                        var behavior = GetWorkspaceController().GetOpenPageBehavior(pageData, navInfo, Optional<PageIdBundle>.None);
+                        controller.OpenPage(workspace.Id, pageData, behavior);
+                        controller.ChangeActiveWorkspace(workspace.Id);
+                    });
                     vm.Activator.Activate();
                     return (IDownloadTaskViewModel)vm;
                 }
             )
-            .AutoRefreshOnObservable(task => task.WhenAnyValue(x => x.IsHidden))
             .FilterOnObservable((item, key) =>
                 {
                     return item.WhenAnyValue(v => v.Status)
