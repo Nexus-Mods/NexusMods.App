@@ -26,4 +26,17 @@
             NEXUSMODS_APP_ENABLE_STARDEW_VALLEY;
         </DefineConstants>
     </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+        <DefineConstants>
+            $(DefineConstants);
+            NEXUSMODS_APP_ENABLE_BANNERLORD;
+            NEXUSMODS_APP_ENABLE_BETHESDA;
+            NEXUSMODS_APP_ENABLE_BLADE_AND_SORCERY;
+            NEXUSMODS_APP_ENABLE_CYBERPUNK_2077;
+            NEXUSMODS_APP_ENABLE_DARKEST_DUNGEON;
+            NEXUSMODS_APP_ENABLE_SIFU;
+            NEXUSMODS_APP_ENABLE_STARDEW_VALLEY;
+        </DefineConstants>
+    </PropertyGroup>
 </Project>
