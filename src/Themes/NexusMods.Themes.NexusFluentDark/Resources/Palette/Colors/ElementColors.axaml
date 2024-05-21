@@ -101,6 +101,7 @@
     <SolidColorBrush x:Key="WarningModerateBrush" Color="{StaticResource WarningModerate}" />
     <SolidColorBrush x:Key="WarningStrongBrush" Color="{StaticResource WarningStrong}" />
 
+    <SolidColorBrush x:Key="WarningSubdued20Brush" Color="{StaticResource WarningSubdued}" Opacity="{StaticResource OpacitySubdued}" />
 
     <!-- Success -->
 

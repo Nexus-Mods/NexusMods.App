@@ -15,7 +15,6 @@
 
     <!-- MessageBoxBackground -->
     <Style Selector="messageBox|MessageBoxBackground">
-
         <Style Selector="^ Border#TopBorder">
             <Setter Property="Background" Value="{StaticResource SurfaceTopBrush}" />
         </Style>
