@@ -1,21 +1,15 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.FileStore.Downloads;
-using NexusMods.Abstractions.Installers;
-using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.App.UI.Controls.DevelopmentBuildBanner;
 using NexusMods.App.UI.Controls.Spine;
 using NexusMods.App.UI.Controls.TopBar;
 using NexusMods.App.UI.LeftMenu;
 using NexusMods.App.UI.Overlays;
+using NexusMods.App.UI.Overlays.AlphaWarning;
 using NexusMods.App.UI.Overlays.MetricsOptIn;
 using NexusMods.App.UI.Overlays.Updater;
 using NexusMods.App.UI.WorkspaceSystem;
-using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Paths;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -24,21 +18,13 @@ namespace NexusMods.App.UI.Windows;
 
 public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindowViewModel
 {
-    private readonly IArchiveInstaller _archiveInstaller;
     private readonly IWindowManager _windowManager;
-    private readonly IConnection _conn;
 
     public MainWindowViewModel(
         IServiceProvider serviceProvider,
-        ILogger<MainWindowViewModel> logger,
         IOSInformation osInformation,
         IWindowManager windowManager,
-        IOverlayController controller,
-        IDownloadService downloadService,
-        IArchiveInstaller archiveInstaller,
-        IMetricsOptInViewModel metricsOptInViewModel,
-        IUpdaterViewModel updaterViewModel,
-        IConnection conn)
+        IOverlayController controller)
     {
         // NOTE(erri120): can't use DI for VMs that require an active Window because
         // those VMs would be instantiated before this constructor gets called.
@@ -56,9 +42,6 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
 
         Spine = serviceProvider.GetRequiredService<ISpineViewModel>();
         DevelopmentBuildBanner = serviceProvider.GetRequiredService<IDevelopmentBuildBannerViewModel>();
-
-        _archiveInstaller = archiveInstaller;
-        _conn = conn;
 
         // Only show controls in Windows since we can remove the chrome on that platform
         TopBar.ShowWindowControls = osInformation.IsWindows;
@@ -84,9 +67,18 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
                 })
                 .DisposeWith(d);
 
+            var alphaWarningViewModel = serviceProvider.GetRequiredService<IAlphaWarningViewModel>();
+            alphaWarningViewModel.WorkspaceController = WorkspaceController;
+            alphaWarningViewModel.MaybeShow();
+
+            var metricsOptInViewModel = serviceProvider.GetRequiredService<IMetricsOptInViewModel>();
+
             // Only show the updater if the metrics opt-in has been shown before, so we don't spam the user.
             if (!metricsOptInViewModel.MaybeShow())
+            {
+                var updaterViewModel = serviceProvider.GetRequiredService<IUpdaterViewModel>();
                 updaterViewModel.MaybeShow();
+            }
 
             this.WhenAnyValue(vm => vm.Spine.LeftMenuViewModel)
                 .BindToVM(this, vm => vm.LeftMenu)

@@ -80,7 +80,10 @@
             <icons:UnifiedIcon Classes="ModLibrary" />
             <icons:UnifiedIcon Classes="ListFilled" />
             <icons:UnifiedIcon Classes="FileEdit"/>
-            
+            <icons:UnifiedIcon Classes="Code"/>
+            <icons:UnifiedIcon Classes="Discord"/>
+            <icons:UnifiedIcon Classes="Forum"/>
+
         </WrapPanel>
     </Design.PreviewWith>
 
@@ -396,7 +399,19 @@
         <Setter Property="Value" Value="{x:Static icons:IconValues.ListFilled}"/>
     </Style>
 
-    <Style Selector="icons|UnifiedIcon.ListFilled">
+    <Style Selector="icons|UnifiedIcon.FileEdit">
         <Setter Property="Value" Value="{x:Static icons:IconValues.FileEdit}"/>
+    </Style>
+
+    <Style Selector="icons|UnifiedIcon.Code">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.Code}"/>
+    </Style>
+
+    <Style Selector="icons|UnifiedIcon.Discord">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.Discord}"/>
+    </Style>
+
+    <Style Selector="icons|UnifiedIcon.Forum">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.Forum}"/>
     </Style>
 </Styles>
