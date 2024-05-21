@@ -50,4 +50,15 @@
         <SubType>Code</SubType>
       </Compile>
     </ItemGroup>
+
+    <ItemGroup>
+      <None Update="uninstall-helper.ps1">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
+    <Target Name="CopyCustomContentOnPublish" AfterTargets="Publish"
+            Condition="'$(RuntimeIdentifier)' == 'win-x64' Or '$(RuntimeIdentifier)' == 'win-x86' Or '$(RuntimeIdentifier)' == 'win'">
+        <Copy SourceFiles="uninstall.bat" DestinationFolder="$(PublishDir)" />
+    </Target>
 </Project>

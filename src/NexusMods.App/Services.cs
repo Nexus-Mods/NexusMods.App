@@ -7,6 +7,7 @@ using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.Activities;
+using NexusMods.App.Commandline;
 using NexusMods.App.UI;
 using NexusMods.CLI;
 using NexusMods.CrossPlatform;
@@ -99,7 +100,8 @@ public static class Services
                 .AddTestHarness()
                 .AddSingleton<HttpClient>()
                 .AddFileSystem()
-                .AddDownloaders();
+                .AddDownloaders()
+                .AddCleanupVerbs();
 
             if (addStandardGameLocators)
                 services.AddStandardGameLocators();

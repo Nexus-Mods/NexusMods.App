@@ -5,6 +5,9 @@ using NexusMods.Paths;
 
 namespace NexusMods.App;
 
+/// <summary>
+/// Settings related to logging in the Nexus Mods App. 
+/// </summary>
 public record LoggingSettings : ISettings
 {
     /// <summary>
@@ -82,17 +85,18 @@ public record LoggingSettings : ISettings
                 )
             );
     }
+    
+    public static AbsolutePath GetLogBaseFolder(IOSInformation os, IFileSystem fs)
+    {
+        var baseKnownPath = BaseKnownPath(os);
+        var baseDirectoryName = GetBaseDirectoryName(os);
+        return fs.GetKnownPath(baseKnownPath).Combine(baseDirectoryName);
+    }
 
     public static LoggingSettings CreateDefault(IOSInformation os)
     {
-        var baseKnownPath = os.MatchPlatform(
-            onWindows: () => KnownPath.LocalApplicationDataDirectory,
-            onLinux: () => KnownPath.XDG_STATE_HOME,
-            onOSX: () => KnownPath.LocalApplicationDataDirectory
-        );
-
-        // NOTE: OSX ".App" is apparently special, using _ instead of . to prevent weirdness
-        var baseDirectoryName = os.IsOSX ? "NexusMods_App/Logs" : "NexusMods.App/Logs";
+        var baseKnownPath = BaseKnownPath(os);
+        var baseDirectoryName = GetBaseDirectoryName(os);
 
         return new LoggingSettings
         {
@@ -101,5 +105,18 @@ public record LoggingSettings : ISettings
             SlimProcessLogFilePath = new ConfigurablePath(baseKnownPath, $"{baseDirectoryName}/nexusmods.app.slim.current.log"),
             SlimProcessArchiveFilePath = new ConfigurablePath(baseKnownPath, $"{baseDirectoryName}/nexusmods.app.slim.{{##}}.log"),
         };
+    }
+    
+    // NOTE: OSX ".App" is apparently special, using _ instead of . to prevent weirdness
+    private static string GetBaseDirectoryName(IOSInformation os) => os.IsOSX ? "NexusMods_App/Logs" : "NexusMods.App/Logs";
+
+    private static KnownPath BaseKnownPath(IOSInformation os)
+    {
+        var baseKnownPath = os.MatchPlatform(
+            onWindows: () => KnownPath.LocalApplicationDataDirectory,
+            onLinux: () => KnownPath.XDG_STATE_HOME,
+            onOSX: () => KnownPath.LocalApplicationDataDirectory
+        );
+        return baseKnownPath;
     }
 }

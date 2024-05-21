@@ -40,15 +40,7 @@ public record DataModelSettings : ISettings
     public static DataModelSettings CreateDefault(IServiceProvider serviceProvider)
     {
         var os = serviceProvider.GetRequiredService<IFileSystem>().OS;
-
-        var baseKnownPath = os.MatchPlatform(
-            onWindows: () => KnownPath.LocalApplicationDataDirectory,
-            onLinux: () => KnownPath.XDG_DATA_HOME,
-            onOSX: () => KnownPath.LocalApplicationDataDirectory
-        );
-
-        // NOTE: OSX ".App" is apparently special, using _ instead of . to prevent weirdness
-        var baseDirectoryName = os.IsOSX ? "NexusMods_App/DataModel" : "NexusMods.App/DataModel";
+        var baseKnownPath = GetStandardDataModelPaths(os, out var baseDirectoryName);
 
         return new DataModelSettings
         {
@@ -57,5 +49,29 @@ public record DataModelSettings : ISettings
                 new ConfigurablePath(baseKnownPath, $"{baseDirectoryName}/Archives"),
             ],
         };
+    }
+
+    private static KnownPath GetStandardDataModelPaths(IOSInformation os, out string baseDirectoryName)
+    {
+        var baseKnownPath = os.MatchPlatform(
+            onWindows: () => KnownPath.LocalApplicationDataDirectory,
+            onLinux: () => KnownPath.XDG_DATA_HOME,
+            onOSX: () => KnownPath.LocalApplicationDataDirectory
+        );
+
+        // NOTE: OSX ".App" is apparently special, using _ instead of . to prevent weirdness
+        baseDirectoryName = os.IsOSX ? "NexusMods_App/DataModel" : "NexusMods.App/DataModel";
+        return baseKnownPath;
+    }
+    
+    /// <summary>
+    /// Retrieves the default DataModel folder.
+    /// This folder is reserved for the App and should not store user info.
+    /// </summary>
+    public static AbsolutePath GetStandardDataModelFolder(IFileSystem fs)
+    {
+        var os = fs.OS;
+        var baseKnownPath = GetStandardDataModelPaths(os, out var baseDirectoryName);
+        return fs.GetKnownPath(baseKnownPath).Combine(baseDirectoryName);
     }
 }
