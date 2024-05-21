@@ -12,7 +12,7 @@ namespace NexusMods.App.UI.Pages.Downloads.ViewModels;
 public interface IDownloadTaskViewModel : IViewModelInterface
 {
     
-    public IDownloadTask Task { get; }
+    public IDownloadTask DlTask { get; }
     
     /// <summary>
     /// e.g. 'My Cool Mod'
@@ -84,25 +84,19 @@ public interface IDownloadTaskViewModel : IViewModelInterface
     /// <summary>
     /// Schedules a cancellation of the task.
     /// </summary>
-    public void Cancel()
-    {
+    public Task Cancel();
 
-    }
 
     /// <summary>
     /// Suspends the task, keeping it around in memory.
     /// </summary>
-    public void Suspend()
-    {
+    public Task Suspend();
 
-    }
 
     /// <summary>
     /// Resumes the task from a suspended state.
     /// </summary>
-    public void Resume()
-    {
+    public Task Resume();
 
-    }
 }
 

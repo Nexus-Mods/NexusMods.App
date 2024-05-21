@@ -9,7 +9,7 @@ namespace NexusMods.App.UI.Pages.Downloads.ViewModels;
 
 public class DownloadTaskDesignViewModel : AViewModel<IDownloadTaskViewModel>, IDownloadTaskViewModel
 {
-    public IDownloadTask Task => null!;
+    public IDownloadTask DlTask => null!;
     public string Name { get; set; } = "Design Mod";
     public string Version { get; set; } = "1.0.0";
     public string Game { get; set; } = "Unknown Game";
@@ -22,6 +22,10 @@ public class DownloadTaskDesignViewModel : AViewModel<IDownloadTaskViewModel>, I
 
     public ReactiveCommand<Unit, Unit> HideCommand { get; } = ReactiveCommand.Create(() => { });
     public ReactiveCommand<NavigationInformation, Unit> ViewInLibraryCommand { get; } = ReactiveCommand.Create<NavigationInformation>(_ => { });
+    public Task Cancel() => Task.CompletedTask;
+    public Task Suspend() => Task.CompletedTask;
+    public Task Resume() => Task.CompletedTask;
+
     public long DownloadedBytes { get; set; } = 1024 * 1024 * 512;
     public long SizeBytes { get; set; } = 1024 * 1024 * 1337;
     public long Throughput { get; set; } = 0;

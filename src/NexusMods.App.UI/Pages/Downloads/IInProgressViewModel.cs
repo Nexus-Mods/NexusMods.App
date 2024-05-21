@@ -90,19 +90,4 @@ public interface IInProgressViewModel : IPageViewModelInterface
     
     ReactiveCommand<Unit, Unit> HideAllCommand { get; }
 
-    /// <summary>
-    /// Cancels all the passed tasks, without asking for confirmation.
-    /// </summary>
-    void CancelTasks(IEnumerable<IDownloadTaskViewModel> tasks);
-
-    /// <summary>
-    /// Suspends all the "Downloading" passed tasks.
-    /// </summary>
-    void SuspendTasks(IEnumerable<IDownloadTaskViewModel> tasks);
-
-    /// <summary>
-    /// Resumes all the "Paused" passed tasks.
-    /// </summary>
-    void ResumeTasks(IEnumerable<IDownloadTaskViewModel> tasks);
-
 }

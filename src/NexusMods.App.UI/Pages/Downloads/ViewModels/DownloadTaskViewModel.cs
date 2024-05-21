@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -82,7 +81,7 @@ public class DownloadTaskViewModel : AViewModel<IDownloadTaskViewModel>, IDownlo
         });
     }
 
-    public IDownloadTask Task => _task;
+    public IDownloadTask DlTask => _task;
     [Reactive] public string Name { get; set; } = "";
 
     [Reactive] public string Version { get; set; } = "";
@@ -106,10 +105,11 @@ public class DownloadTaskViewModel : AViewModel<IDownloadTaskViewModel>, IDownlo
 
     public ReactiveCommand<Unit, Unit> HideCommand { get; set; } = ReactiveCommand.Create(() => { });
     
-    public ReactiveCommand<NavigationInformation, Unit> ViewInLibraryCommand { get; set; } = ReactiveCommand.Create<NavigationInformation>(_ => { });
+    public ReactiveCommand<NavigationInformation, Unit> ViewInLibraryCommand { get; set; } = 
+        ReactiveCommand.Create<NavigationInformation>(_ => { });
     
-    public void Cancel() => _task.Cancel();
-    public void Suspend() => _task.Suspend();
-    public void Resume() => _task.Resume();
+    public Task Cancel() => _task.Cancel();
+    public Task Suspend() => _task.Suspend();
+    public Task Resume() => _task.Resume();
     
 }
