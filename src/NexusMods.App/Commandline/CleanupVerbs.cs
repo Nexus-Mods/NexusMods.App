@@ -34,6 +34,9 @@ internal static class CleanupVerbs
         [Injected] ISettingsManager settingsManager,
         [Injected] IFileSystem fileSystem)
     {
+        // Prevent a race condition where `IRepository` is not fully done initializing.
+        Thread.Sleep(1000);
+        
         // Step 1: Revert the managed games to their original state
         using var db = conn.Db;
         var managedInstallations = db.Loadouts()
