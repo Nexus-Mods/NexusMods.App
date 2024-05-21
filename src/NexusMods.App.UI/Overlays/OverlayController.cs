@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using Avalonia.Threading;
 
 namespace NexusMods.App.UI.Overlays;
 
@@ -41,7 +42,16 @@ public class OverlayController : IOverlayController, INotifyPropertyChanged
         
         CurrentOverlay = _queue.Dequeue();
         CurrentOverlay.Status = Status.Visible;
-        OnPropertyChanged(nameof(CurrentOverlay));
+        NotifyCurrentOverlayChanged();
+    }
+
+    private void NotifyCurrentOverlayChanged()
+    {
+        Dispatcher.UIThread.Invoke(() =>
+            {
+                OnPropertyChanged(nameof(CurrentOverlay));
+            }
+        );
     }
 
     public void Remove(IOverlayViewModel model)
@@ -53,7 +63,7 @@ public class OverlayController : IOverlayController, INotifyPropertyChanged
                 var oldOverlay = CurrentOverlay;
                 oldOverlay.Status = Status.Closed;
                 CurrentOverlay = null;
-                OnPropertyChanged(nameof(CurrentOverlay));
+                NotifyCurrentOverlayChanged();
                 ProcessNext();
             }
             else

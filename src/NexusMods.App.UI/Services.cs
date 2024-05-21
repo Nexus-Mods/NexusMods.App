@@ -258,6 +258,9 @@ public static class Services
             .AddSingleton<IValueFormatter, LoadoutReferenceFormatter>()
             .AddSingleton<IValueFormatter, NamedLinkFormatter>()
             .AddSingleton<IDiagnosticWriter, DiagnosticWriter>()
+            
+            // Overlay Helpers
+            .AddHostedService<NexusLoginOverlayService>()
 
             // Settings
             .AddUISettings()

@@ -15,10 +15,6 @@ public class MetricsOptInViewModel : AOverlayViewModel<IMetricsOptInViewModel>, 
     private readonly IOverlayController _overlayController;
     private readonly ISettingsManager _settingsManager;
 
-    [Reactive]
-    public bool IsActive { get; set; }
-
-    public IOverlayController? Controller { get; set; }
     public ICommand Allow { get; }
     public ICommand Deny { get; }
 
@@ -38,7 +34,7 @@ public class MetricsOptInViewModel : AOverlayViewModel<IMetricsOptInViewModel>, 
                 HasShownPrompt = true,
             });
 
-            IsActive = false;
+            Close();
         });
 
         Deny = ReactiveCommand.Create(() =>
@@ -49,7 +45,7 @@ public class MetricsOptInViewModel : AOverlayViewModel<IMetricsOptInViewModel>, 
                 HasShownPrompt = true,
             });
 
-            IsActive = false;
+            Close();
         });
     }
 

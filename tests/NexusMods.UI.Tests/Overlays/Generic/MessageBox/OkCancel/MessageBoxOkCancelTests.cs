@@ -12,7 +12,7 @@ public class MessageBoxOkCancelTests : AViewTest<MessageBoxOkCancelView, Message
     public MessageBoxOkCancelTests(IServiceProvider provider) : base(provider) { }
     
     [Fact]
-    public async Task OkButton_ShouldSetDialogResultToTrue_AndIsActiveToFalse()
+    public async Task OkButton_ShouldSetDialogResultToTrue_AndStatusToClosed()
     {
         var controler = new OverlayController();
         
@@ -28,7 +28,7 @@ public class MessageBoxOkCancelTests : AViewTest<MessageBoxOkCancelView, Message
     }
 
     [Fact]
-    public async Task CancelButton_ShouldSetDialogResultToFalse_AndIsActiveToFalse()
+    public async Task CancelButton_ShouldSetDialogResultToFalse_AndStatusIsClosed()
     {
         var controler = new OverlayController();
         
@@ -44,7 +44,7 @@ public class MessageBoxOkCancelTests : AViewTest<MessageBoxOkCancelView, Message
     }
 
     [Fact]
-    public async Task CloseButton_ShouldSetDialogResultToFalse_AndIsActiveToFalse()
+    public async Task CloseButton_ShouldSetDialogResultToFalse_AndStatusIsClosed()
     {
         var controler = new OverlayController();
         
