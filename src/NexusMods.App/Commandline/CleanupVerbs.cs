@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using System.Reflection;
 using System.Text;
 using CliWrap;
 using CliWrap.Buffered;
@@ -90,7 +92,7 @@ internal static class CleanupVerbs
             if (fileSystem.OS.IsUnix())
                 await DeleteRemainingFilesUnix(renderer, appFiles, appDirectories);
             else
-                DeleteRemainingFilesWindows(appFiles, appDirectories);
+                await DeleteRemainingFilesWindows(appFiles, appDirectories);
 
             await renderer.Text("Application uninstalled successfully");
             return 0;
@@ -112,39 +114,26 @@ internal static class CleanupVerbs
         await DeleteDirectoriesUnix(renderer, appDirectories);
     }
     
-    private static void DeleteRemainingFilesWindows(AbsolutePath[] appFiles, IEnumerable<AbsolutePath> appDirectories)
+    private static async Task DeleteRemainingFilesWindows(AbsolutePath[] appFiles, IEnumerable<AbsolutePath> appDirectories)
     {
-        var scriptContent = new StringBuilder();
+        var filesToDeletePath = Path.Combine(Path.GetTempPath(), "files_to_delete.txt");
+        await File.WriteAllLinesAsync(filesToDeletePath, appFiles.Select(f => f.ToString()));
 
-        // Kill the App Client and Server
-        scriptContent.AppendLine("Stop-Process -Name \"NexusMods.App\" -Force -ErrorAction SilentlyContinue");
+        var directoriesToDeletePath = Path.Combine(Path.GetTempPath(), "directories_to_delete.txt");
+        await File.WriteAllLinesAsync(directoriesToDeletePath, appDirectories.Select(d => d.ToString()));
 
-        // Note(Sewer) Ensure the process handles are freed, just in case.
-        scriptContent.AppendLine("Start-Sleep -Seconds 1");
+        // uninstall-helper.ps1 is beside our current EXE.
+        var scriptPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!, "uninstall-helper.ps1");
 
-        foreach (var appFile in appFiles)
-            scriptContent.AppendLine($"Remove-Item -Path \"{appFile}\" -Force -ErrorAction SilentlyContinue");
+        // Execute the PowerShell script
+        await Cli.Wrap("powershell")
+            .WithArguments($"-ExecutionPolicy Bypass -Command \"& \"{scriptPath}\" -FilesToDeletePath \"{filesToDeletePath}\" -DirectoriesToDeletePath \"{directoriesToDeletePath}\"\"")
+            .ExecuteAsync();
 
-        foreach (var directory in appDirectories)
-            scriptContent.AppendLine($"Remove-Item -Path \"{directory}\" -Recurse -Force -ErrorAction SilentlyContinue");
-
-        // Remove the script itself
-        scriptContent.AppendLine("Remove-Item -Path $MyInvocation.MyCommand.Path -Force -ErrorAction SilentlyContinue");
-
-        // Save the script to a temporary file
-        var tempFile = Path.GetTempFileName();
-        var tempScriptPath = tempFile.Replace(".tmp", ".ps1");
-        File.Delete(tempFile);
-        File.WriteAllText(tempScriptPath, scriptContent.ToString());
-
-        // Execute the script
-        Task.Run(async () => await Cli.Wrap("powershell.exe")
-            .WithArguments(new[] { "-ExecutionPolicy", "Bypass", "-File", tempScriptPath })
-            .ExecuteBufferedAsync()).Wait();
-
-        // Script will terminate this process, this is just ensuring we don't exit early.
-        Thread.Sleep(10);
-        File.Delete(tempScriptPath);
+        // Clean up the temporary files
+        // Note: This should never be executed in practice.
+        File.Delete(filesToDeletePath);
+        File.Delete(directoriesToDeletePath);
     }
 
     private static async Task DeleteDirectoriesUnix(IRenderer renderer, IEnumerable<AbsolutePath> appDirectories)
