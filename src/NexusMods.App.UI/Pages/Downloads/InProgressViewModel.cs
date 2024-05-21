@@ -188,7 +188,6 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
                             CancelTasks(SelectedTasks.Items);
                     }
                 }, InProgressTasks.ToObservableChangeSet()
-                    .AutoRefresh(task => task.Status)
                     .Select(_ => InProgressTasks.Any()))
                 .DisposeWith(d);
         });
@@ -274,28 +273,24 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
             SuspendSelectedTasksCommand = ReactiveCommand.Create(
                     () => { SuspendTasks(SelectedTasks.Items); },
                     SelectedTasks.Connect()
-                        .AutoRefresh(task => task.Status)
                         .Select(_ => SelectedTasks.Items.Any(task => task.Status == DownloadTaskStatus.Downloading)))
                 .DisposeWith(d);
 
             ResumeSelectedTasksCommand = ReactiveCommand.Create(
                     () => { ResumeTasks(SelectedTasks.Items); },
                     SelectedTasks.Connect()
-                        .AutoRefresh(task => task.Status)
                         .Select(_ => SelectedTasks.Items.Any(task => task.Status == DownloadTaskStatus.Paused)))
                 .DisposeWith(d);
 
             SuspendAllTasksCommand = ReactiveCommand.Create(
                     () => { SuspendTasks(InProgressTasks); },
                     InProgressTasks.ToObservableChangeSet()
-                        .AutoRefresh(task => task.Status)
                         .Select(_ => InProgressTasks.Any(task => task.Status == DownloadTaskStatus.Downloading)))
                 .DisposeWith(d);
 
             ResumeAllTasksCommand = ReactiveCommand.Create(
                     () => { ResumeTasks(InProgressTasks); },
                     InProgressTasks.ToObservableChangeSet()
-                        .AutoRefresh(task => task.Status)
                         .Select(_ => InProgressTasks.Any(task => task.Status == DownloadTaskStatus.Paused)))
                 .DisposeWith(d);
             
