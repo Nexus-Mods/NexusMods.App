@@ -10,13 +10,15 @@ namespace NexusMods.App.UI.Overlays.MetricsOptIn;
 /// <summary>
 /// Primary view model for the MetricsOptIn overlay.
 /// </summary>
-public class MetricsOptInViewModel : AViewModel<IMetricsOptInViewModel>, IMetricsOptInViewModel
+public class MetricsOptInViewModel : AOverlayViewModel<IMetricsOptInViewModel>, IMetricsOptInViewModel
 {
     private readonly IOverlayController _overlayController;
     private readonly ISettingsManager _settingsManager;
 
     [Reactive]
     public bool IsActive { get; set; }
+
+    public IOverlayController? Controller { get; set; }
     public ICommand Allow { get; }
     public ICommand Deny { get; }
 
@@ -55,7 +57,7 @@ public class MetricsOptInViewModel : AViewModel<IMetricsOptInViewModel>, IMetric
     {
         if (_settingsManager.Get<TelemetrySettings>().HasShownPrompt) return false;
 
-        _overlayController.SetOverlayContent(new SetOverlayItem(this));
+        _overlayController.Enqueue(this);
         return true;
     }
 }

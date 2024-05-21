@@ -53,11 +53,11 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
                 .BindTo(this, view => view.LeftMenuViewModelHost.ViewModel)
                 .DisposeWith(disposables);
 
-            this.WhenAnyValue(view => view.ViewModel!.OverlayContent)
+            this.WhenAnyValue(view => view.ViewModel!.OverlayController.CurrentOverlay)
                 .BindTo(this, view => view.OverlayViewHost.ViewModel)
                 .DisposeWith(disposables);
 
-            this.WhenAnyValue(view => view.ViewModel!.OverlayContent)
+            this.WhenAnyValue(view => view.ViewModel!.OverlayController.CurrentOverlay)
                 .Select(content => content != null)
                 .BindTo(this, view => view.OverlayBorder.IsVisible)
                 .DisposeWith(disposables);

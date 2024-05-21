@@ -11,115 +11,104 @@ public class OverlayViewModelTests
     public void SetOverlayContent_CanGetLastOverlayViewModel()
     {
         // Arrange
-        var overlay = new SetOverlayItem(new MockOverlayViewModel());
+        var overlay = new MockOverlayViewModel();
         var controller = new OverlayController();
         
         // Act
-        controller.SetOverlayContent(overlay);
+        controller.Enqueue(overlay);
         
         // Assert that the last overlay is the one we just added
-        controller.GetLastOverlay().Should().Be(overlay);
+        controller.CurrentOverlay.Should().Be(overlay);
     }
     
     [Fact]
     public void SetOverlayContent_WithTwoOverlays_CanGetLastOverlayViewModel()
     {
         // Arrange
-        var overlay = new SetOverlayItem(new MockOverlayViewModel(true));
-        var overlay2 = new SetOverlayItem(new MockOverlayViewModel(true));
+        var overlay1 = new MockOverlayViewModel();
+        var overlay2 = new MockOverlayViewModel();
         
         var controller = new OverlayController();
 
         // Act
-        controller.SetOverlayContent(overlay);
-        controller.SetOverlayContent(overlay2);
+        controller.Enqueue(overlay1);
+        controller.Enqueue(overlay2);
         
         // Check if first overlay is loaded.
-        controller.GetLastOverlay().Should().Be(overlay);
-        overlay.VM.IsActive = false; // Unloads the overlay, causing queue item to be popped.
+        controller.CurrentOverlay.Should().Be(overlay1);
+        overlay1.Status.Should().Be(Status.Visible);
+        overlay2.Status.Should().Be(Status.NotShown);
+        
+        overlay1.Close();
         
         // Assert next modal got loaded.
-        controller.GetLastOverlay().Should().Be(overlay2);
-        overlay2.VM.IsActive = false;
+        controller.CurrentOverlay.Should().Be(overlay2);
+        overlay2.Status.Should().Be(Status.Visible);
         
-        // Assert last modal is null
-        controller.GetLastOverlay().Should().BeNull();
+        // Assert last modal is closed
+        overlay1.Status.Should().Be(Status.Closed);
     }
     
     [Fact]
     public void SetOverlayContent_WithThreeOverlays_CanGetLastOverlayViewModel()
     {
         // Arrange
-        var overlay = new SetOverlayItem(new MockOverlayViewModel(true));
-        var overlay2 = new SetOverlayItem(new MockOverlayViewModel(true));
-        var overlay3 = new SetOverlayItem(new MockOverlayViewModel(true));
+        var overlay1 = new MockOverlayViewModel();
+        var overlay2 = new MockOverlayViewModel();
+        var overlay3 = new MockOverlayViewModel();
         
         var controller = new OverlayController();
 
         // Act
-        controller.SetOverlayContent(overlay);
-        controller.SetOverlayContent(overlay2);
-        controller.SetOverlayContent(overlay3);
+        controller.Enqueue(overlay1);
+        controller.Enqueue(overlay2);
+        controller.Enqueue(overlay3);
         
         // Check if first overlay is loaded.
-        controller.GetLastOverlay().Should().Be(overlay);
-        overlay.VM.IsActive = false; // Unloads the overlay, causing queue item to be popped.
+        controller.CurrentOverlay.Should().Be(overlay1);
+        overlay1.Status.Should().Be(Status.Visible);
+        overlay2.Status.Should().Be(Status.NotShown);
+        overlay3.Status.Should().Be(Status.NotShown);
+        overlay1.Close();
         
         // Assert next modal got loaded.
-        controller.GetLastOverlay().Should().Be(overlay2);
-        overlay2.VM.IsActive = false;
+        controller.CurrentOverlay.Should().Be(overlay2);
+        overlay1.Status.Should().Be(Status.Closed);
+        overlay2.Status.Should().Be(Status.Visible);
+        overlay3.Status.Should().Be(Status.NotShown);
         
         // Assert next modal got loaded.
-        controller.GetLastOverlay().Should().Be(overlay3);
-        overlay3.VM.IsActive = false;
+        controller.CurrentOverlay.Should().Be(overlay3);
+        overlay1.Status.Should().Be(Status.Closed);
+        overlay2.Status.Should().Be(Status.Closed);
+        overlay3.Status.Should().Be(Status.Visible);
     }
     
     [Fact]
-    public void SetOverlayViewModel_ShouldUpdateViewModel()
+    public async Task SetOverlayViewModel_WhenActiveIsFalse_TaskIsCompleted()
     {
         // Arrange
-        var overlay = new SetOverlayItem(new MockOverlayViewModel());
-
-        var controller = new OverlayController();
-        var updated = false;
-
-        // Act
-        using var sub = controller.ApplyNextOverlay.Subscribe(_ => { updated = true; });
-        controller.SetOverlayContent(overlay);
-
-        // Assert
-        updated.Should().BeTrue();
-    }
-    
-    [Fact]
-    public void SetOverlayViewModel_WhenActiveIsFalse_TaskIsCompleted()
-    {
-        // Arrange
-        var overlay = new SetOverlayItem(new MockOverlayViewModel(true));
+        var overlay = new MockOverlayViewModel();
         var tcs = new TaskCompletionSource<bool>();
         
         var controller = new OverlayController();
         var updated = false;
 
         // Act
-        using var sub = controller.ApplyNextOverlay.Subscribe(_ => { updated = true; });
-        controller.SetOverlayContent(overlay, tcs);
-        overlay.VM.IsActive = false;
+        using var sub = overlay.CompletionTask.ContinueWith(t =>
+        {
+            updated = true;
+            tcs.SetResult(t.IsCompletedSuccessfully);
+        });
+        controller.Enqueue(overlay);
+        overlay.Close();
 
         // Assert
+        await tcs.Task;
         updated.Should().BeTrue();
-        tcs.Task.Result.Should().BeTrue();
     }
     
-    public class MockOverlayViewModel : AViewModel<IOverlayViewModel>, IOverlayViewModel
+    public class MockOverlayViewModel : AOverlayViewModel<IOverlayViewModel>
     {
-        [Reactive]
-        public bool IsActive { get; set; }
-        
-        public MockOverlayViewModel() { }
-        public MockOverlayViewModel(bool isActive)
-        {
-            IsActive = isActive;
-        }
     }
 }

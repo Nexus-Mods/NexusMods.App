@@ -19,6 +19,7 @@ using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadStatus;
 using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadVersion;
 using NexusMods.App.UI.Helpers;
 using NexusMods.App.UI.Overlays;
+using NexusMods.App.UI.Overlays.Download.Cancel;
 using NexusMods.App.UI.Pages.Downloads.ViewModels;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
@@ -151,7 +152,8 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
                 {
                     if (SelectedTasks.Items.Any())
                     {
-                        var result = await overlayController.ShowCancelDownloadOverlay(SelectedTasks.Items.ToList());
+                        var newCancelDialog = new CancelDownloadOverlayViewModel(SelectedTasks.Items.ToList());
+                        var result = await overlayController.Enqueue(newCancelDialog);
                         if (result)
                             CancelTasks(SelectedTasks.Items);
                     }

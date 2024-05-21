@@ -1,4 +1,5 @@
 using FluentAssertions;
+using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Overlays.Generic.MessageBox.OkCancel;
 
 namespace NexusMods.UI.Tests.Overlays.Generic.MessageBox.OkCancel;
@@ -13,42 +14,48 @@ public class MessageBoxOkCancelTests : AViewTest<MessageBoxOkCancelView, Message
     [Fact]
     public async Task OkButton_ShouldSetDialogResultToTrue_AndIsActiveToFalse()
     {
+        var controler = new OverlayController();
+        
         await OnUi(() =>
         {
-            ViewModel.IsActive.Should().BeTrue();
+            controler.Enqueue((IOverlayViewModel)ViewModel);
             
             Click_AlreadyOnUi(View.OkButton);
 
-            ViewModel.DialogResult.Should().BeTrue();
-            ViewModel.IsActive.Should().BeFalse();
+            ViewModel.Result.Should().BeTrue();
+            ViewModel.Status.Should().Be(Status.Closed);
         });
     }
 
     [Fact]
     public async Task CancelButton_ShouldSetDialogResultToFalse_AndIsActiveToFalse()
     {
+        var controler = new OverlayController();
+        
         await OnUi(() =>
         {
-            ViewModel.IsActive.Should().BeTrue();
+            controler.Enqueue((IOverlayViewModel)ViewModel);
             
             Click_AlreadyOnUi(View.CancelButton);
 
-            ViewModel.DialogResult.Should().BeFalse();
-            ViewModel.IsActive.Should().BeFalse();
+            ViewModel.Result.Should().BeFalse();
+            ViewModel.Status.Should().Be(Status.Closed);
         });
     }
 
     [Fact]
     public async Task CloseButton_ShouldSetDialogResultToFalse_AndIsActiveToFalse()
     {
+        var controler = new OverlayController();
+        
         await OnUi(() =>
         {
-            ViewModel.IsActive.Should().BeTrue();
+            controler.Enqueue((IOverlayViewModel)ViewModel);
             
             Click_AlreadyOnUi(View.CloseButton);
 
-            ViewModel.DialogResult.Should().BeFalse();
-            ViewModel.IsActive.Should().BeFalse();
+            ViewModel.Result.Should().BeFalse();
+            ViewModel.Status.Should().Be(Status.Closed);
         });
     }
     

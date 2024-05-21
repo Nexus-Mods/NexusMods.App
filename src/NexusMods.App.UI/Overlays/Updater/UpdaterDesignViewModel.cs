@@ -7,7 +7,7 @@ using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Overlays.Updater;
 
-public class UpdaterDesignViewModel : AViewModel<IUpdaterViewModel>, IUpdaterViewModel
+public class UpdaterDesignViewModel : AOverlayViewModel<IUpdaterViewModel>, IUpdaterViewModel
 {
     [Reactive]
     public InstallationMethod Method { get; set; } = InstallationMethod.Archive;
@@ -69,4 +69,7 @@ public class UpdaterDesignViewModel : AViewModel<IUpdaterViewModel>, IUpdaterVie
 
     [Reactive]
     public bool IsActive { get; set; }
+
+    [Reactive]
+    public IOverlayController? Controller { get; set; }
 }

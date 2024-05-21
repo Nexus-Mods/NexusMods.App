@@ -9,7 +9,7 @@ using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Overlays.Login;
 
-public class NexusLoginOverlayViewModel : AViewModel<INexusLoginOverlayViewModel>, INexusLoginOverlayViewModel, IDisposable
+public class NexusLoginOverlayViewModel : AOverlayViewModel<INexusLoginOverlayViewModel>, INexusLoginOverlayViewModel, IDisposable
 {
     private readonly CompositeDisposable _compositeDisposable;
 
@@ -18,8 +18,8 @@ public class NexusLoginOverlayViewModel : AViewModel<INexusLoginOverlayViewModel
         _compositeDisposable = new CompositeDisposable();
 
         var currentJob = activityMonitor.Activities
-            .Select(f => f)
             .AsObservableChangeSet(x => x.Id)
+            .Transform(x => x)
             .QueryWhenChanged(q => q.Items.FirstOrDefault(activity => activity.Group.Value == Constants.OAuthActivityGroupName))
             .OnUI();
 
@@ -33,12 +33,11 @@ public class NexusLoginOverlayViewModel : AViewModel<INexusLoginOverlayViewModel
             {
                 if (!b)
                 {
-                    IsActive = false;
+                    Close();
                     return;
                 }
-
-                IsActive = true;
-                overlayController.SetOverlayContent(new SetOverlayItem(this));
+                
+                overlayController.Enqueue(this);
             })
             .DisposeWith(_compositeDisposable);
 
@@ -55,10 +54,7 @@ public class NexusLoginOverlayViewModel : AViewModel<INexusLoginOverlayViewModel
 
     [Reactive]
     public Uri Uri { get; set; } = new("https://www.nexusmods.com");
-
-    [Reactive]
-    public bool IsActive { get; set; }
-
+    
     public void Dispose()
     {
         _compositeDisposable.Dispose();

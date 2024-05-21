@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,7 +26,6 @@ namespace NexusMods.App.UI.Windows;
 
 public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindowViewModel
 {
-    private readonly INexusLoginOverlayViewModel _nexusLoginOverlayViewModel;
     private readonly IArchiveInstaller _archiveInstaller;
     private readonly IWindowManager _windowManager;
     private readonly IConnection _conn;
@@ -35,12 +35,11 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
         ILogger<MainWindowViewModel> logger,
         IOSInformation osInformation,
         IWindowManager windowManager,
-        IOverlayController controller,
         IDownloadService downloadService,
+        IOverlayController overlayController,
         IArchiveInstaller archiveInstaller,
         IMetricsOptInViewModel metricsOptInViewModel,
         IUpdaterViewModel updaterViewModel,
-        INexusLoginOverlayViewModel nexusLoginOverlayViewModel,
         IConnection conn)
     {
         // NOTE(erri120): can't use DI for VMs that require an active Window because
@@ -66,32 +65,11 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
         // Only show controls in Windows since we can remove the chrome on that platform
         TopBar.ShowWindowControls = osInformation.IsWindows;
         
-        // Don't delete this until we rework overlays, this is required so that the overlay constructor
-        // is called by DI.
-        _nexusLoginOverlayViewModel = nexusLoginOverlayViewModel;
+        OverlayController = overlayController;
 
 
         this.WhenActivated(d =>
         {
-            controller.ApplyNextOverlay.Subscribe(item =>
-                {
-                    if (item == null)
-                    {
-                        OverlayContent = null;
-                        return;
-                    }
-
-                    // This is the main window, if no reference control is specified, show it here.
-                    if (item.Value.ViewItem == null)
-                        OverlayContent = item.Value.VM;
-                    else
-                    {
-                        // TODO: Determine if we are the right window. For now we do nothing, until that helper is implemented
-                        OverlayContent = item.Value.VM;
-                    }
-                })
-                .DisposeWith(d);
-
             // Only show the updater if the metrics opt-in has been shown before, so we don't spam the user.
             if (!metricsOptInViewModel.MaybeShow())
                 updaterViewModel.MaybeShow();
@@ -118,7 +96,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
             }
         });
     }
-
+    
     internal void OnClose()
     {
         // NOTE(erri120): This gets called by the View and can't be inside the disposable
@@ -133,6 +111,11 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
 
     /// <inheritdoc/>
     public IWorkspaceController WorkspaceController { get; }
+    
+    /// <summary>
+    /// The overlay controller for the main window.
+    /// </summary>
+    public IOverlayController OverlayController { get; }
 
     [Reactive] public ISpineViewModel Spine { get; set; }
 
@@ -143,7 +126,4 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
 
     [Reactive]
     public IDevelopmentBuildBannerViewModel DevelopmentBuildBanner { get; set; }
-
-    [Reactive]
-    public IOverlayViewModel? OverlayContent { get; set; }
 }
