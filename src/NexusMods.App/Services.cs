@@ -30,33 +30,10 @@ using NexusMods.SingleProcess;
 using NexusMods.StandardGameLocators;
 using NexusMods.Telemetry;
 
-#if NEXUSMODS_APP_ENABLE_BETHESDA
-using NexusMods.Games.BethesdaGameStudios;
-#endif
-#if NEXUSMODS_APP_ENABLE_BLADE_AND_SORCERY
-using NexusMods.Games.BladeAndSorcery;
-#endif
-#if NEXUSMODS_APP_ENABLE_DARKEST_DUNGEON
-using NexusMods.Games.DarkestDungeon;
-#endif
-#if NEXUSMODS_APP_ENABLE_BANNERLORD
-using NexusMods.Games.MountAndBlade2Bannerlord;
-#endif
-#if NEXUSMODS_APP_ENABLE_CYBERPUNK_2077
-using NexusMods.Games.RedEngine;
-#endif
-#if NEXUSMODS_APP_ENABLE_SIFU
-using NexusMods.Games.Sifu;
-#endif
-#if NEXUSMODS_APP_ENABLE_STARDEW_VALLEY
-using NexusMods.Games.StardewValley;
-#endif
-
 namespace NexusMods.App;
 
 public static class Services
 {
-
     public static IServiceCollection AddApp(this IServiceCollection services,
         TelemetrySettings? telemetrySettings = null,
         bool addStandardGameLocators = true,
@@ -121,27 +98,26 @@ public static class Services
     private static IServiceCollection AddSupportedGames(this IServiceCollection services)
     {
 #if NEXUSMODS_APP_ENABLE_BETHESDA
-        services.AddBethesdaGameStudios();
+        Games.BethesdaGameStudios.Services.AddBethesdaGameStudios(services);
 #endif
 #if NEXUSMODS_APP_ENABLE_CYBERPUNK_2077
-        services.AddRedEngineGames();
+        Games.RedEngine.Services.AddRedEngineGames(services);
 #endif
 #if NEXUSMODS_APP_ENABLE_DARKEST_DUNGEON
-        services.AddDarkestDungeon();
+        Games.DarkestDungeon.Services.AddDarkestDungeon(services);
 #endif
 #if NEXUSMODS_APP_ENABLE_BLADE_AND_SORCERY
-        services.AddBladeAndSorcery();
+        Games.BladeAndSorcery.Services.AddBladeAndSorcery(services);
 #endif
 #if NEXUSMODS_APP_ENABLE_SIFU
-        services.AddSifu();
+        Games.Sifu.Services.AddSifu(services);
 #endif
 #if NEXUSMODS_APP_ENABLE_STARDEW_VALLEY
-        services.AddStardewValley();
+        Games.StardewValley.Services.AddStardewValley(services);
 #endif
 #if NEXUSMODS_APP_ENABLE_BANNERLORD
-        services.AddMountAndBladeBannerlord();
+        Games.MountAndBlade2Bannerlord.ServicesExtensions.AddMountAndBladeBannerlord(services);
 #endif
-
         return services;
     }
 }
