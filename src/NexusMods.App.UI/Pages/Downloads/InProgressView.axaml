@@ -10,7 +10,7 @@
     xmlns:downloads="clr-namespace:NexusMods.App.UI.Pages.Downloads"
     xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.Avalonia;assembly=LiveChartsCore.SkiaSharpView.Avalonia"
     xmlns:viewModels="clr-namespace:NexusMods.App.UI.Pages.Downloads.ViewModels"
-    mc:Ignorable="d" d:DesignWidth="920" d:DesignHeight="664"
+    mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="664"
     x:Class="NexusMods.App.UI.Pages.Downloads.InProgressView">
     <Design.DataContext>
         <downloads:InProgressDesignViewModel />
@@ -143,24 +143,64 @@
                                   HorizontalAlignment="Stretch"
                                   CanUserSortColumns="True"
                                   CanUserResizeColumns="True"
-                                  x:DataType="viewModels:IDownloadTaskViewModel">
+                                  x:DataType="viewModels:IDownloadTaskViewModel"
+                                  Width="1">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="MOD NAME"
-                                                    Binding="{CompiledBinding Name}"
-                                                    Width="0.5*" />
-                                <DataGridTextColumn Header="VERSION"
-                                                    Binding="{CompiledBinding Version}" />
-                                <DataGridTextColumn Header="GAME"
-                                                    Binding="{CompiledBinding Game}" />
-                                <DataGridTextColumn Header="SIZE"
-                                                    Binding="{CompiledBinding HumanizedSize}" />
-                                <DataGridTextColumn Header="COMPLETED"
-                                                    Binding="{CompiledBinding HumanizedCompletedTime}" />
+                                <DataGridTemplateColumn Header="MOD NAME" Width="*"> 
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate DataType="viewModels:IDownloadTaskViewModel">
+                                            <TextBlock Classes="BodyMDNormal"
+                                                       VerticalAlignment="Center"
+                                                       Text="{CompiledBinding Name}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
 
-                                <DataGridTemplateColumn Header="ACTIONS" Width="180">
+                                <DataGridTemplateColumn Header="VERSION"> 
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate DataType="viewModels:IDownloadTaskViewModel">
+                                            <TextBlock Classes="BodyMDNormal"
+                                                       VerticalAlignment="Center"
+                                                       Text="{CompiledBinding Version}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                
+                                <DataGridTemplateColumn Header="GAME"> 
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate DataType="viewModels:IDownloadTaskViewModel">
+                                            <TextBlock Classes="BodyMDNormal"
+                                                       VerticalAlignment="Center"
+                                                       Text="{CompiledBinding Game}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                
+                                <DataGridTemplateColumn Header="SIZE"> 
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate DataType="viewModels:IDownloadTaskViewModel">
+                                            <TextBlock Classes="BodyMDNormal"
+                                                       VerticalAlignment="Center"
+                                                       Text="{CompiledBinding HumanizedSize}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                
+                                <DataGridTemplateColumn Header="COMPLETED"> 
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate DataType="viewModels:IDownloadTaskViewModel">
+                                            <TextBlock Classes="BodyMDNormal"
+                                                       VerticalAlignment="Center"
+                                                       Text="{CompiledBinding HumanizedCompletedTime}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="ACTIONS" Width="Auto">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate DataType="viewModels:IDownloadTaskViewModel">
                                             <StackPanel Orientation="Horizontal"
+                                                        HorizontalAlignment="Center"
                                                         Classes="Spacing-4">
                                                 <Button x:Name="ViewInLibraryButton"
                                                         Classes="Rounded Primary"
@@ -170,11 +210,13 @@
                                                     </StackPanel>
                                                 </Button>
                                                 <Button Classes="BareIcon WindowClose"
-                                                        Command="{CompiledBinding HideCommand}" />
+                                                        Command="{CompiledBinding HideCommand}"
+                                                        Margin="0,0,16,0"/>
                                             </StackPanel>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
+                                
                             </DataGrid.Columns>
 
                         </DataGrid>
