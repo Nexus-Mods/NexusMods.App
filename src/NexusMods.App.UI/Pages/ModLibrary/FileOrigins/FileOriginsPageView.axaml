@@ -22,18 +22,53 @@
                   x:DataType="fileOriginEntry:IFileOriginEntryViewModel"
                   Width="1">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="{x:Static resources:Language.FileOriginsPageView_NameHeader}" 
-                                    Binding="{CompiledBinding Name}"
-                                    Width="*" />
-                <DataGridTextColumn Header="{x:Static resources:Language.FileOriginsPageView_VersionHeader}" 
-                                    Binding="{CompiledBinding Version}"/>
-                <DataGridTextColumn Header="{x:Static resources:Language.FileOriginsPageView_SizeHeader}" 
-                                    Binding="{CompiledBinding Size}"/>
-                <DataGridTextColumn Header="{x:Static resources:Language.FileOriginsPageView_DownloadedHeader}" 
-                                    Binding="{CompiledBinding DisplayArchiveDate}"/>
-                <DataGridTextColumn Header="{x:Static resources:Language.FileOriginsPageView_AddedHeader}" 
-                                    Binding="{CompiledBinding DisplayLastInstalledDate}"/>
-                <DataGridTemplateColumn Header="{x:Static resources:Language.FileOriginsPageView_ActionHeader}">
+                <DataGridTemplateColumn Header="{x:Static resources:Language.FileOriginsPageView_NameHeader}" 
+                                        Width="*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate DataType="fileOriginEntry:IFileOriginEntryViewModel">
+                            <TextBlock Classes="BodyMDNormal" 
+                                       VerticalAlignment="Center"
+                                       Text="{CompiledBinding Name}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="{x:Static resources:Language.FileOriginsPageView_VersionHeader}">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate DataType="fileOriginEntry:IFileOriginEntryViewModel">
+                            <TextBlock Classes="BodyMDNormal" 
+                                       VerticalAlignment="Center"
+                                       Text="{CompiledBinding Version}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="{x:Static resources:Language.FileOriginsPageView_SizeHeader}">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate DataType="fileOriginEntry:IFileOriginEntryViewModel">
+                            <TextBlock Classes="BodyMDNormal" 
+                                       VerticalAlignment="Center"
+                                       Text="{CompiledBinding Size}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="{x:Static resources:Language.FileOriginsPageView_DownloadedHeader}">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate DataType="fileOriginEntry:IFileOriginEntryViewModel">
+                            <TextBlock Classes="BodyMDNormal" 
+                                       VerticalAlignment="Center"
+                                       Text="{CompiledBinding DisplayArchiveDate}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="{x:Static resources:Language.FileOriginsPageView_AddedHeader}">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate DataType="fileOriginEntry:IFileOriginEntryViewModel">
+                            <TextBlock Classes="BodyMDNormal" 
+                                       VerticalAlignment="Center"
+                                       Text="{CompiledBinding DisplayLastInstalledDate}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="{x:Static resources:Language.FileOriginsPageView_ActionHeader}" Width="175">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate DataType="fileOriginEntry:IFileOriginEntryViewModel">
                             <Button x:Name="AddButton"
