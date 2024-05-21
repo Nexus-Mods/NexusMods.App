@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using NexusMods.Abstractions.Activities;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.Downloaders.Tasks.State;
@@ -56,6 +55,15 @@ public interface IDownloadTask
     /// Resumes a download task.
     /// </summary>
     Task Resume();
+
+    /// <summary>
+    /// Sets the <see cref="CompletedDownloadState.Hidden"/> on the task if it is completed.
+    /// </summary>
+    /// <param name="isHidden"> Value to set</param>
+    /// <param name="tx">Transaction to use, if none is passed a new transaction is created and committed.</param>
+    /// <remarks>If a transaction is passed, it is not committed, as it is assumed the caller will</remarks>
+    /// <returns></returns>
+    Task SetIsHidden(bool isHidden, ITransaction? tx = null);
 
     /// <summary>
     /// Reset (reload) the persistent state of the task from the database.

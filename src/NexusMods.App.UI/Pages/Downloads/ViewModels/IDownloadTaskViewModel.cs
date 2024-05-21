@@ -67,7 +67,7 @@ public interface IDownloadTaskViewModel : IViewModelInterface
     /// Whether this completed download was hidden from the UI (clear action).
     /// </summary>
     /// <value></value>
-    public bool IsHidden { get; }
+    public bool IsHidden { get; set; }
 
     /// <summary>
     /// Hides the task from the UI.

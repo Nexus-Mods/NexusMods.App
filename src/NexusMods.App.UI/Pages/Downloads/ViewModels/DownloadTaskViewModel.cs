@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -100,9 +101,9 @@ public class DownloadTaskViewModel : AViewModel<IDownloadTaskViewModel>, IDownlo
 
     [Reactive] public long Throughput { get; set; }
 
-    [Reactive] public bool IsHidden { get; private set; }
+    [Reactive] public bool IsHidden { get; set; }
 
-    public ReactiveCommand<Unit, Unit> HideCommand { get; set; } = ReactiveCommand.Create(() => { });
+    public ReactiveCommand<Unit, Unit> HideCommand { get; set; } = ReactiveCommand.Create(() => { Debugger.Break(); });
     
     public ReactiveCommand<Unit, Unit> ViewInLibraryCommand { get; set; } = ReactiveCommand.Create(() => { });
     

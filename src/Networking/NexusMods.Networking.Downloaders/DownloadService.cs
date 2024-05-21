@@ -143,6 +143,14 @@ public class DownloadService : IDownloadService, IAsyncDisposable
         return Optional<Percent>.Create(Percent.CreateClamped(total / tasks.Length));
     }
 
+    /// <inheritdoc />
+    public async Task SetIsHidden(bool isHidden, IDownloadTask[] targets)
+    {
+        var tx = _conn.BeginTransaction();
+        await Task.WhenAll(targets.Select(x => x.SetIsHidden(isHidden, tx)));
+        await tx.Commit();
+    }
+
     public async ValueTask DisposeAsync()
     {
         if (_isDisposed)

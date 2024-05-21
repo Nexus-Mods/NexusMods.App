@@ -17,7 +17,7 @@ public class DownloadTaskDesignViewModel : AViewModel<IDownloadTaskViewModel>, I
     public DownloadTaskStatus Status { get; set; } = DownloadTaskStatus.Idle;
     public EntityId TaskId { get; set; } = EntityId.From(1024);
 
-    public bool IsHidden => false;
+    public bool IsHidden { get; set; } = false;
 
     public ReactiveCommand<Unit, Unit> HideCommand { get; } = ReactiveCommand.Create(() => { });
     public ReactiveCommand<Unit, Unit> ViewInLibraryCommand { get; } = ReactiveCommand.Create(() => { });

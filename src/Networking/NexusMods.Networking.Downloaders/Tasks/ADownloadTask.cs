@@ -245,6 +245,17 @@ public abstract class ADownloadTask : ReactiveObject, IDownloadTask
             Logger.LogError(ex, "Failed to update activity status");
         }
     }
+    
+    /// <inheritdoc />
+    public async Task SetIsHidden(bool isHidden, ITransaction? tx = null)
+    {
+        if (PersistentState.Status != DownloadTaskStatus.Completed)
+            return;
+        var transaction = tx ?? Connection.BeginTransaction();
+        transaction.Add(PersistentState.Id, CompletedDownloadState.Hidden, isHidden);
+        if (tx == null)
+            await transaction.Commit();
+    }
 
     /// <inheritdoc />
     public void ResetState(IDb db)

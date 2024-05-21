@@ -40,6 +40,8 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
         Observable.Interval(TimeSpan.FromMilliseconds(PollTimeMilliseconds))
             .Select(_ => Unit.Default));
 
+    private IDownloadService _downloadService;
+    
     /// <summary>
     /// For designTime and Testing, provides an alternative list of tasks to use.
     /// </summary>
@@ -107,6 +109,7 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
         IDownloadService downloadService,
         IOverlayController overlayController) : base(windowManager)
     {
+        _downloadService = downloadService;
         Series = new ReadOnlyObservableCollection<ISeries>([
             new LineSeries<DateTimePoint>
             {
@@ -130,17 +133,18 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
         TabTitle = Language.InProgressDownloadsPage_Title;
         TabIcon = IconValues.Downloading;
 
-        var tasksChangeSet = downloadService.Downloads
-            .ToObservableChangeSet(x => x.PersistentState.Id)
+        var tasksChangeSet = _downloadService.Downloads
+            .ToObservableChangeSet(x => x.PersistentState.Id);
+            
+        
+        InProgressTaskChangeSet = tasksChangeSet
             .Transform(x =>
                 {
                     var vm = new DownloadTaskViewModel(x);
                     vm.Activator.Activate();
                     return (IDownloadTaskViewModel)vm;
                 }
-            );
-        
-        InProgressTaskChangeSet = tasksChangeSet
+            )
             .FilterOnObservable((item, key) =>
                 {
                     return item.WhenAnyValue(v => v.Status)
@@ -149,8 +153,16 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
             )
             .DisposeMany()
             .OnUI();
-        
+
         CompletedTaskChangeSet = tasksChangeSet
+            .Transform(x =>
+                {
+                    var vm = new DownloadTaskViewModel(x);
+                    vm.HideCommand = ReactiveCommand.CreateFromTask(async () => await HideTasks(true, [vm]));
+                    vm.Activator.Activate();
+                    return (IDownloadTaskViewModel)vm;
+                }
+            )
             .FilterOnObservable((item, key) =>
                 {
                     return item.WhenAnyValue(v => v.Status)
@@ -189,6 +201,7 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
     {
         InProgressTaskChangeSet = DesignTimeDownloadTasks.Connect().OnUI();
         CompletedTaskChangeSet = DesignTimeDownloadTasks.Connect().OnUI();
+        _downloadService = null!;
         Init();
     }
 
@@ -285,9 +298,8 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
                         .AutoRefresh(task => task.Status)
                         .Select(_ => InProgressTasks.Any(task => task.Status == DownloadTaskStatus.Paused)))
                 .DisposeWith(d);
-
+            
             InProgressTasks.ToObservableChangeSet()
-                .AutoRefresh(task => task.Status)
                 .Subscribe(_ =>
                 {
                     UpdateWindowInfo();
@@ -335,17 +347,20 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
         }
     }
     
-    private async Task HideTasks(IEnumerable<IDownloadTaskViewModel> downloads)
+    private async Task HideTasks(bool hide, IEnumerable<IDownloadTaskViewModel> downloads)
     {
         var dls = downloads
             .Where(x => x.Status == DownloadTaskStatus.Completed)
             .ToArray();
+            
         if (dls.Length == 0)
             return;
+        await _downloadService.SetIsHidden(hide, dls.Select(x => x.Task).ToArray());
         
-        foreach (var dl in dls)
+        // Need to manually update value to refresh the UI, we don't listen to db for changes on IsHidden
+        foreach (var download in dls)
         {
-            // dl.Task.PersistentState.Remap<CompletedDownloadState.Model>().IsHidden = true;
+            download.IsHidden = hide;
         }
     }
 
