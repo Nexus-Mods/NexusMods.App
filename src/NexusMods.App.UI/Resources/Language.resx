@@ -467,4 +467,13 @@
     <data name="DownloadStatusDesignViewModel_FormatStatus_Cancelled" xml:space="preserve">
         <value>Cancelled</value>
     </data>
+    <data name="DownloadInProgressView__Clear" xml:space="preserve">
+        <value>Clear</value>
+    </data>
+    <data name="DownloadInProgressView__Clear_completed" xml:space="preserve">
+        <value>Clear completed</value>
+    </data>
+    <data name="DownloadInProgressView__View_in_library" xml:space="preserve">
+        <value>View in library</value>
+    </data>
 </root>

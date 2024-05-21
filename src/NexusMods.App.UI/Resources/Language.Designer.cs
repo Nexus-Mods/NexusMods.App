@@ -375,6 +375,24 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Clear.
+        /// </summary>
+        public static string DownloadInProgressView__Clear {
+            get {
+                return ResourceManager.GetString("DownloadInProgressView__Clear", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Clear completed.
+        /// </summary>
+        public static string DownloadInProgressView__Clear_completed {
+            get {
+                return ResourceManager.GetString("DownloadInProgressView__Clear_completed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to IN PROGRESS.
         /// </summary>
         public static string DownloadInProgressView__IN_PROGRESS {
@@ -416,6 +434,15 @@ namespace NexusMods.App.UI.Resources {
         public static string DownloadInProgressView__Resume_All {
             get {
                 return ResourceManager.GetString("DownloadInProgressView__Resume_All", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to View in library.
+        /// </summary>
+        public static string DownloadInProgressView__View_in_library {
+            get {
+                return ResourceManager.GetString("DownloadInProgressView__View_in_library", resourceCulture);
             }
         }
         

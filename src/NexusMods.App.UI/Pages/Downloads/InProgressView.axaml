@@ -56,13 +56,13 @@
                     <Button x:Name="ClearButton">
                         <StackPanel>
                             <icons:UnifiedIcon Classes="Close" />
-                            <TextBlock Text="Clear" />
+                            <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Clear}" />
                         </StackPanel>
                     </Button>
                     <Button x:Name="ClearAllButton">
                         <StackPanel>
                             <icons:UnifiedIcon Classes="ClearAll" />
-                            <TextBlock Text="Clear completed" />
+                            <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Clear_completed}" />
                         </StackPanel>
                     </Button>
                 </StackPanel>
@@ -166,7 +166,8 @@
                                   x:DataType="viewModels:IDownloadTaskViewModel"
                                   Width="1">
                             <DataGrid.Columns>
-                                <DataGridTemplateColumn Header="MOD NAME" Width="*"> 
+                                <DataGridTemplateColumn Header="{x:Static resources:Language.Helpers_GenerateHeader_MOD_NAME}" 
+                                                        Width="*"> 
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate DataType="viewModels:IDownloadTaskViewModel">
                                             <TextBlock Classes="BodyMDNormal"
@@ -176,7 +177,7 @@
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
 
-                                <DataGridTemplateColumn Header="VERSION"> 
+                                <DataGridTemplateColumn Header="{x:Static resources:Language.Helpers_GenerateHeader_VERSION}"> 
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate DataType="viewModels:IDownloadTaskViewModel">
                                             <TextBlock Classes="BodyMDNormal"
@@ -186,7 +187,7 @@
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
                                 
-                                <DataGridTemplateColumn Header="GAME"> 
+                                <DataGridTemplateColumn Header="{x:Static resources:Language.Helpers_GenerateHeader_GAME}"> 
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate DataType="viewModels:IDownloadTaskViewModel">
                                             <TextBlock Classes="BodyMDNormal"
@@ -196,7 +197,7 @@
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
                                 
-                                <DataGridTemplateColumn Header="SIZE"> 
+                                <DataGridTemplateColumn Header="{x:Static resources:Language.Helpers_GenerateHeader_SIZE}"> 
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate DataType="viewModels:IDownloadTaskViewModel">
                                             <TextBlock Classes="BodyMDNormal"
@@ -206,7 +207,7 @@
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
                                 
-                                <DataGridTemplateColumn Header="COMPLETED"> 
+                                <DataGridTemplateColumn Header="{x:Static resources:Language.DownloadCompleted_COMPLETED}"> 
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate DataType="viewModels:IDownloadTaskViewModel">
                                             <TextBlock Classes="BodyMDNormal"
@@ -216,7 +217,8 @@
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
 
-                                <DataGridTemplateColumn Header="ACTIONS" Width="Auto">
+                                <DataGridTemplateColumn Header="{x:Static resources:Language.FileOriginsPageView_ActionHeader}" 
+                                                        Width="Auto">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate DataType="viewModels:IDownloadTaskViewModel">
                                             <StackPanel Orientation="Horizontal"
@@ -226,7 +228,7 @@
                                                         Classes="Rounded Primary"
                                                         Command="{CompiledBinding ViewInLibraryCommand}">
                                                     <StackPanel>
-                                                        <TextBlock Text="View in library" />
+                                                        <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__View_in_library}" />
                                                     </StackPanel>
                                                 </navigation:NavigationControl>
                                                 <Button Classes="BareIcon WindowClose"
