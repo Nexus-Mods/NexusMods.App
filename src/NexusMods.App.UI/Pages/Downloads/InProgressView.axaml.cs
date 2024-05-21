@@ -42,8 +42,11 @@ public partial class InProgressView : ReactiveUserControl<IInProgressViewModel>
 
             this.BindCommand(ViewModel, vm => vm.ResumeAllTasksCommand, view => view.ResumeAllButton)
                 .DisposeWith(d);
-
-            this.BindCommand(ViewModel, vm => vm.ShowSettings, view => view.SettingsButton)
+            
+            this.BindCommand(ViewModel, vm => vm.HideSelectedCommand, view => view.ClearButton)
+                .DisposeWith(d);
+            
+            this.BindCommand(ViewModel, vm => vm.HideAllCommand, view => view.ClearAllButton)
                 .DisposeWith(d);
 
             this.OneWayBind(ViewModel, vm => vm.InProgressTasks, 
@@ -115,7 +118,7 @@ public partial class InProgressView : ReactiveUserControl<IInProgressViewModel>
                 })
                 .DisposeWith(d);
 
-            // Bind Selected Items
+            // Bind inProgress Selected Items
             Observable.FromEventPattern<SelectionChangedEventArgs>(
                     addHandler => InprogressDataGrid.SelectionChanged += addHandler,
                     removeHandler => InprogressDataGrid.SelectionChanged -= removeHandler)
@@ -130,10 +133,29 @@ public partial class InProgressView : ReactiveUserControl<IInProgressViewModel>
                                 updater.Add(task);
                         }
                     });
-
                 })
                 .Subscribe()
                 .DisposeWith(d);
+            
+            // Bind completed Selected Items
+            Observable.FromEventPattern<SelectionChangedEventArgs>(
+                addHandler => CompletedDataGrid.SelectionChanged += addHandler,
+                removeHandler => CompletedDataGrid.SelectionChanged -= removeHandler)
+                .Do(_ =>
+                {
+                    ViewModel!.SelectedCompletedTasks.Edit(updater =>
+                    {
+                        updater.Clear();
+                        foreach (var item in CompletedDataGrid.SelectedItems)
+                        {
+                            if (item is IDownloadTaskViewModel task)
+                                updater.Add(task);
+                        }
+                    });
+                })
+                .Subscribe()
+                .DisposeWith(d);
+            
 
         });
     }

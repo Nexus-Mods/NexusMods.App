@@ -52,9 +52,16 @@
                         </StackPanel>
                     </Button>
                     <Line />
-                    <Button x:Name="SettingsButton">
+                    <Button x:Name="ClearButton">
                         <StackPanel>
-                            <icons:UnifiedIcon Classes="Cog" />
+                            <icons:UnifiedIcon Classes="Close" />
+                            <TextBlock Text="Clear" />
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="ClearAllButton">
+                        <StackPanel>
+                            <icons:UnifiedIcon Classes="ClearAll" />
+                            <TextBlock Text="Clear completed" />
                         </StackPanel>
                     </Button>
                 </StackPanel>

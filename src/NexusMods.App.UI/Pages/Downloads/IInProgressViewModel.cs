@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Reactive;
 using System.Windows.Input;
 using DynamicData;
 using LiveChartsCore;
@@ -7,6 +8,7 @@ using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.Controls.DownloadGrid;
 using NexusMods.App.UI.Pages.Downloads.ViewModels;
 using NexusMods.App.UI.WorkspaceSystem;
+using ReactiveUI;
 
 namespace NexusMods.App.UI.Pages.Downloads;
 
@@ -54,12 +56,15 @@ public interface IInProgressViewModel : IPageViewModelInterface
     /// <summary>
     /// The currently selected task.
     /// </summary>
-    SourceList<IDownloadTaskViewModel> SelectedInProgressTasks { get; set;}
+    SourceList<IDownloadTaskViewModel> SelectedInProgressTasks { get; }
+    
+    
+    SourceList<IDownloadTaskViewModel> SelectedCompletedTasks { get; }
 
     /// <summary>
     /// Shows the cancel 'dialog' to the user.
     /// </summary>
-    ICommand ShowCancelDialogCommand { get; set; }
+    ICommand ShowCancelDialogCommand { get; }
 
     /// <summary>
     /// Suspends the current task.
@@ -80,11 +85,10 @@ public interface IInProgressViewModel : IPageViewModelInterface
     /// Resumes all the tasks.
     /// </summary>
     ICommand ResumeAllTasksCommand { get; }
-
-    /// <summary>
-    /// Shows the additional settings for the current task (there is nothing for now).
-    /// </summary>
-    ICommand ShowSettings { get; }
+    
+    ReactiveCommand<Unit, Unit> HideSelectedCommand { get; }
+    
+    ReactiveCommand<Unit, Unit> HideAllCommand { get; }
 
     /// <summary>
     /// Cancels all the passed tasks, without asking for confirmation.

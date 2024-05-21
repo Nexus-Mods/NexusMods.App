@@ -69,8 +69,11 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
     [Reactive] public int SecondsRemaining { get; private set; }
 
     public SourceList<IDownloadTaskViewModel> SelectedInProgressTasks { get; set; } = new();
+    public SourceList<IDownloadTaskViewModel> SelectedCompletedTasks { get; set; } = new();
     
-    private IObservable<IChangeSet<IDownloadTaskViewModel>> SelectedInprogressChangeSet {get; set;}
+    private IObservable<IChangeSet<IDownloadTaskViewModel>> SelectedInprogressTaskChangeSet {get; set;}
+    private IObservable<IChangeSet<IDownloadTaskViewModel>> SelectedCompletedTaskChangeSet {get; set;}
+
     
     [Reactive] public long DownloadedSizeBytes { get; private set; }
 
@@ -84,6 +87,8 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
 
     [Reactive] public ICommand SuspendAllTasksCommand { get; private set; } = ReactiveCommand.Create(() => { });
     [Reactive] public ICommand ResumeAllTasksCommand { get; private set; } = ReactiveCommand.Create(() => { });
+    [Reactive] public ReactiveCommand<Unit, Unit> HideSelectedCommand { get; private set; } = ReactiveCommand.Create(() => { });
+    [Reactive] public ReactiveCommand<Unit, Unit> HideAllCommand { get; private set; } = ReactiveCommand.Create(() => { });
 
     // Do nothing for now and keep disabled.
     [Reactive]
@@ -170,6 +175,7 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
                     return (IDownloadTaskViewModel)vm;
                 }
             )
+            .AutoRefreshOnObservable(task => task.WhenAnyValue(x => x.IsHidden))
             .FilterOnObservable((item, key) =>
                 {
                     return item.WhenAnyValue(v => v.Status)
@@ -180,12 +186,15 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
             .DisposeMany()
             .OnUI();
         
-        SelectedInprogressChangeSet = SelectedInProgressTasks.Connect()
+        SelectedInprogressTaskChangeSet = SelectedInProgressTasks.Connect()
             .AutoRefreshOnObservable(item =>
                 {
                     return item.WhenAnyValue(x => x.Status);
                 }
             )
+            .OnUI();
+        
+        SelectedCompletedTaskChangeSet = SelectedCompletedTasks.Connect()
             .OnUI();
 
         Init();
@@ -202,7 +211,7 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
                         if (result)
                             CancelTasks(SelectedInProgressTasks.Items);
                     }
-                }, SelectedInprogressChangeSet
+                }, SelectedInprogressTaskChangeSet
                 .Select(_ => SelectedInProgressTasks.Items.Any()))
                 .DisposeWith(d);
         });
@@ -215,7 +224,8 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
     {
         InProgressTaskChangeSet = DesignTimeDownloadTasks.Connect().OnUI();
         CompletedTaskChangeSet = DesignTimeDownloadTasks.Connect().OnUI();
-        SelectedInprogressChangeSet = SelectedInProgressTasks.Connect().OnUI();
+        SelectedInprogressTaskChangeSet = SelectedInProgressTasks.Connect().OnUI();
+        SelectedCompletedTaskChangeSet = SelectedCompletedTasks.Connect().OnUI();
         _downloadService = null!;
         Init();
     }
@@ -288,13 +298,13 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
 
             SuspendSelectedTasksCommand = ReactiveCommand.Create(
                     () => { SuspendTasks(SelectedInProgressTasks.Items); },
-                    SelectedInprogressChangeSet
+                    SelectedInprogressTaskChangeSet
                         .Select(_ => SelectedInProgressTasks.Items.Any(task => task.Status == DownloadTaskStatus.Downloading)))
                 .DisposeWith(d);
 
             ResumeSelectedTasksCommand = ReactiveCommand.Create(
                     () => { ResumeTasks(SelectedInProgressTasks.Items); },
-                    SelectedInprogressChangeSet
+                    SelectedInprogressTaskChangeSet
                         .Select(_ => SelectedInProgressTasks.Items.Any(task => task.Status == DownloadTaskStatus.Paused)))
                 .DisposeWith(d);
 
@@ -308,6 +318,20 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
                     () => { ResumeTasks(InProgressTasks); },
                     InProgressTaskChangeSet
                         .Select(_ => InProgressTasks.Any(task => task.Status == DownloadTaskStatus.Paused)))
+                .DisposeWith(d);
+            
+            HideSelectedCommand = ReactiveCommand.CreateFromTask(async () =>
+                    {
+                        await HideTasks(true, SelectedCompletedTasks.Items);
+                    },
+                    SelectedCompletedTaskChangeSet.Select(_ => SelectedCompletedTasks.Items.Any()))
+                .DisposeWith(d);
+            
+            HideAllCommand = ReactiveCommand.CreateFromTask(async () =>
+                    {
+                        await HideTasks(true, CompletedTasks);
+                    },
+                    CompletedTasks.ToObservableChangeSet().Select(_ => CompletedTasks.Any()))
                 .DisposeWith(d);
             
             InProgressTaskChangeSet
