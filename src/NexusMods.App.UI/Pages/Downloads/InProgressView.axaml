@@ -150,7 +150,8 @@
                         <TextBlock Classes="HeadingSMSemi ForegroundModerate"
                                    Text="{x:Static resources:Language.DownloadsView__Completed}" />
                         <TextBlock Classes="HeadingSMSemi ForegroundWeak"
-                                   Text=" (0)" />
+                                   Text=" (0)" 
+                                   x:Name="CompletedTitleCountTextBlock"/>
                     </StackPanel>
 
                     <Grid Grid.Row="1" RowDefinitions="*">

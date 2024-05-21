@@ -61,6 +61,15 @@ public partial class InProgressView : ReactiveUserControl<IInProgressViewModel>
                 .GenerateColumns(InprogressDataGrid)
                 .DisposeWith(d);
 
+            // Fix the CompletedDataGrid Width when number of items changes
+            this.WhenAnyValue(view => view.ViewModel!.CompletedDownloadCount)
+                .OnUI()
+                .Subscribe(count =>
+                    {
+                        CompletedDataGrid.Width = double.NaN;
+                    }
+                ).DisposeWith(d);
+
             // Dynamically hide the "No Downloads" TextBlock
             this.WhenAnyValue(view =>  view.ViewModel!.HasDownloads)
                 .Select(hasDownloads => !hasDownloads)
@@ -115,6 +124,15 @@ public partial class InProgressView : ReactiveUserControl<IInProgressViewModel>
                         BoldMinutesRemainingTextBlock.Text = StringFormatters.ToTimeRemainingShort(vm.SecondsRemaining);
                         MinutesRemainingTextBlock.Text = Language.InProgressView_InProgressView_Remaining;
                     }
+                })
+                .DisposeWith(d);
+            
+            // Dynamically Update Completed Download Count
+            this.WhenAnyValue(view => view.ViewModel!.CompletedDownloadCount)
+                .OnUI()
+                .Subscribe(count =>
+                {
+                    CompletedTitleCountTextBlock.Text = StringFormatters.ToDownloadsInProgressTitle(count);
                 })
                 .DisposeWith(d);
 
