@@ -69,13 +69,14 @@ public class OverlayViewModelTests
         overlay1.Status.Should().Be(Status.Visible);
         overlay2.Status.Should().Be(Status.NotShown);
         overlay3.Status.Should().Be(Status.NotShown);
-        overlay1.Close();
+        controller.CurrentOverlay!.Close();
         
         // Assert next modal got loaded.
         controller.CurrentOverlay.Should().Be(overlay2);
         overlay1.Status.Should().Be(Status.Closed);
         overlay2.Status.Should().Be(Status.Visible);
         overlay3.Status.Should().Be(Status.NotShown);
+        controller.CurrentOverlay!.Close();
         
         // Assert next modal got loaded.
         controller.CurrentOverlay.Should().Be(overlay3);

@@ -25,14 +25,13 @@ where TInner : class, IViewModelInterface
     public void Close()
     {
         Debug.Assert(Controller != null, "Controller != null");
-        
-        Controller.Remove(this);
-        
         if (Status == Status.Closed)
         {
             return;
         }
+
         
+        Controller.Remove(this);
         Status = Status.Closed;
         _taskCompletionSource.SetResult();
     }

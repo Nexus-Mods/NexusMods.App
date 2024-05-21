@@ -44,20 +44,18 @@ public class UpdaterDesignViewModel : AOverlayViewModel<IUpdaterViewModel>, IUpd
                 .DisposeWith(d);
         });
 
-        LaterCommand = ReactiveCommand.Create(() =>
-        {
-            IsActive = false;
-        });
+        LaterCommand = ReactiveCommand.Create(Close);
 
         UpdateCommand = ReactiveCommand.Create(() =>
         {
-            IsActive = false;
             UpdateClicked = true;
+            Close();
         });
 
         ShowChangelog = ReactiveCommand.Create(() =>
         {
             ChangelogShown = true;
+            Close();
         });
     }
 
@@ -66,10 +64,4 @@ public class UpdaterDesignViewModel : AOverlayViewModel<IUpdaterViewModel>, IUpd
 
     [Reactive]
     public bool ChangelogShown { get; set; }
-
-    [Reactive]
-    public bool IsActive { get; set; }
-
-    [Reactive]
-    public IOverlayController? Controller { get; set; }
 }
