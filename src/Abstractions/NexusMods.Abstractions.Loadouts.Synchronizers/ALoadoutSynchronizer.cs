@@ -182,7 +182,8 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                 var file = newEntry.Item.Value!;
                 if (file.TryGetAsDeletedFile(out _))
                 {
-                    // File is deleted in the new tree, so nothing to do
+                    // File is deleted in the new tree, so add it toDelete and we're done
+                    toDelete.Add(KeyValuePair.Create(gamePath, entry));
                     continue;
                 }
                 else if (file.Contains(StoredFile.Hash))
