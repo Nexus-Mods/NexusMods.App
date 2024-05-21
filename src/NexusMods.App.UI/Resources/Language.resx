@@ -464,4 +464,7 @@
     <data name="FileOriginsPageView_ActionHeader" xml:space="preserve">
         <value>ACTIONS</value>
     </data>
+    <data name="DownloadStatusDesignViewModel_FormatStatus_Cancelled" xml:space="preserve">
+        <value>Cancelled</value>
+    </data>
 </root>
