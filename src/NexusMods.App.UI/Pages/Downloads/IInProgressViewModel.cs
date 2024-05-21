@@ -1,6 +1,5 @@
 ﻿using System.Collections.ObjectModel;
 using System.Reactive;
-using System.Windows.Input;
 using DynamicData;
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
@@ -65,27 +64,27 @@ public interface IInProgressViewModel : IPageViewModelInterface
     /// <summary>
     /// Shows the cancel 'dialog' to the user.
     /// </summary>
-    ICommand ShowCancelDialogCommand { get; }
+    ReactiveCommand<Unit,Unit> ShowCancelDialogCommand { get; }
 
     /// <summary>
     /// Suspends the current task.
     /// </summary>
-    ICommand SuspendSelectedTasksCommand { get; }
+    ReactiveCommand<Unit,Unit> SuspendSelectedTasksCommand { get; }
 
     /// <summary>
     /// Resumes the current task.
     /// </summary>
-    ICommand ResumeSelectedTasksCommand { get; }
+    ReactiveCommand<Unit,Unit> ResumeSelectedTasksCommand { get; }
 
     /// <summary>
     /// Suspends all the tasks.
     /// </summary>
-    ICommand SuspendAllTasksCommand { get; }
+    ReactiveCommand<Unit,Unit> SuspendAllTasksCommand { get; }
 
     /// <summary>
     /// Resumes all the tasks.
     /// </summary>
-    ICommand ResumeAllTasksCommand { get; }
+    ReactiveCommand<Unit,Unit> ResumeAllTasksCommand { get; }
     
     ReactiveCommand<Unit, Unit> HideSelectedCommand { get; }
     

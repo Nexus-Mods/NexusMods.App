@@ -85,20 +85,16 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
 
     [Reactive] public long TotalSizeBytes { get; private set; }
 
-    [Reactive] public ICommand ShowCancelDialogCommand { get; set; } = ReactiveCommand.Create(() => { });
+    [Reactive] public ReactiveCommand<Unit,Unit> ShowCancelDialogCommand { get; set; } = ReactiveCommand.Create(() => { });
 
-    [Reactive] public ICommand SuspendSelectedTasksCommand { get; private set; } = ReactiveCommand.Create(() => { });
+    [Reactive] public ReactiveCommand<Unit,Unit> SuspendSelectedTasksCommand { get; private set; } = ReactiveCommand.Create(() => { });
 
-    [Reactive] public ICommand ResumeSelectedTasksCommand { get; private set; } = ReactiveCommand.Create(() => { });
+    [Reactive] public ReactiveCommand<Unit,Unit> ResumeSelectedTasksCommand { get; private set; } = ReactiveCommand.Create(() => { });
 
-    [Reactive] public ICommand SuspendAllTasksCommand { get; private set; } = ReactiveCommand.Create(() => { });
-    [Reactive] public ICommand ResumeAllTasksCommand { get; private set; } = ReactiveCommand.Create(() => { });
+    [Reactive] public ReactiveCommand<Unit,Unit> SuspendAllTasksCommand { get; private set; } = ReactiveCommand.Create(() => { });
+    [Reactive] public ReactiveCommand<Unit,Unit> ResumeAllTasksCommand { get; private set; } = ReactiveCommand.Create(() => { });
     [Reactive] public ReactiveCommand<Unit, Unit> HideSelectedCommand { get; private set; } = ReactiveCommand.Create(() => { });
     [Reactive] public ReactiveCommand<Unit, Unit> HideAllCommand { get; private set; } = ReactiveCommand.Create(() => { });
-
-    // Do nothing for now and keep disabled.
-    [Reactive]
-    public ICommand ShowSettings { get; private set; } = ReactiveCommand.Create(() => { }, Observable.Return(false));
 
     private readonly ObservableCollectionExtended<DateTimePoint> _throughputValues = [];
     public ReadOnlyObservableCollection<ISeries> Series { get; } = ReadOnlyObservableCollection<ISeries>.Empty;
@@ -234,7 +230,7 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
         {
             GetWorkspaceController().SetTabTitle(Language.InProgressDownloadsPage_Title, WorkspaceId, PanelId, TabId);
 
-            ShowCancelDialogCommand = ReactiveCommand.Create(async () =>
+            ShowCancelDialogCommand = ReactiveCommand.CreateFromTask(async () =>
                 {
                     if (SelectedInProgressTasks.Items.Any())
                     {
