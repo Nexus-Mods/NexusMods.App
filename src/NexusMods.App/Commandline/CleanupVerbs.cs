@@ -154,8 +154,15 @@ internal static class CleanupVerbs
             if (!directory.DirectoryExists())
                 continue;
 
-            directory.Delete();
-            await renderer.Text("Deleted directory: {0}", directory);
+            try
+            {
+                directory.DeleteDirectory();
+                await renderer.Text("Deleted directory: {0}", directory);
+            }
+            catch (Exception e)
+            {
+                await renderer.Error(e, "Failed to delete directory: {0}", directory); 
+            }
         }
     }
 
