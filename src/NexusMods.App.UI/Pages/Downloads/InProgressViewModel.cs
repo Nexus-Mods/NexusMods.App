@@ -190,6 +190,7 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
                         
                         if (workspaces.Length == 0)
                             return;
+                        
                         var workspace = workspaces[0];
 
                         var pageData = new PageData
@@ -197,8 +198,8 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
                             FactoryId = FileOriginsPageFactory.StaticId,
                             Context = new FileOriginsPageContext { LoadoutId = workspace.Context.LoadoutId },
                         };
-                        
                         var behavior = GetWorkspaceController().GetOpenPageBehavior(pageData, navInfo, Optional<PageIdBundle>.None);
+                        
                         controller.OpenPage(workspace.Id, pageData, behavior);
                         controller.ChangeActiveWorkspace(workspace.Id);
                     });

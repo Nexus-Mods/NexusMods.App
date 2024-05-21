@@ -135,6 +135,12 @@ public partial class InProgressView : ReactiveUserControl<IInProgressViewModel>
                     CompletedTitleCountTextBlock.Text = StringFormatters.ToDownloadsInProgressTitle(count);
                 })
                 .DisposeWith(d);
+            
+            // Hide Completed Section if no downloads
+            this.WhenAnyValue(view => view.ViewModel!.CompletedDownloadCount)
+                .Select(count => count > 0)
+                .BindToView(this, view => view.CompletedSectionGrid.IsVisible)
+                .DisposeWith(d);
 
             // Bind inProgress Selected Items
             Observable.FromEventPattern<SelectionChangedEventArgs>(

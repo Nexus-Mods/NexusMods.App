@@ -144,7 +144,8 @@
                 <!-- Completed -->
                 <Grid Grid.Row="4"
                       RowDefinitions="Auto, *"
-                      HorizontalAlignment="Stretch">
+                      HorizontalAlignment="Stretch"
+                      x:Name="CompletedSectionGrid">
                     <!-- Title -->
                     <StackPanel Grid.Row="0" Orientation="Horizontal"
                                 Margin="24,12">
