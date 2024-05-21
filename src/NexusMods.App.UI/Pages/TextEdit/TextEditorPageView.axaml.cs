@@ -69,10 +69,11 @@ public partial class TextEditorPageView : ReactiveUserControl<ITextEditorPageVie
                 .SubscribeWithErrorLogging(document =>
                 {
                     TextEditor.Document = document;
-                    if (document is null) return;
 
                     var extension = Extension.FromPath(document.FileName);
                     var language = registryOptions.GetLanguageByExtension(extension.ToString());
+                    if (language is null) return;
+
                     LanguageNameText.Text = language.ToString();
 
                     var scopeName = registryOptions.GetScopeByLanguageId(language.Id);
