@@ -53,7 +53,7 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
     
     private IObservable<IChangeSet<IDownloadTaskViewModel, EntityId>> InProgressTaskChangeSet { get; }
     private IObservable<IChangeSet<IDownloadTaskViewModel, EntityId>> CompletedTaskChangeSet { get; }
-
+    
     public ReadOnlyObservableCollection<IDownloadTaskViewModel> InProgressTasks => _inProgressTasksObservable;
     public ReadOnlyObservableCollection<IDownloadTaskViewModel> CompletedTasks => _completedTasksObservable;
 
@@ -68,8 +68,10 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
 
     [Reactive] public int SecondsRemaining { get; private set; }
 
-    public SourceList<IDownloadTaskViewModel> SelectedTasks { get; set; } = new();
-
+    public SourceList<IDownloadTaskViewModel> SelectedInProgressTasks { get; set; } = new();
+    
+    private IObservable<IChangeSet<IDownloadTaskViewModel>> SelectedInprogressChangeSet {get; set;}
+    
     [Reactive] public long DownloadedSizeBytes { get; private set; }
 
     [Reactive] public long TotalSizeBytes { get; private set; }
@@ -135,7 +137,6 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
 
         var tasksChangeSet = _downloadService.Downloads
             .ToObservableChangeSet(x => x.PersistentState.Id);
-            
         
         InProgressTaskChangeSet = tasksChangeSet
             .Transform(x =>
@@ -151,8 +152,14 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
                         .Select(s => s != DownloadTaskStatus.Cancelled && s != DownloadTaskStatus.Completed);
                 }
             )
+            .AutoRefreshOnObservable(task =>
+                {
+                    return task.WhenAnyValue(x => x.Status);
+                }
+            )
             .DisposeMany()
             .OnUI();
+            
 
         CompletedTaskChangeSet = tasksChangeSet
             .Transform(x =>
@@ -172,6 +179,14 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
             )
             .DisposeMany()
             .OnUI();
+        
+        SelectedInprogressChangeSet = SelectedInProgressTasks.Connect()
+            .AutoRefreshOnObservable(item =>
+                {
+                    return item.WhenAnyValue(x => x.Status);
+                }
+            )
+            .OnUI();
 
         Init();
 
@@ -181,14 +196,14 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
 
             ShowCancelDialogCommand = ReactiveCommand.Create(async () =>
                 {
-                    if (SelectedTasks.Items.Any())
+                    if (SelectedInProgressTasks.Items.Any())
                     {
-                        var result = await overlayController.ShowCancelDownloadOverlay(SelectedTasks.Items.ToList());
+                        var result = await overlayController.ShowCancelDownloadOverlay(SelectedInProgressTasks.Items.ToList());
                         if (result)
-                            CancelTasks(SelectedTasks.Items);
+                            CancelTasks(SelectedInProgressTasks.Items);
                     }
-                }, InProgressTasks.ToObservableChangeSet()
-                    .Select(_ => InProgressTasks.Any()))
+                }, SelectedInprogressChangeSet
+                .Select(_ => SelectedInProgressTasks.Items.Any()))
                 .DisposeWith(d);
         });
     }
@@ -200,6 +215,7 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
     {
         InProgressTaskChangeSet = DesignTimeDownloadTasks.Connect().OnUI();
         CompletedTaskChangeSet = DesignTimeDownloadTasks.Connect().OnUI();
+        SelectedInprogressChangeSet = SelectedInProgressTasks.Connect().OnUI();
         _downloadService = null!;
         Init();
     }
@@ -271,30 +287,30 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
                 .DisposeWith(d);
 
             SuspendSelectedTasksCommand = ReactiveCommand.Create(
-                    () => { SuspendTasks(SelectedTasks.Items); },
-                    SelectedTasks.Connect()
-                        .Select(_ => SelectedTasks.Items.Any(task => task.Status == DownloadTaskStatus.Downloading)))
+                    () => { SuspendTasks(SelectedInProgressTasks.Items); },
+                    SelectedInprogressChangeSet
+                        .Select(_ => SelectedInProgressTasks.Items.Any(task => task.Status == DownloadTaskStatus.Downloading)))
                 .DisposeWith(d);
 
             ResumeSelectedTasksCommand = ReactiveCommand.Create(
-                    () => { ResumeTasks(SelectedTasks.Items); },
-                    SelectedTasks.Connect()
-                        .Select(_ => SelectedTasks.Items.Any(task => task.Status == DownloadTaskStatus.Paused)))
+                    () => { ResumeTasks(SelectedInProgressTasks.Items); },
+                    SelectedInprogressChangeSet
+                        .Select(_ => SelectedInProgressTasks.Items.Any(task => task.Status == DownloadTaskStatus.Paused)))
                 .DisposeWith(d);
 
             SuspendAllTasksCommand = ReactiveCommand.Create(
                     () => { SuspendTasks(InProgressTasks); },
-                    InProgressTasks.ToObservableChangeSet()
+                    InProgressTaskChangeSet
                         .Select(_ => InProgressTasks.Any(task => task.Status == DownloadTaskStatus.Downloading)))
                 .DisposeWith(d);
 
             ResumeAllTasksCommand = ReactiveCommand.Create(
                     () => { ResumeTasks(InProgressTasks); },
-                    InProgressTasks.ToObservableChangeSet()
+                    InProgressTaskChangeSet
                         .Select(_ => InProgressTasks.Any(task => task.Status == DownloadTaskStatus.Paused)))
                 .DisposeWith(d);
             
-            InProgressTasks.ToObservableChangeSet()
+            InProgressTaskChangeSet
                 .Subscribe(_ =>
                 {
                     UpdateWindowInfo();

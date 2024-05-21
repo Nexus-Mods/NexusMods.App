@@ -121,7 +121,7 @@ public partial class InProgressView : ReactiveUserControl<IInProgressViewModel>
                     removeHandler => InprogressDataGrid.SelectionChanged -= removeHandler)
                 .Do(_ =>
                 {
-                    ViewModel!.SelectedTasks.Edit(updater =>
+                    ViewModel!.SelectedInProgressTasks.Edit(updater =>
                     {
                         updater.Clear();
                         foreach (var item in InprogressDataGrid.SelectedItems)

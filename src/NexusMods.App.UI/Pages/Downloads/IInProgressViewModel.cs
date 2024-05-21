@@ -54,7 +54,7 @@ public interface IInProgressViewModel : IPageViewModelInterface
     /// <summary>
     /// The currently selected task.
     /// </summary>
-    SourceList<IDownloadTaskViewModel> SelectedTasks { get; set;}
+    SourceList<IDownloadTaskViewModel> SelectedInProgressTasks { get; set;}
 
     /// <summary>
     /// Shows the cancel 'dialog' to the user.
