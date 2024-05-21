@@ -62,124 +62,125 @@
         </Border>
 
         <!-- Page Content -->
-        <Grid RowDefinitions="Auto, *, 24, *, Auto, Auto" Margin="24, 16" Grid.Row="1">
+        <ScrollViewer Grid.Row="1">
+            <Grid RowDefinitions="Auto, *, 24, *, *" Margin="24, 16">
 
-            <!-- Title & Status -->
-            <DockPanel LastChildFill="True" HorizontalAlignment="Stretch" Grid.Row="0">
-                <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
-                    <TextBlock Classes="HeadingSMSemi"
-                               Text="{x:Static resources:Language.DownloadsView__In_Progress}"
-                               x:Name="InProgressTitleTextBlock"
-                               Margin="0,0,0,16" />
-                    <TextBlock Classes="HeadingSMSemi ForegroundWeak"
-                               Text=" (0)"
-                               x:Name="InProgressTitleCountTextBlock"
-                               Margin="0,0,0,16" />
-                </StackPanel>
+                <!-- Title & Status -->
+                <DockPanel LastChildFill="True" HorizontalAlignment="Stretch" Grid.Row="0">
+                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
+                        <TextBlock Classes="HeadingSMSemi"
+                                   Text="{x:Static resources:Language.DownloadsView__In_Progress}"
+                                   x:Name="InProgressTitleTextBlock"
+                                   Margin="0,0,0,16" />
+                        <TextBlock Classes="HeadingSMSemi ForegroundWeak"
+                                   Text=" (0)"
+                                   x:Name="InProgressTitleCountTextBlock"
+                                   Margin="0,0,0,16" />
+                    </StackPanel>
 
 
-                <!-- Right Side -->
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <TextBlock VerticalAlignment="Center"
-                               Classes="BodyMDNormal ForegroundSubdued"
-                               Text="0GB / 0GB" Margin="0,0,16,0"
-                               x:Name="SizeCompletionTextBlock" />
+                    <!-- Right Side -->
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <TextBlock VerticalAlignment="Center"
+                                   Classes="BodyMDNormal ForegroundSubdued"
+                                   Text="0GB / 0GB" Margin="0,0,16,0"
+                                   x:Name="SizeCompletionTextBlock" />
 
-                    <!-- Note: Can use 'run' here, but don't want to make separate styles for 'run' -->
-                    <TextBlock VerticalAlignment="Center"
-                               Classes="BodyMDBold ForegroundInfoModerate"
-                               Text="{x:Static resources:Language.BoldMinutesRemainingTextBlock}" Margin="0,0,4,0"
-                               x:Name="BoldMinutesRemainingTextBlock" />
+                        <!-- Note: Can use 'run' here, but don't want to make separate styles for 'run' -->
+                        <TextBlock VerticalAlignment="Center"
+                                   Classes="BodyMDBold ForegroundInfoModerate"
+                                   Text="{x:Static resources:Language.BoldMinutesRemainingTextBlock}" Margin="0,0,4,0"
+                                   x:Name="BoldMinutesRemainingTextBlock" />
 
-                    <TextBlock VerticalAlignment="Center"
-                               Classes="BodyMDNormal ForegroundInfoModerate"
-                               Text="{x:Static resources:Language.MinutesRemainingTextBlock}"
-                               x:Name="MinutesRemainingTextBlock" />
+                        <TextBlock VerticalAlignment="Center"
+                                   Classes="BodyMDNormal ForegroundInfoModerate"
+                                   Text="{x:Static resources:Language.MinutesRemainingTextBlock}"
+                                   x:Name="MinutesRemainingTextBlock" />
 
-                </StackPanel>
+                    </StackPanel>
 
-            </DockPanel>
+                </DockPanel>
 
-            <lvc:CartesianChart Grid.Row="1" x:Name="Chart" />
+                <lvc:CartesianChart Grid.Row="1" x:Name="Chart" />
 
-            <!-- Progress -->
-            <ProgressBar Classes="DownloadBar"
-                         ProgressTextFormat="{x:Static resources:Language.ProgressBar_ProgressTextFormat__Total_1_0}"
-                         x:Name="DownloadProgressBar" Minimum="0" Maximum="1" Grid.Row="2" />
+                <!-- Progress -->
+                <ProgressBar Classes="DownloadBar"
+                             ProgressTextFormat="{x:Static resources:Language.ProgressBar_ProgressTextFormat__Total_1_0}"
+                             x:Name="DownloadProgressBar" Minimum="0" Maximum="1" Grid.Row="2" />
 
-            <!-- In progress downloads -->
-            <DataGrid Grid.Row="3"
-                      HorizontalAlignment="Stretch"
-                      CanUserSortColumns="True"
-                      Margin="-16,16"
-                      x:Name="InprogressDataGrid" />
+                <!-- In progress downloads -->
+                <DataGrid Grid.Row="3"
+                          HorizontalAlignment="Stretch"
+                          CanUserSortColumns="True"
+                          Margin="-16,16"
+                          x:Name="InprogressDataGrid" />
 
-            <TextBlock Grid.Row="4"
-                       HorizontalAlignment="Center"
-                       VerticalAlignment="Top"
-                       Margin="0,66,0,0"
-                       Classes="HeadingXSSemi ForegroundWeak"
-                       IsVisible="False"
-                       Text="{x:Static resources:Language.InProgress_NoDownloadsTextBlock}"
-                       x:Name="NoDownloadsTextBlock" />
+                <TextBlock Grid.Row="3"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           Margin="0,66,0,0"
+                           Classes="HeadingXSSemi ForegroundWeak"
+                           IsVisible="False"
+                           Text="{x:Static resources:Language.InProgress_NoDownloadsTextBlock}"
+                           x:Name="NoDownloadsTextBlock" />
 
-            <!-- Completed -->
-            <Expander Grid.Row="5"
-                      HorizontalAlignment="Stretch"
-                      IsExpanded="True">
-                <Expander.Header>
-                    <StackPanel Orientation="Horizontal">
-                        <!-- Title -->
+                <!-- Completed -->
+                <Grid Grid.Row="4"
+                      RowDefinitions="Auto, *"
+                      HorizontalAlignment="Stretch">
+                    <!-- Title -->
+                    <StackPanel Grid.Row="0" Orientation="Horizontal">
                         <TextBlock Classes="HeadingSMSemi ForegroundModerate"
                                    Text="{x:Static resources:Language.DownloadsView__Completed}" />
                         <TextBlock Classes="HeadingSMSemi ForegroundWeak"
                                    Text=" (0)" />
                     </StackPanel>
-                </Expander.Header>
-                <Grid RowDefinitions="*">
-                    <!-- Completed downloads -->
-                    <DataGrid Grid.Row="0"
-                              x:Name="CompletedDataGrid"
-                              HorizontalAlignment="Stretch"
-                              CanUserSortColumns="True"
-                              CanUserResizeColumns="True"
-                              x:DataType="viewModels:IDownloadTaskViewModel">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="MOD NAME"
-                                                Binding="{CompiledBinding Name}"
-                                                Width="0.5*"/>
-                            <DataGridTextColumn Header="VERSION"
-                                                Binding="{CompiledBinding Version}" />
-                            <DataGridTextColumn Header="GAME"
-                                                Binding="{CompiledBinding Game}" />
-                            <DataGridTextColumn Header="SIZE"
-                                                Binding="{CompiledBinding HumanizedSize}" />
-                            <DataGridTextColumn Header="COMPLETED" 
-                                                Binding="{CompiledBinding HumanizedCompletedTime}"/>
 
-                            <DataGridTemplateColumn Header="ACTIONS" Width="180">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate DataType="viewModels:IDownloadTaskViewModel">
-                                        <StackPanel Orientation="Horizontal"
-                                                    Classes="Spacing-4">
-                                            <Button x:Name="ViewInLibraryButton"
-                                                    Classes="Rounded Primary"
-                                                    Command="{CompiledBinding ViewInLibraryCommand}">
-                                                <StackPanel>
-                                                    <TextBlock Text="View in library" />
-                                                </StackPanel>
-                                            </Button>
-                                            <Button Classes="BareIcon WindowClose"
-                                                    Command="{CompiledBinding HideCommand}"/>
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                        </DataGrid.Columns>
+                    <Grid Grid.Row="1" RowDefinitions="*">
+                        <!-- Completed downloads -->
+                        <DataGrid Grid.Row="0"
+                                  x:Name="CompletedDataGrid"
+                                  HorizontalAlignment="Stretch"
+                                  CanUserSortColumns="True"
+                                  CanUserResizeColumns="True"
+                                  x:DataType="viewModels:IDownloadTaskViewModel">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="MOD NAME"
+                                                    Binding="{CompiledBinding Name}"
+                                                    Width="0.5*" />
+                                <DataGridTextColumn Header="VERSION"
+                                                    Binding="{CompiledBinding Version}" />
+                                <DataGridTextColumn Header="GAME"
+                                                    Binding="{CompiledBinding Game}" />
+                                <DataGridTextColumn Header="SIZE"
+                                                    Binding="{CompiledBinding HumanizedSize}" />
+                                <DataGridTextColumn Header="COMPLETED"
+                                                    Binding="{CompiledBinding HumanizedCompletedTime}" />
 
-                    </DataGrid>
+                                <DataGridTemplateColumn Header="ACTIONS" Width="180">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate DataType="viewModels:IDownloadTaskViewModel">
+                                            <StackPanel Orientation="Horizontal"
+                                                        Classes="Spacing-4">
+                                                <Button x:Name="ViewInLibraryButton"
+                                                        Classes="Rounded Primary"
+                                                        Command="{CompiledBinding ViewInLibraryCommand}">
+                                                    <StackPanel>
+                                                        <TextBlock Text="View in library" />
+                                                    </StackPanel>
+                                                </Button>
+                                                <Button Classes="BareIcon WindowClose"
+                                                        Command="{CompiledBinding HideCommand}" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+
+                        </DataGrid>
+                    </Grid>
                 </Grid>
-            </Expander>
-        </Grid>
+            </Grid>
+        </ScrollViewer>
     </Grid>
 </reactiveUi:ReactiveUserControl>
