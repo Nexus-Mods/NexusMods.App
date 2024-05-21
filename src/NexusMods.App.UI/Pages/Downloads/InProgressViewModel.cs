@@ -4,6 +4,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Controls;
 using DynamicData;
+using DynamicData.Aggregation;
 using DynamicData.Binding;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
@@ -359,7 +360,11 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
                     CompletedTasks.ToObservableChangeSet().Select(_ => CompletedTasks.Any()))
                 .DisposeWith(d);
             
-            InProgressTaskChangeSet
+            InProgressTasks.ToObservableChangeSet()
+                .AutoRefreshOnObservable(item =>
+                    {
+                        return item.WhenAnyValue(x => x.Status);
+                    })
                 .Subscribe(_ =>
                 {
                     UpdateWindowInfo();
