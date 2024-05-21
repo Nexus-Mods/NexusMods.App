@@ -11,7 +11,7 @@ public class ModManagementVerbs(StubbedGame stubbedGame, IServiceProvider provid
     {
         var listName = Guid.NewGuid().ToString();
 
-        var log = await Run("manage-game", "-g", "stubbed-game", "-v",
+        var log = await Run("create-loadout", "-g", "stubbed-game", "-v",
             stubbedGame.Installations.First().Version.ToString(), "-n", listName);
 
         log = await Run("list-loadouts");

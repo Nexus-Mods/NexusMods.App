@@ -911,7 +911,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         var (isCached, initialState) = await GetOrCreateInitialDiskState(installation);
         
         using var tx = Connection.BeginTransaction();
-        var db = Connection.Db;
+        using var db = Connection.Db;
         
         // We need to create a 'Vanilla State Loadout' for rolling back the game
         // to the original state before NMA touched it, if we don't already
@@ -923,7 +923,18 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         {
             await CreateVanillaStateLoadout(installation);
         }
-        
+
+#if !NEXUSMODS_APP_ENABLE_MULTIPLE_LOADOUTS
+        // Note: This code is temporary, scheduled for deletion after next release.
+        // Check for an existing loadout at the given install location.
+        var alreadyHasLoadout = db.Loadouts().Any(x => 
+                x.Installation.LocationsRegister[LocationId.Game] == installLocation
+                && x.IsVisible());
+
+        if (alreadyHasLoadout)
+            throw new ArgumentException("Creating multiple loadouts for a single game installation is currently unsupported.", nameof(installation));
+#endif
+
         var loadout = new Loadout.Model(tx)
         {
             Db = db, // Has to be here to the installation resolves properly

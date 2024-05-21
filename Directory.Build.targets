@@ -9,6 +9,11 @@
             NEXUSMODS_APP_USE_SYSTEM_EXTRACTOR: Use system `7z` binary for extraction.
                 - This is intended for Linux package maintainers.
 
+            NEXUSMODS_APP_ENABLE_MULTIPLE_LOADOUTS: Restrict the user from creating multiple loadouts.
+                - This is an Alpha release flag, we want this disabled for release so
+                  we can get more focused feedback which does not include the loadout functionality.
+                - This will be removed in the future.
+
             NEXUSMODS_APP_ENABLE_BANNERLORD: Enable Mount & Blade 2 Bannerlord (game).
             NEXUSMODS_APP_ENABLE_BETHESDA: Enables Skyrim Special Edition & Skyrim Legendary Edition.
             NEXUSMODS_APP_ENABLE_BLADE_AND_SORCERY: Enables Blade & Sorcery (game).
@@ -30,6 +35,7 @@
     <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
         <DefineConstants>
             $(DefineConstants);
+            NEXUSMODS_APP_ENABLE_MULTIPLE_LOADOUTS;
             NEXUSMODS_APP_ENABLE_BANNERLORD;
             NEXUSMODS_APP_ENABLE_BETHESDA;
             NEXUSMODS_APP_ENABLE_BLADE_AND_SORCERY;
