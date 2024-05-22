@@ -26,11 +26,8 @@ public partial class GameWidget : ReactiveUserControl<IGameWidgetViewModel>
                         RemovingGameStackPanel.IsVisible = state == GameWidgetState.RemovingGame;
                         GameWidgetBorder.Classes.ToggleIf("Disabled", state is GameWidgetState.AddingGame or GameWidgetState.RemovingGame);
                         
-#if DISABLE_MULTIPLE_LOADOUTS
-                        // Note: This code is temporary, scheduled for deletion after next release.
-                        //       A managed game has at least 1 loadout by definition.
-                        AddLoadoutButton.IsVisible = !ManagedGameGrid.IsVisible;
-#endif
+                        if (!ViewModel!.CanAddMoreThanOneLoadout)
+                            AddLoadoutButton.IsVisible = !ManagedGameGrid.IsVisible;
                     })
                     .DisposeWith(d);
 

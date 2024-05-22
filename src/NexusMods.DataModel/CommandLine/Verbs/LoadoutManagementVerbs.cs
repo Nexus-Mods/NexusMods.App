@@ -219,9 +219,6 @@ public static class LoadoutManagementVerbs
         [Option("g", "game", "Game to create a loadout for")] IGame game,
         [Option("v", "version", "Version of the game to manage")] Version version,
         [Option("n", "name", "The name of the new loadout")] string name,
-#if DISABLE_MULTIPLE_LOADOUTS
-        [Injected] IConnection connection,
-#endif
         [Injected] CancellationToken token)
     {
         var installation = game.Installations.FirstOrDefault(i => i.Version == version);
