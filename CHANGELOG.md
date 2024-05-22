@@ -34,7 +34,7 @@ One notable change that the new data model brought to the App is reified deletes
 - Stardew Valley saves are no longer managed by the App ([#1344](https://github.com/Nexus-Mods/NexusMods.App/pull/1344)).
 - Two new SMAPI diagnostics for minimum supported SMAPI version and minimum supported game version ([#1265](https://github.com/Nexus-Mods/NexusMods.App/pull/1265)).
 - Game Files and the Override Mod are hidden by default, this is controlled using a setting ([#1286](https://github.com/Nexus-Mods/NexusMods.App/pull/1286), [#1341](https://github.com/Nexus-Mods/NexusMods.App/pull/1341)).
-- New Stardew Valley image by [@Pickysaurus](https://github.com/Pickysaurus) ([#1393](https://github.com/Nexus-Mods/NexusMods.App/pull/1393)).
+- Stardew Valley has a new image ([#1393](https://github.com/Nexus-Mods/NexusMods.App/pull/1393)).
 - Logging to the console can be now enabled in the settings, it's disabled by default ([#1351](https://github.com/Nexus-Mods/NexusMods.App/pull/1351)).
 - The CLI and how we handle multiple processes has been reworked ([#1345](https://github.com/Nexus-Mods/NexusMods.App/pull/1345)).
 - Package maintainers can choose to disable the bundled 7z binary ([#1308](https://github.com/Nexus-Mods/NexusMods.App/pull/1308)).
