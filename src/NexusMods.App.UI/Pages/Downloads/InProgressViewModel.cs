@@ -153,7 +153,7 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
                     if (SelectedTasks.Items.Any())
                     {
                         var newCancelDialog = new CancelDownloadOverlayViewModel(SelectedTasks.Items.ToList());
-                        var result = await overlayController.Enqueue(newCancelDialog);
+                        var result = await overlayController.EnqueueAndWait(newCancelDialog);
                         if (result)
                             CancelTasks(SelectedTasks.Items);
                     }

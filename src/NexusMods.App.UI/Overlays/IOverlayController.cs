@@ -20,7 +20,7 @@ public interface IOverlayController
     /// Enqueue an overlay to be shown by the UI and wait for the result, or null
     /// if it was cancelled, or not shown, or otherwise has no result.
     /// </summary>
-    Task<TResult?> Enqueue<TResult>(IOverlayViewModel<TResult> overlayViewModel);
+    Task<TResult?> EnqueueAndWait<TResult>(IOverlayViewModel<TResult> overlayViewModel);
     
     /// <summary>
     /// Removes the overlay from the queue, need not be the current overlay.

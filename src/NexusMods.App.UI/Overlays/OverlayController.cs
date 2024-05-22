@@ -1,14 +1,15 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Avalonia.Threading;
+using ReactiveUI;
 
 namespace NexusMods.App.UI.Overlays;
 
 /// <inheritdoc />
-public class OverlayController : IOverlayController, INotifyPropertyChanged
+public class OverlayController : ReactiveObject, IOverlayController
 {
-    private object _lockObject = new();
-    public IOverlayViewModel? CurrentOverlay { get; set; } = null;
+    private readonly object _lockObject = new();
+    public IOverlayViewModel? CurrentOverlay { get; set; }
     
     private Queue<IOverlayViewModel> _queue = new();
     public void Enqueue(IOverlayViewModel overlayViewModel)
@@ -22,9 +23,9 @@ public class OverlayController : IOverlayController, INotifyPropertyChanged
         }
     }
 
-    public async Task<TResult?> Enqueue<TResult>(IOverlayViewModel<TResult> overlayViewModel)
+    public async Task<TResult?> EnqueueAndWait<TResult>(IOverlayViewModel<TResult> overlayViewModel)
     {
-        Enqueue((IOverlayViewModel)overlayViewModel);
+        Enqueue(overlayViewModel);
         await overlayViewModel.CompletionTask;
         return overlayViewModel.Result;
     }
@@ -49,7 +50,7 @@ public class OverlayController : IOverlayController, INotifyPropertyChanged
     {
         Dispatcher.UIThread.Invoke(() =>
             {
-                OnPropertyChanged(nameof(CurrentOverlay));
+                this.RaisePropertyChanged(nameof(CurrentOverlay));
             }
         );
     }
@@ -68,27 +69,15 @@ public class OverlayController : IOverlayController, INotifyPropertyChanged
             }
             else
             {
-                _queue = new Queue<IOverlayViewModel>(_queue.Where(ovm => ovm != model));
+                var items = _queue.ToArray();
+                _queue.Clear();
+                foreach (var item in items)
+                {
+                    if (item == model)
+                        continue;
+                    _queue.Enqueue(item);
+                }
             }
         }
     }
-
-#region INotifyPropertyChanged
-    public event PropertyChangedEventHandler? PropertyChanged;
-
-    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
-
-    protected bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
-    {
-        if (EqualityComparer<T>.Default.Equals(field, value)) return false;
-        field = value;
-        OnPropertyChanged(propertyName);
-        return true;
-    }
-    
-    #endregion
-
 }
