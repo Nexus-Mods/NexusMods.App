@@ -13,6 +13,7 @@ public class ManuallyAddedLocator : IGameLocator
 {
     private readonly Lazy<IConnection> _store;
     private readonly IFileSystem _fileSystem;
+    private readonly IServiceProvider _provider;
 
     /// <summary>
     /// DI Constructor
@@ -20,6 +21,7 @@ public class ManuallyAddedLocator : IGameLocator
     /// <param name="provider"></param>
     public ManuallyAddedLocator(IServiceProvider provider, IFileSystem fileSystem)
     {
+        _provider = provider;
         _fileSystem = fileSystem;
         _store = new Lazy<IConnection>(provider.GetRequiredService<IConnection>);
     }
@@ -31,17 +33,31 @@ public class ManuallyAddedLocator : IGameLocator
     /// <param name="version"></param>
     /// <param name="path"></param>
     /// <returns></returns>
-    public async Task<EntityId> Add(IGame game, Version version, AbsolutePath path)
+    public async Task<(EntityId, GameInstallation)> Add(IGame game, Version version, AbsolutePath path)
     {
         using var tx = _store.Value.BeginTransaction();
         var ent = new ManuallyAddedGame.Model(tx)
         {
             GameDomain = game.Domain,
             Version = version.ToString(),
-            Path = path.ToString()
+            Path = path.ToString(),
         };
         var result = await tx.Commit();
-        return result[ent.Id];
+        
+        var gameRegistry = _provider.GetRequiredService<IGameRegistry>();
+        game.ResetInstallations();
+        await gameRegistry.Refresh();
+        var newId = result[ent.Id];
+
+        var found = gameRegistry.AllInstalledGames
+            .FirstOrDefault(g => g.Game.Domain == game.Domain &&
+                        g.LocationsRegister.GetResolvedPath(LocationId.Game) == path &&
+                        g.Version == version);
+
+        if (found == null)
+            throw new KeyNotFoundException("The game was not added to the registry but should have been.");
+
+        return (newId, found);
     }
 
     /// <summary>

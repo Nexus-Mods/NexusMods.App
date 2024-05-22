@@ -10,6 +10,7 @@ using NexusMods.Abstractions.Games.DTO;
 using NexusMods.DataModel.GameRegistry;
 using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Paths;
 
 namespace NexusMods.DataModel;
 
@@ -20,7 +21,7 @@ public class Registry : IGameRegistry, IHostedService
 {
     private readonly IConnection _conn;
     private Dictionary<EntityId,GameInstallation> _byId = new();
-    private Dictionary<(GameDomain Domain, Version Version, GameStore Store),EntityId> _byInstall = new();
+    private Dictionary<(GameDomain Domain, Version Version, GameStore Store, AbsolutePath Path),EntityId> _byInstall = new();
 
     private readonly SourceCache<(GameInstallation Game, EntityId Id), EntityId> _cache = new(x => x.Id); 
     
@@ -47,6 +48,14 @@ public class Registry : IGameRegistry, IHostedService
             .Subscribe();
         
     }
+    
+    /// <summary>
+    /// Refresh the game registry.
+    /// </summary>
+    public async Task Refresh()
+    {
+        await Startup(_games);
+    }
 
     private async Task Startup(IEnumerable<ILocatableGame> games)
     {
@@ -65,12 +74,12 @@ public class Registry : IGameRegistry, IHostedService
         using var tx = _conn.BeginTransaction();
 
         var added = new List<(EntityId Id, GameInstallation)>();
-        var results = new List<(EntityId Id, GameInstallation)>();
+        var results = new Dictionary<EntityId, GameInstallation>();
         foreach (var install in allInstalls)
         {
             if (allInDb.TryGetValue((install.Game.Domain, install.Store), out var found))
             {
-                results.Add((found.Id, install));
+                results[found.Id] = install;
             }
             else
             {
@@ -89,13 +98,13 @@ public class Registry : IGameRegistry, IHostedService
             var result = await tx.Commit();
             _logger.LogInformation("Registered {Count} new games", added.Count);
             foreach (var (id, install) in added)
-                results.Add((result[id], install));
+                results[result[id]] = install;
         }
         
         _logger.LogInformation("Register setup");
 
-        _byId = results.ToDictionary(x => x.Id, x => x.Item2);
-        _byInstall = results.ToDictionary(x => GetKey(x.Item2), x => x.Id);
+        _byId = results;
+        _byInstall = results.ToDictionary(x => GetKey(x.Value), x => x.Key);
         
         _cache.Edit(x => {
             x.Clear();
@@ -104,16 +113,17 @@ public class Registry : IGameRegistry, IHostedService
         });
     }
     
-    private (GameDomain Domain, Version Version, GameStore Store) GetKey(GameInstallation installation)
+    private (GameDomain Domain, Version Version, GameStore Store, AbsolutePath Path) GetKey(GameInstallation installation)
     {
-        return (installation.Game.Domain, installation.Version, installation.Store);
+        var path = installation.LocationsRegister.GetResolvedPath(LocationId.Game);
+        return (installation.Game.Domain, installation.Version, installation.Store, path);
     }
 
     /// <inheritdoc />
     public IEnumerable<GameInstallation> AllInstalledGames => _byId.Values;
 
     /// <inheritdoc />
-    public GameInstallation Get(EntityId id) => _byId[id];
+    public bool TryGet(EntityId id, out GameInstallation installation) => _byId.TryGetValue(id, out installation!);
 
     /// <inheritdoc />
     public EntityId GetId(GameInstallation installation) => _byInstall[GetKey(installation)];

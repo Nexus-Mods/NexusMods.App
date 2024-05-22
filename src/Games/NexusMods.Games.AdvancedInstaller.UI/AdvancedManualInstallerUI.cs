@@ -17,6 +17,13 @@ namespace NexusMods.Games.AdvancedInstaller.UI;
 // ReSharper disable once InconsistentNaming
 public class AdvancedManualInstallerUI : IAdvancedInstallerHandler
 {
+    /// <summary>
+    /// If true, the UI is not running and the installer will quietly fail.
+    ///
+    /// NOTE(halgari): this is an ugly hack, but we don't have a better tool for it at the moment.
+    /// </summary>
+    public static bool Headless { get; set; } = false;
+    
     private readonly Lazy<IConnection> _conn;
     private ILogger<AdvancedManualInstallerUI> _logger;
 
@@ -36,6 +43,9 @@ public class AdvancedManualInstallerUI : IAdvancedInstallerHandler
         ModInstallerInfo info,
         CancellationToken cancellationToken = default)
     {
+        if (Headless)
+            return Array.Empty<ModInstallerResult>();
+        
         // Get default name of the mod for UI purposes.
         var modName = info.ModName ?? Language.AdvancedInstaller_Manual_Mod;
 

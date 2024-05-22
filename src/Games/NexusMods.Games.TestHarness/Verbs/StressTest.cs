@@ -12,6 +12,7 @@ using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.DTOs;
 using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.Games.AdvancedInstaller.UI;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.ProxyConsole.Abstractions;
@@ -40,20 +41,19 @@ public class StressTest
         [Injected] CancellationToken token)
     {
         var manualLocator = gameLocators.OfType<ManuallyAddedLocator>().First();
+        AdvancedManualInstallerUI.Headless = true;
 
         var mods = await nexusApiClient.ModUpdatesAsync(game.Domain.Value, PastTime.Day, token);
         var results = new List<(string FileName, ModId ModId, Abstractions.NexusWebApi.Types.FileId FileId, Hash Hash, bool Passed, Exception? exception)>();
 
         await using var gameFolder = temporaryFileManager.CreateFolder();
-        var gameId = await manualLocator.Add(game, new Version(1, 0), gameFolder);
-        game.ResetInstallations();
-        var install = game.Installations.First(f => f.Store == GameStore.ManuallyAdded);
+        var (manualId, install) = await manualLocator.Add(game, new Version(1, 0), gameFolder);
 
         try
         {
             foreach (var mod in mods.Data)
             {
-                await renderer.Text("Processing {ModId}", mod.ModId);
+                await renderer.Text("Processing {0}", mod.ModId);
 
                 Response<ModFiles> files;
                 try
@@ -62,7 +62,7 @@ public class StressTest
                 }
                 catch (HttpRequestException ex)
                 {
-                    await renderer.Error(ex, "Failed to get files for {ModId}", mod.ModId);
+                    await renderer.Error(ex, "Failed to get files for {0}", mod.ModId);
                     continue;
                 }
 
@@ -72,7 +72,7 @@ public class StressTest
                     try
                     {
                         if (file.CategoryId != 1) continue;
-                        await renderer.Text("Downloading {ModId} {FileId} {FileName} - {Size}", mod.ModId,
+                        await renderer.Text("Downloading {0} {1} {2} - {3}", mod.ModId,
                             file.FileId,
                             file.FileName,
                             Size.FromLong(file.SizeInBytes ?? 0));
@@ -85,7 +85,7 @@ public class StressTest
 
                         hash = await downloader.DownloadAsync(urls.Data.Select(d => d.Uri), tmpPath, token: cts.Token);
 
-                        await renderer.Text("Installing {ModId} {FileId} {FileName} - {Size}", mod.ModId,
+                        await renderer.Text("Installing {0} {1} {2} - {3}", mod.ModId,
                             file.FileId,
                             file.FileName,
                             Size.FromLong(file.SizeInBytes ?? 0));
@@ -97,12 +97,12 @@ public class StressTest
                         await archiveInstaller.AddMods(LoadoutId.From(list.Id), downloadId, token: token);
 
                         results.Add((file.FileName, mod.ModId, file.FileId, hash, true, null));
-                        await renderer.Text("Installed {ModId} {FileId} {FileName} - {Size}", mod.ModId, file.FileId,
+                        await renderer.Text("Installed {0} {1} {2} - {3}", mod.ModId, file.FileId,
                             file.FileName, Size.FromLong(file.SizeInBytes ?? 0));
                     }
                     catch (Exception ex)
                     {
-                        await renderer.Error(ex, "Failed to install {ModId} {FileId} {FileName}", mod.ModId, file.FileId,
+                        await renderer.Error(ex, "Failed to install {0} {1} {2}", mod.ModId, file.FileId,
                             file.FileName);
                         results.Add((file.FileName, mod.ModId, file.FileId, hash, false, ex));
                     }
@@ -139,7 +139,7 @@ public class StressTest
         }
         finally
         {
-            await manualLocator.Remove(gameId);
+            await manualLocator.Remove(manualId);
         }
 
         return 0;

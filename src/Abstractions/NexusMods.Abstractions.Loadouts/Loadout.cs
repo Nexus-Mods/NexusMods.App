@@ -137,8 +137,13 @@ public static class Loadout
         /// </summary>
         public GameInstallation Installation
         {
-            get => ServiceProvider.GetRequiredService<IGameRegistry>()
-                .Get(Loadout.Installation.Get(this));
+            get
+            {
+                var registry = ServiceProvider.GetRequiredService<IGameRegistry>();
+                if (!registry.TryGet(Loadout.Installation.Get(this), out var found))
+                    throw new KeyNotFoundException("Game installation not found in registry");
+                return found;
+            }
             set
             {
                 var id = ServiceProvider.GetRequiredService<IGameRegistry>().GetId(value);
