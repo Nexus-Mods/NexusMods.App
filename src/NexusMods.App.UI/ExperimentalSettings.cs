@@ -38,6 +38,8 @@ public record ExperimentalSettings : ISettings
                     .UseBooleanContainer()
                     .RequiresRestart()
                 )
+                // Disabled until first Alpha Release ships.
+#if DEBUG
                 .AddPropertyToUI(x => x.EnableMultipleLoadouts, propertybuilder => propertybuilder
                     .AddToSection(sectionId)
                     .WithDisplayName("(Experimental) Enable Multiple Loadouts")
@@ -45,6 +47,7 @@ public record ExperimentalSettings : ISettings
                     .UseBooleanContainer()
                     .RequiresRestart()
                 )
+#endif
             );
     }
 }
