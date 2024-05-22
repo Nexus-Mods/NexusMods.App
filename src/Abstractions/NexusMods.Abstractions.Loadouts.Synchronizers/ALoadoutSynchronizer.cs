@@ -924,7 +924,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             await CreateVanillaStateLoadout(installation);
         }
 
-#if !NEXUSMODS_APP_ENABLE_MULTIPLE_LOADOUTS
+#if DISABLE_MULTIPLE_LOADOUTS
         // Note: This code is temporary, scheduled for deletion after next release.
         // Check for an existing loadout at the given install location.
         var alreadyHasLoadout = db.Loadouts().Any(x => 
