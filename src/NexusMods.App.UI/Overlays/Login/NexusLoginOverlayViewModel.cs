@@ -16,7 +16,8 @@ public class NexusLoginOverlayViewModel : AOverlayViewModel<INexusLoginOverlayVi
         Uri = (Uri)activity.Payload!;
         Cancel = ReactiveCommand.Create(() =>
             {
-                ((IActivitySource)activity).Dispose();
+                if (activity is IActivitySource activitySource)
+                    activitySource.Dispose();
                 Close();
             }
         );

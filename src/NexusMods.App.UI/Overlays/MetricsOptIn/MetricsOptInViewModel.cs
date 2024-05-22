@@ -12,7 +12,6 @@ namespace NexusMods.App.UI.Overlays.MetricsOptIn;
 /// </summary>
 public class MetricsOptInViewModel : AOverlayViewModel<IMetricsOptInViewModel>, IMetricsOptInViewModel
 {
-    private readonly IOverlayController _overlayController;
     private readonly ISettingsManager _settingsManager;
 
     public ICommand Allow { get; }
@@ -21,9 +20,8 @@ public class MetricsOptInViewModel : AOverlayViewModel<IMetricsOptInViewModel>, 
     /// <summary>
     /// DI Constructor
     /// </summary>
-    public MetricsOptInViewModel(ISettingsManager settingsManager, IOverlayController overlayController)
+    public MetricsOptInViewModel(ISettingsManager settingsManager)
     {
-        _overlayController = overlayController;
         _settingsManager = settingsManager;
 
         Allow = ReactiveCommand.Create(() =>
@@ -53,7 +51,7 @@ public class MetricsOptInViewModel : AOverlayViewModel<IMetricsOptInViewModel>, 
     {
         if (_settingsManager.Get<TelemetrySettings>().HasShownPrompt) return false;
 
-        _overlayController.Enqueue(this);
+        Controller.Enqueue(this);
         return true;
     }
 }

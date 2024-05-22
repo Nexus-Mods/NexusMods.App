@@ -18,7 +18,7 @@ public class MessageBoxOkCancelTests : AViewTest<MessageBoxOkCancelView, Message
         
         await OnUi(() =>
         {
-            controler.Enqueue((IOverlayViewModel)ViewModel);
+            controler.Enqueue(ViewModel);
             
             Click_AlreadyOnUi(View.OkButton);
 

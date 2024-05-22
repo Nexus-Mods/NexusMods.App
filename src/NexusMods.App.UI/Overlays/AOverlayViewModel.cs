@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Overlays;
@@ -10,14 +11,16 @@ namespace NexusMods.App.UI.Overlays;
 public abstract class AOverlayViewModel<TInner> : AViewModel<TInner>, IOverlayViewModel
 where TInner : class, IViewModelInterface
 {
-    /// <summary>
-    /// The owning controller of the overlay.
-    /// </summary>
-    [Reactive]
-    public IOverlayController? Controller { get; set; }
+    private IOverlayController? _controller;
+
+    /// <inheritdoc/>
+    public IOverlayController Controller
+    {
+        get => _controller ?? throw new InvalidOperationException("Controller must be set!");
+        set => this.RaiseAndSetIfChanged(ref _controller, value);
+    }
     
-    [Reactive]
-    public Status Status { get; set; }
+    [Reactive] public Status Status { get; set; } = Status.Hidden;
 
     private readonly TaskCompletionSource _taskCompletionSource = new();
     public Task CompletionTask => _taskCompletionSource.Task;
@@ -29,7 +32,6 @@ where TInner : class, IViewModelInterface
         {
             return;
         }
-
         
         Controller.Remove(this);
         Status = Status.Closed;

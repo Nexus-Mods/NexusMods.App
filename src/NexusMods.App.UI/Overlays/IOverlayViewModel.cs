@@ -6,17 +6,17 @@
 public enum Status
 {
     /// <summary>
-    /// Never shown.
+    /// Overlay is enqueued and currently hidden.
     /// </summary>
-    NotShown,
+    Hidden = 0,
     /// <summary>
-    /// Currently visible.
+    /// Overlay is currently visible.
     /// </summary>
-    Visible,
+    Visible = 1,
     /// <summary>
-    /// Closed or dismissed.
+    /// Overlay has been closed or dismissed.
     /// </summary>
-    Closed,
+    Closed = 2,
 }
 
 public interface IOverlayViewModel : IViewModelInterface
@@ -24,7 +24,7 @@ public interface IOverlayViewModel : IViewModelInterface
     /// <summary>
     /// The owning controller of the overlay.
     /// </summary>
-    public IOverlayController? Controller { get; set; }
+    public IOverlayController Controller { get; set; }
     
     /// <summary>
     /// Current status of the overlay.

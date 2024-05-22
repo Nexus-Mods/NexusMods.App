@@ -47,7 +47,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
         // Use GetRequiredService<TVM> instead.
         _windowManager = windowManager;
         _windowManager.RegisterWindow(this);
-
+        
         WorkspaceController = new WorkspaceController(
             window: this,
             serviceProvider: serviceProvider
@@ -65,9 +65,6 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
         // Only show controls in Windows since we can remove the chrome on that platform
         TopBar.ShowWindowControls = osInformation.IsWindows;
         
-        OverlayController = overlayController;
-
-
         this.WhenActivated(d =>
         {
             // Only show the updater if the metrics opt-in has been shown before, so we don't spam the user.
@@ -82,6 +79,10 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
                 .Where(isActive => isActive)
                 .Select(_ => WindowId)
                 .BindTo(_windowManager, manager => manager.ActiveWindowId)
+                .DisposeWith(d);
+            
+            overlayController.WhenAnyValue(oc => oc.CurrentOverlay)
+                .BindTo(this, vm => vm.CurrentOverlay)
                 .DisposeWith(d);
 
             Disposable.Create(this, vm =>
@@ -108,14 +109,13 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
 
     /// <inheritdoc/>
     [Reactive] public bool IsActive { get; set; }
+    
+    [Reactive]
+    public IOverlayViewModel? CurrentOverlay { get; set; }
 
     /// <inheritdoc/>
     public IWorkspaceController WorkspaceController { get; }
-    
-    /// <summary>
-    /// The overlay controller for the main window.
-    /// </summary>
-    public IOverlayController OverlayController { get; }
+
 
     [Reactive] public ISpineViewModel Spine { get; set; }
 
