@@ -45,7 +45,6 @@ public record ExperimentalSettings : ISettings
                     .WithDisplayName("(Experimental) Enable Multiple Loadouts")
                     .WithDescription("When set, you will be able to create multiple loadouts for a game.")
                     .UseBooleanContainer()
-                    .RequiresRestart()
                 )
 #endif
             );
