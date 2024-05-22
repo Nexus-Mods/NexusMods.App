@@ -4,34 +4,37 @@
 
 Notable PRs:
 
+### New Features
+
+**TODO**
+
 - Moving to MnemonicDB: https://github.com/Nexus-Mods/NexusMods.App/pull/1194, https://github.com/Nexus-Mods/NexusMods.App/pull/1235, https://github.com/Nexus-Mods/NexusMods.App/pull/1251, https://github.com/Nexus-Mods/NexusMods.App/pull/1252, https://github.com/Nexus-Mods/NexusMods.App/pull/1285, https://github.com/Nexus-Mods/NexusMods.App/pull/1276, https://github.com/Nexus-Mods/NexusMods.App/pull/1302, https://github.com/Nexus-Mods/NexusMods.App/pull/1318
 - Markdown Renderer + viewing Changelog in the App: https://github.com/Nexus-Mods/NexusMods.App/pull/1230, https://github.com/Nexus-Mods/NexusMods.App/pull/1258
 - Settings UI: https://github.com/Nexus-Mods/NexusMods.App/pull/1248, https://github.com/Nexus-Mods/NexusMods.App/pull/1295
-- Removing Loadouts and Unmanaged Game: https://github.com/Nexus-Mods/NexusMods.App/pull/1259, https://github.com/Nexus-Mods/NexusMods.App/pull/1279
-- Uninstalling the App: 
-- SMAPI diagnostic: https://github.com/Nexus-Mods/NexusMods.App/pull/1265
-- new Navigation Control (with context menu): https://github.com/Nexus-Mods/NexusMods.App/pull/1266
-- Tab Titles and Icons everywhere: https://github.com/Nexus-Mods/NexusMods.App/pull/1283
-- Mods Download Library: https://github.com/Nexus-Mods/NexusMods.App/pull/1268, https://github.com/Nexus-Mods/NexusMods.App/pull/1347
-- Hide Game Files and Overrides Mod: https://github.com/Nexus-Mods/NexusMods.App/pull/1286, https://github.com/Nexus-Mods/NexusMods.App/pull/1341
-- Telemetry is back in: https://github.com/Nexus-Mods/NexusMods.App/pull/1293
-- Tons of UI fixes: https://github.com/Nexus-Mods/NexusMods.App/pull/1298, https://github.com/Nexus-Mods/NexusMods.App/pull/1332
 - Sexy Download Speed Chart: https://github.com/Nexus-Mods/NexusMods.App/pull/1297
-- Use system extractor instead packaged one for Linux with compile flag: https://github.com/Nexus-Mods/NexusMods.App/pull/1308
-- Reset broken workspaces: https://github.com/Nexus-Mods/NexusMods.App/pull/1309
-- Don't manage saves: https://github.com/Nexus-Mods/NexusMods.App/pull/1344
 - Text Editor: https://github.com/Nexus-Mods/NexusMods.App/pull/1346
-- SingleProcess rework: https://github.com/Nexus-Mods/NexusMods.App/pull/1345
-- https://github.com/Nexus-Mods/NexusMods.App/pull/1351
 - Ingest SMAPI Mod files: https://github.com/Nexus-Mods/NexusMods.App/pull/1358
+- Uninstalling the App:
+- Removing Loadouts and Unmanaged Game: https://github.com/Nexus-Mods/NexusMods.App/pull/1259, https://github.com/Nexus-Mods/NexusMods.App/pull/1279
+- Mods Download Library: https://github.com/Nexus-Mods/NexusMods.App/pull/1268, https://github.com/Nexus-Mods/NexusMods.App/pull/1347
+- new Navigation Control (with context menu): https://github.com/Nexus-Mods/NexusMods.App/pull/1266
 
-### New Features
+**DONE**
 
 ### Other Changes
 
-- Updated Stardew Valley image by [@Pickysaurus](https://github.com/Pickysaurus) ([#1393](https://github.com/Nexus-Mods/NexusMods.App/pull/1393)).
+- Stardew Valley saves are no longer managed by the App ([#1344](https://github.com/Nexus-Mods/NexusMods.App/pull/1344)).
+- Two new SMAPI diagnostics for minimum supported SMAPI version and minimum supported game version ([#1265](https://github.com/Nexus-Mods/NexusMods.App/pull/1265)).
+- Game Files and the Override Mod are hidden by default, this is controlled using a setting ([#1286](https://github.com/Nexus-Mods/NexusMods.App/pull/1286), [#1341](https://github.com/Nexus-Mods/NexusMods.App/pull/1341)).
+- New Stardew Valley image by [@Pickysaurus](https://github.com/Pickysaurus) ([#1393](https://github.com/Nexus-Mods/NexusMods.App/pull/1393)).
+- Logging to the console can be now enabled in the settings, it's disabled by default ([#1351](https://github.com/Nexus-Mods/NexusMods.App/pull/1351)).
+- The CLI and how we handle multiple processes has been reworked ([#1345](https://github.com/Nexus-Mods/NexusMods.App/pull/1345)).
+- Package maintainers can choose to disable the bundled 7z binary ([#1308](https://github.com/Nexus-Mods/NexusMods.App/pull/1308)).
 
 ### Fixes
+
+- Tons of UI fixes and small visual improvements ([#1283](https://github.com/Nexus-Mods/NexusMods.App/pull/1283), [#1298](https://github.com/Nexus-Mods/NexusMods.App/pull/1298), [#1309](https://github.com/Nexus-Mods/NexusMods.App/pull/1309), [#1332](https://github.com/Nexus-Mods/NexusMods.App/pull/1332)).
+- Telemetry has been reworked and fixed ([#1293](https://github.com/Nexus-Mods/NexusMods.App/pull/1293)).
 
 ### External Contributors
 
