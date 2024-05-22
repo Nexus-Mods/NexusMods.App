@@ -2,7 +2,7 @@
 
 **Q:** What is this? A replacement for Vortex?
 
-**A:** Eventually, yes. But not for quite some time, at the moment this software should be considered “pre-alpha”. Do not ask for support for these tools until official announcements and a product launch is made. Feel free to direct any questions to Halgari in the meantime.
+**A:** Eventually, yes. But not for quite some time, at the moment this software should be considered "pre-alpha". Do not ask for support for these tools until official announcements and a product launch is made. Feel free to direct any questions to Halgari in the meantime.
 
 
 **Q:** Why is this being done, why a new platform, design, etc.?
