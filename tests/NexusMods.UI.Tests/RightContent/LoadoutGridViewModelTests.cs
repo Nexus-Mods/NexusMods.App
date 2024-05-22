@@ -10,6 +10,7 @@ public class LoadoutGridViewModelTests(IServiceProvider provider) : AVmTest<ILoa
     [Fact]
     public async Task AddingModUpdatesTheModSource()
     {
+        await CreateLoadout();
         Vm.LoadoutId = Loadout.LoadoutId;
 
         var ids = await InstallMod(DataZipLzma);
@@ -25,6 +26,7 @@ public class LoadoutGridViewModelTests(IServiceProvider provider) : AVmTest<ILoa
     [Fact]
     public async Task CanDeleteMods()
     {
+        await CreateLoadout();
         Vm.LoadoutId = Loadout.LoadoutId;
         
         var ids = new List<ModId>();

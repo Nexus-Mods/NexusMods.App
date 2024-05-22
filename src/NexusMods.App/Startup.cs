@@ -1,4 +1,3 @@
-using System.Reactive.Disposables;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.ReactiveUI;
@@ -6,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.App.UI;
 using NexusMods.App.UI.Windows;
-using NexusMods.SingleProcess;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using Projektanker.Icons.Avalonia;
