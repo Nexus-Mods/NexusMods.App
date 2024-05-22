@@ -20,31 +20,45 @@ public class NexusLoginOverlayService(IActivityMonitor activityMonitor, IOverlay
     private readonly CompositeDisposable _compositeDisposable = new();
 
     private NexusLoginOverlayViewModel? _overlayViewModel;
+    private IReadOnlyActivity? _currentLoginActivity;
     
     public Task StartAsync(CancellationToken cancellationToken)
     {
         activityMonitor.Activities
             .ToObservableChangeSet(x => x.Id)
             .Filter(x => x.Group.Value == Constants.OAuthActivityGroupName)
-            .QueryWhenChanged()
             .OnUI()
-            .Subscribe(job =>
+            .SubscribeWithErrorLogging(changeSet =>
             {
-                if (job.Count == 0) 
+                if (changeSet.Removes > 0 && _currentLoginActivity is not null)
                 {
-                    _overlayViewModel?.Close();
-                    return;
+                    if (changeSet.Any(x => x.Reason == ChangeReason.Remove && x.Current == _currentLoginActivity))
+                    {
+                        _currentLoginActivity = null;
+                        _overlayViewModel?.Close();
+                    }
                 }
-                
-                _overlayViewModel = new NexusLoginOverlayViewModel(job.Items.First());
-                overlayController.Enqueue(_overlayViewModel);
+
+                if (changeSet.Adds > 0)
+                {
+                    if (_currentLoginActivity is not null) return;
+
+                    _currentLoginActivity = changeSet.First(x => x.Reason == ChangeReason.Add).Current;
+                    _overlayViewModel = new NexusLoginOverlayViewModel(_currentLoginActivity);
+
+                    overlayController.Enqueue(_overlayViewModel);
+                }
             })
             .DisposeWith(_compositeDisposable);
+
         return Task.CompletedTask;
     }
 
     public Task StopAsync(CancellationToken cancellationToken)
     {
+        _currentLoginActivity = null;
+        _overlayViewModel?.Close();
+
         _compositeDisposable.Dispose();
         return Task.CompletedTask;
     }
