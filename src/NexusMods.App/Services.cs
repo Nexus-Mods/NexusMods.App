@@ -37,7 +37,8 @@ public static class Services
     public static IServiceCollection AddApp(this IServiceCollection services,
         TelemetrySettings? telemetrySettings = null,
         bool addStandardGameLocators = true,
-        StartupMode? startupMode = null)
+        StartupMode? startupMode = null,
+        ExperimentalSettings? experimentalSettings = null)
     {
         startupMode ??= new StartupMode();
         if (startupMode.RunAsMain)
@@ -45,6 +46,7 @@ public static class Services
             services
                 .AddSettings<TelemetrySettings>()
                 .AddSettings<LoggingSettings>()
+                .AddSettings<ExperimentalSettings>()
                 .AddSingleProcess(Mode.Main)
                 .AddDefaultRenderers()
 
@@ -63,7 +65,7 @@ public static class Services
                 .AddDataModel()
                 .AddSerializationAbstractions()
                 .AddInstallerTypes()
-                .AddSupportedGames()
+                .AddSupportedGames(experimentalSettings)
                 .AddActivityMonitor()
                 .AddCrossPlatform()
                 .AddGames()
@@ -95,16 +97,18 @@ public static class Services
         return services;
     }
     
-    private static IServiceCollection AddSupportedGames(this IServiceCollection services)
+    private static IServiceCollection AddSupportedGames(this IServiceCollection services, ExperimentalSettings? experimentalSettings)
     {
-#if DEBUG
-        Games.BethesdaGameStudios.Services.AddBethesdaGameStudios(services);
-        Games.RedEngine.Services.AddRedEngineGames(services);
-        Games.DarkestDungeon.Services.AddDarkestDungeon(services);
-        Games.BladeAndSorcery.Services.AddBladeAndSorcery(services);
-        Games.Sifu.Services.AddSifu(services);
-        Games.MountAndBlade2Bannerlord.ServicesExtensions.AddMountAndBladeBannerlord(services);
-#endif
+        if (experimentalSettings is { EnableAllGames: true })
+        {
+            Games.BethesdaGameStudios.Services.AddBethesdaGameStudios(services);
+            Games.RedEngine.Services.AddRedEngineGames(services);
+            Games.DarkestDungeon.Services.AddDarkestDungeon(services);
+            Games.BladeAndSorcery.Services.AddBladeAndSorcery(services);
+            Games.Sifu.Services.AddSifu(services);
+            Games.MountAndBlade2Bannerlord.ServicesExtensions.AddMountAndBladeBannerlord(services);
+        }
+        
         Games.StardewValley.Services.AddStardewValley(services);
         return services;
     }

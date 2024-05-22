@@ -32,18 +32,12 @@
    
     <ItemGroup>
         <ProjectReference Include="..\Games\NexusMods.Games.StardewValley\NexusMods.Games.StardewValley.csproj" />
-        <ProjectReference Include="..\Games\NexusMods.Games.MountAndBlade2Bannerlord\NexusMods.Games.MountAndBlade2Bannerlord.csproj" 
-                          Condition="$(DefineConstants.Contains('DEBUG'))" />
-        <ProjectReference Include="..\Games\NexusMods.Games.Sifu\NexusMods.Games.Sifu.csproj" 
-                          Condition="$(DefineConstants.Contains('DEBUG'))" />
-        <ProjectReference Include="..\Games\NexusMods.Games.BladeAndSorcery\NexusMods.Games.BladeAndSorcery.csproj" 
-                          Condition="$(DefineConstants.Contains('DEBUG'))" />
-        <ProjectReference Include="..\Games\NexusMods.Games.BethesdaGameStudios\NexusMods.Games.BethesdaGameStudios.csproj"
-                          Condition="$(DefineConstants.Contains('DEBUG'))" />
-        <ProjectReference Include="..\Games\NexusMods.Games.DarkestDungeon\NexusMods.Games.DarkestDungeon.csproj"
-                          Condition="$(DefineConstants.Contains('DEBUG'))" />
-        <ProjectReference Include="..\Games\NexusMods.Games.RedEngine\NexusMods.Games.RedEngine.csproj"
-                          Condition="$(DefineConstants.Contains('DEBUG'))" />
+        <ProjectReference Include="..\Games\NexusMods.Games.MountAndBlade2Bannerlord\NexusMods.Games.MountAndBlade2Bannerlord.csproj" />
+        <ProjectReference Include="..\Games\NexusMods.Games.Sifu\NexusMods.Games.Sifu.csproj" />
+        <ProjectReference Include="..\Games\NexusMods.Games.BladeAndSorcery\NexusMods.Games.BladeAndSorcery.csproj" />
+        <ProjectReference Include="..\Games\NexusMods.Games.BethesdaGameStudios\NexusMods.Games.BethesdaGameStudios.csproj" />
+        <ProjectReference Include="..\Games\NexusMods.Games.DarkestDungeon\NexusMods.Games.DarkestDungeon.csproj" />
+        <ProjectReference Include="..\Games\NexusMods.Games.RedEngine\NexusMods.Games.RedEngine.csproj" />
     </ItemGroup>
 
     <ItemGroup>
