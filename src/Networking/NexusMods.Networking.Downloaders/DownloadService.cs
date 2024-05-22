@@ -146,8 +146,11 @@ public class DownloadService : IDownloadService, IAsyncDisposable
     /// <inheritdoc />
     public async Task SetIsHidden(bool isHidden, IDownloadTask[] targets)
     {
-        var tx = _conn.BeginTransaction();
-        await Task.WhenAll(targets.Select(x => x.SetIsHidden(isHidden, tx)));
+        using var tx = _conn.BeginTransaction();
+        foreach (var downloadTask in targets)
+        {
+            downloadTask.SetIsHidden(isHidden, tx);
+        }
         await tx.Commit();
     }
 

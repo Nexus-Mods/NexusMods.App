@@ -63,7 +63,7 @@ public interface IDownloadTask
     /// <param name="tx">Transaction to use, if none is passed a new transaction is created and committed.</param>
     /// <remarks>If a transaction is passed, it is not committed, as it is assumed the caller will</remarks>
     /// <returns></returns>
-    Task SetIsHidden(bool isHidden, ITransaction? tx = null);
+    void SetIsHidden(bool isHidden, ITransaction tx);
 
     /// <summary>
     /// Reset (reload) the persistent state of the task from the database.
