@@ -363,6 +363,7 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
                     {
                         return item.WhenAnyValue(x => x.Status);
                     })
+                .OnUI()
                 .Subscribe(_ =>
                 {
                     UpdateWindowInfo();

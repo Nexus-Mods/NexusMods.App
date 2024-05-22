@@ -63,7 +63,6 @@ public partial class InProgressView : ReactiveUserControl<IInProgressViewModel>
 
             // Fix the CompletedDataGrid Width when number of items changes
             this.WhenAnyValue(view => view.ViewModel!.CompletedTasks.Count)
-                .OnUI()
                 .Subscribe(count =>
                     {
                         CompletedDataGrid.Width = double.NaN;
@@ -78,7 +77,6 @@ public partial class InProgressView : ReactiveUserControl<IInProgressViewModel>
 
             // Dynamically Update Download Count
             this.WhenAnyValue(view => view.ViewModel!.ActiveDownloadCount)
-                .OnUI()
                 .Subscribe(count =>
                 {
                     InProgressTitleCountTextBlock.Text = StringFormatters.ToDownloadsInProgressTitle(count);
@@ -88,13 +86,11 @@ public partial class InProgressView : ReactiveUserControl<IInProgressViewModel>
             // Dynamically Update Download Count color
             this.WhenAnyValue(view => view.ViewModel!.ActiveDownloadCount)
                 .Select(count => count > 0)
-                .OnUI()
                 .BindToClasses(InProgressTitleCountTextBlock, "ForegroundStrong", "ForegroundWeak")
                 .DisposeWith(d);
 
             // Dynamically Update Downloaded Bytes Text
             this.WhenAnyValue(view => view.ViewModel!.DownloadedSizeBytes, view => view.ViewModel!.TotalSizeBytes)
-                .OnUI()
                 .Subscribe(_ =>
                 {
                     var vm = ViewModel!;
@@ -110,7 +106,6 @@ public partial class InProgressView : ReactiveUserControl<IInProgressViewModel>
 
             // Dynamically Update Time Remaining Text
             this.WhenAnyValue(view => view.ViewModel!.SecondsRemaining)
-                .OnUI()
                 .Subscribe(_ =>
                 {
                     var vm = ViewModel!;
@@ -129,7 +124,6 @@ public partial class InProgressView : ReactiveUserControl<IInProgressViewModel>
             
             // Dynamically Update Completed Download Count
             this.WhenAnyValue(view => view.ViewModel!.CompletedTasks.Count)
-                .OnUI()
                 .Subscribe(count =>
                 {
                     CompletedTitleCountTextBlock.Text = StringFormatters.ToDownloadsInProgressTitle(count);
