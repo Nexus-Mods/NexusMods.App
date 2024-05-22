@@ -1,17 +1,13 @@
 using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
-using DynamicData;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics;
-using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.Pages.Diagnostics;
 using NexusMods.App.UI.Pages.LoadoutGrid;
 using NexusMods.App.UI.Pages.ModLibrary;
-using NexusMods.App.UI.Pages.MyGames;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Icons;

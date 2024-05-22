@@ -22,7 +22,7 @@ public class InProgressViewModelTests : AViewTest<InProgressView, InProgressDesi
         await OnUi(() =>
         {
             // Assigned upon view activation. No setter for this item, so no need to test swap.
-            view.ModsDataGrid.ItemsSource.Any().Should().BeTrue();
+            view.InprogressDataGrid.ItemsSource.Any().Should().BeTrue();
         });
     }
 
@@ -34,7 +34,7 @@ public class InProgressViewModelTests : AViewTest<InProgressView, InProgressDesi
         await OnUi(() =>
         {
             // Assigned upon view activation. Only set once.
-            view.ModsDataGrid.Columns.Count.Should().Be(5);
+            view.InprogressDataGrid.Columns.Count.Should().Be(5);
         });
     }
 
@@ -44,7 +44,7 @@ public class InProgressViewModelTests : AViewTest<InProgressView, InProgressDesi
         await OnUi(() =>
         {
             // Calculate Current Item Count
-            var currentCount = View.ModsDataGrid.ItemsSource.Cast<object>().Count();
+            var currentCount = View.InprogressDataGrid.ItemsSource.Cast<object>().Count();
 
             // Add an item.
             var download = new DownloadTaskDesignViewModel();
@@ -55,7 +55,7 @@ public class InProgressViewModelTests : AViewTest<InProgressView, InProgressDesi
             // thread shenanigans don't happen under the hood.
 
             // Assert a new item has arrived.
-            var newCount = View.ModsDataGrid.ItemsSource.Cast<object>().Count();
+            var newCount = View.InprogressDataGrid.ItemsSource.Cast<object>().Count();
             newCount.Should().Be(currentCount + 1);
         });
     }

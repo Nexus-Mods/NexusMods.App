@@ -19,6 +19,8 @@ public partial class InProgressView : ReactiveUserControl<IInProgressViewModel>
 
         this.WhenActivated(d =>
         {
+            CompletedDataGrid.Width = double.NaN;
+            
             this.OneWayBind(ViewModel, vm => vm.Series, view => view.Chart.Series)
                 .DisposeWith(d);
             this.OneWayBind(ViewModel, vm => vm.YAxes, view => view.Chart.YAxes)
@@ -40,17 +42,32 @@ public partial class InProgressView : ReactiveUserControl<IInProgressViewModel>
 
             this.BindCommand(ViewModel, vm => vm.ResumeAllTasksCommand, view => view.ResumeAllButton)
                 .DisposeWith(d);
-
-            this.BindCommand(ViewModel, vm => vm.ShowSettings, view => view.SettingsButton)
+            
+            this.BindCommand(ViewModel, vm => vm.HideSelectedCommand, view => view.ClearButton)
+                .DisposeWith(d);
+            
+            this.BindCommand(ViewModel, vm => vm.HideAllCommand, view => view.ClearAllButton)
                 .DisposeWith(d);
 
-            this.OneWayBind(ViewModel, vm => vm.Tasks, 
-                    view => view.ModsDataGrid.ItemsSource)
+            this.OneWayBind(ViewModel, vm => vm.InProgressTasks, 
+                    view => view.InprogressDataGrid.ItemsSource)
+                .DisposeWith(d);
+            
+            this.OneWayBind(ViewModel, vm => vm.CompletedTasks, 
+                    view => view.CompletedDataGrid.ItemsSource)
                 .DisposeWith(d);
 
             this.WhenAnyValue(view => view.ViewModel!.Columns)
-                .GenerateColumns(ModsDataGrid)
+                .GenerateColumns(InprogressDataGrid)
                 .DisposeWith(d);
+
+            // Fix the CompletedDataGrid Width when number of items changes
+            this.WhenAnyValue(view => view.ViewModel!.CompletedTasks.Count)
+                .Subscribe(count =>
+                    {
+                        CompletedDataGrid.Width = double.NaN;
+                    }
+                ).DisposeWith(d);
 
             // Dynamically hide the "No Downloads" TextBlock
             this.WhenAnyValue(view =>  view.ViewModel!.HasDownloads)
@@ -60,7 +77,6 @@ public partial class InProgressView : ReactiveUserControl<IInProgressViewModel>
 
             // Dynamically Update Download Count
             this.WhenAnyValue(view => view.ViewModel!.ActiveDownloadCount)
-                .OnUI()
                 .Subscribe(count =>
                 {
                     InProgressTitleCountTextBlock.Text = StringFormatters.ToDownloadsInProgressTitle(count);
@@ -70,13 +86,11 @@ public partial class InProgressView : ReactiveUserControl<IInProgressViewModel>
             // Dynamically Update Download Count color
             this.WhenAnyValue(view => view.ViewModel!.ActiveDownloadCount)
                 .Select(count => count > 0)
-                .OnUI()
                 .BindToClasses(InProgressTitleCountTextBlock, "ForegroundStrong", "ForegroundWeak")
                 .DisposeWith(d);
 
             // Dynamically Update Downloaded Bytes Text
             this.WhenAnyValue(view => view.ViewModel!.DownloadedSizeBytes, view => view.ViewModel!.TotalSizeBytes)
-                .OnUI()
                 .Subscribe(_ =>
                 {
                     var vm = ViewModel!;
@@ -92,7 +106,6 @@ public partial class InProgressView : ReactiveUserControl<IInProgressViewModel>
 
             // Dynamically Update Time Remaining Text
             this.WhenAnyValue(view => view.ViewModel!.SecondsRemaining)
-                .OnUI()
                 .Subscribe(_ =>
                 {
                     var vm = ViewModel!;
@@ -108,26 +121,59 @@ public partial class InProgressView : ReactiveUserControl<IInProgressViewModel>
                     }
                 })
                 .DisposeWith(d);
+            
+            // Dynamically Update Completed Download Count
+            this.WhenAnyValue(view => view.ViewModel!.CompletedTasks.Count)
+                .Subscribe(count =>
+                {
+                    CompletedTitleCountTextBlock.Text = StringFormatters.ToDownloadsInProgressTitle(count);
+                })
+                .DisposeWith(d);
+            
+            // Hide Completed Section if no downloads
+            this.WhenAnyValue(view => view.ViewModel!.CompletedTasks.Count)
+                .Select(count => count > 0)
+                .BindToView(this, view => view.CompletedSectionGrid.IsVisible)
+                .DisposeWith(d);
 
-            // Bind Selected Items
+            // Bind inProgress Selected Items
             Observable.FromEventPattern<SelectionChangedEventArgs>(
-                    addHandler => ModsDataGrid.SelectionChanged += addHandler,
-                    removeHandler => ModsDataGrid.SelectionChanged -= removeHandler)
+                    addHandler => InprogressDataGrid.SelectionChanged += addHandler,
+                    removeHandler => InprogressDataGrid.SelectionChanged -= removeHandler)
                 .Do(_ =>
                 {
-                    ViewModel!.SelectedTasks.Edit(updater =>
+                    ViewModel!.SelectedInProgressTasks.Edit(updater =>
                     {
                         updater.Clear();
-                        foreach (var item in ModsDataGrid.SelectedItems)
+                        foreach (var item in InprogressDataGrid.SelectedItems)
                         {
                             if (item is IDownloadTaskViewModel task)
                                 updater.Add(task);
                         }
                     });
-
                 })
                 .Subscribe()
                 .DisposeWith(d);
+            
+            // Bind completed Selected Items
+            Observable.FromEventPattern<SelectionChangedEventArgs>(
+                addHandler => CompletedDataGrid.SelectionChanged += addHandler,
+                removeHandler => CompletedDataGrid.SelectionChanged -= removeHandler)
+                .Do(_ =>
+                {
+                    ViewModel!.SelectedCompletedTasks.Edit(updater =>
+                    {
+                        updater.Clear();
+                        foreach (var item in CompletedDataGrid.SelectedItems)
+                        {
+                            if (item is IDownloadTaskViewModel task)
+                                updater.Add(task);
+                        }
+                    });
+                })
+                .Subscribe()
+                .DisposeWith(d);
+            
 
         });
     }
