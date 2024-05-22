@@ -9,7 +9,7 @@ public class InProgressDesignViewModel : InProgressViewModel
 {
     public InProgressDesignViewModel()
     {
-        // Note (Al12rs): We can't simply assign a new collection to the Tasks property,
+        // Note (Al12rs): We can't simply assign a new collection to the InProgressTasks property,
         // because all the bindings are already subscribed to the old collection.
         // It would be possible to unsubscribe from the old collection and subscribe to the new one,
         // but that would make all the bindings code much more messy, with nested subscriptions.
@@ -57,6 +57,28 @@ public class InProgressDesignViewModel : InProgressViewModel
             Version = "0.0.0",
             DownloadedBytes = 0,
             TaskId = EntityId.From(1027),
+        });
+        
+        DesignTimeDownloadTasks.AddOrUpdate(new DownloadTaskDesignViewModel()
+        {
+            Name = "Fast Travel From Anywhere",
+            Game = "Chrono Fiddler",
+            Version = "13.3.7",
+            DownloadedBytes = 1000_000000,
+            SizeBytes = 1000_000000,
+            Status = DownloadTaskStatus.Completed,
+            TaskId = EntityId.From(1028),
+        });
+        
+        DesignTimeDownloadTasks.AddOrUpdate(new DownloadTaskDesignViewModel()
+        {
+            Name = "Better Farmhouse Textures",
+            Game = "Valdur's Fate",
+            Version = "13.3.10",
+            DownloadedBytes = 300,
+            SizeBytes = 300,
+            Status = DownloadTaskStatus.Completed,
+            TaskId = EntityId.From(1029),
         });
     }
 

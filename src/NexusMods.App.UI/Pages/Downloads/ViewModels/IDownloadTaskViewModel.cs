@@ -1,5 +1,8 @@
+using System.Reactive;
+using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.Downloaders.Interfaces;
+using ReactiveUI;
 
 namespace NexusMods.App.UI.Pages.Downloads.ViewModels;
 
@@ -8,6 +11,8 @@ namespace NexusMods.App.UI.Pages.Downloads.ViewModels;
 /// </summary>
 public interface IDownloadTaskViewModel : IViewModelInterface
 {
+    
+    public IDownloadTask DlTask { get; }
     
     /// <summary>
     /// e.g. 'My Cool Mod'
@@ -23,6 +28,16 @@ public interface IDownloadTaskViewModel : IViewModelInterface
     /// e.g. 'Skyrim'
     /// </summary>
     public string Game { get; }
+    
+    /// <summary>
+    /// Total size in humanized string format.
+    /// </summary>
+    public string HumanizedSize { get; }
+    
+    /// <summary>
+    /// The DateTime when the download was completed in humanized string format.
+    /// </summary>
+    public string HumanizedCompletedTime { get; }
 
     /// <summary>
     /// e.g. 'Downloading'
@@ -50,26 +65,38 @@ public interface IDownloadTaskViewModel : IViewModelInterface
     public EntityId TaskId { get; }
 
     /// <summary>
+    /// Whether this completed download was hidden from the UI (clear action).
+    /// </summary>
+    /// <value></value>
+    public bool IsHidden { get; set; }
+
+    /// <summary>
+    /// Hides the task from the UI.
+    /// Only works for completed tasks.
+    /// </summary>
+    public ReactiveCommand<Unit, Unit> HideCommand { get; }
+    
+    /// <summary>
+    /// View the entry corresponding to this completed download in the mod Library page
+    /// </summary>
+    public ReactiveCommand<NavigationInformation, Unit> ViewInLibraryCommand { get; }
+
+    /// <summary>
     /// Schedules a cancellation of the task.
     /// </summary>
-    public void Cancel()
-    {
+    public Task Cancel();
 
-    }
 
     /// <summary>
     /// Suspends the task, keeping it around in memory.
     /// </summary>
-    public void Suspend()
-    {
+    public Task Suspend();
 
-    }
 
     /// <summary>
     /// Resumes the task from a suspended state.
     /// </summary>
-    public void Resume()
-    {
+    public Task Resume();
 
-    }
 }
+

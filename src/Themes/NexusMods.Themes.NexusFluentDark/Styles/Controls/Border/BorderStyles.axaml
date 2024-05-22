@@ -55,6 +55,9 @@
             <Border Classes="Rounded-lg WarningStrong" Padding="16">
                 <TextBlock Text="WARNING strong" />
             </Border>
+            <Border Classes="Rounded-lg WarningSubdued" Padding="16">
+                <TextBlock Text="WARNING subdued" />
+            </Border>
             <Border Classes="LeftPaneTitle" Padding="16">
                 <TextBlock Text="LEFT PANEL TITLE" />
             </Border>
@@ -217,6 +220,13 @@
 
     <Style Selector="Border.WarningStrong">
         <Setter Property="Background" Value="{StaticResource WarningStrongBrush}"/>
+    </Style>
+    <Style Selector="Border.WarningSubdued">
+        <Setter Property="Background" Value="{StaticResource WarningSubduedBrush}"/>
+    </Style>
+
+    <Style Selector="Border.WarningSubdued20">
+        <Setter Property="Background" Value="{StaticResource WarningSubdued20Brush}"/>
     </Style>
 
     <Style Selector="Border.InfoStrong">

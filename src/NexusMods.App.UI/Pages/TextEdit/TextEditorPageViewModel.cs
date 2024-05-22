@@ -30,11 +30,12 @@ public class TextEditorPageViewModel : APageViewModel<ITextEditorPageViewModel>,
 {
     [Reactive] public TextEditorPageContext? Context { get; set; }
 
-    [Reactive] public bool IsReadOnly { get; set; }
+    [Reactive] public bool IsReadOnly { get; set; } = true;
 
     [Reactive] public bool IsModified { get; set; }
 
-    [Reactive] public TextDocument? Document { get; set; }
+    private static readonly TextDocument EmptyDocument = new(new StringTextSource("")) { FileName = "empty.txt" };
+    [Reactive] public TextDocument Document { get; set; } = EmptyDocument;
 
     public ReactiveCommand<Unit, Unit> SaveCommand { get; }
     private readonly ReactiveCommand<TextEditorPageContext, ValueTuple<TextEditorPageContext, string>> _loadFileCommand;
@@ -75,7 +76,8 @@ public class TextEditorPageViewModel : APageViewModel<ITextEditorPageViewModel>,
         var canSaveObservable = this.WhenAnyValue(
             vm => vm.Document,
             vm => vm.IsModified,
-            (document, isModified) => document is not null && isModified
+            vm => vm.IsReadOnly,
+            (document, isModified, isReadOnly) => document != EmptyDocument && isModified && !isReadOnly
         );
 
         SaveCommand = ReactiveCommand.CreateFromTask(async () =>
@@ -83,7 +85,7 @@ public class TextEditorPageViewModel : APageViewModel<ITextEditorPageViewModel>,
             var fileId = Context!.FileId;
             var filePath = Context!.FilePath;
 
-            var text = Document?.Text ?? string.Empty;
+            var text = Document.Text;
 
             // hash and store the new contents
             var bytes = Encoding.UTF8.GetBytes(text);
@@ -151,6 +153,7 @@ public class TextEditorPageViewModel : APageViewModel<ITextEditorPageViewModel>,
                     };
 
                     Document = document;
+                    IsReadOnly = false;
                 })
                 .DisposeWith(disposables);
 

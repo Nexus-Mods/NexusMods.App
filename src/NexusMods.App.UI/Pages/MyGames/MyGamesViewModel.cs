@@ -1,6 +1,5 @@
 using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using Avalonia.Threading;
 using DynamicData;
 using DynamicData.Binding;
@@ -12,7 +11,6 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.App.UI.Controls.GameWidget;
-using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.LoadoutGrid;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
@@ -27,8 +25,6 @@ namespace NexusMods.App.UI.Pages.MyGames;
 public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewModel
 {
     private readonly IWindowManager _windowManager;
-    private readonly ILogger<MyGamesViewModel> _logger;
-    private readonly IApplyService _applyService;
     private ReadOnlyObservableCollection<IGameWidgetViewModel> _managedGames = new([]);
     private ReadOnlyObservableCollection<IGameWidgetViewModel> _detectedGames = new([]);
 
@@ -48,9 +44,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
 		TabIcon = IconValues.JoystickGameFilled;
         
         var provider = serviceProvider;
-        _applyService = applyService;
         _windowManager = windowManager;
-        _logger = logger;
         
         this.WhenActivated(d =>
             {
