@@ -22,23 +22,6 @@
                     Classes="Spacing-2"
                     HorizontalAlignment="Stretch">
 
-            <!-- Ingest button -->
-            <Button Classes="Standard SecondaryOutlined"
-                    HorizontalAlignment="Stretch"
-                    x:Name="IngestButton">
-                <Viewbox StretchDirection="DownOnly">
-                    <StackPanel Orientation="Horizontal"
-                                HorizontalAlignment="Center"
-                                Classes="Spacing-1">
-                        <icons:UnifiedIcon Size="24" Classes="Refresh" />
-                        <TextBlock Classes="TitleSMSemi"
-                                   x:Name="IngestButtonTextBlock"
-                                   VerticalAlignment="Center"
-                                   Text="{x:Static resources:Language.IngestButtonTextBlock_Text}" />
-                    </StackPanel>
-                </Viewbox>
-            </Button>
-
             <navigation:NavigationControl Classes="Hyperlink Secondary" HorizontalAlignment="Right" x:Name="ApplyDiffButton">
                 <TextBlock x:Name="ViewApplyChangesButton"
                            Classes="ForegroundModerate"

@@ -3,6 +3,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
@@ -20,13 +21,13 @@ namespace NexusMods.App.UI.LeftMenu.Items;
 public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyControlViewModel
 {
     private readonly IApplyService _applyService;
+    private readonly ILogger<ApplyControlViewModel> _logger;
 
     private readonly LoadoutId _loadoutId;
     private readonly GameInstallation _gameInstallation;
 
 
     private readonly ReactiveCommand<Unit, Unit> _applyReactiveCommand;
-    private readonly ReactiveCommand<Unit, Unit> _ingestReactiveCommand;
 
     private ObservableAsPropertyHelper<LoadoutWithTxId> _lastAppliedRevisionId;
     private LoadoutWithTxId LastAppliedWithTxId => _lastAppliedRevisionId.Value;
@@ -39,12 +40,10 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
 
 
     public ReactiveCommand<Unit, Unit> ApplyCommand => _applyReactiveCommand;
-    public ReactiveCommand<Unit, Unit> IngestCommand => _ingestReactiveCommand;
     public ReactiveCommand<NavigationInformation, Unit> ShowApplyDiffCommand { get; }
 
 
     [Reactive] private bool CanApply { get; set; } = true;
-    [Reactive] private bool CanIngest { get; set; } = true;
 
     [Reactive] public string ApplyButtonText { get; private set; } = Language.ApplyControlViewModel__APPLY;
 
@@ -56,6 +55,7 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
         _loadoutId = loadoutId;
         _applyService = serviceProvider.GetRequiredService<IApplyService>();
         _conn = serviceProvider.GetRequiredService<IConnection>();
+        _logger = serviceProvider.GetRequiredService<ILogger<ApplyControlViewModel>>();
         LaunchButtonViewModel = serviceProvider.GetRequiredService<ILaunchButtonViewModel>();
         var windowManager = serviceProvider.GetRequiredService<IWindowManager>();
         LaunchButtonViewModel.LoadoutId = loadoutId;
@@ -75,8 +75,6 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
 
         _applyReactiveCommand = ReactiveCommand.CreateFromTask(async () => await Apply(), 
             canExecute: this.WhenAnyValue(vm => vm.CanApply));
-        _ingestReactiveCommand = ReactiveCommand.CreateFromTask(async () => await Ingest(), 
-            canExecute: this.WhenAnyValue(vm => vm.CanIngest));
         
         ShowApplyDiffCommand = ReactiveCommand.Create<NavigationInformation>(info =>
         {
@@ -99,7 +97,6 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
 
         this.WhenActivated(disposables =>
             {
-                var db = _conn.Db;
                 // Last applied loadout id
                 this.WhenAnyValue(vm => vm.LastAppliedWithTxId)
                     .Select(revId =>
@@ -113,22 +110,19 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
                     .BindToVM(this, vm => vm.LastAppliedLoadoutId)
                     .DisposeWith(disposables);
 
-                // Apply and Ingest button visibility
+                // Apply and button visibility
                 var loadoutOrLastAppliedStream = this.WhenAnyValue(vm => vm.NewestLoadout,
                     vm => vm.LastAppliedWithTxId
                 );
 
                 loadoutOrLastAppliedStream.CombineLatest(_applyReactiveCommand.IsExecuting)
-                    .CombineLatest(_ingestReactiveCommand.IsExecuting)
                     .Subscribe(data =>
                         {
-                            var isApplying = data.First.Second;
-                            var isIngesting = data.Second;
-                            CanApply = !isApplying && !isIngesting &&
+                            var isApplying = data.Second;
+                            var lastAppliedWithTxId = data.First.Item2;
+                            CanApply = !isApplying && 
                                        (!LastAppliedLoadoutId.Equals(_loadoutId) ||
-                                        !NewestLoadout.LoadoutWithTxId.Equals(LastAppliedWithTxId));
-                            CanIngest = !isApplying && !isIngesting &&
-                                        LastAppliedLoadoutId.Equals(_loadoutId);
+                                        !NewestLoadout.LoadoutWithTxId.Equals(lastAppliedWithTxId));
                         }
                     ).DisposeWith(disposables);
                 
@@ -155,9 +149,5 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
             await _applyService.Apply(loadout);
         });
     }
-
-    private async Task Ingest()
-    {
-        await Task.Run(async () => { await _applyService.Ingest(_gameInstallation); });
-    }
+    
 }
