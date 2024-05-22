@@ -36,7 +36,6 @@ public interface IInProgressViewModel : IPageViewModelInterface
     bool HasDownloads { get; }
 
     int ActiveDownloadCount { get; }
-    int CompletedDownloadCount { get; }
 
     /// <summary>
     /// Total size of items currently downloaded.

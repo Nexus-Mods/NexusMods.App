@@ -4,7 +4,6 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Controls;
 using DynamicData;
-using DynamicData.Aggregation;
 using DynamicData.Binding;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
@@ -67,7 +66,6 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
     public ReadOnlyObservableCollection<IDataGridColumnFactory<DownloadColumn>> Columns => _filteredColumns;
 
     [Reactive] public int ActiveDownloadCount { get; set; }
-    [Reactive] public int CompletedDownloadCount { get; set; }
 
     [Reactive] public bool HasDownloads { get; private set; }
 
@@ -370,12 +368,6 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
                     UpdateWindowInfo();
                     ActiveDownloadCount = InProgressTasks.Count(task => task.Status == DownloadTaskStatus.Downloading);
                     HasDownloads = InProgressTasks.Any();
-                }).DisposeWith(d);
-            
-            CompletedTasks.ToObservableChangeSet()
-                .Subscribe(_ =>
-                {
-                    CompletedDownloadCount = CompletedTasks.Count;
                 }).DisposeWith(d);
 
             // Start updating on the UI thread

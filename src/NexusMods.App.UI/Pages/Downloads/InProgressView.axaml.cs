@@ -62,7 +62,7 @@ public partial class InProgressView : ReactiveUserControl<IInProgressViewModel>
                 .DisposeWith(d);
 
             // Fix the CompletedDataGrid Width when number of items changes
-            this.WhenAnyValue(view => view.ViewModel!.CompletedDownloadCount)
+            this.WhenAnyValue(view => view.ViewModel!.CompletedTasks.Count)
                 .OnUI()
                 .Subscribe(count =>
                     {
@@ -128,7 +128,7 @@ public partial class InProgressView : ReactiveUserControl<IInProgressViewModel>
                 .DisposeWith(d);
             
             // Dynamically Update Completed Download Count
-            this.WhenAnyValue(view => view.ViewModel!.CompletedDownloadCount)
+            this.WhenAnyValue(view => view.ViewModel!.CompletedTasks.Count)
                 .OnUI()
                 .Subscribe(count =>
                 {
@@ -137,7 +137,7 @@ public partial class InProgressView : ReactiveUserControl<IInProgressViewModel>
                 .DisposeWith(d);
             
             // Hide Completed Section if no downloads
-            this.WhenAnyValue(view => view.ViewModel!.CompletedDownloadCount)
+            this.WhenAnyValue(view => view.ViewModel!.CompletedTasks.Count)
                 .Select(count => count > 0)
                 .BindToView(this, view => view.CompletedSectionGrid.IsVisible)
                 .DisposeWith(d);
