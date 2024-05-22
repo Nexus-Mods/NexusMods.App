@@ -2,6 +2,7 @@ using System.Collections.Immutable;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Installers;
 using NexusMods.App.UI.Controls.DevelopmentBuildBanner;
 using NexusMods.App.UI.Controls.Spine;
 using NexusMods.App.UI.Controls.TopBar;
@@ -11,6 +12,8 @@ using NexusMods.App.UI.Overlays.AlphaWarning;
 using NexusMods.App.UI.Overlays.MetricsOptIn;
 using NexusMods.App.UI.Overlays.Updater;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Paths;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -27,9 +30,6 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
         IWindowManager windowManager,
         IDownloadService downloadService,
         IOverlayController overlayController,
-        IArchiveInstaller archiveInstaller,
-        IMetricsOptInViewModel metricsOptInViewModel,
-        IUpdaterViewModel updaterViewModel,
         IConnection conn)
     {
         // NOTE(erri120): can't use DI for VMs that require an active Window because
@@ -54,30 +54,13 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
         
         this.WhenActivated(d =>
         {
-            controller.ApplyNextOverlay.Subscribe(item =>
-                {
-                    if (item == null)
-                    {
-                        OverlayContent = null;
-                        return;
-                    }
-
-                    // This is the main window, if no reference control is specified, show it here.
-                    if (item.Value.ViewItem == null)
-                        OverlayContent = item.Value.VM;
-                    else
-                    {
-                        // TODO: Determine if we are the right window. For now we do nothing, until that helper is implemented
-                        OverlayContent = item.Value.VM;
-                    }
-                })
-                .DisposeWith(d);
-
             var alphaWarningViewModel = serviceProvider.GetRequiredService<IAlphaWarningViewModel>();
             alphaWarningViewModel.WorkspaceController = WorkspaceController;
+            alphaWarningViewModel.Controller = overlayController;
             alphaWarningViewModel.MaybeShow();
 
             var metricsOptInViewModel = serviceProvider.GetRequiredService<IMetricsOptInViewModel>();
+            metricsOptInViewModel.Controller = overlayController;
 
             // Only show the updater if the metrics opt-in has been shown before, so we don't spam the user.
             if (!metricsOptInViewModel.MaybeShow())

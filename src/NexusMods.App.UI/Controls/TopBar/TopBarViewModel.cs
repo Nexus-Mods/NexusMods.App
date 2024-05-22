@@ -59,7 +59,7 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
             var alphaWarningViewModel = serviceProvider.GetRequiredService<IAlphaWarningViewModel>();
             alphaWarningViewModel.WorkspaceController = workspaceController;
 
-            overlayController.SetOverlayContent(new SetOverlayItem(alphaWarningViewModel));
+            overlayController.Enqueue(alphaWarningViewModel);
         });
 
         this.WhenActivated(d =>

@@ -13,6 +13,13 @@ where TInner : class, IViewModelInterface
 {
     private IOverlayController? _controller;
 
+    public AOverlayViewModel()
+    {
+        // Has to be here, because otherwise Fody breaks the codegen and doesn't make a backing
+        // field for Status for some reason :|
+        Status = Status.Hidden;
+    }
+
     /// <inheritdoc/>
     public IOverlayController Controller
     {
@@ -20,7 +27,8 @@ where TInner : class, IViewModelInterface
         set => this.RaiseAndSetIfChanged(ref _controller, value);
     }
     
-    [Reactive] public Status Status { get; set; } = Status.Hidden;
+    [Reactive] 
+    public Status Status { get; set; }
 
     private readonly TaskCompletionSource _taskCompletionSource = new();
     public Task CompletionTask => _taskCompletionSource.Task;
