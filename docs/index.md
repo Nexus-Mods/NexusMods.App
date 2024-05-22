@@ -72,7 +72,7 @@ Virtual FileSystems:
 
 #### Nexus Mods App Approach
 
-!!! nexus "The Nexus Mods App aims to merge the mental simplicity of manual modding with the hygiene of existing mod installers and a promise that “you can always go back to what last worked""
+!!! nexus "The Nexus Mods App aims to merge the mental simplicity of manual modding with the hygiene of existing mod installers and a promise that "you can always go back to what last worked""
 
 The 'Data Model' of the Nexus Mods App can be thought of as an extension of lessons learned from the development of
 Nexus Collections and Wabbajack.
