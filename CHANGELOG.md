@@ -6,6 +6,14 @@ Notable PRs:
 
 ### New Features
 
+![Downloads](./docs/changelog-assets/d7e2ce57af49808dc004fa897cc1063e.webp)
+
+![Library](./docs/changelog-assets/ebb2472a1ddcc1eddc3cc4b8061ee86a.webp)
+
+![Settings](./docs/changelog-assets/426d90eea8870ce3481cd291bc2490c6.webp)
+
+![Text Editor](./docs/changelog-assets/a590065539b5c0e4bb30c0b7db401440.webp)
+
 **TODO**
 
 - Moving to MnemonicDB: https://github.com/Nexus-Mods/NexusMods.App/pull/1194, https://github.com/Nexus-Mods/NexusMods.App/pull/1235, https://github.com/Nexus-Mods/NexusMods.App/pull/1251, https://github.com/Nexus-Mods/NexusMods.App/pull/1252, https://github.com/Nexus-Mods/NexusMods.App/pull/1285, https://github.com/Nexus-Mods/NexusMods.App/pull/1276, https://github.com/Nexus-Mods/NexusMods.App/pull/1302, https://github.com/Nexus-Mods/NexusMods.App/pull/1318
