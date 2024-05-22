@@ -15,17 +15,10 @@ using NexusMods.DataModel;
 using NexusMods.FileExtractor;
 using NexusMods.Games.AdvancedInstaller;
 using NexusMods.Games.AdvancedInstaller.UI;
-using NexusMods.Games.BethesdaGameStudios;
-using NexusMods.Games.BladeAndSorcery;
-using NexusMods.Games.DarkestDungeon;
 using NexusMods.Games.FOMOD;
 using NexusMods.Games.FOMOD.UI;
 using NexusMods.Games.Generic;
-using NexusMods.Games.MountAndBlade2Bannerlord;
-using NexusMods.Games.RedEngine;
 using NexusMods.Games.Reshade;
-using NexusMods.Games.Sifu;
-using NexusMods.Games.StardewValley;
 using NexusMods.Games.TestHarness;
 using NexusMods.Networking.Downloaders;
 using NexusMods.Networking.HttpDownloader;
@@ -41,11 +34,11 @@ namespace NexusMods.App;
 
 public static class Services
 {
-
     public static IServiceCollection AddApp(this IServiceCollection services,
         TelemetrySettings? telemetrySettings = null,
         bool addStandardGameLocators = true,
-        StartupMode? startupMode = null)
+        StartupMode? startupMode = null,
+        ExperimentalSettings? experimentalSettings = null)
     {
         startupMode ??= new StartupMode();
         if (startupMode.RunAsMain)
@@ -53,6 +46,7 @@ public static class Services
             services
                 .AddSettings<TelemetrySettings>()
                 .AddSettings<LoggingSettings>()
+                .AddSettings<ExperimentalSettings>()
                 .AddSingleProcess(Mode.Main)
                 .AddDefaultRenderers()
 
@@ -71,21 +65,15 @@ public static class Services
                 .AddDataModel()
                 .AddSerializationAbstractions()
                 .AddInstallerTypes()
-                .AddGames()
+                .AddSupportedGames(experimentalSettings)
                 .AddActivityMonitor()
                 .AddCrossPlatform()
-                .AddBethesdaGameStudios()
-                .AddRedEngineGames()
+                .AddGames()
                 .AddGenericGameSupport()
                 .AddFileStoreAbstractions()
                 .AddLoadoutAbstractions()
                 .AddReshade()
                 .AddFomod()
-                .AddDarkestDungeon()
-                .AddBladeAndSorcery()
-                .AddSifu()
-                .AddStardewValley()
-                .AddMountAndBladeBannerlord()
                 .AddNexusWebApi()
                 .AddAdvancedHttpDownloader()
                 .AddTestHarness()
@@ -106,6 +94,22 @@ public static class Services
                 .AddSettingsManager();
         }
 
+        return services;
+    }
+    
+    private static IServiceCollection AddSupportedGames(this IServiceCollection services, ExperimentalSettings? experimentalSettings)
+    {
+        if (experimentalSettings is { EnableAllGames: true })
+        {
+            Games.BethesdaGameStudios.Services.AddBethesdaGameStudios(services);
+            Games.RedEngine.Services.AddRedEngineGames(services);
+            Games.DarkestDungeon.Services.AddDarkestDungeon(services);
+            Games.BladeAndSorcery.Services.AddBladeAndSorcery(services);
+            Games.Sifu.Services.AddSifu(services);
+            Games.MountAndBlade2Bannerlord.ServicesExtensions.AddMountAndBladeBannerlord(services);
+        }
+        
+        Games.StardewValley.Services.AddStardewValley(services);
         return services;
     }
 }

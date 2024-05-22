@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <ItemGroup>
         <ProjectReference Include="..\..\src\Abstractions\NexusMods.Abstractions.Activities\NexusMods.Abstractions.Activities.csproj" />
+        <ProjectReference Include="..\..\src\Games\NexusMods.Games.RedEngine\NexusMods.Games.RedEngine.csproj" />
         <ProjectReference Include="..\..\src\NexusMods.Activities\NexusMods.Activities.csproj" />
         <ProjectReference Include="..\..\src\NexusMods.App.UI\NexusMods.App.UI.csproj" />
         <ProjectReference Include="..\..\src\NexusMods.App\NexusMods.App.csproj" />
@@ -8,6 +9,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="Noggog.CSharpExt" />
         <PackageReference Include="ReactiveUI.Fody" />
         <PackageReference Include="Avalonia.Headless" />
         <PackageReference Include="Verify.Xunit" />
