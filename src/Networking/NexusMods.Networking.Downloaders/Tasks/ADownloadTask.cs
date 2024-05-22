@@ -247,14 +247,10 @@ public abstract class ADownloadTask : ReactiveObject, IDownloadTask
     }
     
     /// <inheritdoc />
-    public async Task SetIsHidden(bool isHidden, ITransaction? tx = null)
+    public void SetIsHidden(bool isHidden, ITransaction tx)
     {
-        if (PersistentState.Status != DownloadTaskStatus.Completed)
-            return;
-        var transaction = tx ?? Connection.BeginTransaction();
-        transaction.Add(PersistentState.Id, CompletedDownloadState.Hidden, isHidden);
-        if (tx == null)
-            await transaction.Commit();
+        if (PersistentState.Status != DownloadTaskStatus.Completed) return;
+        tx.Add(PersistentState.Id, CompletedDownloadState.Hidden, isHidden);
     }
 
     /// <inheritdoc />
