@@ -2,29 +2,32 @@
 
 ## Unreleased
 
-Notable PRs:
-
 ### New Features
 
-![Downloads](./docs/changelog-assets/d7e2ce57af49808dc004fa897cc1063e.webp)
+This release is packed with new features. Configs generated after the game started are now ingested into the correct mod, and can be edited using our new Text Editor ([#1358](https://github.com/Nexus-Mods/NexusMods.App/pull/1358), [#1346](https://github.com/Nexus-Mods/NexusMods.App/pull/1346)):
 
-![Library](./docs/changelog-assets/ebb2472a1ddcc1eddc3cc4b8061ee86a.webp)
+![Screenshot of the new Text Editor with syntax highlighting.](./docs/changelog-assets/a590065539b5c0e4bb30c0b7db401440.webp)
 
-![Settings](./docs/changelog-assets/426d90eea8870ce3481cd291bc2490c6.webp)
+The text editor uses [AvaloniaEdit](https://github.com/avaloniaui/avaloniaedit) and comes with syntax highlighting and many features you'd expect a code editor to have. You can even change the theme in the toolbar directly or using our new Settings UI ([#396](https://github.com/Nexus-Mods/NexusMods.App/issues/396), [#920](https://github.com/Nexus-Mods/NexusMods.App/issues/920)):
 
-![Text Editor](./docs/changelog-assets/a590065539b5c0e4bb30c0b7db401440.webp)
+![Screenshot of the new Settings UI displaying various items with toggles and drop down menus.](./docs/changelog-assets/426d90eea8870ce3481cd291bc2490c6.webp)
+
+Settings have been in the works for a long time, and we've finally developed a system to easily create settings and allow users to change them. The UI will be expanded with sections, a search bar, and many more features in the future.
+
+Our Downloads Page received a lot of attention in this release as well. It now contains a very nice and sleek download speed chart, and a list of completed downloads ([#1297](https://github.com/Nexus-Mods/NexusMods.App/pull/1297), [#1397](https://github.com/Nexus-Mods/NexusMods.App/pull/1397)):
+
+![Screenshot of the Downloads Page with a new speed chart and a list of completed downloads.](./docs/changelog-assets/d7e2ce57af49808dc004fa897cc1063e.webp)
+
+Clicking the "View in library" button will take you to our new Mods Library. Here you can see a list of all mods you've downloaded and installed. You can also quickly add a mod to your Loadout ([#1268](https://github.com/Nexus-Mods/NexusMods.App/pull/1268), [#1347](https://github.com/Nexus-Mods/NexusMods.App/pull/1347)):
+
+![Screenshot of the new Mod Library showing all downloaded Mods.](./docs/changelog-assets/ebb2472a1ddcc1eddc3cc4b8061ee86a.webp)
 
 **TODO**
 
 - Moving to MnemonicDB: https://github.com/Nexus-Mods/NexusMods.App/pull/1194, https://github.com/Nexus-Mods/NexusMods.App/pull/1235, https://github.com/Nexus-Mods/NexusMods.App/pull/1251, https://github.com/Nexus-Mods/NexusMods.App/pull/1252, https://github.com/Nexus-Mods/NexusMods.App/pull/1285, https://github.com/Nexus-Mods/NexusMods.App/pull/1276, https://github.com/Nexus-Mods/NexusMods.App/pull/1302, https://github.com/Nexus-Mods/NexusMods.App/pull/1318
 - Markdown Renderer + viewing Changelog in the App: https://github.com/Nexus-Mods/NexusMods.App/pull/1230, https://github.com/Nexus-Mods/NexusMods.App/pull/1258
-- Settings UI: https://github.com/Nexus-Mods/NexusMods.App/pull/1248, https://github.com/Nexus-Mods/NexusMods.App/pull/1295
-- Sexy Download Speed Chart: https://github.com/Nexus-Mods/NexusMods.App/pull/1297
-- Text Editor: https://github.com/Nexus-Mods/NexusMods.App/pull/1346
-- Ingest SMAPI Mod files: https://github.com/Nexus-Mods/NexusMods.App/pull/1358
 - Uninstalling the App:
 - Removing Loadouts and Unmanaged Game: https://github.com/Nexus-Mods/NexusMods.App/pull/1259, https://github.com/Nexus-Mods/NexusMods.App/pull/1279
-- Mods Download Library: https://github.com/Nexus-Mods/NexusMods.App/pull/1268, https://github.com/Nexus-Mods/NexusMods.App/pull/1347
 - new Navigation Control (with context menu): https://github.com/Nexus-Mods/NexusMods.App/pull/1266
 
 **DONE**
