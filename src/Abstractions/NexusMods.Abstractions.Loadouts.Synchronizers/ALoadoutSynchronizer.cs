@@ -619,6 +619,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             newFile.AddTo(tx);
         }
         
+        loadout.Revise(tx);
         var result = await tx.Commit();
         return result.Db.Get<Loadout.Model>(loadout.Id);
     }
