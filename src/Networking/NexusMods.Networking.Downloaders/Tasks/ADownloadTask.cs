@@ -133,6 +133,15 @@ public abstract class ADownloadTask : ReactiveObject, IDownloadTask
         PersistentState = result.Remap(PersistentState);
     }
     
+    protected async Task MarkComplete()
+    {
+        using var tx = Connection.BeginTransaction();
+        tx.Add(PersistentState.Id, DownloaderState.Status, (byte)DownloadTaskStatus.Completed);
+        tx.Add(PersistentState.Id, CompletedDownloadState.CompletedDateTime, DateTime.Now);
+        var result = await tx.Commit();
+        PersistentState = result.Remap(PersistentState);
+    }
+    
     [Reactive]
     public DownloaderState.Model PersistentState { get; set; } = null!;
     
@@ -188,7 +197,7 @@ public abstract class ADownloadTask : ReactiveObject, IDownloadTask
         await SetStatus(DownloadTaskStatus.Analyzing);
         Logger.LogInformation("Finished download of {Name} starting analysis", PersistentState.FriendlyName);
         await AnalyzeFile();
-        await SetStatus(DownloadTaskStatus.Completed);
+        await MarkComplete();
     }
 
     private async Task AnalyzeFile()
@@ -235,6 +244,13 @@ public abstract class ADownloadTask : ReactiveObject, IDownloadTask
         {
             Logger.LogError(ex, "Failed to update activity status");
         }
+    }
+    
+    /// <inheritdoc />
+    public void SetIsHidden(bool isHidden, ITransaction tx)
+    {
+        if (PersistentState.Status != DownloadTaskStatus.Completed) return;
+        tx.Add(PersistentState.Id, CompletedDownloadState.Hidden, isHidden);
     }
 
     /// <inheritdoc />

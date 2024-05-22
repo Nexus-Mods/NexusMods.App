@@ -456,6 +456,18 @@
 		<value>DODANE</value>
 	</data>
 	<data name="FileOriginsPageView_ActionHeader" xml:space="preserve">
-		<value>AKCJE</value>
+		<value>DZIAŁANIA</value>
 	</data>
+    <data name="DownloadStatusDesignViewModel_FormatStatus_Cancelled" xml:space="preserve">
+        <value>Anulowane</value>
+    </data>
+    <data name="DownloadInProgressView__Clear" xml:space="preserve">
+        <value>Wyczyść</value>
+    </data>
+    <data name="DownloadInProgressView__Clear_completed" xml:space="preserve">
+        <value>Wyczyść ukończone</value>
+    </data>
+    <data name="DownloadInProgressView__View_in_library" xml:space="preserve">
+        <value>Pokaż w bibliotece</value>
+    </data>
 </root>

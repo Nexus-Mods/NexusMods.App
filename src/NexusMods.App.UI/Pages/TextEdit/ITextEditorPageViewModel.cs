@@ -27,7 +27,7 @@ public interface ITextEditorPageViewModel : IPageViewModelInterface
     /// <summary>
     /// Gets or sets the document to display and edit in the text editor.
     /// </summary>
-    public TextDocument? Document { get; [UsedImplicitly] set; }
+    public TextDocument Document { get; [UsedImplicitly] set; }
 
     /// <summary>
     /// Gets the command for saving the document.

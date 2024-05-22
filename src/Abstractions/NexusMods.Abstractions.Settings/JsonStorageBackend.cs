@@ -27,19 +27,26 @@ public sealed class JsonStorageBackend : ISettingsStorageBackend
         _jsonOptions = new Lazy<JsonSerializerOptions>(serviceProvider.GetRequiredService<JsonSerializerOptions>);
 
         var fileSystem = serviceProvider.GetRequiredService<IFileSystem>();
-        var os = fileSystem.OS;
+        _configDirectory = GetConfigsFolderPath(fileSystem);
+        _configDirectory.CreateDirectory();
+    }
 
+    /// <summary>
+    ///     Retrieves the static path used for storing JSON settings.
+    /// </summary>
+    /// <param name="fileSystem">The FileSystem to use.</param>
+    public static AbsolutePath GetConfigsFolderPath(IFileSystem fileSystem)
+    {
+        var os = fileSystem.OS;
         var baseKnownPath = os.MatchPlatform(
             onWindows: () => KnownPath.LocalApplicationDataDirectory,
             onLinux: () => KnownPath.XDG_DATA_HOME,
             onOSX: () => KnownPath.LocalApplicationDataDirectory
         );
-
+        
         // NOTE: OSX ".App" is apparently special, using _ instead of . to prevent weirdness
         var baseDirectoryName = os.IsOSX ? "NexusMods_App/Configs" : "NexusMods.App/Configs";
-
-        _configDirectory = fileSystem.GetKnownPath(baseKnownPath).Combine(baseDirectoryName);
-        _configDirectory.CreateDirectory();
+        return fileSystem.GetKnownPath(baseKnownPath).Combine(baseDirectoryName);
     }
 
     /// <inheritdoc/>

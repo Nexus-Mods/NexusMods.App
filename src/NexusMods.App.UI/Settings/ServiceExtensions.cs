@@ -10,6 +10,7 @@ public static class ServiceExtensions
         return serviceCollection
             .AddSettings<LoadoutGridSettings>()
             .AddSettings<LanguageSettings>()
-            .AddSettings<TextEditorSettings>();
+            .AddSettings<TextEditorSettings>()
+            .AddSettings<AlphaSettings>();
     }
 }
