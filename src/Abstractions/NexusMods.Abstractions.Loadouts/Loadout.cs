@@ -102,12 +102,15 @@ public static class Loadout
         /// The unique identifier for this loadout, casted to a <see cref="LoadoutId"/>.
         /// </summary>
         public LoadoutId LoadoutId => LoadoutId.From(Id);
-        
+
         /// <summary>
         /// Gets the loadout id/txid pair for this revision of the loadout.
         /// </summary>
-        public LoadoutWithTxId LoadoutWithTxId => new(LoadoutId, Db.BasisTxId);
-        
+        public LoadoutWithTxId GetLoadoutWithTxId()
+        {
+            return new LoadoutWithTxId(LoadoutId, Db.Datoms(LoadoutId.Value).Max(d => d.T));
+        }
+
         public string Name
         {
             get => Loadout.Name.Get(this);
