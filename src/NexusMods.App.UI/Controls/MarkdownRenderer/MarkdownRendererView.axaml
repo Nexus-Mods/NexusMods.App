@@ -79,6 +79,14 @@
                 <Setter Property="FontFamily" Value="{StaticResource FontBodyRegular}" />
                 <Setter Property="FontWeight" Value="Normal" />
                 <Setter Property="FontSize" Value="14" />
+
+                <!--
+                    NOTE(erri120): LineHeight can't be used because every image gets put into a paragraph.
+                    Setting LineHeight would also force the image height to that value.
+                    The library we're using has many issues like this where the ideal solution would be to
+                    apply styles to a parent control from the child control or from the parent control by
+                    somehow checking if it has certain child controls.
+                -->
                 <!-- <Setter Property="LineHeight" Value="21" /> -->
                 <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
             </Style>
