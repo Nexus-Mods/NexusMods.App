@@ -17,4 +17,13 @@ public interface ISettingsUIBuilder<TSettings>
         Expression<Func<TSettings, TProperty>> selectProperty,
         Func<IPropertyUIBuilder<TSettings, TProperty>, IPropertyUIBuilder<TSettings, TProperty>.IFinishedStep> configureProperty
     ) where TProperty : notnull;
+    
+    /// <summary>
+    /// Adds the selected property to the UI if a given condition is true.
+    /// </summary>
+    ISettingsUIBuilder<TSettings> AddPropertyToUIConditionally<TProperty>(
+        Func<bool> condition,
+        Expression<Func<TSettings, TProperty>> selectProperty,
+        Func<IPropertyUIBuilder<TSettings, TProperty>, IPropertyUIBuilder<TSettings, TProperty>.IFinishedStep> configureProperty
+    ) where TProperty : notnull;
 }

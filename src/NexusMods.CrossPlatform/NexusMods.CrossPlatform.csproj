@@ -40,5 +40,11 @@
       <Compile Update="ProtocolRegistration\ProtocolRegistrationWindows.cs">
         <DependentUpon>IProtocolRegistration.cs</DependentUpon>
       </Compile>
+      <Compile Update="Console\ConsoleSpawnerWindows.cs">
+        <DependentUpon>IConsoleSpawner.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Console\DummyConsoleSpawner.cs">
+        <DependentUpon>IConsoleSpawner.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 </Project>

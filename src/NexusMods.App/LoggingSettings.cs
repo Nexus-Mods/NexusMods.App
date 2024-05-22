@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Settings;
@@ -52,6 +53,11 @@ public record LoggingSettings : ISettings
     #else
     public bool LogToConsole { get; init; } = false;
     #endif
+    
+    /// <summary>
+    /// When enabled, a console window is spawned (supported on Windows only).
+    /// </summary>
+    public bool ShowConsole { get; init; } = false;
 
     public static ISettingsBuilder Configure(ISettingsBuilder settingsBuilder)
     {
@@ -81,6 +87,15 @@ public record LoggingSettings : ISettings
                     .AddToSection(sectionId)
                     .WithDisplayName("Log to Console")
                     .WithDescription("When enabled, logs will be written to the console as well as the log file.")
+                    .UseBooleanContainer()
+                    .RequiresRestart()
+                )
+                .AddPropertyToUIConditionally(
+                    OperatingSystem.IsWindows,
+                    x => x.ShowConsole, propertybuilder => propertybuilder
+                    .AddToSection(sectionId)
+                    .WithDisplayName("Show Console")
+                    .WithDescription("When enabled, a console window is spawned on boot.")
                     .UseBooleanContainer()
                     .RequiresRestart()
                 )

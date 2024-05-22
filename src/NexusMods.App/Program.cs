@@ -10,6 +10,7 @@ using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.App.BuildInfo;
 using NexusMods.App.UI;
+using NexusMods.CrossPlatform.Console;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.DataModel;
 using NexusMods.Paths;
@@ -219,6 +220,10 @@ public class Program
 
     private static void AddLogging(ILoggingBuilder loggingBuilder, LoggingSettings settings, StartupMode startupMode)
     {
+        // Enable the console (currently only works on Windows)
+        if (settings.ShowConsole)
+            IConsoleSpawner.SpawnForCurrentOS();
+        
         var fs = FileSystem.Shared;
         var config = new NLog.Config.LoggingConfiguration();
 

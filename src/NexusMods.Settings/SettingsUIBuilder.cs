@@ -36,6 +36,11 @@ internal class SettingsUIBuilder<TSettings> : ISettingsUIBuilder<TSettings>
 
         return this;
     }
+
+    public ISettingsUIBuilder<TSettings> AddPropertyToUIConditionally<TProperty>(Func<bool> condition, Expression<Func<TSettings, TProperty>> selectProperty, Func<IPropertyUIBuilder<TSettings, TProperty>, IPropertyUIBuilder<TSettings, TProperty>.IFinishedStep> configureProperty) where TProperty : notnull
+    {
+        return !condition() ? this : AddPropertyToUI(selectProperty, configureProperty);
+    }
 }
 
 internal class PropertyUIBuilder<TSettings, TProperty> :

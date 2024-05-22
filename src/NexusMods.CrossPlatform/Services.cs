@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.CrossPlatform.Console;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.CrossPlatform.ProtocolRegistration;
 using NexusMods.Paths;
@@ -35,6 +36,13 @@ public static class Services
             onWindows: (ref IServiceCollection value) => value.AddSingleton<IOSInterop, OSInteropWindows>(),
             onLinux: (ref IServiceCollection value) => value.AddSingleton<IOSInterop, OSInteropLinux>(),
             onOSX: (ref IServiceCollection value) => value.AddSingleton<IOSInterop, OSInteropOSX>()
+        );
+        
+        OSInformation.Shared.SwitchPlatform(
+            ref services,
+            onWindows: (ref IServiceCollection value) => value.AddSingleton<IConsoleSpawner, ConsoleSpawnerWindows>(),
+            onLinux: (ref IServiceCollection value) => value.AddSingleton<IConsoleSpawner, DummyConsoleSpawner>(),
+            onOSX: (ref IServiceCollection value) => value.AddSingleton<IConsoleSpawner, DummyConsoleSpawner>()
         );
 
         return services;
