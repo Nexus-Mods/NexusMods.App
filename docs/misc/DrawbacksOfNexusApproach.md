@@ -23,7 +23,7 @@ multiple locations.
 
 !!! info "The backup process for large games may take a long time."
 
-A 100GB game may take around 10 minutes to backup under ideal circumstances on a system using a SATA SSD (we consider this the 'baseline').
+A 100 GB game may take around 10 minutes to backup under ideal circumstances on a system using a SATA SSD (we consider this the 'baseline').
 
 More realistically, probably in the realm of 12-13 minutes, depending on:
 
@@ -34,12 +34,12 @@ This may be problematic if the user wants to immediately play their game, as the
 
 ## Footnote
 
-!!! nexus "The Nexus Mods App is built in mind with the hardware of today. Taking advantage of fast CPUs and SSDs."
+!!! nexus "The Nexus Mods App is built with the hardware of today in mind. Taking advantage of fast CPUs and SSDs."
 
 With sufficient optimization and planning, we hope these processes become mostly 'transparent' to end users,
 so they don't really notice a difference.
 
-If we can be done with our work by the time an end user finds and downloads a mod they want to play;
+If we can be done with our work by the time an end user finds and downloads a mod they want to play,
 we're probably in a good place.
 
 With certain game stores, it may be possible to fetch the original
