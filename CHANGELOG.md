@@ -1,5 +1,41 @@
 # Changelog
 
+## Unreleased
+
+Notable PRs:
+
+- Moving to MnemonicDB: https://github.com/Nexus-Mods/NexusMods.App/pull/1194, https://github.com/Nexus-Mods/NexusMods.App/pull/1235, https://github.com/Nexus-Mods/NexusMods.App/pull/1251, https://github.com/Nexus-Mods/NexusMods.App/pull/1252, https://github.com/Nexus-Mods/NexusMods.App/pull/1285, https://github.com/Nexus-Mods/NexusMods.App/pull/1276, https://github.com/Nexus-Mods/NexusMods.App/pull/1302, https://github.com/Nexus-Mods/NexusMods.App/pull/1318
+- Markdown Renderer + viewing Changelog in the App: https://github.com/Nexus-Mods/NexusMods.App/pull/1230, https://github.com/Nexus-Mods/NexusMods.App/pull/1258
+- Settings UI: https://github.com/Nexus-Mods/NexusMods.App/pull/1248, https://github.com/Nexus-Mods/NexusMods.App/pull/1295
+- Removing Loadouts and Unmanaged Game: https://github.com/Nexus-Mods/NexusMods.App/pull/1259, https://github.com/Nexus-Mods/NexusMods.App/pull/1279
+- Uninstalling the App: 
+- SMAPI diagnostic: https://github.com/Nexus-Mods/NexusMods.App/pull/1265
+- new Navigation Control (with context menu): https://github.com/Nexus-Mods/NexusMods.App/pull/1266
+- Tab Titles and Icons everywhere: https://github.com/Nexus-Mods/NexusMods.App/pull/1283
+- Mods Download Library: https://github.com/Nexus-Mods/NexusMods.App/pull/1268, https://github.com/Nexus-Mods/NexusMods.App/pull/1347
+- Hide Game Files and Overrides Mod: https://github.com/Nexus-Mods/NexusMods.App/pull/1286, https://github.com/Nexus-Mods/NexusMods.App/pull/1341
+- Telemetry is back in: https://github.com/Nexus-Mods/NexusMods.App/pull/1293
+- Tons of UI fixes: https://github.com/Nexus-Mods/NexusMods.App/pull/1298, https://github.com/Nexus-Mods/NexusMods.App/pull/1332
+- Sexy Download Speed Chart: https://github.com/Nexus-Mods/NexusMods.App/pull/1297
+- Use system extractor instead packaged one for Linux with compile flag: https://github.com/Nexus-Mods/NexusMods.App/pull/1308
+- Reset broken workspaces: https://github.com/Nexus-Mods/NexusMods.App/pull/1309
+- Don't manage saves: https://github.com/Nexus-Mods/NexusMods.App/pull/1344
+- Text Editor: https://github.com/Nexus-Mods/NexusMods.App/pull/1346
+- SingleProcess rework: https://github.com/Nexus-Mods/NexusMods.App/pull/1345
+- https://github.com/Nexus-Mods/NexusMods.App/pull/1351
+- Ingest SMAPI Mod files: https://github.com/Nexus-Mods/NexusMods.App/pull/1358
+
+### New Features
+
+### Other Changes
+
+### Fixes
+
+### External Contributors
+
+- [@Patriot99](https://github.com/Patriot99): [#1250](https://github.com/Nexus-Mods/NexusMods.App/pull/1250), [#1314](https://github.com/Nexus-Mods/NexusMods.App/pull/1314)
+- [@DioKiriie](https://github.com/DioKiriie): [#1329](https://github.com/Nexus-Mods/NexusMods.App/pull/1329)
+
 ## [v0.4.1](https://github.com/Nexus-Mods/NexusMods.App/releases/tag/v0.4.1) - 2024-04-17
 
 ### New Features
