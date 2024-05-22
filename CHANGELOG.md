@@ -29,12 +29,15 @@ Notable PRs:
 
 ### Other Changes
 
+- Updated Stardew Valley image by [@Pickysaurus](https://github.com/Pickysaurus) ([#1393](https://github.com/Nexus-Mods/NexusMods.App/pull/1393)).
+
 ### Fixes
 
 ### External Contributors
 
-- [@Patriot99](https://github.com/Patriot99): [#1250](https://github.com/Nexus-Mods/NexusMods.App/pull/1250), [#1314](https://github.com/Nexus-Mods/NexusMods.App/pull/1314)
+- [@Patriot99](https://github.com/Patriot99): [#1250](https://github.com/Nexus-Mods/NexusMods.App/pull/1250), [#1314](https://github.com/Nexus-Mods/NexusMods.App/pull/1314), [#1374](https://github.com/Nexus-Mods/NexusMods.App/pull/1374), [#1399](https://github.com/Nexus-Mods/NexusMods.App/pull/1399)
 - [@DioKiriie](https://github.com/DioKiriie): [#1329](https://github.com/Nexus-Mods/NexusMods.App/pull/1329)
+- [@Pickysaurus](https://github.com/Pickysaurus): [#1393](https://github.com/Nexus-Mods/NexusMods.App/pull/1393)
 
 ## [v0.4.1](https://github.com/Nexus-Mods/NexusMods.App/releases/tag/v0.4.1) - 2024-04-17
 
