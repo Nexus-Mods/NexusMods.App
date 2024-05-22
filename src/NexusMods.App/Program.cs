@@ -35,13 +35,13 @@ public class Program
 
         TelemetrySettings telemetrySettings;
         LoggingSettings loggingSettings;
-        DebugSettings debugSettings;
+        ExperimentalSettings experimentalSettings;
         using (var settingsHost = BuildSettingsHost())
         {
             var settingsManager = settingsHost.Services.GetRequiredService<ISettingsManager>();
             telemetrySettings = settingsManager.Get<TelemetrySettings>();
             loggingSettings = settingsManager.Get<LoggingSettings>();
-            debugSettings = settingsManager.Get<DebugSettings>();
+            experimentalSettings = settingsManager.Get<ExperimentalSettings>();
         }
 
         var startupMode = StartupMode.Parse(args);
@@ -50,7 +50,7 @@ public class Program
             startupMode,
             telemetrySettings,
             loggingSettings,
-            debugSettings
+            experimentalSettings
         );
         var services = host.Services;
 
@@ -176,7 +176,7 @@ public class Program
                 .AddSettingsStorageBackend<JsonStorageBackend>()
                 .AddSettings<TelemetrySettings>()
                 .AddSettings<LoggingSettings>()
-                .AddSettings<DebugSettings>()
+                .AddSettings<ExperimentalSettings>()
             )
             .ConfigureLogging((_, builder) => builder
                 .ClearProviders()
@@ -198,13 +198,13 @@ public class Program
         StartupMode startupMode,
         TelemetrySettings telemetrySettings,
         LoggingSettings loggingSettings,
-        DebugSettings debugSettings,
+        ExperimentalSettings experimentalSettings,
         bool isAvaloniaDesigner = false)
     {
         var host = new HostBuilder()
             .ConfigureServices(services =>
                 {
-                    var s = services.AddApp(telemetrySettings, startupMode: startupMode, debugSettings: debugSettings).Validate();
+                    var s = services.AddApp(telemetrySettings, startupMode: startupMode, experimentalSettings: experimentalSettings).Validate();
 
                     if (isAvaloniaDesigner)
                     {
@@ -296,7 +296,7 @@ public class Program
             telemetrySettings: new TelemetrySettings(), 
             LoggingSettings.CreateDefault(OSInformation.Shared),
             isAvaloniaDesigner: true,
-            debugSettings: new DebugSettings());
+            experimentalSettings: new ExperimentalSettings());
         
         DesignerUtils.Activate(host.Services);
         

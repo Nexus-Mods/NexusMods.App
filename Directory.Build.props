@@ -10,7 +10,7 @@
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 
         <!-- 
-            Listing of all 
+            Listing of all build flags.
         
             Functionality:
 

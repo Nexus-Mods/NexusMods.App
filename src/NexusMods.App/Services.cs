@@ -38,7 +38,7 @@ public static class Services
         TelemetrySettings? telemetrySettings = null,
         bool addStandardGameLocators = true,
         StartupMode? startupMode = null,
-        DebugSettings? debugSettings = null)
+        ExperimentalSettings? experimentalSettings = null)
     {
         startupMode ??= new StartupMode();
         if (startupMode.RunAsMain)
@@ -46,7 +46,7 @@ public static class Services
             services
                 .AddSettings<TelemetrySettings>()
                 .AddSettings<LoggingSettings>()
-                .AddSettings<DebugSettings>()
+                .AddSettings<ExperimentalSettings>()
                 .AddSingleProcess(Mode.Main)
                 .AddDefaultRenderers()
 
@@ -65,7 +65,7 @@ public static class Services
                 .AddDataModel()
                 .AddSerializationAbstractions()
                 .AddInstallerTypes()
-                .AddSupportedGames(debugSettings)
+                .AddSupportedGames(experimentalSettings)
                 .AddActivityMonitor()
                 .AddCrossPlatform()
                 .AddGames()
@@ -97,9 +97,9 @@ public static class Services
         return services;
     }
     
-    private static IServiceCollection AddSupportedGames(this IServiceCollection services, DebugSettings? debug)
+    private static IServiceCollection AddSupportedGames(this IServiceCollection services, ExperimentalSettings? experimentalSettings)
     {
-        if (debug is { EnableAllGames: true })
+        if (experimentalSettings is { EnableAllGames: true })
         {
             Games.BethesdaGameStudios.Services.AddBethesdaGameStudios(services);
             Games.RedEngine.Services.AddRedEngineGames(services);

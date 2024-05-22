@@ -2,11 +2,10 @@ using NexusMods.Abstractions.Settings;
 
 namespace NexusMods.App;
 
-#if DEBUG
 /// <summary>
-/// Settings that are only available in debug releases.
+/// Settings that give access to experimental features.
 /// </summary>
-public record DebugSettings : ISettings
+public record ExperimentalSettings : ISettings
 {
     /// <summary>
     /// Enables games that are not enabled by default.
@@ -19,16 +18,15 @@ public record DebugSettings : ISettings
         var sectionId = SectionId.DefaultValue;
 
         return settingsBuilder
-            .ConfigureStorageBackend<DebugSettings>(builder => builder.UseJson())
-            .AddToUI<DebugSettings>(builder => builder
+            .ConfigureStorageBackend<ExperimentalSettings>(builder => builder.UseJson())
+            .AddToUI<ExperimentalSettings>(builder => builder
                 .AddPropertyToUI(x => x.EnableAllGames, propertybuilder => propertybuilder
                     .AddToSection(sectionId)
-                    .WithDisplayName("Enable all Games")
-                    .WithDescription("When set, all games will be enabled in the debug UI.")
+                    .WithDisplayName("Enable Unsupported Games")
+                    .WithDescription("When set, 'work-in-progress' games that are not yet fully supported will be enabled in the UI.")
                     .UseBooleanContainer()
                     .RequiresRestart()
                 )
             );
     }
 }
-#endif
