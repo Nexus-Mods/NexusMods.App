@@ -1,7 +1,4 @@
 using System.Collections.Concurrent;
-#if DEBUG
-using System.Diagnostics;
-#endif
 
 namespace NexusMods.App;
 
@@ -14,7 +11,7 @@ public static class MainThreadData
     // some AV software may be configured to flag processes that look for debuggers as malicious. So we don't even
     // look for a debugger unless we are in debug mode.
 #if DEBUG
-    public static readonly bool IsDebugMode = Debugger.IsAttached;
+    public static readonly bool IsDebugMode = System.Diagnostics.Debugger.IsAttached;
 #else
     public const bool IsDebugMode = false;
 #endif
