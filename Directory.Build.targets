@@ -8,14 +8,6 @@
         
             NEXUSMODS_APP_USE_SYSTEM_EXTRACTOR: Use system `7z` binary for extraction.
                 - This is intended for Linux package maintainers.
-
-            NEXUSMODS_APP_ENABLE_BANNERLORD: Enable Mount & Blade 2 Bannerlord (game).
-            NEXUSMODS_APP_ENABLE_BETHESDA: Enables Skyrim Special Edition & Skyrim Legendary Edition.
-            NEXUSMODS_APP_ENABLE_BLADE_AND_SORCERY: Enables Blade & Sorcery (game).
-            NEXUSMODS_APP_ENABLE_CYBERPUNK_2077: Enable CyberPunk 2077 (game).
-            NEXUSMODS_APP_ENABLE_DARKEST_DUNGEON: Enable Darkest Dungeon (game).
-            NEXUSMODS_APP_ENABLE_SIFU: Enable Sifu (game).
-            NEXUSMODS_APP_ENABLE_STARDEW_VALLEY: Enable Stardew Valley (game).
         -->
         
         <!-- When defining constants with newlines, you need to suffix with ';'
@@ -23,20 +15,12 @@
         -->
         <DefineConstants>
             $(DefineConstants);
-            NEXUSMODS_APP_ENABLE_STARDEW_VALLEY;
         </DefineConstants>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
         <DefineConstants>
             $(DefineConstants);
-            NEXUSMODS_APP_ENABLE_BANNERLORD;
-            NEXUSMODS_APP_ENABLE_BETHESDA;
-            NEXUSMODS_APP_ENABLE_BLADE_AND_SORCERY;
-            NEXUSMODS_APP_ENABLE_CYBERPUNK_2077;
-            NEXUSMODS_APP_ENABLE_DARKEST_DUNGEON;
-            NEXUSMODS_APP_ENABLE_SIFU;
-            NEXUSMODS_APP_ENABLE_STARDEW_VALLEY;
         </DefineConstants>
     </PropertyGroup>
 </Project>

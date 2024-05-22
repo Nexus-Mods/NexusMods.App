@@ -97,27 +97,15 @@ public static class Services
     
     private static IServiceCollection AddSupportedGames(this IServiceCollection services)
     {
-#if NEXUSMODS_APP_ENABLE_BETHESDA
+#if DEBUG
         Games.BethesdaGameStudios.Services.AddBethesdaGameStudios(services);
-#endif
-#if NEXUSMODS_APP_ENABLE_CYBERPUNK_2077
         Games.RedEngine.Services.AddRedEngineGames(services);
-#endif
-#if NEXUSMODS_APP_ENABLE_DARKEST_DUNGEON
         Games.DarkestDungeon.Services.AddDarkestDungeon(services);
-#endif
-#if NEXUSMODS_APP_ENABLE_BLADE_AND_SORCERY
         Games.BladeAndSorcery.Services.AddBladeAndSorcery(services);
-#endif
-#if NEXUSMODS_APP_ENABLE_SIFU
         Games.Sifu.Services.AddSifu(services);
-#endif
-#if NEXUSMODS_APP_ENABLE_STARDEW_VALLEY
-        Games.StardewValley.Services.AddStardewValley(services);
-#endif
-#if NEXUSMODS_APP_ENABLE_BANNERLORD
         Games.MountAndBlade2Bannerlord.ServicesExtensions.AddMountAndBladeBannerlord(services);
 #endif
+        Games.StardewValley.Services.AddStardewValley(services);
         return services;
     }
 }
