@@ -619,7 +619,17 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             newFile.AddTo(tx);
         }
         
-        loadout.Revise(tx);
+        // If we created the mod in this transaction, db will be null, and we can't call .Revise on it
+        // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+        if (overridesMod.Db != null)
+        {
+            overridesMod.Revise(tx);
+        }
+        else
+        {
+            loadout.Revise(tx);
+        }
+        
         var result = await tx.Commit();
         return result.Db.Get<Loadout.Model>(loadout.Id);
     }
