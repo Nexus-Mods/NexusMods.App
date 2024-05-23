@@ -32,8 +32,12 @@
                     <StackPanel Spacing="20">
                         <TextBlock Classes="BodyMDNormal ForegroundModerate" TextWrapping="Wrap">Congratulations on being one of the first to dive into the Alpha test version of the Nexus Mods App!</TextBlock>
 
-                        <Button x:Name="ViewChangelogButton" Classes="Hyperlink Secondary">
-                            <TextBlock Classes="ForegroundModerate">View the changelog</TextBlock>
+                        <Button x:Name="ViewChangelogInAppButton" Classes="Hyperlink Secondary">
+                            <TextBlock Classes="ForegroundModerate">View the changelog in app (closes this message)</TextBlock>
+                        </Button>
+
+                        <Button x:Name="ViewChangelogInBrowserButton" Classes="Hyperlink Secondary">
+                            <TextBlock Classes="ForegroundModerate">View the changelog (opens browser)</TextBlock>
                         </Button>
 
                         <TextBlock Classes="BodyMDNormal ForegroundModerate" TextWrapping="Wrap">Your feedback is our compass. So, if you encounter any bugs, quirks, or have suggestions for improvement, don't hesitate to reach out.</TextBlock>
