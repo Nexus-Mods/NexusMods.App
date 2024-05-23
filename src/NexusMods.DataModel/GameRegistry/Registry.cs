@@ -1,6 +1,4 @@
 using System.Collections.ObjectModel;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
 using DynamicData;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -8,7 +6,6 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.DTO;
 using NexusMods.DataModel.GameRegistry;
-using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.DataModel;
@@ -27,6 +24,7 @@ public class Registry : IGameRegistry, IHostedService
     private readonly ReadOnlyObservableCollection<GameInstallation> _installedGames;
     private readonly ILogger<Registry> _logger;
     private readonly IEnumerable<ILocatableGame> _games;
+    private bool _isInitialized;
 
     /// <inheritdoc />
     public ReadOnlyObservableCollection<GameInstallation> InstalledGames => _installedGames;
@@ -45,7 +43,6 @@ public class Registry : IGameRegistry, IHostedService
             .Transform(g => g.Game)
             .Bind(out _installedGames)
             .Subscribe();
-        
     }
 
     private async Task Startup(IEnumerable<ILocatableGame> games)
@@ -102,6 +99,7 @@ public class Registry : IGameRegistry, IHostedService
             foreach (var (id, install) in results)
                 _cache.AddOrUpdate((install, id));
         });
+        _isInitialized = true;
     }
     
     private (GameDomain Domain, Version Version, GameStore Store) GetKey(GameInstallation installation)
@@ -110,10 +108,21 @@ public class Registry : IGameRegistry, IHostedService
     }
 
     /// <inheritdoc />
-    public IEnumerable<GameInstallation> AllInstalledGames => _byId.Values;
+    public IEnumerable<GameInstallation> AllInstalledGames
+    {
+        get
+        {
+            WaitUntilInitialized();
+            return _byId.Values;
+        }
+    }
 
     /// <inheritdoc />
-    public GameInstallation Get(EntityId id) => _byId[id];
+    public GameInstallation Get(EntityId id)
+    {
+        WaitUntilInitialized();
+        return _byId[id];
+    }
 
     /// <inheritdoc />
     public EntityId GetId(GameInstallation installation) => _byInstall[GetKey(installation)];
@@ -129,5 +138,13 @@ public class Registry : IGameRegistry, IHostedService
     public Task StopAsync(CancellationToken cancellationToken)
     {
         return Task.CompletedTask;
+    }
+    
+    private void WaitUntilInitialized()
+    {
+        // This is an IHostedService.
+        // It will be initialized in a background threadpool thread.
+        while (!_isInitialized)
+            Thread.Sleep(100);
     }
 }
