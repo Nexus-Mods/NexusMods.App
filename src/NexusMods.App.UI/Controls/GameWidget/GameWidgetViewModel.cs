@@ -14,12 +14,11 @@ namespace NexusMods.App.UI.Controls.GameWidget;
 public class GameWidgetViewModel : AViewModel<IGameWidgetViewModel>, IGameWidgetViewModel
 {
     private readonly ILogger<GameWidgetViewModel> _logger;
-    private readonly ExperimentalSettings _experimentalSettings;
 
     public GameWidgetViewModel(ILogger<GameWidgetViewModel> logger, ISettingsManager settingsManager)
     {
         _logger = logger;
-        _experimentalSettings = settingsManager.Get<ExperimentalSettings>();
+        CanAddMoreThanOneLoadout = settingsManager.Get<ExperimentalSettings>().EnableMultipleLoadouts;
 
         AddGameCommand = ReactiveCommand.Create(() => { });
         ViewGameCommand = ReactiveCommand.Create(() => { });
@@ -80,5 +79,5 @@ public class GameWidgetViewModel : AViewModel<IGameWidgetViewModel>, IGameWidget
 
     [Reactive]
     public GameWidgetState State { get; set; }
-    public bool CanAddMoreThanOneLoadout => _experimentalSettings.EnableMultipleLoadouts;
+    public bool CanAddMoreThanOneLoadout { get; }
 }
