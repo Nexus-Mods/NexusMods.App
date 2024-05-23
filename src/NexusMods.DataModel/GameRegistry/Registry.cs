@@ -142,9 +142,23 @@ public class Registry : IGameRegistry, IHostedService
     
     private void WaitUntilInitialized()
     {
-        // This is an IHostedService.
-        // It will be initialized in a background threadpool thread.
+        /*
+            Note(sewer)
+            
+            This is an IHostedService.
+            It will be initialized in a background threadpool thread.
+            
+            Sleeping current thread is OK as this can't be called from
+            the thread initializing this.
+            
+            Extra Note:
+            
+            On Windows the Timer Resolution means we can only sleep
+            at minimum 15.6ms increments unless we request a lower one.
+            
+            So expect ~16ms sleeps there.
+        */
         while (!_isInitialized)
-            Thread.Sleep(100);
+            Thread.Sleep(8);
     }
 }
