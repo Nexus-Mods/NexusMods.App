@@ -34,10 +34,6 @@ internal static class CleanupVerbs
         [Injected] ISettingsManager settingsManager,
         [Injected] IFileSystem fileSystem)
     {
-        // Prevent a race condition where `IRepository` is not fully done initializing.
-        // https://github.com/Nexus-Mods/NexusMods.App/issues/1396
-        Thread.Sleep(1000);
-        
         // Step 1: Revert the managed games to their original state
         using var db = conn.Db;
         var managedInstallations = db.Loadouts()
