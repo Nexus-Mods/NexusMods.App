@@ -24,7 +24,7 @@
     </Design.DataContext>
 
     <Grid ColumnDefinitions="72, 216, *" RowDefinitions="62, *, 48">
-        <Border Classes="Base"
+        <Border Background="{StaticResource BrandTranslucentDark800Brush}"
                 Grid.Column="0"
                 Grid.ColumnSpan="3"
                 Grid.Row="0"
