@@ -2,7 +2,7 @@
 
 !!! info "Describes how to add a game to the Nexus Mods App."
 
-To make a game automatically recognised by the Nexus Mods App, make a class that inherits from `AGame`.
+To have a game be automatically recognised by the Nexus Mods App, create a class that inherits from `AGame`.
 
 ??? "Example Game (Click to Expand)"
 
@@ -77,11 +77,11 @@ In that scenario, to implement `Rocket League`, you would inherit `ISteamGame` a
 public IEnumerable<uint> SteamIds => new[] { 252950u };
 ```
 
-!!! tip "If you have a game that's not tied to a particular store, you'll probably need to extend `AGameLocator` class to implement the logic to 'find' your game."
+!!! tip "If you have a game that's not tied to a particular store, you'll probably need to extend the `AGameLocator` class to implement the logic to 'find' your game."
 
 ## Populating Game Paths
 
-!!! tip "You need tell the app where to look for files by overriding `GetLocations`."
+!!! tip "You need to tell the app where to look for files by overriding `GetLocations`."
 
 Example:
 ```csharp
@@ -108,7 +108,7 @@ The function `GetPrimaryFile` is the game's main executable (not a launcher).
 
 !!! tip "To link your game with a Nexus page, you need to set the 'Domain' field."
 
-Each `AGame` instance has a field named, `Domain`. This `Domain` corresponds to the URL used on Nexus Mods for the game.
+Each `AGame` instance has a field named `Domain`. This `Domain` corresponds to the URL used on Nexus Mods for the game.
 
 So for example, if you have [https://www.nexusmods.com/sifu][sifu], you should set the value to `sifu`
 

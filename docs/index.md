@@ -22,17 +22,17 @@
 
 Nexus Mods App is a mod installer, creator and manager for all your popular games.
 
-Easy to use, runs on your standard Windows PC and Linux alike. Don't waste time troubleshooting, play your games,
-fill those knees with arrows and most importantly, ***Have Fun***!
+Easy to use, it runs on your standard Windows PC and Linux alike. Don't waste time troubleshooting; play your games,
+fill those knees with arrows, and most importantly, ***Have Fun***!
 
 !!! info "The Nexus Mods App is about creating that Modding experience that *'Just Works'* for old and new games alike!"
 
 ### Mod with Confidence
 
-One of the biggest complaints of users over the years about modding is that they can't mod with confidence.
+One of the biggest complaints from users over the years about modding is that they can't mod with confidence.
 
-- Will a new mod wreck my install?
-- Will I need to delete my game to revert a mod install?
+- Will a new mod wreck my installation?
+- Will I need to delete my game to revert a mod installation?
 - The game updated, my mods updated, and now everything's broken.
 
 Every step of the ***classic modding approach*** is fraught with pitfalls and destructive changes.
@@ -41,7 +41,7 @@ The Nexus Mods App intends to solve these problems. In addition to being a great
 this project aims to always provide an *undo* feature for users. Not just on a metadata level (like most mod managers
 offer today) but on a per-file basis as well.
 
-Go ahead, update that mod, if you don't like it, you can always go back to the game as it was before you made the update.
+Go ahead and update that mod; if you don't like it, you can always go back to the game as it was before you made the update.
 
 Concept: [Immutable Mod Lists][immutable-mod-lists]
 
@@ -72,7 +72,7 @@ Virtual FileSystems:
 
 #### Nexus Mods App Approach
 
-!!! nexus "The Nexus Mods App aims to merge the mental simplicity of manual modding, with the hygiene of existing mod installers, and a promise of: "you can always go back to what last worked""
+!!! nexus "The Nexus Mods App aims to merge the mental simplicity of manual modding with the hygiene of existing mod installers and a promise that "you can always go back to what last worked""
 
 The 'Data Model' of the Nexus Mods App can be thought of as an extension of lessons learned from the development of
 Nexus Collections and Wabbajack.
@@ -80,8 +80,8 @@ Nexus Collections and Wabbajack.
 When you make a mod list, we don't directly manipulate files. Instead, we manipulate the 'instructions' used to deploy
 the mods to the folder, and clicking 'Apply' simply moves the files directly to the folder.
 
-We do this in a way that allows the user to revert changes at any time. Files aren't 'linked' or 'staged' in any way,
-no functions are hooked and the the [cognitive overhead][cognitive-overhead] of the modding process is greatly reduced.
+We do this in a way that allows the user to revert changes at any time. Files aren't 'linked' or 'staged' in any way;
+no functions are hooked, and the [cognitive overhead][cognitive-overhead] of the modding process is greatly reduced.
 
 Instead, users can focus on creating a perfect modding setup that works for them.
 
