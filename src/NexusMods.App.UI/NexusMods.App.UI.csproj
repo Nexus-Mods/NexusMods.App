@@ -553,6 +553,9 @@
         <Compile Update="Pages\TextEdit\TextEditorPageViewModel.cs">
           <DependentUpon>ITextEditorPageViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Overlays\AlphaWarning\AlphaWarningViewModel.cs">
+          <DependentUpon>IAlphaWarningViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>

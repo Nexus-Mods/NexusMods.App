@@ -9,57 +9,21 @@ using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Overlays.Login;
 
-public class NexusLoginOverlayViewModel : AViewModel<INexusLoginOverlayViewModel>, INexusLoginOverlayViewModel, IDisposable
+public class NexusLoginOverlayViewModel : AOverlayViewModel<INexusLoginOverlayViewModel>, INexusLoginOverlayViewModel
 {
-    private readonly CompositeDisposable _compositeDisposable;
-
-    public NexusLoginOverlayViewModel(IActivityMonitor activityMonitor, IOverlayController overlayController)
+    public NexusLoginOverlayViewModel(IReadOnlyActivity activity)
     {
-        _compositeDisposable = new CompositeDisposable();
-
-        var currentJob = activityMonitor.Activities
-            .AsObservableChangeSet(x => x.Id)
-            .QueryWhenChanged(q => q.Items.FirstOrDefault(activity => activity.Group.Value == Constants.OAuthActivityGroupName))
-            .OnUI();
-
-        currentJob.WhereNotNull()
-            .Select(activity => activity.Payload as Uri)
-            .BindTo(this, vm => vm.Uri)
-            .DisposeWith(_compositeDisposable);
-
-        currentJob.Select(job => job != null)
-            .Subscribe(b =>
+        Uri = (Uri)activity.Payload!;
+        Cancel = ReactiveCommand.Create(() =>
             {
-                if (!b)
-                {
-                    IsActive = false;
-                    return;
-                }
-
-                IsActive = true;
-                overlayController.SetOverlayContent(new SetOverlayItem(this));
-            })
-            .DisposeWith(_compositeDisposable);
-
-        currentJob
-            .WhereNotNull()
-            .Select(job => (IActivitySource)job)
-            .Select(job => ReactiveCommand.Create(job.Dispose))
-            .BindTo(this, vm => vm.Cancel)
-            .DisposeWith(_compositeDisposable);
+                if (activity is IActivitySource activitySource)
+                    activitySource.Dispose();
+                Close();
+            }
+        );
     }
 
-    [Reactive]
-    public ICommand Cancel { get; set; } = Initializers.ICommand;
+    public ICommand Cancel { get; }
 
-    [Reactive]
-    public Uri Uri { get; set; } = new("https://www.nexusmods.com");
-
-    [Reactive]
-    public bool IsActive { get; set; }
-
-    public void Dispose()
-    {
-        _compositeDisposable.Dispose();
-    }
+    public Uri Uri { get; }
 }

@@ -1,8 +1,8 @@
 using System.Collections.ObjectModel;
-using DynamicData;
 using DynamicData.Kernel;
 using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.Networking.Downloaders.Tasks.State;
 using NexusMods.Paths;
 
 namespace NexusMods.Networking.Downloaders.Interfaces;
@@ -41,4 +41,9 @@ public interface IDownloadService
     /// Gets the total progress of all downloads.
     /// </summary>
     Optional<Percent> GetTotalProgress();
+
+    /// <summary>
+    /// Sets the <see cref="CompletedDownloadState.Hidden"/> on the tasks if they are completed.
+    /// </summary>
+    Task SetIsHidden(bool isHidden, IDownloadTask[] targets);
 }

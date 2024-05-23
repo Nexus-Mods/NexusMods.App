@@ -1,16 +1,14 @@
+using System.Collections.Immutable;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.Installers;
-using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.App.UI.Controls.DevelopmentBuildBanner;
 using NexusMods.App.UI.Controls.Spine;
 using NexusMods.App.UI.Controls.TopBar;
 using NexusMods.App.UI.LeftMenu;
 using NexusMods.App.UI.Overlays;
+using NexusMods.App.UI.Overlays.AlphaWarning;
 using NexusMods.App.UI.Overlays.MetricsOptIn;
 using NexusMods.App.UI.Overlays.Updater;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -24,20 +22,14 @@ namespace NexusMods.App.UI.Windows;
 
 public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindowViewModel
 {
-    private readonly IArchiveInstaller _archiveInstaller;
     private readonly IWindowManager _windowManager;
-    private readonly IConnection _conn;
 
     public MainWindowViewModel(
         IServiceProvider serviceProvider,
-        ILogger<MainWindowViewModel> logger,
         IOSInformation osInformation,
         IWindowManager windowManager,
-        IOverlayController controller,
         IDownloadService downloadService,
-        IArchiveInstaller archiveInstaller,
-        IMetricsOptInViewModel metricsOptInViewModel,
-        IUpdaterViewModel updaterViewModel,
+        IOverlayController overlayController,
         IConnection conn)
     {
         // NOTE(erri120): can't use DI for VMs that require an active Window because
@@ -45,7 +37,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
         // Use GetRequiredService<TVM> instead.
         _windowManager = windowManager;
         _windowManager.RegisterWindow(this);
-
+        
         WorkspaceController = new WorkspaceController(
             window: this,
             serviceProvider: serviceProvider
@@ -57,36 +49,25 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
         Spine = serviceProvider.GetRequiredService<ISpineViewModel>();
         DevelopmentBuildBanner = serviceProvider.GetRequiredService<IDevelopmentBuildBannerViewModel>();
 
-        _archiveInstaller = archiveInstaller;
-        _conn = conn;
-
         // Only show controls in Windows since we can remove the chrome on that platform
         TopBar.ShowWindowControls = osInformation.IsWindows;
-
+        
         this.WhenActivated(d =>
         {
-            controller.ApplyNextOverlay.Subscribe(item =>
-                {
-                    if (item == null)
-                    {
-                        OverlayContent = null;
-                        return;
-                    }
+            var alphaWarningViewModel = serviceProvider.GetRequiredService<IAlphaWarningViewModel>();
+            alphaWarningViewModel.WorkspaceController = WorkspaceController;
+            alphaWarningViewModel.Controller = overlayController;
+            alphaWarningViewModel.MaybeShow();
 
-                    // This is the main window, if no reference control is specified, show it here.
-                    if (item.Value.ViewItem == null)
-                        OverlayContent = item.Value.VM;
-                    else
-                    {
-                        // TODO: Determine if we are the right window. For now we do nothing, until that helper is implemented
-                        OverlayContent = item.Value.VM;
-                    }
-                })
-                .DisposeWith(d);
+            var metricsOptInViewModel = serviceProvider.GetRequiredService<IMetricsOptInViewModel>();
+            metricsOptInViewModel.Controller = overlayController;
 
             // Only show the updater if the metrics opt-in has been shown before, so we don't spam the user.
             if (!metricsOptInViewModel.MaybeShow())
+            {
+                var updaterViewModel = serviceProvider.GetRequiredService<IUpdaterViewModel>();
                 updaterViewModel.MaybeShow();
+            }
 
             this.WhenAnyValue(vm => vm.Spine.LeftMenuViewModel)
                 .BindToVM(this, vm => vm.LeftMenu)
@@ -96,6 +77,10 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
                 .Where(isActive => isActive)
                 .Select(_ => WindowId)
                 .BindTo(_windowManager, manager => manager.ActiveWindowId)
+                .DisposeWith(d);
+            
+            overlayController.WhenAnyValue(oc => oc.CurrentOverlay)
+                .BindTo(this, vm => vm.CurrentOverlay)
                 .DisposeWith(d);
 
             Disposable.Create(this, vm =>
@@ -110,7 +95,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
             }
         });
     }
-
+    
     internal void OnClose()
     {
         // NOTE(erri120): This gets called by the View and can't be inside the disposable
@@ -122,9 +107,13 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
 
     /// <inheritdoc/>
     [Reactive] public bool IsActive { get; set; }
+    
+    [Reactive]
+    public IOverlayViewModel? CurrentOverlay { get; set; }
 
     /// <inheritdoc/>
     public IWorkspaceController WorkspaceController { get; }
+
 
     [Reactive] public ISpineViewModel Spine { get; set; }
 
@@ -135,7 +124,4 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
 
     [Reactive]
     public IDevelopmentBuildBannerViewModel DevelopmentBuildBanner { get; set; }
-
-    [Reactive]
-    public IOverlayViewModel? OverlayContent { get; set; }
 }

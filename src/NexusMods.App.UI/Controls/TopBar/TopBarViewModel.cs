@@ -5,9 +5,12 @@ using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.App.UI.Controls.Navigation;
+using NexusMods.App.UI.Overlays;
+using NexusMods.App.UI.Overlays.AlphaWarning;
 using NexusMods.App.UI.Pages.Settings;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -22,7 +25,12 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
     private readonly ILoginManager _loginManager;
     private readonly ILogger<TopBarViewModel> _logger;
 
-    public TopBarViewModel(ILogger<TopBarViewModel> logger, ILoginManager loginManager, IWindowManager windowManager)
+    public TopBarViewModel(
+        IServiceProvider serviceProvider,
+        ILogger<TopBarViewModel> logger,
+        ILoginManager loginManager,
+        IWindowManager windowManager,
+        IOverlayController overlayController)
     {
         _logger = logger;
         _loginManager = loginManager;
@@ -44,6 +52,14 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
 
             var behavior = workspaceController.GetOpenPageBehavior(page, info, Optional<PageIdBundle>.None);
             workspaceController.OpenPage(workspaceController.ActiveWorkspace!.Id, page, behavior);
+        });
+
+        HelpActionCommand = ReactiveCommand.Create(() =>
+        {
+            var alphaWarningViewModel = serviceProvider.GetRequiredService<IAlphaWarningViewModel>();
+            alphaWarningViewModel.WorkspaceController = workspaceController;
+
+            overlayController.Enqueue(alphaWarningViewModel);
         });
 
         this.WhenActivated(d =>
@@ -138,8 +154,7 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
     public ReactiveCommand<Unit, Unit> RedoActionCommand { get; } =
         ReactiveCommand.Create(() => { }, Observable.Return(false));
 
-    public ReactiveCommand<Unit, Unit> HelpActionCommand { get; } =
-        ReactiveCommand.Create(() => { }, Observable.Return(false));
+    public ReactiveCommand<Unit, Unit> HelpActionCommand { get; }
 
     public ReactiveCommand<NavigationInformation, Unit> SettingsActionCommand { get; }
 }

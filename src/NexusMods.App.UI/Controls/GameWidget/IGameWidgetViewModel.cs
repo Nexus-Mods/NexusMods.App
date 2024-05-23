@@ -17,6 +17,7 @@ public interface IGameWidgetViewModel : IViewModelInterface
     public ReactiveCommand<Unit,Unit> RemoveAllLoadoutsCommand { get; set; }
 
     public GameWidgetState State { get; set; }
+    public bool CanAddMoreThanOneLoadout { get; }
 }
 
 public enum GameWidgetState : byte

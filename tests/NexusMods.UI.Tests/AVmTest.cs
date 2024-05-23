@@ -13,7 +13,7 @@ using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 
 namespace NexusMods.UI.Tests;
 
-public class AVmTest<TVm> : AUiTest, IAsyncLifetime
+public class AVmTest<TVm> : AUiTest
 where TVm : IViewModelInterface
 {
     protected AbsolutePath DataZipLzma => FileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine("Resources/data_zip_lzma.zip");
@@ -32,7 +32,15 @@ where TVm : IViewModelInterface
     protected IFileOriginRegistry FileOriginRegistry { get; }
 
     private Loadout.Model? _loadout;
-    protected Loadout.Model Loadout => _loadout!;
+    protected Loadout.Model Loadout
+    {
+        get
+        {
+            if (_loadout == null)
+                throw new Exception("Must call CreateLoadout before accessing Loadout.");
+            return _loadout!;
+        }
+    }
 
     public AVmTest(IServiceProvider provider) : base(provider)
     {
@@ -47,7 +55,7 @@ where TVm : IViewModelInterface
 
     protected TVm Vm => _vmWrapper.VM;
 
-    public async Task InitializeAsync()
+    public async Task CreateLoadout()
     {
         _loadout = await ((IGame)Install.Game).Synchronizer.CreateLoadout(Install, "Test");
     }
@@ -67,15 +75,4 @@ where TVm : IViewModelInterface
         _vmWrapper.Dispose();
         return Task.CompletedTask;
     }
-}
-
-public class AVmTest<TVm, TVmInterface> : AVmTest<TVmInterface> where TVmInterface : IViewModelInterface
-where TVm : TVmInterface
-{
-    public AVmTest(IServiceProvider provider) : base(provider) { }
-
-    /// <summary>
-    /// The concrete view model, not the interface.
-    /// </summary>
-    public TVm ConcreteVm => (TVm) Vm;
 }

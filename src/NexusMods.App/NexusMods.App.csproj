@@ -1,27 +1,20 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <OutputType>Exe</OutputType>
+        <OutputType>WinExe</OutputType>
         <ApplicationIcon>nexus-logo.ico</ApplicationIcon>
         <ApplicationManifest>app.manifest</ApplicationManifest>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-      <DefineConstants />
+        <DefineConstants />
     </PropertyGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\ArchiveManagement\NexusMods.FileExtractor\NexusMods.FileExtractor.csproj" />
         <ProjectReference Include="..\Games\NexusMods.Games.AdvancedInstaller.UI\NexusMods.Games.AdvancedInstaller.UI.csproj" />
-        <ProjectReference Include="..\Games\NexusMods.Games.BethesdaGameStudios\NexusMods.Games.BethesdaGameStudios.csproj" />
-        <ProjectReference Include="..\Games\NexusMods.Games.DarkestDungeon\NexusMods.Games.DarkestDungeon.csproj" />
         <ProjectReference Include="..\Games\NexusMods.Games.FOMOD.UI\NexusMods.Games.FOMOD.UI.csproj" />
-        <ProjectReference Include="..\Games\NexusMods.Games.StardewValley\NexusMods.Games.StardewValley.csproj" />
         <ProjectReference Include="..\Games\NexusMods.Games.FOMOD\NexusMods.Games.FOMOD.csproj" />
         <ProjectReference Include="..\Games\NexusMods.Games.Generic\NexusMods.Games.Generic.csproj" />
-        <ProjectReference Include="..\Games\NexusMods.Games.RedEngine\NexusMods.Games.RedEngine.csproj" />
-        <ProjectReference Include="..\Games\NexusMods.Games.Reshade\NexusMods.Games.Reshade.csproj" />
-        <ProjectReference Include="..\Games\NexusMods.Games.MountAndBlade2Bannerlord\NexusMods.Games.MountAndBlade2Bannerlord.csproj" />
-        <ProjectReference Include="..\Games\NexusMods.Games.Sifu\NexusMods.Games.Sifu.csproj" />
-        <ProjectReference Include="..\Games\NexusMods.Games.BladeAndSorcery\NexusMods.Games.BladeAndSorcery.csproj" />
+        <ProjectReference Include="..\Games\NexusMods.Games.Reshade\NexusMods.Games.Reshade.csproj"  />
         <ProjectReference Include="..\Games\NexusMods.Games.TestHarness\NexusMods.Games.TestHarness.csproj" />
         <ProjectReference Include="..\Networking\NexusMods.Networking.Downloaders\NexusMods.Networking.Downloaders.csproj" />
         <ProjectReference Include="..\Networking\NexusMods.Networking.HttpDownloader\NexusMods.Networking.HttpDownloader.csproj" />
@@ -35,6 +28,16 @@
         <ProjectReference Include="..\NexusMods.SingleProcess\NexusMods.SingleProcess.csproj" />
         <ProjectReference Include="..\NexusMods.Telemetry\NexusMods.Telemetry.csproj" />
         <ProjectReference Include="..\Themes\NexusMods.Themes.NexusFluentDark\NexusMods.Themes.NexusFluentDark.csproj" />
+    </ItemGroup>
+   
+    <ItemGroup>
+        <ProjectReference Include="..\Games\NexusMods.Games.StardewValley\NexusMods.Games.StardewValley.csproj" />
+        <ProjectReference Include="..\Games\NexusMods.Games.MountAndBlade2Bannerlord\NexusMods.Games.MountAndBlade2Bannerlord.csproj" />
+        <ProjectReference Include="..\Games\NexusMods.Games.Sifu\NexusMods.Games.Sifu.csproj" />
+        <ProjectReference Include="..\Games\NexusMods.Games.BladeAndSorcery\NexusMods.Games.BladeAndSorcery.csproj" />
+        <ProjectReference Include="..\Games\NexusMods.Games.BethesdaGameStudios\NexusMods.Games.BethesdaGameStudios.csproj" />
+        <ProjectReference Include="..\Games\NexusMods.Games.DarkestDungeon\NexusMods.Games.DarkestDungeon.csproj" />
+        <ProjectReference Include="..\Games\NexusMods.Games.RedEngine\NexusMods.Games.RedEngine.csproj" />
     </ItemGroup>
 
     <ItemGroup>

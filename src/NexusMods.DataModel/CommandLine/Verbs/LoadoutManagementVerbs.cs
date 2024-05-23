@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Cli;
 using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.FileStore.ArchiveMetadata;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Games.Trees;
@@ -41,7 +42,7 @@ public static class LoadoutManagementVerbs
             .AddVerb(() => ListLoadouts)
             .AddVerb(() => ListModContents)
             .AddVerb(() => ListMods)
-            .AddVerb(() => ManageGame)
+            .AddVerb(() => CreateLoadout)
             .AddVerb(() => RenameLoadout)
             .AddVerb(() => RemoveLoadout);
 
@@ -213,9 +214,9 @@ public static class LoadoutManagementVerbs
         */
     }
 
-    [Verb("manage-game", "Create a Loadout for a given game")]
-    private static async Task<int> ManageGame([Injected] IRenderer renderer,
-        [Option("g", "game", "Game to create a loadoout for")] IGame game,
+    [Verb("create-loadout", "Create a Loadout for a given game")]
+    private static async Task<int> CreateLoadout([Injected] IRenderer renderer,
+        [Option("g", "game", "Game to create a loadout for")] IGame game,
         [Option("v", "version", "Version of the game to manage")] Version version,
         [Option("n", "name", "The name of the new loadout")] string name,
         [Injected] CancellationToken token)

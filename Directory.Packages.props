@@ -20,6 +20,7 @@
     <PackageVersion Include="Bannerlord.LauncherManager" Version="1.0.76" />
     <PackageVersion Include="FetchBannerlordVersion" Version="1.0.6.45" />
     <PackageVersion Include="NLog" Version="5.2.8" />
+    <PackageVersion Include="Noggog.CSharpExt" Version="2.64.0" />
     <PackageVersion Include="Spectre.Console.Testing" Version="0.49.1" />
     <PackageVersion Include="System.Linq" Version="4.3.0" />
     <PackageVersion Include="System.Text.Json" Version="8.0.3" />

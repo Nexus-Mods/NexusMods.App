@@ -8,6 +8,30 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+        <!-- 
+            Listing of all build flags.
+        
+            Functionality:
+
+                NEXUSMODS_APP_USE_SYSTEM_EXTRACTOR: Use system `7z` binary for extraction.
+                    - This is intended for Linux package maintainers.
+                
+            Deployment:
+                
+                Note: These are set during CI and should not be set here.
+                      This is just for completeness.
+            
+                INSTALLATION_METHOD_ARCHIVE: App should have been installed via archive.
+                INSTALLATION_METHOD_INNO_SETUP: Installed via InnoSetup (Windows)
+                INSTALLATION_METHOD_FLATPAK: Installed via Flatpak (Linux)
+                INSTALLATION_METHOD_APPIMAGE: Running via AppImage (Linux)
+
+            ________________
+
+            When defining constants with newlines, you need to suffix with ';'
+            This isn't common knowledge - Sewer
+        -->
     </PropertyGroup>
 
     <PropertyGroup>

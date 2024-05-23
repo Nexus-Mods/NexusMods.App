@@ -5,9 +5,15 @@ using NexusMods.Abstractions.Activities;
 
 namespace NexusMods.Activities;
 
-internal class ActivityMonitor : IActivityFactory, IActivityMonitor
+public class ActivityMonitor : IActivityFactory, IActivityMonitor
 {
     private readonly SourceCache<Activity, ActivityId> _activities = new(x => x.Id);
+    
+    
+    private readonly ReadOnlyObservableCollection<IReadOnlyActivity> _activitiesCasted;
+
+    /// <inheritdoc />
+    public ReadOnlyObservableCollection<IReadOnlyActivity> Activities => _activitiesCasted;
 
     /// <summary>
     /// DI constructor.
@@ -16,7 +22,8 @@ internal class ActivityMonitor : IActivityFactory, IActivityMonitor
     {
         _activities.Connect()
             .Transform(x => (IReadOnlyActivity)x)
-            .Bind(out _activitiesCasted);
+            .Bind(out _activitiesCasted)
+            .Subscribe();
     }
 
     /// <inheritdoc />
@@ -57,8 +64,4 @@ internal class ActivityMonitor : IActivityFactory, IActivityMonitor
         _activities.Remove(activity);
     }
 
-    private readonly ReadOnlyObservableCollection<IReadOnlyActivity> _activitiesCasted;
-
-    /// <inheritdoc />
-    public ReadOnlyObservableCollection<IReadOnlyActivity> Activities => _activitiesCasted;
 }

@@ -7,7 +7,7 @@ using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Overlays.Updater;
 
-public class UpdaterDesignViewModel : AViewModel<IUpdaterViewModel>, IUpdaterViewModel
+public class UpdaterDesignViewModel : AOverlayViewModel<IUpdaterViewModel>, IUpdaterViewModel
 {
     [Reactive]
     public InstallationMethod Method { get; set; } = InstallationMethod.Archive;
@@ -44,20 +44,18 @@ public class UpdaterDesignViewModel : AViewModel<IUpdaterViewModel>, IUpdaterVie
                 .DisposeWith(d);
         });
 
-        LaterCommand = ReactiveCommand.Create(() =>
-        {
-            IsActive = false;
-        });
+        LaterCommand = ReactiveCommand.Create(Close);
 
         UpdateCommand = ReactiveCommand.Create(() =>
         {
-            IsActive = false;
             UpdateClicked = true;
+            Close();
         });
 
         ShowChangelog = ReactiveCommand.Create(() =>
         {
             ChangelogShown = true;
+            Close();
         });
     }
 
@@ -66,7 +64,4 @@ public class UpdaterDesignViewModel : AViewModel<IUpdaterViewModel>, IUpdaterVie
 
     [Reactive]
     public bool ChangelogShown { get; set; }
-
-    [Reactive]
-    public bool IsActive { get; set; }
 }

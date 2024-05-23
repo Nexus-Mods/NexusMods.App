@@ -148,7 +148,11 @@ public class CliServer : IHostedService, IDisposable
     public async Task StopAsync(CancellationToken cancellationToken)
     {
         if (!_started) return; 
-        await _cancellationTokenSource.CancelAsync();
+        
+        // Ditch this value and don't wait on it because it otherwise blocks the shutdown even when *no-one* is 
+        // waiting on the token
+        _ = _cancellationTokenSource.CancelAsync();
+        
         _tcpListener?.Stop();
         await Task.WhenAll(_runningClients);
         _started = false;

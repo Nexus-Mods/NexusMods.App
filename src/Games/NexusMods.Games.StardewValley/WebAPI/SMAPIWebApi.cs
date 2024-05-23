@@ -101,6 +101,7 @@ internal sealed class SMAPIWebApi : ISMAPIWebApi
         }
 
         return smapiIDs
+            .Distinct(StringComparer.OrdinalIgnoreCase)
             .Select(id => (Id: id, Link: _knownModPageUrls.GetValueOrDefault(id)))
             .Where(tuple => tuple.Link != default(NamedLink))
             .Select(tuple => new KeyValuePair<string, NamedLink>(tuple.Id, tuple.Link))

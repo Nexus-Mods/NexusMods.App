@@ -74,6 +74,7 @@ public class DownloadStatusDesignViewModel : AViewModel<IDownloadStatusViewModel
             DownloadTaskStatus.Installing => Language.DownloadStatusDesignViewModel_FormatStatus_Installing,
             DownloadTaskStatus.Completed => Language.DownloadStatusDesignViewModel_FormatStatus_Complete,
             DownloadTaskStatus.Analyzing => Language.DownloadStatusDesignViewModel_FormatStatus_Analyzing,
+            DownloadTaskStatus.Cancelled => Language.DownloadStatusDesignViewModel_FormatStatus_Cancelled,
             _ => throw new ArgumentOutOfRangeException(nameof(state), state, null)
         };
 

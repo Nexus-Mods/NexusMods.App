@@ -3,7 +3,9 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Serialization.Attributes;
+using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.App.UI.Pages.LoadoutGrid;
@@ -38,21 +40,20 @@ public class LoadoutGridPageFactory : APageFactory<ILoadoutGridViewModel, Loadou
         if (workspaceContext is not LoadoutContext loadoutContext) yield break;
 
         var loadout = _conn.Db.Get(loadoutContext.LoadoutId);
-        if (!loadout.Contains(Loadout.Name)) yield break;
 
         yield return new PageDiscoveryDetails
         {
-            // TODO: translations?
-            SectionName = "Loadouts",
-            ItemName = loadout.Name,
+            SectionName = "Mods",
+            ItemName = Language.LoadoutLeftMenuViewModel_LoadoutGridEntry,
+            Icon = IconValues.Collections,
             PageData = new PageData
             {
                 FactoryId = Id,
                 Context = new LoadoutGridContext
                 {
-                    LoadoutId = loadout.LoadoutId
-                }
-            }
+                    LoadoutId = loadout.LoadoutId,
+                },
+            },
         };
     }
 }

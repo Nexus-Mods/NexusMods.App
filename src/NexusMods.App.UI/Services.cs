@@ -34,6 +34,7 @@ using NexusMods.App.UI.LeftMenu.Home;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.LeftMenu.Loadout;
 using NexusMods.App.UI.Overlays;
+using NexusMods.App.UI.Overlays.AlphaWarning;
 using NexusMods.App.UI.Overlays.Download.Cancel;
 using NexusMods.App.UI.Overlays.Generic.MessageBox.OkCancel;
 using NexusMods.App.UI.Overlays.Login;
@@ -209,6 +210,9 @@ public static class Services
             .AddView<TextEditorPageView, ITextEditorPageViewModel>()
             .AddViewModel<TextEditorPageViewModel, ITextEditorPageViewModel>()
 
+            .AddView<AlphaWarningView, IAlphaWarningViewModel>()
+            .AddViewModel<AlphaWarningViewModel, IAlphaWarningViewModel>()
+
             // workspace system
             .AddSingleton<IWindowManager, WindowManager>()
             .AddRepository<WindowDataAttributes.Model>([WindowDataAttributes.Data])
@@ -258,6 +262,9 @@ public static class Services
             .AddSingleton<IValueFormatter, LoadoutReferenceFormatter>()
             .AddSingleton<IValueFormatter, NamedLinkFormatter>()
             .AddSingleton<IDiagnosticWriter, DiagnosticWriter>()
+            
+            // Overlay Helpers
+            .AddHostedService<NexusLoginOverlayService>()
 
             // Settings
             .AddUISettings()

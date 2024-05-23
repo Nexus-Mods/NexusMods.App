@@ -474,12 +474,28 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
 
         _panelSource.Edit(updater =>
         {
+            if (data.Panels.Length == 0)
+            {
+                _logger.LogWarning("Workspace gets loaded with no panels!");
+                var addPanelBehavior = new AddPanelBehavior(new AddPanelBehavior.WithDefaultTab());
+
+                AddPanel(
+                    WorkspaceGridState.From(new[]
+                    {
+                        new PanelGridState(PanelId.DefaultValue, MathUtils.One),
+                    }, isHorizontal: IsHorizontal),
+                    addPanelBehavior
+                );
+
+                return;
+            }
+
             foreach (var panel in data.Panels)
             {
                 var vm = new PanelViewModel(_workspaceController, _factoryController)
                 {
                     WindowId = WindowId,
-                    WorkspaceId = Id
+                    WorkspaceId = Id,
                 };
 
                 vm.FromData(panel);
@@ -492,6 +508,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
 
     private void ResetGridIfBroken(bool forceReset = false)
     {
+        if (Panels.Count == 0) return;
         var currentState = WorkspaceGridState.From(Panels, IsHorizontal);
 
         if (!forceReset)

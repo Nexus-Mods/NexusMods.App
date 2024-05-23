@@ -1,0 +1,87 @@
+<reactive:ReactiveUserControl
+    x:TypeArguments="local:IAlphaWarningViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactive="http://reactiveui.net"
+    xmlns:local="clr-namespace:NexusMods.App.UI.Overlays.AlphaWarning"
+    xmlns:base="clr-namespace:NexusMods.App.UI.Overlays.Generic.MessageBox.Base"
+    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+    x:Class="NexusMods.App.UI.Overlays.AlphaWarning.AlphaWarningView">
+
+    <base:MessageBoxBackground MinWidth="576" MaxWidth="576">
+        <base:MessageBoxBackground.TopContent>
+            <StackPanel Orientation="Vertical" Margin="16, 24, 24, 24" Classes="Spacing-3_5">
+                <StackPanel Classes="Spacing-4">
+                    <TextBlock Classes="HeadingXSSemi">Thank you for joining the Nexus Mods App alpha test</TextBlock>
+
+                    <Border Classes="Rounded-lg WarningSubdued20" Padding="16">
+                        <StackPanel Spacing="8">
+                            <StackPanel Orientation="Horizontal" Spacing="2">
+                                <icons:UnifiedIcon Size="20" Classes="Alert"/>
+                                <TextBlock Classes="BodyLGBold">Important</TextBlock>
+                            </StackPanel>
+
+                            <TextBlock Classes="BodyMDNormal" TextWrapping="Wrap">This app is still very early in development and currently only supports Stardew Valley. Please ensure no mods are installed in your game folder before testing.</TextBlock>
+                        </StackPanel>
+
+                    </Border>
+
+                    <StackPanel Spacing="20">
+                        <TextBlock Classes="BodyMDNormal ForegroundModerate" TextWrapping="Wrap">Congratulations on being one of the first to dive into the Alpha test version of the Nexus Mods App!</TextBlock>
+
+                        <Button x:Name="ViewChangelogInAppButton" Classes="Hyperlink Secondary">
+                            <TextBlock Classes="ForegroundModerate">View the changelog in app (closes this message)</TextBlock>
+                        </Button>
+
+                        <Button x:Name="ViewChangelogInBrowserButton" Classes="Hyperlink Secondary">
+                            <TextBlock Classes="ForegroundModerate">View the changelog (opens browser)</TextBlock>
+                        </Button>
+
+                        <TextBlock Classes="BodyMDNormal ForegroundModerate" TextWrapping="Wrap">Your feedback is our compass. So, if you encounter any bugs, quirks, or have suggestions for improvement, don't hesitate to reach out.</TextBlock>
+                    </StackPanel>
+
+                    <Grid ColumnDefinitions="*, *, *">
+                        <Button Grid.Column="0" Width="165" x:Name="OpenDiscordButton" Classes="Rounded" HorizontalAlignment="Left">
+                            <StackPanel HorizontalAlignment="Center">
+                                <icons:UnifiedIcon Classes="Discord" />
+                                <TextBlock Classes="ForegroundStrong">App Discord</TextBlock>
+                            </StackPanel>
+                        </Button>
+
+                        <Button Grid.Column="1" Width="165" x:Name="OpenForumsButton" Classes="Rounded" HorizontalAlignment="Center">
+                            <StackPanel HorizontalAlignment="Center">
+                                <icons:UnifiedIcon Classes="Forum" />
+                                <TextBlock Classes="ForegroundStrong">Forums</TextBlock>
+                            </StackPanel>
+                        </Button>
+
+                        <Button Grid.Column="2" Width="165" x:Name="OpenGitHubButton" Classes="Rounded" HorizontalAlignment="Right">
+                            <StackPanel HorizontalAlignment="Center">
+                                <icons:UnifiedIcon Classes="Code" />
+                                <TextBlock Classes="ForegroundStrong">GitHub</TextBlock>
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+
+                    <TextBlock Classes="BodyMDNormal ForegroundModerate">Thank you for embarking on this exciting journey with us. Happy modding!</TextBlock>
+
+                  </StackPanel>
+            </StackPanel>
+
+        </base:MessageBoxBackground.TopContent>
+
+        <base:MessageBoxBackground.BottomContent>
+            <StackPanel Orientation="Horizontal" Margin="24" HorizontalAlignment="Right" Classes="Spacing-2">
+                <Button x:Name="DoneButton" Classes="Standard Primary">
+                    <TextBlock>LET'S GO!</TextBlock>
+                </Button>
+            </StackPanel>
+
+        </base:MessageBoxBackground.BottomContent>
+    </base:MessageBoxBackground>
+
+</reactive:ReactiveUserControl>
+

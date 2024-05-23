@@ -4,11 +4,8 @@ using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Overlays.MetricsOptIn;
 
-public class MetricsOptInDesignerViewModel : AViewModel<IMetricsOptInViewModel>, IMetricsOptInViewModel
+public class MetricsOptInDesignerViewModel : AOverlayViewModel<IMetricsOptInViewModel>, IMetricsOptInViewModel
 {
-    [Reactive]
-    public bool IsActive { get; set; }
-
     [Reactive]
     public ICommand Allow { get; set; }
 
@@ -26,12 +23,12 @@ public class MetricsOptInDesignerViewModel : AViewModel<IMetricsOptInViewModel>,
         Allow = ReactiveCommand.Create(() =>
         {
             AllowClicked = true;
-            IsActive = false;
+            Close();
         });
         Deny = ReactiveCommand.Create(() =>
         {
             DenyClicked = true;
-            IsActive = false;
+            Close();
         });
     }
     public bool MaybeShow()

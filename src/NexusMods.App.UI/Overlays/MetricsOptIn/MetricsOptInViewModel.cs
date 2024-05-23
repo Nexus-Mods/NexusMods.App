@@ -10,22 +10,18 @@ namespace NexusMods.App.UI.Overlays.MetricsOptIn;
 /// <summary>
 /// Primary view model for the MetricsOptIn overlay.
 /// </summary>
-public class MetricsOptInViewModel : AViewModel<IMetricsOptInViewModel>, IMetricsOptInViewModel
+public class MetricsOptInViewModel : AOverlayViewModel<IMetricsOptInViewModel>, IMetricsOptInViewModel
 {
-    private readonly IOverlayController _overlayController;
     private readonly ISettingsManager _settingsManager;
 
-    [Reactive]
-    public bool IsActive { get; set; }
     public ICommand Allow { get; }
     public ICommand Deny { get; }
 
     /// <summary>
     /// DI Constructor
     /// </summary>
-    public MetricsOptInViewModel(ISettingsManager settingsManager, IOverlayController overlayController)
+    public MetricsOptInViewModel(ISettingsManager settingsManager)
     {
-        _overlayController = overlayController;
         _settingsManager = settingsManager;
 
         Allow = ReactiveCommand.Create(() =>
@@ -36,7 +32,7 @@ public class MetricsOptInViewModel : AViewModel<IMetricsOptInViewModel>, IMetric
                 HasShownPrompt = true,
             });
 
-            IsActive = false;
+            Close();
         });
 
         Deny = ReactiveCommand.Create(() =>
@@ -47,7 +43,7 @@ public class MetricsOptInViewModel : AViewModel<IMetricsOptInViewModel>, IMetric
                 HasShownPrompt = true,
             });
 
-            IsActive = false;
+            Close();
         });
     }
 
@@ -55,7 +51,7 @@ public class MetricsOptInViewModel : AViewModel<IMetricsOptInViewModel>, IMetric
     {
         if (_settingsManager.Get<TelemetrySettings>().HasShownPrompt) return false;
 
-        _overlayController.SetOverlayContent(new SetOverlayItem(this));
+        Controller.Enqueue(this);
         return true;
     }
 }

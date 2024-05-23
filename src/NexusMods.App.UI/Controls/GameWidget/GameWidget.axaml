@@ -88,35 +88,38 @@
                         </StackPanel>
                         
                         <!-- ManagedGame -->
-                        <Grid x:Name="ManagedGameStackPanel"
-                                    Grid.Row="2"
-                                    Margin="0,16,0,0"
-                                    VerticalAlignment="Center"
-                                    IsVisible="False"
-                                    RowDefinitions="*">
-                            <Button Classes="Rounded Primary" x:Name="ViewGameButton" Margin="-6,0,4,0">
+                        <Grid x:Name="ManagedGameGrid"
+                              ColumnDefinitions="*, Auto, Auto" 
+                              Grid.Row="2"
+                              IsVisible="False"
+                              VerticalAlignment="Center"
+                              HorizontalAlignment="Stretch"
+                              Classes="Spacing-1"
+                              Margin="4,16,-6,0">
+                            <Button Classes="Rounded Primary" x:Name="ViewGameButton"
+                                    Margin="-6,0,4,0"
+                                    HorizontalAlignment="Stretch"
+                                    Grid.Column="0">
                                 <StackPanel Orientation="Horizontal">
                                     <icons:UnifiedIcon Size="20" Classes="Check" />
                                     <TextBlock Classes="BodyMDNormal" 
                                                Text="{x:Static resources:Language.GameWidget__View}"/>
                                 </StackPanel>
                             </Button>
-                            <StackPanel Orientation="Horizontal"
-                                        HorizontalAlignment="Right"
-                                        Classes="Spacing-1"
-                                        Margin="4,0,-6,0">
-                                <Button Classes="Rounded Primary"
-                                        HorizontalAlignment="Right"
-                                        x:Name="AddLoadoutButton"
-                                        IsVisible="True">
-                                    <icons:UnifiedIcon Classes="Add" />
-                                </Button>
-                                <Button Classes="Rounded Primary" 
-                                        HorizontalAlignment="Right"
-                                        x:Name="RemoveGameButton">
-                                    <icons:UnifiedIcon Classes="DeleteForever" />
-                                </Button>
-                            </StackPanel>
+                            <Button Classes="Rounded Primary"
+                                    HorizontalAlignment="Right"
+                                    x:Name="AddLoadoutButton"
+                                    IsVisible="True"
+                                    Margin="0,0,4,0"
+                                    Grid.Column="1">
+                                <icons:UnifiedIcon Classes="Add" />
+                            </Button>
+                            <Button Classes="Rounded Primary" 
+                                    HorizontalAlignment="Right"
+                                    x:Name="RemoveGameButton"
+                                    Grid.Column="2">
+                                <icons:UnifiedIcon Classes="DeleteForever" />
+                            </Button>
                         </Grid>
                         
                         <!-- RemovingGame -->

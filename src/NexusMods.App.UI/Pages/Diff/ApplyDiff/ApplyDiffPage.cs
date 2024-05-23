@@ -4,6 +4,7 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.App.UI.Pages.Diff.ApplyDiff;
@@ -38,12 +39,12 @@ public class ApplyDiffPageFactory : APageFactory<IApplyDiffViewModel, ApplyDiffP
         if (workspaceContext is not LoadoutContext loadoutContext) yield break;
 
         var loadout = _connection.Db.Get(loadoutContext.LoadoutId);
-        if (loadout is null) yield break;
 
         yield return new PageDiscoveryDetails
         {
             SectionName = "Utilities",
             ItemName = "Preview Apply Changes",
+            Icon = IconValues.ListFilled,
             PageData = new PageData
             {
                 FactoryId = StaticId,

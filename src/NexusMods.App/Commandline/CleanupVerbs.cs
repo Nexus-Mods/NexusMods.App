@@ -149,7 +149,7 @@ internal static class CleanupVerbs
 
             try
             {
-                directory.DeleteDirectory();
+                directory.DeleteDirectory(recursive: true);
                 await renderer.Text("Deleted directory: {0}", directory);
             }
             catch (Exception e)

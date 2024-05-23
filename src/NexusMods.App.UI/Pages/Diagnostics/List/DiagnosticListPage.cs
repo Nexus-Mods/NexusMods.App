@@ -4,6 +4,7 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.App.UI.Pages.Diagnostics;
@@ -38,13 +39,13 @@ public class DiagnosticListPageFactory : APageFactory<IDiagnosticListViewModel, 
         if (workspaceContext is not LoadoutContext loadoutContext) yield break;
 
         var loadout = _conn.Db.Get(loadoutContext.LoadoutId);
-        if (loadout is null) yield break;
 
         yield return new PageDiscoveryDetails
         {
             // TODO: translations?
             SectionName = "Utilities",
             ItemName = "Diagnostics",
+            Icon = IconValues.MonitorDiagnostics,
             PageData = new PageData
             {
                 FactoryId = StaticId,
