@@ -20,6 +20,11 @@ public static class GameMetadata
     public static readonly StringAttribute Store = new(Namespace, "Store");
     
     /// <summary>
+    /// The path to the game's installation directory.
+    /// </summary>
+    public static readonly StringAttribute Path = new(Namespace, "Path");
+    
+    /// <summary>
     /// Get all games from the database.
     /// </summary>
     /// <param name="db"></param>
@@ -48,6 +53,15 @@ public static class GameMetadata
         {
             get => GameMetadata.Store.Get(this);
             set => GameMetadata.Store.Add(this, value);
+        }
+        
+        /// <summary>
+        /// The path to the game's installation directory.
+        /// </summary>
+        public string Path
+        {
+            get => GameMetadata.Path.Get(this);
+            set => GameMetadata.Path.Add(this, value);
         }
     }
 }

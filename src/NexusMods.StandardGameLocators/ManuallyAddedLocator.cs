@@ -45,11 +45,10 @@ public class ManuallyAddedLocator : IGameLocator
         var result = await tx.Commit();
         
         var gameRegistry = _provider.GetRequiredService<IGameRegistry>();
-        game.ResetInstallations();
-        await gameRegistry.Refresh();
+
         var newId = result[ent.Id];
 
-        var found = gameRegistry.AllInstalledGames
+        var found = gameRegistry.Installations.Values
             .FirstOrDefault(g => g.Game.Domain == game.Domain &&
                         g.LocationsRegister.GetResolvedPath(LocationId.Game) == path &&
                         g.Version == version);

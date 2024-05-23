@@ -10,12 +10,12 @@ namespace NexusMods.StandardGameLocators;
 /// <inheritdoc />
 public class GameInstallationConverter : JsonConverter<GameInstallation>
 {
-    private readonly ILookup<GameDomain, ILocatableGame> _games;
+    private readonly IGameRegistry _gameRegistry;
 
     /// <inheritdoc />
-    public GameInstallationConverter(IEnumerable<ILocatableGame> games)
+    public GameInstallationConverter(IGameRegistry gameRegistry)
     {
-        _games = games.ToLookup(d => d.Domain);
+        _gameRegistry = gameRegistry;
     }
 
     /// <inheritdoc />
@@ -35,9 +35,8 @@ public class GameInstallationConverter : JsonConverter<GameInstallation>
 
         reader.Read();
 
-        var foundGame = _games[slug]
-            .SelectMany(g => ((IGame)g).Installations)
-            .FirstOrDefault(install => install.Store == store);
+        var foundGame = _gameRegistry.Installations.Values
+            .FirstOrDefault(install => install.Store == store && install.Game.Domain == slug && install.Version == version);
 
         return foundGame ?? new UnknownGame(slug, version).Installations.First();
     }

@@ -7,6 +7,7 @@ using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Serialization;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using LocationId = NexusMods.Abstractions.GameLocators.LocationId;
 
@@ -58,6 +59,17 @@ public class UnknownGame : IGame
 
     /// <inheritdoc />
     public ILoadoutSynchronizer Synchronizer => throw new NotImplementedException();
+
+    /// <inheritdoc />
+    public GameInstallation InstallationFromLocatorResult(GameLocatorResult metadata, EntityId dbId, IGameLocator locator)
+    {
+        return new GameInstallation
+        {
+            Game = this,
+            LocationsRegister = new GameLocationsRegister(new Dictionary<LocationId, AbsolutePath>()),
+            Version = _version
+        };
+    }
 
     /// <inheritdoc />
     public IStreamFactory Icon => throw new NotImplementedException("No icon provided for this game.");

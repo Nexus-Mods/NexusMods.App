@@ -91,7 +91,7 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
     public virtual async Task InitializeAsync()
     {
         await _host.StartAsync(Token);
-        Install = GameRegistry.AllInstalledGames.First(g => g.Game is StubbedGame);
+        Install = GameRegistry.Installations.Values.First(g => g.Game is StubbedGame);
         Game = (IGame)Install.Game;
         Synchronizer = (IStandardizedLoadoutSynchronizer)Game.Synchronizer;
         BaseLoadout = await Synchronizer.CreateLoadout(Install, "TestLoadout_" + Guid.NewGuid());
