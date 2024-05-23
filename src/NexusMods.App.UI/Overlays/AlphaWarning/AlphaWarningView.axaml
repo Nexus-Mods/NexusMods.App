@@ -11,7 +11,7 @@
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
     x:Class="NexusMods.App.UI.Overlays.AlphaWarning.AlphaWarningView">
 
-    <base:MessageBoxBackground MinWidth="576" MaxWidth="576" MinHeight="523" MaxHeight="523">
+    <base:MessageBoxBackground MinWidth="576" MaxWidth="576">
         <base:MessageBoxBackground.TopContent>
             <StackPanel Orientation="Vertical" Margin="16, 24, 24, 24" Classes="Spacing-3_5">
                 <StackPanel Classes="Spacing-4">
