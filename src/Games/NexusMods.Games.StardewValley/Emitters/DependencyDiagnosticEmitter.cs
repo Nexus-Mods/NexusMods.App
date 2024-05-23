@@ -52,8 +52,9 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
             .ToDictionaryAsync(tuple => ModId.From(tuple.Item1.Id), tuple => tuple.Item2, cancellationToken);
 
         var uniqueIdToModId = modIdToManifest
+            .DistinctBy(kv => kv.Value.UniqueID, StringComparer.OrdinalIgnoreCase)
             .Select(kv => (UniqueId: kv.Value.UniqueID, ModId: kv.Key))
-            .ToImmutableDictionary(kv => kv.UniqueId, kv => kv.ModId);
+            .ToImmutableDictionary(kv => kv.UniqueId, kv => kv.ModId, StringComparer.OrdinalIgnoreCase);
 
         cancellationToken.ThrowIfCancellationRequested();
 
