@@ -147,8 +147,8 @@ public sealed class LoginManager : IDisposable, ILoginManager
     /// </summary>
     public async Task Logout()
     {
-        await _jwtTokenRepository.Delete(_jwtTokenRepository.All.First());
         _cachedUserInfo.Evict();
+        await _jwtTokenRepository.Delete(_jwtTokenRepository.All.First());
     }
 
     /// <inheritdoc/>
