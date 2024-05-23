@@ -23,7 +23,7 @@
 
         <ItemsControl.ItemTemplate>
             <DataTemplate DataType="{x:Type workspace:INewTabPageSectionViewModel}">
-                <StackPanel Classes="Spacing-3" Width="375" Margin="0 0 12 0">
+                <StackPanel Classes="Spacing-3" Width="375" Margin="0 0 24 24">
                     <TextBlock x:Name="SectionNameTextBlock" Text="{CompiledBinding SectionName}"
                                Classes="HeadingSMSemi" />
 
