@@ -20,6 +20,7 @@ public class GameWidgetDesignViewModel : AViewModel<IGameWidgetViewModel>, IGame
 
     [Reactive]
     public GameWidgetState State { get; set; }
+    public bool CanAddMoreThanOneLoadout { get; }
 
     public GameWidgetDesignViewModel()
     {
