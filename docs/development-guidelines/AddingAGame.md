@@ -2,7 +2,7 @@
 
 !!! info "Describes how to add a game to the Nexus Mods App."
 
-To have a game automatically recognised by the Nexus Mods App, create a class that inherits from `AGame`.
+To have a game be automatically recognised by the Nexus Mods App, create a class that inherits from `AGame`.
 
 ??? "Example Game (Click to Expand)"
 
