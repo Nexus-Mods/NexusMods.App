@@ -29,7 +29,7 @@ public partial class ApplyControlView : ReactiveUserControl<IApplyControlViewMod
                 .Subscribe(canApply =>
                 {
                     ApplyButton.IsVisible = canApply;
-                    ViewApplyChangesButton.IsVisible = canApply;
+                    ApplyDiffButton.IsVisible = canApply;
                 })
                 .DisposeWith(disposables);
             

@@ -49,6 +49,9 @@ public static class IconValues
 
     // https://pictogrammers.com/library/mdi/icon/cog/
     public static readonly IconValue Settings = new ProjektankerIcon("mdi-cog");
+    
+    // https://pictogrammers.com/library/mdi/icon/eye/
+    public static readonly IconValue Visibility = new ProjektankerIcon("mdi-eye");
 
 #endregion
 
