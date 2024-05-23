@@ -33,7 +33,7 @@ public record ExperimentalSettings : ISettings
             .AddToUI<ExperimentalSettings>(builder => builder
                 .AddPropertyToUI(x => x.EnableAllGames, propertybuilder => propertybuilder
                     .AddToSection(sectionId)
-                    .WithDisplayName("(Experimental) Enable Unsupported Games")
+                    .WithDisplayName("[Unsupported] Enable Unsupported Games")
                     .WithDescription("When set, 'work-in-progress' games that are not yet fully supported will be enabled in the UI.")
                     .UseBooleanContainer()
                     .RequiresRestart()
