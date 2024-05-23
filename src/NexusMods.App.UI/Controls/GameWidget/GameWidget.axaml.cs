@@ -22,9 +22,12 @@ public partial class GameWidget : ReactiveUserControl<IGameWidgetViewModel>
                     {
                         DetectedGameStackPanel.IsVisible = state == GameWidgetState.DetectedGame;
                         AddingGameStackPanel.IsVisible = state == GameWidgetState.AddingGame;
-                        ManagedGameStackPanel.IsVisible = state == GameWidgetState.ManagedGame;
+                        ManagedGameGrid.IsVisible = state == GameWidgetState.ManagedGame;
                         RemovingGameStackPanel.IsVisible = state == GameWidgetState.RemovingGame;
                         GameWidgetBorder.Classes.ToggleIf("Disabled", state is GameWidgetState.AddingGame or GameWidgetState.RemovingGame);
+                        
+                        if (!ViewModel!.CanAddMoreThanOneLoadout)
+                            AddLoadoutButton.IsVisible = !ManagedGameGrid.IsVisible;
                     })
                     .DisposeWith(d);
 

@@ -5,6 +5,7 @@ using Avalonia.Media.Imaging;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Settings;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -14,9 +15,10 @@ public class GameWidgetViewModel : AViewModel<IGameWidgetViewModel>, IGameWidget
 {
     private readonly ILogger<GameWidgetViewModel> _logger;
 
-    public GameWidgetViewModel(ILogger<GameWidgetViewModel> logger)
+    public GameWidgetViewModel(ILogger<GameWidgetViewModel> logger, ISettingsManager settingsManager)
     {
         _logger = logger;
+        CanAddMoreThanOneLoadout = settingsManager.Get<ExperimentalSettings>().EnableMultipleLoadouts;
 
         AddGameCommand = ReactiveCommand.Create(() => { });
         ViewGameCommand = ReactiveCommand.Create(() => { });
@@ -77,4 +79,5 @@ public class GameWidgetViewModel : AViewModel<IGameWidgetViewModel>, IGameWidget
 
     [Reactive]
     public GameWidgetState State { get; set; }
+    public bool CanAddMoreThanOneLoadout { get; }
 }

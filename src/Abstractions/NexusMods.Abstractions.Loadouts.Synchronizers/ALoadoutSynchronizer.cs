@@ -911,7 +911,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         var (isCached, initialState) = await GetOrCreateInitialDiskState(installation);
         
         using var tx = Connection.BeginTransaction();
-        var db = Connection.Db;
+        using var db = Connection.Db;
         
         // We need to create a 'Vanilla State Loadout' for rolling back the game
         // to the original state before NMA touched it, if we don't already
@@ -923,7 +923,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         {
             await CreateVanillaStateLoadout(installation);
         }
-        
+
         var loadout = new Loadout.Model(tx)
         {
             Db = db, // Has to be here to the installation resolves properly
