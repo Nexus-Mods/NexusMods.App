@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.Icons;
 
 namespace NexusMods.App.UI.Pages.Settings;
 
@@ -30,6 +31,7 @@ public class SettingsPageFactory : APageFactory<ISettingsPageViewModel, Settings
             {
                 SectionName = Language.SettingsView_Title,
                 ItemName = Language.SettingsView_Title,
+                Icon = IconValues.Settings,
                 PageData = new PageData
                 {
                     FactoryId = StaticId,

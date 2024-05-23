@@ -2,6 +2,7 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.Icons;
 
 namespace NexusMods.App.UI.Pages.Downloads;
 
@@ -28,6 +29,7 @@ public class InProgressPageFactory : APageFactory<IInProgressViewModel, InProgre
             // TODO: translations?
             SectionName = "Mods",
             ItemName = "Downloads",
+            Icon = IconValues.Downloading,
             PageData = new PageData
             {
                 Context = new InProgressPageContext(),

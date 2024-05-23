@@ -5,6 +5,7 @@ using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.App.UI.Pages.LoadoutGrid;
@@ -44,6 +45,7 @@ public class LoadoutGridPageFactory : APageFactory<ILoadoutGridViewModel, Loadou
         {
             SectionName = "Mods",
             ItemName = Language.LoadoutLeftMenuViewModel_LoadoutGridEntry,
+            Icon = IconValues.Collections,
             PageData = new PageData
             {
                 FactoryId = Id,

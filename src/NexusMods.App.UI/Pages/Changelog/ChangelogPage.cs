@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.App.BuildInfo;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.Icons;
 
 namespace NexusMods.App.UI.Pages.Changelog;
 
@@ -36,6 +37,7 @@ public class ChangelogPageFactory : APageFactory<IChangelogPageViewModel, Change
             {
                 SectionName = "Utilities",
                 ItemName = "Changelog",
+                Icon = IconValues.FileDocumentOutline,
                 PageData = new PageData
                 {
                     Context = new ChangelogPageContext
