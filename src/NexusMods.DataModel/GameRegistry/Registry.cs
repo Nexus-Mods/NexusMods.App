@@ -133,7 +133,11 @@ public class Registry : IGameRegistry, IHostedService
     }
 
     /// <inheritdoc />
-    public EntityId GetId(GameInstallation installation) => _byInstall[GetKey(installation)];
+    public EntityId GetId(GameInstallation installation)
+    {
+        WaitUntilInitialized();
+        return _byInstall[GetKey(installation)];
+    }
 
     /// <inheritdoc />
     public async Task StartAsync(CancellationToken cancellationToken)
