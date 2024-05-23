@@ -8,6 +8,7 @@ using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.App.UI.Pages.ModLibrary;
@@ -46,16 +47,17 @@ public class FileOriginsPageFactory : APageFactory<IFileOriginsPageViewModel, Fi
 
         yield return new PageDiscoveryDetails
         {
-            SectionName = "Downloads",
+            SectionName = "Mods",
             ItemName = Language.FileOriginsPageTitle,
+            Icon = IconValues.ModLibrary,
             PageData = new PageData
             {
                 FactoryId = Id,
                 Context = new FileOriginsPageContext
                 {
-                    LoadoutId = loadoutContext.LoadoutId
-                }
-            }
+                    LoadoutId = loadoutContext.LoadoutId,
+                },
+            },
         };
     }
 }
