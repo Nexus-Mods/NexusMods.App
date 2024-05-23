@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Serialization.Attributes;
 
@@ -7,6 +8,7 @@ namespace NexusMods.App.UI.WorkspaceSystem;
 [JsonName("NexusMods.App.UI.Workspace.NewTabPageContext")]
 public record NewTabPageContext : IPageFactoryContext
 {
+    [JsonIgnore]
     public required PageDiscoveryDetails[] DiscoveryDetails { get; init; }
 }
 
