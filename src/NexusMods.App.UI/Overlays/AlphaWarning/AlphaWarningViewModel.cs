@@ -1,6 +1,7 @@
 using System.Reactive;
 using System.Reactive.Disposables;
 using DynamicData.Kernel;
+using JetBrains.Annotations;
 using NexusMods.Abstractions.Settings;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Pages.Changelog;
@@ -12,10 +13,10 @@ using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Overlays.AlphaWarning;
 
-public class AlphaWarningViewModel : AViewModel<IAlphaWarningViewModel>, IAlphaWarningViewModel
+[UsedImplicitly]
+public class AlphaWarningViewModel : AOverlayViewModel<IAlphaWarningViewModel>, IAlphaWarningViewModel
 {
-    [Reactive] public bool IsActive { get; set; }
-
+    
     // NOTE(erri120): from https://github.com/Nexus-Mods/NexusMods.App/issues/1376
     private static readonly Uri DiscordUri = new("https://discord.gg/y7NfQWyRkj");
     private static readonly Uri ForumsUri = new("https://forums.nexusmods.com/forum/9052-nexus-mods-app/");
@@ -31,15 +32,12 @@ public class AlphaWarningViewModel : AViewModel<IAlphaWarningViewModel>, IAlphaW
     public IWorkspaceController? WorkspaceController { get; set; }
 
     private readonly ISettingsManager _settingsManager;
-    private readonly IOverlayController _overlayController;
 
     public AlphaWarningViewModel(
         IOSInterop osInterop,
-        ISettingsManager settingsManager,
-        IOverlayController overlayController)
+        ISettingsManager settingsManager)
     {
         _settingsManager = settingsManager;
-        _overlayController = overlayController;
 
         OpenDiscordCommand = ReactiveCommand.Create(() => DiscordUri);
         OpenForumsCommand = ReactiveCommand.Create(() => ForumsUri);
@@ -70,7 +68,7 @@ public class AlphaWarningViewModel : AViewModel<IAlphaWarningViewModel>, IAlphaW
                 HasShownModal = true,
             });
 
-            IsActive = false;
+            Close();
         });
 
         this.WhenActivated(disposables =>
@@ -94,7 +92,7 @@ public class AlphaWarningViewModel : AViewModel<IAlphaWarningViewModel>, IAlphaW
     {
         if (_settingsManager.Get<AlphaSettings>().HasShownModal) return false;
 
-        _overlayController.SetOverlayContent(new SetOverlayItem(this));
+        Controller.Enqueue(this);
         return true;
     }
 }

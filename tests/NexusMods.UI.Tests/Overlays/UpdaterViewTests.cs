@@ -1,6 +1,7 @@
 ﻿using Avalonia.Controls;
 using FluentAssertions;
 using NexusMods.App.BuildInfo;
+using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Overlays.Updater;
 
 namespace NexusMods.UI.Tests.Overlays;
@@ -12,9 +13,8 @@ public class UpdaterViewTests : AViewTest<UpdaterView, UpdaterDesignViewModel, I
     [Fact]
     public async Task ClickingUpdateCallsTheCommand()
     {
-
-        ViewModel.IsActive = true;
-        ViewModel.IsActive.Should().BeTrue();
+        var controller = new OverlayController();
+        controller.Enqueue(ViewModel);
 
         var btn = await Host.GetViewControl<Button>("UpdateButton");
         await Click(btn);
@@ -23,7 +23,7 @@ public class UpdaterViewTests : AViewTest<UpdaterView, UpdaterDesignViewModel, I
 
         await EventuallyOnUi(() =>
         {
-            ViewModel.IsActive.Should().BeFalse();
+            ViewModel.Status.Should().Be(Status.Closed);
             ViewModel.UpdateClicked.Should().BeTrue();
         });
     }
@@ -46,6 +46,9 @@ public class UpdaterViewTests : AViewTest<UpdaterView, UpdaterDesignViewModel, I
     [Fact]
     public async Task ShowChangelogIsWiredCorrectly()
     {
+        var controller = new OverlayController();
+        controller.Enqueue(ViewModel);
+
         var btn = await Host.GetViewControl<Button>("ChangelogButton");
         await Click(btn);
 
@@ -58,15 +61,16 @@ public class UpdaterViewTests : AViewTest<UpdaterView, UpdaterDesignViewModel, I
     [Fact]
     public async Task ClickingLaterClosesTheOverlay()
     {
-        ViewModel.IsActive = true;
-        ViewModel.IsActive.Should().BeTrue();
+        var controller = new OverlayController();
+        controller.Enqueue(ViewModel);
+
 
         var btn = await Host.GetViewControl<Button>("LaterButton");
         await Click(btn);
 
         await EventuallyOnUi(() =>
         {
-            ViewModel.IsActive.Should().BeFalse();
+            ViewModel.Status.Should().Be(Status.Closed);
         });
 
     }

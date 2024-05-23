@@ -11,16 +11,13 @@ using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Overlays.Updater;
 
-public class UpdaterViewModel : AViewModel<IUpdaterViewModel>, IUpdaterViewModel
+public class UpdaterViewModel : AOverlayViewModel<IUpdaterViewModel>, IUpdaterViewModel
 {
     private Uri _githubRepo = new("https://api.github.com/repos/Nexus-Mods/NexusMods.App/releases");
 
     private readonly HttpClient _client;
     private readonly ILogger<UpdaterViewModel> _logger;
     private readonly IOverlayController _overlayController;
-
-    [Reactive]
-    public bool IsActive { get; set; }
 
     [Reactive]
     public InstallationMethod Method { get; set; }
@@ -44,8 +41,7 @@ public class UpdaterViewModel : AViewModel<IUpdaterViewModel>, IUpdaterViewModel
     [Reactive] public bool ShowSystemUpdateMessage { get; set; } = false;
 
 
-    public UpdaterViewModel(ILogger<UpdaterViewModel> logger, IOSInterop interop, HttpClient client,
-        IOverlayController overlayController)
+    public UpdaterViewModel(ILogger<UpdaterViewModel> logger, IOSInterop interop, HttpClient client, IOverlayController overlayController)
     {
         _client = client;
         _logger = logger;
@@ -53,15 +49,12 @@ public class UpdaterViewModel : AViewModel<IUpdaterViewModel>, IUpdaterViewModel
         OldVersion = ApplicationConstants.Version;
         Method = CompileConstants.InstallationMethod;
 
-        LaterCommand = ReactiveCommand.Create(() =>
-        {
-            IsActive = false;
-        });
+        LaterCommand = ReactiveCommand.Create(Close);
 
         UpdateCommand = ReactiveCommand.Create(() =>
         {
-            IsActive = false;
             interop.OpenUrl(UpdateUrl);
+            Close();
         });
 
         ShowChangelog = ReactiveCommand.Create(() =>
@@ -74,7 +67,7 @@ public class UpdaterViewModel : AViewModel<IUpdaterViewModel>, IUpdaterViewModel
     {
         if (!await ShouldShow()) return false;
 
-        _overlayController.SetOverlayContent(new SetOverlayItem(this));
+        _overlayController.Enqueue(this);
         return true;
     }
 

@@ -32,25 +32,19 @@ public partial class MessageBoxOkCancelView : ReactiveUserControl<IMessageBoxOkC
         InitializeComponent();
         this.WhenActivated(d =>
         {
-            OkButton.Command = ReactiveCommand.CreateFromTask(() =>
+            OkButton.Command = ReactiveCommand.Create(() =>
             {
-                ViewModel!.DialogResult = true;
-                ViewModel!.IsActive = false;
-                return Task.CompletedTask;
+                ViewModel!.Complete(true);
             });
 
-            CancelButton.Command = ReactiveCommand.CreateFromTask(() =>
+            CancelButton.Command = ReactiveCommand.Create(() =>
             {
-                ViewModel!.DialogResult = false;
-                ViewModel!.IsActive = false;
-                return Task.CompletedTask;
+                ViewModel!.Complete(false);
             });
 
-            CloseButton.Command = ReactiveCommand.CreateFromTask(() =>
+            CloseButton.Command = ReactiveCommand.Create(() =>
             {
-                ViewModel!.DialogResult = false;
-                ViewModel!.IsActive = false;
-                return Task.CompletedTask;
+                ViewModel!.Complete(false);
             });
         });
     }
