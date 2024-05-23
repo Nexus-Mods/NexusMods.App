@@ -167,6 +167,23 @@
                         </StackPanel>
                     </Button>
                 </StackPanel>
+                
+                <!-- Standard Info -->
+                <StackPanel Classes="VerticalTwoButtonStack" Orientation="Vertical">
+                    <TextBlock>Standard Info</TextBlock>
+                    <Button Classes="Standard Info">
+                        <StackPanel>
+                            <icons:UnifiedIcon Classes="Play" />
+                            <TextBlock Text="BUTTON" />
+                        </StackPanel>
+                    </Button>
+                    <Button Classes="Standard Info" IsEnabled="False">
+                        <StackPanel>
+                            <icons:UnifiedIcon Classes="Play" />
+                            <TextBlock Text="BUTTON" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
 
 
             </StackPanel>
@@ -346,6 +363,24 @@
 
         <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="Background" Value="{DynamicResource SuccessWeakBrush}" />
+        </Style>
+    </Style>
+    
+    
+    <!-- Standard Info -->
+    <Style Selector="Button.Standard.Info">
+        <Setter Property="Background" Value="{DynamicResource InfoWeakBrush}" />
+
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource InfoSubduedBrush}" />
+        </Style>
+
+        <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource BrandInfo900}" />
+        </Style>
+
+        <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource InfoWeakBrush}" />
         </Style>
     </Style>
 

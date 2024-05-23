@@ -29,14 +29,14 @@
             </navigation:NavigationControl>
 
             <!-- Apply button -->
-            <Button Classes="Standard SecondaryOutlined"
+            <Button Classes="Standard Info"
                     HorizontalAlignment="Stretch"
                     x:Name="ApplyButton">
                 <Viewbox StretchDirection="DownOnly">
                     <StackPanel Orientation="Horizontal"
                                 HorizontalAlignment="Center"
                                 Classes="Spacing-1">
-                        <icons:UnifiedIcon Size="24" Classes="Check" />
+                        <icons:UnifiedIcon Size="24" Classes="Sync" />
                         <TextBlock Classes="TitleSMSemi"
                                    x:Name="ApplyButtonTextBlock"
                                    VerticalAlignment="Center" />
