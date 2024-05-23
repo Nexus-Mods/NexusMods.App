@@ -24,6 +24,7 @@ using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModName;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModVersion;
 using NexusMods.App.UI.Pages.ModInfo;
 using NexusMods.App.UI.Pages.ModInfo.Types;
+using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Settings;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -87,6 +88,7 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
         _mods = new ReadOnlyObservableCollection<ModId>(new ObservableCollection<ModId>());
         
         TabIcon = IconValues.Collections;
+        TabTitle = Language.LoadoutLeftMenuViewModel_LoadoutGridEntry;
 
         var nameColumn = provider.GetRequiredService<DataGridColumnFactory<IModNameViewModel, ModId, LoadoutColumn>>();
         nameColumn.Type = LoadoutColumn.Name;
@@ -155,16 +157,6 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
                 .Bind(out _mods)
                 .SubscribeWithErrorLogging(logger)
                 .DisposeWith(d);
-
-            this.WhenAnyValue(vm => vm.LoadoutId)
-                .SelectMany(id => loadoutRepository.Revisions(id.Value))
-                .Select(loadout => loadout.Name)
-                .OnUI()
-                .Do(loadoutName =>
-                {
-                    TabTitle = loadoutName;
-                })
-                .BindTo(this, vm => vm.LoadoutName);
 
             _columns.Connect()
                 .Bind(out _filteredColumns)

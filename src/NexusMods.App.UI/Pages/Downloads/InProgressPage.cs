@@ -26,13 +26,13 @@ public class InProgressPageFactory : APageFactory<IInProgressViewModel, InProgre
         yield return new PageDiscoveryDetails
         {
             // TODO: translations?
-            SectionName = "Downloads",
-            ItemName = "In-progress Downloads",
+            SectionName = "Mods",
+            ItemName = "Downloads",
             PageData = new PageData
             {
                 Context = new InProgressPageContext(),
-                FactoryId = Id
-            }
+                FactoryId = Id,
+            },
         };
     }
 }

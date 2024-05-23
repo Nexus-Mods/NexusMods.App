@@ -46,7 +46,7 @@ public class FileOriginsPageFactory : APageFactory<IFileOriginsPageViewModel, Fi
 
         yield return new PageDiscoveryDetails
         {
-            SectionName = "Downloads",
+            SectionName = "Mods",
             ItemName = Language.FileOriginsPageTitle,
             PageData = new PageData
             {
@@ -54,8 +54,8 @@ public class FileOriginsPageFactory : APageFactory<IFileOriginsPageViewModel, Fi
                 Context = new FileOriginsPageContext
                 {
                     LoadoutId = loadoutContext.LoadoutId
-                }
-            }
+                },
+            },
         };
     }
 }
