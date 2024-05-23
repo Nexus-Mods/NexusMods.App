@@ -22,7 +22,6 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
 {
     private readonly IConnection _conn;
     private readonly IApplyService _applyService;
-    private readonly ILogger<ApplyControlViewModel> _logger;
 
     private readonly LoadoutId _loadoutId;
     private readonly GameInstallation _gameInstallation;
@@ -45,7 +44,6 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
         _loadoutId = loadoutId;
         _applyService = serviceProvider.GetRequiredService<IApplyService>();
         _conn = serviceProvider.GetRequiredService<IConnection>();
-        _logger = serviceProvider.GetRequiredService<ILogger<ApplyControlViewModel>>();
         var windowManager = serviceProvider.GetRequiredService<IWindowManager>();
 
         LaunchButtonViewModel = serviceProvider.GetRequiredService<ILaunchButtonViewModel>();
@@ -119,8 +117,7 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
                             var isApplying = data.Second;
                             var lastAppliedWithTxId = data.First.Item2;
                             CanApply = !isApplying && 
-                                       (!LastAppliedLoadoutId.Equals(_loadoutId) ||
-                                        !NewestLoadout.LoadoutWithTxId.Equals(lastAppliedWithTxId));
+                                       !NewestLoadout.GetLoadoutWithTxId().Equals(lastAppliedWithTxId);
                         }
                     ).DisposeWith(disposables);
                 

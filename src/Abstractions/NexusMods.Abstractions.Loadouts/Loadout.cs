@@ -108,8 +108,13 @@ public static class Loadout
         /// </summary>
         public LoadoutWithTxId GetLoadoutWithTxId()
         {
-            return new LoadoutWithTxId(LoadoutId, Db.Datoms(LoadoutId.Value).Max(d => d.T));
+            return new LoadoutWithTxId(LoadoutId, GetRevisionTxId());
         }
+        
+        /// <summary>
+        /// The most recent transaction Id that modified this loadout model
+        /// </summary>
+        public TxId GetRevisionTxId() => Db.Datoms(Id).Max(d => d.T);
 
         public string Name
         {
