@@ -15,6 +15,7 @@
 
     <ItemGroup>
         <InternalsVisibleTo Include="NexusMods.Settings" />
+        <InternalsVisibleTo Include="NexusMods.Settings.Tests" />
     </ItemGroup>
 
     <ItemGroup>

@@ -68,28 +68,27 @@ internal partial class SettingsManager : ISettingsManager
         var savedValue = Load<T>();
         if (savedValue is not null)
         {
-            savedValue = Override(savedValue);
+            savedValue = Override(savedValue, out _);
             CoreSet(savedValue, notify: false);
             return savedValue;
         }
 
         var defaultValue = GetDefaultValue<T>();
-        defaultValue = Override(defaultValue);
-        Set(defaultValue);
+        defaultValue = Override(defaultValue, out var didOverride);
+        CoreSet(defaultValue, notify: !didOverride);
 
         return defaultValue;
 
-        T Override(T value)
+        T Override(T value, out bool didOverride)
         {
-            if (_overrides.TryGetValue(settingsType, out var overrideMethod))
-            {
-                var overriden = overrideMethod.Invoke(value);
-                Debug.Assert(overriden.GetType() == settingsType);
+            didOverride = false;
+            if (!_overrides.TryGetValue(settingsType, out var overrideMethod)) return value;
 
-                return (T)overriden;
-            }
+            var overriden = overrideMethod.Invoke(value);
+            Debug.Assert(overriden.GetType() == settingsType);
 
-            return value;
+            didOverride = true;
+            return (T)overriden;
         }
     }
 

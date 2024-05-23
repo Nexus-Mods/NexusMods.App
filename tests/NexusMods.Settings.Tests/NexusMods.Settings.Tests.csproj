@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\NexusMods.Settings\NexusMods.Settings.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="SettingsManagerTests.Setup.cs">
+      <DependentUpon>SettingsManagerTests.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+</Project>

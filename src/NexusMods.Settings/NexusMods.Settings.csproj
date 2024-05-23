@@ -11,4 +11,8 @@
       <DependentUpon>SettingsManager.cs</DependentUpon>
     </Compile>
   </ItemGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="NexusMods.Settings.Tests" />
+    </ItemGroup>
 </Project>
