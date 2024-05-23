@@ -3,7 +3,6 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
@@ -30,12 +29,13 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
     [Reactive] private LoadoutId LastAppliedLoadoutId { get; set; }
     [Reactive] private LoadoutWithTxId LastAppliedWithTxId { get; set; }
     
-    [Reactive] private bool CanApply { get; set; } = true;
+    [Reactive] bool CanApply { get; set; } = true;
 
     public ReactiveCommand<Unit, Unit> ApplyCommand { get; }
     public ReactiveCommand<NavigationInformation, Unit> ShowApplyDiffCommand { get; }
 
     [Reactive] public string ApplyButtonText { get; private set; } = Language.ApplyControlViewModel__APPLY;
+    [Reactive] public bool IsLaunchButtonEnabled { get; private set; } = true;
 
     public ILaunchButtonViewModel LaunchButtonViewModel { get; }
 
