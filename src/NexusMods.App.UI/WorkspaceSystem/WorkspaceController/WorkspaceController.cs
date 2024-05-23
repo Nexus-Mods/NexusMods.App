@@ -119,7 +119,7 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
         vm.AddPanel(
             WorkspaceGridState.From(new[]
             {
-                new PanelGridState(PanelId.DefaultValue, MathUtils.One)
+                new PanelGridState(PanelId.DefaultValue, MathUtils.One),
             }, isHorizontal: vm.IsHorizontal),
             addPanelBehavior
         );

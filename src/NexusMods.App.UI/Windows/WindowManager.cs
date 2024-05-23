@@ -120,7 +120,8 @@ internal sealed class WindowManager : ReactiveObject, IWindowManager
             if (!_repository.TryFindFirst(out var found))
                 return false;
 
-            window.WorkspaceController.FromData(found.GetData());
+            var windowData = found.GetData();
+            window.WorkspaceController.FromData(windowData);
             return true;
         }
         catch (Exception e)
