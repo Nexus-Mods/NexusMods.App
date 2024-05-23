@@ -210,6 +210,13 @@ public static class IconValues
     public static readonly IconValue Refresh = new ProjektankerIcon("mdi-refresh");
 
 #endregion
+    
+#region Notification
+    
+    // https://pictogrammers.com/library/mdi/icon/sync/
+    public static readonly IconValue Sync = new ProjektankerIcon("mdi-sync");
+    
+#endregion
 
 #region Toggle
 

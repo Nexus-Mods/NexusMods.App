@@ -83,6 +83,7 @@
             <icons:UnifiedIcon Classes="Code"/>
             <icons:UnifiedIcon Classes="Discord"/>
             <icons:UnifiedIcon Classes="Forum"/>
+            <icons:UnifiedIcon Classes="Sync"/>
 
         </WrapPanel>
     </Design.PreviewWith>
@@ -413,5 +414,9 @@
 
     <Style Selector="icons|UnifiedIcon.Forum">
         <Setter Property="Value" Value="{x:Static icons:IconValues.Forum}"/>
+    </Style>
+
+    <Style Selector="icons|UnifiedIcon.Sync">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.Sync}"/>
     </Style>
 </Styles>
