@@ -68,7 +68,7 @@ public sealed class JsonStorageBackend : ISettingsStorageBackend
     {
         try
         {
-            var value = JsonSerializer.Deserialize<T>(json, _jsonOptions.Value);
+            var value = JsonSerializer.Deserialize<T>(json);
             return value;
         }
         catch (Exception e)

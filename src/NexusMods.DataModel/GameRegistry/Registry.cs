@@ -32,6 +32,7 @@ public class Registry : IGameRegistry, IHostedService
     private readonly IEnumerable<IGame> _games;
     private readonly IEnumerable<IGameLocator> _locators;
     private readonly ConcurrentDictionary<EntityId, GameInstallation> _byId = new();
+    private Task? _startupTask = null;
 
     /// <inheritdoc />
     public ReadOnlyObservableCollection<GameInstallation> InstalledGames => _installedGames;
@@ -67,10 +68,12 @@ public class Registry : IGameRegistry, IHostedService
         return install;
     }
     
-    private async Task Startup()
+    private async Task Startup(CancellationToken token)
     {
+        await ((IHostedService)_conn).StartAsync(token);
+
         var results = await FindInstallations()
-            .Distinct().ToArrayAsync();
+            .Distinct().ToArrayAsync(token);
         
         _cache.Edit(x => {
             x.Clear();
@@ -150,8 +153,11 @@ public class Registry : IGameRegistry, IHostedService
     /// <inheritdoc />
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        await ((IHostedService)_conn).StartAsync(cancellationToken);
-        await Startup();
+        lock (this)
+        {
+            _startupTask ??= Startup(cancellationToken);
+        }
+        await _startupTask;
     }
 
     /// <inheritdoc />

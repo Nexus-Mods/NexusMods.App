@@ -22,7 +22,7 @@ public static class GameMetadata
     /// <summary>
     /// The path to the game's installation directory.
     /// </summary>
-    public static readonly StringAttribute Path = new(Namespace, "Path");
+    public static readonly StringAttribute Path = new(Namespace, "Path") {IsIndexed = true};
     
     /// <summary>
     /// Get all games from the database.
