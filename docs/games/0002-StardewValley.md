@@ -199,6 +199,7 @@ Detecting if two Content Packs are in conflict with one another depends on the C
 
 ## Community
 
+- [Stardew Valley Modding Wiki](https://stardewvalleywiki.com/Modding:Index)
 - [Stardew Valley Discord](https://discord.gg/stardewvalley)
 - [r/SMAPI](https://www.reddit.com/r/SMAPI)
 - [Stardew Valley Forums](https://forums.stardewvalley.net/)
