@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics;
@@ -107,11 +108,18 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
             diagnosticManager
                 .CountDiagnostics(loadoutContext.LoadoutId)
                 .OnUI()
-                .Subscribe(counts =>
+                .Select(counts =>
                 {
-                    var totalCount = counts.NumSuggestions + counts.NumWarnings + counts.NumCritical;
-                    diagnosticItem.Name = $"{Language.LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics} ({totalCount})";
+                    var badges = new List<string>(capacity: 3);
+                    if (counts.NumCritical != 0)
+                        badges.Add(counts.NumCritical.ToString());
+                    if (counts.NumWarnings != 0)
+                        badges.Add(counts.NumWarnings.ToString());
+                    if (counts.NumSuggestions != 0)
+                        badges.Add(counts.NumSuggestions.ToString());
+                    return badges.ToArray();
                 })
+                .BindToVM(diagnosticItem, vm => vm.Badges)
                 .DisposeWith(disposable);
         });
     }
