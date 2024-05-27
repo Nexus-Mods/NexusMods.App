@@ -105,7 +105,8 @@ internal partial class SettingsManager : ISettingsManager
     {
         return _subject
             .Where(tuple => tuple.Item1 == typeof(T))
-            .Select(tuple => (tuple.Item2 as T)!);
+            .Select(tuple => (tuple.Item2 as T)!)
+            .StartWith(Get<T>());
     }
 
     public ISettingsPropertyUIDescriptor[] GetAllUIProperties()
