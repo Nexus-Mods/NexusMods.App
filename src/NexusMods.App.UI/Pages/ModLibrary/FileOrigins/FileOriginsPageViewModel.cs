@@ -73,12 +73,8 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
 
     public static bool FilterDownloadAnalysisModel(DownloadAnalysis.Model model, GameDomain currentGameDomain)
     {
-        // NOTE(erri120, Al12rs): Manually added archives don't have a game domain.
-        if (model.TryGet(DownloaderState.GameDomain, out var domain))
-        {
-            if (domain != currentGameDomain) return false;
-        }
-
+        if (!model.TryGet(DownloaderState.GameDomain, out var domain)) return false;
+        if (domain != currentGameDomain) return false;
         if (model.Contains(StreamBasedFileOriginMetadata.StreamBasedOrigin)) return false;
         return true;
     }
