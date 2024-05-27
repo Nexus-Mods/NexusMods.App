@@ -13,7 +13,7 @@
                 <Button Classes="Avatar" HorizontalAlignment="Center">
                     <icons:UnifiedIcon>
                         <icons:UnifiedIcon.Value>
-                            <icons:IconValue ImageSetter="avares://NexusMods.Themes.NexusFluentDark/Assets/DesignTime/cyberpunk_game.png"/>
+                            <icons:IconValue ImageSetter="avares://NexusMods.Themes.NexusFluentDark/Assets/DesignTime/cyberpunk_game.png" />
                         </icons:UnifiedIcon.Value>
                     </icons:UnifiedIcon>
                 </Button>
@@ -25,6 +25,12 @@
                 </Button>
                 <Button Classes="Invisible" HorizontalAlignment="Center">
                     <TextBlock Text="Invisible" />
+                </Button>
+                <Button Classes="Preview" HorizontalAlignment="Center">
+                    <StackPanel>
+                        <icons:UnifiedIcon Classes="Visibility" />
+                        <TextBlock Text="Apply Preview" />
+                    </StackPanel>
                 </Button>
             </StackPanel>
         </Border>
@@ -117,4 +123,35 @@
     </Style>
 
 
+    <!--  Preview button  -->
+    <Style Selector="Button.Preview">
+        <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="8,0,8,0" />
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="Height" Value="34" />
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
+        <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
+        
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource SurfaceTopBrush}" />
+        </Style>
+        
+        <Style Selector="^ > StackPanel">
+            <Setter Property="Orientation" Value="Horizontal" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="Spacing" Value="{StaticResource Spacing-1.5}" />
+            <Setter Property="Margin" Value="0" />
+            
+            <Style Selector="^ > icons|UnifiedIcon">
+                <Setter Property="Size" Value="20" />
+            </Style>
+            
+            <Style Selector="^ > TextBlock">
+                <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+            </Style>
+        </Style>
+        
+    </Style>
 </Styles>

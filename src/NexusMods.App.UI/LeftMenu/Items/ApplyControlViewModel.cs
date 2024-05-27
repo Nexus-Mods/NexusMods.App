@@ -19,64 +19,42 @@ namespace NexusMods.App.UI.LeftMenu.Items;
 
 public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyControlViewModel
 {
+    private readonly IConnection _conn;
     private readonly IApplyService _applyService;
 
     private readonly LoadoutId _loadoutId;
     private readonly GameInstallation _gameInstallation;
 
-
-    private readonly ReactiveCommand<Unit, Unit> _applyReactiveCommand;
-    private readonly ReactiveCommand<Unit, Unit> _ingestReactiveCommand;
-
-    private ObservableAsPropertyHelper<LoadoutWithTxId> _lastAppliedRevisionId;
-    private LoadoutWithTxId LastAppliedWithTxId => _lastAppliedRevisionId.Value;
-
+    [Reactive] private Abstractions.Loadouts.Loadout.Model NewestLoadout { get; set; }
     [Reactive] private LoadoutId LastAppliedLoadoutId { get; set; }
+    [Reactive] private LoadoutWithTxId LastAppliedWithTxId { get; set; }
+    
+    [Reactive] bool CanApply { get; set; } = true;
 
-    private ObservableAsPropertyHelper<Abstractions.Loadouts.Loadout.Model> _newestLoadout;
-    private readonly IConnection _conn;
-    private Abstractions.Loadouts.Loadout.Model NewestLoadout => _newestLoadout.Value;
-
-
-    public ReactiveCommand<Unit, Unit> ApplyCommand => _applyReactiveCommand;
-    public ReactiveCommand<Unit, Unit> IngestCommand => _ingestReactiveCommand;
+    public ReactiveCommand<Unit, Unit> ApplyCommand { get; }
     public ReactiveCommand<NavigationInformation, Unit> ShowApplyDiffCommand { get; }
 
-
-    [Reactive] private bool CanApply { get; set; } = true;
-    [Reactive] private bool CanIngest { get; set; } = true;
-
     [Reactive] public string ApplyButtonText { get; private set; } = Language.ApplyControlViewModel__APPLY;
+    [Reactive] public bool IsLaunchButtonEnabled { get; private set; } = true;
 
     public ILaunchButtonViewModel LaunchButtonViewModel { get; }
-
 
     public ApplyControlViewModel(LoadoutId loadoutId, IServiceProvider serviceProvider)
     {
         _loadoutId = loadoutId;
         _applyService = serviceProvider.GetRequiredService<IApplyService>();
         _conn = serviceProvider.GetRequiredService<IConnection>();
-        LaunchButtonViewModel = serviceProvider.GetRequiredService<ILaunchButtonViewModel>();
         var windowManager = serviceProvider.GetRequiredService<IWindowManager>();
+
+        LaunchButtonViewModel = serviceProvider.GetRequiredService<ILaunchButtonViewModel>();
         LaunchButtonViewModel.LoadoutId = loadoutId;
 
-        var currentLoadout = _conn.Db.Get(loadoutId);
-        if (currentLoadout is null)
-            throw new ArgumentException("Loadout not found", nameof(loadoutId));
+        NewestLoadout = _conn.Db.Get(loadoutId) ?? throw new ArgumentException("Loadout not found: " + loadoutId);
 
-        _newestLoadout = Observable.Return(currentLoadout)
-            .Merge(_conn.Revisions(loadoutId))
-            .ToProperty(this, vm => vm.NewestLoadout, scheduler: RxApp.MainThreadScheduler);
+        _gameInstallation = NewestLoadout.Installation;
 
-        _gameInstallation = currentLoadout.Installation;
-
-        _lastAppliedRevisionId = _applyService.LastAppliedRevisionFor(_gameInstallation)
-            .ToProperty(this, vm => vm.LastAppliedWithTxId, scheduler: RxApp.MainThreadScheduler);
-
-        _applyReactiveCommand = ReactiveCommand.CreateFromTask(async () => await Apply(), 
+        ApplyCommand = ReactiveCommand.CreateFromTask(async () => await Apply(), 
             canExecute: this.WhenAnyValue(vm => vm.CanApply));
-        _ingestReactiveCommand = ReactiveCommand.CreateFromTask(async () => await Ingest(), 
-            canExecute: this.WhenAnyValue(vm => vm.CanIngest));
         
         ShowApplyDiffCommand = ReactiveCommand.Create<NavigationInformation>(info =>
         {
@@ -99,8 +77,19 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
 
         this.WhenActivated(disposables =>
             {
-                var db = _conn.Db;
-                // Last applied loadout id
+                // Newest Loadout
+                _conn.Revisions(loadoutId)
+                    .OnUI()
+                    .BindToVM(this, vm => vm.NewestLoadout)
+                    .DisposeWith(disposables);
+                
+                // Last applied loadoutTxId
+                _applyService.LastAppliedRevisionFor(_gameInstallation)
+                    .OnUI()
+                    .BindToVM(this, vm => vm.LastAppliedWithTxId)
+                    .DisposeWith(disposables);
+                
+                // Last applied LoadoutId
                 this.WhenAnyValue(vm => vm.LastAppliedWithTxId)
                     .Select(revId =>
                         {
@@ -110,25 +99,34 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
                             return loadout.LoadoutId;
                         }
                     )
+                    .OnUI()
                     .BindToVM(this, vm => vm.LastAppliedLoadoutId)
                     .DisposeWith(disposables);
 
-                // Apply and Ingest button visibility
-                var loadoutOrLastAppliedStream = this.WhenAnyValue(vm => vm.NewestLoadout,
+                // Changes to either newest loadout or last applied loadout
+                var loadoutOrLastAppliedTxObservable = this.WhenAnyValue(
+                    vm => vm.NewestLoadout,
                     vm => vm.LastAppliedWithTxId
                 );
 
-                loadoutOrLastAppliedStream.CombineLatest(_applyReactiveCommand.IsExecuting)
-                    .CombineLatest(_ingestReactiveCommand.IsExecuting)
+                // CanApply and IsLaunchButtonEnabled
+                Observable.CombineLatest(
+                    loadoutOrLastAppliedTxObservable,
+                    ApplyCommand.IsExecuting,
+                    LaunchButtonViewModel.Command.IsExecuting,
+                    (loadoutTuple, isApplying, isToolRunning) => (
+                        IsApplying: isApplying, 
+                        IsToolRunning: isToolRunning, 
+                        LastAppliedWithTxId: loadoutTuple.Item2)
+                    )
+                    .OnUI()
                     .Subscribe(data =>
                         {
-                            var isApplying = data.First.Second;
-                            var isIngesting = data.Second;
-                            CanApply = !isApplying && !isIngesting &&
-                                       (!LastAppliedLoadoutId.Equals(_loadoutId) ||
-                                        !NewestLoadout.LoadoutWithTxId.Equals(LastAppliedWithTxId));
-                            CanIngest = !isApplying && !isIngesting &&
-                                        LastAppliedLoadoutId.Equals(_loadoutId);
+                            var (isApplying, isToolRunning, lastAppliedWithTxId) = data;
+                            CanApply = !isApplying &&
+                                       !isToolRunning &&
+                                       !NewestLoadout.GetLoadoutWithTxId().Equals(lastAppliedWithTxId);
+                            IsLaunchButtonEnabled = !isApplying && !CanApply;
                         }
                     ).DisposeWith(disposables);
                 
@@ -141,6 +139,7 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
                             ? Language.ApplyControlViewModel__ACTIVATE_AND_APPLY
                             : Language.ApplyControlViewModel__APPLY
                     )
+                    .OnUI()
                     .BindToVM(this, vm => vm.ApplyButtonText)
                     .DisposeWith(disposables);
             }
@@ -155,9 +154,5 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
             await _applyService.Apply(loadout);
         });
     }
-
-    private async Task Ingest()
-    {
-        await Task.Run(async () => { await _applyService.Ingest(_gameInstallation); });
-    }
+    
 }

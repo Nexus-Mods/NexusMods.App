@@ -60,7 +60,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to View apply changes.
+        ///   Looks up a localized string similar to Preview changes.
         /// </summary>
         public static string ApplyControlView_ViewApplyChanges {
             get {
@@ -960,7 +960,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to LAUNCH.
+        ///   Looks up a localized string similar to PLAY.
         /// </summary>
         public static string LaunchButtonViewModel_LaunchGame_LAUNCH {
             get {

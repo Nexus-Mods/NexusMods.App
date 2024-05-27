@@ -12,7 +12,7 @@
             <ProgressBar Classes="DownloadBar" Classes.DisabledDownloadBar="true" Minimum="0" Maximum="1" Value="0.4" />
 
             <TextBlock Text="LaunchButton" TextAlignment="Center" />
-            <ProgressBar Classes="LaunchButton" Minimum="0" Maximum="1" ProgressTextFormat="WAITING" />
+            <ProgressBar Classes="LaunchButton" Minimum="0" Maximum="1" ProgressTextFormat="WAITING..." />
             <ProgressBar Classes="LaunchButton" Minimum="0" Maximum="1" Value="0.75" ProgressTextFormat="PROCESSING..." />
             <ProgressBar Classes="LaunchButton" Minimum="0" Maximum="1" IsIndeterminate="True"
                          ProgressTextFormat="RUNNING..." />
@@ -70,14 +70,13 @@
     <!-- LaunchButton ProgressBar -->
     <Style Selector="ProgressBar.LaunchButton">
         <Setter Property="ShowProgressText" Value="True" />
-        <Setter Property="Height" Value="34" />
-        <Setter Property="Foreground" Value="{StaticResource PrimaryModerateBrush}" />
-        <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="BorderBrush" Value="{StaticResource PrimaryModerateBrush}" />
+        <Setter Property="Height" Value="44" />
+        <Setter Property="Foreground" Value="{StaticResource NeutralWeakBrush}" />
+        <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
         <Setter Property="MinWidth" Value="100" />
 
         <Style Selector="^ TextBlock">
-            <Setter Property="Theme" Value="{StaticResource TextBlockButtonStandardTheme}" />
+            <Setter Property="Theme" Value="{StaticResource TitleSMSemiTheme}" />
         </Style>
     </Style>
 
