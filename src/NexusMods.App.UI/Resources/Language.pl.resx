@@ -470,4 +470,7 @@
     <data name="DownloadInProgressView__View_in_library" xml:space="preserve">
         <value>Pokaż w bibliotece</value>
     </data>
+    <data name="LoadoutGridView__Remove" xml:space="preserve">
+        <value>Usuń</value>
+    </data>
 </root>
