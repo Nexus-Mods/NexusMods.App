@@ -19,19 +19,26 @@ public static class DoubleClickHelper
     /// Registers a double click handler and returns an observable that triggers whenever
     /// a double click occurs.
     /// </summary>
-    public static IObservable<Unit> AddDoubleClickHandler(this Control control)
+    public static IObservable<Unit> AddDoubleClickHandler(
+        this Control control,
+        RoutingStrategies routingStrategy = RoutingStrategies.Bubble,
+        bool ignoreHandledEvents = false)
     {
-        return AddDoubleClickHandler(control, InputElement.PointerPressedEvent);
+        return AddDoubleClickHandler(control, InputElement.PointerPressedEvent, routingStrategy, ignoreHandledEvents);
     }
 
     /// <summary>
     /// Registers a double click handler and returns an observable that triggers whenever
     /// a double click occurs.
     /// </summary>
-    public static IObservable<Unit> AddDoubleClickHandler<TRoutedEventArgs>(this Control control, RoutedEvent<TRoutedEventArgs> routedEvent)
-        where TRoutedEventArgs : RoutedEventArgs
+    public static IObservable<Unit> AddDoubleClickHandler<TRoutedEventArgs>(
+        this Control control,
+        RoutedEvent<TRoutedEventArgs> routedEvent,
+        RoutingStrategies routingStrategy = RoutingStrategies.Bubble,
+        bool ignoreHandledEvents = false
+    ) where TRoutedEventArgs : RoutedEventArgs
     {
-        return new DoubleClickSubject<TRoutedEventArgs>(control, routedEvent);
+        return new DoubleClickSubject<TRoutedEventArgs>(control, routedEvent, routingStrategy, ignoreHandledEvents);
     }
 
     private class DoubleClickSubject<TRoutedEventArgs> : SubjectBase<Unit>
@@ -42,13 +49,17 @@ public static class DoubleClickHelper
         private readonly List<IObserver<Unit>> _observers = new(capacity: 1);
         private readonly IDisposable _handlerDisposable;
 
-        public DoubleClickSubject(Control control, RoutedEvent<TRoutedEventArgs> routedEvent)
+        public DoubleClickSubject(
+            Control control,
+            RoutedEvent<TRoutedEventArgs> routedEvent,
+            RoutingStrategies routingStrategy,
+            bool ignoreHandledEvents)
         {
             _handlerDisposable = control.AddDisposableHandler(
                 routedEvent,
                 EventHandler,
-                routes: RoutingStrategies.Bubble,
-                handledEventsToo: true
+                routes: routingStrategy,
+                handledEventsToo: !ignoreHandledEvents
             );
         }
 
@@ -60,8 +71,8 @@ public static class DoubleClickHelper
             _lastDateTime = currentDateTime;
 
             if (!isDoubleClick) return;
-            OnNext(Unit.Default);
             args.Handled = true;
+            OnNext(Unit.Default);
         }
 
         public override void Dispose()
