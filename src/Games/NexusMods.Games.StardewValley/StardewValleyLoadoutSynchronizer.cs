@@ -59,7 +59,8 @@ public class StardewValleyLoadoutSynchronizer : ALoadoutSynchronizer
 
         foreach (var mod in modifiedMods.Values)
         {
-            // If we created the mod in this transaction, db will be null, and we can't call .Revise on it
+            // If we created the mod in this transaction (e.g. GetOrCreateOverride created the Override mod),
+            // Db property will be null, and we can't call `.Revise` on it.
             // We need to manually revise the loadout in that case
             // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
             if (mod.Db != null)
