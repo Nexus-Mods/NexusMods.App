@@ -109,16 +109,20 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
                     vm => vm.LastAppliedWithTxId
                 );
 
-                // CanApply
-                loadoutOrLastAppliedTxObservable
-                    .CombineLatest(ApplyCommand.IsExecuting)
-                    .CombineLatest(LaunchButtonViewModel.Command.IsExecuting)
+                // CanApply and IsLaunchButtonEnabled
+                Observable.CombineLatest(
+                    loadoutOrLastAppliedTxObservable,
+                    ApplyCommand.IsExecuting,
+                    LaunchButtonViewModel.Command.IsExecuting,
+                    (loadoutTuple, isApplying, isToolRunning) => (
+                        IsApplying: isApplying, 
+                        IsToolRunning: isToolRunning, 
+                        LastAppliedWithTxId: loadoutTuple.Item2)
+                    )
                     .OnUI()
                     .Subscribe(data =>
                         {
-                            var isApplying = data.First.Second;
-                            var isToolRunning = data.Second;
-                            var lastAppliedWithTxId = data.First.First.Item2;
+                            var (isApplying, isToolRunning, lastAppliedWithTxId) = data;
                             CanApply = !isApplying &&
                                        !isToolRunning &&
                                        !NewestLoadout.GetLoadoutWithTxId().Equals(lastAppliedWithTxId);
