@@ -56,11 +56,9 @@ public class ArchiveInstaller : IArchiveInstaller
         var loadout = _conn.Db.Get<Loadout.Model>(loadoutId.Value);
 
         var archiveName = download.TryGet(FilePathMetadata.OriginalName, out var originalName) ? originalName.ToString() : null;
+        var suggestedName = download.TryGet(DownloadAnalysis.SuggestedName, out var outSuggestedName) ? outSuggestedName : null;
 
-        var modName = defaultModName ?? (download.Contains(DownloadAnalysis.SuggestedName)
-            ? download.SuggestedName
-            : archiveName ?? "<unknown>");
-
+        var modName = defaultModName ?? suggestedName ?? archiveName ?? "<unknown>";
         {
             using var dlTx = _conn.BeginTransaction();
             dlTx.Add(download.Id, DownloadAnalysis.SuggestedName, modName);
@@ -148,7 +146,7 @@ public class ArchiveInstaller : IArchiveInstaller
                 {
                     // User was using an explicit installer, if no files were returned, we can assume the user cancelled the installation.
                     // Remove the mod from the loadout.
-                    await SetStatus(modId, ModStatus.Failed);
+                    await SetFailedStatus(modId);
                     return [];
                 }
 
@@ -203,19 +201,19 @@ public class ArchiveInstaller : IArchiveInstaller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to install mod {Name}", modName);
-            await SetStatus(modId, ModStatus.Failed);
+            await SetFailedStatus(modId);
             throw;
         }
     }
 
-    private async Task SetStatus(ModId modId, ModStatus status)
+    private async Task SetFailedStatus(ModId modId)
     {
         var mod = _conn.Db.Get<Mod.Model>(modId.Value);
-        _logger.LogInformation("Setting status of ModId:{ModId}({Name}) to {Status}", modId, mod.Name, status);
-        
+        _logger.LogInformation("Setting status of ModId:{ModId}({Name}) to {Status}", modId, mod.Name, ModStatus.Failed);
+
         using var tx = _conn.BeginTransaction();
         tx.Add(modId.Value, Mod.Name, $"Installation failed: {mod.Name}");
-        tx.Add(modId.Value, Mod.Status, status);
+        tx.Add(modId.Value, Mod.Status, ModStatus.Failed);
         await tx.Commit();
     }
 
