@@ -148,7 +148,7 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
         this.WhenActivated(d =>
         {
             this.WhenAnyValue(vm => vm.LoadoutId)
-                .CombineLatest(settingsManager.GetChanges<LoadoutGridSettings>())
+                .CombineLatest(settingsManager.GetChanges<LoadoutGridSettings>(prependCurrent: true))
                 .SelectMany(tuple => loadoutRepository.Revisions(tuple.First.Value))
                 .Select(loadout =>
                 {
