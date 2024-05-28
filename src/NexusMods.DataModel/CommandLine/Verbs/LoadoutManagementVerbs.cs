@@ -110,7 +110,7 @@ public static class LoadoutManagementVerbs
 
         var flattened = await synchronizer.LoadoutToFlattenedLoadout(loadout);
 
-        foreach (var item in flattened.GetAllDescendentFiles())
+        foreach (var item in flattened.GetAllDescendentFiles().OrderBy(f => f.Item.GamePath))
             rows.Add([item.Item.Value!.Mod.Name, item.GamePath()]);
 
         await renderer.Table(["Mod", "To"], rows);

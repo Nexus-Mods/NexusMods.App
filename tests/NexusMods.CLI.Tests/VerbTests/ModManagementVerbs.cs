@@ -33,8 +33,8 @@ public class ModManagementVerbs(StubbedGame stubbedGame, IServiceProvider provid
         log.LastTable.Rows.Length.Should().Be(3);
 
         log = await Run("flatten-loadout", "-l", listName);
-        log.LastTable.Rows.Length.Should().Be(7);
-
+        await VerifyLog(log, "flatten-loadout");
+        
         log = await Run("apply", "-l", listName);
         
         log.Last<Text>().Template.Should().Contain($"Applied {listName}");

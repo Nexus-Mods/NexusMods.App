@@ -38,7 +38,7 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition.SkyrimSp
     {
         Game.Name.Should().Be("Skyrim Special Edition");
         Game.Domain.Should().Be(SkyrimSpecialEdition.SkyrimSpecialEdition.StaticDomain);
-        Game.Installations.Count().Should().BeGreaterThan(0);
+        GameRegistry.Installations.Values.Where(g => g.Game == Game).Should().NotBeEmpty();
     }
 
     [Fact]

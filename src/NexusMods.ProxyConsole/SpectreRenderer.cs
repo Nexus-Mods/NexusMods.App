@@ -32,7 +32,14 @@ public class SpectreRenderer : Abstractions.IRenderer
         switch (renderable)
         {
             case Impl.Text text:
-                return new Text(string.Format(text.Template, text.Arguments));
+                if (text.Arguments.Length == 0)
+                {
+                    return new Text(text.Template);
+                }
+                else
+                {
+                    return new Text(string.Format(text.Template, text.Arguments));
+                }
             case Impl.Table table:
                 return await ToSpectreAsync(table);
             default:
