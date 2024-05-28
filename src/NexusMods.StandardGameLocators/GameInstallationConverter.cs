@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.DTO;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.StandardGameLocators.Unknown;
 
 namespace NexusMods.StandardGameLocators;
@@ -21,34 +22,18 @@ public class GameInstallationConverter : JsonConverter<GameInstallation>
     /// <inheritdoc />
     public override GameInstallation Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        if (reader.TokenType != JsonTokenType.StartArray)
-            throw new JsonException("Expected array start");
-
-        reader.Read();
-        var slug = GameDomain.From(reader.GetString()!);
-        reader.Read();
-        var version = JsonSerializer.Deserialize<Version>(ref reader, options)!;
-        reader.Read();
-
-        var storeString = reader.GetString();
-        var store = storeString is null ? GameStore.Unknown : GameStore.From(storeString);
-
-        reader.Read();
-
-        var foundGame = _gameRegistry.Value.Installations.Values
-            .FirstOrDefault(install => install.Store == store && install.Game.Domain == slug && install.Version == version);
-
-        return foundGame ?? new UnknownGame(slug, version).Installations.First();
+        var gameId = reader.GetUInt64();
+        if (_gameRegistry.Value.Installations.TryGetValue(EntityId.From(gameId), out var installation))
+        {
+            return installation;
+        }
+        throw new InvalidOperationException($"Game installation with ID {gameId} not found.");
     }
 
     /// <inheritdoc />
     public override void Write(Utf8JsonWriter writer, GameInstallation value, JsonSerializerOptions options)
     {
-        writer.WriteStartArray();
-        writer.WriteStringValue(value.Game.Domain.Value);
-        JsonSerializer.Serialize(writer, value.Version, options);
-        writer.WriteStringValue(value.Store.Value);
-        writer.WriteEndArray();
+        writer.WriteNumberValue(value.GameMetadataId.Value);
     }
 }
 
