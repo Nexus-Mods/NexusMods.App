@@ -1,12 +1,30 @@
 ﻿[
   {
-    GamePath: {Saves}/saves/save.dat,
+    GamePath: {Saves}/saves/save1.dat,
     Size: 9,
     Hash: 7255076076215846327,
     ChangeType: Added
   },
   {
-    GamePath: {Preferences}/preferences/prefs.dat,
+    GamePath: {Saves}/save2.dat,
+    Size: 12,
+    Hash: 18031001016481682657,
+    ChangeType: Removed
+  },
+  {
+    GamePath: {Saves}/save1.dat,
+    Size: 12,
+    Hash: 949194581534277967,
+    ChangeType: Removed
+  },
+  {
+    GamePath: {Preferences}/settings.ini,
+    Size: 86,
+    Hash: 13058521349898435707,
+    ChangeType: Removed
+  },
+  {
+    GamePath: {Preferences}/preferences/settings.ini,
     Size: 10,
     Hash: 7911229197178386601,
     ChangeType: Added
@@ -19,8 +37,14 @@
   },
   {
     GamePath: {Game}/StubbedGame.exe,
-    Size: 15,
-    Hash: 6574561706971262377,
+    Size: 214016,
+    Hash: 6843336436016466707,
+    ChangeType: Removed
+  },
+  {
+    GamePath: {Game}/README.txt,
+    Size: 26,
+    Hash: 7295962725610023847,
     ChangeType: Removed
   },
   {
@@ -84,12 +108,6 @@
     ChangeType: Added
   },
   {
-    GamePath: {Game}/Models/model.3ds,
-    Size: 9,
-    Hash: 13553311955458940840,
-    ChangeType: Removed
-  },
-  {
     GamePath: {Game}/meshes/b.nif,
     Size: 9,
     Hash: 1881667485528595586,
@@ -104,7 +122,8 @@
   {
     GamePath: {Game}/config.ini,
     Size: 10,
-    Hash: 13606612902462422414
+    Hash: 13606612902462422414,
+    ChangeType: Modified
   },
   {
     GamePath: {Game}/bin/script.sh,

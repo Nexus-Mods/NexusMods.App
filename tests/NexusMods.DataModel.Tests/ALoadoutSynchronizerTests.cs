@@ -151,48 +151,15 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
     public async Task CanFlattenLoadout()
     {
         var flattened = await Synchronizer.LoadoutToFlattenedLoadout(BaseLoadout);
-
-        // Game files are not included, because they are disabled in the initializer
-        flattened.GetAllDescendentFiles()
-            .Select(f => f.GamePath().ToString())
-            .Should()
-            .BeEquivalentTo(new []
+        var rows = flattened.GetAllDescendentFiles()
+            .Select(f => new
                 {
-                    "{Game}/meshes/b.nif",
-                    "{Game}/perMod/0.dat",
-                    "{Game}/perMod/1.dat",
-                    "{Game}/perMod/2.dat",
-                    "{Game}/perMod/3.dat",
-                    "{Game}/perMod/4.dat",
-                    "{Game}/perMod/5.dat",
-                    "{Game}/perMod/6.dat",
-                    "{Game}/perMod/7.dat",
-                    "{Game}/perMod/8.dat",
-                    "{Game}/perMod/9.dat",
-                    "{Game}/textures/a.dds",
-                    "{Game}/bin/script.sh",
-                    "{Game}/bin/binary",
-                    "{Preferences}/preferences/prefs.dat",
-                    "{Saves}/saves/save.dat"
-                },
-                "all the mods are flattened into a single tree, with overlaps removed");
-
-        var topMod = _modIds[0];
-        var topFiles = Connection.Db.Get<Mod.Model>(topMod.Value).Files.ToDictionary(d => d.To);
-
-        foreach (var path in _allPaths)
-        {
-            flattened[path].Item.Value.Should()
-                .BeEquivalentTo(topFiles[path], "the top mod should be the one that contributes the file data");
-        }
-
-        for (var i = 0; i < ModCount; i++)
-        {
-            var path = new GamePath(LocationId.Game, $"perMod/{i}.dat");
-            var originalFile = BaseLoadout.Files.First(f => f.To == path);
-            flattened[path].Item.Value.Should()
-                .BeEquivalentTo(originalFile, "these files have unique paths, so they should not be overridden");
-        }
+                    Path = f.GamePath().ToString(),
+                    Mod = f.Item.Value.Mod.Name.ToString(),
+                }
+            ).OrderBy(f => f.Path);
+        
+        await Verify(rows);
     }
 
     
@@ -202,46 +169,15 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
         var flattened = await Synchronizer.LoadoutToFlattenedLoadout(BaseLoadout);
         var fileTree = await Synchronizer.FlattenedLoadoutToFileTree(flattened, BaseLoadout);
 
-        fileTree.GetAllDescendentFiles()
-            .Select(f => f.GamePath().ToString())
-            .Should()
-            .BeEquivalentTo(new []
+        var rows = fileTree.GetAllDescendentFiles()
+            .Select(f => new
                 {
-                    "{Game}/meshes/b.nif",
-                    "{Game}/perMod/0.dat",
-                    "{Game}/perMod/1.dat",
-                    "{Game}/perMod/2.dat",
-                    "{Game}/perMod/3.dat",
-                    "{Game}/perMod/4.dat",
-                    "{Game}/perMod/5.dat",
-                    "{Game}/perMod/6.dat",
-                    "{Game}/perMod/7.dat",
-                    "{Game}/perMod/8.dat",
-                    "{Game}/perMod/9.dat",
-                    "{Game}/textures/a.dds",
-                    "{Game}/bin/script.sh",
-                    "{Game}/bin/binary",
-                    "{Preferences}/preferences/prefs.dat",
-                    "{Saves}/saves/save.dat"
-                },
-                "all the mods are flattened into a single tree, with overlaps removed");
-
-        var topMod = _modIds[0];
-        var topFiles = BaseLoadout.Mods.First(m => m.Id == topMod).Files.ToDictionary(d => d.To);
-
-        foreach (var path in _allPaths)
-        {
-            fileTree[path].Item.Value!.Should()
-                .BeEquivalentTo(topFiles[path], "the top mod should be the one that contributes the file data");
-        }
-
-        for (var i = 0; i < ModCount; i++)
-        {
-            var path = new GamePath(LocationId.Game, $"perMod/{i}.dat");
-            var originalFile = BaseLoadout.Mods.First(m => m.Id == _modIds[i]).Files.First(f => f.To == path);
-            fileTree[path].Item.Value!.Should()
-                .BeEquivalentTo(originalFile, "these files have unique paths, so they should not be overridden");
-        }
+                    Path = f.GamePath().ToString(),
+                    Mod = f.Item.Value.Mod.Name.ToString(),
+                }
+            ).OrderBy(f => f.Path);
+        
+        await Verify(rows);
     }
 
     
@@ -272,8 +208,8 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
                     "{Game}/textures/a.dds",
                     "{Game}/bin/script.sh",
                     "{Game}/bin/binary",
-                    "{Preferences}/preferences/prefs.dat",
-                    "{Saves}/saves/save.dat"
+                    "{Preferences}/preferences/settings.ini",
+                    "{Saves}/saves/save1.dat"
                 },
                 "files have all been written to disk");
 
@@ -359,10 +295,10 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
                     "{Game}/textures/a.dds",
                     "{Game}/bin/script.sh",
                     "{Game}/bin/binary",
-                    "{Preferences}/preferences/prefs.dat",
+                    "{Preferences}/preferences/settings.ini",
                     // newFile: newSave.dat is created
                     "{Saves}/saves/newSave.dat",
-                    "{Saves}/saves/save.dat"
+                    "{Saves}/saves/save1.dat"
                 },
                 "files have all been written to disk");
 
@@ -417,10 +353,10 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
                     "{Game}/bin/binary",
                     // deletedFile: 9.dat is deleted
                     "{Game}/textures/a.dds",
-                    "{Preferences}/preferences/prefs.dat",
+                    "{Preferences}/preferences/settings.ini",
                     // newFile: newSave.dat is created
                     "{Saves}/saves/newSave.dat",
-                    "{Saves}/saves/save.dat"
+                    "{Saves}/saves/save1.dat"
                 },
                 "files have all been written to disk");
 
@@ -477,10 +413,10 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
                     "{Game}/bin/binary",
                     // deletedFile: 9.dat is deleted
                     "{Game}/textures/a.dds",
-                    "{Preferences}/preferences/prefs.dat",
+                    "{Preferences}/preferences/settings.ini",
                     // newFile: newSave.dat is created
                     "{Saves}/saves/newSave.dat",
-                    "{Saves}/saves/save.dat"
+                    "{Saves}/saves/save1.dat"
                 },
                 "files have all been written to disk");
 
