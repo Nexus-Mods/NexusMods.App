@@ -17,4 +17,10 @@ public interface IGameRegistry
     /// All the installations indexed by their ID.
     /// </summary>
     public IDictionary<EntityId, GameInstallation> Installations { get; }
+
+    /// <summary>
+    /// Registers external game installations, mostly used for testing, but it's a way to get a game installation
+    /// from an arbitrary source.
+    /// </summary>
+    public Task<GameInstallation> Register(ILocatableGame game, GameLocatorResult result, IGameLocator locator);
 }

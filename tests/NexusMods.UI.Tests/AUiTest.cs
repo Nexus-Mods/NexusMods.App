@@ -13,14 +13,14 @@ namespace NexusMods.UI.Tests;
 
 public class AUiTest
 {
-    private readonly IServiceProvider _provider;
+    protected IServiceProvider Provider;
 
     protected IConnection Connection { get; }
     protected AvaloniaApp App { get; }
 
     public AUiTest(IServiceProvider provider)
     {
-        _provider = provider;
+        Provider = provider;
 
         // Do this to trigger the AvaloniaApp constructor/initialization
         App = provider.GetRequiredService<AvaloniaApp>();
@@ -30,7 +30,7 @@ public class AUiTest
     protected VMWrapper<T> GetActivatedViewModel<T>()
     where T : IViewModelInterface
     {
-        var vm = _provider.GetRequiredService<T>();
+        var vm = Provider.GetRequiredService<T>();
         return new VMWrapper<T>(vm);
     }
 

@@ -10,9 +10,11 @@ public class ModManagementVerbs(StubbedGame stubbedGame, IServiceProvider provid
     public async Task CanCreateAndManageLists()
     {
         var listName = Guid.NewGuid().ToString();
+        
+        var install = await CreateInstall();
 
         var log = await Run("create-loadout", "-g", "stubbed-game", "-v",
-            stubbedGame.Installations.First().Version.ToString(), "-n", listName);
+            install.Version.ToString(), "-n", listName);
 
         log = await Run("list-loadouts");
 

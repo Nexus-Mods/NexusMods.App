@@ -27,8 +27,8 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
 
     private static GamePath _texturePath = new(LocationId.Game, "textures/a.dds");
     private static GamePath _meshPath = new(LocationId.Game, "meshes/b.nif");
-    private static GamePath _prefsPath = new(LocationId.Preferences, "preferences/prefs.dat");
-    private static GamePath _savePath = new(LocationId.Saves, "saves/save.dat");
+    private static GamePath _prefsPath = new(LocationId.Preferences, "preferences/settings.ini");
+    private static GamePath _savePath = new(LocationId.Saves, "saves/save1.dat");
     private static GamePath _configPath = new(LocationId.Game, "config.ini");
     private static GamePath _imagePath = new(LocationId.Game, "Data/image.dds");
 

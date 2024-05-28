@@ -45,18 +45,9 @@ public class ManuallyAddedLocator : IGameLocator
         var result = await tx.Commit();
         
         var gameRegistry = _provider.GetRequiredService<IGameRegistry>();
-
+        var install = await gameRegistry.Register(game, new GameLocatorResult(path, GameStore.ManuallyAdded, ent, version), this);
         var newId = result[ent.Id];
-
-        var found = gameRegistry.Installations.Values
-            .FirstOrDefault(g => g.Game.Domain == game.Domain &&
-                        g.LocationsRegister.GetResolvedPath(LocationId.Game) == path &&
-                        g.Version == version);
-
-        if (found == null)
-            throw new KeyNotFoundException("The game was not added to the registry but should have been.");
-
-        return (newId, found);
+        return (newId, install);
     }
 
     /// <summary>

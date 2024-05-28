@@ -60,10 +60,10 @@ public class Registry : IGameRegistry, IHostedService
     /// Registers external game installations, mostly used for testing, but it's a way to get a game installation
     /// from an arbitrary source.
     /// </summary>
-    public async Task<GameInstallation> Register(IGame game, GameLocatorResult result, IGameLocator locator)
+    public async Task<GameInstallation> Register(ILocatableGame game, GameLocatorResult result, IGameLocator locator)
     {
         var id = await GetLocatorId(game, result);
-        var install = game.InstallationFromLocatorResult(result, id, locator);
+        var install = ((IGame) game).InstallationFromLocatorResult(result, id, locator);
         _byId[install.GameMetadataId] = install;
         return install;
     }

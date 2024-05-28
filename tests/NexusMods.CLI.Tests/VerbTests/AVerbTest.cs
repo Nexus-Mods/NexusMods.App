@@ -1,8 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Paths;
 using NexusMods.ProxyConsole.Abstractions.Implementations;
 using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
 using NexusMods.SingleProcess;
+using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 
 namespace NexusMods.CLI.Tests.VerbTests;
 
@@ -37,6 +39,15 @@ public class AVerbTest(IServiceProvider provider)
         }
 
         return renderer;
+    }
+
+    /// <summary>
+    /// Creates a new stubbed game installation, registers it with the game registry, and returns it.
+    /// </summary>
+    /// <returns></returns>
+    public async Task<GameInstallation> CreateInstall()
+    {
+        return await StubbedGame.Create(provider);
     }
 
     /// <summary>

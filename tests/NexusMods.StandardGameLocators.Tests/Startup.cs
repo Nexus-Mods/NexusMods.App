@@ -6,6 +6,7 @@ using NexusMods.DataModel;
 using NexusMods.Paths;
 using NexusMods.Settings;
 using NexusMods.StandardGameLocators.TestHelpers;
+using Xunit.DependencyInjection;
 
 namespace NexusMods.StandardGameLocators.Tests;
 
@@ -14,6 +15,7 @@ public class Startup
     public void ConfigureServices(IServiceCollection container)
     {
         container
+            .AddSkippableFactSupport()
             .AddDataModel()
             .AddSettingsManager()
             .OverrideSettingsForTests<DataModelSettings>(settings => settings with

@@ -1,3 +1,4 @@
+using System.Runtime.Versioning;
 using FluentAssertions;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
@@ -7,10 +8,12 @@ namespace NexusMods.StandardGameLocators.Tests;
 public class BasicTests(IGameRegistry registry)
 {
 
-    [Fact]
+    [SkippableFact]
+    [SupportedOSPlatform("linux")]
+
     public void Test_Locators_Linux()
     {
-        if (!OperatingSystem.IsLinux()) return;
+        Skip.If(!OperatingSystem.IsLinux());
 
         registry.Installations.Values.Should().SatisfyRespectively(
             steamInstallation =>
@@ -23,26 +26,23 @@ public class BasicTests(IGameRegistry registry)
             });
     }
 
-    [Fact]
+    [SkippableFact]
+    [SupportedOSPlatform("windows")]
+
     public void Test_Locators_Windows()
     {
-        if (!OperatingSystem.IsWindows()) return;
+        Skip.If(!OperatingSystem.IsWindows());
+
 
         registry.Installations.Values
             .Should().HaveCount(6)
             .And.Satisfy(
-                eaInstallation => eaInstallation.LocationsRegister.LocationDescriptors.First().Value.ResolvedPath
-                    .ToString().Contains("ea_game"),
-                epicInstallation => epicInstallation.LocationsRegister.LocationDescriptors.First().Value.ResolvedPath
-                    .ToString().Contains("epic_game"),
-                originInstallation => originInstallation.LocationsRegister.LocationDescriptors.First().Value
-                    .ResolvedPath.ToString().Contains("origin_game"),
-                gogInstallation => gogInstallation.LocationsRegister.LocationDescriptors.First().Value.ResolvedPath
-                    .ToString().Contains("gog_game"),
-                steamInstallation => steamInstallation.LocationsRegister.LocationDescriptors.First().Value.ResolvedPath
-                    .ToString().Contains("steam_game"),
-                xboxInstallation => xboxInstallation.LocationsRegister.LocationDescriptors.First().Value.ResolvedPath
-                    .ToString().Contains("xbox_game")
+                eaInstallation => eaInstallation.Store == GameStore.EADesktop,
+                epicInstallation => epicInstallation.Store == GameStore.EGS,
+                originInstallation => originInstallation.Store == GameStore.Origin,
+                gogInstallation => gogInstallation.Store == GameStore.GOG,
+                steamInstallation => steamInstallation.Store == GameStore.Steam,
+                xboxInstallation => xboxInstallation.Store == GameStore.XboxGamePass
             );
     }
 

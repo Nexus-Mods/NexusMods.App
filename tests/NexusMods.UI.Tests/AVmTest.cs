@@ -13,7 +13,7 @@ using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 
 namespace NexusMods.UI.Tests;
 
-public class AVmTest<TVm> : AUiTest
+public class AVmTest<TVm> : AUiTest, IAsyncLifetime
 where TVm : IViewModelInterface
 {
     protected AbsolutePath DataZipLzma => FileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine("Resources/data_zip_lzma.zip");
@@ -25,9 +25,12 @@ where TVm : IViewModelInterface
     private VMWrapper<TVm> _vmWrapper { get; }
     protected StubbedGame Game { get; }
     protected IFileSystem FileSystem { get; }
-    protected GameInstallation Install { get; }
+    protected GameInstallation Install { get; set; }
     protected IConnection Connection { get; }
     protected IArchiveInstaller ArchiveInstaller { get; }
+    
+    protected IGameRegistry GameRegistry { get; }
+
 
     protected IFileOriginRegistry FileOriginRegistry { get; }
 
@@ -47,11 +50,12 @@ where TVm : IViewModelInterface
         _vmWrapper = GetActivatedViewModel<TVm>();
         Connection = provider.GetRequiredService<IConnection>();
         Game = provider.GetRequiredService<StubbedGame>();
-        Install = Game.Installations.First();
+        GameRegistry = provider.GetRequiredService<IGameRegistry>();
         FileSystem = provider.GetRequiredService<IFileSystem>();
         ArchiveInstaller = provider.GetRequiredService<IArchiveInstaller>();
         FileOriginRegistry = provider.GetRequiredService<IFileOriginRegistry>();
     }
+
 
     protected TVm Vm => _vmWrapper.VM;
 
@@ -68,6 +72,12 @@ where TVm : IViewModelInterface
                 tx.Add(id, FilePathMetadata.OriginalName, path.FileName);
             });
         return await ArchiveInstaller.AddMods(Loadout.LoadoutId, downloadId);
+    }
+
+    public async Task InitializeAsync()
+    {
+        var game = await StubbedGame.Create(Provider);
+        Install = game;
     }
 
     public Task DisposeAsync()

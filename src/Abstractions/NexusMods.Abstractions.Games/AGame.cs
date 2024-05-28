@@ -60,12 +60,6 @@ public abstract class AGame : IGame
     /// The path to the main executable file for the game.
     /// </summary>
     public abstract GamePath GetPrimaryFile(GameStore store);
-
-    /// <summary>
-    /// Returns a list of installations for this game.
-    /// Each game can have multiple installations, e.g. different game versions.
-    /// </summary>
-    public virtual IEnumerable<GameInstallation> Installations => _installations ??= GetInstallations();
     
     /// <inheritdoc />
     public virtual IStreamFactory Icon => throw new NotImplementedException("No icon provided for this game.");
