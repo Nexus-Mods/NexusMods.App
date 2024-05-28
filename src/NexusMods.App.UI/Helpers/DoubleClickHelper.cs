@@ -11,8 +11,9 @@ namespace NexusMods.App.UI.Helpers;
 [PublicAPI]
 public static class DoubleClickHelper
 {
-    // NOTE(erri120): Windows uses 500ms (https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setdoubleclicktime?redirectedfrom=MSDN#parameters)
-    // This can be fine-tuned later.
+    // NOTE(erri120):
+    // Windows uses 500ms (https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setdoubleclicktime?redirectedfrom=MSDN#parameters)
+    // Avalonia default is 500ms (https://github.com/AvaloniaUI/Avalonia/blob/b904ded9ab32022b3ce037c8b63d21887fbd85a0/src/Avalonia.Base/Platform/DefaultPlatformSettings.cs#L35)
     public static readonly TimeSpan DefaultTimeout = TimeSpan.FromMilliseconds(500);
 
     /// <summary>
@@ -41,44 +42,84 @@ public static class DoubleClickHelper
         return new DoubleClickSubject<TRoutedEventArgs>(control, routedEvent, routingStrategy, ignoreHandledEvents);
     }
 
-    private class DoubleClickSubject<TRoutedEventArgs> : SubjectBase<Unit>
+    private class DoubleClickSubject : ADoubleClickSubject<PointerPressedEventArgs>
+    {
+        public DoubleClickSubject(
+            Control control,
+            RoutedEvent<PointerPressedEventArgs> routedEvent,
+            RoutingStrategies routingStrategy,
+            bool ignoreHandledEvents) : base(control, routedEvent, routingStrategy, ignoreHandledEvents
+        ) { }
+
+        protected override bool IsDoubleClick(PointerPressedEventArgs args)
+        {
+            return args.ClickCount == 2;
+        }
+    }
+
+    private class DoubleClickSubject<TRoutedEventArgs> : ADoubleClickSubject<TRoutedEventArgs>
         where TRoutedEventArgs : RoutedEventArgs
     {
-        private bool _isDisposed;
-
-        private readonly List<IObserver<Unit>> _observers = new(capacity: 1);
-        private readonly IDisposable _handlerDisposable;
+        private readonly TimeSpan _timeout;
+        private DateTime _lastDateTime = DateTime.UnixEpoch;
 
         public DoubleClickSubject(
             Control control,
             RoutedEvent<TRoutedEventArgs> routedEvent,
             RoutingStrategies routingStrategy,
+            bool ignoreHandledEvents) : base(control, routedEvent, routingStrategy, ignoreHandledEvents
+        )
+        {
+            var doubleTapTime = TopLevel.GetTopLevel(control)?.PlatformSettings?.GetDoubleTapTime(PointerType.Mouse);
+            _timeout = doubleTapTime ?? DefaultTimeout;
+        }
+
+        protected override bool IsDoubleClick(TRoutedEventArgs args)
+        {
+            var currentDateTime = DateTime.Now;
+            var isDoubleClick = currentDateTime - _lastDateTime <= _timeout;
+            _lastDateTime = currentDateTime;
+
+            return isDoubleClick;
+        }
+    }
+
+
+    private abstract class ADoubleClickSubject<TRoutedEventArgs> : SubjectBase<Unit>
+        where TRoutedEventArgs : RoutedEventArgs
+    {
+        private bool _isDisposed;
+
+        private readonly List<IObserver<Unit>> _observers = new(capacity: 1);
+        private readonly CompositeDisposable _compositeDisposable = new();
+
+        protected ADoubleClickSubject(
+            Control control,
+            RoutedEvent<TRoutedEventArgs> routedEvent,
+            RoutingStrategies routingStrategy,
             bool ignoreHandledEvents)
         {
-            _handlerDisposable = control.AddDisposableHandler(
+            control.AddDisposableHandler(
                 routedEvent,
                 EventHandler,
                 routes: routingStrategy,
                 handledEventsToo: !ignoreHandledEvents
-            );
+            ).DisposeWith(_compositeDisposable);
         }
 
-        private DateTime _lastDateTime = DateTime.UnixEpoch;
         private void EventHandler(object? sender, TRoutedEventArgs args)
         {
-            var currentDateTime = DateTime.Now;
-            var isDoubleClick = currentDateTime - _lastDateTime <= DefaultTimeout;
-            _lastDateTime = currentDateTime;
-
-            if (!isDoubleClick) return;
+            if (!IsDoubleClick(args)) return;
             args.Handled = true;
             OnNext(Unit.Default);
         }
 
+        protected abstract bool IsDoubleClick(TRoutedEventArgs args);
+
         public override void Dispose()
         {
             ObjectDisposedException.ThrowIf(_isDisposed, this);
-            _handlerDisposable.Dispose();
+            _compositeDisposable.Dispose();
             _isDisposed = true;
         }
 
@@ -114,12 +155,15 @@ public static class DoubleClickHelper
             ObjectDisposedException.ThrowIf(_isDisposed, this);
             _observers.Add(observer);
 
-            return Disposable.Create((_observers, observer), tuple =>
+            var disposable = Disposable.Create((_observers, observer), tuple =>
             {
                 // ReSharper disable once VariableHidesOuterVariable
                 var (observers, observer) = tuple;
                 observers.Remove(observer);
             });
+
+            disposable.DisposeWith(_compositeDisposable);
+            return disposable;
         }
 
         public override bool HasObservers => _observers.Count > 0;

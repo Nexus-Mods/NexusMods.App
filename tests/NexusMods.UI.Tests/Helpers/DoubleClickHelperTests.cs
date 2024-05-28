@@ -1,5 +1,6 @@
 using Avalonia.Automation.Peers;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using FluentAssertions;
 using NexusMods.App.UI.Helpers;
@@ -10,8 +11,10 @@ public class DoubleClickHelperTests : AUiTest
 {
     public DoubleClickHelperTests(IServiceProvider provider) : base(provider) { }
 
+    // NOTE(erri120): Unable to unit test the PointerPressed variant because everything is marked internal...
+
     [Fact]
-    public async Task Test_DoubleClick()
+    public async Task Test_DoubleClick_Generic()
     {
         await OnUi(() =>
         {
