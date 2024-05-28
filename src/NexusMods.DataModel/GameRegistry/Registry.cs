@@ -26,10 +26,7 @@ public class Registry : IGameRegistry, IHostedService
     private readonly ILogger<Registry> _logger;
     private readonly IEnumerable<ILocatableGame> _games;
     private bool _isInitialized;
-    
-#if DEBUG
     private int _initThreadId;
-#endif
 
     /// <inheritdoc />
     public ReadOnlyObservableCollection<GameInstallation> InstalledGames => _installedGames;
@@ -52,9 +49,7 @@ public class Registry : IGameRegistry, IHostedService
 
     private async Task Startup(IEnumerable<ILocatableGame> games)
     {
-#if DEBUG
         _initThreadId = Environment.CurrentManagedThreadId;
-#endif
         var allInstalls = from game in games
             let igame = (IGame)game
             from install in igame.Installations
@@ -170,9 +165,7 @@ public class Registry : IGameRegistry, IHostedService
             
             So expect ~16ms sleeps there.
         */
-#if DEBUG
         Debug.Assert(_initThreadId != Environment.CurrentManagedThreadId, "WaitUntilInitialized called from initialization thread");
-#endif
         while (!_isInitialized)
             Thread.Sleep(8);
     }
