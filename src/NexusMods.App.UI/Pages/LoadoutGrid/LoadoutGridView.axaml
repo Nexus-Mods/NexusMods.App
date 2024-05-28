@@ -12,7 +12,9 @@
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
     xmlns:loadoutGrid="clr-namespace:NexusMods.App.UI.Pages.LoadoutGrid"
-    xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation">
+    xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation"
+    xmlns:ui="clr-namespace:NexusMods.App.UI"
+    xmlns:markdownRenderer="clr-namespace:NexusMods.App.UI.Controls.MarkdownRenderer">
     <Grid RowDefinitions="Auto, *">
         <Border Grid.Row="0" Classes="Toolbar">
             <Grid ColumnDefinitions="*, Auto">
@@ -45,10 +47,19 @@
                 </StackPanel>
             </Grid>
         </Border>
+        
         <DataGrid Grid.Row="1"
-            CanUserResizeColumns="True"
-            CanUserSortColumns="True"
-            x:Name="ModsDataGrid"/>
+                  CanUserResizeColumns="True"
+                  CanUserSortColumns="True"
+                  x:Name="ModsDataGrid"/>
+        
+        <Border Grid.Row="1"
+                x:Name="EmptyModlistMessageBorder"
+                Margin="24,68,24,24"
+                IsVisible="False">
+            <markdownRenderer:MarkdownRendererView x:Name="EmptyModlistMessageMarkdownViewer"/>
+        </Border>
+        
     </Grid>
 </reactiveUi:ReactiveUserControl>
 

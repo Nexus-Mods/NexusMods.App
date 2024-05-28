@@ -5,6 +5,7 @@ using Avalonia.Platform.Storage;
 using Avalonia.ReactiveUI;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
+using NexusMods.App.UI.Controls.MarkdownRenderer;
 using NexusMods.App.UI.Resources;
 using ReactiveUI;
 using static NexusMods.App.UI.Controls.DataGrid.Helpers;
@@ -18,6 +19,10 @@ public partial class LoadoutGridView : ReactiveUserControl<ILoadoutGridViewModel
         InitializeComponent();
         this.WhenActivated(d =>
         {
+            this.OneWayBind(ViewModel, vm => vm.MarkdownRendererViewModel, 
+                    view => view.EmptyModlistMessageMarkdownViewer.ViewModel)
+                .DisposeWith(d);
+            
             this.WhenAnyValue(view => view.ViewModel!.Mods)
                 .BindToView(this, view => view.ModsDataGrid.ItemsSource)
                 .DisposeWith(d);
@@ -34,6 +39,11 @@ public partial class LoadoutGridView : ReactiveUserControl<ILoadoutGridViewModel
                 removeHandler => ModsDataGrid.SelectionChanged -= removeHandler)
                 .Select(_ => ModsDataGrid.SelectedItems.Cast<ModId>().ToArray())
                 .BindTo(ViewModel, vm => vm.SelectedItems)
+                .DisposeWith(d);
+            
+            this.WhenAnyValue(view => view.ViewModel!.Mods.Count)
+                .Select(count => count == 0)
+                .BindTo(this, view => view.EmptyModlistMessageBorder.IsVisible)
                 .DisposeWith(d);
 
             // TODO: remove these commands and move all of this into the ViewModel

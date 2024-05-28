@@ -101,11 +101,12 @@ internal partial class SettingsManager : ISettingsManager
         return newValue;
     }
 
-    public IObservable<T> GetChanges<T>() where T : class, ISettings, new()
+    public IObservable<T> GetChanges<T>(bool prependCurrent = false) where T : class, ISettings, new()
     {
-        return _subject
+        var result = _subject
             .Where(tuple => tuple.Item1 == typeof(T))
             .Select(tuple => (tuple.Item2 as T)!);
+        return prependCurrent ? result.Prepend(Get<T>()) : result;
     }
 
     public ISettingsPropertyUIDescriptor[] GetAllUIProperties()
