@@ -54,20 +54,16 @@ public class ArchiveInstaller : IArchiveInstaller
         // Get the loadout and create the mod, so we can use it in the job.
         var useCustomInstaller = installer != null;
         var loadout = _conn.Db.Get<Loadout.Model>(loadoutId.Value);
-        
-        var modName = defaultModName ?? (download.Contains(DownloadAnalysis.SuggestedName)
-            ? download.SuggestedName
-            : "<unknown>");
 
+        var archiveName = download.TryGet(FilePathMetadata.OriginalName, out var originalName) ? originalName.ToString() : null;
+        var suggestedName = download.TryGet(DownloadAnalysis.SuggestedName, out var outSuggestedName) ? outSuggestedName : null;
+
+        var modName = defaultModName ?? suggestedName ?? archiveName ?? "<unknown>";
         {
             using var dlTx = _conn.BeginTransaction();
             dlTx.Add(download.Id, DownloadAnalysis.SuggestedName, modName);
             await dlTx.Commit();
         }
-
-        var archiveName = download.Contains(FilePathMetadata.OriginalName)
-            ? download.Get(FilePathMetadata.OriginalName).FileName.ToString()
-            : "<unknown>";
         
         ModId modId;
         Mod.Model baseMod;
@@ -150,19 +146,17 @@ public class ArchiveInstaller : IArchiveInstaller
                 {
                     // User was using an explicit installer, if no files were returned, we can assume the user cancelled the installation.
                     // Remove the mod from the loadout.
-                    await SetStatus(modId, ModStatus.Failed);
+                    await SetFailedStatus(modId);
                     return [];
                 }
 
-                _logger.LogError("No Installer found for {Name}", archiveName);
-                await SetStatus(modId, ModStatus.Failed);
-                throw new NotSupportedException($"No Installer found for {archiveName}");
+                _logger.LogError("No Installer found for {Name}", modName);
+                throw new NotSupportedException($"No Installer found for {modName}");
             }
 
             if (results.Length == 0)
             {
-                await SetStatus(modId, ModStatus.Failed);
-                throw new NotSupportedException($"The installer returned 0 mods for {archiveName}");
+                throw new NotSupportedException($"The installer returned 0 mods for {modName}");
             }
             
             // Step 4: Add the mods to the loadout
@@ -206,19 +200,20 @@ public class ArchiveInstaller : IArchiveInstaller
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to install mod {Name}", archiveName);
-            await SetStatus(modId, ModStatus.Failed);
+            _logger.LogError(ex, "Failed to install mod {Name}", modName);
+            await SetFailedStatus(modId);
             throw;
         }
     }
 
-    private async Task SetStatus(ModId modId, ModStatus status)
+    private async Task SetFailedStatus(ModId modId)
     {
         var mod = _conn.Db.Get<Mod.Model>(modId.Value);
-        _logger.LogInformation("Setting status of ModId:{ModId}({Name}) to {Status}", modId, mod.Name, status);
-        
+        _logger.LogInformation("Setting status of ModId:{ModId}({Name}) to {Status}", modId, mod.Name, ModStatus.Failed);
+
         using var tx = _conn.BeginTransaction();
-        tx.Add(modId.Value, Mod.Status, status);
+        tx.Add(modId.Value, Mod.Name, $"Installation failed: {mod.Name}");
+        tx.Add(modId.Value, Mod.Status, ModStatus.Failed);
         await tx.Commit();
     }
 
