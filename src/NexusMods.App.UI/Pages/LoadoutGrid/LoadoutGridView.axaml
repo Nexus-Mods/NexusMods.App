@@ -55,7 +55,8 @@
         
         <Border Grid.Row="1"
                 x:Name="EmptyModlistMessageBorder"
-                Margin="24,68,24,24">
+                Margin="24,68,24,24"
+                IsVisible="False">
             <markdownRenderer:MarkdownRendererView x:Name="EmptyModlistMessageMarkdownViewer"/>
         </Border>
         
