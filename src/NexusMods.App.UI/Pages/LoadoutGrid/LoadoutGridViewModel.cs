@@ -146,7 +146,14 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
                 .SelectMany(id => loadoutRepository.Revisions(id.Value))
                 .Select(loadout =>
                 {
-                    _gameDomain = loadout.Installation.Game.Domain;
+                    try
+                    {
+                        _gameDomain = loadout.Installation.Game.Domain;
+                    }
+                    catch (Exception)
+                    {
+                        _gameDomain = GameDomain.DefaultValue;
+                    }
 
                     var settings = settingsManager.Get<LoadoutGridSettings>();
                     var showGameFiles = settings.ShowGameFiles;
