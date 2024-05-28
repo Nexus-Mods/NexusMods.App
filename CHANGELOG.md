@@ -34,7 +34,7 @@ One notable change that the new data model brought to the App is reified deletes
 - Stardew Valley saves are no longer managed by the App ([#1344](https://github.com/Nexus-Mods/NexusMods.App/pull/1344)).
 - Two new SMAPI diagnostics for minimum supported SMAPI version and minimum supported game version ([#1265](https://github.com/Nexus-Mods/NexusMods.App/pull/1265)).
 - Stardew Valley has a new image ([#1393](https://github.com/Nexus-Mods/NexusMods.App/pull/1393)).
-- The "Library" and "Diagnostics" entry on the left menu now show badges ([#1452](https://github.com/Nexus-Mods/NexusMods.App/pull/1452)).
+- The "Library" and "Diagnostics" entry on the left menu now show badges with counts for new archives and active diagnostics ([#1452](https://github.com/Nexus-Mods/NexusMods.App/pull/1452)).
 - Added a message to an empty Loadout ([#1464](https://github.com/Nexus-Mods/NexusMods.App/pull/1464)).
 - Updated mod names for failed installations ([#1468](https://github.com/Nexus-Mods/NexusMods.App/pull/1468)).
 - Game Files and the Override Mod are hidden by default, this is controlled using a setting ([#1286](https://github.com/Nexus-Mods/NexusMods.App/pull/1286), [#1341](https://github.com/Nexus-Mods/NexusMods.App/pull/1341)).
