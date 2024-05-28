@@ -11,28 +11,45 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation">
+    xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation"
+    xmlns:system="clr-namespace:System;assembly=System.Runtime">
+
     <Design.DataContext>
-        <items:IconViewModel Icon="News" Name="Some Text" />
+        <items:IconViewModel Icon="{x:Static icons:IconValues.ModLibrary}" Name="Some Text" />
     </Design.DataContext>
 
-    <navigation:NavigationControl Classes="Invisible" x:Name="ItemButton">
-        <Grid
-            ColumnDefinitions="38, *"
-            Height="40"
-            Width="184">
-            <icons:UnifiedIcon
-                Size="18"
-                Grid.Column="0"
-                Height="18"
-                Width="18"
-                x:Name="LeftIcon" />
+    <navigation:NavigationControl Classes="Invisible" x:Name="ItemButton" Width="184" Height="37">
+        <Grid ColumnDefinitions="Auto, *, *" Margin="8">
+            <icons:UnifiedIcon Grid.Column="0" Size="18" x:Name="LeftIcon" />
             <TextBlock
-                Classes="BodyMDBold"
+                Margin="6 0 0 0"
                 Grid.Column="1"
+                Classes="BodyMDBold"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Center"
                 x:Name="NameText" />
+
+            <ItemsControl Grid.Column="2" x:Name="Badges">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Spacing="6" Orientation="Horizontal" HorizontalAlignment="Right"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type system:String}">
+                        <Border Width="20" Height="20" CornerRadius="{StaticResource Rounded-full}" Background="{StaticResource PrimaryModerate}">
+                            <TextBlock
+                                x:Name="TextBlock"
+                                TextAlignment="Center"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Classes="BodySMBold"
+                                Foreground="{StaticResource NeutralInverted}"
+                                Text="{CompiledBinding }"/>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
         </Grid>
     </navigation:NavigationControl>
 
