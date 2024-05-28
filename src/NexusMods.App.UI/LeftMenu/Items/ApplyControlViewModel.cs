@@ -145,16 +145,7 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
                     .DisposeWith(disposables);
                 
                 // Perform an ingest on first load:
-                Observable.Return(0)
-                    .Select(async  _ =>
-                        {
-                            if (_isFirstLoad && LastAppliedWithTxId.Id.Equals(_loadoutId))
-                                await Ingest();
-                            _isFirstLoad = false;
-                        }
-                    )
-                    .SubscribeWithErrorLogging()
-                    .DisposeWith(disposables);
+                Task.Run(FirstLoadIngest);
             }
         );
     }
@@ -168,13 +159,17 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
         });
     }
     
-    private async Task Ingest()
+    private async Task FirstLoadIngest()
     {
-        await Task.Run(async () =>
+        if (_isFirstLoad)
         {
-            var loadout = _conn.Db.Get(_loadoutId);
-            await _applyService.Ingest(loadout.Installation);
-        });
+            _isFirstLoad = false;
+
+            if (LastAppliedWithTxId.Id.Equals(_loadoutId))
+            {
+                var loadout = _conn.Db.Get(_loadoutId);
+                await _applyService.Ingest(loadout.Installation);
+            }
+        }
     }
-    
 }
