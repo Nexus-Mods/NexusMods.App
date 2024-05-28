@@ -4,6 +4,7 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.App.UI.Controls.DataGrid;
+using NexusMods.App.UI.Controls.MarkdownRenderer;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.WorkspaceSystem;
 using ReactiveUI;
@@ -18,6 +19,8 @@ public interface ILoadoutGridViewModel : IPageViewModelInterface
     public ReadOnlyObservableCollection<ModId> Mods { get; }
     public LoadoutId LoadoutId { get; set; }
     public string LoadoutName { get; }
+    
+    public IMarkdownRendererViewModel MarkdownRendererViewModel { get; }
 
     public ReadOnlyObservableCollection<IDataGridColumnFactory<LoadoutColumn>> Columns { get; }
 
