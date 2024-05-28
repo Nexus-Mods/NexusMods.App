@@ -204,6 +204,8 @@ SMAPI is the mod loader for Stardew Valley. The majority of mods require SMAPI t
 
 You can download the latest supported SMAPI version {LatestSMAPIVersion} for your game version
 {CurrentGameVersion} from {SMAPINexusModsLink}.
+
+Once downloaded, add SMAPI to your mod list from the Library.
 """
         )
         .WithMessageData(messageBuilder => messageBuilder
