@@ -423,7 +423,7 @@
 		<value>ZAPISZ</value>
 	</data>
 	<data name="SettingEntryView_NeedRestartMessage" xml:space="preserve">
-		<value>Uruchom ponownie aplikację, aby zastosować ustawienia języka</value>
+		<value>Uruchom ponownie aplikację, aby zastosować to ustawienie</value>
 	</data>
 	<data name="FileOriginsPage_AddButtonText" xml:space="preserve">
 		<value>Dodaj</value>
