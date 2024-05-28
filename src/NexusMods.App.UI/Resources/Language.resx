@@ -476,4 +476,7 @@
     <data name="DownloadInProgressView__View_in_library" xml:space="preserve">
         <value>View in library</value>
     </data>
+    <data name="LoadoutGridView__Remove" xml:space="preserve">
+        <value>Remove</value>
+    </data>
 </root>

@@ -21,7 +21,8 @@
                 <StackPanel Grid.Column="1">
                     <Button x:Name="DeleteModsButton">
                         <StackPanel>
-                            <icons:UnifiedIcon Classes="TrashCanOutline" />
+                            <icons:UnifiedIcon Classes="Close" />
+                            <TextBlock Text="{x:Static resources:Language.LoadoutGridView__Remove}"/>
                         </StackPanel>
                     </Button>
                     <navigation:NavigationControl x:Name="ViewModFilesButton">

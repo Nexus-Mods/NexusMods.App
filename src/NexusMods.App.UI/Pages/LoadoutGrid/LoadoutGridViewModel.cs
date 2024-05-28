@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.FileStore.ArchiveMetadata;
+using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
@@ -32,6 +33,7 @@ using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Extensions.DynamicData;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Networking.Downloaders.Tasks.State;
 using NexusMods.Paths;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -61,6 +63,7 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
 
     [Reactive] public LoadoutId LoadoutId { get; set; }
     [Reactive] public string LoadoutName { get; set; } = "";
+    public GameDomain _gameDomain = GameDomain.DefaultValue;
 
     [Reactive] public ModId[] SelectedItems { get; set; } = [];
     public ReactiveCommand<NavigationInformation, Unit> ViewModContentsCommand { get; }
@@ -149,6 +152,15 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
                 .SelectMany(tuple => loadoutRepository.Revisions(tuple.First.Value))
                 .Select(loadout =>
                 {
+                    try
+                    {
+                        _gameDomain = loadout.Installation.Game.Domain;
+                    }
+                    catch (Exception)
+                    {
+                        _gameDomain = GameDomain.DefaultValue;
+                    }
+
                     var settings = settingsManager.Get<LoadoutGridSettings>();
                     var showGameFiles = settings.ShowGameFiles;
                     var showOverride = settings.ShowOverride;
@@ -181,44 +193,29 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
         });
     }
 
-    public Task AddMod(string path)
-    {
-        var file = _fileSystem.FromUnsanitizedFullPath(path);
-        if (!_fileSystem.FileExists(file))
-        {
-            _logger.LogError("File {File} does not exist, not installing mod", file);
-            return Task.CompletedTask;
-        }
-
-        var _ = Task.Run(async () =>
-        {
-            var downloadId = await _fileOriginRegistry.RegisterDownload(file,
-                (tx, id) =>
-                {
-                    tx.Add(id, FilePathMetadata.OriginalName, file.FileName);
-                });
-            await _archiveInstaller.AddMods(LoadoutId, downloadId, file.FileName, token: CancellationToken.None);
-        });
-
-        return Task.CompletedTask;
-    }
+    public Task AddMod(string path) => AddMod(path, installer: null);
 
     public Task AddModAdvanced(string path)
     {
+        var installer = _provider.GetKeyedService<IModInstaller>("AdvancedInstaller");
+        return AddMod(path, installer);
+    }
+
+    private Task AddMod(string path, IModInstaller? installer)
+    {
         var file = _fileSystem.FromUnsanitizedFullPath(path);
         if (!_fileSystem.FileExists(file))
         {
             _logger.LogError("File {File} does not exist, not installing mod", file);
             return Task.CompletedTask;
         }
-        
-        var installer = _provider.GetRequiredKeyedService<IModInstaller>("AdvancedManualInstaller");
 
         var _ = Task.Run(async () =>
         {
             var downloadId = await _fileOriginRegistry.RegisterDownload(file,
                 (tx, id) =>
                 {
+                    tx.Add(id, DownloaderState.GameDomain, _gameDomain);
                     tx.Add(id, FilePathMetadata.OriginalName, file.FileName);
                 });
             await _archiveInstaller.AddMods(LoadoutId, downloadId, file.FileName, token: CancellationToken.None, installer: installer);
