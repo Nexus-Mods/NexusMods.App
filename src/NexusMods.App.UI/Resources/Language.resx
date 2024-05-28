@@ -112,7 +112,7 @@
         <value>RUNNING...</value>
     </data>
     <data name="LaunchButtonViewModel_LaunchGame_LAUNCH" xml:space="preserve">
-        <value>LAUNCH</value>
+        <value>PLAY</value>
     </data>
     <data name="StringFormatters__SecondsRemaining_secs" xml:space="preserve">
         <value>{0} secs</value>
@@ -414,7 +414,7 @@
         <comment>{0} is a formatted file size, representing the data to be processed </comment>
     </data>
     <data name="ApplyControlView_ViewApplyChanges" xml:space="preserve">
-        <value>View apply changes</value>
+        <value>Preview changes</value>
     </data>
     <data name="ApplyDiffViewModel_PageTitle" xml:space="preserve">
         <value>Preview changes</value>
@@ -475,5 +475,8 @@
     </data>
     <data name="DownloadInProgressView__View_in_library" xml:space="preserve">
         <value>View in library</value>
+    </data>
+    <data name="LoadoutGridView__Remove" xml:space="preserve">
+        <value>Remove</value>
     </data>
 </root>

@@ -563,7 +563,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         var prevState = _diskStateRegistry.GetState(loadout.Installation)!;
         var diskState = await FileTreeToDisk(fileTree, loadout, flattened, prevState, loadout.Installation, forceSkipIngest);
         diskState.LoadoutId = loadout.Id;
-        diskState.TxId = loadout.Db.BasisTxId;
+        diskState.TxId = loadout.GetRevisionTxId();
         await _diskStateRegistry.SaveState(loadout.Installation, diskState);
 
         return diskState;
@@ -588,7 +588,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         var newLoadout = await AddChangedFilesToLoadout(loadout, newFiles);
         
         diskState.LoadoutId = newLoadout.Id;
-        diskState.TxId = newLoadout.Db.BasisTxId;
+        diskState.TxId = newLoadout.GetRevisionTxId();
         await _diskStateRegistry.SaveState(loadout.Installation, diskState);
         return newLoadout;
     }
@@ -617,6 +617,17 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             newFile.Add(File.Loadout, loadout.Id);
             newFile.Add(File.Mod, overridesMod.Id);
             newFile.AddTo(tx);
+        }
+        
+        // If we created the mod in this transaction, db will be null, and we can't call .Revise on it
+        // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+        if (overridesMod.Db != null)
+        {
+            overridesMod.Revise(tx);
+        }
+        else
+        {
+            loadout.Revise(tx);
         }
         
         var result = await tx.Commit();

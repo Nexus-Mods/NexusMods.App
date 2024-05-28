@@ -30,7 +30,7 @@ public class ToolTests : ADataModelTest<ToolTests>
         var result = await ToolManager.RunTool(tool, BaseLoadout);
 
         gameFolder.Combine("toolFiles.txt").FileExists.Should().BeTrue("tool should have run");
-        gameFolder.Combine("rootFile.txt").FileExists.Should().BeFalse("loadout has not been automatically applied");
+        gameFolder.Combine("rootFile.txt").FileExists.Should().BeTrue("loadout has been automatically applied");
         
         Refresh(ref BaseLoadout);
         var generatedFile = BaseLoadout.Files

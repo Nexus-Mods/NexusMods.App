@@ -1,5 +1,5 @@
 ﻿<reactiveUi:ReactiveUserControl
-    d:DesignHeight="36"
+    d:DesignHeight="50"
     d:DesignWidth="184"
     mc:Ignorable="d"
     x:Class="NexusMods.App.UI.LeftMenu.Items.LaunchButtonView"
@@ -17,13 +17,14 @@
     <StackPanel>
         <Button
             IsVisible="True"
-            Classes="Standard PrimaryOutlined"
+            Classes="Standard Secondary"
             HorizontalAlignment="Stretch"
             ClipToBounds="False"
-            x:Name="LaunchButton">
+            x:Name="LaunchButton"
+            Height="44">
             <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
                 <icons:UnifiedIcon Classes="Play" x:Name="LaunchIcon" />
-                <TextBlock x:Name="LaunchText" />
+                <TextBlock x:Name="LaunchText" Classes="TitleSMSemi" />
             </StackPanel>
         </Button>
         <ProgressBar
@@ -31,6 +32,7 @@
             x:Name="ProgressBarControl"
             IsVisible="False"
             ShowProgressText="True"
+            Height="44"
             Minimum="0"
             Maximum="1"
             HorizontalAlignment="Stretch" />

@@ -14,7 +14,7 @@ public class MissingSMAPIEmitter : ILoadoutDiagnosticEmitter
     {
         await Task.Yield();
 
-        var smapiModCount = loadout.CountModsWithMetadata(SMAPIMarker.Version);
+        var smapiModCount = loadout.CountModsWithMetadata(SMAPIModMarker.IsSMAPIMod);
         if (smapiModCount == 0) yield break;
 
         var optionalSmapiMod = loadout.GetFirstModWithMetadata(SMAPIMarker.Version, onlyEnabledMods: false);

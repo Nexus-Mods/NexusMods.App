@@ -8,7 +8,7 @@
 
 ## Engine and Mod Support
 
-Stardew Valley uses .NET 5 and [MonoGame](https://github.com/MonoGame/MonoGame), which is an open-source implementation of the discontinued [XNA Framework](https://en.wikipedia.org/wiki/Microsoft_XNA). MonoGame, and Stardew Valley to that extend, is fully cross-platform and runs natively on desktop (Windows/Linux/macOS), on the phone (Android/iOS) and on the console (PS4/PS5/Xbox using UWP and XDK/Nintendo Switch).
+Stardew Valley uses .NET 6 (.NET 5 for versions before 1.6) and [MonoGame](https://github.com/MonoGame/MonoGame), which is an open-source implementation of the discontinued [XNA Framework](https://en.wikipedia.org/wiki/Microsoft_XNA). MonoGame, and Stardew Valley to that extend, is fully cross-platform and runs natively on desktop (Windows/Linux/macOS), on the phone (Android/iOS) and on the console (PS4/PS5/Xbox using UWP and XDK/Nintendo Switch).
 
 Note: Stardew Valley has a `compatability` branch for 32-bit systems, which uses XNA and isn't moddable.
 
@@ -199,6 +199,7 @@ Detecting if two Content Packs are in conflict with one another depends on the C
 
 ## Community
 
+- [Stardew Valley Modding Wiki](https://stardewvalleywiki.com/Modding:Index)
 - [Stardew Valley Discord](https://discord.gg/stardewvalley)
 - [r/SMAPI](https://www.reddit.com/r/SMAPI)
 - [Stardew Valley Forums](https://forums.stardewvalley.net/)

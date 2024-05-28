@@ -16,55 +16,42 @@
 
     <Border Classes="Rounded-lg Low"
             Padding="12"
-            HorizontalAlignment="Stretch">
+            HorizontalAlignment="Stretch"
+            MinHeight="68">
 
         <StackPanel Orientation="Vertical"
-                    Classes="Spacing-2"
-                    HorizontalAlignment="Stretch">
-
-            <!-- Ingest button -->
-            <Button Classes="Standard SecondaryOutlined"
+                    VerticalAlignment="Center"
                     HorizontalAlignment="Stretch"
-                    x:Name="IngestButton">
-                <Viewbox StretchDirection="DownOnly">
-                    <StackPanel Orientation="Horizontal"
-                                HorizontalAlignment="Center"
-                                Classes="Spacing-1">
-                        <icons:UnifiedIcon Size="24" Classes="Refresh" />
-                        <TextBlock Classes="TitleSMSemi"
-                                   x:Name="IngestButtonTextBlock"
-                                   VerticalAlignment="Center"
-                                   Text="{x:Static resources:Language.IngestButtonTextBlock_Text}" />
-                    </StackPanel>
-                </Viewbox>
-            </Button>
+                    Classes="Spacing-2">
 
-            <navigation:NavigationControl Classes="Hyperlink Secondary" HorizontalAlignment="Right" x:Name="ApplyDiffButton">
-                <TextBlock x:Name="ViewApplyChangesButton"
-                           Classes="ForegroundModerate"
-                           Text="{x:Static resources:Language.ApplyControlView_ViewApplyChanges}" />
+            <navigation:NavigationControl Classes="Preview" HorizontalAlignment="Stretch" x:Name="ApplyDiffButton">
+                <StackPanel Orientation="Horizontal">
+                    <!-- <icons:UnifiedIcon Size="20" Classes="Visibility" /> -->
+                    <TextBlock x:Name="ViewApplyChangesTextBlock"
+                               Text="{x:Static resources:Language.ApplyControlView_ViewApplyChanges}" />
+                </StackPanel>
+                
             </navigation:NavigationControl>
 
             <!-- Apply button -->
-            <Button Classes="Standard SecondaryOutlined"
+            <Button Classes="Standard ApplyButton"
                     HorizontalAlignment="Stretch"
+                    Height="44"
                     x:Name="ApplyButton">
-                <Viewbox StretchDirection="DownOnly">
-                    <StackPanel Orientation="Horizontal"
-                                HorizontalAlignment="Center"
-                                Classes="Spacing-1">
-                        <icons:UnifiedIcon Size="24" Classes="Check" />
+                <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Center"
+                            Classes="Spacing-1">
+                        <icons:UnifiedIcon Size="24" Classes="Sync" />
                         <TextBlock Classes="TitleSMSemi"
                                    x:Name="ApplyButtonTextBlock"
                                    VerticalAlignment="Center" />
-                    </StackPanel>
-                </Viewbox>
+                </StackPanel>
             </Button>
 
             <!-- In progress -->
-            <Border Padding="12"
-                    HorizontalAlignment="Stretch"
-                    x:Name="InProgressBorder">
+            <Border HorizontalAlignment="Stretch"
+                    x:Name="InProgressBorder"
+                    VerticalAlignment="Center">
                 <StackPanel Orientation="Horizontal"
                             Classes="Spacing-1_5">
                     <progressRing:ProgressRing />

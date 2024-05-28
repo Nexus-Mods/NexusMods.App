@@ -17,7 +17,8 @@ public class ApplyControlDesignViewModel : AViewModel<IApplyControlViewModel>, I
     public bool IsIngesting { get; private set; }
 
     public ILaunchButtonViewModel LaunchButtonViewModel { get; } = new LaunchButtonDesignViewModel();
-    public string ApplyButtonText { get; } = Language.ApplyControlViewModel__ACTIVATE_AND_APPLY;
+    public bool IsLaunchButtonEnabled { get; } = true;
+    public string ApplyButtonText { get; } = Language.ApplyControlViewModel__APPLY;
 
     public ApplyControlDesignViewModel()
     {

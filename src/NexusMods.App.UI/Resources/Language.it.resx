@@ -85,7 +85,7 @@ Questi dati sono raccolti in maniera anonima e non saranno mai condivisi con ter
         <value>Novità</value>
     </data>
     <data name="LaunchButtonViewModel_LaunchGame_LAUNCH" xml:space="preserve">
-        <value>ESEGUI</value>
+        <value>GIOCA</value>
     </data>
     <data name="LaunchButtonViewModel_LaunchGame_RUNNING" xml:space="preserve">
         <value>IN ESECUZIONE</value>

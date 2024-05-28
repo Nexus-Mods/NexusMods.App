@@ -49,6 +49,9 @@ public static class IconValues
 
     // https://pictogrammers.com/library/mdi/icon/cog/
     public static readonly IconValue Settings = new ProjektankerIcon("mdi-cog");
+    
+    // https://pictogrammers.com/library/mdi/icon/eye/
+    public static readonly IconValue Visibility = new ProjektankerIcon("mdi-eye");
 
 #endregion
 
@@ -209,6 +212,13 @@ public static class IconValues
     // https://pictogrammers.com/library/mdi/icon/refresh/
     public static readonly IconValue Refresh = new ProjektankerIcon("mdi-refresh");
 
+#endregion
+    
+#region Notification
+    
+    // https://pictogrammers.com/library/mdi/icon/sync/
+    public static readonly IconValue Sync = new ProjektankerIcon("mdi-sync");
+    
 #endregion
 
 #region Toggle

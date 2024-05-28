@@ -55,7 +55,7 @@ public class ApplyService : IApplyService
             var lastAppliedLoadout = GetLastAppliedLoadout(loadout.Installation);
             if (lastAppliedLoadout is not null)
             {
-                _logger.LogInformation("Last applied loadout found: {LoadoutId} as of {TxId}", lastAppliedLoadout.Id, lastAppliedLoadout.Db.BasisTxId);
+                _logger.LogInformation("Last applied loadout found: {LoadoutId} as of {TxId}", lastAppliedLoadout.Id, lastAppliedLoadout.GetRevisionTxId());
             }
             else
             {
