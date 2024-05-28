@@ -1,9 +1,11 @@
 using System.Reactive.Disposables;
 using Avalonia.ReactiveUI;
+using JetBrains.Annotations;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.LeftMenu.Items;
 
+[UsedImplicitly]
 public partial class IconView : ReactiveUserControl<IIconViewModel>
 {
     public IconView()
@@ -20,6 +22,9 @@ public partial class IconView : ReactiveUserControl<IIconViewModel>
                 .DisposeWith(d);
 
             this.BindCommand(ViewModel, vm => vm.NavigateCommand, view => view.ItemButton)
+                .DisposeWith(d);
+
+            this.OneWayBind(ViewModel, vm => vm.Badges, view => view.Badges.ItemsSource)
                 .DisposeWith(d);
         });
     }

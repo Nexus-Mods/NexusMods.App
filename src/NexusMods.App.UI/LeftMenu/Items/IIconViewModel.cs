@@ -9,5 +9,6 @@ public interface IIconViewModel : ILeftMenuItemViewModel
 {
     public string Name { get; set; }
     public IconValue Icon { get; set; }
+    public string[] Badges { get; set; }
     public ReactiveCommand<NavigationInformation, Unit> NavigateCommand { get; set; }
 }
