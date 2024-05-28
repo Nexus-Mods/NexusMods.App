@@ -5,6 +5,7 @@ using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.DataModel;
 
@@ -16,6 +17,8 @@ public class ToolManager : IToolManager
     private readonly ILookup<GameDomain,ITool> _tools;
     private readonly ILogger<ToolManager> _logger;
     private readonly IApplyService _applyService;
+    private readonly IConnection _conn;
+    
 
     /// <summary>
     /// DI Constructor
@@ -24,12 +27,13 @@ public class ToolManager : IToolManager
     /// <param name="loadoutSynchronizer"></param>
     /// <param name="dataStore"></param>
     /// <param name="loadoutRegistry"></param>
-    public ToolManager(ILogger<ToolManager> logger, IEnumerable<ITool> tools, IApplyService applyService)
+    public ToolManager(ILogger<ToolManager> logger, IEnumerable<ITool> tools, IApplyService applyService, IConnection conn)
     {
         _logger = logger;
         _tools = tools.SelectMany(tool => tool.Domains.Select(domain => (domain, tool)))
             .ToLookup(t => t.domain, t => t.tool);
         _applyService = applyService;
+        _conn = conn;
     }
 
     /// <inheritdoc />
@@ -39,16 +43,26 @@ public class ToolManager : IToolManager
     }
 
     /// <inheritdoc />
-    public async Task<Loadout.Model> RunTool(ITool tool, Loadout.Model loadout, Mod.Model? generatedFilesMod = null, CancellationToken token = default)
+    public async Task<Loadout.Model> RunTool(
+        ITool tool, 
+        Loadout.Model loadout, 
+        Mod.Model? generatedFilesMod = null, 
+        CancellationToken token = default)
     {
         if (!tool.Domains.Contains(loadout.Installation.Game.Domain))
             throw new Exception("Tool does not support this game");
+        
+        _logger.LogInformation("Applying loadout {LoadoutId} on {GameName} {GameVersion}", 
+            loadout.Id, loadout.Installation.Game.Name, loadout.Installation.Version);
+        await _applyService.Apply(loadout);
+        var appliedLoadout = _conn.Db.Get<Loadout.Model>(loadout.Id);
 
-        _logger.LogInformation("Running tool {ToolName} for loadout {LoadoutId} on {GameName} {GameVersion}", tool.Name, loadout.Id, loadout.Installation.Game.Name, loadout.Installation.Version);
-        await tool.Execute(loadout, token);
+        _logger.LogInformation("Running tool {ToolName} for loadout {LoadoutId} on {GameName} {GameVersion}", 
+            tool.Name, appliedLoadout.Id, appliedLoadout.Installation.Game.Name, appliedLoadout.Installation.Version);
+        await tool.Execute(appliedLoadout, token);
 
-        // This will ingest the changes into the last applied loadout without but will not apply any loadout
-        _logger.LogInformation("Ingesting loadout {LoadoutId} from {GameName} {GameVersion}", loadout.Id, loadout.Installation.Game.Name, loadout.Installation.Version);
-        return await _applyService.Ingest(loadout.Installation);
+        _logger.LogInformation("Ingesting loadout {LoadoutId} from {GameName} {GameVersion}", 
+            appliedLoadout.Id, appliedLoadout.Installation.Game.Name, appliedLoadout.Installation.Version);
+        return await _applyService.Ingest(appliedLoadout.Installation);
     }
 }

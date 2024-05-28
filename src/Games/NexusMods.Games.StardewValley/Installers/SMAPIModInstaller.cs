@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.FileStore.Trees;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Installers;
-using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Games.StardewValley.Models;
 using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.Paths;
@@ -93,9 +92,9 @@ public class SMAPIModInstaller : AModInstaller
                     Files = modFiles,
                     Name = manifest.Name,
                     Version = manifest.Version.ToString(),
-                    Metadata = new TempEntity()
+                    Metadata = new TempEntity
                     {
-                        {SMAPIModMarker.SMAPIMod, true},
+                        SMAPIModMarker.IsSMAPIMod,
                     },
                 };
             });

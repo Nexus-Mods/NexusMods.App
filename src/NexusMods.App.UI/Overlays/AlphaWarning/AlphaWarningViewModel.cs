@@ -63,6 +63,8 @@ public class AlphaWarningViewModel : AOverlayViewModel<IAlphaWarningViewModel>, 
 
             var behavior = workspaceController.GetOpenPageBehavior(pageData, new NavigationInformation(NavigationInput.Default, Optional<OpenPageBehaviorType>.None), Optional<PageIdBundle>.None);
             workspaceController.OpenPage(workspaceController.ActiveWorkspace!.Id, pageData, behavior);
+
+            Close();
         });
 
         CloseCommand = ReactiveCommand.Create(() =>

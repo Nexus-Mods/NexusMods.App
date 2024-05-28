@@ -16,7 +16,7 @@ public class LaunchButtonDesignViewModel : AViewModel<ILaunchButtonViewModel>, I
     public ReactiveCommand<Unit, Unit> Command { get; set; }
 
     [Reactive]
-    public string Label { get; set; } = "LAUNCH";
+    public string Label { get; set; } = "PLAY";
 
     [Reactive]
     public Percent? Progress { get; set; }
@@ -39,7 +39,7 @@ public class LaunchButtonDesignViewModel : AViewModel<ILaunchButtonViewModel>, I
             Progress = null;
             await Task.Delay(1000);
 
-            Label = "Launch";
+            Label = "PLAY";
         });
     }
 }

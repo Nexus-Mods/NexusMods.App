@@ -1,5 +1,6 @@
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.MnemonicDB.Abstractions;
@@ -18,6 +19,7 @@ public class StardewValleyLoadoutSynchronizer : ALoadoutSynchronizer
     {
         using var tx = Connection.BeginTransaction();
         var overridesMod = GetOrCreateOverridesMod(loadout, tx);
+        var modifiedMods = new Dictionary<ModId, Mod.Model>();
 
         var smapiModDirectoryNameToModel = new Dictionary<RelativePath, Mod.Model>();
 
@@ -52,6 +54,23 @@ public class StardewValleyLoadoutSynchronizer : ALoadoutSynchronizer
 
             newFile.Add(File.Mod, smapiMod.Id);
             newFile.AddTo(tx);
+            modifiedMods.TryAdd<ModId, Mod.Model>(smapiMod.ModId, smapiMod);
+        }
+
+        foreach (var mod in modifiedMods.Values)
+        {
+            // If we created the mod in this transaction (e.g. GetOrCreateOverride created the Override mod),
+            // Db property will be null, and we can't call `.Revise` on it.
+            // We need to manually revise the loadout in that case
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+            if (mod.Db != null)
+            {
+                mod.Revise(tx);
+            }
+            else
+            {
+                loadout.Revise(tx);
+            }
         }
 
         var result = await tx.Commit();
@@ -61,6 +80,7 @@ public class StardewValleyLoadoutSynchronizer : ALoadoutSynchronizer
         {
             newFile.Add(File.Mod, overridesMod.Id);
             newFile.AddTo(tx);
+            modifiedMods.TryAdd<ModId, Mod.Model>(overridesMod.ModId, overridesMod);
         }
     }
 

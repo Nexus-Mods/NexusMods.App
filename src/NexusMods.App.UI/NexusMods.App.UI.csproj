@@ -571,6 +571,7 @@
       <UpToDateCheckInput Remove="Controls\Buttons\RoundedButton\RoundedButton.axaml" />
       <UpToDateCheckInput Remove="Controls\Buttons\StandardButtonTheme.axaml" />
       <UpToDateCheckInput Remove="RightContent\Home\HomeView.axaml" />
+      <UpToDateCheckInput Remove="Controls\Badge\Badge.axaml" />
     </ItemGroup>
 
     <ItemGroup>
