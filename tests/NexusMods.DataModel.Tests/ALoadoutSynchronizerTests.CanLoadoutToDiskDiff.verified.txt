@@ -19,8 +19,8 @@
   },
   {
     GamePath: {Preferences}/settings.ini,
-    Size: 86,
-    Hash: 13058521349898435707,
+    Size: 89,
+    Hash: 13422075709660628147,
     ChangeType: Removed
   },
   {
