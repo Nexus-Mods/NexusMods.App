@@ -70,15 +70,11 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
         }
     }
 
-    protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem,
-        GameLocatorResult installation)
+    protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem, GameLocatorResult installation)
     {
         var result = new Dictionary<LocationId, AbsolutePath>()
         {
-            {
-                LocationId.Game,
-                installation.Store == GameStore.XboxGamePass ? installation.Path.Combine("Content") : installation.Path
-            },
+            { LocationId.Game, installation.Path },
         };
         return result;
     }
