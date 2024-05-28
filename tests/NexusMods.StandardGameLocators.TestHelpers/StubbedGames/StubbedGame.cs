@@ -105,10 +105,19 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
 
     private static async Task AddTestFiles(TemporaryPath path, IServiceProvider provider)
     {
-        var gameFile = FileSystem.Shared.GetKnownPath(KnownPath.EntryDirectory).Combine("Resources/StubbedGame.zip");
+        var stateFolder = FileSystem.Shared.GetKnownPath(KnownPath.EntryDirectory).Combine("Resources/StubbedGameState");
 
-        var extractor = provider.GetRequiredService<IFileExtractor>();
-        
-        await extractor.ExtractAllAsync(gameFile, path);
+        foreach (var file in stateFolder.EnumerateFiles())
+        {
+            var relativePath = file.RelativeTo(stateFolder);
+            var destination = path.Path.Combine(relativePath);
+            if (!destination.Parent.DirectoryExists())
+                destination.Parent.CreateDirectory();
+
+            await using var source = file.Read();
+            await using var dest = destination.Create();
+            await source.CopyToAsync(dest);
+        }
+
     }
 }

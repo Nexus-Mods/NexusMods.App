@@ -11,6 +11,7 @@
       <PackageReference Include="System.CommandLine" />  
     </ItemGroup>
     <ItemGroup>
+      <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.GameLocators\NexusMods.Abstractions.GameLocators.csproj" />
       <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Settings\NexusMods.Abstractions.Settings.csproj" />
       <ProjectReference Include="..\NexusMods.ProxyConsole\NexusMods.ProxyConsole.csproj" />
     </ItemGroup>
