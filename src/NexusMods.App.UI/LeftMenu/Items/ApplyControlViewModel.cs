@@ -24,12 +24,13 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
 
     private readonly LoadoutId _loadoutId;
     private readonly GameInstallation _gameInstallation;
+    
+    private bool _isFirstLoad = true;
 
     [Reactive] private Abstractions.Loadouts.Loadout.Model NewestLoadout { get; set; }
     [Reactive] private LoadoutId LastAppliedLoadoutId { get; set; }
     [Reactive] private LoadoutWithTxId LastAppliedWithTxId { get; set; }
-    
-    [Reactive] bool CanApply { get; set; } = true;
+    [Reactive] private bool CanApply { get; set; } = true;
 
     public ReactiveCommand<Unit, Unit> ApplyCommand { get; }
     public ReactiveCommand<NavigationInformation, Unit> ShowApplyDiffCommand { get; }
@@ -142,6 +143,9 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
                     .OnUI()
                     .BindToVM(this, vm => vm.ApplyButtonText)
                     .DisposeWith(disposables);
+                
+                // Perform an ingest on first load:
+                Task.Run(FirstLoadIngest);
             }
         );
     }
@@ -155,4 +159,17 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
         });
     }
     
+    private async Task FirstLoadIngest()
+    {
+        if (_isFirstLoad)
+        {
+            _isFirstLoad = false;
+
+            if (LastAppliedWithTxId.Id.Equals(_loadoutId))
+            {
+                var loadout = _conn.Db.Get(_loadoutId);
+                await _applyService.Ingest(loadout.Installation);
+            }
+        }
+    }
 }
