@@ -10,12 +10,12 @@ namespace NexusMods.StandardGameLocators;
 /// <inheritdoc />
 public class GameInstallationConverter : JsonConverter<GameInstallation>
 {
-    private readonly IGameRegistry _gameRegistry;
+    private readonly Lazy<IGameRegistry> _gameRegistry;
 
     /// <inheritdoc />
-    public GameInstallationConverter(IGameRegistry gameRegistry)
+    public GameInstallationConverter(IServiceProvider provider)
     {
-        _gameRegistry = gameRegistry;
+        _gameRegistry = new Lazy<IGameRegistry>(() => (IGameRegistry) provider.GetService(typeof(IGameRegistry))!);
     }
 
     /// <inheritdoc />
@@ -35,7 +35,7 @@ public class GameInstallationConverter : JsonConverter<GameInstallation>
 
         reader.Read();
 
-        var foundGame = _gameRegistry.Installations.Values
+        var foundGame = _gameRegistry.Value.Installations.Values
             .FirstOrDefault(install => install.Store == store && install.Game.Domain == slug && install.Version == version);
 
         return foundGame ?? new UnknownGame(slug, version).Installations.First();
