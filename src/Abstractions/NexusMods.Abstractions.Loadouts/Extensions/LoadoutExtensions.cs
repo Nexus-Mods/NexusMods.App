@@ -14,9 +14,11 @@ public static class LoadoutExtensions
 {
     private static IEnumerable<Mod.Model> GetEnabledMods(this Loadout.Model loadout, bool onlyEnabledMods)
     {
-        return onlyEnabledMods
+        var enumerable = onlyEnabledMods
             ? loadout.Mods.Where(mod => mod.Enabled)
             : loadout.Mods;
+
+        return enumerable.Where(mod => mod.Category == ModCategory.Mod);
     }
 
     /// <summary>

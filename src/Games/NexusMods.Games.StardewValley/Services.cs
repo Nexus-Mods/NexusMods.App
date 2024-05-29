@@ -29,6 +29,7 @@ public static class Services
             .AddSingleton<SMAPIModDatabaseCompatibilityDiagnosticEmitter>()
             .AddSingleton<SMAPIGameVersionDiagnosticEmitter>()
             .AddSingleton<VersionDiagnosticEmitter>()
+            .AddSingleton<ModOverwritesGameFilesEmitter>()
 
             // Attributes
             .AddAttributeCollection(typeof(SMAPIMarker))
