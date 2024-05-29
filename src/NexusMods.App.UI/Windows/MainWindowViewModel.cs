@@ -1,14 +1,14 @@
-using System.Collections.Immutable;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.App.UI.Controls.DevelopmentBuildBanner;
 using NexusMods.App.UI.Controls.Spine;
 using NexusMods.App.UI.Controls.TopBar;
 using NexusMods.App.UI.LeftMenu;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Overlays.AlphaWarning;
+using NexusMods.App.UI.Overlays.Login;
 using NexusMods.App.UI.Overlays.MetricsOptIn;
 using NexusMods.App.UI.Overlays.Updater;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -30,7 +30,8 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
         IWindowManager windowManager,
         IDownloadService downloadService,
         IOverlayController overlayController,
-        IConnection conn)
+        IConnection conn,
+        ILoginManager loginManager)
     {
         // NOTE(erri120): can't use DI for VMs that require an active Window because
         // those VMs would be instantiated before this constructor gets called.
@@ -68,6 +69,10 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
                 var updaterViewModel = serviceProvider.GetRequiredService<IUpdaterViewModel>();
                 updaterViewModel.MaybeShow();
             }
+            
+            var loginMessageVM = serviceProvider.GetRequiredService<ILoginMessageBoxViewModel>();
+            loginMessageVM.Controller = overlayController;
+            loginMessageVM.MaybeShow();
 
             this.WhenAnyValue(vm => vm.Spine.LeftMenuViewModel)
                 .BindToVM(this, vm => vm.LeftMenu)

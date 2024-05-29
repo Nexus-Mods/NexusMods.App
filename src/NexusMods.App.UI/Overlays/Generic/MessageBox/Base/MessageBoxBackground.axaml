@@ -13,7 +13,7 @@
         <!-- Expected Size: `MinWidth="386" MinHeight="138"` -->
         <Border Grid.Row="0"
                 x:Name="TopBorder"
-                Classes="RoundedTop"
+                Classes="Rounded-t-lg"
                 HorizontalAlignment="Stretch">
             <ContentPresenter x:Name="TopContentControl"
                               Content="{Binding TopContent, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" />
@@ -23,7 +23,7 @@
         <!-- Expected Size: `MinWidth="386" MinHeight="126" -->
         <Border Grid.Row="1"
                 x:Name="BottomBorder"
-                Classes="RoundedBottom"
+                Classes="Rounded-b-lg"
                 HorizontalAlignment="Stretch">
             <ContentPresenter x:Name="BottomContentControl"
                               Content="{Binding BottomContent, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" />
