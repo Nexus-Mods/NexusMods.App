@@ -1,8 +1,8 @@
 using System.Reactive.Disposables;
-using DynamicData.Binding;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Extensions;
+using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.App.UI;
@@ -32,6 +32,7 @@ internal sealed class TelemetryProvider : ITelemetryProvider, IDisposable
         meterConfig.CreateUsersPerLanguageCounter();
         meterConfig.CreateUsersPerMembershipCounter(GetMembership);
         meterConfig.CreateManagedGamesCounter(GetManagedGamesCount);
+        meterConfig.CreateModsPerGameCounter(GetModsPerLoadout);
     }
 
     private bool _isPremium;
@@ -43,9 +44,22 @@ internal sealed class TelemetryProvider : ITelemetryProvider, IDisposable
     private int GetManagedGamesCount()
     {
         return _loadoutRepository.All
+            .Where(x => x.IsVisible())
             .Select(x => x.Installation.Game.Domain)
             .Distinct()
             .Count();
+    }
+
+    private Counters.LoadoutModCount[] GetModsPerLoadout()
+    {
+        return _loadoutRepository.All
+            .Where(x => x.IsVisible())
+            .Select(x =>
+            {
+                var count = x.Mods.Count(mod => mod.Category == ModCategory.Mod);
+                return new Counters.LoadoutModCount(x.Installation.Game.Domain, count);
+            })
+            .ToArray();
     }
 
     public void Dispose()
