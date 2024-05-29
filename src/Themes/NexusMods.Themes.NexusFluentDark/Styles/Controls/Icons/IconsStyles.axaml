@@ -85,7 +85,7 @@
             <icons:UnifiedIcon Classes="Forum"/>
             <icons:UnifiedIcon Classes="Sync"/>
             <icons:UnifiedIcon Classes="Visibility"/>
-
+            <icons:UnifiedIcon Classes="ListAdd"/>
         </WrapPanel>
     </Design.PreviewWith>
 
@@ -423,5 +423,9 @@
     
     <Style Selector="icons|UnifiedIcon.Visibility">
         <Setter Property="Value" Value="{x:Static icons:IconValues.Visibility}"/>
+    </Style>
+    
+    <Style Selector="icons|UnifiedIcon.ListAdd">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.ListAdd}"/>
     </Style>
 </Styles>

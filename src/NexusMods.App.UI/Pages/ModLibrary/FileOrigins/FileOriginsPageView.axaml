@@ -18,13 +18,13 @@
                 <!-- Add Buttons Section -->
                 <Button x:Name="AddModButton">
                     <StackPanel>
-                        <icons:UnifiedIcon Classes="PlusCircleOutline" />
+                        <icons:UnifiedIcon Classes="ListAdd" />
                         <TextBlock Text="{x:Static resources:Language.LoadoutGridView__Add_Mod}"/>
                     </StackPanel>
                 </Button>
                 <Button x:Name="AddModAdvancedButton">
                     <StackPanel>
-                        <icons:UnifiedIcon Classes="PlusCircleOutline" />
+                        <icons:UnifiedIcon Classes="ListAdd" />
                         <TextBlock Text="{x:Static resources:Language.LoadoutGridView__Add_Mod_Advanced}"/>
                     </StackPanel>
                 </Button>

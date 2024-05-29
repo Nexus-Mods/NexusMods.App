@@ -52,6 +52,9 @@ public static class IconValues
     
     // https://pictogrammers.com/library/mdi/icon/eye/
     public static readonly IconValue Visibility = new ProjektankerIcon("mdi-eye");
+    
+    // https://pictogrammers.com/library/mdi/icon/playlist-plus/
+    public static readonly IconValue ListAdd = new ProjektankerIcon("mdi-playlist-plus");
 
 #endregion
 
