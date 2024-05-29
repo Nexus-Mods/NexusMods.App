@@ -26,5 +26,8 @@
       <Compile Update="Counters.ModsPerGame.cs">
         <DependentUpon>Counters.cs</DependentUpon>
       </Compile>
+      <Compile Update="Counters.GlobalDownloadSize.cs">
+        <DependentUpon>Counters.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 </Project>

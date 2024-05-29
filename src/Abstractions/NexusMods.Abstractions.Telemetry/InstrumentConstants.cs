@@ -5,6 +5,7 @@ internal static class InstrumentConstants
     private const string Prefix = "app_";
 
     public const string NameActiveUsers        = Prefix + "active_users";
+    public const string NameGlobalDownloadSize = Prefix + "global_download_size";
     public const string NameManagedGamesCount  = Prefix + "managed_games_count";
     public const string NameModsPerGame        = Prefix + "mods_per_game";
     public const string NameUsersPerLanguage   = Prefix + "users_per_language";

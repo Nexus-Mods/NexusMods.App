@@ -1,11 +1,15 @@
 using System.Reactive.Disposables;
+using DynamicData.Aggregation;
+using DynamicData.Binding;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.App.UI;
 using NexusMods.Networking.NexusWebApi;
+using NexusMods.Paths;
 using OneOf;
 
 namespace NexusMods.App;
@@ -22,6 +26,15 @@ internal sealed class TelemetryProvider : ITelemetryProvider, IDisposable
         // membership status
         var loginManager = serviceProvider.GetRequiredService<LoginManager>();
         loginManager.IsPremium.SubscribeWithErrorLogging(value => _isPremium = value).DisposeWith(_disposable);
+
+        // download size
+        var downloadAnalysisRepository = serviceProvider.GetRequiredService<IRepository<DownloadAnalysis.Model>>();
+        downloadAnalysisRepository
+            .Observable
+            .ToObservableChangeSet()
+            .Sum(x => (double)x.Size.Value)
+            .SubscribeWithErrorLogging(totalDownloadSize => _downloadSize = Size.From((ulong)totalDownloadSize))
+            .DisposeWith(_disposable);
     }
 
     public void ConfigureMetrics(IMeterConfig meterConfig)
@@ -34,6 +47,7 @@ internal sealed class TelemetryProvider : ITelemetryProvider, IDisposable
         meterConfig.CreateUsersPerMembershipCounter(GetMembership);
         meterConfig.CreateManagedGamesCounter(GetManagedGamesCount);
         meterConfig.CreateModsPerGameCounter(GetModsPerLoadout);
+        meterConfig.CreateGlobalDownloadSizeCounter(GetDownloadSize);
     }
 
     private bool _isPremium;
@@ -62,6 +76,9 @@ internal sealed class TelemetryProvider : ITelemetryProvider, IDisposable
             })
             .ToArray();
     }
+
+    private Size _downloadSize;
+    private Size GetDownloadSize() => _downloadSize;
 
     public void Dispose()
     {
