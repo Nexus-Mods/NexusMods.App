@@ -20,8 +20,8 @@ public class LoginMessageBoxViewModel : AOverlayViewModel<ILoginMessageBoxViewMo
         
         OkCommand = ReactiveCommand.CreateFromTask(async () =>
         {
-            await loginManager.LoginAsync();
             Close();
+            await loginManager.LoginAsync();
         });
 
         CancelCommand = ReactiveCommand.Create(Close);
