@@ -1,3 +1,4 @@
+using System.Reactive.Disposables;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 
@@ -11,9 +12,12 @@ public partial class LoginMessageBoxView : ReactiveUserControl<ILoginMessageBoxV
 
         this.WhenActivated(d =>
             {
-                this.BindCommand(ViewModel, vm => vm.OkCommand, view => view.OkButton);
-                this.BindCommand(ViewModel, vm => vm.CancelCommand, view => view.CancelButton);
-                this.BindCommand(ViewModel, vm => vm.CancelCommand, view => view.CloseButton);
+                this.BindCommand(ViewModel, vm => vm.OkCommand, view => view.OkButton)
+                    .DisposeWith(d);
+                this.BindCommand(ViewModel, vm => vm.CancelCommand, view => view.CancelButton)
+                    .DisposeWith(d);;
+                this.BindCommand(ViewModel, vm => vm.CancelCommand, view => view.CloseButton)
+                    .DisposeWith(d);;
             }
         );
     }
