@@ -10,4 +10,18 @@ public interface IFileOriginsPageViewModel : IPageViewModelInterface
     LoadoutId LoadoutId { get; }
     
     ReadOnlyObservableCollection<IFileOriginEntryViewModel> FileOrigins { get; }
+    
+    /// <summary>
+    /// Add a mod to the loadout using the standard installer.
+    /// </summary>
+    /// <param name="path"></param>
+    /// <returns></returns>
+    public Task AddMod(string path);
+
+    /// <summary>
+    /// Add a mod to the loadout using the advanced installer.
+    /// </summary>
+    /// <param name="path"></param>
+    /// <returns></returns>
+    public Task AddModAdvanced(string path);
 }

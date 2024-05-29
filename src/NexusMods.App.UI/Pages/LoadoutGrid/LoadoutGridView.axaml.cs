@@ -51,45 +51,8 @@ public partial class LoadoutGridView : ReactiveUserControl<ILoadoutGridViewModel
                 view => view.ModsDataGrid.SelectedIndex,
                 (selectedIndex) => selectedIndex >= 0);
 
-            AddModButton.Command = ReactiveCommand.CreateFromTask(AddMod);
-
-            AddModAdvancedButton.Command = ReactiveCommand.CreateFromTask(AddModAdvanced);
-
             DeleteModsButton.Command = ReactiveCommand.CreateFromTask(DeleteSelectedMods, isItemSelected);
         });
-    }
-
-    private async Task AddMod()
-    {
-        foreach (var file in await PickModFiles())
-        {
-            await ViewModel!.AddMod(file.Path.LocalPath);
-        }
-    }
-
-    private async Task AddModAdvanced()
-    {
-        foreach (var file in await PickModFiles())
-        {
-            await ViewModel!.AddModAdvanced(file.Path.LocalPath);
-        }
-    }
-
-    private async Task<IEnumerable<IStorageFile>> PickModFiles()
-    {
-        var provider = TopLevel.GetTopLevel(this)!.StorageProvider;
-        var options =
-            new FilePickerOpenOptions
-            {
-                Title = Language.LoadoutGridView_AddMod_FilePicker_Title,
-                AllowMultiple = true,
-                FileTypeFilter = new[]
-                {
-                    new FilePickerFileType(Language.LoadoutGridView_AddMod_FileType_Archive) {Patterns = new [] {"*.zip", "*.7z", "*.rar"}},
-                }
-            };
-
-        return await provider.OpenFilePickerAsync(options);
     }
 
     private async Task DeleteSelectedMods()

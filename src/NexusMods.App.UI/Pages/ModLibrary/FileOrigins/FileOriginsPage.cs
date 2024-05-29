@@ -1,5 +1,7 @@
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Loadouts.Ids;
@@ -10,6 +12,7 @@ using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Paths;
 
 namespace NexusMods.App.UI.Pages.ModLibrary;
 
@@ -37,6 +40,10 @@ public class FileOriginsPageFactory : APageFactory<IFileOriginsPageViewModel, Fi
             ServiceProvider.GetRequiredService<IArchiveInstaller>(),
             ServiceProvider.GetRequiredService<IRepository<DownloadAnalysis.Model>>(),
             ServiceProvider.GetRequiredService<IConnection>(),
+            ServiceProvider.GetRequiredService<IFileSystem>(),
+            ServiceProvider.GetRequiredService<ILogger<FileOriginsPageViewModel>>(),
+            ServiceProvider,
+            ServiceProvider.GetRequiredService<IFileOriginRegistry>(),
             ServiceProvider.GetRequiredService<IWindowManager>()
         );
     }
