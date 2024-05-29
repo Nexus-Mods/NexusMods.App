@@ -5,6 +5,7 @@
 
     <Design.PreviewWith >
         <StackPanel Width="920">
+            <!-- With Header -->
             <Border Classes="Toolbar">
                 <Grid ColumnDefinitions="*, Auto">
                     <TextBlock Grid.Column="0" Text="TOOL BAR HEADER"/>
@@ -31,6 +32,32 @@
                     </StackPanel>
                 </Grid>
             </Border>
+
+            <!-- No Header -->
+            <Border Classes="Toolbar">
+                <StackPanel>
+                    <Button>
+                        <StackPanel>
+                            <icons:UnifiedIcon Classes="RemoveCircleOutline"/>
+                            <TextBlock Text="Remove"/>
+                        </StackPanel>
+                    </Button>
+                    <Line Classes="Separator"/>
+                    <Button>
+                        <StackPanel>
+                            <icons:UnifiedIcon Classes="RemoveCircleOutline"/>
+                            <TextBlock Text="Remove All"/>
+                        </StackPanel>
+                    </Button>
+                    <Button IsEnabled="False">
+                        <StackPanel>
+                            <icons:UnifiedIcon Classes="RemoveCircleOutline"/>
+                            <TextBlock Text="Remove All"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Border>
+
         </StackPanel>
     </Design.PreviewWith>
 
@@ -45,13 +72,19 @@
     <Style Selector="Border.Toolbar > Grid">
         <Setter Property="Margin" Value="24, 0"/>
     </Style>
+    
+    <!-- Only applied when no grid -->
+    <Style Selector="Border.Toolbar > StackPanel">
+        <Setter Property="Margin" Value="24, 0"/>
+        <Setter Property="HorizontalAlignment" Value="Right"/>
+    </Style>
 
-    <Style Selector="Border.Toolbar > Grid > StackPanel">
+    <Style Selector="Border.Toolbar StackPanel">
         <Setter Property="Orientation" Value="Horizontal"/>
         <Setter Property="Spacing" Value="{StaticResource Spacing-2}"/>
     </Style>
 
-    <Style Selector="Border.Toolbar > Grid > StackPanel > Line">
+    <Style Selector="Border.Toolbar StackPanel Line">
         <Setter Property="Width" Value="12"/>
         <Setter Property="Height" Value="32"/>
         <Setter Property="StrokeThickness" Value="1"/>
@@ -60,7 +93,7 @@
         <Setter Property="Stroke" Value="{StaticResource StrokeTranslucentWeakBrush}"/>
     </Style>
 
-    <Style Selector="Border.Toolbar > Grid > TextBlock">
+    <Style Selector="Border.Toolbar TextBlock">
         <Setter Property="Theme" Value="{StaticResource HeadingXSSemiTheme}"/>
         <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
         <Setter Property="VerticalAlignment" Value="Center"/>
@@ -96,7 +129,13 @@
 
     <Style Selector="Border.Toolbar Button TextBlock">
         <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
+        <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
         <Setter Property="Margin" Value="0" />
     </Style>
 
+    <!-- Note(Sewer): Apparently declaration order matters, so this will not work if placed
+         above the style for non-disabled button. --> 
+    <Style Selector="Border.Toolbar Button:disabled TextBlock">
+        <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
+    </Style>
 </Styles>

@@ -7,11 +7,41 @@
                                 xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
                                 xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
                                 xmlns:fileOriginEntry="clr-namespace:NexusMods.App.UI.Pages.ModLibrary.FileOriginEntry"
+                                xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="NexusMods.App.UI.Pages.ModLibrary.FileOriginsPageView"
                                 x:CompileBindings="True">
     <Grid RowDefinitions="Auto, *">
+        <!-- Toolbar -->
         <Border Grid.Row="0" Classes="Toolbar">
+            <StackPanel Orientation="Horizontal">
+                <!-- Add Buttons Section -->
+                <Button x:Name="DeleteModsButton">
+                    <StackPanel>
+                        <icons:UnifiedIcon Classes="Close" />
+                        <TextBlock Text="{x:Static resources:Language.LoadoutGridView__Remove}"/>
+                    </StackPanel>
+                </Button>
+                <navigation:NavigationControl x:Name="ViewModFilesButton">
+                    <StackPanel>
+                        <icons:UnifiedIcon Classes="FolderOutline" />
+                        <TextBlock Text="{x:Static resources:Language.LoadoutGridView__View_Files}"/>
+                    </StackPanel>
+                </navigation:NavigationControl>
+                <Line/>
+                <Button x:Name="AddModButton">
+                    <StackPanel>
+                        <icons:UnifiedIcon Classes="PlusCircleOutline" />
+                        <TextBlock Text="{x:Static resources:Language.LoadoutGridView__Add_Mod}"/>
+                    </StackPanel>
+                </Button>
+                <Button x:Name="AddModAdvancedButton">
+                    <StackPanel>
+                        <icons:UnifiedIcon Classes="PlusCircleOutline" />
+                        <TextBlock Text="{x:Static resources:Language.LoadoutGridView__Add_Mod_Advanced}"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
         </Border>
 
         <DataGrid Grid.Row="1"
