@@ -16,7 +16,7 @@ internal sealed class TelemetryProvider : ITelemetryProvider, IDisposable
         _disposable = new CompositeDisposable();
 
         var loginManager = serviceProvider.GetRequiredService<LoginManager>();
-        loginManager.IsPremium.SubscribeWithErrorLogging(value => _isPremium = value).DisposeWith(_disposable);
+        loginManager.IsPremiumObservable.SubscribeWithErrorLogging(value => _isPremium = value).DisposeWith(_disposable);
     }
 
     public void ConfigureMetrics(IMeterConfig meterConfig)
