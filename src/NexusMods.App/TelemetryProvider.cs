@@ -79,7 +79,7 @@ internal sealed class TelemetryProvider : ITelemetryProvider, IDisposable
             .ToArray();
     }
 
-    private Size _downloadSize;
+    private Size _downloadSize = Size.Zero;
     private Size GetDownloadSize() => _downloadSize;
 
     public void Dispose()
