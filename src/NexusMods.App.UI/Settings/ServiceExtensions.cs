@@ -11,6 +11,7 @@ public static class ServiceExtensions
             .AddSettings<LoadoutGridSettings>()
             .AddSettings<LanguageSettings>()
             .AddSettings<TextEditorSettings>()
-            .AddSettings<AlphaSettings>();
+            .AddSettings<AlphaSettings>()
+            .AddSettings<LoginSettings>();
     }
 }

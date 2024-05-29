@@ -1,4 +1,5 @@
 using System.Reactive.Concurrency;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using DynamicData.Binding;
 using JetBrains.Annotations;
@@ -7,7 +8,6 @@ using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.DTOs.OAuth;
 using NexusMods.Abstractions.NexusWebApi.Types;
-using NexusMods.Abstractions.Serialization;
 using NexusMods.CrossPlatform.ProtocolRegistration;
 using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
@@ -26,26 +26,39 @@ public sealed class LoginManager : IDisposable, ILoginManager
     private readonly IProtocolRegistration _protocolRegistration;
     private readonly NexusApiClient _nexusApiClient;
     private readonly IAuthenticatingMessageFactory _msgFactory;
+    
+    private CompositeDisposable _subscriptions = new CompositeDisposable();
+
 
     /// <summary>
     /// Allows you to subscribe to notifications of when the user information changes.
     /// </summary>
-    public IObservable<UserInfo?> UserInfo { get; }
-
+    public IObservable<UserInfo?> UserInfoObservable { get; }
+    
+    /// <summary>
+    /// The current user information
+    /// </summary>
+    public UserInfo? UserInfo { get; private set; }
+    
     /// <summary>
     /// True if the user is logged in
     /// </summary>
-    public IObservable<bool> IsLoggedIn => UserInfo.Select(info => info is not null);
+    public IObservable<bool> IsLoggedInObservable => UserInfoObservable.Select(info => info is not null);
+    
+    /// <summary>
+    /// True if the user is logged in
+    /// </summary>
+    public bool IsLoggedIn => UserInfo is not null;
 
     /// <summary>
     /// True if the user is logged in and is a premium member
     /// </summary>
-    public IObservable<bool> IsPremium => UserInfo.Select(info => info?.IsPremium ?? false);
+    public IObservable<bool> IsPremiumObservable => UserInfoObservable.Select(info => info?.IsPremium ?? false);
 
     /// <summary>
     /// The user's avatar
     /// </summary>
-    public IObservable<Uri?> Avatar => UserInfo.Select(info => info?.AvatarUrl);
+    public IObservable<Uri?> AvatarObservable => UserInfoObservable.Select(info => info?.AvatarUrl);
 
     /// <summary>
     /// Constructor.
@@ -67,13 +80,16 @@ public sealed class LoginManager : IDisposable, ILoginManager
         _protocolRegistration = protocolRegistration;
         _logger = logger;
 
-        UserInfo = _jwtTokenRepository.Observable
+        UserInfoObservable = _jwtTokenRepository.Observable
             .ToObservableChangeSet()
             // NOTE(err120): Since IDs don't change on startup, we can insert
             // a fake change at the start of the observable chain. This will only
             // run once at startup and notify the subscribers.
             .ObserveOn(TaskPoolScheduler.Default)
             .SelectMany(async _ => await Verify(CancellationToken.None));
+
+        _subscriptions.Add(UserInfoObservable.Subscribe(userInfo => UserInfo = userInfo));
+        
     }
 
     private CachedObject<UserInfo> _cachedUserInfo = new(TimeSpan.FromHours(1));
@@ -155,5 +171,6 @@ public sealed class LoginManager : IDisposable, ILoginManager
     public void Dispose()
     {
         _verifySemaphore.Dispose();
+        _subscriptions.Dispose();
     }
 }

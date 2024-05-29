@@ -479,4 +479,10 @@
     <data name="LoadoutGridView__Remove" xml:space="preserve">
         <value>Remove</value>
     </data>
+    <data name="LoginMessageView_BodyTextBlock" xml:space="preserve">
+        <value>To easily download mods from Nexus Mods you will need to log in with your Nexus Mods account.  To add mods manually from your drive, you do not need to log in.</value>
+    </data>
+    <data name="LoginMessageView_Title" xml:space="preserve">
+        <value>Log in to get started</value>
+    </data>
 </root>

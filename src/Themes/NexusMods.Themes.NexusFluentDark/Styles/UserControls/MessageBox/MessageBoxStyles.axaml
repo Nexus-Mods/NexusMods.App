@@ -22,10 +22,7 @@
         <Style Selector="^ Border#BottomBorder">
             <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
         </Style>
-    </Style>
-
-    <!-- OkCancelMessageBox -->
-    <Style Selector="okCancel|MessageBoxOkCancelView">
+        
         <Style Selector="^ TextBlock#HeadingText">
             <Setter Property="Theme" Value="{StaticResource HeadingXSSemiTheme}" />
         </Style>
@@ -33,7 +30,6 @@
         <Style Selector="^ TextBlock#MessageTextBlock">
             <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
         </Style>
-
-
     </Style>
+    
 </Styles>

@@ -70,17 +70,17 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
             var canLogout = this.WhenAnyValue(x => x.IsLoggedIn);
             LogoutCommand = ReactiveCommand.CreateFromTask(Logout, canLogout).DisposeWith(d);
 
-            _loginManager.IsLoggedIn
+            _loginManager.IsLoggedInObservable
                 .OnUI()
                 .SubscribeWithErrorLogging(logger, x => IsLoggedIn = x)
                 .DisposeWith(d);
 
-            _loginManager.IsPremium
+            _loginManager.IsPremiumObservable
                 .OnUI()
                 .SubscribeWithErrorLogging(logger, x => IsPremium = x)
                 .DisposeWith(d);
 
-            _loginManager.Avatar
+            _loginManager.AvatarObservable
                 .WhereNotNull()
                 .OffUi()
                 .SelectMany(LoadImage)

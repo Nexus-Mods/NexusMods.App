@@ -8,24 +8,34 @@ namespace NexusMods.Abstractions.NexusWebApi;
 public interface ILoginManager
 {
     /// <summary>
+    /// The current user information, null if not logged in
+    /// </summary>
+    UserInfo? UserInfo { get; }
+    
+    /// <summary>
+    /// True if logged in
+    /// </summary>
+    bool IsLoggedIn { get; }
+    
+    /// <summary>
     /// Allows you to subscribe to notifications of when the user information changes.
     /// </summary>
-    IObservable<UserInfo?> UserInfo { get; }
+    IObservable<UserInfo?> UserInfoObservable { get; }
 
     /// <summary>
     /// True if the user is logged in
     /// </summary>
-    IObservable<bool> IsLoggedIn { get; }
+    IObservable<bool> IsLoggedInObservable { get; }
 
     /// <summary>
     /// True if the user is logged in and is a premium member
     /// </summary>
-    IObservable<bool> IsPremium { get; }
+    IObservable<bool> IsPremiumObservable { get; }
 
     /// <summary>
     /// The user's avatar
     /// </summary>
-    IObservable<Uri?> Avatar { get; }
+    IObservable<Uri?> AvatarObservable { get; }
 
     /// <summary>
     /// Show a browser and log into Nexus Mods

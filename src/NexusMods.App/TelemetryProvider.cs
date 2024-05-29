@@ -25,7 +25,7 @@ internal sealed class TelemetryProvider : ITelemetryProvider, IDisposable
 
         // membership status
         var loginManager = serviceProvider.GetRequiredService<LoginManager>();
-        loginManager.IsPremium.SubscribeWithErrorLogging(value => _isPremium = value).DisposeWith(_disposable);
+        loginManager.IsPremiumObservable.SubscribeWithErrorLogging(value => _isPremium = value).DisposeWith(_disposable);
 
         // download size
         var downloadAnalysisRepository = serviceProvider.GetRequiredService<IRepository<DownloadAnalysis.Model>>();
@@ -40,7 +40,7 @@ internal sealed class TelemetryProvider : ITelemetryProvider, IDisposable
     public void ConfigureMetrics(IMeterConfig meterConfig)
     {
 #if RELEASE
-        meterConfig.CreateActiveUsersCounter(BuildInfo.ApplicationConstants.Version);
+        meterConfig.CreateActiveUsersPerVersionCounter(BuildInfo.ApplicationConstants.Version);
 #else
         meterConfig.CreateActiveUsersCounter();
 #endif
