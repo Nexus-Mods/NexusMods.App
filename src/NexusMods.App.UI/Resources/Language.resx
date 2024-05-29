@@ -207,10 +207,10 @@
     <data name="HomeView__BROWSE_ALL_GAMES" xml:space="preserve">
         <value>BROWSE ALL GAMES</value>
     </data>
-    <data name="LoadoutGridView__Add_Mod" xml:space="preserve">
+    <data name="FileOriginsPage__Add_Mod" xml:space="preserve">
         <value>Add</value>
     </data>
-    <data name="LoadoutGridView__Add_Mod_Advanced" xml:space="preserve">
+    <data name="FileOriginsPage__Add_Mod_Advanced" xml:space="preserve">
         <value>Advanced Add</value>
     </data>
     <data name="MyGamesView__Ready_to_mod" xml:space="preserve">
@@ -487,5 +487,11 @@
     </data>
     <data name="FileOriginsPage_GetMods" xml:space="preserve">
         <value>Get mods:</value>
+    </data>
+    <data name="FileOriginsPage_FromDrive" xml:space="preserve">
+        <value>From drive</value>
+    </data>
+    <data name="FileOriginsPage_FromNexusMods" xml:space="preserve">
+        <value>From Nexus Mods</value>
     </data>
 </root>

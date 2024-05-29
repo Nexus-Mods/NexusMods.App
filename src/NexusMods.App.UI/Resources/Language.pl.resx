@@ -204,10 +204,10 @@
 	<data name="HomeView__BROWSE_ALL_GAMES" xml:space="preserve">
 		<value>PRZEGLĄDAJ WSZYSTKIE GRY</value>
 	</data>
-    <data name="LoadoutGridView__Add_Mod" xml:space="preserve">
+    <data name="FileOriginsPage__Add_Mod" xml:space="preserve">
         <value>Dodaj</value>
     </data>
-    <data name="LoadoutGridView__Add_Mod_Advanced" xml:space="preserve">
+    <data name="FileOriginsPage__Add_Mod_Advanced" xml:space="preserve">
         <value>Dodaj (Zaawansowane)</value>
     </data>
 	<data name="MyGamesView__Ready_to_mod" xml:space="preserve">
@@ -474,6 +474,12 @@
         <value>Usuń</value>
     </data>
     <data name="FileOriginsPage_GetMods" xml:space="preserve">
-        <value>Pobierz mody:</value>
+        <value>Pobraj mody:</value>
+    </data>
+    <data name="FileOriginsPage_FromDrive" xml:space="preserve">
+        <value>Z dysku</value>
+    </data>
+    <data name="FileOriginsPage_FromNexusMods" xml:space="preserve">
+        <value>Z Nexus Mods</value>
     </data>
 </root>

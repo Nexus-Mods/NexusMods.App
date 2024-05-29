@@ -423,15 +423,15 @@ namespace NexusMods.App.UI.Resources {
             }
         }
         
-        public static string LoadoutGridView__Add_Mod {
+        public static string FileOriginsPage__Add_Mod {
             get {
-                return ResourceManager.GetString("LoadoutGridView__Add_Mod", resourceCulture);
+                return ResourceManager.GetString("FileOriginsPage__Add_Mod", resourceCulture);
             }
         }
         
-        public static string LoadoutGridView__Add_Mod_Advanced {
+        public static string FileOriginsPage__Add_Mod_Advanced {
             get {
-                return ResourceManager.GetString("LoadoutGridView__Add_Mod_Advanced", resourceCulture);
+                return ResourceManager.GetString("FileOriginsPage__Add_Mod_Advanced", resourceCulture);
             }
         }
         
@@ -966,6 +966,18 @@ namespace NexusMods.App.UI.Resources {
         public static string FileOriginsPage_GetMods {
             get {
                 return ResourceManager.GetString("FileOriginsPage_GetMods", resourceCulture);
+            }
+        }
+        
+        public static string FileOriginsPage_FromDrive {
+            get {
+                return ResourceManager.GetString("FileOriginsPage_FromDrive", resourceCulture);
+            }
+        }
+        
+        public static string FileOriginsPage_FromNexusMods {
+            get {
+                return ResourceManager.GetString("FileOriginsPage_FromNexusMods", resourceCulture);
             }
         }
     }
