@@ -86,6 +86,8 @@
             <icons:UnifiedIcon Classes="Sync"/>
             <icons:UnifiedIcon Classes="Visibility"/>
             <icons:UnifiedIcon Classes="ListAdd"/>
+            <icons:UnifiedIcon Classes="Disk"/>
+            <icons:UnifiedIcon Classes="Nexus"/>
         </WrapPanel>
     </Design.PreviewWith>
 
@@ -427,5 +429,17 @@
     
     <Style Selector="icons|UnifiedIcon.ListAdd">
         <Setter Property="Value" Value="{x:Static icons:IconValues.ListAdd}"/>
+    </Style>
+    
+    <Style Selector="icons|UnifiedIcon.Disk">
+        <Setter Property="Value">
+            <icons:IconValue SvgSetter="avares://NexusMods.App.UI/Assets/Icons/disk_20px.svg" />
+        </Setter>
+    </Style>
+
+    <Style Selector="icons|UnifiedIcon.Nexus">
+        <Setter Property="Value">
+            <icons:IconValue SvgSetter="avares://NexusMods.App.UI/Assets/nexus-logo-white.svg" />
+        </Setter>
     </Style>
 </Styles>

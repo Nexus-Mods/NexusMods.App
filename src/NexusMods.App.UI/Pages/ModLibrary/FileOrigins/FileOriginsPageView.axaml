@@ -36,13 +36,13 @@
                 
                 <Button x:Name="DeleteModsButton">
                     <StackPanel>
-                        <icons:UnifiedIcon Classes="Close" />
+                        <icons:UnifiedIcon Classes="Disk" />
                         <TextBlock Text="{x:Static resources:Language.FileOriginsPage_FromDrive}"/>
                     </StackPanel>
                 </Button>
                 <navigation:NavigationControl x:Name="ViewModFilesButton">
                     <StackPanel>
-                        <icons:UnifiedIcon Classes="FolderOutline" />
+                        <icons:UnifiedIcon Classes="Nexus" />
                         <TextBlock Text="{x:Static resources:Language.FileOriginsPage_FromNexusMods}"/>
                     </StackPanel>
                 </navigation:NavigationControl>

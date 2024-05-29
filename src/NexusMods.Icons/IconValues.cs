@@ -38,6 +38,9 @@ public static class IconValues
     // https://pictogrammers.com/library/mdi/icon/home/
     public static readonly IconValue Home = new ProjektankerIcon("mdi-home");
 
+    // https://pictogrammers.com/library/mdi/icon/playlist-plus/
+    public static readonly IconValue ListAdd = new ProjektankerIcon("mdi-playlist-plus");
+
     // https://pictogrammers.com/library/mdi/icon/open-in-new/
     public static readonly IconValue OpenInNew = new ProjektankerIcon("mdi-open-in-new");
 
@@ -49,12 +52,9 @@ public static class IconValues
 
     // https://pictogrammers.com/library/mdi/icon/cog/
     public static readonly IconValue Settings = new ProjektankerIcon("mdi-cog");
-    
+
     // https://pictogrammers.com/library/mdi/icon/eye/
     public static readonly IconValue Visibility = new ProjektankerIcon("mdi-eye");
-    
-    // https://pictogrammers.com/library/mdi/icon/playlist-plus/
-    public static readonly IconValue ListAdd = new ProjektankerIcon("mdi-playlist-plus");
 
 #endregion
 
@@ -146,6 +146,12 @@ public static class IconValues
 
 #region File
 
+    // exported from Figma because there wasn't a fitting Material Design Icon
+    public static readonly IconValue Disk = new AvaloniaPathIcon(Geometry.Parse(
+            "M2.33317 10.1665H15.6665V5.1665H2.33317V10.1665ZM13.1665 8.9165C13.5137 8.9165 13.8089 8.79498 14.0519 8.55192C14.295 8.30886 14.4165 8.01373 14.4165 7.6665C14.4165 7.31928 14.295 7.02414 14.0519 6.78109C13.8089 6.53803 13.5137 6.4165 13.1665 6.4165C12.8193 6.4165 12.5241 6.53803 12.2811 6.78109C12.038 7.02414 11.9165 7.31928 11.9165 7.6665C11.9165 8.01373 12.038 8.30886 12.2811 8.55192C12.5241 8.79498 12.8193 8.9165 13.1665 8.9165ZM17.3332 3.49984H14.979L13.3123 1.83317H4.68734L3.02067 3.49984H0.666504L3.52067 0.645671C3.67345 0.492893 3.85053 0.374837 4.05192 0.291504C4.25331 0.208171 4.46512 0.166504 4.68734 0.166504H13.3123C13.5346 0.166504 13.7464 0.208171 13.9478 0.291504C14.1491 0.374837 14.3262 0.492893 14.479 0.645671L17.3332 3.49984ZM2.33317 11.8332C1.87484 11.8332 1.48248 11.67 1.15609 11.3436C0.829698 11.0172 0.666504 10.6248 0.666504 10.1665V3.49984H17.3332V10.1665C17.3332 10.6248 17.17 11.0172 16.8436 11.3436C16.5172 11.67 16.1248 11.8332 15.6665 11.8332H2.33317Z"
+        )
+    );
+    
     // https://pictogrammers.com/library/mdi/icon/download/
     public static readonly IconValue Download = new ProjektankerIcon("mdi-download");
 
@@ -307,6 +313,5 @@ public static class IconValues
             "M13.4751 2.12561V9.12561H3.6451L2.4751 10.2956V2.12561H13.4751ZM14.4751 0.12561H1.4751C0.925098 0.12561 0.475098 0.57561 0.475098 1.12561V15.1256L4.4751 11.1256H14.4751C15.0251 11.1256 15.4751 10.6756 15.4751 10.1256V1.12561C15.4751 0.57561 15.0251 0.12561 14.4751 0.12561ZM19.4751 4.12561H17.4751V13.1256H4.4751V15.1256C4.4751 15.6756 4.9251 16.1256 5.4751 16.1256H16.4751L20.4751 20.1256V5.12561C20.4751 4.57561 20.0251 4.12561 19.4751 4.12561Z"
         )
     );
-
 #endregion
 }
