@@ -41,6 +41,8 @@ internal sealed class TelemetryProvider : ITelemetryProvider, IDisposable
     {
 #if RELEASE
         meterConfig.CreateActiveUsersCounter(BuildInfo.ApplicationConstants.Version);
+#else
+        meterConfig.CreateActiveUsersCounter();
 #endif
         meterConfig.CreateUsersPerOSCounter();
         meterConfig.CreateUsersPerLanguageCounter();
