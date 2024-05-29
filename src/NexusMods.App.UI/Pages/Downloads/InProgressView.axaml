@@ -19,54 +19,52 @@
     <Grid RowDefinitions="Auto, *">
         <!-- ToolBar -->
         <Border Classes="Toolbar" Grid.Row="0">
-            <Grid ColumnDefinitions="*, Auto">
-                <StackPanel Grid.Column="1">
-                    <Button x:Name="CancelButton">
-                        <StackPanel>
-                            <icons:UnifiedIcon Classes="RemoveCircleOutline" />
-                            <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Cancel}" />
-                        </StackPanel>
-                    </Button>
-                    <Button x:Name="PauseButton">
-                        <StackPanel>
-                            <icons:UnifiedIcon Classes="PauseCircleOutline" />
-                            <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Pause}" />
-                        </StackPanel>
-                    </Button>
-                    <Button x:Name="ResumeButton">
-                        <StackPanel>
-                            <icons:UnifiedIcon Classes="PlayCircleOutline" />
-                            <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Resume}" />
-                        </StackPanel>
-                    </Button>
-                    <Line />
-                    <Button x:Name="ResumeAllButton">
-                        <StackPanel>
-                            <icons:UnifiedIcon Classes="PlayCircleFilled" />
-                            <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Resume_All}" />
-                        </StackPanel>
-                    </Button>
-                    <Button x:Name="PauseAllButton">
-                        <StackPanel>
-                            <icons:UnifiedIcon Classes="PauseCircleFilled" />
-                            <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Pause_All}" />
-                        </StackPanel>
-                    </Button>
-                    <Line />
-                    <Button x:Name="ClearButton">
-                        <StackPanel>
-                            <icons:UnifiedIcon Classes="Close" />
-                            <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Clear}" />
-                        </StackPanel>
-                    </Button>
-                    <Button x:Name="ClearAllButton">
-                        <StackPanel>
-                            <icons:UnifiedIcon Classes="ClearAll" />
-                            <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Clear_completed}" />
-                        </StackPanel>
-                    </Button>
-                </StackPanel>
-            </Grid>
+           <StackPanel>
+                <Button x:Name="CancelButton">
+                    <StackPanel>
+                        <icons:UnifiedIcon Classes="RemoveCircleOutline" />
+                        <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Cancel}" />
+                    </StackPanel>
+                </Button>
+                <Button x:Name="PauseButton">
+                    <StackPanel>
+                        <icons:UnifiedIcon Classes="PauseCircleOutline" />
+                        <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Pause}" />
+                    </StackPanel>
+                </Button>
+                <Button x:Name="ResumeButton">
+                    <StackPanel>
+                        <icons:UnifiedIcon Classes="PlayCircleOutline" />
+                        <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Resume}" />
+                    </StackPanel>
+                </Button>
+                <Line />
+                <Button x:Name="ResumeAllButton">
+                    <StackPanel>
+                        <icons:UnifiedIcon Classes="PlayCircleFilled" />
+                        <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Resume_All}" />
+                    </StackPanel>
+                </Button>
+                <Button x:Name="PauseAllButton">
+                    <StackPanel>
+                        <icons:UnifiedIcon Classes="PauseCircleFilled" />
+                        <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Pause_All}" />
+                    </StackPanel>
+                </Button>
+                <Line />
+                <Button x:Name="ClearButton">
+                    <StackPanel>
+                        <icons:UnifiedIcon Classes="Close" />
+                        <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Clear}" />
+                    </StackPanel>
+                </Button>
+                <Button x:Name="ClearAllButton">
+                    <StackPanel>
+                        <icons:UnifiedIcon Classes="ClearAll" />
+                        <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Clear_completed}" />
+                    </StackPanel>
+                </Button>
+            </StackPanel>
         </Border>
 
         <!-- Page Content -->
