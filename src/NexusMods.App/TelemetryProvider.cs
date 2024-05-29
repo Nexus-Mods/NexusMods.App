@@ -1,7 +1,6 @@
 using System.Reactive.Disposables;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.Telemetry;
@@ -27,7 +26,9 @@ internal sealed class TelemetryProvider : ITelemetryProvider, IDisposable
 
     public void ConfigureMetrics(IMeterConfig meterConfig)
     {
-        meterConfig.CreateActiveUsersCounter();
+#if RELEASE
+        meterConfig.CreateActiveUsersCounter(BuildInfo.ApplicationConstants.Version);
+#endif
         meterConfig.CreateUsersPerOSCounter();
         meterConfig.CreateUsersPerLanguageCounter();
         meterConfig.CreateUsersPerMembershipCounter(GetMembership);

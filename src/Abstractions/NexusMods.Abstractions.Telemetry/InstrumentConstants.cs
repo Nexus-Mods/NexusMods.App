@@ -15,4 +15,5 @@ internal static class InstrumentConstants
     public const string TagLanguage   = "language";
     public const string TagMembership = "membership";
     public const string TagOS         = "os";
+    public const string TagVersion    = "version";
 }
