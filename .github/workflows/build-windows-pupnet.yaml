@@ -8,11 +8,16 @@ on:
         required: false
         description: "The version of the application to build"
         default: "1.0.0"
-      PupNetVersion:
+      PupNetRepo:
         type: string
         required: false
-        description: "The PupNet version to use"
-        default: "1.6.0"
+        description: "The URL of the PupNet repository"
+        default: "https://github.com/kuiperzone/PupNet-Deploy.git"
+      PupNetBranch:
+        type: string
+        required: false
+        description: "The branch or commit of PupNet to use"
+        default: "dabed0cc2063c5a2d2c4f780bb6718f4b90cfd16"
       ProjectFile:
         type: string
         required: true
@@ -84,8 +89,17 @@ jobs:
       - name: Print debug info
         run: dotnet --info
 
-      - name: Get PupNet
-        run: dotnet tool install -g KuiperZone.PupNet --version ${{ inputs.PupNetVersion }}
+      - name: Build & Install PupNet
+        run: |
+          # Our use of central package management may cause PupNet to fail build
+          # so we lift it out to a separate directory and build it there
+          mkdir ../PupNet
+          cd ../PupNet
+          git clone ${{ inputs.PupNetRepo }} .
+          git checkout ${{ inputs.PupNetBranch }}
+          dotnet build -c Release
+          cd PupNet/bin/Release/net8.0
+          dotnet tool install --global --add-source . KuiperZone.PupNet
 
       - name: Download CodeSignTool
         id: downloadCodeSignTool
