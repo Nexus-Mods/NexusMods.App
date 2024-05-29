@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## [v0.5.0](https://github.com/Nexus-Mods/NexusMods.App/releases/tag/v0.5.0) - 2024-05-29
 
 ### New Features
 
