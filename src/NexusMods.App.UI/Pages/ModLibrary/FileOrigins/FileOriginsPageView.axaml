@@ -16,19 +16,6 @@
         <Border Grid.Row="0" Classes="Toolbar">
             <StackPanel Orientation="Horizontal">
                 <!-- Add Buttons Section -->
-                <Button x:Name="DeleteModsButton">
-                    <StackPanel>
-                        <icons:UnifiedIcon Classes="Close" />
-                        <TextBlock Text="{x:Static resources:Language.LoadoutGridView__Remove}"/>
-                    </StackPanel>
-                </Button>
-                <navigation:NavigationControl x:Name="ViewModFilesButton">
-                    <StackPanel>
-                        <icons:UnifiedIcon Classes="FolderOutline" />
-                        <TextBlock Text="{x:Static resources:Language.LoadoutGridView__View_Files}"/>
-                    </StackPanel>
-                </navigation:NavigationControl>
-                <Line/>
                 <Button x:Name="AddModButton">
                     <StackPanel>
                         <icons:UnifiedIcon Classes="PlusCircleOutline" />
@@ -41,6 +28,23 @@
                         <TextBlock Text="{x:Static resources:Language.LoadoutGridView__Add_Mod_Advanced}"/>
                     </StackPanel>
                 </Button>
+                
+                <Line/>
+                
+                <!-- Get Mods Section -->
+                <Button x:Name="DeleteModsButton">
+                    <StackPanel>
+                        <icons:UnifiedIcon Classes="Close" />
+                        <TextBlock Text="{x:Static resources:Language.LoadoutGridView__Remove}"/>
+                    </StackPanel>
+                </Button>
+                <navigation:NavigationControl x:Name="ViewModFilesButton">
+                    <StackPanel>
+                        <icons:UnifiedIcon Classes="FolderOutline" />
+                        <TextBlock Text="{x:Static resources:Language.LoadoutGridView__View_Files}"/>
+                    </StackPanel>
+                </navigation:NavigationControl>
+
             </StackPanel>
         </Border>
 

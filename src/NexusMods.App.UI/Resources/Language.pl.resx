@@ -204,12 +204,12 @@
 	<data name="HomeView__BROWSE_ALL_GAMES" xml:space="preserve">
 		<value>PRZEGLĄDAJ WSZYSTKIE GRY</value>
 	</data>
-	<data name="LoadoutGridView__Add_Mod" xml:space="preserve">
-		<value>Dodaj mod</value>
-	</data>
-	<data name="LoadoutGridView__Add_Mod_Advanced" xml:space="preserve">
-		<value>Dodaj mod (Zaawansowane)</value>
-	</data>
+    <data name="LoadoutGridView__Add_Mod" xml:space="preserve">
+        <value>Dodaj</value>
+    </data>
+    <data name="LoadoutGridView__Add_Mod_Advanced" xml:space="preserve">
+        <value>Dodaj (Zaawansowane)</value>
+    </data>
 	<data name="MyGamesView__Ready_to_mod" xml:space="preserve">
 		<value>Dodane gry</value>
 	</data>

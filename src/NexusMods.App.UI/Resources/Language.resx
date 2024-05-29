@@ -208,10 +208,10 @@
         <value>BROWSE ALL GAMES</value>
     </data>
     <data name="LoadoutGridView__Add_Mod" xml:space="preserve">
-        <value>Add Mod</value>
+        <value>Add</value>
     </data>
     <data name="LoadoutGridView__Add_Mod_Advanced" xml:space="preserve">
-        <value>Add Mod (Advanced)</value>
+        <value>Advanced Add</value>
     </data>
     <data name="MyGamesView__Ready_to_mod" xml:space="preserve">
         <value>Games Added</value>

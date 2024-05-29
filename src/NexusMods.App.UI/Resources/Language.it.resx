@@ -187,7 +187,7 @@ Questi dati sono raccolti in maniera anonima e non saranno mai condivisi con ter
         <value>SFOGLIA TUTTI I GIOCHI</value>
     </data>
     <data name="LoadoutGridView__Add_Mod" xml:space="preserve">
-        <value>Aggiungi Mod</value>
+        <value>Aggiungi</value>
     </data>
     <data name="MyGamesView__Detected_games" xml:space="preserve">
         <value>Giochi rilevati</value>
