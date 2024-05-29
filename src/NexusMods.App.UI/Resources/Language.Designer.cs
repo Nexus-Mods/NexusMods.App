@@ -909,9 +909,9 @@ namespace NexusMods.App.UI.Resources {
             }
         }
         
-        public static string FileOriginsPageView_AddedHeader {
+        public static string FileOriginsPageView_InstalledHeader {
             get {
-                return ResourceManager.GetString("FileOriginsPageView_AddedHeader", resourceCulture);
+                return ResourceManager.GetString("FileOriginsPageView_InstalledHeader", resourceCulture);
             }
         }
         

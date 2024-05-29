@@ -452,9 +452,9 @@
 	<data name="FileOriginsPageView_DownloadedHeader" xml:space="preserve">
 		<value>POBRANE</value>
 	</data>
-	<data name="FileOriginsPageView_AddedHeader" xml:space="preserve">
-		<value>DODANE</value>
-	</data>
+    <data name="FileOriginsPageView_InstalledHeader" xml:space="preserve">
+        <value>ZAINSTALOWANE</value>
+    </data>
 	<data name="FileOriginsPageView_ActionHeader" xml:space="preserve">
 		<value>DZIAŁANIA</value>
 	</data>

@@ -458,8 +458,8 @@
     <data name="FileOriginsPageView_DownloadedHeader" xml:space="preserve">
         <value>DOWNLOADED</value>
     </data>
-    <data name="FileOriginsPageView_AddedHeader" xml:space="preserve">
-        <value>ADDED</value>
+    <data name="FileOriginsPageView_InstalledHeader" xml:space="preserve">
+        <value>INSTALLED</value>
     </data>
     <data name="FileOriginsPageView_ActionHeader" xml:space="preserve">
         <value>ACTIONS</value>

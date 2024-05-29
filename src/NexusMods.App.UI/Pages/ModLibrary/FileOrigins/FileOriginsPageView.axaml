@@ -95,7 +95,7 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="{x:Static resources:Language.FileOriginsPageView_AddedHeader}">
+                <DataGridTemplateColumn Header="{x:Static resources:Language.FileOriginsPageView_InstalledHeader}">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate DataType="fileOriginEntry:IFileOriginEntryViewModel">
                             <TextBlock Classes="BodyMDNormal" 
@@ -104,7 +104,7 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="{x:Static resources:Language.FileOriginsPageView_ActionHeader}" Width="175">
+                <DataGridTemplateColumn Header="{x:Static resources:Language.FileOriginsPageView_ActionHeader}">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate DataType="fileOriginEntry:IFileOriginEntryViewModel">
                             <Button x:Name="AddButton"
