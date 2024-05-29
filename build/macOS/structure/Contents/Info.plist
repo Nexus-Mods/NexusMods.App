@@ -19,10 +19,14 @@
             </dict>
         </array>
         -->
+        <key>CFBundleIconName</key>
+        <string>NexusMods</string>
         <key>CFBundleInfoDictionaryVersion</key>
         <string>6.0</string>
         <key>CFBundleName</key>
-        <string>NexusMods.App</string>
+        <string>NexusMods</string>
+        <key>CFBundleDisplayName</key>
+        <string>NexusMods</string>
         <key>CFBundlePackageType</key>
         <string>APPL</string>
         <key>CFBundleShortVersionString</key>
