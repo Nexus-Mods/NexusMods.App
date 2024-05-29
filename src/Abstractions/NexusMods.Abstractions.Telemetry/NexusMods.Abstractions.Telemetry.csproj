@@ -4,6 +4,7 @@
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\..\NexusMods.App.BuildInfo\NexusMods.App.BuildInfo.csproj" />
+      <ProjectReference Include="..\NexusMods.Abstractions.GameLocators\NexusMods.Abstractions.GameLocators.csproj" />
       <ProjectReference Include="..\NexusMods.Abstractions.Settings\NexusMods.Abstractions.Settings.csproj" />
     </ItemGroup>
     <ItemGroup>
@@ -17,6 +18,15 @@
         <DependentUpon>Counters.cs</DependentUpon>
       </Compile>
       <Compile Update="Counters.UsersPerMembership.cs">
+        <DependentUpon>Counters.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Counters.ManagedGamesCount.cs">
+        <DependentUpon>Counters.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Counters.ModsPerGame.cs">
+        <DependentUpon>Counters.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Counters.GlobalDownloadSize.cs">
         <DependentUpon>Counters.cs</DependentUpon>
       </Compile>
     </ItemGroup>

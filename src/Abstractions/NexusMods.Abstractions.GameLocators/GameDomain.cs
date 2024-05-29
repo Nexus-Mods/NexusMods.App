@@ -13,16 +13,11 @@ namespace NexusMods.Abstractions.Games.DTO;
 ///    Usually we match these with NexusMods' URLs.
 /// </remarks>
 [ValueObject<string>]
-public readonly partial struct GameDomain : IAugmentWith<DefaultValueAugment, JsonAugment>
+public readonly partial struct GameDomain : IAugmentWith<DefaultValueAugment, JsonAugment, DefaultEqualityComparerAugment>
 {
-    /// <summary>
-    /// Unknown.
-    /// </summary>
+    /// <inheritdoc/>
     public static GameDomain DefaultValue { get; } = From("Unknown");
-    
-    /// <summary>
-    /// Retrieves the 'stable' hash of a domain.
-    /// One that does not change between application runs.
-    /// </summary>
-    public ulong GetStableHash() => Value.AsSpan().GetStableHash();
+
+    /// <inheritdoc/>
+    public static IEqualityComparer<string> InnerValueDefaultEqualityComparer { get; } = StringComparer.OrdinalIgnoreCase;
 }

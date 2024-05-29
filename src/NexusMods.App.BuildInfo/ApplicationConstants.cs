@@ -9,11 +9,11 @@ public static class ApplicationConstants
 {
     static ApplicationConstants()
     {
-        Version = Assembly.GetExecutingAssembly().GetName().Version;
+        Version = Assembly.GetExecutingAssembly().GetName().Version!;
     }
 
     /// <summary>
     /// Gets the current Version.
     /// </summary>
-    public static Version? Version { get; }
+    public static Version Version { get; }
 }
