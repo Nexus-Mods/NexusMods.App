@@ -473,4 +473,7 @@
     <data name="LoadoutGridView__Remove" xml:space="preserve">
         <value>Usuń</value>
     </data>
+    <data name="FileOriginsPage_GetMods" xml:space="preserve">
+        <value>Pobierz mody:</value>
+    </data>
 </root>

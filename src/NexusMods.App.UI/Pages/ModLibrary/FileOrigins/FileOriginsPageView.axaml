@@ -32,6 +32,8 @@
                 <Line/>
                 
                 <!-- Get Mods Section -->
+                <TextBlock Classes="NotTitle" Text="{x:Static resources:Language.FileOriginsPage_GetMods}" />
+                
                 <Button x:Name="DeleteModsButton">
                     <StackPanel>
                         <icons:UnifiedIcon Classes="Close" />

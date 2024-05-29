@@ -485,4 +485,7 @@
     <data name="LoginMessageView_Title" xml:space="preserve">
         <value>Log in to get started</value>
     </data>
+    <data name="FileOriginsPage_GetMods" xml:space="preserve">
+        <value>Get mods:</value>
+    </data>
 </root>

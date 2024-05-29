@@ -962,5 +962,11 @@ namespace NexusMods.App.UI.Resources {
                 return ResourceManager.GetString("LoginMessageView_Title", resourceCulture);
             }
         }
+        
+        public static string FileOriginsPage_GetMods {
+            get {
+                return ResourceManager.GetString("FileOriginsPage_GetMods", resourceCulture);
+            }
+        }
     }
 }
