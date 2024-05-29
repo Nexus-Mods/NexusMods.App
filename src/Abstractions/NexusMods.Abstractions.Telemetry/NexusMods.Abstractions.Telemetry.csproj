@@ -19,5 +19,8 @@
       <Compile Update="Counters.UsersPerMembership.cs">
         <DependentUpon>Counters.cs</DependentUpon>
       </Compile>
+      <Compile Update="Counters.ManagedGamesCount.cs">
+        <DependentUpon>Counters.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 </Project>
