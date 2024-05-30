@@ -145,13 +145,14 @@ public static class Loadout
         /// </summary>
         public GameInstallation Installation
         {
-            get => ServiceProvider.GetRequiredService<IGameRegistry>()
-                .Get(Loadout.Installation.Get(this));
-            set
+            get
             {
-                var id = ServiceProvider.GetRequiredService<IGameRegistry>().GetId(value);
-                Loadout.Installation.Add(this, id);
+                var registry = ServiceProvider.GetRequiredService<IGameRegistry>();
+                if (!registry.Installations.TryGetValue(Loadout.Installation.Get(this), out var found))
+                    throw new KeyNotFoundException("Game installation not found in registry");
+                return found;
             }
+            set => Loadout.Installation.Add(this, value.GameMetadataId);
         }
 
         /// <summary>

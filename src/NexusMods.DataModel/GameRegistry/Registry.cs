@@ -1,4 +1,6 @@
+using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using DynamicData;
@@ -10,6 +12,8 @@ using NexusMods.Abstractions.Games.DTO;
 using NexusMods.DataModel.GameRegistry;
 using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.TxFunctions;
+using NexusMods.Paths;
 
 namespace NexusMods.DataModel;
 
@@ -19,110 +23,141 @@ namespace NexusMods.DataModel;
 public class Registry : IGameRegistry, IHostedService
 {
     private readonly IConnection _conn;
-    private Dictionary<EntityId,GameInstallation> _byId = new();
-    private Dictionary<(GameDomain Domain, Version Version, GameStore Store),EntityId> _byInstall = new();
 
-    private readonly SourceCache<(GameInstallation Game, EntityId Id), EntityId> _cache = new(x => x.Id); 
+
+    private readonly SourceCache<GameInstallation, EntityId> _cache = new(x => x.GameMetadataId); 
     
     private readonly ReadOnlyObservableCollection<GameInstallation> _installedGames;
     private readonly ILogger<Registry> _logger;
-    private readonly IEnumerable<ILocatableGame> _games;
+    private readonly IEnumerable<IGame> _games;
+    private readonly IEnumerable<IGameLocator> _locators;
+    private readonly ConcurrentDictionary<EntityId, GameInstallation> _byId = new();
+    private Task? _startupTask = null;
 
     /// <inheritdoc />
     public ReadOnlyObservableCollection<GameInstallation> InstalledGames => _installedGames;
 
+    /// <inheritdoc />
+    public IDictionary<EntityId, GameInstallation> Installations => _byId;
+
     /// <summary>
     /// Game registry for all installed games.
     /// </summary>
-    public Registry(ILogger<Registry> logger, IEnumerable<ILocatableGame> games, IConnection conn)
+    public Registry(ILogger<Registry> logger, IEnumerable<ILocatableGame> games, IEnumerable<IGameLocator> locators, IConnection conn)
     {
-        _games = games;
+        _games = games.OfType<IGame>().ToArray();
+        _locators = locators;
         _logger = logger;
         _conn = conn;
         
         _cache
             .Connect()
-            .Transform(g => g.Game)
             .Bind(out _installedGames)
             .Subscribe();
-        
     }
 
-    private async Task Startup(IEnumerable<ILocatableGame> games)
+    /// <summary>
+    /// Registers external game installations, mostly used for testing, but it's a way to get a game installation
+    /// from an arbitrary source.
+    /// </summary>
+    public async Task<GameInstallation> Register(ILocatableGame game, GameLocatorResult result, IGameLocator locator)
     {
-        var allInstalls = from game in games
-            let igame = (IGame)game
-            from install in igame.Installations
-            select install;
-        
-        _logger.LogInformation("Getting game metadata");
-        
-        var allInDb = GameMetadata
-            .All(_conn.Db)
-            .ToDictionary(x => (GameDomain.From(x.Domain), GameStore.From(x.Store)));
+        var id = await GetLocatorId(game, result);
+        var install = ((IGame) game).InstallationFromLocatorResult(result, id, locator);
+        _byId[install.GameMetadataId] = install;
+        return install;
+    }
+    
+    private async Task Startup(CancellationToken token)
+    {
+        await ((IHostedService)_conn).StartAsync(token);
 
-        _logger.LogInformation("Creating transaction");
-        using var tx = _conn.BeginTransaction();
-
-        var added = new List<(EntityId Id, GameInstallation)>();
-        var results = new List<(EntityId Id, GameInstallation)>();
-        foreach (var install in allInstalls)
-        {
-            if (allInDb.TryGetValue((install.Game.Domain, install.Store), out var found))
-            {
-                results.Add((found.Id, install));
-            }
-            else
-            {
-                var meta = new GameMetadata.Model(tx)
-                {
-                    Domain = install.Game.Domain.Value,
-                    Store = install.Store.Value,
-                };
-                added.Add((meta.Id, install));
-            }
-        }
-
-        if (added.Count > 0)
-        {
-            _logger.LogInformation("Found {Count} new games to register", added.Count);
-            var result = await tx.Commit();
-            _logger.LogInformation("Registered {Count} new games", added.Count);
-            foreach (var (id, install) in added)
-                results.Add((result[id], install));
-        }
-        
-        _logger.LogInformation("Register setup");
-
-        _byId = results.ToDictionary(x => x.Id, x => x.Item2);
-        _byInstall = results.ToDictionary(x => GetKey(x.Item2), x => x.Id);
+        var results = await FindInstallations()
+            .Distinct().ToArrayAsync(token);
         
         _cache.Edit(x => {
             x.Clear();
-            foreach (var (id, install) in results)
-                _cache.AddOrUpdate((install, id));
+            foreach (var install in results)
+                _cache.AddOrUpdate(install);
         });
     }
-    
-    private (GameDomain Domain, Version Version, GameStore Store) GetKey(GameInstallation installation)
+
+    /// <summary>
+    /// Tries to get the locator result id from the database.
+    /// </summary>
+    private static bool TryGetLocatorResultId(IDb db, ILocatableGame locatableGame, GameLocatorResult result, [NotNullWhen(true)] out EntityId? id)
     {
-        return (installation.Game.Domain, installation.Version, installation.Store);
+        var found = db
+            .FindIndexed(result.Path.ToString(), GameMetadata.Path)
+            .Select(db.Get<GameMetadata.Model>)
+            .FirstOrDefault(m => m.Domain == locatableGame.Domain && m.Store == result.Store);
+        if (found is null)
+        {
+            id = null;
+            return false;
+        }
+        id = found.Id;
+        return true;
     }
 
-    /// <inheritdoc />
-    public IEnumerable<GameInstallation> AllInstalledGames => _byId.Values;
+    /// <summary>
+    /// Gets the locator id from the database, if none exists it will be created and returned.
+    /// </summary>
+    private async ValueTask<EntityId> GetLocatorId(ILocatableGame locatableGame, GameLocatorResult result)
+    {
+        if (TryGetLocatorResultId(_conn.Db, locatableGame, result, out var id))
+            return id.Value;
+        
+        using var tx = _conn.BeginTransaction();
+        tx.Add(locatableGame, result, static (tx, db, game, result) =>
+        {
+            // Check for a race condition, someone may have added it before us.
+            if (TryGetLocatorResultId(db, game, result, out var _))
+                return;
 
-    /// <inheritdoc />
-    public GameInstallation Get(EntityId id) => _byId[id];
+            // Doesn't exist, so create it.
+            _ = new GameMetadata.Model(tx)
+            {
+                Store = result.Store.Value,
+                Domain = game.Domain.Value,
+                Path = result.Path.ToString(),
+            };
+        });
+        
+        var txResult = await tx.Commit();
+        
+        if (!TryGetLocatorResultId(txResult.Db, locatableGame, result, out id))
+            throw new InvalidOperationException("Failed to get locator result id after inserting it, this should never happen");
+        
+        return id.Value;
+    }
 
-    /// <inheritdoc />
-    public EntityId GetId(GameInstallation installation) => _byInstall[GetKey(installation)];
 
+    /// <summary>
+    /// Looks through all locators to find all installations.
+    /// </summary>
+    private async IAsyncEnumerable<GameInstallation> FindInstallations()
+    {
+        foreach (var game in _games)
+        {
+            foreach (var locator in _locators)
+            {
+                foreach (var found in locator.Find(game))
+                {
+                    yield return await Register(game, found, locator);
+                }
+            }
+        }
+    }
+    
     /// <inheritdoc />
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        await ((IHostedService)_conn).StartAsync(cancellationToken);
-        await Startup(_games);
+        lock (this)
+        {
+            _startupTask ??= Startup(cancellationToken);
+        }
+        await _startupTask;
     }
 
     /// <inheritdoc />

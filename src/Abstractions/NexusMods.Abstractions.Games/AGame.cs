@@ -10,6 +10,7 @@ using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Serialization;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 
 namespace NexusMods.Abstractions.Games;
@@ -59,12 +60,6 @@ public abstract class AGame : IGame
     /// The path to the main executable file for the game.
     /// </summary>
     public abstract GamePath GetPrimaryFile(GameStore store);
-
-    /// <summary>
-    /// Returns a list of installations for this game.
-    /// Each game can have multiple installations, e.g. different game versions.
-    /// </summary>
-    public virtual IEnumerable<GameInstallation> Installations => _installations ??= GetInstallations();
     
     /// <inheritdoc />
     public virtual IStreamFactory Icon => throw new NotImplementedException("No icon provided for this game.");
@@ -91,6 +86,23 @@ public abstract class AGame : IGame
 
     /// <inheritdoc />
     public virtual ILoadoutSynchronizer Synchronizer => _synchronizer.Value;
+
+    /// <inheritdoc />
+    public GameInstallation InstallationFromLocatorResult(GameLocatorResult metadata, EntityId dbId, IGameLocator locator)
+    {
+        var locations = GetLocations(metadata.Path.FileSystem, metadata);
+        return new GameInstallation
+        {
+            Game = this,
+            LocationsRegister = new GameLocationsRegister(new Dictionary<LocationId, AbsolutePath>(locations)),
+            InstallDestinations = GetInstallDestinations(locations),
+            Version = metadata.Version ?? GetVersion(metadata),
+            Store = metadata.Store,
+            LocatorResultMetadata = metadata.Metadata,
+            Locator = locator,
+            GameMetadataId = dbId,
+        };
+    }
 
     /// <summary>
     /// Returns the game version if GameLocatorResult failed to get the game version.

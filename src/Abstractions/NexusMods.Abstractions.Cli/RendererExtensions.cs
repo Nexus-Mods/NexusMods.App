@@ -64,6 +64,7 @@ public static class RendererExtensions
     /// <param name="args"></param>
     public static async Task Error(this IRenderer renderer, Exception ex, string template, params object[] args)
     {
-        await renderer.Text(template + "\n\nTraceback: {ex} \n ", args);
+        await renderer.Text(template, args);
+        await renderer.Text("Error: {0}", ex);
     }
 }

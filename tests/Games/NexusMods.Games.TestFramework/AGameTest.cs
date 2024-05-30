@@ -58,7 +58,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
         
         GameRegistry = serviceProvider.GetRequiredService<IGameRegistry>();
         
-        GameInstallation = GameRegistry.AllInstalledGames.First(g => g.Game is TGame);
+        GameInstallation = GameRegistry.Installations.Values.First(g => g.Game is TGame);
         Game = (TGame)GameInstallation.Game;
 
         FileSystem = serviceProvider.GetRequiredService<IFileSystem>();

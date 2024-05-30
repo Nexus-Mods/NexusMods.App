@@ -6,7 +6,7 @@ namespace NexusMods.Abstractions.GameLocators;
 /// <summary>
 /// Stores the path for an individual game.
 /// </summary>
-public readonly struct GamePath : IPath<GamePath>, IEquatable<GamePath>
+public readonly struct GamePath : IPath<GamePath>, IEquatable<GamePath>, IComparable<GamePath>
 {
     /// <summary>
     /// The path to this instance.
@@ -109,5 +109,12 @@ public readonly struct GamePath : IPath<GamePath>, IEquatable<GamePath>
     public bool EndsWith(RelativePath other)
     {
         return Path.EndsWith(other);
+    }
+
+    /// <inheritdoc />
+    public int CompareTo(GamePath other)
+    {
+        var locationComparison = LocationId.CompareTo(other.LocationId);
+        return locationComparison != 0 ? locationComparison : Path.CompareTo(other.Path);
     }
 }

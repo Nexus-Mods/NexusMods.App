@@ -18,6 +18,7 @@ using NexusMods.Abstractions.GameLocators.Stores.EGS;
 using NexusMods.Abstractions.GameLocators.Stores.GOG;
 using NexusMods.Abstractions.GameLocators.Stores.Origin;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 
 namespace NexusMods.StandardGameLocators;
@@ -37,7 +38,8 @@ public static class Services
     public static IServiceCollection AddStandardGameLocators(this IServiceCollection services,
         bool registerConcreteLocators = true)
     {
-        services.AddGameLocatorCliVerbs();
+        services.AddGameLocatorCliVerbs()
+            .AddAttributeCollection(typeof(ManuallyAddedGame));
 
         // TODO: figure out the Proton-Wine situation
 

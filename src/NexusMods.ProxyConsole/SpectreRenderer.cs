@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Spectre.Console;
-using Abstractions = NexusMods.ProxyConsole.Abstractions;
+﻿using Spectre.Console;
 using Impl = NexusMods.ProxyConsole.Abstractions.Implementations;
 using Render = Spectre.Console.Rendering;
 
@@ -33,12 +29,22 @@ public class SpectreRenderer : Abstractions.IRenderer
     /// <exception cref="NotImplementedException"></exception>
     private async ValueTask<Render.IRenderable> ToSpectreAsync(Abstractions.IRenderable renderable)
     {
-        return renderable switch
+        switch (renderable)
         {
-            Impl.Text text => new Text(string.Format(text.Template, text.Arguments)),
-            Impl.Table table => await ToSpectreAsync(table),
-            _ => throw new NotImplementedException()
-        };
+            case Impl.Text text:
+                if (text.Arguments.Length == 0)
+                {
+                    return new Text(text.Template);
+                }
+                else
+                {
+                    return new Text(string.Format(text.Template, text.Arguments));
+                }
+            case Impl.Table table:
+                return await ToSpectreAsync(table);
+            default:
+                throw new NotImplementedException();
+        }
     }
 
     private async ValueTask<Render.IRenderable> ToSpectreAsync(Impl.Table table)

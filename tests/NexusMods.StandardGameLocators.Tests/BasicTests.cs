@@ -1,24 +1,21 @@
+using System.Runtime.Versioning;
 using FluentAssertions;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 
 namespace NexusMods.StandardGameLocators.Tests;
 
-public class BasicTests
+public class BasicTests(IGameRegistry registry)
 {
-    private readonly IGame _game;
 
-    public BasicTests(IGame game)
-    {
-        _game = game;
-    }
+    [SkippableFact]
+    [SupportedOSPlatform("linux")]
 
-    [Fact]
     public void Test_Locators_Linux()
     {
-        if (!OperatingSystem.IsLinux()) return;
+        Skip.If(!OperatingSystem.IsLinux());
 
-        _game.Installations.Should().SatisfyRespectively(
+        registry.Installations.Values.Should().SatisfyRespectively(
             steamInstallation =>
             {
                 steamInstallation.LocationsRegister.LocationDescriptors
@@ -29,32 +26,29 @@ public class BasicTests
             });
     }
 
-    [Fact]
+    [SkippableFact]
+    [SupportedOSPlatform("windows")]
+
     public void Test_Locators_Windows()
     {
-        if (!OperatingSystem.IsWindows()) return;
+        Skip.If(!OperatingSystem.IsWindows());
 
-        _game.Installations
+
+        registry.Installations.Values
             .Should().HaveCount(6)
             .And.Satisfy(
-                eaInstallation => eaInstallation.LocationsRegister.LocationDescriptors.First().Value.ResolvedPath
-                    .ToString().Contains("ea_game"),
-                epicInstallation => epicInstallation.LocationsRegister.LocationDescriptors.First().Value.ResolvedPath
-                    .ToString().Contains("epic_game"),
-                originInstallation => originInstallation.LocationsRegister.LocationDescriptors.First().Value
-                    .ResolvedPath.ToString().Contains("origin_game"),
-                gogInstallation => gogInstallation.LocationsRegister.LocationDescriptors.First().Value.ResolvedPath
-                    .ToString().Contains("gog_game"),
-                steamInstallation => steamInstallation.LocationsRegister.LocationDescriptors.First().Value.ResolvedPath
-                    .ToString().Contains("steam_game"),
-                xboxInstallation => xboxInstallation.LocationsRegister.LocationDescriptors.First().Value.ResolvedPath
-                    .ToString().Contains("xbox_game")
+                eaInstallation => eaInstallation.Store == GameStore.EADesktop,
+                epicInstallation => epicInstallation.Store == GameStore.EGS,
+                originInstallation => originInstallation.Store == GameStore.Origin,
+                gogInstallation => gogInstallation.Store == GameStore.GOG,
+                steamInstallation => steamInstallation.Store == GameStore.Steam,
+                xboxInstallation => xboxInstallation.Store == GameStore.XboxGamePass
             );
     }
 
     [Fact]
     public void CanFindGames()
     {
-        _game.Installations.Should().NotBeEmpty();
+        registry.Installations.Values.Should().NotBeEmpty();
     }
 }

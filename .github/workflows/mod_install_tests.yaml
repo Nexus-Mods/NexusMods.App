@@ -27,8 +27,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest]
-        game: [cyberpunk2077, darkestdungeon, stardewvalley, mountandblade2bannerlord]
+        os: [linux-latest]
+        game: [stardewvalley]
 
     steps:
       - uses: actions/checkout@v3
