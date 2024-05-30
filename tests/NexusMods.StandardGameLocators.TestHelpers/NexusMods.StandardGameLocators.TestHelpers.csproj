@@ -12,8 +12,8 @@
         <None Update="xunit.runner.json">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
-        <Content Include="Resources\StubbedGameState\**">
+        <None Update="Resources\StubbedGameState.zip">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
+        </None>
     </ItemGroup>
 </Project>
