@@ -556,6 +556,9 @@
         <Compile Update="Overlays\AlphaWarning\AlphaWarningViewModel.cs">
           <DependentUpon>IAlphaWarningViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Pages\LoadoutGrid\LoadoutGridDesignViewModel.cs">
+          <DependentUpon>ILoadoutGridViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
