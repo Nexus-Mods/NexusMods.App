@@ -127,7 +127,7 @@ internal static class CleanupVerbs
         await File.WriteAllLinesAsync(directoriesToDeletePath, appDirectories.Select(d => d.ToString()));
 
         // uninstall-helper.ps1 is beside our current EXE.
-        var scriptPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!, "uninstall-helper.ps1");
+        var scriptPath = Path.Combine(AppContext.BaseDirectory, "uninstall-helper.ps1");
 
         // Execute the PowerShell script
         await Cli.Wrap("powershell")
