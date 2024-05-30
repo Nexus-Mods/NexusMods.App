@@ -38,6 +38,7 @@ public class HttpDownloaderTests
     }
 
     [Fact]
+    [Trait("RequiresNetworking", "True")]
     public async Task CanDownloadFromLocalServer()
     {
         await using var path = _temporaryFileManager.CreateFile();
