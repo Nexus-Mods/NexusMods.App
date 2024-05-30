@@ -91,12 +91,6 @@
                         </StackPanel>
                     </Button>
 
-                    <Button
-                        Classes="Action"
-                        HorizontalAlignment="Center">
-                        <icons:UnifiedIcon Classes="Bell" />
-                    </Button>
-
                     <Button Classes="Avatar"
                             HorizontalAlignment="Center"
                             x:Name="UserButton">
