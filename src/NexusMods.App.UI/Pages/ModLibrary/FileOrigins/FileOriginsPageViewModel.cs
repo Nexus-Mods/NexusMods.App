@@ -138,7 +138,7 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
                 {
                     tx.Add(id, DownloaderState.GameDomain, _gameDomain);
                     tx.Add(id, FilePathMetadata.OriginalName, file.FileName);
-                });
+                }, file.FileName);
         });
 
         return Task.CompletedTask;

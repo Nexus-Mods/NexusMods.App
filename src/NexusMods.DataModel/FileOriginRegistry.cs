@@ -49,7 +49,7 @@ public class FileOriginRegistry : IFileOriginRegistry
     }
 
     /// <inheritdoc />
-    public async ValueTask<DownloadId> RegisterDownload(IStreamFactory factory, MetadataFn metaData, CancellationToken token = default)
+    public async ValueTask<DownloadId> RegisterDownload(IStreamFactory factory, MetadataFn metaData, string modName, CancellationToken token = default)
     {
         var db = _conn.Db;
         // WARNING !! Cannot access hash cache.
@@ -63,7 +63,7 @@ public class FileOriginRegistry : IFileOriginRegistry
         await using var tmpFolder = _temporaryFileManager.CreateFolder();
         await _extractor.ExtractAllAsync(factory, tmpFolder.Path, token);
 
-        return await RegisterFolderInternal(tmpFolder.Path, AppendNestedArchiveMetadata, null, _fileStore.GetFileHashes(), archiveHash.Value, archiveSize, token);
+        return await RegisterFolderInternal(tmpFolder.Path, AppendNestedArchiveMetadata, null, _fileStore.GetFileHashes(), archiveHash.Value, archiveSize, modName, token);
 
         void AppendNestedArchiveMetadata(ITransaction tx, EntityId id)
         {
@@ -73,7 +73,7 @@ public class FileOriginRegistry : IFileOriginRegistry
     }
 
     /// <inheritdoc />
-    public async ValueTask<DownloadId> RegisterDownload(AbsolutePath path, MetadataFn metaDataFn, CancellationToken token = default)
+    public async ValueTask<DownloadId> RegisterDownload(AbsolutePath path, MetadataFn metaDataFn, string modName, CancellationToken token = default)
     {
         var db = _conn.Db;
         var archiveSize = (ulong) path.FileInfo.Size;
@@ -85,10 +85,10 @@ public class FileOriginRegistry : IFileOriginRegistry
 
         await using var tmpFolder = _temporaryFileManager.CreateFolder();
         await _extractor.ExtractAllAsync(path, tmpFolder.Path, token);
-        return await RegisterFolderInternal(tmpFolder.Path, metaDataFn, null, _fileStore.GetFileHashes(), archiveHash.Value, archiveSize, token);
+        return await RegisterFolderInternal(tmpFolder.Path, metaDataFn, null, _fileStore.GetFileHashes(), archiveHash.Value, archiveSize, modName, token);
     }
 
-    public async ValueTask<DownloadId> RegisterDownload(AbsolutePath path, EntityId id, CancellationToken token = default)
+    public async ValueTask<DownloadId> RegisterDownload(AbsolutePath path, EntityId id, string modName, CancellationToken token = default)
     {
         var db = _conn.Db;
         var archiveSize = (ulong) path.FileInfo.Size;
@@ -101,14 +101,14 @@ public class FileOriginRegistry : IFileOriginRegistry
 
         await using var tmpFolder = _temporaryFileManager.CreateFolder();
         await _extractor.ExtractAllAsync(path, tmpFolder.Path, token);
-        return await RegisterFolderInternal(tmpFolder.Path, null, id, _fileStore.GetFileHashes(), archiveHash.Value, archiveSize, token);
+        return await RegisterFolderInternal(tmpFolder.Path, null, id, _fileStore.GetFileHashes(), archiveHash.Value, archiveSize, modName, token);
     }
 
     /// <inheritdoc />
-    public async ValueTask<DownloadId> RegisterFolder(AbsolutePath path, Action<ITransaction, EntityId> metaDataFn,
+    public async ValueTask<DownloadId> RegisterFolder(AbsolutePath path, Action<ITransaction, EntityId> metaDataFn, string modName,
         CancellationToken token = default)
     {
-        return await RegisterFolderInternal(path, metaDataFn, null, _fileStore.GetFileHashes(), 0, 0, token);
+        return await RegisterFolderInternal(path, metaDataFn, null, _fileStore.GetFileHashes(), 0, 0, modName, token);
     }
 
     /// <inheritdoc />
@@ -140,6 +140,7 @@ public class FileOriginRegistry : IFileOriginRegistry
         HashSet<ulong> knownHashes, 
         ulong archiveHash, 
         ulong archiveSize, 
+        string suggestedName,
         CancellationToken token = default)
     {
         List<ArchivedFileEntry> filesToBackup = [];
@@ -198,6 +199,7 @@ public class FileOriginRegistry : IFileOriginRegistry
             Hash = Hash.From(archiveHash),
             Size = Size.From(archiveSize),
             Count = (ulong) files.Count,
+            SuggestedName = suggestedName,
         };
 
         metaDataFn?.Invoke(tx, analysis.Id);

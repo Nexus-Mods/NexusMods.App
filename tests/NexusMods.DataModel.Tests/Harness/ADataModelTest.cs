@@ -117,8 +117,8 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
 
     protected async Task<ModId[]> AddMods(LoadoutId loadoutId, AbsolutePath path, string? name = null)
     {
-        var downloadId = await FileOriginRegistry.RegisterDownload(path, Token);
-        var result = await ArchiveInstaller.AddMods(loadoutId, downloadId, name, token: Token);
+        var downloadId = await FileOriginRegistry.RegisterDownload(path, name ?? path.FileName, Token);
+        var result = await ArchiveInstaller.AddMods(loadoutId, downloadId, token: Token);
         // Refresh the loadout to get the new mods, as a convenience.
         Refresh(ref BaseLoadout);
         return result;
@@ -134,8 +134,9 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
     /// returning the download id.
     /// </summary>
     /// <param name="files"></param>
+    /// <param name="modName"></param>
     /// <returns></returns>
-    protected async Task<DownloadId> RegisterDownload(params (string Name, string Data)[] files)
+    protected async Task<DownloadId> RegisterDownload(string modName, params (string Name, string Data)[] files)
     {
         await using var tmpFile = TemporaryFileManager.CreateFile(KnownExtensions.Zip);
         using var memoryStream = new MemoryStream();
@@ -156,7 +157,7 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
             await memoryStream.CopyToAsync(fileStream, Token);
         }
 
-        return await FileOriginRegistry.RegisterDownload(tmpFile.Path, Token);
+        return await FileOriginRegistry.RegisterDownload(tmpFile.Path, modName, Token);
     }
 
     /// <summary>
@@ -164,8 +165,8 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
     /// </summary>
     protected async Task<ModId> AddMod(string modName, params (string Name, string Data)[] files)
     {
-        var downloadId = await RegisterDownload(files);
-        var modIds = await ArchiveInstaller.AddMods(LoadoutId.From(BaseLoadout.Id), downloadId, modName, token: Token);
+        var downloadId = await RegisterDownload(modName, files);
+        var modIds = await ArchiveInstaller.AddMods(LoadoutId.From(BaseLoadout.Id), downloadId, token: Token);
         return modIds.First();
     }
 

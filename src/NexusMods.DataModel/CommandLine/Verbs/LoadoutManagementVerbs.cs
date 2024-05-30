@@ -129,9 +129,9 @@ public static class LoadoutManagementVerbs
         return await renderer.WithProgress(token, async () =>
         {
             var downloadId = await fileOriginRegistry.RegisterDownload(file, 
-            (tx, id) => tx.Add(id, FilePathMetadata.OriginalName, file.FileName), token);
+            (tx, id) => tx.Add(id, FilePathMetadata.OriginalName, file.FileName), name, token);
 
-            await archiveInstaller.AddMods(loadout.LoadoutId, downloadId, name, token: token);
+            await archiveInstaller.AddMods(loadout.LoadoutId, downloadId, token: token);
             return 0;
         });
     }

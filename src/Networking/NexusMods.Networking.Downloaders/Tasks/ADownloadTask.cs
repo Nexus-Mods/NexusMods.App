@@ -204,12 +204,7 @@ public abstract class ADownloadTask : ReactiveObject, IDownloadTask
     {
         try
         {
-            // Set the download's name for the mod library
-            using var tx = Connection.BeginTransaction();
-            tx.Add(PersistentState.Id, DownloadAnalysis.SuggestedName, PersistentState.FriendlyName);
-            await tx.Commit();
-            
-            await FileOriginRegistry.RegisterDownload(DownloadLocation, PersistentState.Id);
+            await FileOriginRegistry.RegisterDownload(DownloadLocation, PersistentState.Id, PersistentState.FriendlyName);
         }
         catch (Exception ex)
         {

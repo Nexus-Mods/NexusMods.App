@@ -66,7 +66,7 @@ where TVm : IViewModelInterface
             (tx, id) =>
             {
                 tx.Add(id, FilePathMetadata.OriginalName, path.FileName);
-            });
+            }, path.FileName);
         return await ArchiveInstaller.AddMods(Loadout.LoadoutId, downloadId);
     }
 

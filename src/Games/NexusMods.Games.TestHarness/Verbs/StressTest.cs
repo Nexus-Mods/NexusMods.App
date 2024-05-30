@@ -93,7 +93,7 @@ public class StressTest
                         var list = await game.Synchronizer.CreateLoadout(install);
                         var downloadId = await fileOriginRegistry.RegisterDownload(tmpPath, 
                             (tx, id) => tx.Add(id, FilePathMetadata.OriginalName, tmpPath.Path.Name),
-                            token);
+                            tmpPath.Path.Name, token);
                         await archiveInstaller.AddMods(LoadoutId.From(list.Id), downloadId, token: token);
 
                         results.Add((file.FileName, mod.ModId, file.FileId, hash, true, null));
