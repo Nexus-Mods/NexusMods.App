@@ -97,9 +97,8 @@ jobs:
           cd ../PupNet
           git clone ${{ inputs.PupNetRepo }} .
           git checkout ${{ inputs.PupNetBranch }}
-          dotnet build -c Release
-          cd PupNet/bin/Release/net8.0
-          dotnet tool install --global --add-source . KuiperZone.PupNet
+          dotnet pack -c Release -o . -p:Version=0.0.0-nma
+          dotnet tool install --global --add-source . KuiperZone.PupNet --version 0.0.0-nma
 
       - name: Download CodeSignTool
         id: downloadCodeSignTool
