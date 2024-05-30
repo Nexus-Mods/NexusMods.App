@@ -40,9 +40,9 @@ public class DiffTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeViewMo
         _statusBarSourceList = new SourceList<string>();
 
         _treeSourceCache.Connect()
+            .OnUI()
             .TransformToTree(model => model.ParentKey)
             .Transform(node => node.Item.Initialize(node))
-            .OnUI()
             .Bind(out _items)
             .Subscribe();
 
