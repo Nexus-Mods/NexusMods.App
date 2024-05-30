@@ -34,19 +34,18 @@
                 <!-- Get Mods Section -->
                 <TextBlock Classes="NotTitle" Text="{x:Static resources:Language.FileOriginsPage_GetMods}" />
                 
-                <Button x:Name="DeleteModsButton">
+                <Button x:Name="GetModsFromDriveButton">
                     <StackPanel>
                         <icons:UnifiedIcon Classes="Disk" />
                         <TextBlock Text="{x:Static resources:Language.FileOriginsPage_FromDrive}"/>
                     </StackPanel>
                 </Button>
-                <navigation:NavigationControl x:Name="ViewModFilesButton">
+                <Button x:Name="GetModsFromNexusButton">
                     <StackPanel>
                         <icons:UnifiedIcon Classes="Nexus" />
                         <TextBlock Text="{x:Static resources:Language.FileOriginsPage_FromNexusMods}"/>
                     </StackPanel>
-                </navigation:NavigationControl>
-
+                </Button>
             </StackPanel>
         </Border>
 

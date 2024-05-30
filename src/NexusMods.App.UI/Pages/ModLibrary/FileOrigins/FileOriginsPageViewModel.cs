@@ -1,7 +1,10 @@
 using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
+using Avalonia.Controls;
+using Avalonia.Platform.Storage;
 using DynamicData;
 using DynamicData.Binding;
+using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.FileStore;
@@ -16,11 +19,13 @@ using NexusMods.App.UI.Pages.ModLibrary.FileOriginEntry;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.CrossPlatform.Process;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.Downloaders.Tasks.State;
 using NexusMods.Paths;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 using RocksDbSharp;
 
 namespace NexusMods.App.UI.Pages.ModLibrary;
@@ -32,10 +37,12 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
     private readonly ILogger<FileOriginsPageViewModel> _logger;
     private readonly IServiceProvider _provider;
     private readonly IFileOriginRegistry _fileOriginRegistry;
+    private readonly IOSInterop _osInterop;
     private readonly IRepository<DownloadAnalysis.Model> _dlAnalysisRepo;
     private readonly IArchiveInstaller _archiveInstaller;
 
     public ReadOnlyObservableCollection<IFileOriginEntryViewModel> FileOrigins => _fileOrigins;
+    [Reactive] public IReadOnlyList<IFileOriginEntryViewModel> SelectedMods { get; set; } = Array.Empty<IFileOriginEntryViewModel>();
     private ReadOnlyObservableCollection<IFileOriginEntryViewModel> _fileOrigins = new([]);
 
     public LoadoutId LoadoutId { get; private set; }
@@ -51,6 +58,7 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
         ILogger<FileOriginsPageViewModel> logger,
         IServiceProvider provider,
         IFileOriginRegistry fileOriginRegistry,
+        IOSInterop osInterop,
         IWindowManager windowManager) : base(windowManager)
     {
         _conn = conn;
@@ -58,6 +66,7 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
         _logger = logger;
         _provider = provider;
         _fileOriginRegistry = fileOriginRegistry;
+        _osInterop = osInterop;
         _archiveInstaller = archiveInstaller;
         _dlAnalysisRepo = downloadAnalysisRepository;
 
@@ -81,7 +90,8 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
                 .ToObservableChangeSet()
                 .Filter(model => FilterDownloadAnalysisModel(model, game.Domain))
                 .OnUI()
-                .Transform(fileOrigin => (IFileOriginEntryViewModel)new FileOriginEntryViewModel(
+                .Transform(fileOrigin => (IFileOriginEntryViewModel)
+                    new FileOriginEntryViewModel(
                         _conn,
                         _archiveInstaller,
                         LoadoutId,
@@ -104,15 +114,15 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
         return true;
     }
 
-    public Task AddMod(string path) => AddMod(path, installer: null);
-
-    public Task AddModAdvanced(string path)
+    [UsedImplicitly]
+    public async Task RegisterFromDisk(IStorageProvider storageProvider)
     {
-        var installer = _provider.GetKeyedService<IModInstaller>("AdvancedInstaller");
-        return AddMod(path, installer);
+        var files = await PickModFiles(storageProvider);
+        foreach (var file in files)
+            await RegisterFileFromDisk(file.Path.LocalPath);
     }
 
-    private Task AddMod(string path, IModInstaller? installer)
+    private Task RegisterFileFromDisk(string path)
     {
         var file = _fileSystem.FromUnsanitizedFullPath(path);
         if (!_fileSystem.FileExists(file))
@@ -121,17 +131,48 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
             return Task.CompletedTask;
         }
 
-        var _ = Task.Run(async () =>
+        _ = Task.Run(async () =>
         {
-            var downloadId = await _fileOriginRegistry.RegisterDownload(file,
+            await _fileOriginRegistry.RegisterDownload(file,
                 (tx, id) =>
                 {
                     tx.Add(id, DownloaderState.GameDomain, _gameDomain);
                     tx.Add(id, FilePathMetadata.OriginalName, file.FileName);
                 });
-            await _archiveInstaller.AddMods(LoadoutId, downloadId, file.FileName, token: CancellationToken.None, installer: installer);
         });
 
         return Task.CompletedTask;
+    }
+
+    public async Task OpenNexusModPage()
+    {
+        var url = $"https://www.nexusmods.com/{_gameDomain.Value}";
+        await _osInterop.OpenUrl(new Uri(url), true);
+    }
+
+    public Task AddMods()
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task AddModsAdvanced()
+    {
+        throw new NotImplementedException();
+    }
+
+    private async Task<IEnumerable<IStorageFile>> PickModFiles(IStorageProvider storageProvider)
+    {
+        var options =
+            new FilePickerOpenOptions
+            {
+                Title = Language.LoadoutGridView_AddMod_FilePicker_Title,
+                AllowMultiple = true,
+                FileTypeFilter = new[]
+                {
+                    new FilePickerFileType(Language.LoadoutGridView_AddMod_FileType_Archive) {Patterns = new [] {"*.zip", "*.7z", "*.rar"}},
+                }
+            };
+
+        return await storageProvider.OpenFilePickerAsync(options);
     }
 }

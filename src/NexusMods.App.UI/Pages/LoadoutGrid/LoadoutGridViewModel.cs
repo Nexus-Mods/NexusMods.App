@@ -171,6 +171,7 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
         });
     }
 
+    [UsedImplicitly]
     public async Task DeleteMods(IEnumerable<ModId> modsToDelete, string commitMessage)
     {
         var db = _conn.Db;

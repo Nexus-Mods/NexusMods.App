@@ -1,7 +1,9 @@
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using Avalonia.ReactiveUI;
+using NexusMods.App.UI.Pages.ModLibrary.FileOriginEntry;
 using NexusMods.App.UI.Resources;
 using ReactiveUI;
 
@@ -20,44 +22,33 @@ public partial class FileOriginsPageView : ReactiveUserControl<IFileOriginsPageV
                     v => v.DataGrid.ItemsSource)
                 .DisposeWith(d);
 
+            // Synchronize the Grid with DataModel for Selected Items
+            Observable.FromEventPattern<SelectionChangedEventArgs>(
+                    addHandler => DataGrid.SelectionChanged += addHandler,
+                    removeHandler => DataGrid.SelectionChanged -= removeHandler)
+                .Select(_ => DataGrid.SelectedItems.Cast<IFileOriginEntryViewModel>().ToList())
+                .BindTo(ViewModel, vm => vm.SelectedMods)
+                .DisposeWith(d);
+            
+            // Enable/Disable Add Mod & Add Mod Advanced Buttons
+            this.WhenAnyValue(x => x.ViewModel!.SelectedMods.Count)
+                .Select(count => count > 0)
+                .BindTo(this, x => x.AddModButton.IsEnabled)
+                .DisposeWith(d);
+
+            this.WhenAnyValue(x => x.ViewModel!.SelectedMods.Count)
+                .Select(count => count > 0)
+                .BindTo(this, x => x.AddModAdvancedButton.IsEnabled)
+                .DisposeWith(d);
+
             DataGrid.Width = Double.NaN;
             
-            AddModButton.Command = ReactiveCommand.CreateFromTask(AddMod);
-            AddModAdvancedButton.Command = ReactiveCommand.CreateFromTask(AddModAdvanced);
+            //AddModButton.Command command = ReactiveCommand.CreateFromTask(AddMod);
+            //AddModAdvancedButton.Command = ReactiveCommand.CreateFromTask(AddModAdvanced);
+            GetModsFromNexusButton.Command = ReactiveCommand.CreateFromTask(ViewModel!.OpenNexusModPage);
+            GetModsFromDriveButton.Command = ReactiveCommand.CreateFromTask(
+                async () => await ViewModel!.RegisterFromDisk(TopLevel.GetTopLevel(this)!.StorageProvider));
         });
-    }
-    
-    private async Task AddMod()
-    {
-        foreach (var file in await PickModFiles())
-        {
-            await ViewModel!.AddMod(file.Path.LocalPath);
-        }
-    }
-
-    private async Task AddModAdvanced()
-    {
-        foreach (var file in await PickModFiles())
-        {
-            await ViewModel!.AddModAdvanced(file.Path.LocalPath);
-        }
-    }
-
-    private async Task<IEnumerable<IStorageFile>> PickModFiles()
-    {
-        var provider = TopLevel.GetTopLevel(this)!.StorageProvider;
-        var options =
-            new FilePickerOpenOptions
-            {
-                Title = Language.LoadoutGridView_AddMod_FilePicker_Title,
-                AllowMultiple = true,
-                FileTypeFilter = new[]
-                {
-                    new FilePickerFileType(Language.LoadoutGridView_AddMod_FileType_Archive) {Patterns = new [] {"*.zip", "*.7z", "*.rar"}},
-                }
-            };
-
-        return await provider.OpenFilePickerAsync(options);
     }
 }
 

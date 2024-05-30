@@ -10,6 +10,7 @@ using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.CrossPlatform.Process;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
@@ -44,6 +45,7 @@ public class FileOriginsPageFactory : APageFactory<IFileOriginsPageViewModel, Fi
             ServiceProvider.GetRequiredService<ILogger<FileOriginsPageViewModel>>(),
             ServiceProvider,
             ServiceProvider.GetRequiredService<IFileOriginRegistry>(),
+            ServiceProvider.GetRequiredService<IOSInterop>(),
             ServiceProvider.GetRequiredService<IWindowManager>()
         );
     }
