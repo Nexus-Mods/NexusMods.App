@@ -11,6 +11,7 @@ using LiveChartsCore;
 using LiveChartsCore.Defaults;
 using LiveChartsCore.SkiaSharpView;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.Controls.DownloadGrid;
 using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadGameName;
@@ -177,8 +178,15 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
                         var controller = GetWorkspaceController();
                         var workspaces = controller
                             .AllWorkspaces
-                            .Where(w => w.Context is LoadoutContext loadoutContext
-                                        && conn.Db.Get<Loadout.Model>(loadoutContext.LoadoutId.Value).Installation.Game.Domain.Equals(vm.Game)
+                            .Where(w =>
+                                {
+                                    if (w.Context is not LoadoutContext loadoutContext)
+                                    {
+                                        return false;
+                                    }
+                                    var loadout = conn.Db.Get<Loadout.Model>(loadoutContext.LoadoutId.Value);
+                                    return loadout.IsVisible() && loadout.Installation.Game.Domain.Equals(vm.Game);
+                                }
                             )
                             .Select(w => (w.Id, Context: (LoadoutContext)w.Context)).ToArray();
                         
