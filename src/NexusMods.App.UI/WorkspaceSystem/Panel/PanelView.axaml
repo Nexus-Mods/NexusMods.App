@@ -73,7 +73,7 @@
                             Classes="Spacing-3"
                             Margin="12, 12, 12, 12">
                             
-                            <!-- TODO: Remove this hidden Border when PoppedOut panels are implemented -->
+                            <!-- TODO: Remove this hiding Border when PoppedOut panels are implemented -->
                             <Border IsVisible="False">
                                 <Button x:Name="PopOutPanelButton"
                                         Classes="PanelTitlebar OpenInWindow" />
