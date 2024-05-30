@@ -45,6 +45,7 @@ public static class DependencyInjectionHelper
             .Combine($"NexusMods.Games.TestFramework-{Guid.NewGuid()}");
 
         return serviceCollection
+            .AddManuallyAddedGameSupport()
             .AddLogging(builder => builder.AddXunitOutput().SetMinimumLevel(LogLevel.Debug))
             .AddSingleton<JsonConverter, GameInstallationConverter>()
             .AddFileSystem()

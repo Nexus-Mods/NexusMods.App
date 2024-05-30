@@ -22,6 +22,7 @@ using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.Extensions;
 using NexusMods.Paths;
+using NexusMods.StandardGameLocators;
 using NexusMods.StandardGameLocators.TestHelpers;
 using FileId = NexusMods.Abstractions.NexusWebApi.Types.FileId;
 using ModId = NexusMods.Abstractions.NexusWebApi.Types.ModId;
@@ -29,11 +30,11 @@ using ModId = NexusMods.Abstractions.NexusWebApi.Types.ModId;
 namespace NexusMods.Games.TestFramework;
 
 [PublicAPI]
-public abstract class AGameTest<TGame> where TGame : AGame
+public abstract class AGameTest<TGame> : IAsyncLifetime where TGame : AGame
 {
     protected readonly IServiceProvider ServiceProvider;
     protected readonly TGame Game;
-    protected readonly GameInstallation GameInstallation;
+    protected GameInstallation GameInstallation;
 
     protected readonly IFileSystem FileSystem;
     protected readonly TemporaryFileManager TemporaryFileManager;
@@ -47,6 +48,9 @@ public abstract class AGameTest<TGame> where TGame : AGame
     protected readonly NexusApiClient NexusNexusApiClient;
     protected readonly IHttpDownloader HttpDownloader;
     private readonly ILogger<AGameTest<TGame>> _logger;
+    private readonly Version _stubVersion;
+    private TemporaryPath _baseFolder;
+    private EntityId _installId;
 
     /// <summary>
     /// Constructor.
@@ -54,6 +58,8 @@ public abstract class AGameTest<TGame> where TGame : AGame
     /// <param name="serviceProvider"></param>
     protected AGameTest(IServiceProvider serviceProvider)
     {
+        _stubVersion = new Version(1, 0, 0, 0);
+        
         ServiceProvider = serviceProvider;
         
         GameRegistry = serviceProvider.GetRequiredService<IGameRegistry>();
@@ -72,29 +78,8 @@ public abstract class AGameTest<TGame> where TGame : AGame
         HttpDownloader = serviceProvider.GetRequiredService<IHttpDownloader>();
 
         _logger = serviceProvider.GetRequiredService<ILogger<AGameTest<TGame>>>();
-        if (GameInstallation.Locator is UniversalStubbedGameLocator<TGame> universal)
-        {
-            _logger.LogInformation("Resetting game files for {Game}", Game.Name);
-            ResetGameFolders();
-        }
-
     }
-
     
-    /// <summary>
-    /// Resets the game folders to a clean state.
-    /// </summary>
-    private void ResetGameFolders()
-    {
-        var register = GameInstallation.LocationsRegister;
-        var oldLocations = register.GetTopLevelLocations().ToArray();
-        var newLocations = new Dictionary<LocationId, AbsolutePath>();
-        foreach (var (k, _) in oldLocations)
-        {
-            newLocations[k] = TemporaryFileManager.CreateFolder().Path;
-        }
-        register.Reset(newLocations);
-    }
 
     /// <summary>
     /// Creates a new loadout and returns the <see cref="LoadoutMarker"/> of it.
@@ -281,4 +266,18 @@ public abstract class AGameTest<TGame> where TGame : AGame
 
     protected Task<TemporaryPath> CreateTestFile(string contents, Extension? extension, Encoding? encoding = null)
         => CreateTestFile((encoding ?? Encoding.UTF8).GetBytes(contents), extension);
+
+    public async Task InitializeAsync()
+    {
+        var manualInstaller = ServiceProvider.GetServices<IGameLocator>().OfType<ManuallyAddedLocator>().First();
+        _baseFolder = TemporaryFileManager.CreateFolder();
+        
+        (_installId, GameInstallation) = await manualInstaller.Add(Game, _stubVersion, _baseFolder);
+    }
+
+    public Task DisposeAsync()
+    {
+        // TODO: Implement, maybe delete the temporary files?
+        return Task.CompletedTask;
+    }
 }
