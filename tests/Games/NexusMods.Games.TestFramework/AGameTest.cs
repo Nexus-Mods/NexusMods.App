@@ -272,7 +272,22 @@ public abstract class AGameTest<TGame> : IAsyncLifetime where TGame : AGame
         var manualInstaller = ServiceProvider.GetServices<IGameLocator>().OfType<ManuallyAddedLocator>().First();
         _baseFolder = TemporaryFileManager.CreateFolder();
         
-        (_installId, GameInstallation) = await manualInstaller.Add(Game, _stubVersion, _baseFolder);
+        static AbsolutePath RemapOne(AbsolutePath basePath, string prefix, AbsolutePath maybeRemap)
+        {
+            if (maybeRemap.InFolder(basePath))
+                return basePath.Combine(prefix).Combine(maybeRemap.RelativeTo(basePath));
+            return maybeRemap;
+        }
+
+        AbsolutePath RemapperFn(LocationId id, AbsolutePath path)
+        {
+            // Expand this if we get many more. 
+            path = RemapOne(_baseFolder.Path, "game", path);
+            path = RemapOne(FileSystem.GetKnownPath(KnownPath.HomeDirectory), "home", path);
+            return path;
+        }
+        
+        (_installId, GameInstallation) = await manualInstaller.Add(Game, _stubVersion, _baseFolder, RemapperFn);
     }
 
     public Task DisposeAsync()

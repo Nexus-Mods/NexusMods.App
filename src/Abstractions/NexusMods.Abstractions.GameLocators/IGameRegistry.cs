@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Paths;
 
 namespace NexusMods.Abstractions.GameLocators;
 
@@ -22,5 +23,5 @@ public interface IGameRegistry
     /// Registers external game installations, mostly used for testing, but it's a way to get a game installation
     /// from an arbitrary source.
     /// </summary>
-    public Task<GameInstallation> Register(ILocatableGame game, GameLocatorResult result, IGameLocator locator);
+    public Task<GameInstallation> Register(ILocatableGame game, GameLocatorResult result, IGameLocator locator, Func<LocationId, AbsolutePath, AbsolutePath>? remapper = null);
 }

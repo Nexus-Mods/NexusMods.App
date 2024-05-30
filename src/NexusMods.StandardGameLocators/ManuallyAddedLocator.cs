@@ -29,11 +29,7 @@ public class ManuallyAddedLocator : IGameLocator
     /// <summary>
     /// Adds a manually added game to the store.
     /// </summary>
-    /// <param name="game"></param>
-    /// <param name="version"></param>
-    /// <param name="path"></param>
-    /// <returns></returns>
-    public async Task<(EntityId, GameInstallation)> Add(IGame game, Version version, AbsolutePath path)
+    public async Task<(EntityId, GameInstallation)> Add(IGame game, Version version, AbsolutePath path, Func<LocationId, AbsolutePath, AbsolutePath>? pathRemapper = null)
     {
         using var tx = _store.Value.BeginTransaction();
         var ent = new ManuallyAddedGame.Model(tx)
@@ -45,7 +41,7 @@ public class ManuallyAddedLocator : IGameLocator
         var result = await tx.Commit();
         
         var gameRegistry = _provider.GetRequiredService<IGameRegistry>();
-        var install = await gameRegistry.Register(game, new GameLocatorResult(path, GameStore.ManuallyAdded, ent, version), this);
+        var install = await gameRegistry.Register(game, new GameLocatorResult(path, GameStore.ManuallyAdded, ent, version), this, pathRemapper);
         var newId = result[ent.Id];
         return (newId, install);
     }

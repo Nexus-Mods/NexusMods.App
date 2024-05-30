@@ -62,11 +62,14 @@ public class Registry : IGameRegistry, IHostedService
     /// Registers external game installations, mostly used for testing, but it's a way to get a game installation
     /// from an arbitrary source.
     /// </summary>
-    public async Task<GameInstallation> Register(ILocatableGame locatableGame, GameLocatorResult result, IGameLocator locator)
+    public async Task<GameInstallation> Register(ILocatableGame locatableGame, GameLocatorResult result, IGameLocator locator, Func<LocationId, AbsolutePath, AbsolutePath>? remapper = null)
     {
         var game = (IGame) locatableGame;
         var id = await GetLocatorId(game, result);
         var locations = game.GetLocations(_fileSystem, result);
+        
+        if (remapper is not null)
+            locations = locations.ToDictionary(x => x.Key, x => remapper(x.Key, x.Value));
         
         var install = ((IGame) game).InstallationFromLocatorResult(locations, result, id, locator);
         _byId[install.GameMetadataId] = install;
