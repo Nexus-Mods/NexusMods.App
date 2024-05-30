@@ -35,13 +35,18 @@
             </StackPanel>
         </Border>
 
-        <TextBlock Grid.Row="1" Classes="HeadingSMSemi" HorizontalAlignment="Center" x:Name="NoDiagnosticsText" Text="{x:Static resources:Language.DiagnosticListView_DiagnosticListView_There_are_no_diagnostics}"/>
+        <TextBlock Grid.Row="1" 
+                   Classes="HeadingSMSemi" 
+                   HorizontalAlignment="Center" 
+                   x:Name="NoDiagnosticsText" 
+                   Margin="0 24,0,0"
+                   Text="{x:Static resources:Language.DiagnosticListView_DiagnosticListView_There_are_no_diagnostics}"/>
 
         <Border Grid.Row="2" Padding="24">
             <ItemsControl x:Name="ItemsControl">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <StackPanel Classes="Spacing-1"/>
+                        <StackPanel Classes="Spacing-3"/>
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
             </ItemsControl>
