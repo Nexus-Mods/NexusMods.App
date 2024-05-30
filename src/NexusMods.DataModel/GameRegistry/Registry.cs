@@ -33,6 +33,7 @@ public class Registry : IGameRegistry, IHostedService
     private readonly IEnumerable<IGameLocator> _locators;
     private readonly ConcurrentDictionary<EntityId, GameInstallation> _byId = new();
     private Task? _startupTask = null;
+    private readonly IFileSystem _fileSystem;
 
     /// <inheritdoc />
     public ReadOnlyObservableCollection<GameInstallation> InstalledGames => _installedGames;
@@ -43,12 +44,13 @@ public class Registry : IGameRegistry, IHostedService
     /// <summary>
     /// Game registry for all installed games.
     /// </summary>
-    public Registry(ILogger<Registry> logger, IEnumerable<ILocatableGame> games, IEnumerable<IGameLocator> locators, IConnection conn)
+    public Registry(ILogger<Registry> logger, IEnumerable<ILocatableGame> games, IEnumerable<IGameLocator> locators, IConnection conn, IFileSystem fileSystem)
     {
         _games = games.OfType<IGame>().ToArray();
         _locators = locators;
         _logger = logger;
         _conn = conn;
+        _fileSystem = fileSystem;
         
         _cache
             .Connect()
@@ -60,10 +62,13 @@ public class Registry : IGameRegistry, IHostedService
     /// Registers external game installations, mostly used for testing, but it's a way to get a game installation
     /// from an arbitrary source.
     /// </summary>
-    public async Task<GameInstallation> Register(ILocatableGame game, GameLocatorResult result, IGameLocator locator)
+    public async Task<GameInstallation> Register(ILocatableGame locatableGame, GameLocatorResult result, IGameLocator locator)
     {
+        var game = (IGame) locatableGame;
         var id = await GetLocatorId(game, result);
-        var install = ((IGame) game).InstallationFromLocatorResult(result, id, locator);
+        var locations = game.GetLocations(_fileSystem, result);
+        
+        var install = ((IGame) game).InstallationFromLocatorResult(locations, result, id, locator);
         _byId[install.GameMetadataId] = install;
         return install;
     }

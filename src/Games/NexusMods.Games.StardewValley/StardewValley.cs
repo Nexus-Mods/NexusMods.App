@@ -70,7 +70,7 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
         }
     }
 
-    protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem, GameLocatorResult installation)
+    public override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem, GameLocatorResult installation)
     {
         var result = new Dictionary<LocationId, AbsolutePath>()
         {

@@ -53,7 +53,7 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
             "NexusMods.StandardGameLocators.TestHelpers.Resources.question_mark_game.png");
 
     public override IStreamFactory GameImage => throw new NotImplementedException("No game image for stubbed game.");
-    protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem,
+    public override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem,
         GameLocatorResult installation)
     {
         return new Dictionary<LocationId, AbsolutePath>

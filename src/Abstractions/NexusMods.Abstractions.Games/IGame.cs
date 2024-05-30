@@ -6,6 +6,7 @@ using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Paths;
 
 namespace NexusMods.Abstractions.Games;
 
@@ -46,5 +47,10 @@ public interface IGame : ILocatableGame
     /// Constructs a <see cref="GameInstallation"/> from the given <see cref="GameLocatorResult"/>, and a unique DB ID,
     /// also marks the installation was sourced from the given <see cref="IGameLocator"/>.
     /// </summary>
-    public GameInstallation InstallationFromLocatorResult(GameLocatorResult metadata, EntityId dbId, IGameLocator locator);
+    public GameInstallation InstallationFromLocatorResult(IReadOnlyDictionary<LocationId, AbsolutePath> locations, GameLocatorResult metadata, EntityId dbId, IGameLocator locator);
+
+    /// <summary>
+    /// Get the various install locations for the game.
+    /// </summary>
+    public IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem, GameLocatorResult installation);
 }

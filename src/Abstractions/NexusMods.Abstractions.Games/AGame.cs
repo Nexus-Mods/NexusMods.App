@@ -88,9 +88,8 @@ public abstract class AGame : IGame
     public virtual ILoadoutSynchronizer Synchronizer => _synchronizer.Value;
 
     /// <inheritdoc />
-    public GameInstallation InstallationFromLocatorResult(GameLocatorResult metadata, EntityId dbId, IGameLocator locator)
+    public GameInstallation InstallationFromLocatorResult(IReadOnlyDictionary<LocationId, AbsolutePath> locations, GameLocatorResult metadata, EntityId dbId, IGameLocator locator)
     {
-        var locations = GetLocations(metadata.Path.FileSystem, metadata);
         return new GameInstallation
         {
             Game = this,
@@ -129,32 +128,11 @@ public abstract class AGame : IGame
     {
         _installations = null;
     }
-
-    private List<GameInstallation> GetInstallations()
-    {
-        return _gameLocators
-            .SelectMany(locator => locator.Find(this), (locator, installation) =>
-            {
-                var locations = GetLocations(installation.Path.FileSystem, installation);
-                return new GameInstallation
-                {
-                    Game = this,
-                    LocationsRegister = new GameLocationsRegister(new Dictionary<LocationId, AbsolutePath>(locations)),
-                    InstallDestinations = GetInstallDestinations(locations),
-                    Version = installation.Version ?? GetVersion(installation),
-                    Store = installation.Store,
-                    LocatorResultMetadata = installation.Metadata,
-                    Locator = locator,
-                };
-            })
-            .DistinctBy(g => g.LocationsRegister[LocationId.Game])
-            .ToList();
-    }
-
+    
     /// <summary>
     /// Returns the locations of known game elements, such as save folder, etc.
     /// </summary>
-    protected abstract IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem, GameLocatorResult installation);
+    public abstract IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem, GameLocatorResult installation);
 
     /// <summary>
     /// Returns the locations of installation destinations used by the Advanced Installer.

@@ -24,7 +24,7 @@ public class BladeAndSorcery : AGame, ISteamGame
 
     public override GamePath GetPrimaryFile(GameStore store) => new(LocationId.Game, "BladeAndSorcery.exe");
 
-    protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem, GameLocatorResult installation)
+    public override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem, GameLocatorResult installation)
     {
         var savesDirectory = fileSystem
             .GetKnownPath(KnownPath.MyGamesDirectory)

@@ -20,7 +20,7 @@ public class Sifu : AGame, ISteamGame, IEpicGame
 
     public Sifu(IServiceProvider serviceProvider) : base(serviceProvider) { }
 
-    protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem,
+    public override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem,
         GameLocatorResult installation)
     {
         return new Dictionary<LocationId, AbsolutePath>()

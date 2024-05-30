@@ -28,6 +28,18 @@ namespace NexusMods.StandardGameLocators;
 /// </summary>
 public static class Services
 {
+    
+    /// <summary>
+    /// Add support for manually added games
+    /// </summary>
+    public static IServiceCollection AddManuallyAddedGameSupport(this IServiceCollection services)
+    {
+        services.AddGameLocatorCliVerbs()
+            .AddAttributeCollection(typeof(ManuallyAddedGame));
+        services.AddSingleton<IGameLocator, ManuallyAddedLocator>();
+        return services;
+    }
+    
     /// <summary>
     /// Registers all the services for the standard store locators
     /// </summary>
@@ -38,12 +50,10 @@ public static class Services
     public static IServiceCollection AddStandardGameLocators(this IServiceCollection services,
         bool registerConcreteLocators = true)
     {
-        services.AddGameLocatorCliVerbs()
-            .AddAttributeCollection(typeof(ManuallyAddedGame));
-
         // TODO: figure out the Proton-Wine situation
 
-        services.AddSingleton<IGameLocator, ManuallyAddedLocator>();
+        services.AddManuallyAddedGameSupport();
+
 
         OSInformation.Shared.SwitchPlatform(
             onWindows: () =>

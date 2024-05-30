@@ -52,7 +52,7 @@ public class DarkestDungeon : AGame, ISteamGame, IGogGame, IEpicGame
         );
     }
 
-    protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem,
+    public override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem,
         GameLocatorResult installation)
     {
         var globalSettingsFile = fileSystem

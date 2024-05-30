@@ -23,7 +23,7 @@ public class SkyrimSpecialEdition(IServiceProvider provider) : ABethesdaGame(pro
     public override GameDomain Domain => StaticDomain;
     public override GamePath GetPrimaryFile(GameStore store) => new(LocationId.Game, "SkyrimSE.exe");
 
-    protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem,
+    public override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem,
         GameLocatorResult installation)
     {
         return new Dictionary<LocationId, AbsolutePath>

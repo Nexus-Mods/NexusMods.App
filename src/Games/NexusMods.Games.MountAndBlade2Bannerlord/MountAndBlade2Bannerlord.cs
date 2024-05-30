@@ -63,7 +63,7 @@ public sealed class MountAndBlade2Bannerlord : AGame, ISteamGame, IGogGame, IEpi
         return Version.TryParse(launcherManagerHandler.GetGameVersion(), out var val) ? val : new Version();
     }
 
-    protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem, GameLocatorResult installation)
+    public override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem, GameLocatorResult installation)
     {
         var documentsFolder = fileSystem.GetKnownPath(KnownPath.MyDocumentsDirectory);
         return new Dictionary<LocationId, AbsolutePath>()

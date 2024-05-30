@@ -61,14 +61,20 @@ public class UnknownGame : IGame
     public ILoadoutSynchronizer Synchronizer => throw new NotImplementedException();
 
     /// <inheritdoc />
-    public GameInstallation InstallationFromLocatorResult(GameLocatorResult metadata, EntityId dbId, IGameLocator locator)
+    public GameInstallation InstallationFromLocatorResult(IReadOnlyDictionary<LocationId, AbsolutePath> locations, GameLocatorResult metadata, EntityId dbId, IGameLocator locator)
     {
         return new GameInstallation
         {
             Game = this,
-            LocationsRegister = new GameLocationsRegister(new Dictionary<LocationId, AbsolutePath>()),
+            LocationsRegister = new GameLocationsRegister(new Dictionary<LocationId, AbsolutePath>(locations)),
             Version = _version
         };
+    }
+
+    /// <inheritdoc />
+    public IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem, GameLocatorResult installation)
+    {
+        return new Dictionary<LocationId, AbsolutePath>();
     }
 
     /// <inheritdoc />
