@@ -59,7 +59,7 @@ public partial class SettingsManagerTests
     public void TestOverride()
     {
         var storageBackend = new InMemoryStorageBackend();
-        var overrideInformation = new SettingsOverrideInformation(typeof(MySettings), obj =>
+        var overrideInformation = new SettingsOverrideInformation(typeof(MySettings), (_, obj) =>
         {
             var setting = obj.Should().BeOfType<MySettings>().Subject;
             setting.Bar = "Baz";

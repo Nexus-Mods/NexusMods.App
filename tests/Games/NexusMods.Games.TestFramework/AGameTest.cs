@@ -232,7 +232,6 @@ public abstract class AGameTest<TGame> : IAsyncLifetime where TGame : AGame
         foreach (var kv in filesToZip)
         {
             var (path, contents) = kv;
-
             var entry = zipArchive.CreateEntry(path.Path, CompressionLevel.Fastest);
             await using var entryStream = entry.Open();
             await using var ms = new MemoryStream(contents);

@@ -97,22 +97,35 @@ public class DownloadService : IDownloadService, IAsyncDisposable
 
     internal IDownloadTask? GetTaskFromState(DownloaderState.Model state)
     {
-        if (state.Contains(HttpDownloadState.Uri))
+        try
         {
-            var httpState = _provider.GetRequiredService<HttpDownloadTask>();
-            httpState.Init(state);
-            return httpState;
+            if (state.Contains(HttpDownloadState.Uri))
+            {
+                var httpState = _provider.GetRequiredService<HttpDownloadTask>();
+                httpState.Init(state);
+                return httpState;
+            }
+            else if (state.Contains(NxmDownloadState.ModId))
+            {
+                var nxmState = _provider.GetRequiredService<NxmDownloadTask>();
+                nxmState.Init(state);
+                return nxmState;
+            }
+            else
+            {
+                throw new InvalidOperationException("Unknown download task type: " + state);
+            }
         }
-        else if (state.Contains(NxmDownloadState.ModId))
+        catch (ObjectDisposedException)
         {
-            var nxmState = _provider.GetRequiredService<NxmDownloadTask>();
-            nxmState.Init(state);
-            return nxmState;
+            // Happens sometimes during shutdown
         }
-        else
+        catch (Exception ex)
         {
-            throw new InvalidOperationException("Unknown download task type: " + state);
+            _logger.LogError(ex, "While creating task from state {State}", state);
         }
+
+        return null;
     }
     
     /// <inheritdoc />
@@ -170,6 +183,7 @@ public class DownloadService : IDownloadService, IAsyncDisposable
         await tx.Commit();
     }
 
+    /// <inheritdoc />
     public async ValueTask DisposeAsync()
     {
         if (_isDisposed)

@@ -20,7 +20,7 @@ internal partial class SettingsManager : ISettingsManager
     private readonly Dictionary<Type, object> _values = new();
 
     private readonly ImmutableDictionary<Type, ObjectCreationInformation> _objectCreationMappings;
-    private readonly ImmutableDictionary<Type, Func<object,object>> _overrides;
+    private readonly ImmutableDictionary<Type, Func<IServiceProvider, object,object>> _overrides;
 
     private readonly ImmutableDictionary<Type, ISettingsStorageBackend> _storageBackendMappings;
     private readonly ImmutableDictionary<Type, IAsyncSettingsStorageBackend> _asyncStorageBackendMappings;
@@ -84,7 +84,7 @@ internal partial class SettingsManager : ISettingsManager
             didOverride = false;
             if (!_overrides.TryGetValue(settingsType, out var overrideMethod)) return value;
 
-            var overriden = overrideMethod.Invoke(value);
+            var overriden = overrideMethod.Invoke(_serviceProvider, value);
             Debug.Assert(overriden.GetType() == settingsType);
 
             didOverride = true;

@@ -2,6 +2,7 @@ using System.Text.Json.Serialization;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.FileExtractor;
 using NexusMods.Abstractions.HttpDownloader;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Settings;
@@ -59,6 +60,21 @@ public static class DependencyInjectionHelper
             .OverrideSettingsForTests<DataModelSettings>(settings => settings with
             {
                 UseInMemoryDataModel = true,
+            })
+            .OverrideSettingsForTests<FileExtractorSettings>((services, settings) =>
+            {
+                var os = services.GetRequiredService<IFileSystem>().OS;
+
+                var baseKnownPath = os.MatchPlatform(
+                    onWindows: () => KnownPath.TempDirectory,
+                    onLinux: () => KnownPath.XDG_STATE_HOME,
+                    onOSX: () => KnownPath.TempDirectory
+                );
+                
+                return settings with
+                {
+                    TempFolderLocation = new ConfigurablePath(baseKnownPath, "NexusMods.App/Temp/"+Guid.NewGuid()),
+                };
             })
             .AddSettingsManager()
             .AddFileExtractors();
