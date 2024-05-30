@@ -28,7 +28,7 @@ public class FileOriginRegistryTests(IServiceProvider provider)
             ServiceProvider.GetRequiredService<IFileHashCache>());
         
         // Act
-        var result = await sut.RegisterDownload(DataZipLzma, CancellationToken.None);
+        var result = await sut.RegisterDownload(DataZipLzma, "data.zip.lzma", CancellationToken.None);
 
         // Assert
         var analysis = FileOriginRegistry.Get(result);
@@ -61,8 +61,8 @@ public class FileOriginRegistryTests(IServiceProvider provider)
 
         
         // Act
-        await sut.RegisterDownload(DataZipLzma, CancellationToken.None);
-        await sut.RegisterDownload(DataZipLzma, CancellationToken.None);
+        await sut.RegisterDownload(DataZipLzma, "Mod V1", CancellationToken.None);
+        await sut.RegisterDownload(DataZipLzma, "Mod V1", CancellationToken.None);
 
         // BackupFiles should only have been called once if all files were duplicate.
         await fileStore.Received(1)
@@ -99,10 +99,10 @@ public class FileOriginRegistryTests(IServiceProvider provider)
             }),
             Arg.Any<CancellationToken>());
 
-        await sut.RegisterDownload(DataZipLzma, CancellationToken.None);
+        await sut.RegisterDownload(DataZipLzma, "Mod V1", CancellationToken.None);
 
         // Act: We now add Mod V2
-        await sut.RegisterDownload(DataZipLzmaWithExtraFile, CancellationToken.None);
+        await sut.RegisterDownload(DataZipLzmaWithExtraFile, "Mod V2", CancellationToken.None);
 
         // Assert
         // Ensure there were at least two calls

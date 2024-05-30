@@ -129,12 +129,12 @@ public abstract class AGameTest<TGame> where TGame : AGame
         var links = await NexusNexusApiClient.DownloadLinksAsync(gameDomain, modId, fileId);
         var file = TemporaryFileManager.CreateFile();
 
-        var downloadHash = await HttpDownloader.DownloadAsync(
+        await HttpDownloader.DownloadAsync(
             links.Data.Select(u => new HttpRequestMessage(HttpMethod.Get, u.Uri)).ToArray(),
             file
         );
 
-        var id = await FileOriginRegistry.RegisterDownload(file.Path);
+        var id = await FileOriginRegistry.RegisterDownload(file.Path, fileId.ToString());
 
         return id;
     }
@@ -173,10 +173,9 @@ public abstract class AGameTest<TGame> where TGame : AGame
     protected async Task<Mod.Model[]> InstallModsStoredFileIntoLoadout(
         Loadout.Model loadout,
         DownloadId downloadId,
-        string? defaultModName = null,
         CancellationToken cancellationToken = default)
     {
-        var modIds = await ArchiveInstaller.AddMods(LoadoutId.From(loadout.Id), downloadId, defaultModName, token: cancellationToken);
+        var modIds = await ArchiveInstaller.AddMods(LoadoutId.From(loadout.Id), downloadId, token: cancellationToken);
         var db = Connection.Db;
         return modIds.Select(id => db.Get<Mod.Model>(id.Value)).ToArray();
     }
@@ -195,7 +194,6 @@ public abstract class AGameTest<TGame> where TGame : AGame
     {
         var mods = await InstallModsStoredFileIntoLoadout(
             loadout, downloadId,
-            defaultModName,
             cancellationToken);
 
         mods.Length.Should().BeGreaterOrEqualTo(1);
@@ -212,12 +210,11 @@ public abstract class AGameTest<TGame> where TGame : AGame
         string? defaultModName = null,
         CancellationToken cancellationToken = default)
     {
-        var downloadId = await FileOriginRegistry.RegisterDownload(path, cancellationToken);
+        var downloadId = await FileOriginRegistry.RegisterDownload(path, defaultModName ?? "Unknown", cancellationToken);
 
         var mods = await InstallModsStoredFileIntoLoadout(
             loadout,
             downloadId,
-            defaultModName,
             cancellationToken
         );
 
