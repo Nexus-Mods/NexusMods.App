@@ -15,16 +15,14 @@
     
     <Grid RowDefinitions="Auto, *">
         <Border Classes="Toolbar" Grid.Row="0">
-            <Grid ColumnDefinitions="Auto, *">
-                <StackPanel Grid.Column="0" Orientation="Horizontal">
-                    <Button x:Name="RefreshButton">
-                        <StackPanel>
-                            <icons:UnifiedIcon Classes="Refresh" />
-                            <TextBlock Text="{x:Static resources:Language.ApplyDiff_Refresh}" />
-                        </StackPanel>
-                    </Button>
-                </StackPanel>
-            </Grid>
+            <StackPanel>
+                <Button x:Name="RefreshButton">
+                    <StackPanel>
+                        <icons:UnifiedIcon Classes="Refresh" />
+                        <TextBlock Text="{x:Static resources:Language.ApplyDiff_Refresh}" />
+                    </StackPanel>
+                </Button>
+            </StackPanel>
         </Border>
         
         <reactiveUi:ViewModelViewHost Grid.Row="1" x:Name="TreeViewHost"/>
