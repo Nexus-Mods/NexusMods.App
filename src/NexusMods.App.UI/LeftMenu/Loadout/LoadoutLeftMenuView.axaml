@@ -11,7 +11,7 @@
     </Design.DataContext>
 
     <Grid RowDefinitions="*,Auto"
-        Margin="16,16">
+        Margin="16,0,16,12">
 
         <ItemsControl Grid.Row="0"  x:Name="MenuItemsControl">
             <ItemsControl.ItemsPanel>
