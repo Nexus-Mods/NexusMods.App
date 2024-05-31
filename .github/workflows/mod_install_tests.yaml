@@ -27,7 +27,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [linux-latest]
+        os: [ubuntu-latest]
         game: [stardewvalley]
 
     steps:
