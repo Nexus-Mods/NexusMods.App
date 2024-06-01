@@ -27,7 +27,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [linux-latest]
+        os: [ubuntu-latest]
         game: [stardewvalley]
 
     steps:
@@ -42,4 +42,4 @@ jobs:
 
       - name: Stress Test
         continue-on-error: true
-        run: dotnet run --project ./src/NexusMods.App/NexusMods.App.csproj -- stress-test -g ${{matrix.game}} -o ${{ github.step_summary }}
+        run: dotnet run --project ./src/NexusMods.App/NexusMods.App.csproj -- as-main stress-test -g ${{matrix.game}} -o ${{ github.step_summary }}
