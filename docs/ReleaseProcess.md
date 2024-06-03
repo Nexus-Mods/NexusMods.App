@@ -37,7 +37,7 @@ not be installable and the user would be required to wipe their data and start o
 
 The common theme for all of these is situations where the user experience is getting worse as time goes on, 
 and waiting till the next release cycle creates an ever compounding problem for users and the dev team. These criteria
-are just guidelines however, and the app team managers reserve the right to make case-by-case decisions. 
+are just guidelines, however, and the app team managers reserve the right to make case-by-case decisions. 
 
 ## Hotfix development process
 * Bring up an issue with the dev team
