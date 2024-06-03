@@ -59,6 +59,7 @@ nav:
       - UI Styling Guidelines: development-guidelines/UIStylingGuidelines.md
       - Using Workspaces: development-guidelines/UsingWorkspaces.md
       - Diagnostics: development-guidelines/Diagnostics.md
+      - Release Process: ReleaseProcess.md
 
   - Decisions:
       - Backend:
