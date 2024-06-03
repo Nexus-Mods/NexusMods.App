@@ -197,7 +197,7 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
 
     public Task AddModAdvanced(string path)
     {
-        var installer = _provider.GetKeyedService<IModInstaller>("AdvancedInstaller");
+        var installer = _provider.GetKeyedService<IModInstaller>("AdvancedManualInstaller");
         return AddMod(path, installer);
     }
 
