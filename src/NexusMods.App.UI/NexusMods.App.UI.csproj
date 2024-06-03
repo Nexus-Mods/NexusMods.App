@@ -230,9 +230,6 @@
         <Compile Update="Overlays\Generic\MessageBox\OkCancel\MessageBoxOkCancelViewModel.cs">
           <DependentUpon>IMessageBoxOkCancelViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Overlays\MetricsOptIn\MetricsOptInDesignerViewModel.cs">
-          <DependentUpon>IMetricsOptInViewModel.cs</DependentUpon>
-        </Compile>
         <Compile Update="Overlays\MetricsOptIn\MetricsOptInViewModel.cs">
           <DependentUpon>IMetricsOptInViewModel.cs</DependentUpon>
         </Compile>

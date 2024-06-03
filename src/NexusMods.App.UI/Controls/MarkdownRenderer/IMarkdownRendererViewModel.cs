@@ -1,4 +1,5 @@
 using System.Reactive;
+using JetBrains.Annotations;
 using Markdown.Avalonia.Plugins;
 using Markdown.Avalonia.Utils;
 using ReactiveUI;
@@ -10,6 +11,7 @@ public interface IMarkdownRendererViewModel : IViewModelInterface
     /// <summary>
     /// Gets or sets the contents of the renderer.
     /// </summary>
+    [LanguageInjection(injectedLanguage: "markdown")]
     public string Contents { get; set; }
 
     /// <summary>
