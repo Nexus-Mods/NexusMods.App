@@ -34,4 +34,10 @@
     <ItemGroup>
       <PackageReference Include="Spectre.Console.Testing" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="Spectre.Console.Testing">
+        <HintPath>..\..\..\..\.nuget\packages\spectre.console.testing\0.49.1\lib\net8.0\Spectre.Console.Testing.dll</HintPath>
+      </Reference>
+    </ItemGroup>
 </Project>
