@@ -1,5 +1,7 @@
 using System.Collections.ObjectModel;
 using Avalonia.Platform.Storage;
+using DynamicData;
+using JetBrains.Annotations;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.App.UI.Pages.ModLibrary.FileOriginEntry;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -12,8 +14,10 @@ public interface IFileOriginsPageViewModel : IPageViewModelInterface
 
     ReadOnlyObservableCollection<IFileOriginEntryViewModel> FileOrigins { get; }
 
-    IReadOnlyList<IFileOriginEntryViewModel> SelectedMods { get; set; }
+    IObservable<IChangeSet<IFileOriginEntryViewModel, IFileOriginEntryViewModel>> SelectedModsObservable { get; [UsedImplicitly] set; }
 
+    ReadOnlyObservableCollection<IFileOriginEntryViewModel> SelectedModsCollection { get; }
+    
     /// <summary>
     /// Registers a new mod from disk.
     /// </summary>

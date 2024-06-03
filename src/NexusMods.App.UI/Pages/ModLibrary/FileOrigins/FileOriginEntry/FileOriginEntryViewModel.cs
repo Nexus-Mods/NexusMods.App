@@ -23,6 +23,9 @@ public class FileOriginEntryViewModel : AViewModel<IFileOriginEntryViewModel>, I
     public ReactiveCommand<IModInstaller?, Unit> AddToLoadoutCommand { get; init; }
     public DownloadAnalysis.Model FileOrigin { get; }
 
+    private readonly ObservableAsPropertyHelper<bool> _isModAddedToLoadout;
+    public bool IsModAddedToLoadout => _isModAddedToLoadout.Value;
+
     private readonly ObservableAsPropertyHelper<string> _displayArchiveDate;
     public string DisplayArchiveDate => _displayArchiveDate.Value;
 
@@ -61,6 +64,12 @@ public class FileOriginEntryViewModel : AViewModel<IFileOriginEntryViewModel>, I
         ArchiveDate = fileOrigin.GetCreatedAt();
 
         var loadout = conn.Db.Get<Loadout.Model>(loadoutId.Value);
+        
+        // Get
+        _isModAddedToLoadout = conn.Revisions(loadoutId)
+            .StartWith(loadout)
+            .Select(rev => rev.Mods.Any(mod => mod.Contains(Mod.Source) && mod.SourceId.Equals(fileOrigin.Id)))
+            .ToProperty(this, vm => vm.IsModAddedToLoadout, scheduler: RxApp.MainThreadScheduler);
 
         var interval = Observable.Interval(TimeSpan.FromSeconds(60)).StartWith(1);
 

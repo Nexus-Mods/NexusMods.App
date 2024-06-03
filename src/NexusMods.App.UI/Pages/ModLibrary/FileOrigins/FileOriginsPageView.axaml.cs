@@ -1,10 +1,12 @@
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Controls;
-using Avalonia.Platform.Storage;
 using Avalonia.ReactiveUI;
+using DynamicData;
+using DynamicData.Binding;
+using NexusMods.App.UI.Helpers;
 using NexusMods.App.UI.Pages.ModLibrary.FileOriginEntry;
-using NexusMods.App.UI.Resources;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Pages.ModLibrary;
@@ -22,23 +24,26 @@ public partial class FileOriginsPageView : ReactiveUserControl<IFileOriginsPageV
                     v => v.DataGrid.ItemsSource)
                 .DisposeWith(d);
 
-            // Synchronize the Grid with DataModel for Selected Items
-            Observable.FromEventPattern<SelectionChangedEventArgs>(
-                    addHandler => DataGrid.SelectionChanged += addHandler,
-                    removeHandler => DataGrid.SelectionChanged -= removeHandler)
-                .Select(_ => DataGrid.SelectedItems.Cast<IFileOriginEntryViewModel>().ToList())
-                .BindTo(ViewModel, vm => vm.SelectedMods)
-                .DisposeWith(d);
-            
-            // Enable/Disable Add Mod & Add Mod Advanced Buttons
-            this.WhenAnyValue(x => x.ViewModel!.SelectedMods.Count)
-                .Select(count => count > 0)
-                .BindTo(this, x => x.AddModButton.IsEnabled)
+            DataGrid.SelectedItemsToViewModelObservableChangeSetProperty(ViewModel!, vm => vm.SelectedModsObservable)
                 .DisposeWith(d);
 
-            this.WhenAnyValue(x => x.ViewModel!.SelectedMods.Count)
-                .Select(count => count > 0)
-                .BindTo(this, x => x.AddModAdvancedButton.IsEnabled)
+            // Synchronize the Grid with DataModel for Selected Items
+            // Enable/Disable Add Mod & Add Mod Advanced Buttons
+            void UpdateAddButtonState()
+            {
+                var enableButtons = 
+                    ViewModel!.SelectedModsCollection.Count > 0 && 
+                    !ViewModel!.SelectedModsCollection.Any(x => x.IsModAddedToLoadout);
+
+                AddModButton.IsEnabled = enableButtons;
+                AddModAdvancedButton.IsEnabled = enableButtons;
+            }
+
+            ViewModel!.SelectedModsCollection.ObserveCollectionChanges()
+                .Subscribe(_ => { UpdateAddButtonState(); })
+                .DisposeWith(d);
+            ViewModel!.SelectedModsObservable.WhenValueChanged(model => model.IsModAddedToLoadout)
+                .Subscribe(_ => { UpdateAddButtonState(); })
                 .DisposeWith(d);
 
             DataGrid.Width = Double.NaN;

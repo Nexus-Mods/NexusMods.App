@@ -16,13 +16,13 @@
         <Border Grid.Row="0" Classes="Toolbar">
             <StackPanel Orientation="Horizontal">
                 <!-- Add Buttons Section -->
-                <Button x:Name="AddModButton">
+                <Button x:Name="AddModButton" IsEnabled="False">
                     <StackPanel>
                         <icons:UnifiedIcon Classes="ListAdd" />
                         <TextBlock Text="{x:Static resources:Language.FileOriginsPage__Add_Mod}"/>
                     </StackPanel>
                 </Button>
-                <Button x:Name="AddModAdvancedButton">
+                <Button x:Name="AddModAdvancedButton" IsEnabled="False">
                     <StackPanel>
                         <icons:UnifiedIcon Classes="ListAdd" />
                         <TextBlock Text="{x:Static resources:Language.FileOriginsPage__Add_Mod_Advanced}"/>

@@ -43,8 +43,24 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
     private readonly IArchiveInstaller _archiveInstaller;
 
     public ReadOnlyObservableCollection<IFileOriginEntryViewModel> FileOrigins => _fileOrigins;
-    [Reactive] public IReadOnlyList<IFileOriginEntryViewModel> SelectedMods { get; set; } = Array.Empty<IFileOriginEntryViewModel>();
-    private ReadOnlyObservableCollection<IFileOriginEntryViewModel> _fileOrigins = new([]);
+    private ReadOnlyObservableCollection<IFileOriginEntryViewModel> _fileOrigins;
+
+    // Note(sewer). Adding a [Reactive] attribute breaks the setter, don't do it please.
+    public IObservable<IChangeSet<IFileOriginEntryViewModel, IFileOriginEntryViewModel>> SelectedModsObservable
+    {
+        get => _selectedMods;
+        set
+        {
+            // Called from view.
+            _selectedMods = value;
+            _selectedMods.Bind(out _selectedModsCollection).Subscribe();
+        }
+    }
+
+    public ReadOnlyObservableCollection<IFileOriginEntryViewModel> SelectedModsCollection => _selectedModsCollection;
+
+    private IObservable<IChangeSet<IFileOriginEntryViewModel, IFileOriginEntryViewModel>> _selectedMods = null!; // set from View
+    private ReadOnlyObservableCollection<IFileOriginEntryViewModel> _selectedModsCollection = null!; // set from View
 
     public LoadoutId LoadoutId { get; private set; }
     private GameDomain _gameDomain;
@@ -157,7 +173,7 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
 
     private async Task AddMod(IModInstaller? installer)
     {
-        foreach (var mod in SelectedMods)
+        foreach (var mod in SelectedModsCollection)
         {
             await mod.AddToLoadoutCommand.Execute(installer);
         }

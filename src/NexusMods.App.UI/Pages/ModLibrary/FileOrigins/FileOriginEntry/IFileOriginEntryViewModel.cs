@@ -14,4 +14,5 @@ public interface IFileOriginEntryViewModel : IViewModelInterface
     string DisplayArchiveDate { get; }
     string DisplayLastInstalledDate { get; }
     ReactiveCommand<IModInstaller?, Unit> AddToLoadoutCommand { get; }
+    bool IsModAddedToLoadout { get; }
 }
