@@ -9,16 +9,23 @@ public static class ApplicationConstants
 {
     static ApplicationConstants()
     {
-        // This attribute is set by SourceLink (https://github.com/dotnet/sourcelink)
-        var attribute = Attribute.GetCustomAttribute(Assembly.GetExecutingAssembly(), typeof(AssemblyInformationalVersionAttribute));
-        if (attribute is AssemblyInformationalVersionAttribute assemblyInformationalVersionAttribute)
+        try
         {
-            var informationalVersion = assemblyInformationalVersionAttribute.InformationalVersion;
-            var sha = GetSha(informationalVersion);
-            CommitHash = sha;
-        }
+            // This attribute is set by SourceLink (https://github.com/dotnet/sourcelink)
+            var attribute = Attribute.GetCustomAttribute(Assembly.GetExecutingAssembly(), typeof(AssemblyInformationalVersionAttribute));
+            if (attribute is AssemblyInformationalVersionAttribute assemblyInformationalVersionAttribute)
+            {
+                var informationalVersion = assemblyInformationalVersionAttribute.InformationalVersion;
+                var sha = GetSha(informationalVersion);
+                CommitHash = sha;
+            }
 
-        Version = Assembly.GetExecutingAssembly().GetName().Version!;
+            Version = Assembly.GetExecutingAssembly().GetName().Version!;
+        }
+        catch (Exception)
+        {
+            Version = new Version(0, 0, 1);
+        }
     }
 
     private static string? GetSha(string input)
