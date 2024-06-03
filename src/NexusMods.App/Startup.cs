@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.ReactiveUI;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.App.BuildInfo;
 using NexusMods.App.UI;
 using NexusMods.App.UI.Windows;
 using OpenTelemetry.Metrics;
@@ -39,6 +40,8 @@ public class Startup
         _logger = provider.GetRequiredService<ILogger<Startup>>();
         
         var logger = provider.GetRequiredService<ILogger<Startup>>();
+        logger.LogInformation("Version: {Version} Commit: {CommitHash}", ApplicationConstants.Version, ApplicationConstants.CommitHash);
+
         var builder = BuildAvaloniaApp(provider);
         
         // NOTE(erri120): DI is lazy by default and these services

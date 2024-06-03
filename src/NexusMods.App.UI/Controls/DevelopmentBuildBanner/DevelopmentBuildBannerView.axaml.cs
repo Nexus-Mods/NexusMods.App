@@ -1,10 +1,11 @@
-﻿using System.Diagnostics;
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.ReactiveUI;
-using ReactiveUI;
+using JetBrains.Annotations;
+using NexusMods.App.BuildInfo;
 
 namespace NexusMods.App.UI.Controls.DevelopmentBuildBanner;
 
+[UsedImplicitly]
 public partial class DevelopmentBuildBannerView : ReactiveUserControl<IDevelopmentBuildBannerViewModel>
 {
     private static readonly StyledProperty<string> TextProperty =
@@ -19,15 +20,13 @@ public partial class DevelopmentBuildBannerView : ReactiveUserControl<IDevelopme
     public DevelopmentBuildBannerView()
     {
         InitializeComponent();
+
         var appVersion = GetAppVersion();
-        this.WhenActivated(_ => Text = $"{appVersion} - DEVELOPMENT USE ONLY");
+        Text = $"{appVersion} - DEVELOPMENT USE ONLY";
     }
 
     private static string GetAppVersion()
     {
-        #if DEBUG
-            return "Debug build";
-        #endif
-        return $"v{Process.GetCurrentProcess().MainModule!.FileVersionInfo.ProductVersion}";
+        return CompileConstants.IsDebug ? "Debug build" : $"{ApplicationConstants.Version} - {ApplicationConstants.CommitHash}";
     }
 }
