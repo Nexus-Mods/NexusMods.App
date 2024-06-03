@@ -29,21 +29,22 @@ public partial class FileOriginsPageView : ReactiveUserControl<IFileOriginsPageV
 
             // Synchronize the Grid with DataModel for Selected Items
             // Enable/Disable Add Mod & Add Mod Advanced Buttons
-            void UpdateAddButtonState()
+            void UpdateAddButtonState(bool isModAdded)
             {
-                var enableButtons = 
-                    ViewModel!.SelectedModsCollection.Count > 0 && 
-                    !ViewModel!.SelectedModsCollection.Any(x => x.IsModAddedToLoadout);
+                var enable = false;
+                if (!isModAdded)
+                    enable = ViewModel!.SelectedModsCollection.Count > 0 && 
+                             !ViewModel!.SelectedModsCollection.Any(x => x.IsModAddedToLoadout);
 
-                AddModButton.IsEnabled = enableButtons;
-                AddModAdvancedButton.IsEnabled = enableButtons;
+                AddModButton.IsEnabled = enable;
+                AddModAdvancedButton.IsEnabled = enable;
             }
 
             ViewModel!.SelectedModsCollection.ObserveCollectionChanges()
-                .Subscribe(_ => { UpdateAddButtonState(); })
+                .Subscribe(_ => { UpdateAddButtonState(false); })
                 .DisposeWith(d);
             ViewModel!.SelectedModsObservable.WhenValueChanged(model => model.IsModAddedToLoadout)
-                .Subscribe(_ => { UpdateAddButtonState(); })
+                .Subscribe(UpdateAddButtonState)
                 .DisposeWith(d);
 
             DataGrid.Width = Double.NaN;
