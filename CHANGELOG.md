@@ -6,7 +6,6 @@ This is a minor release containing bugfixes and small UI improvements.
 
 ### Fixes
 
-- Fixed the "View In Library"-button attempting to opening deleted Loadouts ([#1499](https://github.com/Nexus-Mods/NexusMods.App/pull/1499)).
 - Fixed the infinite loading screen when previewing apply changes ([#1502](https://github.com/Nexus-Mods/NexusMods.App/pull/1502)).
 - Fixed the uninstaller ([#1503](https://github.com/Nexus-Mods/NexusMods.App/pull/1503), [#1504](https://github.com/Nexus-Mods/NexusMods.App/pull/1504)).
 - Fixed a silent exception when using an uninitialized value ([#1493](https://github.com/Nexus-Mods/NexusMods.App/pull/1493)).
