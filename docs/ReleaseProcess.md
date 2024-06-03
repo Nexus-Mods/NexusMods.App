@@ -16,7 +16,7 @@ sometime after the next release is made.
 
 ## Release Schedule
 The Nexus Mods App developer team follows a 3-week iteration cycle, so releases are expected
-to be made at the same interval. Most often releases will be cut by the team lead (halgari)
+to be made at the same interval. Most often, releases will be cut by the team lead (halgari),
 who lives in MST timezone. The cutoff point for a release is sometime early morning on Wednesday
 of the release week (MST). Due to the requirement that main kept in a "always releasable" state, 
 the exact time of the creation of the release branch will not be further defined. 
