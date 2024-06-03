@@ -65,12 +65,11 @@ public static class ProtocolVerbs
             await httpDownloader.DownloadAsync(new[] { new HttpRequestMessage(HttpMethod.Get, uri) },
                 temporaryPath, null, null, token);
 
-            var nameToSet = string.IsNullOrWhiteSpace(modName) ? "Unknown" : modName;
             var downloadId = await fileOriginRegistry.RegisterDownload(temporaryPath,
                 (tx, id) =>
             {
                 tx.Add(id, FilePathMetadata.OriginalName, temporaryPath.Path.Name);
-            }, nameToSet, token);
+            }, name, token);
             await archiveInstaller.AddMods(loadout.LoadoutId, downloadId, token: token);
             return 0;
         });
