@@ -11,7 +11,7 @@ from this branch. A tag is assigned at the moment of the release. Hotfixes to a 
 will only be done for specific issues that cause major regressions, and these hotfixes will
 be applied to the main branch and backported into the release branch (or vice versa). Hotfix
 releases are branched from the base release. Once it is determined that no hotfixes
-will be applied to the release branch, the release branch is deleted. Often this will be done
+will be applied to the release branch, the release branch is deleted. Often, this will be done
 sometime after the next release is made.
 
 ## Release Schedule
