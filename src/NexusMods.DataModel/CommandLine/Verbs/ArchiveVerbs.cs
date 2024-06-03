@@ -26,7 +26,8 @@ internal static class ArchiveVerbs
                 (tx, id) =>
                 {
                     tx.Add(id, FilePathMetadata.OriginalName, inputFile.Name);
-                }, token);
+                }, 
+                inputFile.FileName, token);
             var metadata = fileOriginRegistry.Get(downloadId);
             return metadata.Contents.Select(kv =>
             {

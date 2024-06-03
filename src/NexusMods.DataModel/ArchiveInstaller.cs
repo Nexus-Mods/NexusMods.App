@@ -10,10 +10,8 @@ using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
-using NexusMods.Abstractions.NexusWebApi.DTOs;
 using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.Models;
 using File = NexusMods.Abstractions.Loadouts.Files.File;
 
 namespace NexusMods.DataModel;
@@ -49,21 +47,16 @@ public class ArchiveInstaller : IArchiveInstaller
     }
     
     /// <inheritdoc />
-    public async Task<ModId[]> AddMods(LoadoutId loadoutId, DownloadAnalysis.Model download, string? defaultModName = null, IModInstaller? installer = null, CancellationToken token = default)
+    public async Task<ModId[]> AddMods(LoadoutId loadoutId, DownloadAnalysis.Model download, IModInstaller? installer = null, CancellationToken token = default)
     {
         // Get the loadout and create the mod, so we can use it in the job.
         var useCustomInstaller = installer != null;
         var loadout = _conn.Db.Get<Loadout.Model>(loadoutId.Value);
-
-        var archiveName = download.TryGet(FilePathMetadata.OriginalName, out var originalName) ? originalName.ToString() : null;
-        var suggestedName = download.TryGet(DownloadAnalysis.SuggestedName, out var outSuggestedName) ? outSuggestedName : null;
-
-        var modName = defaultModName ?? suggestedName ?? archiveName ?? "<unknown>";
-        {
-            using var dlTx = _conn.BeginTransaction();
-            dlTx.Add(download.Id, DownloadAnalysis.SuggestedName, modName);
-            await dlTx.Commit();
-        }
+        
+        // Note(suggestedName) cannot be null here.
+        // Because string is non-nullable where it is set (FileOriginRegistry),
+        // and using that is a prerequisite to calling this function.
+        download.TryGet(DownloadAnalysis.SuggestedName, out var modName);
         
         ModId modId;
         Mod.Model baseMod;
@@ -218,12 +211,11 @@ public class ArchiveInstaller : IArchiveInstaller
     }
 
     /// <inheritdoc />
-    public async Task<ModId[]> AddMods(LoadoutId loadoutId, DownloadId downloadId, string? defaultModName = null, 
-        IModInstaller? installer = null, CancellationToken token = default)
+    public async Task<ModId[]> AddMods(LoadoutId loadoutId, DownloadId downloadId, IModInstaller? installer = null, CancellationToken token = default)
     {
         var download = _fileOriginRegistry.Get(downloadId);
         
-        return await AddMods(loadoutId, download, defaultModName, installer, token);
+        return await AddMods(loadoutId, download, installer, token);
     }
 
 }

@@ -24,7 +24,7 @@ public class FomodXmlInstallerTests : AModInstallerTest<SkyrimSpecialEdition, Fo
         var relativePath = $"TestCasesPacked/{testCase}.fomod";
         var fullPath = FileSystem.GetKnownPath(KnownPath.EntryDirectory)
             .Combine(relativePath);
-        var downloadId = await FileOriginRegistry.RegisterDownload(fullPath);
+        var downloadId = await FileOriginRegistry.RegisterDownload(fullPath, "");
 
         var analysis = FileOriginRegistry.Get(downloadId);
         var installer = FomodXmlInstaller.Create(ServiceProvider, new GamePath(LocationId.Game, ""));

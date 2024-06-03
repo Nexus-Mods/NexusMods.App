@@ -120,6 +120,7 @@ public class SMAPIInstaller : AModInstaller
                 installDataFile.Item.StreamFactory!,
                 (tx, id) => 
                     tx.Add(id, FilePathMetadata.OriginalName, installDataFile.Item.FileName),
+                "",
                 cancellationToken);
         }
         else

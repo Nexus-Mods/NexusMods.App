@@ -69,9 +69,8 @@ public static class ProtocolVerbs
                 (tx, id) =>
             {
                 tx.Add(id, FilePathMetadata.OriginalName, temporaryPath.Path.Name);
-            }, token);
-            await archiveInstaller.AddMods(loadout.LoadoutId, downloadId,
-                string.IsNullOrWhiteSpace(modName) ? null : modName, token: token);
+            }, name, token);
+            await archiveInstaller.AddMods(loadout.LoadoutId, downloadId, token: token);
             return 0;
         });
     }
