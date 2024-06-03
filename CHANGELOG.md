@@ -1,5 +1,17 @@
 # Changelog
 
+## [v0.5.1](https://github.com/Nexus-Mods/NexusMods.App/releases/tag/v0.5.1) - 2024-06-03
+
+This is a minor release containing bugfixes and small UI improvements.
+
+### Fixes
+
+- Fixed the "View In Library"-button attempting to opening deleted Loadouts ([#1499](https://github.com/Nexus-Mods/NexusMods.App/pull/1499)).
+- Fixed the infinite loading screen when previewing apply changes ([#1502](https://github.com/Nexus-Mods/NexusMods.App/pull/1502)).
+- Fixed the uninstaller ([#1503](https://github.com/Nexus-Mods/NexusMods.App/pull/1503), [#1504](https://github.com/Nexus-Mods/NexusMods.App/pull/1504)).
+- Fixed a silent exception when using an uninitialized value ([#1493](https://github.com/Nexus-Mods/NexusMods.App/pull/1493)).
+- Various UI fixes and improvements ([#1495](https://github.com/Nexus-Mods/NexusMods.App/pull/1495), [#1517](https://github.com/Nexus-Mods/NexusMods.App/pull/1517)).
+
 ## [v0.5.0](https://github.com/Nexus-Mods/NexusMods.App/releases/tag/v0.5.0) - 2024-05-29
 
 ### New Features
