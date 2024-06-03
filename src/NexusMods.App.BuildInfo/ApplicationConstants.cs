@@ -25,7 +25,7 @@ public static class ApplicationConstants
     {
         var span = input.AsSpan();
         var plusIndex = span.IndexOf('+');
-        return plusIndex == -1 ? null : span[plusIndex..].ToString();
+        return plusIndex == -1 ? null : span[(plusIndex + 1)..].ToString();
     }
 
     /// <summary>
