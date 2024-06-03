@@ -1,4 +1,6 @@
 using System.Reactive;
+using NexusMods.Abstractions.FileStore.Downloads;
+using NexusMods.Abstractions.Installers;
 using NexusMods.Paths;
 using ReactiveUI;
 
@@ -11,5 +13,5 @@ public interface IFileOriginEntryViewModel : IViewModelInterface
     Size Size { get; }    
     string DisplayArchiveDate { get; }
     string DisplayLastInstalledDate { get; }
-    ReactiveCommand<Unit, Unit> AddToLoadoutCommand { get; }
+    ReactiveCommand<IModInstaller?, Unit> AddToLoadoutCommand { get; }
 }

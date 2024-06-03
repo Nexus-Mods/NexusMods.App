@@ -27,10 +27,10 @@ public interface IFileOriginsPageViewModel : IPageViewModelInterface
     /// <summary>
     /// Add a mod to the loadout using the standard installer.
     /// </summary>
-    public Task AddMods();
-
+    Task AddMod();
+    
     /// <summary>
     /// Add a mod to the loadout using the advanced installer.
     /// </summary>
-    public Task AddModsAdvanced();
+    Task AddModAdvanced();
 }

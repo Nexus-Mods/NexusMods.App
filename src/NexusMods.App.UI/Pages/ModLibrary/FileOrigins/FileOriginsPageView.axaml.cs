@@ -43,8 +43,8 @@ public partial class FileOriginsPageView : ReactiveUserControl<IFileOriginsPageV
 
             DataGrid.Width = Double.NaN;
             
-            //AddModButton.Command command = ReactiveCommand.CreateFromTask(AddMod);
-            //AddModAdvancedButton.Command = ReactiveCommand.CreateFromTask(AddModAdvanced);
+            AddModButton.Command = ReactiveCommand.CreateFromTask(ViewModel!.AddMod);
+            AddModAdvancedButton.Command = ReactiveCommand.CreateFromTask(ViewModel!.AddModAdvanced);
             GetModsFromNexusButton.Command = ReactiveCommand.CreateFromTask(ViewModel!.OpenNexusModPage);
             GetModsFromDriveButton.Command = ReactiveCommand.CreateFromTask(
                 async () => await ViewModel!.RegisterFromDisk(TopLevel.GetTopLevel(this)!.StorageProvider));

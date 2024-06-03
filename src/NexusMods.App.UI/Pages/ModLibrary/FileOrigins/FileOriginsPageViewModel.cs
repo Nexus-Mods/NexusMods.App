@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using DynamicData;
@@ -150,14 +151,16 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
         await _osInterop.OpenUrl(new Uri(url), true);
     }
 
-    public Task AddMods()
-    {
-        throw new NotImplementedException();
-    }
+    public async Task AddMod() => await AddMod(null);
 
-    public Task AddModsAdvanced()
+    public async Task AddModAdvanced() => await AddMod(_provider.GetKeyedService<IModInstaller>("AdvancedInstaller"));
+
+    private async Task AddMod(IModInstaller? installer)
     {
-        throw new NotImplementedException();
+        foreach (var mod in SelectedMods)
+        {
+            await mod.AddToLoadoutCommand.Execute(installer);
+        }
     }
 
     private async Task<IEnumerable<IStorageFile>> PickModFiles(IStorageProvider storageProvider)

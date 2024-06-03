@@ -20,7 +20,8 @@ public class FileOriginEntryViewModel : AViewModel<IFileOriginEntryViewModel>, I
     public string Version { get; }
     public Size Size { get; }
     public DateTime ArchiveDate { get; }
-    public ReactiveCommand<Unit, Unit> AddToLoadoutCommand { get; init; }
+    public ReactiveCommand<IModInstaller?, Unit> AddToLoadoutCommand { get; init; }
+    public DownloadAnalysis.Model FileOrigin { get; }
 
     private readonly ObservableAsPropertyHelper<string> _displayArchiveDate;
     public string DisplayArchiveDate => _displayArchiveDate.Value;
@@ -37,6 +38,7 @@ public class FileOriginEntryViewModel : AViewModel<IFileOriginEntryViewModel>, I
         LoadoutId loadoutId,
         DownloadAnalysis.Model fileOrigin)
     {
+        FileOrigin = fileOrigin;
         Name = fileOrigin.TryGet(DownloaderState.FriendlyName, out var friendlyName) && friendlyName != "Unknown"
             ? friendlyName
             : fileOrigin.SuggestedName;
@@ -47,9 +49,9 @@ public class FileOriginEntryViewModel : AViewModel<IFileOriginEntryViewModel>, I
                 ? dlStateSize 
                 : Size.Zero;
         
-        AddToLoadoutCommand = ReactiveCommand.CreateFromTask(async () =>
+        AddToLoadoutCommand = ReactiveCommand.CreateFromTask<IModInstaller?>(async (installer, token) =>
         {
-            await archiveInstaller.AddMods(loadoutId, fileOrigin);
+            await archiveInstaller.AddMods(loadoutId, fileOrigin, installer, token);
         });
         
         Version = fileOrigin.TryGet(DownloaderState.Version, out var version) && version != "Unknown"
