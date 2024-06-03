@@ -21,12 +21,14 @@ public class PanelTabViewModel : AViewModel<IPanelTabViewModel>, IPanelTabViewMo
         Header = new PanelTabHeaderViewModel(Id);
     }
 
-    public TabData ToData()
+    public TabData? ToData()
     {
+        if (Contents.PageData.Context.IsEphemeral) return null;
+
         return new TabData
         {
             Id = Id,
-            PageData = Contents.PageData
+            PageData = Contents.PageData,
         };
     }
 }
