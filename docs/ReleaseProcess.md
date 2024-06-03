@@ -4,7 +4,7 @@
 The Nexus Mods App follows a strict release process which assumes that the
 `main` branch is the development branch and will always be kept in a releasable
 state. This means that any major overhauls of feature development should either
-be done in a single PR or in a be developed behind a optional setting or feature flag. 
+be done in a single PR or be developed behind an optional setting or feature flag.
 
 At a high level, releases are done by branching from main, and then building a app release
 from this branch. A tag is assigned at the moment of the release. Hotfixes to a release
