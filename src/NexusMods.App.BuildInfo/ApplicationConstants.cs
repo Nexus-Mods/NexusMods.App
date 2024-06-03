@@ -9,6 +9,7 @@ public static class ApplicationConstants
 {
     static ApplicationConstants()
     {
+        // This attribute is set by SourceLink (https://github.com/dotnet/sourcelink)
         var attribute = Attribute.GetCustomAttribute(Assembly.GetExecutingAssembly(), typeof(AssemblyInformationalVersionAttribute));
         if (attribute is AssemblyInformationalVersionAttribute assemblyInformationalVersionAttribute)
         {
