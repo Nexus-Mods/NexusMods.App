@@ -33,7 +33,7 @@ public class MetricsOptInViewModel : AOverlayViewModel<IMetricsOptInViewModel>, 
 
 Help us provide you with the best modding experience.
 
-With your permission, we will collect analytics information and sent it to our team to help us improve quality and performance.
+With your permission, we will collect analytics information and send it to our team to help us improve quality and performance.
 
 This information is sent anonymously and will never be shared with a 3rd party.
 
