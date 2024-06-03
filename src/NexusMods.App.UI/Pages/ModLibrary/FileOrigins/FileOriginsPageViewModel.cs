@@ -153,7 +153,7 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
 
     public async Task AddMod() => await AddMod(null);
 
-    public async Task AddModAdvanced() => await AddMod(_provider.GetKeyedService<IModInstaller>("AdvancedInstaller"));
+    public async Task AddModAdvanced() => await AddMod(_provider.GetKeyedService<IModInstaller>("AdvancedManualInstaller"));
 
     private async Task AddMod(IModInstaller? installer)
     {
