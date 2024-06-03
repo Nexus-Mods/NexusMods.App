@@ -21,7 +21,32 @@ who lives in MST timezone. The cutoff point for a release is sometime early morn
 of the release week (MST). Due to the requirement that main kept in a "always releasable" state, 
 the exact time of the creation of the release branch will not be further defined. 
 
-## Technical Process for a release
+## Hotfix Criteria
+The ultimate goal of the team is to never release a hotfix for a release. However there are times 
+where a regression is discovered at the last moment, or some bug slips in as part of a late PR. These
+situations should be considered the exception not the norm, and common hotfixes should be viewed as 
+a failure of process and addressed accordingly. 
+
+Hotfixes should be restricted to the following criteria:
+
+* Data loss - something in the release will cause the user to lose their data or work in an area of the 
+app that was previously marked as "supported"
+* System instability - something in the app causes crashes in a part of the app outside of the app's influence
+* Inability to upgrade - something in the app causes the app to get into a state where future updates will
+not be installable and the user would be required to wipe their data and start over. 
+
+The common theme for all of these is situations where the user experience is getting worse as time goes on, 
+and waiting till the next release cycle creates an ever compounding problem for users and the dev team. These criteria
+are just guidelines however, and the app team managers reserve the right to make case-by-case decisions. 
+
+## Hotfix development process
+* Bring up an issue with the dev team
+* If a decision is made that the issue needs to be hotfixed, the github issue will be marked as `needs-backporting`
+* Create a PR against either `main` or the release branch with the fix. 
+* Create a second PR against the other branch with the same fix (feel free to wait until the first PR is merged).
+* Once *both* PRs are merged the initial issue can be closed. 
+
+## Technical Process for a Release
 
 1. Make sure the release changelog is committed. Often the changelog includes images that 
 reference a tag or commit, so merge the commit PR first, then continue the process. Erri120 is
