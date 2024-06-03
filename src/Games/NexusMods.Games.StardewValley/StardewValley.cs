@@ -25,7 +25,7 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
     private readonly IServiceProvider _serviceProvider;
     public IEnumerable<uint> SteamIds => new[] { 413150u };
     public IEnumerable<long> GogIds => new long[] { 1453375253 };
-    public IEnumerable<string> XboxIds => new[] { "ConcernedApe.StardewValleyPC" };
+    // public IEnumerable<string> XboxIds => new[] { "ConcernedApe.StardewValleyPC" };
 
     public override string Name => "Stardew Valley";
 
