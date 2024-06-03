@@ -13,22 +13,7 @@
     <base:MessageBoxBackground MinWidth="576" MaxWidth="576">
         <base:MessageBoxBackground.TopContent>
             <StackPanel Orientation="Vertical" Margin="16, 24, 24, 24" Classes="Spacing-3_5">
-
-                <TextBlock Classes="HeadingXSSemi"
-                           Text="{x:Static resources:Language.MetricsOptIn_OverlayTitle}" />
-
-                <!-- Message -->
-                <StackPanel Classes="Spacing-2">
-                    <TextBlock TextWrapping="WrapWithOverflow"
-                               Text="{x:Static resources:Language.MetricsOptIn_MainMessage}"
-                               Classes="BodyMDNormal" />
-
-                    <Button Classes="Hyperlink Primary">
-                        <TextBlock Classes="BodyMDNormal"
-                                   Text="{x:Static resources:Language.MetricsOptIn_MoreInfoAboutTheDataWeTrack}">
-                        </TextBlock>
-                    </Button>
-                </StackPanel>
+                <reactiveUi:ViewModelViewHost x:Name="MarkdownRendererViewModelViewHost"/>
             </StackPanel>
 
         </base:MessageBoxBackground.TopContent>

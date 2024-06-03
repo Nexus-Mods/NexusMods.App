@@ -1,0 +1,66 @@
+﻿[
+  {
+    Path: {Game}/bin/binary,
+    Mod: Mod 0
+  },
+  {
+    Path: {Game}/bin/script.sh,
+    Mod: Mod 0
+  },
+  {
+    Path: {Game}/meshes/b.nif,
+    Mod: Mod 0
+  },
+  {
+    Path: {Game}/perMod/0.dat,
+    Mod: Mod 0
+  },
+  {
+    Path: {Game}/perMod/1.dat,
+    Mod: Mod 1
+  },
+  {
+    Path: {Game}/perMod/2.dat,
+    Mod: Mod 2
+  },
+  {
+    Path: {Game}/perMod/3.dat,
+    Mod: Mod 3
+  },
+  {
+    Path: {Game}/perMod/4.dat,
+    Mod: Mod 4
+  },
+  {
+    Path: {Game}/perMod/5.dat,
+    Mod: Mod 5
+  },
+  {
+    Path: {Game}/perMod/6.dat,
+    Mod: Mod 6
+  },
+  {
+    Path: {Game}/perMod/7.dat,
+    Mod: Mod 7
+  },
+  {
+    Path: {Game}/perMod/8.dat,
+    Mod: Mod 8
+  },
+  {
+    Path: {Game}/perMod/9.dat,
+    Mod: Mod 9
+  },
+  {
+    Path: {Game}/textures/a.dds,
+    Mod: Mod 0
+  },
+  {
+    Path: {Preferences}/preferences/settings.ini,
+    Mod: Mod 0
+  },
+  {
+    Path: {Saves}/saves/save1.dat,
+    Mod: Mod 0
+  }
+]

@@ -31,10 +31,13 @@ internal static class CliVerbs
     }
 
     [Verb("list-games", "List all games that are currently supported and installed.")]
-    private static async Task<int> ListGames([Injected] IRenderer renderer, [Injected] IEnumerable<IGame> games)
+    private static async Task<int> ListGames(
+        [Injected] IRenderer renderer, 
+        [Injected] IEnumerable<IGame> games,
+        [Injected] IGameRegistry registry)
     {
         var rows = from game in games
-            from install in game.Installations
+            from install in registry.Installations.Values
             orderby game.Name, install.Version
             select new object[]
             {

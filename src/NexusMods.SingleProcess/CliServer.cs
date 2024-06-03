@@ -1,7 +1,9 @@
 using System.Net;
 using System.Net.Sockets;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Settings;
 using NexusMods.ProxyConsole;
 using NexusMods.SingleProcess.Exceptions;
@@ -137,6 +139,10 @@ public class CliServer : IHostedService, IDisposable
     /// <inheritdoc />
     public async Task StartAsync(CancellationToken cancellationToken)
     {
+        // Bit of a hack, but works for now till we get better startup logic with DI
+        var registry = _serviceProvider.GetRequiredService<IGameRegistry>();
+        await ((IHostedService)registry).StartAsync(cancellationToken);
+        
         if (!_started && _settings.StartCliBackend)
         {
             _started = true;

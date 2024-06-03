@@ -13,6 +13,7 @@ public class ManuallyAddedLocator : IGameLocator
 {
     private readonly Lazy<IConnection> _store;
     private readonly IFileSystem _fileSystem;
+    private readonly IServiceProvider _provider;
 
     /// <summary>
     /// DI Constructor
@@ -20,6 +21,7 @@ public class ManuallyAddedLocator : IGameLocator
     /// <param name="provider"></param>
     public ManuallyAddedLocator(IServiceProvider provider, IFileSystem fileSystem)
     {
+        _provider = provider;
         _fileSystem = fileSystem;
         _store = new Lazy<IConnection>(provider.GetRequiredService<IConnection>);
     }
@@ -31,17 +33,21 @@ public class ManuallyAddedLocator : IGameLocator
     /// <param name="version"></param>
     /// <param name="path"></param>
     /// <returns></returns>
-    public async Task<EntityId> Add(IGame game, Version version, AbsolutePath path)
+    public async Task<(EntityId, GameInstallation)> Add(IGame game, Version version, AbsolutePath path)
     {
         using var tx = _store.Value.BeginTransaction();
         var ent = new ManuallyAddedGame.Model(tx)
         {
             GameDomain = game.Domain,
             Version = version.ToString(),
-            Path = path.ToString()
+            Path = path.ToString(),
         };
         var result = await tx.Commit();
-        return result[ent.Id];
+        
+        var gameRegistry = _provider.GetRequiredService<IGameRegistry>();
+        var install = await gameRegistry.Register(game, new GameLocatorResult(path, GameStore.ManuallyAdded, ent, version), this);
+        var newId = result[ent.Id];
+        return (newId, install);
     }
 
     /// <summary>

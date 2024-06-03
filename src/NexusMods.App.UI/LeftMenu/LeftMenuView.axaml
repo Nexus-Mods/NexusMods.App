@@ -14,7 +14,7 @@
     <Design.DataContext>
         <home:HomeLeftMenuDesignViewModel />
     </Design.DataContext>
-    <ItemsControl Margin="16,36" x:Name="MenuItemsControl">
+    <ItemsControl Margin="16,0, 16, 12" x:Name="MenuItemsControl">
         <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
                 <StackPanel />

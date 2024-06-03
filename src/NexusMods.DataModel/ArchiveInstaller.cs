@@ -52,10 +52,11 @@ public class ArchiveInstaller : IArchiveInstaller
         // Get the loadout and create the mod, so we can use it in the job.
         var useCustomInstaller = installer != null;
         var loadout = _conn.Db.Get<Loadout.Model>(loadoutId.Value);
-
-        var archiveName = download.TryGet(FilePathMetadata.OriginalName, out var originalName) ? originalName.ToString() : null;
-        var suggestedName = download.TryGet(DownloadAnalysis.SuggestedName, out var outSuggestedName) ? outSuggestedName : null;
-        var modName = suggestedName ?? archiveName ?? "Unknown";
+        
+        // Note(suggestedName) cannot be null here.
+        // Because string is non-nullable where it is set (FileOriginRegistry),
+        // and using that is a prerequisite to calling this function.
+        download.TryGet(DownloadAnalysis.SuggestedName, out var modName);
         
         ModId modId;
         Mod.Model baseMod;

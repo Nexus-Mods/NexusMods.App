@@ -35,6 +35,6 @@ public class GetPreviousState : ASynchronizerBenchmark, IBenchmark
     [Benchmark]
     public DiskStateTree GetState()
     {
-        return _datamodel.DiskStateRegistry.GetState(_datamodel.Game.Installations.First())!;
+        return _datamodel.DiskStateRegistry.GetState(_installation)!;
     }
 }

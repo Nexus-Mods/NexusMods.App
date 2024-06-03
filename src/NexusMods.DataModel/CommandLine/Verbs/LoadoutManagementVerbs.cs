@@ -110,7 +110,7 @@ public static class LoadoutManagementVerbs
 
         var flattened = await synchronizer.LoadoutToFlattenedLoadout(loadout);
 
-        foreach (var item in flattened.GetAllDescendentFiles())
+        foreach (var item in flattened.GetAllDescendentFiles().OrderBy(f => f.Item.GamePath))
             rows.Add([item.Item.Value!.Mod.Name, item.GamePath()]);
 
         await renderer.Table(["Mod", "To"], rows);
@@ -219,15 +219,17 @@ public static class LoadoutManagementVerbs
         [Option("g", "game", "Game to create a loadout for")] IGame game,
         [Option("v", "version", "Version of the game to manage")] Version version,
         [Option("n", "name", "The name of the new loadout")] string name,
+        [Injected] IGameRegistry registry,
         [Injected] CancellationToken token)
     {
-        var installation = game.Installations.FirstOrDefault(i => i.Version == version);
-        if (installation == null)
-            throw new Exception("Game not found");
+        
+        var install = registry.Installations.Values.FirstOrDefault(g => g.Game == game);
+        if (install == null)
+            throw new Exception("Game installation not found");
 
         return await renderer.WithProgress(token, async () =>
         {
-            await game.Synchronizer.CreateLoadout(installation, name);
+            await game.Synchronizer.CreateLoadout(install, name);
             return 0;
         });
     }

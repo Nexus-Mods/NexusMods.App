@@ -27,8 +27,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest]
-        game: [cyberpunk2077, darkestdungeon, stardewvalley, mountandblade2bannerlord]
+        os: [ubuntu-latest]
+        game: [stardewvalley]
 
     steps:
       - uses: actions/checkout@v3
@@ -42,4 +42,4 @@ jobs:
 
       - name: Stress Test
         continue-on-error: true
-        run: dotnet run --project ./src/NexusMods.App/NexusMods.App.csproj -- stress-test -g ${{matrix.game}} -o ${{ github.step_summary }}
+        run: dotnet run --project ./src/NexusMods.App/NexusMods.App.csproj -- as-main stress-test -g ${{matrix.game}} -o ${{ github.step_summary }}

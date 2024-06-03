@@ -70,7 +70,7 @@ public static class ProtocolVerbs
                 (tx, id) =>
             {
                 tx.Add(id, FilePathMetadata.OriginalName, temporaryPath.Path.Name);
-            }, nameToSet, token);
+            }, name, token);
             await archiveInstaller.AddMods(loadout.LoadoutId, downloadId, token: token);
             return 0;
         });
