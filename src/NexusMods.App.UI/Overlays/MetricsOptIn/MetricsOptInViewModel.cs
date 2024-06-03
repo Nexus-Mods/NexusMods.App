@@ -37,7 +37,7 @@ With your permission, we will collect analytics information and send it to our t
 
 This information is sent anonymously and will never be shared with a 3rd party.
 
-[More information about the data we track](https://help.nexusmods.com/article/121-diagnostics-usage-data-vortex)
+[More information about the data we track](https://help.nexusmods.com/article/132-diagnostics-and-usage-nexus-mods-app)
 """;
 
         Allow = ReactiveCommand.Create(() =>
