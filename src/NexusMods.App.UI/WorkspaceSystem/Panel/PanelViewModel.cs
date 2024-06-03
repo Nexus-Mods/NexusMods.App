@@ -238,6 +238,13 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
             }
         });
 
-        SelectedTabId = data.SelectedTabId;
+        if (data.Tabs.Length == 0)
+        {
+            AddDefaultTab();
+        }
+        else
+        {
+            SelectedTabId = data.SelectedTabId;
+        }
     }
 }
