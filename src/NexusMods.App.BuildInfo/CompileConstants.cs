@@ -25,12 +25,13 @@ public static class CompileConstants
 #endif
 
     /// <summary>
-    /// True if the app is running with compile settings
+    /// True if the application is running in debug mode.
     /// </summary>
+    public static readonly bool IsDebug =
 #if DEBUG
-    public static readonly bool IsDebug = true;
+    true;
 #else
-    public static readonly bool IsDebug = false;
+    false;
 #endif
 }
 
