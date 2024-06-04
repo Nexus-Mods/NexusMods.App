@@ -48,7 +48,8 @@ plugins:
 
 nav:
   - Home: index.md
-  - Getting Started: GettingStarted.md
+  - Mod With Confidence: ModWithConfidence.md
+  - Contributing: Contributing.md
   - Development Guidelines:
       - Dependency Injection: development-guidelines/DependencyInjection.md
       - Interacting with the File System: development-guidelines/UsingIFileSystem.md
