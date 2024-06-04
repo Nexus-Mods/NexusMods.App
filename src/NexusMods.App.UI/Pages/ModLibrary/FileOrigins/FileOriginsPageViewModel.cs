@@ -103,7 +103,11 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
             _gameDomain = GameDomain.DefaultValue;
         }
 
-        var entriesObservable = downloadAnalysisRepository.Observable
+        _fileOrigins = new ReadOnlyObservableCollection<IFileOriginEntryViewModel>([]);
+        this.WhenActivated(d =>
+        {
+            var workspaceController = GetWorkspaceController();
+            var entriesObservable = downloadAnalysisRepository.Observable
                 .ToObservableChangeSet()
                 .Filter(model => FilterDownloadAnalysisModel(model, game.Domain))
                 .OnUI()
@@ -112,13 +116,12 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
                         _conn,
                         _archiveInstaller,
                         LoadoutId,
-                        fileOrigin
+                        fileOrigin,
+                        workspaceController
                     )
                 )
                 .Bind(out _fileOrigins);
-
-        this.WhenActivated(d =>
-        {
+            
             entriesObservable.SubscribeWithErrorLogging().DisposeWith(d);
         });
     }

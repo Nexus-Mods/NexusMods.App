@@ -23,7 +23,6 @@ public record FileOriginsPageContext : IPageFactoryContext
     public required LoadoutId LoadoutId { get; init; }
 }
 
-
 [UsedImplicitly]
 public class FileOriginsPageFactory : APageFactory<IFileOriginsPageViewModel, FileOriginsPageContext>
 {

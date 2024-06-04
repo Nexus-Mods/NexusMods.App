@@ -1,16 +1,19 @@
 using System.Reactive;
 using System.Reactive.Linq;
+using DynamicData.Kernel;
 using Humanizer;
 using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
+using NexusMods.App.UI.Controls.Navigation;
+using NexusMods.App.UI.Pages.LoadoutGrid;
+using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.Downloaders.Tasks.State;
 using NexusMods.Paths;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Pages.ModLibrary.FileOriginEntry;
 
@@ -34,12 +37,14 @@ public class FileOriginEntryViewModel : AViewModel<IFileOriginEntryViewModel>, I
 
     private readonly ObservableAsPropertyHelper<string> _displayLastInstalledDate;
     public string DisplayLastInstalledDate => _displayLastInstalledDate.Value;
+    public ReactiveCommand<NavigationInformation, Unit> ViewModCommand { get; }
 
     public FileOriginEntryViewModel(
         IConnection conn,
         IArchiveInstaller archiveInstaller,
         LoadoutId loadoutId,
-        DownloadAnalysis.Model fileOrigin)
+        DownloadAnalysis.Model fileOrigin,
+        IWorkspaceController workspaceController)
     {
         FileOrigin = fileOrigin;
         Name = fileOrigin.TryGet(DownloaderState.FriendlyName, out var friendlyName) && friendlyName != "Unknown"
@@ -94,5 +99,23 @@ public class FileOriginEntryViewModel : AViewModel<IFileOriginEntryViewModel>, I
             .Merge(interval.Select(_ => LastInstalledDate))
             .Select(date => date.Equals(DateTime.MinValue) ? "-" : date.Humanize())
             .ToProperty(this, vm => vm.DisplayLastInstalledDate, scheduler: RxApp.MainThreadScheduler);
+
+        ViewModCommand = ReactiveCommand.Create<NavigationInformation>(info =>
+        {
+            // Note(sewer): Design currently doesn't require we scroll to item,
+            //              (it's challenging) so just navigating to correct
+            //              view is enough.
+            var pageData = new PageData()
+            {
+                FactoryId = LoadoutGridPageFactory.StaticId,
+                Context = new LoadoutGridContext()
+                {
+                    LoadoutId = loadoutId,
+                }
+            };
+
+            var behavior = workspaceController.GetOpenPageBehavior(pageData, info, Optional<PageIdBundle>.None);
+            workspaceController.OpenPage(workspaceController.ActiveWorkspace!.Id, pageData, behavior);
+        });
     }
 }

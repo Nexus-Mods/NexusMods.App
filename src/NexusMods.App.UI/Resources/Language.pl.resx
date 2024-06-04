@@ -482,4 +482,7 @@
     <data name="FileOriginsPage_FromNexusMods" xml:space="preserve">
         <value>Z Nexus Mods</value>
     </data>
+    <data name="FileOriginsPage_ViewButtonText" xml:space="preserve">
+        <value>Pokaż</value>
+    </data>
 </root>

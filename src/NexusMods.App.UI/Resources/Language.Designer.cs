@@ -980,5 +980,11 @@ namespace NexusMods.App.UI.Resources {
                 return ResourceManager.GetString("FileOriginsPage_FromNexusMods", resourceCulture);
             }
         }
+        
+        public static string FileOriginsPage_ViewButtonText {
+            get {
+                return ResourceManager.GetString("FileOriginsPage_ViewButtonText", resourceCulture);
+            }
+        }
     }
 }
