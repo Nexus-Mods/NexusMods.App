@@ -25,4 +25,4 @@ If you want to create a package for your distribution, here are some helpful tip
 - If possible, use `nexusmods-app` for the package name.
 - We ship a build of `7zz` and use that executable unless you set `NEXUSMODS_APP_USE_SYSTEM_EXTRACTOR=1` when publishing. See [this issue](https://github.com/Nexus-Mods/NexusMods.App/issues/1306#issuecomment-2095755699) for details.
 - Set `INSTALLATION_METHOD_PACKAGE_MANAGER` when publishing. We have an integrated updater that will notify users about new versions. If you set this flag, we'll tell the user to update with their package manager.
-- Let us know if you have questions or if you published a new package by joining our Discord.
+- Let us know if you have questions or if you published a new package by joining our [Discord](https://discord.gg/ReWTxb93jS).
