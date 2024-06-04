@@ -37,7 +37,7 @@ public partial class FileOriginsPageView : ReactiveUserControl<IFileOriginsPageV
                              !ViewModel!.SelectedModsCollection.Any(x => x.IsModAddedToLoadout);
 
                 AddModButton.IsEnabled = enable;
-                AddModAdvancedButton.IsEnabled = enable;
+                // Note Add(Advanced) should always be available.
             }
 
             ViewModel!.SelectedModsCollection.ObserveCollectionChanges()

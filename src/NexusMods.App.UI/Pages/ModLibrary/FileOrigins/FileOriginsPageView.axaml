@@ -22,7 +22,7 @@
                         <TextBlock Text="{x:Static resources:Language.FileOriginsPage__Add_Mod}"/>
                     </StackPanel>
                 </Button>
-                <Button x:Name="AddModAdvancedButton" IsEnabled="False">
+                <Button x:Name="AddModAdvancedButton">
                     <StackPanel>
                         <icons:UnifiedIcon Classes="ListAdd" />
                         <TextBlock Text="{x:Static resources:Language.FileOriginsPage__Add_Mod_Advanced}"/>
