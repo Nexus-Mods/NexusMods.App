@@ -10,9 +10,7 @@ public interface IProcessFactory
     /// <summary>
     /// Executes the given command that starts the process.
     /// </summary>
-    /// <param name="command">The command to execute.</param>
-    /// <param name="cancellationToken">Allows you to cancel the task, killing the process prematurely.</param>
-    Task<CommandResult> ExecuteAsync(Command command, CancellationToken cancellationToken = default);
+    Task<CommandResult> ExecuteAsync(Command command, bool logProcessOutput = true, CancellationToken cancellationToken = default);
     
     /// <summary>
     /// Executes the gives process asynchronously.

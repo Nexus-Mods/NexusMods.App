@@ -55,8 +55,14 @@ public class ProcessFactory : IProcessFactory
     /// <inheritdoc />
     public async Task<CommandResult> ExecuteAsync(
         Command command,
+        bool logProcessOutput = true,
         CancellationToken cancellationToken = default)
     {
+        if (!logProcessOutput)
+        {
+            return await ExecuteAsync(command, cancellationToken);
+        }
+
         string fileName;
         if (PathHelpers.IsRooted(command.TargetFilePath, _fileSystem.OS))
         {
@@ -85,9 +91,14 @@ public class ProcessFactory : IProcessFactory
                 .WithStandardOutputPipe(mergedStdOutPipe)
                 .WithStandardErrorPipe(mergedStdErrPipe);
 
-            _logger.LogInformation("Executing command `{Command}`", command.ToString());
-            return await command.ExecuteAsync(cancellationToken);
+            return await ExecuteAsync(command, cancellationToken);
         }
+    }
+
+    private async Task<CommandResult> ExecuteAsync(Command command, CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Executing command `{Command}`", command.ToString());
+        return await command.ExecuteAsync(cancellationToken);
     }
 
     /// <inheritdoc />
