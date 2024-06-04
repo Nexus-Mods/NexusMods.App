@@ -61,6 +61,10 @@ We currently don't publish releases for macOS.
 - [Simon](https://github.com/insomnious): Lead developer of [Vortex](https://www.nexusmods.com/about/vortex/).
 - [Nagev](https://github.com/IDCs): Developer of [Vortex](https://www.nexusmods.com/about/vortex/).
 
+### Others
+
+See [Contributors](https://github.com/Nexus-Mods/NexusMods.App/graphs/contributors) for a full list of contributors.
+
 Former maintainers:
 
 - [TanninOne](https://github.com/TanninOne): Creator of [Vortex](https://www.nexusmods.com/about/vortex/) and [Mod Organizer 1](https://github.com/TanninOne/modorganizer).
