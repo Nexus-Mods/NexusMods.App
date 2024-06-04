@@ -12,9 +12,9 @@ public static class EntityExtensions
     /// <summary>
     /// Casts an entity to a specific type, performing no checks.
     /// </summary>
-    public static T Remap<T>(this Entity entity) where T : Entity
+    public static T Remap<T>(this ReadOnlyModel entity) where T : IReadOnlyModel<T>
     {
-        return entity.Db.Get<T>(entity.Id);
+        return T.Create(entity.Db, entity.Id);
     }
     
     
@@ -33,7 +33,7 @@ public static class EntityExtensions
             return true;
         }
 
-        id = default;
+        id = default(EntityId);
         return false;
     }
 }

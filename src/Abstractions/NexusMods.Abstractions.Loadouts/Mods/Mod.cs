@@ -7,7 +7,6 @@ using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.MnemonicDB.Storage;
-using Entity = NexusMods.MnemonicDB.Abstractions.Models.Entity;
 using File = NexusMods.Abstractions.Loadouts.Files.File;
 
 namespace NexusMods.Abstractions.Loadouts.Mods;

@@ -50,18 +50,20 @@ public interface IFileOriginRegistry
     /// </summary>
     public ValueTask<DownloadId> RegisterFolder(AbsolutePath path, MetadataFn metaDataFn, string modName, CancellationToken token = default);
 
+    /*
     /// <summary>
     /// Get the analysis of a download
     /// </summary>
-    public DownloadAnalysis.Model Get(DownloadId id);
+    public DownloadAnalysis.ReadOnly Get(DownloadId id);
 
     /// <summary>
     /// Get the analysis of all downloads
     /// </summary>
-    public IEnumerable<DownloadAnalysis.Model> GetAll();
+    public IEnumerable<DownloadAnalysis.ReadOnly> GetAll();
 
     /// <summary>
     /// Finds all downloads that have the given hash
     /// </summary>
-    public IEnumerable<DownloadAnalysis.Model> GetBy(Hash hash);
+    public IEnumerable<DownloadAnalysis.ReadOnly> GetBy(Hash hash);
+    */
 }

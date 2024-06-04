@@ -11,7 +11,8 @@ using NexusMods.MnemonicDB.Abstractions.Models;
 
 namespace NexusMods.Abstractions.MnemonicDB.Attributes;
 
-internal class Repository<TModel> : IRepository<TModel>, IHostedService where TModel : Entity
+internal class Repository<TModel> : IRepository<TModel>, IHostedService 
+    where TModel : IReadOnlyModel<TModel>
 {
     private readonly IConnection _conn;
     private readonly IAttribute[] _watchedAttributes;
@@ -70,25 +71,16 @@ internal class Repository<TModel> : IRepository<TModel>, IHostedService where TM
 
     private bool IsValid(TModel model)
     {
-        foreach (var attribute in _watchedAttributes)
-        {
-            if (!model.Contains(attribute))
-                return false;
-        }
+        if (!model.IsValid())
+            return false;
         return _filter?.Invoke(model) ?? true;
     }
 
     /// <inheritdoc />
     public bool Exists(EntityId eid)
     {
-        var entity = _conn.Db.Get<TModel>(eid);
-        foreach (var attribute in _watchedAttributes)
-        {
-            if (!entity.Contains(attribute))
-                return false;
-        }
-
-        return true;
+        var entity = TModel.Create(_conn.Db, eid);
+        return IsValid(entity);
     }
 
     public async Task Delete(TModel model)
@@ -96,7 +88,7 @@ internal class Repository<TModel> : IRepository<TModel>, IHostedService where TM
         var tx = _conn.BeginTransaction();
         // For each attribute, resolve it to a IAttribute (default is A = ushort), then
         // use that to call .Add with isRetract = true and pass in the value by object
-        foreach (var attr in model.Select(d => d.Resolved))
+        foreach (var attr in model)
         {
             // This does a bunch of casting, and isn't optimal, but it's such a rarely used usecase
             // it's fine for now. We can optimize this later by adding methods to `Datom` and `IReadDatom`
@@ -111,7 +103,7 @@ internal class Repository<TModel> : IRepository<TModel>, IHostedService where TM
     {
         Debug.Assert(attr.IsIndexed, "Attribute must be indexed to be used in a find operation");
         var db = _conn.Db;
-        var items = db.FindIndexed(value, attr);
+        var items = db.FindIndexed(attr, value);
         foreach (var item in items)
         {
             var entity = db.Get<TModel>(item);
@@ -122,7 +114,7 @@ internal class Repository<TModel> : IRepository<TModel>, IHostedService where TM
             }
         }
 
-        model = null;
+        model = default(TModel)!;
         return false;
     }
 
@@ -133,7 +125,7 @@ internal class Repository<TModel> : IRepository<TModel>, IHostedService where TM
             model = item;
             return true;
         }
-        model = null;
+        model = default(TModel)!;
         return false;
     }
 
@@ -141,7 +133,7 @@ internal class Repository<TModel> : IRepository<TModel>, IHostedService where TM
     {
         Debug.Assert(attr.IsIndexed, "Attribute must be indexed to be used in a find operation");
         var db = _conn.Db;
-        var items = db.FindIndexed(value, attr);
+        var items = db.FindIndexed(attr, value);
         foreach (var item in items)
         {
             var entity = db.Get<TModel>(item);
@@ -198,7 +190,8 @@ public static class ServiceExtensions
     /// <summary>
     /// Registers a repository for a model with the given attributes.
     /// </summary>
-    public static IServiceCollection AddRepository<TModel>(this IServiceCollection collection, IAttribute[] attributes, Predicate<TModel>? filter = null) where TModel : Entity
+    public static IServiceCollection AddRepository<TModel>(this IServiceCollection collection, IAttribute[] attributes, Predicate<TModel>? filter = null) 
+        where TModel : IReadOnlyModel<TModel>
     {
         if (attributes.Length == 0)
             throw new InvalidOperationException("At least one attribute must be provided when creating a repository");

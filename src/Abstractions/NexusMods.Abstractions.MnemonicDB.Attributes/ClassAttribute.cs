@@ -22,7 +22,7 @@ where TType : IGuidClass
     /// <summary>
     /// Gets the instance of the class from the DI container.
     /// </summary>
-    public TType GetInstance(Entity entity) 
+    public TType GetInstance(ReadOnlyModel entity) 
     {
         var key = Get(entity);
         var item = entity.Db.Connection.ServiceProvider.GetKeyedService<TType>(key);
