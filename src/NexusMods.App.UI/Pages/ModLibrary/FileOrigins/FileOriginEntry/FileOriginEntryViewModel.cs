@@ -69,8 +69,7 @@ public class FileOriginEntryViewModel : AViewModel<IFileOriginEntryViewModel>, I
         ArchiveDate = fileOrigin.GetCreatedAt();
 
         var loadout = conn.Db.Get<Loadout.Model>(loadoutId.Value);
-        
-        // Get
+
         _isModAddedToLoadout = conn.Revisions(loadoutId)
             .StartWith(loadout)
             .Select(rev => rev.Mods.Any(mod => mod.Contains(Mod.Source) && mod.SourceId.Equals(fileOrigin.Id)))
