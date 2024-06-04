@@ -120,7 +120,7 @@ public class RunGameTool<T> : IRunGameTool
         var command = new Command(program.ToString())
             .WithWorkingDirectory(program.Parent.ToString());
 
-        var result = await _processFactory.ExecuteAsync(command, cancellationToken);
+        var result = await _processFactory.ExecuteAsync(command, cancellationToken: cancellationToken);
         return result;
     }
 
