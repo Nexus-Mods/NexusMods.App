@@ -1,6 +1,8 @@
+using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Settings;
+using NexusMods.App.BuildInfo;
 using NexusMods.Paths;
 
 namespace NexusMods.CrossPlatform;
@@ -41,16 +43,17 @@ public record LoggingSettings : ISettings
     /// <summary>
     /// Gets the minimum logging level.
     /// </summary>
-    public LogLevel MinimumLevel { get; init; } = LogLevel.Debug;
+    public LogLevel MinimumLevel { get; [UsedImplicitly] set; } = LogLevel.Debug;
 
     /// <summary>
     /// When enabled, logs will be written to the console as well as the log file.
     /// </summary>
-    #if DEBUG
-    public bool LogToConsole { get; init; } = true;
-    #else
-    public bool LogToConsole { get; init; } = false;
-    #endif
+    public bool LogToConsole { get; [UsedImplicitly] set; } = CompileConstants.IsDebug;
+
+    /// <summary>
+    /// Gets the retention span for process logs.
+    /// </summary>
+    public TimeSpan ProcessLogRetentionSpan { get; } = TimeSpan.FromDays(7);
 
     /// <inheritdoc/>
     public static ISettingsBuilder Configure(ISettingsBuilder settingsBuilder)

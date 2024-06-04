@@ -14,8 +14,10 @@ public class OSInteropLinux : AOSInterop
     /// <summary>
     /// Constructor.
     /// </summary>
-    public OSInteropLinux(ILoggerFactory loggerFactory, IProcessFactory processFactory, IFileSystem fileSystem)
-        : base(loggerFactory, processFactory)
+    public OSInteropLinux(
+        ILoggerFactory loggerFactory,
+        IProcessFactory processFactory,
+        IFileSystem fileSystem) : base(loggerFactory, processFactory)
     {
         _fileSystem = fileSystem;
     }

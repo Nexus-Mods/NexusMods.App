@@ -1,5 +1,6 @@
 using CliWrap;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.Settings;
 using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
 
@@ -19,15 +20,36 @@ public class ProcessFactory : IProcessFactory
     /// </summary>
     public ProcessFactory(
         ILogger<ProcessFactory> logger,
-        IFileSystem fileSystem)
+        IFileSystem fileSystem,
+        ISettingsManager settingsManager)
     {
         _logger = logger;
         _fileSystem = fileSystem;
 
         _processLogsFolder = LoggingSettings.GetLogBaseFolder(fileSystem.OS, fileSystem).Combine("ProcessLogs");
+        _logger.LogInformation("Using process log folder at {Path}", _processLogsFolder);
+
         _processLogsFolder.CreateDirectory();
 
-        _logger.LogInformation("Using process log folder at {Path}", _processLogsFolder);
+        var loggingSettings = settingsManager.Get<LoggingSettings>();
+        var retentionSpan = loggingSettings.ProcessLogRetentionSpan;
+
+        var filesToDelete = _processLogsFolder
+            .EnumerateFiles()
+            .Where(x => DateTime.Now - x.FileInfo.CreationTime >= retentionSpan)
+            .ToArray();
+
+        foreach (var file in filesToDelete)
+        {
+            try
+            {
+                file.Delete();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Failed to delete expired log file {Path}", file);
+            }
+        }
     }
 
     /// <inheritdoc />
