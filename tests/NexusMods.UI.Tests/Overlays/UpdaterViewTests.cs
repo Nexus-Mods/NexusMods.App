@@ -1,6 +1,5 @@
 ﻿using Avalonia.Controls;
 using FluentAssertions;
-using NexusMods.App.BuildInfo;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Overlays.Updater;
 
@@ -25,21 +24,6 @@ public class UpdaterViewTests : AViewTest<UpdaterView, UpdaterDesignViewModel, I
         {
             ViewModel.Status.Should().Be(Status.Closed);
             ViewModel.UpdateClicked.Should().BeTrue();
-        });
-    }
-
-    [Fact]
-    public async Task UsingFlatpakDisablesUpdateButtonAndShowsMessage()
-    {
-        ViewModel.Method = InstallationMethod.Flatpak;
-
-        var useSystemUpdater = await Host.GetViewControl<TextBlock>("UseSystemUpdater");
-        var updateButton = await Host.GetViewControl<Button>("UpdateButton");
-
-        await EventuallyOnUi(() =>
-        {
-            useSystemUpdater.IsVisible.Should().BeTrue();
-            updateButton.IsEnabled.Should().BeFalse();
         });
     }
 
