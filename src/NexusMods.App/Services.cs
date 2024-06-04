@@ -38,7 +38,8 @@ public static class Services
         TelemetrySettings? telemetrySettings = null,
         bool addStandardGameLocators = true,
         StartupMode? startupMode = null,
-        ExperimentalSettings? experimentalSettings = null)
+        ExperimentalSettings? experimentalSettings = null,
+        GameLocatorSettings? gameLocatorSettings = null)
     {
         startupMode ??= new StartupMode();
         if (startupMode.RunAsMain)
@@ -83,7 +84,7 @@ public static class Services
                 .AddCleanupVerbs();
 
             if (addStandardGameLocators)
-                services.AddStandardGameLocators();
+                services.AddStandardGameLocators(settings: gameLocatorSettings);
         }
         else
         {
