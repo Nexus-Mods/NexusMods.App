@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Paths;
 
-namespace NexusMods.App;
+namespace NexusMods.CrossPlatform;
 
 /// <summary>
 /// Settings related to logging in the Nexus Mods App. 
@@ -52,6 +52,7 @@ public record LoggingSettings : ISettings
     public bool LogToConsole { get; init; } = false;
     #endif
 
+    /// <inheritdoc/>
     public static ISettingsBuilder Configure(ISettingsBuilder settingsBuilder)
     {
         // TODO: put in some section
@@ -76,7 +77,7 @@ public record LoggingSettings : ISettings
                     )
                     .RequiresRestart()
                 )
-                .AddPropertyToUI(x => x.LogToConsole, propertybuilder => propertybuilder
+                .AddPropertyToUI(x => x.LogToConsole, propertyBuilder => propertyBuilder
                     .AddToSection(sectionId)
                     .WithDisplayName("Log to Console")
                     .WithDescription("When enabled, logs will be written to the console as well as the log file.")

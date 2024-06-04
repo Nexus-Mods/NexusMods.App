@@ -41,4 +41,8 @@
         <DependentUpon>IProtocolRegistration.cs</DependentUpon>
       </Compile>
     </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Settings\NexusMods.Abstractions.Settings.csproj" />
+    </ItemGroup>
 </Project>
