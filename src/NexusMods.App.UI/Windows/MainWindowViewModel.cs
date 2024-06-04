@@ -25,7 +25,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
 {
     private readonly IWindowManager _windowManager;
     
-    public ReactiveCommand<Unit, Unit> ActivateCommand { get; } = ReactiveCommand.Create(() => { });
+    public ReactiveCommand<Unit, Unit> ActivateWindowCommand { get; } = ReactiveCommand.Create(() => { });
 
     public MainWindowViewModel(
         IServiceProvider serviceProvider,

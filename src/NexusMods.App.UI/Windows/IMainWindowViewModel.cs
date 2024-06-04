@@ -16,5 +16,5 @@ public interface IMainWindowViewModel : IViewModelInterface, IWorkspaceWindow
     ///     Normally this would go into something like <see cref="IWorkspaceWindow"/>,
     ///     however there aren't enough use cases yet to justify this.
     /// </remarks>
-    ReactiveCommand<Unit, Unit> ActivateCommand { get; }
+    ReactiveCommand<Unit, Unit> ActivateWindowCommand { get; }
 }
