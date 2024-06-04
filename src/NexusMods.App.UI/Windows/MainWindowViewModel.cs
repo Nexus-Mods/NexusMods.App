@@ -1,3 +1,4 @@
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,6 +24,8 @@ namespace NexusMods.App.UI.Windows;
 public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindowViewModel
 {
     private readonly IWindowManager _windowManager;
+    
+    public ReactiveCommand<Unit, Unit> ActivateCommand { get; } = ReactiveCommand.Create(() => { });
 
     public MainWindowViewModel(
         IServiceProvider serviceProvider,
@@ -69,6 +72,14 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
                 var updaterViewModel = serviceProvider.GetRequiredService<IUpdaterViewModel>();
                 updaterViewModel.MaybeShow();
             }
+            
+            loginManager.IsLoggedInObservable
+                .Subscribe(isSignedIn =>
+                {
+                    if (isSignedIn)
+                        ActivateCommand.Execute().Subscribe();
+                })
+                .DisposeWith(d);
             
             var loginMessageVM = serviceProvider.GetRequiredService<ILoginMessageBoxViewModel>();
             loginMessageVM.Controller = overlayController;

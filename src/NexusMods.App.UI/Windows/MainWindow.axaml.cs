@@ -65,6 +65,11 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
             this.WhenAnyValue(view => view.IsActive)
                 .BindTo(this, view => view.ViewModel!.IsActive)
                 .DisposeWith(disposables);
+
+            ViewModel!.ActivateCommand.Subscribe(_ =>
+            {
+                Activate();
+            }).DisposeWith(disposables);
         });
     }
 
