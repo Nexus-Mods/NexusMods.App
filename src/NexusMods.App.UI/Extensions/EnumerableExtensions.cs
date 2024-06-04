@@ -4,6 +4,11 @@ namespace NexusMods.App.UI.Extensions;
 
 public static class EnumerableExtensions
 {
+    public static IEnumerable<T> NotNull<T>(this IEnumerable<T?> source) where T : class
+    {
+        return source.Where(x => x is not null).Select(x => x!);
+    }
+
     /// <summary>
     /// Creates a new <see cref="ObservableCollection{T}"/> from an <see cref="IEnumerable{T}"/>.
     /// </summary>
