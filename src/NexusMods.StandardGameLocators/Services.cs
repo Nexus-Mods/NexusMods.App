@@ -17,7 +17,7 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.Stores.EGS;
 using NexusMods.Abstractions.GameLocators.Stores.GOG;
 using NexusMods.Abstractions.GameLocators.Stores.Origin;
-using NexusMods.Abstractions.Serialization.ExpressionGenerator;
+using NexusMods.Abstractions.Settings;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 
@@ -31,14 +31,16 @@ public static class Services
     /// <summary>
     /// Registers all the services for the standard store locators
     /// </summary>
-    /// <param name="services">Collection to append entries into</param>
     /// <param name="registerConcreteLocators">if true, will register the concrete locators, set this to false if
     /// you plan on stubbing out these locators for testing</param>
-    /// <returns></returns>
-    public static IServiceCollection AddStandardGameLocators(this IServiceCollection services,
-        bool registerConcreteLocators = true)
+    public static IServiceCollection AddStandardGameLocators(
+        this IServiceCollection services,
+        bool registerConcreteLocators = true,
+        GameLocatorSettings? settings = null)
     {
-        services.AddGameLocatorCliVerbs()
+        services
+            .AddSettings<GameLocatorSettings>()
+            .AddGameLocatorCliVerbs()
             .AddAttributeCollection(typeof(ManuallyAddedGame));
 
         // TODO: figure out the Proton-Wine situation
@@ -53,7 +55,8 @@ public static class Services
                 services.AddSingleton<IGameLocator, EpicLocator>();
                 services.AddSingleton<IGameLocator, GogLocator>();
                 services.AddSingleton<IGameLocator, OriginLocator>();
-                services.AddSingleton<IGameLocator, XboxLocator>();
+
+                if (settings is not null && settings.EnableXboxGamePass) services.AddSingleton<IGameLocator, XboxLocator>();
             },
             onLinux: () =>
             {
