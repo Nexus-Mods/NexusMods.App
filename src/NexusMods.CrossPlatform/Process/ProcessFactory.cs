@@ -91,7 +91,10 @@ public class ProcessFactory : IProcessFactory
                 .WithStandardOutputPipe(mergedStdOutPipe)
                 .WithStandardErrorPipe(mergedStdErrPipe);
 
-            return await ExecuteAsync(command, cancellationToken);
+            var result = await ExecuteAsync(command, cancellationToken);
+            _logger.LogInformation("Command `{Command}` finished after {RunTime} seconds with exit Code {ExitCode}", command.ToString(), result.RunTime.TotalSeconds, result.ExitCode);
+
+            return result;
         }
     }
 
