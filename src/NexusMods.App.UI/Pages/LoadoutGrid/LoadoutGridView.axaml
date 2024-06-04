@@ -13,7 +13,6 @@
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
     xmlns:loadoutGrid="clr-namespace:NexusMods.App.UI.Pages.LoadoutGrid"
     xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation"
-    xmlns:ui="clr-namespace:NexusMods.App.UI"
     xmlns:markdownRenderer="clr-namespace:NexusMods.App.UI.Controls.MarkdownRenderer">
     <Design.DataContext>
         <loadoutGrid:LoadoutGridDesignViewModel />
@@ -21,6 +20,8 @@
     <Grid RowDefinitions="Auto, *">
         <Border Grid.Row="0" Classes="Toolbar">
             <StackPanel>
+                <Line/>
+                
                 <navigation:NavigationControl x:Name="ViewModFilesButton">
                     <StackPanel>
                         <icons:UnifiedIcon Classes="FolderOutline" />
