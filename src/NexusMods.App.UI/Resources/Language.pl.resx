@@ -474,7 +474,7 @@
         <value>Usuń</value>
     </data>
     <data name="FileOriginsPage_GetMods" xml:space="preserve">
-        <value>Pobraj mody:</value>
+        <value>Pobierz mody:</value>
     </data>
     <data name="FileOriginsPage_FromDrive" xml:space="preserve">
         <value>Z dysku</value>
