@@ -2,7 +2,6 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Cli;
 using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.FileStore.ArchiveMetadata;
-using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.HttpDownloader;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Loadouts;
@@ -65,7 +64,6 @@ public static class ProtocolVerbs
             await httpDownloader.DownloadAsync(new[] { new HttpRequestMessage(HttpMethod.Get, uri) },
                 temporaryPath, null, null, token);
 
-            var nameToSet = string.IsNullOrWhiteSpace(modName) ? "Unknown" : modName;
             var downloadId = await fileOriginRegistry.RegisterDownload(temporaryPath,
                 (tx, id) =>
             {

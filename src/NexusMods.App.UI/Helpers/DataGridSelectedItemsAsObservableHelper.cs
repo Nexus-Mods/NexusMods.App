@@ -75,7 +75,10 @@ public class DataGridSelectedItemsAsObservableHelper<T> : IDisposable where T : 
 public static class DataGridSelectedItemsAsObservableHelperExtensions
 {
     /// <summary>
-    /// Synchronizes the selected items of the current DataGrid with an existing property on a view model using the DataGridSelectedItemsAsObservableHelper.
+    /// Synchronizes the selected items of the current DataGrid with an existing
+    /// property on a view model using the DataGridSelectedItemsAsObservableHelper.
+    ///
+    /// This gets us a DynamicData observable for the selected items of a DataGrid.
     /// </summary>
     /// <typeparam name="T">The type of the items in the DataGrid.</typeparam>
     /// <typeparam name="TVM">Type of ViewModel used.</typeparam>
