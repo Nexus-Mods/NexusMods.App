@@ -39,7 +39,7 @@ You can download the AppImage file `NexusMods.App.x86_64.AppImage` from the [lat
 
 #### System Package Manager
 
-This page will be updated with [Repology](https://repology.org/) once packages start appearing. If you're want to create a package for a platform, see [Contributing](./Contributing.md) for more details.
+This page will be updated with [Repology](https://repology.org/) once packages start appearing. If you're want to create a package for a platform, see [Contributing](./Contributing.md#for-package-maintainers) for more details.
 
 ### macOS
 

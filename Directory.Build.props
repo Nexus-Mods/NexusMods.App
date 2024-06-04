@@ -24,7 +24,7 @@
             
                 INSTALLATION_METHOD_ARCHIVE: App should have been installed via archive.
                 INSTALLATION_METHOD_INNO_SETUP: Installed via InnoSetup (Windows)
-                INSTALLATION_METHOD_FLATPAK: Installed via Flatpak (Linux)
+                INSTALLATION_METHOD_PACKAGE_MANAGER: Installed with a package manager.
                 INSTALLATION_METHOD_APPIMAGE: Running via AppImage (Linux)
 
             ________________
