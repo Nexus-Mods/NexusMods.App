@@ -14,6 +14,8 @@
     </a>
 </div>
 
+If you want to know how the App works, see [Mod With Confidence](./ModWithConfidence.md).
+
 ## Installation
 
 ### Windows

@@ -48,6 +48,7 @@ plugins:
 
 nav:
   - Home: index.md
+  - Mod With Confidence: ModWithConfidence.md
   - Contributing: Contributing.md
   - Development Guidelines:
       - Dependency Injection: development-guidelines/DependencyInjection.md
