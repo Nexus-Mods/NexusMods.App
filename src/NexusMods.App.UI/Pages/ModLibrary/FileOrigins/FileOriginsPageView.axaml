@@ -17,7 +17,7 @@
         <Border Grid.Row="0" Classes="Toolbar">
             <StackPanel Orientation="Horizontal">
                 <!-- Add Buttons Section -->
-                <Button x:Name="AddModButton" IsEnabled="False">
+                <Button x:Name="AddModButton">
                     <StackPanel>
                         <icons:UnifiedIcon Classes="PlaylistAdd" />
                         <TextBlock Text="{x:Static resources:Language.FileOriginsPage__Add_Mod}"/>

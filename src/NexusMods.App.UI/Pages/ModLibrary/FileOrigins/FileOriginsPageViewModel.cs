@@ -1,6 +1,8 @@
 using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using Avalonia.Platform.Storage;
 using DynamicData;
 using DynamicData.Binding;
@@ -52,17 +54,18 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
             // Called from view.
             _selectedMods = value;
             _selectedMods.Bind(out _selectedModsCollection).Subscribe();
+            this.RaisePropertyChanged();
         }
     }
 
     public ReadOnlyObservableCollection<IFileOriginEntryViewModel> SelectedModsCollection => _selectedModsCollection;
 
-    ReactiveCommand<Unit, Unit> IFileOriginsPageViewModel.AddMod => ReactiveCommand.CreateFromTask(AddMod);
-    ReactiveCommand<Unit, Unit> IFileOriginsPageViewModel.AddModAdvanced => ReactiveCommand.CreateFromTask(AddModAdvanced);
+    public ReactiveCommand<Unit, Unit> AddMod { get; private set; } = null!;
+    public ReactiveCommand<Unit, Unit> AddModAdvanced { get; private set; } = null!;
     ReactiveCommand<Unit, Unit> IFileOriginsPageViewModel.OpenNexusModPage => ReactiveCommand.CreateFromTask(OpenNexusModPage);
 
     private IObservable<IChangeSet<IFileOriginEntryViewModel, IFileOriginEntryViewModel>> _selectedMods = null!; // set from View
-    private ReadOnlyObservableCollection<IFileOriginEntryViewModel> _selectedModsCollection = null!; // set from View
+    private ReadOnlyObservableCollection<IFileOriginEntryViewModel> _selectedModsCollection = new([]); // overwritten from View
 
     public LoadoutId LoadoutId { get; private set; }
     private readonly GameDomain _gameDomain;
@@ -131,6 +134,37 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
         
             entriesObservable.SubscribeWithErrorLogging().DisposeWith(d);
         });
+        
+        this.WhenActivated(d =>
+        {
+            var canAddMod = new Subject<bool>();
+            var canAddAdvancedMod = new Subject<bool>();
+            this.WhenAnyValue(view => view.SelectedModsObservable)
+                .Where(obs => obs != null!)
+                .Select(observable =>
+                {
+                    return observable
+                        .Select(_ => SelectedModsCollection.Count > 0)
+                        .SubscribeWithErrorLogging(hasSelection =>
+                            {
+                                // Add (Advanced) is always available.
+                                canAddAdvancedMod.OnNext(hasSelection);
+                                
+                                // Add is only available if no mod is already added.
+                                var canAdd = hasSelection && SelectedModsCollection.All(x => !x.IsModAddedToLoadout);
+                                canAddMod.OnNext(canAdd);
+                            }
+                        );
+                })
+                .Subscribe()
+                .DisposeWith(d);
+            
+            AddMod = ReactiveCommand.CreateFromTask(async (token) => await DoAddModImpl(null, token), canAddMod);
+            AddModAdvanced = ReactiveCommand.CreateFromTask(async (token) =>
+            {
+                await DoAddModImpl(_provider.GetKeyedService<IModInstaller>("AdvancedManualInstaller"), token);
+            }, canAddAdvancedMod);
+        });
     }
 
     public static bool FilterDownloadAnalysisModel(DownloadAnalysis.Model model, GameDomain currentGameDomain)
@@ -176,11 +210,7 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
         await _osInterop.OpenUrl(new Uri(url), true);
     }
 
-    public async Task AddMod(CancellationToken token) => await AddMod(null, token);
-
-    public async Task AddModAdvanced(CancellationToken token) => await AddMod(_provider.GetKeyedService<IModInstaller>("AdvancedManualInstaller"), token);
-
-    private async Task AddMod(IModInstaller? installer, CancellationToken token)
+    private async Task DoAddModImpl(IModInstaller? installer, CancellationToken token)
     {
         foreach (var mod in SelectedModsCollection)
             await mod.AddUsingInstallerToLoadout(installer, token);
