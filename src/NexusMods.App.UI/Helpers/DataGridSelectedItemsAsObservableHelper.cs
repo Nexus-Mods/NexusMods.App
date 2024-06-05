@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Reflection;
 using Avalonia.Controls;
@@ -61,10 +62,18 @@ public class DataGridSelectedItemsAsObservableHelper<T> : IDisposable where T : 
         _selectedItemsCache.Edit(updater =>
         {
             foreach (var removedItem in e.RemovedItems)
+            {
+                Debug.Assert(removedItem is T, "Removed item is not of the correct type");
+                Debug.Assert(removedItem != null, "Removed item is null");
                 updater.RemoveKey((T)removedItem);
+            }
 
             foreach (var addedItem in e.AddedItems)
+            {    
+                Debug.Assert(addedItem is T, "Added item is not of the correct type");
+                Debug.Assert(addedItem != null, "Added item is null");
                 updater.AddOrUpdate((T)addedItem);
+            }
         });
     }
 }
