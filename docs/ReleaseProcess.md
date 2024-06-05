@@ -60,5 +60,5 @@ and copy in the correct changelog information from `CHANGELOG.md`
 current version on GitHub
 
 ## Technical Process for a hotfix release
-Exactly the same as the process for a main release, but the base for all branching, builds and tags
+It is exactly the same as the process for a main release, but the base for all branching, builds, and tags
 is the previous most recent release. 
