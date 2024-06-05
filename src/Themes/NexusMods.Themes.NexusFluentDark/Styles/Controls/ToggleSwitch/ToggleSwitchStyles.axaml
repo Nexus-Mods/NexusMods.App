@@ -2,34 +2,89 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Design.PreviewWith>
         <Border Padding="10" Classes="Low">
+ 
             <StackPanel Classes="Spacing-1" Margin="6">
+                <TextBlock Classes="HeadingXSSemi">ToggleSwitch</TextBlock>    
+            
+            <Grid>
+                <Grid.ColumnDefinitions>			
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="1*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
                 
-                <TextBlock Classes="HeadingXSSemi">ToggleSwitch</TextBlock>
+                <!-- Default -->
                 
-                <StackPanel Classes="Spacing-none" Margin="6">
-                    <ToggleSwitch />
+                <StackPanel Classes="Spacing-1" Margin="6">
+                    <TextBlock Classes="TitleMDSemi">Default</TextBlock>
+                
+                    <StackPanel Classes="Spacing-none" Margin="6">
+                    
+                        <TextBlock Classes="BodyMDBold">Default</TextBlock>
+                        <ToggleSwitch />
+                    </StackPanel>
+                
+                    <StackPanel Classes="Spacing-none" Margin="6">
+                        <TextBlock Classes="BodyMDBold">Enabled, Unchecked</TextBlock>
+                        <ToggleSwitch IsEnabled="True" IsChecked="False" />
+                    </StackPanel>
+                
+                    <StackPanel Classes="Spacing-none" Margin="6">
+                        <TextBlock Classes="BodyMDBold">Enabled, Checked</TextBlock>
+                        <ToggleSwitch IsEnabled="True" IsChecked="True" />
+                    </StackPanel>
+                
+                    <StackPanel Classes="Spacing-none" Margin="6">
+                        <TextBlock Classes="BodyMDBold">Disabled, Unchecked</TextBlock>
+                        <ToggleSwitch IsEnabled="False" IsChecked="False"/>
+                    </StackPanel>
+                
+                    <StackPanel Classes="Spacing-none" Margin="6">
+                        <TextBlock Classes="BodyMDBold">Disabled, Checked</TextBlock>
+                        <ToggleSwitch IsEnabled="False" IsChecked="True"/>
+                    </StackPanel>
                 </StackPanel>
                 
-                <StackPanel Classes="Spacing-none" Margin="6">
-                    <TextBlock Classes="BodyMDBold">Enabled, Unchecked</TextBlock>
-                    <ToggleSwitch IsEnabled="True" IsChecked="False" />
-                </StackPanel>
+                <!-- Compact -->
                 
-                <StackPanel Classes="Spacing-none" Margin="6">
-                    <TextBlock Classes="BodyMDBold">Enabled, Checked</TextBlock>
-                    <ToggleSwitch IsEnabled="True" IsChecked="True" />
-                </StackPanel>
+                <StackPanel Grid.Column="1" Classes="Spacing-1" Margin="6">
                 
-                <StackPanel Classes="Spacing-none" Margin="6">
-                    <TextBlock Classes="BodyMDBold">Disabled, Unchecked</TextBlock>
-                    <ToggleSwitch IsEnabled="False" IsChecked="False"/>
-                </StackPanel>
+                    <TextBlock Classes="TitleMDSemi">Compact</TextBlock>
                 
-                <StackPanel Classes="Spacing-none" Margin="6">
-                    <TextBlock Classes="BodyMDBold">Disabled, Checked</TextBlock>
-                    <ToggleSwitch IsEnabled="False" IsChecked="True"/>
+                    <StackPanel Classes="Spacing-none" Margin="6">
+                    
+                        <TextBlock Classes="BodyMDBold">Default</TextBlock>
+                        <ToggleSwitch Classes="Compact" />
+                    </StackPanel>
+                
+                    <StackPanel Classes="Spacing-none" Margin="6">
+                        <TextBlock Classes="BodyMDBold">Enabled, Unchecked</TextBlock>
+                        <ToggleSwitch Classes="Compact" IsEnabled="True" IsChecked="False" />
+                    </StackPanel>
+                
+                    <StackPanel Classes="Spacing-none" Margin="6">
+                        <TextBlock Classes="BodyMDBold">Enabled, Checked</TextBlock>
+                        <ToggleSwitch Classes="Compact" IsEnabled="True" IsChecked="True" />
+                    </StackPanel>
+                
+                    <StackPanel Classes="Spacing-none" Margin="6">
+                        <TextBlock Classes="BodyMDBold">Disabled, Unchecked</TextBlock>
+                        <ToggleSwitch Classes="Compact" IsEnabled="False" IsChecked="False"/>
+                    </StackPanel>
+                
+                    <StackPanel Classes="Spacing-none" Margin="6">
+                        <TextBlock Classes="BodyMDBold">Disabled, Checked</TextBlock>
+                        <ToggleSwitch Classes="Compact" IsEnabled="False" IsChecked="True"/>
+                    </StackPanel>
                 </StackPanel>
-            </StackPanel>
+            </Grid>
+                
+                </StackPanel>
+            
+            
         </Border>
     </Design.PreviewWith>
 
@@ -63,6 +118,9 @@
             <SolidColorBrush x:Key="ToggleSwitchStrokeOffDisabled" Color="{StaticResource BrandTranslucentLight50}" />
             
         </Style.Resources>
+        
+        <Setter Property="ClipToBounds" Value="False"></Setter>
+
 
         <Setter Property="Template">
             <ControlTemplate>
@@ -130,10 +188,10 @@
                             BorderBrush="{DynamicResource ToggleSwitchStrokeOff}"
                             BorderThickness="2"
                             CornerRadius="{StaticResource Rounded-full}"
-                            Grid.Row="1"
-                            Grid.Column="0"
                             Height="32"
                             Width="52"
+                            Grid.Row="1"
+                            Grid.Column="0"
                             x:Name="OuterBorder" />
 
                         <Border
@@ -141,25 +199,29 @@
                             BorderBrush="{DynamicResource ToggleSwitchStrokeOn}"
                             BorderThickness="2"
                             CornerRadius="{StaticResource Rounded-full}"
-                            Grid.Row="1"
-                            Grid.Column="0"
                             Height="32"
                             Width="52"
+                            Grid.Row="1"
+                            Grid.Column="0"
                             x:Name="SwitchKnobBounds" />
 
                         <Canvas
                             Grid.Row="1"
                             Grid.Column="0"
-                            Height="24"
-                            HorizontalAlignment="Left"
-                            VerticalAlignment="Center"
                             Width="20"
-                            Margin="4,0,0,0"
+                            HorizontalAlignment="Left"
+                            Margin="4,4,0,0"
                             x:Name="PART_SwitchKnob">
                             <Grid
                                 Height="24"
                                 Width="24"
                                 x:Name="PART_MovingKnobs">
+                                <Ellipse
+                                    Fill="{StaticResource BrandTranslucentLight50}"
+                                    Opacity="0"
+                                    Height="40"
+                                    Width="40"
+                                    x:Name="SwitchKnobOuter" />
                                 <Ellipse
                                     Fill="{StaticResource ToggleSwitchKnobFillOn}"
                                     Height="24"
@@ -167,8 +229,8 @@
                                     x:Name="SwitchKnobOn" />
                                 <Ellipse
                                     Fill="{StaticResource ToggleSwitchKnobFillOff}"
-                                    Height="24"
-                                    Width="24"
+                                    Height="16"
+                                    Width="16"
                                     x:Name="SwitchKnobOff" />
                             </Grid>
                         </Canvas>
@@ -190,6 +252,35 @@
                     Property="Canvas.Left" />
             </Transitions>
         </Setter>
+        
+        <!-- Compact class overrides -->
+        
+        <Style Selector="
+        ^.Compact /template/ Border#OuterBorder, 
+        ^.Compact /template/ Border#SwitchKnobBounds">
+            <Setter Property="Height" Value="20" />
+            <Setter Property="Width" Value="40" />
+        </Style>
+        
+        <Style Selector="^.Compact /template/ Ellipse#SwitchKnobOn">
+            <Setter Property="Height" Value="16" />
+            <Setter Property="Width" Value="16" />
+        </Style>
+        
+        <Style Selector="^.Compact /template/ Ellipse#SwitchKnobOff">
+            <Setter Property="Height" Value="12" />
+            <Setter Property="Width" Value="12" />
+        </Style>
+        
+        <Style Selector="^.Compact /template/ Ellipse#SwitchKnobOuter">
+            <Setter Property="Height" Value="32" />
+            <Setter Property="Width" Value="32" />
+        </Style>
+        
+        <Style Selector="^.Compact /template/ Canvas#PART_SwitchKnob">
+            <Setter Property="Width" Value="20" />
+            <Setter Property="Margin" Value="-2,-2,0,0" />
+        </Style>
         
 
         <!--  CheckedState  -->
@@ -228,9 +319,7 @@
         </Style>
 
         <Style Selector="^:unchecked /template/ Ellipse#SwitchKnobOff">
-            <Setter Property="Opacity" Value="1" />
-            <Setter Property="Width" Value="16" />
-            <Setter Property="Height" Value="16" />
+            <Setter Property="Opacity" Value="1" /> 
             <Setter Property="Fill" Value="{StaticResource ToggleSwitchKnobFillOff}" />
         </Style>
 
@@ -261,6 +350,10 @@
         <Style Selector="^:pointerover /template/ Ellipse#SwitchKnobOn">
             <Setter Property="Fill" Value="{StaticResource ToggleSwitchKnobFillOnPointerOver}" />
         </Style>
+        
+        <Style Selector="^:pointerover /template/ Ellipse#SwitchKnobOuter">
+            <Setter Property="Opacity" Value="1" />
+        </Style>
 
         <Style Selector="^:pointerover /template/ Border#SwitchKnobBounds">
             <Setter Property="Background" Value="{StaticResource ToggleSwitchFillOnPointerOver}" />
@@ -285,13 +378,24 @@
             <Setter Property="Width" Value="28" />
             <Setter Property="Height" Value="28" />      
             <Setter Property="Margin" Value="0,0,0,0" /> <!-- need to move knob slightly left after size increase -->
-
         </Style>
 
         <Style Selector="^:pressed /template/ Ellipse#SwitchKnobOn">
             <Setter Property="Fill" Value="{StaticResource ToggleSwitchKnobFillOnPointerOver}" />          
             <Setter Property="Width" Value="28" />
             <Setter Property="Height" Value="28" />
+        </Style>
+        
+        <!-- we don't need to resize the knob for the compact style -->
+                
+        <Style Selector="^.Compact:pressed /template/ Ellipse#SwitchKnobOn">
+            <Setter Property="Width" Value="16" />
+            <Setter Property="Height" Value="16" />      
+        </Style>
+        
+        <Style Selector="^.Compact:pressed /template/ Ellipse#SwitchKnobOff">
+            <Setter Property="Width" Value="12" />
+            <Setter Property="Height" Value="12" />      
         </Style>
 
         <Style Selector="^:pressed /template/ Grid#SwitchAreaGrid">
@@ -327,7 +431,7 @@
             <Setter Property="Background" Value="{DynamicResource ToggleSwitchFillOffDisabled}" />
             <Setter Property="BorderBrush" Value="{DynamicResource ToggleSwitchStrokeOffDisabled}" />
         </Style>
-
+        
     </Style>
 </Styles>
 
