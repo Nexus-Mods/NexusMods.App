@@ -8,7 +8,6 @@ using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Pages.LoadoutGrid;
-using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.Downloaders.Tasks.State;
 using NexusMods.Paths;
@@ -46,8 +45,7 @@ public class FileOriginEntryViewModel : AViewModel<IFileOriginEntryViewModel>, I
         IArchiveInstaller archiveInstaller,
         LoadoutId loadoutId,
         DownloadAnalysis.Model fileOrigin,
-        IWorkspaceController workspaceController,
-        PageIdBundle pageIdBundle)
+        ReactiveCommand<NavigationInformation, Unit> viewModCommand)
     {
         _archiveInstaller = archiveInstaller;
         _loadoutId = loadoutId;
@@ -100,23 +98,7 @@ public class FileOriginEntryViewModel : AViewModel<IFileOriginEntryViewModel>, I
             .Select(date => date.Equals(DateTime.MinValue) ? "-" : date.Humanize())
             .ToProperty(this, vm => vm.DisplayLastInstalledDate, scheduler: RxApp.MainThreadScheduler);
 
-        ViewModCommand = ReactiveCommand.Create<NavigationInformation>(info =>
-        {
-            // Note(sewer): Design currently doesn't require we scroll to item,
-            //              (it's challenging) so just navigating to correct
-            //              view is enough.
-            var pageData = new PageData()
-            {
-                FactoryId = LoadoutGridPageFactory.StaticId,
-                Context = new LoadoutGridContext()
-                {
-                    LoadoutId = loadoutId,
-                }
-            };
-
-            var behavior = workspaceController.GetOpenPageBehavior(pageData, info, pageIdBundle);
-            workspaceController.OpenPage(workspaceController.ActiveWorkspace!.Id, pageData, behavior);
-        });
+        ViewModCommand = viewModCommand;
     }
     
     public async Task AddToLoadout(CancellationToken token) => await AddUsingInstallerToLoadout(null, token);

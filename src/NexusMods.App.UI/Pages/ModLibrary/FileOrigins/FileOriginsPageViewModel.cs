@@ -14,6 +14,8 @@ using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
+using NexusMods.App.UI.Controls.Navigation;
+using NexusMods.App.UI.Pages.LoadoutGrid;
 using NexusMods.App.UI.Pages.ModLibrary.FileOriginEntry;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
@@ -91,6 +93,27 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
         this.WhenActivated(d =>
         {
             var workspaceController = GetWorkspaceController();
+            
+            // TODO: Move this to the entry if we ever adding scrolling to an entry.
+            var viewModCommand = ReactiveCommand.Create<NavigationInformation>(info =>
+                {
+                    // Note(sewer): Design currently doesn't require we scroll to item,
+                    //              (it's challenging) so just navigating to correct
+                    //              view is enough.
+                    var pageData = new PageData()
+                    {
+                        FactoryId = LoadoutGridPageFactory.StaticId,
+                        Context = new LoadoutGridContext()
+                        {
+                            LoadoutId = loadoutId,
+                        }
+                    };
+
+                    var behavior = workspaceController.GetOpenPageBehavior(pageData, info, IdBundle);
+                    workspaceController.OpenPage(workspaceController.ActiveWorkspace!.Id, pageData, behavior);
+                }
+            );
+            
             var entriesObservable = dlAnalysisRepo.Observable
                 .ToObservableChangeSet()
                 .Filter(model => FilterDownloadAnalysisModel(model, game.Domain))
@@ -101,8 +124,7 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
                         archiveInstaller,
                         LoadoutId,
                         fileOrigin,
-                        workspaceController,
-                        IdBundle
+                        viewModCommand
                     )
                 )
                 .Bind(out _fileOrigins);
