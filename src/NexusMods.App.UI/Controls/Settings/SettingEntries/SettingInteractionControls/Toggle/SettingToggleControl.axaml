@@ -8,7 +8,7 @@
     mc:Ignorable="d"
     x:Class="NexusMods.App.UI.Controls.Settings.SettingEntries.SettingToggleControl">
 
-    <ToggleSwitch Classes="Compact" HorizontalAlignment="Center" x:Name="ToggleSwitch" ClipToBounds="False">
+    <ToggleSwitch Classes="Compact" HorizontalAlignment="Center" x:Name="ToggleSwitch">
         <ToggleSwitch.OnContent>
             <ContentControl />
         </ToggleSwitch.OnContent>
