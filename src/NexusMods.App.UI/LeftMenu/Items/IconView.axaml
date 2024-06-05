@@ -18,8 +18,12 @@
         <items:IconViewModel Icon="{x:Static icons:IconValues.ModLibrary}" Name="Some Text" />
     </Design.DataContext>
 
-    <navigation:NavigationControl Classes="Invisible" x:Name="ItemButton" Width="184" Height="37">
-        <Grid ColumnDefinitions="Auto, *, *" Margin="8">
+    <navigation:NavigationControl Classes="LeftMenuItem" 
+                                  x:Name="ItemButton" 
+                                  Width="184" 
+                                  Height="36"
+                                  Padding="8,0,8,0">
+        <Grid ColumnDefinitions="Auto, *, *">
             <icons:UnifiedIcon Grid.Column="0" Size="18" x:Name="LeftIcon" />
             <TextBlock
                 Margin="6 0 0 0"
@@ -37,7 +41,10 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="{x:Type system:String}">
-                        <Border Width="20" Height="20" CornerRadius="{StaticResource Rounded-full}" Background="{StaticResource PrimaryModerate}">
+                        <Border Width="20" 
+                                Height="20" 
+                                CornerRadius="{StaticResource Rounded-full}" 
+                                Background="{StaticResource PrimaryModerate}">
                             <TextBlock
                                 x:Name="TextBlock"
                                 TextAlignment="Center"
