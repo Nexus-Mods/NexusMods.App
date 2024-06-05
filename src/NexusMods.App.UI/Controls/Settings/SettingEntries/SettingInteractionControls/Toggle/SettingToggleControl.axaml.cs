@@ -12,6 +12,8 @@ public partial class SettingToggleControl : ReactiveUserControl<ISettingToggleVi
     {
         InitializeComponent();
 
+        ClipToBounds = false;
+
         this.WhenActivated(disposables =>
         {
             this.Bind(ViewModel, vm => vm.BooleanContainer.CurrentValue, view => view.ToggleSwitch.IsChecked)

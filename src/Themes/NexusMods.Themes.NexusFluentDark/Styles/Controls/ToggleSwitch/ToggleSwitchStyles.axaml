@@ -119,8 +119,7 @@
             
         </Style.Resources>
         
-        <Setter Property="ClipToBounds" Value="False"></Setter>
-
+        <Setter Property="ClipToBounds" Value="False" />
 
         <Setter Property="Template">
             <ControlTemplate>
