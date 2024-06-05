@@ -1,6 +1,6 @@
 ﻿<reactiveUi:ReactiveUserControl
-    d:DesignHeight="90"
-    d:DesignWidth="90"
+    d:DesignHeight="150"
+    d:DesignWidth="150"
     mc:Ignorable="d"
     x:Class="NexusMods.App.UI.Controls.Spine.Buttons.Image.ImageButton"
     x:TypeArguments="buttons:IImageButtonViewModel"
@@ -15,27 +15,18 @@
         <buttons:ImageButtonDesignViewModel />
     </Design.DataContext>
 
-    <Button
-        Classes="Spine Image"
-        Height="64"
-        Width="64"
-        x:Name="Button">
+    <Button Classes="ImageButton"
+            x:Name="Button"
+            HorizontalAlignment="Stretch">
         <ToolTip.Tip>
-            <TextBlock x:Name="ToolTipTextBlock"/>
+            <TextBlock x:Name="ToolTipTextBlock" />
         </ToolTip.Tip>
-
-        <Grid>
-            <icons:UnifiedIcon
-                Size="50"
-                x:Name="Image">
-                <icons:UnifiedIcon.Clip>
-                    <EllipseGeometry Rect="0, 0, 50, 50" />
-                </icons:UnifiedIcon.Clip>
-            </icons:UnifiedIcon>
-            <Border
-                Height="50"
-                Width="50" />
-        </Grid>
-
+        <Border x:Name="ClippingBorder">
+            <Grid x:Name="InnerGrid">
+                <icons:UnifiedIcon x:Name="Image" />
+                <Rectangle x:Name="Mask" />
+                <Border x:Name="DecorationBorder" />
+            </Grid>
+        </Border>
     </Button>
 </reactiveUi:ReactiveUserControl>
