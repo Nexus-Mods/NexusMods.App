@@ -144,9 +144,9 @@
                             Height="24"
                             HorizontalAlignment="Left"
                             VerticalAlignment="Center"
-                            Width="12"
+                            Width="20"
+                            Margin="4,0,0,0"
                             x:Name="PART_SwitchKnob">
-
                             <Grid
                                 Height="24"
                                 Width="24"
@@ -275,7 +275,7 @@
             <Setter Property="Fill" Value="{DynamicResource ToggleSwitchKnobFillOffPressed}" />
             <Setter Property="Width" Value="28" />
             <Setter Property="Height" Value="28" />      
-            <Setter Property="Margin" Value="8,0,0,0" />  
+            <Setter Property="Margin" Value="0,0,0,0" /> <!-- need to move knob slightly left after size increase -->
 
         </Style>
 
