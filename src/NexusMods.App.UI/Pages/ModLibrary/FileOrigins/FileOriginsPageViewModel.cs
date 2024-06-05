@@ -97,14 +97,7 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
 
         var loadout = _conn.Db.Get<Loadout.Model>(LoadoutId.Value);
         var game = loadout.Installation.Game;
-        try
-        {
-            _gameDomain = loadout.Installation.Game.Domain;
-        }
-        catch (Exception)
-        {
-            _gameDomain = GameDomain.DefaultValue;
-        }
+        _gameDomain = loadout.Installation.Game.Domain;
 
         _fileOrigins = new ReadOnlyObservableCollection<IFileOriginEntryViewModel>([]);
         this.WhenActivated(d =>
