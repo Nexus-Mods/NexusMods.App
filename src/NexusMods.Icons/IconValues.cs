@@ -39,7 +39,7 @@ public static class IconValues
     public static readonly IconValue Home = new ProjektankerIcon("mdi-home");
 
     // https://pictogrammers.com/library/mdi/icon/playlist-plus/
-    public static readonly IconValue ListAdd = new ProjektankerIcon("mdi-playlist-plus");
+    public static readonly IconValue PlaylistAdd = new ProjektankerIcon("mdi-playlist-plus");
 
     // https://pictogrammers.com/library/mdi/icon/open-in-new/
     public static readonly IconValue OpenInNew = new ProjektankerIcon("mdi-open-in-new");
