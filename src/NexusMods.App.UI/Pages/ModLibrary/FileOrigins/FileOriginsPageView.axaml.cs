@@ -48,10 +48,14 @@ public partial class FileOriginsPageView : ReactiveUserControl<IFileOriginsPageV
                 .DisposeWith(d);
 
             DataGrid.Width = Double.NaN;
+
+            AddModButton.Command = ViewModel!.AddMod;
+            AddModAdvancedButton.Command = ViewModel!.AddModAdvanced;
+            GetModsFromNexusButton.Command = ViewModel!.OpenNexusModPage;
             
-            AddModButton.Command = ReactiveCommand.CreateFromTask(ViewModel!.AddMod);
-            AddModAdvancedButton.Command = ReactiveCommand.CreateFromTask(ViewModel!.AddModAdvanced);
-            GetModsFromNexusButton.Command = ReactiveCommand.CreateFromTask(ViewModel!.OpenNexusModPage);
+            // Note: We get `StorageProvider` from Avalonia, using the View TopLevel.
+            //       This is the suggested approach by an Avalonia team member.
+            //       https://github.com/AvaloniaUI/Avalonia/discussions/10227
             GetModsFromDriveButton.Command = ReactiveCommand.CreateFromTask(
                 async () => await ViewModel!.RegisterFromDisk(TopLevel.GetTopLevel(this)!.StorageProvider));
         });

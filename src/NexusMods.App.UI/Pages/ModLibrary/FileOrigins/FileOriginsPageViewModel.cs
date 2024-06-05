@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Controls;
@@ -61,6 +62,10 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
     }
 
     public ReadOnlyObservableCollection<IFileOriginEntryViewModel> SelectedModsCollection => _selectedModsCollection;
+
+    ReactiveCommand<Unit, Unit> IFileOriginsPageViewModel.AddMod => ReactiveCommand.CreateFromTask(AddMod);
+    ReactiveCommand<Unit, Unit> IFileOriginsPageViewModel.AddModAdvanced => ReactiveCommand.CreateFromTask(AddModAdvanced);
+    ReactiveCommand<Unit, Unit> IFileOriginsPageViewModel.OpenNexusModPage => ReactiveCommand.CreateFromTask(OpenNexusModPage);
 
     private IObservable<IChangeSet<IFileOriginEntryViewModel, IFileOriginEntryViewModel>> _selectedMods = null!; // set from View
     private ReadOnlyObservableCollection<IFileOriginEntryViewModel> _selectedModsCollection = null!; // set from View
