@@ -7,8 +7,17 @@
                 <TextBlock Classes="HeadingXSSemi">ToggleSwitch</TextBlock>
                 
                 <StackPanel Classes="Spacing-none" Margin="6">
-                    <TextBlock Classes="BodyMDBold">Enabled</TextBlock>
                     <ToggleSwitch />
+                </StackPanel>
+                
+                <StackPanel Classes="Spacing-none" Margin="6">
+                    <TextBlock Classes="BodyMDBold">Enabled, Unchecked</TextBlock>
+                    <ToggleSwitch IsEnabled="True" IsChecked="False" />
+                </StackPanel>
+                
+                <StackPanel Classes="Spacing-none" Margin="6">
+                    <TextBlock Classes="BodyMDBold">Enabled, Checked</TextBlock>
+                    <ToggleSwitch IsEnabled="True" IsChecked="True" />
                 </StackPanel>
                 
                 <StackPanel Classes="Spacing-none" Margin="6">
