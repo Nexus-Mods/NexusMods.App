@@ -6,17 +6,17 @@ The Nexus Mods App follows a strict release process which assumes that the
 state. This means that any major overhauls of feature development should either
 be done in a single PR or be developed behind an optional setting or feature flag.
 
-At a high level, releases are done by branching from main, and then building a app release
+At a high level, releases are done by branching from `main`, and then building an app release
 from this branch. A tag is assigned at the moment of the release. Hotfixes to a release
 will only be done for specific issues that cause major regressions, and these hotfixes will
-be applied to the main branch and backported into the release branch (or vice versa). Hotfix
+be applied to the `main` branch and backported into the release branch (or vice versa). Hotfix
 releases are branched from the base release. Once it is determined that no hotfixes
 will be applied to the release branch, the release branch is deleted. Often, this will be done
 sometime after the next release is made.
 
 ## Release Schedule
 The Nexus Mods App developer team follows a 3-week iteration cycle, so releases are expected
-to be made at the same interval. Most often, releases will be cut by the team lead (halgari),
+to be made at the same interval. Most often, releases will be cut by the team lead, [halgari](https://github.com/halgari),
 who lives in the MST timezone. The cutoff point for a release is sometime in the early morning on Wednesday
 of the release week (MST). Due to the requirement that main kept in an "always releasable" state, 
 the exact time of the creation of the release branch will not be further defined. 
