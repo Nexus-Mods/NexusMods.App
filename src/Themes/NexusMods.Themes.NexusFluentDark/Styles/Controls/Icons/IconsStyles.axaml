@@ -86,7 +86,7 @@
             <icons:UnifiedIcon Classes="Sync"/>
             <icons:UnifiedIcon Classes="Visibility"/>
             <icons:UnifiedIcon Classes="PlaylistAdd"/>
-            <icons:UnifiedIcon Classes="Disk"/>
+            <icons:UnifiedIcon Classes="HardDrive"/>
             <icons:UnifiedIcon Classes="Nexus"/>
         </WrapPanel>
     </Design.PreviewWith>
@@ -429,8 +429,8 @@
         <Setter Property="Value" Value="{x:Static icons:IconValues.PlaylistAdd}"/>
     </Style>
     
-    <Style Selector="icons|UnifiedIcon.Disk">
-        <Setter Property="Value" Value="{x:Static icons:IconValues.Disk}"/>
+    <Style Selector="icons|UnifiedIcon.HardDrive">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.HardDrive}"/>
     </Style>
 
     <Style Selector="icons|UnifiedIcon.Nexus">

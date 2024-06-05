@@ -310,7 +310,7 @@ public static class IconValues
     
     // Custom Icon from Figma. The source of this icon is currently unknown.
     // Need to ask. - Sewer
-    public static readonly IconValue Disk = new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Icons/disk_20px.svg");
+    public static readonly IconValue HardDrive = new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Icons/disk_20px.svg");
 
     // The Black and White Nexus 'Developer' Logo.
     // This is the variation of the Nexus logo used in the App, and on the Discord.

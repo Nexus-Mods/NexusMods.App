@@ -37,7 +37,7 @@
                 
                 <Button x:Name="GetModsFromDriveButton">
                     <StackPanel>
-                        <icons:UnifiedIcon Classes="Disk" />
+                        <icons:UnifiedIcon Classes="HardDrive" />
                         <TextBlock Text="{x:Static resources:Language.FileOriginsPage_FromDrive}"/>
                     </StackPanel>
                 </Button>
