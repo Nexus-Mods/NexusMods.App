@@ -71,29 +71,20 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
     private ReadOnlyObservableCollection<IFileOriginEntryViewModel> _selectedModsCollection = null!; // set from View
 
     public LoadoutId LoadoutId { get; private set; }
-    private GameDomain _gameDomain;
-
-
+    private readonly GameDomain _gameDomain;
+    
     public FileOriginsPageViewModel(
         LoadoutId loadoutId,
-        IArchiveInstaller archiveInstaller,
-        IRepository<DownloadAnalysis.Model> downloadAnalysisRepository,
-        IConnection conn,
-        IFileSystem fileSystem,
-        ILogger<FileOriginsPageViewModel> logger,
-        IServiceProvider provider,
-        IFileOriginRegistry fileOriginRegistry,
-        IOSInterop osInterop,
-        IWindowManager windowManager) : base(windowManager)
+        IServiceProvider serviceProvider) : base(serviceProvider.GetRequiredService<IWindowManager>())
     {
-        _conn = conn;
-        _fileSystem = fileSystem;
-        _logger = logger;
-        _provider = provider;
-        _fileOriginRegistry = fileOriginRegistry;
-        _osInterop = osInterop;
-        _archiveInstaller = archiveInstaller;
-        _dlAnalysisRepo = downloadAnalysisRepository;
+        _conn = serviceProvider.GetRequiredService<IConnection>();
+        _fileSystem = serviceProvider.GetRequiredService<IFileSystem>();
+        _logger = serviceProvider.GetRequiredService<ILogger<FileOriginsPageViewModel>>();
+        _provider = serviceProvider;
+        _fileOriginRegistry = serviceProvider.GetRequiredService<IFileOriginRegistry>();
+        _osInterop = serviceProvider.GetRequiredService<IOSInterop>();
+        _archiveInstaller = serviceProvider.GetRequiredService<IArchiveInstaller>();
+        _dlAnalysisRepo = serviceProvider.GetRequiredService<IRepository<DownloadAnalysis.Model>>();
 
         TabTitle = Language.FileOriginsPageTitle;
         TabIcon = IconValues.ModLibrary;
@@ -108,7 +99,7 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
         this.WhenActivated(d =>
         {
             var workspaceController = GetWorkspaceController();
-            var entriesObservable = downloadAnalysisRepository.Observable
+            var entriesObservable = _dlAnalysisRepo.Observable
                 .ToObservableChangeSet()
                 .Filter(model => FilterDownloadAnalysisModel(model, game.Domain))
                 .OnUI()
@@ -122,7 +113,7 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
                     )
                 )
                 .Bind(out _fileOrigins);
-            
+        
             entriesObservable.SubscribeWithErrorLogging().DisposeWith(d);
         });
     }

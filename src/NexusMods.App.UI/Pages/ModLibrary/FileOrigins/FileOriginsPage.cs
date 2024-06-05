@@ -37,15 +37,7 @@ public class FileOriginsPageFactory : APageFactory<IFileOriginsPageViewModel, Fi
     {
         return new FileOriginsPageViewModel(
             context.LoadoutId,
-            ServiceProvider.GetRequiredService<IArchiveInstaller>(),
-            ServiceProvider.GetRequiredService<IRepository<DownloadAnalysis.Model>>(),
-            ServiceProvider.GetRequiredService<IConnection>(),
-            ServiceProvider.GetRequiredService<IFileSystem>(),
-            ServiceProvider.GetRequiredService<ILogger<FileOriginsPageViewModel>>(),
-            ServiceProvider,
-            ServiceProvider.GetRequiredService<IFileOriginRegistry>(),
-            ServiceProvider.GetRequiredService<IOSInterop>(),
-            ServiceProvider.GetRequiredService<IWindowManager>()
+            ServiceProvider
         );
     }
 
