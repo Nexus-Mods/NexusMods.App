@@ -1,0 +1,75 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.PreviewWith>
+        <Border Padding="20" Height="300" Width="500">
+            <StackPanel Spacing="20" Orientation="Horizontal">
+                <ComboBox Classes="Tertiary" PlaceholderText="Placeholder Text">
+                    <ComboBoxItem>Item 1</ComboBoxItem>
+                    <ComboBoxItem>Item 2</ComboBoxItem>
+                </ComboBox>
+
+                <ComboBox Classes="Tertiary" SelectedIndex="0">
+                    <ComboBoxItem>Item 1</ComboBoxItem>
+                    <ComboBoxItem>Item 2</ComboBoxItem>
+                </ComboBox>
+
+                <ComboBox Classes="Tertiary" IsEnabled="False" SelectedIndex="0">
+                    <ComboBoxItem>Item 1</ComboBoxItem>
+                    <ComboBoxItem>Item 2</ComboBoxItem>
+                </ComboBox>
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+
+    <Style Selector="ComboBox.Tertiary">
+        <Setter Property="CornerRadius" Value="4"/>
+        <Setter Property="Padding" Value="6"/>
+
+        <Setter Property="Foreground" Value="{StaticResource NeutralStrong}"/>
+        <Setter Property="PlaceholderForeground" Value="{StaticResource NeutralStrong}"/>
+
+        <Style Selector="^ PathIcon#DropDownGlyph">
+            <Setter Property="Foreground" Value="{StaticResource NeutralStrong}"/>
+        </Style>
+
+        <Style Selector="^ /template/ Border#Background">
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
+
+        <!-- Hover State -->
+        <Style Selector="^:pointerover">
+            <Style Selector="^ /template/ Border#Background">
+                <Setter Property="Background" Value="{StaticResource SurfaceTranslucentMid}" />
+            </Style>
+        </Style>
+
+        <!-- Active State -->
+        <Style Selector="^:pressed">
+            <Style Selector="^ /template/ Border#Background">
+                <Setter Property="Background" Value="{StaticResource SurfaceMid}"/>
+            </Style>
+        </Style>
+
+        <!-- Disabled State -->
+        <Style Selector="^:disabled">
+            <Style Selector="^ /template/ Border#Background">
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="Opacity" Value="{StaticResource OpacityDisabledElement}" />
+            </Style>
+
+            <Style Selector="^ /template/ ContentControl#ContentPresenter">
+                <Setter Property="Foreground" Value="{DynamicResource NeutralWeak}" />
+            </Style>
+
+            <Style Selector="^ /template/ TextBlock#PlaceholderTextBlock">
+                <Setter Property="Foreground" Value="{DynamicResource NeutralWeak}" />
+            </Style>
+
+            <Style Selector="^ /template/ PathIcon#DropDownGlyph">
+                <Setter Property="Foreground" Value="{DynamicResource NeutralWeak}" />
+            </Style>
+        </Style>
+    </Style>
+</Styles>
+
