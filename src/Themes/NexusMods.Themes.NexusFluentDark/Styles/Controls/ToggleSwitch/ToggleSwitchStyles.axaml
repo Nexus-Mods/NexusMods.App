@@ -31,8 +31,6 @@
     <Style Selector="ToggleSwitch">
         <Style.Resources>
             
-            <Thickness x:Key="ToggleSwitchBorderThickness">2</Thickness>
-            
             <SolidColorBrush x:Key="ToggleSwitchFillOn" Color="{StaticResource NeutralModerate}" />
             <SolidColorBrush x:Key="ToggleSwitchStrokeOn" Color="{StaticResource NeutralModerate}" />
             <SolidColorBrush x:Key="ToggleSwitchKnobFillOn" Color="{StaticResource SurfaceMid}" />
@@ -96,6 +94,7 @@
                             TemplatedControl.IsTemplateFocusTarget="True"
                             x:Name="SwitchAreaGrid" />
 
+                        <!-- label when off -->
                         <ContentPresenter
                             Content="{TemplateBinding OffContent}"
                             ContentTemplate="{TemplateBinding OffContentTemplate}"
@@ -106,6 +105,7 @@
                             VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                             x:Name="PART_OffContentPresenter" />
 
+                        <!-- label when on -->
                         <ContentPresenter
                             Content="{TemplateBinding OnContent}"
                             ContentTemplate="{TemplateBinding OnContentTemplate}"
@@ -119,46 +119,47 @@
                         <Border
                             Background="{StaticResource ToggleSwitchFillOff}"
                             BorderBrush="{DynamicResource ToggleSwitchStrokeOff}"
-                            BorderThickness="0"
-                            CornerRadius="{StaticResource Rounded-xl}"
+                            BorderThickness="2"
+                            CornerRadius="{StaticResource Rounded-full}"
                             Grid.Row="1"
                             Grid.Column="0"
-                            Height="14"
-                            Width="34"
+                            Height="32"
+                            Width="52"
                             x:Name="OuterBorder" />
 
                         <Border
                             Background="{StaticResource ToggleSwitchFillOn}"
                             BorderBrush="{DynamicResource ToggleSwitchStrokeOn}"
-                            BorderThickness="0"
-                            CornerRadius="{StaticResource Rounded-xl}"
+                            BorderThickness="2"
+                            CornerRadius="{StaticResource Rounded-full}"
                             Grid.Row="1"
                             Grid.Column="0"
-                            Height="14"
-                            Width="34"
+                            Height="32"
+                            Width="52"
                             x:Name="SwitchKnobBounds" />
 
                         <Canvas
                             Grid.Row="1"
                             Grid.Column="0"
-                            Height="20"
+                            Height="24"
                             HorizontalAlignment="Left"
-                            Width="14"
+                            VerticalAlignment="Center"
+                            Width="12"
                             x:Name="PART_SwitchKnob">
 
                             <Grid
-                                Height="20"
-                                Width="20"
+                                Height="24"
+                                Width="24"
                                 x:Name="PART_MovingKnobs">
                                 <Ellipse
                                     Fill="{StaticResource ToggleSwitchKnobFillOn}"
-                                    Height="20"
-                                    Width="20"
+                                    Height="24"
+                                    Width="24"
                                     x:Name="SwitchKnobOn" />
                                 <Ellipse
                                     Fill="{StaticResource ToggleSwitchKnobFillOff}"
-                                    Height="20"
-                                    Width="20"
+                                    Height="24"
+                                    Width="24"
                                     x:Name="SwitchKnobOff" />
                             </Grid>
                         </Canvas>
@@ -185,12 +186,8 @@
         <!--  CheckedState  -->
         <Style Selector="^:checked /template/ Border#OuterBorder">
             <Setter Property="Opacity" Value="1" />
-            <Setter Property="Height" Value="32" />
-            <Setter Property="Width" Value="52" />
-            <Setter Property="CornerRadius" Value="{StaticResource Rounded-full}" />
             <Setter Property="Background" Value="{StaticResource ToggleSwitchFillOn}" />
             <Setter Property="BorderBrush" Value="{StaticResource ToggleSwitchStrokeOn}" />
-            <Setter Property="BorderThickness" Value="{StaticResource ToggleSwitchBorderThickness}" />
         </Style>
 
         <Style Selector="^:checked  /template/ Ellipse#SwitchKnobOff">
@@ -203,9 +200,6 @@
 
         <Style Selector="^:checked /template/ Ellipse#SwitchKnobOn">
             <Setter Property="Opacity" Value="1" />
-            <Setter Property="Width" Value="24" />
-            <Setter Property="Height" Value="24" />
-            <Setter Property="Margin" Value="22,0,0,0" />
             <Setter Property="Fill" Value="{StaticResource ToggleSwitchKnobFillOn}" />
         </Style>
 
@@ -220,19 +214,14 @@
         <!--  UncheckedState  -->
         <Style Selector="^:unchecked /template/ Border#OuterBorder">
             <Setter Property="Opacity" Value="1" />
-            <Setter Property="Height" Value="32" />
-            <Setter Property="Width" Value="52" />
-            <Setter Property="CornerRadius" Value="{StaticResource Rounded-full}" />
             <Setter Property="Background" Value="{StaticResource ToggleSwitchFillOff}" />
             <Setter Property="BorderBrush" Value="{StaticResource ToggleSwitchStrokeOff}" /> 
-            <Setter Property="BorderThickness" Value="{StaticResource ToggleSwitchBorderThickness}" />
         </Style>
 
         <Style Selector="^:unchecked /template/ Ellipse#SwitchKnobOff">
             <Setter Property="Opacity" Value="1" />
             <Setter Property="Width" Value="16" />
             <Setter Property="Height" Value="16" />
-            <Setter Property="Margin" Value="10,0,0,0" />
             <Setter Property="Fill" Value="{StaticResource ToggleSwitchKnobFillOff}" />
         </Style>
 
@@ -241,7 +230,7 @@
         </Style>
 
         <Style Selector="^:unchecked  /template/ Border#SwitchKnobBounds">
-            <Setter Property="Opacity" Value="0" />  <!--  turn off -->
+            <Setter Property="Opacity" Value="0" />
         </Style>
 
         <Style Selector="^:unchecked /template/ ContentPresenter#PART_OffContentPresenter">
@@ -283,18 +272,17 @@
         </Style>
 
         <Style Selector="^:pressed /template/ Ellipse#SwitchKnobOff">
-            <Setter Property="Fill" Value="{DynamicResource ToggleSwitchKnobFillOffPressed}" /> 
-            <Setter Property="Margin" Value="12,0,0,0" />         
+            <Setter Property="Fill" Value="{DynamicResource ToggleSwitchKnobFillOffPressed}" />
             <Setter Property="Width" Value="28" />
-            <Setter Property="Height" Value="28" />        
+            <Setter Property="Height" Value="28" />      
+            <Setter Property="Margin" Value="8,0,0,0" />  
 
         </Style>
 
         <Style Selector="^:pressed /template/ Ellipse#SwitchKnobOn">
             <Setter Property="Fill" Value="{StaticResource ToggleSwitchKnobFillOnPointerOver}" />          
             <Setter Property="Width" Value="28" />
-            <Setter Property="Height" Value="28" />       
-
+            <Setter Property="Height" Value="28" />
         </Style>
 
         <Style Selector="^:pressed /template/ Grid#SwitchAreaGrid">
@@ -323,7 +311,7 @@
         <Style Selector="^:checked:disabled /template/ Border#OuterBorder">
             <Setter Property="Background" Value="{DynamicResource ToggleSwitchFillOnDisabled}" />
             <Setter Property="BorderBrush" Value="{DynamicResource ToggleSwitchStrokeOnDisabled}" />
-            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="BorderThickness" Value="0" /> <!-- turn off as it's not needed -->
         </Style>
         
         <Style Selector="^:unchecked:disabled /template/ Border#OuterBorder">
