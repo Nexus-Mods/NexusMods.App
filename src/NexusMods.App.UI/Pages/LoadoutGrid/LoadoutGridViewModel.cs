@@ -7,8 +7,6 @@ using DynamicData;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.FileStore;
-using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
@@ -31,7 +29,6 @@ using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Extensions.DynamicData;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.Paths;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using File = NexusMods.Abstractions.Loadouts.Files.File;
@@ -68,9 +65,6 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
         IServiceProvider provider,
         IConnection conn,
         IRepository<Loadout.Model> loadoutRepository,
-        IFileSystem fileSystem,
-        IArchiveInstaller archiveInstaller,
-        IFileOriginRegistry fileOriginRegistry,
         IWindowManager windowManager,
         ISettingsManager settingsManager) : base(windowManager)
     {
