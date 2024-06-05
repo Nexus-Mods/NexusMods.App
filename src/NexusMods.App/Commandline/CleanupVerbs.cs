@@ -9,6 +9,7 @@ using NexusMods.Abstractions.FileExtractor;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Settings;
+using NexusMods.CrossPlatform;
 using NexusMods.DataModel;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;

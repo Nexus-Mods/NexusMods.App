@@ -19,7 +19,9 @@ internal class FakeProcessFactory : IProcessFactory
         _exitCode = exitCode;
     }
 
-    public async Task<CommandResult> ExecuteAsync(Command command,
+    public async Task<CommandResult> ExecuteAsync(
+        Command command,
+        bool logProcessOutput = true,
         CancellationToken cancellationToken = default)
     {
         Callback?.Invoke(command);

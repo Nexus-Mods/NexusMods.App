@@ -21,8 +21,6 @@ public class ProtocolRegistrationLinux : IProtocolRegistration
     /// <summary>
     /// Constructor.
     /// </summary>
-    /// <param name="processFactory"></param>
-    /// <param name="fileSystem"></param>
     public ProtocolRegistrationLinux(IProcessFactory processFactory, IFileSystem fileSystem, IOSInterop osInterop)
     {
         _processFactory = processFactory;
