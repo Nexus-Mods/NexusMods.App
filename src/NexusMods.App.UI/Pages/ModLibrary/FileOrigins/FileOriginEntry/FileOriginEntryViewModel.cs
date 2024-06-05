@@ -44,7 +44,8 @@ public class FileOriginEntryViewModel : AViewModel<IFileOriginEntryViewModel>, I
         IArchiveInstaller archiveInstaller,
         LoadoutId loadoutId,
         DownloadAnalysis.Model fileOrigin,
-        IWorkspaceController workspaceController)
+        IWorkspaceController workspaceController,
+        PageIdBundle pageIdBundle)
     {
         FileOrigin = fileOrigin;
         Name = fileOrigin.TryGet(DownloaderState.FriendlyName, out var friendlyName) && friendlyName != "Unknown"
@@ -113,7 +114,7 @@ public class FileOriginEntryViewModel : AViewModel<IFileOriginEntryViewModel>, I
                 }
             };
 
-            var behavior = workspaceController.GetOpenPageBehavior(pageData, info, Optional<PageIdBundle>.None);
+            var behavior = workspaceController.GetOpenPageBehavior(pageData, info, pageIdBundle);
             workspaceController.OpenPage(workspaceController.ActiveWorkspace!.Id, pageData, behavior);
         });
     }

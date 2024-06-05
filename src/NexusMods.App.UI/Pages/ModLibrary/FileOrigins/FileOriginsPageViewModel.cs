@@ -109,7 +109,8 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
                         _archiveInstaller,
                         LoadoutId,
                         fileOrigin,
-                        workspaceController
+                        workspaceController,
+                        IdBundle
                     )
                 )
                 .Bind(out _fileOrigins);
