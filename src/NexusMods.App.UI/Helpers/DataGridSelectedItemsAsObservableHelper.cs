@@ -104,7 +104,7 @@ public static class DataGridSelectedItemsAsObservableHelperExtensions
     ///         this.WhenActivated(d =>
     ///         {
     ///             // Synchronize the selected items with the SelectedItems property on the view model using the helper
-    ///             MyDataGrid.SelectedItemsToViewModelObservableChangeSetProperty(ViewModel, vm => vm.SelectedItems)
+    ///             MyDataGrid.SelectedItemsToProperty(ViewModel, vm => vm.SelectedItems)
     ///                       .DisposeWith(d);
     ///         });
     ///     }
@@ -121,7 +121,7 @@ public static class DataGridSelectedItemsAsObservableHelperExtensions
     /// }
     /// </code>
     /// </example>
-    public static IDisposable SelectedItemsToViewModelObservableChangeSetProperty<T, TVM>(this DataGrid dataGrid, TVM viewModel, Expression<Func<TVM, IObservable<IChangeSet<T, T>>>> selectedItemsProperty) where T : notnull
+    public static IDisposable SelectedItemsToProperty<T, TVM>(this DataGrid dataGrid, TVM viewModel, Expression<Func<TVM, IObservable<IChangeSet<T, T>>>> selectedItemsProperty) where T : notnull
     {
         var propertyInfo = ((MemberExpression)selectedItemsProperty.Body).Member as PropertyInfo;
         if (propertyInfo == null)

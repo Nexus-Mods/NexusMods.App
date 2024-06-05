@@ -24,7 +24,7 @@ public partial class FileOriginsPageView : ReactiveUserControl<IFileOriginsPageV
                     v => v.DataGrid.ItemsSource)
                 .DisposeWith(d);
 
-            DataGrid.SelectedItemsToViewModelObservableChangeSetProperty(ViewModel!, vm => vm.SelectedModsObservable)
+            DataGrid.SelectedItemsToProperty(ViewModel!, vm => vm.SelectedModsObservable)
                 .DisposeWith(d);
 
             // Synchronize the Grid with DataModel for Selected Items
