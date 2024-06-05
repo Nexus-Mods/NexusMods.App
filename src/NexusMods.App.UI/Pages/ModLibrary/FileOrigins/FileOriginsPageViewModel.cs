@@ -46,6 +46,9 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
     private ReadOnlyObservableCollection<IFileOriginEntryViewModel> _fileOrigins;
 
     // Note(sewer). Adding a [Reactive] attribute breaks the setter, don't do it please.
+    // For some reason the IL weaver used here discards the contents of the setter.
+    // Which is strange because the common Fody PropertyChanged weaver doesn't suffer from this.
+    // So this is down to most likely a bug in the custom implementation here.
     public IObservable<IChangeSet<IFileOriginEntryViewModel, IFileOriginEntryViewModel>> SelectedModsObservable
     {
         get => _selectedMods;
