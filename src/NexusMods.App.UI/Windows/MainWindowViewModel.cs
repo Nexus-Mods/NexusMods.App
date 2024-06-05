@@ -25,7 +25,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
 {
     private readonly IWindowManager _windowManager;
     
-    public ReactiveCommand<Unit, Unit> ActivateWindowCommand { get; } = ReactiveCommand.Create(() => { });
+    public ReactiveCommand<Unit, Unit> BringWindowToFront { get; } = ReactiveCommand.Create(() => { });
 
     public MainWindowViewModel(
         IServiceProvider serviceProvider,
@@ -77,7 +77,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
                 .Subscribe(isSignedIn =>
                 {
                     if (isSignedIn)
-                        ActivateWindowCommand.Execute().Subscribe();
+                        BringWindowToFront.Execute().Subscribe();
                 })
                 .DisposeWith(d);
             
