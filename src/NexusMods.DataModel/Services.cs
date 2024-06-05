@@ -18,7 +18,6 @@ using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Attributes;
 using NexusMods.DataModel.CommandLine.Verbs;
 using NexusMods.DataModel.Diagnostics;
-using NexusMods.DataModel.GameRegistry;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Messaging;

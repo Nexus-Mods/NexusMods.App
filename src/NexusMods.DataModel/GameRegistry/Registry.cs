@@ -9,11 +9,11 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.DTO;
-using NexusMods.DataModel.GameRegistry;
 using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
+using GameMetadata = NexusMods.Abstractions.Loadouts.GameMetadata;
 
 namespace NexusMods.DataModel;
 

@@ -6,10 +6,10 @@ using File = NexusMods.Abstractions.Loadouts.Files.File;
 
 namespace NexusMods.Abstractions.Loadouts.Mods;
 
-public static partial class Mod
+public partial class Mod
 {
 
-    public partial class Model
+    public partial struct ReadOnly
     {
         /// <summary>
         /// Toggle the enabled status of the mod.
@@ -17,16 +17,15 @@ public static partial class Mod
         public async Task ToggleEnabled()
         {
             using var tx = Db.Connection.BeginTransaction();
-            var old = Db.Get(ModId);
             tx.Add(ModId, static (tx, db, id) =>
                 {
-                    var old = db.Get(id);
+                    var old = new ReadOnly(db, id);
                     tx.Add(id.Value, Mod.Enabled, !old.Enabled);
                 }
             );
-            old.Loadout.Revise(tx);
-            
-            old.Revise(tx);
+            Loadout.Revise(tx);
+
+            Revise(tx);
             await tx.Commit();
         }
         
@@ -47,7 +46,7 @@ public static partial class Mod
         /// <param name="tx">The transaction to add the retraction to.</param>
         public void Delete(ITransaction tx)
         {
-            foreach (var file in this.Files)
+            foreach (var file in Files)
                 tx.Retract(file.Id, File.Loadout, this.Loadout.Id);
 
             tx.Retract(this.Id, Mod.Loadout, this.Loadout.Id);

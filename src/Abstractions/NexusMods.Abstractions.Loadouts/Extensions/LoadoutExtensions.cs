@@ -12,7 +12,7 @@ namespace NexusMods.Abstractions.Loadouts.Extensions;
 [PublicAPI]
 public static class LoadoutExtensions
 {
-    private static IEnumerable<Mod.Model> GetEnabledMods(this Loadout.Model loadout, bool onlyEnabledMods)
+    private static IEnumerable<Mod.Model> GetEnabledMods(this Loadout.ReadOnly loadout, bool onlyEnabledMods)
     {
         var enumerable = onlyEnabledMods
             ? loadout.Mods.Where(mod => mod.Enabled)
