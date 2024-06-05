@@ -56,7 +56,7 @@ the current changelog maintainer.
 4. Execute the `Release` github action, and be sure to pass in the correct tag and branch names. 
 5. Once the release has started building, it will create a new release entry on GitHub. Edit the release
 and copy in the correct changelog information from `CHANGELOG.md`
-6. Once the release has built, verify that it has uploaded the artifacts correctly and set the release as the new
+6. Once the release has been built, verify that it has uploaded the artifacts correctly, and set the release as the new
 current version on GitHub
 
 ## Technical Process for a hotfix release
