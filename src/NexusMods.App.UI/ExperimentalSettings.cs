@@ -1,4 +1,6 @@
+using JetBrains.Annotations;
 using NexusMods.Abstractions.Settings;
+using NexusMods.App.BuildInfo;
 
 namespace NexusMods.App.UI;
 
@@ -10,18 +12,12 @@ public record ExperimentalSettings : ISettings
     /// <summary>
     /// Enables games that are not enabled by default.
     /// </summary>
-    public bool EnableAllGames { get; init; } 
-#if DEBUG
-        = true;
-#endif
-    
+    public bool EnableAllGames { get; [UsedImplicitly] set; } = CompileConstants.IsDebug;
+
     /// <summary>
     /// Enables the ability to have multiple loadouts within the app.
     /// </summary>
-    public bool EnableMultipleLoadouts { get; init; }
-#if DEBUG
-        = true;
-#endif
+    public bool EnableMultipleLoadouts { get; [UsedImplicitly] set; } = CompileConstants.IsDebug;
 
     public static ISettingsBuilder Configure(ISettingsBuilder settingsBuilder)
     {
@@ -31,22 +27,19 @@ public record ExperimentalSettings : ISettings
         return settingsBuilder
             .ConfigureStorageBackend<ExperimentalSettings>(builder => builder.UseJson())
             .AddToUI<ExperimentalSettings>(builder => builder
-                .AddPropertyToUI(x => x.EnableAllGames, propertybuilder => propertybuilder
+                .AddPropertyToUI(x => x.EnableAllGames, propertyBuilder => propertyBuilder
                     .AddToSection(sectionId)
                     .WithDisplayName("[Unsupported] Enable Unsupported Games")
                     .WithDescription("When set, 'work-in-progress' games that are not yet fully supported will be enabled in the UI.")
                     .UseBooleanContainer()
                     .RequiresRestart()
                 )
-                // Disabled until first Alpha Release ships.
-#if DEBUG
-                .AddPropertyToUI(x => x.EnableMultipleLoadouts, propertybuilder => propertybuilder
+                .AddPropertyToUI(x => x.EnableMultipleLoadouts, propertyBuilder => propertyBuilder
                     .AddToSection(sectionId)
                     .WithDisplayName("(Experimental) Enable Multiple Loadouts")
                     .WithDescription("When set, you will be able to create multiple loadouts for a game.")
                     .UseBooleanContainer()
                 )
-#endif
             );
     }
 }

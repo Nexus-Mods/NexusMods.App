@@ -29,14 +29,19 @@ Each setter element identifies the property that will be changed by name, and th
 
 !!! example
 
-    ```xml
-    <Style Selector="selector syntax">
-         <Setter Property="property name" Value="new value"/>
+```xml
+<Style Selector="selector syntax">
+    <Setter Property="property name" Value="new value"/>
          ...
-    </Style>
-    ```
+</Style>
+```
 
 The Avalonia UI style selector syntax is analogous to that used by CSS (cascading style sheets).
+
+!!! warning "If selectors are not made specific enough, ToolTips and Context menu contents will also be affected"
+
+Selectors should either use the `x:Name`, a Class or the hierarchical path of the control to be styled, 
+to avoid affecting other controls of the same type. 
 
 ### Example
 

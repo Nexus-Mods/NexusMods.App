@@ -7,6 +7,7 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.Telemetry;
+using NexusMods.App.BuildInfo;
 using NexusMods.App.UI;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
@@ -39,11 +40,7 @@ internal sealed class TelemetryProvider : ITelemetryProvider, IDisposable
 
     public void ConfigureMetrics(IMeterConfig meterConfig)
     {
-#if RELEASE
-        meterConfig.CreateActiveUsersPerVersionCounter(BuildInfo.ApplicationConstants.Version);
-#else
-        meterConfig.CreateActiveUsersCounter();
-#endif
+        meterConfig.CreateActiveUsersPerVersionCounter(ApplicationConstants.Version);
         meterConfig.CreateUsersPerOSCounter();
         meterConfig.CreateUsersPerLanguageCounter();
         meterConfig.CreateUsersPerMembershipCounter(GetMembership);

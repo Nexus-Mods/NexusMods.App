@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Windows.Input;
@@ -100,12 +99,13 @@ public class UpdaterViewModel : AOverlayViewModel<IUpdaterViewModel>, IUpdaterVi
             _logger.LogInformation("New version available: {Version}", latestRelease.Version);
 
             var asset = FindAsset(latestRelease);
+            if (asset is null) return false;
 
             _logger.LogInformation("Asset found: {Asset}", asset.Name);
             UpdateUrl = asset.BrowserDownloadUrl;
             NewVersion = latestRelease.Version;
 
-            if (Method is InstallationMethod.AppImage or InstallationMethod.Flatpak)
+            if (Method is InstallationMethod.AppImage or InstallationMethod.PackageManager)
             {
                 ShowSystemUpdateMessage = true;
             }
@@ -120,24 +120,22 @@ public class UpdaterViewModel : AOverlayViewModel<IUpdaterViewModel>, IUpdaterVi
 
     }
 
-    private Asset FindAsset(Release latestRelease)
+    private Asset? FindAsset(Release latestRelease)
     {
         switch (Method)
         {
-            case InstallationMethod.Flatpak:
-                throw new UnreachableException("Flatpak is not supported yet");
             case InstallationMethod.InnoSetup:
-                return latestRelease.Assets.First(r => r.Name.EndsWith(".exe"));
+                return latestRelease.Assets.FirstOrDefault(r => r.Name.EndsWith(".exe"));
             case InstallationMethod.Archive when RuntimeInformation.IsOSPlatform(OSPlatform.Windows) &&
                                                  RuntimeInformation.OSArchitecture == Architecture.X64:
-                return latestRelease.Assets.First(r => r.Name.EndsWith(".win-x64.zip"));
+                return latestRelease.Assets.FirstOrDefault(r => r.Name.EndsWith(".win-x64.zip"));
             case InstallationMethod.Archive when RuntimeInformation.IsOSPlatform(OSPlatform.Linux) &&
                                                  RuntimeInformation.OSArchitecture == Architecture.X64:
-                return latestRelease.Assets.First(r => r.Name.EndsWith(".linux-x64.zip"));
+                return latestRelease.Assets.FirstOrDefault(r => r.Name.EndsWith(".linux-x64.zip"));
             case InstallationMethod.AppImage:
-                return latestRelease.Assets.First(r => r.Name.EndsWith(".AppImage"));
+                return latestRelease.Assets.FirstOrDefault(r => r.Name.EndsWith(".AppImage"));
             default:
-                throw new UnreachableException("Unsupported installation method");
+                return null;
         }
     }
 

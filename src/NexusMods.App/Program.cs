@@ -10,6 +10,7 @@ using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.App.BuildInfo;
 using NexusMods.App.UI;
+using NexusMods.CrossPlatform;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.DataModel;
 using NexusMods.Paths;
@@ -17,6 +18,7 @@ using NexusMods.ProxyConsole;
 using NexusMods.Settings;
 using NexusMods.SingleProcess;
 using NexusMods.SingleProcess.Exceptions;
+using NexusMods.StandardGameLocators;
 using NLog.Extensions.Logging;
 using NLog.Targets;
 using ReactiveUI;
@@ -36,12 +38,14 @@ public class Program
         TelemetrySettings telemetrySettings;
         LoggingSettings loggingSettings;
         ExperimentalSettings experimentalSettings;
+        GameLocatorSettings gameLocatorSettings;
         using (var settingsHost = BuildSettingsHost())
         {
             var settingsManager = settingsHost.Services.GetRequiredService<ISettingsManager>();
             telemetrySettings = settingsManager.Get<TelemetrySettings>();
             loggingSettings = settingsManager.Get<LoggingSettings>();
             experimentalSettings = settingsManager.Get<ExperimentalSettings>();
+            gameLocatorSettings = settingsManager.Get<GameLocatorSettings>();
         }
 
         var startupMode = StartupMode.Parse(args);
@@ -50,7 +54,8 @@ public class Program
             startupMode,
             telemetrySettings,
             loggingSettings,
-            experimentalSettings
+            experimentalSettings,
+            gameLocatorSettings
         );
         var services = host.Services;
 
@@ -177,6 +182,7 @@ public class Program
                 .AddSettings<TelemetrySettings>()
                 .AddSettings<LoggingSettings>()
                 .AddSettings<ExperimentalSettings>()
+                .AddSettings<GameLocatorSettings>()
             )
             .ConfigureLogging((_, builder) => builder
                 .ClearProviders()
@@ -199,25 +205,24 @@ public class Program
         TelemetrySettings telemetrySettings,
         LoggingSettings loggingSettings,
         ExperimentalSettings experimentalSettings,
+        GameLocatorSettings? gameLocatorSettings = null,
         bool isAvaloniaDesigner = false)
     {
-        var host = new HostBuilder()
-            .ConfigureServices(services =>
-                {
-                    var s = services.AddApp(telemetrySettings, startupMode: startupMode, experimentalSettings: experimentalSettings).Validate();
+        var host = new HostBuilder().ConfigureServices(services =>
+        {
+            var s = services.AddApp(
+                telemetrySettings,
+                startupMode: startupMode,
+                experimentalSettings: experimentalSettings,
+                gameLocatorSettings: gameLocatorSettings).Validate();
 
-                    if (isAvaloniaDesigner)
-                    {
-                        s.OverrideSettingsForTests<DataModelSettings>(settings => settings with
-                            {
-                                UseInMemoryDataModel = true,
-                            }
-                        );
-                    }
-                }
-            )
-            .ConfigureLogging((_, builder) => AddLogging(builder, loggingSettings, startupMode))
-            .Build();
+            if (isAvaloniaDesigner)
+            {
+                s.OverrideSettingsForTests<DataModelSettings>(settings => settings with { UseInMemoryDataModel = true, });
+            }
+        })
+        .ConfigureLogging((_, builder) => AddLogging(builder, loggingSettings, startupMode))
+        .Build();
 
         return host;
     }
@@ -292,11 +297,13 @@ public class Program
             Args = [],
             OriginalArgs = [],
         };
+
         var host = BuildHost(startupMode, 
             telemetrySettings: new TelemetrySettings(), 
             LoggingSettings.CreateDefault(OSInformation.Shared),
             isAvaloniaDesigner: true,
-            experimentalSettings: new ExperimentalSettings());
+            experimentalSettings: new ExperimentalSettings()
+        );
         
         DesignerUtils.Activate(host.Services);
         
