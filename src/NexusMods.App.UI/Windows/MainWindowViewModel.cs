@@ -77,7 +77,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
                 .Subscribe(isSignedIn =>
                 {
                     if (isSignedIn)
-                        ActivateCommand.Execute().Subscribe();
+                        ActivateWindowCommand.Execute().Subscribe();
                 })
                 .DisposeWith(d);
             
