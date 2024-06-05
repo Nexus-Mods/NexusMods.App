@@ -66,12 +66,11 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
                 .BindTo(this, view => view.ViewModel!.IsActive)
                 .DisposeWith(disposables);
 
-            ViewModel!.BringWindowToFront
+            this.WhenAnyObservable(view => view.ViewModel!.BringWindowToFront)
                 .OnUI()
-                .Subscribe(_ =>
-            {
-                Activate();
-            }).DisposeWith(disposables);
+                .Subscribe( _ =>
+                    Activate()
+                ).DisposeWith(disposables);
         });
     }
 
