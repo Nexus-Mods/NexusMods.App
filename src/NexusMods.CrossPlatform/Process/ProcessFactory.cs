@@ -31,10 +31,15 @@ public class ProcessFactory : IProcessFactory
 
         _processLogsFolder.CreateDirectory();
 
+        CleanupOldLogFiles(logger, _processLogsFolder, settingsManager);
+    }
+
+    private static void CleanupOldLogFiles(ILogger logger, AbsolutePath processLogsFolder, ISettingsManager settingsManager)
+    {
         var loggingSettings = settingsManager.Get<LoggingSettings>();
         var retentionSpan = loggingSettings.ProcessLogRetentionSpan;
 
-        var filesToDelete = _processLogsFolder
+        var filesToDelete = processLogsFolder
             .EnumerateFiles()
             .Where(x => DateTime.Now - x.FileInfo.CreationTime >= retentionSpan)
             .ToArray();
@@ -47,7 +52,7 @@ public class ProcessFactory : IProcessFactory
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Failed to delete expired log file {Path}", file);
+                logger.LogError(e, "Failed to delete expired log file {Path}", file);
             }
         }
     }
@@ -63,15 +68,7 @@ public class ProcessFactory : IProcessFactory
             return await ExecuteAsync(command, cancellationToken);
         }
 
-        string fileName;
-        if (PathHelpers.IsRooted(command.TargetFilePath, _fileSystem.OS))
-        {
-            fileName = _fileSystem.FromUnsanitizedFullPath(command.TargetFilePath).FileName;
-        }
-        else
-        {
-            fileName = new RelativePath(command.TargetFilePath).FileName.ToString();
-        }
+        var fileName = GetFileName(command);
 
         var logFileName = $"{fileName}-{DateTime.Now:s}";
         var stdOutFilePath = _processLogsFolder.Combine(logFileName + ".stdout.log");
@@ -96,6 +93,16 @@ public class ProcessFactory : IProcessFactory
 
             return result;
         }
+    }
+
+    private string GetFileName(Command command)
+    {
+        if (PathHelpers.IsRooted(command.TargetFilePath, _fileSystem.OS))
+        {
+            return _fileSystem.FromUnsanitizedFullPath(command.TargetFilePath).FileName;
+        }
+
+        return new RelativePath(command.TargetFilePath).FileName.ToString();
     }
 
     private async Task<CommandResult> ExecuteAsync(Command command, CancellationToken cancellationToken)
