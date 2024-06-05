@@ -130,7 +130,6 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
         return true;
     }
 
-    [UsedImplicitly]
     public async Task RegisterFromDisk(IStorageProvider storageProvider)
     {
         var files = await PickModFiles(storageProvider);
