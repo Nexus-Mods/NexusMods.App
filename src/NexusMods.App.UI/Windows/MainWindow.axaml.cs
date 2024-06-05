@@ -65,6 +65,15 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
             this.WhenAnyValue(view => view.IsActive)
                 .BindTo(this, view => view.ViewModel!.IsActive)
                 .DisposeWith(disposables);
+
+            this.WhenAnyObservable(view => view.ViewModel!.BringWindowToFront)
+                .OnUI()
+                .Subscribe(_ => {
+                    if (WindowState == WindowState.Minimized)
+                        WindowState = WindowState.Normal;
+
+                    Activate();
+                }).DisposeWith(disposables);
         });
     }
 

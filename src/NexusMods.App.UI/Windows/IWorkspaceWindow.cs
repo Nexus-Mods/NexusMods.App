@@ -1,4 +1,6 @@
+using System.Reactive;
 using NexusMods.App.UI.WorkspaceSystem;
+using ReactiveUI;
 
 namespace NexusMods.App.UI.Windows;
 
@@ -21,4 +23,9 @@ public interface IWorkspaceWindow
     /// Gets the workspace controller of the window.
     /// </summary>
     public IWorkspaceController WorkspaceController { get; }
+    
+    /// <summary>
+    ///     This command is used to bring the window to front.
+    /// </summary>
+    ReactiveCommand<Unit, Unit> BringWindowToFront { get; }
 }
