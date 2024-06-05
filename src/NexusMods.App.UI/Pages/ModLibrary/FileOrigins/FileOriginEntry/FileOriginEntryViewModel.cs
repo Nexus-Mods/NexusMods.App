@@ -1,6 +1,5 @@
 using System.Reactive;
 using System.Reactive.Linq;
-using DynamicData.Kernel;
 using Humanizer;
 using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.Installers;
@@ -23,7 +22,6 @@ public class FileOriginEntryViewModel : AViewModel<IFileOriginEntryViewModel>, I
     public string Version { get; }
     public Size Size { get; }
     public DateTime ArchiveDate { get; }
-    public ReactiveCommand<IModInstaller?, Unit> AddToLoadoutCommand { get; init; }
     public DownloadAnalysis.Model FileOrigin { get; }
 
     private readonly ObservableAsPropertyHelper<bool> _isModAddedToLoadout;
@@ -38,6 +36,10 @@ public class FileOriginEntryViewModel : AViewModel<IFileOriginEntryViewModel>, I
     private readonly ObservableAsPropertyHelper<string> _displayLastInstalledDate;
     public string DisplayLastInstalledDate => _displayLastInstalledDate.Value;
     public ReactiveCommand<NavigationInformation, Unit> ViewModCommand { get; }
+    public ReactiveCommand<Unit, Unit> AddToLoadoutCommand { get; }
+
+    private readonly IArchiveInstaller _archiveInstaller;
+    private readonly LoadoutId _loadoutId;
 
     public FileOriginEntryViewModel(
         IConnection conn,
@@ -47,6 +49,8 @@ public class FileOriginEntryViewModel : AViewModel<IFileOriginEntryViewModel>, I
         IWorkspaceController workspaceController,
         PageIdBundle pageIdBundle)
     {
+        _archiveInstaller = archiveInstaller;
+        _loadoutId = loadoutId;
         FileOrigin = fileOrigin;
         Name = fileOrigin.TryGet(DownloaderState.FriendlyName, out var friendlyName) && friendlyName != "Unknown"
             ? friendlyName
@@ -58,17 +62,13 @@ public class FileOriginEntryViewModel : AViewModel<IFileOriginEntryViewModel>, I
                 ? dlStateSize 
                 : Size.Zero;
         
-        AddToLoadoutCommand = ReactiveCommand.CreateFromTask<IModInstaller?>(async (installer, token) =>
-        {
-            await archiveInstaller.AddMods(loadoutId, fileOrigin, installer, token);
-        });
-        
         Version = fileOrigin.TryGet(DownloaderState.Version, out var version) && version != "Unknown"
             ? version
             : "-";
         
         ArchiveDate = fileOrigin.GetCreatedAt();
-
+        AddToLoadoutCommand = ReactiveCommand.CreateFromTask(async () => await AddToLoadout(CancellationToken.None));
+        
         var loadout = conn.Db.Get<Loadout.Model>(loadoutId.Value);
 
         _isModAddedToLoadout = conn.Revisions(loadoutId)
@@ -117,5 +117,12 @@ public class FileOriginEntryViewModel : AViewModel<IFileOriginEntryViewModel>, I
             var behavior = workspaceController.GetOpenPageBehavior(pageData, info, pageIdBundle);
             workspaceController.OpenPage(workspaceController.ActiveWorkspace!.Id, pageData, behavior);
         });
+    }
+    
+    public async Task AddToLoadout(CancellationToken token) => await AddUsingInstallerToLoadout(null, token);
+
+    public async Task AddUsingInstallerToLoadout(IModInstaller? installer, CancellationToken token)
+    {
+        await _archiveInstaller.AddMods(_loadoutId, FileOrigin, installer, token);
     }
 }

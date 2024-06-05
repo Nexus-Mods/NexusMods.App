@@ -1,12 +1,9 @@
 using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
-using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using DynamicData;
 using DynamicData.Binding;
-using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.FileStore;
@@ -27,21 +24,16 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.Downloaders.Tasks.State;
 using NexusMods.Paths;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-using RocksDbSharp;
 
 namespace NexusMods.App.UI.Pages.ModLibrary;
 
 public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel>, IFileOriginsPageViewModel
 {
-    private readonly IConnection _conn;
     private readonly IFileSystem _fileSystem;
     private readonly ILogger<FileOriginsPageViewModel> _logger;
     private readonly IServiceProvider _provider;
     private readonly IFileOriginRegistry _fileOriginRegistry;
     private readonly IOSInterop _osInterop;
-    private readonly IRepository<DownloadAnalysis.Model> _dlAnalysisRepo;
-    private readonly IArchiveInstaller _archiveInstaller;
 
     public ReadOnlyObservableCollection<IFileOriginEntryViewModel> FileOrigins => _fileOrigins;
     private ReadOnlyObservableCollection<IFileOriginEntryViewModel> _fileOrigins;
@@ -77,21 +69,21 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
         LoadoutId loadoutId,
         IServiceProvider serviceProvider) : base(serviceProvider.GetRequiredService<IWindowManager>())
     {
-        _conn = serviceProvider.GetRequiredService<IConnection>();
+        var conn = serviceProvider.GetRequiredService<IConnection>();
         _fileSystem = serviceProvider.GetRequiredService<IFileSystem>();
         _logger = serviceProvider.GetRequiredService<ILogger<FileOriginsPageViewModel>>();
         _provider = serviceProvider;
         _fileOriginRegistry = serviceProvider.GetRequiredService<IFileOriginRegistry>();
         _osInterop = serviceProvider.GetRequiredService<IOSInterop>();
-        _archiveInstaller = serviceProvider.GetRequiredService<IArchiveInstaller>();
-        _dlAnalysisRepo = serviceProvider.GetRequiredService<IRepository<DownloadAnalysis.Model>>();
+        var archiveInstaller = serviceProvider.GetRequiredService<IArchiveInstaller>();
+        var dlAnalysisRepo = serviceProvider.GetRequiredService<IRepository<DownloadAnalysis.Model>>();
 
         TabTitle = Language.FileOriginsPageTitle;
         TabIcon = IconValues.ModLibrary;
 
         LoadoutId = loadoutId;
 
-        var loadout = _conn.Db.Get<Loadout.Model>(LoadoutId.Value);
+        var loadout = conn.Db.Get<Loadout.Model>(LoadoutId.Value);
         var game = loadout.Installation.Game;
         _gameDomain = loadout.Installation.Game.Domain;
 
@@ -99,14 +91,14 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
         this.WhenActivated(d =>
         {
             var workspaceController = GetWorkspaceController();
-            var entriesObservable = _dlAnalysisRepo.Observable
+            var entriesObservable = dlAnalysisRepo.Observable
                 .ToObservableChangeSet()
                 .Filter(model => FilterDownloadAnalysisModel(model, game.Domain))
                 .OnUI()
                 .Transform(fileOrigin => (IFileOriginEntryViewModel)
                     new FileOriginEntryViewModel(
-                        _conn,
-                        _archiveInstaller,
+                        conn,
+                        archiveInstaller,
                         LoadoutId,
                         fileOrigin,
                         workspaceController,
@@ -162,16 +154,14 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
         await _osInterop.OpenUrl(new Uri(url), true);
     }
 
-    public async Task AddMod() => await AddMod(null);
+    public async Task AddMod(CancellationToken token) => await AddMod(null, token);
 
-    public async Task AddModAdvanced() => await AddMod(_provider.GetKeyedService<IModInstaller>("AdvancedManualInstaller"));
+    public async Task AddModAdvanced(CancellationToken token) => await AddMod(_provider.GetKeyedService<IModInstaller>("AdvancedManualInstaller"), token);
 
-    private async Task AddMod(IModInstaller? installer)
+    private async Task AddMod(IModInstaller? installer, CancellationToken token)
     {
         foreach (var mod in SelectedModsCollection)
-        {
-            await mod.AddToLoadoutCommand.Execute(installer);
-        }
+            await mod.AddUsingInstallerToLoadout(installer, token);
     }
 
     private async Task<IEnumerable<IStorageFile>> PickModFiles(IStorageProvider storageProvider)

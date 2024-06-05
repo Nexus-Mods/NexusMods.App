@@ -14,7 +14,8 @@ public interface IFileOriginEntryViewModel : IViewModelInterface
     Size Size { get; }    
     string DisplayArchiveDate { get; }
     string DisplayLastInstalledDate { get; }
-    ReactiveCommand<IModInstaller?, Unit> AddToLoadoutCommand { get; }
     bool IsModAddedToLoadout { get; }
+    ReactiveCommand<Unit, Unit> AddToLoadoutCommand { get; }
+    Task AddUsingInstallerToLoadout(IModInstaller? installer, CancellationToken token);
     ReactiveCommand<NavigationInformation, Unit> ViewModCommand { get; }
 }
