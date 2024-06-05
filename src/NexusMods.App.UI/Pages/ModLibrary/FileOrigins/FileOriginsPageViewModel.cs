@@ -144,6 +144,7 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
                 .Select(observable =>
                 {
                     return observable
+                        .WhenValueChanged(x => x.IsModAddedToLoadout)
                         .Select(_ => SelectedModsCollection.Count > 0)
                         .SubscribeWithErrorLogging(hasSelection =>
                             {
@@ -151,8 +152,7 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
                                 canAddAdvancedMod.OnNext(hasSelection);
                                 
                                 // Add is only available if no mod is already added.
-                                var canAdd = hasSelection && SelectedModsCollection.All(x => !x.IsModAddedToLoadout);
-                                canAddMod.OnNext(canAdd);
+                                canAddMod.OnNext(hasSelection && SelectedModsCollection.All(x => !x.IsModAddedToLoadout));
                             }
                         );
                 })
