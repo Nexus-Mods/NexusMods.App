@@ -70,11 +70,8 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
             }
             
             loginManager.IsLoggedInObservable
-                .Subscribe(isSignedIn =>
-                {
-                    if (isSignedIn)
-                        BringWindowToFront.Execute().Subscribe();
-                })
+                .Where(isSignedIn => isSignedIn)
+                .InvokeCommand(BringWindowToFront)
                 .DisposeWith(d);
             
             var loginMessageVM = serviceProvider.GetRequiredService<ILoginMessageBoxViewModel>();
