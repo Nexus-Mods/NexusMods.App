@@ -12,7 +12,7 @@ namespace NexusMods.Abstractions.Loadouts.Extensions;
 [PublicAPI]
 public static class LoadoutExtensions
 {
-    private static IEnumerable<Mod.Model> GetEnabledMods(this Loadout.ReadOnly loadout, bool onlyEnabledMods)
+    private static IEnumerable<Mod.ReadOnly> GetEnabledMods(this Loadout.ReadOnly loadout, bool onlyEnabledMods)
     {
         var enumerable = onlyEnabledMods
             ? loadout.Mods.Where(mod => mod.Enabled)
@@ -24,7 +24,7 @@ public static class LoadoutExtensions
     /// <summary>
     /// Gets all enabled mods in the Loadout.
     /// </summary>
-    public static IEnumerable<Mod.Model> GetEnabledMods(this Loadout.Model loadout)
+    public static IEnumerable<Mod.ReadOnly> GetEnabledMods(this Loadout.ReadOnly loadout)
     {
         return loadout.GetEnabledMods(onlyEnabledMods: true);
     }
@@ -33,7 +33,7 @@ public static class LoadoutExtensions
     /// Counts all mods that have the given metadata.
     /// </summary>
     public static int CountModsWithMetadata(
-        this Loadout.Model loadout,
+        this Loadout.ReadOnly loadout,
         IAttribute attribute,
         bool onlyEnabledMods = true)
     {
@@ -45,22 +45,22 @@ public static class LoadoutExtensions
     /// <summary>
     /// Gets all mods that have metadata of type <typeparamref name="T"/>.
     /// </summary>
-    public static IEnumerable<ValueTuple<Mod.Model, TOuter>> GetModsWithMetadata<TOuter, TInner>(
-        this Loadout.Model loadout,
+    public static IEnumerable<ValueTuple<Mod.ReadOnly, TOuter>> GetModsWithMetadata<TOuter, TInner>(
+        this Loadout.ReadOnly loadout,
         ScalarAttribute<TOuter, TInner> attribute,
         bool onlyEnabledMods = true)
     {
         return loadout
             .GetEnabledMods(onlyEnabledMods)
             .Where(mod => mod.Contains(attribute))
-            .Select(mod => (mod, mod.Get(attribute)));
+            .Select(mod => (mod, attribute.Get(mod)));
     }
 
     /// <summary>
     /// Gets the first mod that has metadata of type <typeparamref name="T"/>.
     /// </summary>
-    public static Optional<ValueTuple<Mod.Model, TOuter>> GetFirstModWithMetadata<TOuter, TInner>(
-        this Loadout.Model loadout,
+    public static Optional<ValueTuple<Mod.ReadOnly, TOuter>> GetFirstModWithMetadata<TOuter, TInner>(
+        this Loadout.ReadOnly loadout,
         ScalarAttribute<TOuter, TInner> attribute,
         bool onlyEnabledMods = true)
     {

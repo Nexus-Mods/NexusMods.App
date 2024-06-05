@@ -13,12 +13,12 @@ public interface IApplyService
     /// Apply a loadout to its game installation.
     /// This will also ingest outside changes and merge unapplied changes on top and apply them.
     /// </summary>
-    public Task Apply(Loadout.Model loadout);
+    public Task Apply(Loadout.ReadOnly loadout);
     
     /// <summary>
     /// Get the diff tree of the unapplied changes of a loadout.
     /// </summary>
-    public ValueTask<FileDiffTree> GetApplyDiffTree(Loadout.Model loadout);
+    public ValueTask<FileDiffTree> GetApplyDiffTree(Loadout.ReadOnly loadout);
 
     
     /// <summary>
@@ -28,12 +28,12 @@ public interface IApplyService
     /// </summary>
     /// <param name="gameInstallation"></param>
     /// <returns>The merged loadout</returns>
-    public Task<Loadout.Model> Ingest(GameInstallation gameInstallation);
+    public Task<Loadout.ReadOnly> Ingest(GameInstallation gameInstallation);
 
     /// <summary>
     /// Returns the last applied loadout for a given game installation.
     /// </summary>
-    public Loadout.Model? GetLastAppliedLoadout(GameInstallation gameInstallation);
+    public Loadout.ReadOnly? GetLastAppliedLoadout(GameInstallation gameInstallation);
     
     /// <summary>
     /// Returns an observable of the last applied revisions for a specific game installation

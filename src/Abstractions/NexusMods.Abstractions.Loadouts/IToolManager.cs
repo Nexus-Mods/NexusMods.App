@@ -12,7 +12,7 @@ public interface IToolManager
     /// </summary>
     /// <param name="loadout"></param>
     /// <returns></returns>
-    public IEnumerable<ITool> GetTools(Loadout.Model loadout);
+    public IEnumerable<ITool> GetTools(Loadout.ReadOnly loadout);
 
     /// <summary>
     /// Run a tool for a given loadout. Returns the modified loadout. Generated files will be added to the given mod,
@@ -23,6 +23,6 @@ public interface IToolManager
     /// <param name="generatedFilesMod"></param>
     /// <param name="token"></param>
     /// <returns></returns>
-    public Task<Loadout.Model> RunTool(ITool tool, Loadout.Model loadout, Mod.Model? generatedFilesMod = null,
+    public Task<Loadout.ReadOnly> RunTool(ITool tool, Loadout.ReadOnly loadout, Mod.ReadOnly? generatedFilesMod = null,
         CancellationToken token = default);
 }

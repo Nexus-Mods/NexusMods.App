@@ -74,6 +74,11 @@ public partial class Mod : IModelDefinition
     /// </summary>
     public static readonly ReferenceAttribute<Mod> SortAfter = new(Namespace, nameof(SortAfter));
     
+    /// <summary>
+    /// The files that are part of this mod.
+    /// </summary>
+    public static readonly BackReferenceAttribute<File> Files = new(File.Mod);
+    
     public partial struct ReadOnly 
     {
         /// <summary>

@@ -3,7 +3,7 @@ using NexusMods.MnemonicDB.Abstractions.Models;
 
 namespace NexusMods.Abstractions.Loadouts.Ids;
 
-public interface ITypedId<TModel> : ITypedEntityId where TModel : IEntity
+public interface ITypedId<TModel> : ITypedEntityId where TModel : IReadOnlyModel
 {
     /// <summary>
     /// Resolves the entity from the database.

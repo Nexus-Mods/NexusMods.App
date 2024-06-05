@@ -16,7 +16,7 @@ public static class AModFileExtensions
     /// Checks whether any items in <see cref="AModFile.Metadata"/> are of type
     /// <typeparamref name="T"/>.
     /// </summary>
-    public static bool HasMetadata(this File.Model file, IAttribute attribute)
+    public static bool HasMetadata(this File.ReadOnly file, IAttribute attribute)
     {
         return file.Contains(attribute);
     }
