@@ -49,7 +49,7 @@ are just guidelines, however, and the app team managers reserve the right to mak
 ## Technical Process for a Release
 
 1. Make sure the release changelog is committed. Often the changelog includes images that 
-reference a tag or commit, so merge the commit PR first, then continue the process. Erri120 is
+reference a tag or commit, so merge the commit PR first, then continue the process. [erri120](https://github.com/erri120) is
 the current changelog maintainer. 
 2. Create a release branch from main named `release_vX.Y`
 3. Tag the most recent commit of the release branch
