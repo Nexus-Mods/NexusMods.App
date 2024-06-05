@@ -18,7 +18,7 @@ public interface ILoadoutSynchronizer
     /// <param name="loadout">Newer state, e.g. unapplied loadout</param>
     /// <param name="diskState">The old state, e.g. last applied DiskState</param>
     /// <returns>A tree of all the files with associated <see cref="FileChangeType"/></returns>
-    ValueTask<FileDiffTree> LoadoutToDiskDiff(Loadout.Model loadout, DiskStateTree diskState);
+    ValueTask<FileDiffTree> LoadoutToDiskDiff(Loadout.ReadOnly loadout, DiskStateTree diskState);
     
     #endregion
 
@@ -32,14 +32,14 @@ public interface ILoadoutSynchronizer
     ///     Force overrides current locations to intended tree
     /// </param>
     /// <returns>The new DiskState after the files were applied</returns>
-    Task<DiskStateTree> Apply(Loadout.Model loadout, bool forceSkipIngest = false);
+    Task<DiskStateTree> Apply(Loadout.ReadOnly loadout, bool forceSkipIngest = false);
 
     /// <summary>
     /// Finds changes from the game folder compared to loadout and bundles them
     /// into 1 or more Mods.
     /// </summary>
     /// <param name="loadout">The current loadout.</param>
-    Task<Loadout.Model> Ingest(Loadout.Model loadout);
+    Task<Loadout.ReadOnly> Ingest(Loadout.ReadOnly loadout);
 
     /// <summary>
     /// Creates a loadout for a game, managing the game if it has not previously
@@ -51,7 +51,7 @@ public interface ILoadoutSynchronizer
     /// <remarks>
     ///     This was formerly called 'Manage'.
     /// </remarks>
-    Task<Loadout.Model> CreateLoadout(GameInstallation installation, string? suggestedName=null);
+    Task<Loadout.ReadOnly> CreateLoadout(GameInstallation installation, string? suggestedName=null);
 
     /// <summary>
     /// Deletes the loadout for the game. If the loadout is the currently active loadout,

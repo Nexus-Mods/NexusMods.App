@@ -21,7 +21,7 @@ public interface IGeneratedFile
     /// <param name="stream"></param>
     /// <param name="loadout"></param>
     /// <returns></returns>
-    ValueTask<Hash?> Write(Stream stream, Loadout.Model loadout, FlattenedLoadout flattenedLoadout, FileTree fileTree);
+    ValueTask<Hash?> Write(Stream stream, Loadout.ReadOnly loadout, FlattenedLoadout flattenedLoadout, FileTree fileTree);
 
     /// <summary>
     /// Called when the file is updated on disk, outside of the application, this method should read the file,
@@ -30,5 +30,5 @@ public interface IGeneratedFile
     /// <param name="newEntry"></param>
     /// <param name="stream"></param>
     /// <returns></returns>
-    ValueTask<File.Model> Update(DiskStateEntry newEntry, Stream stream);
+    ValueTask<File.ReadOnly> Update(DiskStateEntry newEntry, Stream stream);
 }

@@ -21,5 +21,5 @@ public interface IFileGenerator : IGuidClass
     /// <summary>
     /// Writes the contents of the file to the stream.
     /// </summary>
-    public ValueTask<Hash?> Write(GeneratedFile.Model generatedFile, Stream stream, Loadout.Model loadout, FlattenedLoadout flattenedLoadout, FileTree fileTree);
+    public ValueTask<Hash?> Write(GeneratedFile.ReadOnly generatedFile, Stream stream, Loadout.ReadOnly loadout, FlattenedLoadout flattenedLoadout, FileTree fileTree);
 }

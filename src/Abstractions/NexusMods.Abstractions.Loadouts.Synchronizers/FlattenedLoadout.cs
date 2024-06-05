@@ -7,12 +7,12 @@ namespace NexusMods.Abstractions.Games.DTO;
 /// <summary>
 /// A file tree is a tree that contains all files from a loadout, flattened into a single tree.
 /// </summary>
-public class FlattenedLoadout : AGamePathNodeTree<File.Model>
+public class FlattenedLoadout : AGamePathNodeTree<File.ReadOnly>
 {
-    private FlattenedLoadout(IEnumerable<KeyValuePair<GamePath, File.Model>> tree) : base(tree) { }
+    private FlattenedLoadout(IEnumerable<KeyValuePair<GamePath, File.ReadOnly>> tree) : base(tree) { }
 
     /// <summary>
     ///     Creates a tree that contains all files from a loadout, flattened into a single tree.
     /// </summary>
-    public static FlattenedLoadout Create(IEnumerable<KeyValuePair<GamePath, File.Model>> items) => new(items);
+    public static FlattenedLoadout Create(IEnumerable<KeyValuePair<GamePath, File.ReadOnly>> items) => new(items);
 }

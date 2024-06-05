@@ -5,6 +5,7 @@
     <ItemGroup>
       <ProjectReference Include="..\NexusMods.Abstractions.GameLocators\NexusMods.Abstractions.GameLocators.csproj" />
       <ProjectReference Include="..\NexusMods.Abstractions.Loadouts\NexusMods.Abstractions.Loadouts.csproj" />
+      <PackageReference Include="NexusMods.MnemonicDB.SourceGenerator" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />        
     </ItemGroup>
 
     <ItemGroup>

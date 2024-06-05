@@ -52,5 +52,5 @@ public record ModInstallerInfo
     /// <summary>
     /// Gets the metadata attached to the downloaded archive.
     /// </summary>
-    public required DownloadAnalysis.Model Source { get; init; }
+    public required DownloadAnalysis.ReadOnly Source { get; init; }
 }

@@ -20,7 +20,7 @@ public interface IFileHashCache
     ///     you should call <see cref="IFileHashCache.IndexFileAsync" />; which will update the underlying
     ///     cached item.
     /// </remarks>
-    bool TryGetCached(AbsolutePath path, out HashCacheEntry.Model entry);
+    bool TryGetCached(AbsolutePath path, out HashCacheEntry.ReadOnly entry);
 
     /// <summary>
     ///     Asynchronously indexes the folder specified by <paramref name="path" />; putting it in the cache.

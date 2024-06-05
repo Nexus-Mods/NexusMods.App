@@ -27,5 +27,5 @@ public interface IArchiveInstaller
     /// Installs a <see cref="DownloadAnalysis.Model"/> to a loadout, potentially adding one or more mods.
     /// If the installer is not provided, the installers on the loadout's game will be tried, in the order they are defined.
     /// </summary>
-    public Task<ModId[]> AddMods(LoadoutId loadoutId, DownloadAnalysis.Model downloadAnalysis, IModInstaller? installer = null, CancellationToken token = default);
+    public Task<ModId[]> AddMods(LoadoutId loadoutId, DownloadAnalysis.ReadOnly downloadAnalysis, IModInstaller? installer = null, CancellationToken token = default);
 }
