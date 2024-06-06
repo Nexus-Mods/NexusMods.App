@@ -1,11 +1,20 @@
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NexusMods.ProxyConsole.Abstractions.Implementations;
 using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 
 namespace NexusMods.CLI.Tests.VerbTests;
 
-public class ModManagementVerbs(StubbedGame stubbedGame, IServiceProvider provider) : AVerbTest(provider)
+public class ModManagementVerbs : AVerbTest
 {
+    private readonly ILogger<ModManagementVerbs> _logger;
+    
+    public ModManagementVerbs(IServiceProvider provider) : base(provider)
+    {
+        _logger = provider.GetRequiredService<ILogger<ModManagementVerbs>>();
+    }
+    
     [Fact]
     public async Task CanCreateAndManageLists()
     {
@@ -28,6 +37,9 @@ public class ModManagementVerbs(StubbedGame stubbedGame, IServiceProvider provid
 
         log = await Run("list-mods", "-l", listName);
         log.LastTable.Rows.Length.Should().Be(2);
+        var modNameString = log.LastTable.Rows[1].ToString() ?? "no cells";
+        _logger.LogDebug("Second row: {ModNameString}",modNameString);
+        
 
         log = await Run("list-mod-contents", "-l", listName, "-m", Data7ZipLZMA2.GetFileNameWithoutExtension());
         log.LastTable.Rows.Length.Should().Be(3);
