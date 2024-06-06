@@ -11,6 +11,7 @@
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
+
     <Design.DataContext>
         <icon:IconButtonDesignViewModel />
     </Design.DataContext>
@@ -26,17 +27,16 @@
         <Button.Template>
             <ControlTemplate>
                 <Grid>
-                    <icons:UnifiedIcon
-                        Classes="HelpCircle"
-                        Size="20"
-                        HorizontalAlignment="Center"
-                        Margin="0"
-                        Padding="0"
-                        VerticalAlignment="Center" />
-                    <Border
-                        Classes="Rounded-full"
-                        Height="50"
-                        Width="50" />
+                    <icons:UnifiedIcon Classes="HelpCircle"
+                                       Size="20"
+                                       HorizontalAlignment="Center"
+                                       Margin="0"
+                                       Padding="0"
+                                       VerticalAlignment="Center" />
+                    <Border x:Name="IconButtonInnerBorder"
+                            Classes="Rounded-full"
+                            Height="50"
+                            Width="50" />
                 </Grid>
             </ControlTemplate>
         </Button.Template>

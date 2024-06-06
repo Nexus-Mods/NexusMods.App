@@ -1,3 +1,4 @@
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,8 +13,6 @@ using NexusMods.App.UI.Overlays.Login;
 using NexusMods.App.UI.Overlays.MetricsOptIn;
 using NexusMods.App.UI.Overlays.Updater;
 using NexusMods.App.UI.WorkspaceSystem;
-using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Paths;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -23,14 +22,14 @@ namespace NexusMods.App.UI.Windows;
 public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindowViewModel
 {
     private readonly IWindowManager _windowManager;
+    
+    public ReactiveCommand<Unit, Unit> BringWindowToFront { get; } = ReactiveCommand.Create(() => { });
 
     public MainWindowViewModel(
         IServiceProvider serviceProvider,
         IOSInformation osInformation,
         IWindowManager windowManager,
-        IDownloadService downloadService,
         IOverlayController overlayController,
-        IConnection conn,
         ILoginManager loginManager)
     {
         // NOTE(erri120): can't use DI for VMs that require an active Window because
@@ -69,6 +68,11 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
                 var updaterViewModel = serviceProvider.GetRequiredService<IUpdaterViewModel>();
                 updaterViewModel.MaybeShow();
             }
+            
+            loginManager.IsLoggedInObservable
+                .Where(isSignedIn => isSignedIn)
+                .InvokeCommand(BringWindowToFront)
+                .DisposeWith(d);
             
             var loginMessageVM = serviceProvider.GetRequiredService<ILoginMessageBoxViewModel>();
             loginMessageVM.Controller = overlayController;

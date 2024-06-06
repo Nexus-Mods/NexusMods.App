@@ -57,4 +57,10 @@
       <ProjectReference Include="..\..\NexusMods.Icons\NexusMods.Icons.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <AvaloniaXaml Update="Styles\Controls\ComboBox\ComboBoxStyles.addPanelDropDown.axaml">
+        <DependentUpon>ComboBoxStyles.axaml</DependentUpon>
+      </AvaloniaXaml>
+    </ItemGroup>
+
 </Project>

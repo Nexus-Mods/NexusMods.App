@@ -27,10 +27,14 @@
     <!-- NeutralTranslucent -->
 
     <!-- Colors -->
-    <StaticResource x:Key="SurfaceTranslucentLow" ResourceKey="BrandTranslucentLight100" />
+    <StaticResource x:Key="SurfaceTranslucentLow" ResourceKey="BrandTranslucentLight50" />
+    <StaticResource x:Key="SurfaceTranslucentMid" ResourceKey="BrandTranslucentLight100" />
+    <StaticResource x:Key="SurfaceTranslucentHigh" ResourceKey="BrandTranslucentLight200" />
 
     <!-- SolidColorBrushes -->
     <SolidColorBrush x:Key="SurfaceTranslucentLowBrush" Color="{StaticResource SurfaceTranslucentLow}" />
+    <SolidColorBrush x:Key="SurfaceTranslucentMidBrush" Color="{StaticResource SurfaceTranslucentMid}" />
+    <SolidColorBrush x:Key="SurfaceTranslucentHighBrush" Color="{StaticResource SurfaceTranslucentHigh}" />
 
     <!-- TransparentBrush -->
     <!-- NOTE: Avalonia treats Transparent color as click through, so it can't be used correctly as a background color. -->
