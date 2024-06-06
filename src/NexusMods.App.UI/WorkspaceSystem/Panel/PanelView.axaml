@@ -23,7 +23,7 @@
                         <ScrollViewer Grid.Column="1"
                                       x:Name="TabHeaderScrollViewer"
                                       VerticalScrollBarVisibility="Disabled"
-                                      HorizontalScrollBarVisibility="Hidden">
+                                      HorizontalScrollBarVisibility="Auto">
                             <Grid ColumnDefinitions="Auto, *">
                                 <StackPanel Grid.Column="0" Orientation="Horizontal">
                                     <ItemsControl x:Name="TabHeaders" Height="52">
