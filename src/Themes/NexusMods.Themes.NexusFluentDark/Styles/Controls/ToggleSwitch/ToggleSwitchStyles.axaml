@@ -55,7 +55,6 @@
                         <TextBlock Classes="TitleMDSemi">Compact</TextBlock>
 
                         <StackPanel Classes="Spacing-none" Margin="6">
-
                             <TextBlock Classes="BodyMDBold">Default</TextBlock>
                             <ToggleSwitch Classes="Compact" />
                         </StackPanel>
