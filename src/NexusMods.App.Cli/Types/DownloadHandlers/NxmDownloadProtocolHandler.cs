@@ -59,6 +59,6 @@ public class NxmDownloadProtocolHandler : IDownloadProtocolHandler
             {
                 tx.Add(id, FilePathMetadata.OriginalName, tempPath.Path.Name);
             }, modName, token);
-        await _archiveInstaller.AddMods(loadout.LoadoutId, downloadId, token:token);
+        await _archiveInstaller.AddMods(loadout.LoadoutId, downloadId, modName, token:token);
     }
 }
