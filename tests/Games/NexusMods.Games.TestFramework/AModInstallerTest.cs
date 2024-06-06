@@ -88,7 +88,7 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
     {
         var downloadId = await FileOriginRegistry.RegisterDownload(archivePath, "test", cancellationToken);
         
-        var ids = await ArchiveInstaller.AddMods(Loadout.LoadoutId, downloadId, ModInstaller, cancellationToken);
+        var ids = await ArchiveInstaller.AddMods(Loadout.LoadoutId, downloadId, "test", ModInstaller, cancellationToken);
         var db = Connection.Db;
         return ids.Select(id => db.Get<Mod.Model>((EntityId)id)).ToArray();
     }

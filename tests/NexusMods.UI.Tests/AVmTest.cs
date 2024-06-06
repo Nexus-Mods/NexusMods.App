@@ -71,7 +71,7 @@ where TVm : IViewModelInterface
             {
                 tx.Add(id, FilePathMetadata.OriginalName, path.FileName);
             }, path.FileName);
-        return await ArchiveInstaller.AddMods(Loadout.LoadoutId, downloadId);
+        return await ArchiveInstaller.AddMods(Loadout.LoadoutId, downloadId, path.FileName);
     }
 
     public async Task InitializeAsync()

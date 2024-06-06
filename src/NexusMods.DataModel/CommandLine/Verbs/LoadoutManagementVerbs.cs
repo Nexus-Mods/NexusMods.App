@@ -131,7 +131,7 @@ public static class LoadoutManagementVerbs
             var downloadId = await fileOriginRegistry.RegisterDownload(file, 
             (tx, id) => tx.Add(id, FilePathMetadata.OriginalName, file.FileName), name, token);
 
-            await archiveInstaller.AddMods(loadout.LoadoutId, downloadId, token: token);
+            await archiveInstaller.AddMods(loadout.LoadoutId, downloadId, name, token: token);
             return 0;
         });
     }
