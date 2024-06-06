@@ -47,7 +47,4 @@ public interface ILoginManager
     ///  Log out of Nexus Mods
     /// </summary>
     Task Logout();
-
-    /// <inheritdoc/>
-    void Dispose();
 }

@@ -22,7 +22,13 @@ public partial class TopBarView : ReactiveUserControl<ITopBarViewModel>
             this.BindCommand(ViewModel, vm => vm.OpenSettingsCommand, view => view.SettingsActionButton)
                 .DisposeWith(d);
 
-            this.BindCommand(ViewModel, vm => vm.LogoutCommand, view => view.UserButton)
+            this.BindCommand(ViewModel, vm => vm.LogoutCommand, view => view.SignOutMenuItem)
+                .DisposeWith(d);
+
+            this.BindCommand(ViewModel, vm => vm.OpenNexusModsProfileCommand, view => view.OpenNexusModsProfileMenuItem)
+                .DisposeWith(d);
+
+            this.BindCommand(ViewModel, vm => vm.OpenNexusModsAccountSettingsCommand, view => view.OpenNexusModsAccountSettingsMenuItem)
                 .DisposeWith(d);
 
             this.OneWayBind(ViewModel, vm => vm.IsLoggedIn, view => view.LoginButton.IsVisible,isLoggedIn => !isLoggedIn)
@@ -42,7 +48,7 @@ public partial class TopBarView : ReactiveUserControl<ITopBarViewModel>
                 .BindTo(this, view => view.Premium.IsVisible)
                 .DisposeWith(d);
 
-            this.OneWayBind(ViewModel, vm => vm.Avatar, view => view.AvatarImage.Value, image => new IconValue(new AvaloniaImage(image)))
+            this.OneWayBind(ViewModel, vm => vm.Avatar, view => view.AvatarMenuItemImage.Source)
                 .DisposeWith(d);
 
             this.OneWayBind(ViewModel, vm => vm.ActiveWorkspaceTitle, view => view.ActiveWorkspaceTitleTextBlock.Text)

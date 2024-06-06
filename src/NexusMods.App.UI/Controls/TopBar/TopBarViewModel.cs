@@ -14,6 +14,7 @@ using NexusMods.App.UI.Overlays.AlphaWarning;
 using NexusMods.App.UI.Pages.Settings;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.CrossPlatform.Process;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -29,6 +30,8 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
 
     public ReactiveCommand<Unit, Unit> LoginCommand { get; }
     public ReactiveCommand<Unit, Unit> LogoutCommand { get; }
+    public ReactiveCommand<Unit, Unit> OpenNexusModsProfileCommand { get; }
+    public ReactiveCommand<Unit, Unit> OpenNexusModsAccountSettingsCommand { get; }
 
     [Reactive] public bool IsLoggedIn { get; [UsedImplicitly] set; }
     [Reactive] public bool IsPremium { get; [UsedImplicitly] set; }
@@ -45,7 +48,8 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
         ILogger<TopBarViewModel> logger,
         ILoginManager loginManager,
         IWindowManager windowManager,
-        IOverlayController overlayController)
+        IOverlayController overlayController,
+        IOSInterop osInterop)
     {
         _logger = logger;
         _loginManager = loginManager;
@@ -87,6 +91,22 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
             .OffUi()
             .SelectMany(LoadImage)
             .ToProperty(this, vm => vm.Avatar, scheduler: RxApp.MainThreadScheduler);
+
+        OpenNexusModsProfileCommand = ReactiveCommand.CreateFromTask(async () =>
+        {
+            var userInfo = _loginManager.UserInfo;
+            if (userInfo is null) return;
+
+            var userId = userInfo.UserId.Value;
+            var uri = new Uri($"https://nexusmods.com/users/{userId}");
+            await osInterop.OpenUrl(uri);
+        });
+
+        OpenNexusModsAccountSettingsCommand = ReactiveCommand.CreateFromTask(async () =>
+        {
+            var uri = new Uri("https://users.nexusmods.com");
+            await osInterop.OpenUrl(uri);
+        });
 
         this.WhenActivated(d =>
         {

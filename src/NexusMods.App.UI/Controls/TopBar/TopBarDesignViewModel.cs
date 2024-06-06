@@ -20,6 +20,8 @@ public class TopBarDesignViewModel : AViewModel<ITopBarViewModel>, ITopBarViewMo
 
     public ReactiveCommand<Unit, Unit> LoginCommand { get; set; }
     public ReactiveCommand<Unit, Unit> LogoutCommand { get; set; }
+    public ReactiveCommand<Unit, Unit> OpenNexusModsProfileCommand { get; } = Initializers.DisabledReactiveCommand;
+    public ReactiveCommand<Unit, Unit> OpenNexusModsAccountSettingsCommand { get; } = Initializers.DisabledReactiveCommand;
 
     public ReactiveCommand<Unit, Unit> HelpActionCommand { get; } = ReactiveCommand.Create(() => { }, Observable.Return(false));
 

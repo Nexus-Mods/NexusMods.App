@@ -1,6 +1,6 @@
 ﻿<reactiveUi:ReactiveUserControl
     d:DataContext=""
-    d:DesignHeight="56"
+    d:DesignHeight="300"
     d:DesignWidth="1280"
     mc:Ignorable="d"
     x:Class="NexusMods.App.UI.Controls.TopBar.TopBarView"
@@ -18,7 +18,7 @@
         <topBar:TopBarDesignViewModel />
     </Design.DataContext>
 
-    <Grid ColumnDefinitions="Auto, *, Auto, Auto, Auto" x:Name="MainGrid">
+    <Grid ColumnDefinitions="Auto, *, Auto, Auto, Auto" x:Name="MainGrid" Height="56" VerticalAlignment="Top">
 
         <TextBlock Grid.Column="0"
                    Classes="TitleMDSemi ForegroundSubdued"
@@ -79,15 +79,18 @@
                         </StackPanel>
                     </Button>
 
-                    <Button Classes="Avatar"
-                            HorizontalAlignment="Center"
-                            x:Name="UserButton">
-                        <icons:UnifiedIcon
-                            Size="30"
-                            x:Name="AvatarImage">
-                        </icons:UnifiedIcon>
-                    </Button>
+                    <Menu>
+                        <MenuItem x:Name="AvatarMenuItem" Header="ProfileIconGoesHere">
+                            <MenuItem.Icon>
+                                <!-- TODO: figure out why this doesn't work -->
+                                <Image Width="28" Height="28" x:Name="AvatarMenuItemImage" />
+                            </MenuItem.Icon>
 
+                            <MenuItem Header="My Profile" x:Name="OpenNexusModsProfileMenuItem"/>
+                            <MenuItem Header="Account settings" x:Name="OpenNexusModsAccountSettingsMenuItem" />
+                            <MenuItem Header="Sign out" x:Name="SignOutMenuItem" />
+                        </MenuItem>
+                    </Menu>
                 </StackPanel>
             </Border>
 

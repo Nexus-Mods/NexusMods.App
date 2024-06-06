@@ -106,9 +106,10 @@ public class OAuth2MessageFactory : IAuthenticatingMessageFactory
 
         return new UserInfo
         {
+            UserId = UserId.From(ulong.Parse(oAuthUserInfo.Sub)),
             Name = oAuthUserInfo.Name,
             IsPremium = oAuthUserInfo.MembershipRoles.Contains(MembershipRole.Premium),
-            AvatarUrl = oAuthUserInfo.Avatar
+            AvatarUrl = oAuthUserInfo.Avatar,
         };
     }
 
