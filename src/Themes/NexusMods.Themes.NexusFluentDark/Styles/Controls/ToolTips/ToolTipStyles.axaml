@@ -1,0 +1,30 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:extensions="clr-namespace:NexusMods.Themes.NexusFluentDark.Extensions">
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <!-- Add Controls for Previewer Here -->
+            <Button>
+                <ToolTip.Tip>
+                    <TextBlock Text="This is a tooltip" /> 
+                </ToolTip.Tip>
+                <TextBlock Text="Hover over me" />
+            </Button>
+        </Border>
+    </Design.PreviewWith>
+
+    <!-- Add Styles Here -->
+    <Style Selector="ToolTip">
+        <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
+        <Setter Property="Padding" Value="12,8" />
+        <Setter Property="BoxShadow">
+            <extensions:BoxShadow
+                BlurRadius="5" ShadowColor="{StaticResource BrandTranslucentDark500}"
+                VerticalLength1="3" BlurRadius1="4" ShadowColor1="{StaticResource BrandTranslucentDark100}"
+                VerticalLength2="2" BlurRadius2="4" ShadowColor2="{StaticResource BrandTranslucentDark100}" />
+        </Setter>
+    </Style>
+</Styles>
+
