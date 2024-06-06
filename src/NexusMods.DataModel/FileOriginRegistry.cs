@@ -75,6 +75,7 @@ public class FileOriginRegistry : IFileOriginRegistry
     /// <inheritdoc />
     public async ValueTask<DownloadId> RegisterDownload(AbsolutePath path, MetadataFn metaDataFn, string modName, CancellationToken token = default)
     {
+        _logger.LogDebug("Registering download from path: {Path}, Name: {ModName}", path, modName);
         var db = _conn.Db;
         var archiveSize = (ulong) path.FileInfo.Size;
         var archiveHash = (await _fileHashCache.IndexFileAsync(path, token)).Hash;
@@ -85,6 +86,7 @@ public class FileOriginRegistry : IFileOriginRegistry
 
         await using var tmpFolder = _temporaryFileManager.CreateFolder();
         await _extractor.ExtractAllAsync(path, tmpFolder.Path, token);
+        _logger.LogDebug("Before register folder internal");
         return await RegisterFolderInternal(tmpFolder.Path, metaDataFn, null, _fileStore.GetFileHashes(), archiveHash.Value, archiveSize, modName, token);
     }
 
@@ -143,6 +145,7 @@ public class FileOriginRegistry : IFileOriginRegistry
         string suggestedName,
         CancellationToken token = default)
     {
+        _logger.LogDebug("Registering download Name: {ModName}", suggestedName);
         List<ArchivedFileEntry> filesToBackup = [];
         List<ArchivedFileEntry> files = [];
         List<RelativePath> paths = [];

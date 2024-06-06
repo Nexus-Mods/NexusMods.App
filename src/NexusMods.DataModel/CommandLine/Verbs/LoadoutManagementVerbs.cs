@@ -125,13 +125,16 @@ public static class LoadoutManagementVerbs
         [Option("n", "name", "Name of the mod after installing")] string name,
         [Injected] IArchiveInstaller archiveInstaller,
         [Injected] IFileOriginRegistry fileOriginRegistry,
+        [Injected] ILogger<IArchiveInstaller> logger,
         [Injected] CancellationToken token)
     {
         return await renderer.WithProgress(token, async () =>
         {
+            logger.LogDebug("IArchiveInstaller: {Installer}", archiveInstaller);
+            logger.LogDebug("Name: {Name}", name);
             var downloadId = await fileOriginRegistry.RegisterDownload(file, 
             (tx, id) => tx.Add(id, FilePathMetadata.OriginalName, file.FileName), name, token);
-
+            
             await archiveInstaller.AddMods(loadout.LoadoutId, downloadId, token: token);
             return 0;
         });
