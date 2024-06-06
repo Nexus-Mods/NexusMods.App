@@ -57,6 +57,7 @@ public class ArchiveInstaller : IArchiveInstaller
         // Because string is non-nullable where it is set (FileOriginRegistry),
         // and using that is a prerequisite to calling this function.
         download.TryGet(DownloadAnalysis.SuggestedName, out var modName);
+        _logger.LogInformation("Adding mod {Name} to {Loadout}", modName, loadout.Name);
         
         ModId modId;
         Mod.Model baseMod;
@@ -103,6 +104,8 @@ public class ArchiveInstaller : IArchiveInstaller
             {
                 installers = new[] { installer };
             }
+            
+            _logger.LogDebug("Installers: {Installers}", installers.Select(i => i.GetType().Name));
 
             var (results, modInstaller) = await installers
                 .SelectAsync(async modInstaller =>

@@ -191,7 +191,7 @@ public class FileOriginRegistry : IFileOriginRegistry
         _logger.LogInformation("Calculating metadata");
         using var tx = _conn.BeginTransaction();
         
-
+        _logger.LogDebug("Creating download analysis with Name: {SuggestedName}", suggestedName);
         var analysis = new DownloadAnalysis.Model(tx)
         {
             Id = existingId ?? tx.TempId(),
