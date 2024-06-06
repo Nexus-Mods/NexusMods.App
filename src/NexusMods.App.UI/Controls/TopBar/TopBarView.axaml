@@ -32,18 +32,6 @@
                     Margin="16,0"
                     x:Name="ActionStackPanel">
 
-            <Button Classes="Action" x:Name="HistoryActionButton" IsVisible="False">
-                <icons:UnifiedIcon Classes="History ForegroundSubdued" />
-            </Button>
-
-            <Button Classes="Action" x:Name="UndoActionButton" IsVisible="False">
-                <icons:UnifiedIcon Classes="Undo ForegroundSubdued" />
-            </Button>
-
-            <Button Classes="Action" x:Name="RedoActionButton" IsVisible="False">
-                <icons:UnifiedIcon Classes="Redo ForegroundSubdued" />
-            </Button>
-
             <Button Classes="Action" x:Name="HelpActionButton">
                 <icons:UnifiedIcon Classes="Help ForegroundSubdued" />
             </Button>

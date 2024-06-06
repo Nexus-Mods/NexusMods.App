@@ -27,7 +27,6 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
 
     public MainWindowViewModel(
         IServiceProvider serviceProvider,
-        IOSInformation osInformation,
         IWindowManager windowManager,
         IOverlayController overlayController,
         ILoginManager loginManager)
@@ -49,9 +48,6 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
         Spine = serviceProvider.GetRequiredService<ISpineViewModel>();
         DevelopmentBuildBanner = serviceProvider.GetRequiredService<IDevelopmentBuildBannerViewModel>();
 
-        // Only show controls in Windows since we can remove the chrome on that platform
-        TopBar.ShowWindowControls = osInformation.IsWindows;
-        
         this.WhenActivated(d =>
         {
             var alphaWarningViewModel = serviceProvider.GetRequiredService<IAlphaWarningViewModel>();
