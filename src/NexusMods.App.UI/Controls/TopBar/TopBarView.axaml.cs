@@ -31,21 +31,7 @@ public partial class TopBarView : ReactiveUserControl<ITopBarViewModel>
             this.BindCommand(ViewModel, vm => vm.OpenNexusModsAccountSettingsCommand, view => view.OpenNexusModsAccountSettingsMenuItem)
                 .DisposeWith(d);
 
-            this.OneWayBind(ViewModel, vm => vm.IsLoggedIn, view => view.LoginButton.IsVisible,isLoggedIn => !isLoggedIn)
-                .DisposeWith(d);
-
-            this.OneWayBind(ViewModel, vm => vm.IsLoggedIn, view => view.UserPanel.IsVisible)
-                .DisposeWith(d);
-
             this.OneWayBind(ViewModel, vm => vm.AddPanelDropDownViewModel, view => view.AddPanelViewModelViewHost.ViewModel)
-                .DisposeWith(d);
-
-            this.WhenAnyValue(
-                    x => x.ViewModel!.IsLoggedIn,
-                    x => x.ViewModel!.IsPremium,
-                    (isLoggedIn, isPremium) => isLoggedIn && isPremium
-                )
-                .BindTo(this, view => view.Premium.IsVisible)
                 .DisposeWith(d);
 
             this.OneWayBind(ViewModel, vm => vm.Avatar, view => view.AvatarMenuItemImage.Source)

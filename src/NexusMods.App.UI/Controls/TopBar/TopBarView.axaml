@@ -18,7 +18,7 @@
         <topBar:TopBarDesignViewModel />
     </Design.DataContext>
 
-    <Grid ColumnDefinitions="Auto, *, Auto, Auto, Auto" x:Name="MainGrid" Height="56" VerticalAlignment="Top">
+    <Grid ColumnDefinitions="Auto, *, Auto" x:Name="MainGrid" Height="56" VerticalAlignment="Top">
 
         <TextBlock Grid.Column="0"
                    Classes="TitleMDSemi ForegroundSubdued"
@@ -32,69 +32,46 @@
                     Margin="16,0"
                     x:Name="ActionStackPanel">
 
-            <reactiveUi:ViewModelViewHost VerticalAlignment="Center" x:Name="AddPanelViewModelViewHost" />
+            <Menu>
+                <reactiveUi:ViewModelViewHost VerticalAlignment="Center" x:Name="AddPanelViewModelViewHost" />
 
-            <Line Classes="Separator"/>
+                <MenuItem>
+                    <MenuItem.Header>
+                        <navigation:NavigationControl Classes="Action" x:Name="SettingsActionButton">
+                            <icons:UnifiedIcon Classes="Cog ForegroundSubdued" />
+                        </navigation:NavigationControl>
+                    </MenuItem.Header>
+                </MenuItem>
 
-            <navigation:NavigationControl Classes="Action" x:Name="SettingsActionButton">
-                <icons:UnifiedIcon Classes="Cog ForegroundSubdued" />
-            </navigation:NavigationControl>
+                <MenuItem>
+                    <MenuItem.Header>
+                        <Button Classes="Action" x:Name="HelpActionButton">
+                            <icons:UnifiedIcon Classes="Help ForegroundSubdued" />
+                        </Button>
+                    </MenuItem.Header>
+                </MenuItem>
 
-            <Button Classes="Action" x:Name="HelpActionButton">
-                <icons:UnifiedIcon Classes="Help ForegroundSubdued" />
-            </Button>
+                <Button
+                    Classes="Standard Primary"
+                    x:Name="LoginButton">
+                    <StackPanel>
+                        <TextBlock
+                            Text="{x:Static resources:Language.TopBarActions__LOG_IN}">
+                        </TextBlock>
+                    </StackPanel>
+                </Button>
 
-        </StackPanel>
+                <MenuItem x:Name="AvatarMenuItem" Header="ProfileIconGoesHere">
+                    <MenuItem.Icon>
+                        <!-- TODO: figure out why this doesn't work -->
+                        <Image Width="28" Height="28" x:Name="AvatarMenuItemImage" />
+                    </MenuItem.Icon>
 
-        <Border Grid.Column="3" Classes="OutlineWeak"
-                Margin="0,8"
-                BorderThickness="1,0,0,0"
-                x:Name="LoginDivider" />
-
-        <StackPanel Grid.Column="4"
-                    Orientation="Horizontal"
-                    Classes="Spacing-2"
-                    Margin="12,0"
-                    x:Name="LoginStackPanel">
-
-            <Button
-                Classes="Standard Primary"
-                x:Name="LoginButton">
-                <StackPanel>
-                    <TextBlock
-                        Text="{x:Static resources:Language.TopBarActions__LOG_IN}">
-                    </TextBlock>
-                </StackPanel>
-            </Button>
-
-            <Border Classes="OutlineWeak"
-                    BorderThickness="0,0,0,0"
-                    x:Name="UserPanel"
-                    IsVisible="False">
-
-                <StackPanel Orientation="Horizontal" Classes="Spacing-3_5" Margin="16, 0">
-
-                    <Button Classes="Pill Light" x:Name="Premium" IsVisible="False">
-                        <StackPanel>
-                            <icons:UnifiedIcon Classes="Star" />
-                            <TextBlock Text="{x:Static resources:Language.Nexus_Premium_Status__Premium}"></TextBlock>
-                        </StackPanel>
-                    </Button>
-
-                    <Menu>
-                        <MenuItem x:Name="AvatarMenuItem" Header="ProfileIconGoesHere">
-                            <MenuItem.Icon>
-                                <!-- TODO: figure out why this doesn't work -->
-                                <Image Width="28" Height="28" x:Name="AvatarMenuItemImage" />
-                            </MenuItem.Icon>
-
-                            <MenuItem Header="My Profile" x:Name="OpenNexusModsProfileMenuItem"/>
-                            <MenuItem Header="Account settings" x:Name="OpenNexusModsAccountSettingsMenuItem" />
-                            <MenuItem Header="Sign out" x:Name="SignOutMenuItem" />
-                        </MenuItem>
-                    </Menu>
-                </StackPanel>
-            </Border>
+                    <MenuItem Header="My Profile" x:Name="OpenNexusModsProfileMenuItem" />
+                    <MenuItem Header="Account settings" x:Name="OpenNexusModsAccountSettingsMenuItem" />
+                    <MenuItem Header="Sign out" x:Name="SignOutMenuItem" />
+                </MenuItem>
+            </Menu>
 
         </StackPanel>
     </Grid>
