@@ -58,17 +58,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <AvaloniaXaml Update="Styles\Controls\ComboBox\ComboBox.AddPanelDropDown.axaml">
-        <DependentUpon>ComboBox.axaml</DependentUpon>
-      </AvaloniaXaml>
-      <AvaloniaXaml Update="Styles\Controls\ComboBox\ComboBox.Primary.axaml">
-        <DependentUpon>ComboBox.axaml</DependentUpon>
-      </AvaloniaXaml>
-      <AvaloniaXaml Update="Styles\Controls\ComboBox\ComboBox.Secondary.axaml">
-        <DependentUpon>ComboBox.axaml</DependentUpon>
-      </AvaloniaXaml>
-      <AvaloniaXaml Update="Styles\Controls\ComboBox\ComboBox.Tertiary.axaml">
-        <DependentUpon>ComboBox.axaml</DependentUpon>
+      <AvaloniaXaml Update="Styles\Controls\ComboBox\ComboBoxStyles.addPanelDropDown.axaml">
+        <DependentUpon>ComboBoxStyles.axaml</DependentUpon>
       </AvaloniaXaml>
     </ItemGroup>
 
