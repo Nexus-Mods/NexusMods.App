@@ -37,8 +37,13 @@ public class FileOriginRegistry : IFileOriginRegistry
     /// <param name="fileStore"></param>
     /// <param name="temporaryFileManager"></param>
     /// <param name="store"></param>
-    public FileOriginRegistry(ILogger<FileOriginRegistry> logger, IFileExtractor extractor,
-        IFileStore fileStore, TemporaryFileManager temporaryFileManager, IConnection conn, IFileHashCache fileHashCache)
+    public FileOriginRegistry(
+        ILogger<FileOriginRegistry> logger,
+        IFileExtractor extractor,
+        IFileStore fileStore,
+        TemporaryFileManager temporaryFileManager,
+        IConnection conn,
+        IFileHashCache fileHashCache)
     {
         _logger = logger;
         _extractor = extractor;
@@ -53,7 +58,7 @@ public class FileOriginRegistry : IFileOriginRegistry
     {
         var db = _conn.Db;
         // WARNING !! Cannot access hash cache.
-        var archiveSize = (ulong) factory.Size;
+        var archiveSize = (ulong)factory.Size;
         var archiveHash = await (await factory.GetStreamAsync()).XxHash64Async(token: token);
 
         // Note: Folders have a hash of 0, so in unlikely event an archive hashes to 0, we can't dedupe by archive.
@@ -63,7 +68,15 @@ public class FileOriginRegistry : IFileOriginRegistry
         await using var tmpFolder = _temporaryFileManager.CreateFolder();
         await _extractor.ExtractAllAsync(factory, tmpFolder.Path, token);
 
-        return await RegisterFolderInternal(tmpFolder.Path, AppendNestedArchiveMetadata, null, _fileStore.GetFileHashes(), archiveHash.Value, archiveSize, modName, token);
+        return await RegisterFolderInternal(tmpFolder.Path,
+            AppendNestedArchiveMetadata,
+            null,
+            _fileStore.GetFileHashes(),
+            archiveHash.Value,
+            archiveSize,
+            modName,
+            token
+        );
 
         void AppendNestedArchiveMetadata(ITransaction tx, EntityId id)
         {
@@ -77,7 +90,7 @@ public class FileOriginRegistry : IFileOriginRegistry
     {
         _logger.LogDebug("Registering download from path: {Path}, Name: {ModName}", path, modName);
         var db = _conn.Db;
-        var archiveSize = (ulong) path.FileInfo.Size;
+        var archiveSize = (ulong)path.FileInfo.Size;
         var archiveHash = (await _fileHashCache.IndexFileAsync(path, token)).Hash;
 
         // Note: Folders have a hash of 0, so in unlikely event an archive hashes to 0, we can't dedupe by archive.
@@ -87,30 +100,62 @@ public class FileOriginRegistry : IFileOriginRegistry
         await using var tmpFolder = _temporaryFileManager.CreateFolder();
         await _extractor.ExtractAllAsync(path, tmpFolder.Path, token);
         _logger.LogDebug("Before register folder internal");
-        return await RegisterFolderInternal(tmpFolder.Path, metaDataFn, null, _fileStore.GetFileHashes(), archiveHash.Value, archiveSize, modName, token);
+        return await RegisterFolderInternal(tmpFolder.Path,
+            metaDataFn,
+            null,
+            _fileStore.GetFileHashes(),
+            archiveHash.Value,
+            archiveSize,
+            modName,
+            token
+        );
     }
 
     public async ValueTask<DownloadId> RegisterDownload(AbsolutePath path, EntityId id, string modName, CancellationToken token = default)
     {
         var db = _conn.Db;
-        var archiveSize = (ulong) path.FileInfo.Size;
-        
+        var archiveSize = (ulong)path.FileInfo.Size;
+
         var archiveHash = (await _fileHashCache.IndexFileAsync(path, token)).Hash;
 
         // Note: Folders have a hash of 0, so in unlikely event an archive hashes to 0, we can't dedupe by archive.
         if (archiveHash != 0 && TryGetDownloadIdForHash(db, archiveHash, out var downloadId))
+        {
+            using var tx = _conn.BeginTransaction();
+            tx.Add(id, DownloadAnalysis.SuggestedName, modName);
+            await tx.Commit();
             return downloadId.Value;
+        }
 
         await using var tmpFolder = _temporaryFileManager.CreateFolder();
         await _extractor.ExtractAllAsync(path, tmpFolder.Path, token);
-        return await RegisterFolderInternal(tmpFolder.Path, null, id, _fileStore.GetFileHashes(), archiveHash.Value, archiveSize, modName, token);
+        return await RegisterFolderInternal(tmpFolder.Path,
+            null,
+            id,
+            _fileStore.GetFileHashes(),
+            archiveHash.Value,
+            archiveSize,
+            modName,
+            token
+        );
     }
 
     /// <inheritdoc />
-    public async ValueTask<DownloadId> RegisterFolder(AbsolutePath path, Action<ITransaction, EntityId> metaDataFn, string modName,
+    public async ValueTask<DownloadId> RegisterFolder(
+        AbsolutePath path,
+        Action<ITransaction, EntityId> metaDataFn,
+        string modName,
         CancellationToken token = default)
     {
-        return await RegisterFolderInternal(path, metaDataFn, null, _fileStore.GetFileHashes(), 0, 0, modName, token);
+        return await RegisterFolderInternal(path,
+            metaDataFn,
+            null,
+            _fileStore.GetFileHashes(),
+            0,
+            0,
+            modName,
+            token
+        );
     }
 
     /// <inheritdoc />
@@ -125,7 +170,7 @@ public class FileOriginRegistry : IFileOriginRegistry
     {
         var db = _conn.Db;
         return db.Find(DownloadAnalysis.NumberOfEntries)
-                 .Select(id => db.Get<DownloadAnalysis.Model>(id));
+            .Select(id => db.Get<DownloadAnalysis.Model>(id));
     }
 
     /// <inheritdoc />
@@ -133,15 +178,16 @@ public class FileOriginRegistry : IFileOriginRegistry
     {
         var db = _conn.Db;
         return db.FindIndexed(hash, DownloadAnalysis.Hash)
-                 .Select(id => db.Get<DownloadAnalysis.Model>(id));
+            .Select(id => db.Get<DownloadAnalysis.Model>(id));
     }
 
-    private async ValueTask<DownloadId> RegisterFolderInternal(AbsolutePath originalPath, 
-        Action<ITransaction, EntityId>? metaDataFn, 
+    private async ValueTask<DownloadId> RegisterFolderInternal(
+        AbsolutePath originalPath,
+        Action<ITransaction, EntityId>? metaDataFn,
         EntityId? existingId,
-        HashSet<ulong> knownHashes, 
-        ulong archiveHash, 
-        ulong archiveSize, 
+        HashSet<ulong> knownHashes,
+        ulong archiveHash,
+        ulong archiveSize,
         string suggestedName,
         CancellationToken token = default)
     {
@@ -151,32 +197,33 @@ public class FileOriginRegistry : IFileOriginRegistry
         List<RelativePath> paths = [];
 
         _logger.LogInformation("Analyzing archive: {Name}", originalPath);
-        
+
         // Note: We exploit Async I/O here. Modern storage can munch files in parallel,
         // so doing this on one thread would be a waste.
 
         var allFiles = originalPath.EnumerateFiles().ToArray(); // enables better work stealing.
-        Parallel.ForEach(allFiles, file =>
-        {
-            // TODO: report this as progress
-            var hash = file.XxHash64MemoryMapped();
-            var archivedEntry = new ArchivedFileEntry
+        Parallel.ForEach(allFiles,
+            file =>
             {
-                Hash = hash,
-                Size = file.FileInfo.Size,
-                StreamFactory = new NativeFileStreamFactory(file),
-            };
+                // TODO: report this as progress
+                var hash = file.XxHash64MemoryMapped();
+                var archivedEntry = new ArchivedFileEntry
+                {
+                    Hash = hash,
+                    Size = file.FileInfo.Size,
+                    StreamFactory = new NativeFileStreamFactory(file),
+                };
 
-            // If the hash isn't known, we should back it up.
-            var relativePath = file.RelativeTo(originalPath);
-            lock (paths)
-            {
-                paths.Add(relativePath);
-                files.Add(archivedEntry);
-                if (!knownHashes.Contains(hash.Value))
-                    filesToBackup.Add(archivedEntry);
+                // If the hash isn't known, we should back it up.
+                var relativePath = file.RelativeTo(originalPath);
+                lock (paths)
+                {
+                    paths.Add(relativePath);
+                    files.Add(archivedEntry);
+                    if (!knownHashes.Contains(hash.Value))
+                        filesToBackup.Add(archivedEntry);
+                }
             }
-        }
         );
 
         // We don't want to risk creating an empty archive depending on underlying implementation if
@@ -193,15 +240,15 @@ public class FileOriginRegistry : IFileOriginRegistry
 
         _logger.LogInformation("Calculating metadata");
         using var tx = _conn.BeginTransaction();
-        
+
         _logger.LogDebug("Creating download analysis with Name: {SuggestedName}", suggestedName);
         var analysis = new DownloadAnalysis.Model(tx)
         {
             Id = existingId ?? tx.TempId(),
-            
+
             Hash = Hash.From(archiveHash),
             Size = Size.From(archiveSize),
-            Count = (ulong) files.Count,
+            Count = (ulong)files.Count,
             SuggestedName = suggestedName,
         };
 
@@ -219,7 +266,7 @@ public class FileOriginRegistry : IFileOriginRegistry
         }
 
         var id = (await tx.Commit())[analysis.Id];
-        
+
         return DownloadId.From(id);
     }
 
@@ -235,8 +282,9 @@ public class FileOriginRegistry : IFileOriginRegistry
             analysis = DownloadId.From(found);
             return true;
         }
-        
+
         analysis = null;
         return false;
     }
+
 }
