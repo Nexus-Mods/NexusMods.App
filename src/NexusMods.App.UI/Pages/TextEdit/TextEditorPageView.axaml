@@ -19,7 +19,7 @@
 
                 <Line/>
 
-                <ComboBox x:Name="ThemeSelector">
+                <ComboBox x:Name="ThemeSelector" Classes="Tertiary">
                     <ComboBox.ItemTemplate>
                         <DataTemplate DataType="{x:Type grammars:ThemeName}">
                             <ComboBoxItem>
