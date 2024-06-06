@@ -32,15 +32,17 @@
                     Margin="16,0"
                     x:Name="ActionStackPanel">
 
-            <Button Classes="Action" x:Name="HelpActionButton">
-                <icons:UnifiedIcon Classes="Help ForegroundSubdued" />
-            </Button>
+            <reactiveUi:ViewModelViewHost VerticalAlignment="Center" x:Name="AddPanelViewModelViewHost" />
+
+            <Line Classes="Separator"/>
 
             <navigation:NavigationControl Classes="Action" x:Name="SettingsActionButton">
                 <icons:UnifiedIcon Classes="Cog ForegroundSubdued" />
             </navigation:NavigationControl>
 
-            <reactiveUi:ViewModelViewHost VerticalAlignment="Center" x:Name="AddPanelViewModelViewHost" />
+            <Button Classes="Action" x:Name="HelpActionButton">
+                <icons:UnifiedIcon Classes="Help ForegroundSubdued" />
+            </Button>
 
         </StackPanel>
 
