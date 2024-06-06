@@ -199,7 +199,7 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
 
     public async Task OpenNexusModPage()
     {
-        var url = $"https://www.nexusmods.com/{_gameDomain.Value}";
+        var url = $"https://www.nexusmods.com/{_gameDomain.Value}?pk_source=nexusmodsapp";
         await _osInterop.OpenUrl(new Uri(url), true);
     }
 
