@@ -118,7 +118,7 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
     protected async Task<ModId[]> AddMods(LoadoutId loadoutId, AbsolutePath path, string? name = null)
     {
         var downloadId = await FileOriginRegistry.RegisterDownload(path, name ?? path.FileName, Token);
-        var result = await ArchiveInstaller.AddMods(loadoutId, downloadId, token: Token);
+        var result = await ArchiveInstaller.AddMods(loadoutId, downloadId,name ?? path.FileName, token: Token);
         // Refresh the loadout to get the new mods, as a convenience.
         Refresh(ref BaseLoadout);
         return result;
@@ -166,7 +166,7 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
     protected async Task<ModId> AddMod(string modName, params (string Name, string Data)[] files)
     {
         var downloadId = await RegisterDownload(modName, files);
-        var modIds = await ArchiveInstaller.AddMods(LoadoutId.From(BaseLoadout.Id), downloadId, token: Token);
+        var modIds = await ArchiveInstaller.AddMods(LoadoutId.From(BaseLoadout.Id), downloadId, modName, token: Token);
         return modIds.First();
     }
 

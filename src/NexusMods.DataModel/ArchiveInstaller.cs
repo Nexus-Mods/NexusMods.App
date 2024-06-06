@@ -47,7 +47,12 @@ public class ArchiveInstaller : IArchiveInstaller
     }
     
     /// <inheritdoc />
-    public async Task<ModId[]> AddMods(LoadoutId loadoutId, DownloadAnalysis.Model download, IModInstaller? installer = null, CancellationToken token = default)
+    public async Task<ModId[]> AddMods(
+        LoadoutId loadoutId, 
+        DownloadAnalysis.Model download, 
+        string? name = null, 
+        IModInstaller? installer = null, 
+        CancellationToken token = default)
     {
         // Get the loadout and create the mod, so we can use it in the job.
         var useCustomInstaller = installer != null;
@@ -56,7 +61,7 @@ public class ArchiveInstaller : IArchiveInstaller
         // Note(suggestedName) cannot be null here.
         // Because string is non-nullable where it is set (FileOriginRegistry),
         // and using that is a prerequisite to calling this function.
-        download.TryGet(DownloadAnalysis.SuggestedName, out var modName);
+        var modName = name ?? download.Get(DownloadAnalysis.SuggestedName);
         
         ModId modId;
         Mod.Model baseMod;
@@ -211,11 +216,16 @@ public class ArchiveInstaller : IArchiveInstaller
     }
 
     /// <inheritdoc />
-    public async Task<ModId[]> AddMods(LoadoutId loadoutId, DownloadId downloadId, IModInstaller? installer = null, CancellationToken token = default)
+    public async Task<ModId[]> AddMods(
+        LoadoutId loadoutId, 
+        DownloadId downloadId, 
+        string? name = null,
+        IModInstaller? installer = null, 
+        CancellationToken token = default)
     {
         var download = _fileOriginRegistry.Get(downloadId);
         
-        return await AddMods(loadoutId, download, installer, token);
+        return await AddMods(loadoutId, download, name, installer, token);
     }
 
 }

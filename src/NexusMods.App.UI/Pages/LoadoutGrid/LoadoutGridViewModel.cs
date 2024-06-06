@@ -218,7 +218,7 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
                     tx.Add(id, DownloaderState.GameDomain, _gameDomain);
                     tx.Add(id, FilePathMetadata.OriginalName, file.FileName);
                 }, file.FileName);
-            await _archiveInstaller.AddMods(LoadoutId, downloadId, token: CancellationToken.None, installer: installer);
+            await _archiveInstaller.AddMods(LoadoutId, downloadId, file.FileName, installer: installer, token: CancellationToken.None);
         });
 
         return Task.CompletedTask;
