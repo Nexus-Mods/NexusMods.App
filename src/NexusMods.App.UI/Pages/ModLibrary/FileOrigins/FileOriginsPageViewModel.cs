@@ -142,6 +142,8 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
                 .Bind(out _fileOrigins)
                 .SubscribeWithErrorLogging().DisposeWith(d);
             
+            var serialDisposable = new SerialDisposable();
+            serialDisposable.DisposeWith(d);
             this.WhenAnyValue(vm => vm.SelectedModsObservable)
                 .Where(observable => observable != null!)
                 .Select(observable =>
@@ -156,10 +158,9 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
 
                             // Add is only available if no mod is already added.
                             canAddMod.OnNext(hasSelection && SelectedModsCollection.All(x => !x.IsModAddedToLoadout));
-                        })
-                        .DisposeWith(d);
+                        });
                 })
-                .SubscribeWithErrorLogging()
+                .SubscribeWithErrorLogging(disposable => serialDisposable.Disposable = disposable)
                 .DisposeWith(d);
         });
     }
