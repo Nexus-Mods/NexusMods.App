@@ -19,7 +19,7 @@ public partial class TopBarView : ReactiveUserControl<ITopBarViewModel>
             this.BindCommand(ViewModel, vm => vm.HelpActionCommand, view => view.HelpActionButton)
                 .DisposeWith(d);
 
-            this.BindCommand(ViewModel, vm => vm.SettingsActionCommand, view => view.SettingsActionButton)
+            this.BindCommand(ViewModel, vm => vm.OpenSettingsCommand, view => view.SettingsActionButton)
                 .DisposeWith(d);
 
             this.BindCommand(ViewModel, vm => vm.LogoutCommand, view => view.UserButton)

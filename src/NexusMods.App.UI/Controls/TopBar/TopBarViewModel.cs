@@ -19,11 +19,26 @@ using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Controls.TopBar;
 
-[UsedImplicitly]
+[UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
 public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
 {
     private readonly ILoginManager _loginManager;
     private readonly ILogger<TopBarViewModel> _logger;
+
+    [Reactive] public string ActiveWorkspaceTitle { get; [UsedImplicitly] set; } = string.Empty;
+
+    public ReactiveCommand<Unit, Unit> LoginCommand { get; }
+    public ReactiveCommand<Unit, Unit> LogoutCommand { get; }
+
+    [Reactive] public bool IsLoggedIn { get; [UsedImplicitly] set; }
+    [Reactive] public bool IsPremium { get; [UsedImplicitly] set; }
+
+    private readonly ObservableAsPropertyHelper<IImage?> _avatar;
+    public IImage? Avatar => _avatar.Value;
+
+    [Reactive] public IAddPanelDropDownViewModel AddPanelDropDownViewModel { get; set; } = null!;
+    public ReactiveCommand<Unit, Unit> HelpActionCommand { get; }
+    public ReactiveCommand<NavigationInformation, Unit> OpenSettingsCommand { get; }
 
     public TopBarViewModel(
         IServiceProvider serviceProvider,
@@ -42,12 +57,12 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
 
         var workspaceController = window.WorkspaceController;
 
-        SettingsActionCommand = ReactiveCommand.Create<NavigationInformation>(info =>
+        OpenSettingsCommand = ReactiveCommand.Create<NavigationInformation>(info =>
         {
             var page = new PageData
             {
                 Context = new SettingsPageContext(),
-                FactoryId = SettingsPageFactory.StaticId
+                FactoryId = SettingsPageFactory.StaticId,
             };
 
             var behavior = workspaceController.GetOpenPageBehavior(page, info, Optional<PageIdBundle>.None);
@@ -62,42 +77,40 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
             overlayController.Enqueue(alphaWarningViewModel);
         });
 
+        var canLogin = this.WhenAnyValue(x => x.IsLoggedIn).Select(isLoggedIn => !isLoggedIn);
+        LoginCommand = ReactiveCommand.CreateFromTask(Login, canLogin);
+
+        var canLogout = this.WhenAnyValue(x => x.IsLoggedIn);
+        LogoutCommand = ReactiveCommand.CreateFromTask(Logout, canLogout);
+
+        _avatar = _loginManager.AvatarObservable
+            .OffUi()
+            .SelectMany(LoadImage)
+            .ToProperty(this, vm => vm.Avatar, scheduler: RxApp.MainThreadScheduler);
+
         this.WhenActivated(d =>
         {
-            var canLogin = this.WhenAnyValue(x => x.IsLoggedIn).Select(isLoggedIn => !isLoggedIn);
-            LoginCommand = ReactiveCommand.CreateFromTask(Login, canLogin).DisposeWith(d);
-
-            var canLogout = this.WhenAnyValue(x => x.IsLoggedIn);
-            LogoutCommand = ReactiveCommand.CreateFromTask(Logout, canLogout).DisposeWith(d);
-
             _loginManager.IsLoggedInObservable
                 .OnUI()
-                .SubscribeWithErrorLogging(logger, x => IsLoggedIn = x)
+                .BindToVM(this, vm => vm.IsLoggedIn)
                 .DisposeWith(d);
 
             _loginManager.IsPremiumObservable
                 .OnUI()
-                .SubscribeWithErrorLogging(logger, x => IsPremium = x)
-                .DisposeWith(d);
-
-            _loginManager.AvatarObservable
-                .WhereNotNull()
-                .OffUi()
-                .SelectMany(LoadImage)
-                .WhereNotNull()
-                .OnUI()
-                .SubscribeWithErrorLogging(logger, x => Avatar = x)
+                .BindToVM(this, vm => vm.IsPremium)
                 .DisposeWith(d);
 
             workspaceController.WhenAnyValue(controller => controller.ActiveWorkspace!.Title)
                 .Select(title => title.ToUpperInvariant())
-                .BindTo(this, vm => vm.ActiveWorkspaceTitle)
+                .BindToVM(this, vm => vm.ActiveWorkspaceTitle)
                 .DisposeWith(d);
         });
     }
 
-    private async Task<IImage?> LoadImage(Uri uri)
+    private async Task<IImage?> LoadImage(Uri? uri)
     {
+        if (uri is null) return null;
+
         try
         {
             var client = new HttpClient();
@@ -122,39 +135,4 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
         _logger.LogInformation("Logging out of Nexus Mods");
         await _loginManager.Logout();
     }
-
-    [Reactive] public bool ShowWindowControls { get; set; } = false;
-
-    [Reactive] public bool IsLoggedIn { get; set; }
-
-    [Reactive] public bool IsPremium { get; set; }
-
-    [Reactive] public IImage Avatar { get; set; } = Initializers.IImage;
-    [Reactive] public string ActiveWorkspaceTitle { get; set; } = string.Empty;
-
-    [Reactive] public IAddPanelDropDownViewModel AddPanelDropDownViewModel { get; set; } = null!;
-
-    [Reactive] public ReactiveCommand<Unit, Unit> LoginCommand { get; set; } = Initializers.EnabledReactiveCommand;
-
-    [Reactive] public ReactiveCommand<Unit, Unit> LogoutCommand { get; set; } = Initializers.DisabledReactiveCommand;
-
-    [Reactive] public ReactiveCommand<Unit, Unit> MinimizeCommand { get; set; } = Initializers.DisabledReactiveCommand;
-
-    [Reactive]
-    public ReactiveCommand<Unit, Unit> ToggleMaximizeCommand { get; set; } = Initializers.DisabledReactiveCommand;
-
-    [Reactive] public ReactiveCommand<Unit, Unit> CloseCommand { get; set; } = Initializers.DisabledReactiveCommand;
-
-    public ReactiveCommand<Unit, Unit> HistoryActionCommand { get; } =
-        ReactiveCommand.Create(() => { }, Observable.Return(false));
-
-    public ReactiveCommand<Unit, Unit> UndoActionCommand { get; } =
-        ReactiveCommand.Create(() => { }, Observable.Return(false));
-
-    public ReactiveCommand<Unit, Unit> RedoActionCommand { get; } =
-        ReactiveCommand.Create(() => { }, Observable.Return(false));
-
-    public ReactiveCommand<Unit, Unit> HelpActionCommand { get; }
-
-    public ReactiveCommand<NavigationInformation, Unit> SettingsActionCommand { get; }
 }
