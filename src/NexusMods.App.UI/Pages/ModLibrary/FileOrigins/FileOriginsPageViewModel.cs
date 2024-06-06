@@ -93,6 +93,15 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
         _gameDomain = loadout.Installation.Game.Domain;
 
         _fileOrigins = new ReadOnlyObservableCollection<IFileOriginEntryViewModel>([]);
+
+        var canAddMod = new Subject<bool>();
+        var canAddAdvancedMod = new Subject<bool>();
+        AddMod = ReactiveCommand.CreateFromTask(async cancellationToken => await DoAddModImpl(null, cancellationToken), canAddMod);
+        AddModAdvanced = ReactiveCommand.CreateFromTask(async cancellationToken =>
+        {
+            await DoAddModImpl(_provider.GetKeyedService<IModInstaller>("AdvancedManualInstaller"), cancellationToken);
+        }, canAddAdvancedMod);
+        
         this.WhenActivated(d =>
         {
             var workspaceController = GetWorkspaceController();
@@ -117,7 +126,7 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
                 }
             );
             
-            var entriesObservable = dlAnalysisRepo.Observable
+            dlAnalysisRepo.Observable
                 .ToObservableChangeSet()
                 .Filter(model => FilterDownloadAnalysisModel(model, game.Domain))
                 .OnUI()
@@ -130,40 +139,28 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
                         viewModCommand
                     )
                 )
-                .Bind(out _fileOrigins);
-        
-            entriesObservable.SubscribeWithErrorLogging().DisposeWith(d);
-        });
-        
-        this.WhenActivated(d =>
-        {
-            var canAddMod = new Subject<bool>();
-            var canAddAdvancedMod = new Subject<bool>();
-            this.WhenAnyValue(view => view.SelectedModsObservable)
-                .Where(obs => obs != null!)
+                .Bind(out _fileOrigins)
+                .SubscribeWithErrorLogging().DisposeWith(d);
+            
+            this.WhenAnyValue(vm => vm.SelectedModsObservable)
+                .Where(observable => observable != null!)
                 .Select(observable =>
                 {
                     return observable
                         .WhenValueChanged(x => x.IsModAddedToLoadout)
                         .Select(_ => SelectedModsCollection.Count > 0)
                         .SubscribeWithErrorLogging(hasSelection =>
-                            {
-                                // Add (Advanced) is always available.
-                                canAddAdvancedMod.OnNext(hasSelection);
-                                
-                                // Add is only available if no mod is already added.
-                                canAddMod.OnNext(hasSelection && SelectedModsCollection.All(x => !x.IsModAddedToLoadout));
-                            }
-                        );
+                        {
+                            // Add (Advanced) is always available.
+                            canAddAdvancedMod.OnNext(hasSelection);
+
+                            // Add is only available if no mod is already added.
+                            canAddMod.OnNext(hasSelection && SelectedModsCollection.All(x => !x.IsModAddedToLoadout));
+                        })
+                        .DisposeWith(d);
                 })
-                .Subscribe()
+                .SubscribeWithErrorLogging()
                 .DisposeWith(d);
-            
-            AddMod = ReactiveCommand.CreateFromTask(async (token) => await DoAddModImpl(null, token), canAddMod);
-            AddModAdvanced = ReactiveCommand.CreateFromTask(async (token) =>
-            {
-                await DoAddModImpl(_provider.GetKeyedService<IModInstaller>("AdvancedManualInstaller"), token);
-            }, canAddAdvancedMod);
         });
     }
 
