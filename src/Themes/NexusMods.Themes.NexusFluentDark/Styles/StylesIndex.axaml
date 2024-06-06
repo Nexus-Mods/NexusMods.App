@@ -30,7 +30,6 @@
     <StyleInclude Source="/Styles/UserControls/Spinner/SpinnerStyles.axaml"/>
     <StyleInclude Source="/Styles/UserControls/GameWidget/GameWidgetStyles.axaml"/>
     <StyleInclude Source="/Styles/UserControls/TopBar/TopBarStyles.axaml"/>
-    <StyleInclude Source="/Styles/UserControls/LeftPane/LeftPaneDownloadStyles.axaml"/>
     <StyleInclude Source="/Styles/UserControls/MessageBox/MessageBoxStyles.axaml"/>
     <StyleInclude Source="/Styles/UserControls/LoginDialog/LoginDialogStyles.axaml"/>
     <StyleInclude Source="/Styles/UserControls/WorkspaceSystem/AddPanelButtonStyles.axaml"/>
