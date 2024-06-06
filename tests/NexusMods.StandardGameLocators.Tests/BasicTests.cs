@@ -33,16 +33,16 @@ public class BasicTests(IGameRegistry registry)
     {
         Skip.If(!OperatingSystem.IsWindows());
 
-
+        // TODO: Enable XboxGamePass back again when it's supported 
         registry.Installations.Values
-            .Should().HaveCount(6)
+            .Should().HaveCount(5)
             .And.Satisfy(
                 eaInstallation => eaInstallation.Store == GameStore.EADesktop,
                 epicInstallation => epicInstallation.Store == GameStore.EGS,
                 originInstallation => originInstallation.Store == GameStore.Origin,
                 gogInstallation => gogInstallation.Store == GameStore.GOG,
-                steamInstallation => steamInstallation.Store == GameStore.Steam,
-                xboxInstallation => xboxInstallation.Store == GameStore.XboxGamePass
+                steamInstallation => steamInstallation.Store == GameStore.Steam
+                // xboxInstallation => xboxInstallation.Store == GameStore.XboxGamePass
             );
     }
 
