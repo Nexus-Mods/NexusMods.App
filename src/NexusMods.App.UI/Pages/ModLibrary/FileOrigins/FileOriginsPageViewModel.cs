@@ -69,6 +69,7 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
 
     public LoadoutId LoadoutId { get; private set; }
     private readonly GameDomain _gameDomain;
+    private readonly IArchiveInstaller _archiveInstaller;
     
     public FileOriginsPageViewModel(
         LoadoutId loadoutId,
@@ -80,7 +81,7 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
         _provider = serviceProvider;
         _fileOriginRegistry = serviceProvider.GetRequiredService<IFileOriginRegistry>();
         _osInterop = serviceProvider.GetRequiredService<IOSInterop>();
-        var archiveInstaller = serviceProvider.GetRequiredService<IArchiveInstaller>();
+        _archiveInstaller = serviceProvider.GetRequiredService<IArchiveInstaller>();
         var dlAnalysisRepo = serviceProvider.GetRequiredService<IRepository<DownloadAnalysis.Model>>();
 
         TabTitle = Language.FileOriginsPageTitle;
@@ -95,10 +96,11 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
         _fileOrigins = new ReadOnlyObservableCollection<IFileOriginEntryViewModel>([]);
 
         var canAddMod = new Subject<bool>();
+        var advancedInstaller = _provider.GetKeyedService<IModInstaller>("AdvancedManualInstaller");
         AddMod = ReactiveCommand.CreateFromTask(async cancellationToken => await DoAddModImpl(null, cancellationToken), canAddMod);
         AddModAdvanced = ReactiveCommand.CreateFromTask(async cancellationToken =>
         {
-            await DoAddModImpl(_provider.GetKeyedService<IModInstaller>("AdvancedManualInstaller"), cancellationToken);
+            await DoAddModImpl(advancedInstaller, cancellationToken);
         }, canAddMod);
         
         this.WhenActivated(d =>
@@ -132,10 +134,11 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
                 .Transform(fileOrigin => (IFileOriginEntryViewModel)
                     new FileOriginEntryViewModel(
                         conn,
-                        archiveInstaller,
                         LoadoutId,
                         fileOrigin,
-                        viewModCommand
+                        viewModCommand,
+                        ReactiveCommand.CreateFromTask(async () => await AddUsingInstallerToLoadout(fileOrigin, null, default(CancellationToken))),
+                        ReactiveCommand.CreateFromTask(async () => await AddUsingInstallerToLoadout(fileOrigin, advancedInstaller, default(CancellationToken)))
                     )
                 )
                 .Bind(out _fileOrigins)
@@ -203,7 +206,12 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
     private async Task DoAddModImpl(IModInstaller? installer, CancellationToken token)
     {
         foreach (var mod in SelectedModsCollection)
-            await mod.AddUsingInstallerToLoadout(installer, token);
+            await AddUsingInstallerToLoadout(mod.FileOrigin, installer, token);
+    }
+
+    private async Task AddUsingInstallerToLoadout(DownloadAnalysis.Model fileOrigin, IModInstaller? installer, CancellationToken token)
+    {
+        await _archiveInstaller.AddMods(LoadoutId, fileOrigin, installer, token);
     }
 
     private async Task<IEnumerable<IStorageFile>> PickModFiles(IStorageProvider storageProvider)

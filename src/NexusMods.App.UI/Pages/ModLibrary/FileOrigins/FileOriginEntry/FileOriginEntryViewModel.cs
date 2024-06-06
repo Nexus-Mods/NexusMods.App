@@ -2,12 +2,10 @@ using System.Reactive;
 using System.Reactive.Linq;
 using Humanizer;
 using NexusMods.Abstractions.FileStore.Downloads;
-using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.App.UI.Controls.Navigation;
-using NexusMods.App.UI.Pages.LoadoutGrid;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.Downloaders.Tasks.State;
 using NexusMods.Paths;
@@ -21,7 +19,6 @@ public class FileOriginEntryViewModel : AViewModel<IFileOriginEntryViewModel>, I
     public string Version { get; }
     public Size Size { get; }
     public DateTime ArchiveDate { get; }
-    public DownloadAnalysis.Model FileOrigin { get; }
 
     private readonly ObservableAsPropertyHelper<bool> _isModAddedToLoadout;
     public bool IsModAddedToLoadout => _isModAddedToLoadout.Value;
@@ -34,22 +31,23 @@ public class FileOriginEntryViewModel : AViewModel<IFileOriginEntryViewModel>, I
 
     private readonly ObservableAsPropertyHelper<string> _displayLastInstalledDate;
     public string DisplayLastInstalledDate => _displayLastInstalledDate.Value;
+    public DownloadAnalysis.Model FileOrigin { get; }
     public ReactiveCommand<NavigationInformation, Unit> ViewModCommand { get; }
     public ReactiveCommand<Unit, Unit> AddToLoadoutCommand { get; }
-
-    private readonly IArchiveInstaller _archiveInstaller;
-    private readonly LoadoutId _loadoutId;
+    public ReactiveCommand<Unit, Unit> AddAdvancedToLoadoutCommand { get; }
 
     public FileOriginEntryViewModel(
         IConnection conn,
-        IArchiveInstaller archiveInstaller,
         LoadoutId loadoutId,
         DownloadAnalysis.Model fileOrigin,
-        ReactiveCommand<NavigationInformation, Unit> viewModCommand)
+        ReactiveCommand<NavigationInformation, Unit> viewModCommand,
+        ReactiveCommand<Unit, Unit> addModToLoadoutCommand,
+        ReactiveCommand<Unit, Unit> addAdvancedToLoadoutCommand)
     {
-        _archiveInstaller = archiveInstaller;
-        _loadoutId = loadoutId;
         FileOrigin = fileOrigin;
+        ViewModCommand = viewModCommand;
+        AddToLoadoutCommand = addModToLoadoutCommand;
+        AddAdvancedToLoadoutCommand = addAdvancedToLoadoutCommand;
         Name = fileOrigin.TryGet(DownloaderState.FriendlyName, out var friendlyName) && friendlyName != "Unknown"
             ? friendlyName
             : fileOrigin.SuggestedName;
@@ -65,7 +63,6 @@ public class FileOriginEntryViewModel : AViewModel<IFileOriginEntryViewModel>, I
             : "-";
         
         ArchiveDate = fileOrigin.GetCreatedAt();
-        AddToLoadoutCommand = ReactiveCommand.CreateFromTask(async () => await AddToLoadout(CancellationToken.None));
         
         var loadout = conn.Db.Get<Loadout.Model>(loadoutId.Value);
 
@@ -97,14 +94,5 @@ public class FileOriginEntryViewModel : AViewModel<IFileOriginEntryViewModel>, I
             .Merge(interval.Select(_ => LastInstalledDate))
             .Select(date => date.Equals(DateTime.MinValue) ? "-" : date.Humanize())
             .ToProperty(this, vm => vm.DisplayLastInstalledDate, scheduler: RxApp.MainThreadScheduler);
-
-        ViewModCommand = viewModCommand;
-    }
-    
-    public async Task AddToLoadout(CancellationToken token) => await AddUsingInstallerToLoadout(null, token);
-
-    public async Task AddUsingInstallerToLoadout(IModInstaller? installer, CancellationToken token)
-    {
-        await _archiveInstaller.AddMods(_loadoutId, FileOrigin, installer, token);
     }
 }
