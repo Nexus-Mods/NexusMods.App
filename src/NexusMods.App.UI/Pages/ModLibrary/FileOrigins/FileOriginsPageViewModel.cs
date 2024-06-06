@@ -95,12 +95,11 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
         _fileOrigins = new ReadOnlyObservableCollection<IFileOriginEntryViewModel>([]);
 
         var canAddMod = new Subject<bool>();
-        var canAddAdvancedMod = new Subject<bool>();
         AddMod = ReactiveCommand.CreateFromTask(async cancellationToken => await DoAddModImpl(null, cancellationToken), canAddMod);
         AddModAdvanced = ReactiveCommand.CreateFromTask(async cancellationToken =>
         {
             await DoAddModImpl(_provider.GetKeyedService<IModInstaller>("AdvancedManualInstaller"), cancellationToken);
-        }, canAddAdvancedMod);
+        }, canAddMod);
         
         this.WhenActivated(d =>
         {
@@ -150,16 +149,8 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
                 .Select(observable =>
                 {
                     return observable
-                        .WhenValueChanged(x => x.IsModAddedToLoadout)
                         .Select(_ => SelectedModsCollection.Count > 0)
-                        .SubscribeWithErrorLogging(hasSelection =>
-                        {
-                            // Add (Advanced) is always available.
-                            canAddAdvancedMod.OnNext(hasSelection);
-
-                            // Add is only available if no mod is already added.
-                            canAddMod.OnNext(hasSelection && SelectedModsCollection.All(x => !x.IsModAddedToLoadout));
-                        });
+                        .SubscribeWithErrorLogging(hasSelection => canAddMod.OnNext(hasSelection));
                 })
                 .SubscribeWithErrorLogging(disposable => serialDisposable.Disposable = disposable)
                 .DisposeWith(d);
