@@ -1,12 +1,7 @@
-using System.Reactive;
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using Avalonia.Controls;
 using Avalonia.ReactiveUI;
-using DynamicData;
-using DynamicData.Binding;
 using NexusMods.App.UI.Helpers;
-using NexusMods.App.UI.Pages.ModLibrary.FileOriginEntry;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Pages.ModLibrary;
