@@ -142,6 +142,7 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
                 .Bind(out _fileOrigins)
                 .SubscribeWithErrorLogging().DisposeWith(d);
             
+            // Note(sewer) This ensures inner is auto unsubscribed as new `SelectedModsObservable` items arrive.
             var serialDisposable = new SerialDisposable();
             serialDisposable.DisposeWith(d);
             this.WhenAnyValue(vm => vm.SelectedModsObservable)
