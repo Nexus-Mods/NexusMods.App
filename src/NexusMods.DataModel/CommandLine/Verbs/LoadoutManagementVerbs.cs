@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Cli;
 using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.FileStore.ArchiveMetadata;
@@ -191,13 +192,16 @@ public static class LoadoutManagementVerbs
 
     [Verb("list-mods", "Lists the mods in a loadout")]
     private static async Task<int> ListMods([Injected] IRenderer renderer,
+        [Injected] ILogger<IArchiveInstaller> logger,
         [Option("l", "loadout", "Loadout to load")] Loadout.Model loadout,
         [Injected] CancellationToken token)
     {
         var rows = loadout.Mods
             .Select(mod => new object[] { mod.Name, mod.Files.Count })
             .ToList();
-
+        var modNames = loadout.Mods.Select(m => m.Name);
+        logger.LogDebug("Mods: {Names}", modNames);
+        
         await renderer.Table(["Name", "File Count"], rows);
         return 0;
     }

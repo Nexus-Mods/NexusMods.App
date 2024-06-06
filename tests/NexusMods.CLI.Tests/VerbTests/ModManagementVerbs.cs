@@ -1,6 +1,4 @@
 using FluentAssertions;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using NexusMods.ProxyConsole.Abstractions.Implementations;
 
 namespace NexusMods.CLI.Tests.VerbTests;
