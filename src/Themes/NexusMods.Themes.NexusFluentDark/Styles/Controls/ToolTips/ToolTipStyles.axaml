@@ -2,9 +2,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:extensions="clr-namespace:NexusMods.Themes.NexusFluentDark.Extensions">
     <Design.PreviewWith>
-        <Border Padding="20">
+        <Border Padding="20" Classes="Mid">
             <!-- Add Controls for Previewer Here -->
-            <Button>
+            <Button ClipToBounds="False">
                 <ToolTip.Tip>
                     <TextBlock Text="This is a tooltip" />
                 </ToolTip.Tip>
@@ -19,14 +19,19 @@
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
         <Setter Property="Padding" Value="12,8" />
+        <Setter Property="ClipToBounds" Value="False" />
 
-        <Style Selector="^ /template/  Border#PART_LayoutRoot">
-            <Setter Property="BoxShadow">
-                <extensions:BoxShadow
-                    BlurRadius="5" ShadowColor="{StaticResource BrandTranslucentDark500}"
-                    VerticalLength1="3" BlurRadius1="4" ShadowColor1="{StaticResource BrandTranslucentDark100}"
-                    VerticalLength2="2" BlurRadius2="4" ShadowColor2="{StaticResource BrandTranslucentDark100}" />
-            </Setter>
-        </Style>
+        <!-- BoxShadow doesn't is getting clipped, even with ClipToBounds="False" on everything -->
+        <!-- <Style Selector="^ /template/  Border#PART_LayoutRoot"> -->
+        <!--     <Setter Property="ClipToBounds" Value="False" /> -->
+        <!--     <Setter Property="BoxShadow"> -->
+        <!--         <extensions:BoxShadow -->
+        <!--             BlurRadius="5" VerticalLength="3" ShadowColor="{StaticResource BrandTranslucentDark500}" -->
+        <!--             VerticalLength1="1" BlurRadius1="18" ShadowColor1="{StaticResource BrandTranslucentDark100}" -->
+        <!--             VerticalLength2="6" BlurRadius2="10" ShadowColor2="{StaticResource BrandTranslucentDark100}" /> -->
+        <!--     </Setter> -->
+        <!-- </Style> -->
     </Style>
+    
+    
 </Styles>

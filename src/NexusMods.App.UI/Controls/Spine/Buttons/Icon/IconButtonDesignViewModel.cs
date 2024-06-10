@@ -7,6 +7,7 @@ public class IconButtonDesignViewModel : IconButtonViewModel
     public IconButtonDesignViewModel()
     {
         Click = ReactiveCommand.Create(() => { IsActive = !IsActive; });
+        Name = "Home";
     }
 
 }
