@@ -15,23 +15,26 @@
 
     <!-- Add Styles Here -->
     <Style Selector="ToolTip">
-        <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
         <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
-        <Setter Property="Padding" Value="12,8" />
-        <Setter Property="ClipToBounds" Value="False" />
+        <!-- NOTE(Al12rs) ClipToBounds doesn't work on ToolTips, make outer container bigger and transparent instead -->
+        <Setter Property="Padding" Value="18" />
+        <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
+        
+        <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="ClipToBounds" Value="False" />
+            <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
+            <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
+            <Setter Property="Padding" Value="12,8" />
 
-        <!-- BoxShadow doesn't is getting clipped, even with ClipToBounds="False" on everything -->
-        <!-- <Style Selector="^ /template/  Border#PART_LayoutRoot"> -->
-        <!--     <Setter Property="ClipToBounds" Value="False" /> -->
-        <!--     <Setter Property="BoxShadow"> -->
-        <!--         <extensions:BoxShadow -->
-        <!--             BlurRadius="5" VerticalLength="3" ShadowColor="{StaticResource BrandTranslucentDark500}" -->
-        <!--             VerticalLength1="1" BlurRadius1="18" ShadowColor1="{StaticResource BrandTranslucentDark100}" -->
-        <!--             VerticalLength2="6" BlurRadius2="10" ShadowColor2="{StaticResource BrandTranslucentDark100}" /> -->
-        <!--     </Setter> -->
-        <!-- </Style> -->
+            <Setter Property="BoxShadow">
+                <extensions:BoxShadow
+                    VerticalLength="3"  BlurRadius="5"   ShadowColor="{StaticResource BrandTranslucentDark500}"
+                    VerticalLength1="1" BlurRadius1="18" ShadowColor1="{StaticResource BrandTranslucentDark100}"
+                    VerticalLength2="6" BlurRadius2="10" ShadowColor2="{StaticResource BrandTranslucentDark100}" />
+            </Setter>
+
+        </Style>
     </Style>
-    
-    
+
+
 </Styles>
