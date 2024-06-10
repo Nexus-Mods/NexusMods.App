@@ -133,7 +133,7 @@
                 <TextBlock Grid.Row="3"
                            HorizontalAlignment="Center"
                            VerticalAlignment="Center"
-                           Margin="24"
+                           Margin="24,68,24,24"
                            Classes="HeadingXSSemi ForegroundWeak"
                            IsVisible="False"
                            Text="{x:Static resources:Language.InProgress_NoDownloadsTextBlock}"
