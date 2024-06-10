@@ -14,15 +14,12 @@ using NexusMods.Abstractions.Games.Trees;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Loadouts.Files;
-using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
-using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.Extensions.BCL;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Models;
-using NexusMods.MnemonicDB.Abstractions.ReadOnlys;
 using NexusMods.Paths;
 using File = NexusMods.Abstractions.Loadouts.Files.File;
 
@@ -188,17 +185,17 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                     toDelete.Add(KeyValuePair.Create(gamePath, entry));
                     continue;
                 }
-                else if (file.Contains(StoredFile.Hash))
+                else if (file.TryGetAsStoredFile(out var storedFile))
                 {
-                    // StoredFile files are special cased so we can batch them up and extract them all at once.
+                    // StoredFile files are special cased, so we can batch them up and extract them all at once.
                     // Don't add toExtract to the results yet as we'll need to get the modified file times
                     // after we extract them
-                    if (file.Get(StoredFile.Hash) == entry.Hash)
+                    if (storedFile.Value.Hash == entry.Hash)
                         continue;
 
-                    toExtract.Add(KeyValuePair.Create(entry.Path, file.Remap<StoredFile.ReadOnly>()));
+                    toExtract.Add(KeyValuePair.Create(entry.Path, storedFile.Value));
                 }
-                else if (file.IsGeneratedFile())
+                else if (file.TryGetAsGeneratedFile(out _))
                 {
                     toWrite.Add(KeyValuePair.Create(entry.Path, file));
                 }
@@ -241,7 +238,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             {
                 toExtract.Add(KeyValuePair.Create(absolutePath, storedFile!.Value));
             }
-            else if (file.IsGeneratedFile())
+            else if (file.TryGetAsGeneratedFile(out _))
             {
                 toWrite.Add(KeyValuePair.Create(absolutePath, file));
             }
@@ -287,7 +284,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         var isUnix = _os.IsUnix();
         foreach (var (path, entry) in toExtract)
         {
-            resultingItems[entry.To] = new DiskStateEntry
+            resultingItems[entry.File.To] = new DiskStateEntry
             {
                 Hash = entry.Hash,
                 Size = entry.Size,
@@ -420,7 +417,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             ModId overridesModId;
             using var tx = Connection.BeginTransaction();
             
-            if (overridesMod == null)
+            if (overridesMod.IsValid())
             {
                 var newOverrideMod = new Mod.New(tx)
                 {

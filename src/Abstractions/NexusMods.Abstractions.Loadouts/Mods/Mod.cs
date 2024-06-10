@@ -36,11 +36,11 @@ public partial class Mod : IModelDefinition
     /// Revision number of the mod.
     /// </summary>
     public static readonly ULongAttribute Revision = new(Namespace, nameof(Revision));
-    
+
     /// <summary>
     /// The version of the mod.
     /// </summary>
-    public static readonly StringAttribute Version = new(Namespace, nameof(Version));
+    public static readonly StringAttribute Version = new(Namespace, nameof(Version)) { IsOptional = true };
     
     /// <summary>
     /// The loadout this mod is part of.
@@ -66,8 +66,8 @@ public partial class Mod : IModelDefinition
     /// The category of the mod.
     /// </summary>
     public static readonly EnumAttribute<ModCategory> Category = new(Namespace, nameof(Category)) { IsIndexed = true };
-    
-    
+
+
     /// <summary>
     /// Sort this mod after another mod, mostly used as a placeholder until we figure out better
     /// sorting mechanisms.
