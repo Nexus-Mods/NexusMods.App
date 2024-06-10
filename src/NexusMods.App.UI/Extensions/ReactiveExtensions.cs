@@ -1,8 +1,10 @@
 ﻿using System.Linq.Expressions;
 using System.Reactive.Linq;
+using System.Windows.Input;
 using Avalonia;
 using DynamicData;
 using DynamicData.Alias;
+using ReactiveUI;
 
 namespace NexusMods.App.UI.Extensions;
 
@@ -73,4 +75,49 @@ public static class ReactiveExtensions
     {
         return obs.BindToClasses(target, "Active");
     }
+
+
+    /// <summary>
+    /// Prefer this over `InvokeCommand` for better type checking.
+    /// A utility method that will pipe an Observable to an ICommand (i.e.
+    /// it will first call its CanExecute with the provided value, then if
+    /// the command can be executed, Execute() will be called).
+    /// </summary>
+    /// <typeparam name="T">The type.</typeparam>
+    /// <typeparam name="TResult">The result type.</typeparam>
+    /// <param name="item">The source observable to pipe into the command.</param>
+    /// <param name="command">The command to be executed.</param>
+    /// <returns>An object that when disposes, disconnects the Observable
+    /// from the command.</returns>
+    public static IDisposable InvokeReactiveCommand<T, TResult>(
+        this IObservable<T> item,
+        ReactiveCommandBase<T, TResult>? command)
+    {
+        return item.InvokeCommand(command, cmd => cmd);
+    }
+    
+    
+    /// <summary>
+    /// Prefer this over `InvokeCommand` for better type checking.
+    /// A utility method that will pipe an Observable to an ICommand (i.e.
+    /// it will first call its CanExecute with the provided value, then if
+    /// the command can be executed, Execute() will be called).
+    /// </summary>
+    /// <typeparam name="T">The type.</typeparam>
+    /// <typeparam name="TResult">The result type.</typeparam>
+    /// <typeparam name="TTarget">The target type.</typeparam>
+    /// <param name="item">The source observable to pipe into the command.</param>
+    /// <param name="target">The root object which has the Command.</param>
+    /// <param name="commandProperty">The expression to reference the Command.</param>
+    /// <returns>An object that when disposes, disconnects the Observable
+    /// from the command.</returns>
+    public static IDisposable InvokeReactiveCommand<T, TResult, TTarget>(
+        this IObservable<T> item, 
+        TTarget? target, 
+        Expression<Func<TTarget, ReactiveCommandBase<T, TResult>?>> commandProperty)
+        where TTarget : class
+    {
+        return item.InvokeCommand(target, commandProperty);
+    }
+        
 }
