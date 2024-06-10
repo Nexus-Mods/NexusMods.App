@@ -2,6 +2,7 @@
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
 
 namespace NexusMods.StandardGameLocators;
@@ -36,16 +37,16 @@ public class ManuallyAddedLocator : IGameLocator
     public async Task<(EntityId, GameInstallation)> Add(IGame game, Version version, AbsolutePath path)
     {
         using var tx = _store.Value.BeginTransaction();
-        var ent = new ManuallyAddedGame.ReadOnly(tx)
+        var ent = new ManuallyAddedGame.New(tx)
         {
             GameDomain = game.Domain,
             Version = version.ToString(),
             Path = path.ToString(),
         };
         var result = await tx.Commit();
-        
+        var addedGame = ent.Remap(result);
         var gameRegistry = _provider.GetRequiredService<IGameRegistry>();
-        var install = await gameRegistry.Register(game, new GameLocatorResult(path, GameStore.ManuallyAdded, ent, version), this);
+        var install = await gameRegistry.Register(game, new GameLocatorResult(path, GameStore.ManuallyAdded, addedGame, version), this);
         var newId = result[ent.Id];
         return (newId, install);
     }
@@ -55,15 +56,13 @@ public class ManuallyAddedLocator : IGameLocator
     /// </summary>
     public async Task Remove(EntityId id)
     {
-        var ent = _store.Value.Db.Get<ManuallyAddedGame.Model>(id);
+        var ent = _store.Value.Db.Get<ManuallyAddedGame.ReadOnly>(id);
         if (!ent.Contains(ManuallyAddedGame.GameDomain))
             throw new ArgumentOutOfRangeException(nameof(id), "The id must be a valid 'ManuallyAddedGame'");
 
         using var tx = _store.Value.BeginTransaction();
 
-        ManuallyAddedGame.GameDomain.Retract(ent);
-        ManuallyAddedGame.Path.Retract(ent);
-        ManuallyAddedGame.Version.Retract(ent);
+        tx.Delete(id, false);
         
         await tx.Commit();
     }
@@ -71,11 +70,9 @@ public class ManuallyAddedLocator : IGameLocator
     /// <inheritdoc />
     public IEnumerable<GameLocatorResult> Find(ILocatableGame game)
     {
-        var db = _store.Value.Db;
-        var allGames = db.Find(ManuallyAddedGame.GameDomain)
-            .Select(g => db.Get<ManuallyAddedGame.Model>(g));
-        var games = allGames.Where(g => g.GameDomain == game.Domain);
-        return games.Select(g => new GameLocatorResult(_fileSystem.FromUnsanitizedFullPath(g.Path), 
-            GameStore.ManuallyAdded, g, Version.Parse(g.Version)));
+        var games = ManuallyAddedGame.FindByGameDomain(_store.Value.Db, game.Domain)
+            .Select(g => new GameLocatorResult(_fileSystem.FromUnsanitizedFullPath(g.Path), 
+                GameStore.ManuallyAdded, g, Version.Parse(g.Version)));
+        return games;
     }
 }

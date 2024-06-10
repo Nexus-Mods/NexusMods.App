@@ -12,6 +12,7 @@ using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.Query;
 
 namespace NexusMods.DataModel.Diagnostics;
 
@@ -43,14 +44,18 @@ internal sealed class DiagnosticManager : IDiagnosticManager
             var existingObservable = _observableCache.Lookup(loadoutId);
             if (existingObservable.HasValue) return existingObservable.Value;
 
-            var connectableObservable = 
-                _loadoutRepository.Revisions(loadoutId.Value)
+            var connectableObservable = _connection.ObserveDatoms(loadoutId)
                 .Throttle(dueTime: TimeSpan.FromMilliseconds(250))
-                .SelectMany(async loadout =>
+                .SelectMany(async _ =>
                 {
+                    var db = _connection.Db;
+                    var loadout = Loadout.Load(db, loadoutId);
                     try
                     {
                         // TODO: cancellation token
+                        // TODO: optimize this a bit so we don't load the model twice, we have the datoms above, we should
+                        // be able to use them
+
                         var cancellationToken = CancellationToken.None;
                         return await GetLoadoutDiagnostics(loadout, cancellationToken);
                     }
@@ -61,7 +66,7 @@ internal sealed class DiagnosticManager : IDiagnosticManager
                     }
                 })
                 .Replay(bufferSize: 1);
-
+            
             _compositeDisposable.Add(connectableObservable.Connect());
             _observableCache.Edit(updater => updater.AddOrUpdate(connectableObservable, loadoutId));
             return connectableObservable;

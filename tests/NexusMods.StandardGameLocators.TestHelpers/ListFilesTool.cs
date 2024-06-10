@@ -12,7 +12,7 @@ public class ListFilesTool : ITool
 
     public async Task Execute(Loadout.ReadOnly loadout, CancellationToken cancellationToken)
     {
-        var listPath = loadout.Installation.LocationsRegister[LocationId.Game];
+        var listPath = loadout.InstallationInstance.LocationsRegister[LocationId.Game];
         var outPath = GeneratedFilePath.Combine(listPath);
 
         var lines = listPath.EnumerateFiles()

@@ -21,7 +21,7 @@ public class ToolTests : ADataModelTest<ToolTests>
     public async Task CanRunTools()
     {
         await AddMods(BaseLoadout, Data7ZLzma2, "Mod1");
-        var gameFolder = BaseLoadout.Installation.LocationsRegister[LocationId.Game];
+        var gameFolder = BaseLoadout.InstallationInstance.LocationsRegister[LocationId.Game];
 
         gameFolder.Combine("toolFiles.txt").FileExists.Should().BeFalse("tool should not have run yet");
         gameFolder.Combine("rootFile.txt").FileExists.Should().BeFalse("loadout has not yet been applied");
@@ -33,7 +33,7 @@ public class ToolTests : ADataModelTest<ToolTests>
         gameFolder.Combine("rootFile.txt").FileExists.Should().BeTrue("loadout has been automatically applied");
         
         Refresh(ref BaseLoadout);
-        var generatedFile = BaseLoadout.Files
+        var generatedFile = BaseLoadout.Mods.SelectMany(m => m.Files)
             .FirstOrDefault(f => f.To == ListFilesTool.GeneratedFilePath);
 
         // Disabled until we rework generated files
