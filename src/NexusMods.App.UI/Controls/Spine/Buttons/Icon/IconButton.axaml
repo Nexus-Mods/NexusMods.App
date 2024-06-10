@@ -17,7 +17,7 @@
     </Design.DataContext>
 
     <Button
-        Classes="Spine Icon Add"
+        Classes="IconButton Add"
         Height="64"
         Width="64"
         x:Name="Button">
@@ -27,7 +27,8 @@
         <Button.Template>
             <ControlTemplate>
                 <Grid>
-                    <icons:UnifiedIcon Classes="HelpCircle"
+                    <icons:UnifiedIcon x:Name="Icon"
+                                       Classes="HelpCircle"
                                        Size="20"
                                        HorizontalAlignment="Center"
                                        Margin="0"
