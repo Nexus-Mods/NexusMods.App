@@ -2,32 +2,33 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
         xmlns:extensions="clr-namespace:NexusMods.Themes.NexusFluentDark.Extensions"
-        xmlns:icon="clr-namespace:NexusMods.App.UI.Controls.Spine.Buttons.Icon;assembly=NexusMods.App.UI">
+        xmlns:icon="clr-namespace:NexusMods.App.UI.Controls.Spine.Buttons.Icon;assembly=NexusMods.App.UI"
+        xmlns:image="clr-namespace:NexusMods.App.UI.Controls.Spine.Buttons.Image;assembly=NexusMods.App.UI">
     <Design.PreviewWith>
         <WrapPanel Width="500">
-            <Button Classes="Spine Icon Inactive Add IconTemplate" Margin="10" />
-            <Button Classes="Spine Icon Active Add IconTemplate" Margin="10" />
-            <Button Classes="Spine Icon Inactive Home IconTemplate" Margin="10" />
-            <Button Classes="Spine Icon Active Home IconTemplate" Margin="10" />
+            <Button Classes="IconButton Inactive Add IconTemplate" Margin="10" />
+            <Button Classes="IconButton Active Add IconTemplate" Margin="10" />
+            <Button Classes="IconButton Inactive Home IconTemplate" Margin="10" />
+            <Button Classes="IconButton Active Home IconTemplate" Margin="10" />
             <Button Classes="ImageButton Inactive ImageTemplate" Margin="10" />
             <Button Classes="ImageButton Active ImageTemplate" Margin="10" />
-            <icon:IconButton/>
+            <icon:IconButton />
+            <image:ImageButton />
         </WrapPanel>
     </Design.PreviewWith>
 
     <!-- Styles Definitions-->
 
-    <Style Selector="Button.Spine">
+    <Style Selector="Button.IconButton">
         <Setter Property="HorizontalAlignment" Value="Center" />
         <Setter Property="ClipToBounds" Value="False" />
         <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
-
 
         <Style Selector="^:pressed">
             <Setter Property="RenderTransform" Value="scale(0.9)" />
         </Style>
 
-        <Style Selector="^.Inactive Border">
+        <Style Selector="^.Inactive Border#IconButtonInnerBorder">
             <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
             <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
             <Setter Property="BorderThickness" Value="2" />
@@ -42,7 +43,7 @@
             </Setter>
         </Style>
 
-        <Style Selector="^.Inactive:pointerover Border">
+        <Style Selector="^.Inactive:pointerover Border#IconButtonInnerBorder">
             <Setter Property="Background">
                 <SolidColorBrush Color="{StaticResource NeutralStrong}"
                                  Opacity="{StaticResource OpacityModerate}" />
@@ -51,7 +52,7 @@
             <Setter Property="BorderThickness" Value="2" />
         </Style>
 
-        <Style Selector="^.Active Border">
+        <Style Selector="^.Active Border#IconButtonInnerBorder">
             <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
             <Setter Property="BorderBrush" Value="{StaticResource NeutralStrongBrush}" />
             <Setter Property="BorderThickness" Value="2" />
@@ -60,7 +61,7 @@
             </Setter>
         </Style>
 
-        <Style Selector="^.Active:pointerover Border">
+        <Style Selector="^.Active:pointerover Border#IconButtonInnerBorder">
             <Setter Property="Background">
                 <SolidColorBrush Color="{StaticResource NeutralStrong}"
                                  Opacity="{StaticResource Alpha50}" />
@@ -69,51 +70,49 @@
             <Setter Property="BorderThickness" Value="2" />
         </Style>
 
-        <!-- IconButton Styles -->
-        <Style Selector="^.Icon">
 
-            <!-- Set the template of the button for preview purposes, actual template is defined in `IconButton.axaml` -->
-            <Style Selector="^.IconTemplate">
-                <Setter Property="Template">
-                    <ControlTemplate>
-                        <Grid>
-                            <icons:UnifiedIcon Classes="HelpCircle"
-                                               Size="20"
-                                               HorizontalAlignment="Center"
-                                               Margin="0"
-                                               Padding="0"
-                                               VerticalAlignment="Center" />
-                            <Border Classes="Rounded-full"
-                                    Height="50"
-                                    Width="50">
-                            </Border>
-                        </Grid>
-                    </ControlTemplate>
-                </Setter>
-            </Style>
+        <!-- Set the template of the button for preview purposes, actual template is defined in `IconButton.axaml` -->
+        <Style Selector="^.IconTemplate">
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Grid>
+                        <icons:UnifiedIcon x:Name="Icon"
+                                           Classes="HelpCircle"
+                                           Size="20"
+                                           HorizontalAlignment="Center"
+                                           Margin="0"
+                                           Padding="0"
+                                           VerticalAlignment="Center" />
+                        <Border x:Name="IconButtonInnerBorder" 
+                                Classes="Rounded-full"
+                                Height="50"
+                                Width="50">
+                        </Border>
+                    </Grid>
+                </ControlTemplate>
+            </Setter>
+        </Style>
 
-            <Setter Property="CornerRadius" Value="{StaticResource Rounded-full}" />
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-full}" />
 
-            <Style Selector="^.Add /template/ icons|UnifiedIcon">
-                <Setter Property="Value">
-                    <icons:IconValue MdiValueSetter="mdi-plus" />
-                </Setter>
-            </Style>
+        <Style Selector="^.Add /template/ icons|UnifiedIcon#Icon">
+            <Setter Property="Value">
+                <icons:IconValue MdiValueSetter="mdi-plus" />
+            </Setter>
+        </Style>
 
-            <Style Selector="^.Home /template/ icons|UnifiedIcon">
-                <Setter Property="Value">
-                    <icons:IconValue MdiValueSetter="mdi-home" />
-                </Setter>
-            </Style>
+        <Style Selector="^.Home /template/ icons|UnifiedIcon#Icon">
+            <Setter Property="Value">
+                <icons:IconValue MdiValueSetter="mdi-home" />
+            </Setter>
+        </Style>
 
-            <Style Selector="^.Inactive icons|UnifiedIcon">
-                <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
-            </Style>
+        <Style Selector="^.Inactive icons|UnifiedIcon#Icon">
+            <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
+        </Style>
 
-            <Style Selector="^.Active icons|UnifiedIcon">
-                <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
-            </Style>
-
+        <Style Selector="^.Active icons|UnifiedIcon#Icon">
+            <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
         </Style>
 
     </Style>
@@ -127,7 +126,7 @@
         <Setter Property="Width" Value="48" />
         <Setter Property="Padding" Value="0" />
         <Setter Property="ClipToBounds" Value="False" />
-        
+
         <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="Transitions">
                 <Transitions>
@@ -149,7 +148,7 @@
             <Setter Property="Width" Value="48" />
             <Setter Property="ClipToBounds" Value="True" />
         </Style>
-        
+
         <Style Selector="^ icons|UnifiedIcon#Image">
             <Setter Property="VerticalAlignment" Value="Stretch" />
             <Setter Property="HorizontalAlignment" Value="Stretch" />
@@ -161,7 +160,7 @@
             <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="Height" Value="48" />
             <Setter Property="Width" Value="48" />
-            
+
             <Setter Property="Transitions">
                 <Transitions>
                     <BrushTransition Duration="0:0:0.2" Property="Fill" />
@@ -176,7 +175,7 @@
             <!-- NOTE(Al12rs): Add 1px to workaround image edges showing past the decoration border -->
             <Setter Property="Height" Value="49" />
             <Setter Property="Width" Value="49" />
-            
+
             <Setter Property="Transitions">
                 <Transitions>
                     <BrushTransition Duration="0:0:0.2" Property="BorderBrush" />
@@ -184,26 +183,26 @@
                 </Transitions>
             </Setter>
         </Style>
-        
+
 
         <Style Selector="^:pressed">
             <Setter Property="RenderTransform" Value="scale(0.9)" />
         </Style>
 
-        
+
         <Style Selector="^.Inactive">
-            
+
             <Style Selector="^ Rectangle#Mask">
                 <Setter Property="Fill" Value="{StaticResource BrandTranslucentDark200Brush}" />
             </Style>
-            
+
             <Style Selector="^ Border#DecorationBorder">
                 <!-- Border is 1px thicker than design to account that it is 1px larger -->
                 <Setter Property="BorderThickness" Value="2" />
                 <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
             </Style>
-            
-            
+
+
             <Style Selector="^:pointerover Rectangle#Mask">
                 <Setter Property="Fill" Value="{StaticResource SurfaceTranslucentHighBrush}" />
             </Style>
@@ -213,24 +212,24 @@
                 <Setter Property="BorderThickness" Value="3" />
                 <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentModerateBrush}" />
             </Style>
-            
+
         </Style>
 
         <Style Selector="^.Active">
-            
+
             <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
                 <Setter Property="BoxShadow">
                     <extensions:BoxShadow BlurRadius="10" SpreadRadius="0" ShadowColor="{StaticResource NeutralTranslucentWeak}" />
                 </Setter>
             </Style>
-            
+
             <Style Selector="^ Border#DecorationBorder">
                 <!-- Border is 1px thicker than design to account that it is 1px larger -->
                 <Setter Property="BorderThickness" Value="3" />
                 <Setter Property="BorderBrush" Value="{StaticResource NeutralStrongBrush}" />
             </Style>
-            
-            
+
+
             <Style Selector="^:pointerover Rectangle#Mask">
                 <Setter Property="Fill" Value="{StaticResource SurfaceTranslucentHighBrush}" />
             </Style>
@@ -240,7 +239,7 @@
                 <Setter Property="BorderThickness" Value="3" />
                 <Setter Property="BorderBrush" Value="{StaticResource NeutralStrongBrush}" />
             </Style>
-            
+
         </Style>
 
 

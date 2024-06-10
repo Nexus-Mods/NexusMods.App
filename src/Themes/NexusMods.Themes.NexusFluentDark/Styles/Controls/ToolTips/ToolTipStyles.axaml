@@ -22,9 +22,11 @@
         
         <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="ClipToBounds" Value="False" />
+            <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
             <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
             <Setter Property="Padding" Value="12,8" />
+            <Setter Property="Margin" Value="0" />
 
             <Setter Property="BoxShadow">
                 <extensions:BoxShadow
