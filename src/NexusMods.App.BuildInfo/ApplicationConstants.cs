@@ -19,12 +19,27 @@ public static class ApplicationConstants
                 var sha = GetSha(informationalVersion);
                 CommitHash = sha;
             }
-
-            Version = Assembly.GetExecutingAssembly().GetName().Version!;
         }
         catch (Exception)
         {
-            Version = new Version(0, 0, 1);
+            // ignored
+        }
+
+        var debugVersion = new Version(0, 0, 1);
+        if (CompileConstants.IsDebug)
+        {
+            Version = debugVersion;
+        }
+        else
+        {
+            try
+            {
+                Version = Assembly.GetExecutingAssembly().GetName().Version ?? debugVersion;
+            }
+            catch (Exception)
+            {
+                Version = debugVersion;
+            }
         }
     }
 

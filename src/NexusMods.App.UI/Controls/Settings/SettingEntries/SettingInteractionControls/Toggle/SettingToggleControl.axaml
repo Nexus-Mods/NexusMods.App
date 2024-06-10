@@ -6,9 +6,10 @@
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:settingEntries="clr-namespace:NexusMods.App.UI.Controls.Settings.SettingEntries"
     mc:Ignorable="d"
-    x:Class="NexusMods.App.UI.Controls.Settings.SettingEntries.SettingToggleControl">
+    x:Class="NexusMods.App.UI.Controls.Settings.SettingEntries.SettingToggleControl"
+    ClipToBounds="False">
 
-    <ToggleSwitch HorizontalAlignment="Center" x:Name="ToggleSwitch">
+    <ToggleSwitch Classes="Compact" HorizontalAlignment="Center" x:Name="ToggleSwitch">
         <ToggleSwitch.OnContent>
             <ContentControl />
         </ToggleSwitch.OnContent>

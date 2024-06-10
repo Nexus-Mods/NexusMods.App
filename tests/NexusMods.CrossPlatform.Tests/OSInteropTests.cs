@@ -55,6 +55,7 @@ public class OSInteropTests
             .ExecuteAsync(Arg.Is<Command>(command =>
                     command.TargetFilePath == targetFilePath &&
                     command.Arguments == arguments),
+                Arg.Any<bool>(),
                 Arg.Any<CancellationToken>()
             )
             .Returns(Task.FromResult(new CommandResult(0, DateTimeOffset.Now, DateTimeOffset.Now)));
@@ -66,6 +67,7 @@ public class OSInteropTests
             .Received(1)
             .ExecuteAsync(
                 Arg.Any<Command>(),
+                Arg.Any<bool>(),
                 Arg.Any<CancellationToken>()
             );
     }

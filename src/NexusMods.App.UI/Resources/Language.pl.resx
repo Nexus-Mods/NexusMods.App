@@ -160,7 +160,7 @@
 		<value>PRZEGLĄDARKA NIE URUCHOMIŁA SIĘ AUTOMATYCZNIE?</value>
 	</data>
 	<data name="NexusLoginOverlayView_Please_copy_url" xml:space="preserve">
-		<value>Proszę skopiować poniższy adres URL do okna przeglądarki. Obsługujemy przeglądarki Chrome, Safari, Firefox i Edge.</value>
+		<value>Proszę skopiować poniższy adres URL do okna przeglądarki.&#x0a;Obsługujemy przeglądarki Chrome, Safari, Firefox i Edge.</value>
 	</data>
 	<data name="DownloadCompleted_COMPLETED" xml:space="preserve">
 		<value>UKOŃCZONE</value>
@@ -472,5 +472,11 @@
     </data>
     <data name="LoadoutGridView__Remove" xml:space="preserve">
         <value>Usuń</value>
+    </data>
+    <data name="LoginMessageView_BodyTextBlock" xml:space="preserve">
+        <value>Zaloguj się na swoje konto Nexus Mods, aby łatwo pobierać mody z Nexus Mods.&#x0a;&#x0a;Nie musisz się logować, jeśli chcesz dodawać ręcznie mody z dysku.</value>
+    </data>
+    <data name="LoginMessageView_Title" xml:space="preserve">
+        <value>Zaloguj się, by rozpocząć</value>
     </data>
 </root>

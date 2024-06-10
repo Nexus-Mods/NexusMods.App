@@ -6,6 +6,7 @@ using Avalonia;
 using DynamicData;
 using DynamicData.Aggregation;
 using DynamicData.Kernel;
+using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Windows;
 using NexusMods.Extensions.BCL;
 using ReactiveUI;
@@ -204,8 +205,8 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
         return new PanelData
         {
             LogicalBounds = LogicalBounds,
-            Tabs = _tabs.Select(tab => tab.ToData()).ToArray(),
-            SelectedTabId = SelectedTabId
+            Tabs = _tabs.Select(tab => tab.ToData()).NotNull().ToArray(),
+            SelectedTabId = SelectedTabId,
         };
     }
 
@@ -237,6 +238,13 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
             }
         });
 
-        SelectedTabId = data.SelectedTabId;
+        if (data.Tabs.Length == 0)
+        {
+            AddDefaultTab();
+        }
+        else
+        {
+            SelectedTabId = data.SelectedTabId;
+        }
     }
 }

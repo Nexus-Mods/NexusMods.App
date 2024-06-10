@@ -25,9 +25,9 @@
                                Classes="BodyMDNormal ForegroundSubdued" />
                 </StackPanel>
 
-                <Border Grid.Column="1"
+                <Border Grid.Column="1" 
                         Margin="8,0,0,0">
-                    <reactiveUi:ViewModelViewHost x:Name="InteractionControl" />
+                    <reactiveUi:ViewModelViewHost x:Name="InteractionControl" ClipToBounds="False" />
                 </Border>
             </Grid>
 

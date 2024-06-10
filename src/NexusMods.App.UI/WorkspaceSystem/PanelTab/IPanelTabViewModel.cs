@@ -25,5 +25,5 @@ public interface IPanelTabViewModel : IViewModelInterface
     /// <summary>
     /// Transforms the current state of the tab into a serializable data format.
     /// </summary>
-    public TabData ToData();
+    public TabData? ToData();
 }

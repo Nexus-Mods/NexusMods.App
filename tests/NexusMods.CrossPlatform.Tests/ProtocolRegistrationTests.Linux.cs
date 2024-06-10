@@ -34,7 +34,7 @@ public class ProtocolRegistrationTests(IOSInterop interop)
         const string protocol = "foo";
         var processFactory = new FakeProcessFactory(0)
         {
-            StandardOutput = "no\n"
+            StandardOutput = "no\n",
         };
 
         var protocolRegistration = new ProtocolRegistrationLinux(processFactory, FileSystem.Shared, interop);

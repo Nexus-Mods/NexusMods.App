@@ -1,0 +1,103 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:workspaceSystem="clr-namespace:NexusMods.App.UI.WorkspaceSystem;assembly=NexusMods.App.UI">
+
+    <Design.PreviewWith>
+        <Border Padding="20" Height="300">
+            <StackPanel Orientation="Vertical" Classes="Spacing-1">
+                <ComboBox SelectedIndex="0" Classes="AddPanelDropDown">
+                    <ComboBoxItem Content="Item 1" />
+                    <ComboBoxItem Content="Item 2" />
+                </ComboBox>
+                <ComboBox SelectedIndex="0" Classes="AddPanelDropDown" IsEnabled="False">
+                    <ComboBoxItem Content="Item 1" />
+                    <ComboBoxItem Content="Item 2" />
+                </ComboBox>
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+
+    <Style Selector="ComboBox.AddPanelDropDown">
+        <Setter Property="Height" Value="40" />
+        <Setter Property="Width" Value="75" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-lg}" />
+        <Setter Property="Padding" Value="0" />
+
+        <!-- Add divider between the current selected item and the dropdown glyph -->
+        <Style Selector="^ /template/ Border#DropDownOverlay">
+            <Setter Property="IsVisible" Value="True" />
+            <Setter Property="Margin" Value="0,1,0,1" />
+            <Setter Property="CornerRadius" Value="{StaticResource Rounded-r-lg}" />
+            <Setter Property="BorderThickness" Value="1,0,0,0" />
+            <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
+        </Style>
+
+        <Style Selector="^:pointerover /template/ Border#Background">
+            <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentSubduedBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+
+        <Style Selector="^:pointerover /template/ Border#DropDownOverlay">
+            <Setter Property="Margin" Value="0,0,0,0" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentModerateBrush}" />
+        </Style>
+
+        <!-- Change expander icon -->
+        <Style Selector="^ PathIcon#DropDownGlyph">
+            <Setter Property="Data" Value="{StaticResource MenuDownGeometry}" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
+        </Style>
+
+        <Style Selector="^:pointerover PathIcon#DropDownGlyph">
+            <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
+        </Style>
+
+        <!-- Style the popup list of items -->
+        <Style Selector="^ ComboBoxItem">
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="Padding" Value="0" />
+
+            <Style Selector="^:selected /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Background" Value="Transparent" />
+            </Style>
+            <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Background" Value="Transparent" />
+            </Style>
+        </Style>
+
+        <Style Selector="^ Popup#PART_Popup">
+
+            <Style Selector="^ Border#PopupBorder">
+                <Setter Property="HorizontalAlignment" Value="Left" />
+                <Setter Property="MinWidth" Value="48" />
+                <Setter Property="MaxWidth" Value="48" />
+                <Setter Property="Width" Value="48" />
+                <Setter Property="Padding" Value="0" />
+                <Setter Property="Margin" Value="0" />
+                <Style Selector="^ ItemsPresenter#PART_ItemsPresenter">
+                    <Setter Property="Margin" Value="0" />
+                </Style>
+            </Style>
+
+            <Style Selector="^ ComboBoxItem workspaceSystem|AddPanelButtonView Button">
+                <Setter Property="CornerRadius" Value="{StaticResource Rounded-none}" />
+            </Style>
+        </Style>
+
+        <Style Selector="^:disabled /template/ Border#Background">
+            <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
+        </Style>
+
+        <Style Selector="^:disabled PathIcon#DropDownGlyph">
+            <Setter Property="Foreground">
+                <SolidColorBrush Color="{StaticResource NeutralSubdued}"
+                                 Opacity="{StaticResource OpacityDisabledElement}" />
+            </Setter>
+        </Style>
+    </Style>
+</Styles>
+

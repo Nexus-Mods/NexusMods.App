@@ -16,7 +16,7 @@
         <modEnabled:ModEnabledDesignViewModel />
     </Design.DataContext>
     <Grid>
-        <ToggleSwitch HorizontalAlignment="Center" x:Name="EnabledToggleSwitch" IsVisible="False">
+        <ToggleSwitch Classes="Compact" HorizontalAlignment="Center" x:Name="EnabledToggleSwitch" IsVisible="False">
             <ToggleSwitch.OnContent>
                 <ContentControl />
             </ToggleSwitch.OnContent>

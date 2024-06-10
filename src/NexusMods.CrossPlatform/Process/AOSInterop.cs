@@ -34,7 +34,10 @@ public abstract class AOSInterop : IOSInterop
     public async Task OpenUrl(Uri url, bool fireAndForget = false, CancellationToken cancellationToken = default)
     {
         var command = CreateCommand(url);
-        var task = _processFactory.ExecuteAsync(command, cancellationToken);
+
+        // NOTE(erri120): don't log the process output of the browser
+        var isWeb = url.Scheme.Equals("http", StringComparison.OrdinalIgnoreCase) || url.Scheme.Equals("https", StringComparison.OrdinalIgnoreCase);
+        var task = _processFactory.ExecuteAsync(command, logProcessOutput: !isWeb, cancellationToken: cancellationToken);
 
         try
         {

@@ -11,7 +11,20 @@ env:
   ProjectFile: "src/NexusMods.App/NexusMods.App.csproj"
 
 jobs:
+  transformInputs:
+    runs-on: ubuntu-latest
+    outputs:
+      ProjectFile: ${{ steps.setOutputs.outputs.projectFile }}
+
+    steps:
+      - name: Set Outputs
+        id: setOutputs
+        shell: pwsh
+        run: |
+          echo "projectFile=${{ env.ProjectFile }}" >> $env:GITHUB_OUTPUT
+
   build-linux:
+    needs: [ transformInputs ]
     uses: ./.github/workflows/build-linux-pupnet.yaml
     with:
       AppVersion: "0.0.1"
@@ -21,6 +34,7 @@ jobs:
       RetentionDays: 7
 
   build-windows:
+    needs: [ transformInputs ]
     uses: ./.github/workflows/build-windows-pupnet.yaml
     with:
       AppVersion: "0.0.1"

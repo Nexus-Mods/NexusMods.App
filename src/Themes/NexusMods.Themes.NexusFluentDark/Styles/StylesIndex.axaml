@@ -24,13 +24,13 @@
     <StyleInclude Source="/Styles/Controls/DataGrid/DataGridStyles.axaml"/>
     <StyleInclude Source="/Styles/Controls/ToggleSwitch/ToggleSwitchStyles.axaml"/>
     <StyleInclude Source="/Styles/Controls/ComboBox/ComboBoxStyles.axaml"/>
+    <StyleInclude Source="/Styles/Controls/ComboBox/ComboBoxItemStyles.axaml"/>
     <StyleInclude Source="/Styles/Controls/StackPanel/StackPanelStyles.axaml"/>
 
     <StyleInclude Source="/Styles/UserControls/ProgressRing/ProgressRingStyles.axaml"/>
     <StyleInclude Source="/Styles/UserControls/Spinner/SpinnerStyles.axaml"/>
     <StyleInclude Source="/Styles/UserControls/GameWidget/GameWidgetStyles.axaml"/>
     <StyleInclude Source="/Styles/UserControls/TopBar/TopBarStyles.axaml"/>
-    <StyleInclude Source="/Styles/UserControls/LeftPane/LeftPaneDownloadStyles.axaml"/>
     <StyleInclude Source="/Styles/UserControls/MessageBox/MessageBoxStyles.axaml"/>
     <StyleInclude Source="/Styles/UserControls/LoginDialog/LoginDialogStyles.axaml"/>
     <StyleInclude Source="/Styles/UserControls/WorkspaceSystem/AddPanelButtonStyles.axaml"/>

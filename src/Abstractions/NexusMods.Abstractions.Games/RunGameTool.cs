@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using System.Globalization;
-using System.Text;
 using CliWrap;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -13,14 +12,10 @@ using NexusMods.Paths;
 
 namespace NexusMods.Abstractions.Games;
 
-
 /// <summary>
 /// Marker interface for RunGameTool
 /// </summary>
-public interface IRunGameTool : ITool
-{
-    
-}
+public interface IRunGameTool : ITool;
 
 /// <summary>
 /// A tool that launches the game, using first found installation.
@@ -38,9 +33,8 @@ public class RunGameTool<T> : IRunGameTool
     /// Whether this tool should be started through the shell instead of directly.
     /// This allows tools to start their own console, allowing users to interact with it.
     /// </summary>
-    public virtual bool UseShell { get; set; } = false;
-    
-    
+    protected virtual bool UseShell { get; set; } = false;
+
     /// <summary>
     /// Constructor
     /// </summary>
@@ -123,17 +117,10 @@ public class RunGameTool<T> : IRunGameTool
 
     private async Task<CommandResult> RunCommand(CancellationToken cancellationToken, AbsolutePath program)
     {
-        var stdOut = new StringBuilder();
-        var stdErr = new StringBuilder();
         var command = new Command(program.ToString())
-            .WithStandardOutputPipe(PipeTarget.ToStringBuilder(stdOut))
-            .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdErr))
-            .WithValidation(CommandResultValidation.None)
             .WithWorkingDirectory(program.Parent.ToString());
 
-        var result = await _processFactory.ExecuteAsync(command, cancellationToken);
-        if (result.ExitCode != 0)
-            _logger.LogError("While Running {Filename} : {Error} {Output}", program, stdErr, stdOut);
+        var result = await _processFactory.ExecuteAsync(command, cancellationToken: cancellationToken);
         return result;
     }
 
