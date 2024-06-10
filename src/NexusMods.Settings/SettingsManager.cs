@@ -6,6 +6,7 @@ using System.Reactive.Subjects;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Settings;
+using NexusMods.App.BuildInfo;
 
 namespace NexusMods.Settings;
 
@@ -26,6 +27,7 @@ internal partial class SettingsManager : ISettingsManager
     private readonly ImmutableDictionary<Type, IAsyncSettingsStorageBackend> _asyncStorageBackendMappings;
 
     private readonly IPropertyBuilderOutput[] _propertyBuilderOutputs;
+    private readonly Lazy<ISettingsSectionDescriptor[]> _sectionDescriptors;
 
     public SettingsManager(IServiceProvider serviceProvider)
     {
@@ -36,6 +38,30 @@ internal partial class SettingsManager : ISettingsManager
         _overrides = serviceProvider
             .GetServices<SettingsOverrideInformation>()
             .ToImmutableDictionary(x => x.Type, x => x.OverrideMethod);
+
+        var settingsSectionSetups = serviceProvider.GetServices<SettingsSectionSetup>().ToArray();
+
+        // NOTE(erri120): This has to be Lazy because the Icon isn't available until Avalonia starts up.
+        _sectionDescriptors = new Lazy<ISettingsSectionDescriptor[]>(() => settingsSectionSetups
+            .Select(descriptor => (ISettingsSectionDescriptor)new SettingsSectionDescriptor
+            {
+                Id = descriptor.Id,
+                Name = descriptor.Name,
+                Icon = descriptor.IconFunc(),
+            })
+            .ToArray(),
+            mode: LazyThreadSafetyMode.ExecutionAndPublication
+        );
+
+        if (CompileConstants.IsDebug)
+        {
+            var ids = new HashSet<SectionId>();
+            foreach (var sectionDescriptor in settingsSectionSetups)
+            {
+                var id = sectionDescriptor.Id;
+                Debug.Assert(ids.Add(id), $"duplicate section ID: {id}");
+            }
+        }
 
         var baseStorageBackendArray = serviceProvider.GetServices<IBaseSettingsStorageBackend>().ToArray();
         var settingsTypeInformationArray = serviceProvider.GetServices<SettingsTypeInformation>().ToArray();
@@ -121,6 +147,8 @@ internal partial class SettingsManager : ISettingsManager
             return SettingsPropertyUIDescriptor.From(output, valueContainer);
         }).ToArray();
     }
+
+    public ISettingsSectionDescriptor[] GetAllSections() => _sectionDescriptors.Value;
 
     private object GetDefaultValue(Type settingsType)
     {

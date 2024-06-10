@@ -23,6 +23,14 @@ public static class ServiceExtensions
     }
 
     /// <summary>
+    /// Registers a new settings section.
+    /// </summary>
+    public static IServiceCollection AddSettingsSection(this IServiceCollection serviceCollection, SettingsSectionSetup setup)
+    {
+        return serviceCollection.AddSingleton(setup);
+    }
+
+    /// <summary>
     /// Registers a settings storage backend in DI.
     /// </summary>
     /// <param name="serviceCollection">The Service Collection.</param>
