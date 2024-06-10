@@ -164,7 +164,7 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition.SkyrimSp
     /// </summary>
     /// <param name="loadout"></param>
     /// <exception cref="NotImplementedException"></exception>
-    private async Task<Mod.Model> InstallTruncatedPlugins(Loadout.Model loadout)
+    private async Task<Mod.ReadOnly> InstallTruncatedPlugins(Loadout.ReadOnly loadout)
     {
         var path = FileSystem.GetKnownPath(KnownPath.EntryDirectory)
             .Combine("Assets/TruncatedPlugins.7z");

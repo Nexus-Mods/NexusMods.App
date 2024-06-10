@@ -31,6 +31,6 @@ public static class SMAPIManifestMetadata
     /// <summary>
     /// Returns all the files with the SMAPI manifest marker.
     /// </summary>
-    public static IEnumerable<File.Model> SMAPIManifests(this Loadout.Model loadout) 
+    public static IEnumerable<File.Model> SMAPIManifests(this Loadout.ReadOnly loadout) 
         => loadout.Files.Where(manifest => manifest.IsSMAPIManifest());
 }

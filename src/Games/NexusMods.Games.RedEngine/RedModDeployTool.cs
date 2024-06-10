@@ -20,9 +20,9 @@ public class RedModDeployTool : ITool
 
     public IEnumerable<GameDomain> Domains => new[] { Cyberpunk2077.StaticDomain };
 
-    public async Task Execute(Loadout.Model loadout, CancellationToken cancellationToken)
+    public async Task Execute(Loadout.ReadOnly loadout, CancellationToken cancellationToken)
     {
-        var exe = RedModPath.CombineChecked(loadout.Installation);
+        var exe = RedModPath.CombineChecked(loadout.InstallationInstance);
 
         var stdOutBuffer = new StringBuilder();
         var stdErrBuffer = new StringBuilder();
@@ -30,7 +30,7 @@ public class RedModDeployTool : ITool
         _logger.LogInformation("Running {Program}", exe);
         var result = await Cli.Wrap(exe.ToString())
             .WithArguments("deploy")
-            .WithWorkingDirectory(loadout.Installation.LocationsRegister[LocationId.Game].ToString())
+            .WithWorkingDirectory(loadout.InstallationInstance.LocationsRegister[LocationId.Game].ToString())
             .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdErrBuffer))
             .WithStandardOutputPipe(PipeTarget.ToStringBuilder(stdOutBuffer))
             .ExecuteAsync();

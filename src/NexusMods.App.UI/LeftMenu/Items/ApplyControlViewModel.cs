@@ -27,7 +27,7 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
     
     private bool _isFirstLoad = true;
 
-    [Reactive] private Abstractions.Loadouts.Loadout.Model NewestLoadout { get; set; }
+    [Reactive] private Abstractions.Loadouts.Loadout.ReadOnly NewestLoadout { get; set; }
     [Reactive] private LoadoutId LastAppliedLoadoutId { get; set; }
     [Reactive] private LoadoutWithTxId LastAppliedWithTxId { get; set; }
     [Reactive] private bool CanApply { get; set; } = true;

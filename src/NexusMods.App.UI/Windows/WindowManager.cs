@@ -93,7 +93,7 @@ internal sealed class WindowManager : ReactiveObject, IWindowManager
             using var tx = _conn.BeginTransaction();
             if (!_repository.TryFindFirst(out var found))
             {
-                var model = new WindowDataAttributes.Model(tx)
+                var model = new WindowDataAttributes.ReadOnly(tx)
                 {
                     Db = _conn.Db,
                 };

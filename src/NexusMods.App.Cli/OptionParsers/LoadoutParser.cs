@@ -10,15 +10,15 @@ namespace NexusMods.CLI.OptionParsers;
 /// Parses a string into a loadout marker
 /// </summary>
 [UsedImplicitly]
-internal class LoadoutParser(IConnection conn) : IOptionParser<Loadout.Model>
+internal class LoadoutParser(IConnection conn) : IOptionParser<Loadout.ReadOnly>
 {
-    public bool TryParse(string input, out Loadout.Model value, out string error)
+    public bool TryParse(string input, out Loadout.ReadOnly value, out string error)
     {
         var db = conn.Db;
         error = string.Empty;
         if (LoadoutId.TryParseFromHex(input, out var parsedId))
         {
-            var loadout = db.Get<Loadout.Model>(parsedId.Value);
+            var loadout = db.Get<Loadout.ReadOnly>(parsedId.Value);
             if (loadout.Contains(Loadout.Name))
             {
                 value = loadout;
@@ -35,7 +35,7 @@ internal class LoadoutParser(IConnection conn) : IOptionParser<Loadout.Model>
             case > 1:
                 throw new Exception($"Multiple loadouts found with name {input}");
             case 1:
-                value = db.Get<Loadout.Model>(found[0]);
+                value = db.Get<Loadout.ReadOnly>(found[0]);
                 return true;
             default:
                 throw new Exception($"No loadout found with name {input}");

@@ -6,7 +6,7 @@ namespace NexusMods.Games.MountAndBlade2Bannerlord.Models;
 
 internal class LoadoutModuleViewModel : IModuleViewModel
 {
-    public required Mod.Model Mod { get; init; }
+    public required Mod.ReadOnly Mod { get; init; }
 
     public required ModuleInfoExtendedWithPath ModuleInfoExtended { get; init; }
 

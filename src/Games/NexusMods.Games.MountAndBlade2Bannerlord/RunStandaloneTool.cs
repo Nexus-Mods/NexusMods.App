@@ -23,7 +23,7 @@ public class RunStandaloneTool : ITool
         _launcherManagerFactory = launcherManagerFactory;
     }
 
-    public async Task Execute(Loadout.Model loadout, CancellationToken ct)
+    public async Task Execute(Loadout.ReadOnly loadout, CancellationToken ct)
     {
         if (!loadout.Installation.Is<MountAndBlade2Bannerlord>()) return;
 

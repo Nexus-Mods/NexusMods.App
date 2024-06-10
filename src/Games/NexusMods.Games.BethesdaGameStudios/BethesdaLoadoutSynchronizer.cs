@@ -7,7 +7,7 @@ namespace NexusMods.Games.BethesdaGameStudios;
 
 public class BethesdaLoadoutSynchronizer(IServiceProvider provider) : ALoadoutSynchronizer(provider)
 {
-    public override async Task<Loadout.Model> CreateLoadout(GameInstallation installation, string? suggestedName = null)
+    public override async Task<Loadout.ReadOnly> CreateLoadout(GameInstallation installation, string? suggestedName = null)
     {
         var loadout = await base.CreateLoadout(installation, suggestedName);
         return await FixupLoadout(loadout);
@@ -18,7 +18,7 @@ public class BethesdaLoadoutSynchronizer(IServiceProvider provider) : ALoadoutSy
     /// </summary>
     /// <param name="loadout"></param>
     /// <returns></returns>
-    protected virtual async ValueTask<Loadout.Model> FixupLoadout(Loadout.Model loadout)
+    protected virtual async ValueTask<Loadout.ReadOnly> FixupLoadout(Loadout.ReadOnly loadout)
     {
         var metadataMod = loadout.Mods
             .FirstOrDefault(m => m.Category == ModCategory.Metadata);
@@ -26,7 +26,7 @@ public class BethesdaLoadoutSynchronizer(IServiceProvider provider) : ALoadoutSy
         if (metadataMod == null)
         {
             using var tx = Connection.BeginTransaction();
-            metadataMod = new Mod.Model(tx)
+            metadataMod = new Mod.ReadOnly(tx)
             {
                 Name = "Modding Metadata",
                 Category = ModCategory.Metadata,
@@ -45,7 +45,7 @@ public class BethesdaLoadoutSynchronizer(IServiceProvider provider) : ALoadoutSy
         if (mod == null)
         {
             using var tx = Connection.BeginTransaction(); 
-            var generated = new GeneratedFile.Model(tx)
+            var generated = new GeneratedFile.ReadOnly(tx)
             {
                 Loadout = loadout,
                 Mod = metadataMod,

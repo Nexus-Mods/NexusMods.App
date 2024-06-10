@@ -12,7 +12,7 @@ public class LoadoutExtensionsTests : AGameTest<MountAndBlade2Bannerlord>
 {
     public LoadoutExtensionsTests(IServiceProvider serviceProvider) : base(serviceProvider) { }
 
-    private static LoadoutModuleViewModel ViewModelCreator(Mod.Model mod, ModuleInfoExtendedWithPath moduleInfo, int index) => new()
+    private static LoadoutModuleViewModel ViewModelCreator(Mod.ReadOnly mod, ModuleInfoExtendedWithPath moduleInfo, int index) => new()
     {
         Mod = mod,
         ModuleInfoExtended = moduleInfo,

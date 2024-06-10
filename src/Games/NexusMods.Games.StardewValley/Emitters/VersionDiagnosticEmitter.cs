@@ -34,7 +34,7 @@ public class VersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
         _smapiWebApi = smapiWebApi;
     }
 
-    public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.Model loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
+    public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.ReadOnly loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         var gameVersion = new SemanticVersion(loadout.Installation.Version);
         // var gameVersion = new SemanticVersion("1.5.6");

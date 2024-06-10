@@ -37,7 +37,7 @@ public abstract class AColumnViewModel<TBaseInterface, TValue> : AViewModel<TBas
     /// <summary>
     /// A selector function to get the value of the column from the model
     /// </summary>
-    protected abstract TValue Selector(Mod.Model model);
+    protected abstract TValue Selector(Mod.ReadOnly model);
     
     /// <summary>
     /// A comparer function to compare two values of the column

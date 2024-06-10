@@ -100,7 +100,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
     /// Creates a new loadout and returns the <see cref="LoadoutMarker"/> of it.
     /// </summary>
     /// <returns></returns>
-    protected async Task<Loadout.Model> CreateLoadout(bool indexGameFiles = true)
+    protected async Task<Loadout.ReadOnly> CreateLoadout(bool indexGameFiles = true)
     {
         return await GameInstallation.GetGame().Synchronizer.CreateLoadout(GameInstallation, Guid.NewGuid().ToString());
     }
@@ -155,7 +155,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
         var db = Connection.Db;
         var metaDatas = db
             .FindIndexed(fileId, NexusModsArchiveMetadata.FileId)
-            .Select(id => db.Get<DownloadAnalysis.Model>(id))
+            .Select(id => db.Get<DownloadAnalysis.ReadOnly>(id))
             .Where(ent => ent.Get(NexusModsArchiveMetadata.ModId) == modId)
             .FirstOrDefault(ent => ent.Get(NexusModsArchiveMetadata.GameId) == gameDomain);
 
@@ -170,14 +170,14 @@ public abstract class AGameTest<TGame> where TGame : AGame
     /// <summary>
     /// Installs the mods from the archive into the loadout.
     /// </summary>
-    protected async Task<Mod.Model[]> InstallModsStoredFileIntoLoadout(
-        Loadout.Model loadout,
+    protected async Task<Mod.ReadOnly[]> InstallModsStoredFileIntoLoadout(
+        Loadout.ReadOnly loadout,
         DownloadId downloadId,
         CancellationToken cancellationToken = default)
     {
         var modIds = await ArchiveInstaller.AddMods(LoadoutId.From(loadout.Id), downloadId, token: cancellationToken);
         var db = Connection.Db;
-        return modIds.Select(id => db.Get<Mod.Model>(id.Value)).ToArray();
+        return modIds.Select(id => db.Get<Mod.ReadOnly>(id.Value)).ToArray();
     }
 
 
@@ -186,8 +186,8 @@ public abstract class AGameTest<TGame> where TGame : AGame
     /// <see cref="InstallModsStoredFileIntoLoadout(LoadoutMarker,NexusMods.Hashing.xxHash64.Hash,string?,System.Threading.CancellationToken)"/> and asserts only one mod
     /// exists in the archive.
     /// </summary>
-    protected async Task<Mod.Model> InstallModStoredFileIntoLoadout(
-        Loadout.Model loadout,
+    protected async Task<Mod.ReadOnly> InstallModStoredFileIntoLoadout(
+        Loadout.ReadOnly loadout,
         DownloadId downloadId,
         string? defaultModName = null,
         CancellationToken cancellationToken = default)
@@ -204,8 +204,8 @@ public abstract class AGameTest<TGame> where TGame : AGame
     /// <summary>
     /// Variant of <see cref="InstallModStoredFileIntoLoadout(LoadoutMarker,NexusMods.Hashing.xxHash64.Hash,string?,System.Threading.CancellationToken)"/> that takes a file path instead of a hash.
     /// </summary>
-    protected async Task<Mod.Model> InstallModStoredFileIntoLoadout(
-        Loadout.Model loadout,
+    protected async Task<Mod.ReadOnly> InstallModStoredFileIntoLoadout(
+        Loadout.ReadOnly loadout,
         AbsolutePath path,
         string? defaultModName = null,
         CancellationToken cancellationToken = default)

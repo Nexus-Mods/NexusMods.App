@@ -450,7 +450,7 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
         FilesVerify(secondLoadout).Should().BeTrue();
         FilesVerify(BaseLoadout).Should().BeFalse();
         
-        bool FilesVerify(Loadout.Model loadout)
+        bool FilesVerify(Loadout.ReadOnly loadout)
         {
             foreach(var file in loadout.Files.Where(f => f.Mod.Enabled))
             {
@@ -536,7 +536,7 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
         await Synchronizer.DeleteLoadout(initialLoadout.Installation, initialLoadout.LoadoutId);
 
         // Assert
-        var model = Connection.Db.Get<Loadout.Model>(initialLoadout.LoadoutId.Value);
+        var model = Connection.Db.Get<Loadout.ReadOnly>(initialLoadout.LoadoutId.Value);
         model.LoadoutKind.Should().Be(LoadoutKind.Deleted, "The loadout should be deleted");
 
         var currentDiskState = await Synchronizer.GetDiskState(initialLoadout.Installation);

@@ -12,5 +12,6 @@ public static class ModelExtensions
     /// The most recent transaction Id that modified this model
     /// </summary>
     public static TxId MostRecentTx(this IReadOnlyModel model) => model.Max(d => d.T);
+    
 
 }

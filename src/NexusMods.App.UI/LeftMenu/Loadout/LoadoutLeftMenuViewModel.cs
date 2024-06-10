@@ -38,10 +38,10 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
         IServiceProvider serviceProvider)
     {
         var diagnosticManager = serviceProvider.GetRequiredService<IDiagnosticManager>();
-        var downloadAnalysisRepository = serviceProvider.GetRequiredService<IRepository<DownloadAnalysis.Model>>();
+        var downloadAnalysisRepository = serviceProvider.GetRequiredService<IRepository<DownloadAnalysis.ReadOnly>>();
         var conn = serviceProvider.GetRequiredService<IConnection>();
 
-        var loadout = conn.Db.Get<Abstractions.Loadouts.Loadout.Model>(loadoutContext.LoadoutId.Value);
+        var loadout = conn.Db.Get<Abstractions.Loadouts.Loadout.ReadOnly>(loadoutContext.LoadoutId.Value);
         var game = loadout.Installation.Game;
 
         WorkspaceId = workspaceId;

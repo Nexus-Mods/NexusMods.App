@@ -183,7 +183,7 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
                                     {
                                         return false;
                                     }
-                                    var loadout = conn.Db.Get<Loadout.Model>(loadoutContext.LoadoutId.Value);
+                                    var loadout = conn.Db.Get<Loadout.ReadOnly>(loadoutContext.LoadoutId.Value);
                                     return loadout.IsVisible() && loadout.Installation.Game.Domain.Equals(vm.Game);
                                 }
                             )

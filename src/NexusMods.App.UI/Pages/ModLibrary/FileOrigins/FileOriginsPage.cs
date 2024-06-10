@@ -35,7 +35,7 @@ public class FileOriginsPageFactory : APageFactory<IFileOriginsPageViewModel, Fi
         return new FileOriginsPageViewModel(
             context.LoadoutId,
             ServiceProvider.GetRequiredService<IArchiveInstaller>(),
-            ServiceProvider.GetRequiredService<IRepository<DownloadAnalysis.Model>>(),
+            ServiceProvider.GetRequiredService<IRepository<DownloadAnalysis.ReadOnly>>(),
             ServiceProvider.GetRequiredService<IConnection>(),
             ServiceProvider.GetRequiredService<IWindowManager>()
         );

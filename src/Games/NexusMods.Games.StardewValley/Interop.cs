@@ -37,7 +37,7 @@ internal static class Interop
 
     public static ValueTask<Manifest?> DeserializeManifest(Stream stream) => Deserialize<Manifest>(stream);
 
-    public static async ValueTask<Manifest?> GetManifest(IFileStore fileStore, Mod.Model mod, CancellationToken cancellationToken = default)
+    public static async ValueTask<Manifest?> GetManifest(IFileStore fileStore, Mod.ReadOnly mod, CancellationToken cancellationToken = default)
     {
         var manifestFile = mod.Files.FirstOrDefault(f => f.HasMetadata(SMAPIManifestMetadata.SMAPIManifest));
         if (manifestFile == null || !manifestFile.TryGetAsStoredFile(out var storedFile)) return null;
@@ -48,7 +48,7 @@ internal static class Interop
 
     public static async ValueTask<ModDatabase?> GetModDatabase(
         IFileStore fileStore,
-        Mod.Model smapi,
+        Mod.ReadOnly smapi,
         CancellationToken cancellationToken = default)
     {
         var manifestFile = smapi.Files.FirstOrDefault(f => f.HasMetadata(SMAPIModDatabaseMarker.SMAPIModDatabase));

@@ -48,7 +48,6 @@ public static class Services
         coll.AddSettings<DataModelSettings>();
         coll.AddSettingsStorageBackend<MnemonicDBSettingsBackend>(isDefault: true);
         coll.AddAttributeCollection(typeof(Setting));
-        coll.AddRepository<Setting.Model>([Setting.Name]);
 
         coll.AddSingleton<MnemonicDB.Storage.InMemoryBackend.Backend>();
         coll.AddSingleton<MnemonicDB.Storage.RocksDbBackend.Backend>();
@@ -128,10 +127,6 @@ public static class Services
         coll.AddAttributeCollection(typeof(StreamBasedFileOriginMetadata));
         coll.AddAllSingleton<IFileOriginRegistry, FileOriginRegistry>();
         
-        // Repositories
-        coll.AddRepository<Loadout.Model>([Loadout.Revision], l => l.IsVisible());
-
-
         // Diagnostics
         coll.AddAllSingleton<IDiagnosticManager, DiagnosticManager>();
         coll.AddSettings<DiagnosticSettings>();

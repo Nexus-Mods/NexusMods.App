@@ -18,18 +18,18 @@ namespace NexusMods.App;
 internal sealed class TelemetryProvider : ITelemetryProvider, IDisposable
 {
     private readonly CompositeDisposable _disposable = new();
-    private readonly IRepository<Loadout.Model> _loadoutRepository;
+    private readonly IRepository<Loadout.ReadOnly> _loadoutRepository;
 
     public TelemetryProvider(IServiceProvider serviceProvider)
     {
-        _loadoutRepository = serviceProvider.GetRequiredService<IRepository<Loadout.Model>>();
+        _loadoutRepository = serviceProvider.GetRequiredService<IRepository<Loadout.ReadOnly>>();
 
         // membership status
         var loginManager = serviceProvider.GetRequiredService<LoginManager>();
         loginManager.IsPremiumObservable.SubscribeWithErrorLogging(value => _isPremium = value).DisposeWith(_disposable);
 
         // download size
-        var downloadAnalysisRepository = serviceProvider.GetRequiredService<IRepository<DownloadAnalysis.Model>>();
+        var downloadAnalysisRepository = serviceProvider.GetRequiredService<IRepository<DownloadAnalysis.ReadOnly>>();
         downloadAnalysisRepository
             .Observable
             .ToObservableChangeSet()

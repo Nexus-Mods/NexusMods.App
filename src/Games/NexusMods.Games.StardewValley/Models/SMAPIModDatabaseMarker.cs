@@ -21,6 +21,6 @@ public static class SMAPIModDatabaseMarker
     /// <summary>
     /// Returns all the files with the SMAPI mod database marker.
     /// </summary>
-    public static IEnumerable<File.Model> SMAPIModDatabases(this Loadout.Model loadout) 
+    public static IEnumerable<File.Model> SMAPIModDatabases(this Loadout.ReadOnly loadout) 
         => loadout.Files.Where(modDatabase => modDatabase.IsSMAPIModDatabase());
 }

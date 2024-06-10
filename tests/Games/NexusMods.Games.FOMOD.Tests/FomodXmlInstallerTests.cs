@@ -32,7 +32,7 @@ public class FomodXmlInstallerTests : AModInstallerTest<SkyrimSpecialEdition, Fo
 
         var install = GameInstallation;
         using var tx = Connection.BeginTransaction();
-        var mod = new NexusMods.Abstractions.Loadouts.Mods.Mod.Model(tx)
+        var mod = new NexusMods.Abstractions.Loadouts.Mods.Mod.ReadOnly(tx)
         {
             Name = "Test Mod",
         };

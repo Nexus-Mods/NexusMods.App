@@ -76,7 +76,7 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
         ILogger<LoadoutGridViewModel> logger,
         IServiceProvider provider,
         IConnection conn,
-        IRepository<Loadout.Model> loadoutRepository,
+        IRepository<Loadout.ReadOnly> loadoutRepository,
         IFileSystem fileSystem,
         IArchiveInstaller archiveInstaller,
         IFileOriginRegistry fileOriginRegistry,

@@ -15,7 +15,7 @@ internal record VerifiableMod
 
     public required List<VerifiableFile> Files { get; init; }
 
-    public static VerifiableMod From(Mod.Model mod)
+    public static VerifiableMod From(Mod.ReadOnly mod)
     {
         var files = mod.Files
             .Select(f => f.Remap<StoredFile.Model>())

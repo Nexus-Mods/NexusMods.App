@@ -33,7 +33,7 @@ public class LoadoutGridViewModelTests(IServiceProvider provider) : AVmTest<ILoa
         for (var x = 0; x < 10; x++)
         {
             using var tx = Connection.BeginTransaction();
-            var mod = new Mod.Model(tx)
+            var mod = new Mod.ReadOnly(tx)
             {
                 Name = "Mod",
                 Version = "1.0." + x,

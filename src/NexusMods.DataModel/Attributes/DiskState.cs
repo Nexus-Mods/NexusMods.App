@@ -1,4 +1,6 @@
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
 
@@ -7,7 +9,7 @@ namespace NexusMods.DataModel.Attributes;
 /// <summary>
 /// MnemonicDB attributes for the DiskStateTree registry.
 /// </summary>b
-public static class DiskState
+public partial class DiskState : IModelDefinition
 {
     private static readonly string Namespace = "NexusMods.DataModel.DiskStateRegistry";
     
@@ -25,12 +27,12 @@ public static class DiskState
     /// <summary>
     /// The associated loadout id.
     /// </summary>
-    public static readonly ReferenceAttribute Loadout = new(Namespace, nameof(Loadout)) { IsIndexed = true, NoHistory = true };
+    public static readonly ReferenceAttribute<Loadout> Loadout = new(Namespace, nameof(Loadout)) { IsIndexed = true, NoHistory = true };
     
     /// <summary>
     /// The associated transaction id.
     /// </summary>
-    public static readonly ReferenceAttribute TxId = new(Namespace, nameof(TxId)) { IsIndexed = true, NoHistory = true };
+    public static readonly TxIdAttribute TxId = new(Namespace, nameof(TxId)) { IsIndexed = true, NoHistory = true };
 
     /// <summary>
     /// The state of the disk.

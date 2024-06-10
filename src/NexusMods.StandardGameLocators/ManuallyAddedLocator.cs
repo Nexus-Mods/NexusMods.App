@@ -36,7 +36,7 @@ public class ManuallyAddedLocator : IGameLocator
     public async Task<(EntityId, GameInstallation)> Add(IGame game, Version version, AbsolutePath path)
     {
         using var tx = _store.Value.BeginTransaction();
-        var ent = new ManuallyAddedGame.Model(tx)
+        var ent = new ManuallyAddedGame.ReadOnly(tx)
         {
             GameDomain = game.Domain,
             Version = version.ToString(),

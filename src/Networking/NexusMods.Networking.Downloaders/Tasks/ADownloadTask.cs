@@ -69,7 +69,7 @@ public abstract class ADownloadTask : ReactiveObject, IDownloadTask
     protected EntityId Create(ITransaction tx)
     {
         _downloadLocation = TemporaryFileManager.CreateFile();
-        var state = new DownloaderState.Model(tx)
+        var state = new DownloaderState.ReadOnly(tx)
         {
             Status = DownloadTaskStatus.Idle,
             Downloaded = Size.Zero,

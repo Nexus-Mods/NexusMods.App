@@ -15,13 +15,13 @@ public class StardewValleyLoadoutSynchronizer : ALoadoutSynchronizer
     public StardewValleyLoadoutSynchronizer(IServiceProvider provider) : base(provider) { }
 
 
-    protected override async Task<Loadout.Model> AddChangedFilesToLoadout(Loadout.Model loadout, TempEntity[] newFiles)
+    protected override async Task<Loadout.ReadOnly> AddChangedFilesToLoadout(Loadout.ReadOnly loadout, TempEntity[] newFiles)
     {
         using var tx = Connection.BeginTransaction();
         var overridesMod = GetOrCreateOverridesMod(loadout, tx);
-        var modifiedMods = new Dictionary<ModId, Mod.Model>();
+        var modifiedMods = new Dictionary<ModId, Mod.ReadOnly>();
 
-        var smapiModDirectoryNameToModel = new Dictionary<RelativePath, Mod.Model>();
+        var smapiModDirectoryNameToModel = new Dictionary<RelativePath, Mod.ReadOnly>();
 
         foreach (var newFile in newFiles)
         {
@@ -54,7 +54,7 @@ public class StardewValleyLoadoutSynchronizer : ALoadoutSynchronizer
 
             newFile.Add(File.Mod, smapiMod.Id);
             newFile.AddTo(tx);
-            modifiedMods.TryAdd<ModId, Mod.Model>(smapiMod.ModId, smapiMod);
+            modifiedMods.TryAdd<ModId, Mod.ReadOnly>(smapiMod.ModId, smapiMod);
         }
 
         foreach (var mod in modifiedMods.Values)
@@ -74,17 +74,17 @@ public class StardewValleyLoadoutSynchronizer : ALoadoutSynchronizer
         }
 
         var result = await tx.Commit();
-        return result.Db.Get<Loadout.Model>(loadout.Id);
+        return result.Db.Get<Loadout.ReadOnly>(loadout.Id);
 
         void AddToOverride(TempEntity newFile)
         {
             newFile.Add(File.Mod, overridesMod.Id);
             newFile.AddTo(tx);
-            modifiedMods.TryAdd<ModId, Mod.Model>(overridesMod.ModId, overridesMod);
+            modifiedMods.TryAdd<ModId, Mod.ReadOnly>(overridesMod.ModId, overridesMod);
         }
     }
 
-    private static Mod.Model? GetSMAPIMod(RelativePath modDirectoryName, Loadout.Model loadout, IDb db)
+    private static Mod.ReadOnly? GetSMAPIMod(RelativePath modDirectoryName, Loadout.ReadOnly loadout, IDb db)
     {
         var manifestFilePath = new GamePath(LocationId.Game, Constants.ModsFolder.Join(modDirectoryName).Join(Constants.ManifestFile));
 

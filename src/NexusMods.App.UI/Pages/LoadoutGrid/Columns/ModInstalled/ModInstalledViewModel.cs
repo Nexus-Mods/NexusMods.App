@@ -14,7 +14,7 @@ namespace NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModInstalled;
 internal class ModInstalledViewModel(IConnection connection) : 
     AColumnViewModel<IModInstalledViewModel, DateTime>(connection), IModInstalledViewModel
 {
-    protected override DateTime Selector(Mod.Model model) => model.GetCreatedAt();
+    protected override DateTime Selector(Mod.ReadOnly model) => model.GetCreatedAt();
 
     protected override int Compare(DateTime a, DateTime b) => DateTime.Compare(a, b);
 }

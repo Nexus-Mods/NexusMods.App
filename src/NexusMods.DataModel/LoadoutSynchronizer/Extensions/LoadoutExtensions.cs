@@ -17,9 +17,9 @@ public static class LoadoutExtensions
     /// </summary>
     /// <param name="loadout"></param>
     /// <returns></returns>
-    public static ValueTask<FlattenedLoadout> ToFlattenedLoadout(this Loadout.Model loadout)
+    public static ValueTask<FlattenedLoadout> ToFlattenedLoadout(this Loadout.ReadOnly loadout)
     {
-        return ((IStandardizedLoadoutSynchronizer)loadout.Installation.GetGame().Synchronizer).LoadoutToFlattenedLoadout(loadout);
+        return ((IStandardizedLoadoutSynchronizer)loadout.InstallationInstance.GetGame().Synchronizer).LoadoutToFlattenedLoadout(loadout);
     }
 
     /// <summary>
@@ -27,10 +27,10 @@ public static class LoadoutExtensions
     /// </summary>
     /// <param name="loadout"></param>
     /// <returns></returns>
-    public static async ValueTask<FileTree> ToFileTree(this Loadout.Model loadout)
+    public static async ValueTask<FileTree> ToFileTree(this Loadout.ReadOnly loadout)
     {
         var fileTree = await loadout.ToFlattenedLoadout();
-        return await ((IStandardizedLoadoutSynchronizer)loadout.Installation.GetGame().Synchronizer)
+        return await ((IStandardizedLoadoutSynchronizer)loadout.InstallationInstance.GetGame().Synchronizer)
             .FlattenedLoadoutToFileTree(fileTree, loadout);
     }
 }

@@ -26,10 +26,12 @@ internal sealed class DiagnosticManager : IDiagnosticManager
 
     private bool _isDisposed;
     private readonly CompositeDisposable _compositeDisposable = new();
+    private readonly IConnection _connection;
 
-    public DiagnosticManager(ILogger<DiagnosticManager> logger, IConnection)
+    public DiagnosticManager(ILogger<DiagnosticManager> logger, IConnection connection)
     {
         _logger = logger;
+        _connection = connection;
     }
 
     public IObservable<Diagnostic[]> GetLoadoutDiagnostics(LoadoutId loadoutId)

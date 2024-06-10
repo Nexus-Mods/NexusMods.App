@@ -57,7 +57,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         IIconButtonViewModel homeButtonViewModel,
         ISpineDownloadButtonViewModel spineDownloadsButtonViewModel,
         IWorkspaceAttachmentsFactoryManager workspaceAttachmentsFactory,
-        IRepository<Loadout.Model> loadoutRepository)
+        IRepository<Loadout.ReadOnly> loadoutRepository)
     {
         _serviceProvider = serviceProvider;
         _logger = logger;

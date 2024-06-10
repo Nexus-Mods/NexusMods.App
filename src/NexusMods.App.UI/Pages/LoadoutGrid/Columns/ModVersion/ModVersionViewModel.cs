@@ -12,7 +12,7 @@ namespace NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModVersion;
 
 public class ModVersionViewModel(IConnection conn) : AColumnViewModel<IModVersionViewModel, string>(conn), IModVersionViewModel
 {
-    protected override string Selector(Mod.Model model) => model.Version;
+    protected override string Selector(Mod.ReadOnly model) => model.Version;
 
     protected override int Compare(string a, string b) =>
         string.Compare(a, b, StringComparison.Ordinal);

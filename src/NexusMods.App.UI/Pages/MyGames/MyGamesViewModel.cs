@@ -38,7 +38,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
         ILogger<MyGamesViewModel> logger,
         IApplyService applyService,
         IGameRegistry gameRegistry,
-        IRepository<Loadout.Model> loadoutRepository) : base(windowManager)
+        IRepository<Loadout.ReadOnly> loadoutRepository) : base(windowManager)
     {
         TabTitle = Language.MyGames;
 		TabIcon = IconValues.JoystickGameFilled;
@@ -151,7 +151,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
         );
     }
 
-    private void NavigateToLoadout(IConnection conn, Loadout.Model loadout)
+    private void NavigateToLoadout(IConnection conn, Loadout.ReadOnly loadout)
     {
         // We can't navigate to an invisible loadout, make sure we pick a visible one.
         using var db = conn.Db;

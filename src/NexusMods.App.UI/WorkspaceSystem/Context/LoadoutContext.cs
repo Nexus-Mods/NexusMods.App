@@ -14,7 +14,7 @@ public record LoadoutContext : IWorkspaceContext
 
     public bool IsValid(IServiceProvider serviceProvider)
     {
-        var repo = serviceProvider.GetRequiredService<IRepository<Loadout.Model>>();
+        var repo = serviceProvider.GetRequiredService<IRepository<Loadout.ReadOnly>>();
         return repo.Exists(LoadoutId.Value);
     }
 }

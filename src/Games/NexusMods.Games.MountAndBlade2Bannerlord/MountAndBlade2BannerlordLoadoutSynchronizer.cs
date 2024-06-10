@@ -11,9 +11,9 @@ namespace NexusMods.Games.MountAndBlade2Bannerlord;
 
 public sealed class MountAndBlade2BannerlordLoadoutSynchronizer(IServiceProvider provider) : ALoadoutSynchronizer(provider)
 {
-    public new Task<IEnumerable<Mod.Model>> SortMods(Loadout.Model loadout) => base.SortMods(loadout);
+    public new Task<IEnumerable<Mod.ReadOnly>> SortMods(Loadout.ReadOnly loadout) => base.SortMods(loadout);
 
-    public override async ValueTask<ISortRule<Mod.Model, ModId>[]> ModSortRules(Loadout.Model loadout, Mod.Model mod)
+    public override async ValueTask<ISortRule<Mod.ReadOnly, ModId>[]> ModSortRules(Loadout.ReadOnly loadout, Mod.ReadOnly mod)
     {
         if (mod.GetModuleInfo() is { } moduleInfo)
             return await GetRules(moduleInfo.FromEntity(), loadout).ToArrayAsync();
@@ -21,7 +21,7 @@ public sealed class MountAndBlade2BannerlordLoadoutSynchronizer(IServiceProvider
             return [];
     }
 
-    private static async IAsyncEnumerable<ISortRule<Mod.Model, ModId>> GetRules(ModuleInfoExtended moduleInfo, Loadout.Model loadout)
+    private static async IAsyncEnumerable<ISortRule<Mod.ReadOnly, ModId>> GetRules(ModuleInfoExtended moduleInfo, Loadout.ReadOnly loadout)
     {
 
         ModId? GetModIdFromModuleId(string moduleId)
@@ -35,14 +35,14 @@ public sealed class MountAndBlade2BannerlordLoadoutSynchronizer(IServiceProvider
         {
             if (GetModIdFromModuleId(moduleMetadata.Id) is { } modId)
             {
-                yield return new After<Mod.Model, ModId> { Other = modId };
+                yield return new After<Mod.ReadOnly, ModId> { Other = modId };
             }
         }
         foreach (var moduleMetadata in moduleInfo.DependenciesLoadAfterThisDistinct())
         {
             if (GetModIdFromModuleId(moduleMetadata.Id) is { } modId)
             {
-                yield return new Before<Mod.Model, ModId> { Other = modId };
+                yield return new Before<Mod.ReadOnly, ModId> { Other = modId };
             }
         }
         foreach (var moduleMetadata in moduleInfo.DependenciesIncompatiblesDistinct())

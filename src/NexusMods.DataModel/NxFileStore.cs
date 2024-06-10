@@ -104,7 +104,7 @@ public class NxFileStore : IFileStore
     {
         using var tx = _conn.BeginTransaction();
 
-        var container = new ArchivedFileContainer.Model(tx)
+        var container = new ArchivedFileContainer.New(tx)
         {
             Path = finalPath.Name,
         };
@@ -113,11 +113,11 @@ public class NxFileStore : IFileStore
 
         foreach (var entry in entries)
         {
-            _ = new ArchivedFile.Model(tx)
+            _ = new ArchivedFile.New(tx)
             {
                 Hash = Hash.FromHex(entry.FileName),
                 NxFileEntry = entry.Entry,
-                Container = container,
+                ContainerId = container,
             };
         }
 
@@ -462,8 +462,7 @@ public class NxFileStore : IFileStore
     private bool TryGetLocation(IDb db, Hash hash, ConcurrentDictionary<AbsolutePath, bool>? existsCache, out AbsolutePath archivePath, out FileEntry fileEntry)
     {
         var result = false;
-        var entries = from id in db.FindIndexed(hash, ArchivedFile.Hash)
-            let entry = db.Get<ArchivedFile.Model>(id)
+        var entries = from entry in ArchivedFile.FindByHash(db, hash)
             from location in _archiveLocations
             let combined = location.Combine(entry.Container.Path)
             where existsCache?.GetOrAdd(combined, combined.FileExists) ?? combined.FileExists

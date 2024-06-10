@@ -39,7 +39,7 @@ public static class NxmDownloadState
     /// <summary>
     /// Model for reading and writing NXMDownloadStates
     /// </summary>
-    public class Model(ITransaction tx) : DownloaderState.Model(tx)
+    public class Model(ITransaction tx) : DownloaderState.ReadOnly(tx)
     {
 
         /// <summary>

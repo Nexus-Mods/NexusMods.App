@@ -22,7 +22,7 @@ public partial class ArchivedFile : IModelDefinition
     /// The compressed container (.nx archive) that contains the file, the entity referenced
     /// here should have the relative path to the file.
     /// </summary>
-    public static readonly ReferenceAttribute Container = new(Namespace, nameof(Container));
+    public static readonly ReferenceAttribute<ArchivedFileContainer> Container = new(Namespace, nameof(Container));
     
     /// <summary>
     /// The hash of the file entry

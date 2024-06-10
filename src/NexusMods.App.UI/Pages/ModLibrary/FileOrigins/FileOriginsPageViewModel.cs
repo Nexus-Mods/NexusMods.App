@@ -24,7 +24,7 @@ namespace NexusMods.App.UI.Pages.ModLibrary;
 public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel>, IFileOriginsPageViewModel
 {
     private readonly IConnection _conn;
-    private readonly IRepository<DownloadAnalysis.Model> _dlAnalysisRepo;
+    private readonly IRepository<DownloadAnalysis.ReadOnly> _dlAnalysisRepo;
     private readonly IArchiveInstaller _archiveInstaller;
 
     public ReadOnlyObservableCollection<IFileOriginEntryViewModel> FileOrigins => _fileOrigins;
@@ -36,7 +36,7 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
     public FileOriginsPageViewModel(
         LoadoutId loadoutId,
         IArchiveInstaller archiveInstaller,
-        IRepository<DownloadAnalysis.Model> downloadAnalysisRepository,
+        IRepository<DownloadAnalysis.ReadOnly> downloadAnalysisRepository,
         IConnection conn,
         IWindowManager windowManager) : base(windowManager)
     {
@@ -49,7 +49,7 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
 
         LoadoutId = loadoutId;
 
-        var loadout = _conn.Db.Get<Loadout.Model>(LoadoutId.Value);
+        var loadout = _conn.Db.Get<Loadout.ReadOnly>(LoadoutId.Value);
         var game = loadout.Installation.Game;
 
         var entriesObservable = downloadAnalysisRepository.Observable
@@ -71,7 +71,7 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
         });
     }
 
-    public static bool FilterDownloadAnalysisModel(DownloadAnalysis.Model model, GameDomain currentGameDomain)
+    public static bool FilterDownloadAnalysisModel(DownloadAnalysis.ReadOnly model, GameDomain currentGameDomain)
     {
         if (!model.TryGet(DownloaderState.GameDomain, out var domain)) return false;
         if (domain != currentGameDomain) return false;

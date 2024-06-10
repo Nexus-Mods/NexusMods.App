@@ -24,7 +24,7 @@ public static class CompletedDownloadState
     /// Model for reading and writing CompletedDownloadStates
     /// </summary>
     /// <param name="tx"></param>
-    public class Model(ITransaction tx) : DownloaderState.Model(tx)
+    public class Model(ITransaction tx) : DownloaderState.ReadOnly(tx)
     {
         
         /// <summary>

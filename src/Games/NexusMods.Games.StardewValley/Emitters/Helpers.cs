@@ -13,10 +13,10 @@ internal static class Helpers
     public static readonly NamedLink NexusModsLink = new("Nexus Mods", new Uri("https://nexusmods.com/stardewvalley"));
     public static readonly NamedLink SMAPILink = new("Nexus Mods", new Uri("https://nexusmods.com/stardewvalley/mods/2400"));
 
-    public static async IAsyncEnumerable<ValueTuple<Mod.Model, Manifest>> GetAllManifestsAsync(
+    public static async IAsyncEnumerable<ValueTuple<Mod.ReadOnly, Manifest>> GetAllManifestsAsync(
         ILogger logger,
         IFileStore fileStore,
-        Loadout.Model loadout,
+        Loadout.ReadOnly loadout,
         bool onlyEnabledMods,
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
@@ -40,7 +40,7 @@ internal static class Helpers
     private static async ValueTask<Manifest?> GetManifest(
         ILogger logger,
         IFileStore fileStore,
-        Mod.Model mod,
+        Mod.ReadOnly mod,
         CancellationToken cancellationToken)
     {
         try

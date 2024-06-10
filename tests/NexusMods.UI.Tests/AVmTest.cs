@@ -34,8 +34,8 @@ where TVm : IViewModelInterface
 
     protected IFileOriginRegistry FileOriginRegistry { get; }
 
-    private Loadout.Model? _loadout;
-    protected Loadout.Model Loadout
+    private Loadout.ReadOnly? _loadout;
+    protected Loadout.ReadOnly Loadout
     {
         get
         {

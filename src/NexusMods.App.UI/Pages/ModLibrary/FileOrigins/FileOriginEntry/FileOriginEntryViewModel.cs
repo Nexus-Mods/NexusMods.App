@@ -35,7 +35,7 @@ public class FileOriginEntryViewModel : AViewModel<IFileOriginEntryViewModel>, I
         IConnection conn,
         IArchiveInstaller archiveInstaller,
         LoadoutId loadoutId,
-        DownloadAnalysis.Model fileOrigin)
+        DownloadAnalysis.ReadOnly fileOrigin)
     {
         Name = fileOrigin.TryGet(DownloaderState.FriendlyName, out var friendlyName) && friendlyName != "Unknown"
             ? friendlyName
@@ -58,7 +58,7 @@ public class FileOriginEntryViewModel : AViewModel<IFileOriginEntryViewModel>, I
         
         ArchiveDate = fileOrigin.GetCreatedAt();
 
-        var loadout = conn.Db.Get<Loadout.Model>(loadoutId.Value);
+        var loadout = conn.Db.Get<Loadout.ReadOnly>(loadoutId.Value);
 
         var interval = Observable.Interval(TimeSpan.FromSeconds(60)).StartWith(1);
 

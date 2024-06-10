@@ -275,7 +275,7 @@ public static class Services
             .AddSingleton<InjectedViewLocator>()
             .AddFileSystem()
 
-            .AddRepository<DownloadAnalysis.Model>([DownloadAnalysis.NumberOfEntries, DownloadAnalysis.SuggestedName])
+            .AddRepository<DownloadAnalysis.ReadOnly>([DownloadAnalysis.NumberOfEntries, DownloadAnalysis.SuggestedName])
             .AddRepository<StoredFile.Model>([StoredFile.Hash]);
     }
 
