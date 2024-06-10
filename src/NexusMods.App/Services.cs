@@ -48,7 +48,6 @@ public static class Services
                 .AddSettings<TelemetrySettings>()
                 .AddSettings<LoggingSettings>()
                 .AddSettings<ExperimentalSettings>()
-                .AddSingleProcess(Mode.Main)
                 .AddDefaultRenderers()
 
                 .AddSingleton<ITelemetryProvider, TelemetryProvider>()
@@ -83,6 +82,9 @@ public static class Services
                 .AddDownloaders()
                 .AddCleanupVerbs();
 
+            if (!startupMode.IsAvaloniaDesigner)
+                services.AddSingleProcess(Mode.Main);
+
             if (addStandardGameLocators)
                 services.AddStandardGameLocators(settings: gameLocatorSettings);
         }
@@ -90,9 +92,11 @@ public static class Services
         {
             services.AddFileSystem()
                 .AddCrossPlatform()
-                .AddSingleProcess(Mode.Client)
                 .AddDefaultRenderers()
                 .AddSettingsManager();
+            
+            if (!startupMode.IsAvaloniaDesigner)
+                services.AddSingleProcess(Mode.Client);
         }
 
         return services;

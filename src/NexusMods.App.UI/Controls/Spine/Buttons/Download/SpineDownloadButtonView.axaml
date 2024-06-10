@@ -8,7 +8,7 @@
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:download="clr-namespace:NexusMods.App.UI.Controls.Spine.Buttons.Download"
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
-    mc:Ignorable="d" d:DesignWidth="64" d:DesignHeight="64"
+    mc:Ignorable="d" d:DesignWidth="150" d:DesignHeight="104"
     x:Class="NexusMods.App.UI.Controls.Spine.Buttons.Download.SpineDownloadButtonView">
     <Design.DataContext>
         <download:SpineDownloadButtonDesignerViewModel/>
@@ -18,12 +18,12 @@
             <TextBlock x:Name="ToolTipTextBlock"/>
         </ToolTip.Tip>
         <Grid>
-            <Border></Border>
+            <Border x:Name="OuterBorder"/>
             <Arc x:Name="ProgressArc"></Arc>
-            <icons:UnifiedIcon Size="24" Classes="Download"/>
-            <StackPanel>
-                <TextBlock Classes="Number" x:Name="NumberTextBlock"/>
-                <TextBlock Classes="Units" x:Name="UnitsTextBlock"/>
+            <icons:UnifiedIcon Size="24" Classes="Download" x:Name="Icon"/>
+            <StackPanel x:Name="StackPanel">
+                <TextBlock Classes="SpineDownloadButtonTextBlock Number" x:Name="NumberTextBlock"/>
+                <TextBlock Classes="SpineDownloadButtonTextBlock Units" x:Name="UnitsTextBlock"/>
             </StackPanel>
         </Grid>
     </Button>
