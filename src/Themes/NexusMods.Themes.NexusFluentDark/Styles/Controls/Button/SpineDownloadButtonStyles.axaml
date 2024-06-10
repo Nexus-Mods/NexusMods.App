@@ -8,81 +8,6 @@
     <Design.PreviewWith>
         <StackPanel Orientation="Horizontal" Margin="24" Classes="Spacing-2">
             <ui:SpineDownloadButtonView />
-            <StackPanel Orientation="Vertical" Classes="Spacing-2">
-                <Button Classes="SpineDownloadButton Idle">
-                    <Grid>
-                        <Border></Border>
-                        <Arc></Arc>
-                        <icons:UnifiedIcon Classes="Download" />
-                        <StackPanel>
-                            <TextBlock Text="8.6" Classes="Number" />
-                            <TextBlock Text="MB/s" Classes="Units" />
-                        </StackPanel>
-                    </Grid>
-                </Button>
-                <Button Classes="SpineDownloadButton Idle Active">
-                    <Grid>
-                        <Border></Border>
-                        <Arc></Arc>
-                        <icons:UnifiedIcon Classes="Download" />
-                        <StackPanel>
-                            <TextBlock Text="8.6" Classes="Number" />
-                            <TextBlock Text="MB/s" Classes="Units" />
-                        </StackPanel>
-                    </Grid>
-                </Button>
-            </StackPanel>
-
-            <StackPanel Orientation="Vertical" Classes="Spacing-2">
-                <Button Classes="SpineDownloadButton Progress">
-                    <Grid>
-                        <Border></Border>
-                        <Arc SweepAngle="270"></Arc>
-                        <icons:UnifiedIcon Classes="Download" />
-                        <StackPanel>
-                            <TextBlock Text="18.6" Classes="Number" />
-                            <TextBlock Text="MB/s" Classes="Units" />
-                        </StackPanel>
-                    </Grid>
-                </Button>
-                <Button Classes="SpineDownloadButton Progress Active">
-                    <Grid>
-                        <Border></Border>
-                        <Arc SweepAngle="90"></Arc>
-                        <icons:UnifiedIcon Classes="Download" />
-                        <StackPanel>
-                            <TextBlock Text="18.6" Classes="Number" />
-                            <TextBlock Text="MB/s" Classes="Units" />
-                        </StackPanel>
-                    </Grid>
-                </Button>
-            </StackPanel>
-
-            <StackPanel Orientation="Vertical" Classes="Spacing-2">
-                <Button Classes="SpineDownloadButton Progress">
-                    <Grid>
-                        <Border></Border>
-                        <Arc SweepAngle="180"></Arc>
-                        <icons:UnifiedIcon Classes="Download" />
-                        <StackPanel>
-                            <TextBlock Text="48" Classes="Number" />
-                            <TextBlock Text="MINS" Classes="Units" />
-                        </StackPanel>
-                    </Grid>
-                </Button>
-                <Button Classes="SpineDownloadButton Progress Active">
-                    <Grid>
-                        <Border></Border>
-                        <Arc SweepAngle="90"></Arc>
-                        <icons:UnifiedIcon Classes="Download" />
-                        <StackPanel>
-                            <TextBlock Text="48" Classes="Number" />
-                            <TextBlock Text="MINS" Classes="Units" />
-                        </StackPanel>
-                    </Grid>
-                </Button>
-            </StackPanel>
-
         </StackPanel>
     </Design.PreviewWith>
 
@@ -107,7 +32,7 @@
         <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
 
         <!-- Border -->
-        <Style Selector="^ Border">
+        <Style Selector="^ Border#OuterBorder">
             <Setter Property="Width" Value="50" />
             <Setter Property="Height" Value="50" />
             <Setter Property="CornerRadius" Value="{StaticResource Rounded-full}" />
@@ -118,14 +43,14 @@
         </Style>
 
         <!-- Icon -->
-        <Style Selector="^ icons|UnifiedIcon">
+        <Style Selector="^ icons|UnifiedIcon#Icon">
             <Setter Property="Size" Value="24" />
             <Setter Property="Margin" Value="12" />
             <Setter Property="Foreground" Value="{DynamicResource NeutralStrongBrush}" />
         </Style>
 
         <!-- StackPanel -->
-        <Style Selector="^ > Grid > StackPanel">
+        <Style Selector="^ > Grid > StackPanel#StackPanel">
             <Setter Property="Spacing" Value="{StaticResource Spacing-none}" />
             <Setter Property="Orientation" Value="Vertical" />
             <Setter Property="HorizontalAlignment" Value="Center" />
@@ -134,7 +59,7 @@
         </Style>
 
         <!-- TextBlock -->
-        <Style Selector="^ TextBlock">
+        <Style Selector="^ TextBlock.SpineDownloadButtonTextBlock">
             <Setter Property="Margin" Value="0" />
             <Setter Property="Padding" Value="0" />
             <Setter Property="VerticalAlignment" Value="Center" />
@@ -164,7 +89,7 @@
             </Style>
 
             <!-- Border -->
-            <Style Selector="^ Border">
+            <Style Selector="^ Border#OuterBorder">
                 <Setter Property="BorderBrush" Value="{DynamicResource NeutralModerateBrush}" />
                 <Setter Property="Background">
                     <SolidColorBrush Color="{StaticResource NeutralStrong}"
@@ -173,7 +98,7 @@
             </Style>
 
             <!-- Icon -->
-            <Style Selector="^ icons|UnifiedIcon">
+            <Style Selector="^ icons|UnifiedIcon#Icon">
                 <Setter Property="Foreground" Value="{DynamicResource NeutralStrongBrush}" />
             </Style>
 
@@ -183,12 +108,12 @@
         <!-- Progress variation -->
         <Style Selector="^.Progress">
 
-            <Style Selector="^ Border">
+            <Style Selector="^ Border#OuterBorder">
                 <Setter Property="BorderThickness" Value="2" />
                 <Setter Property="CornerRadius" Value="{StaticResource Rounded-full}" />
             </Style>
 
-            <Style Selector="^ Arc">
+            <Style Selector="^ Arc#ProgressArc">
                 <Setter Property="Width" Value="50" />
                 <Setter Property="Height" Value="50" />
                 <Setter Property="StrokeThickness" Value="3" />
@@ -196,16 +121,16 @@
                 <Setter Property="Stroke" Value="{StaticResource InfoWeakBrush}" />
             </Style>
 
-            <Style Selector="^ > Grid > icons|UnifiedIcon">
+            <Style Selector="^ > Grid > icons|UnifiedIcon#Icon">
                 <Setter Property="IsVisible" Value="False" />
             </Style>
 
-            <Style Selector="^ > Grid > StackPanel">
+            <Style Selector="^ > Grid > StackPanel#StackPanel">
                 <Setter Property="IsVisible" Value="True" />
             </Style>
 
             <!-- pointerover color -->
-            <Style Selector="^:pointerover Arc">
+            <Style Selector="^:pointerover Arc#ProgressArc">
                 <Setter Property="Stroke" Value="{StaticResource InfoSubduedBrush}" />
             </Style>
         </Style>
@@ -213,11 +138,11 @@
         <!-- Idle variation -->
         <Style Selector="^.Idle">
 
-            <Style Selector="^ > Grid > icons|UnifiedIcon">
+            <Style Selector="^ > Grid > icons|UnifiedIcon#Icon">
                 <Setter Property="IsVisible" Value="True" />
             </Style>
 
-            <Style Selector="^ > Grid > StackPanel">
+            <Style Selector="^ > Grid > StackPanel#StackPanel">
                 <Setter Property="IsVisible" Value="False" />
             </Style>
         </Style>
@@ -225,7 +150,7 @@
         <!-- Active variation (Selected) -->
         <Style Selector="^.Active">
 
-            <Style Selector="^ Border">
+            <Style Selector="^ Border#OuterBorder">
                 <Setter Property="Background">
                     <SolidColorBrush Color="{StaticResource NeutralStrong}"
                                      Opacity="{StaticResource OpacityWeak}" />
@@ -236,7 +161,7 @@
                 </Setter>
             </Style>
 
-            <Style Selector="^.Progress Border">
+            <Style Selector="^.Progress Border#OuterBorder">
                 <Setter Property="BorderThickness" Value="2" />
                 <Setter Property="CornerRadius" Value="{StaticResource Rounded-full}" />
                 <Setter Property="BorderBrush" Value="{StaticResource NeutralModerateBrush}" />
@@ -246,7 +171,7 @@
                 </Setter>
             </Style>
 
-            <Style Selector="^ icons|UnifiedIcon">
+            <Style Selector="^ icons|UnifiedIcon#Icon">
                 <Setter Property="Foreground" Value="{DynamicResource NeutralStrongBrush}" />
             </Style>
         </Style>

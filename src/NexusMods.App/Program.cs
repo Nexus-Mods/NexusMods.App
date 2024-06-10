@@ -205,8 +205,7 @@ public class Program
         TelemetrySettings telemetrySettings,
         LoggingSettings loggingSettings,
         ExperimentalSettings experimentalSettings,
-        GameLocatorSettings? gameLocatorSettings = null,
-        bool isAvaloniaDesigner = false)
+        GameLocatorSettings? gameLocatorSettings = null)
     {
         var host = new HostBuilder().ConfigureServices(services =>
         {
@@ -216,7 +215,7 @@ public class Program
                 experimentalSettings: experimentalSettings,
                 gameLocatorSettings: gameLocatorSettings).Validate();
 
-            if (isAvaloniaDesigner)
+            if (startupMode.IsAvaloniaDesigner)
             {
                 s.OverrideSettingsForTests<DataModelSettings>(settings => settings with { UseInMemoryDataModel = true, });
             }
@@ -294,6 +293,8 @@ public class Program
         {
             RunAsMain = true,
             ShowUI = false,
+            ExecuteCli = false,
+            IsAvaloniaDesigner = true,
             Args = [],
             OriginalArgs = [],
         };
@@ -301,9 +302,10 @@ public class Program
         var host = BuildHost(startupMode, 
             telemetrySettings: new TelemetrySettings(), 
             LoggingSettings.CreateDefault(OSInformation.Shared),
-            isAvaloniaDesigner: true,
             experimentalSettings: new ExperimentalSettings()
         );
+        
+        host.StartAsync().GetAwaiter().GetResult();
         
         DesignerUtils.Activate(host.Services);
         
