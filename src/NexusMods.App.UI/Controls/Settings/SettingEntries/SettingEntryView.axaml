@@ -17,12 +17,9 @@
         <Grid RowDefinitions="Auto, Auto">
             <Grid Grid.Row="0" 
                 ColumnDefinitions="*, Auto">
-                <StackPanel Grid.Column="0"
-                            Orientation="Vertical">
-                    <TextBlock x:Name="EntryName"
-                               Classes="BodyXLNormal" />
-                    <TextBlock x:Name="EntryDescription"
-                               Classes="BodyMDNormal ForegroundSubdued" />
+                <StackPanel Grid.Column="0" Orientation="Vertical">
+                    <TextBlock x:Name="EntryName" Classes="BodyXLNormal" TextWrapping="Wrap" />
+                    <TextBlock x:Name="EntryDescription" Classes="BodyMDNormal ForegroundSubdued" TextWrapping="Wrap" />
                 </StackPanel>
 
                 <Border Grid.Column="1" 
