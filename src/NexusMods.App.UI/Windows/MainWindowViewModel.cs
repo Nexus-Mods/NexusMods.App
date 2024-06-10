@@ -71,6 +71,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
             
             loginManager.IsLoggedInObservable
                 .Where(isSignedIn => isSignedIn)
+                .Select(_ => Unit.Default)
                 .InvokeCommand(BringWindowToFront)
                 .DisposeWith(d);
             
