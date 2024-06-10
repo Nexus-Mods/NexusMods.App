@@ -27,6 +27,8 @@ public class StartupMode
     /// </summary>
     public bool ShowUI { get; set; } = true;
     
+    public bool IsAvaloniaDesigner { get; set; } = false;
+    
     public static StartupMode Parse(string[] args)
     {
         var mode = new StartupMode
