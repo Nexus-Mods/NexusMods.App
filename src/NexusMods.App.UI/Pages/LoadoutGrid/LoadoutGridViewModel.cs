@@ -16,6 +16,7 @@ using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.Settings;
+using NexusMods.Abstractions.Telemetry;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.Controls.MarkdownRenderer;
 using NexusMods.App.UI.Controls.Navigation;
@@ -246,8 +247,8 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
     private string GetEmptyModlistMarkdownString()
     {
         var gameDomain = _conn.Db.Get(LoadoutId).Installation.Game.Domain;
-        var url = string.Format(NexusModsUrl, gameDomain);
-        var mkString = """
+        var url = NexusModsUrlBuilder.CreateGenericUri(string.Format(NexusModsUrl, gameDomain));
+        const string mkString = """
 ### No mods have been added
 View and add your existing downloaded mods from the **Library** or [browse new mods on Nexus Mods]({0})
 """;
