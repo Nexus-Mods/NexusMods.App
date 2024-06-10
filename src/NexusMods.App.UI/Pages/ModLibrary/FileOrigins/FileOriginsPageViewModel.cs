@@ -16,6 +16,7 @@ using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
+using NexusMods.Abstractions.Telemetry;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Pages.LoadoutGrid;
 using NexusMods.App.UI.Pages.ModLibrary.FileOriginEntry;
@@ -199,8 +200,8 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
 
     public async Task OpenNexusModPage()
     {
-        var url = $"https://www.nexusmods.com/{_gameDomain.Value}?pk_source=nexusmodsapp";
-        await _osInterop.OpenUrl(new Uri(url), true);
+        var uri = NexusModsUrlBuilder.CreateGenericUri($"https://www.nexusmods.com/{_gameDomain.Value}");
+        await _osInterop.OpenUrl(uri, true);
     }
 
     private async Task DoAddModImpl(IModInstaller? installer, CancellationToken token)
@@ -211,7 +212,7 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
 
     private async Task AddUsingInstallerToLoadout(DownloadAnalysis.Model fileOrigin, IModInstaller? installer, CancellationToken token)
     {
-        await _archiveInstaller.AddMods(LoadoutId, fileOrigin, installer, token);
+        await _archiveInstaller.AddMods(LoadoutId, fileOrigin, null, installer, token);
     }
 
     private async Task<IEnumerable<IStorageFile>> PickModFiles(IStorageProvider storageProvider)
