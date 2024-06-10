@@ -20,6 +20,7 @@ using NexusMods.Extensions.BCL;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Models;
+using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
 using File = NexusMods.Abstractions.Loadouts.Files.File;
 
@@ -190,10 +191,10 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                     // StoredFile files are special cased, so we can batch them up and extract them all at once.
                     // Don't add toExtract to the results yet as we'll need to get the modified file times
                     // after we extract them
-                    if (storedFile.Value.Hash == entry.Hash)
+                    if (storedFile.Hash == entry.Hash)
                         continue;
 
-                    toExtract.Add(KeyValuePair.Create(entry.Path, storedFile.Value));
+                    toExtract.Add(KeyValuePair.Create(entry.Path, storedFile));
                 }
                 else if (file.TryGetAsGeneratedFile(out _))
                 {
@@ -236,7 +237,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             }
             else if (file.TryGetAsStoredFile(out var storedFile))
             {
-                toExtract.Add(KeyValuePair.Create(absolutePath, storedFile!.Value));
+                toExtract.Add(KeyValuePair.Create(absolutePath, storedFile));
             }
             else if (file.TryGetAsGeneratedFile(out _))
             {
@@ -507,20 +508,23 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         var results = new List<KeyValuePair<GamePath, File.ReadOnly>>();
         var mods = prevLoadout.Mods
             .GroupBy(m => m.Category)
-            .ToDictionary(g => g.Key, g => g.First());
+            .ToDictionary(g => g.Key, g => g.First().Id);
         
         using var tx = Connection.BeginTransaction();
 
         // Helper function to get a mod for a given category, or create a new one if it doesn't exist.
-        Mod.ReadOnly ModForCategory(ModCategory category)
+        EntityId ModForCategory(ModCategory category)
         {
             if (mods.TryGetValue(category, out var mod))
                 return mod;
-            var newMod = new Mod.ReadOnly(tx)
+            var newMod = new Mod.New(tx)
             {
                 Category = category,
                 Name = category.ToString(),
                 Enabled = true,
+                Revision = 0,
+                LoadoutId = prevLoadout.LoadoutId,
+                Status = ModStatus.Installed,
             };
             mods.Add(category, newMod);
             return newMod;
@@ -534,8 +538,8 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             // No mod, so we need to put it somewhere, for now we put it in the Override Mod
             if (!item.Item.Value.Contains(File.Mod))
             {
-                var mod = ModForCategory(ModCategory.Overrides);
-                tx.Add(item.Item.Value.Id, File.Mod, mod.Id);
+                var modId = ModForCategory(ModCategory.Overrides);
+                tx.Add(item.Item.Value.Id, File.Mod, modId);
             }
         }
         var result = await tx.Commit();
@@ -600,17 +604,21 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         return newLoadout;
     }
 
-    protected Mod.ReadOnly GetOrCreateOverridesMod(Loadout.ReadOnly loadout, ITransaction tx)
+    protected ModId GetOrCreateOverridesMod(Loadout.ReadOnly loadout, ITransaction tx)
     {
-        var overridesMod = loadout.Mods.FirstOrDefault(m => m.Category == ModCategory.Overrides);
-        overridesMod ??= new Mod.ReadOnly(tx)
+        var overridesMod = loadout.Mods.FirstOrDefault(m => m.Category == ModCategory.Overrides).ModId;
+        if (overridesMod == default(ModId))
         {
-            Loadout = loadout,
-            Category = ModCategory.Overrides,
-            Name = "Overrides",
-            Enabled = true,
-        };
-
+            overridesMod = new Mod.New(tx)
+            {
+                LoadoutId = loadout,
+                Category = ModCategory.Overrides,
+                Name = "Overrides",
+                Enabled = true,
+                Status = ModStatus.Installed,
+                Revision = 0,
+            };
+        }
         return overridesMod;
     }
 
@@ -622,15 +630,16 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         foreach (var newFile in newFiles)
         {
             newFile.Add(File.Loadout, loadout.Id);
-            newFile.Add(File.Mod, overridesMod.Id);
+            newFile.Add(File.Mod, overridesMod);
             newFile.AddTo(tx);
         }
         
         // If we created the mod in this transaction, db will be null, and we can't call .Revise on it
         // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
-        if (overridesMod.Db != null)
+        if (overridesMod.Value.InPartition(PartitionId.Temp))
         {
-            overridesMod.Revise(tx);
+            var mod = new Mod.ReadOnly(loadout.Db, overridesMod);
+            mod.Revise(tx);
         }
         else
         {
@@ -802,7 +811,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                         );
                     }
                 }
-                else if (file.IsGeneratedFile())
+                else if (file.TryGetAsGeneratedFile(out _))
                 {
                     // TODO: Implement change detection for generated files
                     continue;
@@ -853,7 +862,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                     }
                 );
             }
-            else if (file.IsGeneratedFile())
+            else if (file.TryGetAsGeneratedFile(out _))
             {
                 // TODO: Implement change detection for generated files
                 continue;
@@ -913,7 +922,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         if (!file.TryGetAsGeneratedFile(out var generatedFile))
             throw new InvalidOperationException("File is not a generated file");
 
-        var generator = generatedFile.Generator;
+        var generator = generatedFile.GeneratorInstance;
         if (generator == null)
             throw new InvalidOperationException("Generated file does not have a generator");
         
@@ -927,7 +936,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         var (isCached, initialState) = await GetOrCreateInitialDiskState(installation);
         
         using var tx = Connection.BeginTransaction();
-        using var db = Connection.Db;
+        var db = Connection.Db;
         
         // We need to create a 'Vanilla State Loadout' for rolling back the game
         // to the original state before NMA touched it, if we don't already
@@ -944,7 +953,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         var loadout = new Loadout.New(tx)
         {
             Name = suggestedName ?? $"Loadout {installation.Game.Name}",
-            Installation = installation.GameMetadataId,
+            InstallationId = installation.GameMetadataId,
             Revision = 0,
             LoadoutKind = LoadoutKind.Default,
         };
@@ -1012,7 +1021,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         return remappedLoadout;
     }
 
-    private Mod.New CreateGameFilesMod(Loadout.ReadOnly loadout, GameInstallation installation, ITransaction tx)
+    private Mod.New CreateGameFilesMod(Loadout.New loadout, GameInstallation installation, ITransaction tx)
     {
         return new Mod.New(tx)
         {
@@ -1022,6 +1031,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             Enabled = true,
             LoadoutId = loadout,
             Status = ModStatus.Installed,
+            Revision = 0,
         };
     }
 
@@ -1035,8 +1045,10 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         // All database information, including loadouts, initial game state and
         // TODO: Garbage Collect unused files.
 
+        using var tx = Connection.BeginTransaction();
         foreach (var loadout in Loadout.All(Connection.Db))
-            await Connection.Delete(loadout.LoadoutId);
+            tx.Delete(loadout, true);
+        await tx.Commit();
         
         await _diskStateRegistry.ClearInitialState(installation);
     }
@@ -1047,9 +1059,9 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         // Clear Initial State if this is the only loadout for the game.
         // We use folder location for this.
         var installLocation = installation.LocationsRegister[LocationId.Game];
-        var isLastLoadout = Connection.Db.Loadouts()
+        var isLastLoadout = Loadout.All(Connection.Db)
             .Count(x => 
-                x.Installation.LocationsRegister[LocationId.Game] == installLocation 
+                x.InstallationInstance.LocationsRegister[LocationId.Game] == installLocation 
                 && !x.IsVisible()) <= 1;
 
         if (isLastLoadout)
@@ -1094,7 +1106,9 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             await ApplyVanillaStateLoadout(installation);
         }
 
-        await Connection.Delete(id);
+        using var tx = Connection.BeginTransaction();
+        tx.Delete(id, true);
+        await tx.Commit();
     }
 
     /// <summary>
@@ -1110,12 +1124,10 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         var (_, initialState) = await GetOrCreateInitialDiskState(installation);
 
         using var tx = Connection.BeginTransaction();
-        var db = Connection.Db;
-        var loadout = new Loadout.ReadOnly(tx)
+        var loadout = new Loadout.New(tx)
         {
-            Db = db, // Has to be here to the installation resolves properly
             Name = $"Vanilla State Loadout for {installation.Game.Name}",
-            Installation = installation,
+            InstallationId = installation.GameMetadataId,
             Revision = 0,
             LoadoutKind = LoadoutKind.VanillaState,
         };
@@ -1130,20 +1142,23 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         {
             var path = file.GamePath();
             filesToBackup.Add((path, file.Item.Value.Hash, file.Item.Value.Size));
-            _ = new StoredFile.ReadOnly(tx)
+            _ = new StoredFile.New(tx)
             {
-                Loadout = loadout,
-                Mod = gameFiles,
+                File = new File.New(tx)
+                {
+                    LoadoutId = loadout,
+                    ModId = gameFiles,
+                    To = path,
+                },
                 Hash = file.Item.Value.Hash,
                 Size = file.Item.Value.Size,
-                To = path,
             };
         }
         
         await BackupNewFiles(installation, filesToBackup);
-        await tx.Commit();
+        var result = await tx.Commit();
 
-        return loadout;
+        return loadout.Remap(result);
     }
 #endregion
 
@@ -1162,7 +1177,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             return [new First<Mod.ReadOnly, ModId>()];
         if (mod.Category == ModCategory.Overrides)
             return [new Last<Mod.ReadOnly, ModId>()];
-        if (mod.TryGet(Mod.SortAfter, out var other))
+        if (Mod.SortAfter.TryGet(mod, out var other))
             return [new After<Mod.ReadOnly, ModId> { Other = ModId.From(other) }];
         return [];
     }
@@ -1226,17 +1241,18 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
 
     private async Task ApplyVanillaStateLoadout(GameInstallation installation)
     {
-        using var db = Connection.Db;
+        var db = Connection.Db;
         var installLocation = installation.LocationsRegister[LocationId.Game];
 
         // Note(sewer) We should always have a vanilla state loadout, so FirstOrDefault
         // should never return null. But, if due to some issue or bug we don't,
         // this is a recoverable error. We can just create a new vanilla state loadout.
         // as that is based on the initial state of the game folder.
-        var vanillaStateLoadout = db.Loadouts().FirstOrDefault(x =>
-            x.Installation.LocationsRegister[LocationId.Game] == installLocation
-            && x.IsVanillaStateLoadout()
-        ) ?? await CreateVanillaStateLoadout(installation);
+        var vanillaStateLoadout = Loadout.All(db)
+            .FirstOrDefault(x => x.InstallationInstance.LocationsRegister[LocationId.Game] == installLocation && x.IsVanillaStateLoadout());
+        
+        if (!vanillaStateLoadout.IsValid())
+            await CreateVanillaStateLoadout(installation);
 
         await Apply(vanillaStateLoadout, true);
     }

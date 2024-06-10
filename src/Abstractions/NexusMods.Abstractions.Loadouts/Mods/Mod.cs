@@ -50,7 +50,7 @@ public partial class Mod : IModelDefinition
     /// <summary>
     /// The Download Metadata the mod was installed from.
     /// </summary>
-    public static readonly ReferenceAttribute<DownloadAnalysis> Source = new(Namespace, nameof(Source));
+    public static readonly ReferenceAttribute<DownloadAnalysis> Source = new(Namespace, nameof(Source)) { IsOptional = true };
     
     /// <summary>
     /// The enabled status of the mod
@@ -72,7 +72,7 @@ public partial class Mod : IModelDefinition
     /// Sort this mod after another mod, mostly used as a placeholder until we figure out better
     /// sorting mechanisms.
     /// </summary>
-    public static readonly ReferenceAttribute<Mod> SortAfter = new(Namespace, nameof(SortAfter));
+    public static readonly ReferenceAttribute<Mod> SortAfter = new(Namespace, nameof(SortAfter)) { IsOptional = true };
     
     /// <summary>
     /// The files that are part of this mod.
