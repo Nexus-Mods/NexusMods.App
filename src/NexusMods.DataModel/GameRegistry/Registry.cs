@@ -87,11 +87,10 @@ public class Registry : IGameRegistry, IHostedService
     /// </summary>
     private static bool TryGetLocatorResultId(IDb db, ILocatableGame locatableGame, GameLocatorResult result, [NotNullWhen(true)] out EntityId? id)
     {
-        var found = db
-            .FindIndexed(result.Path.ToString(), GameMetadata.Path)
-            .Select(db.Get<GameMetadata.Model>)
+        var found = GameMetadata.FindByPath(db, result.Path.ToString())
+            .Select(id => GameMetadata.Load(db, id))
             .FirstOrDefault(m => m.Domain == locatableGame.Domain && m.Store == result.Store);
-        if (found is null)
+        if (!found.IsValid())
         {
             id = null;
             return false;
@@ -116,7 +115,7 @@ public class Registry : IGameRegistry, IHostedService
                 return;
 
             // Doesn't exist, so create it.
-            _ = new GameMetadata.Model(tx)
+            _ = new GameMetadata.New(tx)
             {
                 Store = result.Store.Value,
                 Domain = game.Domain.Value,

@@ -13,9 +13,9 @@ public static class LoadoutExtensions
     /// </summary>
     /// <param name="loadout"></param>
     /// <returns></returns>
-    public static Task<DiskStateTree> Apply(this Loadout.Model loadout)
+    public static Task<DiskStateTree> Apply(this Loadout.ReadOnly loadout)
     {
-        return loadout.Installation.GetGame().Synchronizer.Apply(loadout);
+        return loadout.InstallationInstance.GetGame().Synchronizer.Apply(loadout);
     }
 
     /// <summary>
@@ -23,9 +23,9 @@ public static class LoadoutExtensions
     /// </summary>
     /// <param name="loadout"></param>
     /// <returns></returns>
-    public static Task<Loadout.Model> Ingest(this Loadout.Model loadout)
+    public static Task<Loadout.ReadOnly> Ingest(this Loadout.ReadOnly loadout)
     {
-        return loadout.Installation.GetGame().Synchronizer.Ingest(loadout);
+        return loadout.InstallationInstance.GetGame().Synchronizer.Ingest(loadout);
     }
 
 }

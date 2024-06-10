@@ -14,7 +14,7 @@ namespace NexusMods.DataModel.ArchiveContents;
 /// entry contains the hash, the decompressed size, and a reference to the container. In the case of Nx containers
 /// it also contains the Nx internal header data for the entry so that we can do point lookups, of files.
 /// </summary>
-public static class ArchivedFile
+public partial class ArchivedFile : IModelDefinition
 {
     private const string Namespace = "NexusMods.DataModel.ArchivedFile";
     
@@ -33,49 +33,4 @@ public static class ArchivedFile
     /// The file entry data for the NX block offset data
     /// </summary>
     public static readonly NxFileEntryAttribute NxFileEntry = new(Namespace, nameof(NxFileEntry));
-
-
-    /// <summary>
-    /// Model for the archived file entry.
-    /// </summary>
-    public class Model(ITransaction tx) : Entity(tx)
-    {
-        
-        /// <summary>
-        /// Id of the containing archive.
-        /// </summary>
-        public EntityId ContainerId
-        {
-            get => ArchivedFile.Container.Get(this);
-            set => ArchivedFile.Container.Add(this, value);
-        } 
-        
-        /// <summary>
-        /// The container that contains this file.
-        /// </summary>
-        public ArchivedFileContainer.Model Container
-        {
-            get => Db.Get<ArchivedFileContainer.Model>(ContainerId);
-            set => ContainerId = value.Id;
-        }
-        
-        /// <summary>
-        /// Hash of the file entry
-        /// </summary>
-        public Hash Hash
-        {
-            get => ArchivedFile.Hash.Get(this);
-            set => ArchivedFile.Hash.Add(this, value);
-        }
-        
-        /// <summary>
-        /// The Nx file entry data for the NX block offset data
-        /// </summary>
-        public FileEntry NxFileEntry
-        {
-            get => ArchivedFile.NxFileEntry.Get(this);
-            set => ArchivedFile.NxFileEntry.Add(this, value);
-        }
-    }
-    
 }

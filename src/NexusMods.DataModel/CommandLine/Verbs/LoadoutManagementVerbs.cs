@@ -48,15 +48,10 @@ public static class LoadoutManagementVerbs
 
     [Verb("apply", "Apply the given loadout to the game folder")]
     private static async Task<int> Apply([Injected] IRenderer renderer,
-        [Option("l", "loadout", "Loadout to apply")] Loadout.Model loadout)
+        [Option("l", "loadout", "Loadout to apply")] Loadout.ReadOnly loadout,
+        [Injected] IApplyService applyService)
     {
-        var state = await loadout.Apply();
-
-        var summary = state.GetAllDescendentFiles()
-            .Aggregate((Count:0, Size:Size.Zero), (acc, file) => (acc.Item1 + 1, acc.Item2 + file.Item.Value.Size));
-
-        await renderer.Text($"Applied {loadout.Name} resulting state contains {summary.Count} files and {summary.Size} of data");
-
+        await applyService.Apply(loadout);
         return 0;
     }
 
@@ -97,14 +92,14 @@ public static class LoadoutManagementVerbs
     [Verb("flatten-loadout", "Flatten a loadout into the projected filesystem")]
     private static async Task<int> FlattenLoadout([Injected] IRenderer renderer,
         [Option("l", "loadout", "Loadout to flatten")]
-        Loadout.Model loadout,
+        Loadout.ReadOnly loadout,
         [Injected] CancellationToken token)
     {
         var rows = new List<object[]>();
-        var synchronizer = loadout.Installation.GetGame().Synchronizer as IStandardizedLoadoutSynchronizer;
+        var synchronizer = loadout.InstallationInstance.GetGame().Synchronizer as IStandardizedLoadoutSynchronizer;
         if (synchronizer == null)
         {
-            await renderer.Text($"{loadout.Installation.Game.Name} does not support flattening loadouts");
+            await renderer.Text($"{loadout.InstallationInstance.Game.Name} does not support flattening loadouts");
             return -1;
         }
 
@@ -119,7 +114,7 @@ public static class LoadoutManagementVerbs
 
     [Verb("install-mod", "Installs a mod into a loadout")]
     private static async Task<int> InstallMod([Injected] IRenderer renderer,
-        [Option("l", "loadout", "loadout to add the mod to")] Loadout.Model loadout,
+        [Option("l", "loadout", "loadout to add the mod to")] Loadout.ReadOnly loadout,
         [Option("f", "file", "Mod file to install")] AbsolutePath file,
         [Option("n", "name", "Name of the mod after installing")] string name,
         [Injected] IArchiveInstaller archiveInstaller,
@@ -158,7 +153,7 @@ public static class LoadoutManagementVerbs
         [Injected] CancellationToken token)
     {
         var db = conn.Db;
-        var rows = db.Loadouts()
+        var rows = Loadout.All(db)
             .Where(x => x.IsVisible())
             .Select(list => new object[] { list.Name, list.Installation, list.LoadoutId, list.Mods.Count })
             .ToList();
@@ -169,7 +164,7 @@ public static class LoadoutManagementVerbs
 
     [Verb("list-mod-contents", "Lists the contents of a mod")]
     private static async Task<int> ListModContents([Injected] IRenderer renderer,
-        [Option("l", "loadout", "Loadout to load")] Loadout.Model loadout,
+        [Option("l", "loadout", "Loadout to load")] Loadout.ReadOnly loadout,
         [Option("m", "mod", "Mod to print the contents of")] string modName,
         [Injected] CancellationToken token)
     {
@@ -191,7 +186,7 @@ public static class LoadoutManagementVerbs
 
     [Verb("list-mods", "Lists the mods in a loadout")]
     private static async Task<int> ListMods([Injected] IRenderer renderer,
-        [Option("l", "loadout", "Loadout to load")] Loadout.Model loadout,
+        [Option("l", "loadout", "Loadout to load")] Loadout.ReadOnly loadout,
         [Injected] CancellationToken token)
     {
         var rows = loadout.Mods
@@ -242,18 +237,7 @@ public static class LoadoutManagementVerbs
         [Injected] CancellationToken token)
     {
 
-        try
-        {
-            // The loadout should be removed through the synchronizer, if it is
-            // removed via the registry only, the game may be left in an inconsistent state
-            await conn.Delete(loadoutId);
-            await renderer.Text($"Loadout {loadoutId} removed successfully");
-            return 0;
-        }
-        catch (Exception ex)
-        {
-            await renderer.Error(ex, $"Error removing loadout: {ex.Message}");
-            return -1;
-        }
+        // TODO: make this call into the new removal logic that uses disk states
+        throw new Exception("Not implemented");
     }
 }

@@ -11,6 +11,7 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Extensions.BCL;
+using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.DataModel.Diagnostics;
 
@@ -25,14 +26,10 @@ internal sealed class DiagnosticManager : IDiagnosticManager
 
     private bool _isDisposed;
     private readonly CompositeDisposable _compositeDisposable = new();
-    private readonly IRepository<Loadout.Model> _loadoutRepository;
 
-    public DiagnosticManager(
-        ILogger<DiagnosticManager> logger,
-        IRepository<Loadout.Model> loadoutRepository)
+    public DiagnosticManager(ILogger<DiagnosticManager> logger, IConnection)
     {
         _logger = logger;
-        _loadoutRepository = loadoutRepository;
     }
 
     public IObservable<Diagnostic[]> GetLoadoutDiagnostics(LoadoutId loadoutId)
@@ -69,9 +66,9 @@ internal sealed class DiagnosticManager : IDiagnosticManager
         }
     }
 
-    private async Task<Diagnostic[]> GetLoadoutDiagnostics(Loadout.Model loadout, CancellationToken cancellationToken)
+    private async Task<Diagnostic[]> GetLoadoutDiagnostics(Loadout.ReadOnly loadout, CancellationToken cancellationToken)
     {
-        var diagnosticEmitters = loadout.Installation.GetGame().DiagnosticEmitters;
+        var diagnosticEmitters = loadout.InstallationInstance.GetGame().DiagnosticEmitters;
 
         try
         {

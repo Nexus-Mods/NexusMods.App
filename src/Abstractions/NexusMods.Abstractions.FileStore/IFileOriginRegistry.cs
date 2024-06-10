@@ -49,8 +49,7 @@ public interface IFileOriginRegistry
     /// Indexes an already extracted download, returns a download id that can be used to retrieve the download later.
     /// </summary>
     public ValueTask<DownloadId> RegisterFolder(AbsolutePath path, MetadataFn metaDataFn, string modName, CancellationToken token = default);
-
-    /*
+    
     /// <summary>
     /// Get the analysis of a download
     /// </summary>
@@ -65,5 +64,5 @@ public interface IFileOriginRegistry
     /// Finds all downloads that have the given hash
     /// </summary>
     public IEnumerable<DownloadAnalysis.ReadOnly> GetBy(Hash hash);
-    */
+    
 }
