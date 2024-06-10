@@ -18,7 +18,7 @@
                         </icons:UnifiedIcon.Value>
                     </icons:UnifiedIcon>
                 </Button>
-                <items:IconView >
+                <items:IconView>
                     <items:IconViewModel Icon="{x:Static icons:IconValues.Home}" Name="Some Text" />
                 </items:IconView>
                 <Button Classes="Invisible" HorizontalAlignment="Center">
@@ -82,12 +82,40 @@
         <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
         
 
+        <Style Selector="^ TextBlock#NameText">
+            <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
+        </Style>
+        
+        <Style Selector="^ icons|UnifiedIcon#LeftIcon">
+            <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
+        </Style>
+        
+        
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
         </Style>
+        
+        <Style Selector="^:pointerover TextBlock#NameText">
+            <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
+        </Style>
+        
+        <Style Selector="^:pointerover icons|UnifiedIcon#LeftIcon">
+            <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
+        </Style>
+        
 
         <Style Selector="^.Active /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
+        </Style>
+        
+        <Style Selector="^.Active TextBlock#NameText">
+            <Setter Property="Theme" Value="{StaticResource BodyMDBoldTheme}" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
+        </Style>
+        
+        <Style Selector="^.Active icons|UnifiedIcon#LeftIcon">
+            <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
         </Style>
     </Style>
 
@@ -114,26 +142,26 @@
         <Setter Property="Height" Value="34" />
         <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
         <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
-        
+
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="Background" Value="{StaticResource SurfaceTopBrush}" />
         </Style>
-        
+
         <Style Selector="^ > StackPanel">
             <Setter Property="Orientation" Value="Horizontal" />
             <Setter Property="HorizontalAlignment" Value="Center" />
             <Setter Property="Spacing" Value="{StaticResource Spacing-1.5}" />
             <Setter Property="Margin" Value="0" />
-            
+
             <Style Selector="^ > icons|UnifiedIcon">
                 <Setter Property="Size" Value="20" />
             </Style>
-            
+
             <Style Selector="^ > TextBlock">
                 <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
                 <Setter Property="VerticalAlignment" Value="Center" />
             </Style>
         </Style>
-        
+
     </Style>
 </Styles>

@@ -24,11 +24,10 @@
                                   Height="36"
                                   Padding="8,0,8,0">
         <Grid ColumnDefinitions="Auto, *, *">
-            <icons:UnifiedIcon Grid.Column="0" Size="18" x:Name="LeftIcon" />
+            <icons:UnifiedIcon Grid.Column="0" Size="16" x:Name="LeftIcon" />
             <TextBlock
-                Margin="6 0 0 0"
+                Margin="8 0 0 0"
                 Grid.Column="1"
-                Classes="BodyMDBold"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Center"
                 x:Name="NameText" />
