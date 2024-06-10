@@ -34,7 +34,7 @@ public partial class TopBarView : ReactiveUserControl<ITopBarViewModel>
             this.OneWayBind(ViewModel, vm => vm.AddPanelDropDownViewModel, view => view.AddPanelViewModelViewHost.ViewModel)
                 .DisposeWith(d);
 
-            this.OneWayBind(ViewModel, vm => vm.Avatar, view => view.AvatarMenuItemImage.Source)
+            this.OneWayBind(ViewModel, vm => vm.Avatar, view => view.AvatarMenuItemHeader.Icon, avatar => new IconValue(new AvaloniaImage(avatar)))
                 .DisposeWith(d);
 
             this.OneWayBind(ViewModel, vm => vm.ActiveWorkspaceTitle, view => view.ActiveWorkspaceTitleTextBlock.Text)

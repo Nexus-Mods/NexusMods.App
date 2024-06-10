@@ -3,7 +3,7 @@
         xmlns:ui="clr-namespace:NexusMods.App.UI.Controls.TopBar;assembly=NexusMods.App.UI"
         xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
     <Design.PreviewWith>
-        <Border Width="720" Height="56">
+        <Border Width="720" Height="200">
             <ui:TopBarView />
         </Border>
     </Design.PreviewWith>

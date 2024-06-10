@@ -13,7 +13,8 @@
     xmlns:topBar="clr-namespace:NexusMods.App.UI.Controls.TopBar"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
-    xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation">
+    xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation"
+    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls">
     <Design.DataContext>
         <topBar:TopBarDesignViewModel />
     </Design.DataContext>
@@ -61,11 +62,10 @@
                     </StackPanel>
                 </Button>
 
-                <MenuItem x:Name="AvatarMenuItem" Header="ProfileIconGoesHere">
-                    <MenuItem.Icon>
-                        <!-- TODO: figure out why this doesn't work -->
-                        <Image Width="28" Height="28" x:Name="AvatarMenuItemImage" />
-                    </MenuItem.Icon>
+                <MenuItem x:Name="AvatarMenuItem">
+                    <MenuItem.Header>
+                        <controls:TopLevelMenuItemHeader x:Name="AvatarMenuItemHeader" />
+                    </MenuItem.Header>
 
                     <MenuItem Header="My Profile" x:Name="OpenNexusModsProfileMenuItem" />
                     <MenuItem Header="Account settings" x:Name="OpenNexusModsAccountSettingsMenuItem" />
