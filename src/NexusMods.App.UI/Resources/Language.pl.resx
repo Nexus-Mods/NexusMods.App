@@ -491,4 +491,28 @@
     <data name="LoginMessageView_Title" xml:space="preserve">
         <value>Zaloguj się, by rozpocząć</value>
     </data>
+    <data name="TopBar_MyProfile" xml:space="preserve">
+        <value>Mój profil</value>
+    </data>
+    <data name="TopBar_SignOut" xml:space="preserve">
+        <value>Wyloguj</value>
+    </data>
+    <data name="TopBar_AccountSettings" xml:space="preserve">
+        <value>Ustawienia konta</value>
+    </data>
+    <data name="ViewChangelogMenuItem.Header" xml:space="preserve">
+        <value>Pokaż dziennik zmian</value>
+    </data>
+    <data name="ViewAppLogsMenuItem.Header" xml:space="preserve">
+        <value>Pokaż logi aplikacji</value>
+    </data>
+    <data name="GiveFeedbackMenuItem.Header" xml:space="preserve">
+        <value>Przekaż opinię</value>
+    </data>
+    <data name="NavigationControl_NavigationControl_Open_in_new_tab" xml:space="preserve">
+        <value>Otwórz w nowej karcie</value>
+    </data>
+    <data name="NavigationControl_NavigationControl_Open_in_new_panel" xml:space="preserve">
+        <value>Otwórz w nowym panelu</value>
+    </data>
 </root>
