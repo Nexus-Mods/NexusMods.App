@@ -75,7 +75,7 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
                 .Count()
                 .Where(count => count == 0)
                 .Select(_ => Unit.Default)
-                .InvokeCommand(CloseCommand)
+                .InvokeReactiveCommand(CloseCommand)
                 .DisposeWith(disposables);
 
             // change the header when the panel only has a single tab vs multiple tabs

@@ -4,6 +4,7 @@ using System.Reactive.Linq;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.ReactiveUI;
+using NexusMods.App.UI.Extensions;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
@@ -95,7 +96,7 @@ public partial class PanelResizerView : ReactiveUserControl<IPanelResizerViewMod
                     _isPressed = false;
                 })
                 .Select(_ => Unit.Default)
-                .InvokeCommand(this, view => view.ViewModel!.DragEndCommand)
+                .InvokeReactiveCommand(this, view => view.ViewModel!.DragEndCommand)
                 .DisposeWith(disposables);
 
             // drag
@@ -112,7 +113,7 @@ public partial class PanelResizerView : ReactiveUserControl<IPanelResizerViewMod
 
                     return ViewModel.IsHorizontal ? currentPos.Y : currentPos.X;
                 })
-                .InvokeCommand(this, view => view.ViewModel!.DragStartCommand)
+                .InvokeReactiveCommand(this, view => view.ViewModel!.DragStartCommand)
                 .DisposeWith(disposables);
         });
     }

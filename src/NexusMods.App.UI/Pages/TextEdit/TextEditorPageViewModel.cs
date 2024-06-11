@@ -11,6 +11,7 @@ using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.Abstractions.Settings;
+using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Settings;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -131,11 +132,11 @@ public class TextEditorPageViewModel : APageViewModel<ITextEditorPageViewModel>,
                     serialDisposable.Disposable = repository.Revisions(context.FileId.Value, includeCurrent: false)
                         .Select(_ => context)
                         .OffUi()
-                        .InvokeCommand(_loadFileCommand);
+                        .InvokeReactiveCommand(_loadFileCommand);
                 })
                 .WhereNotNull()
                 .OffUi()
-                .InvokeCommand(_loadFileCommand)
+                .InvokeReactiveCommand(_loadFileCommand)
                 .DisposeWith(disposables);
 
             this.WhenAnyObservable(vm => vm._loadFileCommand)
