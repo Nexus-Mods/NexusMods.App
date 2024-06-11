@@ -10,6 +10,10 @@ public interface ITopBarViewModel : IViewModelInterface
 {
     public string ActiveWorkspaceTitle { get; }
 
+    public ReactiveCommand<Unit, Unit> ViewChangelogCommand { get; }
+    public ReactiveCommand<Unit, Unit> ViewAppLogsCommand { get; }
+    public ReactiveCommand<Unit, Unit> GiveFeedbackCommand { get; }
+
     public ReactiveCommand<Unit, Unit> LoginCommand { get; }
     public ReactiveCommand<Unit, Unit> LogoutCommand { get; }
     public ReactiveCommand<Unit, Unit> OpenNexusModsProfileCommand { get; }
@@ -20,6 +24,4 @@ public interface ITopBarViewModel : IViewModelInterface
     public IImage? Avatar { get; }
 
     public IAddPanelDropDownViewModel AddPanelDropDownViewModel { get; set; }
-    public ReactiveCommand<Unit, Unit> HelpActionCommand { get; }
-    public ReactiveCommand<NavigationInformation, Unit> OpenSettingsCommand { get; }
 }

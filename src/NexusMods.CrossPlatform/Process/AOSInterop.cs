@@ -53,6 +53,16 @@ public abstract class AOSInterop : IOSInterop
         }
     }
 
+    public Task OpenFile(AbsolutePath filePath, bool fireAndForget = false, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task OpenDirectory(AbsolutePath directoryPath, bool fireAndForget = false, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
     /// <inheritdoc />
     public virtual AbsolutePath GetOwnExe()
     {

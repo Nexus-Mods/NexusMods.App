@@ -7,14 +7,18 @@ using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.NexusWebApi;
+using NexusMods.Abstractions.Settings;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Overlays.AlphaWarning;
 using NexusMods.App.UI.Pages.Settings;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.CrossPlatform;
 using NexusMods.CrossPlatform.Process;
+using NexusMods.Paths;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -28,6 +32,10 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
 
     [Reactive] public string ActiveWorkspaceTitle { get; [UsedImplicitly] set; } = string.Empty;
 
+    public ReactiveCommand<Unit, Unit> ViewChangelogCommand { get; }
+    public ReactiveCommand<Unit, Unit> ViewAppLogsCommand { get; }
+    public ReactiveCommand<Unit, Unit> GiveFeedbackCommand { get; }
+
     public ReactiveCommand<Unit, Unit> LoginCommand { get; }
     public ReactiveCommand<Unit, Unit> LogoutCommand { get; }
     public ReactiveCommand<Unit, Unit> OpenNexusModsProfileCommand { get; }
@@ -40,8 +48,6 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
     public IImage? Avatar => _avatar.Value;
 
     [Reactive] public IAddPanelDropDownViewModel AddPanelDropDownViewModel { get; set; } = null!;
-    public ReactiveCommand<Unit, Unit> HelpActionCommand { get; }
-    public ReactiveCommand<NavigationInformation, Unit> OpenSettingsCommand { get; }
 
     public TopBarViewModel(
         IServiceProvider serviceProvider,
@@ -49,7 +55,9 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
         ILoginManager loginManager,
         IWindowManager windowManager,
         IOverlayController overlayController,
-        IOSInterop osInterop)
+        IOSInterop osInterop,
+        ISettingsManager settingsManager,
+        IFileSystem fileSystem)
     {
         _logger = logger;
         _loginManager = loginManager;
@@ -61,19 +69,28 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
 
         var workspaceController = window.WorkspaceController;
 
-        OpenSettingsCommand = ReactiveCommand.Create<NavigationInformation>(info =>
-        {
-            var page = new PageData
-            {
-                Context = new SettingsPageContext(),
-                FactoryId = SettingsPageFactory.StaticId,
-            };
+        // OpenSettingsCommand = ReactiveCommand.Create<NavigationInformation>(info =>
+        // {
+        //     var page = new PageData
+        //     {
+        //         Context = new SettingsPageContext(),
+        //         FactoryId = SettingsPageFactory.StaticId,
+        //     };
+        //
+        //     var behavior = workspaceController.GetOpenPageBehavior(page, info, Optional<PageIdBundle>.None);
+        //     workspaceController.OpenPage(workspaceController.ActiveWorkspace!.Id, page, behavior);
+        // });
 
-            var behavior = workspaceController.GetOpenPageBehavior(page, info, Optional<PageIdBundle>.None);
-            workspaceController.OpenPage(workspaceController.ActiveWorkspace!.Id, page, behavior);
+        ViewChangelogCommand = ReactiveCommand.Create(() => {});
+
+        ViewAppLogsCommand = ReactiveCommand.CreateFromTask(async () =>
+        {
+            var loggingSettings = settingsManager.Get<LoggingSettings>();
+            var logDirectory = loggingSettings.MainProcessLogFilePath.ToPath(fileSystem).Parent;
+            await osInterop.OpenDirectory(logDirectory);
         });
 
-        HelpActionCommand = ReactiveCommand.Create(() =>
+        GiveFeedbackCommand = ReactiveCommand.Create(() =>
         {
             var alphaWarningViewModel = serviceProvider.GetRequiredService<IAlphaWarningViewModel>();
             alphaWarningViewModel.WorkspaceController = workspaceController;

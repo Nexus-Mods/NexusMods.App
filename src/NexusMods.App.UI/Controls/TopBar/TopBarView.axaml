@@ -57,6 +57,10 @@
                         <TextBlock Text="{x:Static resources:Language.TopBarActions__LOG_IN}"/>
                     </Button>
                 </MenuItem.Header>
+
+                <MenuItem Header="View changelog" x:Name="ViewChangelogMenuItem"/>
+                <MenuItem Header="View App logs" x:Name="ViewAppLogsMenuItem"/>
+                <MenuItem Header="Give feedback" x:Name="GiveFeedbackMenuItem"/>
             </MenuItem>
 
             <MenuItem Classes="TopBarMenuItem" Width="64" x:Name="AvatarMenuItem">
@@ -67,9 +71,9 @@
                     </StackPanel>
                 </MenuItem.Header>
 
-                <MenuItem Header="My Profile" x:Name="OpenNexusModsProfileMenuItem" />
-                <MenuItem Header="Account settings" x:Name="OpenNexusModsAccountSettingsMenuItem" />
-                <MenuItem Header="Sign out" x:Name="SignOutMenuItem" />
+                <MenuItem Header="{x:Static resources:Language.TopBar_MyProfile}" x:Name="OpenNexusModsProfileMenuItem" />
+                <MenuItem Header="{x:Static resources:Language.TopBar_AccountSettings}" x:Name="OpenNexusModsAccountSettingsMenuItem" />
+                <MenuItem Header="{x:Static resources:Language.TopBar_SignOut}" x:Name="SignOutMenuItem" />
             </MenuItem>
         </Menu>
 

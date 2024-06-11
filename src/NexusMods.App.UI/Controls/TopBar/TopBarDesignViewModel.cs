@@ -16,16 +16,17 @@ public class TopBarDesignViewModel : AViewModel<ITopBarViewModel>, ITopBarViewMo
     [Reactive] public bool IsPremium { get; set; } = true;
     [Reactive] public IImage Avatar { get; set; } = new Bitmap(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/cyberpunk_game.png")));
     [Reactive] public string ActiveWorkspaceTitle { get; set; } = "HOME";
+
     [Reactive] public IAddPanelDropDownViewModel AddPanelDropDownViewModel { get; set; } = new AddPanelDropDownDesignViewModel();
+
+    public ReactiveCommand<Unit, Unit> ViewChangelogCommand => Initializers.DisabledReactiveCommand;
+    public ReactiveCommand<Unit, Unit> ViewAppLogsCommand => Initializers.DisabledReactiveCommand;
+    public ReactiveCommand<Unit, Unit> GiveFeedbackCommand => Initializers.DisabledReactiveCommand;
 
     public ReactiveCommand<Unit, Unit> LoginCommand { get; set; }
     public ReactiveCommand<Unit, Unit> LogoutCommand { get; set; }
-    public ReactiveCommand<Unit, Unit> OpenNexusModsProfileCommand { get; } = Initializers.DisabledReactiveCommand;
-    public ReactiveCommand<Unit, Unit> OpenNexusModsAccountSettingsCommand { get; } = Initializers.DisabledReactiveCommand;
-
-    public ReactiveCommand<Unit, Unit> HelpActionCommand { get; } = ReactiveCommand.Create(() => { }, Observable.Return(false));
-
-    public ReactiveCommand<NavigationInformation, Unit> OpenSettingsCommand { get; } = ReactiveCommand.Create<NavigationInformation>(_ => { }, Observable.Return(false));
+    public ReactiveCommand<Unit, Unit> OpenNexusModsProfileCommand => Initializers.DisabledReactiveCommand;
+    public ReactiveCommand<Unit, Unit> OpenNexusModsAccountSettingsCommand => Initializers.DisabledReactiveCommand;
 
     public TopBarDesignViewModel()
     {
