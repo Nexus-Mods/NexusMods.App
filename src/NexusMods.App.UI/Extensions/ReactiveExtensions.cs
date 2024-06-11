@@ -103,6 +103,8 @@ public static class ReactiveExtensions
     /// A utility method that will pipe an Observable to an ICommand (i.e.
     /// it will first call its CanExecute with the provided value, then if
     /// the command can be executed, Execute() will be called).
+    /// This will set up a subscription to the (potentially reactive) command property,
+    /// and should be used when a view needs to invoke a command on a ViewModel.
     /// </summary>
     /// <typeparam name="T">The type.</typeparam>
     /// <typeparam name="TResult">The result type.</typeparam>
