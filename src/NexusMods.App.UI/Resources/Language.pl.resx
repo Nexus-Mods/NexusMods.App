@@ -289,7 +289,7 @@
 		<value>AKTYWUJ ZESTAW</value>
 	</data>
 	<data name="ApplyControlViewModel__ACTIVATE_AND_APPLY" xml:space="preserve">
-		<value>AKTYWUJ i ZASTOSUJ</value>
+		<value>ZASTOSUJ</value>
 	</data>
 	<data name="ApplyControlViewModel__APPLY" xml:space="preserve">
 		<value>ZASTOSUJ</value>
