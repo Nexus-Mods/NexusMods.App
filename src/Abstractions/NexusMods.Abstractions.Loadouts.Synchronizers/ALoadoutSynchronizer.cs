@@ -418,7 +418,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             ModId overridesModId;
             using var tx = Connection.BeginTransaction();
             
-            if (overridesMod.IsValid())
+            if (!overridesMod.IsValid())
             {
                 var newOverrideMod = new Mod.New(tx)
                 {
@@ -429,7 +429,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                     Revision = 0,
                     Status = ModStatus.Installed,
                 };
-                overridesModId = newOverrideMod.ModId;
+                overridesModId = newOverrideMod.Id;
             }
             else
             {
@@ -444,7 +444,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                 if (!newFile.Contains(File.Loadout) && !newFile.Contains(File.Mod))
                 {
                     newFile.Add(File.Loadout, prevLoadout.Id);
-                    newFile.Add(File.Mod, overridesMod.Id);
+                    newFile.Add(File.Mod, overridesModId);
                 }
 
                 newFile.AddTo(tx);
@@ -455,7 +455,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
 
             foreach (var addedFile in addedFiles)
             {
-                var storedFile = result.Db.Get<StoredFile.ReadOnly>(result[addedFile]);
+                var storedFile = StoredFile.Load(result.Db, result[addedFile]);
                 results.Add(KeyValuePair.Create(storedFile.File.To, storedFile.File));
             }
         }
@@ -545,7 +545,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         var result = await tx.Commit();
 
         var tree = resultIds.Select(kv => 
-            KeyValuePair.Create(kv.Path, result.Db.Get<File.ReadOnly>(result[kv.Id])));
+            KeyValuePair.Create(kv.Path, File.ReadOnly.Create(result.Db, result[kv.Id])));
         return FlattenedLoadout.Create(tree);
     }
 

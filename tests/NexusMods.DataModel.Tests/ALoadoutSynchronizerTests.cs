@@ -359,8 +359,11 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
                 },
                 "files have all been written to disk");
 
-        fileTree[modifiedFile].Item.Value.As<StoredFile.ReadOnly>().Hash.Should().Be(new byte[] { 0x01, 0x02, 0x03 }.XxHash64(), "the file should have been modified");
-        fileTree[newFile].Item.Value.As<StoredFile.ReadOnly>().Hash.Should().Be(new byte[] { 0x04, 0x05, 0x06 }.XxHash64(), "the file should have been created");
+        fileTree[modifiedFile].Item.Value.TryGetAsStoredFile(out var stored);
+        stored.Hash.Should().Be(new byte[] { 0x01, 0x02, 0x03 }.XxHash64(), "the file should have been modified");
+        
+        fileTree[newFile].Item.Value.TryGetAsStoredFile(out stored);
+        stored.Hash.Should().Be(new byte[] { 0x04, 0x05, 0x06 }.XxHash64(), "the file should have been created");
 
         fileTree[deletedFile].Should().BeNull("the file should have been deleted");
 
@@ -420,11 +423,11 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
                 "files have all been written to disk");
 
         var flattenedModifiedPair = flattenedLoadout[modifiedFile].Item.Value;
-        var flattenedModifiedFile = flattenedModifiedPair.As<StoredFile.ReadOnly>();
+        flattenedModifiedPair.TryGetAsStoredFile(out var flattenedModifiedFile).Should().BeTrue();
         flattenedModifiedFile.Hash.Should().Be(new byte[] { 0x01, 0x02, 0x03 }.XxHash64(), "the file should have been modified");
 
         var flattenedNewPair = flattenedLoadout[newFile].Item.Value;
-        var flattenedNewFile = flattenedNewPair.As<StoredFile.ReadOnly>();
+        flattenedNewPair.TryGetAsStoredFile(out var flattenedNewFile).Should().BeTrue();
         flattenedNewFile.Hash.Should().Be(new byte[] { 0x04, 0x05, 0x06 }.XxHash64(), "the file should have been created");
         var newMod = flattenedNewPair.Mod;
         newMod.Category.Should().Be(ModCategory.Overrides, "the mod should be in the overrides category");

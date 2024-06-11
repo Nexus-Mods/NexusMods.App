@@ -55,7 +55,7 @@ public class ToolManager : IToolManager
         _logger.LogInformation("Applying loadout {LoadoutId} on {GameName} {GameVersion}", 
             loadout.Id, loadout.InstallationInstance.Game.Name, loadout.InstallationInstance.Version);
         await _applyService.Apply(loadout);
-        var appliedLoadout = _conn.Db.Get<Loadout.ReadOnly>(loadout.Id);
+        var appliedLoadout = loadout.Rebase(_conn.Db);
 
         _logger.LogInformation("Running tool {ToolName} for loadout {LoadoutId} on {GameName} {GameVersion}", 
             tool.Name, appliedLoadout.Id, appliedLoadout.InstallationInstance.Game.Name, appliedLoadout.InstallationInstance.Version);
