@@ -16,11 +16,11 @@ public partial class TopBarView : ReactiveUserControl<ITopBarViewModel>
             this.BindCommand(ViewModel, vm => vm.LoginCommand, view => view.LoginButton)
                 .DisposeWith(d);
 
-            this.BindCommand(ViewModel, vm => vm.HelpActionCommand, view => view.HelpActionButton)
-                .DisposeWith(d);
+            // this.BindCommand(ViewModel, vm => vm.HelpActionCommand, view => view.HelpActionButton)
+            //     .DisposeWith(d);
 
-            this.BindCommand(ViewModel, vm => vm.OpenSettingsCommand, view => view.SettingsActionButton)
-                .DisposeWith(d);
+            // this.BindCommand(ViewModel, vm => vm.OpenSettingsCommand, view => view.SettingsActionButton)
+            //     .DisposeWith(d);
 
             this.BindCommand(ViewModel, vm => vm.LogoutCommand, view => view.SignOutMenuItem)
                 .DisposeWith(d);
@@ -34,10 +34,16 @@ public partial class TopBarView : ReactiveUserControl<ITopBarViewModel>
             this.OneWayBind(ViewModel, vm => vm.AddPanelDropDownViewModel, view => view.AddPanelViewModelViewHost.ViewModel)
                 .DisposeWith(d);
 
-            this.OneWayBind(ViewModel, vm => vm.Avatar, view => view.AvatarMenuItemHeader.Icon, avatar => new IconValue(new AvaloniaImage(avatar)))
+            this.OneWayBind(ViewModel, vm => vm.Avatar, view => view.AvatarIcon.Value, avatar => new IconValue(new AvaloniaImage(avatar)))
                 .DisposeWith(d);
 
             this.OneWayBind(ViewModel, vm => vm.ActiveWorkspaceTitle, view => view.ActiveWorkspaceTitleTextBlock.Text)
+                .DisposeWith(d);
+
+            this.OneWayBind(ViewModel, vm => vm.IsLoggedIn, view => view.LoginMenuItem.IsVisible, b => !b)
+                .DisposeWith(d);
+
+            this.OneWayBind(ViewModel, vm => vm.IsLoggedIn, view => view.AvatarMenuItem.IsVisible)
                 .DisposeWith(d);
         });
     }

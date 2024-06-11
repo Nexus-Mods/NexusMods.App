@@ -27,52 +27,51 @@
                    Margin="16,0"
                    x:Name="ActiveWorkspaceTitleTextBlock" />
 
-        <StackPanel Grid.Column="2"
-                    Classes="TopBarActions Spacing-2"
-                    Orientation="Horizontal"
-                    Margin="16,0"
-                    x:Name="ActionStackPanel">
+        <Menu Grid.Column="2" Margin="16 0">
+            <MenuItem Classes="TopBarNoStyleMenuItem">
+                <MenuItem.Header>
+                    <reactiveUi:ViewModelViewHost VerticalAlignment="Center" x:Name="AddPanelViewModelViewHost" />
+                </MenuItem.Header>
+            </MenuItem>
 
-            <Menu>
-                <reactiveUi:ViewModelViewHost VerticalAlignment="Center" x:Name="AddPanelViewModelViewHost" />
+            <Separator Width="1" Height="40"/>
 
-                <MenuItem>
-                    <MenuItem.Header>
-                        <navigation:NavigationControl Classes="Action" x:Name="SettingsActionButton">
-                            <icons:UnifiedIcon Classes="Cog ForegroundSubdued" />
-                        </navigation:NavigationControl>
-                    </MenuItem.Header>
-                </MenuItem>
+            <MenuItem Classes="TopBarMenuItem">
+                <MenuItem.Header>
+                    <icons:UnifiedIcon Classes="Cog" />
+                </MenuItem.Header>
+            </MenuItem>
 
-                <MenuItem>
-                    <MenuItem.Header>
-                        <Button Classes="Action" x:Name="HelpActionButton">
-                            <icons:UnifiedIcon Classes="Help ForegroundSubdued" />
-                        </Button>
-                    </MenuItem.Header>
-                </MenuItem>
-
-                <Button
-                    Classes="Standard Primary"
-                    x:Name="LoginButton">
-                    <StackPanel>
-                        <TextBlock
-                            Text="{x:Static resources:Language.TopBarActions__LOG_IN}">
-                        </TextBlock>
+            <MenuItem Classes="TopBarMenuItem" Width="64">
+                <MenuItem.Header>
+                    <StackPanel Orientation="Horizontal" Spacing="0" Margin="10">
+                        <icons:UnifiedIcon Classes="Help" Size="20" />
+                        <icons:UnifiedIcon Classes="MenuDown" Size="24"/>
                     </StackPanel>
-                </Button>
+                </MenuItem.Header>
+            </MenuItem>
 
-                <MenuItem x:Name="AvatarMenuItem">
-                    <MenuItem.Header>
-                        <controls:TopLevelMenuItemHeader x:Name="AvatarMenuItemHeader" />
-                    </MenuItem.Header>
+            <MenuItem Classes="TopBarNoStyleMenuItem" x:Name="LoginMenuItem">
+                <MenuItem.Header>
+                    <Button Classes="Standard Primary" x:Name="LoginButton" Height="40">
+                        <TextBlock Text="{x:Static resources:Language.TopBarActions__LOG_IN}"/>
+                    </Button>
+                </MenuItem.Header>
+            </MenuItem>
 
-                    <MenuItem Header="My Profile" x:Name="OpenNexusModsProfileMenuItem" />
-                    <MenuItem Header="Account settings" x:Name="OpenNexusModsAccountSettingsMenuItem" />
-                    <MenuItem Header="Sign out" x:Name="SignOutMenuItem" />
-                </MenuItem>
-            </Menu>
+            <MenuItem Classes="TopBarMenuItem" Width="64" x:Name="AvatarMenuItem">
+                <MenuItem.Header>
+                    <StackPanel Orientation="Horizontal" Spacing="0" Margin="6">
+                        <icons:UnifiedIcon Size="28" x:Name="AvatarIcon" />
+                        <icons:UnifiedIcon Classes="MenuDown" Size="24"/>
+                    </StackPanel>
+                </MenuItem.Header>
 
-        </StackPanel>
+                <MenuItem Header="My Profile" x:Name="OpenNexusModsProfileMenuItem" />
+                <MenuItem Header="Account settings" x:Name="OpenNexusModsAccountSettingsMenuItem" />
+                <MenuItem Header="Sign out" x:Name="SignOutMenuItem" />
+            </MenuItem>
+        </Menu>
+
     </Grid>
 </reactiveUi:ReactiveUserControl>
