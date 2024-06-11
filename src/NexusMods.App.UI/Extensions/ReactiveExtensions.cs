@@ -93,7 +93,8 @@ public static class ReactiveExtensions
         this IObservable<T> item,
         ReactiveCommandBase<T, TResult>? command)
     {
-        return item.InvokeCommand(command, cmd => cmd);
+        // ReSharper disable once InvokeAsExtensionMethod
+        return ReactiveCommandMixins.InvokeCommand(item, command);
     }
     
     
