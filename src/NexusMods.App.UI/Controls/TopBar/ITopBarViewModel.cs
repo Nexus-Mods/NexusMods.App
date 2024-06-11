@@ -10,7 +10,9 @@ public interface ITopBarViewModel : IViewModelInterface
 {
     public string ActiveWorkspaceTitle { get; }
 
-    public ReactiveCommand<Unit, Unit> ViewChangelogCommand { get; }
+    public ReactiveCommand<NavigationInformation, Unit> OpenSettingsCommand { get; }
+
+    public ReactiveCommand<NavigationInformation, Unit> ViewChangelogCommand { get; }
     public ReactiveCommand<Unit, Unit> ViewAppLogsCommand { get; }
     public ReactiveCommand<Unit, Unit> GiveFeedbackCommand { get; }
 

@@ -13,16 +13,33 @@ public partial class TopBarView : ReactiveUserControl<ITopBarViewModel>
 
         this.WhenActivated(d =>
         {
+            this.OneWayBind(ViewModel, vm => vm.ActiveWorkspaceTitle, view => view.ActiveWorkspaceTitleTextBlock.Text)
+                .DisposeWith(d);
+
+
+            this.OneWayBind(ViewModel, vm => vm.AddPanelDropDownViewModel, view => view.AddPanelViewModelViewHost.ViewModel)
+                .DisposeWith(d);
+
+
+            this.BindCommand(ViewModel, vm => vm.OpenSettingsCommand, view => view.OpenSettingsMenuItem)
+                .DisposeWith(d);
+
+
+            this.BindCommand(ViewModel, vm => vm.ViewChangelogCommand, view => view.ViewChangelogMenuItem)
+                .DisposeWith(d);
+
+            this.BindCommand(ViewModel, vm => vm.ViewAppLogsCommand, view => view.ViewAppLogsMenuItem)
+                .DisposeWith(d);
+
+            this.BindCommand(ViewModel, vm => vm.GiveFeedbackCommand, view => view.GiveFeedbackMenuItem)
+                .DisposeWith(d);
+
+
             this.BindCommand(ViewModel, vm => vm.LoginCommand, view => view.LoginButton)
                 .DisposeWith(d);
 
-            // this.BindCommand(ViewModel, vm => vm.HelpActionCommand, view => view.HelpActionButton)
-            //     .DisposeWith(d);
 
-            // this.BindCommand(ViewModel, vm => vm.OpenSettingsCommand, view => view.SettingsActionButton)
-            //     .DisposeWith(d);
-
-            this.BindCommand(ViewModel, vm => vm.LogoutCommand, view => view.SignOutMenuItem)
+            this.OneWayBind(ViewModel, vm => vm.Avatar, view => view.AvatarIcon.Value, avatar => new IconValue(new AvaloniaImage(avatar)))
                 .DisposeWith(d);
 
             this.BindCommand(ViewModel, vm => vm.OpenNexusModsProfileCommand, view => view.OpenNexusModsProfileMenuItem)
@@ -31,14 +48,9 @@ public partial class TopBarView : ReactiveUserControl<ITopBarViewModel>
             this.BindCommand(ViewModel, vm => vm.OpenNexusModsAccountSettingsCommand, view => view.OpenNexusModsAccountSettingsMenuItem)
                 .DisposeWith(d);
 
-            this.OneWayBind(ViewModel, vm => vm.AddPanelDropDownViewModel, view => view.AddPanelViewModelViewHost.ViewModel)
+            this.BindCommand(ViewModel, vm => vm.LogoutCommand, view => view.SignOutMenuItem)
                 .DisposeWith(d);
 
-            this.OneWayBind(ViewModel, vm => vm.Avatar, view => view.AvatarIcon.Value, avatar => new IconValue(new AvaloniaImage(avatar)))
-                .DisposeWith(d);
-
-            this.OneWayBind(ViewModel, vm => vm.ActiveWorkspaceTitle, view => view.ActiveWorkspaceTitleTextBlock.Text)
-                .DisposeWith(d);
 
             this.OneWayBind(ViewModel, vm => vm.IsLoggedIn, view => view.LoginMenuItem.IsVisible, b => !b)
                 .DisposeWith(d);

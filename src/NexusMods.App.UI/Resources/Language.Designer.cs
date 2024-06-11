@@ -1022,5 +1022,17 @@ namespace NexusMods.App.UI.Resources {
                 return ResourceManager.GetString("GiveFeedbackMenuItem.Header", resourceCulture);
             }
         }
+        
+        public static string NavigationControl_NavigationControl_Open_in_new_tab {
+            get {
+                return ResourceManager.GetString("NavigationControl_NavigationControl_Open_in_new_tab", resourceCulture);
+            }
+        }
+        
+        public static string NavigationControl_NavigationControl_Open_in_new_panel {
+            get {
+                return ResourceManager.GetString("NavigationControl_NavigationControl_Open_in_new_panel", resourceCulture);
+            }
+        }
     }
 }

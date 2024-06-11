@@ -19,7 +19,9 @@ public class TopBarDesignViewModel : AViewModel<ITopBarViewModel>, ITopBarViewMo
 
     [Reactive] public IAddPanelDropDownViewModel AddPanelDropDownViewModel { get; set; } = new AddPanelDropDownDesignViewModel();
 
-    public ReactiveCommand<Unit, Unit> ViewChangelogCommand => Initializers.DisabledReactiveCommand;
+    public ReactiveCommand<NavigationInformation, Unit> OpenSettingsCommand => ReactiveCommand.Create<NavigationInformation, Unit>(_ => Unit.Default);
+
+    public ReactiveCommand<NavigationInformation, Unit> ViewChangelogCommand  => ReactiveCommand.Create<NavigationInformation, Unit>(_ => Unit.Default);
     public ReactiveCommand<Unit, Unit> ViewAppLogsCommand => Initializers.DisabledReactiveCommand;
     public ReactiveCommand<Unit, Unit> GiveFeedbackCommand => Initializers.DisabledReactiveCommand;
 

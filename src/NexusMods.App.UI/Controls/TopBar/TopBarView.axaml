@@ -36,11 +36,11 @@
 
             <Separator Width="1" Height="40"/>
 
-            <MenuItem Classes="TopBarMenuItem">
-                <MenuItem.Header>
-                    <icons:UnifiedIcon Classes="Cog" />
-                </MenuItem.Header>
-            </MenuItem>
+            <navigation:NavigationMenuItem  Classes="TopBarMenuItem" x:Name="OpenSettingsMenuItem">
+                <navigation:NavigationMenuItem.Header>
+                    <icons:UnifiedIcon Classes="Cog"/>
+                </navigation:NavigationMenuItem.Header>
+            </navigation:NavigationMenuItem>
 
             <MenuItem Classes="TopBarMenuItem" Width="64">
                 <MenuItem.Header>
@@ -50,7 +50,8 @@
                     </StackPanel>
                 </MenuItem.Header>
 
-                <MenuItem Header="{x:Static resources:Language.ViewChangelogMenuItem_Header}" x:Name="ViewChangelogMenuItem"/>
+                <navigation:NavigationMenuItem Header="{x:Static resources:Language.ViewChangelogMenuItem_Header}" x:Name="ViewChangelogMenuItem"/>
+
                 <MenuItem Header="{x:Static resources:Language.ViewAppLogsMenuItem_Header}" x:Name="ViewAppLogsMenuItem"/>
                 <MenuItem Header="{x:Static resources:Language.GiveFeedbackMenuItem_Header}" x:Name="GiveFeedbackMenuItem"/>
             </MenuItem>
