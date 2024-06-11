@@ -515,4 +515,7 @@
     <data name="NavigationControl_NavigationControl_Open_in_new_panel" xml:space="preserve">
         <value>Otwórz w nowym panelu</value>
     </data>
+    <data name="InfoBanner_PrefixProperty_Did_you_know_" xml:space="preserve">
+        <value>Czy wiesz?</value>
+    </data>
 </root>
