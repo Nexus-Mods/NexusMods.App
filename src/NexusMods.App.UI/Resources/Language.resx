@@ -497,4 +497,13 @@
     <data name="FileOriginsPage_ViewButtonText" xml:space="preserve">
         <value>View</value>
     </data>
+    <data name="TopBar_MyProfile" xml:space="preserve">
+        <value>My Profile</value>
+    </data>
+    <data name="TopBar_SignOut" xml:space="preserve">
+        <value>Sign out</value>
+    </data>
+    <data name="TopBar_AccountSettings" xml:space="preserve">
+        <value>Account settings</value>
+    </data>
 </root>
