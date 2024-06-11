@@ -17,6 +17,7 @@
       <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.Messaging\NexusMods.Abstractions.Messaging.csproj" />
       <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.NexusWebApi\NexusMods.Abstractions.NexusWebApi.csproj" />
       <ProjectReference Include="..\..\NexusMods.ProxyConsole.Abstractions\NexusMods.ProxyConsole.Abstractions.csproj" />
+      <PackageReference Include="NexusMods.MnemonicDB.SourceGenerator" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
 
     <ItemGroup>

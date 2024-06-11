@@ -1,10 +1,12 @@
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
+using NexusMods.MnemonicDB.Abstractions.Models;
 
 namespace NexusMods.Networking.Downloaders.Tasks.State;
 
-public static class NxmDownloadState
+[Include<DownloaderState>]
+public partial class NxmDownloadState : IModelDefinition
 {
     private const string Namespace = "NexusMods.Networking.Downloaders.Tasks.State.NxmDownloadState";
 
@@ -27,65 +29,11 @@ public static class NxmDownloadState
     /// <summary>
     /// The expiry date of the download key
     /// </summary>
-    public static readonly TimestampAttribute ValidUntil = new(Namespace, nameof(ValidUntil));
+    public static readonly TimestampAttribute ValidUntil = new(Namespace, nameof(ValidUntil)) { IsOptional = true };
 
     /// <summary>
     /// The NXM key of the download task, used for free users and clicking "Download with manager"
     /// on the website
     /// </summary>
-    public static readonly StringAttribute NxmKey = new(Namespace, nameof(NXMKey));
-
-
-    /// <summary>
-    /// Model for reading and writing NXMDownloadStates
-    /// </summary>
-    public class Model(ITransaction tx) : DownloaderState.ReadOnly(tx)
-    {
-
-        /// <summary>
-        /// ModId of the download task
-        /// </summary>
-        public ModId ModId
-        {
-            get => NxmDownloadState.ModId.Get(this);
-            set => NxmDownloadState.ModId.Add(this, value);
-        }
-        
-        /// <summary>
-        /// FileId of the download task
-        /// </summary>
-        public FileId FileId
-        {
-            get => NxmDownloadState.FileId.Get(this);
-            set => NxmDownloadState.FileId.Add(this, value);
-        }
-        
-        /// <summary>
-        /// Game domain of the download task
-        /// </summary>
-        public string Game
-        {
-            get => NxmDownloadState.Game.Get(this);
-            set => NxmDownloadState.Game.Add(this, value);
-        }
-        
-        /// <summary>
-        /// Expiry date of the download key
-        /// </summary>
-        public DateTime ValidUntil
-        {
-            get => NxmDownloadState.ValidUntil.Get(this);
-            set => NxmDownloadState.ValidUntil.Add(this, value);
-        }
-        
-        /// <summary>
-        /// The NXM key of the download task, used for free users and clicking "Download with manager"
-        /// </summary>
-        public string NxmKey
-        {
-            get => NxmDownloadState.NxmKey.Get(this);
-            set => NxmDownloadState.NxmKey.Add(this, value);
-        }
-    }
-
+    public static readonly StringAttribute NxmKey = new(Namespace, nameof(NXMKey)) { IsOptional = true };
 }

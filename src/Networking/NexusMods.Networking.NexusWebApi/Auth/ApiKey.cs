@@ -8,7 +8,7 @@ namespace NexusMods.Networking.NexusWebApi.Auth;
 /// API Key storage for older Nexus Mods API calls. No model here because the
 /// datamodel is so simple it's not worth it.
 /// </summary>
-public static class ApiKey
+public partial class ApiKey : IModelDefinition
 {
     private const string Namespace = "NexusMods.Networking.NexusWebApi.Auth.ApiKey";
     
@@ -22,8 +22,8 @@ public static class ApiKey
     /// </summary>
     public static string? Get(IDb db)
     {
-        var id = db.Find(Key).FirstOrDefault();
-        return id != EntityId.From(0) ? Key.Get(db.Get<Entity>(id)) : null;
+        var id = All(db).FirstOrDefault();
+        return !id.IsValid() ? null : id.Key;
     }
 
     /// <summary>
@@ -32,7 +32,7 @@ public static class ApiKey
     public static async Task Set(IConnection conn, string key)
     {
         using var tx = conn.BeginTransaction();
-        var oldId = conn.Db.Find(Key).FirstOrDefault(tx.TempId());
+        var oldId = All(conn.Db).Select(ent => ent.Id).FirstOrDefault(tx.TempId());
         tx.Add(oldId, Key, key);
         await tx.Commit();
     }

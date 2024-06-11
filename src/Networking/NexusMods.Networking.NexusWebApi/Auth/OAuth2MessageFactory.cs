@@ -24,12 +24,10 @@ public class OAuth2MessageFactory : IAuthenticatingMessageFactory
     /// </summary>
     public OAuth2MessageFactory(
         IConnection conn,
-        IRepository<JWTToken.Model> jwtTokenRepository,
         OAuth auth,
         ILogger<OAuth2MessageFactory> logger)
     {
         _conn = conn;
-        _jwtTokenRepository = jwtTokenRepository;
         _auth = auth;
         _logger = logger;
 
@@ -38,9 +36,8 @@ public class OAuth2MessageFactory : IAuthenticatingMessageFactory
             .Subscribe(_ => _cachedTokenEntity = null);
     }
 
-    private JWTToken.Model? _cachedTokenEntity;
+    private JWTToken.ReadOnly? _cachedTokenEntity;
     private readonly IConnection _conn;
-    private readonly IRepository<JWTToken.Model> _jwtTokenRepository;
 
     private async ValueTask<string?> GetOrRefreshToken(CancellationToken cancellationToken)
     {

@@ -21,7 +21,7 @@ public record ModReference : IDataReference<ModId, Mod.ReadOnly>
     public Mod.ReadOnly ResolveData(IServiceProvider serviceProvider, IConnection dataStore)
     {
         var db = dataStore.AsOf(TxId);
-        return db.Get<Mod.ReadOnly>(DataId.Value);
+        return Mod.Load(db, DataId.Value);
     }
 
     /// <inheritdoc/>

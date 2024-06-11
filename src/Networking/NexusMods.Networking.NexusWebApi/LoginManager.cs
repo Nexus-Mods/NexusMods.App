@@ -68,7 +68,6 @@ public sealed class LoginManager : IDisposable, ILoginManager
         NexusApiClient nexusApiClient,
         IAuthenticatingMessageFactory msgFactory,
         OAuth oauth,
-        IRepository<JWTToken.Model> jwtTokenRepository,
         IProtocolRegistration protocolRegistration,
         ILogger<LoginManager> logger)
     {
@@ -76,7 +75,6 @@ public sealed class LoginManager : IDisposable, ILoginManager
         _conn = conn;
         _msgFactory = msgFactory;
         _nexusApiClient = nexusApiClient;
-        _jwtTokenRepository = jwtTokenRepository;
         _protocolRegistration = protocolRegistration;
         _logger = logger;
 
@@ -94,7 +92,6 @@ public sealed class LoginManager : IDisposable, ILoginManager
 
     private CachedObject<UserInfo> _cachedUserInfo = new(TimeSpan.FromHours(1));
     private readonly SemaphoreSlim _verifySemaphore = new(initialCount: 1, maxCount: 1);
-    private readonly IRepository<JWTToken.Model> _jwtTokenRepository;
     private readonly IConnection _conn;
 
     private async Task<UserInfo?> Verify(CancellationToken cancellationToken)

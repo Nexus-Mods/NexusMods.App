@@ -207,7 +207,7 @@ public class ArchiveInstaller : IArchiveInstaller
 
     private async Task SetFailedStatus(ModId modId)
     {
-        var mod = _conn.Db.Get<Mod.ReadOnly>(modId.Value);
+        var mod = Mod.Load(_conn.Db, modId);
         _logger.LogInformation("Setting status of ModId:{ModId}({Name}) to {Status}", modId, mod.Name, ModStatus.Failed);
 
         using var tx = _conn.BeginTransaction();

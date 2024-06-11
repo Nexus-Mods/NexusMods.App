@@ -4,6 +4,7 @@ using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
+using NexusMods.MnemonicDB.Abstractions.BuiltInEntities;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.MnemonicDB.Storage;
@@ -72,7 +73,7 @@ public partial class DownloadAnalysis : IModelDefinition
             // Get the lowest transaction id, then get the timestamp of that transaction
             var t = this.Select(d => d.T).Min();
             var txEntity = new ReadOnly(Db, EntityId.From(t.Value));
-            return BuiltInAttributes.TxTimestanp.Get(txEntity);
+            return Transaction.Timestamp.Get(txEntity);
         }
     }
 }

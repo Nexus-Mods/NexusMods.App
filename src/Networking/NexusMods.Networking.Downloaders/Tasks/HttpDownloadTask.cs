@@ -1,3 +1,5 @@
+using NexusMods.Abstractions.HttpDownloader;
+using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Networking.Downloaders.Tasks.State;
 using NexusMods.Paths;
 
@@ -18,23 +20,30 @@ public class HttpDownloadTask(IServiceProvider provider) : ADownloadTask(provide
     public async Task Create(Uri uri)
     {
         using var tx = Connection.BeginTransaction();
-        var id = base.Create(tx);
-        
-        // Try to divine the name and size of the download, via HTTP headers
         var (name, size) = await GetNameAndSizeAsync(uri);
-        if (!string.IsNullOrEmpty(name))
+        
+        var temporaryPath = TemporaryFileManager.CreateFile();
+        var downloaderState = new DownloaderState.New(tx)
         {
-            tx.Add(id, DownloaderState.FriendlyName, name);
-            tx.Add(id, DownloaderState.Size, size);
-        }
-        tx.Add(id, HttpDownloadState.Uri, uri);
-        await Init(tx, id);
+            FriendlyName = string.IsNullOrEmpty(name) ? "<Unknown>" : name,
+            Size = size,
+            Status = DownloadTaskStatus.Idle,
+            DownloadPath = temporaryPath.Path.ToString(),
+        };
+        
+        _ = new HttpDownloadState.New(tx)
+        {
+            DownloaderState = downloaderState, 
+            Uri = uri,
+        };
+        
+        await Init(tx, downloaderState.Id);
     }
     
     protected override async Task Download(AbsolutePath destination, CancellationToken token)
     {
-        var url = PersistentState.Get(HttpDownloadState.Uri);
-        var size = PersistentState.Get(DownloaderState.Size);
-        await HttpDownloader.DownloadAsync([url], destination, size, TransientState, token);
+        if (!PersistentState.TryGetAsHttpDownloadState(out var httpState))
+            throw new InvalidOperationException("State is not a HttpDownloadState");
+        await HttpDownloader.DownloadAsync([httpState.Uri], destination, httpState.DownloaderState.Size, TransientState, token);
     }
 }

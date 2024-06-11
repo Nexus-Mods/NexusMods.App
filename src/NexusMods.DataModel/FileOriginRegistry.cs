@@ -120,9 +120,7 @@ public class FileOriginRegistry : IFileOriginRegistry
     /// <inheritdoc />
     public IEnumerable<DownloadAnalysis.ReadOnly> GetAll()
     {
-        var db = _conn.Db;
-        return db.Find(DownloadAnalysis.NumberOfEntries)
-                 .Select(id => db.Get<DownloadAnalysis.ReadOnly>(id));
+        return DownloadAnalysis.All(_conn.Db);
     }
 
     /// <inheritdoc />

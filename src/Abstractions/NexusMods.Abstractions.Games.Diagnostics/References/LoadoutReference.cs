@@ -21,7 +21,7 @@ public record LoadoutReference : IDataReference<LoadoutId, Loadout.ReadOnly>
     public Loadout.ReadOnly ResolveData(IServiceProvider serviceProvider, IConnection dataStore)
     {
         var db = dataStore.AsOf(TxId);
-        return db.Get<Loadout.ReadOnly>(DataId.Value);
+        return Loadout.Load(db, DataId.Value);
     }
 
     /// <inheritdoc/>

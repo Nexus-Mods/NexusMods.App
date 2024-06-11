@@ -22,7 +22,7 @@ public record ModFileReference : IDataReference<FileId, File.ReadOnly>
     public File.ReadOnly ResolveData(IServiceProvider serviceProvider, IConnection conn)
     {
         var db = conn.AsOf(TxId);
-        return db.Get<File.ReadOnly>(DataId.Value);
+        return File.Load(db, DataId.Value);
     }
 
     /// <inheritdoc/>
