@@ -1,6 +1,6 @@
 ﻿<reactiveUi:ReactiveUserControl
-    d:DesignHeight="65"
-    d:DesignWidth="65"
+    d:DesignHeight="150"
+    d:DesignWidth="300"
     mc:Ignorable="d"
     x:Class="NexusMods.App.UI.Controls.Spine.Buttons.Icon.IconButton"
     x:TypeArguments="icon:IIconButtonViewModel"
@@ -18,8 +18,6 @@
 
     <Button
         Classes="IconButton Add"
-        Height="64"
-        Width="64"
         x:Name="Button">
         <ToolTip.Tip>
             <TextBlock x:Name="ToolTipTextBlock"/>
@@ -36,8 +34,8 @@
                                        VerticalAlignment="Center" />
                     <Border x:Name="IconButtonInnerBorder"
                             Classes="Rounded-full"
-                            Height="50"
-                            Width="50" />
+                            Height="48"
+                            Width="48" />
                 </Grid>
             </ControlTemplate>
         </Button.Template>
