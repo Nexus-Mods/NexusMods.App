@@ -2,7 +2,6 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Cli;
 using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.FileStore.ArchiveMetadata;
-using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.HttpDownloader;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Loadouts;

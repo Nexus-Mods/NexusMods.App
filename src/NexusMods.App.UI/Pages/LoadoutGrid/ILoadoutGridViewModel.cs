@@ -29,20 +29,6 @@ public interface ILoadoutGridViewModel : IPageViewModelInterface
     public ReactiveCommand<NavigationInformation, Unit> ViewModContentsCommand { get; }
 
     /// <summary>
-    /// Add a mod to the loadout using the standard installer.
-    /// </summary>
-    /// <param name="path"></param>
-    /// <returns></returns>
-    public Task AddMod(string path);
-
-    /// <summary>
-    /// Add a mod to the loadout using the advanced installer.
-    /// </summary>
-    /// <param name="path"></param>
-    /// <returns></returns>
-    public Task AddModAdvanced(string path);
-
-    /// <summary>
     /// Delete the mods from the loadout.
     /// </summary>
     /// <param name="modsToDelete"></param>

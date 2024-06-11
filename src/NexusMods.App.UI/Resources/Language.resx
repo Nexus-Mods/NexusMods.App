@@ -207,11 +207,11 @@
     <data name="HomeView__BROWSE_ALL_GAMES" xml:space="preserve">
         <value>BROWSE ALL GAMES</value>
     </data>
-    <data name="LoadoutGridView__Add_Mod" xml:space="preserve">
-        <value>Add Mod</value>
+    <data name="FileOriginsPage__Add_Mod" xml:space="preserve">
+        <value>Add</value>
     </data>
-    <data name="LoadoutGridView__Add_Mod_Advanced" xml:space="preserve">
-        <value>Add Mod (Advanced)</value>
+    <data name="FileOriginsPage__Add_Mod_Advanced" xml:space="preserve">
+        <value>Advanced Add</value>
     </data>
     <data name="MyGamesView__Ready_to_mod" xml:space="preserve">
         <value>Games Added</value>
@@ -458,8 +458,8 @@
     <data name="FileOriginsPageView_DownloadedHeader" xml:space="preserve">
         <value>DOWNLOADED</value>
     </data>
-    <data name="FileOriginsPageView_AddedHeader" xml:space="preserve">
-        <value>ADDED</value>
+    <data name="FileOriginsPageView_InstalledHeader" xml:space="preserve">
+        <value>INSTALLED</value>
     </data>
     <data name="FileOriginsPageView_ActionHeader" xml:space="preserve">
         <value>ACTIONS</value>
@@ -484,5 +484,17 @@
     </data>
     <data name="LoginMessageView_Title" xml:space="preserve">
         <value>Log in to get started</value>
+    </data>
+    <data name="FileOriginsPage_GetMods" xml:space="preserve">
+        <value>Get mods:</value>
+    </data>
+    <data name="FileOriginsPage_FromDrive" xml:space="preserve">
+        <value>From drive</value>
+    </data>
+    <data name="FileOriginsPage_FromNexusMods" xml:space="preserve">
+        <value>From Nexus Mods</value>
+    </data>
+    <data name="FileOriginsPage_ViewButtonText" xml:space="preserve">
+        <value>View</value>
     </data>
 </root>

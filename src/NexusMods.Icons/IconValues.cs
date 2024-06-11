@@ -38,6 +38,9 @@ public static class IconValues
     // https://pictogrammers.com/library/mdi/icon/home/
     public static readonly IconValue Home = new ProjektankerIcon("mdi-home");
 
+    // https://pictogrammers.com/library/mdi/icon/playlist-plus/
+    public static readonly IconValue PlaylistAdd = new ProjektankerIcon("mdi-playlist-plus");
+
     // https://pictogrammers.com/library/mdi/icon/open-in-new/
     public static readonly IconValue OpenInNew = new ProjektankerIcon("mdi-open-in-new");
 
@@ -49,7 +52,7 @@ public static class IconValues
 
     // https://pictogrammers.com/library/mdi/icon/cog/
     public static readonly IconValue Settings = new ProjektankerIcon("mdi-cog");
-    
+
     // https://pictogrammers.com/library/mdi/icon/eye/
     public static readonly IconValue Visibility = new ProjektankerIcon("mdi-eye");
 
@@ -304,6 +307,13 @@ public static class IconValues
             "M13.4751 2.12561V9.12561H3.6451L2.4751 10.2956V2.12561H13.4751ZM14.4751 0.12561H1.4751C0.925098 0.12561 0.475098 0.57561 0.475098 1.12561V15.1256L4.4751 11.1256H14.4751C15.0251 11.1256 15.4751 10.6756 15.4751 10.1256V1.12561C15.4751 0.57561 15.0251 0.12561 14.4751 0.12561ZM19.4751 4.12561H17.4751V13.1256H4.4751V15.1256C4.4751 15.6756 4.9251 16.1256 5.4751 16.1256H16.4751L20.4751 20.1256V5.12561C20.4751 4.57561 20.0251 4.12561 19.4751 4.12561Z"
         )
     );
+    
+    // Custom Icon from Figma. The source of this icon is currently unknown.
+    // Need to ask. - Sewer
+    public static readonly IconValue HardDrive = new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Icons/disk_20px.svg");
 
+    // The Black and White Nexus 'Developer' Logo.
+    // This is the variation of the Nexus logo used in the App, and on the Discord.
+    public static readonly IconValue Nexus = new AvaloniaSvg("avares://NexusMods.App.UI/Assets/nexus-logo-white.svg");
 #endregion
 }
