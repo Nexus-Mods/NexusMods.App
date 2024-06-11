@@ -506,4 +506,13 @@
     <data name="TopBar_AccountSettings" xml:space="preserve">
         <value>Account settings</value>
     </data>
+    <data name="ViewChangelogMenuItem.Header" xml:space="preserve">
+        <value>View changelog</value>
+    </data>
+    <data name="ViewAppLogsMenuItem.Header" xml:space="preserve">
+        <value>View App logs</value>
+    </data>
+    <data name="GiveFeedbackMenuItem.Header" xml:space="preserve">
+        <value>Give feedback</value>
+    </data>
 </root>

@@ -1004,5 +1004,23 @@ namespace NexusMods.App.UI.Resources {
                 return ResourceManager.GetString("TopBar_AccountSettings", resourceCulture);
             }
         }
+        
+        public static string ViewChangelogMenuItem_Header {
+            get {
+                return ResourceManager.GetString("ViewChangelogMenuItem.Header", resourceCulture);
+            }
+        }
+        
+        public static string ViewAppLogsMenuItem_Header {
+            get {
+                return ResourceManager.GetString("ViewAppLogsMenuItem.Header", resourceCulture);
+            }
+        }
+        
+        public static string GiveFeedbackMenuItem_Header {
+            get {
+                return ResourceManager.GetString("GiveFeedbackMenuItem.Header", resourceCulture);
+            }
+        }
     }
 }

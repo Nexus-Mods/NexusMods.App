@@ -58,9 +58,9 @@
                     </Button>
                 </MenuItem.Header>
 
-                <MenuItem Header="View changelog" x:Name="ViewChangelogMenuItem"/>
-                <MenuItem Header="View App logs" x:Name="ViewAppLogsMenuItem"/>
-                <MenuItem Header="Give feedback" x:Name="GiveFeedbackMenuItem"/>
+                <MenuItem Header="{x:Static resources:Language.ViewChangelogMenuItem_Header}" x:Name="ViewChangelogMenuItem"/>
+                <MenuItem Header="{x:Static resources:Language.ViewAppLogsMenuItem_Header}" x:Name="ViewAppLogsMenuItem"/>
+                <MenuItem Header="{x:Static resources:Language.GiveFeedbackMenuItem_Header}" x:Name="GiveFeedbackMenuItem"/>
             </MenuItem>
 
             <MenuItem Classes="TopBarMenuItem" Width="64" x:Name="AvatarMenuItem">
