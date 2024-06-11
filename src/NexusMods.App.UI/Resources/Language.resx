@@ -500,4 +500,7 @@
     <data name="AddPanelToolTip" xml:space="preserve">
         <value>Add a panel for split screen viewing</value>
     </data>
+    <data name="Panel_Add_tab_ToolTip" xml:space="preserve">
+        <value>Add tab</value>
+    </data>
 </root>

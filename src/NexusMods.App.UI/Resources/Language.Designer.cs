@@ -1288,6 +1288,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add tab.
+        /// </summary>
+        public static string Panel_Add_tab_ToolTip {
+            get {
+                return ResourceManager.GetString("Panel_Add_tab_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to New Tab.
         /// </summary>
         public static string PanelTabHeaderViewModel_Title_New_Tab {
