@@ -15,7 +15,17 @@ public interface IOSInterop
     /// <param name="fireAndForget">Start the process but don't wait for the completion</param>
     /// <param name="cancellationToken">Cancellation token</param>
     Task OpenUrl(Uri url, bool fireAndForget = false, CancellationToken cancellationToken = default);
-    
+
+    /// <summary>
+    /// Opens the file with the registered default application.
+    /// </summary>
+    Task OpenFile(AbsolutePath filePath, bool fireAndForget = false, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Opens the directory with the system explorer.
+    /// </summary>
+    Task OpenDirectory(AbsolutePath directoryPath, bool fireAndForget = false, CancellationToken cancellationToken = default);
+
     /// <summary>
     /// Get the path to the current executable
     /// </summary>

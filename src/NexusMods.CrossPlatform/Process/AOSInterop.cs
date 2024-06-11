@@ -54,6 +54,30 @@ public abstract class AOSInterop : IOSInterop
     }
 
     /// <inheritdoc />
+    public Task OpenFile(AbsolutePath filePath, bool fireAndForget = false, CancellationToken cancellationToken = default)
+    {
+        if (!filePath.FileExists)
+        {
+            _logger.LogError("Unable to open file that doesn't exist at `{Path}`", filePath);
+            return Task.CompletedTask;
+        }
+
+        throw new NotImplementedException();
+    }
+
+    /// <inheritdoc />
+    public Task OpenDirectory(AbsolutePath directoryPath, bool fireAndForget = false, CancellationToken cancellationToken = default)
+    {
+        if (!directoryPath.DirectoryExists())
+        {
+            _logger.LogError("Unable to open directory that doesn't exist at `{Path}`", directoryPath);
+            return Task.CompletedTask;
+        }
+
+        throw new NotImplementedException();
+    }
+
+    /// <inheritdoc />
     public virtual AbsolutePath GetOwnExe()
     {
         var processPath = Environment.ProcessPath;

@@ -1,6 +1,6 @@
 ﻿<reactiveUi:ReactiveUserControl
     d:DataContext=""
-    d:DesignHeight="56"
+    d:DesignHeight="300"
     d:DesignWidth="1280"
     mc:Ignorable="d"
     x:Class="NexusMods.App.UI.Controls.TopBar.TopBarView"
@@ -13,12 +13,13 @@
     xmlns:topBar="clr-namespace:NexusMods.App.UI.Controls.TopBar"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
-    xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation">
+    xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation"
+    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls">
     <Design.DataContext>
-        <topBar:TopBarDesignViewModel ShowWindowControls="True" />
+        <topBar:TopBarDesignViewModel />
     </Design.DataContext>
 
-    <Grid ColumnDefinitions="Auto, *, Auto, Auto, Auto" x:Name="MainGrid">
+    <Grid ColumnDefinitions="Auto, *, Auto" x:Name="MainGrid" Height="56" VerticalAlignment="Top">
 
         <TextBlock Grid.Column="0"
                    Classes="TitleMDSemi ForegroundSubdued"
@@ -26,83 +27,56 @@
                    Margin="16,0"
                    x:Name="ActiveWorkspaceTitleTextBlock" />
 
-        <StackPanel Grid.Column="2"
-                    Classes="TopBarActions Spacing-2"
-                    Orientation="Horizontal"
-                    Margin="16,0"
-                    x:Name="ActionStackPanel">
+        <Menu Grid.Column="2" Margin="16 0">
+            <MenuItem Classes="TopBarNoStyleMenuItem">
+                <MenuItem.Header>
+                    <reactiveUi:ViewModelViewHost VerticalAlignment="Center" x:Name="AddPanelViewModelViewHost" />
+                </MenuItem.Header>
+            </MenuItem>
 
-            <Button Classes="Action" x:Name="HistoryActionButton" IsVisible="False">
-                <icons:UnifiedIcon Classes="History ForegroundSubdued" />
-            </Button>
+            <Separator Width="1" Height="40"/>
 
-            <Button Classes="Action" x:Name="UndoActionButton" IsVisible="False">
-                <icons:UnifiedIcon Classes="Undo ForegroundSubdued" />
-            </Button>
+            <navigation:NavigationMenuItem  Classes="TopBarMenuItem" x:Name="OpenSettingsMenuItem">
+                <navigation:NavigationMenuItem.Header>
+                    <icons:UnifiedIcon Classes="Cog"/>
+                </navigation:NavigationMenuItem.Header>
+            </navigation:NavigationMenuItem>
 
-            <Button Classes="Action" x:Name="RedoActionButton" IsVisible="False">
-                <icons:UnifiedIcon Classes="Redo ForegroundSubdued" />
-            </Button>
+            <MenuItem Classes="TopBarMenuItem" Width="64">
+                <MenuItem.Header>
+                    <StackPanel Orientation="Horizontal" Spacing="0" Margin="10">
+                        <icons:UnifiedIcon Classes="Help" Size="20" />
+                        <icons:UnifiedIcon Classes="MenuDown" Size="24"/>
+                    </StackPanel>
+                </MenuItem.Header>
 
-            <Button Classes="Action" x:Name="HelpActionButton">
-                <icons:UnifiedIcon Classes="Help ForegroundSubdued" />
-            </Button>
+                <navigation:NavigationMenuItem Header="{x:Static resources:Language.ViewChangelogMenuItem_Header}" x:Name="ViewChangelogMenuItem"/>
 
-            <navigation:NavigationControl Classes="Action" x:Name="SettingsActionButton">
-                <icons:UnifiedIcon Classes="Cog ForegroundSubdued" />
-            </navigation:NavigationControl>
+                <MenuItem Header="{x:Static resources:Language.ViewAppLogsMenuItem_Header}" x:Name="ViewAppLogsMenuItem"/>
+                <MenuItem Header="{x:Static resources:Language.GiveFeedbackMenuItem_Header}" x:Name="GiveFeedbackMenuItem"/>
+            </MenuItem>
 
-            <reactiveUi:ViewModelViewHost VerticalAlignment="Center" x:Name="AddPanelViewModelViewHost" />
-
-        </StackPanel>
-
-        <Border Grid.Column="3" Classes="OutlineWeak"
-                Margin="0,8"
-                BorderThickness="1,0,0,0"
-                x:Name="LoginDivider" />
-
-        <StackPanel Grid.Column="4"
-                    Orientation="Horizontal"
-                    Classes="Spacing-2"
-                    Margin="12,0"
-                    x:Name="LoginStackPanel">
-
-            <Button
-                Classes="Standard Primary"
-                x:Name="LoginButton">
-                <StackPanel>
-                    <TextBlock
-                        Text="{x:Static resources:Language.TopBarActions__LOG_IN}">
-                    </TextBlock>
-                </StackPanel>
-            </Button>
-
-            <Border Classes="OutlineWeak"
-                    BorderThickness="0,0,0,0"
-                    x:Name="UserPanel"
-                    IsVisible="False">
-
-                <StackPanel Orientation="Horizontal" Classes="Spacing-3_5" Margin="16, 0">
-
-                    <Button Classes="Pill Light" x:Name="Premium" IsVisible="False">
-                        <StackPanel>
-                            <icons:UnifiedIcon Classes="Star" />
-                            <TextBlock Text="{x:Static resources:Language.Nexus_Premium_Status__Premium}"></TextBlock>
-                        </StackPanel>
+            <MenuItem Classes="TopBarNoStyleMenuItem" x:Name="LoginMenuItem">
+                <MenuItem.Header>
+                    <Button Classes="Standard Primary" x:Name="LoginButton" Height="40">
+                        <TextBlock Text="{x:Static resources:Language.TopBarActions__LOG_IN}"/>
                     </Button>
+                </MenuItem.Header>
+            </MenuItem>
 
-                    <Button Classes="Avatar"
-                            HorizontalAlignment="Center"
-                            x:Name="UserButton">
-                        <icons:UnifiedIcon
-                            Size="30"
-                            x:Name="AvatarImage">
-                        </icons:UnifiedIcon>
-                    </Button>
+            <MenuItem Classes="TopBarMenuItem" Width="64" x:Name="AvatarMenuItem">
+                <MenuItem.Header>
+                    <StackPanel Orientation="Horizontal" Spacing="0" Margin="6">
+                        <icons:UnifiedIcon Size="28" x:Name="AvatarIcon" />
+                        <icons:UnifiedIcon Classes="MenuDown" Size="24"/>
+                    </StackPanel>
+                </MenuItem.Header>
 
-                </StackPanel>
-            </Border>
+                <MenuItem Header="{x:Static resources:Language.TopBar_MyProfile}" x:Name="OpenNexusModsProfileMenuItem" />
+                <MenuItem Header="{x:Static resources:Language.TopBar_AccountSettings}" x:Name="OpenNexusModsAccountSettingsMenuItem" />
+                <MenuItem Header="{x:Static resources:Language.TopBar_SignOut}" x:Name="SignOutMenuItem" />
+            </MenuItem>
+        </Menu>
 
-        </StackPanel>
     </Grid>
 </reactiveUi:ReactiveUserControl>

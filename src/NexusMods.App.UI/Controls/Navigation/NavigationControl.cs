@@ -4,6 +4,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using JetBrains.Annotations;
+using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.WorkspaceSystem;
 using ReactiveUI;
 
@@ -47,13 +48,13 @@ public class NavigationControl : Button
             {
                 new MenuItem
                 {
-                    Header = "Open in new tab",
+                    Header = Language.NavigationControl_NavigationControl_Open_in_new_tab,
                     Command = _contextMenuCommand,
                     CommandParameter = OpenPageBehaviorType.NewTab,
                 },
                 new MenuItem
                 {
-                    Header = "Open in new panel",
+                    Header = Language.NavigationControl_NavigationControl_Open_in_new_panel,
                     Command = _contextMenuCommand,
                     CommandParameter = OpenPageBehaviorType.NewPanel,
                 },
