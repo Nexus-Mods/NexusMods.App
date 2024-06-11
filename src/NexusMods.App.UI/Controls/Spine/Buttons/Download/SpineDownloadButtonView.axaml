@@ -15,7 +15,7 @@
     </Design.DataContext>
     <Button Classes="SpineDownloadButton Idle" x:Name="ParentButton">
         <ToolTip.Tip>
-            <TextBlock x:Name="ToolTipTextBlock"/>
+            <TextBlock Classes="ToolTipText" x:Name="ToolTipTextBlock"/>
         </ToolTip.Tip>
         <Grid>
             <Border x:Name="OuterBorder"/>

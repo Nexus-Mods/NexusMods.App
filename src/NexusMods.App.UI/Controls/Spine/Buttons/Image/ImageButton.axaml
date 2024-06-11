@@ -19,7 +19,7 @@
             x:Name="Button"
             HorizontalAlignment="Stretch">
         <ToolTip.Tip>
-            <TextBlock x:Name="ToolTipTextBlock" />
+            <TextBlock Classes="ToolTipText" x:Name="ToolTipTextBlock" />
         </ToolTip.Tip>
         <Border x:Name="ClippingBorder">
             <Grid x:Name="InnerGrid">

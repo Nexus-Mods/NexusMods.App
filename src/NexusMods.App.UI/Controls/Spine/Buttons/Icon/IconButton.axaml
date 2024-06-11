@@ -22,7 +22,7 @@
         Width="64"
         x:Name="Button">
         <ToolTip.Tip>
-            <TextBlock x:Name="ToolTipTextBlock"/>
+            <TextBlock Classes="ToolTipText" x:Name="ToolTipTextBlock"/>
         </ToolTip.Tip>
         <Button.Template>
             <ControlTemplate>

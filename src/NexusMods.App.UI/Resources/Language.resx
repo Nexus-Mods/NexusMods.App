@@ -497,4 +497,7 @@
     <data name="FileOriginsPage_ViewButtonText" xml:space="preserve">
         <value>View</value>
     </data>
+    <data name="AddPanelToolTip" xml:space="preserve">
+        <value>Add a panel for split screen viewing</value>
+    </data>
 </root>
