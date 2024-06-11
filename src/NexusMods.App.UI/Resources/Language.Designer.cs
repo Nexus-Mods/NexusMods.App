@@ -18,7 +18,7 @@ namespace NexusMods.App.UI.Resources {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class Language {
@@ -807,6 +807,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Give feedback.
+        /// </summary>
+        public static string GiveFeedbackMenuItem_Header {
+            get {
+                return ResourceManager.GetString("GiveFeedbackMenuItem.Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to ERROR.
         /// </summary>
         public static string Helpers_ERROR {
@@ -1243,6 +1252,24 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Open in new panel.
+        /// </summary>
+        public static string NavigationControl_NavigationControl_Open_in_new_panel {
+            get {
+                return ResourceManager.GetString("NavigationControl_NavigationControl_Open_in_new_panel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open in new tab.
+        /// </summary>
+        public static string NavigationControl_NavigationControl_Open_in_new_tab {
+            get {
+                return ResourceManager.GetString("NavigationControl_NavigationControl_Open_in_new_tab", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Newsfeed.
         /// </summary>
         public static string Newsfeed {
@@ -1396,6 +1423,33 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Account settings.
+        /// </summary>
+        public static string TopBar_AccountSettings {
+            get {
+                return ResourceManager.GetString("TopBar_AccountSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to My Profile.
+        /// </summary>
+        public static string TopBar_MyProfile {
+            get {
+                return ResourceManager.GetString("TopBar_MyProfile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sign out.
+        /// </summary>
+        public static string TopBar_SignOut {
+            get {
+                return ResourceManager.GetString("TopBar_SignOut", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to LOG IN.
         /// </summary>
         public static string TopBarActions__LOG_IN {
@@ -1455,6 +1509,24 @@ namespace NexusMods.App.UI.Resources {
         public static string Updater_ViewChangelog {
             get {
                 return ResourceManager.GetString("Updater_ViewChangelog", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to View App logs.
+        /// </summary>
+        public static string ViewAppLogsMenuItem_Header {
+            get {
+                return ResourceManager.GetString("ViewAppLogsMenuItem.Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to View changelog.
+        /// </summary>
+        public static string ViewChangelogMenuItem_Header {
+            get {
+                return ResourceManager.GetString("ViewChangelogMenuItem.Header", resourceCulture);
             }
         }
         

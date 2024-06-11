@@ -9,5 +9,6 @@
         <ResourceInclude Source="/Resources/ThemeBaseResources.axaml"/>
         <ResourceInclude Source="/Resources/Typography/TextBlockControlThemes.axaml"/>
         <ResourceInclude Source="/Resources/ControlThemes/UnifiedIconControlTheme.axaml"/>
+        <ResourceInclude Source="/Resources/ControlThemes/TopLevelMenuItemHeader.axaml"/>
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

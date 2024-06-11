@@ -160,7 +160,6 @@
     <SolidColorBrush x:Key="NeutralTranslucentModerateBrush" Color="{StaticResource NeutralTranslucentModerate}" />
     <SolidColorBrush x:Key="NeutralTranslucentStrongBrush" Color="{StaticResource NeutralTranslucentStrong}" />
 
-
     <!-- Strokes -->
 
     <!-- NeutralTranslucent -->
