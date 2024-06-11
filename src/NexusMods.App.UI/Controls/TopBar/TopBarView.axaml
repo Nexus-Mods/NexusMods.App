@@ -49,6 +49,10 @@
                         <icons:UnifiedIcon Classes="MenuDown" Size="24"/>
                     </StackPanel>
                 </MenuItem.Header>
+
+                <MenuItem Header="{x:Static resources:Language.ViewChangelogMenuItem_Header}" x:Name="ViewChangelogMenuItem"/>
+                <MenuItem Header="{x:Static resources:Language.ViewAppLogsMenuItem_Header}" x:Name="ViewAppLogsMenuItem"/>
+                <MenuItem Header="{x:Static resources:Language.GiveFeedbackMenuItem_Header}" x:Name="GiveFeedbackMenuItem"/>
             </MenuItem>
 
             <MenuItem Classes="TopBarNoStyleMenuItem" x:Name="LoginMenuItem">
@@ -57,10 +61,6 @@
                         <TextBlock Text="{x:Static resources:Language.TopBarActions__LOG_IN}"/>
                     </Button>
                 </MenuItem.Header>
-
-                <MenuItem Header="{x:Static resources:Language.ViewChangelogMenuItem_Header}" x:Name="ViewChangelogMenuItem"/>
-                <MenuItem Header="{x:Static resources:Language.ViewAppLogsMenuItem_Header}" x:Name="ViewAppLogsMenuItem"/>
-                <MenuItem Header="{x:Static resources:Language.GiveFeedbackMenuItem_Header}" x:Name="GiveFeedbackMenuItem"/>
             </MenuItem>
 
             <MenuItem Classes="TopBarMenuItem" Width="64" x:Name="AvatarMenuItem">
