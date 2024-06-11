@@ -13,8 +13,7 @@
     xmlns:topBar="clr-namespace:NexusMods.App.UI.Controls.TopBar"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
-    xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation"
-    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls">
+    xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation">
     <Design.DataContext>
         <topBar:TopBarDesignViewModel />
     </Design.DataContext>
@@ -37,12 +36,18 @@
             <Separator Width="1" Height="40"/>
 
             <navigation:NavigationMenuItem  Classes="TopBarMenuItem" x:Name="OpenSettingsMenuItem">
+                <ToolTip.Tip>
+                    <TextBlock Classes="ToolTipText" Text="{x:Static resources:Language.SettingsView_Title}" />
+                </ToolTip.Tip>
                 <navigation:NavigationMenuItem.Header>
                     <icons:UnifiedIcon Classes="Cog"/>
                 </navigation:NavigationMenuItem.Header>
             </navigation:NavigationMenuItem>
 
             <MenuItem Classes="TopBarMenuItem" Width="64">
+                <ToolTip.Tip>
+                    <TextBlock Classes="ToolTipText" Text="{x:Static resources:Language.TopBar_Help_ToolTip}" />
+                </ToolTip.Tip>
                 <MenuItem.Header>
                     <StackPanel Orientation="Horizontal" Spacing="0" Margin="10">
                         <icons:UnifiedIcon Classes="Help" Size="20" />

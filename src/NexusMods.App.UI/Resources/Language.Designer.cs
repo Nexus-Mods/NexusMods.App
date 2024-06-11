@@ -69,11 +69,29 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Apply your changes to the game folder.
+        /// </summary>
+        public static string ApplyControlView_Apply_ToolTip {
+            get {
+                return ResourceManager.GetString("ApplyControlView_Apply_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Preview changes.
         /// </summary>
         public static string ApplyControlView_ViewApplyChanges {
             get {
                 return ResourceManager.GetString("ApplyControlView_ViewApplyChanges", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to View the changes that will be applied to your game folder.
+        /// </summary>
+        public static string ApplyControlView_ViewApplyChanges_ToolTip {
+            get {
+                return ResourceManager.GetString("ApplyControlView_ViewApplyChanges_ToolTip", resourceCulture);
             }
         }
         
@@ -632,6 +650,24 @@ namespace NexusMods.App.UI.Resources {
         public static string ErrorView_Title {
             get {
                 return ResourceManager.GetString("ErrorView_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add mod to your mod list.
+        /// </summary>
+        public static string FileOriginPage_AddMod_ToolTip {
+            get {
+                return ResourceManager.GetString("FileOriginPage_AddMod_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add mod to mod list using advanced manual installer.
+        /// </summary>
+        public static string FileOriginPage_AddModAdvanced_ToolTip {
+            get {
+                return ResourceManager.GetString("FileOriginPage_AddModAdvanced_ToolTip", resourceCulture);
             }
         }
         
@@ -1428,6 +1464,15 @@ namespace NexusMods.App.UI.Resources {
         public static string TopBar_AccountSettings {
             get {
                 return ResourceManager.GetString("TopBar_AccountSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Help and feedback.
+        /// </summary>
+        public static string TopBar_Help_ToolTip {
+            get {
+                return ResourceManager.GetString("TopBar_Help_ToolTip", resourceCulture);
             }
         }
         
