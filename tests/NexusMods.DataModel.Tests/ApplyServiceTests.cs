@@ -47,7 +47,7 @@ public class ApplyServiceTests(IServiceProvider provider) : ADataModelTest<Apply
         
         // Act
         var newFile = new GamePath(LocationId.Saves, "newfile.dat");
-        await Install.LocationsRegister.GetResolvedPath(newFile).WriteAllBytesAsync(new byte[] { 0x01, 0x02, 0x03 });
+        await Install.LocationsRegister.GetResolvedPath(newFile).WriteAllBytesAsync([0x01, 0x02, 0x03]);
         await ApplyService.Apply(BaseLoadout);
         
         // Assert
@@ -107,7 +107,7 @@ public class ApplyServiceTests(IServiceProvider provider) : ADataModelTest<Apply
         files.Length.Should().Be(2, "deletes are reified, and the delete is in the overrides");
         var overrideFile = files.FirstOrDefault(f => f.Mod.Category == ModCategory.Overrides);
         overrideFile.Should().NotBeNull();
-        overrideFile!.Contains(DeletedFile.Deleted).Should().BeTrue();
+        overrideFile!.Contains(DeletedFile.Size).Should().BeTrue();
         
         
         // Act

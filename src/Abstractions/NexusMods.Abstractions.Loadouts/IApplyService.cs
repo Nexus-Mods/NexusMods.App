@@ -1,4 +1,5 @@
-﻿using NexusMods.Abstractions.GameLocators;
+﻿using System.Diagnostics.CodeAnalysis;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 
@@ -33,7 +34,7 @@ public interface IApplyService
     /// <summary>
     /// Returns the last applied loadout for a given game installation.
     /// </summary>
-    public Loadout.ReadOnly? GetLastAppliedLoadout(GameInstallation gameInstallation);
+    public bool TryGetLastAppliedLoadout(GameInstallation gameInstallation, out Loadout.ReadOnly loadout);
     
     /// <summary>
     /// Returns an observable of the last applied revisions for a specific game installation

@@ -114,8 +114,7 @@ public class FileOriginRegistry : IFileOriginRegistry
     /// <inheritdoc />
     public DownloadAnalysis.ReadOnly Get(DownloadId id)
     {
-        var db = _conn.Db;
-        return db.Get<DownloadAnalysis.ReadOnly>(id.Value);
+        return DownloadAnalysis.Load(_conn.Db, id.Value);
     }
 
     /// <inheritdoc />

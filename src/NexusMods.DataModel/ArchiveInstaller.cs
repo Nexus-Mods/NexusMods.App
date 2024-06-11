@@ -56,7 +56,7 @@ public class ArchiveInstaller : IArchiveInstaller
     {
         // Get the loadout and create the mod, so we can use it in the job.
         var useCustomInstaller = installer != null;
-        var loadout = _conn.Db.Get<Loadout.ReadOnly>(loadoutId.Value);
+        var loadout = Loadout.Load(_conn.Db, loadoutId);
         
         // Note(suggestedName) cannot be null here.
         // Because string is non-nullable where it is set (FileOriginRegistry),

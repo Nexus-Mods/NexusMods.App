@@ -647,7 +647,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         }
         
         var result = await tx.Commit();
-        return result.Db.Get<Loadout.ReadOnly>(loadout.Id);
+        return loadout.Rebase(result.Db);
     }
 
     private TempEntity[] FindChangedFiles(DiskStateTree diskState, Loadout.ReadOnly loadout, FileTree prevFileTree, DiskStateTree prevDiskState)
@@ -723,7 +723,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                     {
                         { StoredFile.Hash, loadoutFile.Item.Value.Hash },
                         { StoredFile.Size, loadoutFile.Item.Value.Size },
-                        DeletedFile.Deleted,
+                        { DeletedFile.Size, loadoutFile.Item.Value.Size },
                         { File.To, gamePath },
                     };
                     newFile.Id = prevDbFile.Id;
@@ -737,7 +737,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                 {
                     { StoredFile.Hash, loadoutFile.Item.Value.Hash },
                     { StoredFile.Size, loadoutFile.Item.Value.Size },
-                    DeletedFile.Deleted,
+                    { DeletedFile.Size, loadoutFile.Item.Value.Size },
                     { File.To, gamePath },
                 };
                 newFiles.Add(newFile);
@@ -986,13 +986,12 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         var result = await tx.Commit();
         
         // Remap the ids
-        loadout = result.Remap(loadout);
+        var remappedLoadout = loadout.Remap(result);
         
         initialState.TxId = result.NewTx;
-        initialState.LoadoutId = loadout.Id;
+        initialState.LoadoutId = remappedLoadout.Id;
 
-        var remappedLoadout = loadout.Remap(result);
-
+        
         // Reset the game folder to initial state if making a new loadout.
         // We must do this before saving state, as Apply does a diff against
         // the last state. Which will be a state from previous loadout.
@@ -1178,7 +1177,8 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         if (mod.Category == ModCategory.Overrides)
             return [new Last<Mod.ReadOnly, ModId>()];
         if (Mod.SortAfter.TryGet(mod, out var other))
-            return [new After<Mod.ReadOnly, ModId> { Other = ModId.From(other) }];
+            if (other != EntityId.From(0)) 
+                return [new After<Mod.ReadOnly, ModId> { Other = ModId.From(other) }];
         return [];
     }
 
@@ -1214,7 +1214,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             return false;
 
         var db = Connection.AsOf(lastApplied.Tx);
-        return db.Get<Loadout.ReadOnly>(lastApplied.Id.Value).IsVanillaStateLoadout();
+        return Loadout.Load(db, lastApplied.Id).IsVanillaStateLoadout();
     }
 
     /// <summary>

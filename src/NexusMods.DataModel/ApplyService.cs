@@ -1,4 +1,5 @@
-﻿using System.Reactive.Linq;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Reactive.Linq;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.GameLocators;
@@ -53,10 +54,9 @@ public class ApplyService : IApplyService
                 loadout.InstallationInstance.Game.Name, loadout.InstallationInstance.Version
             );
 
-            var lastAppliedLoadout = GetLastAppliedLoadout(loadout.InstallationInstance);
-            if (lastAppliedLoadout is not null)
+            if (TryGetLastAppliedLoadout(loadout.InstallationInstance, out var lastAppliedLoadout))
             {
-                _logger.LogInformation("Last applied loadout found: {LoadoutId} as of {TxId}", lastAppliedLoadout.Value.Id, lastAppliedLoadout.Value.MostRecentTx());
+                _logger.LogInformation("Last applied loadout found: {LoadoutId} as of {TxId}", lastAppliedLoadout.Id, lastAppliedLoadout.MostRecentTx());
             }
             else
             {
@@ -84,35 +84,28 @@ public class ApplyService : IApplyService
     /// <inheritdoc />
     public async Task<Loadout.ReadOnly> Ingest(GameInstallation gameInstallation)
     {
-        
-        var lastAppliedRevision = GetLastAppliedLoadout(gameInstallation);
-        if (lastAppliedRevision is null)
+        if (!TryGetLastAppliedLoadout(gameInstallation, out var lastAppliedRevision))
         {
             throw new InvalidOperationException("Game installation does not have a last applied loadout to ingest into");
         }
-
-        var lastLoadout = _conn.Db.Get<Loadout.ReadOnly>(lastAppliedRevision.Value.Id);
-        if (!lastLoadout.IsValid())
-        {
-            throw new KeyNotFoundException("Loadout not found for last applied revision");
-        }
-        var loadoutWithIngest = await lastLoadout.Ingest();
+        
+        var loadoutWithIngest = await gameInstallation.GetGame().Synchronizer.Ingest(lastAppliedRevision);
 
         return loadoutWithIngest;
     }
 
     /// <inheritdoc />
-    public Loadout.ReadOnly? GetLastAppliedLoadout(GameInstallation gameInstallation)
+    public bool TryGetLastAppliedLoadout(GameInstallation gameInstallation, out Loadout.ReadOnly loadout)
     {
         if (!_diskStateRegistry.TryGetLastAppliedLoadout(gameInstallation, out var lastId))
         {
-            return null;
+            loadout = default(Loadout.ReadOnly);
+            return false;
         }
-
-        if (lastId == default(LoadoutWithTxId)) return null;
         
         var db = _conn.AsOf(lastId.Tx);
-        return Loadout.Load(db, lastId.Id);
+        loadout = Loadout.Load(db, lastId.Id);
+        return true;
     }
 
     /// <inheritdoc />

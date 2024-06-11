@@ -177,6 +177,6 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
 
     public void Refresh<T>(ref T ent) where T : IReadOnlyModel<T>
     {
-        ent = T.Create(ent.Db, ent.Id);
+        ent = T.Create(Connection.Db, ent.Id);
     }
 }

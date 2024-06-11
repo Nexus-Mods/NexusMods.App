@@ -18,9 +18,10 @@ namespace NexusMods.Abstractions.Loadouts.Files;
 public partial class DeletedFile : IModelDefinition
 {
     private const string Namespace = "NexusMods.Abstractions.Loadouts.Files.DeletedFile";
-    
+
     /// <summary>
-    /// If set to true, the file is considered deleted.
+    /// Not strictly necessary, but we need some attribute on this entity so we can query
+    /// it and discriminate it from other entities.
     /// </summary>
-    public static readonly MarkerAttribute Deleted = new(Namespace, nameof(Deleted));
+    public static readonly SizeAttribute Size = new(Namespace, nameof(Size));
 }

@@ -53,15 +53,15 @@ public class FileHashCache : IFileHashCache
     {
         var nameHash = Hash.From(path.ToString().AsSpan().GetStableHash());
         var db = _conn.Db;
-        var id = HashCacheEntry.FindByNameHash(db, nameHash)
+        var found = HashCacheEntry.FindByNameHash(db, nameHash)
             .FirstOrDefault();
-        if (id == EntityId.From(0))
+        if (!found.IsValid())
         {
             entry = default(HashCacheEntry.ReadOnly);
             return false;
         }
 
-        entry = db.Get<HashCacheEntry.ReadOnly>(id);
+        entry = found;
         return true;
     }
 

@@ -115,12 +115,10 @@ public class Registry : IGameRegistry, IHostedService
                 return;
 
             // Doesn't exist, so create it.
-            _ = new GameMetadata.New(tx)
-            {
-                Store = result.Store.Value,
-                Domain = game.Domain.Value,
-                Path = result.Path.ToString(),
-            };
+            var tmpId = tx.TempId();
+            tx.Add(tmpId, GameMetadata.Store, result.Store.Value);
+            tx.Add(tmpId, GameMetadata.Domain, game.Domain.Value);
+            tx.Add(tmpId, GameMetadata.Path, result.Path.ToString());
         });
         
         var txResult = await tx.Commit();
