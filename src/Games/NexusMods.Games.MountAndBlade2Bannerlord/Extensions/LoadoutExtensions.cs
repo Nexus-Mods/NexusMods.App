@@ -17,7 +17,8 @@ internal static class LoadoutExtensions
     {
         Mod = mod,
         ModuleInfoExtended = moduleInfo,
-        IsValid = mod.GetSubModuleFileMetadata()?.IsValid == true,
+        // TODO: Actually implement this
+        IsValid = true,
         IsSelected = mod.Enabled,
         IsDisabled = mod.Status == ModStatus.Failed,
         Index = index,
@@ -25,7 +26,7 @@ internal static class LoadoutExtensions
 
     private static async Task<IEnumerable<Mod.ReadOnly>> SortMods(Loadout.ReadOnly loadout)
     {
-        var loadoutSynchronizer = (((IGame)loadout.Installation.Game).Synchronizer as MountAndBlade2BannerlordLoadoutSynchronizer)!;
+        var loadoutSynchronizer = (((IGame)loadout.InstallationInstance.Game).Synchronizer as MountAndBlade2BannerlordLoadoutSynchronizer)!;
 
         var sorted = await loadoutSynchronizer.SortMods(loadout);
         return sorted;
@@ -41,9 +42,9 @@ internal static class LoadoutExtensions
             if (moduleInfo is null) return null;
 
             var subModule = x.Files.First(y => y.To.FileName.Path.Equals(Constants.SubModuleName, StringComparison.OrdinalIgnoreCase));
-            var subModulePath = loadout.Installation.LocationsRegister.GetResolvedPath(subModule.To).GetFullPath();
+            var subModulePath = loadout.InstallationInstance.LocationsRegister.GetResolvedPath(subModule.To).GetFullPath();
 
-            return viewModelCreator(x, moduleInfo.FromEntity(), i++);
+            return viewModelCreator(x, moduleInfo.Value.FromEntity(), i++);
         }).OfType<LoadoutModuleViewModel>();
     }
 

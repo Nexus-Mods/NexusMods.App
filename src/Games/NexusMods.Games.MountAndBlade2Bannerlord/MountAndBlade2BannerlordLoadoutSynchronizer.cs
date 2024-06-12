@@ -26,7 +26,7 @@ public sealed class MountAndBlade2BannerlordLoadoutSynchronizer(IServiceProvider
 
         ModId? GetModIdFromModuleId(string moduleId)
         {
-            return loadout.Mods.FirstOrDefault(x => x.GetModuleInfo() is { } mi && mi.ModuleId == moduleId)?.ModId;
+            return loadout.Mods.FirstOrDefault(x => x.GetModuleInfo() is { } mi && mi.ModuleId == moduleId).ModId;
         }
 
         await Task.Yield();

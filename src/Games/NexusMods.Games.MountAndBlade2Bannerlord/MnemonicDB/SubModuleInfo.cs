@@ -22,6 +22,6 @@ public partial class SubModuleInfo : IModelDefinition
     /// <summary>
     /// Assembly names of the sub-module.
     /// </summary>
-    public static readonly StringsAttribute Assemblies = new(Namespace, nameof(Assemblies));
+    public static readonly StringAttribute Assemblies = new(Namespace, nameof(Assemblies)) { Cardinalty = Cardinality.Many };
 
 }

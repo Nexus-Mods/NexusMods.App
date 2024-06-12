@@ -538,7 +538,7 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
         await Synchronizer.DeleteLoadout(initialLoadout.InstallationInstance, initialLoadout.LoadoutId);
 
         // Assert
-        var model = Connection.Db.Get<Loadout.ReadOnly>(initialLoadout.LoadoutId.Value);
+        var model = initialLoadout.Rebase(Connection.Db);
         model.LoadoutKind.Should().Be(LoadoutKind.Deleted, "The loadout should be deleted");
 
         var currentDiskState = await Synchronizer.GetDiskState(initialLoadout.InstallationInstance);

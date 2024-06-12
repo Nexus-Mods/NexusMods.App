@@ -22,9 +22,9 @@ public class RunLauncherTool : ITool
 
     public async Task Execute(Loadout.ReadOnly loadout, CancellationToken ct)
     {
-        if (!loadout.Installation.Is<MountAndBlade2Bannerlord>()) return;
+        if (!loadout.InstallationInstance.Is<MountAndBlade2Bannerlord>()) return;
 
-        var store = loadout.Installation.Store;
+        var store = loadout.InstallationInstance.Store;
         var isXbox = store == GameStore.XboxGamePass;
         var useVanillaLauncher = false; // TODO: From Options
         var hasBLSE = loadout.HasInstalledFile("Bannerlord.BLSE.Shared.dll");

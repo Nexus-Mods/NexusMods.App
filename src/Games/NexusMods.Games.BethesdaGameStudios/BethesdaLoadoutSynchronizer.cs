@@ -2,6 +2,8 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
+using NexusMods.Abstractions.MnemonicDB.Attributes;
+using File = NexusMods.Abstractions.Loadouts.Files.File;
 
 namespace NexusMods.Games.BethesdaGameStudios;
 
@@ -23,35 +25,40 @@ public class BethesdaLoadoutSynchronizer(IServiceProvider provider) : ALoadoutSy
         var metadataMod = loadout.Mods
             .FirstOrDefault(m => m.Category == ModCategory.Metadata);
         
-        if (metadataMod == null)
+        if (metadataMod.IsValid())
         {
             using var tx = Connection.BeginTransaction();
-            metadataMod = new Mod.ReadOnly(tx)
+            var newMetadataMod = new Mod.New(tx)
             {
                 Name = "Modding Metadata",
                 Category = ModCategory.Metadata,
                 Enabled = true,
-                Loadout = loadout,
+                LoadoutId = loadout,
+                Revision = 0,
+                Status = ModStatus.Installed,
             };
             loadout.Revise(tx);
             var result = await tx.Commit();
-            metadataMod = result.Remap(metadataMod);
+            metadataMod = newMetadataMod.Remap(result);
         }
 
         
         var mod = metadataMod.Files
-            .FirstOrDefault(f => f.IsGeneratedFile<PluginOrderFile>());
+            .FirstOrDefault(f => f.TryGetAsGeneratedFile(out _));
 
-        if (mod == null)
+        if (!mod.IsValid())
         {
             using var tx = Connection.BeginTransaction(); 
-            var generated = new GeneratedFile.ReadOnly(tx)
+            var generated = new GeneratedFile.New(tx)
             {
-                Loadout = loadout,
-                Mod = metadataMod,
-                To = PluginOrderFile.Path,
+                File = new File.New(tx)
+                {
+                    LoadoutId = loadout,
+                    ModId = metadataMod,
+                    To = PluginOrderFile.Path,
+                },
+                Generator = PluginOrderFile.Guid,
             };
-            generated.SetGenerator<PluginOrderFile>();
             metadataMod.Revise(tx);
             var result = await tx.Commit(); 
             loadout = result.Remap(loadout);

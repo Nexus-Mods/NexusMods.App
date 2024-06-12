@@ -5,6 +5,7 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
+using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
@@ -105,5 +106,25 @@ public partial class Loadout : IModelDefinition
         /// especially, when it comes to displaying elements the user can edit.
         /// </remarks>
         public bool IsVisible() => LoadoutKind == LoadoutKind.Default;
+    }
+}
+
+
+public partial struct LoadoutId
+{
+    
+    /// <summary>
+    /// Try to parse a LoadoutId from a hex string.
+    /// </summary>
+    public static bool TryParseFromHex(string hex, out LoadoutId id)
+    {
+        
+        if (EntityExtensions.TryParseFromHex(hex, out var entityId))
+        {
+            id = From(entityId);
+            return true;
+        }
+        id = default(LoadoutId);
+        return false;
     }
 }

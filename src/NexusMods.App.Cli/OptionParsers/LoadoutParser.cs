@@ -18,15 +18,15 @@ internal class LoadoutParser(IConnection conn) : IOptionParser<Loadout.ReadOnly>
         error = string.Empty;
         if (LoadoutId.TryParseFromHex(input, out var parsedId))
         {
-            var loadout = db.Get<Loadout.ReadOnly>(parsedId.Value);
-            if (loadout.Contains(Loadout.Name))
+            var loadout = Loadout.Load(db, parsedId);
+            if (loadout.IsValid())
             {
                 value = loadout;
                 return true;
             }
         }
 
-        var found = db.FindIndexed(input, Loadout.Name).ToArray();
+        var found = Loadout.FindByName(db, input).ToArray();
 
         switch (found.Length)
         {
@@ -35,7 +35,7 @@ internal class LoadoutParser(IConnection conn) : IOptionParser<Loadout.ReadOnly>
             case > 1:
                 throw new Exception($"Multiple loadouts found with name {input}");
             case 1:
-                value = db.Get<Loadout.ReadOnly>(found[0]);
+                value = found[0];
                 return true;
             default:
                 throw new Exception($"No loadout found with name {input}");

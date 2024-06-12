@@ -16,7 +16,8 @@ namespace NexusMods.Games.BethesdaGameStudios;
 
 public record PluginOrderFile : IFileGenerator
 { 
-    static UInt128 IGuidClass.Guid => new(0x3f1b_7b1b_4b1b_8b1b, 0x2b1b_1b1b_9b1b_6b1b);
+    static UInt128 IGuidClass.Guid => Guid;
+    public static UInt128 Guid => new(0x3f1b_7b1b_4b1b_8b1b, 0x2b1b_1b1b_9b1b_6b1b);
     
     public static readonly GamePath Path = new(LocationId.AppData, "plugins.txt");
     

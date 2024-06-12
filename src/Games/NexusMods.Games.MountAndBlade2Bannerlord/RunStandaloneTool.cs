@@ -25,9 +25,9 @@ public class RunStandaloneTool : ITool
 
     public async Task Execute(Loadout.ReadOnly loadout, CancellationToken ct)
     {
-        if (!loadout.Installation.Is<MountAndBlade2Bannerlord>()) return;
+        if (!loadout.InstallationInstance.Is<MountAndBlade2Bannerlord>()) return;
 
-        var store = loadout.Installation.Store;
+        var store = loadout.InstallationInstance.Store;
         var isXbox = store == GameStore.XboxGamePass;
         var hasBLSE = loadout.HasInstalledFile("Bannerlord.BLSE.Shared.dll");
         if (isXbox && !hasBLSE) return; // Not supported.
@@ -37,7 +37,7 @@ public class RunStandaloneTool : ITool
             : PrimaryStandaloneFile(store);
         _logger.LogInformation("Running {Program}", program);
 
-        var launcherManager = _launcherManagerFactory.Get(loadout.Installation);
+        var launcherManager = _launcherManagerFactory.Get(loadout.InstallationInstance);
         var psi = new ProcessStartInfo(program.ToString())
         {
             Arguments = launcherManager.ExecutableParameters
