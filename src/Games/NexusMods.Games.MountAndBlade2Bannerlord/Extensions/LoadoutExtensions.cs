@@ -38,13 +38,13 @@ internal static class LoadoutExtensions
         var i = 0;
         return mods.Select(x =>
         {
-            var moduleInfo = x.GetModuleInfo();
-            if (moduleInfo is null) return null;
+            if (x.TryGetModuleInfo(out var moduleInfo)) 
+                return null;
 
             var subModule = x.Files.First(y => y.To.FileName.Path.Equals(Constants.SubModuleName, StringComparison.OrdinalIgnoreCase));
             var subModulePath = loadout.InstallationInstance.LocationsRegister.GetResolvedPath(subModule.To).GetFullPath();
 
-            return viewModelCreator(x, moduleInfo.Value.FromEntity(), i++);
+            return viewModelCreator(x, moduleInfo.FromEntity(), i++);
         }).OfType<LoadoutModuleViewModel>();
     }
 
@@ -59,9 +59,23 @@ internal static class LoadoutExtensions
         return GetViewModels(loadout, loadout.Mods, viewModelCreator);
     }
 
-    public static bool HasModuleInstalled(this Loadout.ReadOnly loadout, string moduleId) => loadout.Mods.Any(x =>
-        x.GetModuleInfo() is { } moduleInfo && moduleInfo.ModuleId.Equals(moduleId, StringComparison.OrdinalIgnoreCase));
+    public static bool HasModuleInstalled(this Loadout.ReadOnly loadout, string moduleId)
+    {
+        foreach (var mod in loadout.Mods)
+        {
+            if (mod.TryGetModuleInfo(out var moduleInfo) && moduleInfo.ModuleId.Equals(moduleId, StringComparison.OrdinalIgnoreCase))
+                return true;
+        }
 
-    public static bool HasInstalledFile(this Loadout.ReadOnly loadout, string filename) => loadout.Mods.Any(x =>
-        x.GetModuleFileMetadatas().Any(y => y.OriginalRelativePath.EndsWith(filename, StringComparison.OrdinalIgnoreCase)));
+        return false;
+    }
+
+    public static bool HasInstalledFile(this Loadout.ReadOnly loadout, string filename)
+    {
+        throw new NotImplementedException();
+        /*
+        return loadout.Mods.Any(x =>
+            x.GetModuleFileMetadatas().Any(y => y.OriginalRelativePath.EndsWith(filename, StringComparison.OrdinalIgnoreCase))
+        );*/
+    }
 }

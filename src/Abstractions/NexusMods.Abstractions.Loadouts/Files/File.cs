@@ -27,5 +27,10 @@ public partial class File : IModelDefinition
     /// The location the file will be installed to
     /// </summary>
     public static readonly GamePathAttribute To = new(Namespace, nameof(To));
+    
+    /// <summary>
+    /// The file's metadata
+    /// </summary>
+    public static readonly BackReferenceAttribute<Metadata> Metadatas = new(Metadata.File);
 
 }
