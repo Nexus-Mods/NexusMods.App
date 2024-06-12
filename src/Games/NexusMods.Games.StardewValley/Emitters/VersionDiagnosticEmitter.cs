@@ -36,7 +36,7 @@ public class VersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
     public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.ReadOnly loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        var gameVersion = new SemanticVersion(loadout.Installation.Version);
+        var gameVersion = new SemanticVersion(loadout.InstallationInstance.Version);
         // var gameVersion = new SemanticVersion("1.5.6");
 
         var optionalSMAPIMod = loadout.GetFirstModWithMetadata(SMAPIMarker.Version);

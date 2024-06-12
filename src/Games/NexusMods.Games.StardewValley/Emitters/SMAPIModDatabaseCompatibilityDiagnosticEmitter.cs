@@ -55,7 +55,7 @@ public class SMAPIModDatabaseCompatibilityDiagnosticEmitter : ILoadoutDiagnostic
 
     public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.ReadOnly loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        var gameVersion = new SemanticVersion(loadout.Installation.Version);
+        var gameVersion = new SemanticVersion(loadout.InstallationInstance.Version);
         var optionalSMAPIMod = loadout.GetFirstModWithMetadata(SMAPIMarker.Version);
 
         if (!optionalSMAPIMod.HasValue) yield break;

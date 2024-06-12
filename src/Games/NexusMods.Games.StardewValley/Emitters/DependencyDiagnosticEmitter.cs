@@ -40,7 +40,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
     public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.ReadOnly loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        var gameVersion = new SemanticVersion(loadout.Installation.Version);
+        var gameVersion = new SemanticVersion(loadout.InstallationInstance.Version);
         var optionalSMAPIMod = loadout.GetFirstModWithMetadata(SMAPIMarker.Version);
         if (!optionalSMAPIMod.HasValue) yield break;
 
@@ -108,7 +108,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
     private static Mod.ReadOnly ModForId(Loadout.ReadOnly loadout, ModId id)
     {
-        return loadout.Db.Get<Mod.ReadOnly>(id.Value);
+        return Mod.Load(loadout.Db, id);
     }
     
     private async Task<IEnumerable<Diagnostic>> DiagnoseMissingDependencies(

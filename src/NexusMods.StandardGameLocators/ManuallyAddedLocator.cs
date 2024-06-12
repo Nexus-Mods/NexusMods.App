@@ -12,7 +12,7 @@ namespace NexusMods.StandardGameLocators;
 /// </summary>
 public class ManuallyAddedLocator : IGameLocator
 {
-    private readonly Lazy<IConnection> _store;
+    private readonly Lazy<IConnection> _conn;
     private readonly IFileSystem _fileSystem;
     private readonly IServiceProvider _provider;
 
@@ -24,7 +24,7 @@ public class ManuallyAddedLocator : IGameLocator
     {
         _provider = provider;
         _fileSystem = fileSystem;
-        _store = new Lazy<IConnection>(provider.GetRequiredService<IConnection>);
+        _conn = new Lazy<IConnection>(provider.GetRequiredService<IConnection>);
     }
 
     /// <summary>
@@ -36,7 +36,7 @@ public class ManuallyAddedLocator : IGameLocator
     /// <returns></returns>
     public async Task<(EntityId, GameInstallation)> Add(IGame game, Version version, AbsolutePath path)
     {
-        using var tx = _store.Value.BeginTransaction();
+        using var tx = _conn.Value.BeginTransaction();
         var ent = new ManuallyAddedGame.New(tx)
         {
             GameDomain = game.Domain,
@@ -56,11 +56,11 @@ public class ManuallyAddedLocator : IGameLocator
     /// </summary>
     public async Task Remove(EntityId id)
     {
-        var ent = _store.Value.Db.Get<ManuallyAddedGame.ReadOnly>(id);
+        var ent = ManuallyAddedGame.Load(_conn.Value.Db, id);
         if (!ent.Contains(ManuallyAddedGame.GameDomain))
             throw new ArgumentOutOfRangeException(nameof(id), "The id must be a valid 'ManuallyAddedGame'");
 
-        using var tx = _store.Value.BeginTransaction();
+        using var tx = _conn.Value.BeginTransaction();
 
         tx.Delete(id, false);
         
@@ -70,7 +70,7 @@ public class ManuallyAddedLocator : IGameLocator
     /// <inheritdoc />
     public IEnumerable<GameLocatorResult> Find(ILocatableGame game)
     {
-        var games = ManuallyAddedGame.FindByGameDomain(_store.Value.Db, game.Domain)
+        var games = ManuallyAddedGame.FindByGameDomain(_conn.Value.Db, game.Domain)
             .Select(g => new GameLocatorResult(_fileSystem.FromUnsanitizedFullPath(g.Path), 
                 GameStore.ManuallyAdded, g, Version.Parse(g.Version)));
         return games;

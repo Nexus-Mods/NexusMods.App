@@ -88,8 +88,8 @@ public class SMAPIInstaller : AModInstaller
         {
             // https://www.nexusmods.com/stardewvalley/mods/2400
             var source = info.Source;
-            isSMAPI = source.Get(NexusModsArchiveMetadata.GameId) == StardewValley.GameDomain &&
-                      source.Get(NexusModsArchiveMetadata.ModId) == Abstractions.NexusWebApi.Types.ModId.From(2400);
+            isSMAPI = NexusModsArchiveMetadata.GameId.Get(source) == StardewValley.GameDomain &&
+                      NexusModsArchiveMetadata.ModId.Get(source) == Abstractions.NexusWebApi.Types.ModId.From(2400);
         }
 
         var installDataFiles = GetInstallDataFiles(info.ArchiveFiles);

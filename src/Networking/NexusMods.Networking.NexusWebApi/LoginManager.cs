@@ -1,6 +1,7 @@
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using DynamicData;
 using DynamicData.Binding;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
@@ -11,6 +12,8 @@ using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.CrossPlatform.ProtocolRegistration;
 using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.Query;
+using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Networking.NexusWebApi.Auth;
 
 namespace NexusMods.Networking.NexusWebApi;
@@ -78,7 +81,7 @@ public sealed class LoginManager : IDisposable, ILoginManager
         _protocolRegistration = protocolRegistration;
         _logger = logger;
 
-        UserInfoObservable = _jwtTokenRepository.Observable
+        UserInfoObservable = _conn.ObserveDatoms(SliceDescriptor.Create(JWTToken.AccessToken, _conn.Registry))
             .ToObservableChangeSet()
             // NOTE(err120): Since IDs don't change on startup, we can insert
             // a fake change at the start of the observable chain. This will only
@@ -145,7 +148,7 @@ public sealed class LoginManager : IDisposable, ILoginManager
         
         using var tx = _conn.BeginTransaction();
 
-        var newTokenEntity = JWTToken.Model.Create(_conn.Db, tx, jwtToken!);
+        var newTokenEntity = JWTToken.Create(_conn.Db, tx, jwtToken!);
         if (newTokenEntity is null)
         {
             _logger.LogError("Invalid new token data");
@@ -161,7 +164,11 @@ public sealed class LoginManager : IDisposable, ILoginManager
     public async Task Logout()
     {
         _cachedUserInfo.Evict();
-        await _jwtTokenRepository.Delete(_jwtTokenRepository.All.First());
+        using var tx = _conn.BeginTransaction();
+        foreach (var token in JWTToken.All(_conn.Db))
+        {
+            tx.Delete(token.Id, true);
+        }
     }
 
     /// <inheritdoc/>

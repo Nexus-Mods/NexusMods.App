@@ -42,7 +42,7 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
         if (gameToSMAPIMappings is null) yield break;
 
         // var gameVersion = SimplifyVersion(new Version("1.5.6.22018"));
-        var gameVersion = new SemanticVersion(loadout.Installation.Version);
+        var gameVersion = new SemanticVersion(loadout.InstallationInstance.Version);
 
         var optionalSmapiMod = loadout.GetFirstModWithMetadata(SMAPIMarker.Version);
 

@@ -34,7 +34,7 @@ public partial class JWTToken : IModelDefinition
     /// <summary>
     /// Try to find the JWT Token in the database.
     /// </summary>
-    public static bool TryFind(IDb db, [NotNullWhen(true)] out ReadOnly? token)
+    public static bool TryFind(IDb db, out ReadOnly token)
     {
         var found = All(db).FirstOrDefault();
         if (found.IsValid())
@@ -43,7 +43,7 @@ public partial class JWTToken : IModelDefinition
             return true;
         }
         
-        token = null;
+        token = default(ReadOnly);
         return false;
     }
     
@@ -74,8 +74,6 @@ public partial class JWTToken : IModelDefinition
     /// <param name="tx"></param>
     public partial struct ReadOnly
     {
-
-        
         /// <summary>
         /// True if the token has expired.
         /// </summary>
