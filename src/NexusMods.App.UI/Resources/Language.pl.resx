@@ -435,7 +435,7 @@
 		<value>Dziennik zmian</value>
 	</data>
 	<data name="DiagnosticListViewModel_DiagnosticListViewModel_Diagnostics" xml:space="preserve">
-		<value>Stan kondycji</value>
+		<value>Stan zdrowia</value>
 	</data>
 	<data name="FileOriginsPageTitle" xml:space="preserve">
 		<value>Biblioteka</value>
