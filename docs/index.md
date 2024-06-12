@@ -12,17 +12,21 @@
         <tbody>
             <tr>
                 <th style="text-align: center; border: .05rem solid var(--md-typeset-table-color); width: 50%; vertical-align: middle">
+                    <a href="./users/">
                     <div style="font-size: 3em;">🛟</div>
                     <span style="font-size: 1.5em;">
-                        <a href="./users/">User Guides</a>
+                        User Guides
                     </span>
+                    </a>
                     <p>Tutorials and guides to help you get started with the Nexus Mods App.</p>
                 </th>
                 <th style="text-align: center; border: .05rem solid var(--md-typeset-table-color); width: 50%; vertical-align: middle">
+                    <a href="./developers/">
                     <div style="font-size: 3em;">🧑‍💻</div>
                     <span style="font-size: 1.5em;">
-                        <a href="./developers/">Developer Docs</a>
+                        Developer Docs
                     </span>
+                    </a>
                     <p>Technical documentation for contributors and users interested in learning about the design of the app.</p>
                 </th>
             </tr>

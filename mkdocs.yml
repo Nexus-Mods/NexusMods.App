@@ -10,6 +10,8 @@ extra:
       link: https://github.com/Nexus-Mods
     - icon: fontawesome/brands/twitter
       link: https://twitter.com/NexusSites
+    - icon: fontawesome/brands/discord
+      link: https://discord.gg/ReWTxb93jS
 
 extra_css:
   - Nexus/Stylesheets/extra.css
@@ -56,7 +58,11 @@ nav:
     - Getting Started: users/GettingStarted.md
     - System Requirements: users/SystemRequirements.md
     - Uninstall: users/Uninstall.md
+    - Games:
+      - Stardew Valley: users/games/StardewValley.md
+      - Cyberpunk 2077: users/games/Cyberpunk2077.md
   - Developer Docs:
+    - Home: developers/index.md
     - Mod With Confidence: developers/ModWithConfidence.md
     - Contributing: developers/Contributing.md
     - Development Guidelines:
