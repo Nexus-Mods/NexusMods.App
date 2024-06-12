@@ -109,10 +109,10 @@
             </Style>
 
             <Style Selector="ctxt|CHyperlink">
-                <Setter Property="HoverForeground" Value="{StaticResource BrandLegacyPrimaryStrong}"/>
+                <Setter Property="HoverForeground" Value="{StaticResource PrimaryStrong}"/>
 
                 <Style Selector="^ ctxt|CRun">
-                    <Setter Property="Foreground" Value="{StaticResource BrandLegacyPrimaryStrong}" />
+                    <Setter Property="Foreground" Value="{StaticResource PrimaryStrong}" />
                     <Setter Property="IsUnderline" Value="True" />
                 </Style>
             </Style>

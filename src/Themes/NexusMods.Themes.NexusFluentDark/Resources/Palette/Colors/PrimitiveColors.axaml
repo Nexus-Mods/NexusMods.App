@@ -113,11 +113,9 @@
     <Color x:Key="PrimitiveTranslucentBlack200">#33000000</Color>
     <Color x:Key="PrimitiveTranslucentBlack100">#1A000000</Color>
     <Color x:Key="PrimitiveTranslucentBlack50">#0D000000</Color>
-
-    <!-- Legacy Primary -->
-    <!-- NOTE: These are the old Primary brand colors, we keep them until they are switched to new brand primary colors. -->
-    <Color x:Key="PrimitiveLegacyPrimaryWeak">#C87B28</Color>
-    <Color x:Key="PrimitiveLegacyPrimaryModerate">#D98F40</Color>
-    <Color x:Key="PrimitiveLegacyPrimaryStrong">#E0A362</Color>
+    
+    <!-- Pure -->
+    <Color x:Key="PrimitivePureWhite">#FFFFFF</Color>
+    <Color x:Key="PrimitivePureBlack">#000000</Color>
 
 </ResourceDictionary>
