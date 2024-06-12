@@ -521,4 +521,7 @@
     <data name="NavigationControl_NavigationControl_Open_in_new_panel" xml:space="preserve">
         <value>Open in new panel</value>
     </data>
+    <data name="InfoBanner_PrefixProperty_Did_you_know_" xml:space="preserve">
+        <value>Did you know?</value>
+    </data>
 </root>

@@ -98,6 +98,9 @@ public static class IconValues
     // https://pictogrammers.com/library/mdi/icon/notification-clear-all/
     public static readonly IconValue ClearAll = new ProjektankerIcon("mdi-notification-clear-all");
 
+    // https://pictogrammers.com/library/mdi/icon/tooltip-question/
+    public static readonly IconValue LiveHelp = new ProjektankerIcon("mdi-tooltip-question");
+
 #endregion
 
 #region Content
