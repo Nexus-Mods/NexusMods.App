@@ -1040,5 +1040,17 @@ namespace NexusMods.App.UI.Resources {
                 return ResourceManager.GetString("InfoBanner_PrefixProperty_Did_you_know_", resourceCulture);
             }
         }
+        
+        public static string NewTabPageInfoBannerText1 {
+            get {
+                return ResourceManager.GetString("NewTabPageInfoBannerText1", resourceCulture);
+            }
+        }
+        
+        public static string NewTabPageInfoBannerText2 {
+            get {
+                return ResourceManager.GetString("NewTabPageInfoBannerText2", resourceCulture);
+            }
+        }
     }
 }

@@ -33,7 +33,7 @@ public sealed class BannerSettingsWrapper : ReactiveObject
 
         _settingsManager?.Update<BannerSettings>(bannerSettings => bannerSettings with
         {
-            BannerStatus = bannerSettings.BannerStatus.SetItem(Key, false),
+            BannerStatus = bannerSettings.BannerStatus.SetItem(Key, true),
         });
     }
 }
