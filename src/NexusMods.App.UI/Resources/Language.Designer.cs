@@ -1131,6 +1131,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add your downloaded mods from the.
+        /// </summary>
+        public static string LoadoutGrid_EmptyModlistSubtitle_Add_from_library {
+            get {
+                return ResourceManager.GetString("LoadoutGrid_EmptyModlistSubtitle_Add_from_library", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Remove.
         /// </summary>
         public static string LoadoutGridView__Remove {
@@ -1163,6 +1172,15 @@ namespace NexusMods.App.UI.Resources {
         public static string LoadoutGridView_AddMod_FileType_Archive {
             get {
                 return ResourceManager.GetString("LoadoutGridView_AddMod_FileType_Archive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No mods added to {0}.
+        /// </summary>
+        public static string LoadoutGridViewModel_EmptyModlistTitleString {
+            get {
+                return ResourceManager.GetString("LoadoutGridViewModel_EmptyModlistTitleString", resourceCulture);
             }
         }
         
@@ -1356,6 +1374,24 @@ namespace NexusMods.App.UI.Resources {
         public static string Newsfeed {
             get {
                 return ResourceManager.GetString("Newsfeed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You can add panels for split screen viewing by selecting the.
+        /// </summary>
+        public static string NewTabPageInfoBannerText1 {
+            get {
+                return ResourceManager.GetString("NewTabPageInfoBannerText1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to button in the toolbar.
+        /// </summary>
+        public static string NewTabPageInfoBannerText2 {
+            get {
+                return ResourceManager.GetString("NewTabPageInfoBannerText2", resourceCulture);
             }
         }
         
@@ -1653,18 +1689,6 @@ namespace NexusMods.App.UI.Resources {
         public static string ViewModInfoPage_Title {
             get {
                 return ResourceManager.GetString("ViewModInfoPage_Title", resourceCulture);
-            }
-        }
-        
-        public static string NewTabPageInfoBannerText1 {
-            get {
-                return ResourceManager.GetString("NewTabPageInfoBannerText1", resourceCulture);
-            }
-        }
-        
-        public static string NewTabPageInfoBannerText2 {
-            get {
-                return ResourceManager.GetString("NewTabPageInfoBannerText2", resourceCulture);
             }
         }
     }

@@ -7,14 +7,13 @@ using DynamicData;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.Settings;
-using NexusMods.Abstractions.Telemetry;
 using NexusMods.App.UI.Controls.DataGrid;
-using NexusMods.App.UI.Controls.MarkdownRenderer;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModCategory;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModEnabled;
@@ -48,7 +47,8 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
 
     private ReadOnlyObservableCollection<IDataGridColumnFactory<LoadoutColumn>> _filteredColumns = new([]);
     
-    public IMarkdownRendererViewModel MarkdownRendererViewModel { get; }
+    
+    [Reactive] public string? EmptyModlistTitleMessage { get; private set; }
     public ReadOnlyObservableCollection<IDataGridColumnFactory<LoadoutColumn>> Columns => _filteredColumns;
 
     [Reactive] public LoadoutId LoadoutId { get; set; }
@@ -70,8 +70,6 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
         ISettingsManager settingsManager) : base(windowManager)
     {
         _conn = conn;
-
-        MarkdownRendererViewModel = provider.GetRequiredService<IMarkdownRendererViewModel>();
 
         _columns = new SourceCache<IDataGridColumnFactory<LoadoutColumn>, LoadoutColumn>(_ => throw new NotSupportedException());
         _mods = new ReadOnlyObservableCollection<ModId>(new ObservableCollection<ModId>());
@@ -159,7 +157,7 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
                 .WhereNotNull()
                 .SubscribeWithErrorLogging(loadout =>
                 {
-                    MarkdownRendererViewModel.Contents = GetEmptyModlistMarkdownString();
+                    EmptyModlistTitleMessage = GetEmptyModlistTitleString(loadout.Installation);
                 })
                 .DisposeWith(d);
             
@@ -186,14 +184,9 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
     }
     
     private const string NexusModsUrl = "https://www.nexusmods.com/{0}";
-    private string GetEmptyModlistMarkdownString()
+    private static string GetEmptyModlistTitleString(GameInstallation gameInstallation)
     {
-        var gameDomain = _conn.Db.Get(LoadoutId).Installation.Game.Domain;
-        var url = NexusModsUrlBuilder.CreateGenericUri(string.Format(NexusModsUrl, gameDomain));
-        const string mkString = """
-### No mods have been added
-View and add your existing downloaded mods from the **Library** or [browse new mods on Nexus Mods]({0})
-""";
-        return string.Format(mkString, url);
+        return string.Format(Language.LoadoutGridViewModel_EmptyModlistTitleString, gameInstallation.Game.Name);
     }
+
 }

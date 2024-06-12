@@ -18,9 +18,8 @@ public interface ILoadoutGridViewModel : IPageViewModelInterface
 {
     public ReadOnlyObservableCollection<ModId> Mods { get; }
     public LoadoutId LoadoutId { get; set; }
-    public string LoadoutName { get; }
     
-    public IMarkdownRendererViewModel MarkdownRendererViewModel { get; }
+    public string? EmptyModlistTitleMessage { get; }
 
     public ReadOnlyObservableCollection<IDataGridColumnFactory<LoadoutColumn>> Columns { get; }
 
