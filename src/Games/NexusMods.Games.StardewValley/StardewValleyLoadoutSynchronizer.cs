@@ -19,7 +19,7 @@ public class StardewValleyLoadoutSynchronizer : ALoadoutSynchronizer
     {
         using var tx = Connection.BeginTransaction();
         var overridesMod = GetOrCreateOverridesMod(loadout, tx);
-        var modifiedMods = new Dictionary<ModId, Mod.ReadOnly>();
+        var modifiedMods = new HashSet<ModId>();
 
         var smapiModDirectoryNameToModel = new Dictionary<RelativePath, Mod.ReadOnly>();
 
@@ -42,8 +42,7 @@ public class StardewValleyLoadoutSynchronizer : ALoadoutSynchronizer
 
             if (!smapiModDirectoryNameToModel.TryGetValue(modDirectoryName, out var smapiMod))
             {
-                smapiMod = GetSMAPIMod(modDirectoryName, loadout, loadout.Db);
-                if (smapiMod is null)
+                if (!TryGetSMAPIMod(modDirectoryName, loadout, loadout.Db, out smapiMod))
                 {
                     AddToOverride(newFile);
                     continue;
@@ -54,43 +53,38 @@ public class StardewValleyLoadoutSynchronizer : ALoadoutSynchronizer
 
             newFile.Add(File.Mod, smapiMod.Id);
             newFile.AddTo(tx);
-            modifiedMods.TryAdd<ModId, Mod.ReadOnly>(smapiMod.ModId, smapiMod);
+            modifiedMods.Add(smapiMod.ModId);
         }
 
-        foreach (var mod in modifiedMods.Values)
+        foreach (var modId in modifiedMods)
         {
             // If we created the mod in this transaction (e.g. GetOrCreateOverride created the Override mod),
             // Db property will be null, and we can't call `.Revise` on it.
             // We need to manually revise the loadout in that case
-            // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
-            if (mod.Db != null)
-            {
-                mod.Revise(tx);
-            }
-            else
-            {
-                loadout.Revise(tx);
-            }
+            if (modId.Value.Partition == PartitionId.Temp) 
+                continue;
+            
+            var mod = Mod.Load(Connection.Db, modId);
+            mod.Revise(tx);
         }
+        loadout.Revise(tx);
 
         var result = await tx.Commit();
-        return result.Db.Get<Loadout.ReadOnly>(loadout.Id);
+        return loadout.Rebase(result.Db);
 
         void AddToOverride(TempEntity newFile)
         {
-            newFile.Add(File.Mod, overridesMod.Id);
+            newFile.Add(File.Mod, overridesMod);
             newFile.AddTo(tx);
-            modifiedMods.TryAdd<ModId, Mod.ReadOnly>(overridesMod.ModId, overridesMod);
+            modifiedMods.Add(overridesMod);
         }
     }
 
-    private static Mod.ReadOnly? GetSMAPIMod(RelativePath modDirectoryName, Loadout.ReadOnly loadout, IDb db)
+    private static bool TryGetSMAPIMod(RelativePath modDirectoryName, Loadout.ReadOnly loadout, IDb db, out Mod.ReadOnly mod)
     {
         var manifestFilePath = new GamePath(LocationId.Game, Constants.ModsFolder.Join(modDirectoryName).Join(Constants.ManifestFile));
 
-        var manifestFile = db
-            .Find(File.To)
-            .Select(db.Get<File.Model>)
+        var file = File.All(db)
             .FirstOrDefault(file =>
             {
                 if (!file.Contains(File.Loadout)) return false;
@@ -101,8 +95,14 @@ public class StardewValleyLoadoutSynchronizer : ALoadoutSynchronizer
                 if (!file.Contains(File.Mod)) return false;
                 return file.Mod.Enabled;
             });
-
-        return manifestFile?.Mod;
+        
+        if (file.IsValid())
+        {
+            mod = file.Mod;
+            return true;
+        }
+        mod = default(Mod.ReadOnly);
+        return false;
     }
 
     private static bool IsModFile(GamePath gamePath, out RelativePath modDirectoryName)
