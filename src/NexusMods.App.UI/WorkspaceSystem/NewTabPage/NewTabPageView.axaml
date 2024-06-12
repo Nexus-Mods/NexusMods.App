@@ -7,59 +7,66 @@
     xmlns:workspace="clr-namespace:NexusMods.App.UI.WorkspaceSystem"
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
     xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation"
+    xmlns:banners="clr-namespace:NexusMods.App.UI.Controls.Banners"
     mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="500"
     x:Class="NexusMods.App.UI.WorkspaceSystem.NewTabPageView">
 
-    <Design.DataContext>
-        <workspace:NewTabPageDesignViewModel />
-    </Design.DataContext>
+    <StackPanel Margin="24" Orientation="Vertical" Spacing="24">
+        <banners:InfoBanner x:Name="InfoBanner">
+            <StackPanel>
+                <TextBlock Text="You can add panels for split screen viewing by selecting the"/>
+                <icons:UnifiedIcon x:Name="AddPanelIcon"/>
+                <TextBlock Text="button in the toolbar"/>
+            </StackPanel>
+        </banners:InfoBanner>
 
-    <ItemsControl x:Name="Sections" Padding="24">
-        <ItemsControl.ItemsPanel>
-            <ItemsPanelTemplate>
-                <WrapPanel/>
-            </ItemsPanelTemplate>
-        </ItemsControl.ItemsPanel>
+        <ItemsControl x:Name="Sections">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
 
-        <ItemsControl.ItemTemplate>
-            <DataTemplate DataType="{x:Type workspace:INewTabPageSectionViewModel}">
-                <StackPanel Classes="Spacing-3" MinWidth="160" MaxWidth="375" Margin="0 0 24 24">
-                    <TextBlock x:Name="SectionNameTextBlock" Text="{CompiledBinding SectionName}"
-                               Classes="HeadingSMSemi" />
+            <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="{x:Type workspace:INewTabPageSectionViewModel}">
+                    <StackPanel Classes="Spacing-3" MinWidth="160" MaxWidth="375" Margin="0 0 24 24">
+                        <TextBlock x:Name="SectionNameTextBlock" Text="{CompiledBinding SectionName}"
+                                   Classes="HeadingSMSemi" />
 
-                    <ItemsControl x:Name="Items" ItemsSource="{CompiledBinding Items}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <StackPanel Classes="Spacing-2" />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
+                        <ItemsControl x:Name="Items" ItemsSource="{CompiledBinding Items}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Classes="Spacing-2" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
 
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate DataType="{x:Type workspace:INewTabPageSectionItemViewModel}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="{x:Type workspace:INewTabPageSectionItemViewModel}">
 
-                                <Border Classes="Mid Rounded">
-                                    <navigation:NavigationControl
+                                    <Border Classes="Mid Rounded">
+                                        <navigation:NavigationControl
                                             Height="56"
                                             Padding="0"
                                             Width="375"
                                             Background="{StaticResource SurfaceMidBrush}"
                                             Command="{CompiledBinding SelectItemCommand}">
 
-                                        <StackPanel Margin="16" Orientation="Horizontal" Classes="Spacing-1">
-                                            <icons:UnifiedIcon Size="24" Value="{CompiledBinding Icon}"/>
-                                            <TextBlock x:Name="NameTextBlock"
-                                                       Text="{CompiledBinding Name}"
-                                                       Classes="BodyLGBold" />
-                                        </StackPanel>
-                                    </navigation:NavigationControl>
-                                </Border>
+                                            <StackPanel Margin="16" Orientation="Horizontal" Classes="Spacing-1">
+                                                <icons:UnifiedIcon Size="24" Value="{CompiledBinding Icon}" />
+                                                <TextBlock x:Name="NameTextBlock"
+                                                           Text="{CompiledBinding Name}"
+                                                           Classes="BodyLGBold" />
+                                            </StackPanel>
+                                        </navigation:NavigationControl>
+                                    </Border>
 
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </StackPanel>
-            </DataTemplate>
-        </ItemsControl.ItemTemplate>
-    </ItemsControl>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </StackPanel>
 
 </reactive:ReactiveUserControl>

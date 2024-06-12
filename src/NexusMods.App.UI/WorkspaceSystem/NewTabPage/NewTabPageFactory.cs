@@ -1,6 +1,8 @@
 using System.Text.Json.Serialization;
 using JetBrains.Annotations;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Serialization.Attributes;
+using NexusMods.Abstractions.Settings;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
@@ -22,6 +24,10 @@ public class NewTabPageFactory : APageFactory<INewTabPageViewModel, NewTabPageCo
 
     public override INewTabPageViewModel CreateViewModel(NewTabPageContext context)
     {
-        return new NewTabPageViewModel(WindowManager, context.DiscoveryDetails);
+        return new NewTabPageViewModel(
+            ServiceProvider.GetRequiredService<ISettingsManager>(),
+            WindowManager,
+            context.DiscoveryDetails
+        );
     }
 }
