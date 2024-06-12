@@ -2,9 +2,9 @@ using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using DynamicData;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Settings;
+using NexusMods.App.UI.Controls.Settings.Section;
 using NexusMods.App.UI.Controls.Settings.SettingEntries;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
@@ -23,6 +23,8 @@ public class SettingsPageViewModel : APageViewModel<ISettingsPageViewModel>, ISe
     public ReactiveCommand<Unit, Unit> CloseCommand { get; }
     public ReadOnlyObservableCollection<ISettingEntryViewModel> SettingEntries { get; }
 
+    public ReadOnlyObservableCollection<ISettingSectionViewModel> Sections { get; }
+
     [Reactive]
     public bool HasAnyValueChanged { get; private set; }
 
@@ -34,8 +36,12 @@ public class SettingsPageViewModel : APageViewModel<ISettingsPageViewModel>, ISe
         var descriptors = settingsManager.GetAllUIProperties();
         var entryViewModels = descriptors.Select(CreateEntryViewModel).ToArray();
 
+        var sections = settingsManager.GetAllSections();
+        var sectionViewModels = sections.Select(x => new SettingSectionViewModel(x)).ToArray();
+
         // ReSharper disable ArrangeObjectCreationWhenTypeNotEvident
         SettingEntries = new(new(entryViewModels));
+        Sections = new(new(sectionViewModels));
         // ReSharper restore ArrangeObjectCreationWhenTypeNotEvident
 
         SaveCommand = ReactiveCommand.Create(() =>
