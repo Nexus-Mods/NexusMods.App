@@ -37,7 +37,7 @@
                 <DataTemplate x:Key="FileNameColumnTemplate" DataType="{x:Type files:IFileTreeNodeViewModel}">
                     <files:FileTreeNodeView DataContext="{CompiledBinding}" />
                 </DataTemplate>
-                <DataTemplate x:Key="FileStatusColumnTemplate" DataType="{x:Type files:IFileTreeNodeViewModel}">
+                <DataTemplate x:Key="FileStateColumnTemplate" DataType="{x:Type files:IFileTreeNodeViewModel}">
                     <TextBlock Text="{CompiledBinding FormattedChangeState}" >
                         <ToolTip.Tip>
                             <TextBlock Text="{CompiledBinding FormattedChangeStateToolTip}" />
