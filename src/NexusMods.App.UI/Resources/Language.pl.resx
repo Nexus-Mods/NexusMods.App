@@ -551,4 +551,10 @@
     <data name="InfoBanner_PrefixProperty_Did_you_know_" xml:space="preserve">
         <value>Czy wiesz?</value>
     </data>
+    <data name="NewTabPageInfoBannerText1" xml:space="preserve">
+        <value>Możesz dodać panele do wyświetlania na podzielonym ekranie,</value>
+    </data>
+    <data name="NewTabPageInfoBannerText2" xml:space="preserve">
+        <value>wybierając odpowiedni przycisk na pasku narzędzi</value>
+    </data>
 </root>
