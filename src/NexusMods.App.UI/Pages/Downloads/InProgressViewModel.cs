@@ -477,14 +477,9 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
         }
 
         const int delay = 5;
-        if (_throughputValues.Count > delay)
-        {
-            _lineSeries.IsVisible = _throughputValues.TakeLast(delay).Sum(x => x.Value!.Value) > 0.0;
-        }
-        else
-        {
-            _lineSeries.IsVisible = false;
-        }
+        _lineSeries.IsVisible = _throughputValues
+            .TakeLast(Math.Min(delay, _throughputValues.Count))
+            .Sum(x => x.Value!.Value) > 0.0;
 
         _throughputValues.Add(new DateTimePoint(DateTime.Now, throughput));
     }
