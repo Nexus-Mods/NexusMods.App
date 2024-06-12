@@ -17,6 +17,7 @@ using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.Query;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Pages.MyGames;
@@ -37,8 +38,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
         IConnection conn,
         ILogger<MyGamesViewModel> logger,
         IApplyService applyService,
-        IGameRegistry gameRegistry,
-        IRepository<Loadout.ReadOnly> loadoutRepository) : base(windowManager)
+        IGameRegistry gameRegistry) : base(windowManager)
     {
         TabTitle = Language.MyGames;
 		TabIcon = IconValues.JoystickGameFilled;
@@ -48,8 +48,8 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
         
         this.WhenActivated(d =>
             {
-                var loadouts = loadoutRepository.Observable
-                    .ToObservableChangeSet();
+                var loadouts = conn.ObserveDatoms(SliceDescriptor.Create(Loadout.Revision, conn.Registry))
+                    .Transform(datom => Loadout.Load(conn.Db, datom.E));
                 var foundGames = gameRegistry.InstalledGames
                     .ToObservableChangeSet();
                 
@@ -61,17 +61,17 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                     .Transform(loadout =>
                     {
                         var vm = provider.GetRequiredService<IGameWidgetViewModel>();
-                        vm.Installation = loadout.Installation;
+                        vm.Installation = loadout.InstallationInstance;
                         vm.AddGameCommand = ReactiveCommand.CreateFromTask(async () =>
                         {
                             vm.State = GameWidgetState.AddingGame;
-                            await Task.Run(async () => await ManageGame(loadout.Installation));
+                            await Task.Run(async () => await ManageGame(loadout.InstallationInstance));
                             vm.State = GameWidgetState.ManagedGame;
                         });
                         vm.RemoveAllLoadoutsCommand = ReactiveCommand.CreateFromTask(async () => 
                         {
                             vm.State = GameWidgetState.RemovingGame;
-                            await Task.Run(async () => await RemoveAllLoadouts(loadout.Installation));
+                            await Task.Run(async () => await RemoveAllLoadouts(loadout.InstallationInstance));
                             vm.State = GameWidgetState.ManagedGame;
                         });
 
@@ -87,7 +87,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                     .DisposeWith(d);
 
                 // For the games that are detected, we only want to show those that are not managed
-                foundGames.Except(loadouts.Transform(t => t.Installation))
+                foundGames.Except(loadouts.Transform(t => t.InstallationInstance))
                     .OnUI()
                     .Transform(install =>
                     {
@@ -154,11 +154,11 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
     private void NavigateToLoadout(IConnection conn, Loadout.ReadOnly loadout)
     {
         // We can't navigate to an invisible loadout, make sure we pick a visible one.
-        using var db = conn.Db;
+        var db = conn.Db;
         if (!loadout.IsVisible())
         {
             // Note(sewer) | If we're here, last loadout was most likely a LoadoutKind.VanillaState
-            loadout = db.Loadouts().First(x => x.IsVisible());
+            loadout = Loadout.All(db).First(x => x.IsVisible());
         }
 
         var loadoutId = loadout.LoadoutId;

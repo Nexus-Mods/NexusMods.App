@@ -4,8 +4,10 @@ using System.Reactive.Linq;
 using Avalonia.Controls.Selection;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.Loadouts.Ids;
+using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Controls.Trees;
 using NexusMods.App.UI.Controls.Trees.Files;
@@ -45,16 +47,11 @@ public class ModFilesViewModel : AViewModel<IModFilesViewModel>, IModFilesViewMo
 
             // NOTE(erri120): not a huge fan of this, but it works
             var db = connection.Db;
-            var storedFile = db
-                .Find(StoredFile.Hash)
-                .Select(id => db.Get<StoredFile.Model>(id))
-                .FirstOrDefault(storedFile =>
-                {
-                    if (!targetModId.Equals(storedFile.ModId)) return false;
-                    return storedFile.To.Equals(key);
-                });
+            var storedFile = Mod.Load(db, targetModId)
+                .Files
+                .FirstOrDefault(storedFile => storedFile.To.Equals(key));
 
-            if (storedFile is null) return;
+            if (!storedFile.IsValid()) return;
 
             var pageData = new PageData
             {

@@ -38,7 +38,7 @@ public class DiagnosticListPageFactory : APageFactory<IDiagnosticListViewModel, 
     {
         if (workspaceContext is not LoadoutContext loadoutContext) yield break;
 
-        var loadout = _conn.Db.Get(loadoutContext.LoadoutId);
+        var loadout = Loadout.Load(_conn.Db, loadoutContext.LoadoutId);
 
         yield return new PageDiscoveryDetails
         {

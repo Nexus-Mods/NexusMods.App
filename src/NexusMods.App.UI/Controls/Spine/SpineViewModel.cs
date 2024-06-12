@@ -24,6 +24,7 @@ using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceAttachments;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.Query;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -56,8 +57,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         IIconButtonViewModel addButtonViewModel,
         IIconButtonViewModel homeButtonViewModel,
         ISpineDownloadButtonViewModel spineDownloadsButtonViewModel,
-        IWorkspaceAttachmentsFactoryManager workspaceAttachmentsFactory,
-        IRepository<Loadout.ReadOnly> loadoutRepository)
+        IWorkspaceAttachmentsFactoryManager workspaceAttachmentsFactory)
     {
         _serviceProvider = serviceProvider;
         _logger = logger;
@@ -82,13 +82,15 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         
         this.WhenActivated(disposables =>
             {
-                loadoutRepository.Observable
-                    .ToObservableChangeSet()
+                var loadouts = _conn.ObserveDatoms(SliceDescriptor.Create(Loadout.Revision, _conn.Registry))
+                    .Transform(id => Loadout.Load(_conn.Db, id.E));
+                
+                    loadouts
                     .Filter(loadout => loadout.IsVisible())
                     .TransformAsync(async loadout =>
                         {
                             
-                            await using var iconStream = await ((IGame)loadout.Installation.Game).Icon.GetStreamAsync();
+                            await using var iconStream = await ((IGame)loadout.InstallationInstance.Game).Icon.GetStreamAsync();
 
                             var vm = serviceProvider.GetRequiredService<IImageButtonViewModel>();
                             vm.Name = loadout.Name;
@@ -123,8 +125,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                     .DisposeWith(disposables);
 
                 // Navigate away from the Loadout workspace if the Loadout is removed
-                loadoutRepository.Observable
-                    .ToObservableChangeSet()
+                loadouts
                     .OnUI()
                     .OnItemRemoved(loadout =>
                     {

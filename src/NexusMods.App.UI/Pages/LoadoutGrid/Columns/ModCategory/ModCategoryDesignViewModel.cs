@@ -1,5 +1,4 @@
-﻿using NexusMods.Abstractions.Loadouts.Ids;
-using NexusMods.Abstractions.Loadouts.Mods;
+﻿using NexusMods.Abstractions.Loadouts.Mods;
 
 namespace NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModCategory;
 

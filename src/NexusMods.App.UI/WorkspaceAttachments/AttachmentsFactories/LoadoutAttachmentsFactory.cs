@@ -9,7 +9,7 @@ public class LoadoutAttachmentsFactory(IConnection conn) : IWorkspaceAttachments
     public string CreateTitle(LoadoutContext context)
     {
         // Use the game name as the title
-        var loadout = conn.Db.Get(context.LoadoutId);
-        return loadout?.Installation.Game.Name ?? string.Empty;
+        var loadout = Loadout.Load(conn.Db, context.LoadoutId);
+        return loadout.InstallationInstance.Game.Name;
     }
 }

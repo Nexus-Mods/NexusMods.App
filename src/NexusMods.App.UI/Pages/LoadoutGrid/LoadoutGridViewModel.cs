@@ -4,6 +4,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Controls;
 using DynamicData;
+using DynamicData.Alias;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -33,6 +34,7 @@ using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Extensions.DynamicData;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.Networking.Downloaders.Tasks.State;
 using NexusMods.Paths;
 using ReactiveUI;
@@ -76,7 +78,6 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
         ILogger<LoadoutGridViewModel> logger,
         IServiceProvider provider,
         IConnection conn,
-        IRepository<Loadout.ReadOnly> loadoutRepository,
         IFileSystem fileSystem,
         IArchiveInstaller archiveInstaller,
         IFileOriginRegistry fileOriginRegistry,
@@ -149,12 +150,12 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
         {
             this.WhenAnyValue(vm => vm.LoadoutId)
                 .CombineLatest(settingsManager.GetChanges<LoadoutGridSettings>(prependCurrent: true))
-                .SelectMany(tuple => loadoutRepository.Revisions(tuple.First.Value))
+                .SelectMany(tuple => Loadout.Load(_conn.Db, tuple.Item1).Revisions())
                 .Select(loadout =>
                 {
                     try
                     {
-                        _gameDomain = loadout.Installation.Game.Domain;
+                        _gameDomain = loadout.InstallationInstance.Game.Domain;
                     }
                     catch (Exception)
                     {
@@ -227,11 +228,11 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
     public async Task DeleteMods(IEnumerable<ModId> modsToDelete, string commitMessage)
     {
         var db = _conn.Db;
-        var loadout = db.Get(LoadoutId);
+        var loadout = Loadout.Load(db, LoadoutId);
         using var tx = _conn.BeginTransaction();
         foreach (var modId in modsToDelete)
         {
-            var mod = db.Get(modId);
+            var mod = Mod.Load(db, modId);
             foreach (var file in mod.Files)
             {
                 tx.Retract(file.Id, File.Loadout, file.LoadoutId.Value);
@@ -245,7 +246,7 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
     private const string NexusModsUrl = "https://www.nexusmods.com/{0}";
     private string GetEmptyModlistMarkdownString()
     {
-        var gameDomain = _conn.Db.Get(LoadoutId).Installation.Game.Domain;
+        var gameDomain = Loadout.Load(_conn.Db, LoadoutId).InstallationInstance.Game.Domain;
         var url = string.Format(NexusModsUrl, gameDomain);
         var mkString = """
 ### No mods have been added

@@ -17,6 +17,7 @@ using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.Query;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -38,11 +39,10 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
         IServiceProvider serviceProvider)
     {
         var diagnosticManager = serviceProvider.GetRequiredService<IDiagnosticManager>();
-        var downloadAnalysisRepository = serviceProvider.GetRequiredService<IRepository<DownloadAnalysis.ReadOnly>>();
         var conn = serviceProvider.GetRequiredService<IConnection>();
 
-        var loadout = conn.Db.Get<Abstractions.Loadouts.Loadout.ReadOnly>(loadoutContext.LoadoutId.Value);
-        var game = loadout.Installation.Game;
+        var loadout = Abstractions.Loadouts.Loadout.Load(conn.Db, loadoutContext.LoadoutId);
+        var game = loadout.InstallationInstance.Game;
 
         WorkspaceId = workspaceId;
         ApplyControlViewModel = new ApplyControlViewModel(loadoutContext.LoadoutId, serviceProvider);
@@ -135,9 +135,9 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                 })
                 .BindToVM(diagnosticItem, vm => vm.Badges)
                 .DisposeWith(disposable);
-
-            downloadAnalysisRepository.Observable
-                .ToObservableChangeSet()
+            
+            conn.ObserveDatoms(DownloadAnalysis.Hash)
+                .Transform(d => DownloadAnalysis.Load(conn.Db, d.E))
                 .OnUI()
                 .WhereReasonsAre(ListChangeReason.Add, ListChangeReason.AddRange)
                 .Filter(model => FileOriginsPageViewModel.FilterDownloadAnalysisModel(model, game.Domain))

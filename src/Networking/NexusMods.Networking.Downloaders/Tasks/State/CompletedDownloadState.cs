@@ -8,7 +8,7 @@ namespace NexusMods.Networking.Downloaders.Tasks.State;
 /// Additional state for a <see cref="DownloaderState"/> that is completed
 /// </summary>
 [Include<DownloaderState>]
-public static class CompletedDownloadState
+public partial class CompletedDownloadState : IModelDefinition
 {
     private const string Namespace = "NexusMods.Networking.Downloaders.Tasks.DownloaderState";
     

@@ -7,6 +7,7 @@ using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -39,14 +40,14 @@ public class ModEnabledViewModel : AViewModel<IModEnabledViewModel>, IModEnabled
         this.WhenActivated(d =>
         {
             this.WhenAnyValue(vm => vm.Row)
-                .SelectMany(id => _conn.Revisions(id))
+                .SelectMany(id => Mod.Load(_conn.Db, id).Revisions())
                 .Select(mod => mod.Enabled)
                 .OnUI()
                 .BindTo(this, vm => vm.Enabled)
                 .DisposeWith(d);
 
             this.WhenAnyValue(vm => vm.Row)
-                .SelectMany(id => _conn.Revisions(id))
+                .SelectMany(id => Mod.Load(_conn.Db, id).Revisions())
                 .Select(mod => mod.Status)
                 .OnUI()
                 .BindTo(this, vm => vm.Status)

@@ -37,7 +37,7 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
     private async Task LaunchGame(CancellationToken token)
     {
         Label = Language.LaunchButtonViewModel_LaunchGame_RUNNING;
-        var marker = _conn.Db.Get(LoadoutId);
+        var marker = NexusMods.Abstractions.Loadouts.Loadout.Load(_conn.Db, LoadoutId);
         var tool = _toolManager.GetTools(marker).OfType<IRunGameTool>().First();
         await Task.Run(async () =>
         {

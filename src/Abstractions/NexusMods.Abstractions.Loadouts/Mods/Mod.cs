@@ -4,6 +4,7 @@ using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
+using NexusMods.MnemonicDB.Abstractions.BuiltInEntities;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
@@ -94,6 +95,19 @@ public partial class Mod : IModelDefinition
             });
             Loadout.Revise(tx);
         }
-        
+
+        /// <summary>
+        /// Returns the timestamp of the transaction that created this mod.
+        /// </summary>
+        public DateTime CreatedAt
+        {
+            get
+            {
+                var lowestTx = this.Min(d => d.T);
+                var tx = Transaction.Load(Db, EntityId.From(lowestTx.Value));
+                return tx.Timestamp;
+            }
+        }
+
     }
 }

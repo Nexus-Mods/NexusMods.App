@@ -2,11 +2,14 @@ using System.ComponentModel;
 using System.Linq.Expressions;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using DynamicData;
+using DynamicData.Alias;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.Query;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -25,7 +28,9 @@ public abstract class AColumnViewModel<TBaseInterface, TValue> : AViewModel<TBas
         this.WhenActivated(d =>
         {
             this.WhenAnyValue(vm => vm.Row)
-                .SelectMany(id => _conn.Revisions(id))
+                // TODO: Ick 
+                .SelectMany(id => _conn.ObserveDatoms(SliceDescriptor.Create(id, Mod.Revision.GetDbId(_conn.Registry.Id), _conn.Registry)))
+                .QueryWhenChanged(f => Mod.Load(_conn.Db, f.First().E))
                 .Select(Selector)
                 .OnUI()
                 .BindTo(this, vm => vm.Value)
@@ -71,8 +76,8 @@ public abstract class AColumnViewModel<TBaseInterface, TValue> : AViewModel<TBas
     public int Compare(ModId a, ModId b)
     {
         var db = _conn.Db;
-        var aEnt = db.Get(a);
-        var bEnt = db.Get(b);
+        var aEnt = Mod.Load(db, a);
+        var bEnt = Mod.Load(db, b);
         return Compare(Selector(aEnt), Selector(bEnt));
     }
 }

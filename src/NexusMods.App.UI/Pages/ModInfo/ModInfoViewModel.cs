@@ -94,7 +94,7 @@ public class ModInfoViewModel : APageViewModel<IModInfoViewModel>, IModInfoViewM
         try
         {
             isInvalid = false;
-            return _conn.Db.Get(ModId)!.Name;
+            return Mod.Load(_conn.Db, ModId).Name;
         }
         catch (KeyNotFoundException ex)
         {

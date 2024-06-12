@@ -46,9 +46,9 @@ public class ModFileTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeVie
         var folderToSize = new Dictionary<GamePath, (ulong size, uint numFileChildren, GamePath folder, GamePath parent, bool isLeaf)>();
 
         var db = _conn.Db;
-        var loadout = db.Get(loadoutId);
-        var locationsRegister = loadout.Installation.LocationsRegister;
-        var mod = db.Get(modId);
+        var loadout = Loadout.Load(db, loadoutId);
+        var locationsRegister = loadout.InstallationInstance.LocationsRegister;
+        var mod = Mod.Load(db, modId);
         var displayedItems = new List<IFileTreeNodeViewModel>();
 
         // Add all the files to the displayedItems list
@@ -64,11 +64,11 @@ public class ModFileTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeVie
             if (!isDeletion)
                 _totalSize += storedFile.Size.Value;
 
-            var folderName = storedFile.To.Parent;
+            var folderName = storedFile.File.To.Parent;
             var parent = folderName;
 
             displayedItems.Add(new FileTreeNodeViewModel(
-                    storedFile.To,
+                    storedFile.File.To,
                     folderName,
                     true,
                     isDeletion ? 0 : storedFile.Size.Value,

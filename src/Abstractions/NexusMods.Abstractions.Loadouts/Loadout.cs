@@ -88,6 +88,14 @@ public partial class Loadout : IModelDefinition
         }
         
         /// <summary>
+        /// Get the loadout tx pair for this loadout.
+        /// </summary>
+        public LoadoutWithTxId GetLoadoutWithTxId()
+        {
+            return new(Id, this.Max(d => d.T));
+        }
+        
+        /// <summary>
         /// This is true if the loadout is the 'Vanilla State' loadout.
         /// This loadout is created from the original game state and should
         /// be a singleton for a given game. It should never be mutated outside
