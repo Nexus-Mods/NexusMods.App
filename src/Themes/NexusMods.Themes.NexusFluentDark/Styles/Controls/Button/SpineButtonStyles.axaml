@@ -1,8 +1,6 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
-        xmlns:svg="clr-namespace:Avalonia.Svg.Skia;assembly=Avalonia.Svg.Skia"
-        xmlns:extensions="clr-namespace:NexusMods.Themes.NexusFluentDark.Extensions"
         xmlns:icon="clr-namespace:NexusMods.App.UI.Controls.Spine.Buttons.Icon;assembly=NexusMods.App.UI"
         xmlns:image="clr-namespace:NexusMods.App.UI.Controls.Spine.Buttons.Image;assembly=NexusMods.App.UI">
     <Design.PreviewWith>
@@ -13,12 +11,11 @@
             <Button Classes="IconButton Active Home IconTemplate" Margin="10" />
             <Button Classes="ImageButton Inactive ImageTemplate" Margin="10" />
             <Button Classes="ImageButton Active ImageTemplate" Margin="10" />
-            <icon:IconButton Margin="10"/>
+            <icon:IconButton Margin="10" />
             <image:ImageButton Margin="10" />
         </WrapPanel>
     </Design.PreviewWith>
-    
-    
+
 
     <!-- Styles Definitions-->
 
@@ -68,7 +65,7 @@
                                            Margin="0"
                                            Padding="0"
                                            VerticalAlignment="Center" />
-                        <Border x:Name="IconButtonInnerBorder" 
+                        <Border x:Name="IconButtonInnerBorder"
                                 Classes="Rounded-full"
                                 Height="48"
                                 Width="48">
@@ -87,7 +84,7 @@
         </Style>
 
         <Style Selector="^.Home /template/ icons|UnifiedIcon#Icon">
-            <Setter Property="Value" Value="{x:Static icons:IconValues.Nexus}"/>
+            <Setter Property="Value" Value="{x:Static icons:IconValues.Nexus}" />
             <Setter Property="Size" Value="28" />
         </Style>
 
@@ -99,12 +96,12 @@
         <Style Selector="^.Active icons|UnifiedIcon#Icon">
             <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
         </Style>
-        
+
         <Style Selector="^.Inactive:pointerover icons|UnifiedIcon#Icon">
             <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
         </Style>
     </Style>
-    
+
     <!-- ImageButton Style-->
     <Style Selector="Button.ImageButton">
         <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
@@ -146,6 +143,7 @@
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="HorizontalAlignment" Value="Center" />
             <!-- NOTE(Al12rs): Add 1px to workaround image edges showing past the decoration border -->
+            <!-- NOTE(insomnious): I don´t think this workaround is needed anymore -->
             <Setter Property="Height" Value="48" />
             <Setter Property="Width" Value="48" />
         </Style>
@@ -162,7 +160,6 @@
             </Style>
 
             <Style Selector="^ Border#DecorationBorder">
-                <!-- Border is 1px thicker than design to account that it is 1px larger -->
                 <Setter Property="BorderThickness" Value="1" />
                 <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
             </Style>
@@ -173,7 +170,6 @@
             </Style>
 
             <Style Selector="^:pointerover Border#DecorationBorder">
-                <!-- Border is 1px thicker than design to account that it is 1px larger -->
                 <Setter Property="BorderThickness" Value="2" />
                 <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentModerateBrush}" />
             </Style>
@@ -183,7 +179,6 @@
         <Style Selector="^.Active">
 
             <Style Selector="^ Border#DecorationBorder">
-                <!-- Border is 1px thicker than design to account that it is 1px larger -->
                 <Setter Property="BorderThickness" Value="2" />
                 <Setter Property="BorderBrush" Value="{StaticResource NeutralStrongBrush}" />
             </Style>
@@ -194,7 +189,6 @@
             </Style>
 
             <Style Selector="^:pointerover Border#DecorationBorder">
-                <!-- Border is 1px thicker than design to account that it is 1px larger -->
                 <Setter Property="BorderThickness" Value="2" />
                 <Setter Property="BorderBrush" Value="{StaticResource NeutralStrongBrush}" />
             </Style>
@@ -209,7 +203,8 @@
                         <Grid x:Name="InnerGrid">
                             <icons:UnifiedIcon x:Name="Image">
                                 <icons:UnifiedIcon.Value>
-                                    <icons:IconValue ImageSetter="avares://NexusMods.Themes.NexusFluentDark/Assets/DesignTime/cyberpunk_game.png" />
+                                    <icons:IconValue
+                                        ImageSetter="avares://NexusMods.Themes.NexusFluentDark/Assets/DesignTime/cyberpunk_game.png" />
                                 </icons:UnifiedIcon.Value>
                             </icons:UnifiedIcon>
                             <Rectangle x:Name="Mask" />

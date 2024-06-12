@@ -22,7 +22,7 @@
                 x:Name="Loadouts">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <StackPanel Spacing="12"/>
+                        <StackPanel Spacing="12" />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
             </ItemsControl>
