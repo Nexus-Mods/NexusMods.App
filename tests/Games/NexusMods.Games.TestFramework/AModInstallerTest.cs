@@ -233,10 +233,10 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
                 Status = ModStatus.Installing,
                 Revision = 0,
                 LoadoutId = LoadoutId.From(0),
-                Enabled = true
+                Enabled = true,
             };
             var result = await tx.Commit();
-            baseId = result.Remap(mod).ModId;
+            baseId = mod.Remap(result).ModId;
         }
         
         var info = new ModInstallerInfo
