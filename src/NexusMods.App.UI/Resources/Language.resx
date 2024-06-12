@@ -524,4 +524,10 @@
     <data name="InfoBanner_PrefixProperty_Did_you_know_" xml:space="preserve">
         <value>Did you know?</value>
     </data>
+    <data name="NewTabPageInfoBannerText1" xml:space="preserve">
+        <value>You can add panels for split screen viewing by selecting the</value>
+    </data>
+    <data name="NewTabPageInfoBannerText2" xml:space="preserve">
+        <value>button in the toolbar</value>
+    </data>
 </root>

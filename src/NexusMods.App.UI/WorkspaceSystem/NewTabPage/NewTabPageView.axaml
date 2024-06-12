@@ -8,15 +8,16 @@
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
     xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation"
     xmlns:banners="clr-namespace:NexusMods.App.UI.Controls.Banners"
+    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
     mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="500"
     x:Class="NexusMods.App.UI.WorkspaceSystem.NewTabPageView">
 
     <StackPanel Margin="24" Orientation="Vertical" Spacing="24">
         <banners:InfoBanner x:Name="InfoBanner">
             <StackPanel>
-                <TextBlock Text="You can add panels for split screen viewing by selecting the"/>
+                <TextBlock Text="{x:Static resources:Language.NewTabPageInfoBannerText1}"/>
                 <icons:UnifiedIcon x:Name="AddPanelIcon"/>
-                <TextBlock Text="button in the toolbar"/>
+                <TextBlock Text="{x:Static resources:Language.NewTabPageInfoBannerText2}"/>
             </StackPanel>
         </banners:InfoBanner>
 
