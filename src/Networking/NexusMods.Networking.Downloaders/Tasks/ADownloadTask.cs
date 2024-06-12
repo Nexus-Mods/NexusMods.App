@@ -68,7 +68,7 @@ public abstract class ADownloadTask : ReactiveObject, IDownloadTask
     protected async Task Init(ITransaction tx, EntityId id)
     {
         var result = await tx.Commit();
-        PersistentState = DownloaderState.Load(result.Db, id);
+        PersistentState = DownloaderState.Load(result.Db, result[id]);
     }
     
     protected async Task<(string Name, Size Size)> GetNameAndSizeAsync(Uri uri)
@@ -113,7 +113,7 @@ public abstract class ADownloadTask : ReactiveObject, IDownloadTask
         }
         
         var result = await tx.Commit();
-        PersistentState = result.Remap(PersistentState);
+        PersistentState = PersistentState.Rebase();
     }
     
     protected async Task MarkComplete()
@@ -121,8 +121,8 @@ public abstract class ADownloadTask : ReactiveObject, IDownloadTask
         using var tx = Connection.BeginTransaction();
         tx.Add(PersistentState.Id, DownloaderState.Status, DownloadTaskStatus.Completed);
         tx.Add(PersistentState.Id, CompletedDownloadState.CompletedDateTime, DateTime.Now);
-        var result = await tx.Commit();
-        PersistentState = result.Remap(PersistentState);
+        await tx.Commit();
+        PersistentState = PersistentState.Rebase();
     }
     
     [Reactive]
