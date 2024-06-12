@@ -6,6 +6,7 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
+using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.App.UI;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
@@ -41,7 +42,7 @@ where TVm : IViewModelInterface
         {
             if (_loadout == null)
                 throw new Exception("Must call CreateLoadout before accessing Loadout.");
-            return _loadout!;
+            return _loadout!.Value;
         }
     }
 

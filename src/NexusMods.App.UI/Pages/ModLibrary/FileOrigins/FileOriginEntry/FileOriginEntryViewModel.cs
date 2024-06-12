@@ -7,6 +7,7 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.Networking.Downloaders.Tasks.State;
 using NexusMods.Paths;
 using ReactiveUI;
@@ -37,6 +38,10 @@ public class FileOriginEntryViewModel : AViewModel<IFileOriginEntryViewModel>, I
         LoadoutId loadoutId,
         DownloadAnalysis.ReadOnly fileOrigin)
     {
+        Name = "FIXME";
+        /*
+        if (fileOrigin
+        
         Name = fileOrigin.TryGet(DownloaderState.FriendlyName, out var friendlyName) && friendlyName != "Unknown"
             ? friendlyName
             : fileOrigin.SuggestedName;
@@ -46,19 +51,23 @@ public class FileOriginEntryViewModel : AViewModel<IFileOriginEntryViewModel>, I
             : fileOrigin.TryGet(DownloaderState.Size, out var dlStateSize) 
                 ? dlStateSize 
                 : Size.Zero;
+                */
         
         AddToLoadoutCommand = ReactiveCommand.CreateFromTask(async () =>
         {
             await archiveInstaller.AddMods(loadoutId, fileOrigin);
         });
-        
+
+        Version = "FIXME";
+        /*
         Version = fileOrigin.TryGet(DownloaderState.Version, out var version) && version != "Unknown"
             ? version
             : "-";
+            */
         
         ArchiveDate = fileOrigin.GetCreatedAt();
 
-        var loadout = conn.Db.Get<Loadout.ReadOnly>(loadoutId.Value);
+        var loadout = Loadout.Load(conn.Db, loadoutId);
 
         var interval = Observable.Interval(TimeSpan.FromSeconds(60)).StartWith(1);
 
@@ -68,11 +77,11 @@ public class FileOriginEntryViewModel : AViewModel<IFileOriginEntryViewModel>, I
             .ToProperty(this, vm => vm.DisplayArchiveDate, scheduler: RxApp.MainThreadScheduler);
 
         // Update the LastInstalledDate every time the loadout is updated
-        _lastInstalledDate = conn.Revisions(loadoutId)
-            .StartWith(loadout)
+        _lastInstalledDate = Loadout.Load(conn.Db, loadoutId)
+            .Revisions()
             .Select(rev => rev.Mods.Where(mod => mod.Contains(Mod.Source)
                                                  && mod.SourceId.Equals(fileOrigin.Id))
-                .Select(mod => mod.GetCreatedAt())
+                .Select(mod => mod.CreatedAt)
                 .DefaultIfEmpty(DateTime.MinValue)
                 .Max()
             )

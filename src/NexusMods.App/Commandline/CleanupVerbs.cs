@@ -40,9 +40,9 @@ internal static class CleanupVerbs
         Thread.Sleep(1000);
         
         // Step 1: Revert the managed games to their original state
-        using var db = conn.Db;
-        var managedInstallations = db.Loadouts()
-            .Select(loadout => loadout.Installation)
+        var db = conn.Db;
+        var managedInstallations = Loadout.All(db)
+            .Select(loadout => loadout.InstallationInstance)
             .Distinct();
 
         foreach (var installation in managedInstallations)

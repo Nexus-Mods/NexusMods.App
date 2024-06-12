@@ -55,22 +55,28 @@ public class ModEnabledViewModel : AViewModel<IModEnabledViewModel>, IModEnabled
         });
         ToggleEnabledCommand = ReactiveCommand.CreateFromTask<bool, Unit>(async enabled =>
         {
-            var old = _conn.Db.Get(Row);
-            await old.ToggleEnabled();
+            using var tx = _conn.BeginTransaction();
+            tx.Add(Row, static (txInner, db, id) =>
+            {
+                var mod = Mod.Load(db, id);
+                txInner.Add(mod.Id, Mod.Enabled, !mod.Enabled);
+            });
+            await tx.Commit();
             return Unit.Default;
         });
         DeleteModCommand = ReactiveCommand.CreateFromTask(async () =>
         {
-            var mod = _conn.Db.Get(Row);
-            await mod.Delete();
+            using var tx = _conn.BeginTransaction();
+            tx.Delete(Row, true);
+            await tx.Commit();
         });
     }
 
     public int Compare(ModId a, ModId b)
     {
         var db = _conn.Db;
-        var aEnt = db.Get(a);
-        var bEnt = db.Get(b);
-        return (aEnt?.Enabled ?? false).CompareTo(bEnt?.Enabled ?? false);
+        var aEnt = Mod.Load(db, a);
+        var bEnt = Mod.Load(db, b);
+        return (aEnt.Enabled).CompareTo(bEnt.Enabled);
     }
 }

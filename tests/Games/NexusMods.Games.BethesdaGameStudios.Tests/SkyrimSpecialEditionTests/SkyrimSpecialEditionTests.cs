@@ -145,7 +145,7 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition.SkyrimSp
 
         var file = metadataFiles.Files.First(f => f.TryGetAsGeneratedFile(out _));
         file.TryGetAsGeneratedFile(out var pluginOrderFile);
-        var generator = pluginOrderFile!.Generator;
+        var generator = pluginOrderFile!.GeneratorInstance;
         
         var flattened = await loadout.ToFlattenedLoadout();
 
@@ -183,10 +183,10 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition.SkyrimSp
             .BeEmpty("the mod is not installed");
 
         PluginOrderFile? pluginOrderFile = null;
-        GeneratedFile.Model? file = null;
+        GeneratedFile.ReadOnly? file = null;
         foreach (var f in loadout.Files)
         {
-            if (!f.TryGetAsGeneratedFile(out var generator) || generator.Generator is not PluginOrderFile pof) continue;
+            if (!f.TryGetAsGeneratedFile(out var generator) || generator.GeneratorInstance is not PluginOrderFile pof) continue;
             file = generator;
             pluginOrderFile = pof;
             break;
@@ -195,7 +195,7 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition.SkyrimSp
         file.Should().NotBeNull("the plugin order file should exist in the loadout");
 
 
-        var pluginFilePath = file!.To.CombineChecked(loadout.Installation);
+        var pluginFilePath = file.Value.File.To.CombineChecked(loadout.InstallationInstance);
 
         var path = BethesdaTestHelpers.GetDownloadableModFolder(FileSystem, "SkyrimBase");
         var downloaded = await _downloader.DownloadFromManifestAsync(path, FileSystem);
