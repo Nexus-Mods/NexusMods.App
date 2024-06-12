@@ -25,7 +25,7 @@ public class BethesdaLoadoutSynchronizer(IServiceProvider provider) : ALoadoutSy
         var metadataMod = loadout.Mods
             .FirstOrDefault(m => m.Category == ModCategory.Metadata);
         
-        if (metadataMod.IsValid())
+        if (!metadataMod.IsValid())
         {
             using var tx = Connection.BeginTransaction();
             var newMetadataMod = new Mod.New(tx)
@@ -60,8 +60,8 @@ public class BethesdaLoadoutSynchronizer(IServiceProvider provider) : ALoadoutSy
                 Generator = PluginOrderFile.Guid,
             };
             metadataMod.Revise(tx);
-            var result = await tx.Commit(); 
-            loadout = result.Remap(loadout);
+            await tx.Commit();
+            loadout = loadout.Rebase();
         }
 
         return loadout;
