@@ -1,3 +1,4 @@
+using System.Globalization;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
@@ -19,6 +20,17 @@ internal class LoadoutParser(IConnection conn) : IOptionParser<Loadout.ReadOnly>
         if (LoadoutId.TryParseFromHex(input, out var parsedId))
         {
             var loadout = Loadout.Load(db, parsedId);
+            if (loadout.IsValid())
+            {
+                value = loadout;
+                return true;
+            }
+        }
+        
+        // An id in the format of: LoadoutId:00000000000000000000000000
+        if (input.StartsWith("LoadoutId:") && input.Length == 25)
+        {
+            var loadout = Loadout.Load(db, EntityId.From(ulong.Parse(input[10..], NumberStyles.HexNumber)));
             if (loadout.IsValid())
             {
                 value = loadout;

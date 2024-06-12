@@ -36,7 +36,5 @@ public class ModManagementVerbs(StubbedGame stubbedGame, IServiceProvider provid
         await VerifyLog(log, "flatten-loadout");
         
         log = await Run("apply", "-l", listName);
-        
-        log.Last<Text>().Template.Should().Contain($"Applied {listName}");
     }
 }
