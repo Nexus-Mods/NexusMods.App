@@ -534,12 +534,24 @@
         <value>Add mod to your mod list</value>
     </data>
     <data name="FileOriginPage_AddModAdvanced_ToolTip" xml:space="preserve">
-        <value>Add mod to mod list using advanced manual installer</value>
+        <value>Use advanced installer to manually select files to include</value>
     </data>
     <data name="ApplyControlView_ViewApplyChanges_ToolTip" xml:space="preserve">
         <value>View the changes that will be applied to your game folder</value>
     </data>
     <data name="ApplyControlView_Apply_ToolTip" xml:space="preserve">
         <value>Apply your changes to the game folder</value>
+    </data>
+    <data name="IFileTreeNodeViewModel_FormattedChangeStateToolTip_Added" xml:space="preserve">
+        <value>File will be added</value>
+    </data>
+    <data name="IFileTreeNodeViewModel_FormattedChangeStateToolTip_ModifiedFile" xml:space="preserve">
+        <value>File will be modified</value>
+    </data>
+    <data name="IFileTreeNodeViewModel_FormattedChangeStateToolTip_Removed" xml:space="preserve">
+        <value>File will be removed</value>
+    </data>
+    <data name="IFileTreeNodeViewModel_FormattedChangeStateToolTip_ModifiedFolder" xml:space="preserve">
+        <value>Folder contains modified files</value>
     </data>
 </root>

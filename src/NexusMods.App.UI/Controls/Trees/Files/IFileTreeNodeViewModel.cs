@@ -54,17 +54,36 @@ public interface IFileTreeNodeViewModel : IViewModelInterface, IExpandableItem, 
         return FileCount > 0 ? FileCount.ToString() : string.Empty;
     }
 
-    string ToFormattedChangeState()
+    string FormattedChangeState
     {
-        return ChangeType switch
+        get
         {
-            FileChangeType.Added => Language.IFileTreeNodeViewModel_ToFormattedChangeState_Added,
-            FileChangeType.Modified => IsFile
-                ? Language.IFileTreeNodeViewModel_ToFormattedChangeState_Modified
-                : Language.IFileTreeNodeViewModel_ToFormattedChangeState_Contents_modified,
-            FileChangeType.Removed => Language.IFileTreeNodeViewModel_ToFormattedChangeState_Removed,
-            FileChangeType.None => string.Empty,
-        };
+            return ChangeType switch
+            {
+                FileChangeType.Added => Language.IFileTreeNodeViewModel_ToFormattedChangeState_Added,
+                FileChangeType.Modified => IsFile
+                    ? Language.IFileTreeNodeViewModel_ToFormattedChangeState_Modified
+                    : Language.IFileTreeNodeViewModel_ToFormattedChangeState_Contents_modified,
+                FileChangeType.Removed => Language.IFileTreeNodeViewModel_ToFormattedChangeState_Removed,
+                FileChangeType.None => string.Empty,
+            };
+        }
+    }
+    
+    string FormattedChangeStateToolTip
+    {
+        get
+        {
+            return ChangeType switch
+            {
+                FileChangeType.Added => Language.IFileTreeNodeViewModel_FormattedChangeStateToolTip_Added,
+                FileChangeType.Modified => IsFile
+                    ? Language.IFileTreeNodeViewModel_FormattedChangeStateToolTip_ModifiedFile
+                    : Language.IFileTreeNodeViewModel_FormattedChangeStateToolTip_ModifiedFolder,
+                FileChangeType.Removed => Language.IFileTreeNodeViewModel_FormattedChangeStateToolTip_Removed,
+                FileChangeType.None => string.Empty,
+            };
+        }
     }
 
     /// <summary>

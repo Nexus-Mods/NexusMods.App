@@ -663,7 +663,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Add mod to mod list using advanced manual installer.
+        ///   Looks up a localized string similar to Use advanced installer to manually select files to include.
         /// </summary>
         public static string FileOriginPage_AddModAdvanced_ToolTip {
             get {
@@ -983,6 +983,42 @@ namespace NexusMods.App.UI.Resources {
         public static string HomeWorkspace_Title {
             get {
                 return ResourceManager.GetString("HomeWorkspace_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File will be added.
+        /// </summary>
+        public static string IFileTreeNodeViewModel_FormattedChangeStateToolTip_Added {
+            get {
+                return ResourceManager.GetString("IFileTreeNodeViewModel_FormattedChangeStateToolTip_Added", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File will be modified.
+        /// </summary>
+        public static string IFileTreeNodeViewModel_FormattedChangeStateToolTip_ModifiedFile {
+            get {
+                return ResourceManager.GetString("IFileTreeNodeViewModel_FormattedChangeStateToolTip_ModifiedFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Folder contains modified files.
+        /// </summary>
+        public static string IFileTreeNodeViewModel_FormattedChangeStateToolTip_ModifiedFolder {
+            get {
+                return ResourceManager.GetString("IFileTreeNodeViewModel_FormattedChangeStateToolTip_ModifiedFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File will be removed.
+        /// </summary>
+        public static string IFileTreeNodeViewModel_FormattedChangeStateToolTip_Removed {
+            get {
+                return ResourceManager.GetString("IFileTreeNodeViewModel_FormattedChangeStateToolTip_Removed", resourceCulture);
             }
         }
         

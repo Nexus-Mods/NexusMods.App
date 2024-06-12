@@ -204,7 +204,7 @@ public class FileTreeNodeViewModel : AViewModel<IFileTreeNodeViewModel>, IFileTr
     {
         return new TextColumn<IFileTreeNodeViewModel, string?>(
             Language.Helpers_GenerateHeader_State,
-            x => x.ToFormattedChangeState(),
+            x => x.FormattedChangeState,
             options: new TextColumnOptions<IFileTreeNodeViewModel>
             {
                 // Compares change state first, then by folder/file, then by name.
