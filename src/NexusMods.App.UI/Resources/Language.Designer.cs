@@ -1034,5 +1034,11 @@ namespace NexusMods.App.UI.Resources {
                 return ResourceManager.GetString("NavigationControl_NavigationControl_Open_in_new_panel", resourceCulture);
             }
         }
+        
+        public static string InfoBanner_PrefixProperty_Did_you_know_ {
+            get {
+                return ResourceManager.GetString("InfoBanner_PrefixProperty_Did_you_know_", resourceCulture);
+            }
+        }
     }
 }

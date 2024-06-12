@@ -12,6 +12,7 @@ public static class ServiceExtensions
             .AddSettings<LanguageSettings>()
             .AddSettings<TextEditorSettings>()
             .AddSettings<AlphaSettings>()
-            .AddSettings<LoginSettings>();
+            .AddSettings<LoginSettings>()
+            .AddSettings<BannerSettings>();
     }
 }

@@ -15,7 +15,7 @@
     xmlns:system="clr-namespace:System;assembly=System.Runtime">
 
     <Design.DataContext>
-        <items:IconViewModel Icon="{x:Static icons:IconValues.ModLibrary}" Name="Some Text" />
+        <items:IconViewModel Icon="{x:Static icons:IconValues.ModLibrary}" Name="Some long Text" />
     </Design.DataContext>
 
     <navigation:NavigationControl Classes="LeftMenuItem" 
@@ -23,7 +23,7 @@
                                   Width="184" 
                                   Height="36"
                                   Padding="8,0,8,0">
-        <Grid ColumnDefinitions="Auto, *, *">
+        <Grid ColumnDefinitions="Auto, *, Auto">
             <icons:UnifiedIcon Grid.Column="0" Size="16" x:Name="LeftIcon" />
             <TextBlock
                 Margin="8 0 0 0"
