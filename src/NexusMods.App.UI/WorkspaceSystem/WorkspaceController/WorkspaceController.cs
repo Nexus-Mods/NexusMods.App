@@ -88,7 +88,16 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
                 pageData: Optional<PageData>.None
             );
 
-            vm.FromData(workspaceData);
+            try
+            {
+                vm.FromData(workspaceData);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Exception while restoring Workspace {WorkspaceId}", workspaceData.Id);
+                if (vm.Panels.Count == 0) AddDefaultPanel((WorkspaceViewModel)vm);
+            }
+
             if (isActiveWorkspace) activeWorkspace = vm;
         }
 
@@ -125,6 +134,19 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
         );
 
         return vm;
+    }
+
+    private void AddDefaultPanel(WorkspaceViewModel vm)
+    {
+        var addPanelBehavior = new AddPanelBehavior(new AddPanelBehavior.WithDefaultTab());
+
+        vm.AddPanel(
+            WorkspaceGridState.From(new[]
+            {
+                new PanelGridState(PanelId.DefaultValue, MathUtils.One),
+            }, isHorizontal: vm.IsHorizontal),
+            addPanelBehavior
+        );
     }
 
     private void UnregisterWorkspace(WorkspaceViewModel workspaceViewModel)

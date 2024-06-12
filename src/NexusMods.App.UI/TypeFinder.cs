@@ -24,7 +24,6 @@ internal class TypeFinder : ITypeFinder
     private static IEnumerable<Type> AllTypes => new[]
     {
         // factory context
-        typeof(NewTabPageContext),
         typeof(LoadoutGridContext),
         typeof(InProgressPageContext),
         typeof(MyGamesPageContext),

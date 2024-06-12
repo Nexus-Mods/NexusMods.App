@@ -138,9 +138,9 @@ internal sealed class WindowManager : ReactiveObject, IWindowManager
                 WindowDataAttributes.Data.Retract(found);
                 tx.Commit();
             }
-            catch (Exception)
+            catch (Exception otherException)
             {
-                // ignored
+                _logger.LogError(otherException, "Exception while retracting window state");
             }
         }
 
