@@ -1,6 +1,6 @@
 ﻿<reactiveUi:ReactiveUserControl
     d:DesignHeight="150"
-    d:DesignWidth="300"
+    d:DesignWidth="150"
     mc:Ignorable="d"
     x:Class="NexusMods.App.UI.Controls.Spine.Buttons.Image.ImageButton"
     x:TypeArguments="buttons:IImageButtonViewModel"
