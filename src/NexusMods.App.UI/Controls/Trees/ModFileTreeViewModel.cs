@@ -129,6 +129,10 @@ public class ModFileTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeVie
                         size,
                         numChildren
                     )
+                    {
+                        // Always expand the root nodes
+                        IsExpanded = true,
+                    }
                 );
                 continue;
             }
