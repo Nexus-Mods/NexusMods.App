@@ -47,7 +47,7 @@ internal class DiagnosticListViewModel : APageViewModel<IDiagnosticListViewModel
         IDiagnosticWriter diagnosticWriter,
         ISettingsManager settingsManager) : base(windowManager)
     {
-        TabIcon = IconValues.MonitorDiagnostics;
+        TabIcon = IconValues.Stethoscope;
         TabTitle = Language.DiagnosticListViewModel_DiagnosticListViewModel_Diagnostics;
 
         Settings = settingsManager.Get<DiagnosticSettings>();
