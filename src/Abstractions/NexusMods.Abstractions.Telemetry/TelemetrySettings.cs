@@ -10,6 +10,8 @@ public record TelemetrySettings : ISettings
 
     public bool HasShownPrompt { get; set; }
 
+    public static readonly Uri Link = new("https://help.nexusmods.com/article/132-diagnostics-and-usage-nexus-mods-app");
+
     public static ISettingsBuilder Configure(ISettingsBuilder settingsBuilder)
     {
         return settingsBuilder
@@ -19,6 +21,7 @@ public record TelemetrySettings : ISettings
                     .AddToSection(Sections.Privacy)
                     .WithDisplayName("Send usage data")
                     .WithDescription("Help us improve the App by sending usage data to Nexus Mods.")
+                    // TODO: add link
                     .UseBooleanContainer()
                     .RequiresRestart()
                 )

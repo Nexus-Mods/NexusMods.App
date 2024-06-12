@@ -79,8 +79,8 @@ public record LoggingSettings : ISettings
                 )
                 .AddPropertyToUI(x => x.LogToConsole, propertyBuilder => propertyBuilder
                     .AddToSection(Sections.DeveloperTools)
-                    .WithDisplayName("Log to stdout")
-                    .WithDescription("Enables the ConsoleTarget for all loggers.")
+                    .WithDisplayName("Log to console")
+                    .WithDescription("Enables the ConsoleTarget (stdout) for all loggers.")
                     .UseBooleanContainer()
                     .RequiresRestart()
                 )
