@@ -107,7 +107,7 @@
         <!-- Active State -->
         <Style Selector="^:pressed">
             <Style Selector="^ /template/ Border#Background">
-                <Setter Property="Background" Value="{StaticResource PrimaryWeak}"/>
+                <Setter Property="Background" Value="{StaticResource PrimarySubdued}"/>
             </Style>
         </Style>
 

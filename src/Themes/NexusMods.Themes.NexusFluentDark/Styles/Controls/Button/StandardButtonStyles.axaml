@@ -270,7 +270,7 @@
         </Style>
 
         <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource PrimaryWeakBrush}" />
+            <Setter Property="Background" Value="{DynamicResource PrimarySubduedBrush}" />
         </Style>
 
         <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
@@ -291,7 +291,7 @@
 
         <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="Background" Value="{DynamicResource SurfaceMidBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource PrimaryWeakBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource PrimarySubduedBrush}" />
         </Style>
 
         <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
@@ -413,7 +413,7 @@
         </Style>
 
         <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource PrimaryWeakBrush}" />
+            <Setter Property="Background" Value="{DynamicResource PrimarySubduedBrush}" />
             <Setter Property="Foreground" Value="{DynamicResource NeutralInvertedBrush}" />
         </Style>
 
