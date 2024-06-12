@@ -497,6 +497,12 @@
     <data name="FileOriginsPage_ViewButtonText" xml:space="preserve">
         <value>View</value>
     </data>
+    <data name="AddPanelToolTip" xml:space="preserve">
+        <value>Add a panel for split screen viewing</value>
+    </data>
+    <data name="Panel_Add_tab_ToolTip" xml:space="preserve">
+        <value>Add tab</value>
+    </data>
     <data name="TopBar_MyProfile" xml:space="preserve">
         <value>My Profile</value>
     </data>
@@ -520,6 +526,33 @@
     </data>
     <data name="NavigationControl_NavigationControl_Open_in_new_panel" xml:space="preserve">
         <value>Open in new panel</value>
+    </data>
+    <data name="TopBar_Help_ToolTip" xml:space="preserve">
+        <value>Help and feedback</value>
+    </data>
+    <data name="FileOriginPage_AddMod_ToolTip" xml:space="preserve">
+        <value>Add mod to your mod list</value>
+    </data>
+    <data name="FileOriginPage_AddModAdvanced_ToolTip" xml:space="preserve">
+        <value>Use advanced installer to manually select files to include</value>
+    </data>
+    <data name="ApplyControlView_ViewApplyChanges_ToolTip" xml:space="preserve">
+        <value>View the changes that will be applied to your game folder</value>
+    </data>
+    <data name="ApplyControlView_Apply_ToolTip" xml:space="preserve">
+        <value>Apply your changes to the game folder</value>
+    </data>
+    <data name="IFileTreeNodeViewModel_FormattedChangeStateToolTip_Added" xml:space="preserve">
+        <value>File will be added</value>
+    </data>
+    <data name="IFileTreeNodeViewModel_FormattedChangeStateToolTip_ModifiedFile" xml:space="preserve">
+        <value>File will be modified</value>
+    </data>
+    <data name="IFileTreeNodeViewModel_FormattedChangeStateToolTip_Removed" xml:space="preserve">
+        <value>File will be removed</value>
+    </data>
+    <data name="IFileTreeNodeViewModel_FormattedChangeStateToolTip_ModifiedFolder" xml:space="preserve">
+        <value>Folder contains modified files</value>
     </data>
     <data name="InfoBanner_PrefixProperty_Did_you_know_" xml:space="preserve">
         <value>Did you know?</value>

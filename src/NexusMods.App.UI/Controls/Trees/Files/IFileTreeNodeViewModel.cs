@@ -54,7 +54,16 @@ public interface IFileTreeNodeViewModel : IViewModelInterface, IExpandableItem, 
         return FileCount > 0 ? FileCount.ToString() : string.Empty;
     }
 
-    string ToFormattedChangeState()
+    string FormattedChangeState => ToFormattedChangeState();
+
+    string FormattedChangeStateToolTip => ToFormattedChangeStateToolTip();
+    
+    /// <summary>
+    ///     The key to the parent of this node.
+    /// </summary>
+    GamePath ParentKey { get; }
+    
+    private string ToFormattedChangeState()
     {
         return ChangeType switch
         {
@@ -67,8 +76,17 @@ public interface IFileTreeNodeViewModel : IViewModelInterface, IExpandableItem, 
         };
     }
 
-    /// <summary>
-    ///     The key to the parent of this node.
-    /// </summary>
-    GamePath ParentKey { get; }
+    private string ToFormattedChangeStateToolTip()
+    {
+        return ChangeType switch
+        {
+            FileChangeType.Added => Language.IFileTreeNodeViewModel_FormattedChangeStateToolTip_Added,
+            FileChangeType.Modified => IsFile
+                ? Language.IFileTreeNodeViewModel_FormattedChangeStateToolTip_ModifiedFile
+                : Language.IFileTreeNodeViewModel_FormattedChangeStateToolTip_ModifiedFolder,
+            FileChangeType.Removed => Language.IFileTreeNodeViewModel_FormattedChangeStateToolTip_Removed,
+            FileChangeType.None => string.Empty,
+        };
+    }
+    
 }

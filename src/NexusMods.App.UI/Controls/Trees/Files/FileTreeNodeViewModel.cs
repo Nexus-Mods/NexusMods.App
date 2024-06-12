@@ -200,12 +200,13 @@ public class FileTreeNodeViewModel : AViewModel<IFileTreeNodeViewModel>, IFileTr
         );
     }
     
-    internal static TextColumn<IFileTreeNodeViewModel, string?> CreateTreeSourceStateColumn()
+    internal static TemplateColumn<IFileTreeNodeViewModel> CreateTreeSourceStateColumn()
     {
-        return new TextColumn<IFileTreeNodeViewModel, string?>(
+        return new TemplateColumn<IFileTreeNodeViewModel>(
             Language.Helpers_GenerateHeader_State,
-            x => x.ToFormattedChangeState(),
-            options: new TextColumnOptions<IFileTreeNodeViewModel>
+            "FileStateColumnTemplate",
+            width: new GridLength(125),
+            options: new TemplateColumnOptions<IFileTreeNodeViewModel>
             {
                 // Compares change state first, then by folder/file, then by name.
                 CompareAscending = (x, y) =>
@@ -232,8 +233,7 @@ public class FileTreeNodeViewModel : AViewModel<IFileTreeNodeViewModel>, IFileTr
                         ? folderComparison 
                         : string.Compare(y.Name, x.Name, StringComparison.OrdinalIgnoreCase);
                 },
-            },
-            width: new GridLength(125)
+            }
         );
     }
 }

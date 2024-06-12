@@ -938,7 +938,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         var loadout = new Loadout.Model(tx)
         {
             Db = db, // Has to be here to the installation resolves properly
-            Name = suggestedName ?? $"Loadout {installation.Game.Name}",
+            Name = suggestedName ?? installation.Game.Name,
             Installation = installation,
             Revision = 0,
         };
