@@ -1,8 +1,10 @@
 using System.Reactive;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia;
 using Avalonia.Controls.Metadata;
 using Avalonia.Controls.Primitives;
+using Avalonia.Interactivity;
 using Avalonia.Metadata;
 using NexusMods.App.UI.Resources;
 using NexusMods.Icons;
@@ -56,6 +58,9 @@ public class InfoBanner : TemplatedControl
 
     public InfoBanner()
     {
+        // Start out dismissed
+        UpdatePseudoClasses(isDismissed: true);
+
         var canDismiss = this.WhenAnyValue(x => x.BannerSettingsWrapper).Select(x => x is not null);
         DismissCommand = ReactiveCommand.Create(() =>
         {
@@ -66,17 +71,30 @@ public class InfoBanner : TemplatedControl
         }, canDismiss);
     }
 
+    private readonly SerialDisposable _serialDisposable = new();
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
     {
         if (change.Property == BannerSettingsWrapperProperty)
         {
+            _serialDisposable.Disposable = null;
+
             if (change.NewValue is BannerSettingsWrapper bannerSettingsWrapper)
             {
                 UpdatePseudoClasses(bannerSettingsWrapper.IsDismissed);
+
+                _serialDisposable.Disposable = bannerSettingsWrapper
+                    .WhenAnyValue(x => x.IsDismissed)
+                    .Subscribe(UpdatePseudoClasses);
             }
         }
 
         base.OnPropertyChanged(change);
+    }
+
+    protected override void OnUnloaded(RoutedEventArgs e)
+    {
+        _serialDisposable.Disposable = null;
+        base.OnUnloaded(e);
     }
 
     private void UpdatePseudoClasses(bool isDismissed)
