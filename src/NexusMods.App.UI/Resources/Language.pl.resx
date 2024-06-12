@@ -328,7 +328,7 @@
 		<value>BŁĄD KRYTYCZNY</value>
 	</data>
 	<data name="LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics" xml:space="preserve">
-		<value>Stan kondycji</value>
+		<value>Stan zdrowia</value>
 	</data>
 	<data name="DiagnosticDetailsView_SeverityTitle_HIDDEN" xml:space="preserve">
 		<value>UKRYTE</value>
