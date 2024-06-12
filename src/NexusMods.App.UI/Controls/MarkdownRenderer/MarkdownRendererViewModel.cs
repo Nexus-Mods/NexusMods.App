@@ -2,11 +2,11 @@ using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Media;
-using Avalonia.Media.Imaging;
 using JetBrains.Annotations;
 using Markdown.Avalonia.Plugins;
 using Markdown.Avalonia.Utils;
 using Microsoft.Extensions.Logging;
+using NexusMods.App.UI.Extensions;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.Hashing.xxHash64;
 using ReactiveUI;
@@ -60,7 +60,7 @@ public class MarkdownRendererViewModel : AViewModel<IMarkdownRendererViewModel>,
                 .Do(ParseGitHubUri)
                 .WhereNotNull()
                 .OffUi()
-                .InvokeCommand(fetchMarkdownCommand)
+                .InvokeReactiveCommand(fetchMarkdownCommand)
                 .DisposeWith(disposables);
 
             fetchMarkdownCommand

@@ -303,7 +303,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Diagnostics.
+        ///   Looks up a localized string similar to Health check.
         /// </summary>
         public static string DiagnosticListViewModel_DiagnosticListViewModel_Diagnostics {
             get {
@@ -1059,6 +1059,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Did you know?.
+        /// </summary>
+        public static string InfoBanner_PrefixProperty_Did_you_know_ {
+            get {
+                return ResourceManager.GetString("InfoBanner_PrefixProperty_Did_you_know_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to INGEST.
         /// </summary>
         public static string IngestButtonTextBlock_Text {
@@ -1167,7 +1176,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Diagnostics.
+        ///   Looks up a localized string similar to Health check.
         /// </summary>
         public static string LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics {
             get {

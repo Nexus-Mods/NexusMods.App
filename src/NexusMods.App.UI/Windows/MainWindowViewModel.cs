@@ -6,6 +6,7 @@ using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.App.UI.Controls.DevelopmentBuildBanner;
 using NexusMods.App.UI.Controls.Spine;
 using NexusMods.App.UI.Controls.TopBar;
+using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.LeftMenu;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Overlays.AlphaWarning;
@@ -67,7 +68,8 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
             
             loginManager.IsLoggedInObservable
                 .Where(isSignedIn => isSignedIn)
-                .InvokeCommand(BringWindowToFront)
+                .Select(_ => Unit.Default)
+                .InvokeReactiveCommand(BringWindowToFront)
                 .DisposeWith(d);
             
             var loginMessageVM = serviceProvider.GetRequiredService<ILoginMessageBoxViewModel>();
