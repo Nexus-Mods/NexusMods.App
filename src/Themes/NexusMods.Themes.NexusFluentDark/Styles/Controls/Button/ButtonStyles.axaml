@@ -35,6 +35,9 @@
     </Design.PreviewWith>
 
     <!--  Style Definitions -->
+    <Style Selector=":is(Button):pressed">
+        <Setter Property="RenderTransform" Value="none" />
+    </Style>
 
     <!-- TopBar Action Button -->
     <Style Selector="Button.Action">
@@ -104,6 +107,9 @@
             <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
         </Style>
         
+        <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource SurfaceTopBrush}" />
+        </Style>
 
         <Style Selector="^.Active /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
@@ -145,6 +151,10 @@
 
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="Background" Value="{StaticResource SurfaceTopBrush}" />
+        </Style>
+        
+        <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
         </Style>
 
         <Style Selector="^ > StackPanel">
