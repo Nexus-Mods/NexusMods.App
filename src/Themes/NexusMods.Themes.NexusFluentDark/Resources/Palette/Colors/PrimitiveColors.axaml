@@ -46,6 +46,20 @@
     <Color x:Key="PrimitiveOrange200">#FED7AA</Color>
     <Color x:Key="PrimitiveOrange100">#FFEDD5</Color>
     <Color x:Key="PrimitiveOrange50">#FFF7ED</Color>
+    
+    <!-- Amber -->
+    <Color x:Key="PrimitiveAmber950">#451A03</Color>
+    <Color x:Key="PrimitiveAmber900">#78350F</Color>
+    <Color x:Key="PrimitiveAmber800">#92400E</Color>
+    <Color x:Key="PrimitiveAmber700">#B45309</Color>
+    <Color x:Key="PrimitiveAmber600">#D97706</Color>
+    <Color x:Key="PrimitiveAmber500">#F59E0B</Color>
+    <Color x:Key="PrimitiveAmber400">#FBBF24</Color>
+    <Color x:Key="PrimitiveAmber300">#FCD34D</Color>
+    <Color x:Key="PrimitiveAmber200">#FDE68A</Color>
+    <Color x:Key="PrimitiveAmber100">#FEF3C7</Color>
+    <Color x:Key="PrimitiveAmber50">#FFFBEB</Color>
+    
 
     <!-- Yellow -->
     <Color x:Key="PrimitiveYellow950">#422006</Color>
