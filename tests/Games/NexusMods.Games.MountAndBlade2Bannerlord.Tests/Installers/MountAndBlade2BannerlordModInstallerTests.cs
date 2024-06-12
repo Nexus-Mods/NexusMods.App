@@ -6,6 +6,7 @@ using NexusMods.Games.MountAndBlade2Bannerlord.Installers;
 using NexusMods.Games.MountAndBlade2Bannerlord.Tests.Shared;
 using NexusMods.Games.TestFramework;
 using NexusMods.Paths;
+using FileId = NexusMods.Abstractions.NexusWebApi.Types.FileId;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord.Tests.Installers;
 

@@ -16,7 +16,7 @@ public class MountAndBlade2BannerlordLoadoutSynchronizerTests : AGameTest<MountA
     public async Task GeneratedSortRulesAreFetched()
     {
         var loadout = await CreateLoadout();
-        var loadoutSynchronizer = (loadout.Installation.GetGame().Synchronizer as MountAndBlade2BannerlordLoadoutSynchronizer)!;
+        var loadoutSynchronizer = (loadout.InstallationInstance.GetGame().Synchronizer as MountAndBlade2BannerlordLoadoutSynchronizer)!;
 
         var context = AGameTestContext.Create(CreateTestArchive, InstallModStoredFileIntoLoadout);
 

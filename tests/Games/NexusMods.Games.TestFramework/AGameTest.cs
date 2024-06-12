@@ -104,18 +104,18 @@ public abstract class AGameTest<TGame> where TGame : AGame
     {
         return await GameInstallation.GetGame().Synchronizer.CreateLoadout(GameInstallation, Guid.NewGuid().ToString());
     }
+
+    /// <summary>
+    /// Reloads the entity from the database.
+    /// </summary>
+    protected T Refresh<T>(T entity) where T : IReadOnlyModel<T>
+        => T.Create(Connection.Db, entity.Id);
     
     /// <summary>
     /// Reloads the entity from the database.
     /// </summary>
-    protected T Refresh<T>(T entity) where T : IEntity
-        => Connection.Db.Get<T>(entity.Id);
-    
-    /// <summary>
-    /// Reloads the entity from the database.
-    /// </summary>
-    protected void Refresh<T>(ref T entity) where T : IEntity
-        => entity = Connection.Db.Get<T>(entity.Id);
+    protected void Refresh<T>(ref T entity) where T : IReadOnlyModel<T>
+        => entity = T.Create(Connection.Db, entity.Id);
 
     /// <summary>
     /// Downloads a mod and returns the <see cref="TemporaryPath"/> and <see cref="Hash"/> of it.
@@ -153,13 +153,11 @@ public abstract class AGameTest<TGame> where TGame : AGame
     public async Task<DownloadId> DownloadAndCacheMod(GameDomain gameDomain, ModId modId, FileId fileId, Hash hash)
     {
         var db = Connection.Db;
-        var metaDatas = db
-            .FindIndexed(fileId, NexusModsArchiveMetadata.FileId)
-            .Select(id => db.Get<DownloadAnalysis.ReadOnly>(id))
-            .Where(ent => ent.Get(NexusModsArchiveMetadata.ModId) == modId)
-            .FirstOrDefault(ent => ent.Get(NexusModsArchiveMetadata.GameId) == gameDomain);
+        var metaDatas = NexusModsArchiveMetadata.FindByFileId(db, fileId)
+            .Where(ent => ent.ModId == modId)
+            .FirstOrDefault(ent => ent.GameId == gameDomain);
 
-        if (metaDatas != null)
+        if (metaDatas.IsValid())
             return DownloadId.From(metaDatas.Id);
 
         var id = await DownloadMod(gameDomain, modId, fileId);
@@ -177,7 +175,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
     {
         var modIds = await ArchiveInstaller.AddMods(LoadoutId.From(loadout.Id), downloadId, token: cancellationToken);
         var db = Connection.Db;
-        return modIds.Select(id => db.Get<Mod.ReadOnly>(id.Value)).ToArray();
+        return modIds.Select(id => Mod.Load(db, id)).ToArray();
     }
 
 

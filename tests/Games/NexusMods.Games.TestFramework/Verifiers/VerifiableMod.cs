@@ -1,6 +1,7 @@
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.Loadouts.Mods;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 
@@ -18,7 +19,13 @@ internal record VerifiableMod
     public static VerifiableMod From(Mod.ReadOnly mod)
     {
         var files = mod.Files
-            .Select(f => f.Remap<StoredFile.Model>())
+            .Where(f => f.TryGetAsStoredFile(out _))
+            .Select(f =>
+                {
+                    f.TryGetAsStoredFile(out var stored);
+                    return stored;
+                }
+            )
             .Select(VerifiableFile.From)
             .OrderByDescending(file => file.To, StringComparer.OrdinalIgnoreCase)
             .ThenByDescending(file => file.Hash)
@@ -43,11 +50,11 @@ internal record VerifiableFile
 
     public required ulong Hash { get; init; }
 
-    public static VerifiableFile From(StoredFile.Model storedFile)
+    public static VerifiableFile From(StoredFile.ReadOnly storedFile)
     {
         return new VerifiableFile
         {
-            To = storedFile.To.ToString(),
+            To = storedFile.File.To.ToString(),
             Size = storedFile.Size.Value,
             Hash = storedFile.Hash.Value,
         };

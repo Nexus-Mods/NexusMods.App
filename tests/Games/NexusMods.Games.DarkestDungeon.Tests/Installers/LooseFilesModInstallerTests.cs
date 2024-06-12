@@ -4,6 +4,7 @@ using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Games.DarkestDungeon.Installers;
 using NexusMods.Games.TestFramework;
 using NexusMods.Paths;
+using FileId = NexusMods.Abstractions.NexusWebApi.Types.FileId;
 
 namespace NexusMods.Games.DarkestDungeon.Tests.Installers;
 

@@ -4,6 +4,7 @@ using NexusMods.Abstractions.FileStore.ArchiveMetadata;
 using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Installers;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
@@ -32,9 +33,14 @@ public class FomodXmlInstallerTests : AModInstallerTest<SkyrimSpecialEdition, Fo
 
         var install = GameInstallation;
         using var tx = Connection.BeginTransaction();
-        var mod = new NexusMods.Abstractions.Loadouts.Mods.Mod.ReadOnly(tx)
+        var mod = new NexusMods.Abstractions.Loadouts.Mods.Mod.New(tx)
         {
             Name = "Test Mod",
+            Revision = 0,
+            LoadoutId = LoadoutId.From(0),
+            Enabled = true,
+            Status = ModStatus.Installed,
+            Category = ModCategory.Mod,
         };
         var result = await tx.Commit();
         

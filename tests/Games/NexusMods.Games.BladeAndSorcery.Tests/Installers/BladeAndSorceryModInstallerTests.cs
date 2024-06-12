@@ -6,6 +6,7 @@ using NexusMods.Games.BladeAndSorcery.Installers;
 using NexusMods.Games.BladeAndSorcery.Models;
 using NexusMods.Games.TestFramework;
 using NexusMods.Paths;
+using FileId = NexusMods.Abstractions.NexusWebApi.Types.FileId;
 
 namespace NexusMods.Games.BladeAndSorcery.Tests.Installers;
 
