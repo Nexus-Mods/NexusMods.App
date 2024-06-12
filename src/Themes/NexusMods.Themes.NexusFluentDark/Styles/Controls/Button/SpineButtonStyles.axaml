@@ -142,8 +142,6 @@
             <Setter Property="CornerRadius" Value="{StaticResource Rounded-lg}" />
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="HorizontalAlignment" Value="Center" />
-            <!-- NOTE(Al12rs): Add 1px to workaround image edges showing past the decoration border -->
-            <!-- NOTE(insomnious): I don´t think this workaround is needed anymore -->
             <Setter Property="Height" Value="48" />
             <Setter Property="Width" Value="48" />
         </Style>
