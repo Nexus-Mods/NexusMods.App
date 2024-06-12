@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Settings;
 using NexusMods.Activities;
 using NexusMods.App.BuildInfo;
 using NexusMods.CrossPlatform.Process;
@@ -29,6 +30,10 @@ public class Startup
             .AddActivityMonitor()
             .AddLoadoutAbstractions()
             .AddDataModel() // this is required because we're also using NMA integration
+            .OverrideSettingsForTests<DataModelSettings>(settings => settings with
+            {
+                UseInMemoryDataModel = true,
+            })
             .AddLogging(builder => builder.AddXunitOutput()
                 .SetMinimumLevel(LogLevel.Debug))
             .Validate();
