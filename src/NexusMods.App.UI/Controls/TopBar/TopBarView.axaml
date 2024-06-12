@@ -37,7 +37,7 @@
 
             <navigation:NavigationMenuItem  Classes="TopBarMenuItem" x:Name="OpenSettingsMenuItem">
                 <ToolTip.Tip>
-                    <TextBlock Classes="ToolTipText" Text="{x:Static resources:Language.SettingsView_Title}" />
+                    <TextBlock Text="{x:Static resources:Language.SettingsView_Title}" />
                 </ToolTip.Tip>
                 <navigation:NavigationMenuItem.Header>
                     <icons:UnifiedIcon Classes="Cog"/>
@@ -46,7 +46,7 @@
 
             <MenuItem Classes="TopBarMenuItem" Width="64">
                 <ToolTip.Tip>
-                    <TextBlock Classes="ToolTipText" Text="{x:Static resources:Language.TopBar_Help_ToolTip}" />
+                    <TextBlock Text="{x:Static resources:Language.TopBar_Help_ToolTip}" />
                 </ToolTip.Tip>
                 <MenuItem.Header>
                     <StackPanel Orientation="Horizontal" Spacing="0" Margin="10">

@@ -6,7 +6,7 @@
             <!-- Add Controls for Previewer Here -->
             <Button ClipToBounds="False">
                 <ToolTip.Tip>
-                    <TextBlock Classes="ToolTipText" Text="This is a tooltip" />
+                    <TextBlock Text="This is a tooltip" />
                 </ToolTip.Tip>
                 <TextBlock Text="Hover over me" />
             </Button>
@@ -39,7 +39,7 @@
 
         </Style>
 
-        <Style Selector="^ TextBlock.ToolTipText">
+        <Style Selector="^ TextBlock">
             <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}"/>
         </Style>
     </Style>

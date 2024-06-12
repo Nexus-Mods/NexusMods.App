@@ -26,7 +26,7 @@
 
             <navigation:NavigationControl Classes="Preview" HorizontalAlignment="Stretch" x:Name="ApplyDiffButton">
                 <ToolTip.Tip>
-                    <TextBlock Classes="ToolTipText" Text="{x:Static resources:Language.ApplyControlView_ViewApplyChanges_ToolTip}" />
+                    <TextBlock Text="{x:Static resources:Language.ApplyControlView_ViewApplyChanges_ToolTip}" />
                 </ToolTip.Tip>
                 <StackPanel Orientation="Horizontal">
                     <!-- <icons:UnifiedIcon Size="20" Classes="Visibility" /> -->
@@ -42,7 +42,7 @@
                     Height="44"
                     x:Name="ApplyButton">
                 <ToolTip.Tip>
-                    <TextBlock Classes="ToolTipText" Text="{x:Static resources:Language.ApplyControlView_Apply_ToolTip}" />
+                    <TextBlock Text="{x:Static resources:Language.ApplyControlView_Apply_ToolTip}" />
                 </ToolTip.Tip>
                 <StackPanel Orientation="Horizontal"
                             HorizontalAlignment="Center"

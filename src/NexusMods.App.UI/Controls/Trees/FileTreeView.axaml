@@ -40,7 +40,7 @@
                 <DataTemplate x:Key="FileStateColumnTemplate" DataType="{x:Type files:IFileTreeNodeViewModel}">
                     <TextBlock Text="{CompiledBinding FormattedChangeState}" >
                         <ToolTip.Tip>
-                            <TextBlock Classes="ToolTipText" Text="{CompiledBinding FormattedChangeStateToolTip}" />
+                            <TextBlock Text="{CompiledBinding FormattedChangeStateToolTip}" />
                         </ToolTip.Tip>
                     </TextBlock>
                 </DataTemplate>

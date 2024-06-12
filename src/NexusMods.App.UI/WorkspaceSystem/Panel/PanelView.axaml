@@ -48,7 +48,7 @@
                                             Margin="12 12 10 12"
                                             Classes="PanelTitlebar AddTab" >
                                         <ToolTip.Tip>
-                                            <TextBlock Classes="ToolTipText" Text="{x:Static resources:Language.Panel_Add_tab_ToolTip}" />
+                                            <TextBlock Text="{x:Static resources:Language.Panel_Add_tab_ToolTip}" />
                                         </ToolTip.Tip>
                                     </Button>
                                 </Border>

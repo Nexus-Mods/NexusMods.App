@@ -19,7 +19,7 @@
                 <!-- Add Buttons Section -->
                 <Button x:Name="AddModButton">
                     <ToolTip.Tip>
-                        <TextBlock Classes="ToolTipText" Text="{x:Static resources:Language.FileOriginPage_AddMod_ToolTip}" />
+                        <TextBlock Text="{x:Static resources:Language.FileOriginPage_AddMod_ToolTip}" />
                     </ToolTip.Tip>
                     <StackPanel>
                         <icons:UnifiedIcon Classes="PlaylistAdd" />
@@ -28,7 +28,7 @@
                 </Button>
                 <Button x:Name="AddModAdvancedButton">
                     <ToolTip.Tip>
-                        <TextBlock Classes="ToolTipText" Text="{x:Static resources:Language.FileOriginPage_AddModAdvanced_ToolTip}" />
+                        <TextBlock Text="{x:Static resources:Language.FileOriginPage_AddModAdvanced_ToolTip}" />
                     </ToolTip.Tip>
                     <StackPanel>
                         <icons:UnifiedIcon Classes="PlaylistAdd" />

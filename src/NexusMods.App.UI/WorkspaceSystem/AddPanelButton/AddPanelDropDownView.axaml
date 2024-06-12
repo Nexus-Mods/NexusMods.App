@@ -12,7 +12,7 @@
         <workspaceSystem:AddPanelDropDownDesignViewModel />
     </Design.DataContext>
     <ToolTip.Tip>
-        <TextBlock Classes="ToolTipText" Text="{x:Static resources:Language.AddPanelToolTip}" />
+        <TextBlock Text="{x:Static resources:Language.AddPanelToolTip}" />
     </ToolTip.Tip>
     <ComboBox x:Name="CreatePanelComboBox" Classes="AddPanelDropDown"/>
 </reactiveUi:ReactiveUserControl>
