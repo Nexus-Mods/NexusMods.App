@@ -55,8 +55,8 @@ plugins:
 nav:
   - User Guides: 
     - Home: users/index.md
-    - Getting Started: users/GettingStarted.md
     - System Requirements: users/SystemRequirements.md
+    - Getting Started: users/GettingStarted.md
     - Uninstall: users/Uninstall.md
     - Games:
       - Stardew Valley: users/games/StardewValley.md
