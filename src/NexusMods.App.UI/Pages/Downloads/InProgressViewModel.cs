@@ -476,13 +476,17 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
             _customSeparators.Add(FirstMultiple(throughput));
         }
 
-        _throughputValues.Add(new DateTimePoint(DateTime.Now, throughput));
-
         const int delay = 5;
         if (_throughputValues.Count > delay)
         {
             _lineSeries.IsVisible = _throughputValues.TakeLast(delay).Sum(x => x.Value!.Value) > 0.0;
         }
+        else
+        {
+            _lineSeries.IsVisible = false;
+        }
+
+        _throughputValues.Add(new DateTimePoint(DateTime.Now, throughput));
     }
 
     private static double FirstMultiple(long value)
