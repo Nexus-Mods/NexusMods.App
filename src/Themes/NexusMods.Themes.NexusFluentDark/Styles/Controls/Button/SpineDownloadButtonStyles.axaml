@@ -16,8 +16,8 @@
     <!-- Base Styles -->
     <Style Selector="Button.SpineDownloadButton">
 
-        <Setter Property="Width" Value="60" />
-        <Setter Property="Height" Value="60" />
+        <Setter Property="Width" Value="48" />
+        <Setter Property="Height" Value="48" />
 
         <Setter Property="Margin" Value="0" />
         <Setter Property="Padding" Value="0" />

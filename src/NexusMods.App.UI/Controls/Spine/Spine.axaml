@@ -13,7 +13,7 @@
     <Design.DataContext>
         <spine:SpineDesignViewModel />
     </Design.DataContext>
-    <Grid RowDefinitions="*, Auto" Margin="0,12,0,6" Width="72">
+    <Grid RowDefinitions="*, Auto" Margin="0,12,0,12" Width="72">
         <StackPanel Grid.Row="0">
             <reactiveUi:ViewModelViewHost ViewContract="Home" x:Name="Home" />
             <ItemsControl
@@ -22,7 +22,7 @@
                 x:Name="Loadouts">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <StackPanel Spacing="12" />
+                        <StackPanel Classes="Spacing-3" />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
             </ItemsControl>
