@@ -80,7 +80,8 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
             };
 
             var behavior = workspaceController.GetOpenPageBehavior(page, info, Optional<PageIdBundle>.None);
-            workspaceController.OpenPage(workspaceController.ActiveWorkspace!.Id, page, behavior);
+            var workspace = workspaceController.ChangeOrCreateWorkspaceByContext<HomeContext>(() => page);
+            workspaceController.OpenPage(workspace.Id, page, behavior);
         });
 
         ViewChangelogCommand = ReactiveCommand.Create<NavigationInformation>(info =>

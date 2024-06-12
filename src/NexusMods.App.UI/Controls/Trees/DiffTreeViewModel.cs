@@ -91,6 +91,8 @@ public class DiffTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeViewMo
             )
             {
                 ChangeType = FileChangeType.None,
+                // Always expand the root nodes
+                IsExpanded = true,
             };
             fileViewModelNodes.Add(rootNode.GamePath(), model);
         }

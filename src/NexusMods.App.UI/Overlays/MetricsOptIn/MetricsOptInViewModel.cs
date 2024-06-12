@@ -29,7 +29,7 @@ public class MetricsOptInViewModel : AOverlayViewModel<IMetricsOptInViewModel>, 
         MarkdownRendererViewModel = markdownRendererViewModel;
 
         MarkdownRendererViewModel.Contents = """
-## Diagnostics and usage data
+## Telemetry and usage data
 
 Help us provide you with the best modding experience.
 

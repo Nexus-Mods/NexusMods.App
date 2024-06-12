@@ -13,7 +13,7 @@
             </banners:InfoBanner>
 
             <banners:InfoBanner>
-                <StackPanel Orientation="Horizontal">
+                <StackPanel>
                     <TextBlock Text="foo bar baz"/>
                     <icons:UnifiedIcon Value="{x:Static icons:IconValues.Code}"/>
                     <TextBlock Text="baz bar foo"/>
@@ -46,6 +46,7 @@
 
         <Style Selector="^ /template/ ContentPresenter#ContentPresenter">
             <Style Selector="^ StackPanel">
+                <Setter Property="Orientation" Value="Horizontal"/>
                 <Setter Property="Spacing" Value="{StaticResource Spacing-1}"></Setter>
             </Style>
 
