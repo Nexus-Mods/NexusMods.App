@@ -1,6 +1,6 @@
 <div align="center">
 	<h1>The Nexus Mods App</h1>
-	<img src="./Nexus/Images/Nexus-Icon.png" width="150" align="center" />
+	<img src="../Nexus/Images/Nexus-Icon.png" width="150" align="center" />
 	<br/> <br/>
     Mod With Confidence
     <br/>
