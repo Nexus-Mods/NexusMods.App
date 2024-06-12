@@ -4,16 +4,16 @@
         xmlns:icon="clr-namespace:NexusMods.App.UI.Controls.Spine.Buttons.Icon;assembly=NexusMods.App.UI"
         xmlns:image="clr-namespace:NexusMods.App.UI.Controls.Spine.Buttons.Image;assembly=NexusMods.App.UI">
     <Design.PreviewWith>
-        <WrapPanel Width="600">
-            <Button Classes="IconButton Inactive Add IconTemplate" Margin="10" />
-            <Button Classes="IconButton Active Add IconTemplate" Margin="10" />
-            <Button Classes="IconButton Inactive Home IconTemplate" Margin="10" />
-            <Button Classes="IconButton Active Home IconTemplate" Margin="10" />
-            <Button Classes="ImageButton Inactive ImageTemplate" Margin="10" />
-            <Button Classes="ImageButton Active ImageTemplate" Margin="10" />
-            <icon:IconButton Margin="10" />
-            <image:ImageButton Margin="10" />
-        </WrapPanel>
+        <StackPanel Orientation="Horizontal" Spacing="10" Margin="10">
+            <Button Classes="IconButton Inactive Add IconTemplate" />
+            <Button Classes="IconButton Active Add IconTemplate" />
+            <Button Classes="IconButton Inactive Home IconTemplate" />
+            <Button Classes="IconButton Active Home IconTemplate" />
+            <Button Classes="ImageButton Inactive ImageTemplate" />
+            <Button Classes="ImageButton Active ImageTemplate" />
+            <icon:IconButton />
+            <image:ImageButton />
+        </StackPanel>
     </Design.PreviewWith>
 
 
