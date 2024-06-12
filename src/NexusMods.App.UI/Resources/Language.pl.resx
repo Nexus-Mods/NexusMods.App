@@ -473,6 +473,12 @@
     <data name="LoadoutGridView__Remove" xml:space="preserve">
         <value>Usuń</value>
     </data>
+    <data name="LoginMessageView_BodyTextBlock" xml:space="preserve">
+        <value>Zaloguj się na swoje konto Nexus Mods, aby łatwo pobierać mody z Nexus Mods.&#x0a;&#x0a;Nie musisz się logować, jeśli chcesz dodawać ręcznie mody z dysku.</value>
+    </data>
+    <data name="LoginMessageView_Title" xml:space="preserve">
+        <value>Zaloguj się, by rozpocząć</value>
+    </data>
     <data name="FileOriginsPage_GetMods" xml:space="preserve">
         <value>Uzyskaj mody:</value>
     </data>
@@ -485,11 +491,11 @@
     <data name="FileOriginsPage_ViewButtonText" xml:space="preserve">
         <value>Pokaż</value>
     </data>
-    <data name="LoginMessageView_BodyTextBlock" xml:space="preserve">
-        <value>Zaloguj się na swoje konto Nexus Mods, aby łatwo pobierać mody z Nexus Mods.&#x0a;&#x0a;Nie musisz się logować, jeśli chcesz dodawać ręcznie mody z dysku.</value>
+    <data name="AddPanelToolTip" xml:space="preserve">
+        <value>Dodaj panel do wyświetlania na podzielonym ekranie</value>
     </data>
-    <data name="LoginMessageView_Title" xml:space="preserve">
-        <value>Zaloguj się, by rozpocząć</value>
+    <data name="Panel_Add_tab_ToolTip" xml:space="preserve">
+        <value>Dodaj kartę</value>
     </data>
     <data name="TopBar_MyProfile" xml:space="preserve">
         <value>Mój profil</value>
@@ -514,6 +520,33 @@
     </data>
     <data name="NavigationControl_NavigationControl_Open_in_new_panel" xml:space="preserve">
         <value>Otwórz w nowym panelu</value>
+    </data>
+    <data name="TopBar_Help_ToolTip" xml:space="preserve">
+        <value>Pomoc i opinie</value>
+    </data>
+    <data name="FileOriginPage_AddMod_ToolTip" xml:space="preserve">
+        <value>Dodaj mod do swojej listy modów</value>
+    </data>
+    <data name="FileOriginPage_AddModAdvanced_ToolTip" xml:space="preserve">
+        <value>Użyj zaawansowanego instalatora, aby ręcznie wybrać pliki zawarte w instalacji</value>
+    </data>
+    <data name="ApplyControlView_ViewApplyChanges_ToolTip" xml:space="preserve">
+        <value>Zobacz zmiany, które zostaną zastosowane w folderze gry</value>
+    </data>
+    <data name="ApplyControlView_Apply_ToolTip" xml:space="preserve">
+        <value>Zastosuj zmiany w folderze gry</value>
+    </data>
+    <data name="IFileTreeNodeViewModel_FormattedChangeStateToolTip_Added" xml:space="preserve">
+        <value>Plik zostanie dodany</value>
+    </data>
+    <data name="IFileTreeNodeViewModel_FormattedChangeStateToolTip_ModifiedFile" xml:space="preserve">
+        <value>Plik zostanie zmodyfikowany</value>
+    </data>
+    <data name="IFileTreeNodeViewModel_FormattedChangeStateToolTip_Removed" xml:space="preserve">
+        <value>Plik zostanie usunięty</value>
+    </data>
+    <data name="IFileTreeNodeViewModel_FormattedChangeStateToolTip_ModifiedFolder" xml:space="preserve">
+        <value>Folder zawiera zmodyfikowane pliki</value>
     </data>
     <data name="InfoBanner_PrefixProperty_Did_you_know_" xml:space="preserve">
         <value>Czy wiesz?</value>
