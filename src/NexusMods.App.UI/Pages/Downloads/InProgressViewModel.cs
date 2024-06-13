@@ -256,7 +256,7 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
     /// </summary>
     protected InProgressViewModel() : base(new DesignWindowManager())
     {
-        _lineSeries = null!;
+        _lineSeries = new LineSeries<DateTimePoint>();
         Series = ReadOnlyObservableCollection<ISeries>.Empty;
 
         InProgressTaskChangeSet = DesignTimeDownloadTasks.Connect().OnUI();
