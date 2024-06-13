@@ -48,6 +48,7 @@ theme:
   features:
     - navigation.instant
     - navigation.tabs
+    - navigation.indexes
 
 plugins:
   - search
@@ -57,10 +58,11 @@ nav:
     - Home: users/index.md
     - System Requirements: users/SystemRequirements.md
     - Getting Started: users/GettingStarted.md
-    - Uninstall: users/Uninstall.md
     - Games:
+      # - users/games/index.md
       - Stardew Valley: users/games/StardewValley.md
       - Cyberpunk 2077: users/games/Cyberpunk2077.md
+    - Uninstall: users/Uninstall.md
   - Developer Docs:
     - Home: developers/index.md
     - Mod With Confidence: developers/ModWithConfidence.md
