@@ -13,7 +13,7 @@
             <tr>
                 <th style="text-align: center; border: .05rem solid var(--md-typeset-table-color); width: 50%; vertical-align: middle">
                     <a href="./users/">
-                    <div style="font-size: 3em;">🛟</div>
+                    <div><img src="./images/support.svg" style="width: 50px; height: 50px" /></div>
                     <span style="font-size: 1.5em;">
                         User Guides
                     </span>
@@ -22,7 +22,7 @@
                 </th>
                 <th style="text-align: center; border: .05rem solid var(--md-typeset-table-color); width: 50%; vertical-align: middle">
                     <a href="./developers/">
-                    <div style="font-size: 3em;">🧑‍💻</div>
+                    <div><img src="./images/developer_mode.svg" style="width: 50px; height: 50px" /></div>
                     <span style="font-size: 1.5em;">
                         Developer Docs
                     </span>

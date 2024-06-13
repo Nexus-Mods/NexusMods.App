@@ -1,6 +1,6 @@
 # Changelog Assets
 
-This directory contains all assets used in the [CHANGELOG](../../CHANGELOG.md).
+This directory contains all assets used in the [CHANGELOG](../../../CHANGELOG.md).
 
 ## Adding Assets
 
