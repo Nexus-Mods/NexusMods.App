@@ -41,7 +41,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
         IRepository<Loadout.Model> loadoutRepository) : base(windowManager)
     {
         TabTitle = Language.MyGames;
-		TabIcon = IconValues.JoystickGameFilled;
+		TabIcon = IconValues.Game;
         
         var provider = serviceProvider;
         _windowManager = windowManager;

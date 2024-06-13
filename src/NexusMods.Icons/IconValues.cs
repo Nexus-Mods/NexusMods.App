@@ -190,8 +190,8 @@ public static class IconValues
 
 #region Hardware
 
-    // https://pictogrammers.com/library/mdi/icon/gamepad-square-outline/
-    public static readonly IconValue Game = new ProjektankerIcon("mdi-gamepad-square-outline");
+    // https://pictogrammers.com/library/mdi/icon/gamepad-square/
+    public static readonly IconValue Game = new ProjektankerIcon("mdi-gamepad-square");
 
 #endregion
 
