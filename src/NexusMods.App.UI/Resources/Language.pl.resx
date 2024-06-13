@@ -528,7 +528,7 @@
         <value>Dodaj mod do swojej listy modów</value>
     </data>
     <data name="FileOriginPage_AddModAdvanced_ToolTip" xml:space="preserve">
-        <value>Użyj zaawansowanego instalatora, aby ręcznie wybrać pliki zawarte w instalacji</value>
+        <value>Użyj zaawansowanego instalatora, aby ręcznie wybrać pliki zawarte w modzie</value>
     </data>
     <data name="ApplyControlView_ViewApplyChanges_ToolTip" xml:space="preserve">
         <value>Zobacz zmiany, które zostaną zastosowane w folderze gry</value>
@@ -552,7 +552,7 @@
         <value>Czy wiesz?</value>
     </data>
     <data name="NewTabPageInfoBannerText1" xml:space="preserve">
-        <value>Możesz dodać dodatkowe panele na podzielonym ekranie poprzez wybranie tego</value>
+        <value>Możesz dodać dodatkowy panel na podzielonym ekranie poprzez wybranie tego</value>
     </data>
     <data name="NewTabPageInfoBannerText2" xml:space="preserve">
         <value>przycisku na pasku narzędzi</value>
