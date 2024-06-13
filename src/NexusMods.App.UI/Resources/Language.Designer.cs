@@ -627,6 +627,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No mods in your Library.
+        /// </summary>
+        public static string EmptyLibraryTitleText {
+            get {
+                return ResourceManager.GetString("EmptyLibraryTitleText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The mod you&apos;re trying to access has been deleted or is missing..
         /// </summary>
         public static string ErrorView_MissingMod_Description {
@@ -794,6 +803,15 @@ namespace NexusMods.App.UI.Resources {
         public static string FileOriginsPageView_VersionHeader {
             get {
                 return ResourceManager.GetString("FileOriginsPageView_VersionHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Download {0} mods from Nexus Mods.
+        /// </summary>
+        public static string FileOriginsPageViewModel_EmptyLibrarySubtitleText {
+            get {
+                return ResourceManager.GetString("FileOriginsPageViewModel_EmptyLibrarySubtitleText", resourceCulture);
             }
         }
         

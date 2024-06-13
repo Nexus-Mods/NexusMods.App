@@ -570,4 +570,11 @@
         <value>No mods added to {0}</value>
         <comment>{0} is the name of the currently managed game</comment>
     </data>
+    <data name="EmptyLibraryTitleText" xml:space="preserve">
+        <value>No mods in your Library</value>
+    </data>
+    <data name="FileOriginsPageViewModel_EmptyLibrarySubtitleText" xml:space="preserve">
+        <value>Download {0} mods from Nexus Mods</value>
+        <comment>{0} is the name of the currently managed game</comment>
+    </data>
 </root>

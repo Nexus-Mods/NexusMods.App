@@ -1,4 +1,5 @@
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using Avalonia.Controls;
 using Avalonia.ReactiveUI;
 using NexusMods.App.UI.Helpers;
@@ -31,6 +32,25 @@ public partial class FileOriginsPageView : ReactiveUserControl<IFileOriginsPageV
                 .DisposeWith(d);
 
             this.BindCommand(ViewModel, vm => vm.OpenNexusModPage, view => view.GetModsFromNexusButton)
+                .DisposeWith(d);
+            
+            this.BindCommand(ViewModel, vm => vm.OpenNexusModPage, view => view.EmptyLibraryLinkButton)
+                .DisposeWith(d);
+            
+            this.BindCommand(ViewModel, vm => vm.OpenNexusModPage, view => view.OpenLinkBareIconButton)
+                .DisposeWith(d);
+            
+            this.WhenAnyValue(view => view.ViewModel!.FileOrigins.Count)
+                .Select(count => count > 0)
+                .Subscribe(hasItems =>
+                {
+                    DataGrid.IsVisible = hasItems;
+                    EmptyLibraryMessageBorder.IsVisible = !hasItems;
+                })
+                .DisposeWith(d);
+            
+            this.OneWayBind(ViewModel, vm => vm.EmptyLibrarySubtitleText, 
+                    view => view.EmptyLibrarySubtitleTextBlock.Text)
                 .DisposeWith(d);
             
             // Note: We get `StorageProvider` from Avalonia, using the View TopLevel.
