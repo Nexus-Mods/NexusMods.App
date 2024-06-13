@@ -113,14 +113,13 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="{x:Static resources:Language.FileOriginsPageView_ActionHeader}">
+                <DataGridTemplateColumn Header="{x:Static resources:Language.FileOriginsPageView_ActionHeader}" MinWidth="99">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate DataType="fileOriginEntry:IFileOriginEntryViewModel">
                             <Grid>
                                 <!-- Add Mod -->
                                 <Button x:Name="AddButton"
                                         Classes="Rounded Primary"
-                                        Margin="0,0,24,0"
                                         Command="{CompiledBinding AddToLoadoutCommand}"
                                         IsVisible="{CompiledBinding IsModAddedToLoadout, Converter={StaticResource BooleanInverterConverter}}">
                                 
@@ -133,7 +132,6 @@
                                 <!-- View Mod -->
                                 <navigation:NavigationControl x:Name="ViewButton"
                                                    Classes="Rounded Primary"
-                                                   Margin="0,0,24,0"
                                                    Command="{CompiledBinding ViewModCommand}"
                                                    IsVisible="{CompiledBinding IsModAddedToLoadout}">
                                     <StackPanel>
