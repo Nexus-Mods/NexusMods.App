@@ -4,7 +4,7 @@ using NexusMods.MnemonicDB.Abstractions.Models;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord.MnemonicDB;
 
-[Include<NexusMods.Abstractions.Loadouts.Files.File>]
+[Include<ModuleFileMetadata>]
 public partial class SubModuleFileMetadata : IModelDefinition
 {
     private const string Namespace = "NexusMods.Games.MountAndBlade2Bannerlord.Models.SubModuleFileMetadata";

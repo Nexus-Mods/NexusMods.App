@@ -38,7 +38,7 @@ internal static class LoadoutExtensions
         var i = 0;
         return mods.Select(x =>
         {
-            if (x.TryGetModuleInfo(out var moduleInfo)) 
+            if (!x.TryGetModuleInfo(out var moduleInfo)) 
                 return null;
 
             var subModule = x.Files.First(y => y.To.FileName.Path.Equals(Constants.SubModuleName, StringComparison.OrdinalIgnoreCase));

@@ -7,26 +7,15 @@ namespace NexusMods.Games.MountAndBlade2Bannerlord.Extensions;
 
 internal static class ModExtensions
 {
-    public static bool TryGetSubModuleFileMetadata(Mod.ReadOnly mod, out SubModuleFileMetadata.ReadOnly subModuleFileMetadata)
-    {
-        foreach (var file in mod.Files)
-        {
-            if (file.TryGetAsSubModuleFileMetadata(out var meta))
-            {
-                subModuleFileMetadata = meta;
-                return true;
-            }
-        }
-
-        subModuleFileMetadata = default(SubModuleFileMetadata.ReadOnly);
-        return false;
-    }
-
     public static bool TryGetModuleInfo(this Mod.ReadOnly mod, out ModuleInfoExtended.ReadOnly moduleInfo)
     {
-        if (TryGetSubModuleFileMetadata(mod, out var subModuleFileMetadata))
+        var subModuleMetadata = mod.Files.OfTypeModuleFileMetadata()
+            .OfTypeSubModuleFileMetadata()
+            .FirstOrDefault();
+        
+        if (subModuleMetadata.IsValid())
         {
-            moduleInfo = subModuleFileMetadata.ModuleInfo;
+            moduleInfo = subModuleMetadata.ModuleInfo;
             return true;
         }
 

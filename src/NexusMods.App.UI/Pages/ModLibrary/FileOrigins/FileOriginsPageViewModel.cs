@@ -83,16 +83,15 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
         _fileOriginRegistry = serviceProvider.GetRequiredService<IFileOriginRegistry>();
         _osInterop = serviceProvider.GetRequiredService<IOSInterop>();
         _archiveInstaller = serviceProvider.GetRequiredService<IArchiveInstaller>();
-        var dlAnalysisRepo = serviceProvider.GetRequiredService<IRepository<DownloadAnalysis.Model>>();
 
         TabTitle = Language.FileOriginsPageTitle;
         TabIcon = IconValues.ModLibrary;
 
         LoadoutId = loadoutId;
 
-        var loadout = conn.Db.Get<Loadout.Model>(LoadoutId.Value);
-        var game = loadout.Installation.Game;
-        _gameDomain = loadout.Installation.Game.Domain;
+        var loadout = Loadout.Load(conn.Db, loadoutId);
+        var game = loadout.InstallationInstance.Game;
+        _gameDomain = loadout.InstallationInstance.Game.Domain;
 
         _fileOrigins = new ReadOnlyObservableCollection<IFileOriginEntryViewModel>([]);
 
@@ -128,8 +127,7 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
                 }
             );
             
-            dlAnalysisRepo.Observable
-                .ToObservableChangeSet()
+            DownloadAnalysis.ObserveAll(conn)
                 .Filter(model => FilterDownloadAnalysisModel(model, game.Domain))
                 .OnUI()
                 .Transform(fileOrigin => (IFileOriginEntryViewModel)
@@ -161,9 +159,9 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
         });
     }
 
-    public static bool FilterDownloadAnalysisModel(DownloadAnalysis.Model model, GameDomain currentGameDomain)
+    public static bool FilterDownloadAnalysisModel(DownloadAnalysis.ReadOnly model, GameDomain currentGameDomain)
     {
-        if (!model.TryGet(DownloaderState.GameDomain, out var domain)) return false;
+        if (!DownloaderState.GameDomain.TryGet(model, out var domain)) return false;
         if (domain != currentGameDomain) return false;
         if (model.Contains(StreamBasedFileOriginMetadata.StreamBasedOrigin)) return false;
         return true;
@@ -210,7 +208,7 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
             await AddUsingInstallerToLoadout(mod.FileOrigin, installer, token);
     }
 
-    private async Task AddUsingInstallerToLoadout(DownloadAnalysis.Model fileOrigin, IModInstaller? installer, CancellationToken token)
+    private async Task AddUsingInstallerToLoadout(DownloadAnalysis.ReadOnly fileOrigin, IModInstaller? installer, CancellationToken token)
     {
         await _archiveInstaller.AddMods(LoadoutId, fileOrigin, null, installer, token);
     }

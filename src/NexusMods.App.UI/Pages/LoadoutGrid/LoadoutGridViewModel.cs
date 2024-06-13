@@ -65,7 +65,6 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
         ILogger<LoadoutGridViewModel> logger,
         IServiceProvider provider,
         IConnection conn,
-        IRepository<Loadout.Model> loadoutRepository,
         IWindowManager windowManager,
         ISettingsManager settingsManager) : base(windowManager)
     {
@@ -130,7 +129,7 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
         {
             this.WhenAnyValue(vm => vm.LoadoutId)
                 .CombineLatest(settingsManager.GetChanges<LoadoutGridSettings>(prependCurrent: true))
-                .SelectMany(tuple => loadoutRepository.Revisions(tuple.First.Value))
+                .SelectMany(tuple => Loadout.Observe(_conn, tuple.First.Value))
                 .Select(loadout =>
                 {
                     
@@ -170,11 +169,11 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
     public async Task DeleteMods(IEnumerable<ModId> modsToDelete, string commitMessage)
     {
         var db = _conn.Db;
-        var loadout = db.Get(LoadoutId);
+        var loadout = Loadout.Load(db, LoadoutId);
         using var tx = _conn.BeginTransaction();
         foreach (var modId in modsToDelete)
         {
-            var mod = db.Get(modId);
+            var mod = Mod.Load(db, modId);
             foreach (var file in mod.Files)
             {
                 tx.Retract(file.Id, File.Loadout, file.LoadoutId.Value);
@@ -188,7 +187,7 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
     private const string NexusModsUrl = "https://www.nexusmods.com/{0}";
     private string GetEmptyModlistMarkdownString()
     {
-        var gameDomain = _conn.Db.Get(LoadoutId).Installation.Game.Domain;
+        var gameDomain = Loadout.Load(_conn.Db, LoadoutId).InstallationInstance.Game.Domain;
         var url = NexusModsUrlBuilder.CreateGenericUri(string.Format(NexusModsUrl, gameDomain));
         const string mkString = """
 ### No mods have been added

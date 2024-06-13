@@ -18,6 +18,7 @@ using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.Paths;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -50,7 +51,6 @@ public class TextEditorPageViewModel : APageViewModel<ITextEditorPageViewModel>,
         IWindowManager windowManager,
         IFileStore fileStore,
         IConnection connection,
-        IRepository<StoredFile.Model> repository,
         ISettingsManager settingsManager) : base(windowManager)
     {
         TabIcon = IconValues.FileEdit;
@@ -64,7 +64,7 @@ public class TextEditorPageViewModel : APageViewModel<ITextEditorPageViewModel>,
         {
             var fileId = context.FileId;
 
-            var fileHash = connection.Db.Get<StoredFile.Model>(fileId.Value).Hash;
+            var fileHash = StoredFile.Load(connection.Db, fileId.Value).Hash;
             logger.LogDebug("Loading file {Hash} into the Text Editor", fileHash);
 
             await using var stream = await fileStore.GetFileStream(fileHash);
@@ -100,13 +100,13 @@ public class TextEditorPageViewModel : APageViewModel<ITextEditorPageViewModel>,
 
             // update the file
             var db = connection.Db;
-            var storedFile = db.Get<StoredFile.Model>(fileId.Value);
+            var storedFile = StoredFile.Load(db, fileId.Value);
 
             using (var tx = connection.BeginTransaction())
             {
                 tx.Add(storedFile.Id, StoredFile.Hash, hash);
                 tx.Add(storedFile.Id, StoredFile.Size, size);
-                storedFile.Remap<File.Model>().Mod.Revise(tx);
+                storedFile.File.Mod.Revise(tx);
                 await tx.Commit();
             }
 
@@ -117,9 +117,7 @@ public class TextEditorPageViewModel : APageViewModel<ITextEditorPageViewModel>,
         {
             var serialDisposable = new SerialDisposable();
             serialDisposable.DisposeWith(disposables);
-
-            repository.Revisions(Context!.FileId.Value);
-
+            
             this.WhenAnyValue(vm => vm.Context)
                 .Do(context =>
                 {
@@ -129,7 +127,8 @@ public class TextEditorPageViewModel : APageViewModel<ITextEditorPageViewModel>,
                         return;
                     }
 
-                    serialDisposable.Disposable = repository.Revisions(context.FileId.Value, includeCurrent: false)
+                    serialDisposable.Disposable = File.Load(connection.Db, context.FileId.Value)
+                        .Revisions()
                         .Select(_ => context)
                         .OffUi()
                         .InvokeReactiveCommand(_loadFileCommand);
