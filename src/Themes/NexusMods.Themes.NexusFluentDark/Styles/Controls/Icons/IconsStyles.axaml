@@ -67,7 +67,6 @@
             <icons:UnifiedIcon Classes="AlertCircle" />
             <icons:UnifiedIcon Classes="AlertOctagon" />
             <icons:UnifiedIcon Classes="MonitorDiagnostics" />
-            <icons:UnifiedIcon Classes="DiagnosticPage"/>
             <icons:UnifiedIcon Classes="FileDocumentOutline" />
             <icons:UnifiedIcon Classes="MusicNote" />
             <icons:UnifiedIcon Classes="VideoOutline" />
@@ -351,10 +350,6 @@
 
     <Style Selector="icons|UnifiedIcon.MonitorDiagnostics">
         <Setter Property="Value" Value="{x:Static icons:IconValues.MonitorDiagnostics}"/>
-    </Style>
-
-    <Style Selector="icons|UnifiedIcon.DiagnosticPage">
-        <Setter Property="Value" Value="{x:Static icons:IconValues.DiagnosticPage}"/>
     </Style>
 
     <Style Selector="icons|UnifiedIcon.FileDocumentOutline">
