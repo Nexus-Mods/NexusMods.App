@@ -1,4 +1,4 @@
-﻿<Styles xmlns="https://github.com/avaloniaui"
+<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
         xmlns:items="clr-namespace:NexusMods.App.UI.LeftMenu.Items;assembly=NexusMods.App.UI">
@@ -14,7 +14,8 @@
                 <Button Classes="Avatar" HorizontalAlignment="Center">
                     <icons:UnifiedIcon>
                         <icons:UnifiedIcon.Value>
-                            <icons:IconValue ImageSetter="avares://NexusMods.Themes.NexusFluentDark/Assets/DesignTime/cyberpunk_game.png" />
+                            <icons:IconValue
+                                ImageSetter="avares://NexusMods.Themes.NexusFluentDark/Assets/DesignTime/cyberpunk_game.png" />
                         </icons:UnifiedIcon.Value>
                     </icons:UnifiedIcon>
                 </Button>
@@ -34,7 +35,10 @@
         </Border>
     </Design.PreviewWith>
 
-    <!--  Style Definitions -->
+    <!-- blanket removal of pressed scale transform. we will add to specific styles when we need it i.e. spine buttons -->
+    <Style Selector=":is(Button):pressed">
+        <Setter Property="RenderTransform" Value="none" />
+    </Style>
 
     <!-- TopBar Action Button -->
     <Style Selector="Button.Action">
@@ -80,13 +84,13 @@
         <Setter Property="CornerRadius" Value="{StaticResource Rounded-lg}" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
-        
+
 
         <Style Selector="^ TextBlock#NameText">
             <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
             <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
         </Style>
-        
+
         <Style Selector="^ icons|UnifiedIcon#LeftIcon">
             <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
             <Setter Property="Size" Value="20" />
@@ -95,25 +99,35 @@
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
         </Style>
-        
+
         <Style Selector="^:pointerover TextBlock#NameText">
             <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
         </Style>
-        
+
         <Style Selector="^:pointerover icons|UnifiedIcon#LeftIcon">
             <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
         </Style>
-        
+
+
+        <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
+        </Style>
+
+        <!-- NOTE(insomnious): not being used until we have active states implemented
+        <Style Selector="^:pressed TextBlock#NameText">
+            <Setter Property="Theme" Value="{StaticResource BodyMDBoldTheme}" />
+        </Style>
+        -->
 
         <Style Selector="^.Active /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
         </Style>
-        
+
         <Style Selector="^.Active TextBlock#NameText">
             <Setter Property="Theme" Value="{StaticResource BodyMDBoldTheme}" />
             <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
         </Style>
-        
+
         <Style Selector="^.Active icons|UnifiedIcon#LeftIcon">
             <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
         </Style>
@@ -145,6 +159,10 @@
 
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="Background" Value="{StaticResource SurfaceTopBrush}" />
+        </Style>
+
+        <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
         </Style>
 
         <Style Selector="^ > StackPanel">
