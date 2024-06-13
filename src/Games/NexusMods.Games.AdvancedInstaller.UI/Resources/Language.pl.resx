@@ -94,7 +94,7 @@
 		<value>Mod nie jest wspierany</value>
 	</data>
 	<data name="UnsupportedDescriptionTextBlock_This_mod_is_structured" xml:space="preserve">
-		<value>Mod ma nierozpoznaną strukturę lub zawiera nierozpoznane typy plików, więc nie może zostać zainstalowana automatycznie.</value>
+		<value>Mod ma nierozpoznaną strukturę lub zawiera nierozpoznane typy plików, więc nie może zostać zainstalowany automatycznie.</value>
 	</data>
 	<data name="ExtraDescriptionTextBlock_If_you_are_confident" xml:space="preserve">
 		<value>Jeśli masz pewność, że pliki moda są bezpieczne i wiesz, gdzie należy je zainstalować, możesz spróbować ręcznej zaawansowanej instalacji.</value>
