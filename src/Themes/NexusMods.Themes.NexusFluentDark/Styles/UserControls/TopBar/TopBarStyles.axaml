@@ -9,23 +9,23 @@
     </Design.PreviewWith>
 
     <Styles.Resources>
-        <SolidColorBrush x:Key="White10" Color="White" Opacity="{StaticResource OpacityWeak}"/>
+        <SolidColorBrush x:Key="White10" Color="White" Opacity="{StaticResource OpacityWeak}" />
     </Styles.Resources>
 
     <!-- Style Definitions -->
     <Style Selector="ui|TopBarView">
         <Style Selector="^ Menu">
-            <Setter Property="Height" Value="40"/>
+            <Setter Property="Height" Value="40" />
 
             <Style Selector="^ /template/ ItemsPresenter#PART_ItemsPresenter StackPanel">
-                <Setter Property="Spacing" Value="{StaticResource Spacing-2}"/>
+                <Setter Property="Spacing" Value="{StaticResource Spacing-2}" />
             </Style>
 
             <Style Selector="^ Separator">
-                <Setter Property="Margin" Value="0"/>
-                <Setter Property="Width" Value="1"/>
-                <Setter Property="Height" Value="40"/>
-                <Setter Property="Background" Value="{StaticResource White10}"/>
+                <Setter Property="Margin" Value="0" />
+                <Setter Property="Width" Value="1" />
+                <Setter Property="Height" Value="40" />
+                <Setter Property="Background" Value="{StaticResource White10}" />
             </Style>
 
             <Style Selector="^ MenuItem.TopBarNoStyleMenuItem">
@@ -43,6 +43,25 @@
                 </Style>
             </Style>
 
+            <Style Selector="^ MenuItem.TopBarLabelMenuItem">
+                <Setter Property="Padding" Value="0" />
+
+                <Style Selector="^ /template/ Border#PART_LayoutRoot">
+                    <Setter Property="Background" Value="Transparent" />
+                    <Setter Property="CornerRadius" Value="0" />
+                    <Setter Property="BorderThickness" Value="0" />
+                    <Setter Property="BorderBrush" Value="Transparent" />
+
+                    <Style Selector="^:disabled">
+                        <Setter Property="Opacity" Value="1" />
+                    </Style>
+                </Style>
+
+                <Style Selector="^ TextBlock">
+                    <Setter Property="Foreground" Value="{StaticResource NeutralStrong}" />
+                </Style>
+            </Style>
+
             <Style Selector="^ MenuItem.TopBarMenuItem">
                 <Setter Property="Width" Value="40" />
                 <Setter Property="Height" Value="40" />
@@ -57,6 +76,15 @@
                 <Style Selector="^ /template/ ContentPresenter#PART_HeaderPresenter">
                     <Setter Property="Margin" Value="0" />
                     <Setter Property="Foreground" Value="{StaticResource NeutralSubdued}" />
+                </Style>
+
+                <!-- avatar needs to be round -->
+                <Style Selector="^ icons|UnifiedIcon#AvatarIcon Image">
+                    <Setter Property="Clip">
+                        <Setter.Value>
+                            <EllipseGeometry Center="14,14" RadiusX="14" RadiusY="14" />
+                        </Setter.Value>
+                    </Setter>
                 </Style>
 
                 <!-- Hover state (yes, this is using :selected) -->

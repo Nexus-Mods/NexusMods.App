@@ -50,7 +50,14 @@ public partial class TopBarView : ReactiveUserControl<ITopBarViewModel>
 
             this.BindCommand(ViewModel, vm => vm.LogoutCommand, view => view.SignOutMenuItem)
                 .DisposeWith(d);
-
+            
+            this.WhenAnyValue(
+                    x => x.ViewModel!.IsLoggedIn,
+                    x => x.ViewModel!.IsPremium,
+                    (isLoggedIn, isPremium) => isLoggedIn && isPremium
+                )
+                .BindTo(this, view => view.PremiumLabel.IsVisible)
+                .DisposeWith(d);
 
             this.OneWayBind(ViewModel, vm => vm.IsLoggedIn, view => view.LoginMenuItem.IsVisible, b => !b)
                 .DisposeWith(d);
