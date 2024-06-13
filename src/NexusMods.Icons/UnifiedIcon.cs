@@ -18,7 +18,7 @@ public sealed class UnifiedIcon : ContentControl
         .Register<UnifiedIcon, IconValue?>(nameof(Value));
 
     public static readonly StyledProperty<double> SizeProperty = AvaloniaProperty
-        .Register<UnifiedIcon, double>(nameof(Size), defaultValue: 18);
+        .Register<UnifiedIcon, double>(nameof(Size), defaultValue: 24);
 
     public static readonly StyledProperty<double> MaxSizeProperty = AvaloniaProperty
         .Register<UnifiedIcon, double>(nameof(MaxSize));

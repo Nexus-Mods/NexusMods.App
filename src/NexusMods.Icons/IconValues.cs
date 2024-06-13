@@ -4,10 +4,25 @@ namespace NexusMods.Icons;
 
 // https://www.figma.com/file/8pjtQeNggvVi7RWoLNGV80/%F0%9F%A7%B0-Nexus-Mods-Design-System?type=design&node-id=130-463
 
+/*
+    Important Notes!! - Sewer
+    
+    What not to do:
+    
+        - Paste Raw Coordinates from SVG in Figma
+            - This will get you wrong icon sizes, as padding will be excluded.
+            
+    What to do:
+    
+        - Use Projektanker Icon if possible https://pictogrammers.com/library/mdi/icon/code-tags/
+            - Projectanker Icons are the raw SVGs, so it's okay ^-^
+        - Export SVG from Figma if icon is custom.
+            - This will give you the correct icon size, as padding is preserved.
+*/
+
 public static class IconValues
 {
 #region Action
-
     // https://pictogrammers.com/library/mdi/icon/code-tags/
     public static readonly IconValue Code = new ProjektankerIcon("mdi-code-tags");
 
@@ -17,11 +32,9 @@ public static class IconValues
     // https://pictogrammers.com/library/mdi/icon/delete-forever/
     public static readonly IconValue DeleteForever = new ProjektankerIcon("mdi-delete-forever");
 
-    // exported from Figma because there wasn't a fitting Material Design Icon
-    public static readonly IconValue Description = new AvaloniaPathIcon(Geometry.Parse(
-            "M2 0H10L16 6V18C16 19.1 15.1 20 14 20H1.99C0.89 20 0 19.1 0 18V2C0 0.9 0.9 0 2 0ZM4 16H12V14H4V16ZM12 12H4V10H12V12ZM9 1.5V7H14.5L9 1.5Z"
-        )
-    );
+    // https://pictogrammers.com/library/mdi/icon/file-document/
+    // This is mislabeled on Figma and some places as 'description'
+    public static readonly IconValue Description = new ProjektankerIcon("mdi-file-document");
 
     // https://pictogrammers.com/library/mdi/icon/check/
     public static readonly IconValue Done = new ProjektankerIcon("mdi-check");
