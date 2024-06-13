@@ -15,6 +15,7 @@ public static class Services
                 Id = Sections.General,
                 IconFunc = static () => IconValues.Desktop,
                 Name = "General",
+                Priority = ushort.MaxValue,
             })
             .AddSettingsSection(new SettingsSectionSetup
             {
@@ -27,18 +28,21 @@ public static class Services
                 Id = Sections.Advanced,
                 IconFunc = static () => IconValues.School,
                 Name = "Advanced",
+                Priority = ushort.MinValue + 2,
             })
             .AddSettingsSection(new SettingsSectionSetup
             {
                 Id = Sections.DeveloperTools,
                 IconFunc = static () => IconValues.Code,
                 Name = "Developer tools",
+                Priority = ushort.MinValue + 1,
             })
             .AddSettingsSection(new SettingsSectionSetup
             {
                 Id = Sections.Experimental,
                 IconFunc = static () => IconValues.WarningAmber,
                 Name = "Experimental - Not currently supported",
+                Priority = ushort.MinValue,
             });
     }
 }

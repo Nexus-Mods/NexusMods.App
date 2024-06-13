@@ -61,13 +61,13 @@
                         </ScrollViewer>
                     </Border>
 
-                    <Border Grid.Column="1" Margin="12 12 0 12" x:Name="ContentBorder">
+                    <Border Grid.Column="1" Margin="24 12 12 12" x:Name="ContentBorder">
                         
                         <ScrollViewer>
                             <ItemsControl x:Name="SettingEntriesItemsControl">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
-                                        <StackPanel Classes="Spacing-1_5" />
+                                        <StackPanel Classes="Spacing-1_5" Margin="0 0 12 0" />
                                     </ItemsPanelTemplate>
                                 </ItemsControl.ItemsPanel>
 

@@ -48,6 +48,7 @@ internal partial class SettingsManager : ISettingsManager
                 Id = descriptor.Id,
                 Name = descriptor.Name,
                 Icon = descriptor.IconFunc(),
+                Priority = descriptor.Priority,
             })
             .ToArray(),
             mode: LazyThreadSafetyMode.ExecutionAndPublication
@@ -110,6 +111,7 @@ internal partial class SettingsManager : ISettingsManager
 
         return defaultValue;
 
+        // ReSharper disable once VariableHidesOuterVariable
         T Override(T value, out bool didOverride)
         {
             didOverride = false;

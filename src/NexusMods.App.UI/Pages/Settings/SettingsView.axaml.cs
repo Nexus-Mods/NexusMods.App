@@ -30,14 +30,17 @@ public partial class SettingsView : ReactiveUserControl<ISettingsPageViewModel>
                     var (entries, sections) = tuple;
 
                     var dict = sections.ToDictionary(x => x.Descriptor.Id);
-                    var grouped = entries.GroupBy(x => x.PropertyUIDescriptor.SectionId);
+                    var grouped = entries
+                        .OrderBy(x => x.PropertyUIDescriptor.DisplayName, StringComparer.OrdinalIgnoreCase)
+                        .GroupBy(x => x.PropertyUIDescriptor.SectionId)
+                        .OrderByDescending(x => dict[x.Key].Descriptor.Priority);
 
                     var res = new List<IViewModelInterface>();
 
                     foreach (var group in grouped)
                     {
                         res.Add(dict[group.Key]);
-                        res.AddRange(group.OrderBy(x => x.PropertyUIDescriptor.DisplayName, StringComparer.OrdinalIgnoreCase));
+                        res.AddRange(group);
                     }
 
                     return res;
