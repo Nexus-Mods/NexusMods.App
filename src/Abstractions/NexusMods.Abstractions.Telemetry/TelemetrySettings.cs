@@ -21,7 +21,7 @@ public record TelemetrySettings : ISettings
                     .AddToSection(Sections.Privacy)
                     .WithDisplayName("Send usage data")
                     .WithDescription("Help us improve the App by sending usage data to Nexus Mods.")
-                    // TODO: add link
+                    .WithLink(Link)
                     .UseBooleanContainer()
                     .RequiresRestart()
                 )

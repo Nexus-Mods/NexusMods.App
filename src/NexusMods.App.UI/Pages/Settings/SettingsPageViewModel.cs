@@ -3,7 +3,9 @@ using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using JetBrains.Annotations;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Settings;
+using NexusMods.App.UI.Controls.MarkdownRenderer;
 using NexusMods.App.UI.Controls.Settings.Section;
 using NexusMods.App.UI.Controls.Settings.SettingEntries;
 using NexusMods.App.UI.Resources;
@@ -25,11 +27,17 @@ public class SettingsPageViewModel : APageViewModel<ISettingsPageViewModel>, ISe
 
     public ReadOnlyObservableCollection<ISettingSectionViewModel> Sections { get; }
 
-    [Reactive]
-    public bool HasAnyValueChanged { get; private set; }
+    [Reactive] public bool HasAnyValueChanged { get; private set; }
 
-    public SettingsPageViewModel(ISettingsManager settingsManager, IWindowManager windowManager) : base(windowManager)
+    private readonly IServiceProvider _serviceProvider;
+
+    public SettingsPageViewModel(
+        IServiceProvider serviceProvider,
+        ISettingsManager settingsManager,
+        IWindowManager windowManager) : base(windowManager)
     {
+        _serviceProvider = serviceProvider;
+
         TabIcon = IconValues.Settings;
         TabTitle = Language.SettingsView_Title;
 
@@ -89,7 +97,8 @@ public class SettingsPageViewModel : APageViewModel<ISettingsPageViewModel>, ISe
             f1: singleValueMultipleChoiceContainer => new SettingComboBoxViewModel(singleValueMultipleChoiceContainer)
         );
 
-        var res = new SettingEntryViewModel(descriptor, interactionControl);
+        var linkRenderer = descriptor.Link is null ? null : _serviceProvider.GetRequiredService<IMarkdownRendererViewModel>();
+        var res = new SettingEntryViewModel(descriptor, interactionControl, linkRenderer);
         return res;
     }
 }

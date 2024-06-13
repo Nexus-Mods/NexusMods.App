@@ -41,6 +41,9 @@ public partial class SettingEntryView : ReactiveUserControl<ISettingEntryViewMod
         EntryName.Text = descriptor.DisplayName;
         EntryDescription.Text = descriptor.Description;
 
+        LinkViewModel.ViewModel = viewModel.LinkRenderer;
+        LinkViewModel.IsVisible = viewModel.LinkRenderer is not null;
+
         RequiresRestartMessage.Text = descriptor.RestartMessage ?? Language.SettingEntryView_NeedRestartMessage;
     }
 }
