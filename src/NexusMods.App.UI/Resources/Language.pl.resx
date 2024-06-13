@@ -328,7 +328,7 @@
 		<value>BŁĄD KRYTYCZNY</value>
 	</data>
 	<data name="LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics" xml:space="preserve">
-		<value>Stan kondycji</value>
+		<value>Kontrola kondycji</value>
 	</data>
 	<data name="DiagnosticDetailsView_SeverityTitle_HIDDEN" xml:space="preserve">
 		<value>UKRYTE</value>
@@ -360,7 +360,7 @@
 		<value>ILOŚĆ PLIKÓW</value>
 	</data>
 	<data name="IngestButtonTextBlock_Text" xml:space="preserve">
-		<value>POZYSKAJ</value>
+		<value>ZAŁADUJ</value>
 	</data>
 	<data name="MyGamesView__NoGamesDetectedText" xml:space="preserve">
 		<value>Wszystkie wspierane gry zostały dodane. Nie wykryto żadnych nowych gier.</value>
@@ -435,7 +435,7 @@
 		<value>Dziennik zmian</value>
 	</data>
 	<data name="DiagnosticListViewModel_DiagnosticListViewModel_Diagnostics" xml:space="preserve">
-		<value>Stan kondycji</value>
+		<value>Kontrola kondycji</value>
 	</data>
 	<data name="FileOriginsPageTitle" xml:space="preserve">
 		<value>Biblioteka</value>
@@ -492,7 +492,7 @@
         <value>Pokaż</value>
     </data>
     <data name="AddPanelToolTip" xml:space="preserve">
-        <value>Dodaj panel do wyświetlania na podzielonym ekranie</value>
+        <value>Dodaj dodatkowy panel na podzielonym ekranie</value>
     </data>
     <data name="Panel_Add_tab_ToolTip" xml:space="preserve">
         <value>Dodaj kartę</value>
@@ -528,7 +528,7 @@
         <value>Dodaj mod do swojej listy modów</value>
     </data>
     <data name="FileOriginPage_AddModAdvanced_ToolTip" xml:space="preserve">
-        <value>Użyj zaawansowanego instalatora, aby ręcznie wybrać pliki zawarte w instalacji</value>
+        <value>Użyj zaawansowanego instalatora, aby ręcznie wybrać pliki zawarte w modzie</value>
     </data>
     <data name="ApplyControlView_ViewApplyChanges_ToolTip" xml:space="preserve">
         <value>Zobacz zmiany, które zostaną zastosowane w folderze gry</value>
@@ -552,9 +552,23 @@
         <value>Czy wiesz?</value>
     </data>
     <data name="NewTabPageInfoBannerText1" xml:space="preserve">
-        <value>Możesz dodać panele do wyświetlania na podzielonym ekranie,</value>
+        <value>Możesz dodać dodatkowy panel na podzielonym ekranie poprzez wybranie tego</value>
     </data>
     <data name="NewTabPageInfoBannerText2" xml:space="preserve">
-        <value>wybierając odpowiedni przycisk na pasku narzędzi</value>
+        <value>przycisku na pasku narzędzi</value>
+    </data>
+    <data name="LoadoutGrid_EmptyModlistSubtitle_Add_from_library" xml:space="preserve">
+        <value>Dodaj pobrane mody z</value>
+    </data>
+    <data name="LoadoutGridViewModel_EmptyModlistTitleString" xml:space="preserve">
+        <value>Brak dodanych modów do {0}</value>
+        <comment>{0} is the name of the currently managed game</comment>
+    </data>
+    <data name="EmptyLibraryTitleText" xml:space="preserve">
+        <value>Brak modów w bibliotece</value>
+    </data>
+    <data name="FileOriginsPageViewModel_EmptyLibrarySubtitleText" xml:space="preserve">
+        <value>Pobierz mody dla {0} z Nexus Mods</value>
+        <comment>{0} is the name of the currently managed game</comment>
     </data>
 </root>
