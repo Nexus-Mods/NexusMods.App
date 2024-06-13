@@ -76,7 +76,6 @@
             <icons:UnifiedIcon Classes="Add" />
             <icons:UnifiedIcon Classes="DeleteForever" />
             <icons:UnifiedIcon Classes="Mods" />
-            <icons:UnifiedIcon Classes="JoystickGameFilled" />
             <icons:UnifiedIcon Classes="ModLibrary" />
             <icons:UnifiedIcon Classes="ListFilled" />
             <icons:UnifiedIcon Classes="FileEdit"/>
@@ -387,10 +386,6 @@
     
     <Style Selector="icons|UnifiedIcon.Mods">
         <Setter Property="Value" Value="{x:Static icons:IconValues.Mods}"/>
-    </Style>
-    
-    <Style Selector="icons|UnifiedIcon.JoystickGameFilled">
-        <Setter Property="Value" Value="{x:Static icons:IconValues.JoystickGameFilled}"/>
     </Style>
     
     <Style Selector="icons|UnifiedIcon.ModLibrary">
