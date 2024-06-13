@@ -42,13 +42,18 @@
             <Setter Property="ClipToBounds" Value="False" />
         </Style>
 
+        <!-- Shrink on Click -->
+        <Style Selector="^:pressed">
+            <Setter Property="RenderTransform" Value="scale(0.92)" />
+        </Style>
+        
         <!-- Icon -->
         <Style Selector="^ icons|UnifiedIcon#Icon">
             <Setter Property="Size" Value="24" />
             <Setter Property="Margin" Value="12" />
             <Setter Property="Foreground" Value="{DynamicResource NeutralTranslucentModerate}" />
         </Style>
-
+        
         <!-- StackPanel -->
         <Style Selector="^ > Grid > StackPanel#StackPanel">
             <Setter Property="Spacing" Value="{StaticResource Spacing-none}" />
