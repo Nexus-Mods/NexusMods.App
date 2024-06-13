@@ -219,8 +219,12 @@
 
     <!-- Pill Label -->
     <!-- Labels should have all interactions disabled, so they don't look interactable -->
-    <!-- NOTE(insomnious): left this empty selector here to make it easier to find in future -->
     <Style Selector="Button.Pill.Label">
+
+        <!--  Disable the scaling found in Fluent buttons when pressing -->
+        <Style Selector="^:pressed">
+            <Setter Property="RenderTransform" Value="scale(1.0)" />
+        </Style>
     </Style>
 
 

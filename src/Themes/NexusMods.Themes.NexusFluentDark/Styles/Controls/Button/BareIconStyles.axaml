@@ -41,8 +41,21 @@
 
         <Style Selector="^ /template/ icons|UnifiedIcon">
             <Setter Property="Size" Value="24" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralTranslucentModerateBrush}" />
         </Style>
-
+                       
+        <Style Selector="^:pointerover">
+            <Style Selector="^ /template/ icons|UnifiedIcon">
+                <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
+            </Style>
+        </Style>
+        
+        <Style Selector="^:pressed">
+            <Style Selector="^ /template/ icons|UnifiedIcon">
+                <Setter Property="Foreground" Value="{StaticResource NeutralTranslucentModerateBrush}" />
+            </Style>
+        </Style>
+        
         <Style Selector="^:disabled">
             <Setter Property="Opacity" Value="{StaticResource OpacityDisabledElement}" />
         </Style>
