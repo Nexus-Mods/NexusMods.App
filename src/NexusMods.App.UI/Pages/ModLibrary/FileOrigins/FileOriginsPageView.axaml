@@ -57,6 +57,7 @@
         </Border>
 
         <DataGrid Grid.Row="1"
+                  Classes="NoTopBorder"
                   CanUserReorderColumns="True"
                   CanUserResizeColumns="True"
                   CanUserSortColumns="True"
@@ -153,8 +154,6 @@
         <Border Grid.Row="1"
                 x:Name="EmptyLibraryMessageBorder"
                 Padding="24,64,24,64"
-                BorderThickness="0,1,0,0"
-                Classes="OutlineWeak"
                 IsVisible="False">
             <StackPanel Orientation="Vertical" 
                         HorizontalAlignment="Center"

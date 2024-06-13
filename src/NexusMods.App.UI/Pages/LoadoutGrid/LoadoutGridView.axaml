@@ -38,6 +38,7 @@
         </Border>
 
         <DataGrid Grid.Row="1"
+                  Classes="NoTopBorder"
                   CanUserResizeColumns="True"
                   CanUserSortColumns="True"
                   x:Name="ModsDataGrid" />
@@ -45,8 +46,6 @@
         <Border Grid.Row="1"
                 x:Name="EmptyModlistMessageBorder"
                 Padding="24,64,24,64"
-                BorderThickness="0,1,0,0"
-                Classes="OutlineWeak"
                 IsVisible="False">
             <StackPanel Orientation="Vertical" 
                         HorizontalAlignment="Center"
