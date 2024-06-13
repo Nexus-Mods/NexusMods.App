@@ -328,7 +328,7 @@
 		<value>BŁĄD KRYTYCZNY</value>
 	</data>
 	<data name="LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics" xml:space="preserve">
-		<value>Stan kondycji</value>
+		<value>Kontrola kondycji</value>
 	</data>
 	<data name="DiagnosticDetailsView_SeverityTitle_HIDDEN" xml:space="preserve">
 		<value>UKRYTE</value>
@@ -360,7 +360,7 @@
 		<value>ILOŚĆ PLIKÓW</value>
 	</data>
 	<data name="IngestButtonTextBlock_Text" xml:space="preserve">
-		<value>POZYSKAJ</value>
+		<value>ZAŁADUJ</value>
 	</data>
 	<data name="MyGamesView__NoGamesDetectedText" xml:space="preserve">
 		<value>Wszystkie wspierane gry zostały dodane. Nie wykryto żadnych nowych gier.</value>
@@ -435,7 +435,7 @@
 		<value>Dziennik zmian</value>
 	</data>
 	<data name="DiagnosticListViewModel_DiagnosticListViewModel_Diagnostics" xml:space="preserve">
-		<value>Stan kondycji</value>
+		<value>Kontrola kondycji</value>
 	</data>
 	<data name="FileOriginsPageTitle" xml:space="preserve">
 		<value>Biblioteka</value>
