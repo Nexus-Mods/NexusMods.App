@@ -170,7 +170,6 @@
                     <Button Classes="Hyperlink Secondary"
                             x:Name="EmptyLibraryLinkButton">
                         <TextBlock Classes="BodyLGNormal ForegroundSubdued"
-                                   Text="Download Stardew Valley mods from Nexus Mods"
                                    x:Name="EmptyLibrarySubtitleTextBlock"/>
                     </Button>
                     <Button Classes="BareIcon OpenInNew ForegroundSubdued"
