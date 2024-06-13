@@ -211,10 +211,22 @@ public static class IconValues
 
     // https://pictogrammers.com/library/mdi/icon/chevron-right/
     public static readonly IconValue ChevronRight = new ProjektankerIcon("mdi-chevron-right");
+    
+    // https://pictogrammers.com/library/mdi/icon/chevron-down/
+    public static readonly IconValue ChevronDown = new ProjektankerIcon("mdi-chevron-down");
+    
+    // https://pictogrammers.com/library/mdi/icon/chevron-up/
+    public static readonly IconValue ChevronUp = new ProjektankerIcon("mdi-chevron-up");
 
     // https://pictogrammers.com/library/mdi/icon/close/
     public static readonly IconValue Close = new ProjektankerIcon("mdi-close");
-
+    
+    // https://pictogrammers.com/library/mdi/icon/window-minimize/
+    public static readonly IconValue WindowMinimize = new ProjektankerIcon("mdi-window-minimize");
+    
+    // https://pictogrammers.com/library/mdi/icon/window-maximize/
+    public static readonly IconValue WindowMaximize = new ProjektankerIcon("mdi-window-maximize");
+    
     // https://pictogrammers.com/library/mdi/icon/refresh/
     public static readonly IconValue Refresh = new ProjektankerIcon("mdi-refresh");
 

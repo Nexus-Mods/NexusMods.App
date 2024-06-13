@@ -20,6 +20,7 @@
             <Button Classes="BareIcon Copy" />
             <Button Classes="BareIcon PlayCircleOutline" />
             <Button Classes="BareIcon PauseCircleOutline" />
+            <Button Classes="BareIcon OpenInNew" />
         </WrapPanel>
     </Design.PreviewWith>
 
@@ -65,81 +66,59 @@
 
     <!-- BareIcon Icon selection -->
     <Style Selector="Button.BareIcon.Cog /template/ icons|UnifiedIcon">
-        <Setter Property="Value">
-            <icons:IconValue MdiValueSetter="mdi-cog"/>
-        </Setter>
+        <Setter Property="Value" Value="{x:Static icons:IconValues.Settings}"/>
     </Style>
 
     <Style Selector="Button.BareIcon.Help /template/ icons|UnifiedIcon">
-        <Setter Property="Value">
-            <icons:IconValue MdiValueSetter="mdi-help-circle-outline"/>
-        </Setter>
+        <Setter Property="Value" Value="{x:Static icons:IconValues.HelpOutline}"/>
     </Style>
 
     <Style Selector="Button.BareIcon.Bell /template/ icons|UnifiedIcon">
-        <Setter Property="Value">
-            <icons:IconValue MdiValueSetter="mdi-bell"/>
-        </Setter>
+        <Setter Property="Value" Value="{x:Static icons:IconValues.NotificationImportant}"/>
     </Style>
 
     <Style Selector="Button.BareIcon.WindowClose /template/ icons|UnifiedIcon">
-        <Setter Property="Value">
-            <icons:IconValue MdiValueSetter="mdi-window-close"/>
-        </Setter>
+        <Setter Property="Value" Value="{x:Static icons:IconValues.Close}"/>
     </Style>
 
     <Style Selector="Button.BareIcon.WindowMinimize /template/ icons|UnifiedIcon">
-        <Setter Property="Value">
-            <icons:IconValue MdiValueSetter="mdi-window-minimize"/>
-        </Setter>
+        <Setter Property="Value" Value="{x:Static icons:IconValues.WindowMinimize}"/>
     </Style>
 
     <Style Selector="Button.BareIcon.WindowMaximize /template/ icons|UnifiedIcon">
-        <Setter Property="Value">
-            <icons:IconValue MdiValueSetter="mdi-window-maximize"/>
-        </Setter>
+        <Setter Property="Value" Value="{x:Static icons:IconValues.WindowMaximize}"/>
     </Style>
 
     <Style Selector="Button.BareIcon.KeyboardArrowDown /template/ icons|UnifiedIcon">
-        <Setter Property="Value">
-            <icons:IconValue MdiValueSetter="mdi-chevron-down"/>
-        </Setter>
+        <Setter Property="Value" Value="{x:Static icons:IconValues.ChevronDown}"/>
     </Style>
 
     <Style Selector="Button.BareIcon.KeyboardArrowUp /template/ icons|UnifiedIcon">
-        <Setter Property="Value">
-            <icons:IconValue MdiValueSetter="mdi-chevron-up"/>
-        </Setter>
+        <Setter Property="Value" Value="{x:Static icons:IconValues.ChevronUp}"/>
     </Style>
 
     <Style Selector="Button.BareIcon.KeyboardArrowRight /template/ icons|UnifiedIcon">
-        <Setter Property="Value">
-            <icons:IconValue MdiValueSetter="mdi-chevron-right"/>
-        </Setter>
+        <Setter Property="Value" Value="{x:Static icons:IconValues.ChevronRight}"/>
     </Style>
 
     <Style Selector="Button.BareIcon.KeyboardArrowLeft /template/ icons|UnifiedIcon">
-        <Setter Property="Value">
-            <icons:IconValue MdiValueSetter="mdi-chevron-left"/>
-        </Setter>
+        <Setter Property="Value" Value="{x:Static icons:IconValues.ChevronLeft}"/>
     </Style>
 
     <Style Selector="Button.BareIcon.Copy /template/ icons|UnifiedIcon">
-        <Setter Property="Value">
-            <icons:IconValue MdiValueSetter="mdi-content-copy"/>
-        </Setter>
+        <Setter Property="Value" Value="{x:Static icons:IconValues.Copy}"/>
     </Style>
 
     <Style Selector="Button.BareIcon.PlayCircleOutline /template/ icons|UnifiedIcon">
-        <Setter Property="Value">
-            <icons:IconValue MdiValueSetter="mdi-play-circle-outline"/>
-        </Setter>
+        <Setter Property="Value" Value="{x:Static icons:IconValues.PlayCircleOutline}"/>
     </Style>
 
     <Style Selector="Button.BareIcon.PauseCircleOutline /template/ icons|UnifiedIcon">
-        <Setter Property="Value">
-            <icons:IconValue MdiValueSetter="mdi-pause-circle-outline"/>
-        </Setter>
+        <Setter Property="Value" Value="{x:Static icons:IconValues.PauseCircleOutline}"/>
+    </Style>
+    
+    <Style Selector="Button.BareIcon.OpenInNew /template/ icons|UnifiedIcon">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.OpenInNew}"/>
     </Style>
 
 </Styles>
