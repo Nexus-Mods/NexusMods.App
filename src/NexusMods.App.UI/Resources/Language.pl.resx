@@ -492,7 +492,7 @@
         <value>Pokaż</value>
     </data>
     <data name="AddPanelToolTip" xml:space="preserve">
-        <value>Dodaj panel do wyświetlania na podzielonym ekranie</value>
+        <value>Dodaj dodatkowy panel na podzielonym ekranie</value>
     </data>
     <data name="Panel_Add_tab_ToolTip" xml:space="preserve">
         <value>Dodaj kartę</value>
@@ -552,9 +552,9 @@
         <value>Czy wiesz?</value>
     </data>
     <data name="NewTabPageInfoBannerText1" xml:space="preserve">
-        <value>Możesz dodać panele do wyświetlania na podzielonym ekranie,</value>
+        <value>Możesz dodać dodatkowe panele na podzielonym ekranie poprzez wybranie tego</value>
     </data>
     <data name="NewTabPageInfoBannerText2" xml:space="preserve">
-        <value>wybierając odpowiedni przycisk na pasku narzędzi</value>
+        <value>przycisku na pasku narzędzi</value>
     </data>
 </root>
