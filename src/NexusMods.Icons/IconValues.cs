@@ -158,8 +158,8 @@ public static class IconValues
     // https://pictogrammers.com/library/mdi/icon/drag-vertical-variant/
     public static readonly IconValue DragHandleVertical = new ProjektankerIcon("mdi-drag-vertical-variant");
 
-    // https://pictogrammers.com/library/mdi/icon/file/
-    public static readonly IconValue InsertDriveFile = new ProjektankerIcon("mdi-file");
+    // https://pictogrammers.com/library/mdi/icon/file-outline/
+    public static readonly IconValue File = new ProjektankerIcon("mdi-file-outline");
 
 #endregion
 

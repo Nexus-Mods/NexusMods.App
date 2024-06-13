@@ -276,7 +276,7 @@
     </Style>
 
     <Style Selector="icons|UnifiedIcon.File">
-        <Setter Property="Value" Value="{x:Static icons:IconValues.InsertDriveFile}"/>
+        <Setter Property="Value" Value="{x:Static icons:IconValues.File}"/>
     </Style>
 
     <Style Selector="icons|UnifiedIcon.Check">
