@@ -6,6 +6,9 @@ on:
     # https://crontab.guru
     - cron: '17 08,14 * * 1-5'
   workflow_dispatch:
+  pull_request:
+    branches: [ main ]
+    types: [ opened, synchronize, reopened, ready_for_review ]
 
 env:
   ProjectFile: "src/NexusMods.App/NexusMods.App.csproj"
@@ -31,7 +34,7 @@ jobs:
       # this is a bit of a hack, you can't use environment variables here
       # https://docs.github.com/en/actions/learn-github-actions/contexts#context-availability
       ProjectFile: ${{ needs.transformInputs.outputs.ProjectFile }}
-      RetentionDays: 7
+      RetentionDays: 2
 
   build-windows:
     needs: [ transformInputs ]
@@ -41,4 +44,19 @@ jobs:
       # this is a bit of a hack, you can't use environment variables here
       # https://docs.github.com/en/actions/learn-github-actions/contexts#context-availability
       ProjectFile: ${{ needs.transformInputs.outputs.ProjectFile }}
-      RetentionDays: 7
+      RetentionDays: 2
+
+  comment:
+    needs: [ build-linux, build-windows ]
+    if: github.event_name == 'pull_request' && github.event.pull_request.draft == false
+    permissions:
+      pull-requests: write
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Comment PR
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          message: |
+            _(builds * [Linux Archive](${{ steps.build-linux.outputs.ArtifactUrlLinuxArchive }}) * [Linux AppImage](${{ steps.build-linux.outputs.ArtifactUrlLinuxAppImage }}) * [Windows Archive](${{ steps.build-windows.outputs.ArtifactUrlWindowsArchive }}) * [Windows InnoSetup](${{ steps.build-windows.outputs.ArtifactUrlWindowsInnoSetup }}) )_
+          comment_tag: builds
