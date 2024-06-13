@@ -62,6 +62,12 @@ on:
       ArtifactNameWindowsInnoSetup:
         description: "Name of the Artifact that contains the Windows Inno Setup"
         value: ${{ jobs.build.outputs.artifactNameWindowsInnoSetup }}
+      ArtifactUrlWindowsArchive:
+        description: "URL to download the Windows Archive artifact"
+        value: ${{ jobs.build.outputs.artifactUrlWindowsArchive }}
+      ArtifactUrlWindowsInnoSetup:
+        description: "URL to download the Windows InnoSetup artifact"
+        value: ${{ jobs.build.outputs.artifactUrlWindowsInnoSetup }}
 
 jobs:
   build:
@@ -69,6 +75,8 @@ jobs:
     outputs:
       artifactNameWindowsArchive: ${{ steps.setOutputs.outputs.artifactNameWindowsArchive }}
       artifactNameWindowsInnoSetup: ${{ steps.setOutputs.outputs.artifactNameWindowsInnoSetup }}
+      artifactUrlWindowsArchive: ${{ steps.uploadArchive.outputs.artifact-url }}
+      artifactUrlWindowsInnoSetup: ${{ steps.uploadSetup.outputs.artifact-url }}
 
     steps:
       - uses: actions/checkout@v3
@@ -149,6 +157,7 @@ jobs:
           echo "artifactNameWindowsInnoSetup=${{ steps.transformInputs.outputs.projectName }}-${{ github.sha }}-Windows-Setup" >> $env:GITHUB_OUTPUT
 
       - name: Upload Archive
+        id: uploadArchive
         if: inputs.BuildArchive == true
         uses: actions/upload-artifact@v4
         with:
@@ -158,6 +167,7 @@ jobs:
           retention-days: ${{ inputs.RetentionDays }}
 
       - name: Upload Setup
+        id: uploadSetup
         if: inputs.BuildInnoSetup == true
         uses: actions/upload-artifact@v4
         with:

@@ -44,6 +44,12 @@ on:
       ArtifactNameLinuxAppImage:
         description: "Name of the Artifact that contains the Linux AppImage"
         value: ${{ jobs.build.outputs.artifactNameLinuxAppImage }}
+      ArtifactUrlLinuxArchive:
+        description: "URL to download the Linux Archive artifact"
+        value: ${{ jobs.build.outputs.artifactUrlLinuxArchive }}
+      ArtifactUrlLinuxAppImage:
+        description: "URL to download the Linux AppImage artifact"
+        value: ${{ jobs.build.outputs.artifactUrlLinuxAppImage }}
 
 jobs:
   build:
@@ -51,6 +57,8 @@ jobs:
     outputs:
       artifactNameLinuxArchive: ${{ steps.setOutputs.outputs.artifactNameLinuxArchive }}
       artifactNameLinuxAppImage: ${{ steps.setOutputs.outputs.artifactNameLinuxAppImage }}
+      artifactUrlLinuxArchive: ${{ steps.uploadArchive.outputs.artifact-url }}
+      artifactUrlLinuxAppImage: ${{ steps.uploadAppImage.outputs.artifact-url }}
 
     steps:
       - uses: actions/checkout@v3
@@ -104,6 +112,7 @@ jobs:
           echo "artifactNameLinuxAppImage=${{ steps.transformInputs.outputs.projectName }}-${{ github.sha }}-Linux-AppImage" >> $env:GITHUB_OUTPUT
 
       - name: Upload Archive
+        id: uploadArchive
         if: ${{ inputs.BuildArchive }}
         uses: actions/upload-artifact@v4
         with:
@@ -113,6 +122,7 @@ jobs:
           retention-days: ${{ inputs.RetentionDays }}
 
       - name: Upload AppImage
+        id: uploadAppImage
         if: ${{ inputs.BuildAppImage }}
         uses: actions/upload-artifact@v4
         with:
