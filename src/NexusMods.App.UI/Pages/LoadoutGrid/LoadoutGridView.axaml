@@ -30,7 +30,7 @@
                 </navigation:NavigationControl>
                 <Button x:Name="DeleteModsButton">
                     <StackPanel>
-                        <icons:UnifiedIcon Classes="Close" />
+                        <icons:UnifiedIcon Classes="PlaylistRemove" />
                         <TextBlock Text="{x:Static resources:Language.LoadoutGridView__Remove}"/>
                     </StackPanel>
                 </Button>

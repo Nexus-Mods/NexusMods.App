@@ -53,6 +53,9 @@ public static class IconValues
 
     // https://pictogrammers.com/library/mdi/icon/playlist-plus/
     public static readonly IconValue PlaylistAdd = new ProjektankerIcon("mdi-playlist-plus");
+    
+    // https://pictogrammers.com/library/mdi/icon/playlist-remove/
+    public static readonly IconValue PlaylistRemove = new ProjektankerIcon("mdi-playlist-remove");
 
     // https://pictogrammers.com/library/mdi/icon/open-in-new/
     public static readonly IconValue OpenInNew = new ProjektankerIcon("mdi-open-in-new");
