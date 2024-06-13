@@ -10,6 +10,7 @@ using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.App.UI;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
+using NexusMods.StandardGameLocators;
 using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 
 namespace NexusMods.UI.Tests;
@@ -36,6 +37,8 @@ where TVm : IViewModelInterface
     protected IFileOriginRegistry FileOriginRegistry { get; }
 
     private Loadout.ReadOnly? _loadout;
+    private GameInstallation _gameInstall;
+
     protected Loadout.ReadOnly Loadout
     {
         get
@@ -62,7 +65,8 @@ where TVm : IViewModelInterface
 
     public async Task CreateLoadout()
     {
-        _loadout = await ((IGame)Install.Game).Synchronizer.CreateLoadout(Install, "Test");
+        _gameInstall = await StubbedGame.Create(Provider);
+        _loadout = await ((IGame)Install.Game).Synchronizer.CreateLoadout(_gameInstall, "Test");
     }
 
     protected async Task<ModId[]> InstallMod(AbsolutePath path)

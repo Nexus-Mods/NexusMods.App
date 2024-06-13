@@ -187,7 +187,11 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
     private const string NexusModsUrl = "https://www.nexusmods.com/{0}";
     private string GetEmptyModlistMarkdownString()
     {
-        var gameDomain = Loadout.Load(_conn.Db, LoadoutId).InstallationInstance.Game.Domain;
+        var loadout = Loadout.Load(_conn.Db, LoadoutId);
+        if (!loadout.IsValid())
+            return "<NOGAME>";
+        
+        var gameDomain = loadout.InstallationInstance.Game.Domain;
         var url = NexusModsUrlBuilder.CreateGenericUri(string.Format(NexusModsUrl, gameDomain));
         const string mkString = """
 ### No mods have been added
