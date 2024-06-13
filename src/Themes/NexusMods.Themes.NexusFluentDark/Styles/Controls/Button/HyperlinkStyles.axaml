@@ -35,7 +35,6 @@
         </Style>
 
         <Style Selector="^:pressed">
-            <Setter Property="RenderTransform" Value="scale(1)" />
             <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
                 <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
             </Style>
