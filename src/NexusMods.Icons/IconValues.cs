@@ -289,7 +289,7 @@ public static class IconValues
     // From Design System "Custom Icons" section on Figma
     public static readonly IconValue ListFilled = new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Icons/list_filled_24px.svg");
 
-    // https://pictogrammers.com/library/mdi/icon/rogress-download/
+    // https://pictogrammers.com/library/mdi/icon/progress-download/
     public static readonly IconValue Downloading = new ProjektankerIcon("mdi-progress-download");
 
     // From Design System "Custom Icons" section on Figma
