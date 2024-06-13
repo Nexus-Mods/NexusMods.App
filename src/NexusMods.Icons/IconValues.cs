@@ -136,6 +136,9 @@ public static class IconValues
 
 #region Editor
 
+    // https://pictogrammers.com/library/mdi/icon/poll
+    public static readonly IconValue BarChart = new ProjektankerIcon("mdi-poll");
+
     // https://pictogrammers.com/library/mdi/icon/drag-horizontal-variant/
     public static readonly IconValue DragHandleHorizontal = new ProjektankerIcon("mdi-drag-horizontal-variant");
 
@@ -176,6 +179,9 @@ public static class IconValues
 #endregion
 
 #region Hardware
+
+    // https://pictogrammers.com/library/mdi/icon/monitor/
+    public static readonly IconValue Desktop = new ProjektankerIcon("mdi-monitor");
 
     // https://pictogrammers.com/library/mdi/icon/gamepad-square-outline/
     public static readonly IconValue Game = new ProjektankerIcon("mdi-gamepad-square-outline");
@@ -225,6 +231,13 @@ public static class IconValues
     // https://pictogrammers.com/library/mdi/icon/sync/
     public static readonly IconValue Sync = new ProjektankerIcon("mdi-sync");
     
+#endregion
+
+#region Social
+
+    // https://pictogrammers.com/library/mdi/icon/school
+    public static readonly IconValue School = new ProjektankerIcon("mdi-school");
+
 #endregion
 
 #region Toggle

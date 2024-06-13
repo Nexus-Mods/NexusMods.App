@@ -17,8 +17,7 @@ public class DiagnosticSettings : ISettings
     /// <inheritdoc/>
     public static ISettingsBuilder Configure(ISettingsBuilder settingsBuilder)
     {
-        // TODO: put in some section
-        var sectionId = SectionId.DefaultValue;
+        var sectionId = Sections.General;
 
         return settingsBuilder.AddToUI<DiagnosticSettings>(builder => builder
             .AddPropertyToUI(x => x.MinimumSeverity, propertyBuilder => propertyBuilder

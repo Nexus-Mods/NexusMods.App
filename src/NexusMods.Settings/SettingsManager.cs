@@ -41,7 +41,7 @@ internal partial class SettingsManager : ISettingsManager
 
         var settingsSectionSetups = serviceProvider.GetServices<SettingsSectionSetup>().ToArray();
 
-        // NOTE(erri120): This has to be Lazy because the Icon isn't available until Avalonia starts up.
+        // NOTE(erri120): This has to be Lazy because icons aren't available until Avalonia starts up.
         _sectionDescriptors = new Lazy<ISettingsSectionDescriptor[]>(() => settingsSectionSetups
             .Select(descriptor => (ISettingsSectionDescriptor)new SettingsSectionDescriptor
             {
@@ -53,16 +53,6 @@ internal partial class SettingsManager : ISettingsManager
             mode: LazyThreadSafetyMode.ExecutionAndPublication
         );
 
-        if (CompileConstants.IsDebug)
-        {
-            var ids = new HashSet<SectionId>();
-            foreach (var sectionDescriptor in settingsSectionSetups)
-            {
-                var id = sectionDescriptor.Id;
-                Debug.Assert(ids.Add(id), $"duplicate section ID: {id}");
-            }
-        }
-
         var baseStorageBackendArray = serviceProvider.GetServices<IBaseSettingsStorageBackend>().ToArray();
         var settingsTypeInformationArray = serviceProvider.GetServices<SettingsTypeInformation>().ToArray();
         var defaultBaseStorageBackend = serviceProvider.GetService<DefaultSettingsStorageBackend>()?.Backend;
@@ -72,6 +62,21 @@ internal partial class SettingsManager : ISettingsManager
         _storageBackendMappings = builderOutput.StorageBackendMappings;
         _asyncStorageBackendMappings = builderOutput.AsyncStorageBackendMappings;
         _propertyBuilderOutputs = builderOutput.PropertyBuilderOutputs;
+
+        if (CompileConstants.IsDebug)
+        {
+            var ids = new HashSet<SectionId>();
+            foreach (var sectionDescriptor in settingsSectionSetups)
+            {
+                var id = sectionDescriptor.Id;
+                Debug.Assert(ids.Add(id), $"duplicate section ID: {id}");
+            }
+
+            foreach (var propertyBuilderOutput in _propertyBuilderOutputs)
+            {
+                Debug.Assert(settingsSectionSetups.Any(x => x.Id == propertyBuilderOutput.SectionId), $"section not registered: {propertyBuilderOutput.SectionId} (for setting {propertyBuilderOutput.DisplayName})");
+            }
+        }
     }
 
     private void CoreSet<T>(T value, bool notify) where T : class, ISettings, new()

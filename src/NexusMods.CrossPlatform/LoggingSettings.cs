@@ -58,17 +58,14 @@ public record LoggingSettings : ISettings
     /// <inheritdoc/>
     public static ISettingsBuilder Configure(ISettingsBuilder settingsBuilder)
     {
-        // TODO: put in some section
-        var sectionId = SectionId.DefaultValue;
-
         return settingsBuilder
             .ConfigureDefault(serviceProvider => CreateDefault(serviceProvider.GetRequiredService<IFileSystem>().OS))
             .ConfigureStorageBackend<LoggingSettings>(builder => builder.UseJson())
             .AddToUI<LoggingSettings>(builder => builder
                 .AddPropertyToUI(x => x.MinimumLevel, propertyBuilder => propertyBuilder
-                    .AddToSection(sectionId)
-                    .WithDisplayName("Minimum Logging Level")
-                    .WithDescription("Set the minimum logging level. Recommended: Debug")
+                    .AddToSection(Sections.General)
+                    .WithDisplayName("Minimum logging level")
+                    .WithDescription("Sets the minimum logging level. Recommended: Debug")
                     .UseSingleValueMultipleChoiceContainer(
                         valueComparer: EqualityComparer<LogLevel>.Default,
                         allowedValues: [
@@ -81,9 +78,9 @@ public record LoggingSettings : ISettings
                     .RequiresRestart()
                 )
                 .AddPropertyToUI(x => x.LogToConsole, propertyBuilder => propertyBuilder
-                    .AddToSection(sectionId)
-                    .WithDisplayName("Log to Console")
-                    .WithDescription("When enabled, logs will be written to the console as well as the log file.")
+                    .AddToSection(Sections.DeveloperTools)
+                    .WithDisplayName("Log to stdout")
+                    .WithDescription("Enables the ConsoleTarget for all loggers.")
                     .UseBooleanContainer()
                     .RequiresRestart()
                 )

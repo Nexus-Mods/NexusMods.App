@@ -29,13 +29,11 @@ public class MetricsOptInViewModel : AOverlayViewModel<IMetricsOptInViewModel>, 
         MarkdownRendererViewModel = markdownRendererViewModel;
 
         MarkdownRendererViewModel.Contents = """
-## Telemetry and usage data
+## Help us improve
 
 Help us provide you with the best modding experience.
 
-With your permission, we will collect analytics information and send it to our team to help us improve quality and performance.
-
-This information is sent anonymously and will never be shared with a 3rd party.
+With your permission, we will collect anonymous analytics information and send it to our team to help us improve quality and performance.
 
 [More information about the data we track](https://help.nexusmods.com/article/132-diagnostics-and-usage-nexus-mods-app)
 """;

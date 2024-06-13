@@ -37,7 +37,7 @@ public partial class SettingsView : ReactiveUserControl<ISettingsPageViewModel>
                     foreach (var group in grouped)
                     {
                         res.Add(dict[group.Key]);
-                        res.AddRange(group);
+                        res.AddRange(group.OrderBy(x => x.PropertyUIDescriptor.DisplayName, StringComparer.OrdinalIgnoreCase));
                     }
 
                     return res;

@@ -12,7 +12,7 @@ public class CliSettings() : ISettings
     /// <inheritdoc />
     public static ISettingsBuilder Configure(ISettingsBuilder settingsBuilder)
     {
-        var sectionId = SectionId.DefaultValue;
+        var sectionId = Sections.DeveloperTools;
         return settingsBuilder
                 .ConfigureDefault(CreateDefault)
                 .ConfigureStorageBackend<CliSettings>(builder => builder.UseJson())

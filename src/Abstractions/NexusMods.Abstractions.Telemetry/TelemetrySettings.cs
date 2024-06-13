@@ -12,16 +12,13 @@ public record TelemetrySettings : ISettings
 
     public static ISettingsBuilder Configure(ISettingsBuilder settingsBuilder)
     {
-        // TODO: put in some section
-        var sectionId = SectionId.DefaultValue;
-
         return settingsBuilder
             .ConfigureStorageBackend<TelemetrySettings>(backend => backend.UseJson())
             .AddToUI<TelemetrySettings>(builder => builder
                 .AddPropertyToUI(x => x.IsEnabled, propertyBuilder => propertyBuilder
-                    .AddToSection(sectionId)
-                    .WithDisplayName("Enable Telemetry")
-                    .WithDescription("Send anonymous analytics information and usage data to Nexus Mods.")
+                    .AddToSection(Sections.Privacy)
+                    .WithDisplayName("Send usage data")
+                    .WithDescription("Help us improve the App by sending usage data to Nexus Mods.")
                     .UseBooleanContainer()
                     .RequiresRestart()
                 )

@@ -30,12 +30,9 @@ public record LanguageSettings : ISettings
 
     public static ISettingsBuilder Configure(ISettingsBuilder settingsBuilder)
     {
-        // TODO: put in some section
-        var sectionId = SectionId.DefaultValue;
-
         return settingsBuilder.AddToUI<LanguageSettings>(builder => builder
             .AddPropertyToUI(x => x.UICulture, propertyBuilder => propertyBuilder
-                .AddToSection(sectionId)
+                .AddToSection(Sections.General)
                 .WithDisplayName("Language")
                 .WithDescription("Set the language for the application.")
                 .UseSingleValueMultipleChoiceContainer(
