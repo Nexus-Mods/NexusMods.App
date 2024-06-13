@@ -557,4 +557,18 @@
     <data name="NewTabPageInfoBannerText2" xml:space="preserve">
         <value>przycisku na pasku narzędzi</value>
     </data>
+    <data name="LoadoutGrid_EmptyModlistSubtitle_Add_from_library" xml:space="preserve">
+        <value>Dodaj pobrane mody z</value>
+    </data>
+    <data name="LoadoutGridViewModel_EmptyModlistTitleString" xml:space="preserve">
+        <value>Brak dodanych modów do {0}</value>
+        <comment>{0} is the name of the currently managed game</comment>
+    </data>
+    <data name="EmptyLibraryTitleText" xml:space="preserve">
+        <value>Brak modów w bibliotece</value>
+    </data>
+    <data name="FileOriginsPageViewModel_EmptyLibrarySubtitleText" xml:space="preserve">
+        <value>Pobierz mody dla {0} z Nexus Mods</value>
+        <comment>{0} is the name of the currently managed game</comment>
+    </data>
 </root>
