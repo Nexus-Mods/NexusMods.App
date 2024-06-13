@@ -89,8 +89,8 @@
         
         <Style Selector="^ icons|UnifiedIcon#LeftIcon">
             <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
+            <Setter Property="Size" Value="20" />
         </Style>
-        
         
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
