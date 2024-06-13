@@ -17,7 +17,26 @@ namespace NexusMods.Icons;
         - Use Projektanker Icon if possible https://pictogrammers.com/library/mdi/icon/code-tags/
             - Projectanker Icons are the raw SVGs, so it's okay ^-^
         - Export SVG from Figma if icon is custom.
-            - This will give you the correct icon size, as padding is preserved.
+            - This will give you the correct icon size, as padding etc. is preserved.
+
+    How to Import SVG:
+    
+        Exporting from Figma may give you an SVG like
+        
+        ```xml
+        <svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M12.1979 15.4946L6.68644 11.2096L5.47498 12.1518L12.2053 17.3866L18.9357 12.1518L17.7167 11.2021L12.1979 15.4946ZM12.1979 19.2336L6.68644 14.9486L5.47498 15.8908L12.2053 21.1255L18.9357 15.8908L17.7167 14.9411L12.1979 19.2336ZM12.2053 13.5951L17.7093 9.31006L18.9357 8.36033L12.2053 3.12561L5.47498 8.36033L6.69392 9.31006L12.2053 13.5951Z" fill="#F4F4F5"/>
+        </svg>
+        ```
+        
+        You have to remove the 'fill' info. So remove `fill="none"`, `fill="#F4F4F5"`
+        and `fill-rule="evenodd"`. This will allow recolouring of the icon.
+    
+        ```xml
+        <svg width="25" height="25" viewBox="0 0 25 25" xmlns="http://www.w3.org/2000/svg">
+        <path clip-rule="evenodd" d="M12.1979 15.4946L6.68644 11.2096L5.47498 12.1518L12.2053 17.3866L18.9357 12.1518L17.7167 11.2021L12.1979 15.4946ZM12.1979 19.2336L6.68644 14.9486L5.47498 15.8908L12.2053 21.1255L18.9357 15.8908L17.7167 14.9411L12.1979 19.2336ZM12.2053 13.5951L17.7093 9.31006L18.9357 8.36033L12.2053 3.12561L5.47498 8.36033L6.69392 9.31006L12.2053 13.5951Z"/>
+        </svg>
+        ```
 */
 
 public static class IconValues
