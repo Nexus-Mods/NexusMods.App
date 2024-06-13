@@ -154,7 +154,7 @@
 		<value>Historia pobierania</value>
 	</data>
 	<data name="NexusLoginOverlayView__Please_Click_Authorize" xml:space="preserve">
-		<value>PROSZĘ KLIKNĄĆ "AUTHORIZE" NA STRONIE INTERNETOWEJ</value>
+		<value>PROSZĘ KLIKNĄĆ "AUTHORISE" NA STRONIE INTERNETOWEJ</value>
 	</data>
 	<data name="NexusLoginOverlayView__BROWSER_DIDNT_OPEN" xml:space="preserve">
 		<value>PRZEGLĄDARKA NIE URUCHOMIŁA SIĘ AUTOMATYCZNIE?</value>
@@ -289,7 +289,7 @@
 		<value>AKTYWUJ ZESTAW</value>
 	</data>
 	<data name="ApplyControlViewModel__ACTIVATE_AND_APPLY" xml:space="preserve">
-		<value>AKTYWUJ i ZASTOSUJ</value>
+		<value>ZASTOSUJ</value>
 	</data>
 	<data name="ApplyControlViewModel__APPLY" xml:space="preserve">
 		<value>ZASTOSUJ</value>
@@ -328,7 +328,7 @@
 		<value>BŁĄD KRYTYCZNY</value>
 	</data>
 	<data name="LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics" xml:space="preserve">
-		<value>Diagnostyka</value>
+		<value>Stan kondycji</value>
 	</data>
 	<data name="DiagnosticDetailsView_SeverityTitle_HIDDEN" xml:space="preserve">
 		<value>UKRYTE</value>
@@ -435,7 +435,7 @@
 		<value>Dziennik zmian</value>
 	</data>
 	<data name="DiagnosticListViewModel_DiagnosticListViewModel_Diagnostics" xml:space="preserve">
-		<value>Diagnostyka</value>
+		<value>Stan kondycji</value>
 	</data>
 	<data name="FileOriginsPageTitle" xml:space="preserve">
 		<value>Biblioteka</value>
@@ -473,6 +473,12 @@
     <data name="LoadoutGridView__Remove" xml:space="preserve">
         <value>Usuń</value>
     </data>
+    <data name="LoginMessageView_BodyTextBlock" xml:space="preserve">
+        <value>Zaloguj się na swoje konto Nexus Mods, aby łatwo pobierać mody z Nexus Mods.&#x0a;&#x0a;Nie musisz się logować, jeśli chcesz dodawać ręcznie mody z dysku.</value>
+    </data>
+    <data name="LoginMessageView_Title" xml:space="preserve">
+        <value>Zaloguj się, by rozpocząć</value>
+    </data>
     <data name="FileOriginsPage_GetMods" xml:space="preserve">
         <value>Uzyskaj mody:</value>
     </data>
@@ -485,10 +491,70 @@
     <data name="FileOriginsPage_ViewButtonText" xml:space="preserve">
         <value>Pokaż</value>
     </data>
-    <data name="LoginMessageView_BodyTextBlock" xml:space="preserve">
-        <value>Zaloguj się na swoje konto Nexus Mods, aby łatwo pobierać mody z Nexus Mods.&#x0a;&#x0a;Nie musisz się logować, jeśli chcesz dodawać ręcznie mody z dysku.</value>
+    <data name="AddPanelToolTip" xml:space="preserve">
+        <value>Dodaj panel do wyświetlania na podzielonym ekranie</value>
     </data>
-    <data name="LoginMessageView_Title" xml:space="preserve">
-        <value>Zaloguj się, by rozpocząć</value>
+    <data name="Panel_Add_tab_ToolTip" xml:space="preserve">
+        <value>Dodaj kartę</value>
+    </data>
+    <data name="TopBar_MyProfile" xml:space="preserve">
+        <value>Mój profil</value>
+    </data>
+    <data name="TopBar_SignOut" xml:space="preserve">
+        <value>Wyloguj</value>
+    </data>
+    <data name="TopBar_AccountSettings" xml:space="preserve">
+        <value>Ustawienia konta</value>
+    </data>
+    <data name="ViewChangelogMenuItem.Header" xml:space="preserve">
+        <value>Pokaż dziennik zmian</value>
+    </data>
+    <data name="ViewAppLogsMenuItem.Header" xml:space="preserve">
+        <value>Pokaż logi aplikacji</value>
+    </data>
+    <data name="GiveFeedbackMenuItem.Header" xml:space="preserve">
+        <value>Przekaż opinię</value>
+    </data>
+    <data name="NavigationControl_NavigationControl_Open_in_new_tab" xml:space="preserve">
+        <value>Otwórz w nowej karcie</value>
+    </data>
+    <data name="NavigationControl_NavigationControl_Open_in_new_panel" xml:space="preserve">
+        <value>Otwórz w nowym panelu</value>
+    </data>
+    <data name="TopBar_Help_ToolTip" xml:space="preserve">
+        <value>Pomoc i opinie</value>
+    </data>
+    <data name="FileOriginPage_AddMod_ToolTip" xml:space="preserve">
+        <value>Dodaj mod do swojej listy modów</value>
+    </data>
+    <data name="FileOriginPage_AddModAdvanced_ToolTip" xml:space="preserve">
+        <value>Użyj zaawansowanego instalatora, aby ręcznie wybrać pliki zawarte w instalacji</value>
+    </data>
+    <data name="ApplyControlView_ViewApplyChanges_ToolTip" xml:space="preserve">
+        <value>Zobacz zmiany, które zostaną zastosowane w folderze gry</value>
+    </data>
+    <data name="ApplyControlView_Apply_ToolTip" xml:space="preserve">
+        <value>Zastosuj zmiany w folderze gry</value>
+    </data>
+    <data name="IFileTreeNodeViewModel_FormattedChangeStateToolTip_Added" xml:space="preserve">
+        <value>Plik zostanie dodany</value>
+    </data>
+    <data name="IFileTreeNodeViewModel_FormattedChangeStateToolTip_ModifiedFile" xml:space="preserve">
+        <value>Plik zostanie zmodyfikowany</value>
+    </data>
+    <data name="IFileTreeNodeViewModel_FormattedChangeStateToolTip_Removed" xml:space="preserve">
+        <value>Plik zostanie usunięty</value>
+    </data>
+    <data name="IFileTreeNodeViewModel_FormattedChangeStateToolTip_ModifiedFolder" xml:space="preserve">
+        <value>Folder zawiera zmodyfikowane pliki</value>
+    </data>
+    <data name="InfoBanner_PrefixProperty_Did_you_know_" xml:space="preserve">
+        <value>Czy wiesz?</value>
+    </data>
+    <data name="NewTabPageInfoBannerText1" xml:space="preserve">
+        <value>Możesz dodać panele do wyświetlania na podzielonym ekranie,</value>
+    </data>
+    <data name="NewTabPageInfoBannerText2" xml:space="preserve">
+        <value>wybierając odpowiedni przycisk na pasku narzędzi</value>
     </data>
 </root>

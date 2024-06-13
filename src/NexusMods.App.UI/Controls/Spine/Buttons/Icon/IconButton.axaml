@@ -18,8 +18,6 @@
 
     <Button
         Classes="IconButton Add"
-        Height="64"
-        Width="64"
         x:Name="Button">
         <ToolTip.Tip>
             <TextBlock x:Name="ToolTipTextBlock"/>
@@ -36,8 +34,8 @@
                                        VerticalAlignment="Center" />
                     <Border x:Name="IconButtonInnerBorder"
                             Classes="Rounded-full"
-                            Height="50"
-                            Width="50" />
+                            Height="48"
+                            Width="48" />
                 </Grid>
             </ControlTemplate>
         </Button.Template>
