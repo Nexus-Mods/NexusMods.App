@@ -95,7 +95,8 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
     [Reactive] public ReactiveCommand<Unit, Unit> HideAllCommand { get; private set; } = ReactiveCommand.Create(() => { });
 
     private readonly ObservableCollectionExtended<DateTimePoint> _throughputValues = [];
-    public ReadOnlyObservableCollection<ISeries> Series { get; } = ReadOnlyObservableCollection<ISeries>.Empty;
+    private readonly ISeries _lineSeries;
+    public ReadOnlyObservableCollection<ISeries> Series { get; }
 
     private readonly ObservableCollectionExtended<double> _customSeparators = [0];
 
@@ -118,15 +119,15 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
         IOverlayController overlayController) : base(windowManager)
     {
         _downloadService = downloadService;
-        Series = new ReadOnlyObservableCollection<ISeries>([
-            new LineSeries<DateTimePoint>
-            {
-                Values = _throughputValues,
-                Fill = null,
-                GeometryFill = null,
-                GeometryStroke = null,
-            },
-        ]);
+        _lineSeries = new LineSeries<DateTimePoint>
+        {
+            Values = _throughputValues,
+            Fill = null,
+            GeometryFill = null,
+            GeometryStroke = null,
+        };
+
+        Series = new ReadOnlyObservableCollection<ISeries>([_lineSeries]);
 
         YAxes =
         [
@@ -255,6 +256,9 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
     /// </summary>
     protected InProgressViewModel() : base(new DesignWindowManager())
     {
+        _lineSeries = new LineSeries<DateTimePoint>();
+        Series = ReadOnlyObservableCollection<ISeries>.Empty;
+
         InProgressTaskChangeSet = DesignTimeDownloadTasks.Connect().OnUI();
         CompletedTaskChangeSet = DesignTimeDownloadTasks.Connect().OnUI();
         SelectedInprogressTaskChangeSet = SelectedInProgressTasks.Connect().OnUI();
@@ -460,6 +464,7 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
         var remainingBytes = totalSizeBytes - totalDownloadedBytes;
         SecondsRemaining = throughput < 1.0 ? 0 : (int)(remainingBytes / Math.Max(throughput, 1));
 
+        // Graph
         if (_throughputValues.Count > 120)
         {
             _throughputValues.RemoveRange(0, count: 60);
@@ -470,6 +475,11 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
         {
             _customSeparators.Add(FirstMultiple(throughput));
         }
+
+        const int delay = 5;
+        _lineSeries.IsVisible = _throughputValues
+            .TakeLast(Math.Min(delay, _throughputValues.Count))
+            .Sum(x => x.Value!.Value) > 0.0;
 
         _throughputValues.Add(new DateTimePoint(DateTime.Now, throughput));
     }
