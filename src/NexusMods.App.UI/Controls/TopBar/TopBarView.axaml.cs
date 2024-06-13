@@ -56,7 +56,7 @@ public partial class TopBarView : ReactiveUserControl<ITopBarViewModel>
                     x => x.ViewModel!.IsPremium,
                     (isLoggedIn, isPremium) => isLoggedIn && isPremium
                 )
-                .BindTo(this, view => view.PremiumLabel.IsVisible)
+                .BindToView (this, view => view.PremiumLabel.IsVisible)
                 .DisposeWith(d);
 
             this.OneWayBind(ViewModel, vm => vm.IsLoggedIn, view => view.LoginMenuItem.IsVisible, b => !b)

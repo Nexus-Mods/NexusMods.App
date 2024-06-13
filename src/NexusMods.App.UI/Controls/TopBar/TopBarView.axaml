@@ -63,7 +63,7 @@
             
             <MenuItem Classes="TopBarNoStyleMenuItem" x:Name="LoginMenuItem">
                 <MenuItem.Header>
-                    <Button Classes="Standard Primary" x:Name="LoginButton" Width="86">
+                    <Button Classes="Standard Primary" x:Name="LoginButton">
                         <TextBlock Text="{x:Static resources:Language.TopBarActions__LOG_IN}"/>
                     </Button>
                 </MenuItem.Header>
