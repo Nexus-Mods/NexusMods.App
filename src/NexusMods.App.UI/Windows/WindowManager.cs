@@ -134,9 +134,9 @@ internal sealed class WindowManager : ReactiveObject, IWindowManager
                 tx.Delete(found.Id, true);
                 tx.Commit();
             }
-            catch (Exception)
+            catch (Exception otherException)
             {
-                // ignored
+                _logger.LogError(otherException, "Exception while retracting window state");
             }
         }
 

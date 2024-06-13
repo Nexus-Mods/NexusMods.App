@@ -62,6 +62,7 @@ public class ApiKeyMessageFactory(IConnection conn) : IAuthenticatingMessageFact
         var result = await nexusApiNexusApiClient.Validate(token);
         return new UserInfo
         {
+            UserId = result.Data.UserId,
             Name = result.Data.Name,
             IsPremium = result.Data.IsPremium,
             AvatarUrl = result.Data.ProfileUrl,

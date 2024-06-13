@@ -1,15 +1,16 @@
-using System.Text.Json.Serialization;
 using JetBrains.Annotations;
-using NexusMods.Abstractions.Serialization.Attributes;
+using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Settings;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
 [UsedImplicitly]
-[JsonName("NexusMods.App.UI.Workspace.NewTabPageContext")]
 public record NewTabPageContext : IPageFactoryContext
 {
-    [JsonIgnore]
     public required PageDiscoveryDetails[] DiscoveryDetails { get; init; }
+
+    /// <inheritdoc/>
+    public bool IsEphemeral => true;
 }
 
 [UsedImplicitly]
@@ -22,6 +23,10 @@ public class NewTabPageFactory : APageFactory<INewTabPageViewModel, NewTabPageCo
 
     public override INewTabPageViewModel CreateViewModel(NewTabPageContext context)
     {
-        return new NewTabPageViewModel(WindowManager, context.DiscoveryDetails);
+        return new NewTabPageViewModel(
+            ServiceProvider.GetRequiredService<ISettingsManager>(),
+            WindowManager,
+            context.DiscoveryDetails
+        );
     }
 }

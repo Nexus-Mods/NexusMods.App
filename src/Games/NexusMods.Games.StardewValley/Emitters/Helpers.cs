@@ -4,14 +4,15 @@ using NexusMods.Abstractions.Diagnostics.Values;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Mods;
+using NexusMods.Abstractions.Telemetry;
 using StardewModdingAPI.Toolkit.Serialization.Models;
 
 namespace NexusMods.Games.StardewValley.Emitters;
 
 internal static class Helpers
 {
-    public static readonly NamedLink NexusModsLink = new("Nexus Mods", new Uri("https://nexusmods.com/stardewvalley"));
-    public static readonly NamedLink SMAPILink = new("Nexus Mods", new Uri("https://nexusmods.com/stardewvalley/mods/2400"));
+    public static readonly NamedLink NexusModsLink = new("Nexus Mods", NexusModsUrlBuilder.CreateGenericUri("https://nexusmods.com/stardewvalley"));
+    public static readonly NamedLink SMAPILink = new("Nexus Mods", NexusModsUrlBuilder.CreateDiagnosticUri(StardewValley.GameDomain.Value, "2400"));
 
     public static async IAsyncEnumerable<ValueTuple<Mod.ReadOnly, Manifest>> GetAllManifestsAsync(
         ILogger logger,

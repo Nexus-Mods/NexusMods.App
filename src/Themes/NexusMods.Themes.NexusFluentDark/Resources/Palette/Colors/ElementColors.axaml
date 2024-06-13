@@ -80,13 +80,12 @@
     <!-- Primary -->
 
     <!-- Colors -->
-    <!-- NOTE: These are pointing to legacy brand primary colors and should be updated to use the new colors once we switch to them. -->
-    <StaticResource x:Key="PrimaryWeak" ResourceKey="BrandLegacyPrimaryWeak" />
-    <StaticResource x:Key="PrimaryModerate" ResourceKey="BrandLegacyPrimaryModerate" />
-    <StaticResource x:Key="PrimaryStrong" ResourceKey="BrandLegacyPrimaryStrong" />
+    <StaticResource x:Key="PrimarySubdued" ResourceKey="BrandPrimary500" />
+    <StaticResource x:Key="PrimaryModerate" ResourceKey="BrandPrimary400" />
+    <StaticResource x:Key="PrimaryStrong" ResourceKey="BrandPrimary300" />
 
     <!-- SolidColorBrushes -->
-    <SolidColorBrush x:Key="PrimaryWeakBrush" Color="{StaticResource PrimaryWeak}" />
+    <SolidColorBrush x:Key="PrimarySubduedBrush" Color="{StaticResource PrimarySubdued}" />
     <SolidColorBrush x:Key="PrimaryModerateBrush" Color="{StaticResource PrimaryModerate}" />
     <SolidColorBrush x:Key="PrimaryStrongBrush" Color="{StaticResource PrimaryStrong}" />
 
@@ -159,7 +158,6 @@
     <SolidColorBrush x:Key="NeutralTranslucentSubduedBrush" Color="{StaticResource NeutralTranslucentSubdued}" />
     <SolidColorBrush x:Key="NeutralTranslucentModerateBrush" Color="{StaticResource NeutralTranslucentModerate}" />
     <SolidColorBrush x:Key="NeutralTranslucentStrongBrush" Color="{StaticResource NeutralTranslucentStrong}" />
-
 
     <!-- Strokes -->
 

@@ -4,19 +4,15 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Controls;
 using DynamicData;
-using DynamicData.Alias;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.FileStore;
-using NexusMods.Abstractions.FileStore.ArchiveMetadata;
-using NexusMods.Abstractions.Games.DTO;
-using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.Settings;
+using NexusMods.Abstractions.Telemetry;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.Controls.MarkdownRenderer;
 using NexusMods.App.UI.Controls.Navigation;
@@ -34,9 +30,6 @@ using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Extensions.DynamicData;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.Models;
-using NexusMods.Networking.Downloaders.Tasks.State;
-using NexusMods.Paths;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using File = NexusMods.Abstractions.Loadouts.Files.File;
@@ -46,12 +39,7 @@ namespace NexusMods.App.UI.Pages.LoadoutGrid;
 [UsedImplicitly]
 public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoadoutGridViewModel
 {
-    private readonly IFileSystem _fileSystem;
-    private readonly ILogger<LoadoutGridViewModel> _logger;
     private readonly IConnection _conn;
-    private readonly IArchiveInstaller _archiveInstaller;
-    private readonly IFileOriginRegistry _fileOriginRegistry;
-    private readonly IServiceProvider _provider;
 
     private ReadOnlyObservableCollection<ModId> _mods;
     public ReadOnlyObservableCollection<ModId> Mods => _mods;
@@ -65,7 +53,6 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
 
     [Reactive] public LoadoutId LoadoutId { get; set; }
     [Reactive] public string LoadoutName { get; set; } = "";
-    public GameDomain _gameDomain = GameDomain.DefaultValue;
 
     [Reactive] public ModId[] SelectedItems { get; set; } = [];
     public ReactiveCommand<NavigationInformation, Unit> ViewModContentsCommand { get; }
@@ -78,19 +65,12 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
         ILogger<LoadoutGridViewModel> logger,
         IServiceProvider provider,
         IConnection conn,
-        IFileSystem fileSystem,
-        IArchiveInstaller archiveInstaller,
-        IFileOriginRegistry fileOriginRegistry,
+        IRepository<Loadout.Model> loadoutRepository,
         IWindowManager windowManager,
         ISettingsManager settingsManager) : base(windowManager)
     {
-        _logger = logger;
-        _fileSystem = fileSystem;
         _conn = conn;
-        _archiveInstaller = archiveInstaller;
-        _fileOriginRegistry = fileOriginRegistry;
-        _provider = provider;
-        
+
         MarkdownRendererViewModel = provider.GetRequiredService<IMarkdownRendererViewModel>();
 
         _columns = new SourceCache<IDataGridColumnFactory<LoadoutColumn>, LoadoutColumn>(_ => throw new NotSupportedException());
@@ -150,18 +130,10 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
         {
             this.WhenAnyValue(vm => vm.LoadoutId)
                 .CombineLatest(settingsManager.GetChanges<LoadoutGridSettings>(prependCurrent: true))
-                .SelectMany(tuple => Loadout.Load(_conn.Db, tuple.Item1).Revisions())
+                .SelectMany(tuple => loadoutRepository.Revisions(tuple.First.Value))
                 .Select(loadout =>
                 {
-                    try
-                    {
-                        _gameDomain = loadout.InstallationInstance.Game.Domain;
-                    }
-                    catch (Exception)
-                    {
-                        _gameDomain = GameDomain.DefaultValue;
-                    }
-
+                    
                     var settings = settingsManager.Get<LoadoutGridSettings>();
                     var showGameFiles = settings.ShowGameFiles;
                     var showOverride = settings.ShowOverride;
@@ -194,45 +166,15 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
         });
     }
 
-    public Task AddMod(string path) => AddMod(path, installer: null);
-
-    public Task AddModAdvanced(string path)
-    {
-        var installer = _provider.GetKeyedService<IModInstaller>("AdvancedManualInstaller");
-        return AddMod(path, installer);
-    }
-
-    private Task AddMod(string path, IModInstaller? installer)
-    {
-        var file = _fileSystem.FromUnsanitizedFullPath(path);
-        if (!_fileSystem.FileExists(file))
-        {
-            _logger.LogError("File {File} does not exist, not installing mod", file);
-            return Task.CompletedTask;
-        }
-
-        var _ = Task.Run(async () =>
-        {
-            var downloadId = await _fileOriginRegistry.RegisterDownload(file,
-                (tx, id) =>
-                {
-                    tx.Add(id, DownloaderState.GameDomain, _gameDomain);
-                    tx.Add(id, FilePathMetadata.OriginalName, file.FileName);
-                }, file.FileName);
-            await _archiveInstaller.AddMods(LoadoutId, downloadId, file.FileName, installer: installer, token: CancellationToken.None);
-        });
-
-        return Task.CompletedTask;
-    }
-
+    [UsedImplicitly]
     public async Task DeleteMods(IEnumerable<ModId> modsToDelete, string commitMessage)
     {
         var db = _conn.Db;
-        var loadout = Loadout.Load(db, LoadoutId);
+        var loadout = db.Get(LoadoutId);
         using var tx = _conn.BeginTransaction();
         foreach (var modId in modsToDelete)
         {
-            var mod = Mod.Load(db, modId);
+            var mod = db.Get(modId);
             foreach (var file in mod.Files)
             {
                 tx.Retract(file.Id, File.Loadout, file.LoadoutId.Value);
@@ -246,9 +188,9 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
     private const string NexusModsUrl = "https://www.nexusmods.com/{0}";
     private string GetEmptyModlistMarkdownString()
     {
-        var gameDomain = Loadout.Load(_conn.Db, LoadoutId).InstallationInstance.Game.Domain;
-        var url = string.Format(NexusModsUrl, gameDomain);
-        var mkString = """
+        var gameDomain = _conn.Db.Get(LoadoutId).Installation.Game.Domain;
+        var url = NexusModsUrlBuilder.CreateGenericUri(string.Format(NexusModsUrl, gameDomain));
+        const string mkString = """
 ### No mods have been added
 View and add your existing downloaded mods from the **Library** or [browse new mods on Nexus Mods]({0})
 """;

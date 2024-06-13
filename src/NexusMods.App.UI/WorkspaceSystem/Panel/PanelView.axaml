@@ -5,6 +5,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactive="http://reactiveui.net"
     xmlns:workspace="clr-namespace:NexusMods.App.UI.WorkspaceSystem"
+    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
     mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="400"
     x:Class="NexusMods.App.UI.WorkspaceSystem.PanelView"
     Width="0" Height="0">
@@ -45,7 +46,11 @@
                                         HorizontalAlignment="Stretch">
                                     <Button x:Name="AddTabButton1"
                                             Margin="12 12 10 12"
-                                            Classes="PanelTitlebar AddTab" />
+                                            Classes="PanelTitlebar AddTab" >
+                                        <ToolTip.Tip>
+                                            <TextBlock Text="{x:Static resources:Language.Panel_Add_tab_ToolTip}" />
+                                        </ToolTip.Tip>
+                                    </Button>
                                 </Border>
                             </Grid>
 

@@ -204,12 +204,12 @@
 	<data name="HomeView__BROWSE_ALL_GAMES" xml:space="preserve">
 		<value>PRZEGLĄDAJ WSZYSTKIE GRY</value>
 	</data>
-	<data name="LoadoutGridView__Add_Mod" xml:space="preserve">
-		<value>Dodaj mod</value>
-	</data>
-	<data name="LoadoutGridView__Add_Mod_Advanced" xml:space="preserve">
-		<value>Dodaj mod (Zaawansowane)</value>
-	</data>
+    <data name="FileOriginsPage__Add_Mod" xml:space="preserve">
+        <value>Dodaj</value>
+    </data>
+    <data name="FileOriginsPage__Add_Mod_Advanced" xml:space="preserve">
+        <value>Dodaj (Zaawansowane)</value>
+    </data>
 	<data name="MyGamesView__Ready_to_mod" xml:space="preserve">
 		<value>Dodane gry</value>
 	</data>
@@ -452,9 +452,9 @@
 	<data name="FileOriginsPageView_DownloadedHeader" xml:space="preserve">
 		<value>POBRANE</value>
 	</data>
-	<data name="FileOriginsPageView_AddedHeader" xml:space="preserve">
-		<value>DODANE</value>
-	</data>
+    <data name="FileOriginsPageView_InstalledHeader" xml:space="preserve">
+        <value>ZAINSTALOWANE</value>
+    </data>
 	<data name="FileOriginsPageView_ActionHeader" xml:space="preserve">
 		<value>DZIAŁANIA</value>
 	</data>
@@ -472,6 +472,18 @@
     </data>
     <data name="LoadoutGridView__Remove" xml:space="preserve">
         <value>Usuń</value>
+    </data>
+    <data name="FileOriginsPage_GetMods" xml:space="preserve">
+        <value>Uzyskaj mody:</value>
+    </data>
+    <data name="FileOriginsPage_FromDrive" xml:space="preserve">
+        <value>Z dysku</value>
+    </data>
+    <data name="FileOriginsPage_FromNexusMods" xml:space="preserve">
+        <value>Z Nexus Mods</value>
+    </data>
+    <data name="FileOriginsPage_ViewButtonText" xml:space="preserve">
+        <value>Pokaż</value>
     </data>
     <data name="LoginMessageView_BodyTextBlock" xml:space="preserve">
         <value>Zaloguj się na swoje konto Nexus Mods, aby łatwo pobierać mody z Nexus Mods.&#x0a;&#x0a;Nie musisz się logować, jeśli chcesz dodawać ręcznie mody z dysku.</value>

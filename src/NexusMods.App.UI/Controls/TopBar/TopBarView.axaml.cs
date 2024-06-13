@@ -13,48 +13,49 @@ public partial class TopBarView : ReactiveUserControl<ITopBarViewModel>
 
         this.WhenActivated(d =>
         {
-            this.BindCommand(ViewModel, vm => vm.LoginCommand, view => view.LoginButton)
+            this.OneWayBind(ViewModel, vm => vm.ActiveWorkspaceTitle, view => view.ActiveWorkspaceTitleTextBlock.Text)
                 .DisposeWith(d);
 
-            this.BindCommand(ViewModel, vm => vm.HistoryActionCommand, view => view.HistoryActionButton)
-                .DisposeWith(d);
-
-            this.BindCommand(ViewModel, vm => vm.UndoActionCommand, view => view.UndoActionButton)
-                .DisposeWith(d);
-
-            this.BindCommand(ViewModel, vm => vm.RedoActionCommand, view => view.RedoActionButton)
-                .DisposeWith(d);
-
-            this.BindCommand(ViewModel, vm => vm.HelpActionCommand, view => view.HelpActionButton)
-                .DisposeWith(d);
-
-            this.BindCommand(ViewModel, vm => vm.SettingsActionCommand, view => view.SettingsActionButton)
-                .DisposeWith(d);
-
-            this.BindCommand(ViewModel, vm => vm.LogoutCommand, view => view.UserButton)
-                .DisposeWith(d);
-
-            this.OneWayBind(ViewModel, vm => vm.IsLoggedIn, view => view.LoginButton.IsVisible,isLoggedIn => !isLoggedIn)
-                .DisposeWith(d);
-
-            this.OneWayBind(ViewModel, vm => vm.IsLoggedIn, view => view.UserPanel.IsVisible)
-                .DisposeWith(d);
 
             this.OneWayBind(ViewModel, vm => vm.AddPanelDropDownViewModel, view => view.AddPanelViewModelViewHost.ViewModel)
                 .DisposeWith(d);
 
-            this.WhenAnyValue(
-                    x => x.ViewModel!.IsLoggedIn,
-                    x => x.ViewModel!.IsPremium,
-                    (isLoggedIn, isPremium) => isLoggedIn && isPremium
-                )
-                .BindTo(this, view => view.Premium.IsVisible)
+
+            this.BindCommand(ViewModel, vm => vm.OpenSettingsCommand, view => view.OpenSettingsMenuItem)
                 .DisposeWith(d);
 
-            this.OneWayBind(ViewModel, vm => vm.Avatar, view => view.AvatarImage.Value, image => new IconValue(new AvaloniaImage(image)))
+
+            this.BindCommand(ViewModel, vm => vm.ViewChangelogCommand, view => view.ViewChangelogMenuItem)
                 .DisposeWith(d);
 
-            this.OneWayBind(ViewModel, vm => vm.ActiveWorkspaceTitle, view => view.ActiveWorkspaceTitleTextBlock.Text)
+            this.BindCommand(ViewModel, vm => vm.ViewAppLogsCommand, view => view.ViewAppLogsMenuItem)
+                .DisposeWith(d);
+
+            this.BindCommand(ViewModel, vm => vm.GiveFeedbackCommand, view => view.GiveFeedbackMenuItem)
+                .DisposeWith(d);
+
+
+            this.BindCommand(ViewModel, vm => vm.LoginCommand, view => view.LoginButton)
+                .DisposeWith(d);
+
+
+            this.OneWayBind(ViewModel, vm => vm.Avatar, view => view.AvatarIcon.Value, avatar => new IconValue(new AvaloniaImage(avatar)))
+                .DisposeWith(d);
+
+            this.BindCommand(ViewModel, vm => vm.OpenNexusModsProfileCommand, view => view.OpenNexusModsProfileMenuItem)
+                .DisposeWith(d);
+
+            this.BindCommand(ViewModel, vm => vm.OpenNexusModsAccountSettingsCommand, view => view.OpenNexusModsAccountSettingsMenuItem)
+                .DisposeWith(d);
+
+            this.BindCommand(ViewModel, vm => vm.LogoutCommand, view => view.SignOutMenuItem)
+                .DisposeWith(d);
+
+
+            this.OneWayBind(ViewModel, vm => vm.IsLoggedIn, view => view.LoginMenuItem.IsVisible, b => !b)
+                .DisposeWith(d);
+
+            this.OneWayBind(ViewModel, vm => vm.IsLoggedIn, view => view.AvatarMenuItem.IsVisible)
                 .DisposeWith(d);
         });
     }

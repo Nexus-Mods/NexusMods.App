@@ -207,11 +207,11 @@
     <data name="HomeView__BROWSE_ALL_GAMES" xml:space="preserve">
         <value>BROWSE ALL GAMES</value>
     </data>
-    <data name="LoadoutGridView__Add_Mod" xml:space="preserve">
-        <value>Add Mod</value>
+    <data name="FileOriginsPage__Add_Mod" xml:space="preserve">
+        <value>Add</value>
     </data>
-    <data name="LoadoutGridView__Add_Mod_Advanced" xml:space="preserve">
-        <value>Add Mod (Advanced)</value>
+    <data name="FileOriginsPage__Add_Mod_Advanced" xml:space="preserve">
+        <value>Advanced Add</value>
     </data>
     <data name="MyGamesView__Ready_to_mod" xml:space="preserve">
         <value>Games Added</value>
@@ -337,7 +337,7 @@
         <value>HIDDEN</value>
     </data>
     <data name="LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics" xml:space="preserve">
-        <value>Diagnostics</value>
+        <value>Health check</value>
     </data>
     <data name="DiagnosticListView_DiagnosticListView_All" xml:space="preserve">
         <value>All ({0})</value>
@@ -441,7 +441,7 @@
         <value>Changelog</value>
     </data>
     <data name="DiagnosticListViewModel_DiagnosticListViewModel_Diagnostics" xml:space="preserve">
-        <value>Diagnostics</value>
+        <value>Health check</value>
     </data>
     <data name="FileOriginsPageTitle" xml:space="preserve">
         <value>Library</value>
@@ -458,8 +458,8 @@
     <data name="FileOriginsPageView_DownloadedHeader" xml:space="preserve">
         <value>DOWNLOADED</value>
     </data>
-    <data name="FileOriginsPageView_AddedHeader" xml:space="preserve">
-        <value>ADDED</value>
+    <data name="FileOriginsPageView_InstalledHeader" xml:space="preserve">
+        <value>INSTALLED</value>
     </data>
     <data name="FileOriginsPageView_ActionHeader" xml:space="preserve">
         <value>ACTIONS</value>
@@ -484,5 +484,83 @@
     </data>
     <data name="LoginMessageView_Title" xml:space="preserve">
         <value>Log in to get started</value>
+    </data>
+    <data name="FileOriginsPage_GetMods" xml:space="preserve">
+        <value>Get mods:</value>
+    </data>
+    <data name="FileOriginsPage_FromDrive" xml:space="preserve">
+        <value>From drive</value>
+    </data>
+    <data name="FileOriginsPage_FromNexusMods" xml:space="preserve">
+        <value>From Nexus Mods</value>
+    </data>
+    <data name="FileOriginsPage_ViewButtonText" xml:space="preserve">
+        <value>View</value>
+    </data>
+    <data name="AddPanelToolTip" xml:space="preserve">
+        <value>Add a panel for split screen viewing</value>
+    </data>
+    <data name="Panel_Add_tab_ToolTip" xml:space="preserve">
+        <value>Add tab</value>
+    </data>
+    <data name="TopBar_MyProfile" xml:space="preserve">
+        <value>My Profile</value>
+    </data>
+    <data name="TopBar_SignOut" xml:space="preserve">
+        <value>Sign out</value>
+    </data>
+    <data name="TopBar_AccountSettings" xml:space="preserve">
+        <value>Account settings</value>
+    </data>
+    <data name="ViewChangelogMenuItem.Header" xml:space="preserve">
+        <value>View changelog</value>
+    </data>
+    <data name="ViewAppLogsMenuItem.Header" xml:space="preserve">
+        <value>View App logs</value>
+    </data>
+    <data name="GiveFeedbackMenuItem.Header" xml:space="preserve">
+        <value>Give feedback</value>
+    </data>
+    <data name="NavigationControl_NavigationControl_Open_in_new_tab" xml:space="preserve">
+        <value>Open in new tab</value>
+    </data>
+    <data name="NavigationControl_NavigationControl_Open_in_new_panel" xml:space="preserve">
+        <value>Open in new panel</value>
+    </data>
+    <data name="TopBar_Help_ToolTip" xml:space="preserve">
+        <value>Help and feedback</value>
+    </data>
+    <data name="FileOriginPage_AddMod_ToolTip" xml:space="preserve">
+        <value>Add mod to your mod list</value>
+    </data>
+    <data name="FileOriginPage_AddModAdvanced_ToolTip" xml:space="preserve">
+        <value>Use advanced installer to manually select files to include</value>
+    </data>
+    <data name="ApplyControlView_ViewApplyChanges_ToolTip" xml:space="preserve">
+        <value>View the changes that will be applied to your game folder</value>
+    </data>
+    <data name="ApplyControlView_Apply_ToolTip" xml:space="preserve">
+        <value>Apply your changes to the game folder</value>
+    </data>
+    <data name="IFileTreeNodeViewModel_FormattedChangeStateToolTip_Added" xml:space="preserve">
+        <value>File will be added</value>
+    </data>
+    <data name="IFileTreeNodeViewModel_FormattedChangeStateToolTip_ModifiedFile" xml:space="preserve">
+        <value>File will be modified</value>
+    </data>
+    <data name="IFileTreeNodeViewModel_FormattedChangeStateToolTip_Removed" xml:space="preserve">
+        <value>File will be removed</value>
+    </data>
+    <data name="IFileTreeNodeViewModel_FormattedChangeStateToolTip_ModifiedFolder" xml:space="preserve">
+        <value>Folder contains modified files</value>
+    </data>
+    <data name="InfoBanner_PrefixProperty_Did_you_know_" xml:space="preserve">
+        <value>Did you know?</value>
+    </data>
+    <data name="NewTabPageInfoBannerText1" xml:space="preserve">
+        <value>You can add panels for split screen viewing by selecting the</value>
+    </data>
+    <data name="NewTabPageInfoBannerText2" xml:space="preserve">
+        <value>button in the toolbar</value>
     </data>
 </root>

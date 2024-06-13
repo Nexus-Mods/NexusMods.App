@@ -110,16 +110,23 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                 workspaceController.AllWorkspaces
                     .ToObservableChangeSet()
                     .Transform(workspace =>
+                    {
+                        try
                         {
                             var leftMenu = workspaceAttachmentsFactory.CreateLeftMenuFor(
                                 workspace.Context,
                                 workspace.Id,
                                 workspaceController
                             );
-                            // This should never be null, since there should be a factory for each context type, but in case
-                            return leftMenu ?? new EmptyLeftMenuViewModel(workspace.Id);
+
+                            return leftMenu ?? new EmptyLeftMenuViewModel(workspace.Id, message: $"Missing {workspace.Context.GetType()}");
                         }
-                    )
+                        catch (Exception e)
+                        {
+                            _logger.LogError(e, "Exception while creating left menu for context {Context}", workspace.Context);
+                            return new EmptyLeftMenuViewModel(workspace.Id, message: $"Error for {workspace.Context.GetType()}");
+                        }
+                    })
                     .Bind(out _leftMenus)
                     .SubscribeWithErrorLogging()
                     .DisposeWith(disposables);

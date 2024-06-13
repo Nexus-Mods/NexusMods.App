@@ -85,7 +85,9 @@
             <icons:UnifiedIcon Classes="Forum"/>
             <icons:UnifiedIcon Classes="Sync"/>
             <icons:UnifiedIcon Classes="Visibility"/>
-
+            <icons:UnifiedIcon Classes="PlaylistAdd"/>
+            <icons:UnifiedIcon Classes="HardDrive"/>
+            <icons:UnifiedIcon Classes="Nexus"/>
         </WrapPanel>
     </Design.PreviewWith>
 
@@ -336,9 +338,7 @@
     </Style>
 
     <Style Selector="icons|UnifiedIcon.AddCircle">
-        <Setter Property="Value">
-            <icons:IconValue SvgSetter="avares://NexusMods.App.UI/Assets/Icons/add_circle_24px.svg" />
-        </Setter>
+        <Setter Property="Value" Value="{x:Static icons:IconValues.AddCircle}"/>
     </Style>
 
     <Style Selector="icons|UnifiedIcon.AlertCircle">
@@ -423,5 +423,17 @@
     
     <Style Selector="icons|UnifiedIcon.Visibility">
         <Setter Property="Value" Value="{x:Static icons:IconValues.Visibility}"/>
+    </Style>
+    
+    <Style Selector="icons|UnifiedIcon.PlaylistAdd">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.PlaylistAdd}"/>
+    </Style>
+    
+    <Style Selector="icons|UnifiedIcon.HardDrive">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.HardDrive}"/>
+    </Style>
+
+    <Style Selector="icons|UnifiedIcon.Nexus">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.Nexus}"/>
     </Style>
 </Styles>

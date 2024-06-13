@@ -36,6 +36,7 @@
             <!-- No Header -->
             <Border Classes="Toolbar">
                 <StackPanel>
+                    <TextBlock Classes="NotTitle" Text="Override: Not a title!"/>
                     <Button>
                         <StackPanel>
                             <icons:UnifiedIcon Classes="RemoveCircleOutline"/>
@@ -137,5 +138,12 @@
          above the style for non-disabled button. --> 
     <Style Selector="Border.Toolbar Button:disabled TextBlock">
         <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
+    </Style>
+    
+    <!-- Optional Classes -->
+    
+    <!-- Class 'NotTitle', for text that is not title -->
+    <Style Selector="Border.Toolbar TextBlock.NotTitle">
+        <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
     </Style>
 </Styles>

@@ -7,7 +7,6 @@ using NexusMods.ProxyConsole.Abstractions.Implementations;
 using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
 using NexusMods.SingleProcess;
 using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
-using Noggog;
 using Spectre.Console.Testing;
 
 namespace NexusMods.CLI.Tests.VerbTests;

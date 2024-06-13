@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Humanizer;
 using NexusMods.Abstractions.Settings;
 
 namespace NexusMods.App.UI.Settings;
@@ -9,6 +10,23 @@ public record LanguageSettings : ISettings
 {
     [JsonConverter(typeof(CultureInfoConverter))]
     public CultureInfo UICulture { get; set; } = CultureInfo.CurrentUICulture;
+
+    private static readonly CultureInfo[] SupportedLanguages;
+
+    static LanguageSettings()
+    {
+        // TODO: dynamically get allowed values
+        CultureInfo[] supportedLanguages =
+        [
+            new CultureInfo("en"),
+            new CultureInfo("pl"),
+            new CultureInfo("de"),
+            new CultureInfo("it"),
+        ];
+
+        Array.Sort(supportedLanguages, (a, b) => string.Compare(a.NativeName, b.NativeName, StringComparison.InvariantCulture));
+        SupportedLanguages = supportedLanguages;
+    }
 
     public static ISettingsBuilder Configure(ISettingsBuilder settingsBuilder)
     {
@@ -22,14 +40,8 @@ public record LanguageSettings : ISettings
                 .WithDescription("Set the language for the application.")
                 .UseSingleValueMultipleChoiceContainer(
                     valueComparer: CultureInfoComparer.Instance,
-                    allowedValues: [
-                        // TODO: dynamically get allowed values
-                        new CultureInfo("en"),
-                        new CultureInfo("pl"),
-                        new CultureInfo("de"),
-                        new CultureInfo("it"),
-                    ],
-                    valueToDisplayString: static cultureInfo => cultureInfo.NativeName
+                    allowedValues: SupportedLanguages,
+                    valueToDisplayString: static cultureInfo => To.TitleCase.Transform(cultureInfo.NativeName, culture: CultureInfo.InvariantCulture)
                 )
                 .RequiresRestart()
             )

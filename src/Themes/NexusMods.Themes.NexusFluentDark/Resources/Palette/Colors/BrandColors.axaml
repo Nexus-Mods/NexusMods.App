@@ -71,7 +71,6 @@
 
 
     <!-- Primary -->
-    <!-- NOTE: The Primary colour ramp will be hidden until we are ready to update our Primary Brand colours -->
 
     <!-- Colors -->
     <StaticResource x:Key="BrandPrimary950" ResourceKey="PrimitiveOrange950" />
@@ -243,14 +242,5 @@
     <SolidColorBrush x:Key="BrandTranslucentDark200Brush" Color="{StaticResource BrandTranslucentDark200}" />
     <SolidColorBrush x:Key="BrandTranslucentDark100Brush" Color="{StaticResource BrandTranslucentDark100}" />
     <SolidColorBrush x:Key="BrandTranslucentDark50Brush" Color="{StaticResource BrandTranslucentDark50}" />
-
-
-    <!-- Primary Legacy -->
-    <!-- NOTE: These are the legacy Primary colours, and should be removed once the new Primary colours are ready to be used. -->
-    <StaticResource x:Key="BrandLegacyPrimaryWeak" ResourceKey="PrimitiveLegacyPrimaryWeak" />
-    <StaticResource x:Key="BrandLegacyPrimaryModerate" ResourceKey="PrimitiveLegacyPrimaryModerate" />
-    <StaticResource x:Key="BrandLegacyPrimaryStrong" ResourceKey="PrimitiveLegacyPrimaryStrong" />
-
-
 
 </ResourceDictionary>

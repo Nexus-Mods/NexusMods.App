@@ -29,7 +29,5 @@ public class LoadoutGridDesignViewModel(IWindowManager windowManager) : APageVie
 
     public LoadoutGridDesignViewModel() : this(new DesignWindowManager()) { }
 
-    public Task AddMod(string path) => throw new NotImplementedException();
-    public Task AddModAdvanced(string path) => throw new NotImplementedException();
     public Task DeleteMods(IEnumerable<ModId> modsToDelete, string commitMessage) => throw new NotImplementedException();
 }

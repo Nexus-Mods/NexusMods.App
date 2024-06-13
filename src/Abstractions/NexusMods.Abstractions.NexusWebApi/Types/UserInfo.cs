@@ -9,6 +9,11 @@ namespace NexusMods.Abstractions.NexusWebApi.Types;
 public record UserInfo
 {
     /// <summary>
+    /// Gets the ID of the user.
+    /// </summary>
+    public required UserId UserId { get; init; }
+
+    /// <summary>
     /// Gets the name of the user.
     /// </summary>
     public required string Name { get; init; }

@@ -90,7 +90,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
         var diagnosticItem = new IconViewModel
         {
             Name = Language.LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics,
-            Icon = IconValues.MonitorDiagnostics,
+            Icon = IconValues.Stethoscope,
             NavigateCommand = ReactiveCommand.Create<NavigationInformation>(info =>
             {
                 var pageData = new PageData

@@ -30,4 +30,7 @@
         <DependentUpon>Counters.cs</DependentUpon>
       </Compile>
     </ItemGroup>
+    <ItemGroup>
+      <PackageReference Include="Microsoft.AspNetCore.WebUtilities"/>
+    </ItemGroup>
 </Project>

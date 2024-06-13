@@ -1,17 +1,19 @@
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.Installers;
-using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.CrossPlatform.Process;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.Models;
+using NexusMods.Paths;
 
 namespace NexusMods.App.UI.Pages.ModLibrary;
 
@@ -20,7 +22,6 @@ public record FileOriginsPageContext : IPageFactoryContext
 {
     public required LoadoutId LoadoutId { get; init; }
 }
-
 
 [UsedImplicitly]
 public class FileOriginsPageFactory : APageFactory<IFileOriginsPageViewModel, FileOriginsPageContext>
@@ -36,9 +37,7 @@ public class FileOriginsPageFactory : APageFactory<IFileOriginsPageViewModel, Fi
     {
         return new FileOriginsPageViewModel(
             context.LoadoutId,
-            ServiceProvider.GetRequiredService<IArchiveInstaller>(),
-            ServiceProvider.GetRequiredService<IConnection>(),
-            ServiceProvider.GetRequiredService<IWindowManager>()
+            ServiceProvider
         );
     }
 

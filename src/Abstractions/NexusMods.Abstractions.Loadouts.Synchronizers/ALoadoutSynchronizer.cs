@@ -952,7 +952,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
 
         var loadout = new Loadout.New(tx)
         {
-            Name = suggestedName ?? $"Loadout {installation.Game.Name}",
+            Name = suggestedName ?? installation.Game.Name,
             InstallationId = installation.GameMetadataId,
             Revision = 0,
             LoadoutKind = LoadoutKind.Default,

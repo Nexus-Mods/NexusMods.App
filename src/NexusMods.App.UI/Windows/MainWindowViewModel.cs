@@ -6,6 +6,7 @@ using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.App.UI.Controls.DevelopmentBuildBanner;
 using NexusMods.App.UI.Controls.Spine;
 using NexusMods.App.UI.Controls.TopBar;
+using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.LeftMenu;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Overlays.AlphaWarning;
@@ -27,7 +28,6 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
 
     public MainWindowViewModel(
         IServiceProvider serviceProvider,
-        IOSInformation osInformation,
         IWindowManager windowManager,
         IOverlayController overlayController,
         ILoginManager loginManager)
@@ -49,9 +49,6 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
         Spine = serviceProvider.GetRequiredService<ISpineViewModel>();
         DevelopmentBuildBanner = serviceProvider.GetRequiredService<IDevelopmentBuildBannerViewModel>();
 
-        // Only show controls in Windows since we can remove the chrome on that platform
-        TopBar.ShowWindowControls = osInformation.IsWindows;
-        
         this.WhenActivated(d =>
         {
             var alphaWarningViewModel = serviceProvider.GetRequiredService<IAlphaWarningViewModel>();
@@ -71,7 +68,8 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
             
             loginManager.IsLoggedInObservable
                 .Where(isSignedIn => isSignedIn)
-                .InvokeCommand(BringWindowToFront)
+                .Select(_ => Unit.Default)
+                .InvokeReactiveCommand(BringWindowToFront)
                 .DisposeWith(d);
             
             var loginMessageVM = serviceProvider.GetRequiredService<ILoginMessageBoxViewModel>();

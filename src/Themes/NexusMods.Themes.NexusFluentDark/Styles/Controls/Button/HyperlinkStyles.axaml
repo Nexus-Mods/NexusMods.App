@@ -54,7 +54,7 @@
         <Setter Property="Foreground" Value="{StaticResource PrimaryModerateBrush}" />
 
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Foreground" Value="{StaticResource PrimaryWeakBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource PrimarySubduedBrush}" />
         </Style>
 
         <Style Selector="^:pointerover > TextBlock">
