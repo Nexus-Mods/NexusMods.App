@@ -282,7 +282,7 @@ public static class IconValues
         )
     );
 
-    // https://pictogrammers.com/library/mdi/icon/star/
+    // https://pictogrammers.com/library/mdi/icon/rogress-download/
     public static readonly IconValue Downloading = new ProjektankerIcon("mdi-progress-download");
 
     // From Design System "Custom Icons" section on Figma
