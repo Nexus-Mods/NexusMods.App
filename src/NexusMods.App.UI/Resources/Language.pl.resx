@@ -154,7 +154,7 @@
 		<value>Historia pobierania</value>
 	</data>
 	<data name="NexusLoginOverlayView__Please_Click_Authorize" xml:space="preserve">
-		<value>PROSZĘ KLIKNĄĆ "AUTHORIZE" NA STRONIE INTERNETOWEJ</value>
+		<value>PROSZĘ KLIKNĄĆ "AUTHORISE" NA STRONIE INTERNETOWEJ</value>
 	</data>
 	<data name="NexusLoginOverlayView__BROWSER_DIDNT_OPEN" xml:space="preserve">
 		<value>PRZEGLĄDARKA NIE URUCHOMIŁA SIĘ AUTOMATYCZNIE?</value>
