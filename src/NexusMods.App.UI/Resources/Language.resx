@@ -337,7 +337,7 @@
         <value>HIDDEN</value>
     </data>
     <data name="LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics" xml:space="preserve">
-        <value>Health check</value>
+        <value>Health Check</value>
     </data>
     <data name="DiagnosticListView_DiagnosticListView_All" xml:space="preserve">
         <value>All ({0})</value>
@@ -441,7 +441,7 @@
         <value>Changelog</value>
     </data>
     <data name="DiagnosticListViewModel_DiagnosticListViewModel_Diagnostics" xml:space="preserve">
-        <value>Health check</value>
+        <value>Health Check</value>
     </data>
     <data name="FileOriginsPageTitle" xml:space="preserve">
         <value>Library</value>
