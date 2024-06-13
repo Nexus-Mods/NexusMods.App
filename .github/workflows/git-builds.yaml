@@ -7,7 +7,6 @@ on:
     - cron: '17 08,14 * * 1-5'
   workflow_dispatch:
   pull_request_target:
-    types: [ opened, synchronize, reopened, ready_for_review ]
 
 env:
   ProjectFile: "src/NexusMods.App/NexusMods.App.csproj"
