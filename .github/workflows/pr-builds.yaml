@@ -85,6 +85,6 @@ jobs:
         uses: thollander/actions-comment-pull-request@v2
         with:
           message: |
-            * [Windows Archive](${{ steps.build-windows.outputs.ArtifactUrlWindowsArchive }})
-            * [Linux Archive](${{ steps.build-linux.outputs.ArtifactUrlLinuxArchive }})
+            * [Windows Archive](${{ needs.build-windows.outputs.ArtifactUrlWindowsArchive }})
+            * [Linux Archive](${{ needs.build-linux.outputs.ArtifactUrlLinuxArchive }})
           comment_tag: builds
