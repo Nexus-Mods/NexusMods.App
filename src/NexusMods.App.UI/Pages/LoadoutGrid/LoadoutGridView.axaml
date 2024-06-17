@@ -62,7 +62,8 @@
                     <TextBlock Classes="BodyLGNormal ForegroundSubdued"
                                VerticalAlignment="Center"
                                Text="{x:Static resources:Language.LoadoutGrid_EmptyModlistSubtitle_Add_from_library}" />
-                    <Button Classes="Square Primary">
+                    <navigation:NavigationControl Classes="Square Primary"
+                                                  x:Name="ViewModLibraryButton">
                         <StackPanel Orientation="Horizontal" Classes="Spacing-1">
                             <icons:UnifiedIcon Classes="ModLibrary ForegroundSubdued"
                                                VerticalAlignment="Center" Size="18"/>
@@ -70,7 +71,7 @@
                                        VerticalAlignment="Center"
                                        Text="Library" />
                         </StackPanel>
-                    </Button>
+                    </navigation:NavigationControl>
 
                 </StackPanel>
             </StackPanel>

@@ -22,6 +22,7 @@ using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModName;
 using NexusMods.App.UI.Pages.LoadoutGrid.Columns.ModVersion;
 using NexusMods.App.UI.Pages.ModInfo;
 using NexusMods.App.UI.Pages.ModInfo.Types;
+using NexusMods.App.UI.Pages.ModLibrary;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Settings;
 using NexusMods.App.UI.Windows;
@@ -56,6 +57,7 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
 
     [Reactive] public ModId[] SelectedItems { get; set; } = [];
     public ReactiveCommand<NavigationInformation, Unit> ViewModContentsCommand { get; }
+    public ReactiveCommand<NavigationInformation, Unit> ViewModLibraryCommand { get; }
 
     public LoadoutGridViewModel() : base(null!)
     {
@@ -123,6 +125,23 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
             var behavior = workspaceController.GetOpenPageBehavior(pageData, info, IdBundle);
             workspaceController.OpenPage(WorkspaceId, pageData, behavior);
         }, hasSelection);
+        
+        ViewModLibraryCommand = ReactiveCommand.Create<NavigationInformation>(info =>
+        {
+
+            var pageData = new PageData
+            {
+                Context = new FileOriginsPageContext()
+                {
+                    LoadoutId = LoadoutId,
+                },
+                FactoryId = FileOriginsPageFactory.StaticId,
+            };
+
+            var workspaceController = GetWorkspaceController();
+            var behavior = workspaceController.GetOpenPageBehavior(pageData, info, IdBundle);
+            workspaceController.OpenPage(WorkspaceId, pageData, behavior);
+        });
 
         this.WhenActivated(d =>
         {

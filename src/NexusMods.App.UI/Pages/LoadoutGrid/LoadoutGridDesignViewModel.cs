@@ -25,6 +25,7 @@ public class LoadoutGridDesignViewModel(IWindowManager windowManager) : APageVie
     public ReadOnlyObservableCollection<IDataGridColumnFactory<LoadoutColumn>> Columns { get; } = new([]);
     public ModId[] SelectedItems { get; set; } = [];
     public ReactiveCommand<NavigationInformation, Unit> ViewModContentsCommand { get; } = ReactiveCommand.Create<NavigationInformation, Unit>(_ => Unit.Default);
+    public ReactiveCommand<NavigationInformation, Unit> ViewModLibraryCommand { get; } = ReactiveCommand.Create<NavigationInformation, Unit>(_ => Unit.Default);
 
     public LoadoutGridDesignViewModel() : this(new DesignWindowManager()) { }
 

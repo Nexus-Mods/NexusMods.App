@@ -1,10 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.Reactive;
-using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
-using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.App.UI.Controls.DataGrid;
-using NexusMods.App.UI.Controls.MarkdownRenderer;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.WorkspaceSystem;
 using ReactiveUI;
@@ -26,6 +23,8 @@ public interface ILoadoutGridViewModel : IPageViewModelInterface
     public ModId[] SelectedItems { get; set; }
 
     public ReactiveCommand<NavigationInformation, Unit> ViewModContentsCommand { get; }
+    
+    public ReactiveCommand<NavigationInformation, Unit> ViewModLibraryCommand { get; }
 
     /// <summary>
     /// Delete the mods from the loadout.

@@ -29,6 +29,9 @@ public partial class LoadoutGridView : ReactiveUserControl<ILoadoutGridViewModel
 
             this.BindCommand(ViewModel, vm => vm.ViewModContentsCommand, view => view.ViewModFilesButton)
                 .DisposeWith(d);
+            
+            this.BindCommand(ViewModel, vm => vm.ViewModLibraryCommand, view => view.ViewModLibraryButton)
+                .DisposeWith(d);
 
             this.WhenAnyValue(view => view.ViewModel!.Columns)
                 .GenerateColumns(ModsDataGrid)
