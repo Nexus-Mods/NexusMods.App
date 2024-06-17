@@ -8,6 +8,10 @@ on:
 env:
   ProjectFile: "src/NexusMods.App/NexusMods.App.csproj"
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref }}
+  cancel-in-progress: true
+
 jobs:
   comment-start:
     if: github.event.pull_request.draft == false
@@ -23,7 +27,7 @@ jobs:
         uses: thollander/actions-comment-pull-request@v2
         with:
           message: |
-            _(builds Build starting, please wait... )_
+            _Build starting, please wait..._
           comment_tag: builds
 
   transformInputs:
@@ -81,5 +85,6 @@ jobs:
         uses: thollander/actions-comment-pull-request@v2
         with:
           message: |
-            _(builds * [Linux Archive](${{ steps.build-linux.outputs.ArtifactUrlLinuxArchive }}) * [Windows Archive](${{ steps.build-windows.outputs.ArtifactUrlWindowsArchive }}) )_
+            * [Windows Archive](${{ steps.build-windows.outputs.ArtifactUrlWindowsArchive }})
+            * [Linux Archive](${{ steps.build-linux.outputs.ArtifactUrlLinuxArchive }})
           comment_tag: builds
