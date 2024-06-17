@@ -1,0 +1,80 @@
+name: PR Builds
+
+on:
+  pull_request_target:
+
+env:
+  ProjectFile: "src/NexusMods.App/NexusMods.App.csproj"
+
+jobs:
+  comment-start:
+    if: github.event_name == 'pull_request_target' && github.event.pull_request.draft == false
+    permissions:
+      pull-requests: write
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Comment PR
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          message: |
+            _(builds Build starting, please wait... )_
+          comment_tag: builds
+
+  transformInputs:
+    runs-on: ubuntu-latest
+    outputs:
+      ProjectFile: ${{ steps.setOutputs.outputs.projectFile }}
+
+    steps:
+      - name: Set Outputs
+        id: setOutputs
+        shell: pwsh
+        run: |
+          echo "projectFile=${{ env.ProjectFile }}" >> $env:GITHUB_OUTPUT
+
+  build-linux:
+    needs: [ transformInputs ]
+    uses: ./.github/workflows/build-linux-pupnet.yaml
+    with:
+      AppVersion: "0.0.1"
+      # this is a bit of a hack, you can't use environment variables here
+      # https://docs.github.com/en/actions/learn-github-actions/contexts#context-availability
+      ProjectFile: ${{ needs.transformInputs.outputs.ProjectFile }}
+      RetentionDays: 1
+      BuildAppImage: false
+      BuildArchive: true
+
+  build-windows:
+    needs: [ transformInputs ]
+    uses: ./.github/workflows/build-windows-pupnet.yaml
+    with:
+      AppVersion: "0.0.1"
+      # this is a bit of a hack, you can't use environment variables here
+      # https://docs.github.com/en/actions/learn-github-actions/contexts#context-availability
+      ProjectFile: ${{ needs.transformInputs.outputs.ProjectFile }}
+      RetentionDays: 1
+      SignExecutable: false
+      BuildInnoSetup: false
+      BuildArchive: true
+
+  comment-build-end:
+    needs: [ build-linux, build-windows ]
+    if: github.event_name == 'pull_request_target' && github.event.pull_request.draft == false
+    permissions:
+      pull-requests: write
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Comment PR
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          message: |
+            _(builds * [Linux Archive](${{ steps.build-linux.outputs.ArtifactUrlLinuxArchive }}) * [Windows Archive](${{ steps.build-windows.outputs.ArtifactUrlWindowsArchive }}) )_
+          comment_tag: builds
