@@ -53,8 +53,8 @@ jobs:
       # https://docs.github.com/en/actions/learn-github-actions/contexts#context-availability
       ProjectFile: ${{ needs.transformInputs.outputs.ProjectFile }}
       RetentionDays: 1
-      BuildAppImage: false
-      BuildArchive: true
+      BuildAppImage: true
+      BuildArchive: false
 
   build-windows:
     if: github.event.pull_request.draft == false
@@ -67,7 +67,7 @@ jobs:
       ProjectFile: ${{ needs.transformInputs.outputs.ProjectFile }}
       RetentionDays: 1
       SignExecutable: false
-      BuildInnoSetup: false
+      BuildInnoSetup: true
       BuildArchive: true
 
   comment-build-end:
@@ -85,6 +85,7 @@ jobs:
         uses: thollander/actions-comment-pull-request@v2
         with:
           message: |
+            * [Windows InnoSetup](${{ needs.build-windows.outputs.ArtifactUrlWindowsInnoSetup }})
             * [Windows Archive](${{ needs.build-windows.outputs.ArtifactUrlWindowsArchive }})
-            * [Linux Archive](${{ needs.build-linux.outputs.ArtifactUrlLinuxArchive }})
+            * [Linux AppImage](${{ needs.build-linux.outputs.ArtifactUrlLinuxAppImage }})
           comment_tag: builds
