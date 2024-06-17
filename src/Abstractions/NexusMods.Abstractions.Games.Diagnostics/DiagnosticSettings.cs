@@ -23,7 +23,7 @@ public class DiagnosticSettings : ISettings
             .AddPropertyToUI(x => x.MinimumSeverity, propertyBuilder => propertyBuilder
                 .AddToSection(sectionId)
                 .WithDisplayName("Health Check sensitivity")
-                .WithDescription("Set the minimum severity for diagnostics. You will not be notified for diagnostics with a severity lower than the selected level.")
+                .WithDescription("Set the minimum severity for Health Check diagnostics. You will not be notified about diagnostics with a severity lower than the selected level.")
                 .UseSingleValueMultipleChoiceContainer(
                     valueComparer: EqualityComparer<DiagnosticSeverity>.Default,
                     allowedValues: [
