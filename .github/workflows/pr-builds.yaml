@@ -27,6 +27,7 @@ jobs:
         uses: thollander/actions-comment-pull-request@v2
         with:
           message: |
+            Commit: `${{ github.sha }}`
             _Build starting, please wait..._
           comment_tag: builds
 
@@ -85,6 +86,9 @@ jobs:
         uses: thollander/actions-comment-pull-request@v2
         with:
           message: |
+            ### Builds
+            Commit: `${{ github.sha }}`
+
             * [Windows InnoSetup](${{ needs.build-windows.outputs.ArtifactUrlWindowsInnoSetup }})
             * [Windows Archive](${{ needs.build-windows.outputs.ArtifactUrlWindowsArchive }})
             * [Linux AppImage](${{ needs.build-linux.outputs.ArtifactUrlLinuxAppImage }})
