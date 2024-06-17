@@ -4,7 +4,7 @@
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
 
     <Design.PreviewWith >
-        <StackPanel Width="920">
+        <StackPanel Width="920" Classes="Spacing-2">
             <!-- With Header -->
             <Border Classes="Toolbar">
                 <Grid ColumnDefinitions="*, Auto">
@@ -68,6 +68,8 @@
         <Setter Property="HorizontalAlignment" Value="Stretch"/>
         <Setter Property="Height" Value="52"/>
         <Setter Property="Background" Value="{StaticResource SurfaceLow}"/>
+        <Setter Property="BorderThickness" Value="0, 0, 0, 1"/>
+        <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}"/>
     </Style>
 
     <Style Selector="Border.Toolbar > Grid">

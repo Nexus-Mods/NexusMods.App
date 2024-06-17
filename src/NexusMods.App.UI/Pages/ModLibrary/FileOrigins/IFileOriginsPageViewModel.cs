@@ -19,6 +19,8 @@ public interface IFileOriginsPageViewModel : IPageViewModelInterface
     IObservable<IChangeSet<IFileOriginEntryViewModel, IFileOriginEntryViewModel>> SelectedModsObservable { get; [UsedImplicitly] set; }
 
     ReadOnlyObservableCollection<IFileOriginEntryViewModel> SelectedModsCollection { get; }
+    
+    string EmptyLibrarySubtitleText { get; }
 
     /// <summary>
     /// Add a mod to the loadout using the standard installer.

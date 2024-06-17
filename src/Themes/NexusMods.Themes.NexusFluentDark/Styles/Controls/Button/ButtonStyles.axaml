@@ -31,6 +31,12 @@
                         <TextBlock Text="Apply Preview" />
                     </StackPanel>
                 </Button>
+                <Button Classes="Square Primary" HorizontalAlignment="Center">
+                    <StackPanel>
+                        <icons:UnifiedIcon Classes="ModLibrary" />
+                        <TextBlock Text="Square Primary" />
+                    </StackPanel>
+                </Button>
             </StackPanel>
         </Border>
     </Design.PreviewWith>
@@ -179,6 +185,72 @@
                 <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
                 <Setter Property="VerticalAlignment" Value="Center" />
             </Style>
+        </Style>
+
+    </Style>
+    
+    
+    <!--  Square primary  -->
+    <Style Selector="Button.Square.Primary">
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
+        <Setter Property="Height" Value="32" />
+        <Setter Property="Padding" Value="12,0" />
+
+        <!-- Set an invisible border thickness to 1 to avoid size differences with outlined variants. -->
+        <Setter Property="BorderThickness" Value="1" />
+
+        <!-- Allow the BoxShadow for the focus to extend beyond the button bounds -->
+        <Setter Property="ClipToBounds" Value="False" />
+
+
+
+        <!-- When TextBlock isn't wrapped in StackPanel, i.e. text only -->
+        <Style Selector="^ > TextBlock">
+            <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+
+        <Style Selector="^ > StackPanel">
+            <Setter Property="Orientation" Value="Horizontal" />
+            <Setter Property="Spacing" Value="{StaticResource Spacing-1}" />
+        </Style>
+
+        <Style Selector="^ > StackPanel > TextBlock">
+            <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+
+        <Style Selector="^ > StackPanel > icons|UnifiedIcon">
+            <Setter Property="Size" Value="20" />
+        </Style>
+
+        <Style Selector="^ > StackPanel > Button.Pill.Label">
+            <!-- This disables the Label's own click handling, so that the parent button receives clicks instead -->
+            <Setter Property="IsHitTestVisible" Value="False" />
+        </Style>
+
+        <Style Selector="^:focus /template/ ContentPresenter#PART_ContentPresenter">
+            <!-- ReSharper disable once Xaml.InvalidResourceType -->
+            <Setter Property="BoxShadow" Value="{StaticResource FocusBoxShadow}" />
+        </Style>
+
+        <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Opacity" Value="{StaticResource OpacityDisabledElement}" />
+        </Style>
+        
+        <Setter Property="Background" Value="{StaticResource BrandTranslucentLight100Brush}" />
+
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource BrandTranslucentLight200Brush}" />
+        </Style>
+
+        <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource BrandTranslucentLight100Brush}" />
+        </Style>
+
+        <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource BrandTranslucentLight100Brush}" />
         </Style>
 
     </Style>

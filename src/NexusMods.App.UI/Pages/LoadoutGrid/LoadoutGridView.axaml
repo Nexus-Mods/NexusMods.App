@@ -20,35 +20,62 @@
     <Grid RowDefinitions="Auto, *">
         <Border Grid.Row="0" Classes="Toolbar">
             <StackPanel>
-                <Line/>
-                
+                <Line />
+
                 <navigation:NavigationControl x:Name="ViewModFilesButton">
                     <StackPanel>
                         <icons:UnifiedIcon Classes="FolderOutline" />
-                        <TextBlock Text="{x:Static resources:Language.LoadoutGridView__View_Files}"/>
+                        <TextBlock Text="{x:Static resources:Language.LoadoutGridView__View_Files}" />
                     </StackPanel>
                 </navigation:NavigationControl>
                 <Button x:Name="DeleteModsButton">
                     <StackPanel>
                         <icons:UnifiedIcon Classes="Close" />
-                        <TextBlock Text="{x:Static resources:Language.LoadoutGridView__Remove}"/>
+                        <TextBlock Text="{x:Static resources:Language.LoadoutGridView__Remove}" />
                     </StackPanel>
                 </Button>
             </StackPanel>
         </Border>
-        
+
         <DataGrid Grid.Row="1"
+                  Classes="NoTopBorder"
                   CanUserResizeColumns="True"
                   CanUserSortColumns="True"
-                  x:Name="ModsDataGrid"/>
-        
+                  x:Name="ModsDataGrid" />
+
         <Border Grid.Row="1"
                 x:Name="EmptyModlistMessageBorder"
-                Margin="24,68,24,24"
+                Padding="24,64,24,64"
                 IsVisible="False">
-            <markdownRenderer:MarkdownRendererView x:Name="EmptyModlistMessageMarkdownViewer"/>
+            <StackPanel Orientation="Vertical" 
+                        HorizontalAlignment="Center"
+                        Classes="Spacing-2">
+
+                <TextBlock Classes="BodyXLBold ForegroundSubdued" 
+                           HorizontalAlignment="Center"
+                           x:Name="EmptyModlistTitleTextBlock" />
+
+                <StackPanel Orientation="Horizontal" 
+                            Classes="Spacing-1_5"
+                            HorizontalAlignment="Center">
+
+                    <TextBlock Classes="BodyLGNormal ForegroundSubdued"
+                               VerticalAlignment="Center"
+                               Text="{x:Static resources:Language.LoadoutGrid_EmptyModlistSubtitle_Add_from_library}" />
+                    <navigation:NavigationControl Classes="Square Primary"
+                                                  x:Name="ViewModLibraryButton">
+                        <StackPanel Orientation="Horizontal" Classes="Spacing-1">
+                            <icons:UnifiedIcon Classes="ModLibrary ForegroundSubdued"
+                                               VerticalAlignment="Center" Size="18"/>
+                            <TextBlock Classes="BodyLGNormal ForegroundSubdued"
+                                       VerticalAlignment="Center"
+                                       Text="Library" />
+                        </StackPanel>
+                    </navigation:NavigationControl>
+
+                </StackPanel>
+            </StackPanel>
         </Border>
-        
+
     </Grid>
 </reactiveUi:ReactiveUserControl>
-
