@@ -88,7 +88,7 @@ internal sealed class WindowManager : ReactiveObject, IWindowManager
             var data = window.WorkspaceController.ToData();
 
             using var tx = _conn.BeginTransaction();
-            var found = WindowDataAttributes.All(_conn.Db).First();
+            var found = WindowDataAttributes.All(_conn.Db).FirstOrDefault();
             if (!found.IsValid())
             {
                 var model = new WindowDataAttributes.New(tx)

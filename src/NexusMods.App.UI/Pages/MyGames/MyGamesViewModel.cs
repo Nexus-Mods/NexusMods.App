@@ -48,8 +48,8 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
         
         this.WhenActivated(d =>
             {
-                var loadouts = conn.ObserveDatoms(SliceDescriptor.Create(Loadout.Revision, conn.Registry))
-                    .Transform(datom => Loadout.Load(conn.Db, datom.E));
+                var loadouts = Loadout.ObserveAll(conn)
+                    .Filter(l => l.IsVisible());
                 var foundGames = gameRegistry.InstalledGames
                     .ToObservableChangeSet();
                 

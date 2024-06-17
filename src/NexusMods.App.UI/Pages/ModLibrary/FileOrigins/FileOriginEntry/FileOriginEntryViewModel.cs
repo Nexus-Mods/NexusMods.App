@@ -51,25 +51,12 @@ public class FileOriginEntryViewModel : AViewModel<IFileOriginEntryViewModel>, I
         AddToLoadoutCommand = addModToLoadoutCommand;
         AddAdvancedToLoadoutCommand = addAdvancedToLoadoutCommand;
 
-        Name = "FIXME";
-        Version = "FIXME";
-        Size = Size.From(4242);
-        // TODO : FIX THIS
-        /****
-        Name = fileOrigin.TryGet(DownloaderState.FriendlyName, out var friendlyName) && friendlyName != "Unknown"
-            ? friendlyName
-            : fileOrigin.SuggestedName;
+        Name = DownloaderState.FriendlyName.TryGet(fileOrigin, out var foundName) && foundName != "Unknown" ? foundName : fileOrigin.SuggestedName;
         
-        Size = fileOrigin.TryGet(DownloadAnalysis.Size, out var analysisSize) 
-            ? analysisSize 
-            : fileOrigin.TryGet(DownloaderState.Size, out var dlStateSize) 
-                ? dlStateSize 
-                : Size.Zero;
-        
-        Version = fileOrigin.TryGet(DownloaderState.Version, out var version) && version != "Unknown"
-            ? version
-            : "-";
-        ***/
+        Size = DownloadAnalysis.Size.TryGet(fileOrigin, out var analysisSize) ? analysisSize : 
+            DownloaderState.Size.TryGet(fileOrigin, out var dlStateSize) ? dlStateSize : Size.From(0);
+
+        Version = DownloaderState.Version.TryGet(fileOrigin, out var version) && version != "Unknown" ? version : "-";
         
         ArchiveDate = fileOrigin.GetCreatedAt();
         

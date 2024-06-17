@@ -19,6 +19,7 @@ using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Extensions.BCL;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.BuiltInEntities;
 using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
@@ -966,6 +967,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         foreach (var file in initialState.GetAllDescendentFiles())
         {
             var path = file.GamePath();
+            
             filesToBackup.Add((path, file.Item.Value.Hash, file.Item.Value.Size));
             allStoredFileModels.Add(new StoredFile.New(tx)
             {

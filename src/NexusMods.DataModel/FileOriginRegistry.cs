@@ -185,9 +185,11 @@ public class FileOriginRegistry : IFileOriginRegistry
 
         _logger.LogInformation("Calculating metadata");
         using var tx = _conn.BeginTransaction();
-        
 
-        var analysis = new DownloadAnalysis.New(tx)
+
+        existingId ??= tx.TempId();
+        
+        var analysis = new DownloadAnalysis.New(tx, existingId.Value)
         {
             Hash = Hash.From(archiveHash),
             Size = Size.From(archiveSize),
