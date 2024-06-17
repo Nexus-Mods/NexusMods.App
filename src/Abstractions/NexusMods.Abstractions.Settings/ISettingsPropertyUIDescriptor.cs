@@ -19,9 +19,14 @@ public interface ISettingsPropertyUIDescriptor
     public string DisplayName { get; }
 
     /// <summary>
-    /// Gets the markdown description.
+    /// Gets the description.
     /// </summary>
     public string Description { get; }
+
+    /// <summary>
+    /// Gets the optional link.
+    /// </summary>
+    public Uri? Link { get; }
 
     /// <summary>
     /// Gets whether changing the property requires a restart.

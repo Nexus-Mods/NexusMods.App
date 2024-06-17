@@ -28,16 +28,14 @@ public class MetricsOptInViewModel : AOverlayViewModel<IMetricsOptInViewModel>, 
         _settingsManager = settingsManager;
         MarkdownRendererViewModel = markdownRendererViewModel;
 
-        MarkdownRendererViewModel.Contents = """
-## Telemetry and usage data
+        MarkdownRendererViewModel.Contents = $"""
+## Help us improve
 
 Help us provide you with the best modding experience.
 
-With your permission, we will collect analytics information and send it to our team to help us improve quality and performance.
+With your permission, we will collect anonymous analytics information and send it to our team to help us improve quality and performance.
 
-This information is sent anonymously and will never be shared with a 3rd party.
-
-[More information about the data we track](https://help.nexusmods.com/article/132-diagnostics-and-usage-nexus-mods-app)
+[More information about the data we track]({ TelemetrySettings.Link })
 """;
 
         Allow = ReactiveCommand.Create(() =>

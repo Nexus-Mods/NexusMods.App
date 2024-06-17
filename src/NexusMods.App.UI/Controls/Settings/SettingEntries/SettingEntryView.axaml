@@ -17,16 +17,13 @@
         <Grid RowDefinitions="Auto, Auto">
             <Grid Grid.Row="0" 
                 ColumnDefinitions="*, Auto">
-                <StackPanel Grid.Column="0"
-                            Orientation="Vertical">
-                    <TextBlock x:Name="EntryName"
-                               Classes="BodyXLNormal" />
-                    <TextBlock x:Name="EntryDescription"
-                               Classes="BodyMDNormal ForegroundSubdued" />
+                <StackPanel Grid.Column="0" Orientation="Vertical">
+                    <TextBlock x:Name="EntryName" Classes="BodyXLNormal" TextWrapping="Wrap" />
+                    <TextBlock x:Name="EntryDescription" Classes="BodyMDNormal ForegroundSubdued" TextWrapping="Wrap" />
+                    <reactiveUi:ViewModelViewHost x:Name="LinkViewModel" IsVisible="False" />
                 </StackPanel>
 
-                <Border Grid.Column="1" 
-                        Margin="8,0,0,0">
+                <Border Grid.Column="1" Margin="8,0,0,0">
                     <reactiveUi:ViewModelViewHost x:Name="InteractionControl" ClipToBounds="False" />
                 </Border>
             </Grid>

@@ -11,20 +11,17 @@ public record LoadoutGridSettings : ISettings
 
     public static ISettingsBuilder Configure(ISettingsBuilder settingsBuilder)
     {
-        // TODO: put in some section
-        var sectionId = SectionId.DefaultValue;
-
         return settingsBuilder.AddToUI<LoadoutGridSettings>(builder => builder
             .AddPropertyToUI(x => x.ShowGameFiles, propertyBuilder => propertyBuilder
-                .AddToSection(sectionId)
-                .WithDisplayName("Show Game Files")
-                .WithDescription("Shows the Game Files in the Mods page.")
+                .AddToSection(Sections.Advanced)
+                .WithDisplayName("Show game files")
+                .WithDescription("Show game files as a mod alongside your added mods.")
                 .UseBooleanContainer()
             )
             .AddPropertyToUI(x => x.ShowOverride, propertyBuilder => propertyBuilder
-                .AddToSection(sectionId)
-                .WithDisplayName("Show Override")
-                .WithDescription("Shows Override in the Mods page.")
+                .AddToSection(Sections.Advanced)
+                .WithDisplayName("Show Override mod")
+                .WithDescription("Shows the Override mod, which contains files generated or modified during gameplay that aren't part of any specific mod.")
                 .UseBooleanContainer()
             )
         );

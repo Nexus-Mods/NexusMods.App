@@ -1,0 +1,19 @@
+<reactive:ReactiveUserControl
+    x:TypeArguments="section:ISettingSectionViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactive="http://reactiveui.net"
+    xmlns:section="clr-namespace:NexusMods.App.UI.Controls.Settings.Section"
+    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    x:Class="NexusMods.App.UI.Controls.Settings.Section.SettingSectionView">
+
+    <StackPanel Orientation="Horizontal" Spacing="{StaticResource Spacing-1.5}" Margin="0 24 0 8">
+        <icons:UnifiedIcon x:Name="Icon" Size="20"/>
+        <TextBlock Classes="BodyXLBold" x:Name="Text"/>
+    </StackPanel>
+
+</reactive:ReactiveUserControl>
+

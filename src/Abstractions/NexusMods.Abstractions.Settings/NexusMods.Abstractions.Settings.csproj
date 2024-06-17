@@ -32,4 +32,8 @@
         <DependentUpon>SettingsPropertyValueContainer.cs</DependentUpon>
       </Compile>
     </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\NexusMods.Icons\NexusMods.Icons.csproj" />
+    </ItemGroup>
 </Project>

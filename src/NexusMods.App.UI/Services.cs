@@ -19,6 +19,7 @@ using NexusMods.App.UI.Controls.MarkdownRenderer;
 using NexusMods.App.UI.Controls.ModInfo.Error;
 using NexusMods.App.UI.Controls.ModInfo.Loading;
 using NexusMods.App.UI.Controls.ModInfo.ModFiles;
+using NexusMods.App.UI.Controls.Settings.Section;
 using NexusMods.App.UI.Controls.Settings.SettingEntries;
 using NexusMods.App.UI.Controls.Spine;
 using NexusMods.App.UI.Controls.Spine.Buttons.Download;
@@ -190,6 +191,10 @@ public static class Services
             
             .AddView<SettingsView, ISettingsPageViewModel>()
             .AddViewModel<SettingsPageViewModel, ISettingsPageViewModel>()
+
+            .AddView<SettingSectionView, ISettingSectionViewModel>()
+            .AddViewModel<SettingSectionViewModel, ISettingSectionViewModel>()
+
             .AddView<SettingEntryView, ISettingEntryViewModel>()
             .AddViewModel<SettingEntryViewModel, ISettingEntryViewModel>()
             .AddView<SettingToggleControl, ISettingToggleViewModel>()
