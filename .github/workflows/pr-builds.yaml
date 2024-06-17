@@ -1,7 +1,7 @@
 name: PR Builds
 
 on:
-  pull_request_target:
+  pull_request:
     branches: [ main ]
     types: [ opened, synchronize, reopened, ready_for_review ]
 
@@ -10,7 +10,7 @@ env:
 
 jobs:
   comment-start:
-    if: github.event_name == 'pull_request_target' && github.event.pull_request.draft == false
+    if: github.event.pull_request.draft == false
     permissions:
       pull-requests: write
 
@@ -27,6 +27,7 @@ jobs:
           comment_tag: builds
 
   transformInputs:
+    if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     outputs:
       ProjectFile: ${{ steps.setOutputs.outputs.projectFile }}
@@ -39,6 +40,7 @@ jobs:
           echo "projectFile=${{ env.ProjectFile }}" >> $env:GITHUB_OUTPUT
 
   build-linux:
+    if: github.event.pull_request.draft == false
     needs: [ transformInputs ]
     uses: ./.github/workflows/build-linux-pupnet.yaml
     with:
@@ -51,6 +53,7 @@ jobs:
       BuildArchive: true
 
   build-windows:
+    if: github.event.pull_request.draft == false
     needs: [ transformInputs ]
     uses: ./.github/workflows/build-windows-pupnet.yaml
     with:
@@ -64,8 +67,8 @@ jobs:
       BuildArchive: true
 
   comment-build-end:
+    if: github.event.pull_request.draft == false
     needs: [ build-linux, build-windows ]
-    if: github.event_name == 'pull_request_target' && github.event.pull_request.draft == false
     permissions:
       pull-requests: write
 
