@@ -20,7 +20,7 @@ public static class Services
             .AddSettingsSection(new SettingsSectionSetup
             {
                 Id = Sections.Privacy,
-                IconFunc = static () => IconValues.BarChart,
+                IconFunc = static () => IconValues.ShieldHalfFull,
                 Name = "Privacy",
             })
             .AddSettingsSection(new SettingsSectionSetup

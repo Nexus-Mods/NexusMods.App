@@ -339,5 +339,12 @@ public static class IconValues
         )
     );
 
+    // From Design System "Custom Icons" section on Figma
+    public static readonly IconValue ShieldHalfFull = new AvaloniaPathIcon(
+        Geometry.Parse(
+            "M21.4751 11.1256C21.4751 16.6756 17.6351 21.8656 12.4751 23.1256C7.3151 21.8656 3.4751 16.6756 3.4751 11.1256V5.12561L12.4751 1.12561L21.4751 5.12561V11.1256ZM12.4751 21.1256C16.2251 20.1256 19.4751 15.6656 19.4751 11.3456V6.42561L12.4751 3.30561V21.1256Z"
+        )
+    );
+
 #endregion
 }
