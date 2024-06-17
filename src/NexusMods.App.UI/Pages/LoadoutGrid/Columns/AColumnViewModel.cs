@@ -1,17 +1,10 @@
 using System.ComponentModel;
-using System.Linq.Expressions;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using DynamicData;
-using DynamicData.Alias;
-using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.Query;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Pages.LoadoutGrid.Columns;
 
@@ -28,9 +21,7 @@ public abstract class AColumnViewModel<TBaseInterface, TValue> : AViewModel<TBas
         this.WhenActivated(d =>
         {
             this.WhenAnyValue(vm => vm.Row)
-                // TODO: Ick 
-                .SelectMany(id => _conn.ObserveDatoms(SliceDescriptor.Create(id, Mod.Revision.GetDbId(_conn.Registry.Id), _conn.Registry)))
-                .QueryWhenChanged(f => Mod.Load(_conn.Db, f.First().E))
+                .SelectMany(id => Mod.Observe(_conn, id))
                 .Select(Selector)
                 .OnUI()
                 .BindTo(this, vm => vm.Value)

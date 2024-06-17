@@ -60,7 +60,13 @@ public partial class Loadout : IModelDefinition
     
     public partial struct ReadOnly
     {
-        
+        public override bool Equals(object? obj)
+        {
+            if (obj is not ReadOnly other)
+                return false;
+            return Id.Equals(other.Id);
+        }
+
         /// <summary>
         /// Get the game installation for this loadout.
         /// </summary>

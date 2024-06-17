@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using Avalonia.Threading;
 using DynamicData;
 using DynamicData.Binding;
@@ -48,15 +49,9 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
         
         this.WhenActivated(d =>
             {
-                var loadouts = Loadout.ObserveAll(conn)
-                    .Filter(l => l.IsVisible());
-                var foundGames = gameRegistry.InstalledGames
-                    .ToObservableChangeSet();
-                
-                
-
                 // Managed games widgets
-                loadouts
+                Loadout.ObserveAll(conn)
+                    .Filter(l => l.IsVisible())
                     .OnUI()
                     .Transform(loadout =>
                     {
@@ -86,8 +81,11 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                     .SubscribeWithErrorLogging()
                     .DisposeWith(d);
 
-                // For the games that are detected, we only want to show those that are not managed
-                foundGames.Except(loadouts.Transform(t => t.InstallationInstance))
+                // For the games that are detected, we only want to show those that are not managed, we'll bind directly
+                // to the collection here so we don't need any temporary collections or observables
+                gameRegistry.InstalledGames
+                    .ToObservableChangeSet()
+                    .Except(_managedGames.ToObservableChangeSet().Transform(s => s.Installation))
                     .OnUI()
                     .Transform(install =>
                     {

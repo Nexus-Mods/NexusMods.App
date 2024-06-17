@@ -607,20 +607,20 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
 
     protected ModId GetOrCreateOverridesMod(Loadout.ReadOnly loadout, ITransaction tx)
     {
-        var overridesMod = loadout.Mods.FirstOrDefault(m => m.Category == ModCategory.Overrides).ModId;
-        if (overridesMod == default(ModId))
+        var foundMod = loadout.Mods.FirstOrDefault(m => m.Category == ModCategory.Overrides);
+        if (foundMod.IsValid()) 
+            return foundMod.ModId;
+        
+        var newOverrides = new Mod.New(tx)
         {
-            overridesMod = new Mod.New(tx)
-            {
-                LoadoutId = loadout,
-                Category = ModCategory.Overrides,
-                Name = "Overrides",
-                Enabled = true,
-                Status = ModStatus.Installed,
-                Revision = 0,
-            };
-        }
-        return overridesMod;
+            LoadoutId = loadout,
+            Category = ModCategory.Overrides,
+            Name = "Overrides",
+            Enabled = true,
+            Status = ModStatus.Installed,
+            Revision = 0,
+        };
+        return newOverrides.ModId;
     }
 
     protected virtual async Task<Loadout.ReadOnly> AddChangedFilesToLoadout(Loadout.ReadOnly loadout, TempEntity[] newFiles)
