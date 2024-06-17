@@ -2,6 +2,8 @@ name: PR Builds
 
 on:
   pull_request_target:
+    branches: [ main ]
+    types: [ opened, synchronize, reopened, ready_for_review ]
 
 env:
   ProjectFile: "src/NexusMods.App/NexusMods.App.csproj"
