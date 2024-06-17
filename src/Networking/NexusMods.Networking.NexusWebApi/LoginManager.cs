@@ -2,6 +2,7 @@ using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using DynamicData;
+using DynamicData.Alias;
 using DynamicData.Binding;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
@@ -81,13 +82,11 @@ public sealed class LoginManager : IDisposable, ILoginManager
         _protocolRegistration = protocolRegistration;
         _logger = logger;
 
-        UserInfoObservable = _conn.ObserveDatoms(SliceDescriptor.Create(JWTToken.AccessToken, _conn.Registry))
-            .ToObservableChangeSet()
-            // NOTE(err120): Since IDs don't change on startup, we can insert
-            // a fake change at the start of the observable chain. This will only
-            // run once at startup and notify the subscribers.
+        UserInfoObservable = JWTToken.ObserveAll(_conn)
+            // We only care that it has changed, not the actual value
+            .QueryWhenChanged(values => values.Count > 0)
             .ObserveOn(TaskPoolScheduler.Default)
-            .SelectMany(async _ => await Verify(CancellationToken.None));
+            .SelectMany(async hasValue  => await Verify(hasValue, CancellationToken.None));
 
         _subscriptions.Add(UserInfoObservable.Subscribe(userInfo => UserInfo = userInfo));
         
@@ -97,8 +96,11 @@ public sealed class LoginManager : IDisposable, ILoginManager
     private readonly SemaphoreSlim _verifySemaphore = new(initialCount: 1, maxCount: 1);
     private readonly IConnection _conn;
 
-    private async Task<UserInfo?> Verify(CancellationToken cancellationToken)
+    private async Task<UserInfo?> Verify(bool hasValue, CancellationToken cancellationToken)
     {
+        if (!hasValue) 
+            return null;
+        
         var cachedValue = _cachedUserInfo.Get();
         if (cachedValue is not null) return cachedValue;
 
@@ -169,6 +171,7 @@ public sealed class LoginManager : IDisposable, ILoginManager
         {
             tx.Delete(token.Id, true);
         }
+        await tx.Commit();
     }
 
     /// <inheritdoc/>
