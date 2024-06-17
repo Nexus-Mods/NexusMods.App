@@ -1,7 +1,7 @@
 # System Requirements
 !!! note "This page does not include the requirements to run any supported games. Please refer to the game store page for details."
 
-This page lists the minimum and recommend system requirements to install and run the app on all supported platforms. 
+This page lists the recommended system requirements to install and run the app on all supported platforms. 
 
 ## Windows 
 
