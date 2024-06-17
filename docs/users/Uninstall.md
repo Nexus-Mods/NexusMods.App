@@ -40,5 +40,5 @@ If something goes wrong during uninstall, it may be necessary to remove the app 
 
 1. Inside the App, ensure that all mods for your loadouts in all games are disabled and these changes have been applied. This will remove any files added to the game folder and get the game back to a "vanilla" state. (When possible, you should delete your loadouts).</li>
 2. Close the App. 
-3. Delete the contents of `%LOCALAPPDATA%\NexusMods.App` on Windows or `$XDG_STATE_HOME/NexusMods.App/Logs` on Linux to remove all downloaded mods and internal databases used by the app.
+3. Delete the contents of `%LOCALAPPDATA%\NexusMods.App` on Windows or `$XDG_STATE_HOME/NexusMods.App/Logs` and `$XDG_DATA_HOME/NexusMods.App` on Linux to remove all downloaded mods and internal databases used by the app.
 4. Delete the App itself (or uninstall it using the Windows system settings if possible). </li>

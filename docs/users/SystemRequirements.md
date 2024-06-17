@@ -5,26 +5,24 @@ This page lists the minimum and recommend system requirements to install and run
 
 ## Windows 
 
-|| Minimum | Recommended |
-| --- | --- | --- |
-| OS | Windows 10 or higher (64-bit OS required) | Windows 10/11 with updates |
-| Processor | Intel®️ Core™️ i5-7500 | Intel®️ Core™️ i7-7500 |
-| Memory | 4 GB RAM | 16 GB RAM |
-| Graphics | 2GB VRAM | 4GB VRAM |
-| Storage | 10GB available space* | 200GB available space* |
+|| Recommended |
+| --- | --- 
+| OS | Windows 10/11 with updates (64-bit OS required) |
+| Processor | A multi-core CPU is recommended |
+| Memory | More than 4 GB RAM |
+| Storage | 5GB available space* |
 
-<sub>\* Storage space varies by the number of games managed, the size of the managed games and the mods installed.</sub>
+<sub>\* Storage space required does not factor in the number of games managed, the size of the managed games and the mods installed.</sub>
 
 ## SteamOS + Linux 
-|| Minimum | Recommended |
-| --- | --- | --- |
-| OS | Ubuntu 12.04 LTS | A currently supported Linux distribution |
-| Processor | Intel®️ Core™️ i5-7500 | Intel®️ Core™️ i7-7500 |
-| Memory | 4 GB RAM | 16 GB RAM |
-| Graphics | 2GB VRAM | 4GB VRAM |
-| Storage | 10GB available space* | 200GB available space* |
+|| Recommended |
+| --- | --- |
+| OS | A currently supported Linux distribution |
+| Processor | A multi-core CPU is recommended |
+| Memory | More than 4 GB RAM |
+| Storage | 5GB available space* |
 
-<sub>\* Storage space varies by the number of games managed, the size of the managed games and the mods installed.</sub>
+<sub>\* Storage space required does not factor in the number of games managed, the size of the managed games and the mods installed.</sub>
 
 ### Linux dependencies
 The App requires the following programs to be available at runtime:
