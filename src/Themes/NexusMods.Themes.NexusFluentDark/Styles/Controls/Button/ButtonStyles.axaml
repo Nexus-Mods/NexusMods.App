@@ -176,7 +176,7 @@
     <Style Selector="Button.Square.Primary">
         <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
         <Setter Property="Height" Value="32" />
-        <Setter Property="Padding" Value="7,0" />
+        <Setter Property="Padding" Value="12,0" />
 
         <!-- Set an invisible border thickness to 1 to avoid size differences with outlined variants. -->
         <Setter Property="BorderThickness" Value="1" />
@@ -184,25 +184,17 @@
         <!-- Allow the BoxShadow for the focus to extend beyond the button bounds -->
         <Setter Property="ClipToBounds" Value="False" />
 
-        <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
-            <!-- NOTE(Al12rs): Odd border thickness values apparently mess with the alignment of the contents. -->
-            <!-- To counter this, we add a negative margin equivalent to the border thickness -->
-            <Setter Property="Margin" Value="-1" />
-        </Style>
+
 
         <!-- When TextBlock isn't wrapped in StackPanel, i.e. text only -->
         <Style Selector="^ > TextBlock">
             <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
             <Setter Property="VerticalAlignment" Value="Center" />
-            <!-- Don't set vertical margins, use vertical alignment to keep things centered instead -->
-            <Setter Property="Margin" Value="8,0" />
         </Style>
 
         <Style Selector="^ > StackPanel">
             <Setter Property="Orientation" Value="Horizontal" />
             <Setter Property="Spacing" Value="{StaticResource Spacing-1}" />
-            <!-- Don't set vertical margins, use vertical alignment to keep things centered instead -->
-            <Setter Property="Margin" Value="8,0" />
         </Style>
 
         <Style Selector="^ > StackPanel > TextBlock">
