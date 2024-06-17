@@ -60,12 +60,17 @@
                             HorizontalAlignment="Center">
 
                     <TextBlock Classes="BodyLGNormal ForegroundSubdued"
+                               VerticalAlignment="Center"
                                Text="{x:Static resources:Language.LoadoutGrid_EmptyModlistSubtitle_Add_from_library}" />
-
-                    <StackPanel Orientation="Horizontal" Classes="Spacing-1">
-                        <icons:UnifiedIcon Classes="ModLibrary ForegroundSubdued" />
-                        <TextBlock Classes="BodyLGNormal ForegroundSubdued" Text="Library" />
-                    </StackPanel>
+                    <Button Classes="Square Primary">
+                        <StackPanel Orientation="Horizontal" Classes="Spacing-1">
+                            <icons:UnifiedIcon Classes="ModLibrary ForegroundSubdued"
+                                               VerticalAlignment="Center" Size="18"/>
+                            <TextBlock Classes="BodyLGNormal ForegroundSubdued"
+                                       VerticalAlignment="Center"
+                                       Text="Library" />
+                        </StackPanel>
+                    </Button>
 
                 </StackPanel>
             </StackPanel>
