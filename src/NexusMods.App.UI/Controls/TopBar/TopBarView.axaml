@@ -87,7 +87,7 @@
                     <TextBlock 
                         Classes="TitleMDSemi" 
                         VerticalAlignment="Center"
-                        Margin="8,0"
+                        Margin="0"
                         Text="{x:Static resources:Language.Nexus_Premium_Status__Premium}"/>
                 </MenuItem.Header>
             </MenuItem>
