@@ -6,11 +6,13 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactive="http://reactiveui.net"
     xmlns:local="clr-namespace:NexusMods.App.UI.Pages.Diagnostics"
+    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
+    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="NexusMods.App.UI.Pages.Diagnostics.DiagnosticListView">
 
-    <Grid RowDefinitions="Auto, Auto, *">
+    <Grid RowDefinitions="Auto, *">
         <Border Grid.Row="0" Classes="OutlineWeak" BorderThickness="0 0 0 1" Padding="24 10">
             <Border.Styles>
                 <Style Selector="Button.Selected">
@@ -35,22 +37,29 @@
             </StackPanel>
         </Border>
 
-        <TextBlock Grid.Row="1" 
-                   Classes="HeadingSMSemi" 
-                   HorizontalAlignment="Center" 
-                   x:Name="NoDiagnosticsText" 
-                   Margin="0 24,0,0"
-                   Text="{x:Static resources:Language.DiagnosticListView_DiagnosticListView_There_are_no_diagnostics}"/>
+        <controls:EmptyState x:Name="EmptyState"
+                             Grid.Row="1"
+                             Icon="{x:Static icons:IconValues.CheckCircle}"
+                             Header="{x:Static resources:Language.DiagnosticListView_EmptyState_Header}"
+                             Subtitle="{x:Static resources:Language.DiagnosticListView_EmptyState_Subtitle}">
 
-        <Border Grid.Row="2" Padding="24">
-            <ItemsControl x:Name="ItemsControl">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel Classes="Spacing-3"/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-            </ItemsControl>
-        </Border>
+            <controls:EmptyState.Styles>
+                <Style Selector="icons|UnifiedIcon#Icon">
+                    <Setter Property="Foreground" Value="{StaticResource SuccessStrong}"/>
+                </Style>
+            </controls:EmptyState.Styles>
+
+            <Border Padding="24">
+                <ItemsControl x:Name="ItemsControl">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Spacing="{StaticResource Spacing-1}" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+            </Border>
+        </controls:EmptyState>
+
     </Grid>
 
 </reactive:ReactiveUserControl>

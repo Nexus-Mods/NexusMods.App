@@ -1,0 +1,67 @@
+name: PR Builds
+
+on:
+  pull_request:
+    branches: [ main ]
+    paths:
+      - ".github/workflows/pr-builds.yaml"
+      - "src/**"
+      - "tests/**"
+      - "**.props"
+      - "**.targets"
+      - "**.sln"
+      - "**.csproj"
+    types: [ opened, synchronize, reopened, ready_for_review ]
+
+env:
+  ProjectFile: "src/NexusMods.App/NexusMods.App.csproj"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref }}
+  cancel-in-progress: true
+
+# NOTE(erri120): originally, this workflow was supposed to post a comment under the PR with links to the artifact URLs.defaults:
+# This isn't possible with the "pull_request" event because the GITHUB_TOKEN doesn't have permissions for creating comments.defaults:
+# Using "pull_request_target" is also not viable because that runs on the head ref of the target branch, so the builds will build not
+# the merge commit but the target branch, which is main.
+
+jobs:
+  transformInputs:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    outputs:
+      ProjectFile: ${{ steps.setOutputs.outputs.projectFile }}
+
+    steps:
+      - name: Set Outputs
+        id: setOutputs
+        shell: pwsh
+        run: |
+          echo "projectFile=${{ env.ProjectFile }}" >> $env:GITHUB_OUTPUT
+
+  build-linux:
+    if: github.event.pull_request.draft == false
+    needs: [ transformInputs ]
+    uses: ./.github/workflows/build-linux-pupnet.yaml
+    with:
+      AppVersion: "0.0.1"
+      # this is a bit of a hack, you can't use environment variables here
+      # https://docs.github.com/en/actions/learn-github-actions/contexts#context-availability
+      ProjectFile: ${{ needs.transformInputs.outputs.ProjectFile }}
+      RetentionDays: 1
+      BuildAppImage: true
+      BuildArchive: false
+
+  build-windows:
+    if: github.event.pull_request.draft == false
+    needs: [ transformInputs ]
+    uses: ./.github/workflows/build-windows-pupnet.yaml
+    with:
+      AppVersion: "0.0.1"
+      # this is a bit of a hack, you can't use environment variables here
+      # https://docs.github.com/en/actions/learn-github-actions/contexts#context-availability
+      ProjectFile: ${{ needs.transformInputs.outputs.ProjectFile }}
+      RetentionDays: 1
+      SignExecutable: false
+      BuildInnoSetup: true
+      BuildArchive: true

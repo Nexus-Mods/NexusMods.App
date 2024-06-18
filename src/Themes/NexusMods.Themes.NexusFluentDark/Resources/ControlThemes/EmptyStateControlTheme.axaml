@@ -1,0 +1,25 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI"
+                    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
+
+    <ControlTheme x:Key="{x:Type controls:EmptyState}" TargetType="controls:EmptyState">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Grid ColumnDefinitions="*" RowDefinitions="*">
+                    <Border Grid.Column="0" Grid.Row="0" x:Name="EmptyStateBorder">
+                        <StackPanel x:Name="Panel">
+                            <icons:UnifiedIcon x:Name="Icon" Value="{TemplateBinding Icon}"/>
+                            <TextBlock x:Name="HeaderTextBlock" Text="{TemplateBinding Header}"/>
+                            <ContentPresenter x:Name="SubtitleContentPresenter" Content="{TemplateBinding Subtitle}"/>
+                        </StackPanel>
+                    </Border>
+
+                    <ContentPresenter Grid.Column="0" Grid.Row="0" x:Name="ContentPresenter" Content="{TemplateBinding Content}"/>
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+
+</ResourceDictionary>
+
