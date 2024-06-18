@@ -33,4 +33,4 @@ You will then be prompted to open the app to complete the log in process. Most p
 
 ![The prompt shown in Google Chrome asking users to open an NXM link with the app](./images/OpenInAppBrowserPromptChrome.png)
 
-Congratulation, you are now logged in!
+Congratulations, you are now logged in!
