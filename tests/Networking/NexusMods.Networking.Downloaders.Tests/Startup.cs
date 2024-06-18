@@ -28,7 +28,6 @@ public class Startup
             .AddDefaultServicesForTesting()
             .AddUniversalGameLocator<Cyberpunk2077>(new Version("1.61"))
             .AddUniversalGameLocator<SkyrimSpecialEdition>(new Version("1.6.659.0"))
-            .AddActivityMonitor()
             .AddStubbedGameLocators()
             .AddBethesdaGameStudios()
             .AddGenericGameSupport()
@@ -37,8 +36,6 @@ public class Startup
             .AddFomod()
             .AddDownloaders()
             .AddSingleton<LocalHttpServer>()
-            .AddCrossPlatform()
-            .AddSettings<LoggingSettings>()
             .Validate();
     }
 }
