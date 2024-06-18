@@ -29,7 +29,6 @@ public class Startup
             .AddSingleton<CommandLineConfigurator>()
             .AddBethesdaGameStudios()
             .AddGames()
-            .AddActivityMonitor()
             .AddSerializationAbstractions()
             .AddInstallerTypes()
             .AddGenericGameSupport()
@@ -39,7 +38,6 @@ public class Startup
             .AddCLI()
             .AddSingleton<IGuidedInstaller, NullGuidedInstaller>()
             .AddLogging(builder => builder.AddXunitOutput())
-            .AddCrossPlatform()
             .Validate();
     }
 }
