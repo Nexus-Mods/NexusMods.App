@@ -1,0 +1,9 @@
+/* Extra styles for the Nexus Mods App docs */
+
+.md-tabs {
+    background-color: var(--nexus-background-tertiary);
+}
+
+[dir=ltr] .md-header__title {
+    margin-left: 0
+}
