@@ -171,11 +171,11 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
                 .DisposeWith(d);
             
             this.WhenAnyValue(vm => vm.LoadoutId)
-                .Select(id => conn.Db.Get(id))
+                .Select(id => Loadout.Load(conn.Db, id))
                 .WhereNotNull()
                 .SubscribeWithErrorLogging(loadout =>
                 {
-                    EmptyModlistTitleMessage = GetEmptyModlistTitleString(loadout.Installation);
+                    EmptyModlistTitleMessage = GetEmptyModlistTitleString(loadout.InstallationInstance);
                 })
                 .DisposeWith(d);
             
