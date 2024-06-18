@@ -1,7 +1,7 @@
 name: PR Builds
 
 on:
-  pull_request_target:
+  pull_request:
     branches: [ main ]
     paths:
       - ".github/workflows/pr-builds.yaml"
@@ -20,25 +20,12 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref }}
   cancel-in-progress: true
 
+# NOTE(erri120): originally, this workflow was supposed to post a comment under the PR with links to the artifact URLs.defaults:
+# This isn't possible with the "pull_request" event because the GITHUB_TOKEN doesn't have permissions for creating comments.defaults:
+# Using "pull_request_target" is also not viable because that runs on the head ref of the target branch, so the builds will build not
+# the merge commit but the target branch, which is main.
+
 jobs:
-  comment-start:
-    if: github.event.pull_request.draft == false
-    permissions:
-      pull-requests: write
-
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Comment PR
-        uses: thollander/actions-comment-pull-request@v2
-        with:
-          message: |
-            Commit: `${{ github.sha }}`
-            _Build starting, please wait..._
-          comment_tag: builds
-
   transformInputs:
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
@@ -78,26 +65,3 @@ jobs:
       SignExecutable: false
       BuildInnoSetup: true
       BuildArchive: true
-
-  comment-build-end:
-    if: github.event.pull_request.draft == false
-    needs: [ build-linux, build-windows ]
-    permissions:
-      pull-requests: write
-
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Comment PR
-        uses: thollander/actions-comment-pull-request@v2
-        with:
-          message: |
-            ### Builds
-            Commit: `${{ github.sha }}`
-
-            * [Windows InnoSetup](${{ needs.build-windows.outputs.ArtifactUrlWindowsInnoSetup }})
-            * [Windows Archive](${{ needs.build-windows.outputs.ArtifactUrlWindowsArchive }})
-            * [Linux AppImage](${{ needs.build-linux.outputs.ArtifactUrlLinuxAppImage }})
-          comment_tag: builds
