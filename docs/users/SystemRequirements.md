@@ -24,7 +24,7 @@ This page lists the recommended system requirements to install and run the app o
 
 <sub>\* Storage space required does not factor in the number of games managed, the size of the managed games and the mods installed.</sub>
 
-### Linux dependencies
+### Linux Dependencies
 The App requires the following programs to be available at runtime:
 
 - `xdg-open` to open URLs in your browser.
@@ -35,6 +35,12 @@ If you plan to install using the AppImage, make sure you have the following depe
 - [FUSE 2](https://github.com/AppImage/AppImageKit/wiki/FUSE) is required to run any AppImage.
 - `glibc` 2.2.5 or newer
 - `glibc++` 3.4 or newer
+
+### Linux Packages
+The status of packages for various Linux builds can be seen below:
+
+[![Packaging status](https://repology.org/badge/vertical-allrepos/nexusmods-app.svg)](https://repology.org/project/nexusmods-app/versions)
+
 
 ## macOS
 

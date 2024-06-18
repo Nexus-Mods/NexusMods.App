@@ -58,6 +58,8 @@ nav:
     - Home: users/index.md
     - System Requirements: users/SystemRequirements.md
     - Getting Started: users/GettingStarted.md
+    # - Features: 
+    #   - Health Check: users/features/HealthCheck.md
     - Games:
       # - users/games/index.md
       - Stardew Valley: users/games/StardewValley.md
