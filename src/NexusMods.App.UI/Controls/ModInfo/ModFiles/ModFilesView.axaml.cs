@@ -17,7 +17,7 @@ public partial class ModFilesView : ReactiveUserControl<IModFilesViewModel>
             this.OneWayBind(ViewModel, vm => vm.FileTreeViewModel, v => v.FilesTreeView.ViewModel)
                 .DisposeWith(disposables);
 
-            this.BindCommand(ViewModel, vm => vm.OpenEditorCommand, view => view.OpenEditorButton)
+            this.BindCommand(ViewModel, vm => vm.OpenEditorCommand, view => view.OpenEditorMenuItem)
                 .DisposeWith(disposables);
         });
     }
