@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Settings;
-using NexusMods.CrossPlatform;
 
 namespace NexusMods.SingleProcess;
 
