@@ -12,15 +12,15 @@
         <diagnostics:DiagnosticEntryDesignViewModel />
     </Design.DataContext>
 
-    <navigation:NavigationControl x:Name="EntryButton" HorizontalAlignment="Stretch">
+    <navigation:NavigationControl x:Name="EntryButton" HorizontalAlignment="Stretch" Padding="12">
         <StackPanel Orientation="Horizontal"
                     HorizontalAlignment="Stretch"
-                    Classes="Spacing-2"
+                    Spacing="{StaticResource Spacing-2}"
                     VerticalAlignment="Center">
 
             <icons:UnifiedIcon x:Name="SeverityIcon" Size="20" />
             <TextBlock x:Name="DescriptionText"
-                       Classes="BodyMDBold"
+                       Theme="{StaticResource BodyMDBoldTheme}"
                        VerticalAlignment="Center"/>
         </StackPanel>
     </navigation:NavigationControl>

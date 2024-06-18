@@ -23,12 +23,10 @@ public class Startup
             .AddMountAndBladeBannerlord()
             .AddLogging(builder => builder.AddXunitOutput())
             .AddGames()
-            .AddActivityMonitor()
             .AddSerializationAbstractions()
             .AddFileStoreAbstractions()
             .AddLoadoutAbstractions()
             .AddInstallerTypes()
-            .AddCrossPlatform()
             .Validate();
     }
 }

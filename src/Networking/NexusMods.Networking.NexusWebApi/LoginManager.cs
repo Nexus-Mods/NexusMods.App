@@ -3,6 +3,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using DynamicData.Binding;
 using JetBrains.Annotations;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.NexusWebApi;
@@ -19,14 +20,15 @@ namespace NexusMods.Networking.NexusWebApi;
 /// Component for handling login and logout from the Nexus Mods
 /// </summary>
 [PublicAPI]
-public sealed class LoginManager : IDisposable, ILoginManager
+public sealed class LoginManager : IDisposable, ILoginManager, IHostedService
 {
     private readonly ILogger<LoginManager> _logger;
     private readonly OAuth _oauth;
     private readonly IProtocolRegistration _protocolRegistration;
     private readonly NexusApiClient _nexusApiClient;
     private readonly IAuthenticatingMessageFactory _msgFactory;
-    
+    private Task? _startupTask = null;
+
     private CompositeDisposable _subscriptions = new CompositeDisposable();
 
 
@@ -172,5 +174,31 @@ public sealed class LoginManager : IDisposable, ILoginManager
     {
         _verifySemaphore.Dispose();
         _subscriptions.Dispose();
+    }
+
+    /// <inheritdoc />
+    public async Task StartAsync(CancellationToken cancellationToken)
+    {
+        lock (this)
+        {
+            _startupTask ??= Startup(cancellationToken);
+        }
+        await _startupTask;
+    }
+    
+    private async Task Startup(CancellationToken cancellationToken)
+    {
+        await ((IHostedService)_jwtTokenRepository).StartAsync(cancellationToken);
+        var userInfo = await Verify(cancellationToken);
+        if (userInfo is not null)
+        {
+            UserInfo = userInfo;
+        }
+    }
+
+    /// <inheritdoc />
+    public Task StopAsync(CancellationToken cancellationToken)
+    {
+        return Task.CompletedTask;
     }
 }

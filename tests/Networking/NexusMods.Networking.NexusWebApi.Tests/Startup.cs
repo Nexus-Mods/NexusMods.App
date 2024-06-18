@@ -1,8 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Settings;
 using NexusMods.Activities;
 using NexusMods.App.BuildInfo;
+using NexusMods.CrossPlatform;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.DataModel;
 using NexusMods.Networking.HttpDownloader;
@@ -23,10 +25,11 @@ public class Startup
             .AddSingleton<HttpClient>()
             .AddHttpDownloader()
             .AddSingleton<TemporaryFileManager>()
-            .AddSingleton<IProcessFactory, ProcessFactory>()
             .AddSingleton<LocalHttpServer>()
             .AddNexusWebApi(true)
             .AddActivityMonitor()
+            .AddCrossPlatform()
+            .AddSettings<LoggingSettings>()
             .AddLoadoutAbstractions()
             .AddDataModel() // this is required because we're also using NMA integration
             .AddLogging(builder => builder.AddXunitOutput()

@@ -132,7 +132,7 @@
         </Style>
     </Style>
 
-        <Style Selector="ComboBox.Secondary">
+    <Style Selector="ComboBox.Secondary">
         <Setter Property="CornerRadius" Value="4"/>
         <Setter Property="Padding" Value="6"/>
 
@@ -183,7 +183,7 @@
         </Style>
     </Style>
 
-        <Style Selector="ComboBox.Tertiary">
+    <Style Selector="ComboBox.Tertiary">
         <Setter Property="CornerRadius" Value="4"/>
         <Setter Property="Padding" Value="6"/>
 

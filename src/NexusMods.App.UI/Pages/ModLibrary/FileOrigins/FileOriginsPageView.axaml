@@ -9,6 +9,7 @@
                                 xmlns:fileOriginEntry="clr-namespace:NexusMods.App.UI.Pages.ModLibrary.FileOriginEntry"
                                 xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation"
                                 xmlns:converters="clr-namespace:NexusMods.App.UI.Converters"
+                                xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="NexusMods.App.UI.Pages.ModLibrary.FileOriginsPageView"
                                 x:CompileBindings="True">
@@ -56,117 +57,9 @@
             </StackPanel>
         </Border>
 
-        <DataGrid Grid.Row="1"
-                  Classes="NoTopBorder"
-                  CanUserReorderColumns="True"
-                  CanUserResizeColumns="True"
-                  CanUserSortColumns="True"
-                  x:Name="DataGrid"
-                  x:DataType="fileOriginEntry:IFileOriginEntryViewModel"
-                  Width="1">
-            <DataGrid.Resources>
-                <converters:BooleanInverterConverter x:Key="BooleanInverterConverter"/>
-            </DataGrid.Resources>
-            <DataGrid.Columns>
-                <DataGridTemplateColumn Header="{x:Static resources:Language.FileOriginsPageView_NameHeader}" 
-                                        Width="*">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate DataType="fileOriginEntry:IFileOriginEntryViewModel">
-                            <TextBlock Classes="BodyMDNormal" 
-                                       VerticalAlignment="Center"
-                                       Text="{CompiledBinding Name}" />
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="{x:Static resources:Language.FileOriginsPageView_VersionHeader}">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate DataType="fileOriginEntry:IFileOriginEntryViewModel">
-                            <TextBlock Classes="BodyMDNormal" 
-                                       VerticalAlignment="Center"
-                                       Text="{CompiledBinding Version}" />
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="{x:Static resources:Language.FileOriginsPageView_SizeHeader}">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate DataType="fileOriginEntry:IFileOriginEntryViewModel">
-                            <TextBlock Classes="BodyMDNormal" 
-                                       VerticalAlignment="Center"
-                                       Text="{CompiledBinding Size}" />
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="{x:Static resources:Language.FileOriginsPageView_DownloadedHeader}">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate DataType="fileOriginEntry:IFileOriginEntryViewModel">
-                            <TextBlock Classes="BodyMDNormal" 
-                                       VerticalAlignment="Center"
-                                       Text="{CompiledBinding DisplayArchiveDate}" />
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="{x:Static resources:Language.FileOriginsPageView_InstalledHeader}">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate DataType="fileOriginEntry:IFileOriginEntryViewModel">
-                            <TextBlock Classes="BodyMDNormal" 
-                                       VerticalAlignment="Center"
-                                       Text="{CompiledBinding DisplayLastInstalledDate}" />
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="{x:Static resources:Language.FileOriginsPageView_ActionHeader}">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate DataType="fileOriginEntry:IFileOriginEntryViewModel">
-                            <Grid>
-                                <!-- Add Mod -->
-                                <Button x:Name="AddButton"
-                                        Classes="Rounded Primary"
-                                        Margin="0,0,24,0"
-                                        Command="{CompiledBinding AddToLoadoutCommand}"
-                                        IsVisible="{CompiledBinding IsModAddedToLoadout, Converter={StaticResource BooleanInverterConverter}}">
-                                
-                                    <StackPanel>
-                                        <icons:UnifiedIcon Classes="Plus" />
-                                        <TextBlock Text="{x:Static resources:Language.FileOriginsPage_AddButtonText}" />
-                                    </StackPanel>
-                                </Button>
-
-                                <!-- View Mod -->
-                                <navigation:NavigationControl x:Name="ViewButton"
-                                                   Classes="Rounded Primary"
-                                                   Margin="0,0,24,0"
-                                                   Command="{CompiledBinding ViewModCommand}"
-                                                   IsVisible="{CompiledBinding IsModAddedToLoadout}">
-                                    <StackPanel>
-                                        <icons:UnifiedIcon Classes="Check" />
-                                        <TextBlock Text="{x:Static resources:Language.FileOriginsPage_ViewButtonText}" />
-                                    </StackPanel>
-                                </navigation:NavigationControl>
-                            </Grid>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-
-            </DataGrid.Columns>
-        </DataGrid>
-        
-        <!-- Empty message -->
-        <Border Grid.Row="1"
-                x:Name="EmptyLibraryMessageBorder"
-                Padding="24,64,24,64"
-                IsVisible="False">
-            <StackPanel Orientation="Vertical" 
-                        HorizontalAlignment="Center"
-                        Classes="Spacing-2">
-
-                <TextBlock Classes="BodyXLBold ForegroundSubdued" 
-                           HorizontalAlignment="Center"
-                           Text="{x:Static resources:Language.EmptyLibraryTitleText}" />
-
-                <StackPanel Orientation="Horizontal" 
-                            Classes="Spacing-1"
-                            HorizontalAlignment="Center">
-                    
+        <controls:EmptyState x:Name="EmptyState" Grid.Row="1" Header="{x:Static resources:Language.EmptyLibraryTitleText}">
+            <controls:EmptyState.Subtitle>
+                <StackPanel>
                     <Button Classes="Hyperlink Secondary"
                             x:Name="EmptyLibraryLinkButton">
                         <TextBlock Classes="BodyLGNormal ForegroundSubdued"
@@ -176,10 +69,102 @@
                             Height="18"
                             Width="18"
                             x:Name="OpenLinkBareIconButton"/>
-
                 </StackPanel>
-            </StackPanel>
-        </Border>
+            </controls:EmptyState.Subtitle>
+
+            <DataGrid Classes="NoTopBorder"
+                      CanUserReorderColumns="True"
+                      CanUserResizeColumns="True"
+                      CanUserSortColumns="True"
+                      x:Name="DataGrid"
+                      x:DataType="fileOriginEntry:IFileOriginEntryViewModel"
+                      Width="1">
+                <DataGrid.Resources>
+                    <converters:BooleanInverterConverter x:Key="BooleanInverterConverter" />
+                </DataGrid.Resources>
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn Header="{x:Static resources:Language.FileOriginsPageView_NameHeader}"
+                                            Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate DataType="fileOriginEntry:IFileOriginEntryViewModel">
+                                <TextBlock Classes="BodyMDNormal"
+                                           VerticalAlignment="Center"
+                                           Text="{CompiledBinding Name}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="{x:Static resources:Language.FileOriginsPageView_VersionHeader}">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate DataType="fileOriginEntry:IFileOriginEntryViewModel">
+                                <TextBlock Classes="BodyMDNormal"
+                                           VerticalAlignment="Center"
+                                           Text="{CompiledBinding Version}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="{x:Static resources:Language.FileOriginsPageView_SizeHeader}">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate DataType="fileOriginEntry:IFileOriginEntryViewModel">
+                                <TextBlock Classes="BodyMDNormal"
+                                           VerticalAlignment="Center"
+                                           Text="{CompiledBinding Size}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="{x:Static resources:Language.FileOriginsPageView_DownloadedHeader}">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate DataType="fileOriginEntry:IFileOriginEntryViewModel">
+                                <TextBlock Classes="BodyMDNormal"
+                                           VerticalAlignment="Center"
+                                           Text="{CompiledBinding DisplayArchiveDate}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="{x:Static resources:Language.FileOriginsPageView_InstalledHeader}">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate DataType="fileOriginEntry:IFileOriginEntryViewModel">
+                                <TextBlock Classes="BodyMDNormal"
+                                           VerticalAlignment="Center"
+                                           Text="{CompiledBinding DisplayLastInstalledDate}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="{x:Static resources:Language.FileOriginsPageView_ActionHeader}">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate DataType="fileOriginEntry:IFileOriginEntryViewModel">
+                                <Grid>
+                                    <!-- Add Mod -->
+                                    <Button x:Name="AddButton"
+                                            Classes="Rounded Primary"
+                                            Margin="0,0,24,0"
+                                            Command="{CompiledBinding AddToLoadoutCommand}"
+                                            IsVisible="{CompiledBinding IsModAddedToLoadout, Converter={StaticResource BooleanInverterConverter}}">
+
+                                        <StackPanel>
+                                            <icons:UnifiedIcon Classes="Plus" />
+                                            <TextBlock Text="{x:Static resources:Language.FileOriginsPage_AddButtonText}" />
+                                        </StackPanel>
+                                    </Button>
+
+                                    <!-- View Mod -->
+                                    <navigation:NavigationControl x:Name="ViewButton"
+                                                                  Classes="Rounded Primary"
+                                                                  Margin="0,0,24,0"
+                                                                  Command="{CompiledBinding ViewModCommand}"
+                                                                  IsVisible="{CompiledBinding IsModAddedToLoadout}">
+                                        <StackPanel>
+                                            <icons:UnifiedIcon Classes="Check" />
+                                            <TextBlock Text="{x:Static resources:Language.FileOriginsPage_ViewButtonText}" />
+                                        </StackPanel>
+                                    </navigation:NavigationControl>
+                                </Grid>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                </DataGrid.Columns>
+            </DataGrid>
+        </controls:EmptyState>
 
     </Grid>
 

@@ -23,12 +23,10 @@ public class Startup
             .AddRedEngineGames()
             .AddLogging(builder => builder.AddXUnit())
             .AddGames()
-            .AddActivityMonitor()
             .AddSerializationAbstractions()
             .AddLoadoutAbstractions()
             .AddFileStoreAbstractions()
             .AddInstallerTypes()
-            .AddCrossPlatform()
             .Validate();
     }
 }
