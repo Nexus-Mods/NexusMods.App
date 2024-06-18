@@ -6,7 +6,7 @@ This page lists the recommended system requirements to install and run the app o
 ## Windows 
 
 || Recommended |
-| --- | --- 
+| --- | --- |
 | OS | Windows 10/11 with updates (64-bit OS required) |
 | Processor | A multi-core CPU is recommended |
 | Memory | More than 4 GB RAM |
