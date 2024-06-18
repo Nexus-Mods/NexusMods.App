@@ -14,7 +14,11 @@
 
             <controls:EmptyState Icon="{x:Static icons:IconValues.Alert}" Header="You've got nothing" IsActive="True">
                 <controls:EmptyState.Subtitle>
-                    <TextBlock>There is nothing here, you should better do something about this.</TextBlock>
+                    <StackPanel>
+                        <TextBlock>There is nothing here, you should better do something about this.</TextBlock>
+                        <Button>Cool button</Button>
+                        <TextBlock>More text</TextBlock>
+                    </StackPanel>
                 </controls:EmptyState.Subtitle>
 
                 <TextBlock>There is something here</TextBlock>
@@ -40,6 +44,7 @@
             <Style Selector="^ TextBlock#HeaderTextBlock">
                 <Setter Property="Theme" Value="{StaticResource BodyXLBoldTheme}"/>
                 <Setter Property="HorizontalAlignment" Value="Center"/>
+                <Setter Property="VerticalAlignment" Value="Center" />
                 <Setter Property="Foreground" Value="{StaticResource NeutralSubdued}"/>
                 <Setter Property="TextWrapping" Value="Wrap"/>
             </Style>
@@ -48,11 +53,13 @@
                 <Style Selector="^ StackPanel">
                     <Setter Property="Orientation" Value="Horizontal"/>
                     <Setter Property="Spacing" Value="2"/>
+                    <Setter Property="HorizontalAlignment" Value="Center"/>
                 </Style>
 
                 <Style Selector="^ TextBlock">
                     <Setter Property="Theme" Value="{StaticResource BodyLGNormalTheme}"/>
                     <Setter Property="HorizontalAlignment" Value="Center" />
+                    <Setter Property="VerticalAlignment" Value="Center"/>
                     <Setter Property="Foreground" Value="{StaticResource NeutralSubdued}" />
                     <Setter Property="TextWrapping" Value="Wrap" />
                 </Style>
