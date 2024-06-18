@@ -9,7 +9,10 @@ Before installing the app, please ensure that your PC meets the system requireme
 Download the latest version of the app and run the installer on your system.
 
 [:fontawesome-brands-windows: Windows Installer](https://github.com/Nexus-Mods/NexusMods.App/releases/latest/download/NexusMods.App.x64.exe){ .md-button .md-button--primary }
-[:fontawesome-brands-linux: Linux AppImage](https://github.com/Nexus-Mods/NexusMods.App/releases/latest){ .md-button }
+[:fontawesome-brands-linux: Linux AppImage](https://github.com/Nexus-Mods/NexusMods.App/releases/latest/download/NexusMods.App.x86_64.AppImage){ .md-button }
+
+
+<sub>[Other releases](https://github.com/Nexus-Mods/NexusMods.App/releases/latest)</sub>
 
 ## Connect your Nexus Mods account
 
