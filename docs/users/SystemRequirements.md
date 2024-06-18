@@ -36,9 +36,9 @@ The App requires the following programs to be available at runtime:
 - `xdg-open` to open URLs in your browser.
 - `update-desktop-database` to update the MIME cache after creating a desktop entry file for the NXM link handler.
 
-If you plan to install using the AppImage, make sure you have the following dependencies installed:
+In addition, the following libraries are required:
 
-- [FUSE 2](https://github.com/AppImage/AppImageKit/wiki/FUSE) is required to run any AppImage.
+- [FUSE 2](https://github.com/AppImage/AppImageKit/wiki/FUSE) if running the AppImage
 - `glibc` 2.2.5 or newer
 - `glibc++` 3.4 or newer
 
