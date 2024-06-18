@@ -49,6 +49,7 @@ public class Startup
                 .AddGames()
                 .AddInstallerTypes()
                 .AddCrossPlatform()
+                .AddSettings<LoggingSettings>()
                 .AddLogging(builder => builder.AddXunitOutput().SetMinimumLevel(LogLevel.Trace))
                 .AddSingleton<LocalHttpServer>()
                 .AddLogging(builder => builder.AddXUnit())
