@@ -1,0 +1,95 @@
+name: PR Builds
+
+on:
+  pull_request_target:
+    branches: [ main ]
+    types: [ opened, synchronize, reopened, ready_for_review ]
+
+env:
+  ProjectFile: "src/NexusMods.App/NexusMods.App.csproj"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref }}
+  cancel-in-progress: true
+
+jobs:
+  comment-start:
+    if: github.event.pull_request.draft == false
+    permissions:
+      pull-requests: write
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Comment PR
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          message: |
+            Commit: `${{ github.sha }}`
+            _Build starting, please wait..._
+          comment_tag: builds
+
+  transformInputs:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    outputs:
+      ProjectFile: ${{ steps.setOutputs.outputs.projectFile }}
+
+    steps:
+      - name: Set Outputs
+        id: setOutputs
+        shell: pwsh
+        run: |
+          echo "projectFile=${{ env.ProjectFile }}" >> $env:GITHUB_OUTPUT
+
+  build-linux:
+    if: github.event.pull_request.draft == false
+    needs: [ transformInputs ]
+    uses: ./.github/workflows/build-linux-pupnet.yaml
+    with:
+      AppVersion: "0.0.1"
+      # this is a bit of a hack, you can't use environment variables here
+      # https://docs.github.com/en/actions/learn-github-actions/contexts#context-availability
+      ProjectFile: ${{ needs.transformInputs.outputs.ProjectFile }}
+      RetentionDays: 1
+      BuildAppImage: true
+      BuildArchive: false
+
+  build-windows:
+    if: github.event.pull_request.draft == false
+    needs: [ transformInputs ]
+    uses: ./.github/workflows/build-windows-pupnet.yaml
+    with:
+      AppVersion: "0.0.1"
+      # this is a bit of a hack, you can't use environment variables here
+      # https://docs.github.com/en/actions/learn-github-actions/contexts#context-availability
+      ProjectFile: ${{ needs.transformInputs.outputs.ProjectFile }}
+      RetentionDays: 1
+      SignExecutable: false
+      BuildInnoSetup: true
+      BuildArchive: true
+
+  comment-build-end:
+    if: github.event.pull_request.draft == false
+    needs: [ build-linux, build-windows ]
+    permissions:
+      pull-requests: write
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Comment PR
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          message: |
+            ### Builds
+            Commit: `${{ github.sha }}`
+
+            * [Windows InnoSetup](${{ needs.build-windows.outputs.ArtifactUrlWindowsInnoSetup }})
+            * [Windows Archive](${{ needs.build-windows.outputs.ArtifactUrlWindowsArchive }})
+            * [Linux AppImage](${{ needs.build-linux.outputs.ArtifactUrlLinuxAppImage }})
+          comment_tag: builds
