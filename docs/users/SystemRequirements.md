@@ -7,7 +7,7 @@ This page lists the recommended system requirements to install and run the app o
 
 * Windows 10 or 11
 
-## Linux dependencies
+## Linux
 The App requires the following programs to be available at runtime:
 
 - `xdg-open` to open URLs in your browser.
@@ -15,9 +15,9 @@ The App requires the following programs to be available at runtime:
 
 If you plan to install using the AppImage, make sure you have the following dependencies installed:
 
-- [FUSE 2](https://github.com/AppImage/AppImageKit/wiki/FUSE) is required to run any AppImage.
 - `glibc` 2.2.5 or newer
 - `glibc++` 3.4 or newer
+- [FUSE 2](https://github.com/AppImage/AppImageKit/wiki/FUSE) is required if you want to run the AppImage.
 
 ## macOS
 
