@@ -2,8 +2,10 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GuidedInstallers;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
+using NexusMods.Abstractions.Settings;
 using NexusMods.Activities;
 using NexusMods.App.BuildInfo;
+using NexusMods.CrossPlatform;
 using NexusMods.Extensions.DependencyInjection;
 using NexusMods.Games.BethesdaGameStudios;
 using NexusMods.Games.BethesdaGameStudios.SkyrimSpecialEdition;
@@ -35,6 +37,8 @@ public class Startup
             .AddFomod()
             .AddDownloaders()
             .AddSingleton<LocalHttpServer>()
+            .AddCrossPlatform()
+            .AddSettings<LoggingSettings>()
             .Validate();
     }
 }
