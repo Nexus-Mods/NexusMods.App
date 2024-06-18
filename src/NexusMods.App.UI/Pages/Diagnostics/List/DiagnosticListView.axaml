@@ -8,6 +8,7 @@
     xmlns:local="clr-namespace:NexusMods.App.UI.Pages.Diagnostics"
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="NexusMods.App.UI.Pages.Diagnostics.DiagnosticListView">
 
@@ -39,8 +40,8 @@
         <controls:EmptyState x:Name="EmptyState"
                              Grid.Row="1"
                              Icon="{x:Static icons:IconValues.CheckCircle}"
-                             Header="Your loadout passed the health check without issues"
-                             Subtitle="Ready for gaming.">
+                             Header="{x:Static resources:Language.DiagnosticListView_EmptyState_Header}"
+                             Subtitle="{x:Static resources:Language.DiagnosticListView_EmptyState_Subtitle}">
 
             <controls:EmptyState.Styles>
                 <Style Selector="icons|UnifiedIcon#Icon">
