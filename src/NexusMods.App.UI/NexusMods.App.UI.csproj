@@ -557,6 +557,9 @@
         <Compile Update="WorkspaceSystem\WorkspaceController\WorkspaceController.cs">
           <DependentUpon>IWorkspaceController.cs</DependentUpon>
         </Compile>
+        <Compile Update="Controls\Settings\Section\SettingSectionViewModel.cs">
+          <DependentUpon>ISettingSectionViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>

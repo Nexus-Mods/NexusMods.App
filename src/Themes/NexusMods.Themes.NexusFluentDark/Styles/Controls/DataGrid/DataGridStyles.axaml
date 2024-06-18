@@ -23,7 +23,17 @@
     <!-- Add Styles Here -->
 
     <Style Selector="DataGrid">
+        <Style.Resources>
+            <SolidColorBrush x:Key="DataGridGridLinesBrush" Color="{DynamicResource StrokeTranslucentWeak}" />
+        </Style.Resources>
+        
         <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
+    </Style>
+    
+    <Style Selector="DataGrid.NoTopBorder">
+        <Style Selector="^ DataGridColumnHeader">
+            <Setter Property="BorderThickness" Value="0,0,0,0" />
+        </Style>
     </Style>
     
     <Style Selector="DataGridCell:nth-child(1)">

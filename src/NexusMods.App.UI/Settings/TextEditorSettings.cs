@@ -12,22 +12,6 @@ public record TextEditorSettings : ISettings
 
     public static ISettingsBuilder Configure(ISettingsBuilder settingsBuilder)
     {
-        // TODO: put in some section
-        var sectionId = SectionId.DefaultValue;
-
-        // TODO: add font size to UI (requires new component)
-
-        return settingsBuilder.AddToUI<TextEditorSettings>(builder => builder
-            .AddPropertyToUI(x => x.ThemeName, propertyBuilder => propertyBuilder
-                .AddToSection(sectionId)
-                .WithDisplayName("Text Editor Theme")
-                .WithDescription("Set the desired theme in the text editor.")
-                .UseSingleValueMultipleChoiceContainer(
-                    valueComparer: EqualityComparer<ThemeName>.Default,
-                    allowedValues: Enum.GetValues<ThemeName>(),
-                    valueToDisplayString: x => x.ToString()
-                )
-            )
-        );
+        return settingsBuilder;
     }
 }

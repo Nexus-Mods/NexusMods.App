@@ -35,7 +35,6 @@
         </Style>
 
         <Style Selector="^:pressed">
-            <Setter Property="RenderTransform" Value="scale(1)" />
             <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
                 <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
             </Style>
@@ -86,6 +85,10 @@
         <Style Selector="^:pressed">
             <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
                 <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
+                
+            </Style>
+            <Style Selector="^ > TextBlock">
+                <Setter Property="TextDecorations" Value="Underline" />
             </Style>
         </Style>
     </Style>

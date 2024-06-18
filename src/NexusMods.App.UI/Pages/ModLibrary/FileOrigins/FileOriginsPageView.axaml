@@ -57,6 +57,7 @@
         </Border>
 
         <DataGrid Grid.Row="1"
+                  Classes="NoTopBorder"
                   CanUserReorderColumns="True"
                   CanUserResizeColumns="True"
                   CanUserSortColumns="True"
@@ -148,6 +149,37 @@
 
             </DataGrid.Columns>
         </DataGrid>
+        
+        <!-- Empty message -->
+        <Border Grid.Row="1"
+                x:Name="EmptyLibraryMessageBorder"
+                Padding="24,64,24,64"
+                IsVisible="False">
+            <StackPanel Orientation="Vertical" 
+                        HorizontalAlignment="Center"
+                        Classes="Spacing-2">
+
+                <TextBlock Classes="BodyXLBold ForegroundSubdued" 
+                           HorizontalAlignment="Center"
+                           Text="{x:Static resources:Language.EmptyLibraryTitleText}" />
+
+                <StackPanel Orientation="Horizontal" 
+                            Classes="Spacing-1"
+                            HorizontalAlignment="Center">
+                    
+                    <Button Classes="Hyperlink Secondary"
+                            x:Name="EmptyLibraryLinkButton">
+                        <TextBlock Classes="BodyLGNormal ForegroundSubdued"
+                                   x:Name="EmptyLibrarySubtitleTextBlock"/>
+                    </Button>
+                    <Button Classes="BareIcon OpenInNew ForegroundSubdued"
+                            Height="18"
+                            Width="18"
+                            x:Name="OpenLinkBareIconButton"/>
+
+                </StackPanel>
+            </StackPanel>
+        </Border>
 
     </Grid>
 

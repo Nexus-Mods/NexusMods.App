@@ -19,8 +19,8 @@ public partial class LoadoutGridView : ReactiveUserControl<ILoadoutGridViewModel
         InitializeComponent();
         this.WhenActivated(d =>
         {
-            this.OneWayBind(ViewModel, vm => vm.MarkdownRendererViewModel, 
-                    view => view.EmptyModlistMessageMarkdownViewer.ViewModel)
+            this.OneWayBind(ViewModel, vm => vm.EmptyModlistTitleMessage, 
+                    view => view.EmptyModlistTitleTextBlock.Text)
                 .DisposeWith(d);
             
             this.WhenAnyValue(view => view.ViewModel!.Mods)
@@ -28,6 +28,9 @@ public partial class LoadoutGridView : ReactiveUserControl<ILoadoutGridViewModel
                 .DisposeWith(d);
 
             this.BindCommand(ViewModel, vm => vm.ViewModContentsCommand, view => view.ViewModFilesButton)
+                .DisposeWith(d);
+            
+            this.BindCommand(ViewModel, vm => vm.ViewModLibraryCommand, view => view.ViewModLibraryButton)
                 .DisposeWith(d);
 
             this.WhenAnyValue(view => view.ViewModel!.Columns)
@@ -42,8 +45,13 @@ public partial class LoadoutGridView : ReactiveUserControl<ILoadoutGridViewModel
                 .DisposeWith(d);
             
             this.WhenAnyValue(view => view.ViewModel!.Mods.Count)
-                .Select(count => count == 0)
-                .BindTo(this, view => view.EmptyModlistMessageBorder.IsVisible)
+                .Select(count => count > 0)
+                .Subscribe(hasItems =>
+                    {
+                        ModsDataGrid.IsVisible = hasItems;
+                        EmptyModlistMessageBorder.IsVisible = !hasItems;
+                    }
+                   )
                 .DisposeWith(d);
 
             // TODO: remove these commands and move all of this into the ViewModel

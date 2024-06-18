@@ -136,6 +136,9 @@ public static class IconValues
 
 #region Editor
 
+    // https://pictogrammers.com/library/mdi/icon/poll
+    public static readonly IconValue BarChart = new ProjektankerIcon("mdi-poll");
+
     // https://pictogrammers.com/library/mdi/icon/drag-horizontal-variant/
     public static readonly IconValue DragHandleHorizontal = new ProjektankerIcon("mdi-drag-horizontal-variant");
 
@@ -177,6 +180,9 @@ public static class IconValues
 
 #region Hardware
 
+    // https://pictogrammers.com/library/mdi/icon/monitor/
+    public static readonly IconValue Desktop = new ProjektankerIcon("mdi-monitor");
+
     // https://pictogrammers.com/library/mdi/icon/gamepad-square-outline/
     public static readonly IconValue Game = new ProjektankerIcon("mdi-gamepad-square-outline");
 
@@ -211,10 +217,22 @@ public static class IconValues
 
     // https://pictogrammers.com/library/mdi/icon/chevron-right/
     public static readonly IconValue ChevronRight = new ProjektankerIcon("mdi-chevron-right");
+    
+    // https://pictogrammers.com/library/mdi/icon/chevron-down/
+    public static readonly IconValue ChevronDown = new ProjektankerIcon("mdi-chevron-down");
+    
+    // https://pictogrammers.com/library/mdi/icon/chevron-up/
+    public static readonly IconValue ChevronUp = new ProjektankerIcon("mdi-chevron-up");
 
     // https://pictogrammers.com/library/mdi/icon/close/
     public static readonly IconValue Close = new ProjektankerIcon("mdi-close");
-
+    
+    // https://pictogrammers.com/library/mdi/icon/window-minimize/
+    public static readonly IconValue WindowMinimize = new ProjektankerIcon("mdi-window-minimize");
+    
+    // https://pictogrammers.com/library/mdi/icon/window-maximize/
+    public static readonly IconValue WindowMaximize = new ProjektankerIcon("mdi-window-maximize");
+    
     // https://pictogrammers.com/library/mdi/icon/refresh/
     public static readonly IconValue Refresh = new ProjektankerIcon("mdi-refresh");
 
@@ -225,6 +243,13 @@ public static class IconValues
     // https://pictogrammers.com/library/mdi/icon/sync/
     public static readonly IconValue Sync = new ProjektankerIcon("mdi-sync");
     
+#endregion
+
+#region Social
+
+    // https://pictogrammers.com/library/mdi/icon/school
+    public static readonly IconValue School = new ProjektankerIcon("mdi-school");
+
 #endregion
 
 #region Toggle
@@ -323,6 +348,13 @@ public static class IconValues
     public static readonly IconValue Stethoscope = new AvaloniaPathIcon(
         Geometry.Parse(
             "M13.8943 22.8744C12.0943 22.8744 10.561 22.2411 9.29429 20.9744C8.02762 19.7077 7.39429 18.1744 7.39429 16.3744V15.7994C5.96095 15.5661 4.76929 14.8952 3.81929 13.7869C2.86929 12.6786 2.39429 11.3744 2.39429 9.87439V3.87439H5.39429V2.87439H7.39429V6.87439H5.39429V5.87439H4.39429V9.87439C4.39429 10.9744 4.78595 11.9161 5.56929 12.6994C6.35262 13.4827 7.29429 13.8744 8.39429 13.8744C9.49429 13.8744 10.436 13.4827 11.2193 12.6994C12.0026 11.9161 12.3943 10.9744 12.3943 9.87439V5.87439H11.3943V6.87439H9.39429V2.87439H11.3943V3.87439H14.3943V9.87439C14.3943 11.3744 13.9193 12.6786 12.9693 13.7869C12.0193 14.8952 10.8276 15.5661 9.39429 15.7994V16.3744C9.39429 17.6244 9.83179 18.6869 10.7068 19.5619C11.5818 20.4369 12.6443 20.8744 13.8943 20.8744C15.1443 20.8744 16.2068 20.4369 17.0818 19.5619C17.9568 18.6869 18.3943 17.6244 18.3943 16.3744V14.6994C17.811 14.4994 17.3318 14.1411 16.9568 13.6244C16.5818 13.1077 16.3943 12.5244 16.3943 11.8744C16.3943 11.0411 16.686 10.3327 17.2693 9.74939C17.8526 9.16606 18.561 8.87439 19.3943 8.87439C20.2276 8.87439 20.936 9.16606 21.5193 9.74939C22.1026 10.3327 22.3943 11.0411 22.3943 11.8744C22.3943 12.5244 22.2068 13.1077 21.8318 13.6244C21.4568 14.1411 20.9776 14.4994 20.3943 14.6994V16.3744C20.3943 18.1744 19.761 19.7077 18.4943 20.9744C17.2276 22.2411 15.6943 22.8744 13.8943 22.8744ZM19.3943 12.8744C19.6776 12.8744 19.9151 12.7786 20.1068 12.5869C20.2985 12.3952 20.3943 12.1577 20.3943 11.8744C20.3943 11.5911 20.2985 11.3536 20.1068 11.1619C19.9151 10.9702 19.6776 10.8744 19.3943 10.8744C19.111 10.8744 18.8735 10.9702 18.6818 11.1619C18.4901 11.3536 18.3943 11.5911 18.3943 11.8744C18.3943 12.1577 18.4901 12.3952 18.6818 12.5869C18.8735 12.7786 19.111 12.8744 19.3943 12.8744Z"
+        )
+    );
+
+    // From Design System "Custom Icons" section on Figma
+    public static readonly IconValue ShieldHalfFull = new AvaloniaPathIcon(
+        Geometry.Parse(
+            "M21.4751 11.1256C21.4751 16.6756 17.6351 21.8656 12.4751 23.1256C7.3151 21.8656 3.4751 16.6756 3.4751 11.1256V5.12561L12.4751 1.12561L21.4751 5.12561V11.1256ZM12.4751 21.1256C16.2251 20.1256 19.4751 15.6656 19.4751 11.3456V6.42561L12.4751 3.30561V21.1256Z"
         )
     );
 

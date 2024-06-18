@@ -17,14 +17,13 @@ public class DiagnosticSettings : ISettings
     /// <inheritdoc/>
     public static ISettingsBuilder Configure(ISettingsBuilder settingsBuilder)
     {
-        // TODO: put in some section
-        var sectionId = SectionId.DefaultValue;
+        var sectionId = Sections.General;
 
         return settingsBuilder.AddToUI<DiagnosticSettings>(builder => builder
             .AddPropertyToUI(x => x.MinimumSeverity, propertyBuilder => propertyBuilder
                 .AddToSection(sectionId)
-                .WithDisplayName("Minimum Severity")
-                .WithDescription("Set the minimum Severity for Diagnostics. Any diagnostic with a lower Severity will not appear in the UI.")
+                .WithDisplayName("Health Check sensitivity")
+                .WithDescription("Set the minimum severity for Health Check diagnostics. You will not be notified about diagnostics with a severity lower than the selected level.")
                 .UseSingleValueMultipleChoiceContainer(
                     valueComparer: EqualityComparer<DiagnosticSeverity>.Default,
                     allowedValues: [
@@ -38,7 +37,7 @@ public class DiagnosticSettings : ISettings
                         DiagnosticSeverity.Suggestion => "Suggestion",
                         DiagnosticSeverity.Warning => "Warning",
                         DiagnosticSeverity.Critical => "Critical",
-                        _ => throw new ArgumentOutOfRangeException(nameof(severity), severity, null),
+                        _ => $"Unknown: {severity}",
                     }
                 )
             )

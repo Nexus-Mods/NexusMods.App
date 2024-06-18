@@ -60,6 +60,8 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
     }
 
     public ReadOnlyObservableCollection<IFileOriginEntryViewModel> SelectedModsCollection => _selectedModsCollection;
+    
+    public string EmptyLibrarySubtitleText { get; }
 
     public ReactiveCommand<Unit, Unit> AddMod { get; private set; } = null!;
     public ReactiveCommand<Unit, Unit> AddModAdvanced { get; private set; } = null!;
@@ -102,6 +104,8 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
         {
             await DoAddModImpl(advancedInstaller, cancellationToken);
         }, canAddMod);
+        
+        EmptyLibrarySubtitleText = string.Format(Language.FileOriginsPageViewModel_EmptyLibrarySubtitleText, game.Name);
         
         this.WhenActivated(d =>
         {

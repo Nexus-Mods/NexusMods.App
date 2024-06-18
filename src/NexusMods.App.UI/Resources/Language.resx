@@ -187,7 +187,7 @@
         <value>Pause all</value>
     </data>
     <data name="InProgressTitleTextBlock" xml:space="preserve">
-        <value>In progress</value>
+        <value>Downloads</value>
     </data>
     <data name="BoldMinutesRemainingTextBlock" xml:space="preserve">
         <value>0 mins</value>
@@ -337,7 +337,7 @@
         <value>HIDDEN</value>
     </data>
     <data name="LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics" xml:space="preserve">
-        <value>Health check</value>
+        <value>Health Check</value>
     </data>
     <data name="DiagnosticListView_DiagnosticListView_All" xml:space="preserve">
         <value>All ({0})</value>
@@ -441,7 +441,7 @@
         <value>Changelog</value>
     </data>
     <data name="DiagnosticListViewModel_DiagnosticListViewModel_Diagnostics" xml:space="preserve">
-        <value>Health check</value>
+        <value>Health Check</value>
     </data>
     <data name="FileOriginsPageTitle" xml:space="preserve">
         <value>Library</value>
@@ -562,5 +562,19 @@
     </data>
     <data name="NewTabPageInfoBannerText2" xml:space="preserve">
         <value>button in the toolbar</value>
+    </data>
+    <data name="LoadoutGrid_EmptyModlistSubtitle_Add_from_library" xml:space="preserve">
+        <value>Add your downloaded mods from the</value>
+    </data>
+    <data name="LoadoutGridViewModel_EmptyModlistTitleString" xml:space="preserve">
+        <value>No mods added to {0}</value>
+        <comment>{0} is the name of the currently managed game</comment>
+    </data>
+    <data name="EmptyLibraryTitleText" xml:space="preserve">
+        <value>No mods in your Library</value>
+    </data>
+    <data name="FileOriginsPageViewModel_EmptyLibrarySubtitleText" xml:space="preserve">
+        <value>Download {0} mods from Nexus Mods</value>
+        <comment>{0} is the name of the currently managed game</comment>
     </data>
 </root>

@@ -23,9 +23,11 @@ public class LoadoutGridDesignViewModel(IWindowManager windowManager) : APageVie
     public LoadoutId LoadoutId { get; set; }
     public string LoadoutName { get; } = "Design Loadout";
     public IMarkdownRendererViewModel MarkdownRendererViewModel { get; } = new MarkdownRendererDesignViewModel();
+    public string EmptyModlistTitleMessage { get; } = "No mods added to Game";
     public ReadOnlyObservableCollection<IDataGridColumnFactory<LoadoutColumn>> Columns { get; } = new([]);
     public ModId[] SelectedItems { get; set; } = [];
     public ReactiveCommand<NavigationInformation, Unit> ViewModContentsCommand { get; } = ReactiveCommand.Create<NavigationInformation, Unit>(_ => Unit.Default);
+    public ReactiveCommand<NavigationInformation, Unit> ViewModLibraryCommand { get; } = ReactiveCommand.Create<NavigationInformation, Unit>(_ => Unit.Default);
 
     public LoadoutGridDesignViewModel() : this(new DesignWindowManager()) { }
 
