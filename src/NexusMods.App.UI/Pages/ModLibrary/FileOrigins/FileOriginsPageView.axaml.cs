@@ -15,9 +15,7 @@ public partial class FileOriginsPageView : ReactiveUserControl<IFileOriginsPageV
         
         this.WhenActivated(d =>
         {
-            this.OneWayBind(ViewModel,
-                    vm => vm.FileOrigins,
-                    v => v.DataGrid.ItemsSource)
+            this.OneWayBind(ViewModel, vm => vm.FileOrigins, v => v.DataGrid.ItemsSource)
                 .DisposeWith(d);
 
             DataGrid.SelectedItemsToProperty(ViewModel!, vm => vm.SelectedModsObservable)
@@ -41,18 +39,13 @@ public partial class FileOriginsPageView : ReactiveUserControl<IFileOriginsPageV
                 .DisposeWith(d);
             
             this.WhenAnyValue(view => view.ViewModel!.FileOrigins.Count)
-                .Select(count => count > 0)
-                .Subscribe(hasItems =>
-                {
-                    DataGrid.IsVisible = hasItems;
-                    EmptyLibraryMessageBorder.IsVisible = !hasItems;
-                })
+                .Select(count => count == 0)
+                .BindToView(this, view => view.EmptyState.IsActive)
                 .DisposeWith(d);
-            
-            this.OneWayBind(ViewModel, vm => vm.EmptyLibrarySubtitleText, 
-                    view => view.EmptyLibrarySubtitleTextBlock.Text)
+
+            this.OneWayBind(ViewModel, vm => vm.EmptyLibrarySubtitleText, view => view.EmptyLibrarySubtitleTextBlock.Text)
                 .DisposeWith(d);
-            
+
             // Note: We get `StorageProvider` from Avalonia, using the View TopLevel.
             //       This is the suggested approach by an Avalonia team member.
             //       https://github.com/AvaloniaUI/Avalonia/discussions/10227

@@ -13,7 +13,7 @@
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
     xmlns:loadoutGrid="clr-namespace:NexusMods.App.UI.Pages.LoadoutGrid"
     xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation"
-    xmlns:markdownRenderer="clr-namespace:NexusMods.App.UI.Controls.MarkdownRenderer">
+    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls">
     <Design.DataContext>
         <loadoutGrid:LoadoutGridDesignViewModel />
     </Design.DataContext>
@@ -37,45 +37,25 @@
             </StackPanel>
         </Border>
 
-        <DataGrid Grid.Row="1"
-                  Classes="NoTopBorder"
-                  CanUserResizeColumns="True"
-                  CanUserSortColumns="True"
-                  x:Name="ModsDataGrid" />
-
-        <Border Grid.Row="1"
-                x:Name="EmptyModlistMessageBorder"
-                Padding="24,64,24,64"
-                IsVisible="False">
-            <StackPanel Orientation="Vertical" 
-                        HorizontalAlignment="Center"
-                        Classes="Spacing-2">
-
-                <TextBlock Classes="BodyXLBold ForegroundSubdued" 
-                           HorizontalAlignment="Center"
-                           x:Name="EmptyModlistTitleTextBlock" />
-
-                <StackPanel Orientation="Horizontal" 
-                            Classes="Spacing-1_5"
-                            HorizontalAlignment="Center">
-
-                    <TextBlock Classes="BodyLGNormal ForegroundSubdued"
-                               VerticalAlignment="Center"
-                               Text="{x:Static resources:Language.LoadoutGrid_EmptyModlistSubtitle_Add_from_library}" />
-                    <navigation:NavigationControl Classes="Square Primary"
-                                                  x:Name="ViewModLibraryButton">
-                        <StackPanel Orientation="Horizontal" Classes="Spacing-1">
-                            <icons:UnifiedIcon Classes="ModLibrary ForegroundSubdued"
-                                               VerticalAlignment="Center" Size="18"/>
-                            <TextBlock Classes="BodyLGNormal ForegroundSubdued"
-                                       VerticalAlignment="Center"
-                                       Text="Library" />
+        <controls:EmptyState Grid.Row="1" x:Name="EmptyState">
+            <controls:EmptyState.Subtitle>
+                <StackPanel>
+                    <TextBlock Text="{x:Static resources:Language.LoadoutGrid_EmptyModlistSubtitle_Add_from_library}" />
+                    <navigation:NavigationControl Classes="Square Primary" x:Name="ViewModLibraryButton">
+                        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Spacing-1}">
+                            <icons:UnifiedIcon Classes="ModLibrary ForegroundSubdued" VerticalAlignment="Center" Size="18"/>
+                            <TextBlock Text="Library" />
                         </StackPanel>
                     </navigation:NavigationControl>
-
                 </StackPanel>
-            </StackPanel>
-        </Border>
+            </controls:EmptyState.Subtitle>
+
+            <DataGrid Classes="NoTopBorder"
+                      CanUserResizeColumns="True"
+                      CanUserSortColumns="True"
+                      x:Name="ModsDataGrid" />
+
+        </controls:EmptyState>
 
     </Grid>
 </reactiveUi:ReactiveUserControl>
