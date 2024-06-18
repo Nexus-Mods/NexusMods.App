@@ -187,7 +187,7 @@
         <value>Pause all</value>
     </data>
     <data name="InProgressTitleTextBlock" xml:space="preserve">
-        <value>In progress</value>
+        <value>Downloads</value>
     </data>
     <data name="BoldMinutesRemainingTextBlock" xml:space="preserve">
         <value>0 mins</value>
