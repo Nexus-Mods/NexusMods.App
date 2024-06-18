@@ -31,7 +31,6 @@ public static class Services
     {
         services.AddSingleton<SyncFile>();
         services.AddSettings<CliSettings>();
-        services.AddSettings<LoggingSettings>();
         switch (mode)
         {
             case Mode.Main:
