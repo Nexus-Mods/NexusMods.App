@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Settings;
+using NexusMods.CrossPlatform;
 
 namespace NexusMods.SingleProcess;
 
@@ -30,9 +31,11 @@ public static class Services
     {
         services.AddSingleton<SyncFile>();
         services.AddSettings<CliSettings>();
+        services.AddSettings<LoggingSettings>();
         switch (mode)
         {
             case Mode.Main:
+                services.AddSingleton<CliServer>();
                 services.AddHostedService<CliServer>();
                 break;
             case Mode.Client:
