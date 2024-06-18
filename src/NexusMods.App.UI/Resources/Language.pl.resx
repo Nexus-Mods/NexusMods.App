@@ -571,4 +571,10 @@
         <value>Pobierz mody dla {0} z Nexus Mods</value>
         <comment>{0} is the name of the currently managed game</comment>
     </data>
+    <data name="DiagnosticListView.EmptyState.Header" xml:space="preserve">
+        <value>Twój zestaw przeszedł kontrolę kondycji bez problemów</value>
+    </data>
+    <data name="DiagnosticListView.EmptyState.Subtitle" xml:space="preserve">
+        <value>Gotowy do gry</value>
+    </data>
 </root>
