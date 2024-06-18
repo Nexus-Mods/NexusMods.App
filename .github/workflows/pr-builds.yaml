@@ -3,6 +3,14 @@ name: PR Builds
 on:
   pull_request_target:
     branches: [ main ]
+    paths:
+      - ".github/workflows/pr-builds.yaml"
+      - "src/**"
+      - "tests/**"
+      - "**.props"
+      - "**.targets"
+      - "**.sln"
+      - "**.csproj"
     types: [ opened, synchronize, reopened, ready_for_review ]
 
 env:
