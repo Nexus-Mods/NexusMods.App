@@ -43,10 +43,12 @@ In addition, the following libraries are required:
 - `glibc++` 3.4 or newer
 
 ### Linux Packages
+
 The status of packages for various Linux builds can be seen below:
 
 [![Packaging status](https://repology.org/badge/vertical-allrepos/nexusmods-app.svg)](https://repology.org/project/nexusmods-app/versions)
 
+If you want to create a package for your platform, see [Contributing](../developers/Contributing.md#for-package-maintainers) for more details.
 
 ## macOS
 
