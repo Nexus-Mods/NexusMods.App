@@ -288,12 +288,6 @@
 	<data name="ApplyControlViewModel__ACTIVATE_LOADOUT" xml:space="preserve">
 		<value>AKTYWUJ ZESTAW</value>
 	</data>
-	<data name="ApplyControlViewModel__ACTIVATE_AND_APPLY" xml:space="preserve">
-		<value>ZASTOSUJ</value>
-	</data>
-	<data name="ApplyControlViewModel__APPLY" xml:space="preserve">
-		<value>ZASTOSUJ</value>
-	</data>
 	<data name="ApplyingControlView__ApplyingText" xml:space="preserve">
 		<value>Zastosowywanie...</value>
 	</data>
