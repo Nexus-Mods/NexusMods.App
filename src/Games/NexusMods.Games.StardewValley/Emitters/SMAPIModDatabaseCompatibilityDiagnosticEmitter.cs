@@ -117,7 +117,7 @@ public class SMAPIModDatabaseCompatibilityDiagnosticEmitter : ILoadoutDiagnostic
                 yield return Diagnostics.CreateModCompatabilityAssumeBroken(
                     Mod: mod.ToReference(loadout),
                     ReasonPhrase: reasonPhrase ?? "it's no longer compatible",
-                    ModLink: apiMods.GetValueOrDefault(manifest.UniqueID)?.NexusModsLink.ValueOr(() => Helpers.NexusModsLink) ?? Helpers.NexusModsLink,
+                    ModLink: apiMods.GetValueOrDefault(manifest.UniqueID)?.NexusModsLink.ValueOr(() => DefaultWikiLink) ?? DefaultWikiLink,
                     ModVersion: manifest.Version.ToString()
                 );
             }
