@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using Avalonia.Threading;
 using DynamicData;
 using DynamicData.Binding;
@@ -49,7 +50,10 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
         this.WhenActivated(d =>
             {
                 var loadouts = loadoutRepository.Observable
-                    .ToObservableChangeSet();
+                    .ToObservableChangeSet()
+                    .Filter(loadout => loadout.IsVisible())
+                    .GroupOn(loadout => loadout.Installation.LocationsRegister[LocationId.Game])
+                    .Transform(group => group.List.Items.First());
                 var foundGames = gameRegistry.InstalledGames
                     .ToObservableChangeSet();
                 
