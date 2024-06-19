@@ -17,9 +17,9 @@ internal static partial class Diagnostics
         .WithId(new DiagnosticId(Source, number: 1))
         .WithTitle("Missing required dependency")
         .WithSeverity(DiagnosticSeverity.Warning)
-        .WithSummary("Mod {Mod} is missing required dependency {MissingDependencyModName}")
+        .WithSummary("Mod {Mod} is missing required dependency '{MissingDependencyModName}'")
         .WithDetails("""
-You can download the latest version of {MissingDependencyModName} ({MissingDependencyModId}) at {NexusModsDependencyUri}.
+You can download the latest version of '{MissingDependencyModName}' (`{MissingDependencyModId}`) at {NexusModsDependencyUri}.
 """)
         .WithMessageData(messageBuilder => messageBuilder
             .AddDataReference<ModReference>("Mod")

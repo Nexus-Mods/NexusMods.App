@@ -12,6 +12,6 @@ internal sealed class ModReferenceFormatter(IConnection conn) : IValueFormatter<
     {
         // TODO: custom markdown control
         var mod = conn.Db.Get(value.DataId);
-        writer.Write(ref state, mod?.Name ?? "MISSING MOD");
+        writer.Write(ref state, $"'{mod.Name}'");
     }
 }
