@@ -193,6 +193,11 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
 
     public void CloseTab(PanelTabId id)
     {
+        var tab = _tabs.FirstOrDefault(tab => tab.Id == id);
+        if (tab is null) return;
+
+        if (!tab.Contents.ViewModel.CanClose()) return;
+
         _tabsList.Edit(updater =>
         {
             var index = updater.LinearSearch(item => item.Id == id);
