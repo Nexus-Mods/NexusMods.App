@@ -239,7 +239,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
             Dependency: ModForId(loadout, tuple.DependencyModId).ToReference(loadout),
             MinimumVersion: tuple.MinimumVersion.ToString(),
             CurrentVersion: tuple.CurrentVersion.ToString(),
-            NexusModsDependencyUri: apiMods.GetValueOrDefault(tuple.DependencyId)?.NexusModsLink.ValueOr(() => Helpers.NexusModsLink) ?? Helpers.NexusModsLink
+            NexusModsDependencyUri: apiMods.GetLink(tuple.DependencyId, defaultValue: Helpers.NexusModsLink)
         ));
     }
 

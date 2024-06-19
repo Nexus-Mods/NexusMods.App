@@ -31,3 +31,15 @@ public record SMAPIWebApiMod
 
     public required Optional<NamedLink> NexusModsLink { get; init; }
 }
+
+public static class SMAPIWebApiExtensions
+{
+    public static NamedLink GetLink(this IReadOnlyDictionary<string, SMAPIWebApiMod> mods, string id, NamedLink defaultValue)
+    {
+        var mod = mods.GetValueOrDefault(id);
+        if (mod is null) return defaultValue;
+
+        var link = mod.NexusModsLink;
+        return link.HasValue ? link.Value : defaultValue;
+    }
+}

@@ -71,7 +71,7 @@ public class VersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
                     ModName: mod.Name,
                     MinimumAPIVersion: minimumApiVersion.ToString(),
                     CurrentSMAPIVersion: smapiVersion.ToString(),
-                    NexusModsLink: apiMods.GetValueOrDefault(manifest.UniqueID)?.NexusModsLink.ValueOr(() => Helpers.NexusModsLink) ?? Helpers.NexusModsLink,
+                    NexusModsLink: apiMods.GetLink(manifest.UniqueID, defaultValue: Helpers.NexusModsLink),
                     SMAPINexusModsLink: Helpers.SMAPILink
                 );
             }
@@ -83,7 +83,7 @@ public class VersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
                     ModName: mod.Name,
                     MinimumGameVersion: minimumGameVersion.ToString(),
                     CurrentGameVersion: gameVersion.ToString(),
-                    NexusModsLink: apiMods.GetValueOrDefault(manifest.UniqueID)?.NexusModsLink.ValueOr(() => Helpers.NexusModsLink) ?? Helpers.NexusModsLink
+                    NexusModsLink: apiMods.GetLink(manifest.UniqueID, defaultValue: Helpers.NexusModsLink)
                 );
             }
         }
