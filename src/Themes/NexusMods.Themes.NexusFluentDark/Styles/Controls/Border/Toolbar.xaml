@@ -3,32 +3,52 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
 
-    <Design.PreviewWith >
+    <Design.PreviewWith>
         <StackPanel Width="920" Classes="Spacing-2">
             <!-- With Header -->
             <Border Classes="Toolbar">
                 <Grid ColumnDefinitions="*, Auto">
-                    <TextBlock Grid.Column="0" Text="TOOL BAR HEADER"/>
+                    <TextBlock Grid.Column="0" Text="TOOL BAR HEADER" Classes="ToolBarTitle" />
                     <StackPanel Grid.Column="1">
                         <Button>
                             <StackPanel>
-                                <icons:UnifiedIcon Classes="RemoveCircleOutline"/>
-                                <TextBlock Text="Remove"/>
+                                <icons:UnifiedIcon Classes="RemoveCircleOutline" />
+                                <TextBlock Text="Remove" />
                             </StackPanel>
                         </Button>
-                        <Line Classes="Separator"/>
+                        <Line Classes="Separator" />
                         <Button>
                             <StackPanel>
-                                <icons:UnifiedIcon Classes="RemoveCircleOutline"/>
-                                <TextBlock Text="Remove All"/>
+                                <icons:UnifiedIcon Classes="RemoveCircleOutline" />
+                                <TextBlock Text="Remove All" />
                             </StackPanel>
                         </Button>
                         <Button IsEnabled="False">
                             <StackPanel>
-                                <icons:UnifiedIcon Classes="RemoveCircleOutline"/>
-                                <TextBlock Text="Remove All"/>
+                                <icons:UnifiedIcon Classes="RemoveCircleOutline" />
+                                <TextBlock Text="Remove All" />
                             </StackPanel>
                         </Button>
+                        <ComboBox SelectedIndex="0" Classes="Tertiary">
+                            <ComboBoxItem>
+                                <StackPanel>
+                                    <icons:UnifiedIcon Classes="ColorLens" />
+                                    <TextBlock Text="Item 1"/>
+                                </StackPanel>
+                            </ComboBoxItem>
+                            <ComboBoxItem>
+                                <StackPanel>
+                                    <icons:UnifiedIcon Classes="ColorLens" />
+                                    <TextBlock Text="Item 2"/>
+                                </StackPanel>
+                            </ComboBoxItem>
+                            <ComboBoxItem>
+                                <StackPanel>
+                                    <icons:UnifiedIcon Classes="ColorLens" />
+                                    <TextBlock Text="Item 3"/>
+                                </StackPanel>
+                            </ComboBoxItem>
+                        </ComboBox>
                     </StackPanel>
                 </Grid>
             </Border>
@@ -36,26 +56,39 @@
             <!-- No Header -->
             <Border Classes="Toolbar">
                 <StackPanel>
-                    <TextBlock Classes="NotTitle" Text="Override: Not a title!"/>
+                    <TextBlock Classes="NotTitle" Text="Override: Not a title!" />
                     <Button>
                         <StackPanel>
-                            <icons:UnifiedIcon Classes="RemoveCircleOutline"/>
-                            <TextBlock Text="Remove"/>
+                            <icons:UnifiedIcon Classes="RemoveCircleOutline" />
+                            <TextBlock Text="Remove" />
                         </StackPanel>
                     </Button>
-                    <Line Classes="Separator"/>
+                    <Line Classes="Separator" />
                     <Button>
                         <StackPanel>
-                            <icons:UnifiedIcon Classes="RemoveCircleOutline"/>
-                            <TextBlock Text="Remove All"/>
+                            <icons:UnifiedIcon Classes="RemoveCircleOutline" />
+                            <TextBlock Text="Remove All" />
                         </StackPanel>
                     </Button>
                     <Button IsEnabled="False">
                         <StackPanel>
-                            <icons:UnifiedIcon Classes="RemoveCircleOutline"/>
-                            <TextBlock Text="Remove All"/>
+                            <icons:UnifiedIcon Classes="RemoveCircleOutline" />
+                            <TextBlock Text="Remove All" />
                         </StackPanel>
                     </Button>
+                    <ComboBox SelectedIndex="0" Classes="Tertiary">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <icons:UnifiedIcon Classes="ColorLens" Size="20"/>
+                                    <TextBlock Text="Item" Classes="BodyMDNormal"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                        <ComboBoxItem><TextBlock Text="Item 1"/></ComboBoxItem>
+                        <ComboBoxItem><TextBlock Text="Item 2"/></ComboBoxItem>
+                        <ComboBoxItem><TextBlock Text="Item 3"/></ComboBoxItem>
+                    </ComboBox>
                 </StackPanel>
             </Border>
 
@@ -65,41 +98,35 @@
     <!-- Style Definitions -->
 
     <Style Selector="Border.Toolbar">
-        <Setter Property="HorizontalAlignment" Value="Stretch"/>
-        <Setter Property="Height" Value="52"/>
-        <Setter Property="Background" Value="{StaticResource SurfaceLow}"/>
-        <Setter Property="BorderThickness" Value="0, 0, 0, 1"/>
-        <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="Height" Value="52" />
+        <Setter Property="Background" Value="{StaticResource SurfaceLow}" />
+        <Setter Property="BorderThickness" Value="0, 0, 0, 1" />
+        <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
     </Style>
 
     <Style Selector="Border.Toolbar > Grid">
-        <Setter Property="Margin" Value="24, 0"/>
+        <Setter Property="Margin" Value="24, 0" />
     </Style>
-    
+
     <!-- Only applied when no grid -->
     <Style Selector="Border.Toolbar > StackPanel">
-        <Setter Property="Margin" Value="24, 0"/>
-        <Setter Property="HorizontalAlignment" Value="Right"/>
+        <Setter Property="Margin" Value="24, 0" />
+        <Setter Property="HorizontalAlignment" Value="Right" />
     </Style>
 
     <Style Selector="Border.Toolbar StackPanel">
-        <Setter Property="Orientation" Value="Horizontal"/>
-        <Setter Property="Spacing" Value="{StaticResource Spacing-2}"/>
+        <Setter Property="Orientation" Value="Horizontal" />
+        <Setter Property="Spacing" Value="{StaticResource Spacing-2}" />
     </Style>
 
     <Style Selector="Border.Toolbar StackPanel Line">
-        <Setter Property="Width" Value="12"/>
-        <Setter Property="Height" Value="32"/>
-        <Setter Property="StrokeThickness" Value="1"/>
-        <Setter Property="StartPoint" Value="6, 0"/>
-        <Setter Property="EndPoint" Value="6, 32"/>
-        <Setter Property="Stroke" Value="{StaticResource StrokeTranslucentWeakBrush}"/>
-    </Style>
-
-    <Style Selector="Border.Toolbar TextBlock">
-        <Setter Property="Theme" Value="{StaticResource HeadingXSSemiTheme}"/>
-        <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
-        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Width" Value="12" />
+        <Setter Property="Height" Value="32" />
+        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="StartPoint" Value="6, 0" />
+        <Setter Property="EndPoint" Value="6, 32" />
+        <Setter Property="Stroke" Value="{StaticResource StrokeTranslucentWeakBrush}" />
     </Style>
 
     <Style Selector="Border.Toolbar Button">
@@ -135,17 +162,32 @@
         <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
         <Setter Property="Margin" Value="0" />
     </Style>
-
+    
     <!-- Note(Sewer): Apparently declaration order matters, so this will not work if placed
-         above the style for non-disabled button. --> 
+         above the style for non-disabled button. -->
     <Style Selector="Border.Toolbar Button:disabled TextBlock">
         <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
     </Style>
     
-    <!-- Optional Classes -->
+
+    <!-- ComboBox -->
+    <Style Selector="Border.Toolbar ComboBox">
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Height" Value="32" />
+    </Style>
+
     
+
+    <!-- Optional Classes -->
+    <Style Selector="Border.Toolbar TextBlock.ToolBarTitle">
+        <Setter Property="Theme" Value="{StaticResource HeadingXSSemiTheme}" />
+        <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
     <!-- Class 'NotTitle', for text that is not title -->
     <Style Selector="Border.Toolbar TextBlock.NotTitle">
         <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
 </Styles>

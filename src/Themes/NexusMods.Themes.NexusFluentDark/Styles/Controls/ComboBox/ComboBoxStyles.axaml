@@ -1,7 +1,8 @@
 <Styles xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
 
-    <StyleInclude Source="ComboBoxStyles.addPanelDropDown.axaml"/>
+    <StyleInclude Source="ComboBoxStyles.addPanelDropDown.axaml" />
 
     <Design.PreviewWith>
         <Border Padding="20" Height="400" Width="400">
@@ -56,22 +57,64 @@
                         <ComboBoxItem>Item 2</ComboBoxItem>
                     </ComboBox>
                 </StackPanel>
+
+                <!-- DataTemplate version -->
+                <StackPanel Spacing="20" Orientation="Horizontal">
+                    <ComboBox Classes="Tertiary">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <icons:UnifiedIcon Classes="ColorLens" Size="20" />
+                                    <TextBlock Text="Item" Classes="BodyMDNormal" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                        <ComboBoxItem>Item 1</ComboBoxItem>
+                        <ComboBoxItem>Item 2</ComboBoxItem>
+                    </ComboBox>
+
+                    <ComboBox Classes="Tertiary" SelectedIndex="0">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <icons:UnifiedIcon Classes="ColorLens" Size="20" />
+                                    <TextBlock Text="Item" Classes="BodyMDNormal" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                        <ComboBoxItem>Item 1</ComboBoxItem>
+                        <ComboBoxItem>Item 2</ComboBoxItem>
+                    </ComboBox>
+
+                    <ComboBox Classes="Tertiary" IsEnabled="False" SelectedIndex="0">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <icons:UnifiedIcon Classes="ColorLens" Size="20" />
+                                    <TextBlock Text="Item" Classes="BodyMDNormal" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                        <ComboBoxItem>Item 1</ComboBoxItem>
+                        <ComboBoxItem>Item 2</ComboBoxItem>
+                    </ComboBox>
+                </StackPanel>
             </StackPanel>
         </Border>
     </Design.PreviewWith>
 
     <Style Selector="ComboBox">
         <Style Selector="^ /template/ ContentControl#ContentPresenter">
-            <Setter Property="FontWeight" Value="Normal"/>
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="FontFamily" Value="{StaticResource FontBodyRegular}"/>
+            <Setter Property="FontWeight" Value="Normal" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontFamily" Value="{StaticResource FontBodyRegular}" />
         </Style>
 
         <Style Selector="^ /template/ TextBlock#PlaceholderTextBlock">
-            <Setter Property="FontWeight" Value="Normal"/>
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="FontFamily" Value="{StaticResource FontBodyRegular}"/>
-            <Setter Property="LineHeight" Value="20"/>
+            <Setter Property="FontWeight" Value="Normal" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontFamily" Value="{StaticResource FontBodyRegular}" />
+            <Setter Property="LineHeight" Value="20" />
         </Style>
 
         <Style Selector="^ /template/ PathIcon#DropDownGlyph">
@@ -81,20 +124,20 @@
         </Style>
     </Style>
 
-        <Style Selector="ComboBox.Primary">
-        <Setter Property="CornerRadius" Value="4"/>
-        <Setter Property="Padding" Value="6"/>
+    <Style Selector="ComboBox.Primary">
+        <Setter Property="CornerRadius" Value="4" />
+        <Setter Property="Padding" Value="6" />
 
-        <Setter Property="Background" Value="{StaticResource PrimaryModerate}"/>
-        <Setter Property="Foreground" Value="{StaticResource NeutralInverted}"/>
-        <Setter Property="PlaceholderForeground" Value="{StaticResource NeutralInverted}"/>
+        <Setter Property="Background" Value="{StaticResource PrimaryModerate}" />
+        <Setter Property="Foreground" Value="{StaticResource NeutralInverted}" />
+        <Setter Property="PlaceholderForeground" Value="{StaticResource NeutralInverted}" />
 
         <Style Selector="^ PathIcon#DropDownGlyph">
-            <Setter Property="Foreground" Value="{StaticResource NeutralInverted}"/>
+            <Setter Property="Foreground" Value="{StaticResource NeutralInverted}" />
         </Style>
 
         <Style Selector="^ /template/ Border#Background">
-            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="BorderThickness" Value="0" />
         </Style>
 
         <!-- Hover State -->
@@ -107,14 +150,14 @@
         <!-- Active State -->
         <Style Selector="^:pressed">
             <Style Selector="^ /template/ Border#Background">
-                <Setter Property="Background" Value="{StaticResource PrimarySubdued}"/>
+                <Setter Property="Background" Value="{StaticResource PrimarySubdued}" />
             </Style>
         </Style>
 
         <!-- Disabled State -->
         <Style Selector="^:disabled">
             <Style Selector="^ /template/ Border#Background">
-                <Setter Property="Background" Value="{StaticResource PrimaryModerate}"/>
+                <Setter Property="Background" Value="{StaticResource PrimaryModerate}" />
                 <Setter Property="Opacity" Value="{StaticResource OpacityDisabledElement}" />
             </Style>
 
@@ -133,19 +176,19 @@
     </Style>
 
     <Style Selector="ComboBox.Secondary">
-        <Setter Property="CornerRadius" Value="4"/>
-        <Setter Property="Padding" Value="6"/>
+        <Setter Property="CornerRadius" Value="4" />
+        <Setter Property="Padding" Value="6" />
 
-        <Setter Property="Background" Value="{StaticResource NeutralModerate}"/>
-        <Setter Property="Foreground" Value="{StaticResource NeutralInverted}"/>
-        <Setter Property="PlaceholderForeground" Value="{StaticResource NeutralInverted}"/>
+        <Setter Property="Background" Value="{StaticResource NeutralModerate}" />
+        <Setter Property="Foreground" Value="{StaticResource NeutralInverted}" />
+        <Setter Property="PlaceholderForeground" Value="{StaticResource NeutralInverted}" />
 
         <Style Selector="^ PathIcon#DropDownGlyph">
-            <Setter Property="Foreground" Value="{StaticResource NeutralInverted}"/>
+            <Setter Property="Foreground" Value="{StaticResource NeutralInverted}" />
         </Style>
 
         <Style Selector="^ /template/ Border#Background">
-            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="BorderThickness" Value="0" />
         </Style>
 
         <!-- Hover State -->
@@ -158,14 +201,14 @@
         <!-- Active State -->
         <Style Selector="^:pressed">
             <Style Selector="^ /template/ Border#Background">
-                <Setter Property="Background" Value="{StaticResource NeutralSubdued}"/>
+                <Setter Property="Background" Value="{StaticResource NeutralSubdued}" />
             </Style>
         </Style>
 
         <!-- Disabled State -->
         <Style Selector="^:disabled">
             <Style Selector="^ /template/ Border#Background">
-                <Setter Property="Background" Value="{StaticResource NeutralModerate}"/>
+                <Setter Property="Background" Value="{StaticResource NeutralModerate}" />
                 <Setter Property="Opacity" Value="{StaticResource OpacityDisabledElement}" />
             </Style>
 
@@ -184,19 +227,19 @@
     </Style>
 
     <Style Selector="ComboBox.Tertiary">
-        <Setter Property="CornerRadius" Value="4"/>
-        <Setter Property="Padding" Value="6"/>
+        <Setter Property="CornerRadius" Value="4" />
+        <Setter Property="Padding" Value="6" />
 
-        <Setter Property="Foreground" Value="{StaticResource NeutralStrong}"/>
-        <Setter Property="PlaceholderForeground" Value="{StaticResource NeutralStrong}"/>
+        <Setter Property="Foreground" Value="{StaticResource NeutralStrong}" />
+        <Setter Property="PlaceholderForeground" Value="{StaticResource NeutralStrong}" />
 
         <Style Selector="^ PathIcon#DropDownGlyph">
-            <Setter Property="Foreground" Value="{StaticResource NeutralStrong}"/>
+            <Setter Property="Foreground" Value="{StaticResource NeutralStrong}" />
         </Style>
 
         <Style Selector="^ /template/ Border#Background">
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Background" Value="Transparent" />
         </Style>
 
         <!-- Hover State -->
@@ -209,14 +252,14 @@
         <!-- Active State -->
         <Style Selector="^:pressed">
             <Style Selector="^ /template/ Border#Background">
-                <Setter Property="Background" Value="{StaticResource SurfaceMid}"/>
+                <Setter Property="Background" Value="{StaticResource SurfaceMid}" />
             </Style>
         </Style>
 
         <!-- Disabled State -->
         <Style Selector="^:disabled">
             <Style Selector="^ /template/ Border#Background">
-                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="Background" Value="Transparent" />
                 <Setter Property="Opacity" Value="{StaticResource OpacityDisabledElement}" />
             </Style>
 
@@ -234,4 +277,3 @@
         </Style>
     </Style>
 </Styles>
-
