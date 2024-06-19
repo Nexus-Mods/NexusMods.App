@@ -22,6 +22,7 @@ markdown_extensions:
   - tables
   - pymdownx.details
   - pymdownx.highlight
+  - pymdownx.keys
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid
@@ -58,6 +59,9 @@ nav:
     - Home: users/index.md
     - System Requirements: users/SystemRequirements.md
     - Getting Started: users/GettingStarted.md
+    - Adding a Game: users/AddGames.md
+    # - Features: 
+    #   - Health Check: users/features/HealthCheck.md
     - Games:
       # - users/games/index.md
       - Stardew Valley: users/games/StardewValley.md

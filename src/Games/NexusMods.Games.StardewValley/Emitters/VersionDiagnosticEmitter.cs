@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Diagnostics;
@@ -49,11 +50,11 @@ public class VersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
             .GetAllManifestsAsync(_logger, _fileStore, loadout, onlyEnabledMods: true, cancellationToken)
             .ToArrayAsync(cancellationToken);
 
-        var modPageUrls = await _smapiWebApi.GetModPageUrls(
-            _os,
+        var apiMods = await _smapiWebApi.GetModDetails(
+            os: _os,
             gameVersion,
             smapiVersion,
-            smapiMods.Select(tuple => tuple.Item2.UniqueID).ToArray()
+            smapiIDs: smapiMods.Select(tuple => tuple.Item2.UniqueID).ToArray()
         );
 
         foreach (var tuple in smapiMods)
@@ -70,7 +71,7 @@ public class VersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
                     ModName: mod.Name,
                     MinimumAPIVersion: minimumApiVersion.ToString(),
                     CurrentSMAPIVersion: smapiVersion.ToString(),
-                    NexusModsLink: modPageUrls.GetValueOrDefault(manifest.UniqueID, Helpers.NexusModsLink),
+                    NexusModsLink: apiMods.GetLink(manifest.UniqueID, defaultValue: Helpers.NexusModsLink),
                     SMAPINexusModsLink: Helpers.SMAPILink
                 );
             }
@@ -82,7 +83,7 @@ public class VersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
                     ModName: mod.Name,
                     MinimumGameVersion: minimumGameVersion.ToString(),
                     CurrentGameVersion: gameVersion.ToString(),
-                    NexusModsLink: modPageUrls.GetValueOrDefault(manifest.UniqueID, Helpers.NexusModsLink)
+                    NexusModsLink: apiMods.GetLink(manifest.UniqueID, defaultValue: Helpers.NexusModsLink)
                 );
             }
         }
