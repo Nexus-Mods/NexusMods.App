@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using DynamicData.Kernel;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
@@ -92,8 +93,8 @@ public class SMAPIModDatabaseCompatibilityDiagnosticEmitter : ILoadoutDiagnostic
             list.Add((mod, manifest, versionedFields));
         }
 
-        var modPageUrls = await _smapiWebApi.GetModPageUrls(
-            _os,
+        var apiMods = await _smapiWebApi.GetModDetails(
+            os: _os,
             gameVersion,
             smapiVersion,
             smapiIDs: list.Select(tuple => tuple.Item2.UniqueID).ToArray()
@@ -116,7 +117,7 @@ public class SMAPIModDatabaseCompatibilityDiagnosticEmitter : ILoadoutDiagnostic
                 yield return Diagnostics.CreateModCompatabilityAssumeBroken(
                     Mod: mod.ToReference(loadout),
                     ReasonPhrase: reasonPhrase ?? "it's no longer compatible",
-                    ModLink:  modPageUrls.GetValueOrDefault(manifest.UniqueID, DefaultWikiLink),
+                    ModLink:apiMods.GetLink(manifest.UniqueID, defaultValue: DefaultWikiLink),
                     ModVersion: manifest.Version.ToString()
                 );
             }
