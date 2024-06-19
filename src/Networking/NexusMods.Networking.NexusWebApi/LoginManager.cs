@@ -27,29 +27,16 @@ public sealed class LoginManager : IDisposable, ILoginManager
     private readonly NexusApiClient _nexusApiClient;
     private readonly IAuthenticatingMessageFactory _msgFactory;
 
-    private CompositeDisposable _subscriptions = new CompositeDisposable();
-
-
     /// <summary>
     /// Allows you to subscribe to notifications of when the user information changes.
     /// </summary>
     public IObservable<UserInfo?> UserInfoObservable { get; }
     
     /// <summary>
-    /// The current user information
-    /// </summary>
-    public UserInfo? UserInfo { get; private set; }
-    
-    /// <summary>
     /// True if the user is logged in
     /// </summary>
     public IObservable<bool> IsLoggedInObservable => UserInfoObservable.Select(info => info is not null);
     
-    /// <summary>
-    /// True if the user is logged in
-    /// </summary>
-    public bool IsLoggedIn => UserInfo is not null;
-
     /// <summary>
     /// True if the user is logged in and is a premium member
     /// </summary>
@@ -82,14 +69,8 @@ public sealed class LoginManager : IDisposable, ILoginManager
 
         UserInfoObservable = _jwtTokenRepository.Observable
             .ToObservableChangeSet()
-            // NOTE(err120): Since IDs don't change on startup, we can insert
-            // a fake change at the start of the observable chain. This will only
-            // run once at startup and notify the subscribers.
             .ObserveOn(TaskPoolScheduler.Default)
             .SelectMany(async _ => await Verify(CancellationToken.None));
-
-        _subscriptions.Add(UserInfoObservable.Subscribe(userInfo => UserInfo = userInfo));
-        
     }
 
     private CachedObject<UserInfo> _cachedUserInfo = new(TimeSpan.FromHours(1));
@@ -113,6 +94,12 @@ public sealed class LoginManager : IDisposable, ILoginManager
         _cachedUserInfo.Store(userInfo);
 
         return userInfo;
+    }
+
+    /// <inheritdoc />
+    public async Task<UserInfo?> GetUserInfoAsync(CancellationToken token)
+    {
+        return await Verify(token);
     }
 
     /// <summary>
@@ -172,7 +159,6 @@ public sealed class LoginManager : IDisposable, ILoginManager
     public void Dispose()
     {
         _verifySemaphore.Dispose();
-        _subscriptions.Dispose();
     }
     
 }
