@@ -88,6 +88,7 @@
             <icons:UnifiedIcon Classes="PlaylistAdd"/>
             <icons:UnifiedIcon Classes="HardDrive"/>
             <icons:UnifiedIcon Classes="Nexus"/>
+            <icons:UnifiedIcon Classes="ColorLens"/>
         </WrapPanel>
     </Design.PreviewWith>
 
@@ -435,5 +436,9 @@
 
     <Style Selector="icons|UnifiedIcon.Nexus">
         <Setter Property="Value" Value="{x:Static icons:IconValues.Nexus}"/>
+    </Style>
+    
+    <Style Selector="icons|UnifiedIcon.ColorLens">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.ColorLens}"/>
     </Style>
 </Styles>

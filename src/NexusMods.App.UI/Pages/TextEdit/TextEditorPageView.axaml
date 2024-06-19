@@ -19,12 +19,13 @@
 
                 <Line/>
 
-                <ComboBox x:Name="ThemeSelector" Classes="Tertiary">
+                <ComboBox x:Name="ThemeSelector" Classes="Tertiary" VerticalAlignment="Center" Height="32" >
                     <ComboBox.ItemTemplate>
                         <DataTemplate DataType="{x:Type grammars:ThemeName}">
-                            <ComboBoxItem>
-                                <TextBlock Text="{CompiledBinding}"/>
-                            </ComboBoxItem>
+                                <StackPanel Orientation="Horizontal">
+                                    <icons:UnifiedIcon Classes="ColorLens" Size="20"/>
+                                    <TextBlock Text="{CompiledBinding}" Classes="BodyMDNormal"/>
+                                </StackPanel>
                         </DataTemplate>
                     </ComboBox.ItemTemplate>
                 </ComboBox>
