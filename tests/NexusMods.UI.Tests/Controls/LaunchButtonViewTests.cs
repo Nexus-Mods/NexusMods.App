@@ -61,6 +61,8 @@ public class LaunchButtonViewTests : AViewTest<LaunchButtonView, LaunchButtonDes
     }
 
     [Fact]
+    // Seems to very seldom stall CI, could be made to fail if run un repeat for enough times locally
+    [Trait("FlakeyTest", "True")]
     public async Task ProgressAffectsProgressBar()
     {
         ViewModel.Progress = Percent.CreateClamped(0.25);

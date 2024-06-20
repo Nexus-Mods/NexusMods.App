@@ -86,6 +86,8 @@ public class OverlayViewModelTests
     }
     
     [Fact]
+    // intermittent failures on CI but not locally
+    [Trait("FlakeyTest", "True")]
     public async Task SetOverlayViewModel_WhenActiveIsFalse_TaskIsCompleted()
     {
         // Arrange

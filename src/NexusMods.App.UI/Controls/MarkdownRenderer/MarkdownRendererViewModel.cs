@@ -113,11 +113,14 @@ public class MarkdownRendererViewModel : AViewModel<IMarkdownRendererViewModel>,
     private async Task<Stream?> FetchGitHubImage(string path, CancellationToken cancellationToken = default)
     {
         if (_gitHubBaseUri is null) return null;
-        if (path.StartsWith("./"))
-            path = path.Substring(startIndex: 2);
+        if (path.StartsWith("./")) path = path.Substring(startIndex: 2);
 
         var uri = new Uri($"{_gitHubBaseUri}{path}");
+        return await FetchRemoteImage(uri, cancellationToken);
+    }
 
+    private async Task<Stream?> FetchRemoteImage(Uri uri, CancellationToken cancellationToken = default)
+    {
         var hash = await _imageCache.Prefetch(new ImageIdentifier(uri), cancellationToken);
         var hashValue = hash.Value;
 
@@ -155,6 +158,23 @@ public class MarkdownRendererViewModel : AViewModel<IMarkdownRendererViewModel>,
 
         public Task<Stream?>? ResolveImageResource(string relativeOrAbsolutePath)
         {
+            if (Uri.TryCreate(relativeOrAbsolutePath, UriKind.Absolute, out var uri))
+            {
+                if (uri.Scheme == "http")
+                {
+                    _parent._logger.LogWarning("Skip loading image from unsecure HTTP URL: {Uri}", uri);
+                    return null;
+                }
+
+                if (uri.Scheme != "https")
+                {
+                    _parent._logger.LogWarning("Unknown URI schema: {Uri}", uri);
+                    return null;
+                }
+
+                return _parent.FetchRemoteImage(uri);
+            }
+
             if (_parent.MarkdownUri is null) return null;
             return _parent.FetchGitHubImage(relativeOrAbsolutePath);
         }
