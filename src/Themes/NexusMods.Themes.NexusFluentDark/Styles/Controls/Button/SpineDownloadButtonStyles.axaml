@@ -41,11 +41,6 @@
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="ClipToBounds" Value="False" />
         </Style>
-
-        <!-- Shrink on Click -->
-        <Style Selector="^:pressed">
-            <Setter Property="RenderTransform" Value="scale(0.92)" />
-        </Style>
         
         <!-- Icon -->
         <Style Selector="^ icons|UnifiedIcon#Icon">
