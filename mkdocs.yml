@@ -62,6 +62,7 @@ nav:
     - Adding a Game: users/AddGames.md
     # - Features: 
     #   - Health Check: users/features/HealthCheck.md
+    #   - Workspaces: users/features/Workspaces.md
     - Games:
       # - users/games/index.md
       - Stardew Valley: users/games/StardewValley.md
