@@ -12,7 +12,6 @@
 
             <Style Selector="^ icons|UnifiedIcon">
                 <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
-                <Setter Property="Size" Value="20" />
             </Style>
 
             <Style Selector="^ TextBlock">
