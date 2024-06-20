@@ -34,7 +34,7 @@ public static class Services
         {
             case Mode.Main:
                 services.AddSingleton<CliServer>();
-                services.AddHostedService<CliServer>();
+                services.AddHostedService(s => s.GetRequiredService<CliServer>());
                 break;
             case Mode.Client:
                 services.AddTransient<CliClient>();
