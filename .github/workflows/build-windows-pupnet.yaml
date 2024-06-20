@@ -58,17 +58,89 @@ on:
     outputs:
       ArtifactNameWindowsArchive:
         description: "Name of the Artifact that contains the Windows Archive"
-        value: ${{ jobs.build.outputs.artifactNameWindowsArchive }}
+        value: ${{ jobs.build-archive.outputs.artifactName }}
+      ArtifactUrlWindowsArchive:
+        description: "URL to download the Windows Archive artifact"
+        value: ${{ jobs.build-archive.outputs.artifactUrl }}
       ArtifactNameWindowsInnoSetup:
         description: "Name of the Artifact that contains the Windows Inno Setup"
-        value: ${{ jobs.build.outputs.artifactNameWindowsInnoSetup }}
+        value: ${{ jobs.build-setup.outputs.artifactName }}
+      ArtifactUrlWindowsInnoSetup:
+        description: "URL to download the Windows InnoSetup artifact"
+        value: ${{ jobs.build-setup.outputs.artifactUrl }}
 
 jobs:
-  build:
+  build-archive:
+    if: inputs.BuildArchive
     runs-on: windows-latest
     outputs:
-      artifactNameWindowsArchive: ${{ steps.setOutputs.outputs.artifactNameWindowsArchive }}
-      artifactNameWindowsInnoSetup: ${{ steps.setOutputs.outputs.artifactNameWindowsInnoSetup }}
+      artifactName: ${{ steps.setOutputs.outputs.artifactName }}
+      artifactUrl: ${{ steps.upload.outputs.artifact-url }}
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: "recursive"
+
+      - name: Transform inputs
+        id: transformInputs
+        shell: pwsh
+        env:
+          ProjectFile: ${{ inputs.ProjectFile }}
+        run: |
+          $projectDir = [System.IO.Path]::GetDirectoryName("$env:ProjectFile")
+          $projectName = [System.IO.Path]::GetFileNameWithoutExtension("$env:ProjectFile")
+          echo "projectDir=$projectDir" >> $env:GITHUB_OUTPUT
+          echo "projectName=$projectName" >> $env:GITHUB_OUTPUT
+
+      - name: Build & Install PupNet
+        run: |
+          # Our use of central package management may cause PupNet to fail build
+          # so we lift it out to a separate directory and build it there
+          mkdir ../PupNet
+          cd ../PupNet
+          git clone ${{ inputs.PupNetRepo }} .
+          git checkout ${{ inputs.PupNetBranch }}
+          dotnet pack -c Release -o . -p:Version=0.0.0-nma
+          dotnet tool install --global --add-source . KuiperZone.PupNet --version 0.0.0-nma
+
+      - name: Download CodeSignTool
+        id: downloadCodeSignTool
+        shell: pwsh
+        run: ./scripts/download-codesigntool.ps1
+
+      - name: Create Archive
+        working-directory: ${{ steps.transformInputs.outputs.projectDir }}
+        run: pupnet -y -v ${{ inputs.AppVersion }} -k zip -p DefineConstants=INSTALLATION_METHOD_ARCHIVE
+        env:
+          SignExecutable: ${{ inputs.SignExecutable }}
+          CodeSignToolDir: ${{ steps.downloadCodeSignTool.outputs.codeSignToolDir }}
+          ES_USERNAME: ${{ secrets.ES_USERNAME }}
+          ES_PASSWORD: ${{ secrets.ES_PASSWORD }}
+          ES_CREDENTIAL_ID: ${{ secrets.ES_CREDENTIAL_ID }}
+          ES_TOTP_SECRET: ${{ secrets.ES_TOTP_SECRET }}
+
+      - name: Set outputs
+        id: setOutputs
+        shell: pwsh
+        run: |
+          echo "artifactName=${{ steps.transformInputs.outputs.projectName }}-${{ github.sha }}-Windows-Archive" >> $env:GITHUB_OUTPUT
+
+      - name: Upload
+        id: upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.setOutputs.outputs.artifactName }}
+          path: ${{ steps.transformInputs.outputs.projectDir }}/Deploy/OUT/*.zip
+          if-no-files-found: error
+          retention-days: ${{ inputs.RetentionDays }}
+
+  build-setup:
+    runs-on: windows-latest
+    if: inputs.BuildInnoSetup
+    outputs:
+      artifactName: ${{ steps.setOutputs.outputs.artifactName }}
+      artifactUrl: ${{ steps.upload.outputs.artifact-url }}
 
     steps:
       - uses: actions/checkout@v3
@@ -105,20 +177,7 @@ jobs:
         shell: pwsh
         run: ./scripts/download-codesigntool.ps1
 
-      - name: Create Archive
-        if: inputs.BuildArchive == true
-        working-directory: ${{ steps.transformInputs.outputs.projectDir }}
-        run: pupnet -y -v ${{ inputs.AppVersion }} -k zip -p DefineConstants=INSTALLATION_METHOD_ARCHIVE
-        env:
-          SignExecutable: ${{ inputs.SignExecutable }}
-          CodeSignToolDir: ${{ steps.downloadCodeSignTool.outputs.codeSignToolDir }}
-          ES_USERNAME: ${{ secrets.ES_USERNAME }}
-          ES_PASSWORD: ${{ secrets.ES_PASSWORD }}
-          ES_CREDENTIAL_ID: ${{ secrets.ES_CREDENTIAL_ID }}
-          ES_TOTP_SECRET: ${{ secrets.ES_TOTP_SECRET }}
-
       - name: Create Setup
-        if: inputs.BuildInnoSetup == true
         working-directory: ${{ steps.transformInputs.outputs.projectDir }}
         run: pupnet -y -v ${{ inputs.AppVersion }} -k Setup -p DefineConstants=INSTALLATION_METHOD_INNO_SETUP
         env:
@@ -130,7 +189,7 @@ jobs:
           ES_TOTP_SECRET: ${{ secrets.ES_TOTP_SECRET }}
 
       - name: Sign Setup
-        if: inputs.BuildInnoSetup == true && inputs.SignExecutable == true
+        if: inputs.SignExecutable == true
         working-directory: ${{ steps.transformInputs.outputs.projectDir }}
         run: ../../scripts/sign.ps1 Deploy/OUT
         env:
@@ -145,23 +204,13 @@ jobs:
         id: setOutputs
         shell: pwsh
         run: |
-          echo "artifactNameWindowsArchive=${{ steps.transformInputs.outputs.projectName }}-${{ github.sha }}-Windows-Archive" >> $env:GITHUB_OUTPUT
-          echo "artifactNameWindowsInnoSetup=${{ steps.transformInputs.outputs.projectName }}-${{ github.sha }}-Windows-Setup" >> $env:GITHUB_OUTPUT
+          echo "artifactName=${{ steps.transformInputs.outputs.projectName }}-${{ github.sha }}-Windows-Setup" >> $env:GITHUB_OUTPUT
 
-      - name: Upload Archive
-        if: inputs.BuildArchive == true
-        uses: actions/upload-artifact@v3
+      - name: Upload
+        id: upload
+        uses: actions/upload-artifact@v4
         with:
-          name: ${{ steps.setOutputs.outputs.artifactNameWindowsArchive }}
-          path: ${{ steps.transformInputs.outputs.projectDir }}/Deploy/OUT/*.zip
-          if-no-files-found: error
-          retention-days: ${{ inputs.RetentionDays }}
-
-      - name: Upload Setup
-        if: inputs.BuildInnoSetup == true
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ steps.setOutputs.outputs.artifactNameWindowsInnoSetup }}
+          name: ${{ steps.setOutputs.outputs.artifactName }}
           path: ${{ steps.transformInputs.outputs.projectDir }}/Deploy/OUT/*.exe
           if-no-files-found: error
           retention-days: ${{ inputs.RetentionDays }}

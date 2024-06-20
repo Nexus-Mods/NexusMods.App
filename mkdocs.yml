@@ -10,15 +10,19 @@ extra:
       link: https://github.com/Nexus-Mods
     - icon: fontawesome/brands/twitter
       link: https://twitter.com/NexusSites
+    - icon: fontawesome/brands/discord
+      link: https://discord.gg/ReWTxb93jS
 
 extra_css:
   - Nexus/Stylesheets/extra.css
+  - styles.css
 
 markdown_extensions:
   - admonition
   - tables
   - pymdownx.details
   - pymdownx.highlight
+  - pymdownx.keys
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid
@@ -37,74 +41,91 @@ markdown_extensions:
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
 
 theme:
+  logo: ./images/nexus-logo-white.svg
+  favicon: ./images/nexus-logo-white.svg
   name: material
   palette:
     scheme: nexus-slate
   features:
     - navigation.instant
+    - navigation.tabs
+    - navigation.indexes
 
 plugins:
   - search
 
 nav:
-  - Home: index.md
-  - Mod With Confidence: ModWithConfidence.md
-  - Contributing: Contributing.md
-  - Development Guidelines:
-      - Dependency Injection: development-guidelines/DependencyInjection.md
-      - Interacting with the File System: development-guidelines/UsingIFileSystem.md
-      - Adding a Game: development-guidelines/AddingAGame.md
-      - Installing Mods: development-guidelines/InstallingMods.md
-      - Localization and Translation: development-guidelines/LocalizationAndTranslation.md
-      - UI Coding Guidelines: development-guidelines/UICodingGuidelines.md
-      - UI Styling Guidelines: development-guidelines/UIStylingGuidelines.md
-      - Using Workspaces: development-guidelines/UsingWorkspaces.md
-      - Diagnostics: development-guidelines/Diagnostics.md
-      - Release Process: ReleaseProcess.md
+  - User Guides: 
+    - Home: users/index.md
+    - System Requirements: users/SystemRequirements.md
+    - Getting Started: users/GettingStarted.md
+    - Adding a Game: users/AddGames.md
+    # - Features: 
+    #   - Health Check: users/features/HealthCheck.md
+    - Games:
+      # - users/games/index.md
+      - Stardew Valley: users/games/StardewValley.md
+      - Cyberpunk 2077: users/games/Cyberpunk2077.md
+    - Uninstall: users/Uninstall.md
+  - Developer Docs:
+    - Home: developers/index.md
+    - Mod With Confidence: developers/ModWithConfidence.md
+    - Contributing: developers/Contributing.md
+    - Development Guidelines:
+        - Dependency Injection: developers/development-guidelines/DependencyInjection.md
+        - Interacting with the File System: developers/development-guidelines/UsingIFileSystem.md
+        - Adding a Game: developers/development-guidelines/AddingAGame.md
+        - Installing Mods: developers/development-guidelines/InstallingMods.md
+        - Localization and Translation: developers/development-guidelines/LocalizationAndTranslation.md
+        - UI Coding Guidelines: developers/development-guidelines/UICodingGuidelines.md
+        - UI Styling Guidelines: developers/development-guidelines/UIStylingGuidelines.md
+        - Using Workspaces: developers/development-guidelines/UsingWorkspaces.md
+        - Diagnostics: developers/development-guidelines/Diagnostics.md
+        - Release Process: developers/ReleaseProcess.md
 
-  - Decisions:
-      - Backend:
-          - '00: Use xxhash64': decisions/backend/0000-use-xxhash64.md
-          - '01: Use SQLite': decisions/backend/0001-use-sqlite.md
-          - '03: File Paths': decisions/backend/0003-paths.md
-          - '04: File System Abstraction': decisions/backend/0004-file-system-abstraction.md
-          - '06: File System on Absolute Paths': decisions/backend/0006-file-system-on-absolute-paths.md
-          - '07: Localization and Internationalisation': decisions/backend/0007-localization-and-internationalisation.md
-          - '08: Localization Live Update Support': decisions/backend/0008-localization-live-update-support.md
-          - '09: Advanced Installer Design': decisions/backend/0009-advanced-installer-design.md
-          - '0A: Basic & Advanced Installer Suggestions': decisions/backend/0010-basic-advanced-installer-suggestions.md
-          - '0B: Undo Via Event Sourcing': decisions/backend/0011-undo-via-event-sourcing.md
-          - '0C: Single Process Application': decisions/backend/0012-single-process-application.md
-          - '0D: Default Datastore Locations': decisions/backend/0013-default-datastore-locations.md
-      - Frontend:
-          - '01: UI Panel Layout': decisions/frontend/0001-UI-Panel-Layout.md
-          - '02: Workspaces': decisions/frontend/0002-Workspaces.md
-          - '03: UI Styling Approach': decisions/frontend/0003-UI-Styling-Approach.md
-      - Meeting Notes:
-          - '00: Datastore Locations': decisions/meeting-notes/0000-datastore-locations.md
-      - Project:
-          - '00: Use Decision Records': decisions/project/0000-use-decision-records.md
-          - '01: Use C# and .NET': decisions/project/0001-use-csharp-and-dot-net.md
-          - '02: Use Microsoft Dependency Injection': decisions/project/0002-use-microsoft-dependency-injection.md
-          - '03: Use xUnit Testing Framework': decisions/project/0003-use-xunit-testing-framework.md
-          - '04: Use Nominal Typing': decisions/project/0004-use-nominal-typing.md
-      - Templates:
-          - '00: ADR Template': decisions/templates/adr-template.md
-  - Concepts:
-      - '00: Immutable Modlists': concepts/0000-immutable-modlists.md
-      - '01: DAG Sorting': concepts/0001-dag-sorting.md
-      - '02: Data Model Triggers': concepts/0002-datamodel-triggers.md
-  - Games:
-      - '00: Template': games/0000-Template.md
-      - '01: Skyrim SE': games/0001-SkyrimSE.md
-      - '02: Stardew Valley': games/0002-StardewValley.md
-      - '03: Sifu': games/0003-Sifu.md
-      - '04: Darkest Dungeon': games/0004-DarkestDungeon.md
-      - '05: Skyrim LE': games/0005-SkyrimLE.md
-      - '06: Blade And Sorcery': games/0006-BladeAndSorcery.md
-      - '07: Bannerlord': games/0007-Bannerlord.md
-  - Misc:
-      - About Fomod: misc/AboutFomod.md
-      - Comparison of File Management Systems: misc/ComparisonOfFileManagementSystems.md
-      - Drawbacks of Nexus App Approach: misc/DrawbacksOfNexusApproach.md
-  - Contributing to Docs: Nexus/Pages/contributing.md
+    - Decisions:
+        - Backend:
+            - '00: Use xxhash64': developers/decisions/backend/0000-use-xxhash64.md
+            - '01: Use SQLite': developers/decisions/backend/0001-use-sqlite.md
+            - '03: File Paths': developers/decisions/backend/0003-paths.md
+            - '04: File System Abstraction': developers/decisions/backend/0004-file-system-abstraction.md
+            - '06: File System on Absolute Paths': developers/decisions/backend/0006-file-system-on-absolute-paths.md
+            - '07: Localization and Internationalisation': developers/decisions/backend/0007-localization-and-internationalisation.md
+            - '08: Localization Live Update Support': developers/decisions/backend/0008-localization-live-update-support.md
+            - '09: Advanced Installer Design': developers/decisions/backend/0009-advanced-installer-design.md
+            - '0A: Basic & Advanced Installer Suggestions': developers/decisions/backend/0010-basic-advanced-installer-suggestions.md
+            - '0B: Undo Via Event Sourcing': developers/decisions/backend/0011-undo-via-event-sourcing.md
+            - '0C: Single Process Application': developers/decisions/backend/0012-single-process-application.md
+            - '0D: Default Datastore Locations': developers/decisions/backend/0013-default-datastore-locations.md
+        - Frontend:
+            - '01: UI Panel Layout': developers/decisions/frontend/0001-UI-Panel-Layout.md
+            - '02: Workspaces': developers/decisions/frontend/0002-Workspaces.md
+            - '03: UI Styling Approach': developers/decisions/frontend/0003-UI-Styling-Approach.md
+        - Meeting Notes:
+            - '00: Datastore Locations': developers/decisions/meeting-notes/0000-datastore-locations.md
+        - Project:
+            - '00: Use Decision Records': developers/decisions/project/0000-use-decision-records.md
+            - '01: Use C# and .NET': developers/decisions/project/0001-use-csharp-and-dot-net.md
+            - '02: Use Microsoft Dependency Injection': developers/decisions/project/0002-use-microsoft-dependency-injection.md
+            - '03: Use xUnit Testing Framework': developers/decisions/project/0003-use-xunit-testing-framework.md
+            - '04: Use Nominal Typing': developers/decisions/project/0004-use-nominal-typing.md
+        - Templates:
+            - '00: ADR Template': developers/decisions/templates/adr-template.md
+    - Concepts:
+        - '00: Immutable Modlists': developers/concepts/0000-immutable-modlists.md
+        - '01: DAG Sorting': developers/concepts/0001-dag-sorting.md
+        - '02: Data Model Triggers': developers/concepts/0002-datamodel-triggers.md
+    - Games:
+        - '00: Template': developers/games/0000-Template.md
+        - '01: Skyrim SE': developers/games/0001-SkyrimSE.md
+        - '02: Stardew Valley': developers/games/0002-StardewValley.md
+        - '03: Sifu': developers/games/0003-Sifu.md
+        - '04: Darkest Dungeon': developers/games/0004-DarkestDungeon.md
+        - '05: Skyrim LE': developers/games/0005-SkyrimLE.md
+        - '06: Blade And Sorcery': developers/games/0006-BladeAndSorcery.md
+        - '07: Bannerlord': developers/games/0007-Bannerlord.md
+    - Misc:
+        - About Fomod: developers/misc/AboutFomod.md
+        - Comparison of File Management Systems: developers/misc/ComparisonOfFileManagementSystems.md
+        - Drawbacks of Nexus App Approach: developers/misc/DrawbacksOfNexusApproach.md
+    - Contributing to Docs: Nexus/Pages/contributing.md

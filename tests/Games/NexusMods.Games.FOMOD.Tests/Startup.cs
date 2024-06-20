@@ -6,7 +6,6 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization;
-using NexusMods.Activities;
 using NexusMods.App.BuildInfo;
 using NexusMods.CrossPlatform;
 using NexusMods.Games.BethesdaGameStudios;
@@ -23,7 +22,6 @@ public class Startup
     public void ConfigureServices(IServiceCollection container)
     {
         container
-            .AddCrossPlatform()
             .AddLoadoutAbstractions()
             .AddDefaultServicesForTesting()
             .AddBethesdaGameStudios()
@@ -34,7 +32,6 @@ public class Startup
             .AddSingleton<ICoreDelegates, MockDelegates>()
             .AddLogging(builder => builder.AddXunitOutput().SetMinimumLevel(LogLevel.Debug))
             .AddGames()
-            .AddActivityMonitor()
             .AddSerializationAbstractions()
             .AddInstallerTypes()
             .Validate();

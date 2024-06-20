@@ -45,6 +45,9 @@ public static class IconValues
     // https://pictogrammers.com/library/mdi/icon/code-tags/
     public static readonly IconValue Code = new ProjektankerIcon("mdi-code-tags");
 
+    // https://pictogrammers.com/library/mdi/icon/check-circle/
+    public static readonly IconValue CheckCircle = new ProjektankerIcon("mdi-check-circle");
+
     // https://pictogrammers.com/library/mdi/icon/delete-outline/
     public static readonly IconValue DeleteOutline = new ProjektankerIcon("mdi-delete-outline");
 
@@ -171,6 +174,9 @@ public static class IconValues
 
 #region Editor
 
+    // https://pictogrammers.com/library/mdi/icon/poll
+    public static readonly IconValue BarChart = new ProjektankerIcon("mdi-poll");
+
     // https://pictogrammers.com/library/mdi/icon/drag-horizontal-variant/
     public static readonly IconValue DragHandleHorizontal = new ProjektankerIcon("mdi-drag-horizontal-variant");
 
@@ -212,6 +218,9 @@ public static class IconValues
 
 #region Hardware
 
+    // https://pictogrammers.com/library/mdi/icon/monitor/
+    public static readonly IconValue Desktop = new ProjektankerIcon("mdi-monitor");
+
     // https://pictogrammers.com/library/mdi/icon/gamepad-square/
     public static readonly IconValue Game = new ProjektankerIcon("mdi-gamepad-square");
 
@@ -224,6 +233,11 @@ public static class IconValues
 
     // https://pictogrammers.com/library/mdi/icon/tune/
     public static readonly IconValue Tune = new ProjektankerIcon("mdi-tune");
+    
+    // https://pictogrammers.com/library/mdi/icon/palette/
+    public static readonly IconValue ColorLens = new ProjektankerIcon("mdi-palette");
+    
+    
 
 #endregion
 
@@ -246,10 +260,22 @@ public static class IconValues
 
     // https://pictogrammers.com/library/mdi/icon/chevron-right/
     public static readonly IconValue ChevronRight = new ProjektankerIcon("mdi-chevron-right");
+    
+    // https://pictogrammers.com/library/mdi/icon/chevron-down/
+    public static readonly IconValue ChevronDown = new ProjektankerIcon("mdi-chevron-down");
+    
+    // https://pictogrammers.com/library/mdi/icon/chevron-up/
+    public static readonly IconValue ChevronUp = new ProjektankerIcon("mdi-chevron-up");
 
     // https://pictogrammers.com/library/mdi/icon/close/
     public static readonly IconValue Close = new ProjektankerIcon("mdi-close");
-
+    
+    // https://pictogrammers.com/library/mdi/icon/window-minimize/
+    public static readonly IconValue WindowMinimize = new ProjektankerIcon("mdi-window-minimize");
+    
+    // https://pictogrammers.com/library/mdi/icon/window-maximize/
+    public static readonly IconValue WindowMaximize = new ProjektankerIcon("mdi-window-maximize");
+    
     // https://pictogrammers.com/library/mdi/icon/refresh/
     public static readonly IconValue Refresh = new ProjektankerIcon("mdi-refresh");
 
@@ -260,6 +286,13 @@ public static class IconValues
     // https://pictogrammers.com/library/mdi/icon/sync/
     public static readonly IconValue Sync = new ProjektankerIcon("mdi-sync");
     
+#endregion
+
+#region Social
+
+    // https://pictogrammers.com/library/mdi/icon/school
+    public static readonly IconValue School = new ProjektankerIcon("mdi-school");
+
 #endregion
 
 #region Toggle
@@ -311,6 +344,13 @@ public static class IconValues
 
     // From Design System "Custom Icons" section on Figma
     public static readonly IconValue Stethoscope = new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Icons/stethoscope_24px.svg");
+
+    // From Design System "Custom Icons" section on Figma
+    public static readonly IconValue ShieldHalfFull = new AvaloniaPathIcon(
+        Geometry.Parse(
+            "M21.4751 11.1256C21.4751 16.6756 17.6351 21.8656 12.4751 23.1256C7.3151 21.8656 3.4751 16.6756 3.4751 11.1256V5.12561L12.4751 1.12561L21.4751 5.12561V11.1256ZM12.4751 21.1256C16.2251 20.1256 19.4751 15.6656 19.4751 11.3456V6.42561L12.4751 3.30561V21.1256Z"
+        )
+    );
 
 #endregion
 }

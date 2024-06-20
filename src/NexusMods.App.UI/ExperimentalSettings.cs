@@ -21,23 +21,20 @@ public record ExperimentalSettings : ISettings
 
     public static ISettingsBuilder Configure(ISettingsBuilder settingsBuilder)
     {
-        // TODO: put in some section
-        var sectionId = SectionId.DefaultValue;
-
         return settingsBuilder
             .ConfigureStorageBackend<ExperimentalSettings>(builder => builder.UseJson())
             .AddToUI<ExperimentalSettings>(builder => builder
                 .AddPropertyToUI(x => x.EnableAllGames, propertyBuilder => propertyBuilder
-                    .AddToSection(sectionId)
-                    .WithDisplayName("[Unsupported] Enable Unsupported Games")
-                    .WithDescription("When set, 'work-in-progress' games that are not yet fully supported will be enabled in the UI.")
+                    .AddToSection(Sections.Experimental)
+                    .WithDisplayName("Enable unsupported games")
+                    .WithDescription("Allows you to manage unsupported games.")
                     .UseBooleanContainer()
                     .RequiresRestart()
                 )
                 .AddPropertyToUI(x => x.EnableMultipleLoadouts, propertyBuilder => propertyBuilder
-                    .AddToSection(sectionId)
-                    .WithDisplayName("(Experimental) Enable Multiple Loadouts")
-                    .WithDescription("When set, you will be able to create multiple loadouts for a game.")
+                    .AddToSection(Sections.Experimental)
+                    .WithDisplayName("Enable multiple loadouts")
+                    .WithDescription("Allows you to create multiple Loadouts.")
                     .UseBooleanContainer()
                 )
             );

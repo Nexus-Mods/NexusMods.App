@@ -43,5 +43,6 @@
     <StyleInclude Source="/Styles/UserControls/GuidedInstaller/StepViewStyles.axaml"/>
     <StyleInclude Source="/Styles/UserControls/Diagnostics/DiagnosticEntryStyles.axaml"/>
     <StyleInclude Source="/Styles/UserControls/Banners/InfoBannerStyles.axaml"/>
+    <StyleInclude Source="/Styles/UserControls/EmptyStateStyles.axaml"/>
 
 </Styles>

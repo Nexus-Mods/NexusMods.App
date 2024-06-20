@@ -39,4 +39,9 @@ public interface ISettingsManager
     /// Gets an array containing all properties to be exposed to the UI.
     /// </summary>
     ISettingsPropertyUIDescriptor[] GetAllUIProperties();
+
+    /// <summary>
+    /// Gets an array containing all sections
+    /// </summary>
+    ISettingsSectionDescriptor[] GetAllSections();
 }

@@ -93,7 +93,8 @@ public static class Services
             services.AddFileSystem()
                 .AddCrossPlatform()
                 .AddDefaultRenderers()
-                .AddSettingsManager();
+                .AddSettingsManager()
+                .AddSettings<LoggingSettings>();
             
             if (!startupMode.IsAvaloniaDesigner)
                 services.AddSingleProcess(Mode.Client);

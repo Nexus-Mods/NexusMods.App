@@ -25,10 +25,8 @@ public class Startup
             .AddGames()
             .AddFileStoreAbstractions()
             .AddLoadoutAbstractions()
-            .AddActivityMonitor()
             .AddSerializationAbstractions()
             .AddInstallerTypes()
-            .AddCrossPlatform()
             .Validate();
     }
 }

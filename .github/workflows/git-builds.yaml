@@ -31,7 +31,7 @@ jobs:
       # this is a bit of a hack, you can't use environment variables here
       # https://docs.github.com/en/actions/learn-github-actions/contexts#context-availability
       ProjectFile: ${{ needs.transformInputs.outputs.ProjectFile }}
-      RetentionDays: 7
+      RetentionDays: 3
 
   build-windows:
     needs: [ transformInputs ]
@@ -41,4 +41,4 @@ jobs:
       # this is a bit of a hack, you can't use environment variables here
       # https://docs.github.com/en/actions/learn-github-actions/contexts#context-availability
       ProjectFile: ${{ needs.transformInputs.outputs.ProjectFile }}
-      RetentionDays: 7
+      RetentionDays: 3

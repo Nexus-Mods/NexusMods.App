@@ -1,5 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Reactive;
+using NexusMods.Abstractions.Settings;
+using NexusMods.App.UI.Controls.Settings.Section;
 using NexusMods.App.UI.Controls.Settings.SettingEntries;
 using NexusMods.App.UI.WorkspaceSystem;
 using ReactiveUI;
@@ -17,4 +19,6 @@ public interface ISettingsPageViewModel : IPageViewModelInterface
     ReactiveCommand<Unit, Unit> CloseCommand { get; }
     
     ReadOnlyObservableCollection<ISettingEntryViewModel> SettingEntries { get; }
+
+    ReadOnlyObservableCollection<ISettingSectionViewModel> Sections { get; }
 }

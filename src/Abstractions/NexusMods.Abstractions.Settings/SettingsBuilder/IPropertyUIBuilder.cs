@@ -42,9 +42,15 @@ public interface IPropertyUIBuilder<TSettings, TProperty>
         /// <remarks>
         /// This property allows for Markdown.
         /// </remarks>
-        IConfigureValueContainerStep WithDescription(string description);
+        IWithLinkStep WithDescription(string description);
     }
 
+    public interface IWithLinkStep : IConfigureValueContainerStep
+    {
+        IConfigureValueContainerStep WithLink(Uri link);
+    }
+
+    [PublicAPI]
     public interface IConfigureValueContainerStep
     {
         IRequiresRestartStep UseBooleanContainer();

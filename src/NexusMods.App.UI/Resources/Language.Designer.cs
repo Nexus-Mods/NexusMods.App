@@ -1118,5 +1118,41 @@ namespace NexusMods.App.UI.Resources {
                 return ResourceManager.GetString("NewTabPageInfoBannerText2", resourceCulture);
             }
         }
+        
+        public static string LoadoutGrid_EmptyModlistSubtitle_Add_from_library {
+            get {
+                return ResourceManager.GetString("LoadoutGrid_EmptyModlistSubtitle_Add_from_library", resourceCulture);
+            }
+        }
+        
+        public static string LoadoutGridViewModel_EmptyModlistTitleString {
+            get {
+                return ResourceManager.GetString("LoadoutGridViewModel_EmptyModlistTitleString", resourceCulture);
+            }
+        }
+        
+        public static string EmptyLibraryTitleText {
+            get {
+                return ResourceManager.GetString("EmptyLibraryTitleText", resourceCulture);
+            }
+        }
+        
+        public static string FileOriginsPageViewModel_EmptyLibrarySubtitleText {
+            get {
+                return ResourceManager.GetString("FileOriginsPageViewModel_EmptyLibrarySubtitleText", resourceCulture);
+            }
+        }
+        
+        public static string DiagnosticListView_EmptyState_Header {
+            get {
+                return ResourceManager.GetString("DiagnosticListView.EmptyState.Header", resourceCulture);
+            }
+        }
+        
+        public static string DiagnosticListView_EmptyState_Subtitle {
+            get {
+                return ResourceManager.GetString("DiagnosticListView.EmptyState.Subtitle", resourceCulture);
+            }
+        }
     }
 }

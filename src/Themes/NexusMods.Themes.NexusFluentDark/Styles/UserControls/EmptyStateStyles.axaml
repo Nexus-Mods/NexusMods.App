@@ -1,0 +1,91 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI"
+        xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
+    <Design.PreviewWith>
+        <StackPanel Orientation="Vertical" Spacing="10" Height="400">
+            <controls:EmptyState Header="You've got nothing" IsActive="True">
+                <controls:EmptyState.Subtitle>
+                    <TextBlock>There is nothing here, you should better do something about this.</TextBlock>
+                </controls:EmptyState.Subtitle>
+
+                <TextBlock>There is something here</TextBlock>
+            </controls:EmptyState>
+
+            <controls:EmptyState Icon="{x:Static icons:IconValues.Alert}" Header="You've got nothing" IsActive="True">
+                <controls:EmptyState.Subtitle>
+                    <StackPanel>
+                        <TextBlock>There is nothing here, you should better do something about this.</TextBlock>
+                        <Button>Cool button</Button>
+                        <TextBlock>More text</TextBlock>
+                    </StackPanel>
+                </controls:EmptyState.Subtitle>
+
+                <TextBlock>There is something here</TextBlock>
+            </controls:EmptyState>
+        </StackPanel>
+
+    </Design.PreviewWith>
+
+    <Style Selector="controls|EmptyState">
+        <Style Selector="^ /template/ Border#EmptyStateBorder">
+            <Setter Property="IsVisible" Value="False"/>
+
+            <Style Selector="^ StackPanel#Panel">
+                <Setter Property="Orientation" Value="Vertical"/>
+                <Setter Property="Margin" Value="128 64 128 0"/>
+                <Setter Property="Spacing" Value="{StaticResource Spacing-2}"/>
+            </Style>
+
+            <Style Selector="^ icons|UnifiedIcon#Icon">
+                <Setter Property="Size" Value="36"/>
+            </Style>
+
+            <Style Selector="^ TextBlock#HeaderTextBlock">
+                <Setter Property="Theme" Value="{StaticResource BodyXLBoldTheme}"/>
+                <Setter Property="HorizontalAlignment" Value="Center"/>
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <Setter Property="Foreground" Value="{StaticResource NeutralSubdued}"/>
+                <Setter Property="TextWrapping" Value="Wrap"/>
+            </Style>
+
+            <Style Selector="^ ContentPresenter#SubtitleContentPresenter">
+                <Style Selector="^ StackPanel">
+                    <Setter Property="Orientation" Value="Horizontal"/>
+                    <Setter Property="Spacing" Value="2"/>
+                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                </Style>
+
+                <Style Selector="^ TextBlock">
+                    <Setter Property="Theme" Value="{StaticResource BodyLGNormalTheme}"/>
+                    <Setter Property="HorizontalAlignment" Value="Center" />
+                    <Setter Property="VerticalAlignment" Value="Center"/>
+                    <Setter Property="Foreground" Value="{StaticResource NeutralSubdued}" />
+                    <Setter Property="TextWrapping" Value="Wrap" />
+                </Style>
+            </Style>
+        </Style>
+
+        <Style Selector="^ /template/ ContentPresenter#ContentPresenter">
+            <Setter Property="IsVisible" Value="True"/>
+        </Style>
+
+        <Style Selector="^ /template/ icons|UnifiedIcon#Icon">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+
+        <Style Selector="^:icon /template/ icons|UnifiedIcon#Icon">
+            <Setter Property="IsVisible" Value="True"/>
+        </Style>
+
+        <Style Selector="^:active /template/ Border#EmptyStateBorder">
+            <Setter Property="IsVisible" Value="True"/>
+        </Style>
+
+        <Style Selector="^:active /template/ ContentPresenter#ContentPresenter">
+            <Setter Property="IsVisible" Value="False"/>
+        </Style>
+    </Style>
+
+</Styles>
+

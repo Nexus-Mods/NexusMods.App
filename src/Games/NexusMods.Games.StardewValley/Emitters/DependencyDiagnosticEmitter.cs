@@ -1,5 +1,7 @@
 using System.Collections.Immutable;
 using System.Runtime.CompilerServices;
+using DynamicData.Kernel;
+using Metsys.Bson;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
@@ -146,7 +148,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        var missingDependencyUris = await _smapiWebApi.GetModPageUrls(
+        var apiMods = await _smapiWebApi.GetModDetails(
             os: _os,
             gameVersion,
             smapiVersion,
@@ -159,12 +161,17 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
             return missingDependencies.Select(missingDependency =>
             {
                 var mod = ModForId(loadout, modId);
+                var modDetails = apiMods.GetValueOrDefault(missingDependency);
+                // TODO: diagnostic even if the API doesn't return anything
+                if (modDetails?.Name is null) return null;
+
                 return Diagnostics.CreateMissingRequiredDependency(
                     Mod: mod.ToReference(loadout),
-                    MissingDependency: missingDependency,
-                    NexusModsDependencyUri: missingDependencyUris.GetValueOrDefault(missingDependency, Helpers.NexusModsLink)
+                    MissingDependencyModId: modDetails.UniqueId,
+                    MissingDependencyModName: modDetails.Name,
+                    NexusModsDependencyUri: modDetails.NexusModsLink.ValueOr(() => Helpers.NexusModsLink)
                 );
-            });
+            }).Where(x => x is not null).Select(x => x!);
         });
     }
 
@@ -220,7 +227,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        var missingDependencyUris = await _smapiWebApi.GetModPageUrls(
+        var apiMods = await _smapiWebApi.GetModDetails(
             os: _os,
             gameVersion,
             smapiVersion,
@@ -232,7 +239,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
             Dependency: ModForId(loadout, tuple.DependencyModId).ToReference(loadout),
             MinimumVersion: tuple.MinimumVersion.ToString(),
             CurrentVersion: tuple.CurrentVersion.ToString(),
-            NexusModsDependencyUri: missingDependencyUris.GetValueOrDefault(tuple.DependencyId, Helpers.NexusModsLink)
+            NexusModsDependencyUri: apiMods.GetLink(tuple.DependencyId, defaultValue: Helpers.NexusModsLink)
         ));
     }
 

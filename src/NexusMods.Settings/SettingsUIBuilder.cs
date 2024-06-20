@@ -42,7 +42,7 @@ internal class PropertyUIBuilder<TSettings, TProperty> :
     IPropertyUIBuilder<TSettings, TProperty>,
     IPropertyUIBuilder<TSettings, TProperty>.IWithDisplayNameStep,
     IPropertyUIBuilder<TSettings, TProperty>.IWithDescriptionStep,
-    IPropertyUIBuilder<TSettings, TProperty>.IConfigureValueContainerStep,
+    IPropertyUIBuilder<TSettings, TProperty>.IWithLinkStep,
     IPropertyUIBuilder<TSettings, TProperty>.IRequiresRestartStep
     where TSettings : class, ISettings, new()
     where TProperty : notnull
@@ -50,6 +50,7 @@ internal class PropertyUIBuilder<TSettings, TProperty> :
     private SectionId _sectionId = SectionId.DefaultValue;
     private string _displayName = string.Empty;
     private string _description = string.Empty;
+    private Uri? _link = null;
     private bool _requiresRestart;
     private string? _restartMessage;
 
@@ -61,6 +62,7 @@ internal class PropertyUIBuilder<TSettings, TProperty> :
         _sectionId,
         _displayName,
         _description,
+        _link,
         _requiresRestart,
         _restartMessage,
         _factory!,
@@ -80,9 +82,15 @@ internal class PropertyUIBuilder<TSettings, TProperty> :
         return this;
     }
 
-    public IPropertyUIBuilder<TSettings, TProperty>.IConfigureValueContainerStep WithDescription(string description)
+    public IPropertyUIBuilder<TSettings, TProperty>.IWithLinkStep WithDescription(string description)
     {
         _description = description;
+        return this;
+    }
+
+    public IPropertyUIBuilder<TSettings, TProperty>.IConfigureValueContainerStep WithLink(Uri link)
+    {
+        _link = link;
         return this;
     }
 

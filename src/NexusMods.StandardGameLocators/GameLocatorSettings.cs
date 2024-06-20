@@ -10,16 +10,13 @@ public record GameLocatorSettings : ISettings
 
     public static ISettingsBuilder Configure(ISettingsBuilder settingsBuilder)
     {
-        // TODO: put in some section
-        var sectionId = SectionId.DefaultValue;
-
         return settingsBuilder
             .ConfigureStorageBackend<GameLocatorSettings>(builder => builder.UseJson())
             .AddToUI<GameLocatorSettings>(builder => builder
                 .AddPropertyToUI(x => x.EnableXboxGamePass, propertyBuilder => propertyBuilder
-                    .AddToSection(sectionId)
-                    .WithDisplayName("(Experimental) Enable Xbox Game Pass support")
-                    .WithDescription("For testing the Xbox Game Pass detection")
+                    .AddToSection(Sections.Experimental)
+                    .WithDisplayName("Enable Xbox Game Pass support")
+                    .WithDescription("Allows you to manage games installed with Xbox Game Pass.")
                     .UseBooleanContainer()
                 )
             );

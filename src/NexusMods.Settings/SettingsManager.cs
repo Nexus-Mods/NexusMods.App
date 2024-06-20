@@ -6,6 +6,7 @@ using System.Reactive.Subjects;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Settings;
+using NexusMods.App.BuildInfo;
 
 namespace NexusMods.Settings;
 
@@ -26,6 +27,7 @@ internal partial class SettingsManager : ISettingsManager
     private readonly ImmutableDictionary<Type, IAsyncSettingsStorageBackend> _asyncStorageBackendMappings;
 
     private readonly IPropertyBuilderOutput[] _propertyBuilderOutputs;
+    private readonly Lazy<ISettingsSectionDescriptor[]> _sectionDescriptors;
 
     public SettingsManager(IServiceProvider serviceProvider)
     {
@@ -37,6 +39,21 @@ internal partial class SettingsManager : ISettingsManager
             .GetServices<SettingsOverrideInformation>()
             .ToImmutableDictionary(x => x.Type, x => x.OverrideMethod);
 
+        var settingsSectionSetups = serviceProvider.GetServices<SettingsSectionSetup>().ToArray();
+
+        // NOTE(erri120): This has to be Lazy because icons aren't available until Avalonia starts up.
+        _sectionDescriptors = new Lazy<ISettingsSectionDescriptor[]>(() => settingsSectionSetups
+            .Select(descriptor => (ISettingsSectionDescriptor)new SettingsSectionDescriptor
+            {
+                Id = descriptor.Id,
+                Name = descriptor.Name,
+                Icon = descriptor.IconFunc(),
+                Priority = descriptor.Priority,
+            })
+            .ToArray(),
+            mode: LazyThreadSafetyMode.ExecutionAndPublication
+        );
+
         var baseStorageBackendArray = serviceProvider.GetServices<IBaseSettingsStorageBackend>().ToArray();
         var settingsTypeInformationArray = serviceProvider.GetServices<SettingsTypeInformation>().ToArray();
         var defaultBaseStorageBackend = serviceProvider.GetService<DefaultSettingsStorageBackend>()?.Backend;
@@ -46,6 +63,21 @@ internal partial class SettingsManager : ISettingsManager
         _storageBackendMappings = builderOutput.StorageBackendMappings;
         _asyncStorageBackendMappings = builderOutput.AsyncStorageBackendMappings;
         _propertyBuilderOutputs = builderOutput.PropertyBuilderOutputs;
+
+        if (CompileConstants.IsDebug)
+        {
+            var ids = new HashSet<SectionId>();
+            foreach (var sectionDescriptor in settingsSectionSetups)
+            {
+                var id = sectionDescriptor.Id;
+                Debug.Assert(ids.Add(id), $"duplicate section ID: {id}");
+            }
+
+            foreach (var propertyBuilderOutput in _propertyBuilderOutputs)
+            {
+                Debug.Assert(settingsSectionSetups.Any(x => x.Id == propertyBuilderOutput.SectionId), $"section not registered: {propertyBuilderOutput.SectionId} (for setting {propertyBuilderOutput.DisplayName})");
+            }
+        }
     }
 
     private void CoreSet<T>(T value, bool notify) where T : class, ISettings, new()
@@ -79,6 +111,7 @@ internal partial class SettingsManager : ISettingsManager
 
         return defaultValue;
 
+        // ReSharper disable once VariableHidesOuterVariable
         T Override(T value, out bool didOverride)
         {
             didOverride = false;
@@ -121,6 +154,8 @@ internal partial class SettingsManager : ISettingsManager
             return SettingsPropertyUIDescriptor.From(output, valueContainer);
         }).ToArray();
     }
+
+    public ISettingsSectionDescriptor[] GetAllSections() => _sectionDescriptors.Value;
 
     private object GetDefaultValue(Type settingsType)
     {

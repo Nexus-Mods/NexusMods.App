@@ -1684,8 +1684,8 @@ The final result should look something like:
 To add a custom column, we will take the following steps:
 
 - [**Create a View**](#view): `FileColumnView.axaml` & `FileColumnView.axaml.cs`
-- [**Update the TreeDataGrid**](#using-the-custom-column): Use the custom view, and give it a key.
-- [**Modify the Column Definition**](#using-the-custom-column): Reference the key for custom view.
+- [**Update the TreeDataGrid**](#using-the-custom-column-with-treedatagrid): Use the custom view, and give it a key.
+- [**Modify the Column Definition**](#using-the-custom-column-with-treedatagrid): Reference the key for custom view.
 
 ##### ViewModel
 
