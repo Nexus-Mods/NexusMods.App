@@ -85,4 +85,7 @@ public abstract class APageViewModel<TInterface> : AViewModel<TInterface>, IPage
     public PanelTabId TabId { get; set; }
 
     protected PageIdBundle IdBundle => new(WindowId, WorkspaceId, PanelId, TabId);
+
+    /// <inheritdoc/>
+    public virtual bool CanClose() => true;
 }
