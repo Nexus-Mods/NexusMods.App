@@ -3,7 +3,6 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using DynamicData.Binding;
 using JetBrains.Annotations;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.NexusWebApi;
@@ -20,17 +19,13 @@ namespace NexusMods.Networking.NexusWebApi;
 /// Component for handling login and logout from the Nexus Mods
 /// </summary>
 [PublicAPI]
-public sealed class LoginManager : IDisposable, ILoginManager, IHostedService
+public sealed class LoginManager : IDisposable, ILoginManager
 {
     private readonly ILogger<LoginManager> _logger;
     private readonly OAuth _oauth;
     private readonly IProtocolRegistration _protocolRegistration;
     private readonly NexusApiClient _nexusApiClient;
     private readonly IAuthenticatingMessageFactory _msgFactory;
-    private Task? _startupTask = null;
-
-    private CompositeDisposable _subscriptions = new CompositeDisposable();
-
 
     /// <summary>
     /// Allows you to subscribe to notifications of when the user information changes.
@@ -38,20 +33,10 @@ public sealed class LoginManager : IDisposable, ILoginManager, IHostedService
     public IObservable<UserInfo?> UserInfoObservable { get; }
     
     /// <summary>
-    /// The current user information
-    /// </summary>
-    public UserInfo? UserInfo { get; private set; }
-    
-    /// <summary>
     /// True if the user is logged in
     /// </summary>
     public IObservable<bool> IsLoggedInObservable => UserInfoObservable.Select(info => info is not null);
     
-    /// <summary>
-    /// True if the user is logged in
-    /// </summary>
-    public bool IsLoggedIn => UserInfo is not null;
-
     /// <summary>
     /// True if the user is logged in and is a premium member
     /// </summary>
@@ -84,14 +69,8 @@ public sealed class LoginManager : IDisposable, ILoginManager, IHostedService
 
         UserInfoObservable = _jwtTokenRepository.Observable
             .ToObservableChangeSet()
-            // NOTE(err120): Since IDs don't change on startup, we can insert
-            // a fake change at the start of the observable chain. This will only
-            // run once at startup and notify the subscribers.
             .ObserveOn(TaskPoolScheduler.Default)
             .SelectMany(async _ => await Verify(CancellationToken.None));
-
-        _subscriptions.Add(UserInfoObservable.Subscribe(userInfo => UserInfo = userInfo));
-        
     }
 
     private CachedObject<UserInfo> _cachedUserInfo = new(TimeSpan.FromHours(1));
@@ -115,6 +94,12 @@ public sealed class LoginManager : IDisposable, ILoginManager, IHostedService
         _cachedUserInfo.Store(userInfo);
 
         return userInfo;
+    }
+
+    /// <inheritdoc />
+    public async Task<UserInfo?> GetUserInfoAsync(CancellationToken token)
+    {
+        return await Verify(token);
     }
 
     /// <summary>
@@ -168,37 +153,12 @@ public sealed class LoginManager : IDisposable, ILoginManager, IHostedService
         _cachedUserInfo.Evict();
         await _jwtTokenRepository.Delete(_jwtTokenRepository.All.First());
     }
-
+    
+    
     /// <inheritdoc/>
     public void Dispose()
     {
         _verifySemaphore.Dispose();
-        _subscriptions.Dispose();
-    }
-
-    /// <inheritdoc />
-    public async Task StartAsync(CancellationToken cancellationToken)
-    {
-        lock (this)
-        {
-            _startupTask ??= Startup(cancellationToken);
-        }
-        await _startupTask;
     }
     
-    private async Task Startup(CancellationToken cancellationToken)
-    {
-        await ((IHostedService)_jwtTokenRepository).StartAsync(cancellationToken);
-        var userInfo = await Verify(cancellationToken);
-        if (userInfo is not null)
-        {
-            UserInfo = userInfo;
-        }
-    }
-
-    /// <inheritdoc />
-    public Task StopAsync(CancellationToken cancellationToken)
-    {
-        return Task.CompletedTask;
-    }
 }

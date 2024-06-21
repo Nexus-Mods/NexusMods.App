@@ -35,11 +35,6 @@ public class LoginMessageBoxViewModel : AOverlayViewModel<ILoginMessageBoxViewMo
         if (_settingsManager.Get<LoginSettings>().HasShownModal) return false;
         _settingsManager.Update<LoginSettings>(settings => settings with { HasShownModal = true });
         
-        if (_loginManager.IsLoggedIn)
-        {
-            return false;
-        }
-        
         _overlayController.Enqueue(this);
         return true;
     }

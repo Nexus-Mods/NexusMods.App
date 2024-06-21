@@ -198,6 +198,11 @@ public static class IconValues
 
     // https://pictogrammers.com/library/mdi/icon/tune/
     public static readonly IconValue Tune = new ProjektankerIcon("mdi-tune");
+    
+    // https://pictogrammers.com/library/mdi/icon/palette/
+    public static readonly IconValue ColorLens = new ProjektankerIcon("mdi-palette");
+    
+    
 
 #endregion
 

@@ -48,7 +48,8 @@ public class NxmIpcProtocolHandler : IIpcProtocolHandler
                 break;
             case NXMModUrl modUrl:
                 // Check if the user is logged in
-                if (_loginManager.IsLoggedIn)
+                var userInfo = await _loginManager.GetUserInfoAsync(cancel);
+                if (userInfo is not null)
                 {
                     var task = await _downloadService.AddTask(modUrl);
                     _ = task.StartAsync();

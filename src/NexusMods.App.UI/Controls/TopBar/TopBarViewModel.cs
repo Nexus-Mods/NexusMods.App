@@ -128,7 +128,7 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
 
         OpenNexusModsProfileCommand = ReactiveCommand.CreateFromTask(async () =>
         {
-            var userInfo = _loginManager.UserInfo;
+            var userInfo = await _loginManager.GetUserInfoAsync();
             if (userInfo is null) return;
 
             var userId = userInfo.UserId.Value;

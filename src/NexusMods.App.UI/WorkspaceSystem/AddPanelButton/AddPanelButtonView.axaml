@@ -18,7 +18,7 @@
         <Button x:Name="AddPanelButton">
             <StackPanel Orientation="Horizontal">
                 <icons:UnifiedIcon x:Name="ButtonImage"/>
-                <icons:UnifiedIcon x:Name="PlusIcon" Classes="Plus"/>
+                <icons:UnifiedIcon x:Name="PlusIcon" Classes="Plus" Size="16"/>
             </StackPanel>
         </Button>
     </Border>
