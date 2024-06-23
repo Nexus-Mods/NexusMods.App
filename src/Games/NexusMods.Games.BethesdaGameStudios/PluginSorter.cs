@@ -159,6 +159,6 @@ public class PluginSorter
     private async Task<PluginAnalysisData?> GetAnalysis(StoredFile.ReadOnly archive, CancellationToken token)
     {
         await using var stream = await _fileStore.GetFileStream(archive.Hash, token);
-        return await _pluginAnalyzer.AnalyzeAsync(archive.File.To.FileName, stream, token);
+        return await _pluginAnalyzer.AnalyzeAsync(archive.AsFile().To.FileName, stream, token);
     }
 }

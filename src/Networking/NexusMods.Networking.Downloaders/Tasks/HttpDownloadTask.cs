@@ -44,6 +44,6 @@ public class HttpDownloadTask(IServiceProvider provider) : ADownloadTask(provide
     {
         if (!PersistentState.TryGetAsHttpDownloadState(out var httpState))
             throw new InvalidOperationException("State is not a HttpDownloadState");
-        await HttpDownloader.DownloadAsync([httpState.Uri], destination, httpState.DownloaderState.Size, TransientState, token);
+        await HttpDownloader.DownloadAsync([httpState.Uri], destination, httpState.AsDownloaderState().Size, TransientState, token);
     }
 }

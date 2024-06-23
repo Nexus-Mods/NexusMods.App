@@ -44,7 +44,7 @@ public class ManuallyAddedLocator : IGameLocator
             Path = path.ToString(),
         };
         var result = await tx.Commit();
-        var addedGame = ent.Remap(result);
+        var addedGame = result.Remap(ent);
         var gameRegistry = _provider.GetRequiredService<IGameRegistry>();
         var install = await gameRegistry.Register(game, new GameLocatorResult(path, GameStore.ManuallyAdded, addedGame, version), this);
         var newId = result[ent.Id];

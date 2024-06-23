@@ -45,7 +45,7 @@ internal static class Interop
             .FirstOrDefault();
         if (!manifestFile.IsValid()) return null;
 
-        await using var stream = await fileStore.GetFileStream(manifestFile.StoredFile.Hash, cancellationToken);
+        await using var stream = await fileStore.GetFileStream(manifestFile.AsStoredFile().Hash, cancellationToken);
         return await DeserializeManifest(stream);
     }
 
@@ -61,7 +61,7 @@ internal static class Interop
         if (databaseMarker.IsValid()) return null;
 
         // https://github.com/Pathoschild/SMAPI/blob/e8a86a0b98061d322c2af89af845ed9f5fd15468/src/SMAPI.Toolkit/ModToolkit.cs#L66-L71
-        await using var stream = await fileStore.GetFileStream(databaseMarker.StoredFile.Hash, cancellationToken);
+        await using var stream = await fileStore.GetFileStream(databaseMarker.AsStoredFile().Hash, cancellationToken);
         var metadata = await DeserializeWithDefaults<MetadataModel>(stream);
         if (metadata is null) return null;
 

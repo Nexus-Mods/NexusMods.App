@@ -22,7 +22,7 @@ public class DownloadTaskViewModel : AViewModel<IDownloadTaskViewModel>, IDownlo
         _task = task;
         
         if (task.PersistentState.TryGetAsCompletedDownloadState(out var completed))
-            IsHidden = completed.DownloaderState.Status == DownloadTaskStatus.Completed && completed.Hidden;
+            IsHidden = completed.AsDownloaderState().Status == DownloadTaskStatus.Completed && completed.Hidden;
         
         var interval = Observable.Interval(TimeSpan.FromSeconds(60)).StartWith(1);
         

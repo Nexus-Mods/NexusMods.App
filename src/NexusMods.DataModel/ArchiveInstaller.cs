@@ -80,7 +80,7 @@ public class ArchiveInstaller : IArchiveInstaller
             };
             loadout.Revise(tx);
             var result = await tx.Commit();
-            baseMod = newMod.Remap(result);
+            baseMod = result.Remap(newMod);
             modId = ModId.From(result[baseMod.Id]);
         }
 

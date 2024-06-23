@@ -39,7 +39,7 @@ public class BethesdaLoadoutSynchronizer(IServiceProvider provider) : ALoadoutSy
             };
             loadout.Revise(tx);
             var result = await tx.Commit();
-            metadataMod = newMetadataMod.Remap(result);
+            metadataMod = result.Remap(newMetadataMod);
         }
 
         

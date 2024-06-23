@@ -106,7 +106,7 @@ public class TextEditorPageViewModel : APageViewModel<ITextEditorPageViewModel>,
             {
                 tx.Add(storedFile.Id, StoredFile.Hash, hash);
                 tx.Add(storedFile.Id, StoredFile.Size, size);
-                storedFile.File.Mod.Revise(tx);
+                storedFile.AsFile().Mod.Revise(tx);
                 await tx.Commit();
             }
 

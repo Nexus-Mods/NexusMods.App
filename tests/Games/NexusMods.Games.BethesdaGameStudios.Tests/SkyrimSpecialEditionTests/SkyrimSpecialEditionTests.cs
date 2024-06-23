@@ -195,7 +195,7 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition.SkyrimSp
         file.Should().NotBeNull("the plugin order file should exist in the loadout");
 
 
-        var pluginFilePath = file.Value.File.To.CombineChecked(loadout.InstallationInstance);
+        var pluginFilePath = file.Value.AsFile().To.CombineChecked(loadout.InstallationInstance);
 
         var path = BethesdaTestHelpers.GetDownloadableModFolder(FileSystem, "SkyrimBase");
         var downloaded = await _downloader.DownloadFromManifestAsync(path, FileSystem);

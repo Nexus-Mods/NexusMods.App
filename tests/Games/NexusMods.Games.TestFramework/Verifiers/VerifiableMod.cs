@@ -54,7 +54,7 @@ internal record VerifiableFile
     {
         return new VerifiableFile
         {
-            To = storedFile.File.To.ToString(),
+            To = storedFile.AsFile().To.ToString(),
             Size = storedFile.Size.Value,
             Hash = storedFile.Hash.Value,
         };

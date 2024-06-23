@@ -286,7 +286,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         var isUnix = _os.IsUnix();
         foreach (var (path, entry) in toExtract)
         {
-            resultingItems[entry.File.To] = new DiskStateEntry
+            resultingItems[entry.AsFile().To] = new DiskStateEntry
             {
                 Hash = entry.Hash,
                 Size = entry.Size,
@@ -457,7 +457,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             foreach (var addedFile in addedFiles)
             {
                 var storedFile = StoredFile.Load(result.Db, result[addedFile]);
-                results.Add(KeyValuePair.Create(storedFile.File.To, storedFile.File));
+                results.Add(KeyValuePair.Create(storedFile.AsFile().To, storedFile.AsFile()));
             }
         }
 
@@ -988,7 +988,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         var result = await tx.Commit();
         
         // Remap the ids
-        var remappedLoadout = loadout.Remap(result);
+        var remappedLoadout = result.Remap(loadout);
         
         initialState.TxId = result.NewTx;
         initialState.LoadoutId = remappedLoadout.Id;
@@ -1008,8 +1008,8 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             
             var tree = FileTree.Create(allStoredFileModels.Select(file =>
                 {
-                    var remapped = file.Remap(result);
-                    return KeyValuePair.Create(remapped.File.To, remapped.File);
+                    var remapped = result.Remap(file);
+                    return KeyValuePair.Create(remapped.AsFile().To, remapped.AsFile());
                 }
             ));
             await FileTreeToDisk(tree, remappedLoadout, flattened, prevState, remappedLoadout.InstallationInstance, true);
@@ -1159,7 +1159,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         await BackupNewFiles(installation, filesToBackup);
         var result = await tx.Commit();
 
-        return loadout.Remap(result);
+        return result.Remap(loadout);
     }
 #endregion
 

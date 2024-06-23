@@ -64,11 +64,11 @@ public class ModFileTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeVie
             if (!isDeletion)
                 _totalSize += storedFile.Size.Value;
 
-            var folderName = storedFile.File.To.Parent;
+            var folderName = storedFile.AsFile().To.Parent;
             var parent = folderName;
 
             displayedItems.Add(new FileTreeNodeViewModel(
-                    storedFile.File.To,
+                    storedFile.AsFile().To,
                     folderName,
                     true,
                     isDeletion ? 0 : storedFile.Size.Value,

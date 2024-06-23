@@ -236,7 +236,7 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
                 Enabled = true,
             };
             var result = await tx.Commit();
-            baseId = mod.Remap(result).ModId;
+            baseId = result.Remap(mod).ModId;
         }
         
         var info = new ModInstallerInfo
