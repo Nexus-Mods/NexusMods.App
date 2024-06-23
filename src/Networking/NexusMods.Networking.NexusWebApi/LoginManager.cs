@@ -104,7 +104,7 @@ public sealed class LoginManager : IDisposable, ILoginManager
     /// <inheritdoc />
     public async Task<UserInfo?> GetUserInfoAsync(CancellationToken token)
     {
-        return await Verify(token);
+        return await Verify(true, token);
     }
 
     /// <summary>

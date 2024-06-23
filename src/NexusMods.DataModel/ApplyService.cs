@@ -9,6 +9,7 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
+using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.DataModel.Loadouts.Extensions;
 using NexusMods.MnemonicDB.Abstractions;
 
@@ -56,7 +57,7 @@ public class ApplyService : IApplyService
 
             if (TryGetLastAppliedLoadout(loadout.InstallationInstance, out var lastAppliedLoadout))
             {
-                _logger.LogInformation("Last applied loadout found: {LoadoutId} as of {TxId}", lastAppliedLoadout.Id, lastAppliedLoadout.MostRecentTx());
+                _logger.LogInformation("Last applied loadout found: {LoadoutId} as of {TxId}", lastAppliedLoadout.Id, lastAppliedLoadout.MostRecentTxId());
             }
             else
             {

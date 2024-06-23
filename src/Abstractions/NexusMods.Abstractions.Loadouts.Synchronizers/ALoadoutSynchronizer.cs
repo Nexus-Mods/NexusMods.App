@@ -16,6 +16,7 @@ using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
+using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.Extensions.BCL;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions;
@@ -575,7 +576,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         var prevState = _diskStateRegistry.GetState(loadout.InstallationInstance)!;
         var diskState = await FileTreeToDisk(fileTree, loadout, flattened, prevState, loadout.InstallationInstance, forceSkipIngest);
         diskState.LoadoutId = loadout.Id;
-        diskState.TxId = loadout.MostRecentTx();
+        diskState.TxId = loadout.MostRecentTxId();
         await _diskStateRegistry.SaveState(loadout.InstallationInstance, diskState);
 
         return diskState;
@@ -600,7 +601,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         var newLoadout = await AddChangedFilesToLoadout(loadout, newFiles);
         
         diskState.LoadoutId = newLoadout.Id;
-        diskState.TxId = newLoadout.MostRecentTx();
+        diskState.TxId = newLoadout.MostRecentTxId();
         await _diskStateRegistry.SaveState(loadout.InstallationInstance, diskState);
         return newLoadout;
     }

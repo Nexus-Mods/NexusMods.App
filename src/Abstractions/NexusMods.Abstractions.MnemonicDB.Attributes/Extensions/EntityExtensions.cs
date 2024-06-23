@@ -9,12 +9,13 @@ namespace NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 /// </summary>
 public static class EntityExtensions
 {
+    
     /// <summary>
-    /// Casts an entity to a specific type, performing no checks.
+    /// Gets the largest transaction id in the model.
     /// </summary>
-    public static T Remap<T>(this ReadOnlyModel entity) where T : IReadOnlyModel<T>
+    public static TxId MostRecentTxId(this IReadOnlyModel model)
     {
-        return T.Create(entity.Db, entity.Id);
+        return model.Max(m => m.T);
     }
     
     
