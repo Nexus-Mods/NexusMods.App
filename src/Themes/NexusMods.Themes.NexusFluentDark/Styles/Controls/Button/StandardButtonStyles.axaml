@@ -185,26 +185,7 @@
                     </Button>
                 </StackPanel>
                 
-                <!-- Standard ApplyButton -->
-                <StackPanel Classes="VerticalTwoButtonStack" Orientation="Vertical">
-                    <TextBlock>Standard ApplyButton</TextBlock>
-                    <Button Classes="Standard ApplyButton">
-                        <StackPanel>
-                            <icons:UnifiedIcon Classes="Play" />
-                            <TextBlock Text="BUTTON" />
-                        </StackPanel>
-                    </Button>
-                    <Button Classes="Standard ApplyButton" IsEnabled="False">
-                        <StackPanel>
-                            <icons:UnifiedIcon Classes="Play" />
-                            <TextBlock Text="BUTTON" />
-                        </StackPanel>
-                    </Button>
-                </StackPanel>
-
-
             </StackPanel>
-
 
         </StackPanel>
     </Design.PreviewWith>
@@ -264,18 +245,24 @@
     <!-- Standard Primary -->
     <Style Selector="Button.Standard.Primary">
         <Setter Property="Background" Value="{DynamicResource PrimaryModerateBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource NeutralInvertedBrush}" />
+
 
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="Background" Value="{DynamicResource PrimaryStrongBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource NeutralInvertedBrush}" />
         </Style>
 
         <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="Background" Value="{DynamicResource PrimarySubduedBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource NeutralInvertedBrush}" />
         </Style>
 
         <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="Background" Value="{DynamicResource PrimaryModerateBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource NeutralInvertedBrush}" />
         </Style>
+        
     </Style>
 
 
@@ -401,26 +388,4 @@
         </Style>
     </Style>
     
-    
-    <!-- Standard ApplyButton -->
-    <Style Selector="Button.Standard.ApplyButton">
-        <Setter Property="Background" Value="{DynamicResource PrimaryModerateBrush}" />
-        <Setter Property="Foreground" Value="{DynamicResource NeutralInvertedBrush}" />
-
-        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource PrimaryStrongBrush}" />
-            <Setter Property="Foreground" Value="{DynamicResource NeutralInvertedBrush}" />
-        </Style>
-
-        <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource PrimarySubduedBrush}" />
-            <Setter Property="Foreground" Value="{DynamicResource NeutralInvertedBrush}" />
-        </Style>
-
-        <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource PrimaryModerateBrush}" />
-            <Setter Property="Foreground" Value="{DynamicResource NeutralInvertedBrush}" />
-        </Style>
-    </Style>
-
 </Styles>

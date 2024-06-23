@@ -37,7 +37,7 @@
             </navigation:NavigationControl>
 
             <!-- Apply button -->
-            <Button Classes="Standard ApplyButton"
+            <Button Classes="Standard Primary"
                     HorizontalAlignment="Stretch"
                     Height="44"
                     x:Name="ApplyButton">

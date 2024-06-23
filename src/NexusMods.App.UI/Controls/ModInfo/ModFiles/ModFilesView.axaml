@@ -11,13 +11,24 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:viewModFiles="clr-namespace:NexusMods.App.UI.Controls.ModInfo.ModFiles"
     xmlns:trees="clr-namespace:NexusMods.App.UI.Controls.Trees"
-    xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation">
+    xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation"
+    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
     <Design.DataContext>
         <viewModFiles:ModFilesDesignViewModel />
     </Design.DataContext>
 
     <Grid RowDefinitions="Auto, *">
-        <navigation:NavigationControl Grid.Row="0" x:Name="OpenEditorButton" Content="Open Editor" />
+        <Border Grid.Row="0" Classes="Toolbar">
+            <StackPanel>
+                <navigation:NavigationControl x:Name="OpenEditorMenuItem">
+                    <StackPanel>
+                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.FileEdit}" />
+                        <TextBlock Text="Edit file" />
+                    </StackPanel>
+                </navigation:NavigationControl>
+            </StackPanel>
+        </Border>
+
         <trees:FileTreeView Grid.Row="1" x:Name="FilesTreeView" />
     </Grid>
 

@@ -135,19 +135,6 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
                         }
                     ).DisposeWith(disposables);
                 
-                // Apply button text
-                this.WhenAnyValue(vm => vm.LastAppliedLoadoutId,
-                        vm => vm.NewestLoadout
-                    )
-                    .Select(_ =>
-                        !LastAppliedLoadoutId.Equals(_loadoutId)
-                            ? Language.ApplyControlViewModel__ACTIVATE_AND_APPLY
-                            : Language.ApplyControlViewModel__APPLY
-                    )
-                    .OnUI()
-                    .BindToVM(this, vm => vm.ApplyButtonText)
-                    .DisposeWith(disposables);
-                
                 // Perform an ingest on first load:
                 Task.Run(FirstLoadIngest);
             }

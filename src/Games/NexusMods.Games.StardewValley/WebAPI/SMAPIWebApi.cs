@@ -22,14 +22,14 @@ internal sealed class SMAPIWebApi : ISMAPIWebApi
     private bool _isDisposed;
     private WebApiClient? _client;
 
-    private ImmutableDictionary<string, NamedLink> _knownModPageUrls = ImmutableDictionary<string, NamedLink>.Empty.WithComparers(StringComparer.OrdinalIgnoreCase);
+    private ImmutableDictionary<string, SMAPIWebApiMod> _cache = ImmutableDictionary<string, SMAPIWebApiMod>.Empty.WithComparers(StringComparer.OrdinalIgnoreCase);
 
     public SMAPIWebApi(ILogger<SMAPIWebApi> logger)
     {
         _logger = logger;
     }
 
-    public async Task<IReadOnlyDictionary<string, NamedLink>> GetModPageUrls(
+    public async Task<IReadOnlyDictionary<string, SMAPIWebApiMod>> GetModDetails(
         IOSInformation os,
         ISemanticVersion gameVersion,
         ISemanticVersion smapiVersion,
@@ -45,7 +45,7 @@ internal sealed class SMAPIWebApi : ISMAPIWebApi
         );
 
         var mods = smapiIDs
-            .Where(id => !_knownModPageUrls.ContainsKey(id))
+            .Where(id => !_cache.ContainsKey(id))
             .Select(id => new ModSearchEntryModel(
                     id: id,
                     installedVersion: null,
@@ -76,36 +76,44 @@ internal sealed class SMAPIWebApi : ISMAPIWebApi
             if (apiResult is not null)
             {
                 var tmp = apiResult
-                    .Select<KeyValuePair<string, ModEntryModel>, ValueTuple<string?, Optional<NamedLink>>>(kv =>
+                    .Select(kv =>
                     {
                         var (id, model) = kv;
                         var metadata = model.Metadata;
 
                         var nexusId = metadata?.NexusID;
-                        if (nexusId is null) return (null, Optional<NamedLink>.None);
+                        var nexusModsLink = Optional<NamedLink>.None;
 
-                        var uri = NexusModsUrlBuilder.CreateDiagnosticUri(StardewValley.GameDomain.Value, nexusId.Value.ToString());
-                        return (id, uri.WithName("Nexus Mods"));
+                        if (nexusId is not null)
+                        {
+                            var uri = NexusModsUrlBuilder.CreateDiagnosticUri(StardewValley.GameDomain.Value, nexusId.Value.ToString());
+                            nexusModsLink = uri.WithName("Nexus Mods");
+                        }
+
+                        return new SMAPIWebApiMod
+                        {
+                            UniqueId = id,
+                            Name = metadata?.Name,
+                            NexusModsLink = nexusModsLink,
+                        };
                     })
-                    .Where(kv => kv.Item1 is not null)
-                    .Select(tuple => new KeyValuePair<string, NamedLink>(tuple.Item1!, tuple.Item2.Value))
-                    .ToDictionary();
+                    .ToDictionary(x => x.UniqueId, x => x, StringComparer.OrdinalIgnoreCase);
 
-                ImmutableDictionary<string, NamedLink> initial, updated;
+                ImmutableDictionary<string, SMAPIWebApiMod> initial, updated;
                 do
                 {
-                    initial = _knownModPageUrls;
-                    updated = _knownModPageUrls.SetItems(tmp);
-                } while (initial != Interlocked.CompareExchange(ref _knownModPageUrls, updated, initial));
+                    initial = _cache;
+                    updated = _cache.SetItems(tmp);
+                } while (initial != Interlocked.CompareExchange(ref _cache, updated, initial));
             }
         }
 
         return smapiIDs
             .Distinct(StringComparer.OrdinalIgnoreCase)
-            .Select(id => (Id: id, Link: _knownModPageUrls.GetValueOrDefault(id)))
-            .Where(tuple => tuple.Link != default(NamedLink))
-            .Select(tuple => new KeyValuePair<string, NamedLink>(tuple.Id, tuple.Link))
-            .ToDictionary(StringComparer.OrdinalIgnoreCase);
+            .Select(id => _cache.GetValueOrDefault(id))
+            .Where(mod => mod is not null)
+            .Select(mod => mod!)
+            .ToDictionary(mod => mod.UniqueId, mod => mod, StringComparer.OrdinalIgnoreCase);
     }
 
     private static Platform ToPlatform(IOSInformation os)

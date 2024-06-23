@@ -61,6 +61,10 @@ public class Program
 
         // Okay to do wait here, as we are in the main process thread.
         host.StartAsync().Wait(timeout: TimeSpan.FromMinutes(5));
+        
+        // Start the CLI server if we are the main process.
+        var cliServer = services.GetService<CliServer>();
+        cliServer?.StartCliServerAsync().Wait(timeout: TimeSpan.FromSeconds(5));
 
         _logger = services.GetRequiredService<ILogger<Program>>();
         LogMessages.RuntimeInformation(_logger, RuntimeInformation.OSDescription, RuntimeInformation.FrameworkDescription);

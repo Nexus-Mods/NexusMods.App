@@ -40,17 +40,24 @@ on:
     outputs:
       ArtifactNameLinuxArchive:
         description: "Name of the Artifact that contains the Linux Archive"
-        value: ${{ jobs.build.outputs.artifactNameLinuxArchive }}
+        value: ${{ jobs.build-archive.outputs.artifactName }}
+      ArtifactUrlLinuxArchive:
+        description: "URL to download the Linux Archive artifact"
+        value: ${{ jobs.build-archive.outputs.artifactUrl }}
       ArtifactNameLinuxAppImage:
         description: "Name of the Artifact that contains the Linux AppImage"
-        value: ${{ jobs.build.outputs.artifactNameLinuxAppImage }}
+        value: ${{ jobs.build-appimage.outputs.artifactName }}
+      ArtifactUrlLinuxAppImage:
+        description: "URL to download the Linux AppImage artifact"
+        value: ${{ jobs.build-appimage.outputs.artifactUrl }}
 
 jobs:
-  build:
+  build-archive:
+    if: inputs.BuildArchive
     runs-on: ubuntu-latest
     outputs:
-      artifactNameLinuxArchive: ${{ steps.setOutputs.outputs.artifactNameLinuxArchive }}
-      artifactNameLinuxAppImage: ${{ steps.setOutputs.outputs.artifactNameLinuxAppImage }}
+      artifactName: ${{ steps.setOutputs.outputs.artifactName }}
+      artifactUrl: ${{ steps.upload.outputs.artifact-url }}
 
     steps:
       - uses: actions/checkout@v3
@@ -68,8 +75,58 @@ jobs:
           echo "projectDir=$projectDir" >> $env:GITHUB_OUTPUT
           echo "projectName=$projectName" >> $env:GITHUB_OUTPUT
 
-      - name: Print debug info
-        run: dotnet --info
+      - name: Build & Install PupNet
+        run: |
+          # Our use of central package management may cause PupNet to fail build
+          # so we lift it out to a separate directory and build it there
+          mkdir ../PupNet
+          cd ../PupNet
+          git clone ${{ inputs.PupNetRepo }} .
+          git checkout ${{ inputs.PupNetBranch }}
+          dotnet pack -c Release -o . -p:Version=0.0.0-nma
+          dotnet tool install --global --add-source . KuiperZone.PupNet --version 0.0.0-nma
+
+      - name: Create Archive
+        working-directory: ${{ steps.transformInputs.outputs.projectDir }}
+        run: pupnet -y -v ${{ inputs.AppVersion }} -k zip -p DefineConstants=INSTALLATION_METHOD_ARCHIVE
+
+      - name: Set outputs
+        id: setOutputs
+        shell: pwsh
+        run: |
+          echo "artifactName=${{ steps.transformInputs.outputs.projectName }}-${{ github.sha }}-Linux-Archive" >> $env:GITHUB_OUTPUT
+
+      - name: Upload
+        id: upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.setOutputs.outputs.artifactName }}
+          path: ${{ steps.transformInputs.outputs.projectDir }}/Deploy/OUT/*.zip
+          if-no-files-found: error
+          retention-days: ${{ inputs.RetentionDays }}
+
+  build-appimage:
+    if: inputs.BuildAppImage
+    runs-on: ubuntu-latest
+    outputs:
+      artifactName: ${{ steps.setOutputs.outputs.artifactName }}
+      artifactUrl: ${{ steps.upload.outputs.artifact-url }}
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: "recursive"
+
+      - name: Transform inputs
+        id: transformInputs
+        shell: pwsh
+        env:
+          ProjectFile: ${{ inputs.ProjectFile }}
+        run: |
+          $projectDir = [System.IO.Path]::GetDirectoryName("$env:ProjectFile")
+          $projectName = [System.IO.Path]::GetFileNameWithoutExtension("$env:ProjectFile")
+          echo "projectDir=$projectDir" >> $env:GITHUB_OUTPUT
+          echo "projectName=$projectName" >> $env:GITHUB_OUTPUT
 
       # https://github.com/AppImage/AppImageKit/wiki/FUSE#install-fuse
       - name: Install FUSE
@@ -86,13 +143,7 @@ jobs:
           dotnet pack -c Release -o . -p:Version=0.0.0-nma
           dotnet tool install --global --add-source . KuiperZone.PupNet --version 0.0.0-nma
 
-      - name: Create Archive
-        if: ${{ inputs.BuildArchive }}
-        working-directory: ${{ steps.transformInputs.outputs.projectDir }}
-        run: pupnet -y -v ${{ inputs.AppVersion }} -k zip -p DefineConstants=INSTALLATION_METHOD_ARCHIVE
-
       - name: Create AppImage
-        if: ${{ inputs.BuildAppImage }}
         working-directory: ${{ steps.transformInputs.outputs.projectDir }}
         run: pupnet -y -v ${{ inputs.AppVersion }} -k AppImage -p DefineConstants=INSTALLATION_METHOD_APPIMAGE
 
@@ -100,23 +151,13 @@ jobs:
         id: setOutputs
         shell: pwsh
         run: |
-          echo "artifactNameLinuxArchive=${{ steps.transformInputs.outputs.projectName }}-${{ github.sha }}-Linux-Archive" >> $env:GITHUB_OUTPUT
-          echo "artifactNameLinuxAppImage=${{ steps.transformInputs.outputs.projectName }}-${{ github.sha }}-Linux-AppImage" >> $env:GITHUB_OUTPUT
+          echo "artifactName=${{ steps.transformInputs.outputs.projectName }}-${{ github.sha }}-Linux-AppImage" >> $env:GITHUB_OUTPUT
 
-      - name: Upload Archive
-        if: ${{ inputs.BuildArchive }}
-        uses: actions/upload-artifact@v3
+      - name: Upload
+        id: upload
+        uses: actions/upload-artifact@v4
         with:
-          name: ${{ steps.setOutputs.outputs.artifactNameLinuxArchive }}
-          path: ${{ steps.transformInputs.outputs.projectDir }}/Deploy/OUT/*.zip
-          if-no-files-found: error
-          retention-days: ${{ inputs.RetentionDays }}
-
-      - name: Upload AppImage
-        if: ${{ inputs.BuildAppImage }}
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ steps.setOutputs.outputs.artifactNameLinuxAppImage }}
+          name: ${{ steps.setOutputs.outputs.artifactName }}
           path: ${{ steps.transformInputs.outputs.projectDir }}/Deploy/OUT/*.AppImage
           if-no-files-found: error
           retention-days: ${{ inputs.RetentionDays }}

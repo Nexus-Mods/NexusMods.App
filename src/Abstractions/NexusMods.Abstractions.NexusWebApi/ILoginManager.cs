@@ -7,15 +7,6 @@ namespace NexusMods.Abstractions.NexusWebApi;
 /// </summary>
 public interface ILoginManager
 {
-    /// <summary>
-    /// The current user information, null if not logged in
-    /// </summary>
-    UserInfo? UserInfo { get; }
-    
-    /// <summary>
-    /// True if logged in
-    /// </summary>
-    bool IsLoggedIn { get; }
     
     /// <summary>
     /// Allows you to subscribe to notifications of when the user information changes.
@@ -42,6 +33,11 @@ public interface ILoginManager
     /// </summary>
     /// <param name="token"></param>
     Task LoginAsync(CancellationToken token = default);
+    
+    /// <summary>
+    /// Returns the user's information
+    /// </summary>
+    Task<UserInfo?> GetUserInfoAsync(CancellationToken token = default);
 
     /// <summary>
     ///  Log out of Nexus Mods

@@ -11,6 +11,9 @@ public static class IconValues
     // https://pictogrammers.com/library/mdi/icon/code-tags/
     public static readonly IconValue Code = new ProjektankerIcon("mdi-code-tags");
 
+    // https://pictogrammers.com/library/mdi/icon/check-circle/
+    public static readonly IconValue CheckCircle = new ProjektankerIcon("mdi-check-circle");
+
     // https://pictogrammers.com/library/mdi/icon/delete-outline/
     public static readonly IconValue DeleteOutline = new ProjektankerIcon("mdi-delete-outline");
 
@@ -195,6 +198,11 @@ public static class IconValues
 
     // https://pictogrammers.com/library/mdi/icon/tune/
     public static readonly IconValue Tune = new ProjektankerIcon("mdi-tune");
+    
+    // https://pictogrammers.com/library/mdi/icon/palette/
+    public static readonly IconValue ColorLens = new ProjektankerIcon("mdi-palette");
+    
+    
 
 #endregion
 

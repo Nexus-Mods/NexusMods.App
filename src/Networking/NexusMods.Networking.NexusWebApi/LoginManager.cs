@@ -30,9 +30,6 @@ public sealed class LoginManager : IDisposable, ILoginManager
     private readonly IProtocolRegistration _protocolRegistration;
     private readonly NexusApiClient _nexusApiClient;
     private readonly IAuthenticatingMessageFactory _msgFactory;
-    
-    private CompositeDisposable _subscriptions = new CompositeDisposable();
-
 
     /// <summary>
     /// Allows you to subscribe to notifications of when the user information changes.
@@ -40,20 +37,10 @@ public sealed class LoginManager : IDisposable, ILoginManager
     public IObservable<UserInfo?> UserInfoObservable { get; }
     
     /// <summary>
-    /// The current user information
-    /// </summary>
-    public UserInfo? UserInfo { get; private set; }
-    
-    /// <summary>
     /// True if the user is logged in
     /// </summary>
     public IObservable<bool> IsLoggedInObservable => UserInfoObservable.Select(info => info is not null);
     
-    /// <summary>
-    /// True if the user is logged in
-    /// </summary>
-    public bool IsLoggedIn => UserInfo is not null;
-
     /// <summary>
     /// True if the user is logged in and is a premium member
     /// </summary>
@@ -87,9 +74,6 @@ public sealed class LoginManager : IDisposable, ILoginManager
             .QueryWhenChanged(values => values.Count > 0)
             .ObserveOn(TaskPoolScheduler.Default)
             .SelectMany(async hasValue  => await Verify(hasValue, CancellationToken.None));
-
-        _subscriptions.Add(UserInfoObservable.Subscribe(userInfo => UserInfo = userInfo));
-        
     }
 
     private CachedObject<UserInfo> _cachedUserInfo = new(TimeSpan.FromHours(1));
@@ -115,6 +99,12 @@ public sealed class LoginManager : IDisposable, ILoginManager
         _cachedUserInfo.Store(userInfo);
 
         return userInfo;
+    }
+
+    /// <inheritdoc />
+    public async Task<UserInfo?> GetUserInfoAsync(CancellationToken token)
+    {
+        return await Verify(token);
     }
 
     /// <summary>
@@ -173,11 +163,12 @@ public sealed class LoginManager : IDisposable, ILoginManager
         }
         await tx.Commit();
     }
-
+    
+    
     /// <inheritdoc/>
     public void Dispose()
     {
         _verifySemaphore.Dispose();
-        _subscriptions.Dispose();
     }
+    
 }

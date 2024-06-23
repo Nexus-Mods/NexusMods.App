@@ -1,8 +1,11 @@
+using System.Xml;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
+using Avalonia.Svg.Skia;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.IO;
 using NexusMods.Hashing.xxHash64;
+using Svg.Model;
 
 namespace NexusMods.App.UI;
 
@@ -12,7 +15,7 @@ internal sealed class ImageCache : IImageCache
     private readonly IFileStore _fileStore;
     private readonly HttpClient _client;
 
-    private readonly Dictionary<Hash, Bitmap> _cache = new();
+    private readonly Dictionary<Hash, IImage> _cache = new();
 
     public ImageCache(
         ILogger<ImageCache> logger,
@@ -52,7 +55,7 @@ internal sealed class ImageCache : IImageCache
         );
     }
 
-    private Task<Bitmap?> Load(ImageIdentifier imageIdentifier, CancellationToken cancellationToken)
+    private Task<IImage?> Load(ImageIdentifier imageIdentifier, CancellationToken cancellationToken)
     {
         return imageIdentifier.Union.Match(
             f0: uri => LoadFromUri(uri, cancellationToken),
@@ -60,13 +63,14 @@ internal sealed class ImageCache : IImageCache
         );
     }
 
-    private async Task<Bitmap?> LoadFromUri(Uri uri, CancellationToken cancellationToken)
+    private async Task<IImage?> LoadFromUri(Uri uri, CancellationToken cancellationToken)
     {
         try
         {
             _logger.LogDebug("Fetching image from {Uri}", uri);
-            var stream = await _client.GetByteArrayAsync(uri, cancellationToken);
-            return new Bitmap(new MemoryStream(stream));
+            var bytes = await _client.GetByteArrayAsync(uri, cancellationToken);
+            var stream = new MemoryStream(bytes);
+            return StreamToImage(stream);
         }
         catch (Exception e)
         {
@@ -75,15 +79,14 @@ internal sealed class ImageCache : IImageCache
         }
     }
 
-    private async Task<Bitmap?> LoadFromHash(
+    private async Task<IImage?> LoadFromHash(
         Hash hash,
         CancellationToken cancellationToken)
     {
         try
         {
             await using var stream = await _fileStore.GetFileStream(hash, cancellationToken);
-            var res = new Bitmap(stream);
-            return res;
+            return StreamToImage(stream);
         }
         catch (Exception e)
         {
@@ -92,11 +95,49 @@ internal sealed class ImageCache : IImageCache
         }
     }
 
+    private static IImage? StreamToImage(Stream stream)
+    {
+        return IsSvg(stream) ? FromSvg(stream) : new Bitmap(stream);
+    }
+
+    private static SvgImage? FromSvg(Stream stream)
+    {
+        var source = SvgSource.LoadFromStream(stream);
+        var image = new SvgImage
+        {
+            Source = source,
+        };
+
+        return image;
+    }
+
+    private static bool IsSvg(Stream stream)
+    {
+        try
+        {
+            var firstByte = stream.ReadByte();
+            if (firstByte != ('<' & 0xFF)) return false;
+
+            stream.Seek(0, SeekOrigin.Begin);
+            using var xmlReader = XmlReader.Create(stream);
+            return xmlReader.MoveToContent() == XmlNodeType.Element && "svg".Equals(xmlReader.Name, StringComparison.OrdinalIgnoreCase);
+        }
+        catch
+        {
+            return false;
+        }
+        finally
+        {
+            stream.Seek(0, SeekOrigin.Begin);
+        }
+    }
+
     public void Dispose()
     {
         foreach (var kv in _cache)
         {
-            kv.Value.Dispose();
+            var value = kv.Value;
+            if (value is IDisposable disposable) disposable.Dispose();
         }
     }
 }

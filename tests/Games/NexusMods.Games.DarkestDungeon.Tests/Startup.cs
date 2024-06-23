@@ -23,12 +23,10 @@ public class Startup
             .AddDarkestDungeon()
             .AddLogging(builder => builder.AddXUnit())
             .AddGames()
-            .AddActivityMonitor()
             .AddFileStoreAbstractions()
             .AddLoadoutAbstractions()
             .AddSerializationAbstractions()
             .AddInstallerTypes()
-            .AddCrossPlatform()
             .Validate();
     }
 }

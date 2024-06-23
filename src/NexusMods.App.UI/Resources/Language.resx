@@ -577,4 +577,10 @@
         <value>Download {0} mods from Nexus Mods</value>
         <comment>{0} is the name of the currently managed game</comment>
     </data>
+    <data name="DiagnosticListView.EmptyState.Header" xml:space="preserve">
+        <value>Your loadout passed the health check without issues</value>
+    </data>
+    <data name="DiagnosticListView.EmptyState.Subtitle" xml:space="preserve">
+        <value>Ready for gaming.</value>
+    </data>
 </root>

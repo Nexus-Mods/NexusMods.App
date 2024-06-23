@@ -2,9 +2,11 @@ using System.Text.Json.Serialization;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.HttpDownloader;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Settings;
+using NexusMods.Activities;
 using NexusMods.CrossPlatform;
 using NexusMods.DataModel;
 using NexusMods.FileExtractor;
@@ -52,6 +54,9 @@ public static class DependencyInjectionHelper
             .AddSingleton<HttpClient>()
             .AddSingleton<TestModDownloader>()
             .AddNexusWebApi(true)
+            .AddCrossPlatform()
+            .AddActivityMonitor()
+            .AddSettings<LoggingSettings>()
             .AddHttpDownloader()
             .AddDataModel()
             .AddLoadoutsSynchronizers()

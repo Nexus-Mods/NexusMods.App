@@ -3,6 +3,7 @@ using System.Reactive.Linq;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using Avalonia.ReactiveUI;
+using JetBrains.Annotations;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.App.UI.Controls.MarkdownRenderer;
@@ -12,17 +13,23 @@ using static NexusMods.App.UI.Controls.DataGrid.Helpers;
 
 namespace NexusMods.App.UI.Pages.LoadoutGrid;
 
+[UsedImplicitly]
 public partial class LoadoutGridView : ReactiveUserControl<ILoadoutGridViewModel>
 {
     public LoadoutGridView()
     {
         InitializeComponent();
+
         this.WhenActivated(d =>
         {
-            this.OneWayBind(ViewModel, vm => vm.EmptyModlistTitleMessage, 
-                    view => view.EmptyModlistTitleTextBlock.Text)
+            this.WhenAnyValue(view => view.ViewModel!.Mods.Count)
+                .Select(count => count == 0)
+                .BindToView(this, view => view.EmptyState.IsActive)
                 .DisposeWith(d);
-            
+
+            this.OneWayBind(ViewModel, vm => vm.EmptyModlistTitleMessage, view => view.EmptyState.Header)
+                .DisposeWith(d);
+
             this.WhenAnyValue(view => view.ViewModel!.Mods)
                 .BindToView(this, view => view.ModsDataGrid.ItemsSource)
                 .DisposeWith(d);
@@ -42,16 +49,6 @@ public partial class LoadoutGridView : ReactiveUserControl<ILoadoutGridViewModel
                 removeHandler => ModsDataGrid.SelectionChanged -= removeHandler)
                 .Select(_ => ModsDataGrid.SelectedItems.Cast<ModId>().ToArray())
                 .BindTo(ViewModel, vm => vm.SelectedItems)
-                .DisposeWith(d);
-            
-            this.WhenAnyValue(view => view.ViewModel!.Mods.Count)
-                .Select(count => count > 0)
-                .Subscribe(hasItems =>
-                    {
-                        ModsDataGrid.IsVisible = hasItems;
-                        EmptyModlistMessageBorder.IsVisible = !hasItems;
-                    }
-                   )
                 .DisposeWith(d);
 
             // TODO: remove these commands and move all of this into the ViewModel
