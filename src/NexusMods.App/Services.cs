@@ -45,6 +45,7 @@ public static class Services
         if (startupMode.RunAsMain)
         {
             services
+                .AddDataModel()
                 .AddSettings<TelemetrySettings>()
                 .AddSettings<LoggingSettings>()
                 .AddSettings<ExperimentalSettings>()
@@ -62,7 +63,6 @@ public static class Services
                 .AddAdvancedInstaller()
                 .AddAdvancedInstallerUi()
                 .AddFileExtractors()
-                .AddDataModel()
                 .AddSerializationAbstractions()
                 .AddInstallerTypes()
                 .AddSupportedGames(experimentalSettings)
