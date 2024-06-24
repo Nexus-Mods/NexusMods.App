@@ -49,7 +49,7 @@ classDiagram
     
     class ContainerItem {
         +string Name
-        +bool Enabled
+        +marker IsDisabled
     }
     
     class DownloadedMod {
@@ -86,4 +86,34 @@ to find these items mostly becaomes `ContainerItem.FindByParentId(db, loadout)`.
 ### Synchronizer
 
 The Synchronizer will need to be updated to handle the new model, flattening a loadout becomes a matter of finding all `File`
-items that point to the loadout, then walking all those items to make sure each parent is enabled.
+items that point to the loadout, then walking all those items to make sure each parent is enabled. Stated another way, the
+loadout is flatted down by grouping all loadout items by `To` that are not an ancestor of a item that has the `Disabled` marker
+attribute.
+
+Naturally this approach does not handle file conflicts, but it is assumed that these conflicts will be rare in most cases. When these
+conflicts do occur the Synchronzier will pass the options to a `ResolveWinningFile` method that will pick which of the conflicting
+files is the winner. Due to this approach it is not required that loadout items or mod be sorted, instead only the conflicting
+files need to be ordered, in which case the ordering is often trivially detected based on the files and mods in question
+
+### Mod Library
+
+The mod library grid will look in the loadout for any loadout items with the given `DownloadMetadata` and use this to drive
+the "installed" or "not installed" states in the grid. 
+
+### Diagnostics
+
+Diagnostics likely will need to be updated to handle specific types of loadout items, the biggest changing being moving 
+mod referencs to container/downloaded mod items. 
+
+### Stardew Valley Updates
+
+Stardew valley installers will need to be updated to emit a single parent container of the type DownloadedMod that contains
+other containers of "SMAPI Mod" which each contain the files of the mod. In future UI updates we can decide if we want
+to display all of these mods as a list, a tree, or only the top or lower levels of the tree. 
+
+## Rationale
+
+The primary motivation for this change is to move questions of what a specific object is from code-time to runtime. Displaying
+items in a grid or a tree, or projecting parts of the loadout item tree into a list all now become runtime concerns and 
+we are free to project the data in any way required. New file or container types can be added to this process and existing
+grids and lists should work as-is. 
