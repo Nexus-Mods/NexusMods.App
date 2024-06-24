@@ -67,6 +67,7 @@ classDiagram
     ContainerItem <|-- DownloadedMod
     LoadoutItem <|-- GameFiles
     LoadoutItem <|-- ContainerItem
+    LoadoutItem <-- LoadoutItem
 
 ```
 
