@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using CliWrap;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Paths;
 
@@ -31,13 +30,15 @@ public abstract class AOSInterop : IOSInterop
     protected abstract Command CreateCommand(Uri uri);
 
     /// <inheritdoc/>
-    public async Task OpenUrl(Uri url, bool fireAndForget = false, CancellationToken cancellationToken = default)
+    public async Task OpenUrl(Uri url, bool logOutput = false, bool fireAndForget = false, CancellationToken cancellationToken = default)
     {
         var command = CreateCommand(url);
 
         // NOTE(erri120): don't log the process output of the browser
         var isWeb = url.Scheme.Equals("http", StringComparison.OrdinalIgnoreCase) || url.Scheme.Equals("https", StringComparison.OrdinalIgnoreCase);
-        var task = _processFactory.ExecuteAsync(command, logProcessOutput: !isWeb, cancellationToken: cancellationToken);
+        var shouldLogOutput = logOutput && !isWeb;
+
+        var task = _processFactory.ExecuteAsync(command, logProcessOutput: shouldLogOutput, cancellationToken: cancellationToken);
 
         try
         {
@@ -54,7 +55,7 @@ public abstract class AOSInterop : IOSInterop
     }
 
     /// <inheritdoc />
-    public Task OpenFile(AbsolutePath filePath, bool fireAndForget = false, CancellationToken cancellationToken = default)
+    public Task OpenFile(AbsolutePath filePath, bool logOutput = false, bool fireAndForget = false, CancellationToken cancellationToken = default)
     {
         if (!filePath.FileExists)
         {
@@ -66,7 +67,7 @@ public abstract class AOSInterop : IOSInterop
     }
 
     /// <inheritdoc />
-    public virtual Task OpenDirectory(AbsolutePath directoryPath, bool fireAndForget = false, CancellationToken cancellationToken = default)
+    public virtual Task OpenDirectory(AbsolutePath directoryPath, bool logOutput = false, bool fireAndForget = true, CancellationToken cancellationToken = default)
     {
         if (!directoryPath.DirectoryExists())
         {
@@ -74,7 +75,7 @@ public abstract class AOSInterop : IOSInterop
             return Task.CompletedTask;
         }
 
-        return OpenUrl(new Uri($"file://{directoryPath.ToNativeSeparators(OSInformation.Shared)}"), fireAndForget, cancellationToken);
+        return OpenUrl(new Uri($"file://{directoryPath.ToNativeSeparators(OSInformation.Shared)}"), logOutput, fireAndForget, cancellationToken);
     }
 
     /// <inheritdoc />
