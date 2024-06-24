@@ -24,10 +24,6 @@
         <Setter Property="ClipToBounds" Value="False" />
         <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
 
-        <Style Selector="^:pressed">
-            <Setter Property="RenderTransform" Value="scale(0.92)" />
-        </Style>
-
         <Style Selector="^.Inactive Border#IconButtonInnerBorder">
             <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
             <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
@@ -145,12 +141,6 @@
             <Setter Property="Height" Value="48" />
             <Setter Property="Width" Value="48" />
         </Style>
-
-
-        <Style Selector="^:pressed">
-            <Setter Property="RenderTransform" Value="scale(0.92)" />
-        </Style>
-
 
         <Style Selector="^.Inactive">
             <Style Selector="^ Rectangle#Mask">

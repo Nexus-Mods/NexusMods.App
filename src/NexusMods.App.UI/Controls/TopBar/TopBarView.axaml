@@ -49,9 +49,9 @@
                     <TextBlock Text="{x:Static resources:Language.TopBar_Help_ToolTip}" />
                 </ToolTip.Tip>
                 <MenuItem.Header>
-                    <StackPanel Orientation="Horizontal" Spacing="0" Margin="10">
-                        <icons:UnifiedIcon Classes="Help" Size="20" />
-                        <icons:UnifiedIcon Classes="MenuDown" Size="24"/>
+                    <StackPanel Orientation="Horizontal" Spacing="0" Margin="10, 0 , 10,  0">
+                        <icons:UnifiedIcon Classes="Help"/>
+                        <icons:UnifiedIcon Classes="MenuDown"/>
                     </StackPanel>
                 </MenuItem.Header>
 
