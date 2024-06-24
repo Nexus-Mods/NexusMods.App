@@ -12,5 +12,5 @@ public partial class SMAPIModDatabaseMarker : IModelDefinition
     private const string Namespace = "NexusMods.Games.StardewValley.Models.SMAPIModDatabaseMarker";
     
     
-    public static readonly BooleanAttribute SMAPIModDatabase = new(Namespace, "SMAPIModDatabase");
+    public static readonly MarkerAttribute SMAPIModDatabase = new(Namespace, nameof(SMAPIModDatabase));
 }
