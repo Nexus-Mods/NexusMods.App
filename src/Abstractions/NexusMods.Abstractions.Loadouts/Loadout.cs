@@ -1,5 +1,6 @@
 
 using System.Reactive.Linq;
+using DynamicData.Cache.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts.Ids;
@@ -60,13 +61,6 @@ public partial class Loadout : IModelDefinition
     
     public partial struct ReadOnly
     {
-        public override bool Equals(object? obj)
-        {
-            if (obj is not ReadOnly other)
-                return false;
-            return Id.Equals(other.Id);
-        }
-
         /// <summary>
         /// Get the game installation for this loadout.
         /// </summary>
@@ -75,9 +69,9 @@ public partial class Loadout : IModelDefinition
             get
             {
                 var registry = Db.Connection.ServiceProvider.GetRequiredService<IGameRegistry>();
-                if (!registry.Installations.TryGetValue(Loadout.Installation.Get(this), out var found))
-                    throw new KeyNotFoundException("Game installation not found in registry");
-                return found;
+                if (!registry.Installations.TryGetValue(Loadout.Installation.Get(this), out var gameInstallation))
+                    throw new KeySelectorException($"Game installation of `{Installation.Domain}` at `{Installation.Path}` not found in registry!");
+                return gameInstallation;
             }
         }
         
