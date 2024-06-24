@@ -31,6 +31,6 @@ public partial class File : IModelDefinition
     /// <summary>
     /// The file's metadata
     /// </summary>
-    public static readonly BackReferenceAttribute<Metadata> Metadatas = new(Metadata.File);
+    public static readonly BackReferenceAttribute<Metadata> Metadata = new(Files.Metadata.File);
 
 }

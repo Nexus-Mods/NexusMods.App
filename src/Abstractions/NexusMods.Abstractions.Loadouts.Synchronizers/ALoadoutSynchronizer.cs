@@ -270,7 +270,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                 hash = await outputStream.HashingCopyAsync(Stream.Null, CancellationToken.None);
             }
 
-            var gamePath = loadout!.InstallationInstance.LocationsRegister.ToGamePath(entry.Key);
+            var gamePath = loadout.InstallationInstance.LocationsRegister.ToGamePath(entry.Key);
             resultingItems[gamePath] = new DiskStateEntry
             {
                 Hash = hash!.Value,
