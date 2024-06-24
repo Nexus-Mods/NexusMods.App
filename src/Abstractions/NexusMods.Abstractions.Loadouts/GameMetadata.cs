@@ -9,10 +9,7 @@ namespace NexusMods.Abstractions.Loadouts;
 /// </summary>
 public partial class GameMetadata : IModelDefinition
 {
-    // Note: this namespace doesn't match the C# namespace due to it being moved 
-    // after creation. This could possibly me migrated in the future but there's noting
-    // wrong keeping it as-is
-    private const string Namespace = "NexusMods.DataModel.GameRegistry.GameMetadata";
+    private const string Namespace = "NexusMods.Abstractions.Loadouts.GameMetadata";
     
     /// <summary>
     /// The game's domain.

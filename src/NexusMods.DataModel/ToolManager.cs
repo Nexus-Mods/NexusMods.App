@@ -23,10 +23,6 @@ public class ToolManager : IToolManager
     /// <summary>
     /// DI Constructor
     /// </summary>
-    /// <param name="tools"></param>
-    /// <param name="loadoutSynchronizer"></param>
-    /// <param name="dataStore"></param>
-    /// <param name="loadoutRegistry"></param>
     public ToolManager(ILogger<ToolManager> logger, IEnumerable<ITool> tools, IApplyService applyService, IConnection conn)
     {
         _logger = logger;
@@ -46,7 +42,6 @@ public class ToolManager : IToolManager
     public async Task<Loadout.ReadOnly> RunTool(
         ITool tool, 
         Loadout.ReadOnly loadout, 
-        Mod.ReadOnly? generatedFilesMod = null, 
         CancellationToken token = default)
     {
         if (!tool.Domains.Contains(loadout.InstallationInstance.Game.Domain))

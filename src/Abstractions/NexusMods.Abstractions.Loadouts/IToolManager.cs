@@ -23,6 +23,6 @@ public interface IToolManager
     /// <param name="generatedFilesMod"></param>
     /// <param name="token"></param>
     /// <returns></returns>
-    public Task<Loadout.ReadOnly> RunTool(ITool tool, Loadout.ReadOnly loadout, Mod.ReadOnly? generatedFilesMod = null,
+    public Task<Loadout.ReadOnly> RunTool(ITool tool, Loadout.ReadOnly loadout,
         CancellationToken token = default);
 }

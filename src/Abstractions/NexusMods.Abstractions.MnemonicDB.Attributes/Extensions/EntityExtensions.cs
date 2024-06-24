@@ -1,5 +1,6 @@
 using System.Globalization;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.BuiltInEntities;
 using NexusMods.MnemonicDB.Abstractions.Models;
 
 namespace NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
@@ -16,6 +17,18 @@ public static class EntityExtensions
     public static TxId MostRecentTxId(this IReadOnlyModel model)
     {
         return model.Max(m => m.T);
+    }
+    
+    
+    /// <summary>
+    /// Gets the timestamp of the transaction that created the model.
+    /// </summary>
+    /// <param name="model"></param>
+    /// <returns></returns>
+    public static DateTime GetCreatedAt(this IReadOnlyModel model)
+    {
+        var tx = new Transaction.ReadOnly(model.Db, EntityId.From(model.Min(m => m.T).Value));
+        return Transaction.Timestamp.Get(tx);
     }
     
     

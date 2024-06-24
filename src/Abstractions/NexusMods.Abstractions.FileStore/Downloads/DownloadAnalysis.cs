@@ -63,18 +63,6 @@ public partial class DownloadAnalysis : IModelDefinition
         {
             return TreeCreator.Create(Contents, fs);
         }
-
-        /// <summary>
-        /// The timestamp of the creation of this <see cref="DownloadAnalysis"/> entity
-        /// Download start time or first manual installation time
-        /// </summary>
-        public DateTime GetCreatedAt()
-        {
-            // Get the lowest transaction id, then get the timestamp of that transaction
-            var t = this.Select(d => d.T).Min();
-            var txEntity = new ReadOnly(Db, EntityId.From(t.Value));
-            return Transaction.Timestamp.Get(txEntity);
-        }
     }
 }
 
