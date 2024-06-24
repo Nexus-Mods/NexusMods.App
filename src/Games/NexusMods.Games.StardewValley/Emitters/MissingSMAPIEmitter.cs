@@ -28,8 +28,7 @@ public class MissingSMAPIEmitter : ILoadoutDiagnosticEmitter
             yield break;
         }
 
-        var smapiMod = optionalSmapiMod.Value.Item1;
-        if (!smapiMod.Enabled)
+        if (!loadout.GetFirstModWithMetadata(SMAPIMarker.Version, onlyEnabledMods: true).HasValue)
         {
             yield return Diagnostics.CreateSMAPIRequiredButDisabled(
                 ModCount: smapiModCount
