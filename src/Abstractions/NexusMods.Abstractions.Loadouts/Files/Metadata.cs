@@ -9,7 +9,7 @@ namespace NexusMods.Abstractions.Loadouts.Files;
 /// </summary>
 public partial class Metadata : IModelDefinition
 {
-    public const string Namespace = "NexusMods.Abstractions.Loadouts.Files.Metadata";
+    private const string Namespace = "NexusMods.Abstractions.Loadouts.Files.Metadata";
     
     /// <summary>
     /// The revision number of the MetaData
