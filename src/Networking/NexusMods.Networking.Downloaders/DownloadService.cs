@@ -10,6 +10,7 @@ using NexusMods.Networking.Downloaders.Tasks;
 using NexusMods.Networking.Downloaders.Tasks.State;
 using System.Reactive.Disposables;
 using DynamicData.Kernel;
+using Microsoft.Extensions.Hosting;
 using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.IO;
 using NexusMods.Paths;
@@ -17,11 +18,11 @@ using NexusMods.Paths;
 namespace NexusMods.Networking.Downloaders;
 
 /// <inheritdoc />
-public class DownloadService : IDownloadService, IAsyncDisposable
+public class DownloadService : IDownloadService, IDisposable, IHostedService
 {
     /// <inheritdoc />
     public ReadOnlyObservableCollection<IDownloadTask> Downloads => _downloadsCollection;
-    private readonly ReadOnlyObservableCollection<IDownloadTask> _downloadsCollection;
+    private ReadOnlyObservableCollection<IDownloadTask> _downloadsCollection = ReadOnlyObservableCollection<IDownloadTask>.Empty;
 
     private readonly SourceCache<IDownloadTask, EntityId> _downloads = new(t => t.PersistentState.Id);
     private readonly ILogger<DownloadService> _logger;
@@ -38,47 +39,6 @@ public class DownloadService : IDownloadService, IAsyncDisposable
         _conn = conn;
         _disposables = new CompositeDisposable();
         _fileStore = fileStore;
-        
-        _conn.UpdatesFor(DownloaderState.Status)
-            .Subscribe(x =>
-            {
-                var (db, id) = x;
-                _downloads.Edit(e =>
-                {
-                    var found = e.Lookup(id);
-                    if (found.HasValue) 
-                        found.Value.ResetState(db);
-                    else
-                    {
-                        var task = GetTaskFromState(db.Get<DownloaderState.Model>(id));
-                        if (task == null)
-                            return;
-                        e.AddOrUpdate(task);
-                    }
-                });
-            })
-            .DisposeWith(_disposables);
-
-        _downloads.Connect()
-            .Bind(out _downloadsCollection)
-            .Subscribe()
-            .DisposeWith(_disposables);
-        
-        // Cancel any orphaned downloads
-        foreach (var task in _conn.Db.FindIndexed((byte)DownloadTaskStatus.Downloading, DownloaderState.Status))
-        {
-            try
-            {
-                _logger.LogInformation("Cancelling orphaned download task {Task}", task);
-                var state = _conn.Db.Get<DownloaderState.Model>(task);
-                var downloadTask = GetTaskFromState(state);
-                downloadTask?.Cancel();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "While cancelling orphaned download task {Task}", task);
-            }
-        }
     }
 
     internal IEnumerable<IDownloadTask> GetItemsToResume()
@@ -170,18 +130,73 @@ public class DownloadService : IDownloadService, IAsyncDisposable
         await tx.Commit();
     }
 
-    public async ValueTask DisposeAsync()
+    /// <inheritdoc />
+    public void Dispose()
     {
         if (_isDisposed)
             return;
+        _isDisposed = true;
         
         _disposables.Dispose();
+    }
+
+    /// <inheritdoc />
+    public Task StartAsync(CancellationToken cancellationToken)
+    {
+        _conn.UpdatesFor(DownloaderState.Status)
+            .Subscribe(x =>
+            {
+                var (db, id) = x;
+                _downloads.Edit(e =>
+                {
+                    var found = e.Lookup(id);
+                    if (found.HasValue) 
+                        found.Value.ResetState(db);
+                    else
+                    {
+                        var task = GetTaskFromState(db.Get<DownloaderState.Model>(id));
+                        if (task == null)
+                            return;
+                        e.AddOrUpdate(task);
+                    }
+                });
+            })
+            .DisposeWith(_disposables);
+
+        _downloads.Connect()
+            .Bind(out _downloadsCollection)
+            .Subscribe()
+            .DisposeWith(_disposables);
         
-        foreach (var download in _downloads.Items)
+        // Cancel any orphaned downloads
+        foreach (var task in _conn.Db.FindIndexed((byte)DownloadTaskStatus.Downloading, DownloaderState.Status))
         {
-            if (download.PersistentState.Status == DownloadTaskStatus.Downloading)
-                await download.Cancel();
+            try
+            {
+                _logger.LogInformation("Cancelling orphaned download task {Task}", task);
+                var state = _conn.Db.Get<DownloaderState.Model>(task);
+                var downloadTask = GetTaskFromState(state);
+                downloadTask?.Cancel();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "While cancelling orphaned download task {Task}", task);
+                return Task.CompletedTask;
+            }
         }
-        _isDisposed = true;
+        return Task.CompletedTask;
+    }
+
+    /// <inheritdoc />
+    public async Task StopAsync(CancellationToken cancellationToken)
+    {
+        var suspendingTasks = _downloads.Items
+            .Where(dl => dl.PersistentState.Status == DownloadTaskStatus.Downloading)
+            // TODO(Al12rs): should Suspend() instead, but only after moving ongoing dl files outside Temp folder,
+            // that is otherwise cleaned up on application close, causing exceptions due to file in use,
+            // on top of discarding all the progress.
+            .Select(dl => dl.Cancel());
+        
+        await Task.WhenAll(suspendingTasks);
     }
 }
