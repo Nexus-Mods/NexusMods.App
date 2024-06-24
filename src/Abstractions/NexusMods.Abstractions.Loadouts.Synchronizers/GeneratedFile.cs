@@ -19,7 +19,7 @@ public partial class GeneratedFile : IModelDefinition
     public partial struct ReadOnly
     {
         /// <summary>
-        /// The set instance of the generator that is used to generate the contents of this file.
+        /// The instance of the generator that is used to generate the contents of this file.
         /// </summary>
         public IFileGenerator GeneratorInstance => GeneratedFile.Generator.GetInstance(this);
     }
