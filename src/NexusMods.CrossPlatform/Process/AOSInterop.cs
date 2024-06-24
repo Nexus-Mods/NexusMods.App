@@ -66,7 +66,7 @@ public abstract class AOSInterop : IOSInterop
     }
 
     /// <inheritdoc />
-    public Task OpenDirectory(AbsolutePath directoryPath, bool fireAndForget = false, CancellationToken cancellationToken = default)
+    public virtual Task OpenDirectory(AbsolutePath directoryPath, bool fireAndForget = false, CancellationToken cancellationToken = default)
     {
         if (!directoryPath.DirectoryExists())
         {
@@ -74,7 +74,7 @@ public abstract class AOSInterop : IOSInterop
             return Task.CompletedTask;
         }
 
-        throw new NotImplementedException();
+        return OpenUrl(new Uri($"file://{directoryPath.ToNativeSeparators(OSInformation.Shared)}"), fireAndForget, cancellationToken);
     }
 
     /// <inheritdoc />
