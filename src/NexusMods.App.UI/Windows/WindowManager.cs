@@ -4,6 +4,7 @@ using Avalonia.Threading;
 using DynamicData;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
+using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using ReactiveUI;
@@ -112,8 +113,7 @@ internal sealed class WindowManager : ReactiveObject, IWindowManager
     {
         try
         {
-            var found = WindowDataAttributes.All(_conn.Db).First();
-            if (!found.IsValid())
+            if (!WindowDataAttributes.All(_conn.Db).TryGetFirst(out var found))
                 return false;
 
             window.WorkspaceController.FromData(found.WindowData);
