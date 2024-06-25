@@ -61,12 +61,35 @@ public class SimpleVectorIconImage : DrawingImage, IImage
     }
 
     /// <summary>
+    /// Initializes a new instance of the <see cref="SimpleVectorIconImage"/> class with specified geometry, view box, brush, and pen.
+    /// </summary>
+    /// <param name="geometry">The StreamGeometry for the icon.</param>
+    /// <param name="viewBox">The view box of the SVG icon.</param>
+    /// <param name="brush">The brush used to fill the icon. Can be null for no fill.</param>
+    /// <param name="pen">The pen used to stroke the icon. Can be null for no stroke.</param>
+    public SimpleVectorIconImage(StreamGeometry geometry, Rect viewBox, IBrush? brush = null, IPen? pen = null)
+    {
+        _viewBox = viewBox;
+
+        _drawing = new GeometryDrawing
+        {
+            Geometry = geometry,
+            Brush = brush,
+            Pen = pen,
+        };
+
+        Drawing = _drawing;
+        Brush = brush;
+        Pen = pen;
+    }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="SimpleVectorIconImage"/> class with specified path data and view box, using a black brush for fill.
     /// </summary>
     /// <param name="pathData">The SVG path data for the icon.</param>
     /// <param name="viewBox">The view box of the SVG icon.</param>
     public SimpleVectorIconImage(string pathData, Rect viewBox)
-        : this(pathData, viewBox, Brushes.White)
+        : this(pathData, viewBox, new SolidColorBrush(0xFFFFFFFF))
     {
     }
     
@@ -138,5 +161,30 @@ public class SimpleVectorIconImage : DrawingImage, IImage
         using var clip = context.PushClip(destRect);
         using var state = context.PushTransform(translate * scale);
         _drawing.Draw(context);
+    }
+
+    /// <summary>
+    /// Creates a new SimpleVectorIconImage that is a copy of the current instance.
+    /// </summary>
+    /// <returns>A new SimpleVectorIconImage with the same properties as this instance.</returns>
+    /// <remarks>
+    ///     The purpose of this method is to create a distinct instance of the
+    ///     current object whose visual properties (such as colour) can be modified
+    ///     without affecting the original object.
+    ///
+    ///     (Assuming, that the properties, such as brushes are mutated by assigning
+    ///     a new instance to the property, which is standard for XAML-like frameworks)
+    ///
+    ///     The actual geometry of the icon is reused, thus we skip the parsing
+    ///     overhead.
+    /// </remarks>
+    public SimpleVectorIconImage Clone()
+    {
+        return new SimpleVectorIconImage(
+            (_drawing.Geometry as StreamGeometry)!,
+            _viewBox,
+            Brush,
+            Pen
+        );
     }
 }
