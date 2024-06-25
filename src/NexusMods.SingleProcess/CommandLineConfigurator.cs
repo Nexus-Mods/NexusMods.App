@@ -4,6 +4,8 @@ using System.CommandLine.Invocation;
 using System.CommandLine.Parsing;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using NexusMods.CLI.Types;
 using NexusMods.ProxyConsole.Abstractions;
 using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
 
@@ -21,6 +23,8 @@ public class CommandLineConfigurator
     private readonly IServiceProvider _provider;
     private readonly MethodInfo _makeOptionMethod;
 
+    private ILogger _logger;
+
     /// <summary>
     /// DI constructor
     /// </summary>
@@ -28,6 +32,8 @@ public class CommandLineConfigurator
     /// <param name="verbDefinitions"></param>
     public CommandLineConfigurator(IServiceProvider provider, IEnumerable<VerbDefinition> verbDefinitions)
     {
+        _logger = provider.GetRequiredService<ILogger<CommandLineConfigurator>>();
+
         _makeOptionMethod = GetType().GetMethod(nameof(MakeOption), BindingFlags.Instance | BindingFlags.NonPublic)!;
         (_rootCommand, _injectedTypes) = MakeRootCommand(verbDefinitions);
         _provider = provider;
@@ -91,6 +97,29 @@ public class CommandLineConfigurator
         return option;
     }
 
+    private async Task<bool> RunLink(string[] args, CancellationToken cancellationToken)
+    {
+        if (args.Length != 1) return false;
+        if (!Uri.TryCreate(args[0], UriKind.Absolute, out var uri)) return false;
+
+        var handlers = _provider.GetServices<IIpcProtocolHandler>().ToArray();
+        var handler = handlers.FirstOrDefault(handler => handler.Protocol.Equals(uri.Scheme, StringComparison.OrdinalIgnoreCase));
+
+        if (handler is null) return false;
+
+        try
+        {
+            _logger.LogInformation("Using handler {Handler} for `{Uri}`", handler.GetType(), uri);
+            await handler.Handle(uri.ToString(), cancellationToken);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Exception while running handler {Handler} for `{Uri}`", handler.GetType(), uri);
+        }
+
+        return true;
+    }
+
     /// <summary>
     /// Runs the commandline parser and executes the verb using the given renderer and arguments.
     /// </summary>
@@ -100,6 +129,7 @@ public class CommandLineConfigurator
     /// <returns></returns>
     public async Task<int> RunAsync(string[] args, IRenderer renderer, CancellationToken token)
     {
+        if (await RunLink(args, token)) return 0;
 
         var parser = new CommandLineBuilder(_rootCommand)
             .UseHelp()
