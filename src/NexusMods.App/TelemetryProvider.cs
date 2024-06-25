@@ -72,7 +72,7 @@ internal sealed class TelemetryProvider : ITelemetryProvider, IDisposable
             .Select(x =>
             {
                 var count = x.Mods.Count(mod => mod.Category == ModCategory.Mod);
-                return new Counters.LoadoutModCount(x.InstallationInstance.Game.Domain, count);
+                return new Counters.LoadoutModCount(x.Installation.Domain, count);
             })
             .ToArray();
     }
