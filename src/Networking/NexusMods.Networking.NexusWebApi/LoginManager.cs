@@ -1,19 +1,14 @@
 using System.Reactive.Concurrency;
-using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using DynamicData;
-using DynamicData.Alias;
-using DynamicData.Binding;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.DTOs.OAuth;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.CrossPlatform.ProtocolRegistration;
 using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Networking.NexusWebApi.Auth;
 
@@ -73,18 +68,20 @@ public sealed class LoginManager : IDisposable, ILoginManager
             // We only care that it has changed, not the actual value
             .QueryWhenChanged(values => values.Count > 0)
             .ObserveOn(TaskPoolScheduler.Default)
-            .SelectMany(async hasValue  => await Verify(hasValue, CancellationToken.None));
+            .SelectMany(async hasValue  =>
+                {
+                    if (!hasValue) return null;
+                    return await Verify(CancellationToken.None);
+                }
+            );
     }
 
     private CachedObject<UserInfo> _cachedUserInfo = new(TimeSpan.FromHours(1));
     private readonly SemaphoreSlim _verifySemaphore = new(initialCount: 1, maxCount: 1);
     private readonly IConnection _conn;
 
-    private async Task<UserInfo?> Verify(bool hasValue, CancellationToken cancellationToken)
+    private async Task<UserInfo?> Verify(CancellationToken cancellationToken)
     {
-        if (!hasValue) 
-            return null;
-        
         var cachedValue = _cachedUserInfo.Get();
         if (cachedValue is not null) return cachedValue;
 
@@ -104,7 +101,7 @@ public sealed class LoginManager : IDisposable, ILoginManager
     /// <inheritdoc />
     public async Task<UserInfo?> GetUserInfoAsync(CancellationToken token)
     {
-        return await Verify(true, token);
+        return await Verify(token);
     }
 
     /// <summary>
