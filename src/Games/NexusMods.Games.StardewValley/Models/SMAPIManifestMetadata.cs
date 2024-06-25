@@ -17,5 +17,5 @@ public partial class SMAPIManifestMetadata : IModelDefinition
     /// <summary>
     /// Marker attribute for SMAPI Manifests
     /// </summary>
-    public static readonly BooleanAttribute SMAPIManifest = new(Namespace, "SMAPIManifest");
+    public static readonly MarkerAttribute SMAPIManifest = new(Namespace, nameof(SMAPIManifest));
 }
