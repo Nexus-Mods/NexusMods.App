@@ -97,7 +97,6 @@ public class SimpleVectorIconImage : DrawingImage, IImage
     /// <summary>
     /// Gets the view box of the SVG icon.
     /// </summary>
-    [PublicAPI]
     public Rect ViewBox => _viewBox;
 
     /// <summary>
