@@ -37,7 +37,7 @@ public class ProtocolRegistrationLinux : IProtocolRegistration
             protocol,
             friendlyName: $"{BaseId}-{protocol}.desktop",
             workingDirectory: executable.Directory,
-            commandLine: $"{EscapeWhitespaceForCli(executable)} protocol-invoke --url %u"
+            commandLine: $"{EscapeWhitespaceForCli(executable)} %u"
         );
     }
 
