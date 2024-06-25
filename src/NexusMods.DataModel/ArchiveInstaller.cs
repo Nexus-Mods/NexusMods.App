@@ -61,7 +61,7 @@ public class ArchiveInstaller : IArchiveInstaller
         // Note(suggestedName) cannot be null here.
         // Because string is non-nullable where it is set (FileOriginRegistry),
         // and using that is a prerequisite to calling this function.
-        var modName = name ?? DownloadAnalysis.SuggestedName.Get(download);
+         var modName = name ?? download.SuggestedName
         
         ModId modId;
         Mod.ReadOnly baseMod;
