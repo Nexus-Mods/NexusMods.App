@@ -83,4 +83,4 @@ public record struct AvaloniaSvg(string? Path);
 public record struct AvaloniaPathIcon(Geometry? Geometry);
 
 [PublicAPI]
-public record struct SimpleVectorIcon(SimpleVectorIconImage? Image);
+public record struct SimpleVectorIcon(SimpleVectorIconImage Image);
