@@ -120,13 +120,11 @@ public class Registry : IGameRegistry, IHostedService
             if (TryGetLocatorResultId(db, game, result, out var _))
                 return;
 
-            // Doesn't exist, so create it.
-            _ = new GameMetadata.New(tx)
-            {
-                Store = result.Store,
-                Domain = game.Domain,
-                Path = result.Path.ToString(),
-            };
+            // TX Functions don't yet support the .New() syntax, so we'll have to do it manually.
+            var id = tx.TempId();
+            tx.Add(id, GameMetadata.Store, result.Store);
+            tx.Add(id, GameMetadata.Domain, game.Domain);
+            tx.Add(id, GameMetadata.Path, result.Path.ToString());
         });
         
         var txResult = await tx.Commit();
