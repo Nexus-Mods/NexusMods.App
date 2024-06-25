@@ -608,9 +608,8 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
 
     protected ModId GetOrCreateOverridesMod(Loadout.ReadOnly loadout, ITransaction tx)
     {
-        var foundMod = loadout.Mods.FirstOrDefault(m => m.Category == ModCategory.Overrides);
-        if (foundMod.IsValid()) 
-            return foundMod.ModId;
+        if (loadout.Mods.TryGetFirst(m => m.Category == ModCategory.Overrides, out var overridesMod))
+            return overridesMod.ModId;
         
         var newOverrides = new Mod.New(tx)
         {
