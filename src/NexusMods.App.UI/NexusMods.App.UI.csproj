@@ -575,6 +575,18 @@
       <UpToDateCheckInput Remove="Controls\Buttons\StandardButtonTheme.axaml" />
       <UpToDateCheckInput Remove="RightContent\Home\HomeView.axaml" />
       <UpToDateCheckInput Remove="Controls\Badge\Badge.axaml" />
+      <UpToDateCheckInput Remove="Assets\Icons\add_circle_24px.svg" />
+      <UpToDateCheckInput Remove="Assets\Icons\bookmarks_24px.svg" />
+      <UpToDateCheckInput Remove="Assets\Icons\collections.svg" />
+      <UpToDateCheckInput Remove="Assets\Icons\discord.svg" />
+      <UpToDateCheckInput Remove="Assets\Icons\disk_20px.svg" />
+      <UpToDateCheckInput Remove="Assets\Icons\forum.svg" />
+      <UpToDateCheckInput Remove="Assets\Icons\list_filled_24px.svg" />
+      <UpToDateCheckInput Remove="Assets\Icons\mods.svg" />
+      <UpToDateCheckInput Remove="Assets\Icons\mod_library.svg" />
+      <UpToDateCheckInput Remove="Assets\Icons\newspaper-variant-outline-1.svg" />
+      <UpToDateCheckInput Remove="Assets\Icons\stethoscope_24px.svg" />
+      <UpToDateCheckInput Remove="Assets\Icons\videogame_asset_24px.svg" />
     </ItemGroup>
 
     <ItemGroup>
