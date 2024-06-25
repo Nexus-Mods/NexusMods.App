@@ -67,6 +67,7 @@ nav:
       # - users/games/index.md
       - Stardew Valley: users/games/StardewValley.md
       - Cyberpunk 2077: users/games/Cyberpunk2077.md
+    - Frequently Asked Questions: users/FAQ.md
     - Uninstall: users/Uninstall.md
   - Developer Docs:
     - Home: developers/index.md
