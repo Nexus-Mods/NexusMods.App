@@ -7,6 +7,7 @@ namespace NexusMods.Icons.SimpleVector;
 /// <summary>
 /// Represents a simple SVG icon image that can be used in Avalonia applications.
 /// </summary>
+[PublicAPI]
 public class SimpleVectorIconImage : DrawingImage, IImage
 {
     private readonly Rect _viewBox;
