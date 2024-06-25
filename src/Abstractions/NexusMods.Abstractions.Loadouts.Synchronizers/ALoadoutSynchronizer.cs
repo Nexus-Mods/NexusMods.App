@@ -107,10 +107,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
 
             foreach (var file in mod.Files)
             {
-                if (!File.To.TryGet(file, out var path))
-                    continue;
-
-                dict[path] = file;
+                dict[file.To] = file;
             }
         }
 

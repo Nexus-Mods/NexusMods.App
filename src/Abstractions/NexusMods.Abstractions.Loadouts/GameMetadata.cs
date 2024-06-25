@@ -1,3 +1,4 @@
+using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
 
@@ -14,12 +15,12 @@ public partial class GameMetadata : IModelDefinition
     /// <summary>
     /// The game's domain.
     /// </summary>
-    public static readonly StringAttribute Domain = new(Namespace, "Domain");
+    public static readonly GameDomainAttribute Domain = new(Namespace, "Domain");
     
     /// <summary>
     /// The name of the store the game is from
     /// </summary>
-    public static readonly StringAttribute Store = new(Namespace, "Store");
+    public static readonly GameStoreAttribute Store = new(Namespace, "Store");
     
     /// <summary>
     /// The path to the game's installation directory.

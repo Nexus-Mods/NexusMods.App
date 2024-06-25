@@ -10,6 +10,7 @@ using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Games.StardewValley.Models;
+using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
@@ -193,7 +194,7 @@ public class SMAPIInstaller : AModInstaller
             {
                 var storedFile = kv.ToStoredFile(to, new TempEntity
                 {
-                    {SMAPIModDatabaseMarker.SMAPIModDatabase, true},
+                    {SMAPIModDatabaseMarker.SMAPIModDatabase, Null.Instance},
                 });
                 
                 modFiles.Add(storedFile);

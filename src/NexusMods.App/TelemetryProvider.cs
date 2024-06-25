@@ -4,6 +4,7 @@ using DynamicData.Aggregation;
 using DynamicData.Binding;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.FileStore.Downloads;
+using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.MnemonicDB.Attributes;

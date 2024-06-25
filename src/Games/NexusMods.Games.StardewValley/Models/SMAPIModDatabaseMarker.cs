@@ -1,5 +1,6 @@
 using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
+using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
 
 // ReSharper disable InconsistentNaming

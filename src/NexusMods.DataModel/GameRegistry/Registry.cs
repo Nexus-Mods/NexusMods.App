@@ -117,8 +117,8 @@ public class Registry : IGameRegistry, IHostedService
             // Doesn't exist, so create it.
             _ = new GameMetadata.New(tx)
             {
-                Store = result.Store.Value,
-                Domain = game.Domain.Value,
+                Store = result.Store,
+                Domain = game.Domain,
                 Path = result.Path.ToString(),
             };
         });
