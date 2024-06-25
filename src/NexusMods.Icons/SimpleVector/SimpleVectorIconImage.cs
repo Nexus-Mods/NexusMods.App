@@ -121,7 +121,6 @@ public class SimpleVectorIconImage : DrawingImage, IImage
     /// <summary>
     /// Gets the size of the icon.
     /// </summary>
-    [PublicAPI]
     public new Size Size => _viewBox.Size;
 
     /// <inheritdoc/>
