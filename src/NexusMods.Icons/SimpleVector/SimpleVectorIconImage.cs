@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Media;
+using JetBrains.Annotations;
 
 namespace NexusMods.Icons.SimpleVector;
 
@@ -69,6 +70,7 @@ public class SimpleVectorIconImage : DrawingImage, IImage
     /// <summary>
     /// Gets the view box of the SVG icon.
     /// </summary>
+    [PublicAPI]
     public Rect ViewBox => _viewBox;
 
     /// <summary>
@@ -92,6 +94,7 @@ public class SimpleVectorIconImage : DrawingImage, IImage
     /// <summary>
     /// Gets the size of the icon.
     /// </summary>
+    [PublicAPI]
     public new Size Size => _viewBox.Size;
 
     /// <inheritdoc/>
