@@ -123,7 +123,7 @@ public sealed class UnifiedIcon : ContentControl
                 [MaxWidthProperty] = this[MaxWidthProperty],
                 [ForegroundProperty] = this[ForegroundProperty],
             },
-            f5: simpleVectorIcon => new NexusMods.Icons.SimpleVector.Control.SimpleVectorIcon(simpleVectorIcon.Image!.Clone())
+            f5: simpleVectorIcon => new NexusMods.Icons.SimpleVector.Control.SimpleVectorIcon(simpleVectorIcon.Image.Clone())
         );
 
         if (innerControl is null) return;
