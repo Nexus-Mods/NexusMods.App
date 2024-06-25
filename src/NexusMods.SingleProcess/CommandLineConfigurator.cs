@@ -99,6 +99,12 @@ public class CommandLineConfigurator
 
     private async Task<bool> RunLink(string[] args, CancellationToken cancellationToken)
     {
+        // NOTE(erri120): The CLI framework we're using was designed for verbs and options only.
+        // This method circumvents the entire framework to deal with this invocation:
+        // NexusMods.App nxm://something
+        // This invocation can't be parsed with the CLI framework, so we hand-role the parsing.
+        // See https://github.com/Nexus-Mods/NexusMods.App/issues/1677 for details.
+
         if (args.Length != 1) return false;
         if (!Uri.TryCreate(args[0], UriKind.Absolute, out var uri)) return false;
 
