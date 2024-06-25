@@ -66,8 +66,6 @@
             <icons:UnifiedIcon Classes="AddCircle" />
             <icons:UnifiedIcon Classes="AlertCircle" />
             <icons:UnifiedIcon Classes="AlertOctagon" />
-            <icons:UnifiedIcon Classes="MonitorDiagnostics" />
-            <icons:UnifiedIcon Classes="DiagnosticPage"/>
             <icons:UnifiedIcon Classes="FileDocumentOutline" />
             <icons:UnifiedIcon Classes="MusicNote" />
             <icons:UnifiedIcon Classes="VideoOutline" />
@@ -76,7 +74,6 @@
             <icons:UnifiedIcon Classes="Add" />
             <icons:UnifiedIcon Classes="DeleteForever" />
             <icons:UnifiedIcon Classes="Mods" />
-            <icons:UnifiedIcon Classes="JoystickGameFilled" />
             <icons:UnifiedIcon Classes="ModLibrary" />
             <icons:UnifiedIcon Classes="ListFilled" />
             <icons:UnifiedIcon Classes="FileEdit"/>
@@ -86,6 +83,7 @@
             <icons:UnifiedIcon Classes="Sync"/>
             <icons:UnifiedIcon Classes="Visibility"/>
             <icons:UnifiedIcon Classes="PlaylistAdd"/>
+            <icons:UnifiedIcon Classes="PlaylistRemove"/>
             <icons:UnifiedIcon Classes="HardDrive"/>
             <icons:UnifiedIcon Classes="Nexus"/>
             <icons:UnifiedIcon Classes="ColorLens"/>
@@ -279,7 +277,7 @@
     </Style>
 
     <Style Selector="icons|UnifiedIcon.File">
-        <Setter Property="Value" Value="{x:Static icons:IconValues.InsertDriveFile}"/>
+        <Setter Property="Value" Value="{x:Static icons:IconValues.File}"/>
     </Style>
 
     <Style Selector="icons|UnifiedIcon.Check">
@@ -350,14 +348,6 @@
         <Setter Property="Value" Value="{x:Static icons:IconValues.Alert}"/>
     </Style>
 
-    <Style Selector="icons|UnifiedIcon.MonitorDiagnostics">
-        <Setter Property="Value" Value="{x:Static icons:IconValues.MonitorDiagnostics}"/>
-    </Style>
-
-    <Style Selector="icons|UnifiedIcon.DiagnosticPage">
-        <Setter Property="Value" Value="{x:Static icons:IconValues.DiagnosticPage}"/>
-    </Style>
-
     <Style Selector="icons|UnifiedIcon.FileDocumentOutline">
         <Setter Property="Value" Value="{x:Static icons:IconValues.FileDocumentOutline}"/>
     </Style>
@@ -388,10 +378,6 @@
     
     <Style Selector="icons|UnifiedIcon.Mods">
         <Setter Property="Value" Value="{x:Static icons:IconValues.Mods}"/>
-    </Style>
-    
-    <Style Selector="icons|UnifiedIcon.JoystickGameFilled">
-        <Setter Property="Value" Value="{x:Static icons:IconValues.JoystickGameFilled}"/>
     </Style>
     
     <Style Selector="icons|UnifiedIcon.ModLibrary">
@@ -428,6 +414,10 @@
     
     <Style Selector="icons|UnifiedIcon.PlaylistAdd">
         <Setter Property="Value" Value="{x:Static icons:IconValues.PlaylistAdd}"/>
+    </Style>
+    
+    <Style Selector="icons|UnifiedIcon.PlaylistRemove">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.PlaylistRemove}"/>
     </Style>
     
     <Style Selector="icons|UnifiedIcon.HardDrive">

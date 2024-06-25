@@ -1,4 +1,4 @@
-﻿<Styles xmlns="https://github.com/avaloniaui"
+<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
         xmlns:items="clr-namespace:NexusMods.App.UI.LeftMenu.Items;assembly=NexusMods.App.UI">
@@ -99,9 +99,9 @@
 
         <Style Selector="^ icons|UnifiedIcon#LeftIcon">
             <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
+            <Setter Property="Size" Value="20" />
         </Style>
-
-
+        
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
         </Style>

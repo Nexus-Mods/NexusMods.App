@@ -12,6 +12,13 @@
     <Design.DataContext>
         <ui:GuidedInstallerOptionDesignViewModel />
     </Design.DataContext>
+    
+    <reactiveUi:ReactiveUserControl.Styles>
+        <!-- Match Icon Size with Design -->
+        <Style Selector="Border#SelectionHighlightBorder icons|UnifiedIcon">
+            <Setter Property="Size" Value="24" />
+        </Style>
+    </reactiveUi:ReactiveUserControl.Styles>
 
     <Border x:Name="OptionContainerBorder" Classes="OptionBorder">
         <Grid ColumnDefinitions="Auto, *" RowDefinitions="Auto">
@@ -24,7 +31,7 @@
                     <TextBlock Grid.Column="0" Classes="BodyMDNormal" x:Name="OptionNameTextBlock"
                                VerticalAlignment="Center" />
                     <icons:UnifiedIcon Classes="Image" IsVisible="False" Grid.Column="1" x:Name="ImageIcon"
-                                VerticalAlignment="Center" />
+                                VerticalAlignment="Center"  />
                     <icons:UnifiedIcon Classes="Description" IsVisible="False" Grid.Column="2" x:Name="DescriptionIcon"
                                 VerticalAlignment="Center" />
                 </Grid>

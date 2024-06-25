@@ -211,7 +211,7 @@
         <value>Add</value>
     </data>
     <data name="FileOriginsPage__Add_Mod_Advanced" xml:space="preserve">
-        <value>Advanced Add</value>
+        <value>Advanced add</value>
     </data>
     <data name="MyGamesView__Ready_to_mod" xml:space="preserve">
         <value>Games Added</value>
@@ -283,7 +283,7 @@
         <value>Downloads</value>
     </data>
     <data name="LoadoutGridView__View_Files" xml:space="preserve">
-        <value>View Mod Files</value>
+        <value>View Mod files</value>
     </data>
     <data name="FileTreeNodeView__View" xml:space="preserve">
         <value>View</value>

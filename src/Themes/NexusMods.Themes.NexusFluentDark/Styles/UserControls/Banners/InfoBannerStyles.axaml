@@ -15,7 +15,7 @@
             <banners:InfoBanner>
                 <StackPanel>
                     <TextBlock Text="foo bar baz"/>
-                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Code}"/>
+                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Code}" />
                     <TextBlock Text="baz bar foo"/>
                 </StackPanel>
             </banners:InfoBanner>

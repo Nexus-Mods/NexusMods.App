@@ -76,7 +76,7 @@
                             <TextBlock Text="Remove All" />
                         </StackPanel>
                     </Button>
-                    <ComboBox SelectedIndex="0" Classes="Tertiary">
+                    <ComboBox SelectedIndex="0" Classes="Tertiary" >
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
@@ -157,26 +157,18 @@
         <Setter Property="Size" Value="20" />
     </Style>
 
-    <Style Selector="Border.Toolbar Button TextBlock">
+    <Style Selector="Border.Toolbar TextBlock">
         <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
         <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="Margin" Value="0" />
     </Style>
-    
-    <!-- Note(Sewer): Apparently declaration order matters, so this will not work if placed
-         above the style for non-disabled button. -->
-    <Style Selector="Border.Toolbar Button:disabled TextBlock">
-        <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
-    </Style>
-    
 
     <!-- ComboBox -->
     <Style Selector="Border.Toolbar ComboBox">
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="Height" Value="32" />
     </Style>
-
-    
 
     <!-- Optional Classes -->
     <Style Selector="Border.Toolbar TextBlock.ToolBarTitle">
@@ -189,5 +181,14 @@
     <Style Selector="Border.Toolbar TextBlock.NotTitle">
         <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
         <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    
+    <!-- Note(Sewer): Apparently declaration order matters, so this will not work if placed
+         above the style for non-disabled button etc. 
+         
+         Anyway this grays out the text for any disabled components, e.g. Button, ComboBox, etc.
+    -->
+    <Style Selector="Border.Toolbar :disabled TextBlock">
+        <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
     </Style>
 </Styles>

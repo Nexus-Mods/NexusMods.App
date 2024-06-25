@@ -50,7 +50,7 @@ public class Program
 
         var startupMode = StartupMode.Parse(args);
         
-        var host = BuildHost(
+        using var host = BuildHost(
             startupMode,
             telemetrySettings,
             loggingSettings,

@@ -207,9 +207,9 @@ public class DiffTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeViewMo
             Columns =
             {
                 FileTreeNodeViewModel.CreateTreeSourceNameColumn(),
-                FileTreeNodeViewModel.CreateTreeSourceStateColumn(),
-                FileTreeNodeViewModel.CreateTreeSourceFileCountColumn(),
                 FileTreeNodeViewModel.CreateTreeSourceSizeColumn(),
+                FileTreeNodeViewModel.CreateTreeSourceFileCountColumn(),
+                FileTreeNodeViewModel.CreateTreeSourceStateColumn(),
             },
         };
     }

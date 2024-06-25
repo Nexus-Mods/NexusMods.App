@@ -65,7 +65,7 @@
                             IsVisible="False">
                             <Button Classes="Rounded Primary" x:Name="AddGameButton">
                                 <StackPanel Orientation="Horizontal">
-                                    <icons:UnifiedIcon Size="20" Classes="Add" />
+                                    <icons:UnifiedIcon Classes="Add" />
                                     <TextBlock Classes="BodyMDNormal" 
                                                Text="{x:Static resources:Language.GameWidget__Add_game}"/>
                                 </StackPanel>
@@ -101,7 +101,7 @@
                                     HorizontalAlignment="Stretch"
                                     Grid.Column="0">
                                 <StackPanel Orientation="Horizontal">
-                                    <icons:UnifiedIcon Size="20" Classes="Check" />
+                                    <icons:UnifiedIcon Classes="Check" />
                                     <TextBlock Classes="BodyMDNormal" 
                                                Text="{x:Static resources:Language.GameWidget__View}"/>
                                 </StackPanel>

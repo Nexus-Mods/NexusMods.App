@@ -183,8 +183,8 @@ public class ModFileTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeVie
             Columns =
             {
                 FileTreeNodeViewModel.CreateTreeSourceNameColumn(),
-                FileTreeNodeViewModel.CreateTreeSourceFileCountColumn(),
                 FileTreeNodeViewModel.CreateTreeSourceSizeColumn(),
+                FileTreeNodeViewModel.CreateTreeSourceFileCountColumn(),
             },
         };
     }

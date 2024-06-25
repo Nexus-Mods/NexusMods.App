@@ -42,7 +42,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
         IGameRegistry gameRegistry) : base(windowManager)
     {
         TabTitle = Language.MyGames;
-		TabIcon = IconValues.JoystickGameFilled;
+		TabIcon = IconValues.Game;
         
         var provider = serviceProvider;
         _windowManager = windowManager;

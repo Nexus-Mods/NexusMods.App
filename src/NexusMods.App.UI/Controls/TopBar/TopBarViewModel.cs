@@ -104,8 +104,7 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
             var loggingSettings = settingsManager.Get<LoggingSettings>();
             var logDirectory = loggingSettings.MainProcessLogFilePath.ToPath(fileSystem).Parent;
             await osInterop.OpenDirectory(logDirectory);
-        }, // TODO: enable this once OpenDirectory has been implemented
-            Observable.Return(false));
+        });
 
         GiveFeedbackCommand = ReactiveCommand.Create(() =>
         {

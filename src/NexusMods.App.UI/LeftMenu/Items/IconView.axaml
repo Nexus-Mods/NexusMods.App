@@ -24,7 +24,7 @@
                                   Height="36"
                                   Padding="8,0,8,0">
         <Grid ColumnDefinitions="Auto, *, Auto">
-            <icons:UnifiedIcon Grid.Column="0" Size="16" x:Name="LeftIcon" />
+            <icons:UnifiedIcon Grid.Column="0" x:Name="LeftIcon" />
             <TextBlock
                 Margin="8 0 0 0"
                 Grid.Column="1"

@@ -12,10 +12,12 @@
 
             <Style Selector="^ icons|UnifiedIcon">
                 <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
+                <Setter Property="Size" Value="20" />
             </Style>
 
             <Style Selector="^ TextBlock">
                 <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
+                <Setter Property="VerticalAlignment" Value="Center" />
             </Style>
         </Style>
 
@@ -24,10 +26,12 @@
 
             <Style Selector="^ icons|UnifiedIcon">
                 <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
+                <Setter Property="Size" Value="20" />
             </Style>
 
             <Style Selector="^ TextBlock">
                 <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
+                <Setter Property="VerticalAlignment" Value="Center" />
             </Style>
         </Style>
     </Style>

@@ -56,7 +56,7 @@
                 </Button>
             </StackPanel>
         </Border>
-
+        
         <controls:EmptyState x:Name="EmptyState" Grid.Row="1" Header="{x:Static resources:Language.EmptyLibraryTitleText}">
             <controls:EmptyState.Subtitle>
                 <StackPanel>
@@ -71,23 +71,23 @@
                             x:Name="OpenLinkBareIconButton"/>
                 </StackPanel>
             </controls:EmptyState.Subtitle>
-
-            <DataGrid Classes="NoTopBorder"
-                      CanUserReorderColumns="True"
-                      CanUserResizeColumns="True"
-                      CanUserSortColumns="True"
-                      x:Name="DataGrid"
-                      x:DataType="fileOriginEntry:IFileOriginEntryViewModel"
-                      Width="1">
+            
+            <DataGrid
+                  CanUserReorderColumns="True"
+                  CanUserResizeColumns="True"
+                  CanUserSortColumns="True"
+                  x:Name="DataGrid"
+                  x:DataType="fileOriginEntry:IFileOriginEntryViewModel"
+                  Width="1">
                 <DataGrid.Resources>
-                    <converters:BooleanInverterConverter x:Key="BooleanInverterConverter" />
+                    <converters:BooleanInverterConverter x:Key="BooleanInverterConverter"/>
                 </DataGrid.Resources>
                 <DataGrid.Columns>
-                    <DataGridTemplateColumn Header="{x:Static resources:Language.FileOriginsPageView_NameHeader}"
+                    <DataGridTemplateColumn Header="{x:Static resources:Language.FileOriginsPageView_NameHeader}" 
                                             Width="*">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate DataType="fileOriginEntry:IFileOriginEntryViewModel">
-                                <TextBlock Classes="BodyMDNormal"
+                                <TextBlock Classes="BodyMDNormal" 
                                            VerticalAlignment="Center"
                                            Text="{CompiledBinding Name}" />
                             </DataTemplate>
@@ -96,7 +96,7 @@
                     <DataGridTemplateColumn Header="{x:Static resources:Language.FileOriginsPageView_VersionHeader}">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate DataType="fileOriginEntry:IFileOriginEntryViewModel">
-                                <TextBlock Classes="BodyMDNormal"
+                                <TextBlock Classes="BodyMDNormal" 
                                            VerticalAlignment="Center"
                                            Text="{CompiledBinding Version}" />
                             </DataTemplate>
@@ -105,7 +105,7 @@
                     <DataGridTemplateColumn Header="{x:Static resources:Language.FileOriginsPageView_SizeHeader}">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate DataType="fileOriginEntry:IFileOriginEntryViewModel">
-                                <TextBlock Classes="BodyMDNormal"
+                                <TextBlock Classes="BodyMDNormal" 
                                            VerticalAlignment="Center"
                                            Text="{CompiledBinding Size}" />
                             </DataTemplate>
@@ -114,7 +114,7 @@
                     <DataGridTemplateColumn Header="{x:Static resources:Language.FileOriginsPageView_DownloadedHeader}">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate DataType="fileOriginEntry:IFileOriginEntryViewModel">
-                                <TextBlock Classes="BodyMDNormal"
+                                <TextBlock Classes="BodyMDNormal" 
                                            VerticalAlignment="Center"
                                            Text="{CompiledBinding DisplayArchiveDate}" />
                             </DataTemplate>
@@ -123,23 +123,22 @@
                     <DataGridTemplateColumn Header="{x:Static resources:Language.FileOriginsPageView_InstalledHeader}">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate DataType="fileOriginEntry:IFileOriginEntryViewModel">
-                                <TextBlock Classes="BodyMDNormal"
+                                <TextBlock Classes="BodyMDNormal" 
                                            VerticalAlignment="Center"
                                            Text="{CompiledBinding DisplayLastInstalledDate}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="{x:Static resources:Language.FileOriginsPageView_ActionHeader}">
+                    <DataGridTemplateColumn Header="{x:Static resources:Language.FileOriginsPageView_ActionHeader}" MinWidth="102">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate DataType="fileOriginEntry:IFileOriginEntryViewModel">
                                 <Grid>
                                     <!-- Add Mod -->
                                     <Button x:Name="AddButton"
                                             Classes="Rounded Primary"
-                                            Margin="0,0,24,0"
                                             Command="{CompiledBinding AddToLoadoutCommand}"
                                             IsVisible="{CompiledBinding IsModAddedToLoadout, Converter={StaticResource BooleanInverterConverter}}">
-
+                                    
                                         <StackPanel>
                                             <icons:UnifiedIcon Classes="Plus" />
                                             <TextBlock Text="{x:Static resources:Language.FileOriginsPage_AddButtonText}" />
@@ -148,10 +147,9 @@
 
                                     <!-- View Mod -->
                                     <navigation:NavigationControl x:Name="ViewButton"
-                                                                  Classes="Rounded Primary"
-                                                                  Margin="0,0,24,0"
-                                                                  Command="{CompiledBinding ViewModCommand}"
-                                                                  IsVisible="{CompiledBinding IsModAddedToLoadout}">
+                                                       Classes="Rounded Primary"
+                                                       Command="{CompiledBinding ViewModCommand}"
+                                                       IsVisible="{CompiledBinding IsModAddedToLoadout}">
                                         <StackPanel>
                                             <icons:UnifiedIcon Classes="Check" />
                                             <TextBlock Text="{x:Static resources:Language.FileOriginsPage_ViewButtonText}" />
@@ -161,11 +159,9 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-
                 </DataGrid.Columns>
             </DataGrid>
         </controls:EmptyState>
-
     </Grid>
 
 </reactiveUi:ReactiveUserControl>
