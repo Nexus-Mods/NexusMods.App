@@ -14,6 +14,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
@@ -92,10 +93,10 @@ public class Registry : IGameRegistry, IHostedService
     /// </summary>
     private static bool TryGetLocatorResultId(IDb db, ILocatableGame locatableGame, GameLocatorResult result, [NotNullWhen(true)] out EntityId? id)
     {
-        var found = GameMetadata.FindByPath(db, result.Path.ToString())
+        var wasFound = GameMetadata.FindByPath(db, result.Path.ToString())
             .Select(id => GameMetadata.Load(db, id))
-            .FirstOrDefault(m => m.Domain == locatableGame.Domain && m.Store == result.Store);
-        if (!found.IsValid())
+            .TryGetFirst(m => m.Domain == locatableGame.Domain && m.Store == result.Store, out var found);
+        if (!wasFound)
         {
             id = null;
             return false;

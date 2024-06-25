@@ -3,6 +3,7 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
+using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.Paths;
@@ -84,19 +85,11 @@ public class StardewValleyLoadoutSynchronizer : ALoadoutSynchronizer
     {
         var manifestFilePath = new GamePath(LocationId.Game, Constants.ModsFolder.Join(modDirectoryName).Join(Constants.ManifestFile));
 
-        var file = File.All(db)
-            .FirstOrDefault(file =>
-            {
-                if (!file.Contains(File.Loadout)) return false;
-                if (!file.LoadoutId.Equals(loadout.LoadoutId)) return false;
-
-                if (!file.To.Equals(manifestFilePath)) return false;
-
-                if (!file.Contains(File.Mod)) return false;
-                return file.Mod.Enabled;
-            });
+        var hasFile = File.FindByLoadout(db, loadout.LoadoutId)
+            .TryGetFirst(x => x.To == manifestFilePath && x.Mod.Enabled,
+                out var file);
         
-        if (file.IsValid())
+        if (hasFile)
         {
             mod = file.Mod;
             return true;
