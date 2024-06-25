@@ -62,10 +62,12 @@ nav:
     - Adding a Game: users/AddGames.md
     # - Features: 
     #   - Health Check: users/features/HealthCheck.md
+    #   - Workspaces: users/features/Workspaces.md
     - Games:
       # - users/games/index.md
       - Stardew Valley: users/games/StardewValley.md
       - Cyberpunk 2077: users/games/Cyberpunk2077.md
+    - Frequently Asked Questions: users/FAQ.md
     - Uninstall: users/Uninstall.md
   - Developer Docs:
     - Home: developers/index.md
