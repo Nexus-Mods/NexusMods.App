@@ -13,7 +13,7 @@ public interface IDownloadTask
     /// <summary>
     /// The DownloaderState of the task.
     /// </summary>
-    DownloaderState.ReadOnly PersistentState { get; }
+    DownloaderState.Model PersistentState { get; }
     
     /// <summary>
     /// The download location of the task.

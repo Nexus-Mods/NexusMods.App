@@ -14,7 +14,6 @@ using Microsoft.Extensions.Hosting;
 using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.IO;
 using NexusMods.Paths;
-using ReactiveUI;
 
 namespace NexusMods.Networking.Downloaders;
 
@@ -25,6 +24,7 @@ public class DownloadService : IDownloadService, IDisposable, IHostedService
     public ReadOnlyObservableCollection<IDownloadTask> Downloads => _downloadsCollection;
     private ReadOnlyObservableCollection<IDownloadTask> _downloadsCollection = ReadOnlyObservableCollection<IDownloadTask>.Empty;
 
+    private readonly SourceCache<IDownloadTask, EntityId> _downloads = new(t => t.PersistentState.Id);
     private readonly ILogger<DownloadService> _logger;
     private readonly IServiceProvider _provider;
     private readonly IConnection _conn;
@@ -46,14 +46,16 @@ public class DownloadService : IDownloadService, IDisposable, IHostedService
         var db = _conn.Db;
 
         var tasks = db.Find(DownloaderState.Status)
-            .Select(x => DownloaderState.Load(db, x))
+            .Select(x => db.Get<DownloaderState.Model>(x))
             .Where(x => x.Status != DownloadTaskStatus.Completed && 
                              x.Status != DownloadTaskStatus.Cancelled)
-            .Select(GetTaskFromState);
+            .Select(GetTaskFromState)
+            .Where(x => x != null)
+            .Cast<IDownloadTask>();
         return tasks;
     }
 
-    internal IDownloadTask GetTaskFromState(DownloaderState.ReadOnly state)
+    internal IDownloadTask? GetTaskFromState(DownloaderState.Model state)
     {
         if (state.Contains(HttpDownloadState.Uri))
         {
@@ -79,7 +81,7 @@ public class DownloadService : IDownloadService, IDisposable, IHostedService
         _logger.LogInformation("Adding task for {Url}", url);
         var task = _provider.GetRequiredService<NxmDownloadTask>();
         await task.Create(url);
-        return GetTaskFromState(task.PersistentState);
+        return _downloads.Lookup(task.PersistentState.Id).Value;
     }
 
     /// <inheritdoc />
@@ -87,13 +89,13 @@ public class DownloadService : IDownloadService, IDisposable, IHostedService
     {
         var task = _provider.GetRequiredService<HttpDownloadTask>();
         await task.Create(url);
-        return GetTaskFromState(task.PersistentState);
+        return _downloads.Lookup(task.PersistentState.Id).Value;
     }
 
     /// <inheritdoc />
     public Size GetThroughput()
     {
-        var tasks = _downloadsCollection
+        var tasks = _downloads.Items
             .Where(i => i.PersistentState.Status == DownloadTaskStatus.Downloading)
             .ToArray();
         
@@ -105,7 +107,7 @@ public class DownloadService : IDownloadService, IDisposable, IHostedService
     /// <inheritdoc />
     public Optional<Percent> GetTotalProgress()
     {
-        var tasks = _downloadsCollection
+        var tasks = _downloads.Items
             .Where(i => i.PersistentState.Status == DownloadTaskStatus.Downloading)
             .ToArray();
         
@@ -141,20 +143,38 @@ public class DownloadService : IDownloadService, IDisposable, IHostedService
     /// <inheritdoc />
     public Task StartAsync(CancellationToken cancellationToken)
     {
+        _conn.UpdatesFor(DownloaderState.Status)
+            .Subscribe(x =>
+            {
+                var (db, id) = x;
+                _downloads.Edit(e =>
+                {
+                    var found = e.Lookup(id);
+                    if (found.HasValue) 
+                        found.Value.ResetState(db);
+                    else
+                    {
+                        var task = GetTaskFromState(db.Get<DownloaderState.Model>(id));
+                        if (task == null)
+                            return;
+                        e.AddOrUpdate(task);
+                    }
+                });
+            })
+            .DisposeWith(_disposables);
 
-        DownloaderState.ObserveAll(_conn)
-            .Transform(GetTaskFromState)
+        _downloads.Connect()
             .Bind(out _downloadsCollection)
             .Subscribe()
             .DisposeWith(_disposables);
         
         // Cancel any orphaned downloads
-        foreach (var task in DownloaderState.FindByStatus(_conn.Db, DownloadTaskStatus.Downloading))
+        foreach (var task in _conn.Db.FindIndexed((byte)DownloadTaskStatus.Downloading, DownloaderState.Status))
         {
             try
             {
                 _logger.LogInformation("Cancelling orphaned download task {Task}", task);
-                var state = DownloaderState.Load(_conn.Db, task);
+                var state = _conn.Db.Get<DownloaderState.Model>(task);
                 var downloadTask = GetTaskFromState(state);
                 downloadTask?.Cancel();
             }
@@ -170,7 +190,7 @@ public class DownloadService : IDownloadService, IDisposable, IHostedService
     /// <inheritdoc />
     public async Task StopAsync(CancellationToken cancellationToken)
     {
-        var suspendingTasks = _downloadsCollection
+        var suspendingTasks = _downloads.Items
             .Where(dl => dl.PersistentState.Status == DownloadTaskStatus.Downloading)
             // TODO(Al12rs): should Suspend() instead, but only after moving ongoing dl files outside Temp folder,
             // that is otherwise cleaned up on application close, causing exceptions due to file in use,

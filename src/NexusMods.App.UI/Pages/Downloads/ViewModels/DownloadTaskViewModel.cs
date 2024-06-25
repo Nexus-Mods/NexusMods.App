@@ -20,9 +20,8 @@ public class DownloadTaskViewModel : AViewModel<IDownloadTaskViewModel>, IDownlo
     public DownloadTaskViewModel(IDownloadTask task)
     {
         _task = task;
-        
-        if (task.PersistentState.TryGetAsCompletedDownloadState(out var completed))
-            IsHidden = completed.AsDownloaderState().Status == DownloadTaskStatus.Completed && completed.Hidden;
+        IsHidden = task.PersistentState.Status.Equals(DownloadTaskStatus.Completed) 
+                   && task.PersistentState.Remap<CompletedDownloadState.Model>().IsHidden;
         
         var interval = Observable.Interval(TimeSpan.FromSeconds(60)).StartWith(1);
         
@@ -71,12 +70,9 @@ public class DownloadTaskViewModel : AViewModel<IDownloadTaskViewModel>, IDownlo
             _task.WhenAnyValue(t => t.PersistentState.Status)
                 .Where(s => s.Equals(DownloadTaskStatus.Completed))
                 .CombineLatest(interval)
-                .Select(_ =>
-                    {
-                        if (_task.PersistentState.TryGetAsCompletedDownloadState(out var completed))
-                            return (DateTime.UtcNow - completed.CompletedDateTime).Humanize();
-                        return "-";
-                    }
+                .Select(_ => _task.PersistentState.Status.Equals(DownloadTaskStatus.Completed) 
+                    ? _task.PersistentState.Remap<CompletedDownloadState.Model>().CompletedAt.Humanize()
+                    : "-"
                 )
                 .OnUI()
                 .BindTo(this, x => x.HumanizedCompletedTime)
