@@ -39,12 +39,15 @@ public class SimpleVectorIconImage : DrawingImage, IImage
     {
         _viewBox = viewBox;
 
-        // TODO(Sewer): Write a TinyVG parser that directly feeds into StreamGeometry.
-        // Shouldn't be that hard.
+        /*
+            TODO(Sewer): Write a TinyVG parser that directly feeds into StreamGeometry.
+            And pass the path as a byte span. This way we can avoid slow string parsing
+            and save on binary size. Will pick this up in my own time. Shouldn't be that hard.
 
-        // Also considered parsing out the SVG and feeding StreamGeometry commands
-        // directly via source generator. However that just bloats the code, as
-        // .NET is unable to compile time generate the resulting StreamGeometry.
+            Also considered parsing out the SVG and feeding StreamGeometry commands
+            directly via source generator. However that just bloats the code, as
+            .NET is unable to compile time generate the resulting StreamGeometry.
+        */
         _drawing = new GeometryDrawing
         {
             Geometry = StreamGeometry.Parse(pathData),
