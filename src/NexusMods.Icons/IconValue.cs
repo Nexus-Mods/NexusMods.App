@@ -1,11 +1,13 @@
 using Avalonia.Media;
 using JetBrains.Annotations;
+using NexusMods.Icons.SimpleVector;
 using Union = OneOf.OneOf<
     NexusMods.Icons.Empty,
     NexusMods.Icons.ProjektankerIcon,
     NexusMods.Icons.AvaloniaImage,
     NexusMods.Icons.AvaloniaSvg,
-    NexusMods.Icons.AvaloniaPathIcon>;
+    NexusMods.Icons.AvaloniaPathIcon,
+    NexusMods.Icons.SimpleVectorIcon>;
 
 namespace NexusMods.Icons;
 
@@ -42,6 +44,11 @@ public sealed class IconValue
     {
         set => Value = new AvaloniaPathIcon(value);
     }
+    
+    public SimpleVectorIconImage? SimpleVectorSetter
+    {
+        set => Value = new SimpleVectorIcon(value);
+    }
 
     public IconValue()
     {
@@ -57,6 +64,7 @@ public sealed class IconValue
     public static implicit operator IconValue(AvaloniaImage value) => new(value);
     public static implicit operator IconValue(AvaloniaSvg value) => new(value);
     public static implicit operator IconValue(AvaloniaPathIcon value) => new(value);
+    public static implicit operator IconValue(SimpleVectorIcon value) => new(value);
 }
 
 [PublicAPI]
@@ -74,3 +82,5 @@ public record struct AvaloniaSvg(string? Path);
 [PublicAPI]
 public record struct AvaloniaPathIcon(Geometry? Geometry);
 
+[PublicAPI]
+public record struct SimpleVectorIcon(SimpleVectorIconImage Image);
