@@ -25,7 +25,6 @@ public class DownloadService : IDownloadService, IDisposable, IHostedService
     public ReadOnlyObservableCollection<IDownloadTask> Downloads => _downloadsCollection;
     private ReadOnlyObservableCollection<IDownloadTask> _downloadsCollection = ReadOnlyObservableCollection<IDownloadTask>.Empty;
 
-    private readonly SourceCache<IDownloadTask, EntityId> _downloads = new(t => t.PersistentState.Id);
     private readonly ILogger<DownloadService> _logger;
     private readonly IServiceProvider _provider;
     private readonly IConnection _conn;
@@ -80,7 +79,7 @@ public class DownloadService : IDownloadService, IDisposable, IHostedService
         _logger.LogInformation("Adding task for {Url}", url);
         var task = _provider.GetRequiredService<NxmDownloadTask>();
         await task.Create(url);
-        return _downloads.Lookup(task.PersistentState.Id).Value;
+        return GetTaskFromState(task.PersistentState);
     }
 
     /// <inheritdoc />
@@ -88,13 +87,13 @@ public class DownloadService : IDownloadService, IDisposable, IHostedService
     {
         var task = _provider.GetRequiredService<HttpDownloadTask>();
         await task.Create(url);
-        return _downloads.Lookup(task.PersistentState.Id).Value;
+        return GetTaskFromState(task.PersistentState);
     }
 
     /// <inheritdoc />
     public Size GetThroughput()
     {
-        var tasks = _downloads.Items
+        var tasks = _downloadsCollection
             .Where(i => i.PersistentState.Status == DownloadTaskStatus.Downloading)
             .ToArray();
         
@@ -106,7 +105,7 @@ public class DownloadService : IDownloadService, IDisposable, IHostedService
     /// <inheritdoc />
     public Optional<Percent> GetTotalProgress()
     {
-        var tasks = _downloads.Items
+        var tasks = _downloadsCollection
             .Where(i => i.PersistentState.Status == DownloadTaskStatus.Downloading)
             .ToArray();
         
@@ -171,7 +170,7 @@ public class DownloadService : IDownloadService, IDisposable, IHostedService
     /// <inheritdoc />
     public async Task StopAsync(CancellationToken cancellationToken)
     {
-        var suspendingTasks = _downloads.Items
+        var suspendingTasks = _downloadsCollection
             .Where(dl => dl.PersistentState.Status == DownloadTaskStatus.Downloading)
             // TODO(Al12rs): should Suspend() instead, but only after moving ongoing dl files outside Temp folder,
             // that is otherwise cleaned up on application close, causing exceptions due to file in use,
