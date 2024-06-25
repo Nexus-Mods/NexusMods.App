@@ -60,7 +60,7 @@ internal sealed class TelemetryProvider : ITelemetryProvider, IDisposable
     {
         return Loadout.All(_connection.Db)
             .Where(x => x.IsVisible())
-            .Select(x => x.InstallationInstance.Game.Domain)
+            .Select(x => x.Installation.Domain)
             .Distinct()
             .Count();
     }
