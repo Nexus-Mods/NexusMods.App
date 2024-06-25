@@ -30,6 +30,6 @@ Depending on your choice of browser, there may be additional considerations when
 
     To access these settings click the menu button to the right of the address bar and select "Settings". Under the "General" category locate the section entitled "Files and Applications". 
 
-    ![The settinggs page in Mozilla Firefox 127.0.1 showing the Files and Applications section](./images/FirefoxProtocols.webp)
+    ![The settings page in Mozilla Firefox 127.0.1 showing the Files and Applications section](./images/FirefoxProtocols.webp)
 
     Here you will see the `nxm` protocol and the default app which will be used to open it. Using the drop-down you can select the default application for Firefox to use. Setting it to whichever option is set as "Default" will use the application specified by your operating system. 
