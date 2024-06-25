@@ -7,6 +7,9 @@ Adding support for a wide range of games it not a practical decision at this sta
 
 Our plan is to go game-by-game and work with the modding community at each step to ensure we're building something great. To see which games are supported, coming next and planned for the future please see the [roadmap](https://trello.com/b/gPzMuIr3/nexus-mods-app-roadmap).
 
+## How do I find my log files?
+To find your log files, please see [this guide](./faq/LogFiles.md). 
+
 ## Why can't I log into the app or download from Nexus Mods?
 
 These issues most often occur when your PC is not correctly handling Nexus Mods `nxm://` links. These links are used for communication between your web browser and the app. To reset the connection, follow the instructions below.
