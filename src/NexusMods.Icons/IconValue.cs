@@ -45,7 +45,7 @@ public sealed class IconValue
         set => Value = new AvaloniaPathIcon(value);
     }
     
-    public SimpleVectorIconImage? SimpleVectorSetter
+    public SimpleVectorIconImage SimpleVectorSetter
     {
         set => Value = new SimpleVectorIcon(value);
     }
