@@ -413,11 +413,10 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         {
             _logger.LogInformation("Found {Count} new files during ingest", newFiles.Count);
 
-            var overridesMod = prevLoadout.Mods.FirstOrDefault(m => m.Category == ModCategory.Overrides);
             ModId overridesModId;
             using var tx = Connection.BeginTransaction();
             
-            if (!overridesMod.IsValid())
+            if (!prevLoadout.Mods.TryGetFirst(m => m.Category == ModCategory.Overrides, out var overridesMod))
             {
                 var newOverrideMod = new Mod.New(tx)
                 {
@@ -435,7 +434,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                 overridesModId = overridesMod.Id;
             }
             
-            List<EntityId> addedFiles = new();
+            List<EntityId> addedFiles = [];
             foreach (var newFile in newFiles)
             {
                 // NOTE(erri120): allow implementations to put new files into custom mods
