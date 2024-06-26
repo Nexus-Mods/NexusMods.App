@@ -9,8 +9,12 @@
     <name>Nexus Mods App</name>
     <summary>Mod Manager for your games</summary>
 
+    <developer id="com.nexusmods">
+        <name>The Nexus Mods Team</name>
+    </developer>
+
     <description>
-        <p>The Nexus Mods App is a mod manager for your games.</p>
+        <p>The Nexus Mods App is a mod manager for your games and the successor to Vortex with native support for Linux.</p>
     </description>
 
     <launchable type="desktop-id">com.nexusmods.app.desktop</launchable>
@@ -24,7 +28,6 @@
     <url type="vcs-browser">https://github.com/Nexus-Mods/NexusMods.App</url>
     <url type="contribute">https://nexus-mods.github.io/NexusMods.App/developers/Contributing/</url>
 
-    <developer_name>Nexus mods</developer_name>
     <content_rating type="oars-1.0">
         <content_attribute id="social-info">moderate</content_attribute>
     </content_rating>
@@ -38,9 +41,7 @@
 
         <internet>always</internet>
         <display_length compare="ge">360</display_length>
-    </recommends>
 
-    <recommends>
         <id version="1.0" compare="ge">com.valvesoftware.Steam</id>
     </recommends>
 
