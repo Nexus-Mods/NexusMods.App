@@ -27,7 +27,7 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
     where TModInstaller : IModInstaller
 {
     protected readonly TModInstaller ModInstaller;
-    protected Loadout.Model Loadout;
+    protected Loadout.ReadOnly Loadout;
 
     /// <summary>
     /// Constructor.
@@ -82,7 +82,7 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
     /// <param name="archivePath"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    protected async Task<Mod.Model[]> GetModsFromInstaller(
+    protected async Task<Mod.ReadOnly[]> GetModsFromInstaller(
         AbsolutePath archivePath,
         CancellationToken cancellationToken = default)
     {
@@ -90,7 +90,7 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
         
         var ids = await ArchiveInstaller.AddMods(Loadout.LoadoutId, downloadId, "test", ModInstaller, cancellationToken);
         var db = Connection.Db;
-        return ids.Select(id => db.Get<Mod.Model>((EntityId)id)).ToArray();
+        return ids.Select(id => Mod.Load(db, id)).ToArray();
     }
 
     /// <summary>
@@ -101,7 +101,7 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
     /// <param name="archivePath"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    protected async Task<Mod.Model> GetModFromInstaller(
+    protected async Task<Mod.ReadOnly> GetModFromInstaller(
         AbsolutePath archivePath,
         CancellationToken cancellationToken = default)
     {
@@ -117,7 +117,7 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
     /// <param name="archivePath"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    protected async Task<Dictionary<Mod.Model, File.Model[]>> GetModsWithFilesFromInstaller(
+    protected async Task<Dictionary<Mod.ReadOnly, File.ReadOnly[]>> GetModsWithFilesFromInstaller(
         AbsolutePath archivePath,
         CancellationToken cancellationToken = default)
     {
@@ -133,14 +133,14 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
     /// <param name="archivePath"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    protected async Task<(Mod.Model mod, File.Model[] modFiles)> GetModWithFilesFromInstaller(
+    protected async Task<(Mod.ReadOnly mod, File.ReadOnly[] modFiles)> GetModWithFilesFromInstaller(
         AbsolutePath archivePath,
         CancellationToken cancellationToken = default)
     {
         var mods = await GetModsFromInstaller(archivePath, cancellationToken);
         mods.Should().ContainSingle();
 
-        var mod = mods.OrderBy(m => m.Name).First();
+        var mod = mods.MinBy(m => m.Name);
         return (mod, mod.Files.ToArray());
     }
 
@@ -226,11 +226,14 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
         ModId baseId;
         {
             using var tx = Connection.BeginTransaction();
-            var mod = new Mod.Model(tx)
+            var mod = new Mod.New(tx)
             {
                 Name = "Base Mod (Test)",
                 Category = ModCategory.Mod,
                 Status = ModStatus.Installing,
+                Revision = 0,
+                LoadoutId = LoadoutId.From(0),
+                Enabled = true,
             };
             var result = await tx.Commit();
             baseId = result.Remap(mod).ModId;
@@ -245,7 +248,7 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
             Store = install.Store,
             Version = install.Version,
             ModName = "",
-            Source = Connection.Db.Get<DownloadAnalysis.Model>(EntityId.From(0))
+            Source = DownloadAnalysis.Load(Connection.Db, EntityId.From(0)),
         };
 
         mods = (await ModInstaller.GetModsAsync(info)).ToArray();
@@ -257,7 +260,7 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
         return contents.Select(m => (m.GetFirst(StoredFile.Hash).Value, m.GetFirst(File.To).LocationId, m.GetFirst(File.To).Path.ToString()));
     }
 
-    protected async Task VerifyMod(Mod.Model mod, [CallerFilePath] string sourceFile = "")
+    protected async Task VerifyMod(Mod.ReadOnly mod, [CallerFilePath] string sourceFile = "")
     {
         var res = VerifiableMod.From(mod);
 
@@ -265,7 +268,7 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
         await Verify(res, sourceFile: sourceFile);
     }
 
-    protected async Task VerifyMods(Mod.Model[] mods, [CallerFilePath] string sourceFile = "")
+    protected async Task VerifyMods(Mod.ReadOnly[] mods, [CallerFilePath] string sourceFile = "")
     {
         var res = mods
             .Select(VerifiableMod.From)

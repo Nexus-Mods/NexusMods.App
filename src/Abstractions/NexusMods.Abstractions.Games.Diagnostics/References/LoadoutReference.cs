@@ -9,7 +9,7 @@ namespace NexusMods.Abstractions.Diagnostics.References;
 /// A reference to a <see cref="Loadout"/>.
 /// </summary>
 [PublicAPI]
-public record LoadoutReference : IDataReference<LoadoutId, Loadout.Model>
+public record LoadoutReference : IDataReference<LoadoutId, Loadout.ReadOnly>
 {
     /// <inheritdoc/>
     public required TxId TxId { get; init; }
@@ -18,12 +18,12 @@ public record LoadoutReference : IDataReference<LoadoutId, Loadout.Model>
     public required LoadoutId DataId { get; init; }
 
     /// <inheritdoc/>
-    public Loadout.Model? ResolveData(IServiceProvider serviceProvider, IConnection dataStore)
+    public Loadout.ReadOnly ResolveData(IServiceProvider serviceProvider, IConnection dataStore)
     {
         var db = dataStore.AsOf(TxId);
-        return db.Get<Loadout.Model>(DataId.Value);
+        return Loadout.Load(db, DataId.Value);
     }
 
     /// <inheritdoc/>
-    public string ToStringRepresentation(Loadout.Model data) => data.Name;
+    public string ToStringRepresentation(Loadout.ReadOnly data) => data.Name;
 }

@@ -34,7 +34,7 @@ Mod {Mod} has been made obsolete:
 file class MyDiagnosticLoadoutEmitter : ILoadoutDiagnosticEmitter
 {
     public IAsyncEnumerable<Diagnostic> Diagnose(
-        Loadout.Model loadout,
+        Loadout.ReadOnly loadout,
         CancellationToken cancellationToken)
     {
         var res = new List<Diagnostic>();

@@ -9,58 +9,73 @@ using NexusMods.Games.MountAndBlade2Bannerlord.Models;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord.Extensions;
 
-internal delegate LoadoutModuleViewModel ViewModelCreator(Mod.Model mod, ModuleInfoExtendedWithPath moduleInfo, int index);
+internal delegate LoadoutModuleViewModel ViewModelCreator(Mod.ReadOnly mod, ModuleInfoExtendedWithPath moduleInfo, int index);
 
 internal static class LoadoutExtensions
 {
-    private static LoadoutModuleViewModel Default(Mod.Model mod, ModuleInfoExtendedWithPath moduleInfo, int index) => new()
+    private static LoadoutModuleViewModel Default(Mod.ReadOnly mod, ModuleInfoExtendedWithPath moduleInfo, int index) => new()
     {
         Mod = mod,
         ModuleInfoExtended = moduleInfo,
-        IsValid = mod.GetSubModuleFileMetadata()?.IsValid == true,
+        // TODO: Actually implement this
+        IsValid = true,
         IsSelected = mod.Enabled,
         IsDisabled = mod.Status == ModStatus.Failed,
         Index = index,
     };
 
-    private static async Task<IEnumerable<Mod.Model>> SortMods(Loadout.Model loadout)
+    private static async Task<IEnumerable<Mod.ReadOnly>> SortMods(Loadout.ReadOnly loadout)
     {
-        var loadoutSynchronizer = (((IGame)loadout.Installation.Game).Synchronizer as MountAndBlade2BannerlordLoadoutSynchronizer)!;
+        var loadoutSynchronizer = (((IGame)loadout.InstallationInstance.Game).Synchronizer as MountAndBlade2BannerlordLoadoutSynchronizer)!;
 
         var sorted = await loadoutSynchronizer.SortMods(loadout);
         return sorted;
     }
 
-    public static IEnumerable<LoadoutModuleViewModel> GetViewModels(this Loadout.Model loadout, IEnumerable<Mod.Model> mods, ViewModelCreator? viewModelCreator = null)
+    public static IEnumerable<LoadoutModuleViewModel> GetViewModels(this Loadout.ReadOnly loadout, IEnumerable<Mod.ReadOnly> mods, ViewModelCreator? viewModelCreator = null)
     {
         viewModelCreator ??= Default;
         var i = 0;
         return mods.Select(x =>
         {
-            var moduleInfo = x.GetModuleInfo();
-            if (moduleInfo is null) return null;
+            if (!x.TryGetModuleInfo(out var moduleInfo)) 
+                return null;
 
             var subModule = x.Files.First(y => y.To.FileName.Path.Equals(Constants.SubModuleName, StringComparison.OrdinalIgnoreCase));
-            var subModulePath = loadout.Installation.LocationsRegister.GetResolvedPath(subModule.To).GetFullPath();
+            var subModulePath = loadout.InstallationInstance.LocationsRegister.GetResolvedPath(subModule.To).GetFullPath();
 
             return viewModelCreator(x, moduleInfo.FromEntity(), i++);
         }).OfType<LoadoutModuleViewModel>();
     }
 
-    public static async Task<IEnumerable<LoadoutModuleViewModel>> GetSortedViewModelsAsync(this Loadout.Model loadout, ViewModelCreator? viewModelCreator = null)
+    public static async Task<IEnumerable<LoadoutModuleViewModel>> GetSortedViewModelsAsync(this Loadout.ReadOnly loadout, ViewModelCreator? viewModelCreator = null)
     {
         var sortedMods = await SortMods(loadout);
         return GetViewModels(loadout, sortedMods, viewModelCreator);
     }
 
-    public static IEnumerable<LoadoutModuleViewModel> GetViewModels(this Loadout.Model loadout, ViewModelCreator? viewModelCreator = null)
+    public static IEnumerable<LoadoutModuleViewModel> GetViewModels(this Loadout.ReadOnly loadout, ViewModelCreator? viewModelCreator = null)
     {
         return GetViewModels(loadout, loadout.Mods, viewModelCreator);
     }
 
-    public static bool HasModuleInstalled(this Loadout.Model loadout, string moduleId) => loadout.Mods.Any(x =>
-        x.GetModuleInfo() is { } moduleInfo && moduleInfo.ModuleId.Equals(moduleId, StringComparison.OrdinalIgnoreCase));
+    public static bool HasModuleInstalled(this Loadout.ReadOnly loadout, string moduleId)
+    {
+        foreach (var mod in loadout.Mods)
+        {
+            if (mod.TryGetModuleInfo(out var moduleInfo) && moduleInfo.ModuleId.Equals(moduleId, StringComparison.OrdinalIgnoreCase))
+                return true;
+        }
 
-    public static bool HasInstalledFile(this Loadout.Model loadout, string filename) => loadout.Mods.Any(x =>
-        x.GetModuleFileMetadatas().Any(y => y.OriginalRelativePath.EndsWith(filename, StringComparison.OrdinalIgnoreCase)));
+        return false;
+    }
+
+    public static bool HasInstalledFile(this Loadout.ReadOnly loadout, string filename)
+    {
+        throw new NotImplementedException();
+        /*
+        return loadout.Mods.Any(x =>
+            x.GetModuleFileMetadatas().Any(y => y.OriginalRelativePath.EndsWith(filename, StringComparison.OrdinalIgnoreCase))
+        );*/
+    }
 }

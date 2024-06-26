@@ -1,12 +1,16 @@
-using JetBrains.Annotations;
-using NexusMods.Abstractions.Serialization;
-using NexusMods.Abstractions.Serialization.Attributes;
+using NexusMods.Abstractions.Loadouts.Files;
+using NexusMods.Abstractions.MnemonicDB.Attributes;
+using NexusMods.MnemonicDB.Abstractions.Models;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord.Models;
 
-[PublicAPI]
-[JsonName("NexusMods.Games.MountAndBlade2Bannerlord.Models.ModuleFileMetadata")]
-public class ModuleFileMetadata : IMetadata
+[Include<Metadata>]
+public partial class ModuleFileMetadata : IModelDefinition
 {
-    public required string OriginalRelativePath { get; init; }
+    private const string Namespace = "NexusMods.Games.MountAndBlade2Bannerlord.Models.ModuleFileMetadata";
+    
+    /// <summary>
+    /// The original relative path of the file.
+    /// </summary>
+    public static readonly RelativePathAttribute OriginalRelativePath = new(Namespace, nameof(OriginalRelativePath));
 }

@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using Avalonia.Threading;
 using DynamicData;
 using DynamicData.Binding;
@@ -17,6 +18,7 @@ using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.Query;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Pages.MyGames;
@@ -37,8 +39,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
         IConnection conn,
         ILogger<MyGamesViewModel> logger,
         IApplyService applyService,
-        IGameRegistry gameRegistry,
-        IRepository<Loadout.Model> loadoutRepository) : base(windowManager)
+        IGameRegistry gameRegistry) : base(windowManager)
     {
         TabTitle = Language.MyGames;
 		TabIcon = IconValues.Game;
@@ -48,33 +49,24 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
         
         this.WhenActivated(d =>
             {
-                var loadouts = loadoutRepository.Observable
-                    .ToObservableChangeSet()
-                    .Filter(loadout => loadout.IsVisible())
-                    .GroupOn(loadout => loadout.Installation.LocationsRegister[LocationId.Game])
-                    .Transform(group => group.List.Items.First());
-                var foundGames = gameRegistry.InstalledGames
-                    .ToObservableChangeSet();
-                
-                
-
                 // Managed games widgets
-                loadouts
+                Loadout.ObserveAll(conn)
+                    .Filter(l => l.IsVisible())
                     .OnUI()
                     .Transform(loadout =>
                     {
                         var vm = provider.GetRequiredService<IGameWidgetViewModel>();
-                        vm.Installation = loadout.Installation;
+                        vm.Installation = loadout.InstallationInstance;
                         vm.AddGameCommand = ReactiveCommand.CreateFromTask(async () =>
                         {
                             vm.State = GameWidgetState.AddingGame;
-                            await Task.Run(async () => await ManageGame(loadout.Installation));
+                            await Task.Run(async () => await ManageGame(loadout.InstallationInstance));
                             vm.State = GameWidgetState.ManagedGame;
                         });
                         vm.RemoveAllLoadoutsCommand = ReactiveCommand.CreateFromTask(async () => 
                         {
                             vm.State = GameWidgetState.RemovingGame;
-                            await Task.Run(async () => await RemoveAllLoadouts(loadout.Installation));
+                            await Task.Run(async () => await RemoveAllLoadouts(loadout.InstallationInstance));
                             vm.State = GameWidgetState.ManagedGame;
                         });
 
@@ -89,8 +81,11 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                     .SubscribeWithErrorLogging()
                     .DisposeWith(d);
 
-                // For the games that are detected, we only want to show those that are not managed
-                foundGames.Except(loadouts.Transform(t => t.Installation))
+                // For the games that are detected, we only want to show those that are not managed, we'll bind directly
+                // to the collection here so we don't need any temporary collections or observables
+                gameRegistry.InstalledGames
+                    .ToObservableChangeSet()
+                    .Except(_managedGames.ToObservableChangeSet().Transform(s => s.Installation))
                     .OnUI()
                     .Transform(install =>
                     {
@@ -154,14 +149,14 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
         );
     }
 
-    private void NavigateToLoadout(IConnection conn, Loadout.Model loadout)
+    private void NavigateToLoadout(IConnection conn, Loadout.ReadOnly loadout)
     {
         // We can't navigate to an invisible loadout, make sure we pick a visible one.
-        using var db = conn.Db;
+        var db = conn.Db;
         if (!loadout.IsVisible())
         {
             // Note(sewer) | If we're here, last loadout was most likely a LoadoutKind.VanillaState
-            loadout = db.Loadouts().First(x => x.IsVisible());
+            loadout = Loadout.All(db).First(x => x.IsVisible());
         }
 
         var loadoutId = loadout.LoadoutId;

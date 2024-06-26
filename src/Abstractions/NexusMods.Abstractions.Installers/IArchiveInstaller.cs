@@ -29,12 +29,12 @@ public interface IArchiveInstaller
         CancellationToken token = default);
 
     /// <summary>
-    /// Installs a <see cref="DownloadAnalysis.Model"/> to a loadout, potentially adding one or more mods.
+    /// Installs a <see cref="DownloadAnalysis.ReadOnly"/> to a loadout, potentially adding one or more mods.
     /// If the installer is not provided, the installers on the loadout's game will be tried, in the order they are defined.
     /// </summary>
     public Task<ModId[]> AddMods(
         LoadoutId loadoutId, 
-        DownloadAnalysis.Model downloadAnalysis,
+        DownloadAnalysis.ReadOnly downloadAnalysis,
         string? name = null, 
         IModInstaller? installer = null, 
         CancellationToken token = default);

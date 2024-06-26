@@ -14,7 +14,7 @@ public static class ReferenceExtensions
     /// <summary>
     /// Creates a new <see cref="LoadoutReference"/> for the given <see cref="Loadout"/>.
     /// </summary>
-    public static LoadoutReference ToReference(this Loadout.Model loadout)
+    public static LoadoutReference ToReference(this Loadout.ReadOnly loadout)
     {
         return new LoadoutReference
         {
@@ -26,7 +26,7 @@ public static class ReferenceExtensions
     /// <summary>
     /// Creates a new <see cref="ModReference"/> for the given <see cref="Mod"/>.
     /// </summary>
-    public static ModReference ToReference(this Mod.Model mod, Loadout.Model loadout)
+    public static ModReference ToReference(this Mod.ReadOnly mod, Loadout.ReadOnly loadout)
     {
         return new ModReference
         {
@@ -38,7 +38,7 @@ public static class ReferenceExtensions
     /// <summary>
     /// Creates a new <see cref="ModFileReference"/> for the given <see cref="AModFile"/>.
     /// </summary>
-    public static ModFileReference ToReference(this File.Model modFile)
+    public static ModFileReference ToReference(this File.ReadOnly modFile)
     {
         return new ModFileReference
         {

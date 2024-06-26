@@ -91,21 +91,13 @@ public class ModInfoViewModel : APageViewModel<IModInfoViewModel>, IModInfoViewM
 
     private string GetModName(out bool isInvalid)
     {
-        try
+        var mod = Mod.Load(_conn.Db, ModId);
+        if (mod.IsValid())
         {
             isInvalid = false;
-            return _conn.Db.Get(ModId)!.Name;
+            return mod.Name;
         }
-        catch (KeyNotFoundException ex)
-        {
-            // The user deleted this mod and restarted the app while having this panel open.
-            // In theory this could also be thrown for invalid loadout, but then you'd lose the whole workspace,
-            // so in this context, that's impossible to happen.
-            isInvalid = true;
-            
-            var log = _serviceProvider.GetRequiredService<ILogger<ModInfoViewModel>>();
-            log.LogError(ex, "Failed to Get Mod Name, Because ModId {0} no longer exists.", ModId);
-            return Language.ViewModInfoPage_NotFound_Title;
-        }
+        isInvalid = true;
+        return Language.ViewModInfoPage_NotFound_Title;
     }
 }

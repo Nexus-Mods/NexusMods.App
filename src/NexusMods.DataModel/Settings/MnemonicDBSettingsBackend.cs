@@ -15,7 +15,6 @@ internal sealed class MnemonicDBSettingsBackend : ISettingsStorageBackend
     private readonly ILogger<MnemonicDBSettingsBackend> _logger;
     private readonly Lazy<IConnection> _conn;
     private readonly Lazy<JsonSerializerOptions> _jsonOptions;
-    private readonly Lazy<IRepository<Setting.Model>> _settingRepository;
 
     public MnemonicDBSettingsBackend(ILogger<MnemonicDBSettingsBackend> logger, IServiceProvider serviceProvider)
     {
@@ -23,7 +22,6 @@ internal sealed class MnemonicDBSettingsBackend : ISettingsStorageBackend
 
         _conn = new Lazy<IConnection>(serviceProvider.GetRequiredService<IConnection>);
         _jsonOptions = new Lazy<JsonSerializerOptions>(serviceProvider.GetRequiredService<JsonSerializerOptions>);
-        _settingRepository = new Lazy<IRepository<Setting.Model>>(serviceProvider.GetRequiredService<IRepository<Setting.Model>>);
     }
     
     public void Dispose()
@@ -64,16 +62,18 @@ internal sealed class MnemonicDBSettingsBackend : ISettingsStorageBackend
     /// <inheritdoc />
     public void Save<T>(T value) where T : class, ISettings, new()
     {
+        var db = _conn.Value.Db;
         using var tx = _conn.Value.BeginTransaction();
         EntityId id;
-        if (!_settingRepository.Value.TryFindFirst(Setting.Name, GetId<T>(), out var setting))
+        var settings = Setting.FindByName(db, GetId<T>()).ToArray();
+        if (!settings.Any())
         {
             id = tx.TempId();
             tx.Add(id, Setting.Name, GetId<T>());
         }
         else
         {
-            id = setting.Id;
+            id = settings.First().Id;
         }
         
         tx.Add(id, Setting.Value, Serialize(value) ?? "null");
@@ -88,10 +88,11 @@ internal sealed class MnemonicDBSettingsBackend : ISettingsStorageBackend
     /// <inheritdoc />
     public T? Load<T>() where T : class, ISettings, new()
     {
-        if (!_settingRepository.Value.TryFindFirst(Setting.Name, GetId<T>(), out var setting)) 
+        var settings = Setting.FindByName(_conn.Value.Db, GetId<T>()).ToArray();
+        if (!settings.Any()) 
             return null;
         
-        return Deserialize<T>(setting.Value);
+        return Deserialize<T>(settings.First().Value);
     }
 
     private static string GetId<T>() where T : ISettings

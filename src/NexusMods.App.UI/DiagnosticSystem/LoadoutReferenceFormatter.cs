@@ -10,7 +10,10 @@ internal sealed class LoadoutReferenceFormatter(IConnection conn) : IValueFormat
     public void Format(IDiagnosticWriter writer, ref DiagnosticWriterState state, LoadoutReference value)
     {
         // TODO: custom markdown control
-        var loadout = conn.Db.Get(value.DataId);
-        writer.Write(ref state, loadout?.Name ?? "MISSING LOADOUT");
+        var loadout = Loadout.Load(conn.Db, value.DataId);
+        if (loadout.IsValid()) 
+            writer.Write(ref state, loadout.Name);
+        else
+            writer.Write(ref state, "MISSING LOADOUT");
     }
 }

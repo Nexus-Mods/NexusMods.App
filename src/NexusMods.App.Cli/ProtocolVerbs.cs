@@ -40,7 +40,7 @@ public static class ProtocolVerbs
     [Verb("download-and-install-mod", "Download a mod and install it in one step")]
     private static async Task<int> DownloadAndInstallMod([Injected] IRenderer renderer,
         [Option("u","url", "The url of the mod to download")] Uri uri,
-        [Option("l", "loadout", "The loadout to install the mod to")] Loadout.Model loadout,
+        [Option("l", "loadout", "The loadout to install the mod to")] Loadout.ReadOnly loadout,
         [Option("n", "name", "The name of the mod after installing")] string? modName,
         [Injected] IHttpDownloader httpDownloader,
         [Injected] TemporaryFileManager temporaryFileManager,

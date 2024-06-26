@@ -38,7 +38,7 @@ public class ApplyDiffPageFactory : APageFactory<IApplyDiffViewModel, ApplyDiffP
     {
         if (workspaceContext is not LoadoutContext loadoutContext) yield break;
 
-        var loadout = _connection.Db.Get(loadoutContext.LoadoutId);
+        var loadout = Loadout.Load(_connection.Db, loadoutContext.LoadoutId);
 
         yield return new PageDiscoveryDetails
         {

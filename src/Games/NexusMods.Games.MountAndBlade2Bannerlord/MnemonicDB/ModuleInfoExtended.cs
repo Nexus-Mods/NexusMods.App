@@ -1,15 +1,12 @@
 using Bannerlord.LauncherManager.Models;
-using Bannerlord.ModuleManager;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
-using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.Models;
-using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord.MnemonicDB;
 
-public static class ModuleInfoExtended
+public partial class ModuleInfoExtended : IModelDefinition
 {
     private const string Namespace = "NexusMods.Games.MountAndBlade2Bannerlord.MnemonicDB.ModuleInfoExtended";
     
@@ -56,27 +53,27 @@ public static class ModuleInfoExtended
     /// <summary>
     /// Sub-modules of the module.
     /// </summary>
-    public static readonly ReferencesAttribute SubModules = new(Namespace, nameof(SubModules));
+    public static readonly ReferencesAttribute<SubModuleInfo> SubModules = new(Namespace, nameof(SubModules));
     
     /// <summary>
     /// Modules that this module depends on.
     /// </summary>
-    public static readonly ReferencesAttribute DependentModules = new(Namespace, nameof(DependentModules));
+    public static readonly ReferencesAttribute<DependentModule> DependentModules = new(Namespace, nameof(DependentModules));
     
     /// <summary>
     /// Modules that should be loaded after this module.
     /// </summary>
-    public static readonly ReferencesAttribute ModulesToLoadAfterThis = new(Namespace, nameof(ModulesToLoadAfterThis));
+    public static readonly ReferencesAttribute<ModuleInfoExtended> ModulesToLoadAfterThis = new(Namespace, nameof(ModulesToLoadAfterThis));
     
     /// <summary>
     /// Modules that are incompatible with this module.
     /// </summary>
-    public static readonly ReferencesAttribute IncompatibleModules = new(Namespace, nameof(IncompatibleModules));
+    public static readonly ReferencesAttribute<ModuleInfoExtended> IncompatibleModules = new(Namespace, nameof(IncompatibleModules));
     
     /// <summary>
     /// Metadata of dependent modules.
     /// </summary>
-    public static readonly ReferencesAttribute DependentModuleMetadatas = new(Namespace, nameof(DependentModuleMetadatas));
+    public static readonly ReferencesAttribute<DependentModuleMetadata> DependentModuleMetadatas = new(Namespace, nameof(DependentModuleMetadatas));
     
     /// <summary>
     /// Url of the module's page.
@@ -135,85 +132,9 @@ public static class ModuleInfoExtended
 
         return id;
     }
-
-
-    public class Model(ITransaction tx) : Entity(tx)
+    
+    public partial struct ReadOnly
     {
-        
-        public string ModuleId
-        {
-            get => ModuleInfoExtended.ModuleId.Get(this);
-            init => ModuleInfoExtended.ModuleId.Add(this, value);
-        }
-        
-        public string Name
-        {
-            get => ModuleInfoExtended.Name.Get(this);
-            init => ModuleInfoExtended.Name.Add(this, value);
-        }
-        
-        public bool IsOfficial
-        {
-            get => ModuleInfoExtended.IsOfficial.Get(this);
-            init => ModuleInfoExtended.IsOfficial.Add(this, value);
-        }
-        
-        public ApplicationVersion Version
-        {
-            get => ModuleInfoExtended.Version.Get(this);
-            init => ModuleInfoExtended.Version.Add(this, value);
-        }
-        
-        public bool IsSingleplayerModule
-        {
-            get => ModuleInfoExtended.IsSingleplayerModule.Get(this);
-            init => ModuleInfoExtended.IsSingleplayerModule.Add(this, value);
-        }
-        
-        public bool IsMultiplayerModule
-        {
-            get => ModuleInfoExtended.IsMultiplayerModule.Get(this);
-            init => ModuleInfoExtended.IsMultiplayerModule.Add(this, value);
-        }
-        
-        public bool IsServerModule
-        {
-            get => ModuleInfoExtended.IsServerModule.Get(this);
-            init => ModuleInfoExtended.IsServerModule.Add(this, value);
-        }
-        
-        /// <summary>
-        /// The dependent modules of the module.
-        /// </summary>
-        public IEnumerable<DependentModule.Model> DependentModules
-        {
-            get
-            {
-                if (!ModuleInfoExtended.DependentModules.IsIn(Db, Id))
-                    return Enumerable.Empty<DependentModule.Model>();
-                return ModuleInfoExtended.DependentModules
-                    .Get(this)
-                    .Select(id => Db.Get<DependentModule.Model>(id));
-            }
-        }
-
-        /// <summary>
-        /// The dependent module metadata of the module.
-        /// </summary>
-        public IEnumerable<DependentModuleMetadata.Model> DependentModuleMetadatas
-        {
-            get
-            {
-                if (!ModuleInfoExtended.DependentModuleMetadatas.IsIn(Db, Id))
-                    return Enumerable.Empty<DependentModuleMetadata.Model>();
-                
-                return ModuleInfoExtended.DependentModuleMetadatas
-                    .Get(this)
-                    .Select(id => Db.Get<DependentModuleMetadata.Model>(id));
-            }
-        }
-
-
         /// <summary>
         /// Convert a MneumonicDB entity to a ModuleInfoExtendedWithPath.
         /// </summary>

@@ -16,7 +16,7 @@ public class MountAndBlade2BannerlordLoadoutSynchronizerTests : AGameTest<MountA
     public async Task GeneratedSortRulesAreFetched()
     {
         var loadout = await CreateLoadout();
-        var loadoutSynchronizer = (loadout.Installation.GetGame().Synchronizer as MountAndBlade2BannerlordLoadoutSynchronizer)!;
+        var loadoutSynchronizer = (loadout.InstallationInstance.GetGame().Synchronizer as MountAndBlade2BannerlordLoadoutSynchronizer)!;
 
         var context = AGameTestContext.Create(CreateTestArchive, InstallModStoredFileIntoLoadout);
 
@@ -31,8 +31,8 @@ public class MountAndBlade2BannerlordLoadoutSynchronizerTests : AGameTest<MountA
 
         var testData = rules.Select(r =>
         {
-            if (r is After<Mod.Model, ModId> a) return ("After", nameForId[a.Other]);
-            if (r is Before<Mod.Model, ModId> b) return ("Before", nameForId[b.Other]);
+            if (r is After<Mod.ReadOnly, ModId> a) return ("After", nameForId[a.Other]);
+            if (r is Before<Mod.ReadOnly, ModId> b) return ("Before", nameForId[b.Other]);
             throw new NotImplementedException();
         });
 

@@ -20,8 +20,11 @@ public class DownloadTaskViewModel : AViewModel<IDownloadTaskViewModel>, IDownlo
     public DownloadTaskViewModel(IDownloadTask task)
     {
         _task = task;
-        IsHidden = task.PersistentState.Status.Equals(DownloadTaskStatus.Completed) 
-                   && task.PersistentState.Remap<CompletedDownloadState.Model>().IsHidden;
+
+        var isCompleted = task.PersistentState.TryGetAsCompletedDownloadState(out var completed);
+
+        IsHidden = task.PersistentState.Status.Equals(DownloadTaskStatus.Completed)
+                   && isCompleted && completed.Hidden;
         
         var interval = Observable.Interval(TimeSpan.FromSeconds(60)).StartWith(1);
         
@@ -33,7 +36,8 @@ public class DownloadTaskViewModel : AViewModel<IDownloadTaskViewModel>, IDownlo
                 .BindTo(this, x => x.Name)
                 .DisposeWith(d);
             
-            _task.WhenAnyValue(t => t.PersistentState.Version)
+            _task.WhenAnyValue(t => t.PersistentState)
+                .Select(state => DownloaderState.Version.TryGet(state, out var version) ? version : "-" )
                 .OnUI()
                 .BindTo(this, x => x.Version)
                 .DisposeWith(d);
@@ -70,9 +74,14 @@ public class DownloadTaskViewModel : AViewModel<IDownloadTaskViewModel>, IDownlo
             _task.WhenAnyValue(t => t.PersistentState.Status)
                 .Where(s => s.Equals(DownloadTaskStatus.Completed))
                 .CombineLatest(interval)
-                .Select(_ => _task.PersistentState.Status.Equals(DownloadTaskStatus.Completed) 
-                    ? _task.PersistentState.Remap<CompletedDownloadState.Model>().CompletedAt.Humanize()
-                    : "-"
+                .Select(_ =>
+                    {
+                        var isCompleted = _task.PersistentState.TryGetAsCompletedDownloadState(out var completed);
+                        
+                        return _task.PersistentState.Status.Equals(DownloadTaskStatus.Completed) && isCompleted
+                            ? completed.CompletedDateTime.Humanize()
+                            : "-";
+                    }
                 )
                 .OnUI()
                 .BindTo(this, x => x.HumanizedCompletedTime)

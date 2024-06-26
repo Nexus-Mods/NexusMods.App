@@ -14,7 +14,7 @@ public interface IFileOriginEntryViewModel : IViewModelInterface
     string DisplayArchiveDate { get; }
     string DisplayLastInstalledDate { get; }
     bool IsModAddedToLoadout { get; }
-    DownloadAnalysis.Model FileOrigin { get; }
+    DownloadAnalysis.ReadOnly FileOrigin { get; }
     ReactiveCommand<Unit, Unit> AddToLoadoutCommand { get; }
     ReactiveCommand<Unit, Unit> AddAdvancedToLoadoutCommand { get; }
     ReactiveCommand<NavigationInformation, Unit> ViewModCommand { get; }

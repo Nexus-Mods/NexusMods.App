@@ -49,37 +49,38 @@ public class ArchiveInstaller : IArchiveInstaller
     /// <inheritdoc />
     public async Task<ModId[]> AddMods(
         LoadoutId loadoutId, 
-        DownloadAnalysis.Model download, 
+        DownloadAnalysis.ReadOnly download, 
         string? name = null, 
         IModInstaller? installer = null, 
         CancellationToken token = default)
     {
         // Get the loadout and create the mod, so we can use it in the job.
         var useCustomInstaller = installer != null;
-        var loadout = _conn.Db.Get<Loadout.Model>(loadoutId.Value);
+        var loadout = Loadout.Load(_conn.Db, loadoutId);
         
         // Note(suggestedName) cannot be null here.
         // Because string is non-nullable where it is set (FileOriginRegistry),
         // and using that is a prerequisite to calling this function.
-        var modName = name ?? download.Get(DownloadAnalysis.SuggestedName);
+        var modName = name ?? download.SuggestedName;
         
         ModId modId;
-        Mod.Model baseMod;
+        Mod.ReadOnly baseMod;
         {
             using var tx = _conn.BeginTransaction();
 
-            baseMod = new Mod.Model(tx)
+            var newMod = new Mod.New(tx)
             {
                 Name = modName,
-                Source = download,
+                SourceId = download,
                 Status = ModStatus.Installing,
-                Loadout = loadout,
+                LoadoutId = loadout,
                 Category = ModCategory.Mod,
                 Enabled = true,
+                Revision = 0,
             };
             loadout.Revise(tx);
             var result = await tx.Commit();
-            baseMod = result.Remap(baseMod);
+            baseMod = result.Remap(newMod);
             modId = ModId.From(result[baseMod.Id]);
         }
 
@@ -92,7 +93,7 @@ public class ArchiveInstaller : IArchiveInstaller
             var tree = download.GetFileTree(_fileStore);
 
             // Step 3: Run the archive through the installers.
-            var installers = loadout.Installation.GetGame().Installers;
+            var installers = loadout.InstallationInstance.GetGame().Installers;
             try
             {
                 var advancedInstaller = _provider.GetRequiredKeyedService<IModInstaller>("AdvancedManualInstaller");
@@ -114,7 +115,7 @@ public class ArchiveInstaller : IArchiveInstaller
                 {
                     try
                     {
-                        var install = loadout.Installation;
+                        var install = loadout.InstallationInstance;
                         var info = new ModInstallerInfo
                         {
                             ArchiveFiles = tree,
@@ -206,7 +207,7 @@ public class ArchiveInstaller : IArchiveInstaller
 
     private async Task SetFailedStatus(ModId modId)
     {
-        var mod = _conn.Db.Get<Mod.Model>(modId.Value);
+        var mod = Mod.Load(_conn.Db, modId);
         _logger.LogInformation("Setting status of ModId:{ModId}({Name}) to {Status}", modId, mod.Name, ModStatus.Failed);
 
         using var tx = _conn.BeginTransaction();

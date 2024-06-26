@@ -40,9 +40,9 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
         _os = os;
     }
 
-    public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.Model loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
+    public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.ReadOnly loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        var gameVersion = new SemanticVersion(loadout.Installation.Version);
+        var gameVersion = new SemanticVersion(loadout.InstallationInstance.Version);
         var optionalSMAPIMod = loadout.GetFirstModWithMetadata(SMAPIMarker.Version);
         if (!optionalSMAPIMod.HasValue) yield break;
 
@@ -72,7 +72,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
     }
     
     private static IEnumerable<Diagnostic> DiagnoseDisabledDependencies(
-        Loadout.Model loadout,
+        Loadout.ReadOnly loadout,
         Dictionary<ModId, SMAPIManifest> modIdToManifest,
         ImmutableDictionary<string, ModId> uniqueIdToModId)
     {
@@ -108,13 +108,13 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
         });
     }
 
-    private static Mod.Model ModForId(Loadout.Model loadout, ModId id)
+    private static Mod.ReadOnly ModForId(Loadout.ReadOnly loadout, ModId id)
     {
-        return loadout.Db.Get<Mod.Model>(id.Value);
+        return Mod.Load(loadout.Db, id);
     }
     
     private async Task<IEnumerable<Diagnostic>> DiagnoseMissingDependencies(
-        Loadout.Model loadout,
+        Loadout.ReadOnly loadout,
         ISemanticVersion gameVersion,
         ISemanticVersion smapiVersion,
         Dictionary<ModId, SMAPIManifest> modIdToManifest,
@@ -176,7 +176,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
     }
 
     private async Task<IEnumerable<Diagnostic>> DiagnoseOutdatedDependencies(
-        Loadout.Model loadout,
+        Loadout.ReadOnly loadout,
         ISemanticVersion gameVersion,
         ISemanticVersion smapiVersion,
         Dictionary<ModId, SMAPIManifest> modIdToManifest,

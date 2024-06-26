@@ -37,7 +37,7 @@ public abstract class ADownloadTask : ReactiveObject, IDownloadTask
     protected TemporaryPath _downloadLocation = default!;
     protected IFileSystem FileSystem;
     protected IFileOriginRegistry FileOriginRegistry;
-    private DownloaderState.Model _persistentState = null!;
+    private DownloaderState.ReadOnly _persistentState;
 
     protected ADownloadTask(IServiceProvider provider)
     {
@@ -51,16 +51,21 @@ public abstract class ADownloadTask : ReactiveObject, IDownloadTask
         FileSystem = provider.GetRequiredService<IFileSystem>();
         FileOriginRegistry = provider.GetRequiredService<IFileOriginRegistry>();
     }
-
-
-
-    public void Init(DownloaderState.Model state)
+    
+    public void Init(DownloaderState.ReadOnly state)
     {
         PersistentState = state;
         Downloaded = state.Downloaded;
         _downloadLocation = new TemporaryPath(FileSystem, FileSystem.FromUnsanitizedFullPath(state.DownloadPath), false);
     }
-
+    
+    /// <summary>
+    /// Reloads the state of the download task from the database.
+    /// </summary>
+    public void RefreshState()
+    {
+        PersistentState = PersistentState.Rebase();
+    }
 
     /// <summary>
     /// Sets up the inital state of the download task, creates the persistent state
@@ -69,8 +74,9 @@ public abstract class ADownloadTask : ReactiveObject, IDownloadTask
     protected EntityId Create(ITransaction tx)
     {
         _downloadLocation = TemporaryFileManager.CreateFile();
-        var state = new DownloaderState.Model(tx)
+        var state = new DownloaderState.New(tx)
         {
+            FriendlyName = "<Unknown>",
             Status = DownloadTaskStatus.Idle,
             Downloaded = Size.Zero,
             DownloadPath = DownloadLocation.ToString(),
@@ -85,7 +91,7 @@ public abstract class ADownloadTask : ReactiveObject, IDownloadTask
     protected async Task Init(ITransaction tx, EntityId id)
     {
         var result = await tx.Commit();
-        PersistentState = result.Db.Get<DownloaderState.Model>(result[id]);
+        PersistentState = DownloaderState.Load(result.Db, result[id]);
     }
     
     protected async Task<(string Name, Size Size)> GetNameAndSizeAsync(Uri uri)
@@ -114,7 +120,7 @@ public abstract class ADownloadTask : ReactiveObject, IDownloadTask
     protected async Task SetStatus(DownloadTaskStatus status)
     {
         using var tx = Connection.BeginTransaction();
-        tx.Add(PersistentState.Id, DownloaderState.Status, (byte)status);
+        tx.Add(PersistentState.Id, DownloaderState.Status, status);
         
         if (TransientState != null)
         {
@@ -129,21 +135,21 @@ public abstract class ADownloadTask : ReactiveObject, IDownloadTask
             }
         }
         
-        var result = await tx.Commit();
-        PersistentState = result.Remap(PersistentState);
+        await tx.Commit();
+        RefreshState();
     }
     
     protected async Task MarkComplete()
     {
         using var tx = Connection.BeginTransaction();
-        tx.Add(PersistentState.Id, DownloaderState.Status, (byte)DownloadTaskStatus.Completed);
+        tx.Add(PersistentState.Id, DownloaderState.Status, DownloadTaskStatus.Completed);
         tx.Add(PersistentState.Id, CompletedDownloadState.CompletedDateTime, DateTime.Now);
-        var result = await tx.Commit();
-        PersistentState = result.Remap(PersistentState);
+        await tx.Commit();
+        RefreshState();
     }
     
     [Reactive]
-    public DownloaderState.Model PersistentState { get; set; } = null!;
+    public DownloaderState.ReadOnly PersistentState { get; protected set; }
     
     public AbsolutePath DownloadLocation => _downloadLocation;
 
@@ -229,7 +235,7 @@ public abstract class ADownloadTask : ReactiveObject, IDownloadTask
             if (report is { Current.HasValue: true })
             {
                 Downloaded = report.Current.Value;
-                if (PersistentState.TryGet(DownloaderState.Size, out var size) && size != Size.Zero)
+                if (DownloaderState.Size.TryGet(PersistentState, out var size) && size != Size.Zero)
                     Progress = Percent.CreateClamped((long)Downloaded.Value, (long)size.Value);
                 if (report.Throughput.HasValue)
                     Bandwidth = Bandwidth.From(report.Throughput.Value.Value);
@@ -247,13 +253,7 @@ public abstract class ADownloadTask : ReactiveObject, IDownloadTask
         if (PersistentState.Status != DownloadTaskStatus.Completed) return;
         tx.Add(PersistentState.Id, CompletedDownloadState.Hidden, isHidden);
     }
-
-    /// <inheritdoc />
-    public void ResetState(IDb db)
-    {
-        PersistentState = db.Get<DownloaderState.Model>(PersistentState.Id);
-    }
-
+    
     /// <summary>
     /// Begin the process of downloading a file to the specified destination, should
     /// terminate when the download is complete or cancelled. The destination may have

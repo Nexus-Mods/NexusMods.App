@@ -9,12 +9,12 @@ namespace NexusMods.Abstractions.GameLocators;
 /// <summary>
 /// A file tree is a tree that contains all files from a loadout, flattened into a single tree.
 /// </summary>
-public class FileTree : AGamePathNodeTree<File.Model>
+public class FileTree : AGamePathNodeTree<File.ReadOnly>
 {
-    private FileTree(IEnumerable<KeyValuePair<GamePath, File.Model>> tree) : base(tree) { }
+    private FileTree(IEnumerable<KeyValuePair<GamePath, File.ReadOnly>> tree) : base(tree) { }
 
     /// <summary>
     ///     Creates a file tree from a list mod files.
     /// </summary>
-    public static FileTree Create(IEnumerable<KeyValuePair<GamePath, File.Model>> items) => new(items);
+    public static FileTree Create(IEnumerable<KeyValuePair<GamePath, File.ReadOnly>> items) => new(items);
 }

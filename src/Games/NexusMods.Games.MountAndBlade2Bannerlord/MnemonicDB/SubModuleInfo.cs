@@ -5,7 +5,7 @@ using NexusMods.MnemonicDB.Abstractions.Models;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord.MnemonicDB;
 
-public static class SubModuleInfo
+public partial class SubModuleInfo : IModelDefinition
 {
     private const string Namespace = "NexusMods.Games.MountAndBlade2Bannerlord.Models";
     
@@ -22,23 +22,6 @@ public static class SubModuleInfo
     /// <summary>
     /// Assembly names of the sub-module.
     /// </summary>
-    public static readonly StringsAttribute Assemblies = new(Namespace, nameof(Assemblies));
-    
-    public class Model(ITransaction tx) : Entity(tx)
-    {
-        public string Name
-        {
-            get => SubModuleInfo.Name.Get(this);
-            init => SubModuleInfo.Name.Add(this, value);
-        }
+    public static readonly StringAttribute Assemblies = new(Namespace, nameof(Assemblies)) { Cardinalty = Cardinality.Many };
 
-        public string DLLName
-        {
-            get => SubModuleInfo.DLLName.Get(this);
-            init => SubModuleInfo.DLLName.Add(this, value);
-        }
-        
-        public IEnumerable<string> Assemblies => SubModuleInfo.Assemblies.Get(this);
-    }
-    
 }

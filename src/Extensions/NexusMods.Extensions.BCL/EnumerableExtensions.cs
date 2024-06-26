@@ -25,6 +25,23 @@ public static class EnumerableExtensions
         value = default;
         return false;
     }
+    
+    /// <summary>
+    /// <see cref="Enumerable.FirstOrDefault{TSource}(System.Collections.Generic.IEnumerable{TSource})"/>
+    /// in a try-get style. This is helpful for value types like structs that have a non-null default value.
+    /// </summary>
+    /// <returns></returns>
+    public static bool TryGetFirst<T>(this IEnumerable<T> enumerable, out T? value)
+    {
+        foreach (var item in enumerable)
+        {
+            value = item;
+            return true;
+        }
+
+        value = default;
+        return false;
+    }
 
     /// <summary>
     /// Transforms a <see cref="IEnumerable{T}"/> into a <see cref="IAsyncEnumerable{TOut}"/> via a transform function

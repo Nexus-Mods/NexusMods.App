@@ -46,7 +46,7 @@ public class BodyViewModel : AViewModel<IBodyViewModel>, IBodyViewModel
         string modName,
         KeyedBox<RelativePath, ModFileTree> archiveFiles,
         IGameLocationsRegister locationRegister,
-        Loadout.Model? loadout,
+        Loadout.ReadOnly? loadout,
         string gameName)
     {
         // Setup child VMs

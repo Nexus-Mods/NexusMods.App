@@ -49,21 +49,19 @@ public class FileHashCache : IFileHashCache
     }
 
     /// <inheritdoc/>
-    public bool TryGetCached(AbsolutePath path, out HashCacheEntry.Model entry)
+    public bool TryGetCached(AbsolutePath path, out HashCacheEntry.ReadOnly entry)
     {
         var nameHash = Hash.From(path.ToString().AsSpan().GetStableHash());
         var db = _conn.Db;
-        var id = db
-            .FindIndexed(nameHash, HashCacheEntry.NameHash)
+        var found = HashCacheEntry.FindByNameHash(db, nameHash)
             .FirstOrDefault();
-        if (id == EntityId.From(0))
+        if (!found.IsValid())
         {
-            
-            entry = null!;
+            entry = default(HashCacheEntry.ReadOnly);
             return false;
         }
 
-        entry = db.Get<HashCacheEntry.Model>(id);
+        entry = found;
         return true;
     }
 
@@ -163,7 +161,7 @@ public class FileHashCache : IFileHashCache
     private static void AddOrReplace(HashedEntryWithName entry, IDb db, string nameString, ITransaction tx)
     {
         var hash = Hash.From(nameString.AsSpan().GetStableHash());
-        var existing = db.FindIndexed(hash, HashCacheEntry.NameHash)
+        var existing = HashCacheEntry.FindByNameHash(db, hash)
             .FirstOrDefault();
 
         if (existing != EntityId.From(0))

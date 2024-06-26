@@ -1,8 +1,10 @@
 using NexusMods.Abstractions.MnemonicDB.Attributes;
+using NexusMods.MnemonicDB.Abstractions.Models;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord.MnemonicDB;
 
-public static class ModuleFileMetadata
+[Include<NexusMods.Abstractions.Loadouts.Files.File>]
+public partial class ModuleFileMetadata : IModelDefinition
 {
     private const string Namespace = "NexusMods.Games.MountAndBlade2Bannerlord.MnemonicDB.ModuleFileMetadata";
     

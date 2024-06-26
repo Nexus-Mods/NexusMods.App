@@ -21,7 +21,7 @@ public class ApplyServiceTests(IServiceProvider provider) : ADataModelTest<Apply
         // Arrange
         await AddMods(BaseLoadout, Data7ZLzma2, "Mod1");
         Refresh(ref BaseLoadout);
-        var gameFolder = BaseLoadout.Installation.LocationsRegister[LocationId.Game];
+        var gameFolder = BaseLoadout.InstallationInstance.LocationsRegister[LocationId.Game];
         
         gameFolder.Combine("rootFile.txt").FileExists.Should().BeFalse("loadout has not yet been applied");
         
@@ -41,13 +41,13 @@ public class ApplyServiceTests(IServiceProvider provider) : ADataModelTest<Apply
         await AddMods(BaseLoadout, Data7ZLzma2, "Mod1");
         Refresh(ref BaseLoadout);
 
-        var gameFolder = BaseLoadout.Installation.LocationsRegister[LocationId.Game];
+        var gameFolder = BaseLoadout.InstallationInstance.LocationsRegister[LocationId.Game];
         
         gameFolder.Combine("rootFile.txt").FileExists.Should().BeFalse("loadout has not yet been applied");
         
         // Act
         var newFile = new GamePath(LocationId.Saves, "newfile.dat");
-        await Install.LocationsRegister.GetResolvedPath(newFile).WriteAllBytesAsync(new byte[] { 0x01, 0x02, 0x03 });
+        await Install.LocationsRegister.GetResolvedPath(newFile).WriteAllBytesAsync([0x01, 0x02, 0x03]);
         await ApplyService.Apply(BaseLoadout);
         
         // Assert
@@ -66,7 +66,7 @@ public class ApplyServiceTests(IServiceProvider provider) : ADataModelTest<Apply
     {
         // Arrange
         BaseLoadout.Mods.Should().HaveCount(1);
-        var gameFolder = BaseLoadout.Installation.LocationsRegister[LocationId.Game];
+        var gameFolder = BaseLoadout.InstallationInstance.LocationsRegister[LocationId.Game];
         BaseLoadout.Mods.SelectMany(mod=> mod.Files)
             .Should()
             .NotContain(file => file.To.EndsWith( "newDiskFile.dat"));
@@ -74,7 +74,7 @@ public class ApplyServiceTests(IServiceProvider provider) : ADataModelTest<Apply
         // Act
         var newFile = new GamePath(LocationId.Saves, "newDiskFile.dat");
         await Install.LocationsRegister.GetResolvedPath(newFile).WriteAllBytesAsync([0x01, 0x02, 0x03]);
-        var loadout = await ApplyService.Ingest(BaseLoadout.Installation);
+        var loadout = await ApplyService.Ingest(BaseLoadout.InstallationInstance);
         
         // Assert
         loadout!.Mods.SelectMany(mod=> mod.Files)
@@ -98,16 +98,16 @@ public class ApplyServiceTests(IServiceProvider provider) : ADataModelTest<Apply
         // Act
         deletedFile.Delete();
         deletedFile.FileExists.Should().BeFalse("the file was deleted");
-        await ApplyService.Ingest(BaseLoadout.Installation);
+        await ApplyService.Ingest(BaseLoadout.InstallationInstance);
         Refresh(ref BaseLoadout);
         
         // Assert
         deletedFile.FileExists.Should().BeFalse("file is still deleted after ingest");
-        var files = BaseLoadout.Files.Where(f => f.To.EndsWith("rootFile.txt")).ToArray();
+        var files = BaseLoadout.Mods.SelectMany(m => m.Files).Where(f => f.To.EndsWith("rootFile.txt")).ToArray();
         files.Length.Should().Be(2, "deletes are reified, and the delete is in the overrides");
         var overrideFile = files.FirstOrDefault(f => f.Mod.Category == ModCategory.Overrides);
         overrideFile.Should().NotBeNull();
-        overrideFile!.Contains(DeletedFile.Deleted).Should().BeTrue();
+        overrideFile!.Contains(DeletedFile.Size).Should().BeTrue();
         
         
         // Act

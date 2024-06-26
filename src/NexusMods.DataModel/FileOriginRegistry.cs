@@ -112,26 +112,21 @@ public class FileOriginRegistry : IFileOriginRegistry
     }
 
     /// <inheritdoc />
-    public DownloadAnalysis.Model Get(DownloadId id)
+    public DownloadAnalysis.ReadOnly Get(DownloadId id)
     {
-        var db = _conn.Db;
-        return db.Get<DownloadAnalysis.Model>(id.Value);
+        return DownloadAnalysis.Load(_conn.Db, id.Value);
     }
 
     /// <inheritdoc />
-    public IEnumerable<DownloadAnalysis.Model> GetAll()
+    public IEnumerable<DownloadAnalysis.ReadOnly> GetAll()
     {
-        var db = _conn.Db;
-        return db.Find(DownloadAnalysis.NumberOfEntries)
-                 .Select(id => db.Get<DownloadAnalysis.Model>(id));
+        return DownloadAnalysis.All(_conn.Db);
     }
 
     /// <inheritdoc />
-    public IEnumerable<DownloadAnalysis.Model> GetBy(Hash hash)
+    public IEnumerable<DownloadAnalysis.ReadOnly> GetBy(Hash hash)
     {
-        var db = _conn.Db;
-        return db.FindIndexed(hash, DownloadAnalysis.Hash)
-                 .Select(id => db.Get<DownloadAnalysis.Model>(id));
+        return DownloadAnalysis.FindByHash(_conn.Db, hash);
     }
 
     private async ValueTask<DownloadId> RegisterFolderInternal(AbsolutePath originalPath, 
@@ -190,15 +185,15 @@ public class FileOriginRegistry : IFileOriginRegistry
 
         _logger.LogInformation("Calculating metadata");
         using var tx = _conn.BeginTransaction();
-        
 
-        var analysis = new DownloadAnalysis.Model(tx)
+
+        existingId ??= tx.TempId();
+        
+        var analysis = new DownloadAnalysis.New(tx, existingId.Value)
         {
-            Id = existingId ?? tx.TempId(),
-            
             Hash = Hash.From(archiveHash),
             Size = Size.From(archiveSize),
-            Count = (ulong) files.Count,
+            NumberOfEntries = (ulong) files.Count,
             SuggestedName = suggestedName,
         };
 
@@ -206,12 +201,12 @@ public class FileOriginRegistry : IFileOriginRegistry
 
         foreach (var (path, file) in paths.Zip(files))
         {
-            _ = new DownloadContentEntry.Model(tx)
+            _ = new DownloadContentEntry.New(tx)
             {
                 Size = file.Size,
                 Hash = file.Hash,
                 Path = path,
-                DownloadAnalysisId = DownloadId.From(analysis.Id),
+                DownloadAnalysisId = analysis.Id,
             };
         }
 
@@ -223,11 +218,11 @@ public class FileOriginRegistry : IFileOriginRegistry
     /// <summary>
     ///     Gets a <see cref="DownloadId"/> with a given hash.
     /// </summary>
-    private bool TryGetDownloadIdForHash(IDb? db, Hash expectedHash, [NotNullWhen(true)] out DownloadId? analysis)
+    private bool TryGetDownloadIdForHash(IDb? db, Hash hash, [NotNullWhen(true)] out DownloadId? analysis)
     {
         db ??= _conn.Db;
 
-        foreach (var found in db.FindIndexed(expectedHash, DownloadAnalysis.Hash))
+        foreach (var found in DownloadAnalysis.FindByHash(db, hash))
         {
             analysis = DownloadId.From(found);
             return true;

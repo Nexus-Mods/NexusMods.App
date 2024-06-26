@@ -101,8 +101,6 @@ public sealed class MountAndBlade2BannerlordModInstaller : AModInstaller
 
                     if (relativePath.Equals(SubModuleFile))
                     {
-                        // TODO: For now lets keep it true while we don't have the validation layer
-                        src.Add(MnemonicDB.SubModuleFileMetadata.IsValid, true); 
                         src.Add(MnemonicDB.SubModuleFileMetadata.ModuleInfo, moduleInfo);
                     }
 

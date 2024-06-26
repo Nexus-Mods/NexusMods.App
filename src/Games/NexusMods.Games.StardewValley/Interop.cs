@@ -37,25 +37,31 @@ internal static class Interop
 
     public static ValueTask<Manifest?> DeserializeManifest(Stream stream) => Deserialize<Manifest>(stream);
 
-    public static async ValueTask<Manifest?> GetManifest(IFileStore fileStore, Mod.Model mod, CancellationToken cancellationToken = default)
+    public static async ValueTask<Manifest?> GetManifest(IFileStore fileStore, Mod.ReadOnly mod, CancellationToken cancellationToken = default)
     {
-        var manifestFile = mod.Files.FirstOrDefault(f => f.HasMetadata(SMAPIManifestMetadata.SMAPIManifest));
-        if (manifestFile == null || !manifestFile.TryGetAsStoredFile(out var storedFile)) return null;
+        var manifestFile = mod.Files
+            .OfTypeStoredFile()
+            .OfTypeSMAPIManifestMetadata()
+            .FirstOrDefault();
+        if (!manifestFile.IsValid()) return null;
 
-        await using var stream = await fileStore.GetFileStream(storedFile.Hash, cancellationToken);
+        await using var stream = await fileStore.GetFileStream(manifestFile.AsStoredFile().Hash, cancellationToken);
         return await DeserializeManifest(stream);
     }
 
     public static async ValueTask<ModDatabase?> GetModDatabase(
         IFileStore fileStore,
-        Mod.Model smapi,
+        Mod.ReadOnly smapi,
         CancellationToken cancellationToken = default)
     {
-        var manifestFile = smapi.Files.FirstOrDefault(f => f.HasMetadata(SMAPIModDatabaseMarker.SMAPIModDatabase));
-        if (manifestFile == null || !manifestFile.TryGetAsStoredFile(out var storedFile)) return null;
+        var databaseMarker = smapi.Files
+            .OfTypeStoredFile()
+            .OfTypeSMAPIModDatabaseMarker()
+            .FirstOrDefault();
+        if (databaseMarker.IsValid()) return null;
 
         // https://github.com/Pathoschild/SMAPI/blob/e8a86a0b98061d322c2af89af845ed9f5fd15468/src/SMAPI.Toolkit/ModToolkit.cs#L66-L71
-        await using var stream = await fileStore.GetFileStream(storedFile.Hash, cancellationToken);
+        await using var stream = await fileStore.GetFileStream(databaseMarker.AsStoredFile().Hash, cancellationToken);
         var metadata = await DeserializeWithDefaults<MetadataModel>(stream);
         if (metadata is null) return null;
 

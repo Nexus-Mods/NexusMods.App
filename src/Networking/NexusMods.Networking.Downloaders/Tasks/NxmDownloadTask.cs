@@ -21,6 +21,16 @@ public class NxmDownloadTask : ADownloadTask
 {
     private readonly INexusApiClient _nexusApiClient;
 
+    private NxmDownloadState.ReadOnly NxPersistentState
+    {
+        get
+        {
+            if (!PersistentState.TryGetAsNxmDownloadState(out var nxState))
+                throw new InvalidOperationException("Download task is not a NXM download task.");
+            return nxState;
+        }
+    }
+
     public NxmDownloadTask(IServiceProvider provider) : base(provider)
     {
         _nexusApiClient = provider.GetRequiredService<INexusApiClient>();
@@ -84,7 +94,8 @@ public class NxmDownloadTask : ADownloadTask
     {
         try
         {
-            var nxState = PersistentState.Db.Get<NxmDownloadState.Model>(PersistentState.Id);
+            var nxState = NxPersistentState;
+            
             var fileInfos = await _nexusApiClient.ModFilesAsync(nxState.Game, nxState.ModId, token);
 
             var file = fileInfos.Data.Files.FirstOrDefault(f => f.FileId == nxState.FileId);
@@ -96,15 +107,15 @@ public class NxmDownloadTask : ADownloadTask
             if (file is { SizeInBytes: not null })
             {
                 using var tx = Connection.BeginTransaction();
-                if (info.Data.Name is not null)
+                if (!string.IsNullOrWhiteSpace(info.Data.Name))
                     tx.Add(eid, DownloaderState.FriendlyName, info.Data.Name);
                 else
                     tx.Add(eid, DownloaderState.FriendlyName, file.FileName);
                 
                 tx.Add(eid, DownloaderState.Size, Size.FromLong(file.SizeInBytes!.Value));
                 tx.Add(eid, DownloaderState.Version, file.Version);
-                var result = await tx.Commit();
-                PersistentState = result.Db.Get<NxmDownloadState.Model>(eid);
+                await tx.Commit();
+                RefreshState();
                 return true;
             }
         }
@@ -124,25 +135,26 @@ public class NxmDownloadTask : ADownloadTask
         using var tx = Connection.BeginTransaction();
         tx.Add(PersistentState.Id, DownloaderState.Size, size);
         tx.Add(PersistentState.Id, DownloaderState.FriendlyName, name);
-        var nxState = PersistentState.Db.Get<NxmDownloadState.Model>(PersistentState.Id);
         
         Logger.LogDebug("Updated size and name for {Name} to {Size}", name, size);
-        var result = await tx.Commit();
-        PersistentState = result.Db.Get<NxmDownloadState.Model>(PersistentState.Id);
+        await tx.Commit();
+        RefreshState();
     }
-
+    
     private async Task<HttpRequestMessage[]> InitDownloadLinks(CancellationToken token)
     {
         Response<DownloadLink[]> links;
 
-        var state = PersistentState.Db.Get<NxmDownloadState.Model>(PersistentState.Id);
-        
-        if (!PersistentState.TryGet(NxmDownloadState.NxmKey, out var key))
-            links = await _nexusApiClient.DownloadLinksAsync(state.Game, state.ModId, state.FileId, token);
-        else
-            links = await _nexusApiClient.DownloadLinksAsync(state.Game, state.ModId, state.FileId, NXMKey.From(state.NxmKey), 
-                state.ValidUntil, token);
+        var nxState = NxPersistentState;
 
+        if (!NxmDownloadState.NxmKey.TryGet(nxState, out var nxmKey))
+        {
+            links = await _nexusApiClient.DownloadLinksAsync(nxState.Game, nxState.ModId, nxState.FileId, token);
+        }
+        else
+        {
+            links = await _nexusApiClient.DownloadLinksAsync(nxState.Game, nxState.ModId, nxState.FileId, NXMKey.From(nxState.NxmKey), nxState.ValidUntil, token);
+        }
         return links.Data.Select(u => new HttpRequestMessage(HttpMethod.Get, u.Uri)).ToArray();
     }
 

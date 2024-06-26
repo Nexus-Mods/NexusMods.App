@@ -21,5 +21,5 @@ public interface ITool
     /// <summary>
     /// Executes this tool against the given loadout.
     /// </summary>
-    public Task Execute(Loadout.Model loadout, CancellationToken cancellationToken);
+    public Task Execute(Loadout.ReadOnly loadout, CancellationToken cancellationToken);
 }

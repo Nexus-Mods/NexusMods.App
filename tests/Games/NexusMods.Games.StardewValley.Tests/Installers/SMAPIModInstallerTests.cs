@@ -6,6 +6,7 @@ using NexusMods.DataModel.Loadouts;
 using NexusMods.Games.StardewValley.Installers;
 using NexusMods.Games.TestFramework;
 using NexusMods.Paths;
+using FileId = NexusMods.Abstractions.NexusWebApi.Types.FileId;
 using ModId = NexusMods.Abstractions.NexusWebApi.Types.ModId;
 
 namespace NexusMods.Games.StardewValley.Tests.Installers;

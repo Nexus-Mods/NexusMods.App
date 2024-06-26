@@ -12,6 +12,7 @@ using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.Models;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -27,7 +28,7 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
     
     private bool _isFirstLoad = true;
 
-    [Reactive] private Abstractions.Loadouts.Loadout.Model NewestLoadout { get; set; }
+    [Reactive] private Abstractions.Loadouts.Loadout.ReadOnly NewestLoadout { get; set; }
     [Reactive] private LoadoutId LastAppliedLoadoutId { get; set; }
     [Reactive] private LoadoutWithTxId LastAppliedWithTxId { get; set; }
     [Reactive] private bool CanApply { get; set; } = true;
@@ -50,9 +51,11 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
         LaunchButtonViewModel = serviceProvider.GetRequiredService<ILaunchButtonViewModel>();
         LaunchButtonViewModel.LoadoutId = loadoutId;
 
-        NewestLoadout = _conn.Db.Get(loadoutId) ?? throw new ArgumentException("Loadout not found: " + loadoutId);
+        NewestLoadout = Abstractions.Loadouts.Loadout.Load(_conn.Db, _loadoutId);
+        if (!NewestLoadout.IsValid()) 
+            throw new ArgumentException("Loadout not found: " + loadoutId);
 
-        _gameInstallation = NewestLoadout.Installation;
+        _gameInstallation = NewestLoadout.InstallationInstance;
 
         ApplyCommand = ReactiveCommand.CreateFromTask(async () => await Apply(), 
             canExecute: this.WhenAnyValue(vm => vm.CanApply));
@@ -79,7 +82,8 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
         this.WhenActivated(disposables =>
             {
                 // Newest Loadout
-                _conn.Revisions(loadoutId)
+                Abstractions.Loadouts.Loadout.Load(_conn.Db, _loadoutId)
+                    .Revisions()
                     .OnUI()
                     .BindToVM(this, vm => vm.NewestLoadout)
                     .DisposeWith(disposables);
@@ -94,8 +98,8 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
                 this.WhenAnyValue(vm => vm.LastAppliedWithTxId)
                     .Select(revId =>
                         {
-                            var loadout = _conn.AsOf(revId.Tx).Get(revId.Id);
-                            if (loadout is null)
+                            var loadout = Abstractions.Loadouts.Loadout.Load(_conn.AsOf(revId.Tx),revId.Id);
+                            if (!loadout.IsValid())
                                 throw new ArgumentException("Loadout not found for revision: " + revId);
                             return loadout.LoadoutId;
                         }
@@ -141,7 +145,7 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
     {
         await Task.Run(async () =>
         {
-            var loadout = _conn.Db.Get(_loadoutId);
+            var loadout = Abstractions.Loadouts.Loadout.Load(_conn.Db, _loadoutId);
             await _applyService.Apply(loadout);
         });
     }
@@ -154,8 +158,8 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
 
             if (LastAppliedWithTxId.Id.Equals(_loadoutId))
             {
-                var loadout = _conn.Db.Get(_loadoutId);
-                await _applyService.Ingest(loadout.Installation);
+                var loadout = Abstractions.Loadouts.Loadout.Load(_conn.Db, _loadoutId);
+                await _applyService.Ingest(loadout.InstallationInstance);
             }
         }
     }

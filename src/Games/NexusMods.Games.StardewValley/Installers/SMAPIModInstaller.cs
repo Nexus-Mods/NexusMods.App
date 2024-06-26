@@ -4,6 +4,7 @@ using NexusMods.Abstractions.FileStore.Trees;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Games.StardewValley.Models;
+using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees;
@@ -81,7 +82,7 @@ public class SMAPIModInstaller : AModInstaller
 
                             if (!kv.Equals(manifestFile)) return storedFile;
                             
-                            storedFile.Add(SMAPIManifestMetadata.SMAPIManifest, true);
+                            storedFile.Add(SMAPIManifestMetadata.SMAPIManifest, Null.Instance);
                             return storedFile;
                         }
                     );

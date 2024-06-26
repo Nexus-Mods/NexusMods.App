@@ -7,17 +7,17 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Ids;
+using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
 using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 using Xunit.DependencyInjection;
 using DownloadId = NexusMods.Abstractions.FileStore.Downloads.DownloadId;
-using Entity = NexusMods.MnemonicDB.Abstractions.Models.Entity;
 using IGame = NexusMods.Abstractions.Games.IGame;
 
 // ReSharper disable StaticMemberInGenericType
@@ -49,7 +49,7 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
     protected IGame Game;
     protected GameInstallation Install;
     
-    protected Loadout.Model BaseLoadout = null!;
+    protected Loadout.ReadOnly BaseLoadout;
 
     protected CancellationToken Token = CancellationToken.None;
     private readonly IHost _host;
@@ -124,7 +124,7 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
         return result;
     }
 
-    protected Task<ModId[]> AddMods(Loadout.Model loadout, AbsolutePath path, string? name = null)
+    protected Task<ModId[]> AddMods(Loadout.ReadOnly loadout, AbsolutePath path, string? name = null)
     {
         return AddMods(LoadoutId.From(loadout.Id), path, name);
     }
@@ -175,8 +175,8 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
         return Task.CompletedTask;
     }
 
-    public void Refresh<T>(ref T ent) where T : Entity
+    public void Refresh<T>(ref T ent) where T : IReadOnlyModel<T>
     {
-        ent = Connection.Db.Get<T>(ent.Id);
+        ent = T.Create(Connection.Db, ent.Id);
     }
 }

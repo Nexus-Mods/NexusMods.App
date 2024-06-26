@@ -14,11 +14,12 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.DTO;
-using NexusMods.DataModel.GameRegistry;
+using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
+using GameMetadata = NexusMods.Abstractions.Loadouts.GameMetadata;
 
 namespace NexusMods.DataModel;
 
@@ -92,11 +93,10 @@ public class Registry : IGameRegistry, IHostedService
     /// </summary>
     private static bool TryGetLocatorResultId(IDb db, ILocatableGame locatableGame, GameLocatorResult result, [NotNullWhen(true)] out EntityId? id)
     {
-        var found = db
-            .FindIndexed(result.Path.ToString(), GameMetadata.Path)
-            .Select(db.Get<GameMetadata.Model>)
-            .FirstOrDefault(m => m.Domain == locatableGame.Domain && m.Store == result.Store);
-        if (found is null)
+        var wasFound = GameMetadata.FindByPath(db, result.Path.ToString())
+            .Select(id => GameMetadata.Load(db, id))
+            .TryGetFirst(m => m.Domain == locatableGame.Domain && m.Store == result.Store, out var found);
+        if (!wasFound)
         {
             id = null;
             return false;
@@ -120,13 +120,11 @@ public class Registry : IGameRegistry, IHostedService
             if (TryGetLocatorResultId(db, game, result, out var _))
                 return;
 
-            // Doesn't exist, so create it.
-            _ = new GameMetadata.Model(tx)
-            {
-                Store = result.Store.Value,
-                Domain = game.Domain.Value,
-                Path = result.Path.ToString(),
-            };
+            // TX Functions don't yet support the .New() syntax, so we'll have to do it manually.
+            var id = tx.TempId();
+            tx.Add(id, GameMetadata.Store, result.Store);
+            tx.Add(id, GameMetadata.Domain, game.Domain);
+            tx.Add(id, GameMetadata.Path, result.Path.ToString());
         });
         
         var txResult = await tx.Commit();

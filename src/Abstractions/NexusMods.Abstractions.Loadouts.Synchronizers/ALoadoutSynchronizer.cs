@@ -14,13 +14,15 @@ using NexusMods.Abstractions.Games.Trees;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Loadouts.Files;
-using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
+using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.Extensions.BCL;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.BuiltInEntities;
 using NexusMods.MnemonicDB.Abstractions.Models;
+using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
 using File = NexusMods.Abstractions.Loadouts.Files.File;
 
@@ -87,17 +89,17 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     #region IStandardizedLoadoutSynchronizer Implementation
 
     /// <inheritdoc />
-    public async ValueTask<FlattenedLoadout> LoadoutToFlattenedLoadout(Loadout.Model loadout)
+    public async ValueTask<FlattenedLoadout> LoadoutToFlattenedLoadout(Loadout.ReadOnly loadout)
     {
         var sorted = await SortMods(loadout);
         return ModsToFlattenedLoadout(sorted);
     }
 
-    private static FlattenedLoadout ModsToFlattenedLoadout(IEnumerable<Mod.Model> sorted)
+    private static FlattenedLoadout ModsToFlattenedLoadout(IEnumerable<Mod.ReadOnly> sorted)
     {
         var modArray = sorted.ToArray();
         var numItems = modArray.Sum(mod => mod.Files.Count);
-        var dict = new Dictionary<GamePath, File.Model>(numItems);
+        var dict = new Dictionary<GamePath, File.ReadOnly>(numItems);
         foreach (var mod in modArray)
         {
             if (!mod.Enabled)
@@ -105,10 +107,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
 
             foreach (var file in mod.Files)
             {
-                if (!file.TryGet(File.To, out var path))
-                    continue;
-
-                dict[path] = file;
+                dict[file.To] = file;
             }
         }
 
@@ -116,7 +115,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     }
 
     /// <inheritdoc />
-    public ValueTask<FileTree> FlattenedLoadoutToFileTree(FlattenedLoadout flattenedLoadout, Loadout.Model loadout)
+    public ValueTask<FileTree> FlattenedLoadoutToFileTree(FlattenedLoadout flattenedLoadout, Loadout.ReadOnly loadout)
     {
         return ValueTask.FromResult(FileTree.Create(flattenedLoadout.GetAllDescendentFiles()
             .Select(f => KeyValuePair.Create(f.GamePath(), f.Item.Value))));
@@ -124,18 +123,18 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
 
 
     /// <inheritdoc />
-    public async Task<DiskStateTree> FileTreeToDisk(FileTree fileTree, Loadout.Model loadout, FlattenedLoadout flattenedLoadout, DiskStateTree prevState, GameInstallation installation, bool skipIngest = false)
+    public async Task<DiskStateTree> FileTreeToDisk(FileTree fileTree, Loadout.ReadOnly loadout, FlattenedLoadout flattenedLoadout, DiskStateTree prevState, GameInstallation installation, bool skipIngest = false)
     {
         // Return the new tree
         return await FileTreeToDiskImpl(fileTree, loadout, flattenedLoadout, prevState, installation, true);
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal async Task<DiskStateTree> FileTreeToDiskImpl(FileTree fileTree, Loadout.Model loadout, FlattenedLoadout flattenedLoadout, DiskStateTree prevState, GameInstallation installation, bool fixFileMode, bool skipIngest = false)
+    internal async Task<DiskStateTree> FileTreeToDiskImpl(FileTree fileTree, Loadout.ReadOnly loadout, FlattenedLoadout flattenedLoadout, DiskStateTree prevState, GameInstallation installation, bool fixFileMode, bool skipIngest = false)
     {
         List<KeyValuePair<GamePath, HashedEntryWithName>> toDelete = new();
-        List<KeyValuePair<AbsolutePath, File.Model>> toWrite = new();
-        List<KeyValuePair<AbsolutePath, StoredFile.Model>> toExtract = new();
+        List<KeyValuePair<AbsolutePath, File.ReadOnly>> toWrite = new();
+        List<KeyValuePair<AbsolutePath, StoredFile.ReadOnly>> toExtract = new();
 
         Dictionary<GamePath, DiskStateEntry> resultingItems = new();
 
@@ -186,17 +185,17 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                     toDelete.Add(KeyValuePair.Create(gamePath, entry));
                     continue;
                 }
-                else if (file.Contains(StoredFile.Hash))
+                else if (file.TryGetAsStoredFile(out var storedFile))
                 {
-                    // StoredFile files are special cased so we can batch them up and extract them all at once.
+                    // StoredFile files are special cased, so we can batch them up and extract them all at once.
                     // Don't add toExtract to the results yet as we'll need to get the modified file times
                     // after we extract them
-                    if (file.Get(StoredFile.Hash) == entry.Hash)
+                    if (storedFile.Hash == entry.Hash)
                         continue;
 
-                    toExtract.Add(KeyValuePair.Create(entry.Path, file.Remap<StoredFile.Model>()));
+                    toExtract.Add(KeyValuePair.Create(entry.Path, storedFile));
                 }
-                else if (file.IsGeneratedFile())
+                else if (file.TryGetAsGeneratedFile(out _))
                 {
                     toWrite.Add(KeyValuePair.Create(entry.Path, file));
                 }
@@ -235,11 +234,11 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                 // File is deleted in the new tree, so nothing to do
                 continue;
             }
-            else if (file.Contains(StoredFile.Hash))
+            else if (file.TryGetAsStoredFile(out var storedFile))
             {
-                toExtract.Add(KeyValuePair.Create(absolutePath, file.Remap<StoredFile.Model>()));
+                toExtract.Add(KeyValuePair.Create(absolutePath, storedFile));
             }
-            else if (file.IsGeneratedFile())
+            else if (file.TryGetAsGeneratedFile(out _))
             {
                 toWrite.Add(KeyValuePair.Create(absolutePath, file));
             }
@@ -268,7 +267,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                 hash = await outputStream.HashingCopyAsync(Stream.Null, CancellationToken.None);
             }
 
-            var gamePath = loadout!.Installation.LocationsRegister.ToGamePath(entry.Key);
+            var gamePath = loadout.InstallationInstance.LocationsRegister.ToGamePath(entry.Key);
             resultingItems[gamePath] = new DiskStateEntry
             {
                 Hash = hash!.Value,
@@ -285,7 +284,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         var isUnix = _os.IsUnix();
         foreach (var (path, entry) in toExtract)
         {
-            resultingItems[entry.To] = new DiskStateEntry
+            resultingItems[entry.AsFile().To] = new DiskStateEntry
             {
                 Hash = entry.Hash,
                 Size = entry.Size,
@@ -350,7 +349,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         // Quick convert function such that to not be LINQ bottlenecked.
         // Needed as separate method because parent method is async.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static (Hash Hash, AbsolutePath Dest)[] GetFilesToExtract(List<KeyValuePair<AbsolutePath, StoredFile.Model>> toExtract) 
+        static (Hash Hash, AbsolutePath Dest)[] GetFilesToExtract(List<KeyValuePair<AbsolutePath, StoredFile.ReadOnly>> toExtract) 
         {
             (Hash Hash, AbsolutePath Dest)[] entries = GC.AllocateUninitializedArray<(Hash Src, AbsolutePath Dest)>(toExtract.Count);
             var toExtractSpan = CollectionsMarshal.AsSpan(toExtract);
@@ -380,14 +379,14 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     }
 
     /// <inheritdoc />
-    public async ValueTask<FileTree> DiskToFileTree(DiskStateTree diskState, Loadout.Model prevLoadout, FileTree prevFileTree, DiskStateTree prevDiskState)
+    public async ValueTask<FileTree> DiskToFileTree(DiskStateTree diskState, Loadout.ReadOnly prevLoadout, FileTree prevFileTree, DiskStateTree prevDiskState)
     {
-        List<KeyValuePair<GamePath, File.Model>> results = new();
+        List<KeyValuePair<GamePath, File.ReadOnly>> results = new();
         var newFiles = new List<TempEntity>();
         foreach (var item in diskState.GetAllDescendentFiles())
         {
             var gamePath = item.GamePath();
-            var absPath = prevLoadout.Installation.LocationsRegister.GetResolvedPath(item.GamePath());
+            var absPath = prevLoadout.InstallationInstance.LocationsRegister.GetResolvedPath(item.GamePath());
             if (prevDiskState.TryGetValue(gamePath, out var prevEntry))
             {
                 var prevFile = prevFileTree[gamePath].Item.Value!;
@@ -414,21 +413,28 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         {
             _logger.LogInformation("Found {Count} new files during ingest", newFiles.Count);
 
-            var overridesMod = prevLoadout.Mods.FirstOrDefault(m => m.Category == ModCategory.Overrides);
+            ModId overridesModId;
             using var tx = Connection.BeginTransaction();
             
-            if (overridesMod == null)
+            if (!prevLoadout.Mods.TryGetFirst(m => m.Category == ModCategory.Overrides, out var overridesMod))
             {
-                overridesMod = new Mod.Model(tx)
+                var newOverrideMod = new Mod.New(tx)
                 {
-                    Loadout = prevLoadout,
+                    LoadoutId = prevLoadout,
                     Category = ModCategory.Overrides,
                     Name = "Overrides",
                     Enabled = true,
+                    Revision = 0,
+                    Status = ModStatus.Installed,
                 };
+                overridesModId = newOverrideMod.Id;
+            }
+            else
+            {
+                overridesModId = overridesMod.Id;
             }
             
-            List<EntityId> addedFiles = new();
+            List<EntityId> addedFiles = [];
             foreach (var newFile in newFiles)
             {
                 // NOTE(erri120): allow implementations to put new files into custom mods
@@ -436,7 +442,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                 if (!newFile.Contains(File.Loadout) && !newFile.Contains(File.Mod))
                 {
                     newFile.Add(File.Loadout, prevLoadout.Id);
-                    newFile.Add(File.Mod, overridesMod.Id);
+                    newFile.Add(File.Mod, overridesModId);
                 }
 
                 newFile.AddTo(tx);
@@ -447,8 +453,8 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
 
             foreach (var addedFile in addedFiles)
             {
-                var storedFile = result.Db.Get<StoredFile.Model>(result[addedFile]);
-                results.Add(KeyValuePair.Create(storedFile.To, (File.Model)storedFile));
+                var storedFile = StoredFile.Load(result.Db, result[addedFile]);
+                results.Add(KeyValuePair.Create(storedFile.AsFile().To, storedFile.AsFile()));
             }
         }
 
@@ -481,7 +487,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// When a file is changed, this method will be called to convert the new data into a AModFile. The
     /// file on disk is still accessible via <paramref name="absolutePath"/>
     /// </summary>
-    protected virtual async ValueTask<TempEntity> HandleChangedFile(File.Model prevFile, DiskStateEntry prevEntry, DiskStateEntry newEntry, GamePath gamePath, AbsolutePath absolutePath)
+    protected virtual async ValueTask<TempEntity> HandleChangedFile(File.ReadOnly prevFile, DiskStateEntry prevEntry, DiskStateEntry newEntry, GamePath gamePath, AbsolutePath absolutePath)
     {
         var newFile = new TempEntity
         {
@@ -493,27 +499,30 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     }
 
     /// <inheritdoc />
-    public async ValueTask<FlattenedLoadout> FileTreeToFlattenedLoadout(FileTree fileTree, Loadout.Model prevLoadout,
+    public async ValueTask<FlattenedLoadout> FileTreeToFlattenedLoadout(FileTree fileTree, Loadout.ReadOnly prevLoadout,
         FlattenedLoadout prevFlattenedLoadout)
     {
         var resultIds = new List<(GamePath Path, EntityId Id)>();
-        var results = new List<KeyValuePair<GamePath, File.Model>>();
+        var results = new List<KeyValuePair<GamePath, File.ReadOnly>>();
         var mods = prevLoadout.Mods
             .GroupBy(m => m.Category)
-            .ToDictionary(g => g.Key, g => g.First());
+            .ToDictionary(g => g.Key, g => g.First().Id);
         
         using var tx = Connection.BeginTransaction();
 
         // Helper function to get a mod for a given category, or create a new one if it doesn't exist.
-        Mod.Model ModForCategory(ModCategory category)
+        EntityId ModForCategory(ModCategory category)
         {
             if (mods.TryGetValue(category, out var mod))
                 return mod;
-            var newMod = new Mod.Model(tx)
+            var newMod = new Mod.New(tx)
             {
                 Category = category,
                 Name = category.ToString(),
                 Enabled = true,
+                Revision = 0,
+                LoadoutId = prevLoadout.LoadoutId,
+                Status = ModStatus.Installed,
             };
             mods.Add(category, newMod);
             return newMod;
@@ -527,14 +536,14 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             // No mod, so we need to put it somewhere, for now we put it in the Override Mod
             if (!item.Item.Value.Contains(File.Mod))
             {
-                var mod = ModForCategory(ModCategory.Overrides);
-                tx.Add(item.Item.Value.Id, File.Mod, mod.Id);
+                var modId = ModForCategory(ModCategory.Overrides);
+                tx.Add(item.Item.Value.Id, File.Mod, modId);
             }
         }
         var result = await tx.Commit();
 
         var tree = resultIds.Select(kv => 
-            KeyValuePair.Create(kv.Path, result.Db.Get<File.Model>(result[kv.Id])));
+            KeyValuePair.Create(kv.Path, File.ReadOnly.Create(result.Db, result[kv.Id])));
         return FlattenedLoadout.Create(tree);
     }
 
@@ -551,63 +560,66 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     ///     Force overrides current locations to intended tree
     /// </param>
     /// <returns></returns>
-    public virtual async Task<DiskStateTree> Apply(Loadout.Model loadout, bool forceSkipIngest = false)
+    public virtual async Task<DiskStateTree> Apply(Loadout.ReadOnly loadout, bool forceSkipIngest = false)
     {
         // Note(Sewer) If the last loadout was a vanilla state loadout, we need to
         // skip ingest and ignore changes, since vanilla state loadouts should not be changed.
         // (Prevent 'Needs Ingest' exception)
-        forceSkipIngest = forceSkipIngest || IsLastLoadoutAVanillaStateLoadout(loadout.Installation);
+        forceSkipIngest = forceSkipIngest || IsLastLoadoutAVanillaStateLoadout(loadout.InstallationInstance);
 
         var flattened = await LoadoutToFlattenedLoadout(loadout);
         var fileTree = await FlattenedLoadoutToFileTree(flattened, loadout);
-        var prevState = _diskStateRegistry.GetState(loadout.Installation)!;
-        var diskState = await FileTreeToDisk(fileTree, loadout, flattened, prevState, loadout.Installation, forceSkipIngest);
+        var prevState = _diskStateRegistry.GetState(loadout.InstallationInstance)!;
+        var diskState = await FileTreeToDisk(fileTree, loadout, flattened, prevState, loadout.InstallationInstance, forceSkipIngest);
         diskState.LoadoutId = loadout.Id;
-        diskState.TxId = loadout.GetRevisionTxId();
-        await _diskStateRegistry.SaveState(loadout.Installation, diskState);
+        diskState.TxId = loadout.MostRecentTxId();
+        await _diskStateRegistry.SaveState(loadout.InstallationInstance, diskState);
 
         return diskState;
     }
 
     /// <inheritdoc />
-    public virtual async Task<Loadout.Model> Ingest(Loadout.Model loadout)
+    public virtual async Task<Loadout.ReadOnly> Ingest(Loadout.ReadOnly loadout)
     {
         // Reconstruct the previous file tree
         var prevFlattenedLoadout = await LoadoutToFlattenedLoadout(loadout);
         var prevFileTree = await FlattenedLoadoutToFileTree(prevFlattenedLoadout, loadout);
-        var prevDiskState = _diskStateRegistry.GetState(loadout.Installation)!;
+        var prevDiskState = _diskStateRegistry.GetState(loadout.InstallationInstance)!;
 
         // Get the new disk state
-        var diskState = await GetDiskState(loadout.Installation);
+        var diskState = await GetDiskState(loadout.InstallationInstance);
         var newFiles = FindChangedFiles(diskState, loadout, prevFileTree, prevDiskState);
 
-        await BackupNewFiles(loadout.Installation, newFiles.Select(f => 
+        await BackupNewFiles(loadout.InstallationInstance, newFiles.Select(f => 
             (f.GetFirst(File.To), 
              f.GetFirst(StoredFile.Hash), 
              f.GetFirst(StoredFile.Size))));
         var newLoadout = await AddChangedFilesToLoadout(loadout, newFiles);
         
         diskState.LoadoutId = newLoadout.Id;
-        diskState.TxId = newLoadout.GetRevisionTxId();
-        await _diskStateRegistry.SaveState(loadout.Installation, diskState);
+        diskState.TxId = newLoadout.MostRecentTxId();
+        await _diskStateRegistry.SaveState(loadout.InstallationInstance, diskState);
         return newLoadout;
     }
 
-    protected Mod.Model GetOrCreateOverridesMod(Loadout.Model loadout, ITransaction tx)
+    protected ModId GetOrCreateOverridesMod(Loadout.ReadOnly loadout, ITransaction tx)
     {
-        var overridesMod = loadout.Mods.FirstOrDefault(m => m.Category == ModCategory.Overrides);
-        overridesMod ??= new Mod.Model(tx)
+        if (loadout.Mods.TryGetFirst(m => m.Category == ModCategory.Overrides, out var overridesMod))
+            return overridesMod.ModId;
+        
+        var newOverrides = new Mod.New(tx)
         {
-            Loadout = loadout,
+            LoadoutId = loadout,
             Category = ModCategory.Overrides,
             Name = "Overrides",
             Enabled = true,
+            Status = ModStatus.Installed,
+            Revision = 0,
         };
-
-        return overridesMod;
+        return newOverrides.ModId;
     }
 
-    protected virtual async Task<Loadout.Model> AddChangedFilesToLoadout(Loadout.Model loadout, TempEntity[] newFiles)
+    protected virtual async Task<Loadout.ReadOnly> AddChangedFilesToLoadout(Loadout.ReadOnly loadout, TempEntity[] newFiles)
     {
         using var tx = Connection.BeginTransaction();
         var overridesMod = GetOrCreateOverridesMod(loadout, tx);
@@ -615,15 +627,16 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         foreach (var newFile in newFiles)
         {
             newFile.Add(File.Loadout, loadout.Id);
-            newFile.Add(File.Mod, overridesMod.Id);
+            newFile.Add(File.Mod, overridesMod);
             newFile.AddTo(tx);
         }
         
         // If we created the mod in this transaction, db will be null, and we can't call .Revise on it
         // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
-        if (overridesMod.Db != null)
+        if (overridesMod.Value.InPartition(PartitionId.Temp))
         {
-            overridesMod.Revise(tx);
+            var mod = new Mod.ReadOnly(loadout.Db, overridesMod);
+            mod.Revise(tx);
         }
         else
         {
@@ -631,10 +644,10 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         }
         
         var result = await tx.Commit();
-        return result.Db.Get<Loadout.Model>(loadout.Id);
+        return loadout.Rebase(result.Db);
     }
 
-    private TempEntity[] FindChangedFiles(DiskStateTree diskState, Loadout.Model loadout, FileTree prevFileTree, DiskStateTree prevDiskState)
+    private TempEntity[] FindChangedFiles(DiskStateTree diskState, Loadout.ReadOnly loadout, FileTree prevFileTree, DiskStateTree prevDiskState)
     {
         List<TempEntity> newFiles = new();
         // Find files on disk that have changed or are not in the loadout
@@ -707,7 +720,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                     {
                         { StoredFile.Hash, loadoutFile.Item.Value.Hash },
                         { StoredFile.Size, loadoutFile.Item.Value.Size },
-                        DeletedFile.Deleted,
+                        { DeletedFile.Size, loadoutFile.Item.Value.Size },
                         { File.To, gamePath },
                     };
                     newFile.Id = prevDbFile.Id;
@@ -721,7 +734,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                 {
                     { StoredFile.Hash, loadoutFile.Item.Value.Hash },
                     { StoredFile.Size, loadoutFile.Item.Value.Size },
-                    DeletedFile.Deleted,
+                    { DeletedFile.Size, loadoutFile.Item.Value.Size },
                     { File.To, gamePath },
                 };
                 newFiles.Add(newFile);
@@ -733,7 +746,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     }
 
     /// <inheritdoc />
-    public async ValueTask<FileDiffTree> LoadoutToDiskDiff(Loadout.Model loadout, DiskStateTree diskState)
+    public async ValueTask<FileDiffTree> LoadoutToDiskDiff(Loadout.ReadOnly loadout, DiskStateTree diskState)
     {
         var flattenedLoadout = await LoadoutToFlattenedLoadout(loadout);
         return await FlattenedLoadoutToDiskDiff(flattenedLoadout, diskState);
@@ -754,11 +767,9 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             if (flattenedLoadout.TryGetValue(gamePath, out var loadoutFileEntry))
             {
                 var file = loadoutFileEntry.Item.Value;
-                if (file.TryGetAsStoredFile(out _))
+                if (file.TryGetAsStoredFile(out var sf))
                 {
-                    var sf = file.Remap<StoredFile.Model>();
-                    
-                    if (sf.TryGetAsDeletedFile(out _))
+                    if (file.TryGetAsDeletedFile(out _))
                     {
                         resultingItems.Add(gamePath,
                             new DiskDiffEntry
@@ -797,7 +808,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                         );
                     }
                 }
-                else if (file.IsGeneratedFile())
+                else if (file.TryGetAsGeneratedFile(out _))
                 {
                     // TODO: Implement change detection for generated files
                     continue;
@@ -833,7 +844,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                     continue;
                 }
 
-                if (storedFile.TryGetAsDeletedFile(out _))
+                if (file.TryGetAsDeletedFile(out _))
                 {
                     continue;
                 }
@@ -848,7 +859,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                     }
                 );
             }
-            else if (file.IsGeneratedFile())
+            else if (file.TryGetAsGeneratedFile(out _))
             {
                 // TODO: Implement change detection for generated files
                 continue;
@@ -903,12 +914,12 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     }
     
     /// <inheritdoc />
-    public async Task<Hash?> WriteGeneratedFile(File.Model file, Stream outputStream, Loadout.Model loadout, FlattenedLoadout flattenedLoadout, FileTree fileTree)
+    public async Task<Hash?> WriteGeneratedFile(File.ReadOnly file, Stream outputStream, Loadout.ReadOnly loadout, FlattenedLoadout flattenedLoadout, FileTree fileTree)
     {
         if (!file.TryGetAsGeneratedFile(out var generatedFile))
             throw new InvalidOperationException("File is not a generated file");
 
-        var generator = generatedFile.Generator;
+        var generator = generatedFile.GeneratorInstance;
         if (generator == null)
             throw new InvalidOperationException("Generated file does not have a generator");
         
@@ -916,49 +927,54 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     }
 
     /// <inheritdoc />
-    public virtual async Task<Loadout.Model> CreateLoadout(GameInstallation installation, string? suggestedName = null)
+    public virtual async Task<Loadout.ReadOnly> CreateLoadout(GameInstallation installation, string? suggestedName = null)
     {
         // Get the initial state of the game folders
         var (isCached, initialState) = await GetOrCreateInitialDiskState(installation);
         
         using var tx = Connection.BeginTransaction();
-        using var db = Connection.Db;
+        var db = Connection.Db;
         
         // We need to create a 'Vanilla State Loadout' for rolling back the game
         // to the original state before NMA touched it, if we don't already
         // have one.
         var installLocation = installation.LocationsRegister[LocationId.Game];
-        if (!db.Loadouts().Any(x => 
-                x.Installation.LocationsRegister[LocationId.Game] == installLocation 
+        if (!Loadout.All(db)
+                .Any(x => 
+                x.InstallationInstance.LocationsRegister[LocationId.Game] == installLocation 
                 && x.IsVanillaStateLoadout()))
         {
             await CreateVanillaStateLoadout(installation);
         }
 
-        var loadout = new Loadout.Model(tx)
+        var loadout = new Loadout.New(tx)
         {
-            Db = db, // Has to be here to the installation resolves properly
             Name = suggestedName ?? installation.Game.Name,
-            Installation = installation,
+            InstallationId = installation.GameMetadataId,
             Revision = 0,
+            LoadoutKind = LoadoutKind.Default,
         };
         
         var gameFiles = CreateGameFilesMod(loadout, installation, tx);
         
         // Backup the files
         var filesToBackup = new List<(GamePath To, Hash Hash, Size Size)>();
-        var allStoredFileModels = new List<StoredFile.Model>();
+        var allStoredFileModels = new List<StoredFile.New>();
         foreach (var file in initialState.GetAllDescendentFiles())
         {
             var path = file.GamePath();
+            
             filesToBackup.Add((path, file.Item.Value.Hash, file.Item.Value.Size));
-            allStoredFileModels.Add(new StoredFile.Model(tx)
+            allStoredFileModels.Add(new StoredFile.New(tx)
             {
-                Loadout = loadout,
-                Mod = gameFiles,
+                File = new File.New(tx)
+                {
+                    To = path,
+                    LoadoutId = loadout,
+                    ModId = gameFiles,
+                },
                 Hash = file.Item.Value.Hash,
                 Size = file.Item.Value.Size,
-                To = path,
             });
         }
         
@@ -968,11 +984,12 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         var result = await tx.Commit();
         
         // Remap the ids
-        loadout = result.Remap(loadout);
+        var remappedLoadout = result.Remap(loadout);
         
         initialState.TxId = result.NewTx;
-        initialState.LoadoutId = loadout.Id;
+        initialState.LoadoutId = remappedLoadout.Id;
 
+        
         // Reset the game folder to initial state if making a new loadout.
         // We must do this before saving state, as Apply does a diff against
         // the last state. Which will be a state from previous loadout.
@@ -982,36 +999,36 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         {
             // This is a 'fast apply' operation, that avoids recomputing the file tree.
             // And avoids a double save-state.
-            var flattened = await LoadoutToFlattenedLoadout(loadout);
-            var prevState = _diskStateRegistry.GetState(loadout.Installation)!;
+            var flattened = await LoadoutToFlattenedLoadout(remappedLoadout);
+            var prevState = _diskStateRegistry.GetState(remappedLoadout.InstallationInstance)!;
             
-            // Note: We can downcast (remap) here because StoredFile inherits from File (base).
             var tree = FileTree.Create(allStoredFileModels.Select(file =>
                 {
-                    var remapped = result.Remap<File.Model>(file);
-                    return KeyValuePair.Create(remapped.To, remapped);
+                    var remapped = result.Remap(file);
+                    return KeyValuePair.Create(remapped.AsFile().To, remapped.AsFile());
                 }
             ));
-            await FileTreeToDisk(tree, loadout, flattened, prevState, loadout.Installation, true);
+            await FileTreeToDisk(tree, remappedLoadout, flattened, prevState, remappedLoadout.InstallationInstance, true);
             
             // Note: DiskState returned from `FileTreeToDisk` and `initialState`
             // are the same in terms of content!!
         }
 
-        await _diskStateRegistry.SaveState(loadout.Installation, initialState);
-        return loadout;
+        await _diskStateRegistry.SaveState(remappedLoadout.InstallationInstance, initialState);
+        return remappedLoadout;
     }
 
-    private Mod.Model CreateGameFilesMod(Loadout.Model loadout, GameInstallation installation, ITransaction tx)
+    private Mod.New CreateGameFilesMod(Loadout.New loadout, GameInstallation installation, ITransaction tx)
     {
-        return new Mod.Model(tx)
+        return new Mod.New(tx)
         {
             Name = "Game Files",
             Version = installation.Version.ToString(),
             Category = ModCategory.GameFiles,
             Enabled = true,
-            Loadout = loadout,
+            LoadoutId = loadout,
             Status = ModStatus.Installed,
+            Revision = 0,
         };
     }
 
@@ -1025,8 +1042,10 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         // All database information, including loadouts, initial game state and
         // TODO: Garbage Collect unused files.
 
-        foreach (var loadout in Connection.Db.Loadouts().ToArray())
-            await Connection.Delete(loadout.LoadoutId);
+        using var tx = Connection.BeginTransaction();
+        foreach (var loadout in Loadout.All(Connection.Db))
+            tx.Delete(loadout, true);
+        await tx.Commit();
         
         await _diskStateRegistry.ClearInitialState(installation);
     }
@@ -1037,9 +1056,9 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         // Clear Initial State if this is the only loadout for the game.
         // We use folder location for this.
         var installLocation = installation.LocationsRegister[LocationId.Game];
-        var isLastLoadout = Connection.Db.Loadouts()
+        var isLastLoadout = Loadout.All(Connection.Db)
             .Count(x => 
-                x.Installation.LocationsRegister[LocationId.Game] == installLocation 
+                x.InstallationInstance.LocationsRegister[LocationId.Game] == installLocation 
                 && !x.IsVisible()) <= 1;
 
         if (isLastLoadout)
@@ -1084,7 +1103,9 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             await ApplyVanillaStateLoadout(installation);
         }
 
-        await Connection.Delete(id);
+        using var tx = Connection.BeginTransaction();
+        tx.Delete(id, true);
+        await tx.Commit();
     }
 
     /// <summary>
@@ -1095,17 +1116,15 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     ///     is deleted. And is deleted when a non-vanillastate loadout is applied.
     ///     It should be a singleton.
     /// </summary>
-    private async Task<Loadout.Model> CreateVanillaStateLoadout(GameInstallation installation)
+    private async Task<Loadout.ReadOnly> CreateVanillaStateLoadout(GameInstallation installation)
     {
         var (_, initialState) = await GetOrCreateInitialDiskState(installation);
 
         using var tx = Connection.BeginTransaction();
-        var db = Connection.Db;
-        var loadout = new Loadout.Model(tx)
+        var loadout = new Loadout.New(tx)
         {
-            Db = db, // Has to be here to the installation resolves properly
             Name = $"Vanilla State Loadout for {installation.Game.Name}",
-            Installation = installation,
+            InstallationId = installation.GameMetadataId,
             Revision = 0,
             LoadoutKind = LoadoutKind.VanillaState,
         };
@@ -1120,20 +1139,23 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         {
             var path = file.GamePath();
             filesToBackup.Add((path, file.Item.Value.Hash, file.Item.Value.Size));
-            _ = new StoredFile.Model(tx)
+            _ = new StoredFile.New(tx)
             {
-                Loadout = loadout,
-                Mod = gameFiles,
+                File = new File.New(tx)
+                {
+                    LoadoutId = loadout,
+                    ModId = gameFiles,
+                    To = path,
+                },
                 Hash = file.Item.Value.Hash,
                 Size = file.Item.Value.Size,
-                To = path,
             };
         }
         
         await BackupNewFiles(installation, filesToBackup);
-        await tx.Commit();
+        var result = await tx.Commit();
 
-        return loadout;
+        return result.Remap(loadout);
     }
 #endregion
 
@@ -1146,14 +1168,15 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// <param name="mod"></param>
     /// <returns></returns>
     /// <exception cref="NotImplementedException"></exception>
-    public virtual async ValueTask<ISortRule<Mod.Model, ModId>[]> ModSortRules(Loadout.Model loadout, Mod.Model mod)
+    public virtual async ValueTask<ISortRule<Mod.ReadOnly, ModId>[]> ModSortRules(Loadout.ReadOnly loadout, Mod.ReadOnly mod)
     {
         if (mod.Category == ModCategory.GameFiles)
-            return [new First<Mod.Model, ModId>()];
+            return [new First<Mod.ReadOnly, ModId>()];
         if (mod.Category == ModCategory.Overrides)
-            return [new Last<Mod.Model, ModId>()];
-        if (mod.TryGet(Mod.SortAfter, out var other))
-            return [new After<Mod.Model, ModId> { Other = ModId.From(other) }];
+            return [new Last<Mod.ReadOnly, ModId>()];
+        if (Mod.SortAfter.TryGet(mod, out var other))
+            if (other != EntityId.From(0)) 
+                return [new After<Mod.ReadOnly, ModId> { Other = ModId.From(other) }];
         return [];
     }
 
@@ -1162,7 +1185,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// </summary>
     /// <param name="loadout"></param>
     /// <returns></returns>
-    protected virtual async Task<IEnumerable<Mod.Model>> SortMods(Loadout.Model loadout)
+    protected virtual async Task<IEnumerable<Mod.ReadOnly>> SortMods(Loadout.ReadOnly loadout)
     {
         var mods = loadout.Mods.Where(mod => mod.Enabled).ToList();
         _logger.LogInformation("Sorting {ModCount} mods in loadout {LoadoutName}", mods.Count, loadout.Name);
@@ -1170,7 +1193,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             .SelectAsync(async mod => (mod.Id, await ModSortRules(loadout, mod)))
             .ToDictionaryAsync(r => r.Id, r => r.Item2);
         if (modRules.Count == 0)
-            return Array.Empty<Mod.Model>();
+            return Array.Empty<Mod.ReadOnly>();
 
         var sorted = _sorter.Sort(mods, m => ModId.From(m.Id), m => modRules[m.Id]);
         return sorted;
@@ -1189,7 +1212,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             return false;
 
         var db = Connection.AsOf(lastApplied.Tx);
-        return db.Get<Loadout.Model>(lastApplied.Id.Value).IsVanillaStateLoadout();
+        return Loadout.Load(db, lastApplied.Id).IsVanillaStateLoadout();
     }
 
     /// <summary>
@@ -1216,17 +1239,18 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
 
     private async Task ApplyVanillaStateLoadout(GameInstallation installation)
     {
-        using var db = Connection.Db;
+        var db = Connection.Db;
         var installLocation = installation.LocationsRegister[LocationId.Game];
 
         // Note(sewer) We should always have a vanilla state loadout, so FirstOrDefault
         // should never return null. But, if due to some issue or bug we don't,
         // this is a recoverable error. We can just create a new vanilla state loadout.
         // as that is based on the initial state of the game folder.
-        var vanillaStateLoadout = db.Loadouts().FirstOrDefault(x =>
-            x.Installation.LocationsRegister[LocationId.Game] == installLocation
-            && x.IsVanillaStateLoadout()
-        ) ?? await CreateVanillaStateLoadout(installation);
+        var vanillaStateLoadout = Loadout.All(db)
+            .FirstOrDefault(x => x.InstallationInstance.LocationsRegister[LocationId.Game] == installLocation && x.IsVanillaStateLoadout());
+        
+        if (!vanillaStateLoadout.IsValid())
+            await CreateVanillaStateLoadout(installation);
 
         await Apply(vanillaStateLoadout, true);
     }

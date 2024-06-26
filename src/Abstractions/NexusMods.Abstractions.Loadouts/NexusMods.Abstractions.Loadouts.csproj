@@ -17,6 +17,7 @@
       <PackageReference Include="NexusMods.MnemonicDB.Storage" />
       <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
       <ProjectReference Include="..\NexusMods.Abstractions.Triggers\NexusMods.Abstractions.Triggers.csproj" />
+      <PackageReference Include="NexusMods.MnemonicDB.SourceGenerator" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
 
 </Project>

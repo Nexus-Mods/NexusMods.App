@@ -16,13 +16,13 @@ public abstract class RunGameWithScriptExtender<T> : RunGameTool<T> where T : AG
 
     protected abstract GamePath ScriptLoaderPath { get; }
 
-    protected override async ValueTask<AbsolutePath> GetGamePath(Loadout.Model loadout)
+    protected override async ValueTask<AbsolutePath> GetGamePath(Loadout.ReadOnly loadout)
     {
         var flattened =
-            await ((IStandardizedLoadoutSynchronizer)loadout.Installation.GetGame().Synchronizer)
+            await ((IStandardizedLoadoutSynchronizer)loadout.InstallationInstance.GetGame().Synchronizer)
             .LoadoutToFlattenedLoadout(loadout);
         return flattened.ContainsKey(ScriptLoaderPath) ?
-            ScriptLoaderPath.CombineChecked(loadout.Installation) :
+            ScriptLoaderPath.CombineChecked(loadout.InstallationInstance) :
             await base.GetGamePath(loadout);
     }
 }

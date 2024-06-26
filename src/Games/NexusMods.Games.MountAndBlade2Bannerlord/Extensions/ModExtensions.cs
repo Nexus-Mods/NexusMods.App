@@ -1,31 +1,46 @@
-﻿using Bannerlord.ModuleManager;
-using NexusMods.Abstractions.Loadouts.Mods;
-using NexusMods.Games.MountAndBlade2Bannerlord.Models;
+﻿using NexusMods.Abstractions.Loadouts.Mods;
+using NexusMods.Games.MountAndBlade2Bannerlord.MnemonicDB;
 using File = NexusMods.Abstractions.Loadouts.Files.File;
+using ModuleFileMetadata = NexusMods.Games.MountAndBlade2Bannerlord.Models.ModuleFileMetadata;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord.Extensions;
 
 internal static class ModExtensions
 {
-    public static MnemonicDB.SubModuleFileMetadata.Model? GetSubModuleFileMetadata(this Mod.Model mod)
+    public static bool TryGetModuleInfo(this Mod.ReadOnly mod, out ModuleInfoExtended.ReadOnly moduleInfo)
     {
-        return MnemonicDB.SubModuleFileMetadata.OfSubModuleFileMetadata(mod.Files).FirstOrDefault();
+        var subModuleMetadata = mod.Files.OfTypeModuleFileMetadata()
+            .OfTypeSubModuleFileMetadata()
+            .FirstOrDefault();
+        
+        if (subModuleMetadata.IsValid())
+        {
+            moduleInfo = subModuleMetadata.ModuleInfo;
+            return true;
+        }
+
+        moduleInfo = default(ModuleInfoExtended.ReadOnly);
+        return false;
     }
 
-    public static MnemonicDB.ModuleInfoExtended.Model? GetModuleInfo(this Mod.Model mod) => 
-        GetSubModuleFileMetadata(mod)?.ModuleInfo;
+    public static IEnumerable<ModuleFileMetadata> GetModuleFileMetadatas(this Mod.ReadOnly mod)
+    {
+        foreach (var file in mod.Files)
+        {
+            if (file.TryGetModuleFileMetadata(out var meta))
+            {
+                yield return meta;
+            }
+        }
+    }
 
-    public static IEnumerable<ModuleFileMetadata> GetModuleFileMetadatas(this Mod.Model mod)
+    public static bool TryGetModuleFileMetadata(this File.ReadOnly modFile, out ModuleFileMetadata data)
     {
         throw new NotImplementedException();
-        //return mod.Files.Values.Select(GetModuleFileMetadata).OfType<ModuleFileMetadata>();
     }
 
-    public static ModuleFileMetadata? GetModuleFileMetadata(this File.Model modFile)
+    public static string? GetOriginalRelativePath(this File.ReadOnly mod)
     {
         throw new NotImplementedException();
-        //return modFile.Metadata.OfType<ModuleFileMetadata>().FirstOrDefault();
     }
-
-    public static string? GetOriginalRelativePath(this File.Model mod) => GetModuleFileMetadata(mod)?.OriginalRelativePath;
 }

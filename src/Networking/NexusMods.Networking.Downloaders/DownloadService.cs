@@ -9,10 +9,13 @@ using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Networking.Downloaders.Tasks;
 using NexusMods.Networking.Downloaders.Tasks.State;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using DynamicData.Kernel;
 using Microsoft.Extensions.Hosting;
 using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.IO;
+using NexusMods.MnemonicDB.Abstractions.DatomIterators;
+using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.Paths;
 
 namespace NexusMods.Networking.Downloaders;
@@ -46,7 +49,7 @@ public class DownloadService : IDownloadService, IDisposable, IHostedService
         var db = _conn.Db;
 
         var tasks = db.Find(DownloaderState.Status)
-            .Select(x => db.Get<DownloaderState.Model>(x))
+            .Select(x => DownloaderState.Load(db, x))
             .Where(x => x.Status != DownloadTaskStatus.Completed && 
                              x.Status != DownloadTaskStatus.Cancelled)
             .Select(GetTaskFromState)
@@ -55,7 +58,7 @@ public class DownloadService : IDownloadService, IDisposable, IHostedService
         return tasks;
     }
 
-    internal IDownloadTask? GetTaskFromState(DownloaderState.Model state)
+    internal IDownloadTask? GetTaskFromState(DownloaderState.ReadOnly state)
     {
         if (state.Contains(HttpDownloadState.Uri))
         {
@@ -143,7 +146,18 @@ public class DownloadService : IDownloadService, IDisposable, IHostedService
     /// <inheritdoc />
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        _conn.UpdatesFor(DownloaderState.Status)
+        _conn.Revisions
+            // This is really inefficient, but we'd need to rewrite other parts of this service
+            // to process these updates in a more efficient way, so we'll come back to this later.
+            // We should be using ObserveDatoms here
+            .SelectMany(revision =>
+            {
+                return revision.AddedDatoms
+                    .Select(r => r.Resolved)
+                    .Where(d => d.A == DownloaderState.Status)
+                    .Select(d => (revision.Database, d.E));
+            })
+            .StartWith(DownloaderState.All(_conn.Db).Select(state => (state.Db, state.Id)))
             .Subscribe(x =>
             {
                 var (db, id) = x;
@@ -151,10 +165,10 @@ public class DownloadService : IDownloadService, IDisposable, IHostedService
                 {
                     var found = e.Lookup(id);
                     if (found.HasValue) 
-                        found.Value.ResetState(db);
+                        found.Value.RefreshState();
                     else
                     {
-                        var task = GetTaskFromState(db.Get<DownloaderState.Model>(id));
+                        var task = GetTaskFromState(DownloaderState.Load(db, id));
                         if (task == null)
                             return;
                         e.AddOrUpdate(task);
@@ -168,14 +182,14 @@ public class DownloadService : IDownloadService, IDisposable, IHostedService
             .Subscribe()
             .DisposeWith(_disposables);
         
+        var db = _conn.Db;
         // Cancel any orphaned downloads
-        foreach (var task in _conn.Db.FindIndexed((byte)DownloadTaskStatus.Downloading, DownloaderState.Status))
-        {
+        foreach (var task in  DownloaderState.FindByStatus(db, DownloadTaskStatus.Downloading))
+        { 
             try
             {
                 _logger.LogInformation("Cancelling orphaned download task {Task}", task);
-                var state = _conn.Db.Get<DownloaderState.Model>(task);
-                var downloadTask = GetTaskFromState(state);
+                var downloadTask = GetTaskFromState(task);
                 downloadTask?.Cancel();
             }
             catch (Exception ex)

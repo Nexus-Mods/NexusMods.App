@@ -16,7 +16,7 @@ public class ModOverwritesGameFilesEmitter : ILoadoutDiagnosticEmitter
 
     private static readonly GamePath ContentDirectoryPath = new(LocationId.Game, "Content");
 
-    public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.Model loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
+    public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.ReadOnly loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         await Task.Yield();
 

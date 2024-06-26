@@ -1,9 +1,6 @@
 ﻿using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
-using NexusMods.Abstractions.Serialization;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.MnemonicDB.Abstractions;
 using ReactiveUI;
@@ -24,8 +21,7 @@ public class ModCategoryViewModel : AViewModel<IModCategoryViewModel>, IModCateg
         this.WhenActivated(d =>
         {
             this.WhenAnyValue(vm => vm.Row)
-                .SelectMany(id => conn.Revisions(id))
-                .WhereNotNull()
+                .SelectMany(id => Mod.Observe(conn, id))
                 .Select(revision => revision.Category)
                 .OnUI()
                 .BindTo(this, vm => vm.Category)
@@ -36,8 +32,8 @@ public class ModCategoryViewModel : AViewModel<IModCategoryViewModel>, IModCateg
     public int Compare(ModId a, ModId b)
     {
         var db = _conn.Db;
-        var aMod = _conn.Db.Get(a);
-        var bMod = _conn.Db.Get(b);
-        return string.Compare(aMod?.Category.ToString() ?? "", bMod?.Category.ToString() ?? "", StringComparison.Ordinal);
+        var aMod = Mod.Load(db, a);
+        var bMod = Mod.Load(db, b);
+        return string.Compare(aMod.Category.ToString() ?? "", bMod.Category.ToString() ?? "", StringComparison.Ordinal);
     }
 }

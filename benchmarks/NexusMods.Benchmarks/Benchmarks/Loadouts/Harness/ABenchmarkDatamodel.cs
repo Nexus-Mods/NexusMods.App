@@ -27,7 +27,7 @@ public class ABenchmarkDatamodel(IServiceProvider provider) : ADataModelTest<ABe
 
     public new IGame Game => base.Game;
     public new GameInstallation Install => base.Install;
-    public new Loadout.Model BaseLoadout => base.BaseLoadout;
+    public new Loadout.ReadOnly BaseLoadout => base.BaseLoadout;
     
     public static ABenchmarkDatamodel WithMod(IServiceProvider provider, string modName, IEnumerable<string> files)
     {

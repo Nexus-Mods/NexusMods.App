@@ -23,12 +23,12 @@ public interface IDataReference
     /// Resolves the data at <see cref="TxId"/> to an <see cref="Entity"/>.
     /// </summary>
     /// <returns><c>null</c> if the value doesn't exist in the data store.</returns>
-    Entity? ResolveData(IServiceProvider serviceProvider, TxId dataStore);
+    IReadOnlyModel? ResolveData(IServiceProvider serviceProvider, TxId dataStore);
 
     /// <summary>
     /// Converts the data from <see cref="ResolveData"/> to a string representation.
     /// </summary>
-    string ToStringRepresentation(Entity data);
+    string ToStringRepresentation(IReadOnlyModel data);
 }
 
 /// <summary>
@@ -37,7 +37,7 @@ public interface IDataReference
 /// <seealso cref="IDataReference"/>
 [PublicAPI]
 public interface IDataReference<out TDataId, TData> : IDataReference
-    where TData : Entity
+    where TData : IReadOnlyModel
 {
     /// <summary>
     /// Gets the ID of the referenced data.
@@ -45,11 +45,11 @@ public interface IDataReference<out TDataId, TData> : IDataReference
     TDataId DataId { get; }
 
     /// <inheritdoc/>
-    Entity? IDataReference.ResolveData(IServiceProvider serviceProvider, TxId dataStore) 
+    IReadOnlyModel? IDataReference.ResolveData(IServiceProvider serviceProvider, TxId dataStore) 
         => ResolveData(serviceProvider, dataStore);
 
     /// <inheritdoc/>
-    string IDataReference.ToStringRepresentation(Entity data)
+    string IDataReference.ToStringRepresentation(IReadOnlyModel data)
     {
         if (data is not TData actualData)
             throw new ArgumentException($"Argument is not of type '{typeof(TData)}' but '{data.GetType()}'", nameof(data));

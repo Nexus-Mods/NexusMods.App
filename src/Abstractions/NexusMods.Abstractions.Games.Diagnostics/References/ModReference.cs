@@ -9,7 +9,7 @@ namespace NexusMods.Abstractions.Diagnostics.References;
 /// A reference to a <see cref="Mod"/>.
 /// </summary>
 [PublicAPI]
-public record ModReference : IDataReference<ModId, Mod.Model>
+public record ModReference : IDataReference<ModId, Mod.ReadOnly>
 {
     /// <inheritdoc/>
     public required TxId TxId { get; init; }
@@ -18,12 +18,12 @@ public record ModReference : IDataReference<ModId, Mod.Model>
     public required ModId DataId { get; init; }
 
     /// <inheritdoc/>
-    public Mod.Model? ResolveData(IServiceProvider serviceProvider, IConnection dataStore)
+    public Mod.ReadOnly ResolveData(IServiceProvider serviceProvider, IConnection dataStore)
     {
         var db = dataStore.AsOf(TxId);
-        return db.Get<Mod.Model>(DataId.Value);
+        return Mod.Load(db, DataId.Value);
     }
 
     /// <inheritdoc/>
-    public string ToStringRepresentation(Mod.Model data) => data.Name;
+    public string ToStringRepresentation(Mod.ReadOnly data) => data.Name;
 }

@@ -10,6 +10,7 @@ using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Games.StardewValley.Models;
+using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
@@ -88,8 +89,8 @@ public class SMAPIInstaller : AModInstaller
         {
             // https://www.nexusmods.com/stardewvalley/mods/2400
             var source = info.Source;
-            isSMAPI = source.Get(NexusModsArchiveMetadata.GameId) == StardewValley.GameDomain &&
-                      source.Get(NexusModsArchiveMetadata.ModId) == Abstractions.NexusWebApi.Types.ModId.From(2400);
+            isSMAPI = NexusModsArchiveMetadata.GameId.Get(source) == StardewValley.GameDomain &&
+                      NexusModsArchiveMetadata.ModId.Get(source) == Abstractions.NexusWebApi.Types.ModId.From(2400);
         }
 
         var installDataFiles = GetInstallDataFiles(info.ArchiveFiles);
@@ -193,7 +194,7 @@ public class SMAPIInstaller : AModInstaller
             {
                 var storedFile = kv.ToStoredFile(to, new TempEntity
                 {
-                    {SMAPIModDatabaseMarker.SMAPIModDatabase, true},
+                    {SMAPIModDatabaseMarker.SMAPIModDatabase, Null.Instance},
                 });
                 
                 modFiles.Add(storedFile);
