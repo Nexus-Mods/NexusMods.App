@@ -84,7 +84,8 @@
                 </DataGrid.Resources>
                 <DataGrid.Columns>
                     <DataGridTemplateColumn Header="{x:Static resources:Language.FileOriginsPageView_NameHeader}" 
-                                            Width="*">
+                                            Width="*"
+                                            SortMemberPath="Name">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate DataType="fileOriginEntry:IFileOriginEntryViewModel">
                                 <TextBlock Classes="BodyMDNormal" 
@@ -93,7 +94,8 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="{x:Static resources:Language.FileOriginsPageView_VersionHeader}">
+                    <DataGridTemplateColumn Header="{x:Static resources:Language.FileOriginsPageView_VersionHeader}"
+                                            SortMemberPath="Version">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate DataType="fileOriginEntry:IFileOriginEntryViewModel">
                                 <TextBlock Classes="BodyMDNormal" 
@@ -102,7 +104,8 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="{x:Static resources:Language.FileOriginsPageView_SizeHeader}">
+                    <DataGridTemplateColumn Header="{x:Static resources:Language.FileOriginsPageView_SizeHeader}"
+                                            SortMemberPath="Size">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate DataType="fileOriginEntry:IFileOriginEntryViewModel">
                                 <TextBlock Classes="BodyMDNormal" 
@@ -111,7 +114,8 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="{x:Static resources:Language.FileOriginsPageView_DownloadedHeader}">
+                    <DataGridTemplateColumn Header="{x:Static resources:Language.FileOriginsPageView_DownloadedHeader}"
+                                            SortMemberPath="DisplayArchiveDate">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate DataType="fileOriginEntry:IFileOriginEntryViewModel">
                                 <TextBlock Classes="BodyMDNormal" 
@@ -120,7 +124,8 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="{x:Static resources:Language.FileOriginsPageView_InstalledHeader}">
+                    <DataGridTemplateColumn Header="{x:Static resources:Language.FileOriginsPageView_InstalledHeader}"
+                                            SortMemberPath="DisplayLastInstalledDate">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate DataType="fileOriginEntry:IFileOriginEntryViewModel">
                                 <TextBlock Classes="BodyMDNormal" 
@@ -129,7 +134,9 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="{x:Static resources:Language.FileOriginsPageView_ActionHeader}" MinWidth="102">
+                    <DataGridTemplateColumn Header="{x:Static resources:Language.FileOriginsPageView_ActionHeader}" 
+                                            MinWidth="102"
+                                            SortMemberPath="IsModAddedToLoadout">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate DataType="fileOriginEntry:IFileOriginEntryViewModel">
                                 <Grid>
