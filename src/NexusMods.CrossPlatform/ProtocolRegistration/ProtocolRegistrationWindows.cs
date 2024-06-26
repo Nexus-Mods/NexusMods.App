@@ -1,4 +1,5 @@
 using System.Runtime.Versioning;
+using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.Paths;
@@ -11,54 +12,65 @@ namespace NexusMods.CrossPlatform.ProtocolRegistration;
 [SupportedOSPlatform("windows")]
 public class ProtocolRegistrationWindows : IProtocolRegistration
 {
+    private readonly ILogger _logger;
     private readonly IOSInterop _osInterop;
+    private readonly IFileSystem _fileSystem;
 
     /// <summary>
-    /// constructor
+    /// Constructor.
     /// </summary>
-    public ProtocolRegistrationWindows(IOSInterop osInterop)
+    public ProtocolRegistrationWindows(
+        ILogger<ProtocolRegistrationWindows> logger,
+        IOSInterop osInterop,
+        IFileSystem fileSystem)
     {
+        _logger = logger;
         _osInterop = osInterop;
+        _fileSystem = fileSystem;
     }
 
     /// <inheritdoc/>
-    public Task<bool> IsSelfHandler(string protocol)
+    public Task RegisterHandler(string uriScheme, bool setAsDefaultHandler = true, CancellationToken cancellationToken = default)
     {
-        using var key = GetClassKey(protocol);
-        using var commandKey = GetCommandKey(key);
+        try
+        {
+            UpdateRegistry(uriScheme);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Exception while updating registry to register protocol handler for `{Scheme}`", uriScheme);
+        }
 
-        return Task.FromResult(((string?)commandKey.GetValue("") ?? "").Contains(_osInterop.GetOwnExe().ToString()));
+        if (setAsDefaultHandler)
+        {
+            // On Windows, this is done via the "UserChoice" registry key.
+            // We can't set this automatically without much hassle. See this for details:
+            // https://www.winhelponline.com/blog/set-default-browser-file-associations-command-line-windows-10/
+            _logger.LogDebug("Skipping setting default handler for `{Scheme}`", uriScheme);
+        }
+
+        return Task.CompletedTask;
     }
 
-    /// <inheritdoc/>
-    public Task<string?> Register(string protocol, string friendlyName, string workingDirectory, string commandLine)
+    private void UpdateRegistry(string uriScheme)
     {
-        using var key = GetClassKey(protocol);
-        key.SetValue("", "URL:" + friendlyName);
+        // https://learn.microsoft.com/en-us/previous-versions/windows/internet-explorer/ie-developer/platform-apis/aa767914(v=vs.85)
+
+        using var key = GetClassKey(uriScheme);
+        key.SetValue("", "URL:Nexus Mods App");
         key.SetValue("URL Protocol", "");
 
         using var commandKey = GetCommandKey(key);
 
-        var res = (string?)commandKey.GetValue("");
-        commandKey.SetValue("", commandLine);
-        commandKey.SetValue("WorkingDirectory", workingDirectory);
+        var executable = _osInterop.GetOwnExe();
 
-        return Task.FromResult(res);
+        commandKey.SetValue("", $"\"{executable.ToNativeSeparators(_fileSystem.OS)}\" \"%1\"");
+        commandKey.SetValue("WorkingDirectory", $"\"{executable.Parent.ToNativeSeparators(_fileSystem.OS)}\"");
     }
 
-    /// <inheritdoc/>
-    public Task<string?> RegisterSelf(string protocol)
-    {
-        var exePath = _osInterop.GetOwnExe();
-        var osInfo = FileSystem.Shared.OS;
-        return Register(protocol, "NMA", "\""+exePath.Parent.ToNativeSeparators(osInfo) + "\"", 
-            "\""+exePath.ToNativeSeparators(osInfo)+"\"" +
-            " protocol-invoke --url \"%1\"");
-    }
-    
     private static RegistryKey GetClassKey(string protocol)
     {
-        return Registry.CurrentUser.CreateSubKey("SOFTWARE\\Classes\\" + protocol);
+        return Registry.CurrentUser.CreateSubKey(@"SOFTWARE\Classes\" + protocol);
     }
 
     private static RegistryKey GetCommandKey(RegistryKey parent)
