@@ -43,10 +43,10 @@ public class ProtocolRegistrationWindows : IProtocolRegistration
 
         if (setAsDefaultHandler)
         {
-            // On Windows, this is done via the "UserChoice" registry key.
-            // We can't set this automatically without much hassle. See this for details:
+            // We always register the default handler, so this is ignored.
+            // Windows also has a thing called "UserChoice" which is protected.
+            // See this for details:
             // https://www.winhelponline.com/blog/set-default-browser-file-associations-command-line-windows-10/
-            _logger.LogDebug("Skipping setting default handler for `{Scheme}`", uriScheme);
         }
 
         return Task.CompletedTask;
