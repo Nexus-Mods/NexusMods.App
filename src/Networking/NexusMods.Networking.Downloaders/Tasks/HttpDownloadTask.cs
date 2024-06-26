@@ -33,8 +33,15 @@ public class HttpDownloadTask(IServiceProvider provider) : ADownloadTask(provide
     
     protected override async Task Download(AbsolutePath destination, CancellationToken token)
     {
-        var url = PersistentState.Get(HttpDownloadState.Uri);
-        var size = PersistentState.Get(DownloaderState.Size);
-        await HttpDownloader.DownloadAsync([url], destination, size, TransientState, token);
+        if (PersistentState.TryGetAsHttpDownloadState(out var httpState))
+        {
+            await HttpDownloader.DownloadAsync([httpState.Uri], destination, PersistentState.Size, TransientState, token);
+        }
+        else
+        {
+            throw new InvalidOperationException("Download task is not a HTTP download task.");
+        }
+        
+
     }
 }

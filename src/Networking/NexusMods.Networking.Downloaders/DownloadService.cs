@@ -46,7 +46,7 @@ public class DownloadService : IDownloadService, IDisposable, IHostedService
         var db = _conn.Db;
 
         var tasks = db.Find(DownloaderState.Status)
-            .Select(x => db.Get<DownloaderState.Model>(x))
+            .Select(x => DownloaderState.Load(db, x))
             .Where(x => x.Status != DownloadTaskStatus.Completed && 
                              x.Status != DownloadTaskStatus.Cancelled)
             .Select(GetTaskFromState)
@@ -55,7 +55,7 @@ public class DownloadService : IDownloadService, IDisposable, IHostedService
         return tasks;
     }
 
-    internal IDownloadTask? GetTaskFromState(DownloaderState.Model state)
+    internal IDownloadTask? GetTaskFromState(DownloaderState.ReadOnly state)
     {
         if (state.Contains(HttpDownloadState.Uri))
         {
@@ -151,10 +151,10 @@ public class DownloadService : IDownloadService, IDisposable, IHostedService
                 {
                     var found = e.Lookup(id);
                     if (found.HasValue) 
-                        found.Value.ResetState(db);
+                        found.Value.RefreshState();
                     else
                     {
-                        var task = GetTaskFromState(db.Get<DownloaderState.Model>(id));
+                        var task = GetTaskFromState(DownloaderState.Load(db, id));
                         if (task == null)
                             return;
                         e.AddOrUpdate(task);
@@ -168,14 +168,14 @@ public class DownloadService : IDownloadService, IDisposable, IHostedService
             .Subscribe()
             .DisposeWith(_disposables);
         
+        var db = _conn.Db;
         // Cancel any orphaned downloads
-        foreach (var task in _conn.Db.FindIndexed((byte)DownloadTaskStatus.Downloading, DownloaderState.Status))
-        {
+        foreach (var task in  DownloaderState.FindByStatus(db, DownloadTaskStatus.Downloading))
+        { 
             try
             {
                 _logger.LogInformation("Cancelling orphaned download task {Task}", task);
-                var state = _conn.Db.Get<DownloaderState.Model>(task);
-                var downloadTask = GetTaskFromState(state);
+                var downloadTask = GetTaskFromState(task);
                 downloadTask?.Cancel();
             }
             catch (Exception ex)

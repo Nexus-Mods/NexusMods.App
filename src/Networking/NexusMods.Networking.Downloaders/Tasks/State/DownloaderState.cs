@@ -1,11 +1,8 @@
-using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
-using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Paths;
-using Entity = NexusMods.MnemonicDB.Abstractions.Models.Entity;
 
 namespace NexusMods.Networking.Downloaders.Tasks.State;
 
@@ -28,7 +25,7 @@ public partial class DownloaderState : IModelDefinition
     /// <summary>
     /// Status of the task associated with this state.
     /// </summary>
-    public static readonly ByteAttribute Status = new(Namespace, nameof(Status)) { IsIndexed = true, NoHistory = true };
+    public static readonly EnumByteAttribute<DownloadTaskStatus> Status = new(Namespace, nameof(Status)) { IsIndexed = true, NoHistory = true };
 
     /// <summary>
     /// Path to the temporary file being downloaded.
@@ -48,20 +45,20 @@ public partial class DownloaderState : IModelDefinition
     /// <summary>
     /// Amount of already downloaded bytes.
     /// </summary>
-    public static readonly SizeAttribute Downloaded = new(Namespace, nameof(Downloaded));
+    public static readonly SizeAttribute Downloaded = new(Namespace, nameof(Downloaded)) { IsOptional = true };
     
     /// <summary>
     /// Amount of already downloaded bytes.
     /// </summary>
-    public static readonly SizeAttribute Size = new(Namespace, nameof(Size));
+    public static readonly SizeAttribute Size = new(Namespace, nameof(Size)) { IsOptional = true };
 
     /// <summary>
     /// Domain of the game the mod will be installed to.
     /// </summary>
-    public static readonly GameDomainAttribute GameDomain = new(Namespace, nameof(GameDomain)) { IsIndexed = true};
+    public static readonly GameDomainAttribute GameDomain = new(Namespace, nameof(GameDomain)) { IsIndexed = true, IsOptional = true};
     
     /// <summary>
     /// Version of the mod; can sometimes be arbitrary and not follow SemVer or any standard.
     /// </summary>
-    public static readonly StringAttribute Version = new(Namespace, nameof(Version));
+    public static readonly StringAttribute Version = new(Namespace, nameof(Version)) { IsOptional = true };
 }

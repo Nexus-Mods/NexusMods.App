@@ -13,7 +13,7 @@ public interface IDownloadTask
     /// <summary>
     /// The DownloaderState of the task.
     /// </summary>
-    DownloaderState.Model PersistentState { get; }
+    DownloaderState.ReadOnly PersistentState { get; }
     
     /// <summary>
     /// The download location of the task.
@@ -66,10 +66,10 @@ public interface IDownloadTask
     void SetIsHidden(bool isHidden, ITransaction tx);
 
     /// <summary>
-    /// Reset (reload) the persistent state of the task from the database.
+    /// Refresh (reload) the persistent state of the task from the database.
     /// </summary>
     /// <param name="db"></param>
-    void ResetState(IDb db);
+    void RefreshState();
 }
 
 /// <summary>
