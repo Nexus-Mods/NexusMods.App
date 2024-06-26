@@ -9,10 +9,13 @@ using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Networking.Downloaders.Tasks;
 using NexusMods.Networking.Downloaders.Tasks.State;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using DynamicData.Kernel;
 using Microsoft.Extensions.Hosting;
 using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.IO;
+using NexusMods.MnemonicDB.Abstractions.DatomIterators;
+using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.Paths;
 
 namespace NexusMods.Networking.Downloaders;
@@ -143,7 +146,12 @@ public class DownloadService : IDownloadService, IDisposable, IHostedService
     /// <inheritdoc />
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        _conn.UpdatesFor(DownloaderState.Status)
+        _conn.ObserveDatoms(DownloaderState.Status)
+            .SelectMany<IChangeSet<Datom>, (IDb, EntityId)>(changes =>
+            {
+                var db = _conn.Db;
+                return changes.Select(change => (db, change.Item.Current.E));
+            })
             .Subscribe(x =>
             {
                 var (db, id) = x;
