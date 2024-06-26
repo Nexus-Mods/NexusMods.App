@@ -2,6 +2,7 @@ using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
+using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Paths;
 using Entity = NexusMods.MnemonicDB.Abstractions.Models.Entity;
@@ -20,7 +21,7 @@ namespace NexusMods.Networking.Downloaders.Tasks.State;
 ///     might not need it since it uses another strategy to start a mod download.
 /// </remarks>
 // ReSharper disable once PartialTypeWithSinglePart
-public static class DownloaderState
+public partial class DownloaderState : IModelDefinition
 {
     private const string Namespace = "NexusMods.Networking.Downloaders.Tasks.DownloaderState";
     
@@ -57,85 +58,10 @@ public static class DownloaderState
     /// <summary>
     /// Domain of the game the mod will be installed to.
     /// </summary>
-    /// <remarks>Provided by <see cref="IHaveGameName"/> trait.</remarks>
     public static readonly GameDomainAttribute GameDomain = new(Namespace, nameof(GameDomain)) { IsIndexed = true};
     
     /// <summary>
-    /// Size of the file being downloaded in bytes. A value of less than 0 means size is unknown.
-    /// </summary>
-    /// <remarks>Provided by <see cref="IHaveFileSize"/> trait.</remarks>
-    public static readonly SizeAttribute SizeBytes = new(Namespace, nameof(SizeBytes));
-
-    /// <summary>
     /// Version of the mod; can sometimes be arbitrary and not follow SemVer or any standard.
     /// </summary>
-    /// <remarks>Provided by <see cref="IHaveDownloadVersion"/> trait.</remarks>
     public static readonly StringAttribute Version = new(Namespace, nameof(Version));
-
-
-    public class Model(ITransaction tx) : Entity(tx)
-    {
-        /// <summary>
-        /// Status of the download task.
-        /// </summary>
-        public DownloadTaskStatus Status
-        {
-            get => (DownloadTaskStatus)DownloaderState.Status.Get(this);
-            set => DownloaderState.Status.Add(this, (byte)value);
-        }
-        
-        /// <summary>
-        /// The path to the download on disk
-        /// </summary>
-        public string DownloadPath
-        {
-            get => DownloaderState.DownloadPath.Get(this);
-            set => DownloaderState.DownloadPath.Add(this, value);
-        }
-        
-        /// <summary>
-        /// A friendly name for the download
-        /// </summary>
-        public string FriendlyName
-        {
-            get => DownloaderState.FriendlyName.Get(this, "Unknown");
-            set => DownloaderState.FriendlyName.Add(this, value);
-        }
-        
-        /// <summary>
-        /// The size of the file already downloaded
-        /// </summary>
-        public Size Downloaded
-        {
-            get => DownloaderState.Downloaded.Get(this, Size.Zero);
-            set => DownloaderState.Downloaded.Add(this, value);
-        }
-
-        /// <summary>
-        /// The total size of the file to download
-        /// </summary>
-        public Size Size
-        {
-            get => DownloaderState.Size.Get(this, Size.Zero);
-            set => DownloaderState.Size.Add(this, value);
-        }
-        
-        /// <summary>
-        /// The recommended game domain for the download
-        /// </summary>
-        public GameDomain GameDomain
-        {
-            get => DownloaderState.GameDomain.Get(this, GameDomain.From("Unknown"));
-            set => DownloaderState.GameDomain.Add(this, value);
-        }
-        
-        /// <summary>
-        /// The version of the download
-        /// </summary>
-        public string Version
-        {
-            get => DownloaderState.Version.Get(this, "Unknown");
-            set => DownloaderState.Version.Add(this, value);
-        }
-    }
 }
