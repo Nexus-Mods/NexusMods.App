@@ -1,9 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
-        <ApplicationIcon>nexus-logo.ico</ApplicationIcon>
+        <ApplicationIcon>icon.ico</ApplicationIcon>
         <ApplicationManifest>app.manifest</ApplicationManifest>
     </PropertyGroup>
+
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
         <DefineConstants />
     </PropertyGroup>
@@ -55,9 +56,28 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="uninstall-helper.ps1">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
+        <None Update="uninstall-helper.ps1">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+            <DependentUpon>app.pupnet.conf</DependentUpon>
+        </None>
+        <None Update="com.nexusmods.app.desktop">
+            <DependentUpon>app.pupnet.conf</DependentUpon>
+        </None>
+        <None Update="app.manifest">
+            <DependentUpon>app.pupnet.conf</DependentUpon>
+        </None>
+        <None Update="com.nexusmods.app.metainfo.xml">
+            <DependentUpon>app.pupnet.conf</DependentUpon>
+        </None>
+        <None Update="sign.bat">
+            <DependentUpon>app.pupnet.conf</DependentUpon>
+        </None>
+        <None Update="uninstall.bat">
+            <DependentUpon>app.pupnet.conf</DependentUpon>
+        </None>
+        <None Update="icon.svg">
+            <DependentUpon>app.pupnet.conf</DependentUpon>
+        </None>
     </ItemGroup>
 
     <Target Name="CopyCustomContentOnPublish" AfterTargets="Publish"
