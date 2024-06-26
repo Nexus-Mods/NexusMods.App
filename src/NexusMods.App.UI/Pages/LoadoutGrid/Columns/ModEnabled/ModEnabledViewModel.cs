@@ -61,6 +61,8 @@ public class ModEnabledViewModel : AViewModel<IModEnabledViewModel>, IModEnabled
                 var mod = Mod.Load(db, id);
                 txInner.Add(mod.Id, Mod.Enabled, !mod.Enabled);
                 txInner.Add(mod.Id, Mod.Revision, mod.Revision + 1);
+                var loadout = mod.Loadout;
+                txInner.Add(loadout, Loadout.Revision, loadout.Revision + 1);
             });
             await tx.Commit();
             return Unit.Default;
