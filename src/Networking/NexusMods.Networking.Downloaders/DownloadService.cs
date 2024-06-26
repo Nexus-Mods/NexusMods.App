@@ -157,6 +157,7 @@ public class DownloadService : IDownloadService, IDisposable, IHostedService
                     .Where(d => d.A == DownloaderState.Status)
                     .Select(d => (revision.Database, d.E));
             })
+            .StartWith(DownloaderState.All(_conn.Db).Select(state => (state.Db, state.Id)))
             .Subscribe(x =>
             {
                 var (db, id) = x;
