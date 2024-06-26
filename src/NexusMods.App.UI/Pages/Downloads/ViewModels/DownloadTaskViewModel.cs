@@ -36,7 +36,8 @@ public class DownloadTaskViewModel : AViewModel<IDownloadTaskViewModel>, IDownlo
                 .BindTo(this, x => x.Name)
                 .DisposeWith(d);
             
-            _task.WhenAnyValue(t => t.PersistentState.Version)
+            _task.WhenAnyValue(t => t.PersistentState)
+                .Select(state => DownloaderState.Version.TryGet(state, out var version) ? version : "-" )
                 .OnUI()
                 .BindTo(this, x => x.Version)
                 .DisposeWith(d);
