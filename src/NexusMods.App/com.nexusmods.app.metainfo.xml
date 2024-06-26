@@ -2,50 +2,50 @@
 <component type="desktop-application">
     <!-- See https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#spec-component-filespec -->
 
-    <!-- This license is not the project license but the license for this singular file. -->
-    <metadata_license>MIT</metadata_license>
+    <id>com.nexusmods.app</id>
+    <metadata_license>CC0-1.0</metadata_license>
+    <project_license>GPL-3.0-only</project_license>
 
-    <!-- Note the use of macros to automate most (but not all) content below -->
-    <id>${APP_ID}</id>
-    <name>${APP_FRIENDLY_NAME}</name>
-    <summary>${APP_SHORT_SUMMARY}</summary>
-    <developer_name>${PUBLISHER_NAME}</developer_name>
-    <url type="homepage">${PUBLISHER_LINK_URL}</url>
-    <project_license>${APP_LICENSE_ID}</project_license>
-    <content_rating type="oars-1.1" />
-
-    <launchable type="desktop-id">${APP_ID}.desktop</launchable>
+    <name>Nexus Mods App</name>
+    <summary>Mod Manager for your games</summary>
 
     <description>
-        ${APPSTREAM_DESCRIPTION_XML}
+        <p>The Nexus Mods App is a mod manager for your games.</p>
     </description>
 
-    <!-- Freedesktop Categories -->
+    <launchable type="desktop-id">com.nexusmods.app.desktop</launchable>
+
+    <url type="homepage">https://github.com/Nexus-Mods/NexusMods.App</url>
+    <url type="bugtracker">https://github.com/Nexus-Mods/NexusMods.App/issues</url>
+    <url type="faq">https://nexus-mods.github.io/NexusMods.App/users/FAQ/</url>
+    <url type="help">https://nexus-mods.github.io/NexusMods.App/users</url>
+    <url type="translate">https://nexus-mods.github.io/NexusMods.App/developers/Contributing/</url>
+    <url type="contact">https://discord.gg/ReWTxb93jS</url>
+    <url type="vcs-browser">https://github.com/Nexus-Mods/NexusMods.App</url>
+    <url type="contribute">https://nexus-mods.github.io/NexusMods.App/developers/Contributing/</url>
+
+    <developer_name>Nexus mods</developer_name>
+    <content_rating type="oars-1.0">
+        <content_attribute id="social-info">moderate</content_attribute>
+    </content_rating>
+
     <categories>
-        <category>${PRIME_CATEGORY}</category>
+        <category>Game</category>
     </categories>
 
-    <!-- Uncomment to provide keywords
-    <keywords>
-        <keyword translate="no">IDE</keyword>
-        <keyword>development</keyword>
-        <keyword>programming</keyword>
-        <keyword xml:lang="de">entwicklung</keyword>
-        <keyword xml:lang="de">programmierung</keyword>
-    </keywords>
-    -->
+    <recommends>
+        <memory>1024</memory>
 
-    <!-- Uncomment to provide screenshots
-    <screenshots>
-        <screenshot type="default">
-            <image>https://i.postimg.cc/0jc8xxxC/Hello-Computer.png</image>
-        </screenshot>
-    </screenshots>
-    -->
+        <internet>always</internet>
+        <display_length compare="ge">360</display_length>
+    </recommends>
 
-    <releases>
-        <!-- See AppChangeFile in configuration -->
-        ${APPSTREAM_CHANGELOG_XML}
-    </releases>
+    <recommends>
+        <id version="1.0" compare="ge">com.valvesoftware.Steam</id>
+    </recommends>
+
+    <supports>
+        <id version="1.0" compare="ge">com.usebottles.bottles</id>
+    </supports>
 
 </component>
