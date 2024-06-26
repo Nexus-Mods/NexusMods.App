@@ -14,6 +14,7 @@ public class DownloadTaskDesignViewModel : AViewModel<IDownloadTaskViewModel>, I
     public string Version { get; set; } = "1.0.0";
     public string Game { get; set; } = "Unknown Game";
     public string HumanizedSize => ByteSize.FromBytes(SizeBytes).ToString();
+    public DateTime CompletedTime { get; }
     public string HumanizedCompletedTime { get; } = "-";
     public DownloadTaskStatus Status { get; set; } = DownloadTaskStatus.Idle;
     public EntityId TaskId { get; set; } = EntityId.From(1024);
