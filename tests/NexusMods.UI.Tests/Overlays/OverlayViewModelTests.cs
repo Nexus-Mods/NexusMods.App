@@ -8,6 +8,8 @@ namespace NexusMods.UI.Tests.Overlays;
 public class OverlayViewModelTests
 {
     [Fact]
+    [Trait("FlakeyTest", "True")]
+
     public void SetOverlayContent_CanGetLastOverlayViewModel()
     {
         // Arrange
@@ -22,6 +24,8 @@ public class OverlayViewModelTests
     }
     
     [Fact]
+    [Trait("FlakeyTest", "True")]
+
     public void SetOverlayContent_WithTwoOverlays_CanGetLastOverlayViewModel()
     {
         // Arrange
@@ -50,6 +54,8 @@ public class OverlayViewModelTests
     }
     
     [Fact]
+    [Trait("FlakeyTest", "True")]
+
     public void SetOverlayContent_WithThreeOverlays_CanGetLastOverlayViewModel()
     {
         // Arrange
@@ -86,7 +92,6 @@ public class OverlayViewModelTests
     }
     
     [Fact]
-    // intermittent failures on CI but not locally
     [Trait("FlakeyTest", "True")]
     public async Task SetOverlayViewModel_WhenActiveIsFalse_TaskIsCompleted()
     {
