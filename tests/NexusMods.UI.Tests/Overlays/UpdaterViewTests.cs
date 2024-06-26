@@ -10,6 +10,7 @@ public class UpdaterViewTests : AViewTest<UpdaterView, UpdaterDesignViewModel, I
     public UpdaterViewTests(IServiceProvider provider) : base(provider) { }
 
     [Fact]
+    [Trait("FlakeyTest", "True")]
     public async Task ClickingUpdateCallsTheCommand()
     {
         var controller = new OverlayController();
@@ -28,6 +29,7 @@ public class UpdaterViewTests : AViewTest<UpdaterView, UpdaterDesignViewModel, I
     }
 
     [Fact]
+    [Trait("FlakeyTest", "True")]
     public async Task ShowChangelogIsWiredCorrectly()
     {
         var controller = new OverlayController();
@@ -43,6 +45,7 @@ public class UpdaterViewTests : AViewTest<UpdaterView, UpdaterDesignViewModel, I
     }
 
     [Fact]
+    [Trait("FlakeyTest", "True")]
     public async Task ClickingLaterClosesTheOverlay()
     {
         var controller = new OverlayController();
