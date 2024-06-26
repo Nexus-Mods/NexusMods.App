@@ -146,11 +146,16 @@ public class DownloadService : IDownloadService, IDisposable, IHostedService
     /// <inheritdoc />
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        _conn.ObserveDatoms(DownloaderState.Status)
-            .SelectMany<IChangeSet<Datom>, (IDb, EntityId)>(changes =>
+        _conn.Revisions
+            // This is really inefficient, but we'd need to rewrite other parts of this service
+            // to process these updates in a more efficient way, so we'll come back to this later.
+            // We should be using ObserveDatoms here
+            .SelectMany(revision =>
             {
-                var db = _conn.Db;
-                return changes.Select(change => (db, change.Item.Current.E));
+                return revision.AddedDatoms
+                    .Select(r => r.Resolved)
+                    .Where(d => d.A == DownloaderState.Status)
+                    .Select(d => (revision.Database, d.E));
             })
             .Subscribe(x =>
             {
