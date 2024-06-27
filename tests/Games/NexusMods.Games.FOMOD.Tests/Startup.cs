@@ -20,6 +20,7 @@ public class Startup
     public void ConfigureServices(IServiceCollection container)
     {
         container
+            .AddRedEngineGames()
             .AddLoadoutAbstractions()
             .AddDefaultServicesForTesting()
             .AddUniversalGameLocator<Cyberpunk2077>(new Version("1.6.659.0"))
