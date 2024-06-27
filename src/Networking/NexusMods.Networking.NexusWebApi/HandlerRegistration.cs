@@ -4,7 +4,7 @@ using NexusMods.CrossPlatform.ProtocolRegistration;
 
 namespace NexusMods.Networking.NexusWebApi;
 
-internal class HandlerRegistration : IHostedService
+internal class HandlerRegistration : BackgroundService
 {
     private readonly ILogger _logger;
     private readonly IProtocolRegistration _protocolRegistration;
@@ -17,25 +17,15 @@ internal class HandlerRegistration : IHostedService
         _protocolRegistration = protocolRegistration;
     }
 
-    public Task StartAsync(CancellationToken cancellationToken)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _ = Task.Run(async () =>
+        try
         {
-            try
-            {
-                await _protocolRegistration.RegisterHandler(uriScheme: "nxm", cancellationToken: cancellationToken);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, "Exception while registering handler for nxm links");
-            }
-        }, cancellationToken);
-
-        return Task.CompletedTask;
-    }
-
-    public Task StopAsync(CancellationToken cancellationToken)
-    {
-        return Task.CompletedTask;
+            await _protocolRegistration.RegisterHandler(uriScheme: "nxm", cancellationToken: stoppingToken);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Exception while registering handler for nxm links");
+        }
     }
 }
