@@ -63,8 +63,7 @@ public class ModFilesViewModel : AViewModel<IModFilesViewModel>, IModFilesViewMo
                 },
             };
 
-            if (!windowManager.TryGetActiveWindow(out var activeWindow)) return;
-            var workspaceController = activeWindow.WorkspaceController;
+            var workspaceController = windowManager.ActiveWorkspaceController;
 
             var behavior = workspaceController.GetOpenPageBehavior(pageData, info, _pageIdBundle);
             var workspaceId = workspaceController.ActiveWorkspace!.Id;

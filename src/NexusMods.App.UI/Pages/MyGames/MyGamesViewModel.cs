@@ -127,8 +127,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
         var install = await ((IGame)installation.Game).Synchronizer.CreateLoadout(installation);
         Dispatcher.UIThread.Invoke(() =>
             {
-                if (!_windowManager.TryGetActiveWindow(out var window)) return;
-                var workspaceController = window.WorkspaceController;
+                var workspaceController = _windowManager.ActiveWorkspaceController;
 
                 workspaceController.ChangeOrCreateWorkspaceByContext(
                     context => context.LoadoutId == install.LoadoutId,
@@ -162,8 +161,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
         var loadoutId = loadout.LoadoutId;
         Dispatcher.UIThread.Invoke(() =>
             {
-                if (!_windowManager.TryGetActiveWindow(out var window)) return;
-                var workspaceController = window.WorkspaceController;
+                var workspaceController = _windowManager.ActiveWorkspaceController;
 
                 workspaceController.ChangeOrCreateWorkspaceByContext(
                     context => context.LoadoutId == loadoutId,

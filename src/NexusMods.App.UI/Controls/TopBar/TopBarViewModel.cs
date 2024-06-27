@@ -64,12 +64,7 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
         _logger = logger;
         _loginManager = loginManager;
 
-        if (!windowManager.TryGetActiveWindow(out var window))
-        {
-            throw new NotImplementedException();
-        }
-
-        var workspaceController = window.WorkspaceController;
+        var workspaceController = windowManager.ActiveWorkspaceController;
 
         OpenSettingsCommand = ReactiveCommand.Create<NavigationInformation>(info =>
         {

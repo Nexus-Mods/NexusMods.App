@@ -18,8 +18,7 @@ file class Example
 
     public void Do()
     {
-        if (!_windowManager.TryGetActiveWindow(out var activeWindow)) return;
-        var workspaceController = activeWindow.WorkspaceController;
+        var workspaceController = _windowManager.ActiveWorkspaceController;
 
         // The Workspace Controller requires a WorkspaceId for most of it's
         // methods. See the previous example on how to query the exact Workspace
