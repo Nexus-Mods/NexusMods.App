@@ -46,6 +46,7 @@ public static class Services
         return collection
             .AddAllSingleton<ILoginManager, LoginManager>()
             .AddAllSingleton<INexusApiClient, NexusApiClient>()
+            .AddHostedService<HandlerRegistration>()
             .AddNexusApiVerbs();
     }
 }

@@ -13,6 +13,10 @@
     </ItemGroup>
 
     <ItemGroup>
+        <EmbeddedResource Include="../NexusMods.App/com.nexusmods.app.desktop" />
+    </ItemGroup>
+
+    <ItemGroup>
       <Compile Update="Process\AOSInterop.cs">
         <DependentUpon>IOSInterop.cs</DependentUpon>
       </Compile>
