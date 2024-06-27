@@ -76,9 +76,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         _specialSpineItems.Add(Downloads);
         Downloads.Click = ReactiveCommand.Create(NavigateToDownloads);
         
-        if (!_windowManager.TryGetActiveWindow(out var currentWindow)) return;
-        var workspaceController = currentWindow.WorkspaceController;
-
+        var workspaceController = windowManager.ActiveWorkspaceController;
         
         this.WhenActivated(disposables =>
             {
@@ -136,7 +134,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                     .OnUI()
                     .OnItemRemoved(loadout =>
                     {
-                        if (workspaceController.ActiveWorkspace?.Context is LoadoutContext activeLoadoutContext &&
+                        if (workspaceController.ActiveWorkspace.Context is LoadoutContext activeLoadoutContext &&
                             activeLoadoutContext.LoadoutId == loadout.LoadoutId)
                         {
                             workspaceController.ChangeOrCreateWorkspaceByContext<HomeContext>(() => new PageData
@@ -151,7 +149,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
 
                 // Update the LeftMenuViewModel when the active workspace changes
                 workspaceController.WhenAnyValue(controller => controller.ActiveWorkspace)
-                    .Select(workspace => workspace?.Id)
+                    .Select(workspace => workspace.Id)
                     .Select(workspaceId => _leftMenus.FirstOrDefault(menu => menu.WorkspaceId == workspaceId))
                     .BindToVM(this, vm => vm.LeftMenuViewModel)
                     .DisposeWith(disposables);
@@ -159,7 +157,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                 // Update the active spine item when the active workspace changes
                 workspaceController
                     .WhenAnyValue(controller => controller.ActiveWorkspace)
-                    .Select(workspace => workspace?.Context)
+                    .Select(workspace => workspace.Context)
                     .WhereNotNull()
                     .SubscribeWithErrorLogging(context =>
                         {
@@ -217,8 +215,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
 
     public void NavigateToHome()
     {
-        if (!_windowManager.TryGetActiveWindow(out var window)) return;
-        var workspaceController = window.WorkspaceController;
+        var workspaceController = _windowManager.ActiveWorkspaceController;
 
         workspaceController.ChangeOrCreateWorkspaceByContext<HomeContext>(() => new PageData
             {
@@ -230,8 +227,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
 
     private void ChangeToLoadoutWorkspace(LoadoutId loadoutId)
     {
-        if (!_windowManager.TryGetActiveWindow(out var window)) return;
-        var workspaceController = window.WorkspaceController;
+        var workspaceController = _windowManager.ActiveWorkspaceController;
 
         workspaceController.ChangeOrCreateWorkspaceByContext(
             context => context.LoadoutId == loadoutId,
@@ -252,8 +248,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
 
     private void NavigateToDownloads()
     {
-        if (!_windowManager.TryGetActiveWindow(out var window)) return;
-        var workspaceController = window.WorkspaceController;
+        var workspaceController = _windowManager.ActiveWorkspaceController;
 
         workspaceController.ChangeOrCreateWorkspaceByContext<DownloadsContext>(() => new PageData
             {

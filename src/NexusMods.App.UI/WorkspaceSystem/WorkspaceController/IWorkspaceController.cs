@@ -20,9 +20,14 @@ public interface IWorkspaceController
     public WindowId WindowId { get; }
 
     /// <summary>
-    /// Gets the currently active Workspace.
+    /// Gets the currently active workspace.
     /// </summary>
-    public IWorkspaceViewModel? ActiveWorkspace { get; }
+    public IWorkspaceViewModel ActiveWorkspace { get; }
+
+    /// <summary>
+    /// Gets the ID of the currently active workspace.
+    /// </summary>
+    public WorkspaceId ActiveWorkspaceId => ActiveWorkspace.Id;
 
     /// <summary>
     /// Gets a read-only observable collection of all workspaces.

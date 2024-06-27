@@ -82,8 +82,8 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
 
             this.WhenAnyValue(vm => vm.IsActive)
                 .Where(isActive => isActive)
-                .Select(_ => WindowId)
-                .BindTo(_windowManager, manager => manager.ActiveWindowId)
+                .Select(_ => this)
+                .BindTo(_windowManager, manager => manager.ActiveWindow)
                 .DisposeWith(d);
             
             overlayController.WhenAnyValue(oc => oc.CurrentOverlay)
