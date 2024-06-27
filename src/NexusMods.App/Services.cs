@@ -111,7 +111,6 @@ public static class Services
             Games.RedEngine.Services.AddRedEngineGames(services);
             Games.DarkestDungeon.Services.AddDarkestDungeon(services);
             Games.BladeAndSorcery.Services.AddBladeAndSorcery(services);
-            Games.MountAndBlade2Bannerlord.ServicesExtensions.AddMountAndBladeBannerlord(services);
         }
         
         Games.StardewValley.Services.AddStardewValley(services);
