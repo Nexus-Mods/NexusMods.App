@@ -34,7 +34,7 @@ public class ProtocolRegistrationWindows : IProtocolRegistration
     {
         try
         {
-            UpdateRegistry(uriScheme);
+            RegisterApplication(uriScheme);
         }
         catch (Exception e)
         {
@@ -43,38 +43,42 @@ public class ProtocolRegistrationWindows : IProtocolRegistration
 
         if (setAsDefaultHandler)
         {
-            // We always register the default handler, so this is ignored.
-            // Windows also has a thing called "UserChoice" which is protected.
-            // See this for details:
-            // https://www.winhelponline.com/blog/set-default-browser-file-associations-command-line-windows-10/
+            try
+            {
+                SetAsDefaultHandler(uriScheme);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Exception while registering as default protocol handler for `{Scheme}`", uriScheme);
+            }
         }
 
         return Task.CompletedTask;
     }
 
-    private void UpdateRegistry(string uriScheme)
+    private void RegisterApplication(string uriScheme)
+    {
+        using var key = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\Nexus Mods\NexusMods.App\Capabilities");
+        key.SetValue("ApplicationName", "Nexus Mods App");
+        key.SetValue("ApplicationDescription", "Mod Manager for your games");
+
+        using var urlAssociationsKey = key.CreateSubKey("UrlAssociations");
+        urlAssociationsKey.SetValue(uriScheme, uriScheme);
+    }
+
+    private void SetAsDefaultHandler(string uriScheme)
     {
         // https://learn.microsoft.com/en-us/previous-versions/windows/internet-explorer/ie-developer/platform-apis/aa767914(v=vs.85)
 
-        using var key = GetClassKey(uriScheme);
+        using var key = Registry.CurrentUser.CreateSubKey(@$"SOFTWARE\Classes\{uriScheme}");
         key.SetValue("", "URL:Nexus Mods App");
         key.SetValue("URL Protocol", "");
 
-        using var commandKey = GetCommandKey(key);
+        using var commandKey = key.CreateSubKey(@"shell\open\command");
 
         var executable = _osInterop.GetOwnExe();
 
         commandKey.SetValue("", $"\"{executable.ToNativeSeparators(_fileSystem.OS)}\" \"%1\"");
         commandKey.SetValue("WorkingDirectory", $"\"{executable.Parent.ToNativeSeparators(_fileSystem.OS)}\"");
-    }
-
-    private static RegistryKey GetClassKey(string protocol)
-    {
-        return Registry.CurrentUser.CreateSubKey(@"SOFTWARE\Classes\" + protocol);
-    }
-
-    private static RegistryKey GetCommandKey(RegistryKey parent)
-    {
-        return parent.CreateSubKey(@"shell\open\command");
     }
 }
