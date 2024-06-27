@@ -107,7 +107,6 @@ public static class Services
     {
         if (experimentalSettings is { EnableAllGames: true })
         {
-            Games.BethesdaGameStudios.Services.AddBethesdaGameStudios(services);
             Games.RedEngine.Services.AddRedEngineGames(services);
         }
         
