@@ -7,7 +7,7 @@ using NexusMods.Paths;
 namespace NexusMods.CrossPlatform.ProtocolRegistration;
 
 /// <summary>
-/// protocol registration for windows
+/// Protocol registration for Windows.
 /// </summary>
 [SupportedOSPlatform("windows")]
 public class ProtocolRegistrationWindows : IProtocolRegistration
@@ -56,8 +56,12 @@ public class ProtocolRegistrationWindows : IProtocolRegistration
         return Task.CompletedTask;
     }
 
+    private static string CreateProgId(string uriScheme) => $"NexusMods.App.{uriScheme}";
+
     private void RegisterApplication(string uriScheme)
     {
+        // https://learn.microsoft.com/en-us/windows/win32/shell/default-programs
+
         const string capabilitiesPath = @"SOFTWARE\Nexus Mods\NexusMods.App\Capabilities";
 
         using var key = Registry.CurrentUser.CreateSubKey(capabilitiesPath);
@@ -65,19 +69,21 @@ public class ProtocolRegistrationWindows : IProtocolRegistration
         key.SetValue("ApplicationDescription", "Mod Manager for your games");
 
         using var urlAssociationsKey = key.CreateSubKey("UrlAssociations");
-        urlAssociationsKey.SetValue(uriScheme, uriScheme);
+        urlAssociationsKey.SetValue(uriScheme, CreateProgId(uriScheme));
 
         using var registeredApplicationsKey = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\RegisteredApplications");
         registeredApplicationsKey.SetValue("NexusMods.App", capabilitiesPath);
+
+        CreateProgIdClass(CreateProgId(uriScheme), $"Nexus Mods App {uriScheme.ToUpperInvariant()} Handler", isProtocolHandler: false);
     }
 
-    private void SetAsDefaultHandler(string uriScheme)
+    private void CreateProgIdClass(string progId, string name, bool isProtocolHandler)
     {
         // https://learn.microsoft.com/en-us/previous-versions/windows/internet-explorer/ie-developer/platform-apis/aa767914(v=vs.85)
 
-        using var key = Registry.CurrentUser.CreateSubKey(@$"SOFTWARE\Classes\{uriScheme}");
-        key.SetValue("", "URL:Nexus Mods App");
-        key.SetValue("URL Protocol", "");
+        using var key = Registry.CurrentUser.CreateSubKey(@$"SOFTWARE\Classes\{progId}");
+        key.SetValue("", name);
+        if (isProtocolHandler) key.SetValue("URL Protocol", "");
 
         using var commandKey = key.CreateSubKey(@"shell\open\command");
 
@@ -85,5 +91,10 @@ public class ProtocolRegistrationWindows : IProtocolRegistration
 
         commandKey.SetValue("", $"\"{executable.ToNativeSeparators(_fileSystem.OS)}\" \"%1\"");
         commandKey.SetValue("WorkingDirectory", $"\"{executable.Parent.ToNativeSeparators(_fileSystem.OS)}\"");
+    }
+
+    private void SetAsDefaultHandler(string uriScheme)
+    {
+        CreateProgIdClass(uriScheme, $"Nexus Mods App {uriScheme.ToUpperInvariant()} Handler", isProtocolHandler: true);
     }
 }
