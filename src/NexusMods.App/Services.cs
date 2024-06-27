@@ -109,7 +109,6 @@ public static class Services
         {
             Games.BethesdaGameStudios.Services.AddBethesdaGameStudios(services);
             Games.RedEngine.Services.AddRedEngineGames(services);
-            Games.DarkestDungeon.Services.AddDarkestDungeon(services);
         }
         
         Games.StardewValley.Services.AddStardewValley(services);
