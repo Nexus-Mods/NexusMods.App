@@ -44,6 +44,8 @@ internal sealed class WindowManager : ReactiveObject, IWindowManager
 
     private void SetActiveWindow(IWorkspaceWindow window)
     {
+        Dispatcher.UIThread.VerifyAccess();
+
         if (!TryGetWindow(window.WindowId, out _))
             throw new InvalidOperationException($"Can't change active window to unregistered window `{window.WindowId}`");
 

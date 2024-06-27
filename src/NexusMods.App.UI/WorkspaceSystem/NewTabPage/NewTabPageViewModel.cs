@@ -54,7 +54,6 @@ public class NewTabPageViewModel : APageViewModel<INewTabPageViewModel>, INewTab
         this.WhenActivated(disposables =>
         {
             var workspace = GetWorkspaceController().ActiveWorkspace;
-            Debug.Assert(workspace is not null);
 
             if (!BannerSettingsWrapper.IsDismissed)
             {

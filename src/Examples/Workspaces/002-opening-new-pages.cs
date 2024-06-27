@@ -23,7 +23,7 @@ file class Example
         // The Workspace Controller requires a WorkspaceId for most of it's
         // methods. See the previous example on how to query the exact Workspace
         // that you need.
-        var workspaceId = workspaceController.ActiveWorkspace!.Id;
+        var workspaceId = workspaceController.ActiveWorkspaceId;
 
         // The OpenPage method has two main arguments:
 

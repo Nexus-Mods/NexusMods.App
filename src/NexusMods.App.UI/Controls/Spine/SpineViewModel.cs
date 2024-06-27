@@ -134,7 +134,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                     .OnUI()
                     .OnItemRemoved(loadout =>
                     {
-                        if (workspaceController.ActiveWorkspace?.Context is LoadoutContext activeLoadoutContext &&
+                        if (workspaceController.ActiveWorkspace.Context is LoadoutContext activeLoadoutContext &&
                             activeLoadoutContext.LoadoutId == loadout.LoadoutId)
                         {
                             workspaceController.ChangeOrCreateWorkspaceByContext<HomeContext>(() => new PageData
@@ -149,7 +149,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
 
                 // Update the LeftMenuViewModel when the active workspace changes
                 workspaceController.WhenAnyValue(controller => controller.ActiveWorkspace)
-                    .Select(workspace => workspace?.Id)
+                    .Select(workspace => workspace.Id)
                     .Select(workspaceId => _leftMenus.FirstOrDefault(menu => menu.WorkspaceId == workspaceId))
                     .BindToVM(this, vm => vm.LeftMenuViewModel)
                     .DisposeWith(disposables);
@@ -157,7 +157,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                 // Update the active spine item when the active workspace changes
                 workspaceController
                     .WhenAnyValue(controller => controller.ActiveWorkspace)
-                    .Select(workspace => workspace?.Context)
+                    .Select(workspace => workspace.Context)
                     .WhereNotNull()
                     .SubscribeWithErrorLogging(context =>
                         {
