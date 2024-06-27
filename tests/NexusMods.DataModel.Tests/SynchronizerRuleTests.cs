@@ -19,7 +19,7 @@ public class SynchronizerRuleTests
     {
         var action = ActionMapping.MapAction(signature);
         action.Should().NotBe(0, "Every signature should have a corresponding action");
-        
+
         if (action.HasFlag(ExtractToDisk))
             signature.Should().HaveFlag(LoadoutArchived, "If we are extracting to disk, the loadout file should be archived");
         
@@ -28,10 +28,12 @@ public class SynchronizerRuleTests
 
         if (action.HasFlag(DoNothing) && !signature.HasFlag(DiskExists))
             signature.Should().NotHaveFlag(LoadoutExists, "If we are doing nothing because the disk file does not exist, the loadout file should not exist");
-        
+
         if (action.HasFlag(DoNothing) && signature.HasFlag(DiskExists))
+        {
             signature.Should().HaveFlag(LoadoutExists, "If we are doing nothing because the disk file exists, the loadout file should exist")
                 .And.HaveFlag(DiskEqualsLoadout, "If we are doing nothing because the disk file exists, the loadout file should be the same as the disk file");
+        }
     }
 
     [Fact]
