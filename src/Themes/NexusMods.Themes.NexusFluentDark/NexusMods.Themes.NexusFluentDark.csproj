@@ -26,9 +26,6 @@
       <UpToDateCheckInput Remove="Palette\Spacing\PrimitiveSpacings.axaml" />
       <UpToDateCheckInput Remove="Styles\TextBox\TextBoxStyles.axaml" />
       <UpToDateCheckInput Remove="Styles\Icons\IconsStyles.axaml" />
-      <UpToDateCheckInput Remove="Styles\UserControls\GuidedInstaller\GroupViewStyles.axaml" />
-      <UpToDateCheckInput Remove="Styles\UserControls\GuidedInstaller\OptionViewStyles.axaml" />
-      <UpToDateCheckInput Remove="Styles\UserControls\GuidedInstaller\StepViewStyles.axaml" />
     </ItemGroup>
 
     <ItemGroup>

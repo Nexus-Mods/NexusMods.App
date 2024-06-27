@@ -15,6 +15,8 @@ using NexusMods.DataModel;
 using NexusMods.FileExtractor;
 using NexusMods.Games.AdvancedInstaller;
 using NexusMods.Games.AdvancedInstaller.UI;
+using NexusMods.Games.FOMOD;
+using NexusMods.Games.FOMOD.UI;
 using NexusMods.Games.Generic;
 using NexusMods.Games.Reshade;
 using NexusMods.Games.TestHarness;
@@ -57,6 +59,7 @@ public static class Services
                 .AddUI()
                 .AddSettingsManager()
                 .AddSingleton<App>()
+                .AddGuidedInstallerUi()
                 .AddAdvancedInstaller()
                 .AddAdvancedInstallerUi()
                 .AddFileExtractors()
@@ -70,6 +73,7 @@ public static class Services
                 .AddFileStoreAbstractions()
                 .AddLoadoutAbstractions()
                 .AddReshade()
+                .AddFomod()
                 .AddNexusWebApi()
                 .AddAdvancedHttpDownloader()
                 .AddTestHarness()

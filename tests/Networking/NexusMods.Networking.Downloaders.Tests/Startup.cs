@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GuidedInstallers;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.App.BuildInfo;
+using NexusMods.Games.FOMOD;
 using NexusMods.Games.Generic;
 using NexusMods.Games.RedEngine;
 using NexusMods.Games.TestFramework;
@@ -21,6 +22,7 @@ public class Startup
             .AddGenericGameSupport()
             .AddRedEngineGames()
             .AddSerializationAbstractions()
+            .AddFomod()
             .AddDownloaders()
             .AddSingleton<LocalHttpServer>()
             .Validate();
