@@ -7,10 +7,8 @@ using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.App.BuildInfo;
-using NexusMods.CrossPlatform;
-using NexusMods.Games.BethesdaGameStudios;
-using NexusMods.Games.BethesdaGameStudios.SkyrimSpecialEdition;
 using NexusMods.Games.Generic;
+using NexusMods.Games.RedEngine;
 using NexusMods.Games.TestFramework;
 using NexusMods.StandardGameLocators.TestHelpers;
 using Xunit.DependencyInjection.Logging;
@@ -24,8 +22,7 @@ public class Startup
         container
             .AddLoadoutAbstractions()
             .AddDefaultServicesForTesting()
-            .AddBethesdaGameStudios()
-            .AddUniversalGameLocator<SkyrimSpecialEdition>(new Version("1.6.659.0"))
+            .AddUniversalGameLocator<Cyberpunk2077>(new Version("1.6.659.0"))
             .AddGenericGameSupport()
             .AddFileStoreAbstractions()
             .AddFomod()

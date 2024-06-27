@@ -1,6 +1,6 @@
 using FluentAssertions;
 using NexusMods.Abstractions.HttpDownloader;
-using NexusMods.Games.BethesdaGameStudios.SkyrimSpecialEdition;
+using NexusMods.Games.RedEngine;
 using NexusMods.Games.TestFramework;
 using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Paths;
@@ -13,7 +13,7 @@ public class DownloadServiceDataStoreTests(
     LocalHttpServer server,
     TemporaryFileManager temporaryFileManager,
     IHttpDownloader httpDownloader)
-    : AGameTest<SkyrimSpecialEdition>(serviceProvider)
+    : AGameTest<Cyberpunk2077>(serviceProvider)
 {
 
     // Create a new instance of the DownloadService
