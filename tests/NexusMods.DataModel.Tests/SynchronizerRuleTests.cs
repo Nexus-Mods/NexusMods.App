@@ -1,8 +1,12 @@
+using System.Security.Cryptography;
 using System.Text;
 using DynamicData.Kernel;
+using FluentAssertions;
 using NexusMods.DataModel.LoadoutSynchronizer.Rules;
 using NexusMods.Hashing.xxHash64;
 using Xunit.DependencyInjection;
+using static NexusMods.DataModel.LoadoutSynchronizer.Rules.Actions;
+using static NexusMods.DataModel.LoadoutSynchronizer.Rules.Signature;
 
 namespace NexusMods.DataModel.Tests;
 
@@ -13,7 +17,21 @@ public class SynchronizerRuleTests
     [MethodData(nameof(TestRows))]
     public void AllRulesHaveActions(Signature signature, string EnumShorthand, Optional<Hash> disk, Optional<Hash> prev, Optional<Hash> loadout)
     {
-        Assert.True(false);
+        var action = ActionMapping.MapAction(signature);
+        action.Should().NotBe(0, "Every signature should have a corresponding action");
+        
+        if (action.HasFlag(ExtractToDisk))
+            signature.Should().HaveFlag(LoadoutArchived, "If we are extracting to disk, the loadout file should be archived");
+        
+        if (action.HasFlag(WarnOfUnableToExtract))
+            signature.Should().NotHaveFlag(LoadoutArchived, "If we are warning of unable to extract, the loadout file should not be archived");
+
+        if (action.HasFlag(DoNothing) && !signature.HasFlag(DiskExists))
+            signature.Should().NotHaveFlag(LoadoutExists, "If we are doing nothing because the disk file does not exist, the loadout file should not exist");
+        
+        if (action.HasFlag(DoNothing) && signature.HasFlag(DiskExists))
+            signature.Should().HaveFlag(LoadoutExists, "If we are doing nothing because the disk file exists, the loadout file should exist")
+                .And.HaveFlag(DiskEqualsLoadout, "If we are doing nothing because the disk file exists, the loadout file should be the same as the disk file");
     }
 
     [Fact]
@@ -87,11 +105,11 @@ public class SynchronizerRuleTests
         var prevCode = HashToValue(prev);
         var loadoutCode = HashToValue(loadout);
         
-        var archived = (disk.HasValue && sig.HasFlag(Signature.DiskArchived) ? "X" : "x") +
-                       (prev.HasValue && sig.HasFlag(Signature.PrevArchived) ? "X" : "x") +
-                       (loadout.HasValue && sig.HasFlag(Signature.LoadoutArchived) ? "X" : "x");
+        var archived = (disk.HasValue && sig.HasFlag(DiskArchived) ? "X" : "x") +
+                       (prev.HasValue && sig.HasFlag(PrevArchived) ? "X" : "x") +
+                       (loadout.HasValue && sig.HasFlag(LoadoutArchived) ? "X" : "x");
         
-        var ignored = sig.HasFlag(Signature.PathIsIgnored) ? "I" : "i";
+        var ignored = sig.HasFlag(PathIsIgnored) ? "I" : "i";
         
         return $"{diskCode}{prevCode}{loadoutCode}_{archived}_{ignored}";
         

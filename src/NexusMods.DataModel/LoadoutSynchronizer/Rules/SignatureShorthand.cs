@@ -1,4 +1,7 @@
-﻿/// <summary>
+// ReSharper disable InconsistentNaming
+namespace NexusMods.DataModel.LoadoutSynchronizer.Rules;
+
+/// <summary>
 /// Summary of all 92 possible signatures in a somewhat readable format
 /// </summary>
 public enum SignatureShorthand : ushort
