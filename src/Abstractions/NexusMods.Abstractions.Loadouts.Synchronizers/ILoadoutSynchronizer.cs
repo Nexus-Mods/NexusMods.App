@@ -10,6 +10,31 @@ namespace NexusMods.Abstractions.Loadouts.Synchronizers;
 public interface ILoadoutSynchronizer
 {
     
+    #region Sync Methods
+    
+    /// <summary>
+    /// Creates a new sync tree from the current state of the game folder, the loadout and the previous state. This
+    /// sync tree contains a matching of all the files in all 3 sources based on their path.
+    /// </summary>
+    SyncTree BuildSyncTree(DiskStateTree currentState, DiskStateTree previousTree, Loadout.ReadOnly loadoutTree);
+    
+    /// <summary>
+    /// Builds a sync tree from a loadout and the current state of the game folder.
+    /// </summary>
+    /// <param name="loadoutTree"></param>
+    /// <returns></returns>
+    Task<SyncTree> BuildSyncTree(Loadout.ReadOnly loadoutTree);
+    
+    /// <summary>
+    /// Processes the sync tree to create the signature and actions for each file.
+    /// </summary>
+    SyncTree ProcessSyncTree(SyncTree syncTree);
+    
+    
+    #endregion
+    
+    
+    
     #region Diff Methods
     
     /// <summary>

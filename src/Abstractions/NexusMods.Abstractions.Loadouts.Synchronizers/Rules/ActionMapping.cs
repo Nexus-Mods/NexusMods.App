@@ -1,7 +1,7 @@
-using static NexusMods.DataModel.LoadoutSynchronizer.Rules.Actions;
-using static NexusMods.DataModel.LoadoutSynchronizer.Rules.SignatureShorthand;
+using static NexusMods.Abstractions.Loadouts.Synchronizers.Rules.Actions;
+using static NexusMods.Abstractions.Loadouts.Synchronizers.Rules.SignatureShorthand;
 
-namespace NexusMods.DataModel.LoadoutSynchronizer.Rules;
+namespace NexusMods.Abstractions.Loadouts.Synchronizers.Rules;
 
 public class ActionMapping
 {

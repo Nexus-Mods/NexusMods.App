@@ -1,5 +1,5 @@
 // ReSharper disable InconsistentNaming
-namespace NexusMods.DataModel.LoadoutSynchronizer.Rules;
+namespace NexusMods.Abstractions.Loadouts.Synchronizers.Rules;
 
 /// <summary>
 /// Summary of all 92 possible signatures in a somewhat readable format

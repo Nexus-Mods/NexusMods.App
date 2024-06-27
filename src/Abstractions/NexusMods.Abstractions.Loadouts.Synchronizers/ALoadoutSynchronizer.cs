@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.DataModel.Entities.Sorting;
@@ -15,6 +16,7 @@ using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.Loadouts.Mods;
+using NexusMods.Abstractions.Loadouts.Synchronizers.Rules;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.Extensions.BCL;
@@ -743,6 +745,109 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         
 
         return newFiles.ToArray();
+    }
+
+    public SyncTree BuildSyncTree(DiskStateTree currentState, DiskStateTree previousTree, Loadout.ReadOnly loadoutTree)
+    {
+        var tree = new Dictionary<GamePath, SyncTreeNode>();
+
+        var grouped = loadoutTree.Mods.Where(m => m.Enabled)
+            .SelectMany(m => m.Files)
+            .OfTypeStoredFile()
+            .GroupBy(f => f.AsFile().To);
+        
+        foreach (var group in grouped)
+        {
+            var path = group.Key;
+            var file = group.First();
+            if (group.Count() > 1)
+            {
+                file = SelectFile(group);
+            }
+            
+            tree.Add(path, new SyncTreeNode
+            {
+                Path = path,
+                LoadoutFile = file,
+            });
+        }
+
+        foreach (var node in previousTree.GetAllDescendentFiles())
+        {
+            if (tree.TryGetValue(node.GamePath(), out var found))
+            {
+                found.Previous = node.Item.Value;
+            }
+            else
+            {
+                tree.Add(node.GamePath(), new SyncTreeNode
+                {
+                    Path = node.GamePath(),
+                    Previous = node.Item.Value,
+                });
+            }
+        }
+        
+        foreach (var node in currentState.GetAllDescendentFiles())
+        {
+            if (tree.TryGetValue(node.GamePath(), out var found))
+            {
+                found.Disk = node.Item.Value;
+            }
+            else
+            {
+                tree.Add(node.GamePath(), new SyncTreeNode
+                {
+                    Path = node.GamePath(),
+                    Disk = node.Item.Value,
+                });
+            }
+        }
+        
+        return new SyncTree(tree);
+    }
+
+    public async Task<SyncTree> BuildSyncTree(Loadout.ReadOnly loadout)
+    {
+        var diskState = await GetDiskState(loadout.InstallationInstance);
+        var prevDiskState = _diskStateRegistry.GetState(loadout.InstallationInstance)!;
+        
+        return BuildSyncTree(diskState, prevDiskState, loadout);
+    }
+
+    public SyncTree ProcessSyncTree(SyncTree tree)
+    {
+        foreach (var entry in tree.GetAllDescendentFiles())
+        {
+            var item = entry.Item.Value;
+
+            var signature = new SignatureBuilder
+            {
+                DiskHash = item.Disk.HasValue ? item.Disk.Value.Hash : Optional<Hash>.None,
+                PrevHash = item.Previous.HasValue ? item.Previous.Value.Hash : Optional<Hash>.None,
+                LoadoutHash = item.LoadoutFile.HasValue ? item.LoadoutFile.Value.Hash : Optional<Hash>.None,
+                DiskArchived = item.Disk.HasValue && HaveArchive(item.Disk.Value.Hash),
+                PrevArchived = item.Previous.HasValue && HaveArchive(item.Previous.Value.Hash),
+                LoadoutArchived = item.LoadoutFile.HasValue && HaveArchive(item.LoadoutFile.Value.Hash),
+                PathIsIgnored = false,
+            }.Build();
+            
+            item.Signature = signature;
+            item.Actions = ActionMapping.MapAction(signature);
+        }
+
+        return tree;
+    }
+    
+    protected bool HaveArchive(Hash hash)
+    {
+        return _fileStore.HaveFile(hash).Result;
+    }
+
+    protected StoredFile.ReadOnly SelectFile(IEnumerable<StoredFile.ReadOnly> files)
+    {
+        // TODO: do this better
+        return files.First();
     }
 
     /// <inheritdoc />

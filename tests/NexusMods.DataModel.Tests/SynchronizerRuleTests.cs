@@ -2,11 +2,11 @@ using System.Security.Cryptography;
 using System.Text;
 using DynamicData.Kernel;
 using FluentAssertions;
-using NexusMods.DataModel.LoadoutSynchronizer.Rules;
+using NexusMods.Abstractions.Loadouts.Synchronizers.Rules;
 using NexusMods.Hashing.xxHash64;
 using Xunit.DependencyInjection;
-using static NexusMods.DataModel.LoadoutSynchronizer.Rules.Actions;
-using static NexusMods.DataModel.LoadoutSynchronizer.Rules.Signature;
+using static NexusMods.Abstractions.Loadouts.Synchronizers.Rules.Actions;
+using static NexusMods.Abstractions.Loadouts.Synchronizers.Rules.Signature;
 
 namespace NexusMods.DataModel.Tests;
 
@@ -15,7 +15,7 @@ public class SynchronizerRuleTests
 
     [Theory]
     [MethodData(nameof(TestRows))]
-    public void AllRulesHaveActions(Signature signature, string EnumShorthand, Optional<Hash> disk, Optional<Hash> prev, Optional<Hash> loadout)
+    public void AllRulesHaveActions(Abstractions.Loadouts.Synchronizers.Rules.Signature signature, string EnumShorthand, Optional<Hash> disk, Optional<Hash> prev, Optional<Hash> loadout)
     {
         var action = ActionMapping.MapAction(signature);
         action.Should().NotBe(0, "Every signature should have a corresponding action");
@@ -75,7 +75,7 @@ public class SynchronizerRuleTests
         );
     }
     
-    public static IEnumerable<(Signature Signature, string EnumShorthand, Optional<Hash> Disk, Optional<Hash> Prev, Optional<Hash> Loadout)> AllSignatures()
+    public static IEnumerable<(Abstractions.Loadouts.Synchronizers.Rules.Signature Signature, string EnumShorthand, Optional<Hash> Disk, Optional<Hash> Prev, Optional<Hash> Loadout)> AllSignatures()
     {
 
         var options =

@@ -1,19 +1,12 @@
 ﻿using FluentAssertions;
-using GameFinder.Common;
-using NexusMods.Abstractions.DataModel.Entities.Sorting;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.Trees;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Files;
-using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
-using NexusMods.Abstractions.Loadouts.Synchronizers;
-using NexusMods.Abstractions.MnemonicDB.Attributes;
-using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.DataModel.Tests.Harness;
 using NexusMods.Extensions.Hashing;
 using NexusMods.Hashing.xxHash64;
-using File = NexusMods.Abstractions.Loadouts.Files.File;
 
 namespace NexusMods.DataModel.Tests;
 
@@ -179,6 +172,15 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
         await Verify(rows);
     }
 
+    [Fact]
+    public async Task CanSynchronize()
+    {
+        var tree = await Synchronizer.BuildSyncTree(BaseLoadout);
+        var processed = Synchronizer.ProcessSyncTree(tree);
+
+        Assert.Fail();
+    }
+    
     
     [Fact]
     public async Task CanWriteDiskTreeToDisk()

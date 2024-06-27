@@ -1,6 +1,7 @@
 using BenchmarkDotNet.Attributes;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.DTO;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Benchmarks.Benchmarks.Loadouts.Harness;
 using NexusMods.Benchmarks.Interfaces;
 
