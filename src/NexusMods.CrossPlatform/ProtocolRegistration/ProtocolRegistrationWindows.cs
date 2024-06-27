@@ -32,25 +32,18 @@ public class ProtocolRegistrationWindows : IProtocolRegistration
     /// <inheritdoc/>
     public Task RegisterHandler(string uriScheme, bool setAsDefaultHandler = true, CancellationToken cancellationToken = default)
     {
+        // NOTE(erri120): See this comment for an in-depth guide on protocol handlers:
+        // https://github.com/Nexus-Mods/NexusMods.App/pull/1691#issuecomment-2194418849
+        // We've decided use the same method that Vortex and MO2 use, which is using a
+        // generic ProgID. This means we're always overwriting the existing values.
+
         try
         {
-            RegisterApplication(uriScheme);
+            SetAsDefaultHandler(uriScheme);
         }
         catch (Exception e)
         {
             _logger.LogError(e, "Exception while updating registry to register protocol handler for `{Scheme}`", uriScheme);
-        }
-
-        if (setAsDefaultHandler)
-        {
-            try
-            {
-                SetAsDefaultHandler(uriScheme);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, "Exception while registering as default protocol handler for `{Scheme}`", uriScheme);
-            }
         }
 
         return Task.CompletedTask;
@@ -90,7 +83,10 @@ public class ProtocolRegistrationWindows : IProtocolRegistration
         var executable = _osInterop.GetOwnExe();
 
         commandKey.SetValue("", $"\"{executable.ToNativeSeparators(_fileSystem.OS)}\" \"%1\"");
-        commandKey.SetValue("WorkingDirectory", $"\"{executable.Parent.ToNativeSeparators(_fileSystem.OS)}\"");
+
+        // NOTE(erri120): can't set the working directory for generic protocol handlers
+        // due to possible issues with Vortex/MO2.
+        if (!isProtocolHandler) commandKey.SetValue("WorkingDirectory", $"\"{executable.Parent.ToNativeSeparators(_fileSystem.OS)}\"");
     }
 
     private void SetAsDefaultHandler(string uriScheme)
