@@ -58,12 +58,17 @@ public class ProtocolRegistrationWindows : IProtocolRegistration
 
     private void RegisterApplication(string uriScheme)
     {
-        using var key = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\Nexus Mods\NexusMods.App\Capabilities");
+        const string capabilitiesPath = @"SOFTWARE\Nexus Mods\NexusMods.App\Capabilities";
+
+        using var key = Registry.CurrentUser.CreateSubKey(capabilitiesPath);
         key.SetValue("ApplicationName", "Nexus Mods App");
         key.SetValue("ApplicationDescription", "Mod Manager for your games");
 
         using var urlAssociationsKey = key.CreateSubKey("UrlAssociations");
         urlAssociationsKey.SetValue(uriScheme, uriScheme);
+
+        using var registeredApplicationsKey = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\RegisteredApplications");
+        registeredApplicationsKey.SetValue("NexusMods.App", capabilitiesPath);
     }
 
     private void SetAsDefaultHandler(string uriScheme)
