@@ -8,6 +8,7 @@ using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
+using NexusMods.Games.FOMOD;
 using NexusMods.Games.RedEngine.ModInstallers;
 using NexusMods.Paths;
 
@@ -65,7 +66,8 @@ public class Cyberpunk2077 : AGame, ISteamGame, IGogGame, IEpicGame
         new RedModInstaller(),
         new SimpleOverlayModInstaller(),
         new AppearancePreset(_serviceProvider),
-        new FolderlessModInstaller()
+        new FolderlessModInstaller(),
+        FomodXmlInstaller.Create(_serviceProvider, new GamePath(LocationId.Game, "/")),
     };
 
     public override List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations)

@@ -1,7 +1,6 @@
 using FluentAssertions;
 using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Paths;
-using Noggog;
 using ReactiveUI;
 
 namespace NexusMods.Networking.Downloaders.Tests;
@@ -26,7 +25,7 @@ public class DownloadServiceTests
     public async Task AddTask_Uri_ShouldDownload()
     {
         var id = Guid.NewGuid().ToString();
-        _httpServer.SetContent(id, "Hello, World!".ToBytes());
+        _httpServer.SetContent(id, "Hello, World!"u8.ToArray());
         
 
         var task = await _downloadService.AddTask(new Uri($"{_httpServer.Prefix}{id}"));
@@ -62,7 +61,7 @@ public class DownloadServiceTests
     public async Task CanSuspendDownloads()
     {
         var id = Guid.NewGuid().ToString();
-        _httpServer.SetContent(id, "Suspended Test".ToBytes());
+        _httpServer.SetContent(id, "Suspended Test"u8.ToArray());
         
 
         var task = await _downloadService.AddTask(new Uri($"{_httpServer.Prefix}{id}"));
@@ -117,7 +116,7 @@ public class DownloadServiceTests
     public async Task CanCencelDownloads()
     {
         var id = Guid.NewGuid().ToString();
-        _httpServer.SetContent(id, "Suspended Test".ToBytes());
+        _httpServer.SetContent(id, "Suspended Test"u8.ToArray());
         
 
         var task = await _downloadService.AddTask(new Uri($"{_httpServer.Prefix}{id}"));
