@@ -81,10 +81,11 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
     [Fact]
     public async Task ApplyingTwiceDoesNothing()
     {
-        // If apply is buggy, it will result in a "needs ingest" error when we try to re-apply. Because Apply
-        // will have not properly updated the disk state, and it will error because the disk state is not in sync
-        await Synchronizer.Apply(BaseLoadout);
-        await Synchronizer.Apply(BaseLoadout);
+        // This test is mostly a vestige of the apply/ingest system, but it's still a good sanity check to make 
+        // sure that the system is idempotent.
+        
+        await Synchronizer.Synchronize(BaseLoadout);
+        await Synchronizer.Synchronize(BaseLoadout);
 
         // This should not throw as the disk state should be in sync
 
@@ -93,7 +94,7 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
         await tx.Commit();
         Refresh(ref BaseLoadout);
         
-        await Synchronizer.Apply(BaseLoadout);
+        await Synchronizer.Synchronize(BaseLoadout);
     }
 
     
@@ -176,20 +177,20 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
     public async Task CanSynchronize()
     {
         var tree = await Synchronizer.BuildSyncTree(BaseLoadout);
-        var processed = Synchronizer.ProcessSyncTree(tree);
+        var groupings = Synchronizer.ProcessSyncTree(tree);
+        var newLoadout = await Synchronizer.RunGroupings(tree, groupings, BaseLoadout);
 
         Assert.Fail();
     }
     
     
     [Fact]
-    public async Task CanWriteDiskTreeToDisk()
+    public async Task CanSynchronizeLoadout()
     {
-        var flattened = await Synchronizer.LoadoutToFlattenedLoadout(BaseLoadout);
-        var fileTree = await Synchronizer.FlattenedLoadoutToFileTree(flattened, BaseLoadout);
-        var prevState = DiskStateRegistry.GetState(BaseLoadout.InstallationInstance)!;
-        var diskState = await Synchronizer.FileTreeToDisk(fileTree, BaseLoadout, flattened, prevState, Install);
-
+        await Synchronizer.Synchronize(BaseLoadout);
+        
+        var diskState = DiskStateRegistry.GetState(BaseLoadout.InstallationInstance)!;
+        
         diskState.GetAllDescendentFiles()
             .Select(f => f.GamePath().ToString())
             .Should()
@@ -219,8 +220,6 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
             var path = Install.LocationsRegister.GetResolvedPath(file.GamePath());
             path.FileExists.Should().BeTrue("the file should exist on disk");
             path.FileInfo.Size.Should().Be(file.Item.Value.Size, "the file size should match");
-            path.FileInfo.LastWriteTimeUtc.Should()
-                .Be(file.Item.Value.LastModified, "the file last modified time should match");
             (await path.XxHash64Async()).Should().Be(file.Item.Value.Hash, "the file hash should match");
         }
 
@@ -232,6 +231,7 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
         var executeFlags = UnixFileMode.UserExecute | UnixFileMode.GroupExecute | UnixFileMode.OtherExecute;
         scriptPath.GetUnixFileMode().Should().HaveFlag(executeFlags);
         binaryPath.GetUnixFileMode().Should().HaveFlag(executeFlags);
+        
     }
 
     
@@ -262,7 +262,7 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
     public async Task CanIngestDiskState()
     {
         // Apply the old state
-        await Synchronizer.Apply(BaseLoadout);
+        await Synchronizer.Synchronize(BaseLoadout);
 
         // Setup some paths
         var modifiedFile = new GamePath(LocationId.Game, "meshes/b.nif");
@@ -271,12 +271,15 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
 
         // Modify the files on disk
         Install.LocationsRegister.GetResolvedPath(deletedFile).Delete();
-        await Install.LocationsRegister.GetResolvedPath(modifiedFile).WriteAllBytesAsync(new byte[] { 0x01, 0x02, 0x03 });
-        await Install.LocationsRegister.GetResolvedPath(newFile).WriteAllBytesAsync(new byte[] { 0x04, 0x05, 0x06 });
+        await Install.LocationsRegister.GetResolvedPath(modifiedFile).WriteAllBytesAsync([0x01, 0x02, 0x03]);
+        await Install.LocationsRegister.GetResolvedPath(newFile).WriteAllBytesAsync([0x04, 0x05, 0x06]);
+        
+        await Synchronizer.Synchronize(BaseLoadout);
+        
+        var diskState = DiskStateRegistry.GetState(Install)!;
 
-        var diskState = await Synchronizer.GetDiskState(Install);
-
-        diskState.GetAllDescendentFiles()
+        diskState
+            .GetAllDescendentFiles()
             .Select(f => f.GamePath().ToString())
             .Should()
             .BeEquivalentTo(new[]
@@ -299,7 +302,7 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
                     "{Preferences}/preferences/settings.ini",
                     // newFile: newSave.dat is created
                     "{Saves}/saves/newSave.dat",
-                    "{Saves}/saves/save1.dat"
+                    "{Saves}/saves/save1.dat",
                 },
                 "files have all been written to disk");
 

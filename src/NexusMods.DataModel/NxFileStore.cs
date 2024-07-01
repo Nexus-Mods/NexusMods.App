@@ -125,7 +125,7 @@ public class NxFileStore : IFileStore
     }
     
     /// <inheritdoc />
-    public async Task ExtractFiles((Hash Hash, AbsolutePath Dest)[] files, CancellationToken token = default)
+    public async Task ExtractFiles(IEnumerable<(Hash Hash, AbsolutePath Dest)> files, CancellationToken token = default)
     {
         // Group the files by archive.
         // In almost all cases, everything will go in one archive, except for cases

@@ -87,6 +87,8 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     {
 
     }
+    
+    
 
     #region IStandardizedLoadoutSynchronizer Implementation
 
@@ -280,7 +282,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
 
         // Extract all the files that need extracting in one batch.
         _logger.LogInformation("Extracting {Count} files", toExtract.Count);
-        await _fileStore.ExtractFiles(GetFilesToExtract(toExtract));
+        //await _fileStore.ExtractFiles(GetFilesToExtract(toExtract));
 
         // Update the resulting items with the new file times
         var isUnix = _os.IsUnix();
@@ -347,22 +349,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
 
         return newTree;
 
-        // Return the new tree
-        // Quick convert function such that to not be LINQ bottlenecked.
-        // Needed as separate method because parent method is async.
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static (Hash Hash, AbsolutePath Dest)[] GetFilesToExtract(List<KeyValuePair<AbsolutePath, StoredFile.ReadOnly>> toExtract) 
-        {
-            (Hash Hash, AbsolutePath Dest)[] entries = GC.AllocateUninitializedArray<(Hash Src, AbsolutePath Dest)>(toExtract.Count);
-            var toExtractSpan = CollectionsMarshal.AsSpan(toExtract);
-            for (var x = 0; x < toExtract.Count; x++)
-            {
-                ref var item = ref toExtractSpan[x];
-                entries[x] = (item.Value.Hash, item.Key);
-            }
 
-            return entries;
-        }
     }
 
     /// <inheritdoc />
@@ -372,7 +359,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     }
 
     /// <summary>
-    /// Called when a file has changed during an apply operation, and a ingest is required.
+    /// Called when a file has changed during an apply operation, and an ingest is required.
     /// </summary>
     /// <param name="entry"></param>
     public virtual void HandleNeedIngest(HashedEntryWithName entry)
@@ -564,6 +551,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// <returns></returns>
     public virtual async Task<DiskStateTree> Apply(Loadout.ReadOnly loadout, bool forceSkipIngest = false)
     {
+        throw new NotSupportedException("Deprecated, use Sync instead");
         // Note(Sewer) If the last loadout was a vanilla state loadout, we need to
         // skip ingest and ignore changes, since vanilla state loadouts should not be changed.
         // (Prevent 'Needs Ingest' exception)
@@ -815,8 +803,11 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         return BuildSyncTree(diskState, prevDiskState, loadout);
     }
 
-    public SyncTree ProcessSyncTree(SyncTree tree)
+    /// <inheritdoc />
+    public SyncActionGroupings ProcessSyncTree(SyncTree tree)
     {
+        var groupings = new SyncActionGroupings();
+        
         foreach (var entry in tree.GetAllDescendentFiles())
         {
             var item = entry.Item.Value;
@@ -834,10 +825,186 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             
             item.Signature = signature;
             item.Actions = ActionMapping.MapAction(signature);
+            
+            groupings.Add(item);
         }
 
-        return tree;
+        return groupings;
     }
+
+    public async Task<Loadout.ReadOnly> RunGroupings(SyncTree tree, SyncActionGroupings groupings, Loadout.ReadOnly loadout)
+    {
+        
+        var previousTree = _diskStateRegistry.GetState(loadout.InstallationInstance)!
+            .GetAllDescendentFiles()
+            .ToDictionary(d => d.Item.GamePath, d => d.Item.Value);
+        
+        foreach (var action in ActionsInOrder)
+        {
+            var items = groupings[action];
+            if (items.Count == 0)
+                continue;
+
+            var register = loadout.InstallationInstance.LocationsRegister;
+
+            
+            switch (action)
+            {
+                case Actions.DoNothing:
+                    break;
+
+                case Actions.BackupFile:
+                {
+                    var toBackup = groupings[Actions.BackupFile];
+                    _logger.LogDebug("Backing up {Count} files", toBackup.Count);
+                    
+                    await BackupNewFiles(loadout.InstallationInstance, toBackup.Select(item =>
+                        (item.Path, item.Disk.Value.Hash, item.Disk.Value.Size)));
+                }
+                    break;
+
+                case Actions.IngestFromDisk:
+                {
+                    var toIngest = groupings[Actions.IngestFromDisk];
+                    _logger.LogDebug("Ingesting {Count} files", toIngest.Count);
+                    using var tx = Connection.BeginTransaction();
+                    var overridesMod = GetOrCreateOverridesMod(loadout, tx);
+
+                    foreach (var file in toIngest)
+                    {
+                        var storedFile = new StoredFile.New(tx)
+                        {
+                            File = new File.New(tx)
+                            {
+                                To = file.Path,
+                                ModId = overridesMod,
+                                LoadoutId = loadout.Id,
+                            },
+                            Hash = file.Disk.Value.Hash,
+                            Size = file.Disk.Value.Size,
+                        };
+                        previousTree[file.Path] = file.Disk.Value with { LastModified = DateTime.UtcNow };
+                    }
+                    
+                    if (overridesMod.Value.InPartition(PartitionId.Temp))
+                    {
+                        var mod = new Mod.ReadOnly(loadout.Db, overridesMod);
+                        mod.Revise(tx);
+                    }
+                    else
+                    {
+                        loadout.Revise(tx);
+                    }
+                    
+                    var result = await tx.Commit();
+                }
+                    break;
+
+
+                case Actions.DeleteFromDisk:
+                    {
+                        // Delete files from disk
+                        var toDelete = groupings[Actions.DeleteFromDisk];
+                        _logger.LogDebug("Deleting {Count} files from disk", toDelete.Count);
+                        foreach (var item in toDelete)
+                        {
+                            var gamePath = register.GetResolvedPath(item.Path);
+                            gamePath.Delete();
+                            previousTree.Remove(item.Path);
+                        }
+                    } 
+                    break;
+                
+                case Actions.ExtractToDisk:
+                    // Extract files to disk
+                    var toExtract = groupings[Actions.ExtractToDisk];
+                    _logger.LogDebug("Extracting {Count} files to disk", toExtract.Count);
+                    if (toExtract.Count > 0)
+                    {
+                        await _fileStore.ExtractFiles(toExtract.Select(item =>
+                        {
+                            var gamePath = register.GetResolvedPath(item.Path);
+                            return (item.LoadoutFile.Value.Hash, gamePath);
+                        }), CancellationToken.None);
+
+                        foreach (var entry in toExtract)
+                        {
+                            previousTree[entry.Path] = new DiskStateEntry
+                            {
+                                Hash = entry.LoadoutFile.Value.Hash,
+                                Size = entry.LoadoutFile.Value.Size,
+                                // TODO: this isn't needed and we can delete it eventually
+                                LastModified = DateTime.UtcNow,
+                            };
+                        }
+                    }
+                    break;
+
+                case Actions.AddReifiedDelete:
+                {
+                    var toAddDelete = groupings[Actions.AddReifiedDelete];
+                    _logger.LogDebug("Adding {Count} reified deletes", toAddDelete.Count);
+                    
+                    using var tx = Connection.BeginTransaction();
+                    var overridesMod = GetOrCreateOverridesMod(loadout, tx);
+
+                    foreach (var item in toAddDelete)
+                    {
+                        var delete = new DeletedFile.New(tx)
+                        {
+                            File = new File.New(tx)
+                            {
+                                To = item.Path,
+                                ModId = overridesMod,
+                                LoadoutId = loadout.Id,
+                            },
+                            Size = item.LoadoutFile.Value.Size,
+                        };
+
+                        previousTree.Remove(item.Path);
+                    }
+                    
+                    if (overridesMod.Value.InPartition(PartitionId.Temp))
+                    {
+                        var mod = new Mod.ReadOnly(loadout.Db, overridesMod);
+                        mod.Revise(tx);
+                    }
+                    else
+                    {
+                        loadout.Revise(tx);
+                    }
+                    
+                    await tx.Commit();
+                }
+                    break;
+                
+                
+                default:
+                    throw new InvalidOperationException($"Unknown action: {action}");
+
+            }
+        }
+        
+        var newTree = DiskStateTree.Create(previousTree);
+        newTree.LoadoutId = loadout.Id;
+        newTree.TxId = loadout.MostRecentTxId();
+        await _diskStateRegistry.SaveState(loadout.InstallationInstance, newTree);
+
+        return loadout;
+    }
+
+    /// <inheritdoc />
+    public async Task<Loadout.ReadOnly> Synchronize(Loadout.ReadOnly loadout)
+    {
+        var tree = await BuildSyncTree(loadout);
+        var groupings = ProcessSyncTree(tree);
+        return await RunGroupings(tree, groupings, loadout);
+    }
+
+    /// <summary>
+    /// All actions, in execution order.
+    /// </summary>
+    private static readonly Actions[] ActionsInOrder = Enum.GetValues<Actions>().OrderBy(a => (ushort)a).ToArray();
     
     protected bool HaveArchive(Hash hash)
     {
