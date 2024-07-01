@@ -32,7 +32,7 @@ This page lists the recommended system requirements to install and run the app o
 
 ### Linux Dependencies
 
-The App requires the following programs to be available at runtime:
+The App requires the following programs to be available on the system `PATH` at runtime:
 
 - `xdg-open` (part of [xdg-utils](https://www.freedesktop.org/wiki/Software/xdg-utils/))
 - `xdg-settings` (part of [xdg-utils](https://www.freedesktop.org/wiki/Software/xdg-utils/))
