@@ -31,10 +31,14 @@ public class ApplyService : IApplyService
         _conn = conn;
         _diskStateRegistry = diskStateRegistry;
     }
+    
+    
+    
 
     /// <inheritdoc />
     public async Task Apply(Loadout.ReadOnly loadout)
     {
+        throw new NotImplementedException();
         // TODO: Check if this or any other loadout is being applied to this game installation
         // Queue the loadout to be applied if that is the case.
 
@@ -69,6 +73,12 @@ public class ApplyService : IApplyService
 
             await loadoutWithIngest.Apply();
         }
+    }
+
+    /// <inheritdoc />
+    public async Task Synchronize(Loadout.ReadOnly loadout)
+    {
+        await loadout.InstallationInstance.GetGame().Synchronizer.Synchronize(loadout);
     }
 
 

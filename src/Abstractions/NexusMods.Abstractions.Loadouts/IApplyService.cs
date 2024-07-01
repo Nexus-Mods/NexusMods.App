@@ -17,6 +17,12 @@ public interface IApplyService
     public Task Apply(Loadout.ReadOnly loadout);
     
     /// <summary>
+    /// Synchronize the loadout with the game folder, any changes in the game folder will be added to the loadout, and any
+    /// new changes in the loadout will be applied to the game folder.
+    /// </summary>
+    public Task Synchronize(Loadout.ReadOnly loadout);
+    
+    /// <summary>
     /// Get the diff tree of the unapplied changes of a loadout.
     /// </summary>
     public ValueTask<FileDiffTree> GetApplyDiffTree(Loadout.ReadOnly loadout);

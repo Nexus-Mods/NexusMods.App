@@ -352,6 +352,44 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
 
     }
 
+    private void CleanDirectories(IEnumerable<GamePath> toDelete, DiskStateTree newTree, GameInstallation installation)
+    {
+        var seenDirectories = new HashSet<GamePath>();
+        var directoriesToDelete = new HashSet<GamePath>();
+        foreach (var entry in toDelete)
+        {
+            var parentPath = entry.Parent;
+            GamePath? emptyStructureRoot = null;
+            while (parentPath != entry.GetRootComponent)
+            {
+                if (seenDirectories.Contains(parentPath))
+                {
+                    emptyStructureRoot = null;
+                    break;
+                }
+                
+                // newTree was build from files, so if the parent is in the new tree, it's not empty
+                if (newTree.ContainsKey(parentPath))
+                {
+                    break;
+                }
+                
+                seenDirectories.Add(parentPath);
+                emptyStructureRoot = parentPath;
+                parentPath = parentPath.Parent;
+            }
+            
+            if (emptyStructureRoot != null)
+                directoriesToDelete.Add(emptyStructureRoot.Value);
+        }
+        
+        foreach (var dir in directoriesToDelete)
+        {
+            // Could have other empty directories as children, so we need to delete recursively
+            installation.LocationsRegister.GetResolvedPath(dir).DeleteDirectory(recursive: true);
+        }
+    }
+
     /// <inheritdoc />
     public virtual async Task<DiskStateTree> GetDiskState(GameInstallation installation)
     {
@@ -988,6 +1026,14 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         var newTree = DiskStateTree.Create(previousTree);
         newTree.LoadoutId = loadout.Id;
         newTree.TxId = loadout.MostRecentTxId();
+
+        // Clean up empty directories
+        var deletedFiles = groupings[Actions.DeleteFromDisk];
+        if (deletedFiles.Count > 0)
+        {
+            CleanDirectories(deletedFiles.Select(f => f.Path), newTree, loadout.InstallationInstance);
+        }
+        
         await _diskStateRegistry.SaveState(loadout.InstallationInstance, newTree);
 
         return loadout;
@@ -996,6 +1042,16 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// <inheritdoc />
     public async Task<Loadout.ReadOnly> Synchronize(Loadout.ReadOnly loadout)
     {
+        var prevDiskState = _diskStateRegistry.GetState(loadout.InstallationInstance)!;
+
+        // If we are swapping loadouts, then we need to synchronize the previous loadout first then
+        // the new one
+        if (prevDiskState.LoadoutId != loadout.Id)
+        {
+            var prevLoadout = Loadout.Load(loadout.Db, prevDiskState.LoadoutId);
+            await Synchronize(prevLoadout);
+        }
+        
         var tree = await BuildSyncTree(loadout);
         var groupings = ProcessSyncTree(tree);
         return await RunGroupings(tree, groupings, loadout);
@@ -1524,7 +1580,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         if (!vanillaStateLoadout.IsValid())
             await CreateVanillaStateLoadout(installation);
 
-        await Apply(vanillaStateLoadout, true);
+        await Synchronize(vanillaStateLoadout);
     }
     #endregion
 
