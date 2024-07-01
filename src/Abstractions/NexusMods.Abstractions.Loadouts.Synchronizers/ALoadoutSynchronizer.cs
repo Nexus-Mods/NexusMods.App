@@ -1049,7 +1049,8 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         if (prevDiskState.LoadoutId != loadout.Id)
         {
             var prevLoadout = Loadout.Load(loadout.Db, prevDiskState.LoadoutId);
-            await Synchronize(prevLoadout);
+            if (prevLoadout.IsValid()) 
+                await Synchronize(prevLoadout);
         }
         
         var tree = await BuildSyncTree(loadout);
