@@ -1,2 +1,43 @@
-!!! tip "Coming Soon"
-    Stardew Valley is not supported yet, but will be one of the next games we add to the app. Stay tuned!
+Use the Nexus Mods app to manage your Stardew Valley mods!
+
+## Features
+On top of the basic mod management features, players also benefit from these dedicated features:
+
+### SMAPI Installer
+Manage your installatioon of Stardew Modding API (SMAPI) by simply downloading and installing it as you would with any other mod. Once installed, your SMAPI version and game version are compared to ensure that they are compatible. 
+
+### Health Checks
+Get information on potential issues in your loadout(s). 
+
+![An example Health Check message prompting the installation of a missing mod.](../images/0.6.0/HealthCheckExample.webp)
+
+Diagnostics are shown in the following situations: 
+
+- SMAPI is recommended when no mods are installed yet.
+- The installed SMAPI version is too old to work with the game version.
+- The game version is too old to work with the installed SMAPI version.
+- An installed mod's dependencies are installed, but they are outdated.
+- An installed mod has missing dependencies.
+- An installed mod's dependencies are installed, but they are disabled.
+- A mod that requires SMAPI is installed but SMAPI is missing.
+- A mod that requires SMAPI is installed but SMAPI is disabled.
+- A mod is marked as obsolete or broken (according to SMAPI).
+- A mod is overwriting the game files (XNB mod).
+
+### Edit Config Files
+Easily edit mod config files in your loadout(s). When new config files are created after starting the game, the app will automatically assign them to mod they correspond to. To edit these settings select the mod in the "My Mods" view and click "View Mod Files" on the toolbar. Locate the config file (e.g. config.json) and click "Edit File" from the toolbar. Click save when finished editing, then apply the changes to your game. 
+
+![Using the app to edit a config.json](../images/0.6.0/SDVEditConfig.webp)
+
+## Compatibility
+This game can be managed via the app on the following operating systems and platforms. The applicatioon will automatically detect valid installations from supported game stores if possible. 
+
+|| :fontawesome-brands-windows: Windows |  :fontawesome-brands-linux: Linux | :fontawesome-brands-apple: macOS |
+|---|---|---|---|
+| :fontawesome-brands-steam: Steam | :material-check-circle: | :material-check-circle: | :material-close-thick: |
+| <img src="../../images/GOG.com_logo_white.svg" alt="drawing" width="14"/> GOG | :material-check-circle: | :material-close-thick:* | :material-close-thick:|
+| :fontawesome-brands-xbox: Xbox Game Pass (PC) | :material-close-thick:** | :material-close-thick: | :material-close-thick: |
+
+<sub>\* Manual DRM-free installs from GOG.com cannot be detected automatically.</sub>
+
+<sub>\*\* Xbox Game Pass for PC is not yet supported. <a href="https://github.com/Nexus-Mods/NexusMods.App/issues/1476">More.</a></sub>
