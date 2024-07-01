@@ -150,8 +150,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
         var grouped = loadoutTree.Mods.Where(m => m.Enabled)
             .SelectMany(m => m.Files)
-            .OfTypeStoredFile()
-            .GroupBy(f => f.AsFile().To);
+            .GroupBy(f => f.To);
         
         foreach (var group in grouped)
         {
@@ -162,10 +161,20 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 file = SelectWinningFile(group);
             }
             
+            // Deleted file markers are not included in the sync tree
+            if (file.TryGetAsDeletedFile(out _))
+                continue;
+
+            if (!file.TryGetAsStoredFile(out var stored))
+            {
+                _logger.LogWarning("File {Path} is not a stored file, skipping", path);
+                continue;
+            }
+
             tree.Add(path, new SyncTreeNode
             {
                 Path = path,
-                LoadoutFile = file,
+                LoadoutFile = stored,
             });
         }
 
@@ -516,10 +525,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// </summary>
     /// <param name="files"></param>
     /// <returns></returns>
-    protected virtual StoredFile.ReadOnly SelectWinningFile(IEnumerable<StoredFile.ReadOnly> files)
+    protected virtual File.ReadOnly SelectWinningFile(IEnumerable<File.ReadOnly> files)
     {
-        // TODO: do this better
-        return files.First();
+        return files.MaxBy(f => (byte)f.Mod.Category);
     }
 
     /// <summary>

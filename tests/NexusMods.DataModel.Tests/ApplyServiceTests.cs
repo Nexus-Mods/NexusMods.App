@@ -111,15 +111,12 @@ public class ApplyServiceTests(IServiceProvider provider) : ADataModelTest<Apply
         overrideFile.Should().NotBeNull();
         overrideFile!.Contains(DeletedFile.Size).Should().BeTrue();
         
+        var syncTree = await Synchronizer.BuildSyncTree(BaseLoadout);
         
         // Act
         await ApplyService.Synchronize(BaseLoadout);
 
-        
-        // This only fails on Windows on github actions, I don't know why, disabled for now on windows
-        // until I can investigate it - halgari
-        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) 
-            deletedFile.FileExists.Should().BeFalse("file is still deleted after apply");
+        deletedFile.FileExists.Should().BeFalse("file is still deleted after apply");
         
     }
 }
