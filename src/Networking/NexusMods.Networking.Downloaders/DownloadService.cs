@@ -26,7 +26,7 @@ public class DownloadService : IDownloadService, IDisposable, IHostedService
     public ReadOnlyObservableCollection<IDownloadTask> Downloads => _downloadsCollection;
     
     /// <inheritdoc />
-    public AbsolutePath OngoingDownloadsDirectory => _downloadDirectory;
+    public AbsolutePath OngoingDownloadsDirectory { get; private set; }
     private ReadOnlyObservableCollection<IDownloadTask> _downloadsCollection = ReadOnlyObservableCollection<IDownloadTask>.Empty;
 
     private readonly SourceCache<IDownloadTask, EntityId> _downloads = new(t => t.PersistentState.Id);
@@ -36,7 +36,6 @@ public class DownloadService : IDownloadService, IDisposable, IHostedService
     private bool _isDisposed;
     private readonly CompositeDisposable _disposables;
     private readonly IFileStore _fileStore;
-    private AbsolutePath _downloadDirectory;
 
     public DownloadService(
         ILogger<DownloadService> logger, 
@@ -51,10 +50,10 @@ public class DownloadService : IDownloadService, IDisposable, IHostedService
         _conn = conn;
         _disposables = new CompositeDisposable();
         _fileStore = fileStore;
-        _downloadDirectory = settingsManager.Get<DownloadSettings>().OngoingDownloadLocation.ToPath(fs);
-        if (!_downloadDirectory.DirectoryExists())
+        OngoingDownloadsDirectory = settingsManager.Get<DownloadSettings>().OngoingDownloadLocation.ToPath(fs);
+        if (!OngoingDownloadsDirectory.DirectoryExists())
         {
-            _downloadDirectory.CreateDirectory();
+            OngoingDownloadsDirectory.CreateDirectory();
         }
     }
 
@@ -231,6 +230,6 @@ public class DownloadService : IDownloadService, IDisposable, IHostedService
     [EditorBrowsable(EditorBrowsableState.Never)]
     internal void SetDownloadDirectory(AbsolutePath path)
     {
-        _downloadDirectory = path;
+        OngoingDownloadsDirectory = path;
     }
 }
