@@ -6,7 +6,7 @@ On top of the basic mod management features, players also benefit from these ded
 ### SMAPI Installer
 Manage your installatioon of Stardew Modding API (SMAPI) by simply downloading and installing it as you would with any other mod. Once installed, your SMAPI version and game version are compared to ensure that they are compatible. 
 
-### Health Checks
+### Loadout Health Check
 Get information on potential issues in your loadout(s). 
 
 ![An example Health Check message prompting the installation of a missing mod.](../images/0.6.0/HealthCheckExample.webp)
