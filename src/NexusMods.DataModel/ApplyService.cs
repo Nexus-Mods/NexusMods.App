@@ -83,7 +83,7 @@ public class ApplyService : IApplyService
 
 
     /// <inheritdoc />
-    public ValueTask<FileDiffTree> GetApplyDiffTree(Loadout.ReadOnly loadout)
+    public FileDiffTree GetApplyDiffTree(Loadout.ReadOnly loadout)
     {
         var prevDiskState = _diskStateRegistry.GetState(loadout.InstallationInstance)!;
             

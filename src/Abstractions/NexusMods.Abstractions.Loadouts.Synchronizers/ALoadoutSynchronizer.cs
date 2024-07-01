@@ -1074,10 +1074,68 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     }
 
     /// <inheritdoc />
-    public async ValueTask<FileDiffTree> LoadoutToDiskDiff(Loadout.ReadOnly loadout, DiskStateTree diskState)
+    public FileDiffTree LoadoutToDiskDiff(Loadout.ReadOnly loadout, DiskStateTree diskState)
     {
-        var flattenedLoadout = await LoadoutToFlattenedLoadout(loadout);
-        return await FlattenedLoadoutToDiskDiff(flattenedLoadout, diskState);
+        var syncTree = BuildSyncTree(diskState, diskState, loadout);
+        // Process the sync tree to get the actions populated in the nodes
+        ProcessSyncTree(syncTree);
+        
+        List<DiskDiffEntry> diffs = new();
+
+        foreach (var node in syncTree.GetAllDescendentFiles())
+        {
+            var syncNode = node.Item.Value;
+            var actions = syncNode.Actions;
+
+            if (actions.HasFlag(Actions.DoNothing))
+            {
+                var entry = new DiskDiffEntry
+                {
+                    Hash = syncNode.LoadoutFile.Value.Hash,
+                    Size = syncNode.LoadoutFile.Value.Size,
+                    ChangeType = FileChangeType.None,
+                    GamePath = node.GamePath(),
+                };
+                diffs.Add(entry);
+            }
+            else if (actions.HasFlag(Actions.ExtractToDisk))
+            {
+                var entry = new DiskDiffEntry
+                {
+                    Hash = syncNode.LoadoutFile.Value.Hash,
+                    Size = syncNode.LoadoutFile.Value.Size,
+                    // If paired with a delete action, this is a modified file not a new one
+                    ChangeType = actions.HasFlag(Actions.DeleteFromDisk) ? FileChangeType.Modified : FileChangeType.Added,
+                    GamePath = node.GamePath(),
+                };
+                diffs.Add(entry);
+            }
+            else if (actions.HasFlag(Actions.DeleteFromDisk))
+            {
+                var entry = new DiskDiffEntry
+                {
+                    Hash = syncNode.Disk.Value.Hash,
+                    Size = syncNode.Disk.Value.Size,
+                    ChangeType = FileChangeType.Removed,
+                    GamePath = node.GamePath(),
+                };
+                diffs.Add(entry);
+            }
+            else
+            {
+                // This really should become some sort of error state
+                var entry = new DiskDiffEntry
+                {
+                    Hash = Hash.Zero,
+                    Size = Size.Zero,
+                    ChangeType = FileChangeType.None,
+                    GamePath = node.GamePath(),
+                };
+                diffs.Add(entry);
+            }
+        }
+        
+        return FileDiffTree.Create(diffs.Select(d => KeyValuePair.Create(d.GamePath, d)));
     }
 
     private ValueTask<FileDiffTree> FlattenedLoadoutToDiskDiff(FlattenedLoadout flattenedLoadout, DiskStateTree diskState)

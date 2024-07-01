@@ -53,7 +53,7 @@ public interface ILoadoutSynchronizer
     /// <param name="loadout">Newer state, e.g. unapplied loadout</param>
     /// <param name="diskState">The old state, e.g. last applied DiskState</param>
     /// <returns>A tree of all the files with associated <see cref="FileChangeType"/></returns>
-    ValueTask<FileDiffTree> LoadoutToDiskDiff(Loadout.ReadOnly loadout, DiskStateTree diskState);
+    FileDiffTree LoadoutToDiskDiff(Loadout.ReadOnly loadout, DiskStateTree diskState);
     
     #endregion
 

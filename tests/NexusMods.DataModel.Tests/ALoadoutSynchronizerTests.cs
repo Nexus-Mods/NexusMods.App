@@ -237,7 +237,7 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
             );
 
         Refresh(ref BaseLoadout);
-        var diffTree = await Synchronizer.LoadoutToDiskDiff(BaseLoadout, prevDiskState );
+        var diffTree = Synchronizer.LoadoutToDiskDiff(BaseLoadout, prevDiskState );
         var res = diffTree.GetAllDescendentFiles()
             .Select(node => VerifiableFile.From(node.Item.Value))
             .OrderByDescending(mod => mod.GamePath)

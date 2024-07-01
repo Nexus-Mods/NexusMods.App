@@ -25,7 +25,7 @@ public interface IApplyService
     /// <summary>
     /// Get the diff tree of the unapplied changes of a loadout.
     /// </summary>
-    public ValueTask<FileDiffTree> GetApplyDiffTree(Loadout.ReadOnly loadout);
+    public FileDiffTree GetApplyDiffTree(Loadout.ReadOnly loadout);
 
     
     /// <summary>
