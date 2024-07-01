@@ -333,16 +333,13 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
         secondLoadoutDiskState.Should().BeEquivalentTo(initialDiskState);
 
         // Check that the second loadout only contains the original game files
-        throw new NotImplementedException();
-        /*
-        var secondLoadoutFileTree = await Synchronizer.LoadoutToFlattenedLoadout(secondLoadout);
-        secondLoadoutFileTree.GetAllDescendentFiles()
+        secondLoadoutDiskState.GetAllDescendentFiles()
             .Select(f => f.GamePath().ToString())
             .Should()
             .NotContain(_texturePath.ToString())
             .And
             .NotContain(_meshPath.ToString());
-            */
+
 
         // Check that the files added by the first loadout are not present in the second loadout
         textureAbsPath.FileExists.Should().BeFalse("The texture file should not exist in the second loadout");

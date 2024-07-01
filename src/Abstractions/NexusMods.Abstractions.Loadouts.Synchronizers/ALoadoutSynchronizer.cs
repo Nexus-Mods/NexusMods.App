@@ -265,137 +265,33 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     break;
 
                 case Actions.BackupFile:
-                {
-                    var toBackup = groupings[Actions.BackupFile];
-                    _logger.LogDebug("Backing up {Count} files", toBackup.Count);
-                    
-                    await BackupNewFiles(loadout.InstallationInstance, toBackup.Select(item =>
-                        (item.Path, item.Disk.Value.Hash, item.Disk.Value.Size)));
-                }
+                    await ActionBackupFiles(groupings, loadout);
                     break;
 
                 case Actions.IngestFromDisk:
-                {
-                    var toIngest = groupings[Actions.IngestFromDisk];
-                    _logger.LogDebug("Ingesting {Count} files", toIngest.Count);
-                    using var tx = Connection.BeginTransaction();
-                    var overridesMod = GetOrCreateOverridesMod(loadout, tx);
-                    
-                    var added = new List<StoredFile.New>();
-
-                    foreach (var file in toIngest)
-                    {
-                        var storedFile = new StoredFile.New(tx)
-                        {
-                            File = new File.New(tx)
-                            {
-                                To = file.Path,
-                                ModId = overridesMod,
-                                LoadoutId = loadout.Id,
-                            },
-                            Hash = file.Disk.Value.Hash,
-                            Size = file.Disk.Value.Size,
-                        };
-                        previousTree[file.Path] = file.Disk.Value with { LastModified = DateTime.UtcNow };
-                    }
-                    
-                    if (overridesMod.Value.InPartition(PartitionId.Temp))
-                    {
-                        var mod = new Mod.ReadOnly(loadout.Db, overridesMod);
-                        mod.Revise(tx);
-                    }
-                    else
-                    {
-                        loadout.Revise(tx);
-                    }
-                    
-                    var result = await tx.Commit();
-
-                    loadout = loadout.Rebase();
-
-                    loadout = await MoveNewFilesToMods(loadout, added.Select(file => result.Remap(file)).ToArray());
-                }
+                    loadout = await ActionIngestFromDisk(groupings, loadout, previousTree);
                     break;
-
-
+                
                 case Actions.DeleteFromDisk:
-                    {
-                        // Delete files from disk
-                        var toDelete = groupings[Actions.DeleteFromDisk];
-                        _logger.LogDebug("Deleting {Count} files from disk", toDelete.Count);
-                        foreach (var item in toDelete)
-                        {
-                            var gamePath = register.GetResolvedPath(item.Path);
-                            gamePath.Delete();
-                            previousTree.Remove(item.Path);
-                        }
-                    } 
+                    ActionDeleteFromDisk(groupings, register, previousTree); 
                     break;
                 
                 case Actions.ExtractToDisk:
-                    // Extract files to disk
-                    var toExtract = groupings[Actions.ExtractToDisk];
-                    _logger.LogDebug("Extracting {Count} files to disk", toExtract.Count);
-                    if (toExtract.Count > 0)
-                    {
-                        await _fileStore.ExtractFiles(toExtract.Select(item =>
-                        {
-                            var gamePath = register.GetResolvedPath(item.Path);
-                            return (item.LoadoutFile.Value.Hash, gamePath);
-                        }), CancellationToken.None);
-
-                        foreach (var entry in toExtract)
-                        {
-                            previousTree[entry.Path] = new DiskStateEntry
-                            {
-                                Hash = entry.LoadoutFile.Value.Hash,
-                                Size = entry.LoadoutFile.Value.Size,
-                                // TODO: this isn't needed and we can delete it eventually
-                                LastModified = DateTime.UtcNow,
-                            };
-                        }
-                    }
+                    await ActionExtractToDisk(groupings, register, previousTree);
                     break;
 
                 case Actions.AddReifiedDelete:
-                {
-                    var toAddDelete = groupings[Actions.AddReifiedDelete];
-                    _logger.LogDebug("Adding {Count} reified deletes", toAddDelete.Count);
-                    
-                    using var tx = Connection.BeginTransaction();
-                    var overridesMod = GetOrCreateOverridesMod(loadout, tx);
-
-                    foreach (var item in toAddDelete)
-                    {
-                        var delete = new DeletedFile.New(tx)
-                        {
-                            File = new File.New(tx)
-                            {
-                                To = item.Path,
-                                ModId = overridesMod,
-                                LoadoutId = loadout.Id,
-                            },
-                            Size = item.LoadoutFile.Value.Size,
-                        };
-
-                        previousTree.Remove(item.Path);
-                    }
-                    
-                    if (overridesMod.Value.InPartition(PartitionId.Temp))
-                    {
-                        var mod = new Mod.ReadOnly(loadout.Db, overridesMod);
-                        mod.Revise(tx);
-                    }
-                    else
-                    {
-                        loadout.Revise(tx);
-                    }
-                    
-                    await tx.Commit();
-                }
+                    loadout = await ActionAddReifiedDelete(groupings, loadout, previousTree);
                     break;
                 
-                
+                case Actions.WarnOfUnableToExtract:
+                    WarnOfUnableToExtract(groupings);
+                    break;
+                    
+                case Actions.WarnOfConflict:
+                    WarnOfConflict(groupings);
+                    break;
+                    
                 default:
                     throw new InvalidOperationException($"Unknown action: {action}");
 
@@ -415,6 +311,157 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         
         await _diskStateRegistry.SaveState(loadout.InstallationInstance, newTree);
 
+        return loadout;
+    }
+
+    private void WarnOfConflict(SyncActionGroupings groupings)
+    {
+        var conflicts = groupings[Actions.WarnOfConflict];
+        _logger.LogWarning("Conflict detected in {Count} files", conflicts.Count);
+        
+        foreach (var item in conflicts)
+        {
+            _logger.LogWarning("Conflict in {Path}", item.Path);
+        }
+    }
+
+    private void WarnOfUnableToExtract(SyncActionGroupings groupings)
+    {
+        var unableToExtract = groupings[Actions.WarnOfUnableToExtract];
+        _logger.LogWarning("Unable to extract {Count} files", unableToExtract.Count);
+        
+        foreach (var item in unableToExtract)
+        {
+            _logger.LogWarning("Unable to extract {Path}", item.Path);
+        }
+    }
+
+    private async Task<Loadout.ReadOnly> ActionAddReifiedDelete(SyncActionGroupings groupings, Loadout.ReadOnly loadout, Dictionary<GamePath, DiskStateEntry> previousTree)
+    {
+        var toAddDelete = groupings[Actions.AddReifiedDelete];
+        _logger.LogDebug("Adding {Count} reified deletes", toAddDelete.Count);
+                    
+        using var tx = Connection.BeginTransaction();
+        var overridesMod = GetOrCreateOverridesMod(loadout, tx);
+
+        foreach (var item in toAddDelete)
+        {
+            var delete = new DeletedFile.New(tx)
+            {
+                File = new File.New(tx)
+                {
+                    To = item.Path,
+                    ModId = overridesMod,
+                    LoadoutId = loadout.Id,
+                },
+                Size = item.LoadoutFile.Value.Size,
+            };
+
+            previousTree.Remove(item.Path);
+        }
+                    
+        if (overridesMod.Value.InPartition(PartitionId.Temp))
+        {
+            var mod = new Mod.ReadOnly(loadout.Db, overridesMod);
+            mod.Revise(tx);
+        }
+        else
+        {
+            loadout.Revise(tx);
+        }
+                    
+        await tx.Commit();
+        return loadout.Rebase();
+    }
+
+    private async Task ActionExtractToDisk(SyncActionGroupings groupings, IGameLocationsRegister register, Dictionary<GamePath, DiskStateEntry> previousTree)
+    {
+        // Extract files to disk
+        var toExtract = groupings[Actions.ExtractToDisk];
+        _logger.LogDebug("Extracting {Count} files to disk", toExtract.Count);
+        if (toExtract.Count > 0)
+        {
+            await _fileStore.ExtractFiles(toExtract.Select(item =>
+            {
+                var gamePath = register.GetResolvedPath(item.Path);
+                return (item.LoadoutFile.Value.Hash, gamePath);
+            }), CancellationToken.None);
+
+            foreach (var entry in toExtract)
+            {
+                previousTree[entry.Path] = new DiskStateEntry
+                {
+                    Hash = entry.LoadoutFile.Value.Hash,
+                    Size = entry.LoadoutFile.Value.Size,
+                    // TODO: this isn't needed and we can delete it eventually
+                    LastModified = DateTime.UtcNow,
+                };
+            }
+        }
+    }
+
+    private void ActionDeleteFromDisk(SyncActionGroupings groupings, IGameLocationsRegister register, Dictionary<GamePath, DiskStateEntry> previousTree)
+    {
+        // Delete files from disk
+        var toDelete = groupings[Actions.DeleteFromDisk];
+        _logger.LogDebug("Deleting {Count} files from disk", toDelete.Count);
+        foreach (var item in toDelete)
+        {
+            var gamePath = register.GetResolvedPath(item.Path);
+            gamePath.Delete();
+            previousTree.Remove(item.Path);
+        }
+    }
+
+    private async Task ActionBackupFiles(SyncActionGroupings groupings, Loadout.ReadOnly loadout)
+    {
+        var toBackup = groupings[Actions.BackupFile];
+        _logger.LogDebug("Backing up {Count} files", toBackup.Count);
+                    
+        await BackupNewFiles(loadout.InstallationInstance, toBackup.Select(item =>
+            (item.Path, item.Disk.Value.Hash, item.Disk.Value.Size)));
+    }
+
+    private async Task<Loadout.ReadOnly> ActionIngestFromDisk(SyncActionGroupings groupings, Loadout.ReadOnly loadout, Dictionary<GamePath, DiskStateEntry> previousTree)
+    {
+        var toIngest = groupings[Actions.IngestFromDisk];
+        _logger.LogDebug("Ingesting {Count} files", toIngest.Count);
+        using var tx = Connection.BeginTransaction();
+        var overridesMod = GetOrCreateOverridesMod(loadout, tx);
+                    
+        var added = new List<StoredFile.New>();
+
+        foreach (var file in toIngest)
+        {
+            var storedFile = new StoredFile.New(tx)
+            {
+                File = new File.New(tx)
+                {
+                    To = file.Path,
+                    ModId = overridesMod,
+                    LoadoutId = loadout.Id,
+                },
+                Hash = file.Disk.Value.Hash,
+                Size = file.Disk.Value.Size,
+            };
+            previousTree[file.Path] = file.Disk.Value with { LastModified = DateTime.UtcNow };
+        }
+                    
+        if (overridesMod.Value.InPartition(PartitionId.Temp))
+        {
+            var mod = new Mod.ReadOnly(loadout.Db, overridesMod);
+            mod.Revise(tx);
+        }
+        else
+        {
+            loadout.Revise(tx);
+        }
+                    
+        var result = await tx.Commit();
+
+        loadout = loadout.Rebase();
+
+        loadout = await MoveNewFilesToMods(loadout, added.Select(file => result.Remap(file)).ToArray());
         return loadout;
     }
 
