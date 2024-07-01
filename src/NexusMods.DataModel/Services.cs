@@ -94,8 +94,8 @@ public static class Services
         coll.AddSingleton<JsonConverter, SizeConverter>();
         
         // Game Registry
-        coll.AddSingleton<IGameRegistry, Registry>();
-        coll.AddHostedService(s => (Registry)s.GetRequiredService<IGameRegistry>());
+        coll.AddSingleton<IGameRegistry, GameRegistry>();
+        coll.AddHostedService(s => (GameRegistry)s.GetRequiredService<IGameRegistry>());
         coll.AddAttributeCollection(typeof(GameMetadata));
         
         // File Store

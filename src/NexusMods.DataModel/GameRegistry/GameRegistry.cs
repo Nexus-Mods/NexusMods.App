@@ -3,22 +3,14 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
-using System.Threading;
-using System.Threading.Tasks;
 using DynamicData;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Extensions.BCL;
-using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
-using NexusMods.Paths;
 using GameMetadata = NexusMods.Abstractions.Loadouts.GameMetadata;
 
 namespace NexusMods.DataModel;
@@ -26,7 +18,7 @@ namespace NexusMods.DataModel;
 /// <summary>
 /// Game registry for all installed games.
 /// </summary>
-public class Registry : IGameRegistry, IHostedService
+public class GameRegistry : IGameRegistry, IHostedService
 {
     private readonly IConnection _conn;
 
@@ -34,7 +26,7 @@ public class Registry : IGameRegistry, IHostedService
     private readonly SourceCache<GameInstallation, EntityId> _cache = new(x => x.GameMetadataId); 
     
     private readonly ReadOnlyObservableCollection<GameInstallation> _installedGames;
-    private readonly ILogger<Registry> _logger;
+    private readonly ILogger<GameRegistry> _logger;
     private readonly IEnumerable<IGame> _games;
     private readonly IEnumerable<IGameLocator> _locators;
     private readonly ConcurrentDictionary<EntityId, GameInstallation> _byId = new();
@@ -49,7 +41,7 @@ public class Registry : IGameRegistry, IHostedService
     /// <summary>
     /// Game registry for all installed games.
     /// </summary>
-    public Registry(ILogger<Registry> logger, IEnumerable<ILocatableGame> games, IEnumerable<IGameLocator> locators, IConnection conn)
+    public GameRegistry(ILogger<GameRegistry> logger, IEnumerable<ILocatableGame> games, IEnumerable<IGameLocator> locators, IConnection conn)
     {
         _games = games.OfType<IGame>().ToArray();
         _locators = locators;
@@ -76,8 +68,6 @@ public class Registry : IGameRegistry, IHostedService
     
     private async Task Startup(CancellationToken token)
     {
-        await ((IHostedService)_conn).StartAsync(token);
-
         var results = await FindInstallations()
             .Distinct().ToArrayAsync(token);
         
