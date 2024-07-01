@@ -4,20 +4,15 @@ using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.FileStore.ArchiveMetadata;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Games.Loadouts;
 using NexusMods.Abstractions.Games.Trees;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Files;
-using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
-using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.Loadouts.Extensions;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.ProxyConsole.Abstractions;
 using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
-using IGeneratedFile = NexusMods.Abstractions.Loadouts.Synchronizers.IGeneratedFile;
 
 namespace NexusMods.DataModel.CommandLine.Verbs;
 
@@ -33,7 +28,7 @@ public static class LoadoutManagementVerbs
     /// <returns></returns>
     public static IServiceCollection AddLoadoutManagementVerbs(this IServiceCollection services) =>
         services
-            .AddVerb(() => Apply)
+            .AddVerb(() => Synchronize)
             .AddVerb(() => ChangeTracking)
             .AddVerb(() => FlattenLoadout)
             .AddVerb(() => Ingest)
@@ -46,12 +41,12 @@ public static class LoadoutManagementVerbs
             .AddVerb(() => RenameLoadout)
             .AddVerb(() => RemoveLoadout);
 
-    [Verb("apply", "Apply the given loadout to the game folder")]
-    private static async Task<int> Apply([Injected] IRenderer renderer,
+    [Verb("synchronize", "Synchronize the loadout with the game folders, adding any changes in the game folder to the loadout and applying any new changes in the loadout to the game folder")]
+    private static async Task<int> Synchronize([Injected] IRenderer renderer,
         [Option("l", "loadout", "Loadout to apply")] Loadout.ReadOnly loadout,
         [Injected] IApplyService applyService)
     {
-        await applyService.Apply(loadout);
+        await applyService.Synchronize(loadout);
         return 0;
     }
 

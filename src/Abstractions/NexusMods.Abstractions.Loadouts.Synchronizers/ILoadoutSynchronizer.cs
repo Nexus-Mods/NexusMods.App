@@ -44,8 +44,7 @@ public interface ILoadoutSynchronizer
     #endregion
     
     
-    
-    #region Diff Methods
+    #region High Level Methods
     
     /// <summary>
     /// Computes the difference between a loadout and a disk state, assuming the loadout to be the newer state.
@@ -55,27 +54,6 @@ public interface ILoadoutSynchronizer
     /// <returns>A tree of all the files with associated <see cref="FileChangeType"/></returns>
     FileDiffTree LoadoutToDiskDiff(Loadout.ReadOnly loadout, DiskStateTree diskState);
     
-    #endregion
-
-    #region High Level Methods
-    /// <summary>
-    /// Applies a loadout to the game folder.
-    /// </summary>
-    /// <param name="loadout">The loadout to apply.</param>
-    /// <param name="forceSkipIngest">
-    ///     Skips checking if an ingest is needed.
-    ///     Force overrides current locations to intended tree
-    /// </param>
-    /// <returns>The new DiskState after the files were applied</returns>
-    Task<DiskStateTree> Apply(Loadout.ReadOnly loadout, bool forceSkipIngest = false);
-
-    /// <summary>
-    /// Finds changes from the game folder compared to loadout and bundles them
-    /// into 1 or more Mods.
-    /// </summary>
-    /// <param name="loadout">The current loadout.</param>
-    Task<Loadout.ReadOnly> Ingest(Loadout.ReadOnly loadout);
-
     /// <summary>
     /// Creates a loadout for a game, managing the game if it has not previously
     /// been managed.
@@ -102,7 +80,7 @@ public interface ILoadoutSynchronizer
     Task DeleteLoadout(GameInstallation installation, LoadoutId loadoutId);
 
     /// <summary>
-    /// Removes all of the loadouts for a game, an resets the game folder to its
+    /// Removes all the loadouts for a game, and resets the game folder to its
     /// initial state.
     /// </summary>
     /// <param name="installation">Game installation which should be unmanaged.</param>
