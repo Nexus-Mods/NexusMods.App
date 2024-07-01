@@ -387,6 +387,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 return (item.LoadoutFile.Value.Hash, gamePath);
             }), CancellationToken.None);
 
+            var isUnix = _os.IsUnix();
             foreach (var entry in toExtract)
             {
                 previousTree[entry.Path] = new DiskStateEntry
@@ -396,6 +397,22 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     // TODO: this isn't needed and we can delete it eventually
                     LastModified = DateTime.UtcNow,
                 };
+                
+                
+
+                // And mark them as executable if necessary, on Unix
+                if (!isUnix)
+                    continue;
+
+                var path = register.GetResolvedPath(entry.Path);
+                var ext = path.Extension.ToString().ToLower();
+                if (ext is not ("" or ".sh" or ".bin" or ".run" or ".py" or ".pl" or ".php" or ".rb" or ".out"
+                    or ".elf")) continue;
+
+                // Note (Sewer): I don't think we'd ever need anything other than just 'user' execute, but you can never
+                // be sure. Just in case, I'll throw in group and other to match 'chmod +x' behaviour.
+                var currentMode = path.GetUnixFileMode();
+                path.SetUnixFileMode(currentMode | UnixFileMode.UserExecute | UnixFileMode.GroupExecute | UnixFileMode.OtherExecute);
             }
         }
     }
