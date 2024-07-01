@@ -220,9 +220,6 @@ public class DownloadService : IDownloadService, IDisposable, IHostedService
     {
         var suspendingTasks = _downloads.Items
             .Where(dl => dl.PersistentState.Status == DownloadTaskStatus.Downloading)
-            // TODO(Al12rs): should Suspend() instead, but only after moving ongoing dl files outside Temp folder,
-            // that is otherwise cleaned up on application close, causing exceptions due to file in use,
-            // on top of discarding all the progress.
             .Select(dl => dl.Suspend());
         
         await Task.WhenAll(suspendingTasks);
