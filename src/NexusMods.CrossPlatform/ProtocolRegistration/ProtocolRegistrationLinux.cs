@@ -1,6 +1,8 @@
 using System.Runtime.Versioning;
 using System.Text;
 using CliWrap;
+using Microsoft.Extensions.Logging;
+using NexusMods.App.BuildInfo;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.Paths;
 
@@ -12,8 +14,12 @@ namespace NexusMods.CrossPlatform.ProtocolRegistration;
 [SupportedOSPlatform("linux")]
 public class ProtocolRegistrationLinux : IProtocolRegistration
 {
-    private const string BaseId = "nexusmods-app";
+    private const string ApplicationId = "com.nexusmods.app";
+    private const string DesktopFile = $"{ApplicationId}.desktop";
+    private const string DesktopFileResourceName = $"NexusMods.CrossPlatform.{DesktopFile}";
+    private const string ExecutablePathPlaceholder = "${INSTALL_EXEC}";
 
+    private readonly ILogger _logger;
     private readonly IProcessFactory _processFactory;
     private readonly IFileSystem _fileSystem;
     private readonly IOSInterop _osInterop;
@@ -21,72 +27,106 @@ public class ProtocolRegistrationLinux : IProtocolRegistration
     /// <summary>
     /// Constructor.
     /// </summary>
-    public ProtocolRegistrationLinux(IProcessFactory processFactory, IFileSystem fileSystem, IOSInterop osInterop)
+    public ProtocolRegistrationLinux(
+        ILogger<ProtocolRegistrationLinux> logger,
+        IProcessFactory processFactory,
+        IFileSystem fileSystem,
+        IOSInterop osInterop)
     {
+        _logger = logger;
         _processFactory = processFactory;
         _fileSystem = fileSystem;
         _osInterop = osInterop;
     }
 
     /// <inheritdoc/>
-    public async Task<string?> RegisterSelf(string protocol)
+    public async Task RegisterHandler(string uriScheme, bool setAsDefaultHandler = true, CancellationToken cancellationToken = default)
     {
-        var executable = _osInterop.GetOwnExe();
+        if (CompileConstants.InstallationMethod != InstallationMethod.PackageManager)
+        {
+            var applicationsDirectory = _fileSystem.GetKnownPath(KnownPath.XDG_DATA_HOME).Combine("applications");
+            _logger.LogInformation("Using applications directory `{Path}`", applicationsDirectory);
 
-        return await Register(
-            protocol,
-            friendlyName: $"{BaseId}-{protocol}.desktop",
-            workingDirectory: executable.Directory,
-            commandLine: $"{EscapeWhitespaceForCli(executable)} %u"
-        );
+            try
+            {
+                await CreateDesktopFile(applicationsDirectory, cancellationToken: cancellationToken);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Exception while creating desktop file, the handler for `{Scheme}` might not work", uriScheme);
+                return;
+            }
+
+            try
+            {
+                await UpdateMIMECacheDatabase(applicationsDirectory, cancellationToken: cancellationToken);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Exception while updating MIME cache database, see process logs for more details");
+                return;
+            }
+        }
+
+        if (setAsDefaultHandler)
+        {
+            try
+            {
+                await SetAsDefaultHandler(uriScheme, cancellationToken: cancellationToken);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Exception while setting the default handler for `{Scheme}`, see the process logs for more details", uriScheme);
+            }
+        }
     }
 
-    private static string EscapeWhitespaceForCli(AbsolutePath path) => path.ToString().Replace(" ", @"\ ");
-
-    /// <inheritdoc/>
-    public async Task<string?> Register(string protocol, string friendlyName, string workingDirectory, string commandLine)
+    private async Task CreateDesktopFile(AbsolutePath applicationsDirectory, CancellationToken cancellationToken = default)
     {
-        var applicationsFolder = _fileSystem.GetKnownPath(KnownPath.HomeDirectory)
-            .Combine(".local/share/applications");
+        var filePath = applicationsDirectory.Combine(DesktopFile);
+        var backupPath = filePath.AppendExtension(new Extension(".bak"));
 
-        applicationsFolder.CreateDirectory();
+        if (filePath.FileExists)
+        {
+            _logger.LogInformation("Moving existing desktop file from `{From}` to `{To}`", filePath, backupPath);
+        }
 
-        var desktopEntryFile = applicationsFolder.Combine(friendlyName);
+        _logger.LogInformation("Creating desktop file at `{Path}`", filePath);
 
-        var sb = new StringBuilder();
-        sb.AppendLine("[Desktop Entry]");
-        sb.AppendLine($"Name=NexusMods.App {protocol.ToUpper()} Handler");
-        sb.AppendLine("Terminal=false");
-        sb.AppendLine("Type=Application");
-        sb.AppendLine($"Path={workingDirectory}");
-        sb.AppendLine($"Exec={commandLine}");
-        sb.AppendLine($"MimeType=x-scheme-handler/{protocol}");
-        sb.AppendLine("NoDisplay=true");
+        await using var stream = typeof(ProtocolRegistrationLinux).Assembly.GetManifestResourceStream(DesktopFileResourceName);
+        if (stream is null)
+        {
+            _logger.LogError($"Manifest resource Stream for `{DesktopFileResourceName}` is null!");
+            return;
+        }
 
-        await desktopEntryFile.WriteAllTextAsync(sb.ToString());
+        using var sr = new StreamReader(stream, encoding: Encoding.UTF8);
 
-        var command = Cli.Wrap("update-desktop-database")
-            .WithArguments(applicationsFolder.ToString());
+        var text = await sr.ReadToEndAsync(cancellationToken);
+        text = text.Replace(ExecutablePathPlaceholder, EscapeWhitespaceForCli(_osInterop.GetOwnExe()));
 
-        await _processFactory.ExecuteAsync(command);
-        return null;
+        await filePath.WriteAllTextAsync(text, cancellationToken);
     }
 
-    /// <inheritdoc/>
-    public async Task<bool> IsSelfHandler(string protocol)
+    private async Task UpdateMIMECacheDatabase(AbsolutePath applicationsDirectory, CancellationToken cancellationToken = default)
     {
-        var stdOutBuffer = new StringBuilder();
+        _logger.LogInformation("Updating MIME cache database");
 
-        var command = Cli.Wrap("xdg-settings")
-            .WithArguments($"check default-url-scheme-handler {protocol} {BaseId}-{protocol}.desktop")
-            .WithStandardOutputPipe(PipeTarget.ToStringBuilder(stdOutBuffer));
+        var command = Cli
+            .Wrap("update-desktop-database")
+            .WithArguments(EscapeWhitespaceForCli(applicationsDirectory));
 
-        var res = await _processFactory.ExecuteAsync(command);
-        if (res.ExitCode != 0) return false;
-
-        var stdOut = stdOutBuffer.ToString();
-
-        // might end with 0xA (LF)
-        return stdOut.StartsWith("yes", StringComparison.InvariantCultureIgnoreCase);
+        await _processFactory.ExecuteAsync(command, cancellationToken: cancellationToken);
     }
+
+    private async Task SetAsDefaultHandler(string uriScheme, CancellationToken cancellationToken = default)
+    {
+        var command = Cli
+            .Wrap("xdg-settings")
+            .WithArguments($"set default-url-scheme-handler {uriScheme} {DesktopFile}");
+
+        await _processFactory.ExecuteAsync(command, cancellationToken: cancellationToken);
+    }
+
+    private string EscapeWhitespaceForCli(AbsolutePath path) => path.ToNativeSeparators(_fileSystem.OS).Replace(" ", @"\ ");
 }

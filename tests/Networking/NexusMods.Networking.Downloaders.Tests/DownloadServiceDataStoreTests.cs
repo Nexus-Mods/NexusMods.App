@@ -1,13 +1,13 @@
 using FluentAssertions;
 using NexusMods.Abstractions.HttpDownloader;
-using NexusMods.Games.BethesdaGameStudios.SkyrimSpecialEdition;
+using NexusMods.Games.RedEngine;
 using NexusMods.Games.TestFramework;
 using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Paths;
 
 namespace NexusMods.Networking.Downloaders.Tests;
 
-public class DownloadServiceDataStoreTests : AGameTest<SkyrimSpecialEdition>
+public class DownloadServiceDataStoreTests : AGameTest<Cyberpunk2077>
 {
     private readonly DownloadService _downloadService;
     private readonly LocalHttpServer _server;

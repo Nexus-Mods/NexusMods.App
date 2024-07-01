@@ -34,7 +34,8 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
     private readonly ReadOnlyObservableCollection<IWorkspaceViewModel> _allWorkspaces;
     public ReadOnlyObservableCollection<IWorkspaceViewModel> AllWorkspaces => _allWorkspaces;
 
-    [Reactive] public IWorkspaceViewModel? ActiveWorkspace { get; private set; }
+    private IWorkspaceViewModel? _activeWorkspace;
+    public IWorkspaceViewModel ActiveWorkspace => GetActiveWorkspace();
 
     public WorkspaceController(IWorkspaceWindow window, IServiceProvider serviceProvider)
     {
@@ -58,7 +59,7 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
         var workspaces = _allWorkspaces.Select(workspace => workspace.ToData()).ToArray();
         var data = new WindowData
         {
-            ActiveWorkspaceId = ActiveWorkspace?.Id,
+            ActiveWorkspaceId = ActiveWorkspace.Id,
             Workspaces = workspaces,
         };
 
@@ -239,13 +240,21 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
             if (workspace.Id == workspaceId)
             {
                 workspace.IsActive = true;
-                ActiveWorkspace = workspace;
+                _activeWorkspace = workspace;
             }
             else
             {
                 workspace.IsActive = false;
             }
         }
+
+        this.RaisePropertyChanged(nameof(ActiveWorkspace));
+    }
+
+    private IWorkspaceViewModel GetActiveWorkspace()
+    {
+        if (_activeWorkspace is null) throw new InvalidOperationException("There is no active workspace");
+        return _activeWorkspace;
     }
 
     /// <inheritdoc/>

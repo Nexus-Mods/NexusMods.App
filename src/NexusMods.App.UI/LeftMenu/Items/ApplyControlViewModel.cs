@@ -71,11 +71,10 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
                 },
             };
 
-            if (!windowManager.TryGetActiveWindow(out var activeWindow)) return;
-            var workspaceController = activeWindow.WorkspaceController;
+            var workspaceController = windowManager.ActiveWorkspaceController;
 
             var behavior = workspaceController.GetOpenPageBehavior(pageData, info, Optional<PageIdBundle>.None);
-            var workspaceId = workspaceController.ActiveWorkspace!.Id;
+            var workspaceId = workspaceController.ActiveWorkspaceId;
             workspaceController.OpenPage(workspaceId, pageData, behavior);
         });
 

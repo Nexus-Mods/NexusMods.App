@@ -64,12 +64,7 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
         _logger = logger;
         _loginManager = loginManager;
 
-        if (!windowManager.TryGetActiveWindow(out var window))
-        {
-            throw new NotImplementedException();
-        }
-
-        var workspaceController = window.WorkspaceController;
+        var workspaceController = windowManager.ActiveWorkspaceController;
 
         OpenSettingsCommand = ReactiveCommand.Create<NavigationInformation>(info =>
         {
@@ -96,7 +91,7 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
             };
 
             var behavior = workspaceController.GetOpenPageBehavior(page, info, Optional<PageIdBundle>.None);
-            workspaceController.OpenPage(workspaceController.ActiveWorkspace!.Id, page, behavior);
+            workspaceController.OpenPage(workspaceController.ActiveWorkspace.Id, page, behavior);
         });
 
         ViewAppLogsCommand = ReactiveCommand.CreateFromTask(async () =>
@@ -153,7 +148,7 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
                 .BindToVM(this, vm => vm.IsPremium)
                 .DisposeWith(d);
 
-            workspaceController.WhenAnyValue(controller => controller.ActiveWorkspace!.Title)
+            workspaceController.WhenAnyValue(controller => controller.ActiveWorkspace.Title)
                 .Select(title => title.ToUpperInvariant())
                 .BindToVM(this, vm => vm.ActiveWorkspaceTitle)
                 .DisposeWith(d);

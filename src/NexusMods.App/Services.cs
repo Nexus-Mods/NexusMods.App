@@ -107,12 +107,7 @@ public static class Services
     {
         if (experimentalSettings is { EnableAllGames: true })
         {
-            Games.BethesdaGameStudios.Services.AddBethesdaGameStudios(services);
             Games.RedEngine.Services.AddRedEngineGames(services);
-            Games.DarkestDungeon.Services.AddDarkestDungeon(services);
-            Games.BladeAndSorcery.Services.AddBladeAndSorcery(services);
-            Games.Sifu.Services.AddSifu(services);
-            Games.MountAndBlade2Bannerlord.ServicesExtensions.AddMountAndBladeBannerlord(services);
         }
         
         Games.StardewValley.Services.AddStardewValley(services);

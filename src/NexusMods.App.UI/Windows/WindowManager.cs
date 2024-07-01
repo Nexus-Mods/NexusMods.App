@@ -3,12 +3,10 @@ using System.Diagnostics.CodeAnalysis;
 using Avalonia.Threading;
 using DynamicData;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Windows;
 
@@ -29,14 +27,30 @@ internal sealed class WindowManager : ReactiveObject, IWindowManager
         _allWindowIdSource.Connect().OnUI().Bind(out _allWindowIds);
     }
 
-    [Reactive] public WindowId ActiveWindowId { get; set; } = WindowId.DefaultValue;
+    private WindowId _activeWindowId = WindowId.DefaultValue;
+    public IWorkspaceWindow ActiveWindow {
+        get => GetActiveWindow();
+        set => SetActiveWindow(value);
+    }
 
     private readonly ReadOnlyObservableCollection<WindowId> _allWindowIds;
     public ReadOnlyObservableCollection<WindowId> AllWindowIds => _allWindowIds;
 
-    public bool TryGetActiveWindow([NotNullWhen(true )] out IWorkspaceWindow? window)
+    private IWorkspaceWindow GetActiveWindow()
     {
-        return TryGetWindow(ActiveWindowId, out window);
+        if (TryGetWindow(_activeWindowId, out var window)) return window;
+        throw new InvalidOperationException("There is no active window");
+    }
+
+    private void SetActiveWindow(IWorkspaceWindow window)
+    {
+        Dispatcher.UIThread.VerifyAccess();
+
+        if (!TryGetWindow(window.WindowId, out _))
+            throw new InvalidOperationException($"Can't change active window to unregistered window `{window.WindowId}`");
+
+        _activeWindowId = window.WindowId;
+        this.RaisePropertyChanged(nameof(ActiveWindow));
     }
 
     public bool TryGetWindow(WindowId windowId, [NotNullWhen(true)] out IWorkspaceWindow? window)
@@ -69,7 +83,7 @@ internal sealed class WindowManager : ReactiveObject, IWindowManager
         }
 
         _allWindowIdSource.Edit(list => list.Add(window.WindowId));
-        ActiveWindowId = window.WindowId;
+        SetActiveWindow(window);
     }
 
     public void UnregisterWindow(IWorkspaceWindow window)
@@ -92,7 +106,7 @@ internal sealed class WindowManager : ReactiveObject, IWindowManager
             var found = WindowDataAttributes.All(_conn.Db).FirstOrDefault();
             if (!found.IsValid())
             {
-                var model = new WindowDataAttributes.New(tx)
+                _ = new WindowDataAttributes.New(tx)
                 {
                     Data = WindowDataAttributes.Encode(_conn.Db, data),
                 };

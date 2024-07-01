@@ -110,9 +110,6 @@ public sealed class LoginManager : IDisposable, ILoginManager
     /// <param name="token"></param>
     public async Task LoginAsync(CancellationToken token = default)
     {
-        // temporary but if we want oauth to work we _have_ to be registered as the nxm handler
-        await _protocolRegistration.RegisterSelf("nxm");
-
         JwtTokenReply? jwtToken;
         try
         {
@@ -137,7 +134,7 @@ public sealed class LoginManager : IDisposable, ILoginManager
         
         using var tx = _conn.BeginTransaction();
 
-        var newTokenEntity = JWTToken.Create(_conn.Db, tx, jwtToken!);
+        var newTokenEntity = JWTToken.Create(_conn.Db, tx, jwtToken);
         if (newTokenEntity is null)
         {
             _logger.LogError("Invalid new token data");

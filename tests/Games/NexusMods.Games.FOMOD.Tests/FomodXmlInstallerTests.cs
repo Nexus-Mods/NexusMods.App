@@ -1,22 +1,17 @@
 using FluentAssertions;
-using NexusMods.Abstractions.FileStore;
-using NexusMods.Abstractions.FileStore.ArchiveMetadata;
 using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Files;
-using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
-using NexusMods.Games.BethesdaGameStudios.SkyrimSpecialEdition;
+using NexusMods.Games.RedEngine;
 using NexusMods.Games.TestFramework;
 using NexusMods.Paths;
 using File = NexusMods.Abstractions.Loadouts.Files.File;
-using Mod = FomodInstaller.Interface.Mod;
 
 namespace NexusMods.Games.FOMOD.Tests;
 
-public class FomodXmlInstallerTests : AModInstallerTest<SkyrimSpecialEdition, FomodXmlInstaller>
+public class FomodXmlInstallerTests : AModInstallerTest<Cyberpunk2077, FomodXmlInstaller>
 {
     public FomodXmlInstallerTests(IServiceProvider serviceProvider) : base(serviceProvider) { }
 

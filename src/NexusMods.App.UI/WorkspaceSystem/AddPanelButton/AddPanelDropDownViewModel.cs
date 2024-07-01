@@ -30,13 +30,6 @@ public class AddPanelDropDownViewModel : AViewModel<IAddPanelDropDownViewModel>,
                     // buttons for different workspaces in the collection
                     _addPanelButtonViewModels.Clear();
 
-                    if (activeWorkspace is null)
-                    {
-                        serialDisposable.Disposable = null;
-                        SelectedIndex = -1;
-                        return;
-                    }
-
                     // subscribes to changes to the observable collection and applies all
                     // changes to the observable collection
                     serialDisposable.Disposable = activeWorkspace.AddPanelButtonViewModels
