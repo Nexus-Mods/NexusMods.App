@@ -1,5 +1,5 @@
 <div align="center">
-	<h1>The Nexus Mods App</h1>
+	<h1>The Nexus Mods app</h1>
 	<img src="./Nexus/Images/Nexus-Icon.png" width="150" align="center" />
 	<br/> <br/>
     Mod With Confidence
@@ -18,7 +18,7 @@
                         User Guides
                     </span>
                     </a>
-                    <p>Tutorials and guides to help you get started with the Nexus Mods App.</p>
+                    <p>Tutorials and guides to help you get started with the Nexus Mods app.</p>
                 </th>
                 <th style="text-align: center; border: .05rem solid var(--md-typeset-table-color); width: 50%; vertical-align: middle">
                     <a href="./developers/">
