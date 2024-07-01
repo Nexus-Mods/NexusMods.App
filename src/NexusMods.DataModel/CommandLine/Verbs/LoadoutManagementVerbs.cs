@@ -30,10 +30,8 @@ public static class LoadoutManagementVerbs
         services
             .AddVerb(() => Synchronize)
             .AddVerb(() => ChangeTracking)
-            .AddVerb(() => FlattenLoadout)
             .AddVerb(() => Ingest)
             .AddVerb(() => InstallMod)
-            .AddVerb(() => ListHistory)
             .AddVerb(() => ListLoadouts)
             .AddVerb(() => ListModContents)
             .AddVerb(() => ListMods)
@@ -83,30 +81,7 @@ public static class LoadoutManagementVerbs
         return 0;
         */
     }
-
-    [Verb("flatten-loadout", "Flatten a loadout into the projected filesystem")]
-    private static async Task<int> FlattenLoadout([Injected] IRenderer renderer,
-        [Option("l", "loadout", "Loadout to flatten")]
-        Loadout.ReadOnly loadout,
-        [Injected] CancellationToken token)
-    {
-        var rows = new List<object[]>();
-        var synchronizer = loadout.InstallationInstance.GetGame().Synchronizer as IStandardizedLoadoutSynchronizer;
-        if (synchronizer == null)
-        {
-            await renderer.Text($"{loadout.InstallationInstance.Game.Name} does not support flattening loadouts");
-            return -1;
-        }
-
-        var flattened = await synchronizer.LoadoutToFlattenedLoadout(loadout);
-
-        foreach (var item in flattened.GetAllDescendentFiles().OrderBy(f => f.Item.GamePath))
-            rows.Add([item.Item.Value!.Mod.Name, item.GamePath()]);
-
-        await renderer.Table(["Mod", "To"], rows);
-        return 0;
-    }
-
+    
     [Verb("install-mod", "Installs a mod into a loadout")]
     private static async Task<int> InstallMod([Injected] IRenderer renderer,
         [Option("l", "loadout", "loadout to add the mod to")] Loadout.ReadOnly loadout,
@@ -126,21 +101,6 @@ public static class LoadoutManagementVerbs
         });
     }
 
-    [Verb("list-history", "Lists the history of a loadout")]
-    private static async Task<int> ListHistory([Injected] IRenderer renderer,
-        [Option("l", "loadout", "Loadout to load")] LoadoutId loadout,
-        [Injected] CancellationToken token)
-    {
-        throw new NotImplementedException();
-        /*
-        var rows = loadout.History()
-            .Select(list => new object[] { list.LastModified, list.ChangeMessage, list.Mods.Count, list.DataStoreId })
-            .ToList();
-
-        await renderer.Table(new[] { "Date", "Change Message", "Mod Count", "Id" }, rows);
-        return 0;
-        */
-    }
 
     [Verb("list-loadouts", "Lists all the loadouts")]
     private static async Task<int> ListLoadouts([Injected] IRenderer renderer,

@@ -10,7 +10,7 @@ namespace NexusMods.Abstractions.Loadouts.Synchronizers;
 public interface ILoadoutSynchronizer
 {
     
-    #region Sync Methods
+    #region Synchronization Methods
     
     /// <summary>
     /// Creates a new sync tree from the current state of the game folder, the loadout and the previous state. This
@@ -40,6 +40,19 @@ public interface ILoadoutSynchronizer
     /// new changes in the loadout will be applied to the game folder.
     /// </summary>
     Task<Loadout.ReadOnly> Synchronize(Loadout.ReadOnly loadout);
+    
+    /// <summary>
+    /// Gets the current disk state of the game folders for the given game installation.
+    /// </summary>
+    Task<DiskStateTree> GetDiskState(GameInstallation installationInstance);
+
+    /// <summary>
+    /// Gets the current disk state of the game folders for the given loadout.
+    /// </summary>
+    Task<DiskStateTree> GetDiskState(Loadout.ReadOnly loadout)
+    {
+        return GetDiskState(loadout.InstallationInstance);
+    }
     
     #endregion
     

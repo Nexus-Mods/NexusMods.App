@@ -13,6 +13,15 @@ public class ActionMapping
     
     public static Actions MapAction(SignatureShorthand shorthand)
     {
+        // Format of the shorthand:
+        // xxx_yyy_z -> xxx: Loadout, yyy: Archive, z: Ignore path
+        // xxx: a tuple of `(Disk, Previous, Loadout)` states.
+        // A `x` means no state because that source has no value for the path.
+        // A `A`, `B`, `C` are placeholders for the hash of the file, so `AAA` means all three sources have the same hash, while `BAA` means the hash is different on disk
+        // from either the previous state or the loadout.
+        // yyy: a tuple of `(Disk, Previous, Loadout)` archive states. `XXX` means all three sources are archived (regardless of their hash) and `Xxx` means the disk is archived but the previous and loadout states are not.
+        // `z`: either `i` or `I`, where `i` means the path is not ignored and `I` means the path is ignored.
+        // The easiest way to think of this is that a capital letter means the existence of data, while a lowercase letter means the absence of data or a false value.
         return shorthand switch
         {
             xxA_xxx_i => WarnOfUnableToExtract,

@@ -33,6 +33,7 @@ public class FileTreeToDisk : ASynchronizerBenchmark, IBenchmark
     {
         var filePath = Assets.Loadouts.FileLists.GetFileListPathByFileName(FileName);
         Init("Benchmark Mod Files", filePath);
+        /*
         Task.Run<int>(async () =>
         {
             _flattenedLoadout = await _defaultSynchronizer.LoadoutToFlattenedLoadout(_datamodel.BaseLoadout);
@@ -40,6 +41,7 @@ public class FileTreeToDisk : ASynchronizerBenchmark, IBenchmark
             _prevState = _datamodel.DiskStateRegistry.GetState(_installation)!;
             return 0;
         }).Wait();
+        */
 #pragma warning disable CS0618 // Type or member is obsolete
         _defaultSynchronizer.SetFileStore(new DummyFileStore());
 #pragma warning restore CS0618 // Type or member is obsolete

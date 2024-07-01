@@ -68,10 +68,4 @@ public class BackupNewFiles : ASynchronizerBenchmark, IBenchmark
         _defaultSynchronizer.SetFileStore(new DummyFileStore());
 #pragma warning restore CS0618 // Type or member is obsolete
     }
-
-    [Benchmark]
-    public async Task BackupNewFiles_OverheadOnly()
-    {
-        await _defaultSynchronizer.BackupNewFiles(_installation, _fileTree);
-    }
 }

@@ -139,40 +139,7 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
         var textureAbsPath = Install.LocationsRegister.GetResolvedPath(_texturePath.Parent);
         textureAbsPath.DirectoryExists().Should().BeTrue("the texture folder should still exist");
     }
-    
-    [Fact]
-    public async Task CanFlattenLoadout()
-    {
-        var flattened = await Synchronizer.LoadoutToFlattenedLoadout(BaseLoadout);
-        var rows = flattened.GetAllDescendentFiles()
-            .Select(f => new
-                {
-                    Path = f.GamePath().ToString(),
-                    Mod = f.Item.Value.Mod.Name.ToString(),
-                }
-            ).OrderBy(f => f.Path);
-        
-        await Verify(rows);
-    }
 
-    
-    [Fact]
-    public async Task CanCreateFileTree()
-    {
-        var flattened = await Synchronizer.LoadoutToFlattenedLoadout(BaseLoadout);
-        var fileTree = await Synchronizer.FlattenedLoadoutToFileTree(flattened, BaseLoadout);
-
-        var rows = fileTree.GetAllDescendentFiles()
-            .Select(f => new
-                {
-                    Path = f.GamePath().ToString(),
-                    Mod = f.Item.Value.Mod.Name.ToString(),
-                }
-            ).OrderBy(f => f.Path);
-        
-        await Verify(rows);
-    }
-    
     [Fact]
     public async Task CanSynchronizeLoadout()
     {
@@ -334,7 +301,7 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
         // Arrange
         // Get our initial game disk state
         var initialLoadout = BaseLoadout;
-        var initialDiskState = await Synchronizer.GetDiskState(initialLoadout.InstallationInstance);
+        var initialDiskState = await Synchronizer.GetDiskState(initialLoadout);
         
         // Check that the files added by the first mod don't already exist, for sanity.
         var textureAbsPath = initialLoadout.InstallationInstance.LocationsRegister.GetResolvedPath(_texturePath);
@@ -360,12 +327,14 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
         var secondLoadout = await Synchronizer.CreateLoadout(Install, "Second Loadout");
 
         // Assert
-        var secondLoadoutDiskState = await Synchronizer.GetDiskState(secondLoadout.InstallationInstance);
+        var secondLoadoutDiskState = await Synchronizer.GetDiskState(secondLoadout);
 
         // Check that the second loadout's initial disk state matches the original initial disk state
         secondLoadoutDiskState.Should().BeEquivalentTo(initialDiskState);
 
         // Check that the second loadout only contains the original game files
+        throw new NotImplementedException();
+        /*
         var secondLoadoutFileTree = await Synchronizer.LoadoutToFlattenedLoadout(secondLoadout);
         secondLoadoutFileTree.GetAllDescendentFiles()
             .Select(f => f.GamePath().ToString())
@@ -373,6 +342,7 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
             .NotContain(_texturePath.ToString())
             .And
             .NotContain(_meshPath.ToString());
+            */
 
         // Check that the files added by the first loadout are not present in the second loadout
         textureAbsPath.FileExists.Should().BeFalse("The texture file should not exist in the second loadout");
