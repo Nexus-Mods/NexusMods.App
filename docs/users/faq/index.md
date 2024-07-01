@@ -1,3 +1,5 @@
+#Frequently Asked Questions (FAQ)
+
 This page includes answers to the commonly asked questions about the app. 
 
 ## Why doesn't the app support my game?
