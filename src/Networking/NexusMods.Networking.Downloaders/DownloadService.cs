@@ -1,8 +1,8 @@
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.MnemonicDB.Attributes.Extensions;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.Downloaders.Interfaces;
@@ -14,8 +14,7 @@ using DynamicData.Kernel;
 using Microsoft.Extensions.Hosting;
 using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.IO;
-using NexusMods.MnemonicDB.Abstractions.DatomIterators;
-using NexusMods.MnemonicDB.Abstractions.Query;
+using NexusMods.Abstractions.Settings;
 using NexusMods.Paths;
 
 namespace NexusMods.Networking.Downloaders;
@@ -25,6 +24,9 @@ public class DownloadService : IDownloadService, IDisposable, IHostedService
 {
     /// <inheritdoc />
     public ReadOnlyObservableCollection<IDownloadTask> Downloads => _downloadsCollection;
+    
+    /// <inheritdoc />
+    public AbsolutePath OngoingDownloadsDirectory => _downloadDirectory;
     private ReadOnlyObservableCollection<IDownloadTask> _downloadsCollection = ReadOnlyObservableCollection<IDownloadTask>.Empty;
 
     private readonly SourceCache<IDownloadTask, EntityId> _downloads = new(t => t.PersistentState.Id);
@@ -34,14 +36,26 @@ public class DownloadService : IDownloadService, IDisposable, IHostedService
     private bool _isDisposed;
     private readonly CompositeDisposable _disposables;
     private readonly IFileStore _fileStore;
+    private AbsolutePath _downloadDirectory;
 
-    public DownloadService(ILogger<DownloadService> logger, IServiceProvider provider, IFileStore fileStore, IConnection conn)
+    public DownloadService(
+        ILogger<DownloadService> logger, 
+        IServiceProvider provider, 
+        IFileStore fileStore, 
+        IConnection conn,
+        IFileSystem fs,
+        ISettingsManager settingsManager)
     {
         _logger = logger;
         _provider = provider;
         _conn = conn;
         _disposables = new CompositeDisposable();
         _fileStore = fileStore;
+        _downloadDirectory = settingsManager.Get<DownloadSettings>().OngoingDownloadLocation.ToPath(fs);
+        if (!_downloadDirectory.DirectoryExists())
+        {
+            _downloadDirectory.CreateDirectory();
+        }
     }
 
     internal IEnumerable<IDownloadTask> GetItemsToResume()
@@ -209,8 +223,17 @@ public class DownloadService : IDownloadService, IDisposable, IHostedService
             // TODO(Al12rs): should Suspend() instead, but only after moving ongoing dl files outside Temp folder,
             // that is otherwise cleaned up on application close, causing exceptions due to file in use,
             // on top of discarding all the progress.
-            .Select(dl => dl.Cancel());
+            .Select(dl => dl.Suspend());
         
         await Task.WhenAll(suspendingTasks);
+    }
+    
+    /// <summary>
+    /// Set a custom downloadDirectory, for tests only.
+    /// Directory should already exist.
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    internal void SetDownloadDirectory(AbsolutePath path)
+    {
+        _downloadDirectory = path;
     }
 }

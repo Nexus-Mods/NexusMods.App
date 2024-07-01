@@ -20,6 +20,7 @@ public class DownloadServiceTests
         _httpServer = httpServer;
         _downloadService = downloadService;
         _temporaryFileManager = temporaryFileManager;
+        _downloadService.SetDownloadDirectory(_temporaryFileManager.CreateFolder(prefix:nameof(DownloadServiceTests)));
     }
 
     [Fact]
@@ -52,8 +53,8 @@ public class DownloadServiceTests
             DownloadTaskStatus.Downloading, 
             DownloadTaskStatus.Completed);
         
-        task.DownloadLocation.FileExists.Should().BeTrue();
-        (await task.DownloadLocation.ReadAllTextAsync()).Should().Be("Hello, World!");
+        // File is deleted after Analyzing and repacking
+        task.DownloadPath.FileExists.Should().BeFalse();
         
         task.Downloaded.Value.Should().BeGreaterThan(0);
     }
@@ -107,8 +108,8 @@ public class DownloadServiceTests
             DownloadTaskStatus.Downloading,
             DownloadTaskStatus.Completed);
         
-        task.DownloadLocation.FileExists.Should().BeTrue();
-        (await task.DownloadLocation.ReadAllTextAsync()).Should().Be("Suspended Test");
+        // File is deleted after Analyzing and repacking
+        task.DownloadPath.FileExists.Should().BeFalse();
         
         task.Downloaded.Value.Should().BeGreaterThan(0);
     }

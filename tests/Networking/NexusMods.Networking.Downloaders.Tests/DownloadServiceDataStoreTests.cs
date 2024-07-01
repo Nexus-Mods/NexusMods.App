@@ -7,14 +7,21 @@ using NexusMods.Paths;
 
 namespace NexusMods.Networking.Downloaders.Tests;
 
-public class DownloadServiceDataStoreTests(
-    DownloadService downloadService,
-    IServiceProvider serviceProvider,
-    LocalHttpServer server,
-    TemporaryFileManager temporaryFileManager,
-    IHttpDownloader httpDownloader)
-    : AGameTest<SkyrimSpecialEdition>(serviceProvider)
+public class DownloadServiceDataStoreTests : AGameTest<SkyrimSpecialEdition>
 {
+    private readonly DownloadService _downloadService;
+    private readonly LocalHttpServer _server;
+
+    public DownloadServiceDataStoreTests(DownloadService downloadService,
+        IServiceProvider serviceProvider,
+        LocalHttpServer server,
+        TemporaryFileManager temporaryFileManager,
+        IHttpDownloader httpDownloader) : base(serviceProvider)
+    {
+        _downloadService = downloadService;
+        _server = server;
+        _downloadService.SetDownloadDirectory(temporaryFileManager.CreateFolder(prefix: nameof(DownloadServiceDataStoreTests)));
+    }
 
     // Create a new instance of the DownloadService
 
@@ -22,7 +29,7 @@ public class DownloadServiceDataStoreTests(
     public async Task WhenComplete_StaysPersistedInDataStore()
     {
         var currentCount = GetTaskCountIncludingCompleted();
-        await downloadService.AddTask(new Uri($"{server.Prefix}Resources/RootedAtGameFolder/-Skyrim 202X 9.0 - Architecture-2347-9-0-1664994366.zip"));
+        await _downloadService.AddTask(new Uri($"{_server.Prefix}Resources/RootedAtGameFolder/-Skyrim 202X 9.0 - Architecture-2347-9-0-1664994366.zip"));
         var newCount = GetTaskCountIncludingCompleted();
         newCount.Should().Be(currentCount + 1);
     }
@@ -34,8 +41,8 @@ public class DownloadServiceDataStoreTests(
         // Should be persisted into datastore on start, because
         var currentCount = GetTasks().Count();
 
-        var url = new Uri($"{server.Prefix}Resources/RootedAtGameFolder/-Skyrim 202X 9.0 - Architecture-2347-9-0-1664994366.zip");
-        await downloadService.AddTask(url);
+        var url = new Uri($"{_server.Prefix}Resources/RootedAtGameFolder/-Skyrim 202X 9.0 - Architecture-2347-9-0-1664994366.zip");
+        await _downloadService.AddTask(url);
 
         var newCount = GetTasks().Count();
         newCount.Should().Be(currentCount + 1);
@@ -43,13 +50,13 @@ public class DownloadServiceDataStoreTests(
 
     private IEnumerable<IDownloadTask> GetTasks()
     {
-        return downloadService.Downloads
+        return _downloadService.Downloads
             .ToList();
     }
 
 
     private int GetTaskCountIncludingCompleted()
     {
-        return downloadService.Downloads.Count;
+        return _downloadService.Downloads.Count;
     }
 }
