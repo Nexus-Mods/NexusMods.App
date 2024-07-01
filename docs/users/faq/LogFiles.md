@@ -2,6 +2,10 @@
 
 To help troubleshoot issues with the app, it's important to be able to find and share you log files. 
 
+## Open the logs folder from the app
+To quickly open your logs folder, simply click the "View app logs" button from the help menu located in the top-right of the main window. 
+![The top-right corner of the main window with the help menu expanded.](../images/0.6.0/OpenAppLogsButton.webp)
+
 ## :fontawesome-brands-windows: Windows
 Log files for the app are located in `%LOCALAPPDATA%\NexusMods.App\Logs` on Windows. You can quickly find these files be following the steps below:
 
