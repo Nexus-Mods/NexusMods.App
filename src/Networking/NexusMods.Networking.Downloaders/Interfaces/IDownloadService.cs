@@ -21,6 +21,11 @@ public interface IDownloadService
     ReadOnlyObservableCollection<IDownloadTask> Downloads { get; }
     
     /// <summary>
+    /// The base directory for ongoing downloads
+    /// </summary>
+    AbsolutePath OngoingDownloadsDirectory { get; }
+    
+    /// <summary>
     /// Adds a task that will download from a NXM link.
     /// </summary>
     /// <param name="url">Url to download from.</param>

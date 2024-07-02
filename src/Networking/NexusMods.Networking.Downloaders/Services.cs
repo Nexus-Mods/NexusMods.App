@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Settings;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Networking.Downloaders.Tasks;
@@ -18,6 +19,7 @@ public static class Services
     public static IServiceCollection AddDownloaders(this IServiceCollection services)
     {        
         return services.AddSingleton<DownloadService>()
+            .AddSettings<DownloadSettings>()
             .AddHostedService<DownloadService>(sp=> sp.GetRequiredService<DownloadService>())
             .AddSingleton<IDownloadService>(sp=> sp.GetRequiredService<DownloadService>())
             .AddTransient<NxmDownloadTask>()
