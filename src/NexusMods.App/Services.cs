@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Installers;
@@ -41,6 +42,15 @@ public static class Services
         ExperimentalSettings? experimentalSettings = null,
         GameLocatorSettings? gameLocatorSettings = null)
     {
+        services.Configure<HostOptions>(options =>
+        {
+            // Sequential execution can lead to long startup times depending on number of hostedServices.
+            options.ServicesStartConcurrently = true;
+            // If executed sequentially, one service taking a long time can trigger the timeout,
+            // preventing StopAsync of other services from being called. 
+            options.ServicesStopConcurrently = true;
+        });
+        
         startupMode ??= new StartupMode();
         if (startupMode.RunAsMain)
         {
