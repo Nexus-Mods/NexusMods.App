@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using static NexusMods.Abstractions.Loadouts.Synchronizers.Rules.Actions;
 using static NexusMods.Abstractions.Loadouts.Synchronizers.Rules.SignatureShorthand;
 
@@ -6,13 +7,21 @@ namespace NexusMods.Abstractions.Loadouts.Synchronizers.Rules;
 public class ActionMapping
 {
 
-    public static Actions MapAction(Signature signature)
+    /// <summary>
+    /// Maps a signature to the corresponding actions
+    /// </summary>
+    public static Actions MapActions(Signature signature)
     {
-        return MapAction((SignatureShorthand)signature);
+        return MapActions((SignatureShorthand)signature);
     }
     
-    public static Actions MapAction(SignatureShorthand shorthand)
+    /// <summary>
+    /// Maps a shorthand signature to the corresponding actions
+    /// </summary>
+    public static Actions MapActions(SignatureShorthand shorthand)
     {
+        Debug.Assert(Enum.IsDefined(shorthand), $"Unknown value: {shorthand} ({(int)shorthand})");
+        
         // Format of the shorthand:
         // xxx_yyy_z -> xxx: Loadout, yyy: Archive, z: Ignore path
         // xxx: a tuple of `(Disk, Previous, Loadout)` states.
@@ -115,8 +124,7 @@ public class ActionMapping
             ABC_XXx_I => WarnOfUnableToExtract,
             ABC_XxX_I => DeleteFromDisk | ExtractToDisk,
             ABC_xXX_I => BackupFile | DeleteFromDisk | ExtractToDisk,
-            ABC_XXX_I => DeleteFromDisk | ExtractToDisk,
-            _ => throw new ArgumentOutOfRangeException(nameof(shorthand), shorthand, null),
+            ABC_XXX_I => DeleteFromDisk | ExtractToDisk
         };
     }
 }

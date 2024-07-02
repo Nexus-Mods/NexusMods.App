@@ -243,7 +243,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             }.Build();
             
             item.Signature = signature;
-            item.Actions = ActionMapping.MapAction(signature);
+            item.Actions = ActionMapping.MapActions(signature);
             
             groupings.Add(item);
         }

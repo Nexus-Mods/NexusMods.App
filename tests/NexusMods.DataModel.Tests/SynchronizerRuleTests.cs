@@ -17,7 +17,7 @@ public class SynchronizerRuleTests
     [MethodData(nameof(TestRows))]
     public void AllRulesHaveActions(Abstractions.Loadouts.Synchronizers.Rules.Signature signature, string EnumShorthand, Optional<Hash> disk, Optional<Hash> prev, Optional<Hash> loadout)
     {
-        var action = ActionMapping.MapAction(signature);
+        var action = ActionMapping.MapActions(signature);
         action.Should().NotBe(0, "Every signature should have a corresponding action");
 
         if (action.HasFlag(ExtractToDisk))
