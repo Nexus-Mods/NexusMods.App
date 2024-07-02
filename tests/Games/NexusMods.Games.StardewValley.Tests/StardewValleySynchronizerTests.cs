@@ -104,7 +104,7 @@ public class StardewValleySynchronizerTests(IServiceProvider serviceProvider) : 
         loadout.Files.Should().Contain(f => f.To == notIgnoredGamePath, "The file was not ignored");
         (await FileStore.HaveFile(notIgnoredHash)).Should().BeTrue("The file was not ignored"); 
         
-        // Not disable the ignore setting
+        // Now disable the ignore setting
         settings.IgnoreContentFolder = false;
 
         var loadout2 = await CreateLoadout();
