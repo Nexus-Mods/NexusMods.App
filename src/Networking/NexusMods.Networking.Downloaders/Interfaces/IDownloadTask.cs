@@ -16,9 +16,9 @@ public interface IDownloadTask
     DownloaderState.ReadOnly PersistentState { get; }
     
     /// <summary>
-    /// The download location of the task.
+    /// Path of the ongoing download file
     /// </summary>
-    public AbsolutePath DownloadLocation { get; }
+    public AbsolutePath DownloadPath { get; }
     
     /// <summary>
     /// Calculates the download speed of the current job.
@@ -93,12 +93,7 @@ public enum DownloadTaskStatus : byte
     Downloading,
 
     /// <summary>
-    /// The mod is being archived (and possibly installed) to a loadout.
-    /// </summary>
-    Installing,
-
-    /// <summary>
-    /// The task has ran to completion.
+    /// The task has run to completion.
     /// </summary>
     Completed,
     

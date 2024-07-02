@@ -69,7 +69,7 @@ class DownloadState
     /// The file where the download is stored while it is in progress
     /// </summary>
     [JsonIgnore]
-    public AbsolutePath TempFilePath => GetTempFilePath(Destination);
+    public AbsolutePath ProgressFilePath => GetProgressFilePath(Destination);
 
     /// <summary>
     /// Based on the destination, get the path to the state file
@@ -83,7 +83,7 @@ class DownloadState
     /// </summary>
     /// <param name="destination"></param>
     /// <returns></returns>
-    public static AbsolutePath GetTempFilePath(AbsolutePath destination) => destination.ReplaceExtension(new Extension(".downloading"));
+    public static AbsolutePath GetProgressFilePath(AbsolutePath destination) => destination.ReplaceExtension(new Extension(".downloading"));
 
 
     /// <summary>
