@@ -1,10 +1,8 @@
-﻿using NexusMods.Abstractions.GameLocators.Trees;
-using NexusMods.Abstractions.Loadouts.Files;
-using NexusMods.Hashing.xxHash64;
-using NexusMods.Paths;
+﻿using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.GameLocators.Trees;
 using File = NexusMods.Abstractions.Loadouts.Files.File;
 
-namespace NexusMods.Abstractions.GameLocators;
+namespace NexusMods.Abstractions.Loadouts.Synchronizers;
 
 /// <summary>
 /// A file tree is a tree that contains all files from a loadout, flattened into a single tree.

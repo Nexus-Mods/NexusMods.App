@@ -1,11 +1,10 @@
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Ids;
+using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.Paths;
 using File = NexusMods.Abstractions.Loadouts.Files.File;
 
@@ -16,28 +15,18 @@ public class StardewValleyLoadoutSynchronizer : ALoadoutSynchronizer
     public StardewValleyLoadoutSynchronizer(IServiceProvider provider) : base(provider) { }
 
 
-    protected override async Task<Loadout.ReadOnly> AddChangedFilesToLoadout(Loadout.ReadOnly loadout, TempEntity[] newFiles)
+    protected override async Task<Loadout.ReadOnly> MoveNewFilesToMods(Loadout.ReadOnly loadout, StoredFile.ReadOnly[] newFiles)
     {
         using var tx = Connection.BeginTransaction();
-        var overridesMod = GetOrCreateOverridesMod(loadout, tx);
         var modifiedMods = new HashSet<ModId>();
 
         var smapiModDirectoryNameToModel = new Dictionary<RelativePath, Mod.ReadOnly>();
 
         foreach (var newFile in newFiles)
         {
-            newFile.Add(File.Loadout, loadout.Id);
-
-            if (!newFile.Contains(File.To))
-            {
-                AddToOverride(newFile);
-                continue;
-            }
-
-            var gamePath = newFile.GetFirst(File.To);
+            var gamePath = newFile.AsFile().To;
             if (!IsModFile(gamePath, out var modDirectoryName))
             {
-                AddToOverride(newFile);
                 continue;
             }
 
@@ -45,40 +34,30 @@ public class StardewValleyLoadoutSynchronizer : ALoadoutSynchronizer
             {
                 if (!TryGetSMAPIMod(modDirectoryName, loadout, loadout.Db, out smapiMod))
                 {
-                    AddToOverride(newFile);
                     continue;
                 }
 
                 smapiModDirectoryNameToModel[modDirectoryName] = smapiMod;
             }
 
-            newFile.Add(File.Mod, smapiMod.Id);
-            newFile.AddTo(tx);
+            tx.Add(newFile.Id, File.Mod, smapiMod.Id);
             modifiedMods.Add(smapiMod.ModId);
         }
 
+        // Revise all modified mods
         foreach (var modId in modifiedMods)
         {
-            // If we created the mod in this transaction (e.g. GetOrCreateOverride created the Override mod),
-            // Db property will be null, and we can't call `.Revise` on it.
-            // We need to manually revise the loadout in that case
-            if (modId.Value.Partition == PartitionId.Temp) 
-                continue;
-            
             var mod = Mod.Load(Connection.Db, modId);
             mod.Revise(tx);
         }
-        loadout.Revise(tx);
 
+        // Only commit if we have changes
+        if (modifiedMods.Count <= 0) 
+            return loadout;
+        
+        
         var result = await tx.Commit();
-        return loadout.Rebase(result.Db);
-
-        void AddToOverride(TempEntity newFile)
-        {
-            newFile.Add(File.Mod, overridesMod);
-            newFile.AddTo(tx);
-            modifiedMods.Add(overridesMod);
-        }
+        return loadout.Rebase();
     }
 
     private static bool TryGetSMAPIMod(RelativePath modDirectoryName, Loadout.ReadOnly loadout, IDb db, out Mod.ReadOnly mod)

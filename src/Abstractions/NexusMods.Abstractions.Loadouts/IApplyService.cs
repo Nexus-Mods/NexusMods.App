@@ -11,25 +11,15 @@ namespace NexusMods.Abstractions.Loadouts;
 public interface IApplyService
 {
     /// <summary>
-    /// Apply a loadout to its game installation.
-    /// This will also ingest outside changes and merge unapplied changes on top and apply them.
+    /// Synchronize the loadout with the game folder, any changes in the game folder will be added to the loadout, and any
+    /// new changes in the loadout will be applied to the game folder.
     /// </summary>
-    public Task Apply(Loadout.ReadOnly loadout);
+    public Task Synchronize(Loadout.ReadOnly loadout);
     
     /// <summary>
     /// Get the diff tree of the unapplied changes of a loadout.
     /// </summary>
-    public ValueTask<FileDiffTree> GetApplyDiffTree(Loadout.ReadOnly loadout);
-
-    
-    /// <summary>
-    /// Ingest any detected outside changes into the last applied loadout.
-    /// This will also rebase any unapplied changes on top of the last applied state, but will not apply them to disk.
-    /// The loadoutId will point to the new merged loadout
-    /// </summary>
-    /// <param name="gameInstallation"></param>
-    /// <returns>The merged loadout</returns>
-    public Task<Loadout.ReadOnly> Ingest(GameInstallation gameInstallation);
+    public FileDiffTree GetApplyDiffTree(Loadout.ReadOnly loadout);
 
     /// <summary>
     /// Returns the last applied loadout for a given game installation.
