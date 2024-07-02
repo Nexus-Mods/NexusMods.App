@@ -470,6 +470,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 Hash = file.Disk.Value.Hash,
                 Size = file.Disk.Value.Size,
             };
+            added.Add(storedFile);
             previousTree[file.Path] = file.Disk.Value with { LastModified = DateTime.UtcNow };
         }
                     
@@ -487,7 +488,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
         loadout = loadout.Rebase();
 
-        loadout = await MoveNewFilesToMods(loadout, added.Select(file => result.Remap(file)).ToArray());
+        if (added.Count > 0) 
+            loadout = await MoveNewFilesToMods(loadout, added.Select(file => result.Remap(file)).ToArray());
         return loadout;
     }
 

@@ -1,13 +1,10 @@
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Files;
-using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.Models;
-using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
 using File = NexusMods.Abstractions.Loadouts.Files.File;
 
@@ -60,7 +57,7 @@ public class StardewValleyLoadoutSynchronizer : ALoadoutSynchronizer
         
         
         var result = await tx.Commit();
-        return loadout.Rebase(result.Db);
+        return loadout.Rebase();
     }
 
     private static bool TryGetSMAPIMod(RelativePath modDirectoryName, Loadout.ReadOnly loadout, IDb db, out Mod.ReadOnly mod)
