@@ -224,12 +224,4 @@ public class DownloadService : IDownloadService, IDisposable, IHostedService
         await Task.WhenAll(suspendingTasks);
     }
     
-    /// <summary>
-    /// Set a custom downloadDirectory, for tests only.
-    /// Directory should already exist.
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    internal void SetDownloadDirectory(AbsolutePath path)
-    {
-        OngoingDownloadsDirectory = path;
-    }
 }

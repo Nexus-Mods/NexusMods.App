@@ -9,7 +9,7 @@ namespace NexusMods.Networking.Downloaders;
 /// Settings for downloads.
 /// </summary>
 [PublicAPI]
-public class DownloadSettings : ISettings
+public record DownloadSettings : ISettings
 {
     
     /// <summary>

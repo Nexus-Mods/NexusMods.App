@@ -10,7 +10,6 @@ public class DownloadServiceTests
     // For the uninitiated with xUnit: This is initialized before every test.
     private readonly DownloadService _downloadService;
     private readonly LocalHttpServer _httpServer;
-    private readonly TemporaryFileManager _temporaryFileManager;
     private IReadOnlyCollection<IDownloadTask> _downloadTasks;
 
     public DownloadServiceTests(DownloadService downloadService, 
@@ -18,8 +17,6 @@ public class DownloadServiceTests
     {
         _httpServer = httpServer;
         _downloadService = downloadService;
-        _temporaryFileManager = temporaryFileManager;
-        _downloadService.SetDownloadDirectory(_temporaryFileManager.CreateFolder(prefix:nameof(DownloadServiceTests)));
     }
 
     [Fact]

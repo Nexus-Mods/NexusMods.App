@@ -1,9 +1,7 @@
 using FluentAssertions;
-using NexusMods.Abstractions.HttpDownloader;
 using NexusMods.Games.RedEngine;
 using NexusMods.Games.TestFramework;
 using NexusMods.Networking.Downloaders.Interfaces;
-using NexusMods.Paths;
 
 namespace NexusMods.Networking.Downloaders.Tests;
 
@@ -14,13 +12,10 @@ public class DownloadServiceDataStoreTests : AGameTest<Cyberpunk2077>
 
     public DownloadServiceDataStoreTests(DownloadService downloadService,
         IServiceProvider serviceProvider,
-        LocalHttpServer server,
-        TemporaryFileManager temporaryFileManager,
-        IHttpDownloader httpDownloader) : base(serviceProvider)
+        LocalHttpServer server) : base(serviceProvider)
     {
         _downloadService = downloadService;
         _server = server;
-        _downloadService.SetDownloadDirectory(temporaryFileManager.CreateFolder(prefix: nameof(DownloadServiceDataStoreTests)));
     }
 
     // Create a new instance of the DownloadService
