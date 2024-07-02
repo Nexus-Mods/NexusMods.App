@@ -9,4 +9,16 @@
         <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
         <PackageReference Include="NexusMods.MnemonicDB.SourceGenerator" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="LocalFile.cs">
+        <DependentUpon>LibraryItem.cs</DependentUpon>
+      </Compile>
+      <Compile Update="LibraryFile.cs">
+        <DependentUpon>LibraryItem.cs</DependentUpon>
+      </Compile>
+      <Compile Update="ArchiveFile.cs">
+        <DependentUpon>Archive.cs</DependentUpon>
+      </Compile>
+    </ItemGroup>
 </Project>
