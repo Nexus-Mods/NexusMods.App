@@ -43,6 +43,13 @@ public static class Services
                 IconFunc = static () => IconValues.WarningAmber,
                 Name = "Experimental - Not currently supported",
                 Priority = ushort.MinValue,
+            })
+            .AddSettingsSection(new SettingsSectionSetup
+            {
+                Id = Sections.GameSpecific,
+                IconFunc = static () => IconValues.Game,
+                Name = "Game specific",
+                Priority = ushort.MinValue + 3,
             });
     }
 }

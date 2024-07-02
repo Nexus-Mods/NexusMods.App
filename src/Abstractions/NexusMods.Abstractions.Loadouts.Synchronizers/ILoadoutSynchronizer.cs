@@ -98,5 +98,13 @@ public interface ILoadoutSynchronizer
     /// </summary>
     /// <param name="installation">Game installation which should be unmanaged.</param>
     Task UnManage(GameInstallation installation);
-    #endregion
+
+    /// <summary>
+    /// Returns true if the path should be ignored by the synchronizer when backing up or restoring files. This does not mean
+    /// that files on the given path will not be managed or moddable, just that the default files on that path are not backed
+    /// up. This method is ignored when the global configuration is set to always back up all game files.
+    /// </summary>
+    bool IsIgnoredBackupPath(GamePath path);
+
+#endregion
 }
