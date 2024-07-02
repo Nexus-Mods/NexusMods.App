@@ -6,16 +6,59 @@ namespace NexusMods.Abstractions.Loadouts.Synchronizers.Rules;
 [Flags]
 public enum Signature : ushort
 {
+    /// <summary>
+    /// Empty signature, used only as a way to detect an uninitialized signature.
+    /// </summary>
     Empty = 0,
+    
+    /// <summary>
+    /// True if the file exists on disk.
+    /// </summary>
     DiskExists = 1,
+    
+    /// <summary>
+    /// True if the file exists in the previous state.
+    /// </summary>
     PrevExists = 2,
+    
+    /// <summary>
+    /// True if the file exists in the loadout.
+    /// </summary>
     LoadoutExists = 4,
+    
+    /// <summary>
+    /// True if the hashes of the disk and previous state are equal.
+    /// </summary>
     DiskEqualsPrev = 8,
+    
+    /// <summary>
+    /// True if the hashes of the previous state and loadout are equal.
+    /// </summary>
     PrevEqualsLoadout = 16,
+    
+    /// <summary>
+    /// True if the hashes of the disk and loadout are equal.
+    /// </summary>
     DiskEqualsLoadout = 32,
+    
+    /// <summary>
+    /// True if the file on disk is already archived.
+    /// </summary>
     DiskArchived = 64,
+    
+    /// <summary>
+    /// True if the file in the previous state is archived.
+    /// </summary>
     PrevArchived = 128,
+    
+    /// <summary>
+    /// True if the file in the loadout is archived.
+    /// </summary>
     LoadoutArchived = 256,
+    
+    /// <summary>
+    /// True if the path is ignored, i.e. it is on a game-specific ignore list.
+    /// </summary>
     PathIsIgnored = 512,
 }
 
