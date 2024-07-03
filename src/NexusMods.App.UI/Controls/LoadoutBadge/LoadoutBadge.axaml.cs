@@ -26,6 +26,9 @@ public partial class LoadoutBadge : ReactiveUserControl<ILoadoutBadgeVM>
                 this.WhenAnyValue(x => x.ViewModel!.IsLoadoutInProgress)
                     .Subscribe(SetInProgress)
                     .DisposeWith(d);
+                
+                this.OneWayBind(ViewModel, vm => vm.LoadoutShortName, v => v.ShortName.Text)
+                    .DisposeWith(d);
             }
         );
     }
