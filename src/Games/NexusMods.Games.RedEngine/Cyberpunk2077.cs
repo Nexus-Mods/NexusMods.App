@@ -8,6 +8,7 @@ using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Games.FOMOD;
 using NexusMods.Games.RedEngine.ModInstallers;
 using NexusMods.Paths;
@@ -25,6 +26,9 @@ public class Cyberpunk2077 : AGame, ISteamGame, IGogGame, IEpicGame
         _fileSystem = fileSystem;
         _serviceProvider = provider;
     }
+
+    protected override ILoadoutSynchronizer MakeSynchronizer(IServiceProvider provider) 
+        => new Cyberpunk2077Synchronizer(provider);
 
     public override string Name => "Cyberpunk 2077";
     public override GameDomain Domain => StaticDomain;
