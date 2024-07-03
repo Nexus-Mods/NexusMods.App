@@ -14,6 +14,11 @@ public partial class LibraryArchive : IModelDefinition
     private const string Namespace = "NexusMods.Library.LibraryArchive";
 
     /// <summary>
+    /// Marker.
+    /// </summary>
+    public static readonly MarkerAttribute LibraryArchiveMarker = new(Namespace, nameof(LibraryArchiveMarker));
+
+    /// <summary>
     /// Back-reference to all files inside the archive.
     /// </summary>
     public static readonly BackReferenceAttribute<LibraryArchiveFileEntry> Children = new(LibraryArchiveFileEntry.Parent);
