@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
+using NexusMods.Abstractions.Settings;
 using NexusMods.Games.StardewValley.Emitters;
 using NexusMods.Games.StardewValley.Installers;
 using NexusMods.Games.StardewValley.Models;
@@ -38,7 +39,8 @@ public static class Services
             .AddAttributeCollection(typeof(SMAPIModDatabaseMarker))
 
             // Misc
-            .AddSingleton<ISMAPIWebApi, SMAPIWebApi>();
+            .AddSingleton<ISMAPIWebApi, SMAPIWebApi>()
+            .AddSettings<StardewValleySettings>();
 
         return services;
     }

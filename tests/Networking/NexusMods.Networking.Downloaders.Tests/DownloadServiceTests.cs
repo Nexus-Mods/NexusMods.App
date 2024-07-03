@@ -10,7 +10,6 @@ public class DownloadServiceTests
     // For the uninitiated with xUnit: This is initialized before every test.
     private readonly DownloadService _downloadService;
     private readonly LocalHttpServer _httpServer;
-    private readonly TemporaryFileManager _temporaryFileManager;
     private IReadOnlyCollection<IDownloadTask> _downloadTasks;
 
     public DownloadServiceTests(DownloadService downloadService, 
@@ -18,7 +17,6 @@ public class DownloadServiceTests
     {
         _httpServer = httpServer;
         _downloadService = downloadService;
-        _temporaryFileManager = temporaryFileManager;
     }
 
     [Fact]
@@ -51,8 +49,8 @@ public class DownloadServiceTests
             DownloadTaskStatus.Downloading, 
             DownloadTaskStatus.Completed);
         
-        task.DownloadLocation.FileExists.Should().BeTrue();
-        (await task.DownloadLocation.ReadAllTextAsync()).Should().Be("Hello, World!");
+        // File is deleted after Analyzing and repacking
+        task.DownloadPath.FileExists.Should().BeFalse();
         
         task.Downloaded.Value.Should().BeGreaterThan(0);
     }
@@ -106,8 +104,8 @@ public class DownloadServiceTests
             DownloadTaskStatus.Downloading,
             DownloadTaskStatus.Completed);
         
-        task.DownloadLocation.FileExists.Should().BeTrue();
-        (await task.DownloadLocation.ReadAllTextAsync()).Should().Be("Suspended Test");
+        // File is deleted after Analyzing and repacking
+        task.DownloadPath.FileExists.Should().BeFalse();
         
         task.Downloaded.Value.Should().BeGreaterThan(0);
     }

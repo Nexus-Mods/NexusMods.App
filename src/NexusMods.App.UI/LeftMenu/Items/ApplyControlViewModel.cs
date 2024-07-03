@@ -145,7 +145,7 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
         await Task.Run(async () =>
         {
             var loadout = Abstractions.Loadouts.Loadout.Load(_conn.Db, _loadoutId);
-            await _applyService.Apply(loadout);
+            await _applyService.Synchronize(loadout);
         });
     }
     
@@ -158,7 +158,7 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
             if (LastAppliedWithTxId.Id.Equals(_loadoutId))
             {
                 var loadout = Abstractions.Loadouts.Loadout.Load(_conn.Db, _loadoutId);
-                await _applyService.Ingest(loadout.InstallationInstance);
+                await _applyService.Synchronize(loadout);
             }
         }
     }

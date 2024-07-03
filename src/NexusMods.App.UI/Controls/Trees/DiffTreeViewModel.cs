@@ -62,7 +62,7 @@ public class DiffTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeViewMo
             throw new KeyNotFoundException($"Loadout with ID {_loadoutId} not found.");
         }
 
-        var diffTree = await _applyService.GetApplyDiffTree(loadout);
+        var diffTree = _applyService.GetApplyDiffTree(loadout);
 
         Dictionary<GamePath, IFileTreeNodeViewModel> fileViewModelNodes = [];
 

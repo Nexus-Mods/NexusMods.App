@@ -1,6 +1,5 @@
 using System.Text;
 using NexusMods.Abstractions.IO;
-using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Games.StardewValley.Models;

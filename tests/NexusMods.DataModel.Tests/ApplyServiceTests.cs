@@ -26,7 +26,7 @@ public class ApplyServiceTests(IServiceProvider provider) : ADataModelTest<Apply
         gameFolder.Combine("rootFile.txt").FileExists.Should().BeFalse("loadout has not yet been applied");
         
         // Act
-        await ApplyService.Apply(BaseLoadout);
+        await ApplyService.Synchronize(BaseLoadout);
         
         // Assert
         gameFolder.Combine("rootFile.txt").FileExists.Should().BeTrue("loadout has been applied");
@@ -48,7 +48,7 @@ public class ApplyServiceTests(IServiceProvider provider) : ADataModelTest<Apply
         // Act
         var newFile = new GamePath(LocationId.Saves, "newfile.dat");
         await Install.LocationsRegister.GetResolvedPath(newFile).WriteAllBytesAsync([0x01, 0x02, 0x03]);
-        await ApplyService.Apply(BaseLoadout);
+        await ApplyService.Synchronize(BaseLoadout);
         
         // Assert
         gameFolder.Combine("rootFile.txt").FileExists.Should().BeTrue("loadout has been applied");
@@ -74,10 +74,12 @@ public class ApplyServiceTests(IServiceProvider provider) : ADataModelTest<Apply
         // Act
         var newFile = new GamePath(LocationId.Saves, "newDiskFile.dat");
         await Install.LocationsRegister.GetResolvedPath(newFile).WriteAllBytesAsync([0x01, 0x02, 0x03]);
-        var loadout = await ApplyService.Ingest(BaseLoadout.InstallationInstance);
+        await ApplyService.Synchronize(BaseLoadout);
+
+        Refresh(ref BaseLoadout);
         
         // Assert
-        loadout!.Mods.SelectMany(mod=> mod.Files)
+        BaseLoadout!.Mods.SelectMany(mod=> mod.Files)
             .Should().Contain(file => file.To.EndsWith( "newDiskFile.dat"));
     }
     
@@ -92,13 +94,13 @@ public class ApplyServiceTests(IServiceProvider provider) : ADataModelTest<Apply
         var deletedFile = Install.LocationsRegister.GetResolvedPath(new GamePath(LocationId.Game, "rootFile.txt"));
 
         // Apply the loadout to make sure there are no uncommitted revisions
-        await ApplyService.Apply(BaseLoadout);
+        await ApplyService.Synchronize(BaseLoadout);
 
         deletedFile.FileExists.Should().BeTrue("the file was applied");
         // Act
         deletedFile.Delete();
         deletedFile.FileExists.Should().BeFalse("the file was deleted");
-        await ApplyService.Ingest(BaseLoadout.InstallationInstance);
+        await ApplyService.Synchronize(BaseLoadout);
         Refresh(ref BaseLoadout);
         
         // Assert
@@ -109,15 +111,12 @@ public class ApplyServiceTests(IServiceProvider provider) : ADataModelTest<Apply
         overrideFile.Should().NotBeNull();
         overrideFile!.Contains(DeletedFile.Size).Should().BeTrue();
         
+        var syncTree = await Synchronizer.BuildSyncTree(BaseLoadout);
         
         // Act
-        await ApplyService.Apply(BaseLoadout);
+        await ApplyService.Synchronize(BaseLoadout);
 
-        
-        // This only fails on Windows on github actions, I don't know why, disabled for now on windows
-        // until I can investigate it - halgari
-        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) 
-            deletedFile.FileExists.Should().BeFalse("file is still deleted after apply");
+        deletedFile.FileExists.Should().BeFalse("file is still deleted after apply");
         
     }
 }

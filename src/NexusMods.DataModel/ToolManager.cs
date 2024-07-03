@@ -49,8 +49,8 @@ public class ToolManager : IToolManager
         
         _logger.LogInformation("Applying loadout {LoadoutId} on {GameName} {GameVersion}", 
             loadout.Id, loadout.InstallationInstance.Game.Name, loadout.InstallationInstance.Version);
-        await _applyService.Apply(loadout);
-        var appliedLoadout = loadout.Rebase(_conn.Db);
+        await _applyService.Synchronize(loadout);
+        var appliedLoadout = loadout.Rebase();
 
         _logger.LogInformation("Running tool {ToolName} for loadout {LoadoutId} on {GameName} {GameVersion}", 
             tool.Name, appliedLoadout.Id, appliedLoadout.InstallationInstance.Game.Name, appliedLoadout.InstallationInstance.Version);
@@ -58,6 +58,8 @@ public class ToolManager : IToolManager
 
         _logger.LogInformation("Ingesting loadout {LoadoutId} from {GameName} {GameVersion}", 
             appliedLoadout.Id, appliedLoadout.InstallationInstance.Game.Name, appliedLoadout.InstallationInstance.Version);
-        return await _applyService.Ingest(appliedLoadout.InstallationInstance);
+        await _applyService.Synchronize(appliedLoadout);
+
+        return appliedLoadout.Rebase();
     }
 }

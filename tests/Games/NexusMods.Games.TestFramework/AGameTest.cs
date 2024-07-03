@@ -15,6 +15,7 @@ using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Mods;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions;
@@ -46,6 +47,9 @@ public abstract class AGameTest<TGame> where TGame : AGame
 
     protected readonly NexusApiClient NexusNexusApiClient;
     protected readonly IHttpDownloader HttpDownloader;
+    
+    protected ILoadoutSynchronizer Synchronizer => GameInstallation.GetGame().Synchronizer;
+    
     private readonly ILogger<AGameTest<TGame>> _logger;
 
     /// <summary>

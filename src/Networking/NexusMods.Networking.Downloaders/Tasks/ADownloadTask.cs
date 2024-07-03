@@ -1,18 +1,13 @@
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Activities;
 using NexusMods.Abstractions.FileStore;
-using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.HttpDownloader;
-using NexusMods.Abstractions.IO;
-using NexusMods.DataModel;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Networking.Downloaders.Tasks.State;
 using NexusMods.Paths;
+using NexusMods.Paths.Utilities;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -30,33 +25,33 @@ public abstract class ADownloadTask : ReactiveObject, IDownloadTask
     /// </summary>
     protected HttpDownloaderState? TransientState = null!;
     protected ILogger<ADownloadTask> Logger;
-    protected TemporaryFileManager TemporaryFileManager;
     protected HttpClient HttpClient;
     protected IHttpDownloader HttpDownloader;
     protected CancellationTokenSource CancellationTokenSource;
-    protected TemporaryPath _downloadLocation = default!;
+    protected AbsolutePath _downloadPath = default!;
     protected IFileSystem FileSystem;
     protected IFileOriginRegistry FileOriginRegistry;
     private DownloaderState.ReadOnly _persistentState;
-
+    private IDownloadService _downloadService;
+    
     protected ADownloadTask(IServiceProvider provider)
     {
         Connection = provider.GetRequiredService<IConnection>();
         Logger = provider.GetRequiredService<ILogger<ADownloadTask>>();
-        TemporaryFileManager = provider.GetRequiredService<TemporaryFileManager>();
         HttpClient = provider.GetRequiredService<HttpClient>();
         HttpDownloader = provider.GetRequiredService<IHttpDownloader>();
         CancellationTokenSource = new CancellationTokenSource();
         ActivityFactory = provider.GetRequiredService<IActivityFactory>();
         FileSystem = provider.GetRequiredService<IFileSystem>();
         FileOriginRegistry = provider.GetRequiredService<IFileOriginRegistry>();
+        _downloadService = provider.GetRequiredService<IDownloadService>();
     }
     
     public void Init(DownloaderState.ReadOnly state)
     {
         PersistentState = state;
         Downloaded = state.Downloaded;
-        _downloadLocation = new TemporaryPath(FileSystem, FileSystem.FromUnsanitizedFullPath(state.DownloadPath), false);
+        _downloadPath = FileSystem.FromUnsanitizedFullPath(state.DownloadPath);
     }
     
     /// <summary>
@@ -73,13 +68,19 @@ public abstract class ADownloadTask : ReactiveObject, IDownloadTask
     /// </summary>
     protected EntityId Create(ITransaction tx)
     {
-        _downloadLocation = TemporaryFileManager.CreateFile();
+        // Add a subfolder for the download task
+        var guid = Guid.NewGuid().ToString();
+        var downloadSubfolder = _downloadService.OngoingDownloadsDirectory.Combine(guid);
+        downloadSubfolder.CreateDirectory();
+        
+        _downloadPath = downloadSubfolder.Combine(guid).AppendExtension(KnownExtensions.Tmp);
+        
         var state = new DownloaderState.New(tx)
         {
             FriendlyName = "<Unknown>",
             Status = DownloadTaskStatus.Idle,
             Downloaded = Size.Zero,
-            DownloadPath = DownloadLocation.ToString(),
+            DownloadPath = DownloadPath.ToString(),
         };
         return state.Id;
     }
@@ -151,7 +152,7 @@ public abstract class ADownloadTask : ReactiveObject, IDownloadTask
     [Reactive]
     public DownloaderState.ReadOnly PersistentState { get; protected set; }
     
-    public AbsolutePath DownloadLocation => _downloadLocation;
+    public AbsolutePath DownloadPath => _downloadPath;
 
 
     [Reactive] public Bandwidth Bandwidth { get; set; } = Bandwidth.From(0);
@@ -173,6 +174,10 @@ public abstract class ADownloadTask : ReactiveObject, IDownloadTask
         try { await CancellationTokenSource.CancelAsync(); }
         catch (Exception) { /* ignored */ }
         await SetStatus(DownloadTaskStatus.Cancelled);
+        
+        // Cleanup the download directory (this could actually still be in use by the downloader,
+        // since CancelAsync is not guaranteed to wait for exception handlers to finish handling the cancellation)
+        CleanupDownloadFiles();
     }
 
     /// <inheritdoc />
@@ -193,24 +198,39 @@ public abstract class ADownloadTask : ReactiveObject, IDownloadTask
         await SetStatus(DownloadTaskStatus.Downloading);
         TransientState = new HttpDownloaderState
         {
-            Activity = ActivityFactory.Create<Size>(IHttpDownloader.Group, "Downloading {FileName}", DownloadLocation),
+            Activity = ActivityFactory.Create<Size>(IHttpDownloader.Group, "Downloading {FileName}", DownloadPath),
         };
         _ = StartActivityUpdater();
         
         Logger.LogDebug("Dispatching download task for {Name}", PersistentState.FriendlyName);
-        await Download(DownloadLocation, CancellationTokenSource.Token);
+        try
+        {
+            await Download(DownloadPath, CancellationTokenSource.Token);
+        }
+        catch (OperationCanceledException e)
+        {
+            return;
+        }
+        
         UpdateActivity();
         await SetStatus(DownloadTaskStatus.Analyzing);
         Logger.LogInformation("Finished download of {Name} starting analysis", PersistentState.FriendlyName);
         await AnalyzeFile();
         await MarkComplete();
+        CleanupDownloadFiles();
+    }
+
+    // Delete the download task subfolder and all files within it. 
+    private void CleanupDownloadFiles()
+    {
+        DownloadPath.Parent.DeleteDirectory(recursive: true);
     }
 
     private async Task AnalyzeFile()
     {
         try
         {
-            await FileOriginRegistry.RegisterDownload(DownloadLocation, PersistentState.Id, PersistentState.FriendlyName);
+            await FileOriginRegistry.RegisterDownload(DownloadPath, PersistentState.Id, PersistentState.FriendlyName);
         }
         catch (Exception ex)
         {

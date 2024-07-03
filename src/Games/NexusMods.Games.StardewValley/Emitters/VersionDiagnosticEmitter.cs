@@ -1,5 +1,4 @@
 using System.Runtime.CompilerServices;
-using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Diagnostics;

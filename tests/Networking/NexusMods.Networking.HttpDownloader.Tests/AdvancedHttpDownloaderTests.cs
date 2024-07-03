@@ -70,7 +70,7 @@ public class AdvancedHttpDownloaderTests
         var downloadTask = _httpDownloader.DownloadAsync(sources,path, token: tokenSource.Token);
 
         var progressFile = DownloadState.GetStateFilePath(path.Path);
-        var downloadingFile = DownloadState.GetTempFilePath(path.Path);
+        var downloadingFile = DownloadState.GetProgressFilePath(path.Path);
 
         while (!progressFile.FileExists)
             await Task.Delay(10);
