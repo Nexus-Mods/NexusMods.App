@@ -1,7 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-    <!-- NuGet Package Shared Details -->
-    <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
-
     <PropertyGroup>
         <RootNamespace>NexusMods.Abstractions.Library.NexusModsLibrary</RootNamespace>
     </PropertyGroup>
